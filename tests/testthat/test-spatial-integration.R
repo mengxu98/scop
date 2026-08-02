@@ -158,7 +158,7 @@ test_that("SpatialMNN follows the atlasClustering three-stage API", {
   srt <- make_spatial_integration_seurat()
   observed <- character()
   testthat::local_mocked_bindings(
-    spatialmnn_check_r = function() invisible(TRUE),
+    check_r = function(...) list(atlasClustering = TRUE),
     get_namespace_fun = function(package, name) {
       expect_identical(package, "atlasClustering")
       switch(name,
@@ -245,10 +245,35 @@ test_that("SpatialMNN installation discovery uses the actual package name", {
         return(list(atlasClustering = FALSE))
       }
       list(atlasClustering = TRUE)
-    }
+    },
+    get_namespace_fun = function(package, name) {
+      stage_1 <- function(seu_ls, ...) {
+        lapply(seu_ls, function(x) {
+          x$merged_cluster <- rep(1:2, length.out = ncol(x))
+          x
+        })
+      }
+      stage_2 <- function(seu_ls, ...) {
+        list(
+          cl_df = data.frame(
+            sample = "S1",
+            cluster = "1",
+            louvain = "1"
+          )
+        )
+      }
+      switch(name,
+        stage_1 = stage_1,
+        stage_2 = stage_2,
+        stage_3 = function(...) list(embedding = NULL, domains = NULL),
+        function(...) NULL
+      )
+    },
+    spatialmnn_prepare_seurat_list = function(...) list()
   )
 
-  expect_invisible(spatialmnn_check_r())
+  out <- spatial_integration_run_spatialmnn(input = list(), params = list())
+  expect_true(is.list(out))
   expect_identical(calls, c("atlasClustering", "Pixel-Dream/spatialMNN"))
 })
 
@@ -267,7 +292,9 @@ test_that("BASS discovery rejects the unrelated package-name collision", {
     }
   )
 
-  expect_invisible(bass_check_r())
+  expect_invisible(
+    spatial_integration_run_bass(input = list(), params = list())
+  )
   expect_identical(installs, "zhengli09/BASS")
 })
 

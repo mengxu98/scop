@@ -281,9 +281,9 @@ RunIntegration <- function(
 
   if (!isTRUE(integration_method_missing)) {
     if (!isTRUE(integration_methods_missing)) {
-      stop(
+      log_message(
         "Supply only one of `integration_methods` and the deprecated `integration_method`.",
-        call. = FALSE
+        message_type = "error"
       )
     }
     .Deprecated(
@@ -366,9 +366,9 @@ RunIntegration <- function(
   ) {
     assay_use <- assay_requested %||% SeuratObject::DefaultAssay(assay_source)
     if (inherits(assay_source[[assay_use]], "ChromatinAssay")) {
-      stop(
+      log_message(
         "`integration_method = 'Seurat'` is not supported for `ChromatinAssay` in the current TFIDF/rlsi workflow. Please use `Uncorrected` or `Harmony5` (auto-switches to `Harmony`).",
-        call. = FALSE
+        message_type = "error"
       )
     }
   }
@@ -378,9 +378,9 @@ RunIntegration <- function(
   ) {
     assay_use <- assay_requested %||% SeuratObject::DefaultAssay(assay_source)
     if (inherits(assay_source[[assay_use]], "ChromatinAssay")) {
-      stop(
+      log_message(
         "`integration_method = 'RPCA'` is not supported for `ChromatinAssay` in the current implementation.",
-        call. = FALSE
+        message_type = "error"
       )
     }
   }
@@ -390,9 +390,9 @@ RunIntegration <- function(
   ) {
     assay_use <- assay_requested %||% SeuratObject::DefaultAssay(assay_source)
     if (!inherits(assay_source[[assay_use]], "ChromatinAssay")) {
-      stop(
+      log_message(
         "`integration_method = 'PeakVI'` requires a `ChromatinAssay`.",
-        call. = FALSE
+        message_type = "error"
       )
     }
   }
@@ -402,9 +402,9 @@ RunIntegration <- function(
   ) {
     assay_use <- assay_requested %||% SeuratObject::DefaultAssay(assay_source)
     if (!inherits(assay_source[[assay_use]], "ChromatinAssay")) {
-      stop(
+      log_message(
         "`integration_method = 'PoissonVI'` requires a `ChromatinAssay`.",
-        call. = FALSE
+        message_type = "error"
       )
     }
   }
@@ -420,9 +420,9 @@ RunIntegration <- function(
     )]
     rna_assays <- setdiff(assays_available, chrom_assays)
     if (length(chrom_assays) == 0 || length(rna_assays) == 0) {
-      stop(
+      log_message(
         "`integration_method = 'WNN'` requires both an RNA assay and a `ChromatinAssay` in the same Seurat object.",
-        call. = FALSE
+        message_type = "error"
       )
     }
   }
@@ -438,9 +438,9 @@ RunIntegration <- function(
     )]
     rna_assays <- setdiff(assays_available, chrom_assays)
     if (length(chrom_assays) == 0 || length(rna_assays) == 0) {
-      stop(
+      log_message(
         "`integration_method = 'MultiMAP'` requires both an RNA assay and a `ChromatinAssay` in the same Seurat object.",
-        call. = FALSE
+        message_type = "error"
       )
     }
   }
@@ -456,9 +456,9 @@ RunIntegration <- function(
     )]
     rna_assays <- setdiff(assays_available, chrom_assays)
     if (length(chrom_assays) == 0 || length(rna_assays) == 0) {
-      stop(
+      log_message(
         "`integration_method = 'GLUE'` requires both an RNA assay and a `ChromatinAssay` in the same Seurat object.",
-        call. = FALSE
+        message_type = "error"
       )
     }
   }

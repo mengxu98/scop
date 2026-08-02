@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include "velocity_utils.h"
 
 using namespace Rcpp;
@@ -330,7 +331,7 @@ List scvelo_dynamical_nm_cpp(
   int n_genes = Ms.nrow();
   int n_cells = Ms.ncol();
   if (Mu.nrow() != n_genes || Mu.ncol() != n_cells)
-    stop("Ms and Mu must have identical dimensions");
+    thisutils::log_message("Ms and Mu must have identical dimensions", "error");
 
   // Which genes to fit
   std::vector<bool> do_fit(n_genes, true);
@@ -441,7 +442,7 @@ List scvelo_dynamical_velocity_cpp(
 
   if ((int)alpha.size() < n_genes || (int)beta.size() < n_genes ||
       (int)gamma.size() < n_genes || (int)t_.size() < n_genes)
-    stop("parameter vectors must match n_genes");
+    thisutils::log_message("parameter vectors must match n_genes", "error");
 
   // Compute per-cell velocity from fitted parameters
   // v = du/dt = alpha - beta*u  (unspliced velocity)
@@ -488,7 +489,7 @@ List scvelo_dynamical_em_cpp(
   const int n_genes = Ms.nrow();
   const int n_cells = Ms.ncol();
   if (Mu.nrow() != n_genes || Mu.ncol() != n_cells)
-    stop("Ms and Mu must have identical dimensions");
+    thisutils::log_message("Ms and Mu must have identical dimensions", "error");
 
   std::vector<bool> do_fit(n_genes, true);
   if (use_genes.size() > 0) {

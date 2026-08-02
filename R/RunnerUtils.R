@@ -52,6 +52,13 @@ runner_system2 <- function(command, args, env, stdout, stderr) {
       message_type = "error"
     )
   }
+  log_message_path <- system.file(
+    "python", "log_message.py",
+    package = "thisutils"
+  )
+  if (nzchar(log_message_path)) {
+    env <- c(env, SCOP_LOG_MESSAGE_PATH = log_message_path)
+  }
   if (!length(env)) {
     return(system2(
       command = command,

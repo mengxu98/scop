@@ -1,4 +1,5 @@
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #ifdef __APPLE__
 #include <dlfcn.h>
 #endif
@@ -224,7 +225,7 @@ Rcpp::List pca_backend_run(const arma::mat& X,
   const int cells = X.n_cols;
   const int keep = component_count(npcs, features, cells);
   if (keep < 1) {
-    Rcpp::stop("pca_backend_run: matrix is too small");
+    thisutils::log_message("pca_backend_run: matrix is too small", "error");
   }
 
   arma::mat gram;
@@ -243,7 +244,7 @@ Rcpp::List pca_backend_run(const arma::mat& X,
   arma::mat gram_for_eigen = gram;
   if (!fast_top_eigen(gram_for_eigen, keep, eigvals, loadings)) {
     if (!arma::eig_sym(values, vectors, gram)) {
-      Rcpp::stop("pca_backend_run: eigensolver failed");
+      thisutils::log_message("pca_backend_run: eigensolver failed", "error");
     }
     for (int j = 0; j < keep; ++j) {
       const arma::uword source = static_cast<arma::uword>(values.n_elem - 1 - j);
@@ -253,7 +254,7 @@ Rcpp::List pca_backend_run(const arma::mat& X,
   }
 #else
   if (!arma::eig_sym(values, vectors, gram)) {
-    Rcpp::stop("pca_backend_run: eigensolver failed");
+    thisutils::log_message("pca_backend_run: eigensolver failed", "error");
   }
   for (int j = 0; j < keep; ++j) {
     const arma::uword source = static_cast<arma::uword>(values.n_elem - 1 - j);

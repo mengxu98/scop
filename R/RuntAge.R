@@ -155,7 +155,10 @@ RuntAge <- function(
     configure_python_thread_env()
     if (isTRUE(check_python)) {
       PrepareEnv(modules = "tage")
-      check_tage_python(verbose = verbose)
+      scop::check_python(
+        c("joblib", "pandas", "sklearn"),
+        verbose = verbose
+      )
     }
   }
 
@@ -906,25 +909,6 @@ infer_tage_model_name <- function(path) {
     return("scaled")
   }
   NA_character_
-}
-
-check_tage_python <- function(verbose = TRUE) {
-  missing_modules <- vapply(
-    c("joblib", "pandas", "sklearn"),
-    function(pkg) !isTRUE(reticulate::py_module_available(pkg)),
-    logical(1)
-  )
-  if (any(missing_modules)) {
-    log_message(
-      paste0(
-        "Missing Python module{?s} for {.pkg tAge}: {.pkg {names(missing_modules)[missing_modules]}}. ",
-        "Run {.code PrepareEnv(modules = 'tage')} or set {.envvar RETICULATE_PYTHON} ",
-        "to an environment with {.pkg joblib}, {.pkg pandas}, and {.pkg scikit-learn}."
-      ),
-      message_type = "error",
-      verbose = verbose
-    )
-  }
 }
 
 predict_tage_models <- function(

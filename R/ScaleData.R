@@ -23,7 +23,7 @@ ScaleData.Seurat <- function(
       !isTRUE(do.scale) ||
       !isTRUE(do.center)
   ) {
-    stop("ScaleData.Seurat supports linear scaling without regression, split.by, or use.umi.", call. = FALSE)
+    log_message("ScaleData.Seurat supports linear scaling without regression, split.by, or use.umi.", message_type = "error")
   }
   assay_name <- if (is.null(assay)) {
     SeuratObject::DefaultAssay(object)
@@ -39,7 +39,7 @@ ScaleData.Seurat <- function(
         error = function(e) NULL
       )
       if (is.null(data_mat)) {
-        stop("ScaleData.Seurat requires data convertible to dgCMatrix.", call. = FALSE)
+        log_message("ScaleData.Seurat requires data convertible to dgCMatrix.", message_type = "error")
       }
     }
     features <- if (is.null(features)) {
@@ -66,12 +66,12 @@ ScaleData.Seurat <- function(
     !inherits(assay_obj, "Assay5") ||
       length(SeuratObject::Layers(assay_obj, search = "data")) == 0L
   ) {
-    stop("ScaleData.Seurat requires an Assay5 object with a data layer.", call. = FALSE)
+    log_message("ScaleData.Seurat requires an Assay5 object with a data layer.", message_type = "error")
   }
   data_layers <- SeuratObject::Layers(assay_obj, search = "data")
   data_layers <- data_layers[grepl("^data(\\.|$)", data_layers)]
   if (length(data_layers) == 0L) {
-    stop("ScaleData.Seurat requires an Assay5 object with a data layer.", call. = FALSE)
+    log_message("ScaleData.Seurat requires an Assay5 object with a data layer.", message_type = "error")
   }
   features <- if (is.null(features)) {
     SeuratObject::VariableFeatures(object)
@@ -111,7 +111,7 @@ ScaleData.Seurat <- function(
       error = function(e) NULL
     )
     if (is.null(data_mat)) {
-      stop("ScaleData.Seurat requires data convertible to dgCMatrix.", call. = FALSE)
+      log_message("ScaleData.Seurat requires data convertible to dgCMatrix.", message_type = "error")
     }
   }
   if (length(data_layers) > 1L) {
@@ -162,5 +162,5 @@ ScaleData <- function(object, ...) {
 
 #' @export
 ScaleData.default <- function(object, ...) {
-  stop("ScaleData supports Seurat objects.", call. = FALSE)
+  log_message("ScaleData supports Seurat objects.", message_type = "error")
 }

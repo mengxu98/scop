@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -26,8 +27,8 @@ List phate_graphtools_affinity_data_cpp(
 {
   const int n_cells = data.nrow();
   const int n_features = data.ncol();
-  if (n_cells < 1) stop("data must contain at least one row");
-  if (n_features < 1) stop("data must contain at least one column");
+  if (n_cells < 1) thisutils::log_message("data must contain at least one row", "error");
+  if (n_features < 1) thisutils::log_message("data must contain at least one column", "error");
   knn = std::max(1, std::min(knn, std::max(1, n_cells - 1)));
   const int max_neighbors = (knn_max > 0) ?
     std::min(knn_max, std::max(1, n_cells - 1)) :
@@ -297,7 +298,7 @@ NumericMatrix phate_potential_distance_cpp(
 {
   const int n = log_transition.nrow();
   if (log_transition.ncol() != n)
-    stop("log_transition must be a square matrix");
+    thisutils::log_message("log_transition must be a square matrix", "error");
   const int use_landmarks = (n_landmarks > 0 && n_landmarks < n) ? n_landmarks : n;
 
   mat logP(log_transition.begin(), n, n, false);
@@ -369,11 +370,11 @@ NumericMatrix phate_metric_mds_cpp(
 {
   const int n = D.nrow();
   if (D.ncol() != n)
-    stop("D must be a square distance matrix");
+    thisutils::log_message("D must be a square distance matrix", "error");
   if (n < 1)
-    stop("D must contain at least one row");
+    thisutils::log_message("D must contain at least one row", "error");
   if (n_components < 1)
-    stop("n_components must be at least 1");
+    thisutils::log_message("n_components must be at least 1", "error");
   if (n_components > n) n_components = n;
 
   mat dist(D.begin(), n, n, false);

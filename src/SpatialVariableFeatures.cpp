@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <R_ext/Random.h>
 
 #include <algorithm>
@@ -164,19 +165,19 @@ Rcpp::List spatial_variable_score_cpp(
     int method,
     int n_permutations = 0) {
   if (edge_from.size() != edge_to.size()) {
-    Rcpp::stop("`edge_from` and `edge_to` must have the same length.");
+    thisutils::log_message("`edge_from` and `edge_to` must have the same length.", "error");
   }
   if (method != 1 && method != 2) {
-    Rcpp::stop("`method` must be 1 (Moran) or 2 (Geary).");
+    thisutils::log_message("`method` must be 1 (Moran) or 2 (Geary).", "error");
   }
   if (n_permutations < 0) {
-    Rcpp::stop("`n_permutations` must be non-negative.");
+    thisutils::log_message("`n_permutations` must be non-negative.", "error");
   }
 
   const bool is_sparse = Rf_inherits(expr, "dgCMatrix");
   const bool is_dense = Rf_isMatrix(expr) && TYPEOF(expr) == REALSXP;
   if (!is_sparse && !is_dense) {
-    Rcpp::stop("`expr` must be a numeric matrix or a `dgCMatrix`.");
+    thisutils::log_message("`expr` must be a numeric matrix or a `dgCMatrix`.", "error");
   }
 
   int n_features = 0;
@@ -196,7 +197,7 @@ Rcpp::List spatial_variable_score_cpp(
   for (int edge = 0; edge < n_edges; ++edge) {
     if (edge_from[edge] < 0 || edge_from[edge] >= n_spots ||
         edge_to[edge] < 0 || edge_to[edge] >= n_spots) {
-      Rcpp::stop("Edge indices are outside the expression matrix columns.");
+      thisutils::log_message("Edge indices are outside the expression matrix columns.", "error");
     }
   }
 

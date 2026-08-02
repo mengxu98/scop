@@ -313,8 +313,8 @@ palantir_maxmin_waypoints_cpp <- function(ms_data, num_waypoints, seed = 20L) {
     .Call(`_scop_palantir_maxmin_waypoints_cpp`, ms_data, num_waypoints, seed)
 }
 
-palantir_pseudotime_cpp <- function(ms_data, start_cell, waypoints, knn, max_iterations = 25L, n_jobs = 1L) {
-    .Call(`_scop_palantir_pseudotime_cpp`, ms_data, start_cell, waypoints, knn, max_iterations, n_jobs)
+palantir_pseudotime_cpp <- function(ms_data, start_cell, waypoints, knn, max_iterations = 25L, n_jobs = 1L, knn_idx = matrix(), knn_dist = matrix()) {
+    .Call(`_scop_palantir_pseudotime_cpp`, ms_data, start_cell, waypoints, knn, max_iterations, n_jobs, knn_idx, knn_dist)
 }
 
 palantir_markov_chain_cpp <- function(wp_data, knn, pseudotime) {

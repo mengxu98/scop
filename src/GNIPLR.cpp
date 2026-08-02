@@ -1,4 +1,5 @@
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -160,7 +161,7 @@ List gniplr_cpp(
   max_lag = std::max(1, std::min(3, max_lag));
   const int min_cells = max_lag == 1 ? 4 : (max_lag == 2 ? 6 : 8);
   if (cell_num < min_cells) {
-    stop("GNIPLR requires at least %d cells for max_lag=%d", min_cells, max_lag);
+    thisutils::log_message_fmt("error", "GNIPLR requires at least %d cells for max_lag=%d",  min_cells,  max_lag);
   }
   arma::mat corr(gene_num, gene_num, arma::fill::eye);
   for (int i = 0; i < gene_num; ++i) {

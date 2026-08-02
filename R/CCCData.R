@@ -45,7 +45,7 @@ RunLIANA <- function(
   backend <- match.arg(backend)
   species <- match.arg(species)
   consensus <- match.arg(consensus)
-  liana_check_r(verbose = FALSE)
+  check_r(c("saezlab/liana", "SingleCellExperiment"), verbose = FALSE)
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -199,7 +199,7 @@ RunLIANA <- function(
 #' @return A data frame describing the resources available from LIANA.
 #' @export
 ListLIANAResources <- function(species = NULL) {
-  liana_check_r(verbose = FALSE)
+  check_r(c("saezlab/liana", "SingleCellExperiment"), verbose = FALSE)
   if (!is.null(species)) {
     species <- match.arg(species, c("human", "mouse"))
   }
@@ -218,11 +218,6 @@ ListLIANAResources <- function(species = NULL) {
   }
   rownames(out) <- NULL
   out
-}
-
-liana_check_r <- function(verbose = FALSE) {
-  check_r(c("saezlab/liana", "SingleCellExperiment"), verbose = verbose)
-  invisible(TRUE)
 }
 
 liana_get_fun <- function(fun, package = "liana") {

@@ -1,5 +1,6 @@
 // [[Rcpp::plugins(cpp14)]]
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 
 #include <unordered_set>
 #include <vector>
@@ -57,14 +58,14 @@ IntegerVector dynamic_row_unique_counts_dense_cpp(NumericMatrix x) {
 IntegerVector dynamic_row_unique_counts_sparse_cpp(S4 x) {
   IntegerVector dims = x.slot("Dim");
   if (dims.size() != 2) {
-    stop("x must have a two-dimensional Dim slot");
+    thisutils::log_message("x must have a two-dimensional Dim slot", "error");
   }
   const int n_rows = dims[0];
   const int n_cols = dims[1];
   IntegerVector row_index = x.slot("i");
   NumericVector values = x.slot("x");
   if (row_index.size() != values.size()) {
-    stop("sparse matrix i and x slots must have the same length");
+    thisutils::log_message("sparse matrix i and x slots must have the same length", "error");
   }
 
   std::vector<RowUniqueValues> row_values(n_rows);
@@ -72,7 +73,7 @@ IntegerVector dynamic_row_unique_counts_sparse_cpp(S4 x) {
   for (R_xlen_t value_i = 0; value_i < values.size(); ++value_i) {
     const int row_i = row_index[value_i];
     if (row_i < 0 || row_i >= n_rows) {
-      stop("sparse matrix contains an out-of-bounds row index");
+      thisutils::log_message("sparse matrix contains an out-of-bounds row index", "error");
     }
     add_value(row_values[row_i], values[value_i]);
     ++row_stored[row_i];

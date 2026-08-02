@@ -2,7 +2,12 @@ import importlib.util
 import os
 from pathlib import Path
 
-_LOG_MESSAGE_PATH = Path(__file__).resolve().parent / "log_message.py"
+_LOG_MESSAGE_ENV = os.environ.get("SCOP_LOG_MESSAGE_PATH")
+_LOG_MESSAGE_PATH = (
+    Path(_LOG_MESSAGE_ENV)
+    if _LOG_MESSAGE_ENV
+    else Path(__file__).resolve().parent / "log_message.py"
+)
 _LOG_MESSAGE_SPEC = importlib.util.spec_from_file_location(
     "scop_log_message", _LOG_MESSAGE_PATH
 )

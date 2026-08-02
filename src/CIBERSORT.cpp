@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include "cibersort_libsvm.h"
 #include <algorithm>
 #include <atomic>
@@ -445,13 +446,13 @@ List cibersort_cpp(
   const int n_cell_types = signature.ncol();
   const int n_samples = mixture.ncol();
   if (n_genes <= 0 || n_cell_types <= 0 || n_samples <= 0) {
-    stop("signature and mixture matrices must be non-empty");
+    thisutils::log_message("signature and mixture matrices must be non-empty", "error");
   }
   if (mixture.nrow() != n_genes) {
-    stop("signature and mixture matrices must have the same number of rows");
+    thisutils::log_message("signature and mixture matrices must have the same number of rows", "error");
   }
   if (perm < 0) {
-    stop("perm must be non-negative");
+    thisutils::log_message("perm must be non-negative", "error");
   }
   cibersort_svm_clear_diagnostics();
 

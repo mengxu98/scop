@@ -85,6 +85,14 @@ print.scop_logo <- function(x, ...) {
 .onAttach <- function(libname, pkgname) {
   options(scop_env_cache = NULL)
 
+  log_message_path <- system.file(
+    "python", "log_message.py",
+    package = "thisutils"
+  )
+  if (nzchar(log_message_path)) {
+    Sys.setenv(SCOP_LOG_MESSAGE_PATH = log_message_path)
+  }
+
   verbose <- thisutils::get_verbose()
   if (isTRUE(verbose)) {
     scop_env_init <- getOption("scop_env_init", default = FALSE)

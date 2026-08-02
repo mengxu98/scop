@@ -698,11 +698,11 @@ monocle2_cpp_select_root_cell <- function(cds, root_state = NULL, projection = N
   }
   pdata <- Biobase::pData(cds)
   if (is.null(pdata[["State"]])) {
-    stop("Error: State has not yet been set. Please call orderCells() without specifying root_state, then try this call again.")
+    log_message("Error: State has not yet been set. Please call orderCells() without specifying root_state, then try this call again.", message_type = "error")
   }
   root_cell_candidates <- which(as.character(pdata[["State"]]) == as.character(root_state))
   if (length(root_cell_candidates) == 0L) {
-    stop(paste("Error: no cells for State =", root_state))
+    log_message(paste("Error: no cells for State =", root_state), message_type = "error")
   }
   if (is.null(projection)) {
     projection <- monocle2_cpp_project_cells_to_mst(cds)

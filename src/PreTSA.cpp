@@ -1,4 +1,5 @@
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -19,7 +20,7 @@ List pretsa_fit_block_cpp(
   const int models = bases.size();
   if (features < 1 || samples < 2 || models < 1 || inverses.size() != models ||
       knots.size() != models) {
-    stop("invalid PreTSA kernel dimensions");
+    thisutils::log_message("invalid PreTSA kernel dimensions", "error");
   }
 
   arma::mat expr(const_cast<double*>(expression.begin()), features, samples, false, true);
@@ -35,7 +36,7 @@ List pretsa_fit_block_cpp(
     NumericMatrix inverse_r = inverses[model];
     if (basis_r.nrow() != samples || inverse_r.nrow() != basis_r.ncol() ||
         inverse_r.ncol() != basis_r.ncol()) {
-      stop("incompatible PreTSA basis dimensions");
+      thisutils::log_message("incompatible PreTSA basis dimensions", "error");
     }
     arma::mat basis(basis_r.begin(), basis_r.nrow(), basis_r.ncol(), false, true);
     arma::mat inverse(inverse_r.begin(), inverse_r.nrow(), inverse_r.ncol(), false, true);
@@ -78,7 +79,7 @@ List pretsa_curve_summary_cpp(
   const int samples = fitted.ncol();
   if (expression.nrow() != features || expression.ncol() != samples ||
       pseudotime.size() != samples || samples < 1) {
-    stop("invalid PreTSA summary dimensions");
+    thisutils::log_message("invalid PreTSA summary dimensions", "error");
   }
   NumericVector peak(features);
   NumericVector valley(features);

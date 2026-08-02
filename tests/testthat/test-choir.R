@@ -18,7 +18,11 @@ make_choir_seurat <- function() {
   Seurat::NormalizeData(srt, verbose = FALSE)
 }
 
-with_mock_choir <- function(code, backend = NULL) {
+with_mock_choir <- function(code,
+                            backend = NULL,
+                            installed_commit = "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc",
+                            namespace_loaded = FALSE,
+                            loaded_commit = "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc") {
   received <- new.env(parent = emptyenv())
   if (is.null(backend)) {
     backend <- function(object,
@@ -67,17 +71,12 @@ with_mock_choir <- function(code, backend = NULL) {
       expect_identical(name, "CHOIR")
       backend
     },
-    choir_installed_commit = function() {
-      "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
-    },
-    choir_namespace_loaded = function() FALSE,
-    choir_loaded_commit = function() {
-      "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
-    },
-    choir_validate_platform = function(...) invisible(TRUE)
+    choir_installed_commit = function() installed_commit,
+    choir_namespace_loaded = function() namespace_loaded,
+    choir_loaded_commit = function() loaded_commit
   )
-  force(code)
-  list(received = received, checked = checked)
+  result <- force(code)
+  list(received = received, checked = checked, result = result)
 }
 
 test_that("CHOIR rejects unsafe numeric cluster limits", {
@@ -139,9 +138,12 @@ test_that("RunCHOIR calls the optional backend and standardizes results", {
   })
 
   expect_s4_class(out, "Seurat")
-  expect_identical(
+  expect_setequal(
     mocked$checked,
-    "CHOIR"
+    c(
+      getFromNamespace(".choir_repository", "scop"),
+      getFromNamespace(".choir_dependencies", "scop")
+    )
   )
   expect_identical(mocked$received$args$use_assay, "RNA")
   expect_identical(mocked$received$args$use_slot, "data")
@@ -433,162 +435,51 @@ test_that("RunCHOIR rejects invalid cluster labels", {
   )
 })
 
-test_that("CHOIR rejects unsupported Windows execution", {
-  validate <- getFromNamespace("choir_validate_platform", "scop")
-  expect_invisible(validate("unix"))
-  expect_error(validate("windows"), "not Windows")
+test_that("RunCHOIR installs and verifies the pinned backend through check_r", {
+  srt <- make_choir_seurat()
+  mocked <- with_mock_choir({
+    out <- RunCHOIR(srt, verbose = FALSE)
+    out
+  })
+  expect_setequal(
+    mocked$checked,
+    c(
+      getFromNamespace(".choir_repository", "scop"),
+      getFromNamespace(".choir_dependencies", "scop")
+    )
+  )
+  expect_s4_class(mocked$result, "Seurat")
 })
 
-test_that("CHOIR helper reuses the installed pinned backend", {
-  checked <- NULL
-  testthat::local_mocked_bindings(
-    .package = "scop",
-    check_r = function(packages, dependencies, install, verbose, ...) {
-      checked <<- list(
-        packages = packages,
-        dependencies = dependencies,
-        install = install,
-        verbose = verbose
-      )
-      invisible(TRUE)
-    },
-    choir_installed_commit = function() {
-      "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
-    },
-    choir_namespace_loaded = function() FALSE,
-    choir_validate_platform = function(...) invisible(TRUE)
-  )
-  expect_invisible(choir_check_r(verbose = FALSE))
-  expect_identical(checked$packages, "CHOIR")
-  expect_identical(checked$dependencies, NA)
-  expect_false(checked$install)
-  expect_identical(checked$verbose, FALSE)
-})
-
-test_that("CHOIR helper always skips the upstream telemetry configure", {
-  calls <- list()
-  fallback_calls <- 0L
-  testthat::local_mocked_bindings(
-    .package = "scop",
-    check_r = function(packages, ...) {
-      calls[[length(calls) + 1L]] <<- packages
-      if (identical(packages, "CHOIR") && length(calls) == 1L) {
-        return(list(CHOIR = FALSE))
-      }
-      if (!identical(packages, "CHOIR")) {
-        return(as.list(stats::setNames(rep(TRUE, length(packages)), packages)))
-      }
-      list(CHOIR = TRUE)
-    },
-    choir_install_without_configure = function(verbose) {
-      fallback_calls <<- fallback_calls + 1L
-      expect_false(verbose)
-      invisible(TRUE)
-    },
-    choir_validate_platform = function(...) invisible(TRUE),
-    choir_namespace_loaded = function() FALSE,
-    choir_installed_commit = function() {
-      if (fallback_calls == 0L) {
-        return(NULL)
-      }
-      "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
-    }
-  )
-
-  expect_invisible(getFromNamespace("choir_check_r", "scop")(verbose = FALSE))
-  expect_identical(calls[[1L]], "CHOIR")
-  expect_identical(
-    calls[[2L]],
-    getFromNamespace(".choir_dependencies", "scop")
-  )
-  expect_identical(calls[[3L]], "CHOIR")
-  expect_identical(fallback_calls, 1L)
-})
-
-test_that("CHOIR helper stops before source installation when dependencies fail", {
-  fallback_calls <- 0L
-  testthat::local_mocked_bindings(
-    .package = "scop",
-    check_r = function(packages, ...) {
-      if (identical(packages, "CHOIR")) {
-        return(list(CHOIR = FALSE))
-      }
-      as.list(stats::setNames(
-        c(FALSE, rep(TRUE, length(packages) - 1L)),
-        packages
-      ))
-    },
-    choir_namespace_loaded = function() FALSE,
-    choir_installed_commit = function() NULL,
-    choir_validate_platform = function(...) invisible(TRUE),
-    choir_install_without_configure = function(...) {
-      fallback_calls <<- fallback_calls + 1L
-    }
-  )
-
+test_that("RunCHOIR errors when the pinned backend cannot be verified", {
+  srt <- make_choir_seurat()
   expect_error(
-    getFromNamespace("choir_check_r", "scop")(verbose = FALSE),
-    "prepare dependencies"
+    with_mock_choir(
+      { RunCHOIR(srt, verbose = FALSE) },
+      installed_commit = NULL
+    ),
+    "Unable to install the pinned optional"
   )
-  expect_identical(fallback_calls, 0L)
 })
 
-test_that("CHOIR helper refuses to replace a loaded stale namespace", {
-  fallback_calls <- 0L
-  testthat::local_mocked_bindings(
-    .package = "scop",
-    check_r = function(...) list(CHOIR = TRUE),
-    choir_installed_commit = function() "stale",
-    choir_namespace_loaded = function() TRUE,
-    choir_loaded_commit = function() "stale",
-    choir_validate_platform = function(...) invisible(TRUE),
-    choir_install_without_configure = function(...) {
-      fallback_calls <<- fallback_calls + 1L
-    }
-  )
-
+test_that("RunCHOIR refuses to replace a loaded stale namespace", {
+  srt <- make_choir_seurat()
   expect_error(
-    getFromNamespace("choir_check_r", "scop")(verbose = FALSE),
+    with_mock_choir(
+      { RunCHOIR(srt, verbose = FALSE) },
+      namespace_loaded = TRUE,
+      loaded_commit = "stale"
+    ),
     "Restart R"
   )
-  expect_identical(fallback_calls, 0L)
 })
 
-test_that("CHOIR helper accepts a loaded pinned namespace on the fast path", {
-  checked <- FALSE
-  testthat::local_mocked_bindings(
-    .package = "scop",
-    check_r = function(...) {
-      checked <<- TRUE
-      list(CHOIR = TRUE)
-    },
-    choir_namespace_loaded = function() TRUE,
-    choir_loaded_commit = function() {
-      "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
-    },
-    choir_validate_platform = function(...) invisible(TRUE)
+test_that("RunCHOIR accepts a loaded pinned namespace on the fast path", {
+  srt <- make_choir_seurat()
+  mocked <- with_mock_choir(
+    { RunCHOIR(srt, verbose = FALSE) },
+    namespace_loaded = TRUE
   )
-
-  expect_invisible(getFromNamespace("choir_check_r", "scop")(verbose = FALSE))
-  expect_false(checked)
-})
-
-test_that("CHOIR helper rejects Windows before checking dependencies", {
-  checked <- FALSE
-  testthat::local_mocked_bindings(
-    .package = "scop",
-    choir_validate_platform = function(...) {
-      stop("windows blocked")
-    },
-    check_r = function(...) {
-      checked <<- TRUE
-      TRUE
-    }
-  )
-
-  expect_error(
-    getFromNamespace("choir_check_r", "scop")(verbose = FALSE),
-    "windows blocked"
-  )
-  expect_false(checked)
+  expect_s4_class(mocked$result, "Seurat")
+  expect_length(mocked$checked, 0L)
 })

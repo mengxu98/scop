@@ -588,13 +588,22 @@ run_palantir_cpp <- function(
   )))
   n_wp <- length(wp)
 
+  knn_ms <- thisutils::run_biocneighbors_knn(
+    reference = ms_data_scaled,
+    k = as.integer(knn_k),
+    metric = "euclidean",
+    exclude_self = FALSE,
+    n_threads = as.integer(cores)
+  )
   pt_res <- palantir_pseudotime_cpp(
     ms_data = ms_data_scaled,
     start_cell = as.integer(start_cell - 1L),
     waypoints = wp,
     knn = as.integer(knn_k),
     max_iterations = as.integer(max_iterations),
-    n_jobs = as.integer(cores)
+    n_jobs = as.integer(cores),
+    knn_idx = knn_ms[["idx"]],
+    knn_dist = knn_ms[["dist"]]
   )
   pseudotime <- as.numeric(pt_res[["pseudotime"]])
   pseudotime_raw <- pseudotime

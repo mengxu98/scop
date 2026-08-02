@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <vector>
 #include <cmath>
 #include <cstring>
@@ -123,7 +124,7 @@ NumericMatrix scale_sparse_rows_from_stats(
   const int n_rows = dim_vec[0];
   const int n_cols = dim_vec[1];
   if (center.size() != n_rows || scale.size() != n_rows) {
-    stop("center and scale must have one value per sparse matrix row.");
+    thisutils::log_message("center and scale must have one value per sparse matrix row.", "error");
   }
 
   std::vector<double> zero_score(n_rows, 0.0);

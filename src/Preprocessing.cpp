@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <cmath>
 #include <algorithm>
 #include <numeric>
@@ -20,7 +21,7 @@ IntegerVector scvelo_filter_genes_scanpy_cpp(
   int n_genes = spliced.nrow();
   int n_cells = spliced.ncol();
   if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    stop("spliced and unspliced must have identical dimensions");
+    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
 
   IntegerVector keep(n_genes, 1);
   for (int g = 0; g < n_genes; ++g) {
@@ -49,9 +50,9 @@ List scvelo_normalize_scanpy_cpp(
   int n_genes = spliced.nrow();
   int n_cells = spliced.ncol();
   if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    stop("spliced and unspliced must have identical dimensions");
+    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
   if (initial_spliced_totals.size() != n_cells || initial_unspliced_totals.size() != n_cells)
-    stop("initial totals must match n_cells");
+    thisutils::log_message("initial totals must match n_cells", "error");
 
   // Median of pre-filtering totals (matching scvelo's get_initial_size)
   std::vector<double> sorted_s(n_cells), sorted_u(n_cells);
@@ -317,7 +318,7 @@ IntegerVector scvelo_filter_genes_shared_cpp(
   int n_genes = spliced.nrow();
   int n_cells = spliced.ncol();
   if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    stop("spliced and unspliced must have identical dimensions");
+    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
 
   IntegerVector keep(n_genes, 1);
   for (int g = 0; g < n_genes; ++g) {
@@ -348,7 +349,7 @@ List scvelo_preprocess_scanpy_cpp(
   int n_genes = spliced.nrow();
   int n_cells = spliced.ncol();
   if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    stop("spliced and unspliced must have identical dimensions");
+    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
 
   // Step 1: Compute initial per-cell totals (before filtering)
   NumericVector initial_spliced_totals(n_cells);
@@ -368,7 +369,7 @@ List scvelo_preprocess_scanpy_cpp(
 
   int n_keep = 0;
   for (int g = 0; g < n_genes; ++g) n_keep += keep[g] > 0;
-  if (n_keep < 2) stop("Too few genes pass filtering");
+  if (n_keep < 2) thisutils::log_message("Too few genes pass filtering", "error");
 
   NumericMatrix spliced_f(n_keep, n_cells);
   NumericMatrix unspliced_f(n_keep, n_cells);

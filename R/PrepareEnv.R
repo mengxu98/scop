@@ -61,12 +61,6 @@ PrepareEnv <- function(
   components_missing <- missing(components)
   components <- norm_env_components(components)
   modules <- normalize_env_modules(modules = modules)
-  if (
-    identical(modules, "choir") &&
-      (components_missing || identical(components, "r"))
-  ) {
-    return(invisible(choir_check_r(verbose = verbose)))
-  }
   r_status <- NULL
   if ("r" %in% components) {
     r_status <- ensure_env_r_packages(
@@ -627,10 +621,6 @@ ensure_external_wrapper_r_packages <- function(modules, verbose = TRUE) {
   }
 
   for (module in modules) {
-    if (identical(module, "choir")) {
-      choir_check_r(verbose = verbose)
-      next
-    }
     repo <- unname(repos[[module]])
     check_r(repo, dependencies = NA, verbose = verbose)
   }

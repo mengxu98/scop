@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -26,7 +27,7 @@ DgCSlots get_dgc_slots_spatial_gradient(S4 mat) {
   IntegerVector col_ptr = mat.slot("p");
   NumericVector values = mat.slot("x");
   if (dims.size() != 2 || col_ptr.size() != dims[1] + 1 || row_idx.size() != values.size()) {
-    stop("expr must be a valid dgCMatrix.");
+    thisutils::log_message("expr must be a valid dgCMatrix.", "error");
   }
   return DgCSlots{dims[0], dims[1], row_idx, col_ptr, values};
 }
@@ -437,7 +438,7 @@ std::vector<double> annotation_distances(const NumericMatrix& coords, const Logi
     }
   }
   if (refs.empty()) {
-    stop("The annotation reference contains no finite spots.");
+    thisutils::log_message("The annotation reference contains no finite spots.", "error");
   }
   std::vector<double> dist(n, NA_REAL);
   for (int i = 0; i < n; ++i) {
@@ -466,7 +467,7 @@ std::vector<double> trajectory_distances(const NumericMatrix& coords, const Nume
   const int n = coords.nrow();
   const int k = trajectory.nrow();
   if (k < 2 || trajectory.ncol() != 2) {
-    stop("trajectory must contain at least two x/y coordinates.");
+    thisutils::log_message("trajectory must contain at least two x/y coordinates.", "error");
   }
   std::vector<double> seg_len(k - 1, 0.0);
   std::vector<double> cum(k - 1, 0.0);
@@ -479,7 +480,7 @@ std::vector<double> trajectory_distances(const NumericMatrix& coords, const Nume
     total += seg_len[s];
   }
   if (!(total > 0.0)) {
-    stop("trajectory length must be greater than zero.");
+    thisutils::log_message("trajectory length must be greater than zero.", "error");
   }
 
   std::vector<double> dist(n, NA_REAL);
@@ -535,7 +536,7 @@ IntegerVector make_bins(const std::vector<double>& dist, int n_bins, NumericVect
     }
   }
   if (!std::isfinite(d_min) || !std::isfinite(d_max)) {
-    stop("No finite spatial distances are available.");
+    thisutils::log_message("No finite spatial distances are available.", "error");
   }
   if (!(d_max > d_min)) {
     n_bins = 1;
@@ -587,19 +588,19 @@ List spatial_gradient_screening_cpp(
 ) {
   DgCSlots mat = get_dgc_slots_spatial_gradient(expr);
   if (coords.nrow() != mat.n_cols || coords.ncol() != 2) {
-    stop("coords must have one x/y row per expression column.");
+    thisutils::log_message("coords must have one x/y row per expression column.", "error");
   }
   if (variables.size() != mat.n_rows) {
-    stop("variables must contain one name per expression row.");
+    thisutils::log_message("variables must contain one name per expression row.", "error");
   }
   if (n_bins < 1) {
-    stop("n_bins must be positive.");
+    thisutils::log_message("n_bins must be positive.", "error");
   }
   if (n_random < 0) {
-    stop("n_random must be non-negative.");
+    thisutils::log_message("n_random must be non-negative.", "error");
   }
   if (min_spots < 1) {
-    stop("min_spots must be positive.");
+    thisutils::log_message("min_spots must be positive.", "error");
   }
 
   std::vector<std::vector<Entry> > rows(static_cast<std::size_t>(mat.n_rows));
@@ -607,7 +608,7 @@ List spatial_gradient_screening_cpp(
     for (int ptr = mat.col_ptr[col]; ptr < mat.col_ptr[col + 1]; ++ptr) {
       const int row = mat.row_idx[ptr];
       if (row < 0 || row >= mat.n_rows) {
-        stop("expr row index is out of bounds.");
+        thisutils::log_message("expr row index is out of bounds.", "error");
       }
       const double value = mat.values[ptr];
       if (std::isfinite(value) && value != 0.0) {

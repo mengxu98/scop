@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 
 using namespace Rcpp;
 
@@ -14,11 +15,11 @@ NumericVector tage_elastic_net_predict_cpp(
   const int n_features = feature_match.size();
   const int n_samples = expr.ncol();
   if (imputer.size() != n_features || center.size() != n_features || coef.size() != n_features) {
-    stop("feature_match, imputer, center, and coef must have the same length");
+    thisutils::log_message("feature_match, imputer, center, and coef must have the same length", "error");
   }
   const bool use_scale = scale.size() > 0;
   if (use_scale && scale.size() != n_features) {
-    stop("scale must be empty or have the same length as coef");
+    thisutils::log_message("scale must be empty or have the same length as coef", "error");
   }
 
   NumericVector prediction(n_samples, intercept);

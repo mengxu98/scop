@@ -19,30 +19,6 @@ spatialcellchat_required_symbols <- function(analysis.level = c("cell", "spot", 
   c(common, aggregate_symbol)
 }
 
-spatialcellchat_check_r <- function(analysis.level, verbose = FALSE) {
-  check_r(.spatialcellchat_repository, verbose = verbose)
-  missing <- vapply(
-    spatialcellchat_required_symbols(analysis.level),
-    function(symbol) {
-      tryCatch(
-        {
-          get_namespace_fun(.spatialcellchat_package, symbol)
-          FALSE
-        },
-        error = function(e) TRUE
-      )
-    },
-    logical(1)
-  )
-  if (any(missing)) {
-    log_message(
-      "The installed {.pkg SpatialCellChat} API is incompatible. Missing functions: {.val {names(missing)[missing]}}",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
 spatialcellchat_remote_info <- function() {
   desc <- tryCatch(utils::packageDescription(.spatialcellchat_package), error = function(e) NULL)
   list(
@@ -185,14 +161,6 @@ spatialcellchat_detect_technology <- function(srt, technology, image = NULL) {
   evidence[[1L]]
 }
 
-spatialcellchat_has_segmentation <- function(srt, image = NULL) {
-  if (is.null(image) || !image %in% tryCatch(SeuratObject::Images(srt), error = function(e) character())) {
-    return(FALSE)
-  }
-  boundaries <- tryCatch(SeuratObject::Boundaries(srt[[image]]), error = function(e) character())
-  "segmentation" %in% boundaries || inherits(srt[[image]], "FOV")
-}
-
 spatialcellchat_detect_level <- function(srt, analysis.level, technology, composition, image = NULL) {
   analysis.level <- match.arg(analysis.level, c("auto", "cell", "spot", "composition"))
   if (!identical(analysis.level, "auto")) {
@@ -201,14 +169,19 @@ spatialcellchat_detect_level <- function(srt, analysis.level, technology, compos
   if (!is.null(composition)) {
     return("composition")
   }
-  if (spatialcellchat_has_segmentation(srt, image = image) || technology %in% c("xenium", "cosmx", "merfish")) {
+  has_segmentation <- !is.null(image) &&
+    image %in% tryCatch(SeuratObject::Images(srt), error = function(e) character()) &&
+    (
+      "segmentation" %in% tryCatch(SeuratObject::Boundaries(srt[[image]]), error = function(e) character()) ||
+        inherits(srt[[image]], "FOV")
+    )
+  if (has_segmentation || technology %in% c("xenium", "cosmx", "merfish")) {
     return("cell")
   }
   if (technology %in% c("visium", "visium_hd")) {
     return("spot")
   }
-  log_message(
-    "Cannot determine {.arg analysis.level}; choose {.val cell}, {.val spot}, or {.val composition}",
+  log_message(    "Cannot determine {.arg analysis.level}; choose {.val cell}, {.val spot}, or {.val composition}",
     message_type = "error"
   )
 }
@@ -1095,7 +1068,26 @@ RunSpatialCellChat <- function(
   if (isTRUE(contact.dependent)) {
     spatialcellchat_validate_scalar(contact.range, "contact.range", positive = TRUE)
   }
-  spatialcellchat_check_r(analysis.level, verbose = FALSE)
+  check_r(.spatialcellchat_repository, verbose = FALSE)
+  missing <- vapply(
+    spatialcellchat_required_symbols(analysis.level),
+    function(symbol) {
+      tryCatch(
+        {
+          get_namespace_fun(.spatialcellchat_package, symbol)
+          FALSE
+        },
+        error = function(e) TRUE
+      )
+    },
+    logical(1)
+  )
+  if (any(missing)) {
+    log_message(
+      "The installed {.pkg SpatialCellChat} API is incompatible. Missing functions: {.val {names(missing)[missing]}}",
+      message_type = "error"
+    )
+  }
   database.use <- spatialcellchat_database(species, database, custom.db = custom.db)
   expression_all <- tryCatch(
     GetAssayData5(srt, assay = assay, layer = layer),

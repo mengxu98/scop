@@ -491,13 +491,14 @@ augur_cpp <- function(
     fun = function(cell_type) {
       y <- labels[cell_types == cell_type]
       if (min(table(y)) < min_cells) {
-        warning(
+        log_message(
           "skipping cell type ",
           cell_type,
           ": minimum number of cells (",
           min(table(y)),
           ") is less than ",
-          min_cells
+          min_cells,
+          message_type = "warning"
         )
         return(list())
       }

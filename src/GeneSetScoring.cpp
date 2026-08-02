@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo, cli)]]
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <thisutils/cli_progress.h>
 #include <algorithm>
 #include <cstdint>
@@ -469,14 +470,14 @@ NumericMatrix ucell_scores_sparse(
   if (negative_sets.size() != n_sets ||
       positive_missing.size() != n_sets ||
       negative_missing.size() != n_sets) {
-    stop("UCell signature inputs must have matching lengths.");
+    thisutils::log_message("UCell signature inputs must have matching lengths.", "error");
   }
   if (max_rank <= 0 || !R_finite(negative_weight) ||
       negative_weight < 0.0) {
-    stop("Invalid UCell max rank or negative signature weight.");
+    thisutils::log_message("Invalid UCell max rank or negative signature weight.", "error");
   }
   if (tie_method < 1 || tie_method > 6) {
-    stop("Unsupported UCell tie method.");
+    thisutils::log_message("Unsupported UCell tie method.", "error");
   }
   max_rank = std::min(max_rank, n_genes);
 
@@ -783,7 +784,7 @@ DataFrame ora_hypergeom(
   int max_size = 2147483647
 ) {
   if (term_ids.size() != term_genes.size()) {
-    stop("term_ids and term_genes must have the same length");
+    thisutils::log_message("term_ids and term_genes must have the same length", "error");
   }
 
   std::unordered_map<std::string, std::unordered_set<std::string> > term_to_genes;
@@ -932,7 +933,7 @@ NumericMatrix module_score_sparse(
   const int n_cells = dims[1];
   const int n_sets = feature_sets.size();
   if (control_sets.size() != n_sets) {
-    stop("feature_sets and control_sets must have the same length");
+    thisutils::log_message("feature_sets and control_sets must have the same length", "error");
   }
 
   IntegerVector row_idx = expr.slot("i");
@@ -1041,7 +1042,7 @@ DataFrame proportion_permutation(
   bool verbose = false
 ) {
   if (sample_ids.size() != cluster_ids.size()) {
-    stop("sample_ids and cluster_ids must have the same length");
+    thisutils::log_message("sample_ids and cluster_ids must have the same length", "error");
   }
   const int n_cells = sample_ids.size();
   const int n_clusters = cluster_levels.size();
@@ -1069,7 +1070,7 @@ DataFrame proportion_permutation(
     const int label = sample_ids[i];
     const int cluster = cluster_ids[i] - 1;
     if ((label != 1 && label != 2) || cluster < 0 || cluster >= n_clusters) {
-      stop("sample_ids must be 1/2 and cluster_ids must be within cluster_levels");
+      thisutils::log_message("sample_ids must be 1/2 and cluster_ids must be within cluster_levels", "error");
     }
     labels[i] = label;
     clusters[i] = cluster;
@@ -1082,7 +1083,7 @@ DataFrame proportion_permutation(
     }
   }
   if (total_1 == 0 || total_2 == 0) {
-    stop("Both comparison groups must contain cells");
+    thisutils::log_message("Both comparison groups must contain cells", "error");
   }
 
   std::vector<int> obs_1(n_clusters, 0);

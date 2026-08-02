@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <vector>
 #ifdef _OPENMP
 #include <omp.h>
@@ -92,7 +93,7 @@ List sparse_row_mean_var(IntegerVector p, IntegerVector i, NumericVector x,
 List sparse_row_mean_var_dgc_list(List mats, int nrow) {
   const int n_layers = mats.size();
   if (n_layers < 1) {
-    stop("mats must contain at least one dgCMatrix");
+    thisutils::log_message("mats must contain at least one dgCMatrix", "error");
   }
 
   std::vector<double> sum(nrow, 0.0);
@@ -107,7 +108,7 @@ List sparse_row_mean_var_dgc_list(List mats, int nrow) {
     NumericVector x = mat.slot("x");
     IntegerVector dim = mat.slot("Dim");
     if (dim.size() != 2 || dim[0] != nrow) {
-      stop("All matrices must have the requested row count");
+      thisutils::log_message("All matrices must have the requested row count", "error");
     }
     const int ncol = dim[1];
     ncol_total += ncol;
@@ -248,7 +249,7 @@ NumericVector sparse_row_var_std_dgc_list(List mats, int nrow,
     NumericVector x = mat.slot("x");
     IntegerVector dim = mat.slot("Dim");
     if (dim.size() != 2 || dim[0] != nrow) {
-      stop("All matrices must have the requested row count");
+      thisutils::log_message("All matrices must have the requested row count", "error");
     }
     const int ncol = dim[1];
     ncol_total += ncol;

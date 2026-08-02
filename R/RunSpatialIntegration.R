@@ -614,7 +614,15 @@ spatial_integration_run_precast <- function(input, params, verbose = TRUE) {
 }
 
 spatial_integration_run_bass <- function(input, params, verbose = TRUE) {
-  bass_check_r()
+  if (!bass_namespace_ready()) {
+    check_r("zhengli09/BASS", force = TRUE, verbose = FALSE)
+  }
+  if (!bass_namespace_ready()) {
+    log_message(
+      "The installed {.pkg BASS} is not the spatial transcriptomics backend from {.url https://github.com/zhengli09/BASS}",
+      message_type = "error"
+    )
+  }
   create_fun <- get_namespace_fun("BASS", "createBASSObject")
   preprocess_fun <- get_namespace_fun("BASS", "BASS.preprocess")
   run_fun <- get_namespace_fun("BASS", "BASS.run")
@@ -646,19 +654,6 @@ spatial_integration_run_bass <- function(input, params, verbose = TRUE) {
   )
 }
 
-bass_check_r <- function() {
-  if (!bass_namespace_ready()) {
-    check_r("zhengli09/BASS", force = TRUE, verbose = FALSE)
-  }
-  if (!bass_namespace_ready()) {
-    log_message(
-      "The installed {.pkg BASS} is not the spatial transcriptomics backend from {.url https://github.com/zhengli09/BASS}",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
 bass_namespace_ready <- function() {
   required <- c("createBASSObject", "BASS.preprocess", "BASS.run")
   desc <- tryCatch(utils::packageDescription("BASS"), error = function(e) NULL)
@@ -670,7 +665,10 @@ bass_namespace_ready <- function() {
 }
 
 spatial_integration_run_spatialmnn <- function(input, params, verbose = TRUE) {
-  spatialmnn_check_r()
+  installed <- check_r("atlasClustering", install = FALSE, verbose = FALSE)
+  if (!isTRUE(installed[["atlasClustering"]])) {
+    check_r("Pixel-Dream/spatialMNN", verbose = FALSE)
+  }
   pkg <- "atlasClustering"
   stage1_fun <- get_namespace_fun(pkg, "stage_1")
   stage2_fun <- get_namespace_fun(pkg, "stage_2")
@@ -811,14 +809,6 @@ spatialmnn_prepare_seurat_list <- function(input) {
     out[[sample]] <- object
   }
   out
-}
-
-spatialmnn_check_r <- function() {
-  installed <- check_r("atlasClustering", install = FALSE, verbose = FALSE)
-  if (!isTRUE(installed[["atlasClustering"]])) {
-    check_r("Pixel-Dream/spatialMNN", verbose = FALSE)
-  }
-  invisible(TRUE)
 }
 
 spatial_integration_extract_backend <- function(raw_result, method, input) {

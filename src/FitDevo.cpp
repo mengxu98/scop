@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 
 #include <algorithm>
 #include <cmath>
@@ -12,12 +13,12 @@ Rcpp::NumericVector fitdevo_spearman_weights_cpp(
   const int n_features = scaled.nrow();
   const int n_cells = scaled.ncol();
   if (target_centered.size() != n_cells) {
-    Rcpp::stop("Target rank length must match the number of cells.");
+    thisutils::log_message("Target rank length must match the number of cells.", "error");
   }
   double target_ss = 0.0;
   for (int cell = 0; cell < n_cells; ++cell) {
     if (!std::isfinite(target_centered[cell])) {
-      Rcpp::stop("Target ranks must be finite.");
+      thisutils::log_message("Target ranks must be finite.", "error");
     }
     target_ss += target_centered[cell] * target_centered[cell];
   }

@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <R_ext/Print.h>
 #define __ERROR_PRINTER_OVERRIDE__(...) Rprintf(__VA_ARGS__)
 #define ANNOYLIB_MULTITHREADED_BUILD
@@ -297,7 +298,7 @@ Rcpp::IntegerMatrix annoy_build_search(Rcpp::NumericMatrix data,
   const int rows = data.nrow();
   const int dims = data.ncol();
   if (rows <= 0 || dims <= 0 || k <= 0 || k > rows) {
-    Rcpp::stop("invalid Annoy kNN dimensions");
+    thisutils::log_message("invalid Annoy kNN dimensions", "error");
   }
 
   std::vector<float> packed = matrix_as_row_float(data);
@@ -408,18 +409,18 @@ Rcpp::List annoy_cross_knn(Rcpp::NumericMatrix reference,
   if (reference_rows <= 0 || query_rows <= 0 || dims <= 0 ||
       query.ncol() != dims || k <= 0 || k > reference_rows ||
       n_trees <= 0) {
-    Rcpp::stop("invalid Annoy cross-kNN dimensions");
+    thisutils::log_message("invalid Annoy cross-kNN dimensions", "error");
   }
   std::vector<float> reference_packed = matrix_as_row_float(reference);
   std::vector<float> query_packed = matrix_as_row_float(query);
   for (size_t i = 0; i < reference_packed.size(); ++i) {
     if (!std::isfinite(reference_packed[i])) {
-      Rcpp::stop("Annoy cross-kNN requires finite reference values");
+      thisutils::log_message("Annoy cross-kNN requires finite reference values", "error");
     }
   }
   for (size_t i = 0; i < query_packed.size(); ++i) {
     if (!std::isfinite(query_packed[i])) {
-      Rcpp::stop("Annoy cross-kNN requires finite query values");
+      thisutils::log_message("Annoy cross-kNN requires finite query values", "error");
     }
   }
   if (metric == "euclidean") {
@@ -437,7 +438,7 @@ Rcpp::List annoy_cross_knn(Rcpp::NumericMatrix reference,
       reference_packed, query_packed, reference_rows, query_rows, dims,
       k, n_trees, cores);
   }
-  Rcpp::stop("Annoy cross-kNN supports euclidean, angular, and manhattan");
+  thisutils::log_message("Annoy cross-kNN supports euclidean, angular, and manhattan", "error");
 }
 
 // [[Rcpp::export]]
@@ -447,7 +448,7 @@ Rcpp::IntegerMatrix exact_knn_f32(Rcpp::NumericMatrix data,
   const int rows = data.nrow();
   const int dims = data.ncol();
   if (rows <= 0 || dims <= 0 || k <= 0 || k > rows) {
-    Rcpp::stop("invalid exact kNN dimensions");
+    thisutils::log_message("invalid exact kNN dimensions", "error");
   }
   std::vector<float> packed = matrix_as_row_float(data);
   Rcpp::IntegerMatrix neighbors(rows, k);
@@ -486,19 +487,19 @@ Rcpp::List cross_knn_f32(Rcpp::NumericMatrix reference,
   if (reference_rows <= 0 || query_rows <= 0 || dims <= 0 ||
       query.ncol() != dims || k <= 0 || k > reference_rows ||
       (!cosine && metric != "euclidean")) {
-    Rcpp::stop("invalid cross kNN dimensions or metric");
+    thisutils::log_message("invalid cross kNN dimensions or metric", "error");
   }
 
   std::vector<float> reference_packed = matrix_as_row_float(reference);
   std::vector<float> query_packed = matrix_as_row_float(query);
   for (size_t i = 0; i < reference_packed.size(); ++i) {
     if (!std::isfinite(reference_packed[i])) {
-      Rcpp::stop("cross kNN requires finite reference values");
+      thisutils::log_message("cross kNN requires finite reference values", "error");
     }
   }
   for (size_t i = 0; i < query_packed.size(); ++i) {
     if (!std::isfinite(query_packed[i])) {
-      Rcpp::stop("cross kNN requires finite query values");
+      thisutils::log_message("cross kNN requires finite query values", "error");
     }
   }
 
@@ -511,7 +512,7 @@ Rcpp::List cross_knn_f32(Rcpp::NumericMatrix reference,
       float norm_sq = 0.0f;
       for (int col = 0; col < dims; ++col) norm_sq += current[col] * current[col];
       if (!(norm_sq > 0.0f) || !std::isfinite(norm_sq)) {
-        Rcpp::stop("cross cosine kNN requires non-zero finite reference rows");
+        thisutils::log_message("cross cosine kNN requires non-zero finite reference rows", "error");
       }
       reference_norms[row] = std::sqrt(norm_sq);
     }
@@ -521,7 +522,7 @@ Rcpp::List cross_knn_f32(Rcpp::NumericMatrix reference,
       float norm_sq = 0.0f;
       for (int col = 0; col < dims; ++col) norm_sq += current[col] * current[col];
       if (!(norm_sq > 0.0f) || !std::isfinite(norm_sq)) {
-        Rcpp::stop("cross cosine kNN requires non-zero finite query rows");
+        thisutils::log_message("cross cosine kNN requires non-zero finite query rows", "error");
       }
       query_norms[row] = std::sqrt(norm_sq);
     }

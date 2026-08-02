@@ -1,6 +1,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::plugins(cpp14)]]
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <atomic>
 #include <chrono>
@@ -25,7 +26,7 @@ NumericVector scenic_edge_correlation_cpp(
   const int n_cells = expr.nrow();
   const int n_genes = expr.ncol();
   if (tf_index.size() != target_index.size()) {
-    stop("SCENIC edge index vectors must have the same length");
+    thisutils::log_message("SCENIC edge index vectors must have the same length", "error");
   }
   NumericVector rho(tf_index.size(), NA_REAL);
   if (n_cells < 2) return rho;
@@ -61,7 +62,7 @@ NumericVector scenic_edge_correlation_cpp(
     const int tf = tf_index[edge] - 1;
     const int target = target_index[edge] - 1;
     if (tf < 0 || tf >= n_genes || target < 0 || target >= n_genes) {
-      stop("SCENIC edge index is out of bounds");
+      thisutils::log_message("SCENIC edge index is out of bounds", "error");
     }
     if (!valid[tf] || !valid[target]) continue;
     double cross = 0.0;
@@ -151,18 +152,18 @@ struct ScenicSparseDgcMatrix {
       x(mat.slot("x")),
       dim(mat.slot("Dim")) {
     if (!mat.is("dgCMatrix")) {
-      stop("expr must be a dgCMatrix.");
+      thisutils::log_message("expr must be a dgCMatrix.", "error");
     }
     if (dim.size() != 2) {
-      stop("expr must have two dimensions.");
+      thisutils::log_message("expr must have two dimensions.", "error");
     }
     n_rows = dim[0];
     n_cols = dim[1];
     if (p.size() != n_cols + 1) {
-      stop("Invalid dgCMatrix column pointer.");
+      thisutils::log_message("Invalid dgCMatrix column pointer.", "error");
     }
     if (i.size() != x.size()) {
-      stop("Invalid dgCMatrix index/value slots.");
+      thisutils::log_message("Invalid dgCMatrix index/value slots.", "error");
     }
   }
 
@@ -1154,10 +1155,10 @@ static DataFrame scenic_grnboost_tree_impl(
   const int n_samples = expr.nrow();
   const int n_genes = expr.ncol();
   if (n_samples < 2 || n_genes < 1) {
-    stop("Expression matrix must contain at least two samples and one gene.");
+    thisutils::log_message("Expression matrix must contain at least two samples and one gene.", "error");
   }
   if (regulator_idx.size() == 0 || target_idx.size() == 0) {
-    stop("At least one regulator and one target are required.");
+    thisutils::log_message("At least one regulator and one target are required.", "error");
   }
   n_rounds = std::max(1, n_rounds);
   max_depth = std::max(1, max_depth);
@@ -1179,7 +1180,7 @@ static DataFrame scenic_grnboost_tree_impl(
     if (idx >= 0 && idx < n_genes) targets.push_back(idx);
   }
   if (regs.empty() || targets.empty()) {
-    stop("Regulator and target indices must refer to expression matrix columns.");
+    thisutils::log_message("Regulator and target indices must refer to expression matrix columns.", "error");
   }
 
   std::vector<double> means(n_genes, 0.0);
@@ -1448,7 +1449,7 @@ DataFrame grnboost_tree_round_trace(
   }
   const int target = target_idx - 1;
   if (target < 0 || target >= n_genes || regs.empty()) {
-    stop("Trace target and regulator indices must refer to expression matrix columns.");
+    thisutils::log_message("Trace target and regulator indices must refer to expression matrix columns.", "error");
   }
 
   std::vector<int> features;
@@ -1457,7 +1458,7 @@ DataFrame grnboost_tree_round_trace(
     if (!exclude_self || regs[ri] != target) features.push_back(regs[ri]);
   }
   if (features.empty()) {
-    stop("No candidate regulators remain for the trace target.");
+    thisutils::log_message("No candidate regulators remain for the trace target.", "error");
   }
 
   std::vector<int> trace_regs;
@@ -1469,7 +1470,7 @@ DataFrame grnboost_tree_round_trace(
     }
   }
   if (trace_regs.empty()) {
-    stop("No trace regulators remain after filtering.");
+    thisutils::log_message("No trace regulators remain after filtering.", "error");
   }
 
   double target_mean = 0.0;
@@ -1678,7 +1679,7 @@ DataFrame grnboost_tree_round_nodes(
   }
   const int target = target_idx - 1;
   if (target < 0 || target >= n_genes || regs.empty()) {
-    stop("Trace target and regulator indices must refer to expression matrix columns.");
+    thisutils::log_message("Trace target and regulator indices must refer to expression matrix columns.", "error");
   }
 
   std::vector<int> features;
@@ -1686,7 +1687,7 @@ DataFrame grnboost_tree_round_nodes(
   for (std::size_t ri = 0; ri < regs.size(); ++ri) {
     if (!exclude_self || regs[ri] != target) features.push_back(regs[ri]);
   }
-  if (features.empty()) stop("No candidate regulators remain for the trace target.");
+  if (features.empty()) thisutils::log_message("No candidate regulators remain for the trace target.", "error");
 
   double target_mean = 0.0;
   for (int i = 0; i < n_samples; ++i) {
@@ -1875,7 +1876,7 @@ DataFrame grnboost_tree_node_candidates(
   }
   const int target = target_idx - 1;
   if (target < 0 || target >= n_genes || regs.empty()) {
-    stop("Trace target and regulator indices must refer to expression matrix columns.");
+    thisutils::log_message("Trace target and regulator indices must refer to expression matrix columns.", "error");
   }
 
   std::vector<int> features;
@@ -1883,7 +1884,7 @@ DataFrame grnboost_tree_node_candidates(
   for (std::size_t ri = 0; ri < regs.size(); ++ri) {
     if (!exclude_self || regs[ri] != target) features.push_back(regs[ri]);
   }
-  if (features.empty()) stop("No candidate regulators remain for the trace target.");
+  if (features.empty()) thisutils::log_message("No candidate regulators remain for the trace target.", "error");
 
   double target_mean = 0.0;
   for (int i = 0; i < n_samples; ++i) {
@@ -2042,7 +2043,7 @@ List scenic_ctx_auc_avg2sd(
   const int n_targets = ranks.ncol();
   rank_threshold = std::min(std::max(1, rank_threshold), std::max(1, total_genes - 1));
   if (rank_cutoff < 1 || rank_cutoff > rank_threshold) {
-    stop("auc_threshold and rank_threshold produce an invalid cisTarget rank cutoff");
+    thisutils::log_message("auc_threshold and rank_threshold produce an invalid cisTarget rank cutoff", "error");
   }
 
   NumericVector auc_out(n_features);
@@ -2242,10 +2243,10 @@ NumericVector scenicplus_region_gene_cor(
     IntegerVector gene_idx) {
   const int n_cells = atac_log.ncol();
   if (rna_log.ncol() != n_cells) {
-    stop("ATAC and RNA matrices must have the same number of cells.");
+    thisutils::log_message("ATAC and RNA matrices must have the same number of cells.", "error");
   }
   if (region_idx.size() != gene_idx.size()) {
-    stop("Region and gene index vectors must have the same length.");
+    thisutils::log_message("Region and gene index vectors must have the same length.", "error");
   }
   NumericVector scores(region_idx.size());
   for (int pair = 0; pair < region_idx.size(); ++pair) {

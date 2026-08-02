@@ -179,10 +179,23 @@ RunCell2location <- function(
   logs_dir <- file.path(result_dir, "logs")
   dir.create(logs_dir, recursive = TRUE, showWarnings = FALSE)
 
-  python <- cell2location_check_python(
+  PrepareEnv(envname = envname, modules = "cell2location", verbose = verbose)
+  ok <- check_python(
+    c("cell2location==0.1.5", "scvi-tools==1.3.3", "scanpy", "anndata", "numpy", "pandas", "scipy", "torch"),
     envname = envname,
-    verbose = verbose
+    verbose = FALSE
   )
+  if (!isTRUE(ok)) {
+    log_message("The shared SCOP Python environment is missing cell2location dependencies", message_type = "error")
+  }
+  python <- getOption("scop_env_cache", default = NULL)[["python"]] %||% tryCatch(
+    conda_python(envname = get_envname(envname), conda = resolve_conda("auto")),
+    error = function(...) NULL
+  )
+  if (is.null(python) || !file.exists(python)) {
+    log_message("Unable to resolve the cell2location Python executable", message_type = "error")
+  }
+  python <- normalizePath(python, winslash = "/", mustWork = TRUE)
   workdir <- tempfile("cell2location_inputs_")
   dir.create(workdir, recursive = TRUE)
   on.exit(unlink(workdir, recursive = TRUE, force = TRUE), add = TRUE)
@@ -257,7 +270,7 @@ RunCell2location <- function(
   )
   config_path <- file.path(workdir, "config.json")
   runner_write_json(config, config_path)
-  runner <- runner_script_path("cell2location_runner.py", "cell2location")
+  runner <- runner_script_path("cell2location.py", "cell2location")
   stdout_path <- file.path(logs_dir, "cell2location_stdout.log")
   stderr_path <- file.path(logs_dir, "cell2location_stderr.log")
   cache_dir <- file.path(result_dir, ".cache")
@@ -672,27 +685,6 @@ cell2location_read_signatures <- function(x) {
     log_message("{.arg reference_signatures} must be finite and non-negative", message_type = "error")
   }
   x
-}
-
-cell2location_check_python <- function(envname = NULL, verbose = TRUE) {
-  PrepareEnv(envname = envname, modules = "cell2location", verbose = verbose)
-  ok <- check_python(
-    c("cell2location==0.1.5", "scvi-tools==1.3.3", "scanpy", "anndata", "numpy", "pandas", "scipy", "torch"),
-    envname = envname,
-    verbose = FALSE
-  )
-  if (!isTRUE(ok)) {
-    log_message("The shared SCOP Python environment is missing cell2location dependencies", message_type = "error")
-  }
-  cache <- getOption("scop_env_cache", default = NULL)
-  python <- cache[["python"]] %||% tryCatch(
-    conda_python(envname = get_envname(envname), conda = resolve_conda("auto")),
-    error = function(...) NULL
-  )
-  if (is.null(python) || !file.exists(python)) {
-    log_message("Unable to resolve the cell2location Python executable", message_type = "error")
-  }
-  normalizePath(python, winslash = "/", mustWork = TRUE)
 }
 
 cell2location_result_files <- function(result_dir) {

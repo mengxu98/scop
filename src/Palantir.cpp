@@ -1,5 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo, RcppEigen)]]
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <RcppEigen.h>
 #include <queue>
 #include <vector>
@@ -317,42 +318,62 @@ List palantir_pseudotime_cpp(
     IntegerVector waypoints,
     int knn,
     int max_iterations = 25,
-    int n_jobs = 1)
+    int n_jobs = 1,
+    IntegerMatrix knn_idx = IntegerMatrix(),
+    NumericMatrix knn_dist = NumericMatrix())
 {
   int n = ms_data.nrow();
   int d = ms_data.ncol();
   if (start_cell < 0 || start_cell >= n)
-    stop("start_cell out of range");
+    thisutils::log_message("start_cell out of range", "error");
 
   int n_wp = waypoints.size();
 
-  // Build kNN graph using brute force (small data) or Euclidean distances
-  // Since waypoints << n_cells usually, we build graph on ALL cells
-  // Compute pairwise distances for kNN
   IntegerMatrix knn_idx_cpp(n, knn);
   NumericMatrix knn_dist_cpp(n, knn);
 
-  for (int i = 0; i < n; ++i) {
-    std::vector<std::pair<double,int>> dists;
-    dists.reserve(n);
-    for (int j = 0; j < n; ++j) {
-      double dd = 0.0;
-      for (int dim = 0; dim < d; ++dim) {
-        double diff = ms_data(i, dim) - ms_data(j, dim);
-        dd += diff * diff;
+  bool use_precomputed = knn_idx.nrow() == n && knn_idx.ncol() == knn &&
+    knn_dist.nrow() == n && knn_dist.ncol() == knn;
+
+  if (use_precomputed) {
+    // Use the kNN graph already computed on the R side (BiocNeighbors),
+    // avoiding the O(n^2 * d) brute-force distance scan below.
+    for (int i = 0; i < n; ++i) {
+      for (int k_idx = 0; k_idx < knn; ++k_idx) {
+        knn_idx_cpp(i, k_idx) = knn_idx(i, k_idx);
+        knn_dist_cpp(i, k_idx) = knn_dist(i, k_idx);
       }
-      dists.push_back({dd, j});
     }
-    int m = std::min(knn, (int)dists.size());
-    std::nth_element(dists.begin(), dists.begin() + m - 1, dists.end());
-    std::sort(dists.begin(), dists.begin() + m);
-    for (int k = 0; k < m; ++k) {
-      knn_idx_cpp(i, k) = dists[k].second + 1;
-      knn_dist_cpp(i, k) = std::sqrt(dists[k].first);
-    }
-    for (int k = m; k < knn; ++k) {
-      knn_idx_cpp(i, k) = NA_INTEGER;
-      knn_dist_cpp(i, k) = NA_REAL;
+  } else {
+    // Build kNN graph using brute force (small data) or Euclidean distances
+    // Since waypoints << n_cells usually, we build graph on ALL cells
+    // Compute pairwise distances for kNN
+#ifdef _OPENMP
+    const int omp_threads = n_jobs > 0 ? n_jobs : 1;
+#pragma omp parallel for num_threads(omp_threads) schedule(dynamic)
+#endif
+    for (int i = 0; i < n; ++i) {
+      std::vector<std::pair<double,int>> dists;
+      dists.reserve(n);
+      for (int j = 0; j < n; ++j) {
+        double dd = 0.0;
+        for (int dim = 0; dim < d; ++dim) {
+          double diff = ms_data(i, dim) - ms_data(j, dim);
+          dd += diff * diff;
+        }
+        dists.push_back({dd, j});
+      }
+      int m = std::min(knn, (int)dists.size());
+      std::nth_element(dists.begin(), dists.begin() + m - 1, dists.end());
+      std::sort(dists.begin(), dists.begin() + m);
+      for (int k = 0; k < m; ++k) {
+        knn_idx_cpp(i, k) = dists[k].second + 1;
+        knn_dist_cpp(i, k) = std::sqrt(dists[k].first);
+      }
+      for (int k = m; k < knn; ++k) {
+        knn_idx_cpp(i, k) = NA_INTEGER;
+        knn_dist_cpp(i, k) = NA_REAL;
+      }
     }
   }
 
@@ -384,18 +405,37 @@ List palantir_pseudotime_cpp(
   NumericMatrix D(n_wp, n);
   NumericMatrix W(n_wp, n);
 
+  bool disconnected = false;
+#ifdef _OPENMP
+  const int omp_threads = n_jobs > 0 ? n_jobs : 1;
+#pragma omp parallel for num_threads(omp_threads) schedule(dynamic) shared(disconnected)
+#endif
   for (int s = 0; s < n_wp; ++s) {
     std::vector<double> dists_v;
     dijkstra_graph(n, graph, wp_offsets[s], dists_v);
+    bool row_disconnected = false;
     for (int i = 0; i < n; ++i) {
       if (!std::isfinite(dists_v[i])) {
-        stop(
-          "Palantir kNN graph is disconnected; increase knn or provide "
-          "a connected embedding"
-        );
+        row_disconnected = true;
+        break;
       }
+    }
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+    {
+      disconnected = disconnected || row_disconnected;
+    }
+    for (int i = 0; i < n; ++i) {
       D(s, i) = dists_v[i];
     }
+  }
+  if (disconnected) {
+    thisutils::log_message(
+      "Palantir kNN graph is disconnected; increase knn or provide "
+      "a connected embedding",
+      "error"
+    );
   }
 
   // Bandwidth for weight matrix

@@ -45,7 +45,13 @@ mock_spatialcellchat_table <- function(sample, analysis.level) {
 
 local_mock_spatialcellchat_backend <- function(fail = FALSE) {
   testthat::local_mocked_bindings(
-    spatialcellchat_check_r = function(...) invisible(TRUE),
+    check_r = function(...) invisible(TRUE),
+    get_namespace_fun = function(package, name) {
+      if (identical(package, "SpatialCellChat")) {
+        return(function(...) invisible(NULL))
+      }
+      stop("unexpected namespace lookup")
+    },
     spatialcellchat_database = function(...) list(mock = TRUE),
     spatialcellchat_run_one = if (isTRUE(fail)) {
       function(...) stop("backend failed")

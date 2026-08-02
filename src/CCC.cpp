@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -83,7 +84,7 @@ DataFrame ccc_aggregate_long_cpp(
     );
   }
   if (receiver.size() != n_in || score.size() != n_in || significant.size() != n_in) {
-    stop("ccc_aggregate_long_cpp: sender, receiver, score, and significant must have the same length");
+    thisutils::log_message("ccc_aggregate_long_cpp: sender, receiver, score, and significant must have the same length", "error");
   }
 
   std::unordered_map<std::string, int> index;
@@ -197,7 +198,7 @@ DataFrame ccc_aggregate_liana_table_cpp(
   }
   if (target.size() != n || ligand_complex.size() != n || receptor_complex.size() != n ||
       score.size() != n || pvalue.size() != n) {
-    stop("ccc_aggregate_liana_table_cpp: all vectors must have the same length");
+    thisutils::log_message("ccc_aggregate_liana_table_cpp: all vectors must have the same length", "error");
   }
 
   auto make_key = [&](int i) -> std::string {

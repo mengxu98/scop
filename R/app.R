@@ -1048,7 +1048,7 @@ group <- intersect(data_group, meta_group)
 group <- group[group != "/"]
 group <- as.character(sapply(group, function(x) substr(x, 2, nchar(x))))
 if (length(group) == 0) {
-  stop("Can not find the shared group names in the data_file and the MetaFile. They may not correspond to the same project")
+  log_message("Can not find the shared group names in the data_file and the MetaFile. They may not correspond to the same project", message_type = "error")
 }
 if (is.null(initial_dataset)) {
   initial_dataset <- group[1]
@@ -1057,7 +1057,7 @@ if (substr(initial_dataset, 1, 1) == "/") {
   initial_dataset <- substr(initial_dataset, 2, nchar(initial_dataset))
 }
 if (!initial_dataset %in% group) {
-  stop("Dataset ", group, " is not in the data_file and the meta_file")
+  log_message("Dataset ", group, " is not in the data_file and the meta_file", message_type = "error")
 }
 
 assays <- unique(stats::na.omit(sapply(strsplit(data_group[grep(initial_dataset, data_group)], "/"), function(x) x[3])))
@@ -1069,10 +1069,10 @@ if (is.null(initial_slot)) {
   initial_slot <- ifelse("data" %in% layers, "data", layers[1])
 }
 if (!initial_assay %in% assays) {
-  stop("initial_assay is not in the dataset ", initial_dataset, " in the data_file")
+  log_message("initial_assay is not in the dataset ", initial_dataset, " in the data_file", message_type = "error")
 }
 if (!initial_slot %in% layers) {
-  stop("initial_slot is not in the dataset ", initial_slot, " in the data_file")
+  log_message("initial_slot is not in the dataset ", initial_slot, " in the data_file", message_type = "error")
 }
 all_cells <- rhdf5::h5read(
   data_file, name = paste0("/", initial_dataset, "/cells")

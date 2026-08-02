@@ -175,7 +175,6 @@ RunCell2fate <- function(
     mustWork = FALSE
   )
   cell2fate_prepare_result_dir(result_dir)
-  cell2fate_claim_result_dir(result_dir)
   result_lock <- runner_acquire_lock(
     file.path(result_dir, ".cell2fate.lock"),
     backend = "Cell2fate"
@@ -184,7 +183,59 @@ RunCell2fate <- function(
   cell2fate_assert_safe_result_paths(result_dir)
   request_id <- runner_request_id()
 
-  python <- cell2fate_check_python(envname = envname, verbose = verbose)
+  target_env <- envname %||% "cell2fate_env"
+  PrepareEnv(
+    envname = target_env,
+    version = "3.9-1",
+    modules = "cell2fate",
+    verbose = verbose
+  )
+  base_runtime_ok <- check_python(
+    c("setuptools<81", "jaxlib==0.4.10"),
+    envname = target_env,
+    pip = FALSE,
+    verbose = FALSE
+  )
+  runtime_ok <- check_python(
+    c(
+      paste0(
+        "git+https://github.com/",
+        .cell2fate_repository,
+        ".git@",
+        .cell2fate_commit
+      ),
+      "scvi-tools==0.16.1",
+      "anndata==0.8.0",
+      "scanpy==1.9.1",
+      "scvelo==0.2.4",
+      "torch==1.11.0",
+      "jax==0.4.10"
+    ),
+    envname = target_env,
+    pip = TRUE,
+    verbose = FALSE
+  )
+  if (!isTRUE(base_runtime_ok) || !isTRUE(runtime_ok)) {
+    log_message(
+      "The isolated Cell2fate environment is incomplete",
+      message_type = "error"
+    )
+  }
+  python <- getOption("scop_env_cache", default = NULL)[["python"]] %||% tryCatch(
+    conda_python(
+      envname = target_env,
+      conda = resolve_conda("auto")
+    ),
+    error = function(...) NULL
+  )
+  if (is.null(python) || !file.exists(python)) {
+    log_message(
+      "Unable to resolve the Cell2fate Python executable",
+      message_type = "error"
+    )
+  }
+  python <- normalizePath(python, winslash = "/", mustWork = TRUE)
+
   workdir <- tempfile("cell2fate_inputs_")
   dir.create(workdir, recursive = TRUE)
   on.exit(unlink(workdir, recursive = TRUE, force = TRUE), add = TRUE)
@@ -219,7 +270,7 @@ RunCell2fate <- function(
   config_path <- file.path(workdir, "config.json")
   runner_write_json(config, config_path)
 
-  runner <- runner_script_path("cell2fate_runner.py", "Cell2fate")
+  runner <- runner_script_path("cell2fate.py", "Cell2fate")
   logs_dir <- file.path(result_dir, "logs")
   dir.create(logs_dir, recursive = TRUE, showWarnings = FALSE)
   attempt_dir <- tempfile("attempt_", tmpdir = logs_dir)
@@ -253,7 +304,14 @@ RunCell2fate <- function(
   }
 
   cell2fate_assert_safe_result_paths(result_dir)
-  files <- cell2fate_result_files(result_dir)
+  files <- list(
+    input = file.path(result_dir, "inputs", "input.h5ad"),
+    cell_metadata = file.path(result_dir, "tables", "cell_metadata.csv"),
+    velocity = file.path(result_dir, "tables", "velocity.csv"),
+    posterior = file.path(result_dir, "posterior", "cell2fate_posterior.h5ad"),
+    model = file.path(result_dir, "model"),
+    manifest = file.path(result_dir, "manifest.json")
+  )
   required_names <- c("input", "cell_metadata", "posterior", "manifest")
   if (isTRUE(store_velocity)) {
     required_names <- c(required_names, "velocity")
@@ -416,18 +474,12 @@ cell2fate_prepare_result_dir <- function(result_dir) {
         message_type = "error"
       )
     }
-    return(invisible(result_dir))
-  }
-  if (!dir.create(result_dir, recursive = TRUE)) {
+  } else if (!dir.create(result_dir, recursive = TRUE)) {
     log_message(
       "Unable to create {.arg result_dir}: {.file {result_dir}}",
       message_type = "error"
     )
   }
-  invisible(result_dir)
-}
-
-cell2fate_claim_result_dir <- function(result_dir) {
   if (!cell2fate_result_dir_is_owned(result_dir)) {
     entries <- list.files(
       result_dir,
@@ -969,73 +1021,6 @@ cell2fate_write_input <- function(prepared, path, verbose = TRUE) {
     neighbors = character(),
     overwrite = TRUE,
     verbose = verbose
-  )
-}
-
-cell2fate_check_python <- function(envname = NULL, verbose = TRUE) {
-  target_env <- envname %||% "cell2fate_env"
-  PrepareEnv(
-    envname = target_env,
-    version = "3.9-1",
-    modules = "cell2fate",
-    verbose = verbose
-  )
-  base_runtime_ok <- check_python(
-    c("setuptools<81", "jaxlib==0.4.10"),
-    envname = target_env,
-    pip = FALSE,
-    verbose = FALSE
-  )
-  runtime_ok <- check_python(
-    c(
-      paste0(
-        "git+https://github.com/",
-        .cell2fate_repository,
-        ".git@",
-        .cell2fate_commit
-      ),
-      "scvi-tools==0.16.1",
-      "anndata==0.8.0",
-      "scanpy==1.9.1",
-      "scvelo==0.2.4",
-      "torch==1.11.0",
-      "jax==0.4.10"
-    ),
-    envname = target_env,
-    pip = TRUE,
-    verbose = FALSE
-  )
-  if (!isTRUE(base_runtime_ok) || !isTRUE(runtime_ok)) {
-    log_message(
-      "The isolated Cell2fate environment is incomplete",
-      message_type = "error"
-    )
-  }
-  cache <- getOption("scop_env_cache", default = NULL)
-  python <- cache[["python"]] %||% tryCatch(
-    conda_python(
-      envname = target_env,
-      conda = resolve_conda("auto")
-    ),
-    error = function(...) NULL
-  )
-  if (is.null(python) || !file.exists(python)) {
-    log_message(
-      "Unable to resolve the Cell2fate Python executable",
-      message_type = "error"
-    )
-  }
-  normalizePath(python, winslash = "/", mustWork = TRUE)
-}
-
-cell2fate_result_files <- function(result_dir) {
-  list(
-    input = file.path(result_dir, "inputs", "input.h5ad"),
-    cell_metadata = file.path(result_dir, "tables", "cell_metadata.csv"),
-    velocity = file.path(result_dir, "tables", "velocity.csv"),
-    posterior = file.path(result_dir, "posterior", "cell2fate_posterior.h5ad"),
-    model = file.path(result_dir, "model"),
-    manifest = file.path(result_dir, "manifest.json")
   )
 }
 

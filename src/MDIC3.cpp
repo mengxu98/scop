@@ -1,4 +1,5 @@
 #include <RcppArmadillo.h>
+#include <thisutils/log_message.h>
 #include <cmath>
 
 // [[Rcpp::depends(RcppArmadillo)]]
@@ -42,7 +43,7 @@ arma::mat mdic3_type_raw(const arma::mat& cellular, const IntegerVector& group) 
   int n_groups = 0;
   for (int i = 0; i < group.size(); ++i) {
     if (IntegerVector::is_na(group[i]) || group[i] < 1) {
-      stop("mdic3_score_cpp: group ids must be positive integers without NA");
+      thisutils::log_message("mdic3_score_cpp: group ids must be positive integers without NA", "error");
     }
     if (group[i] > n_groups) n_groups = group[i];
   }
@@ -72,13 +73,13 @@ List mdic3_score_cpp(NumericMatrix expression, NumericMatrix grn, IntegerVector 
   const int n_genes = expression.nrow();
   const int n_cells = expression.ncol();
   if (grn.nrow() != n_genes || grn.ncol() != n_genes) {
-    stop("mdic3_score_cpp: grn must be a square gene-by-gene matrix aligned to expression rows");
+    thisutils::log_message("mdic3_score_cpp: grn must be a square gene-by-gene matrix aligned to expression rows", "error");
   }
   if (group.size() != n_cells) {
-    stop("mdic3_score_cpp: group length must match expression columns");
+    thisutils::log_message("mdic3_score_cpp: group length must match expression columns", "error");
   }
   if (n_genes < 1 || n_cells < 2) {
-    stop("mdic3_score_cpp: expression must contain at least one gene and two cells");
+    thisutils::log_message("mdic3_score_cpp: expression must contain at least one gene and two cells", "error");
   }
 
   arma::mat aa = as<arma::mat>(expression);
@@ -90,7 +91,7 @@ List mdic3_score_cpp(NumericMatrix expression, NumericMatrix grn, IntegerVector 
   arma::vec s;
   arma::mat v;
   if (!arma::svd_econ(u, s, v, aa, "both", "std")) {
-    stop("mdic3_score_cpp: SVD failed");
+    thisutils::log_message("mdic3_score_cpp: SVD failed", "error");
   }
   arma::mat s_rect(n_genes, n_cells, arma::fill::zeros);
   const arma::uword diag_n = std::min<arma::uword>(

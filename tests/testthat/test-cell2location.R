@@ -95,8 +95,11 @@ test_that("RunCell2location writes abundance, proportions, and reproducible tool
   dir.create(result_dir)
   testthat::local_mocked_bindings(
     .package = "scop",
-    cell2location_check_python = function(...) "python",
-    runner_script_path = function(...) "cell2location_runner.py",
+    PrepareEnv = function(...) invisible(NULL),
+    check_python = function(...) TRUE,
+    conda_python = function(...) Sys.which("python3"),
+    resolve_conda = function(...) "mamba",
+    runner_script_path = function(...) "cell2location.py",
     runner_write_json = function(...) invisible(NULL),
     runner_read_json = function(...) list(status = "complete"),
     srt_to_h5ad = function(srt, path, ...) {
@@ -195,8 +198,11 @@ test_that("RunCell2location does not mutate Seurat when Python fails", {
   result_dir <- tempfile("cell2location_failed_")
   testthat::local_mocked_bindings(
     .package = "scop",
-    cell2location_check_python = function(...) "python",
-    runner_script_path = function(...) "cell2location_runner.py",
+    PrepareEnv = function(...) invisible(NULL),
+    check_python = function(...) TRUE,
+    conda_python = function(...) Sys.which("python3"),
+    resolve_conda = function(...) "mamba",
+    runner_script_path = function(...) "cell2location.py",
     runner_write_json = function(...) invisible(NULL),
     srt_to_h5ad = function(srt, path, ...) {
       file.create(path)

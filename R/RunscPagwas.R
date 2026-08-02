@@ -62,7 +62,13 @@ RunscPagwas <- function(
   output.dirs <- scpagwas_abs_path(output.dirs)
   dir.create(output.dirs, recursive = TRUE, showWarnings = FALSE)
   single_data <- scpagwas_prepare_seurat(single_data, group.by, assay)
-  scpagwas_check_r(verbose = verbose)
+  check_r("sulab-wmu/scPagwas", dependencies = NA, verbose = verbose)
+  if (!is.function(scpagwas_find_runner(error = FALSE))) {
+    log_message(
+      "Failed to install or load {.pkg scPagwas}. Install it manually with {.code pak::pkg_install('sulab-wmu/scPagwas')}",
+      message_type = "error"
+    )
+  }
   block_annotation <- scpagwas_resolve_block_annotation(block_annotation)
 
   fun <- scpagwas_prepare_runner(scpagwas_find_runner())
@@ -273,17 +279,6 @@ PlotscPagwas <- function(
     invisible(lapply(plots, print))
   }
   plots
-}
-
-scpagwas_check_r <- function(verbose = TRUE) {
-  check_r("sulab-wmu/scPagwas", dependencies = NA, verbose = verbose)
-  if (!is.function(scpagwas_find_runner(error = FALSE))) {
-    log_message(
-      "Failed to install or load {.pkg scPagwas}. Install it manually with {.code pak::pkg_install('sulab-wmu/scPagwas')}",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
 }
 
 scpagwas_get_fun <- function(fun, error = TRUE) {

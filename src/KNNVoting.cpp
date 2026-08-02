@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 
 using namespace Rcpp;
 
@@ -7,7 +8,7 @@ List knn_vote_labels_cpp(const IntegerMatrix& labels, int n_levels) {
   const int n = labels.nrow();
   const int k = labels.ncol();
   if (n_levels < 1) {
-    stop("n_levels must be positive");
+    thisutils::log_message("n_levels must be positive", "error");
   }
 
   NumericMatrix probability(n, n_levels);
@@ -20,7 +21,7 @@ List knn_vote_labels_cpp(const IntegerMatrix& labels, int n_levels) {
         continue;
       }
       if (label < 1 || label > n_levels) {
-        stop("labels contains an out-of-range level code");
+        thisutils::log_message("labels contains an out-of-range level code", "error");
       }
       probability(i, label - 1) += 1.0;
       ++valid;

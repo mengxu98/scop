@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <thisutils/log_message.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -42,9 +43,9 @@ List monocle2_order_from_mst_cpp(
     IntegerMatrix edges,
     int root_cell = 1) {
   const int n_cells = distances.nrow();
-  if (n_cells < 1) stop("distances must contain at least one cell");
-  if (distances.ncol() != n_cells) stop("distances must be a square matrix");
-  if (edges.ncol() != 2) stop("edges must have two columns");
+  if (n_cells < 1) thisutils::log_message("distances must contain at least one cell", "error");
+  if (distances.ncol() != n_cells) thisutils::log_message("distances must be a square matrix", "error");
+  if (edges.ncol() != 2) thisutils::log_message("edges must have two columns", "error");
 
   std::vector<std::vector<int>> adj(n_cells);
   for (int i = 0; i < edges.nrow(); ++i) {
@@ -129,9 +130,9 @@ List monocle2_order_from_weighted_edges_cpp(
     IntegerMatrix edges,
     NumericVector weights,
     int root_cell = 1) {
-  if (n_cells < 1) stop("n_cells must be positive");
-  if (edges.ncol() != 2) stop("edges must have two columns");
-  if (weights.size() != edges.nrow()) stop("weights length must match edge rows");
+  if (n_cells < 1) thisutils::log_message("n_cells must be positive", "error");
+  if (edges.ncol() != 2) thisutils::log_message("edges must have two columns", "error");
+  if (weights.size() != edges.nrow()) thisutils::log_message("weights length must match edge rows", "error");
 
   std::vector<std::vector<std::pair<int, double>>> adj(n_cells);
   for (int i = 0; i < edges.nrow(); ++i) {
@@ -223,11 +224,11 @@ List monocle2_project_cells_to_mst_cpp(
   const int dims = z.nrow();
   const int n_cells = z.ncol();
   const int n_centers = y.ncol();
-  if (y.nrow() != dims) stop("z and y must have the same number of rows");
+  if (y.nrow() != dims) thisutils::log_message("z and y must have the same number of rows", "error");
   if (closest_vertex.size() != n_cells) {
-    stop("closest_vertex length must equal the number of cells");
+    thisutils::log_message("closest_vertex length must equal the number of cells", "error");
   }
-  if (graph_edges.ncol() != 2) stop("graph_edges must have two columns");
+  if (graph_edges.ncol() != 2) thisutils::log_message("graph_edges must have two columns", "error");
 
   std::vector<std::vector<int>> center_adj(n_centers);
   for (int i = 0; i < graph_edges.nrow(); ++i) {
@@ -362,13 +363,13 @@ int monocle2_select_root_by_state_cpp(
     bool use_min_pseudotime = false) {
   const int n_total = coords.ncol();
   const int n_candidates = candidate_cells.size();
-  if (n_candidates < 1) stop("candidate_cells must not be empty");
-  if (pseudotime.size() != n_total) stop("pseudotime length must match coords columns");
-  if (closest_vertex.size() != n_total) stop("closest_vertex length must match coords columns");
+  if (n_candidates < 1) thisutils::log_message("candidate_cells must not be empty", "error");
+  if (pseudotime.size() != n_total) thisutils::log_message("pseudotime length must match coords columns", "error");
+  if (closest_vertex.size() != n_total) thisutils::log_message("closest_vertex length must match coords columns", "error");
 
   if (n_candidates == 1) {
     const int cell = candidate_cells[0] - 1;
-    if (cell < 0 || cell >= n_total) stop("candidate_cells contains an invalid index");
+    if (cell < 0 || cell >= n_total) thisutils::log_message("candidate_cells contains an invalid index", "error");
     return closest_vertex[cell];
   }
 
@@ -376,7 +377,7 @@ int monocle2_select_root_by_state_cpp(
   for (int i = 0; i < n_candidates; ++i) {
     cells[i] = candidate_cells[i] - 1;
     if (cells[i] < 0 || cells[i] >= n_total) {
-      stop("candidate_cells contains an invalid index");
+      thisutils::log_message("candidate_cells contains an invalid index", "error");
     }
   }
 

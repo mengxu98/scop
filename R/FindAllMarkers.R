@@ -128,7 +128,7 @@ marker_bind <- function(pieces) {
   pieces <- pieces[!vapply(pieces, is.null, logical(1))]
   out <- if (length(pieces) == 0L) data.frame() else do.call(rbind, pieces)
   if (nrow(out) == 0L) {
-    warning("No DE genes identified", call. = FALSE, immediate. = TRUE)
+    log_message("No DE genes identified", message_type = "warning")
   }
   out
 }
@@ -284,7 +284,7 @@ FindAllMarkers.Seurat <- function(
       base = base
     )
   ) {
-    stop("FindAllMarkers.Seurat received unsupported arguments for the scop implementation.", call. = FALSE)
+    log_message("FindAllMarkers.Seurat received unsupported arguments for the scop implementation.", message_type = "error")
   }
 
   ctx <- marker_context(
@@ -296,7 +296,7 @@ FindAllMarkers.Seurat <- function(
     features = features
   )
   if (is.null(ctx)) {
-    stop("FindAllMarkers.Seurat could not prepare marker context.", call. = FALSE)
+    log_message("FindAllMarkers.Seurat could not prepare marker context.", message_type = "error")
   }
   marker_all_from_context(
     ctx = ctx,
@@ -323,5 +323,5 @@ FindAllMarkers <- function(object, ...) {
 
 #' @export
 FindAllMarkers.default <- function(object, ...) {
-  stop("FindAllMarkers supports Seurat objects.", call. = FALSE)
+  log_message("FindAllMarkers supports Seurat objects.", message_type = "error")
 }

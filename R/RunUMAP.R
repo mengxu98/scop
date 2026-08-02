@@ -184,7 +184,7 @@ RunUMAP.Seurat <- function(
   if (!is.null(cores)) {
     cores <- suppressWarnings(as.integer(cores[[1L]]))
     if (is.na(cores) || cores < 1L) {
-      stop("cores must be a positive integer.", call. = FALSE)
+      log_message("cores must be a positive integer.", message_type = "error")
     }
     cores <- as.integer(min(cores, 16L))
   }
@@ -261,7 +261,7 @@ RunUMAP.Seurat <- function(
     X <- emb_src[, dims, drop = FALSE]
   }
   if (ncol(X) < as.integer(n.components)) {
-    stop("insufficient dimensions for UMAP", call. = FALSE)
+    log_message("insufficient dimensions for UMAP", message_type = "error")
   }
   assay <- SeuratObject::DefaultAssay(object = object[[reduction]])
   emb <- runumap_embedding(

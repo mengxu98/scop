@@ -18,6 +18,23 @@ from typing import Any
 import anndata as ad
 import numpy as np
 import pandas as pd
+from pathlib import Path
+import importlib.util
+
+_LOG_MESSAGE_ENV = os.environ.get("SCOP_LOG_MESSAGE_PATH")
+_LOG_MESSAGE_PATH = (
+    Path(_LOG_MESSAGE_ENV)
+    if _LOG_MESSAGE_ENV
+    else Path(__file__).resolve().parent / "log_message.py"
+)
+if not _LOG_MESSAGE_PATH.exists():
+    raise ImportError(f"Cannot load log_message module from {_LOG_MESSAGE_PATH}")
+_LOG_MESSAGE_SPEC = importlib.util.spec_from_file_location(
+    "scop_log_message", _LOG_MESSAGE_PATH
+)
+_LOG_MESSAGE_MODULE = importlib.util.module_from_spec(_LOG_MESSAGE_SPEC)
+_LOG_MESSAGE_SPEC.loader.exec_module(_LOG_MESSAGE_MODULE)
+log_message = _LOG_MESSAGE_MODULE.log_message
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -54,7 +71,7 @@ def _normalise_train_params(value: Any) -> dict[str, Any]:
     params = dict(value or {})
     if "devices" in params:
         if "device" in params:
-            raise ValueError("Use only one of 'device' or legacy 'devices' in cell2location train parameters")
+            log_message("Use only one of 'device' or legacy 'devices' in cell2location train parameters", message_type="error")
         params["device"] = params.pop("devices")
     return params
 
@@ -141,12 +158,12 @@ def _read_signatures(path: Path) -> pd.DataFrame:
     signatures.index = signatures.index.astype(str)
     signatures.columns = signatures.columns.astype(str)
     if signatures.empty:
-        raise ValueError("Reference signatures are empty")
+        log_message("Reference signatures are empty", message_type="error")
     if not signatures.index.is_unique or not signatures.columns.is_unique:
-        raise ValueError("Reference signature gene and cell-type names must be unique")
+        log_message("Reference signature gene and cell-type names must be unique", message_type="error")
     values = signatures.to_numpy(dtype=float)
     if not np.isfinite(values).all() or (values < 0).any():
-        raise ValueError("Reference signatures must be finite and non-negative")
+        log_message("Reference signatures must be finite and non-negative", message_type="error")
     return signatures
 
 
@@ -162,7 +179,7 @@ def _extract_reference_signatures(adata_ref: ad.AnnData) -> pd.DataFrame:
     elif all(key in adata_ref.var.columns for key in keys):
         signatures = adata_ref.var.loc[:, keys].copy()
     else:
-        raise KeyError("Reference posterior did not contain means_per_cluster_mu_fg signatures")
+        log_message("Reference posterior did not contain means_per_cluster_mu_fg signatures", message_type="error")
     signatures.columns = factor_names
     signatures.index = adata_ref.var_names.astype(str)
     return signatures
@@ -209,14 +226,14 @@ def _reference_stage(
     matches = _manifest_matches(old_manifest, fingerprints, parameters, reference_only=True)
 
     if resume and done_path.exists() and signatures_out.exists() and matches:
-        print("Reuse matching cell2location reference signatures")
+        log_message("Reuse matching cell2location reference signatures")
         return _read_signatures(signatures_out), True
     if done_path.exists() and not matches:
         if not overwrite:
-            raise RuntimeError(
+            log_message(
                 "Existing cell2location reference artifacts do not match the current input or parameters; "
-                "set overwrite=TRUE to replace them"
-            )
+                "set overwrite=TRUE to replace them",
+              message_type="error")
         _clear_stage(directories, "reference")
 
     signatures_path = config.get("signatures_path")
@@ -230,7 +247,7 @@ def _reference_stage(
         selected = filter_genes(adata_ref, **config.get("gene_filter_params", {}))
         adata_ref = adata_ref[:, np.asarray(selected)].copy()
         if adata_ref.n_vars == 0:
-            raise ValueError("Reference gene filtering removed every gene")
+            log_message("Reference gene filtering removed every gene", message_type="error")
 
         setup_kwargs: dict[str, Any] = {
             "adata": adata_ref,
@@ -284,21 +301,21 @@ def _spatial_stage(
     matches = _manifest_matches(old_manifest, fingerprints, parameters, reference_only=False)
 
     if resume and done_path.exists() and abundance_path.exists() and proportions_path.exists() and matches:
-        print("Reuse matching cell2location spatial posterior")
+        log_message("Reuse matching cell2location spatial posterior")
         return _read_signatures(abundance_path), _read_signatures(proportions_path), True
     if done_path.exists() and not matches:
         if not overwrite:
-            raise RuntimeError(
+            log_message(
                 "Existing cell2location spatial artifacts do not match the current input or parameters; "
-                "set overwrite=TRUE to replace them"
-            )
+                "set overwrite=TRUE to replace them",
+              message_type="error")
         _clear_stage(directories, "spatial")
 
     spatial_path = Path(config["spatial_path"])
     adata_sp = ad.read_h5ad(spatial_path)
     shared = adata_sp.var_names.intersection(signatures.index, sort=False)
     if len(shared) == 0:
-        raise ValueError("Spatial data and reference signatures have no shared genes")
+        log_message("Spatial data and reference signatures have no shared genes", message_type="error")
     adata_sp = adata_sp[:, shared].copy()
     signatures = signatures.loc[shared, :].copy()
 
@@ -365,7 +382,7 @@ def run(config: dict[str, Any]) -> None:
         parameters,
     )
     if list(abundance.index) != list(proportions.index) or list(abundance.columns) != list(proportions.columns):
-        raise RuntimeError("Abundance and proportion output dimensions do not match")
+        log_message("Abundance and proportion output dimensions do not match", message_type="error")
 
     manifest = {
         "fingerprints": fingerprints,
@@ -379,11 +396,11 @@ def run(config: dict[str, Any]) -> None:
         "status": "complete",
     }
     _write_json(manifest, result_dir / "manifest.json")
-    print(
+    log_message(
         "cell2location completed: "
         f"{abundance.shape[0]} locations, {abundance.shape[1]} cell types, "
-        f"{signatures.shape[0]} signature genes"
-    )
+        f"{signatures.shape[0]} signature genes",
+      )
 
 
 def main() -> None:
