@@ -669,7 +669,8 @@ env_r_packages <- function(modules = NULL) {
   dependency_fields <- c("Depends", "Imports", "Suggests", "LinkingTo", "Remotes")
   dependency_fields <- intersect(dependency_fields, colnames(description))
   description_packages <- trimws(unlist(strsplit(
-    description[1, dependency_fields], ",", fixed = TRUE
+    description[1, dependency_fields], ",",
+    fixed = TRUE
   )))
   description_packages <- sub("\\s*\\(.*$", "", description_packages)
   description_packages <- sub("^(github|gitlab)::", "", description_packages)
@@ -691,14 +692,18 @@ env_r_packages <- function(modules = NULL) {
 
 collect_r_packages <- function() {
   collect_strings <- function(expr) {
-    if (is.character(expr)) return(expr)
+    if (is.character(expr)) {
+      return(expr)
+    }
     if (is.call(expr) && identical(as.character(expr[[1]]), "c")) {
       return(unlist(lapply(as.list(expr)[-1], collect_strings), use.names = FALSE))
     }
     character()
   }
   walk <- function(expr) {
-    if (!is.call(expr)) return(character())
+    if (!is.call(expr)) {
+      return(character())
+    }
     name <- as.character(expr[[1]])
     packages <- if (identical(name, "check_r") && length(expr) >= 2L) {
       collect_strings(expr[[2]])

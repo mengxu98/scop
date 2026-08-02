@@ -40,19 +40,26 @@ test_that("CUDA runtime discovery finds conda and pip NVIDIA libraries in load o
 })
 
 test_that("shared-library preloading retries dependencies loaded out of order", {
+  # LD_PRELOAD is a Linux-only mechanism; the preload strategy is a
+  # no-op elsewhere and the environment variable is not meaningful.
+  skip_on_os(c("mac", "windows"))
+
   first <- tempfile(fileext = ".so")
   second <- tempfile(fileext = ".so")
   file.create(first, second)
   attempts <- new.env(parent = emptyenv())
   attempts$first <- 0L
   old_preload <- Sys.getenv("LD_PRELOAD", unset = NA_character_)
-  on.exit({
-    if (is.na(old_preload)) {
-      Sys.unsetenv("LD_PRELOAD")
-    } else {
-      Sys.setenv(LD_PRELOAD = old_preload)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (is.na(old_preload)) {
+        Sys.unsetenv("LD_PRELOAD")
+      } else {
+        Sys.setenv(LD_PRELOAD = old_preload)
+      }
+    },
+    add = TRUE
+  )
 
   testthat::local_mocked_bindings(
     load_shared_library = function(lib) {

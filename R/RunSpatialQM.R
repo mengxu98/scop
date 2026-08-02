@@ -106,12 +106,12 @@ RunSpatialQM <- function(
     )
     metric_result <- tryCatch(
       spatialqm_run_metric(
-      seu_obj = input$object,
-      metric = metric,
-      spec = spec,
-      features = features,
-      platform = input$platform,
-      extra_args = extra_args
+        seu_obj = input$object,
+        metric = metric,
+        spec = spec,
+        features = features,
+        platform = input$platform,
+        extra_args = extra_args
       ),
       error = function(e) e
     )

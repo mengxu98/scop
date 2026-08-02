@@ -70,13 +70,13 @@
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")
 #' )
-#'   SpatialSpotPlot(
-#'     spatial,
-#'     group.by = "RCTD_dominant_type",
-#'     plot_type = "pie",
-#'     overlay_image = FALSE,
-#'     coord.cols = c("x", "y")
-#'   )
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "RCTD_dominant_type",
+#'   plot_type = "pie",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
 #'
 #' data(pancreas_sub)
 #' features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
@@ -363,9 +363,9 @@ RunRCTD <- function(
         layer = layer,
         reference_layer = reference_layer,
         reference_label = reference_label,
-          image = image,
-          coord.cols = coord.cols,
-          coordinate_space = coordinate_space,
+        image = image,
+        coord.cols = coord.cols,
+        coordinate_space = coordinate_space,
         rctd_mode = rctd_mode,
         max_cores = max_cores,
         min_cells = min_cells,

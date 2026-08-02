@@ -363,14 +363,12 @@ palantir_trajectory_paths <- function(
   paths <- lapply(branch_cols, function(branch) {
     branch_prob <- dat[[branch]]
     branch_dat <- dat[
-      !is.na(branch_prob) & branch_prob >= branch_min_prob,
-      ,
+      !is.na(branch_prob) & branch_prob >= branch_min_prob, ,
       drop = FALSE
     ]
     if (nrow(branch_dat) < min_cells_per_bin * 2L) {
       branch_dat <- dat[
-        !is.na(branch_prob) & dat[["branch_selection"]] == branch,
-        ,
+        !is.na(branch_prob) & dat[["branch_selection"]] == branch, ,
         drop = FALSE
       ]
     }

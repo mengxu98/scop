@@ -203,8 +203,8 @@ test_that("palantir_normalize_kernel_cpp produces row-stochastic T matrix", {
 
 test_that("palantir_normalize_kernel_cpp handles uniform kernel", {
   n <- 5
-  kernel_i <- as.integer(c(1,1,2,2,3,3,4,4,5,5))
-  kernel_j <- as.integer(c(2,3,1,4,1,5,2,5,3,4))
+  kernel_i <- as.integer(c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5))
+  kernel_j <- as.integer(c(2, 3, 1, 4, 1, 5, 2, 5, 3, 4))
   kernel_x <- rep(1.0, 10)
 
   norm <- palantir_normalize_kernel_cpp(
@@ -229,14 +229,14 @@ test_that("palantir_multiscale_space_cpp returns correct dimensions", {
   eigvecs <- matrix(rnorm(n * n_eigs), nrow = n, ncol = n_eigs)
   # Normalize columns
   eigvecs <- apply(eigvecs, 2, function(x) x / sqrt(sum(x^2)))
-  eigvals <- seq(0.99, 0.5, length.out = n_eigs)  # decreasing
+  eigvals <- seq(0.99, 0.5, length.out = n_eigs) # decreasing
 
   ms <- palantir_multiscale_space_cpp(eigvecs, eigvals)
 
   expect_true(is.matrix(ms))
   expect_equal(nrow(ms), n)
   # Number of components = n_use - 1 (first eigenvector skipped)
-  expect_gte(ncol(ms), 2)   # at least 3 eigs used → 2 components minimum
+  expect_gte(ncol(ms), 2) # at least 3 eigs used → 2 components minimum
   expect_lte(ncol(ms), n_eigs - 1)
   expect_true(all(is.finite(ms)))
 })
@@ -313,7 +313,7 @@ test_that("palantir_maxmin_waypoints_cpp respects minimum waypoints", {
 
   # Request fewer than n_cols → should be bumped up
   wp <- palantir_maxmin_waypoints_cpp(ms_data, num_waypoints = 2, seed = 42)
-  expect_gte(length(wp), 3)   # at least max(3, n_cols)
+  expect_gte(length(wp), 3) # at least max(3, n_cols)
 })
 
 test_that("palantir_maxmin_waypoints_cpp is deterministic", {
@@ -337,7 +337,7 @@ test_that("palantir_pseudotime_cpp returns valid structure", {
 
   out <- palantir_pseudotime_cpp(
     ms_data = ms_data,
-    start_cell = 0,          # 0-based
+    start_cell = 0, # 0-based
     waypoints = as.integer(c(1, 5, 10, 15, 20)),
     knn = 5,
     max_iterations = 10,
@@ -359,7 +359,7 @@ test_that("palantir_pseudotime_cpp start_cell has minimum pseudotime", {
   set.seed(2)
   ms_data <- matrix(rnorm(n * d), nrow = n, ncol = d)
 
-  start_cell <- 0  # first cell
+  start_cell <- 0 # first cell
   out <- palantir_pseudotime_cpp(
     ms_data = ms_data,
     start_cell = start_cell,
@@ -489,9 +489,9 @@ test_that("palantir_markov_chain_cpp handles single cell", {
 test_that("palantir_absorption_cpp returns correct dimensions", {
   n <- 10
   # Build a simple Markov chain
-  T_i <- as.integer(c(1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10))
-  T_j <- as.integer(c(2,3,1,4,1,5,4,5,3,6,5,7,6,8,7,9,8,10,9,10))
-  T_x <- rep(0.5, 20)  # uniform transitions
+  T_i <- as.integer(c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10))
+  T_j <- as.integer(c(2, 3, 1, 4, 1, 5, 4, 5, 3, 6, 5, 7, 6, 8, 7, 9, 8, 10, 9, 10))
+  T_x <- rep(0.5, 20) # uniform transitions
 
   bp <- palantir_absorption_cpp(
     T_i = T_i,
@@ -513,8 +513,8 @@ test_that("palantir_absorption_cpp returns correct dimensions", {
 
 test_that("palantir_absorption_cpp row-sums are 1", {
   n <- 8
-  T_i <- as.integer(c(1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8))
-  T_j <- as.integer(c(2,3,1,4,1,5,4,5,3,6,5,7,6,8,7,8))
+  T_i <- as.integer(c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8))
+  T_j <- as.integer(c(2, 3, 1, 4, 1, 5, 4, 5, 3, 6, 5, 7, 6, 8, 7, 8))
   T_x <- rep(0.5, 16)
 
   bp <- palantir_absorption_cpp(
@@ -531,8 +531,8 @@ test_that("palantir_absorption_cpp row-sums are 1", {
 
 test_that("palantir_absorption_cpp all cells terminal", {
   n <- 5
-  T_i <- as.integer(c(1,2,3,4,5))
-  T_j <- as.integer(c(2,3,4,5,1))
+  T_i <- as.integer(c(1, 2, 3, 4, 5))
+  T_j <- as.integer(c(2, 3, 4, 5, 1))
   T_x <- rep(1.0, 5)
 
   bp <- palantir_absorption_cpp(

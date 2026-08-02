@@ -242,6 +242,8 @@ test_that("CytoSPACE public workflow records fraction and assignment backends", 
 })
 
 test_that("PAGA public C++ path records its limited implementation scope", {
+  skip_if_not_installed("BiocNeighbors")
+
   srt <- make_cpp_backend_safety_object()
   out <- RunPAGA(
     srt = srt,
@@ -286,6 +288,8 @@ test_that("scVelo public C++ path records memory and result semantics", {
 })
 
 test_that("CellRank public C++ path records approximation and memory scope", {
+  skip_if_not_installed("BiocNeighbors")
+
   srt <- make_cpp_backend_safety_object()
   out <- RunCellRank(
     srt = srt,

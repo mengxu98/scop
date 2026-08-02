@@ -684,11 +684,11 @@ cell2fate_validate_result_tables <- function(
   )
   invalid_continuous <-
     any(!vapply(metadata[continuous_names], is.numeric, logical(1))) ||
-    any(vapply(
-      metadata[continuous_names],
-      function(x) any(!is.finite(x)),
-      logical(1)
-    ))
+      any(vapply(
+        metadata[continuous_names],
+        function(x) any(!is.finite(x)),
+        logical(1)
+      ))
   numeric_columns <- vapply(metadata, is.numeric, logical(1))
   invalid_numeric <- any(vapply(
     metadata[numeric_columns],

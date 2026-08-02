@@ -377,8 +377,7 @@ GiottoPlot.giotto2_spatial_modules <- function(
   }
   dat <- cor_table[
     as.character(cor_table$feat_ID) %in% features &
-      as.character(cor_table$variable) %in% features,
-    ,
+      as.character(cor_table$variable) %in% features, ,
     drop = FALSE
   ]
   dat[["feat_ID"]] <- factor(as.character(dat[["feat_ID"]]), levels = features)

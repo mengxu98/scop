@@ -22,13 +22,13 @@ derived from \code{EnsDb.Hsapiens.v86} and collapsed to the longest transcript
 per gene.
 }
 \examples{
-  source("test/data/create_pbmcmultiome_sub.R")
-  pbmcmultiome_sub <- create_pbmcmultiome_sub()
-  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-  use_data(
-    pbmcmultiome_sub,
-    compress = "xz",
-    overwrite = TRUE
-  )
+source("test/data/create_pbmcmultiome_sub.R")
+pbmcmultiome_sub <- create_pbmcmultiome_sub()
+use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+use_data(
+  pbmcmultiome_sub,
+  compress = "xz",
+  overwrite = TRUE
+)
 }
 \concept{data}

@@ -19,42 +19,42 @@ from \href{https://github.com/satijalab/seurat-data}{SeuratData} package.
 For each data set in \code{panc8}, 200 cells were downsampled to form the \code{panc8_sub} dataset.
 }
 \examples{
-  data(pancreas_sub)
-  thisutils::check_r("satijalab/seurat-data")
+data(pancreas_sub)
+thisutils::check_r("satijalab/seurat-data")
 
-  InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
-  InstallData("panc8")
-  data(panc8)
-  panc8 <- UpdateSeuratObject(panc8)
-  set.seed(98)
-  cells_sub <- unlist(
-    lapply(
-      split(colnames(panc8), panc8$dataset),
-      function(x) sample(x, size = 200)
-    )
+InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
+InstallData("panc8")
+data(panc8)
+panc8 <- UpdateSeuratObject(panc8)
+set.seed(98)
+cells_sub <- unlist(
+  lapply(
+    split(colnames(panc8), panc8$dataset),
+    function(x) sample(x, size = 200)
   )
-  panc8_sub <- subset(panc8, cells = cells_sub)
-  counts <- GetAssayData5(
-    panc8_sub,
-    layer = "counts"
-  )
-  panc8_sub <- CreateSeuratObject(
-    counts = counts,
-    meta.data = panc8_sub@meta.data
-  )
-  panc8_sub <- panc8_sub[Matrix::rowSums(counts) > 0, ]
-  panc8_sub <- panc8_sub[toupper(
-    rownames(panc8_sub)
-  ) \%in\% toupper(
-    rownames(pancreas_sub)
-  ), ]
-  panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
-  panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-  use_data(
-    panc8_sub,
-    compress = "xz",
-    overwrite = TRUE
-  )
+)
+panc8_sub <- subset(panc8, cells = cells_sub)
+counts <- GetAssayData5(
+  panc8_sub,
+  layer = "counts"
+)
+panc8_sub <- CreateSeuratObject(
+  counts = counts,
+  meta.data = panc8_sub@meta.data
+)
+panc8_sub <- panc8_sub[Matrix::rowSums(counts) > 0, ]
+panc8_sub <- panc8_sub[toupper(
+  rownames(panc8_sub)
+) \%in\% toupper(
+  rownames(pancreas_sub)
+), ]
+panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
+panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
+use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+use_data(
+  panc8_sub,
+  compress = "xz",
+  overwrite = TRUE
+)
 }
 \concept{data}

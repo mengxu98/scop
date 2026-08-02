@@ -576,7 +576,9 @@ spatial_neighborhood_observed_pairs <- function(
         weight = "binary"
       )
     }
-    if (nrow(graph$edges) == 0L) return(NULL)
+    if (nrow(graph$edges) == 0L) {
+      return(NULL)
+    }
     from_idx <- graph$edges$from
     to_idx <- graph$edges$to
     data.frame(

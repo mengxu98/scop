@@ -612,8 +612,7 @@ run_scvelo_cpp <- function(
         seq_len(n_genes)
       }
       fitting_by <- match.arg(fitting_by)
-      fitting_by <- switch(
-        fitting_by,
+      fitting_by <- switch(fitting_by,
         stochastic = "em",
         deterministic = "nm",
         fitting_by

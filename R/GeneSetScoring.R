@@ -206,8 +206,7 @@ run_aucell_scores <- function(
     )
   }
   auc_max_rank <- ceiling(auc_threshold * nrow(expr_counts))
-  rank_seed <- switch(
-    tie_method,
+  rank_seed <- switch(tie_method,
     "first" = -1L,
     "hash" = as.integer(seed %||% 0L),
     "numpy" = -as.integer(seed %||% 0L) - 2L

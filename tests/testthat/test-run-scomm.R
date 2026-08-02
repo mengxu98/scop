@@ -29,7 +29,8 @@ test_that("scomm_assign_labels retains the legacy missing-value path", {
 
 test_that("add_prediction_meta computes maximum probabilities by row", {
   counts <- Matrix::Matrix(
-    matrix(1:6, nrow = 2,
+    matrix(1:6,
+      nrow = 2,
       dimnames = list(c("Gene1", "Gene2"), paste0("Cell", 1:3))
     ),
     sparse = TRUE

@@ -50,13 +50,13 @@
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")
 #' )
-#'   SpatialSpotPlot(
-#'     spatial,
-#'     group.by = "SPOTlight_dominant_type",
-#'     plot_type = "pie",
-#'     overlay_image = FALSE,
-#'     coord.cols = c("x", "y")
-#'   )
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "SPOTlight_dominant_type",
+#'   plot_type = "pie",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
 #'
 #' data(pancreas_sub)
 #' features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)

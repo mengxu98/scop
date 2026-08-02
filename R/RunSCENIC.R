@@ -1198,8 +1198,7 @@ cistarget2 <- function(
   }
   motif_tbl <- motif_tbl[
     motif_tbl[[".motif_similarity_qvalue"]] <= 0.001 &
-      motif_tbl[[".orthologous_identity"]] >= 0,
-    ,
+      motif_tbl[[".orthologous_identity"]] >= 0, ,
     drop = FALSE
   ]
 
@@ -1211,8 +1210,7 @@ cistarget2 <- function(
         motif_tbl[["tf"]],
         -motif_tbl[[".motif_similarity_qvalue"]],
         motif_tbl[[".orthologous_identity"]]
-      ),
-      ,
+      ), ,
       drop = FALSE
     ]
     motif_key <- paste(motif_tbl[["tf"]], motif_tbl[["motif"]], sep = "\r")
@@ -1415,8 +1413,7 @@ cistarget2 <- function(
           motif_tbl[FALSE, , drop = FALSE]
         } else {
           annotated_tf[
-            annotated_tf[["motif"]] %in% rm[["clusters"]][enriched_idx],
-            ,
+            annotated_tf[["motif"]] %in% rm[["clusters"]][enriched_idx], ,
             drop = FALSE
           ]
         }
@@ -1432,8 +1429,7 @@ cistarget2 <- function(
         next
       }
       annotated_features <- annotated_features[
-        match(rm[["clusters"]][annotated_feature_idx], annotated_features[["motif"]]),
-        ,
+        match(rm[["clusters"]][annotated_feature_idx], annotated_features[["motif"]]), ,
         drop = FALSE
       ]
       # ctxcore sorts annotated enriched motifs ahead of unannotated rows, then
@@ -1484,8 +1480,7 @@ cistarget2 <- function(
     cluster_scores <- do.call(rbind, cluster_score_list)
 
     cluster_scores <- cluster_scores[
-      order(-cluster_scores[["nes"]]),
-      ,
+      order(-cluster_scores[["nes"]]), ,
       drop = FALSE
     ]
 
@@ -1830,8 +1825,7 @@ scenic_filter_module_regulation <- function(adjacency, regulation) {
     return(adjacency)
   }
   adjacency[
-    as.integer(adjacency[["regulation"]]) == as.integer(regulation),
-    ,
+    as.integer(adjacency[["regulation"]]) == as.integer(regulation), ,
     drop = FALSE
   ]
 }
@@ -1844,8 +1838,7 @@ scenic_add_correlation <- function(
   tfs <- intersect(unique(adjacency[["TF"]]), colnames(expr_mtx))
   targets <- intersect(unique(adjacency[["target"]]), colnames(expr_mtx))
   adjacency <- adjacency[
-    adjacency[["TF"]] %in% tfs & adjacency[["target"]] %in% targets,
-    ,
+    adjacency[["TF"]] %in% tfs & adjacency[["target"]] %in% targets, ,
     drop = FALSE
   ]
   if (nrow(adjacency) == 0) {
@@ -1918,8 +1911,7 @@ scenic_reference <- function(
     reference_files <- species_config[["files"]]
     if (isTRUE(missing_ranking_dbs)) {
       ranking_rows <- reference_files[
-        reference_files[["role"]] == "ranking_dbs",
-        ,
+        reference_files[["role"]] == "ranking_dbs", ,
         drop = FALSE
       ]
       ranking_dbs <- scenic_dl_refs(
@@ -1930,8 +1922,7 @@ scenic_reference <- function(
     }
     if (isTRUE(missing_motif_annotations)) {
       motif_rows <- reference_files[
-        reference_files[["role"]] == "motif_annotations",
-        ,
+        reference_files[["role"]] == "motif_annotations", ,
         drop = FALSE
       ]
       motif_annotations <- scenic_dl_refs(
@@ -1942,8 +1933,7 @@ scenic_reference <- function(
     }
     if (isTRUE(missing_regulators)) {
       tf_rows <- reference_files[
-        reference_files[["role"]] == "tf_list",
-        ,
+        reference_files[["role"]] == "tf_list", ,
         drop = FALSE
       ]
       regulators <- scenic_dl_refs(
@@ -1986,8 +1976,7 @@ scenic_species_config <- function(species, genome = NULL) {
   }
   species_key <- tolower(gsub("[ .-]+", "_", species))
   genome_key <- if (is.null(genome)) NULL else tolower(gsub("[ .-]+", "_", genome))
-  species_key <- switch(
-    species_key,
+  species_key <- switch(species_key,
     homo_sapiens = "human",
     mus_musculus = "mouse",
     drosophila_melanogaster = "fly",
@@ -2001,14 +1990,12 @@ scenic_species_config <- function(species, genome = NULL) {
   }
 
   cistarget_url <- "https://resources.aertslab.org/cistarget"
-  genome_key <- switch(
-    species_key,
+  genome_key <- switch(species_key,
     human = genome_key %||% "hg38",
     mouse = genome_key %||% "mm10",
     fly = genome_key %||% "dm6"
   )
-  genome_key <- switch(
-    genome_key,
+  genome_key <- switch(genome_key,
     hg38 = "hg38",
     grch38 = "hg38",
     hg19 = "hg19",
@@ -2018,8 +2005,7 @@ scenic_species_config <- function(species, genome = NULL) {
     dm6 = "dm6",
     genome_key
   )
-  expected_genomes <- switch(
-    species_key,
+  expected_genomes <- switch(species_key,
     human = c("hg38", "hg19"),
     mouse = "mm10",
     fly = "dm6"
@@ -2030,8 +2016,7 @@ scenic_species_config <- function(species, genome = NULL) {
       message_type = "error"
     )
   }
-  switch(
-    species_key,
+  switch(species_key,
     human = if (identical(genome_key, "hg19")) {
       list(
         key = "human_hg19",
@@ -2065,35 +2050,35 @@ scenic_species_config <- function(species, genome = NULL) {
       )
     } else {
       list(
-      key = "human",
-      label = "Homo_sapiens",
-      genome = "hg38",
-      files = data.frame(
-        role = c("ranking_dbs", "ranking_dbs", "motif_annotations", "tf_list"),
-        filename = c(
-          "hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
-          "hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
-          "motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl",
-          "allTFs_hg38.txt"
-        ),
-        url = c(
-          paste0(
-            cistarget_url,
-            "/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+        key = "human",
+        label = "Homo_sapiens",
+        genome = "hg38",
+        files = data.frame(
+          role = c("ranking_dbs", "ranking_dbs", "motif_annotations", "tf_list"),
+          filename = c(
+            "hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
+            "hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather",
+            "motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl",
+            "allTFs_hg38.txt"
           ),
-          paste0(
-            cistarget_url,
-            "/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+          url = c(
+            paste0(
+              cistarget_url,
+              "/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+            ),
+            paste0(
+              cistarget_url,
+              "/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+            ),
+            paste0(
+              cistarget_url,
+              "/motif2tf/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl"
+            ),
+            paste0(cistarget_url, "/tf_lists/allTFs_hg38.txt")
           ),
-          paste0(
-            cistarget_url,
-            "/motif2tf/motifs-v10nr_clust-nr.hgnc-m0.001-o0.0.tbl"
-          ),
-          paste0(cistarget_url, "/tf_lists/allTFs_hg38.txt")
-        ),
-        stringsAsFactors = FALSE
+          stringsAsFactors = FALSE
+        )
       )
-    )
     },
     mouse = list(
       key = "mouse",
@@ -2553,8 +2538,7 @@ scenic_compute_aucell_score <- function(
       seed = if (!is.null(seed)) -1L else 0L
     )
     return(as.data.frame(scores, check.names = FALSE)[
-      colnames(counts),
-      ,
+      colnames(counts), ,
       drop = FALSE
     ])
   }

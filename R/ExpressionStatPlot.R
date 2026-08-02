@@ -824,8 +824,7 @@ ExpressionStatPlot <- function(
 
       if (isTRUE(auto_comparison) && split.by == "All.groups" && length(comparisons_use) == 0) {
         auto_dat <- dat[
-          is.finite(dat[["value"]]) & !is.na(dat[["group.by"]]),
-          ,
+          is.finite(dat[["value"]]) & !is.na(dat[["group.by"]]), ,
           drop = FALSE
         ]
         auto_groups <- split(
@@ -861,8 +860,7 @@ ExpressionStatPlot <- function(
                 -auto_summary[["median_value"]],
                 -auto_summary[["mean_value"]],
                 auto_summary[["group_order"]]
-              ),
-              ,
+              ), ,
               drop = FALSE
             ]
             ref_group_use <- auto_summary[["group"]][1]
@@ -943,8 +941,8 @@ ExpressionStatPlot <- function(
                 )
             }
           } else {
-              p <- p +
-                ggpubr::stat_compare_means(
+            p <- p +
+              ggpubr::stat_compare_means(
                 mapping = aes(
                   x = .data[["group.by"]],
                   y = .data[["value"]],
@@ -958,9 +956,9 @@ ExpressionStatPlot <- function(
                 vjust = 0,
                 comparisons = comparisons_use,
                 ref.group = ref_group_use,
-                  method = pairwise_method
-                )
-            }
+                method = pairwise_method
+              )
+          }
           y_max_use <- layer_scales(p)$y$range$range[1] +
             (layer_scales(p)$y$range$range[2] -
               layer_scales(p)$y$range$range[1]) *

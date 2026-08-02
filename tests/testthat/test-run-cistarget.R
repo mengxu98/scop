@@ -15,15 +15,13 @@ test_that("RunCisTarget exposes the native cisTarget backend", {
     scenic_reference = function(...) {
       list(ranking_dbs = ranking, motif_annotations = motif)
     },
-    cistarget2 = function(
-      adjacency,
-      expr_mtx,
-      ranking_dbs,
-      motif_annotations,
-      min_regulon_size,
-      cores,
-      verbose
-    ) {
+    cistarget2 = function(adjacency,
+                          expr_mtx,
+                          ranking_dbs,
+                          motif_annotations,
+                          min_regulon_size,
+                          cores,
+                          verbose) {
       expect_true("importance" %in% colnames(adjacency))
       expect_null(expr_mtx)
       expect_identical(ranking_dbs, ranking)
@@ -65,6 +63,11 @@ test_that("RunCisTarget forwards cores to the RcisTarget backend", {
   testthat::local_mocked_bindings(
     .package = "scop",
     check_r = function(...) invisible(TRUE),
+    # scenic_reference() downloads the species TF list when regulators
+    # are missing; mock it so the test never depends on network access.
+    scenic_reference = function(...) {
+      list(ranking_dbs = ranking, motif_annotations = motif)
+    },
     get_namespace_fun = function(package, fun) {
       expect_identical(package, "RcisTarget")
       if (identical(fun, "importRankings")) {

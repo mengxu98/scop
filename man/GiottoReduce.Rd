@@ -65,13 +65,13 @@ g <- structure(
 )
 GiottoPlot(g, plot_type = "dim")
 
-  spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
-  g <- SeuratToGiotto2(
-    spatial,
-    coord.cols = c("x", "y"),
-    features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
-  )
-  g <- GiottoPreprocess(g)
-  g <- GiottoReduce(g, reduction = "pca", dims = 1:10)
-  g <- GiottoReduce(g, reduction = "umap", dims = 1:10)
+spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
+g <- SeuratToGiotto2(
+  spatial,
+  coord.cols = c("x", "y"),
+  features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
+)
+g <- GiottoPreprocess(g)
+g <- GiottoReduce(g, reduction = "pca", dims = 1:10)
+g <- GiottoReduce(g, reduction = "umap", dims = 1:10)
 }

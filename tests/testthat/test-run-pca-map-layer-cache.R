@@ -16,7 +16,8 @@ make_pcamap_cache_objects <- function() {
   )
   reference[["pca"]] <- SeuratObject::CreateDimReducObject(
     embeddings = matrix(
-      seq_len(6), ncol = 2,
+      seq_len(6),
+      ncol = 2,
       dimnames = list(colnames(reference), c("PC_1", "PC_2"))
     ),
     loadings = loadings,
@@ -25,7 +26,8 @@ make_pcamap_cache_objects <- function() {
   )
   reference[["umap"]] <- SeuratObject::CreateDimReducObject(
     embeddings = matrix(
-      seq_len(6), ncol = 2,
+      seq_len(6),
+      ncol = 2,
       dimnames = list(colnames(reference), c("UMAP_1", "UMAP_2"))
     ),
     assay = "RNA",

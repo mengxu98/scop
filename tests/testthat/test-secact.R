@@ -108,12 +108,10 @@ test_that("RunSecAct scRNAseq dispatches to SecAct and stores single-cell assay"
     dimnames = list(c("TGFB1", "LY86"), paste0("Cell", 1:3))
   )
   funs <- list(
-    SecAct.activity.inference.scRNAseq = function(
-      inputProfile,
-      cellType_meta,
-      is.singleCellLevel,
-      ...
-    ) {
+    SecAct.activity.inference.scRNAseq = function(inputProfile,
+                                                  cellType_meta,
+                                                  is.singleCellLevel,
+                                                  ...) {
       expect_s4_class(inputProfile, "Seurat")
       expect_null(cellType_meta)
       expect_true(is.singleCellLevel)
@@ -194,14 +192,12 @@ test_that("RunSecAct rejects non-RNA Seurat assays explicitly", {
 test_that("RunSecActCCC records scRNAseq CCC runs", {
   srt <- make_secact_seurat()
   funs <- list(
-    SecAct.CCC.scRNAseq = function(
-      Seurat_obj,
-      cellType_meta,
-      condition_meta,
-      conditionCase,
-      conditionControl,
-      ...
-    ) {
+    SecAct.CCC.scRNAseq = function(Seurat_obj,
+                                   cellType_meta,
+                                   condition_meta,
+                                   conditionCase,
+                                   conditionControl,
+                                   ...) {
       expect_identical(cellType_meta, "celltype")
       expect_identical(condition_meta, "condition")
       expect_identical(conditionCase, "case")
@@ -228,13 +224,11 @@ test_that("RunSecActCCC records scRNAseq CCC runs", {
 test_that("RunSecActCCC allows condition_meta NULL and ignores case labels", {
   srt <- make_secact_seurat()
   funs <- list(
-    SecAct.CCC.scRNAseq = function(
-      Seurat_obj,
-      condition_meta,
-      conditionCase,
-      conditionControl,
-      ...
-    ) {
+    SecAct.CCC.scRNAseq = function(Seurat_obj,
+                                   condition_meta,
+                                   conditionCase,
+                                   conditionControl,
+                                   ...) {
       expect_null(condition_meta)
       expect_null(conditionCase)
       expect_null(conditionControl)

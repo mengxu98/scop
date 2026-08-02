@@ -147,7 +147,7 @@ test_that("scvelo estimates gamma ~ 1 when unspliced = spliced", {
     stats::rgamma(n_genes * n_cells, shape = 3, rate = 1),
     nrow = n_genes, ncol = n_cells
   )
-  unspliced <- spliced  # identical
+  unspliced <- spliced # identical
   knn_idx <- matrix(NA_integer_, nrow = n_cells, ncol = 4)
   for (i in seq_len(n_cells)) {
     candidates <- setdiff(seq_len(n_cells), i)
@@ -254,8 +254,8 @@ test_that("scvelo gamma reflects relationship between spliced and unspliced", {
   # Make first 5 genes have high unspliced/spliced ratio (high gamma),
   # last 5 genes have low ratio
   unspliced <- spliced
-  unspliced[1:5, ] <- unspliced[1:5, ] * 2.0    # gamma approx 2
-  unspliced[6:10, ] <- unspliced[6:10, ] * 0.1  # gamma approx 0.1
+  unspliced[1:5, ] <- unspliced[1:5, ] * 2.0 # gamma approx 2
+  unspliced[6:10, ] <- unspliced[6:10, ] * 0.1 # gamma approx 0.1
 
   knn_idx <- matrix(NA_integer_, nrow = n_cells, ncol = 4)
   for (i in seq_len(n_cells)) {
@@ -283,7 +283,7 @@ test_that("scvelo rejects mismatched spliced/unspliced dimensions", {
   dat <- make_scvelo_mock()
   expect_error(
     scvelo_stochastic_embedding_cpp(
-      spliced = dat$spliced[1:5, , drop = FALSE],  # different n_genes
+      spliced = dat$spliced[1:5, , drop = FALSE], # different n_genes
       unspliced = dat$unspliced,
       knn_idx = dat$knn_idx,
       embedding = dat$embedding
@@ -331,7 +331,8 @@ test_that("scvelo embedding output is finite and well-scaled", {
     nrow = n_genes, ncol = n_cells
   )
   unspliced <- 0.3 * spliced + matrix(
-    rnorm(n_genes * n_cells, sd = 0.1), nrow = n_genes, ncol = n_cells
+    rnorm(n_genes * n_cells, sd = 0.1),
+    nrow = n_genes, ncol = n_cells
   )
   unspliced <- pmax(unspliced, 0)
 

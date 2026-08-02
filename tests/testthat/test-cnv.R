@@ -354,16 +354,14 @@ test_that("fastCNV runner skips expensive upstream preparation by default", {
     get_namespace_fun = function(package, name) {
       expect_identical(package, "fastCNV")
       expect_identical(name, "fastCNV")
-      function(
-        seuratObj,
-        sampleName,
-        referenceVar,
-        referenceLabel,
-        assay,
-        prepareCounts,
-        doPlot,
-        savePath
-      ) {
+      function(seuratObj,
+               sampleName,
+               referenceVar,
+               referenceLabel,
+               assay,
+               prepareCounts,
+               doPlot,
+               savePath) {
         expect_s4_class(seuratObj, "Seurat")
         expect_identical(sampleName, "scop_cnv")
         expect_identical(referenceVar, "celltype")
@@ -410,13 +408,11 @@ test_that("infercnv runner avoids subclusters by default and filters passthrough
     get_namespace_fun = function(package, name) {
       expect_identical(package, "infercnv")
       if (identical(name, "CreateInfercnvObject")) {
-        return(function(
-          raw_counts_matrix,
-          annotations_file,
-          delim,
-          gene_order_file,
-          ref_group_names
-        ) {
+        return(function(raw_counts_matrix,
+                        annotations_file,
+                        delim,
+                        gene_order_file,
+                        ref_group_names) {
           expect_true(is.matrix(raw_counts_matrix))
           expect_equal(delim, "\t")
           expect_equal(ref_group_names, "reference")
@@ -428,28 +424,26 @@ test_that("infercnv runner avoids subclusters by default and filters passthrough
         })
       }
       if (identical(name, "run")) {
-        return(function(
-          infercnv_obj,
-          cutoff,
-          out_dir,
-          cluster_by_groups,
-          cluster_references,
-          denoise,
-          HMM,
-          analysis_mode,
-          tumor_subcluster_partition_method,
-          plot_steps,
-          resume_mode,
-          no_plot,
-          no_prelim_plot,
-          save_rds,
-          save_final_rds,
-          plot_probabilities,
-          write_expr_matrix,
-          write_phylo,
-          inspect_subclusters,
-          num_threads
-        ) {
+        return(function(infercnv_obj,
+                        cutoff,
+                        out_dir,
+                        cluster_by_groups,
+                        cluster_references,
+                        denoise,
+                        HMM,
+                        analysis_mode,
+                        tumor_subcluster_partition_method,
+                        plot_steps,
+                        resume_mode,
+                        no_plot,
+                        no_prelim_plot,
+                        save_rds,
+                        save_final_rds,
+                        plot_probabilities,
+                        write_expr_matrix,
+                        write_phylo,
+                        inspect_subclusters,
+                        num_threads) {
           expect_equal(cutoff, 0.1)
           expect_true(dir.exists(out_dir))
           expect_false(cluster_by_groups)

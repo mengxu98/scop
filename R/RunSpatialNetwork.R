@@ -228,7 +228,9 @@ GetSpatialGraph <- function(
   }
   graph <- res$graphs[[graph.name]]
   spatial_graph_validate(graph)
-  if (identical(format, "list")) return(graph)
+  if (identical(format, "list")) {
+    return(graph)
+  }
   edges <- graph$edges
   if (identical(value, "distance") && nrow(edges) > 0L && any(edges$distance == 0)) {
     log_message(
@@ -255,7 +257,9 @@ GetSpatialGraph <- function(
     dimnames = list(ids, ids),
     giveCsparse = TRUE
   )
-  if (identical(format, "sparse")) return(matrix)
+  if (identical(format, "sparse")) {
+    return(matrix)
+  }
   methods::as(matrix, "Graph")
 }
 

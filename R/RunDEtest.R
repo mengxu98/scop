@@ -887,14 +887,12 @@ prepare_de_for_pathway <- function(de_results, require_score = FALSE) {
 
   de_results[["comparison"]] <- comparison
   de_results <- de_results[
-    !is.na(de_results[["gene"]]) & nzchar(as.character(de_results[["gene"]])),
-    ,
+    !is.na(de_results[["gene"]]) & nzchar(as.character(de_results[["gene"]])), ,
     drop = FALSE
   ]
   if (isTRUE(require_score)) {
     de_results <- de_results[
-      !is.na(de_results[["avg_log2FC"]]),
-      ,
+      !is.na(de_results[["avg_log2FC"]]), ,
       drop = FALSE
     ]
   }

@@ -108,12 +108,14 @@ RunCisTarget <- function(
   if (is.character(adj) && length(adj) == 1 && file.exists(adj)) {
     adj_file <- adj
     adj <- utils::read.table(
-      adj_file, header = TRUE, sep = "\t", stringsAsFactors = FALSE
+      adj_file,
+      header = TRUE, sep = "\t", stringsAsFactors = FALSE
     )
   } else if (is.data.frame(adj)) {
     adj_file <- file.path(work_dir, paste0(prefix, "_adj.tsv"))
     utils::write.table(
-      adj, adj_file, sep = "\t", row.names = FALSE, quote = FALSE
+      adj, adj_file,
+      sep = "\t", row.names = FALSE, quote = FALSE
     )
   } else {
     log_message(
@@ -134,7 +136,8 @@ RunCisTarget <- function(
     adj[["importance"]] <- 1
     adj_file <- file.path(work_dir, paste0(prefix, "_adj.tsv"))
     utils::write.table(
-      adj, adj_file, sep = "\t", row.names = FALSE, quote = FALSE
+      adj, adj_file,
+      sep = "\t", row.names = FALSE, quote = FALSE
     )
   }
 
@@ -149,8 +152,7 @@ RunCisTarget <- function(
     work_dir, paste0(prefix, "_regulons.txt")
   )
 
-  switch(
-    backend,
+  switch(backend,
     python = cisTarget_python(
       adj = adj,
       adj_file = adj_file,

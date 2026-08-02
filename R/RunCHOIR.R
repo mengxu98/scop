@@ -552,7 +552,7 @@ choir_resolve_layer <- function(
   normalization_method = "none"
 ) {
   if (!is.character(assay) || length(assay) != 1L || is.na(assay) ||
-      !nzchar(assay)) {
+    !nzchar(assay)) {
     log_message(
       "{.arg assay} must be a single non-empty assay name",
       message_type = "error"
@@ -621,7 +621,7 @@ choir_resolve_layer <- function(
   }
 
   if (identical(normalization_method, "SCTransform") &&
-      !identical(layer, "counts")) {
+    !identical(layer, "counts")) {
     log_message(
       "{.arg normalization_method = 'SCTransform'} requires {.arg layer = 'counts'}",
       message_type = "error"
@@ -637,7 +637,7 @@ choir_resolve_layer <- function(
     )
   }
   if (identical(layer, "counts") &&
-      identical(normalization_method, "none")) {
+    identical(normalization_method, "none")) {
     log_message(
       "CHOIR expects normalized input when {.arg normalization_method = 'none'}. Consider normalizing first or use {.arg normalization_method = 'SCTransform'}.",
       message_type = "warning"
@@ -680,8 +680,8 @@ choir_resolve_batch <- function(
     batch_correction_method <- if (is.null(batch.by)) "none" else "Harmony"
   }
   if (!is.character(batch_correction_method) ||
-      length(batch_correction_method) != 1L ||
-      !batch_correction_method %in% c("none", "Harmony")) {
+    length(batch_correction_method) != 1L ||
+    !batch_correction_method %in% c("none", "Harmony")) {
     log_message(
       "{.arg batch_correction_method} must be {.val 'none'} or {.val 'Harmony'}",
       message_type = "error"
@@ -732,7 +732,7 @@ choir_resolve_reduction <- function(
       )
     }
     if (is.null(rownames(reduction)) ||
-        !setequal(rownames(reduction), colnames(srt))) {
+      !setequal(rownames(reduction), colnames(srt))) {
       log_message(
         "{.arg reduction} row names must match all cells in {.arg srt}",
         message_type = "error"
@@ -900,11 +900,11 @@ choir_assert_probability <- function(x, arg, open = FALSE) {
 
 choir_validate_max_clusters <- function(x) {
   if (is.character(x) && length(x) == 1L && !is.na(x) &&
-      identical(x, "auto")) {
+    identical(x, "auto")) {
     return(x)
   }
   if (is.numeric(x) && length(x) == 1L && is.finite(x) &&
-      x >= 1 && x == floor(x)) {
+    x >= 1 && x == floor(x)) {
     log_message(
       "Numeric {.arg max_clusters} is unsafe with the pinned {.pkg CHOIR} backend because its full-tree loop may not terminate when the cluster count plateaus. Use {.val 'auto'}.",
       message_type = "error"

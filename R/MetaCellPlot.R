@@ -54,7 +54,8 @@
 #' )
 #'
 #' CellDimPlot(
-#'   pancreas_sub, group.by = "CellType"
+#'   pancreas_sub,
+#'   group.by = "CellType"
 #' ) +
 #'   MetaCellPlot(
 #'     mc,

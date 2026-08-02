@@ -1,10 +1,11 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+#
+# Coverage is collected weekly: covr instrumentation slows the suite
+# ~3.5x (1h+), while R-CMD-check already runs the full test suite on
+# three platforms on every push. Run manually with workflow_dispatch
+# whenever fresh coverage numbers are needed.
 on:
-  push:
-    branches: [main, master, dev]
-  pull_request:
-    branches: [main, master, dev]
   schedule:
     # 02:00 Monday Asia/Shanghai, expressed in UTC for GitHub Actions.
     - cron: '0 18 * * 0'
@@ -13,77 +14,51 @@ on:
 name: test-coverage
 
 jobs:
-  changes:
+  test-coverage:
     runs-on: ubuntu-latest
-    outputs:
-      package_changed: ${{ steps.filter.outputs.package_changed }}
+
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
 
-      - id: filter
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Capture R library path 🔍
+        id: r-info
         shell: bash
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            base="${{ github.event.pull_request.base.sha }}"
-            head="${{ github.event.pull_request.head.sha }}"
-          elif [[ "${{ github.event_name }}" == "push" ]]; then
-            base="${{ github.event.before }}"
-            head="${{ github.sha }}"
-            if [[ "$base" =~ ^0+$ ]]; then
-              echo "package_changed=true" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          else
-            echo "package_changed=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+          echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
+          echo "r-lib=$(Rscript -e 'cat(.libPaths()[1])')" >> "$GITHUB_OUTPUT"
 
-          # `github.event.before` may be unreachable after a force-push.
-          # In that case, run coverage rather than failing while filtering.
-          if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
-            echo "package_changed=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          files="$(git diff --name-only "$base" "$head")"
-          echo "$files"
-          if printf '%s\n' "$files" |
-            grep -Ev '^(scripts/.*|\.github/workflows/pkgdown\.yaml)$' |
-            grep -q .; then
-            echo "package_changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "package_changed=false" >> "$GITHUB_OUTPUT"
-          fi
-
-  prepare-environment:
-    needs: changes
-    if: needs.changes.outputs.package_changed == 'true'
-    uses: ./.github/workflows/warm-renv-cache.yaml
-
-  test-coverage:
-    needs: [changes, prepare-environment]
-    if: needs.changes.outputs.package_changed == 'true'
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Restore locked R environment 🧰
-        uses: ./.github/actions/prepare-renv
-
-      - name: Install coverage tooling 📊
-        uses: ./.github/actions/install-external-r-packages
+      # Custom cache key (OS + R version only) survives DESCRIPTION
+      # bumps that would invalidate setup-r-dependencies' built-in
+      # cache.  Without this, Ubuntu recompiles 80+ bioinformatics
+      # Suggests from source (~1-2 hr) and frequently OOMs.  The
+      # weekly warm-renv-cache workflow keeps this cache alive so a
+      # cold restore never happens in practice.
+      - name: Restore R package cache ♻️
+        id: r-pkg-cache
+        uses: actions/cache/restore@v5
         with:
-          packages: |-
-            covr@3.6.5
-            rex@1.2.2
-          required-packages: |-
-            covr
-            rex
-          library-name: scop-ci-covr
-          cache-version: scop-ci-covr
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          GITHUB_PAT: ${{ github.token }}
+        with:
+          extra-packages: any::covr, any::testthat
+          needs: coverage
+          cache: false
+
+      - name: Save R package cache 💾
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Test coverage 📊
         run: |

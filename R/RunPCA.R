@@ -165,7 +165,7 @@ RunPCA.Seurat <- function(
   }
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   if (
-      isTRUE(rev.pca) ||
+    isTRUE(rev.pca) ||
       isFALSE(extra[["approx"]]) ||
       !assay %in% SeuratObject::Assays(object)
   ) {

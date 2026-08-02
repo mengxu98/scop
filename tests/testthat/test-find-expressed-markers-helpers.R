@@ -8,7 +8,9 @@ test_that("conserved-marker sign filtering matches legacy all() semantics", {
   )
   legacy <- function(x, only.pos) {
     positive <- apply(x > 0, 1L, all)
-    if (only.pos) return(positive)
+    if (only.pos) {
+      return(positive)
+    }
     apply(x < 0, 1L, all) | positive
   }
 

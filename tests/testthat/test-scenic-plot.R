@@ -62,7 +62,9 @@ test_that("SCENIC group heatmap order matches legacy row-wise maxima", {
     x <- as.matrix(x[features, , drop = FALSE])
     x[!is.finite(x)] <- NA_real_
     max_group_idx <- apply(x, 1L, function(values) {
-      if (all(is.na(values))) return(NA_integer_)
+      if (all(is.na(values))) {
+        return(NA_integer_)
+      }
       which.max(replace(values, is.na(values), -Inf))
     })
     max_value <- apply(x, 1L, function(values) {
@@ -120,7 +122,7 @@ test_that("SCENICPlot activity heatmap returns drawable plot object", {
 
 test_that("SCENICPlot activity heatmap can order rows by RSS source group", {
   dat <- make_scenic_plot_mock(seed = 22)
-  dat$auc[,] <- 0
+  dat$auc[, ] <- 0
   dat$auc["Jun(+)", dat$srt$CellType == "A"] <- 4
   dat$auc["Atf3(+)", dat$srt$CellType == "A"] <- 3
   dat$auc["Fos(+)", dat$srt$CellType == "B"] <- 4

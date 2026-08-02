@@ -69,13 +69,13 @@ g <- structure(
 )
 GiottoPlot(g, plot_type = "spatial_genes", top_n = 6)
 
-  spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
-  g <- SeuratToGiotto2(
-    spatial,
-    coord.cols = c("x", "y"),
-    features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
-  )
-  g <- GiottoPreprocess(g)
-  g <- GiottoSpatialNetwork(g)
-  g <- GiottoSpatialGenes(g, features = rownames(spatial)[1:50], top_n = 10)
+spatial <- subset(spatial, cells = colnames(spatial)[seq_len(min(200L, ncol(spatial)))])
+g <- SeuratToGiotto2(
+  spatial,
+  coord.cols = c("x", "y"),
+  features = rownames(spatial)[seq_len(min(200L, nrow(spatial)))]
+)
+g <- GiottoPreprocess(g)
+g <- GiottoSpatialNetwork(g)
+g <- GiottoSpatialGenes(g, features = rownames(spatial)[1:50], top_n = 10)
 }

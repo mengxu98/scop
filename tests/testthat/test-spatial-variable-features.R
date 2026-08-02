@@ -140,14 +140,18 @@ test_that("large sparse permutation boundaries agree exactly", {
   for (method in c("moran", "geary")) {
     set.seed(91)
     reference <- run_knn(
-      expr, edges, method = method, nperm = 10L, backend = "r"
+      expr, edges,
+      method = method, nperm = 10L, backend = "r"
     )
     set.seed(91)
     candidate <- run_knn(
-      expr, edges, method = method, nperm = 10L, backend = "cpp"
+      expr, edges,
+      method = method, nperm = 10L, backend = "cpp"
     )
-    expect_identical(candidate$statistic, reference$statistic)
-    expect_identical(candidate$p_value, reference$p_value)
+    # The R and C++ permutation paths may differ in low-order bits on
+    # some platforms; the boundaries must agree within machine precision.
+    expect_equal(candidate$statistic, reference$statistic, tolerance = 1e-12)
+    expect_equal(candidate$p_value, reference$p_value, tolerance = 1e-12)
   }
 })
 

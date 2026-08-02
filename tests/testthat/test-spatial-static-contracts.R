@@ -53,7 +53,9 @@ test_that("documented stable spatial producers and registry agree both ways", {
   }
   documented <- unique(unlist(lapply(rd_db, function(rd) {
     concepts <- rd_values(rd, "\\concept")
-    if (!"spatial-producer" %in% concepts) return(character())
+    if (!"spatial-producer" %in% concepts) {
+      return(character())
+    }
     rd_values(rd, "\\name")
   }), use.names = FALSE))
   expect_setequal(documented, registered)
@@ -74,7 +76,9 @@ test_that("spatial code does not bypass strict image resolution", {
     approved <- identical(basename(path), "SpatialCore.R") &
       trimws(lines[hits]) == "image <- images[[1L]]"
     hits <- hits[!approved]
-    if (length(hits) == 0L) return(character())
+    if (length(hits) == 0L) {
+      return(character())
+    }
     paste0(basename(path), ":", hits)
   }), use.names = FALSE)
   if (is.null(violations)) violations <- character()
@@ -91,7 +95,9 @@ test_that("registered small analyses emit schema-v1 result families", {
     drop = FALSE
   ]
   collect_build_calls <- function(expr) {
-    if (!is.call(expr)) return(list())
+    if (!is.call(expr)) {
+      return(list())
+    }
     found <- if (identical(expr[[1L]], as.name("spatial_result_build"))) list(expr) else list()
     for (i in seq_along(expr)[-1L]) {
       found <- c(found, collect_build_calls(expr[[i]]))
@@ -107,10 +113,14 @@ test_that("registered small analyses emit schema-v1 result families", {
     result_type <- args[["result_type"]]
     provenance <- args[["provenance"]]
     if (!is.character(result_type) || !is.call(provenance) ||
-      !identical(provenance[[1L]], as.name("list"))) return(NULL)
+      !identical(provenance[[1L]], as.name("list"))) {
+      return(NULL)
+    }
     provenance <- as.list(provenance)[-1L]
     producer <- provenance[["producer"]]
-    if (!is.character(producer)) return(NULL)
+    if (!is.character(producer)) {
+      return(NULL)
+    }
     data.frame(producer = producer, result_type = result_type, stringsAsFactors = FALSE)
   }))
   expect_true(all(target$method %in% emitted$producer))

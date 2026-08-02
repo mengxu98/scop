@@ -149,7 +149,7 @@ test_that("paga_connectivities_cpp handles single group gracefully", {
   }
   expect_error(
     paga_connectivities_cpp(knn_idx = knn_idx, groups = groups, n_groups = 1),
-    NA  # should not error
+    NA # should not error
   )
 })
 
@@ -257,7 +257,7 @@ test_that("paga_connectivities_cpp rejects negative n_groups", {
 test_that("paga_connectivities_cpp rejects groups with invalid indices", {
   dat <- make_paga_mock()
   bad_groups <- dat$groups
-  bad_groups[1] <- 99L  # > n_groups
+  bad_groups[1] <- 99L # > n_groups
   expect_error(
     paga_connectivities_cpp(
       knn_idx = dat$knn_idx,

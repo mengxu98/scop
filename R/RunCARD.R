@@ -48,13 +48,13 @@
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")
 #' )
-#'   SpatialSpotPlot(
-#'     spatial,
-#'     group.by = "CARD_dominant_type",
-#'     plot_type = "pie",
-#'     overlay_image = FALSE,
-#'     coord.cols = c("x", "y")
-#'   )
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "CARD_dominant_type",
+#'   plot_type = "pie",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
 #'
 #' data(pancreas_sub)
 #' features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
@@ -391,13 +391,11 @@ card_run_backend <- function(
         }
       )
       informative_counts <- spatial_count_mat[
-        rownames(spatial_count_mat) %in% informative_genes,
-        ,
+        rownames(spatial_count_mat) %in% informative_genes, ,
         drop = FALSE
       ]
       informative_counts <- informative_counts[
-        Matrix::rowSums(informative_counts) > 0,
-        ,
+        Matrix::rowSums(informative_counts) > 0, ,
         drop = FALSE
       ]
       supported_spots <- if (nrow(informative_counts) == 0L) {

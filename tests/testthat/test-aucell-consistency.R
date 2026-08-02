@@ -47,13 +47,15 @@ test_that("C++ AUCell AUC matches official random and blocked rankings", {
   for (split_by_blocks in c(FALSE, TRUE)) {
     set.seed(91)
     rankings <- AUCell::AUCell_buildRankings(
-      expr, plotStats = FALSE, splitByBlocks = split_by_blocks, verbose = FALSE
+      expr,
+      plotStats = FALSE, splitByBlocks = split_by_blocks, verbose = FALSE
     )
     expected <- suppressWarnings(AUCell::getAUC(AUCell::AUCell_calcAUC(
       geneSets = gene_sets, rankings = rankings, aucMaxRank = 12L, verbose = FALSE
     )))
     observed <- run_aucell_scores_from_official_rankings(
-      rankings, gene_sets, auc_max_rank = 12L, norm_auc = TRUE
+      rankings, gene_sets,
+      auc_max_rank = 12L, norm_auc = TRUE
     )
 
     expect_equal(unname(observed), unname(t(expected)), tolerance = 1e-12)
@@ -73,10 +75,12 @@ test_that("AUCell top-k ranks preserve the full native AUC", {
   )
 
   full <- run_aucell_scores(
-    expr, gene_sets, strategy = "full", tie_method = "first"
+    expr, gene_sets,
+    strategy = "full", tie_method = "first"
   )
   topk <- run_aucell_scores(
-    expr, gene_sets, strategy = "topk", tie_method = "first"
+    expr, gene_sets,
+    strategy = "topk", tie_method = "first"
   )
 
   expect_equal(topk, full, tolerance = 1e-12)
@@ -238,12 +242,14 @@ test_that("CellScoring AUCell uses an exactly shared tie rule", {
   features <- list(set_a = rownames(counts)[1:4], set_b = rownames(counts)[3:6])
 
   r_out <- suppressWarnings(CellScoring(
-    srt, features = features, method = "AUCell", backend = "r",
+    srt,
+    features = features, method = "AUCell", backend = "r",
     classification = FALSE, name = "auc_r_first",
     verbose = FALSE
   ))
   cpp_out <- suppressWarnings(CellScoring(
-    srt, features = features, method = "AUCell", backend = "cpp",
+    srt,
+    features = features, method = "AUCell", backend = "cpp",
     classification = FALSE, name = "auc_cpp_first",
     verbose = FALSE
   ))
@@ -266,12 +272,14 @@ test_that("CellScoring routes AUCell native ranking options through both backend
   features <- list(set_a = rownames(counts)[1:15], set_b = rownames(counts)[20:40])
   set.seed(17)
   r_out <- suppressWarnings(CellScoring(
-    srt, features = features, method = "AUCell", backend = "r", splitByBlocks = TRUE,
+    srt,
+    features = features, method = "AUCell", backend = "r", splitByBlocks = TRUE,
     aucMaxRank = 10L, classification = FALSE, name = "auc_r_native", verbose = FALSE
   ))
   set.seed(17)
   cpp_out <- suppressWarnings(CellScoring(
-    srt, features = features, method = "AUCell", backend = "cpp", splitByBlocks = TRUE,
+    srt,
+    features = features, method = "AUCell", backend = "cpp", splitByBlocks = TRUE,
     aucMaxRank = 10L, classification = FALSE, name = "auc_cpp_native", verbose = FALSE
   ))
   r_scores <- as.matrix(r_out@meta.data[, c("auc_r_native_set_a", "auc_r_native_set_b")])
@@ -311,11 +319,13 @@ test_that("RunMetabolism AUCell R and C++ backends agree end to end", {
   )
 
   r_out <- suppressWarnings(RunMetabolism(
-    srt, db = "KEGG", method = "AUCell", backend = "r", minGSSize = 10L,
+    srt,
+    db = "KEGG", method = "AUCell", backend = "r", minGSSize = 10L,
     use_preparedb = TRUE, new_assay = FALSE, verbose = FALSE
   ))
   cpp_out <- suppressWarnings(RunMetabolism(
-    srt, db = "KEGG", method = "AUCell", backend = "cpp", minGSSize = 10L,
+    srt,
+    db = "KEGG", method = "AUCell", backend = "cpp", minGSSize = 10L,
     use_preparedb = TRUE, new_assay = FALSE, verbose = FALSE
   ))
   r_scores <- r_out@tools$Metabolism_AUCell$scores

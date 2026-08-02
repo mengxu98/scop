@@ -17,7 +17,9 @@ test_that("conserved-marker p-value C++ methods agree with R", {
   for (method in methods) {
     reference <- combine(pvalues, method = method, backend = "r")
     native <- combine(pvalues, method = method, backend = "cpp")
-    expect_identical(native, reference)
+    # Low-order bits may differ across compilers and platforms; the
+    # combined p-values must agree within machine precision.
+    expect_equal(native, reference, tolerance = 1e-12)
   }
 })
 

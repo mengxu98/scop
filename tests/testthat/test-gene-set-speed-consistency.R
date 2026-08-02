@@ -120,11 +120,13 @@ test_that("CellScoring Seurat backends receive the same public seed", {
   )
 
   cpp <- CellScoring(
-    srt, features = feature_sets, method = "Seurat", backend = "cpp",
+    srt,
+    features = feature_sets, method = "Seurat", backend = "cpp",
     classification = FALSE, name = "audit", seed = 20260714, verbose = FALSE
   )
   r <- CellScoring(
-    srt, features = feature_sets, method = "Seurat", backend = "r",
+    srt,
+    features = feature_sets, method = "Seurat", backend = "r",
     classification = FALSE, name = "audit", seed = 20260714, verbose = FALSE
   )
   columns <- paste0("audit_", names(feature_sets))

@@ -40,7 +40,8 @@ test_that("raw and display coordinate transforms round trip", {
 test_that("RunSpatialNetwork uses deterministic slots and collision protection", {
   skip_if_not_installed("BiocNeighbors")
   counts <- matrix(
-    seq_len(12), nrow = 3,
+    seq_len(12),
+    nrow = 3,
     dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
   )
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
@@ -73,7 +74,8 @@ test_that("dedicated spatial result plots accept result-only input", {
 
 test_that("SpatialCoordinates returns ordered raw and display contracts", {
   counts <- matrix(
-    seq_len(12), nrow = 3,
+    seq_len(12),
+    nrow = 3,
     dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
   )
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
@@ -98,7 +100,8 @@ test_that("SpatialCoordinates returns ordered raw and display contracts", {
 
 test_that("analysis coordinates keep one payload contract across spaces", {
   counts <- matrix(
-    seq_len(12), nrow = 3,
+    seq_len(12),
+    nrow = 3,
     dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
   )
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
@@ -133,7 +136,8 @@ test_that("CytoSPACE resolves coordinates before assignment work", {
   expect_identical(rownames(raw), spot_ids)
 
   bad_counts <- matrix(
-    seq_len(12), nrow = 3,
+    seq_len(12),
+    nrow = 3,
     dimnames = list(paste0("gene", 1:3), paste0("bad", 1:4))
   )
   bad <- suppressWarnings(SeuratObject::CreateSeuratObject(bad_counts))
@@ -192,7 +196,8 @@ test_that("CytoSPACE composition estimation matches pairwise correlations", {
 
 test_that("SpatialCoordinates makes multi-image selection explicit", {
   counts <- matrix(
-    seq_len(12), nrow = 3,
+    seq_len(12),
+    nrow = 3,
     dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
   )
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
@@ -246,7 +251,8 @@ test_that("analysis and plotting never silently select the first spatial image",
 
 test_that("schema-v1 results support custom keys and legacy read-only views", {
   counts <- matrix(
-    seq_len(12), nrow = 3,
+    seq_len(12),
+    nrow = 3,
     dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
   )
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
@@ -280,7 +286,8 @@ test_that("schema-v1 results support custom keys and legacy read-only views", {
 test_that("GetSpatialGraph converts without synchronizing Seurat graphs", {
   skip_if_not_installed("BiocNeighbors")
   counts <- matrix(
-    seq_len(12), nrow = 3,
+    seq_len(12),
+    nrow = 3,
     dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
   )
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))

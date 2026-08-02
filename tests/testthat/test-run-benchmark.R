@@ -18,10 +18,8 @@ mock_benchmark_runs <- function(code) {
       list(status = "available", detail = "available", versions = c(mock = "1.0"))
     },
     benchmark_package_context = function() list(source_path = NULL, libpath = .libPaths()),
-    benchmark_run_isolated = function(
-      input_path, run_dir, adapter, params, seed, keep_object,
-      timeout, poll_interval, package_context
-    ) {
+    benchmark_run_isolated = function(input_path, run_dir, adapter, params, seed, keep_object,
+                                      timeout, poll_interval, package_context) {
       object <- readRDS(input_path)
       truth <- object$gold
       prediction <- switch(adapter$method,
@@ -33,10 +31,22 @@ mock_benchmark_runs <- function(code) {
       list(
         status = "success", error = "", prediction = prediction,
         object = if (keep_object) object else NULL,
-        runtime_s = switch(adapter$method, BayesSpace = 2, BANKSY = 1, SmoothClust = 4),
+        runtime_s = switch(adapter$method,
+          BayesSpace = 2,
+          BANKSY = 1,
+          SmoothClust = 4
+        ),
         baseline_memory_mb = 100,
-        peak_memory_mb = switch(adapter$method, BayesSpace = 250, BANKSY = 150, SmoothClust = 500),
-        memory_delta_mb = switch(adapter$method, BayesSpace = 150, BANKSY = 50, SmoothClust = 400),
+        peak_memory_mb = switch(adapter$method,
+          BayesSpace = 250,
+          BANKSY = 150,
+          SmoothClust = 500
+        ),
+        memory_delta_mb = switch(adapter$method,
+          BayesSpace = 150,
+          BANKSY = 50,
+          SmoothClust = 400
+        ),
         started_at = Sys.time(), finished_at = Sys.time(),
         parameters = params,
         cluster_colname = params$cluster_colname %||% adapter$cluster_colname,
@@ -166,10 +176,8 @@ test_that("install_missing enters the producer path instead of pretending unavai
       runtime_checks <<- runtime_checks + 1L
       invisible(TRUE)
     },
-    benchmark_run_isolated = function(
-      input_path, run_dir, adapter, params, seed, keep_object,
-      timeout, poll_interval, package_context
-    ) {
+    benchmark_run_isolated = function(input_path, run_dir, adapter, params, seed, keep_object,
+                                      timeout, poll_interval, package_context) {
       benchmark_failed_isolated_result(
         status = "failed", error = "producer installation failed",
         adapter = adapter, params = params, started_at = Sys.time(),
@@ -178,7 +186,8 @@ test_that("install_missing enters the producer path instead of pretending unavai
     }
   )
   result <- RunBenchmark(
-    object, "gold", methods = c("BayesSpace", "BANKSY"),
+    object, "gold",
+    methods = c("BayesSpace", "BANKSY"),
     install_missing = TRUE, verbose = FALSE
   )
   expect_identical(runtime_checks, 1L)
@@ -193,10 +202,8 @@ test_that("malformed predictions fail one method without aborting the batch", {
       list(status = "available", detail = "available", versions = character())
     },
     benchmark_package_context = function() list(source_path = NULL, libpath = .libPaths()),
-    benchmark_run_isolated = function(
-      input_path, run_dir, adapter, params, seed, keep_object,
-      timeout, poll_interval, package_context
-    ) {
+    benchmark_run_isolated = function(input_path, run_dir, adapter, params, seed, keep_object,
+                                      timeout, poll_interval, package_context) {
       object <- readRDS(input_path)
       prediction <- if (adapter$method == "BayesSpace") {
         unname(as.character(object$gold))
@@ -214,7 +221,8 @@ test_that("malformed predictions fail one method without aborting the batch", {
     }
   )
   result <- RunBenchmark(
-    object, "gold", methods = c("BayesSpace", "BANKSY"), verbose = FALSE
+    object, "gold",
+    methods = c("BayesSpace", "BANKSY"), verbose = FALSE
   )
   expect_identical(result$summary$status, c("failed", "success"))
   expect_match(result$summary$error[[1]], "Prediction validation failed")
@@ -299,7 +307,8 @@ test_that("benchmark execution never mutates the caller's Seurat object", {
   original <- object
   mock_benchmark_runs({
     invisible(RunBenchmark(
-      object, "gold", methods = c("BayesSpace", "BANKSY"), verbose = FALSE
+      object, "gold",
+      methods = c("BayesSpace", "BANKSY"), verbose = FALSE
     ))
   })
   expect_identical(object, original)
@@ -309,7 +318,8 @@ test_that("custom producer result keys are recorded truthfully", {
   object <- make_benchmark_seurat()
   mock_benchmark_runs({
     result <- RunBenchmark(
-      object, "gold", methods = "BANKSY",
+      object, "gold",
+      methods = "BANKSY",
       method_params = list(BANKSY = list(
         tool_name = "BANKSY_custom",
         cluster_colname = "BANKSY_custom_cluster"
@@ -358,10 +368,8 @@ test_that("failed and unavailable methods do not receive pseudo metrics", {
       }
     },
     benchmark_package_context = function() list(source_path = NULL, libpath = .libPaths()),
-    benchmark_run_isolated = function(
-      input_path, run_dir, adapter, params, seed, keep_object,
-      timeout, poll_interval, package_context
-    ) {
+    benchmark_run_isolated = function(input_path, run_dir, adapter, params, seed, keep_object,
+                                      timeout, poll_interval, package_context) {
       list(
         status = "failed", error = "backend error", prediction = NULL, object = NULL,
         runtime_s = NA_real_, baseline_memory_mb = 80, peak_memory_mb = 90,
@@ -373,7 +381,8 @@ test_that("failed and unavailable methods do not receive pseudo metrics", {
     }
   )
   result <- RunBenchmark(
-    object, "gold", methods = c("BayesSpace", "BANKSY"), verbose = FALSE
+    object, "gold",
+    methods = c("BayesSpace", "BANKSY"), verbose = FALSE
   )
   expect_identical(result$summary$status, c("failed", "unavailable"))
   expect_true(all(is.na(result$summary$ARI)))
@@ -388,10 +397,8 @@ test_that("timeout status remains method-local in a mixed batch", {
       list(status = "available", detail = "available", versions = character())
     },
     benchmark_package_context = function() list(source_path = NULL, libpath = .libPaths()),
-    benchmark_run_isolated = function(
-      input_path, run_dir, adapter, params, seed, keep_object,
-      timeout, poll_interval, package_context
-    ) {
+    benchmark_run_isolated = function(input_path, run_dir, adapter, params, seed, keep_object,
+                                      timeout, poll_interval, package_context) {
       if (adapter$method == "BayesSpace") {
         return(benchmark_failed_isolated_result(
           status = "timeout", error = "method exceeded timeout",
@@ -412,7 +419,8 @@ test_that("timeout status remains method-local in a mixed batch", {
     }
   )
   result <- RunBenchmark(
-    object, "gold", methods = c("BayesSpace", "BANKSY"), verbose = FALSE
+    object, "gold",
+    methods = c("BayesSpace", "BANKSY"), verbose = FALSE
   )
   expect_identical(result$summary$status, c("timeout", "success"))
   expect_true(is.na(result$summary$ARI[[1]]))

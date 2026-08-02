@@ -42,16 +42,11 @@ articles:
   - cell-annotation-workflow
   - trajectory-dynamic-workflow
   - differential-enrichment-workflow
-  - interactive-scexplorer-workflow
 - title: Spatial Analysis
   navbar: Spatial Analysis
   contents:
   - spatial-main-workflow
   - spatial-framework-bridges
-- title: Cell-cell communication
-  navbar: Cell-cell communication
-  contents:
-  - cell-cell-communication-workflow
 
 reference:
 - subtitle: "Single-cell and Spatial omics analysis pipeline"

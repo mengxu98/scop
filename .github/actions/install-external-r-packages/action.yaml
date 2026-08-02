@@ -1,5 +1,5 @@
 name: Install external R packages
-description: Install pinned CI or optional packages outside the locked project library.
+description: Install pinned CI or optional packages into a dedicated library outside the project dependencies.
 
 inputs:
   packages:
@@ -69,7 +69,7 @@ runs:
       uses: actions/cache@v5
       with:
         path: ${{ steps.metadata.outputs.library }}
-        key: ${{ inputs.cache-version }}-${{ runner.os }}-${{ runner.arch }}-r${{ steps.metadata.outputs.r-version }}-${{ hashFiles('renv.lock') }}-${{ steps.metadata.outputs.packages-hash }}
+        key: ${{ inputs.cache-version }}-${{ runner.os }}-${{ runner.arch }}-r${{ steps.metadata.outputs.r-version }}-${{ steps.metadata.outputs.packages-hash }}
 
     - name: Install external R packages 📦
       if: steps.cache.outputs.cache-hit != 'true'
@@ -86,6 +86,9 @@ runs:
           fixed = TRUE
         )[[1]])
         packages <- packages[nzchar(packages)]
+        if (!requireNamespace("renv", quietly = TRUE)) {
+          utils::install.packages("renv", quiet = TRUE)
+        }
         install_project <- file.path(
           Sys.getenv("RUNNER_TEMP"),
           "scop-external-install-project"
@@ -129,23 +132,20 @@ runs:
         linked <- package_dirs[nzchar(Sys.readlink(package_dirs))]
         if (length(linked)) {
           stop(
-            "External R packages must not link into the locked renv cache: ",
+            "External R packages must not link into the renv cache: ",
             paste(basename(linked), collapse = ", ")
           )
         }
 
-        existing <- Sys.getenv("RENV_CONFIG_EXTERNAL_LIBRARIES")
-        external <- unique(c(
+        existing <- Sys.getenv("R_LIBS_USER")
+        external <- paste(
           library,
-          if (nzchar(existing)) {
-            strsplit(existing, .Platform$path.sep, fixed = TRUE)[[1]]
-          } else {
-            character()
-          }
-        ))
+          existing,
+          sep = .Platform$path.sep
+        )
         cat(
-          "RENV_CONFIG_EXTERNAL_LIBRARIES=",
-          paste(external, collapse = .Platform$path.sep),
+          "R_LIBS_USER=",
+          external,
           "\n",
           sep = "",
           file = Sys.getenv("GITHUB_ENV"),

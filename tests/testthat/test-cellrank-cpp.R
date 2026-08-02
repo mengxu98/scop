@@ -40,7 +40,9 @@ make_knn_idx <- function(n_cells, n_neighbors = 5, seed = 42) {
 test_that("cellrank_validate_transition_matrix_cpp fixes NaN/Inf", {
   n <- 10
   T <- make_transition_matrix(n)
-  T[1, 2] <- NaN; T[3, 4] <- Inf; T[5, 6] <- -0.1
+  T[1, 2] <- NaN
+  T[3, 4] <- Inf
+  T[5, 6] <- -0.1
   T[7, ] <- 0
 
   out <- cellrank_validate_transition_matrix_cpp(T)
@@ -107,7 +109,9 @@ test_that("cellrank_auto_n_states_cpp returns valid range", {
 # ---------------------------------------------------------------------------
 
 test_that("cellrank_velocity_kernel_cpp produces valid transition matrix", {
-  n_cells <- 20; n_dims <- 2; n_neighbors <- 5
+  n_cells <- 20
+  n_dims <- 2
+  n_neighbors <- 5
   set.seed(1)
   vel_emb <- matrix(rnorm(n_cells * n_dims), n_cells, n_dims)
   embedding <- matrix(rnorm(n_cells * n_dims), n_cells, n_dims)
@@ -123,7 +127,8 @@ test_that("cellrank_velocity_kernel_cpp produces valid transition matrix", {
 })
 
 test_that("velocity kernel backward mode differs from forward", {
-  n_cells <- 15; n_dims <- 2
+  n_cells <- 15
+  n_dims <- 2
   set.seed(2)
   # Create directed velocity field: cells on left point right
   embedding <- matrix(c(rep(1, 8), rep(4, 7), rep(0, 8), rep(0, 7)), ncol = 2)
@@ -139,8 +144,9 @@ test_that("velocity kernel backward mode differs from forward", {
 })
 
 test_that("velocity kernel handles zero-velocity cells", {
-  n_cells <- 10; n_dims <- 2
-  vel_emb <- matrix(0, n_cells, n_dims)  # all zero velocity
+  n_cells <- 10
+  n_dims <- 2
+  vel_emb <- matrix(0, n_cells, n_dims) # all zero velocity
   set.seed(3)
   embedding <- matrix(rnorm(n_cells * n_dims), n_cells, n_dims)
   knn_idx <- make_knn_idx(n_cells, 3, seed = 3)
@@ -206,7 +212,8 @@ test_that("pseudotime kernel forward mode transitions toward later pseudotime", 
   knn_idx <- make_knn_idx(n_cells, 3, seed = 7)
 
   T <- cellrank_pseudotime_kernel_cpp(
-    pseudotime, knn_idx, cell_weights = rep(1, n_cells), backward = FALSE
+    pseudotime, knn_idx,
+    cell_weights = rep(1, n_cells), backward = FALSE
   )
   # Early cell should have non-zero transitions
   expect_true(sum(T[1, ]) > 0)
@@ -303,7 +310,8 @@ test_that("GPCCA absorption probabilities between 0 and 1", {
 # ---------------------------------------------------------------------------
 
 test_that("cellrank_lineage_drivers_cpp computes correlations", {
-  n_genes <- 20; n_cells <- 30
+  n_genes <- 20
+  n_cells <- 30
   set.seed(9)
   expression <- matrix(rgamma(n_genes * n_cells, shape = 2, rate = 1), nrow = n_genes)
   abs_probs <- matrix(runif(n_cells * 2), nrow = n_cells)
@@ -316,7 +324,8 @@ test_that("cellrank_lineage_drivers_cpp computes correlations", {
 })
 
 test_that("lineage drivers with specific lineage indices", {
-  n_genes <- 10; n_cells <- 20
+  n_genes <- 10
+  n_cells <- 20
   set.seed(10)
   expression <- matrix(rgamma(n_genes * n_cells, shape = 2), nrow = n_genes)
   abs_probs <- matrix(runif(n_cells * 3), nrow = n_cells)
@@ -340,7 +349,8 @@ test_that("CFLARE is deterministic", {
 })
 
 test_that("velocity kernel is deterministic", {
-  n_cells <- 20; n_dims <- 2
+  n_cells <- 20
+  n_dims <- 2
   set.seed(12)
   vel_emb <- matrix(rnorm(n_cells * n_dims), n_cells, n_dims)
   embedding <- matrix(rnorm(n_cells * n_dims), n_cells, n_dims)

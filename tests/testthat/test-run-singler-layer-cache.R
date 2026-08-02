@@ -40,8 +40,10 @@ test_that("RunSingleR reuses checked logcounts when constructing SCE inputs", {
       list(
         labels = c("A", "B", "A"),
         pruned.labels = c("A", "B", "A"),
-        scores = matrix(c(0.9, 0.1, 0.2, 0.8, 0.7, 0.3), nrow = 3,
-          dimnames = list(NULL, c("A", "B")))
+        scores = matrix(c(0.9, 0.1, 0.2, 0.8, 0.7, 0.3),
+          nrow = 3,
+          dimnames = list(NULL, c("A", "B"))
+        )
       )
     },
     .package = "SingleR"

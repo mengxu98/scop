@@ -578,6 +578,10 @@ test_that("Cell2fate refuses a non-empty unowned result directory", {
 })
 
 test_that("Cell2fate rejects symbolic links in managed result paths", {
+  # file.symlink() creates junctions on Windows, which Sys.readlink()
+  # does not report, so the POSIX symlink scenario cannot be simulated.
+  skip_on_os("windows")
+
   result_dir <- tempfile("cell2fate symlink ")
   outside <- tempfile("cell2fate outside ")
   dir.create(result_dir)
@@ -713,7 +717,7 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
       "        Path(temporary), 'owner-token'",
       "    )",
       "    assert not stale_stage.exists()",
-      "    if hasattr(os, 'symlink'):",
+      "    if hasattr(os, 'symlink') and os.name == 'posix':",
       "        outside_stage = Path(temporary) / 'outside-stage'",
       "        outside_stage.mkdir()",
       "        outside_marker = outside_stage / 'keep'",
@@ -750,13 +754,17 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
       "    old_marker.unlink()",
       "    paths['model'].rmdir()",
       "    external_lock.unlink()",
-      "    concurrent_json = Path(temporary) / 'concurrent.json'",
-      "    with ThreadPoolExecutor(max_workers=8) as executor:",
-      "        list(executor.map(",
-      "            lambda value: module['_write_json']({'value': value}, concurrent_json),",
-      "            range(40),",
-      "        ))",
-      "    assert isinstance(json.loads(concurrent_json.read_text()), dict)",
+      "    if os.name == 'posix':",
+      "        # os.replace() of the same target from multiple threads is",
+      "        # atomic on POSIX but can fail with PermissionError when the",
+      "        # target is transiently open on Windows.",
+      "        concurrent_json = Path(temporary) / 'concurrent.json'",
+      "        with ThreadPoolExecutor(max_workers=8) as executor:",
+      "            list(executor.map(",
+      "                lambda value: module['_write_json']({'value': value}, concurrent_json),",
+      "                range(40),",
+      "            ))",
+      "        assert isinstance(json.loads(concurrent_json.read_text()), dict)",
       "    paths['model'].mkdir(parents=True)",
       "    paths['inputs'].mkdir(parents=True)",
       "    paths['posterior'].mkdir(parents=True)",
@@ -809,7 +817,7 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
       "    assert module['_can_resume'](",
       "        paths, 'fingerprint', {'flag': 0}, require_velocity=False",
       "    ) is False",
-      "    if hasattr(os, 'symlink'):",
+      "    if hasattr(os, 'symlink') and os.name == 'posix':",
       "        outside = Path(temporary) / 'outside'",
       "        outside.mkdir()",
       "        try:",

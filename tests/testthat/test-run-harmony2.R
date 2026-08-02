@@ -10,7 +10,8 @@ test_that("RunHarmony2 writes matrix-level component standard deviations", {
   srt <- Seurat::CreateSeuratObject(counts)
   srt$batch <- c("A", "A", "B", "B")
   pca_embeddings <- matrix(
-    seq_len(8), ncol = 2,
+    seq_len(8),
+    ncol = 2,
     dimnames = list(colnames(srt), c("PC_1", "PC_2"))
   )
   srt[["pca"]] <- SeuratObject::CreateDimReducObject(
@@ -29,10 +30,12 @@ test_that("RunHarmony2 writes matrix-level component standard deviations", {
     get_namespace_fun = function(package, name) {
       expect_identical(package, "harmony")
       expect_identical(name, "RunHarmony")
-      function(...) list(
-        Z_corr = corrected,
-        R = matrix(1, nrow = 1, ncol = ncol(srt))
-      )
+      function(...) {
+        list(
+          Z_corr = corrected,
+          R = matrix(1, nrow = 1, ncol = ncol(srt))
+        )
+      }
     },
     .package = "scop"
   )

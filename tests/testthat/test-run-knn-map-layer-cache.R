@@ -13,7 +13,8 @@ test_that("RunKNNMap reuses checked data layers for feature projection", {
   SeuratObject::VariableFeatures(reference) <- rownames(reference)
   umap <- SeuratObject::CreateDimReducObject(
     embeddings = matrix(
-      seq_len(6), ncol = 2,
+      seq_len(6),
+      ncol = 2,
       dimnames = list(colnames(reference), c("UMAP_1", "UMAP_2"))
     ),
     assay = "RNA",
@@ -26,11 +27,13 @@ test_that("RunKNNMap reuses checked data layers for feature projection", {
   reference[["umap"]] <- umap
 
   query_data <- matrix(
-    seq_len(12), nrow = 4,
+    seq_len(12),
+    nrow = 4,
     dimnames = list(rownames(query), colnames(query))
   )
   ref_data <- matrix(
-    seq_len(12) + 20, nrow = 4,
+    seq_len(12) + 20,
+    nrow = 4,
     dimnames = list(rownames(reference), colnames(reference))
   )
   calls <- character()

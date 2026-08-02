@@ -266,8 +266,7 @@ CellScoring <- function(
         stats::complete.cases(term2gene_tmp)
       term2gene_tmp <- term2gene_tmp[keep_term_gene, , drop = FALSE]
       term2name_tmp <- term2name_tmp[
-        term2name_tmp[, "Term"] %in% term2gene_tmp[, "Term"],
-        ,
+        term2name_tmp[, "Term"] %in% term2gene_tmp[, "Term"], ,
         drop = FALSE
       ]
 
@@ -488,7 +487,8 @@ CellScoring <- function(
         norm_auc <- dots[["normAUC"]] %||% TRUE
         if (identical(backend, "cpp")) {
           auc_scores <- run_aucell_scores_from_official_rankings(
-            rankings, features, auc_max_rank = auc_max_rank, norm_auc = norm_auc
+            rankings, features,
+            auc_max_rank = auc_max_rank, norm_auc = norm_auc
           )
         } else {
           calc_args <- dots[intersect(names(dots), c("nCores", "normAUC", "aucMaxRank"))]

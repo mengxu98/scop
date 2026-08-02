@@ -102,8 +102,7 @@ filter_grn_adjacency_file <- function(
     )
   }
   adjacency <- adjacency[
-    adjacency[["target"]] %in% targets,
-    ,
+    adjacency[["target"]] %in% targets, ,
     drop = FALSE
   ]
   dir.create(dirname(output_file), recursive = TRUE, showWarnings = FALSE)
@@ -140,16 +139,14 @@ grn_python_packages <- function(module = c("grnboost2", "regdiffusion")) {
 cap_grn_edges_per_target <- function(adjacency, max_edges_per_target = Inf) {
   max_edges_per_target <- suppressWarnings(as.numeric(max_edges_per_target))
   adjacency <- adjacency[
-    is.finite(adjacency[["importance"]]) & adjacency[["importance"]] > 0,
-    ,
+    is.finite(adjacency[["importance"]]) & adjacency[["importance"]] > 0, ,
     drop = FALSE
   ]
   if (nrow(adjacency) == 0L) {
     return(adjacency)
   }
   adjacency <- adjacency[
-    order(adjacency[["target"]], -adjacency[["importance"]], adjacency[["TF"]]),
-    ,
+    order(adjacency[["target"]], -adjacency[["importance"]], adjacency[["TF"]]), ,
     drop = FALSE
   ]
   if (
@@ -168,8 +165,7 @@ cap_grn_edges_per_target <- function(adjacency, max_edges_per_target = Inf) {
   }
   rownames(adjacency) <- NULL
   adjacency[
-    order(-adjacency[["importance"]], adjacency[["TF"]], adjacency[["target"]]),
-    ,
+    order(-adjacency[["importance"]], adjacency[["TF"]], adjacency[["target"]]), ,
     drop = FALSE
   ]
 }
@@ -229,8 +225,7 @@ fill_grnboost_edges <- function(
     stringsAsFactors = FALSE
   )
   filled <- filled[
-    filled[["TF"]] != filled[["target"]] & filled[["importance"]] > 0,
-    ,
+    filled[["TF"]] != filled[["target"]] & filled[["importance"]] > 0, ,
     drop = FALSE
   ]
   if (nrow(filled) == 0L) {
@@ -488,8 +483,7 @@ grnboost <- function(
     )
   }
   adjacency <- adjacency[
-    order(-adjacency[["importance"]], adjacency[["TF"]], adjacency[["target"]]),
-    ,
+    order(-adjacency[["importance"]], adjacency[["TF"]], adjacency[["target"]]), ,
     drop = FALSE
   ]
   write_grn_adjacency(

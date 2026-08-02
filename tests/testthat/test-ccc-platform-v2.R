@@ -153,7 +153,9 @@ test_that("LIANA consensus failure does not mutate the Seurat object", {
   testthat::local_mocked_bindings(
     liana_check_r = function(...) invisible(TRUE),
     liana_get_fun = function(fun, package = "liana") {
-      if (identical(package, "SingleCellExperiment")) return(function(...) list(...))
+      if (identical(package, "SingleCellExperiment")) {
+        return(function(...) list(...))
+      }
       switch(fun,
         show_resources = function() c("Consensus", "MouseConsensus"),
         liana_wrap = function(...) raw,
@@ -166,7 +168,8 @@ test_that("LIANA consensus failure does not mutate the Seurat object", {
 
   expect_error(
     scop::RunLIANA(
-      srt, group.by = "celltype", method = c("natmi", "sca"),
+      srt,
+      group.by = "celltype", method = c("natmi", "sca"),
       backend = "r", verbose = FALSE
     ),
     "aggregate failed"
@@ -403,14 +406,16 @@ test_that("RunCCC preflights extended method requirements", {
 
   expect_error(
     scop::RunCCC(
-      srt, group.by = "celltype", methods = "Nichenetr",
+      srt,
+      group.by = "celltype", methods = "Nichenetr",
       method_params = list(), verbose = FALSE
     ),
     "receiver"
   )
   expect_error(
     scop::RunCCC(
-      srt, group.by = "celltype", methods = "Nichenetr",
+      srt,
+      group.by = "celltype", methods = "Nichenetr",
       method_params = list(Nichenetr = list(receiver = "B")),
       verbose = FALSE
     ),
@@ -418,7 +423,8 @@ test_that("RunCCC preflights extended method requirements", {
   )
   expect_error(
     scop::RunCCC(
-      srt, group.by = "celltype", methods = "MultiNichenetr",
+      srt,
+      group.by = "celltype", methods = "MultiNichenetr",
       method_params = list(MultiNichenetr = list(sample.by = "sample")),
       verbose = FALSE
     ),
@@ -426,14 +432,16 @@ test_that("RunCCC preflights extended method requirements", {
   )
   expect_error(
     scop::RunCCC(
-      srt, group.by = "celltype", methods = "SpatialCellChat",
+      srt,
+      group.by = "celltype", methods = "SpatialCellChat",
       method_params = list(), verbose = FALSE
     ),
     "spatial image"
   )
   expect_error(
     scop::RunCCC(
-      srt, group.by = "celltype", methods = "MDIC3",
+      srt,
+      group.by = "celltype", methods = "MDIC3",
       method_params = list(), verbose = FALSE
     ),
     "grn.*grn_method"
@@ -460,7 +468,8 @@ test_that("RunCCC skip_failed records preflight failures and continues", {
     .package = "scop"
   )
   out <- suppressWarnings(scop::RunCCC(
-    srt, group.by = "celltype", methods = c("CellChat", "Nichenetr"),
+    srt,
+    group.by = "celltype", methods = c("CellChat", "Nichenetr"),
     skip_failed = TRUE, backend = "r", verbose = FALSE
   ))
   expect_equal(out@tools$RunCCC$status$status, c("completed", "failed"))
@@ -693,7 +702,8 @@ test_that("LIANA result accessor preserves official consensus ranks", {
 
   expect_equal(
     scop::GetCCCResult(
-      srt, "LIANA", type = "consensus", resource = "Consensus"
+      srt, "LIANA",
+      type = "consensus", resource = "Consensus"
     )$magnitude_rank,
     0.05
   )
@@ -720,7 +730,8 @@ test_that("native access never substitutes a raw result", {
     "not available"
   )
   expect_true(scop::GetCCCResult(
-    srt, "CellphoneDB", type = "raw"
+    srt, "CellphoneDB",
+    type = "raw"
   )$not_native)
 
   srt@tools$MDIC3 <- list(

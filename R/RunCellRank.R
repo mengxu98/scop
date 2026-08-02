@@ -489,8 +489,11 @@ RunCellRank <- function(
       backend = "python",
       estimator = estimator_type,
       kernel = kernel_type,
-      n_macrostates = if (!is.null(srt_out@meta.data[["cellrank_macrostate"]]))
-        length(unique(srt_out@meta.data[["cellrank_macrostate"]])) else 0L,
+      n_macrostates = if (!is.null(srt_out@meta.data[["cellrank_macrostate"]])) {
+        length(unique(srt_out@meta.data[["cellrank_macrostate"]]))
+      } else {
+        0L
+      },
       absorption_probabilities = ap,
       parameters = list(
         kernel_type = kernel_type,
@@ -546,10 +549,16 @@ run_cellrank_cpp <- function(
   if (!isTRUE(return_seurat)) {
     log_message("{.arg backend = 'cpp'} returns a {.cls Seurat} object only", message_type = "error")
   }
-  if (is.null(linear_reduction)) linear_reduction <- DefaultReduction(srt)
-  else linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
-  if (is.null(nonlinear_reduction)) nonlinear_reduction <- DefaultReduction(srt)
-  else nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
+  if (is.null(linear_reduction)) {
+    linear_reduction <- DefaultReduction(srt)
+  } else {
+    linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
+  }
+  if (is.null(nonlinear_reduction)) {
+    nonlinear_reduction <- DefaultReduction(srt)
+  } else {
+    nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
+  }
   cells <- colnames(srt)
   nonlinear_embedding <- as.matrix(srt@reductions[[nonlinear_reduction]]@cell.embeddings[cells, , drop = FALSE])
   storage.mode(nonlinear_embedding) <- "double"
@@ -572,13 +581,15 @@ run_cellrank_cpp <- function(
       "Running {.fn RunSCVELO} cpp backend before {.fn RunCellRank}",
       verbose = verbose
     )
-    srt <- run_scvelo_cpp(srt = srt, assay_y = assay_y, layer_y = layer_y, group.by = group.by,
+    srt <- run_scvelo_cpp(
+      srt = srt, assay_y = assay_y, layer_y = layer_y, group.by = group.by,
       linear_reduction = linear_reduction, nonlinear_reduction = nonlinear_reduction,
       n_pcs = n_pcs, n_neighbors = n_neighbors, mode = mode,
       filter_genes = TRUE, normalize_per_cell = TRUE, log_transform = TRUE,
       compute_terminal_states = FALSE, compute_pseudotime = FALSE,
       compute_velocity_confidence = FALSE,
-      cores = cores, return_seurat = TRUE, verbose = verbose)
+      cores = cores, return_seurat = TRUE, verbose = verbose
+    )
   } else if (isTRUE(needs_velocity)) {
     log_message(
       "Reusing existing {.field {velocity_reduction}} reduction for {.fn RunCellRank}",
@@ -597,7 +608,9 @@ run_cellrank_cpp <- function(
     storage.mode(ve) <- "double"
   }
   le <- as.matrix(srt@reductions[[linear_reduction]]@cell.embeddings[
-    cells, seq_len(min(n_pcs, ncol(srt@reductions[[linear_reduction]]@cell.embeddings))), drop = FALSE])
+    cells, seq_len(min(n_pcs, ncol(srt@reductions[[linear_reduction]]@cell.embeddings))),
+    drop = FALSE
+  ])
   storage.mode(le) <- "double"
   knn_k <- max(1L, min(as.integer(n_neighbors) - 1L, n_cells - 1L))
   knn <- run_biocneighbors_knn(
@@ -691,15 +704,24 @@ run_cellrank_cpp <- function(
     T_mat <- matrix(0, n_cells, n_cells)
     for (i in seq_len(n_cells)) {
       vn <- sqrt(sum(ve[i, ]^2))
-      if (vn < 1e-10) { T_mat[i, i] <- 1.0; next }
+      if (vn < 1e-10) {
+        T_mat[i, i] <- 1.0
+        next
+      }
       wsum <- 0
       for (k in seq_len(knn_k)) {
-        nb <- knn[["idx"]][i, k]; if (is.na(nb)) next; nb <- as.integer(nb)
+        nb <- knn[["idx"]][i, k]
+        if (is.na(nb)) next
+        nb <- as.integer(nb)
         if (nb < 1 || nb > n_cells || nb == i) next
         delta <- nonlinear_embedding[nb, ] - nonlinear_embedding[i, ]
-        dn <- sqrt(sum(delta^2)); if (dn < 1e-10) next
+        dn <- sqrt(sum(delta^2))
+        if (dn < 1e-10) next
         cosine <- sum(ve[i, ] * delta) / (vn * dn)
-        if (cosine > 0) { T_mat[i, nb] <- exp(cosine * softmax_scale); wsum <- wsum + T_mat[i, nb] }
+        if (cosine > 0) {
+          T_mat[i, nb] <- exp(cosine * softmax_scale)
+          wsum <- wsum + T_mat[i, nb]
+        }
       }
       if (wsum > 0) T_mat[i, ] <- T_mat[i, ] / wsum else T_mat[i, i] <- 1.0
     }
@@ -858,6 +880,7 @@ run_cellrank_cpp <- function(
     )
   ))
   log_message("{.pkg CellRank} cpp backend ({.val {estimator_type}} + {.val {kernel_used}} kernel) completed",
-    message_type = "success", verbose = verbose)
+    message_type = "success", verbose = verbose
+  )
   srt
 }

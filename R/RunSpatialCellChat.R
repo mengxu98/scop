@@ -48,14 +48,20 @@ spatialcellchat_remote_info <- function() {
   list(
     package_version = if (is.null(desc)) NA_character_ else as.character(desc$Version %||% NA_character_),
     remote_sha = if (is.null(desc)) NA_character_ else as.character(desc$RemoteSha %||% NA_character_),
-    remote_repo = if (is.null(desc)) .spatialcellchat_repository else as.character(
-      desc$RemoteRepo %||% .spatialcellchat_repository
-    )
+    remote_repo = if (is.null(desc)) {
+      .spatialcellchat_repository
+    } else {
+      as.character(
+        desc$RemoteRepo %||% .spatialcellchat_repository
+      )
+    }
   )
 }
 
 spatialcellchat_validate_scalar <- function(x, name, positive = FALSE, allow_null = FALSE) {
-  if (is.null(x) && isTRUE(allow_null)) return(invisible(TRUE))
+  if (is.null(x) && isTRUE(allow_null)) {
+    return(invisible(TRUE))
+  }
   value <- suppressWarnings(as.numeric(x))
   ok <- length(value) == 1L && is.finite(value)
   if (isTRUE(positive)) ok <- ok && value > 0
@@ -142,7 +148,9 @@ spatialcellchat_detect_technology <- function(srt, technology, image = NULL) {
     technology,
     c("auto", "visium", "visium_hd", "xenium", "cosmx", "merfish", "generic")
   )
-  if (!identical(technology, "auto")) return(technology)
+  if (!identical(technology, "auto")) {
+    return(technology)
+  }
 
   evidence <- character()
   if (!is.null(image) && image %in% tryCatch(SeuratObject::Images(srt), error = function(e) character())) {
@@ -187,12 +195,18 @@ spatialcellchat_has_segmentation <- function(srt, image = NULL) {
 
 spatialcellchat_detect_level <- function(srt, analysis.level, technology, composition, image = NULL) {
   analysis.level <- match.arg(analysis.level, c("auto", "cell", "spot", "composition"))
-  if (!identical(analysis.level, "auto")) return(analysis.level)
-  if (!is.null(composition)) return("composition")
+  if (!identical(analysis.level, "auto")) {
+    return(analysis.level)
+  }
+  if (!is.null(composition)) {
+    return("composition")
+  }
   if (spatialcellchat_has_segmentation(srt, image = image) || technology %in% c("xenium", "cosmx", "merfish")) {
     return("cell")
   }
-  if (technology %in% c("visium", "visium_hd")) return("spot")
+  if (technology %in% c("visium", "visium_hd")) {
+    return("spot")
+  }
   log_message(
     "Cannot determine {.arg analysis.level}; choose {.val cell}, {.val spot}, or {.val composition}",
     message_type = "error"
@@ -201,7 +215,9 @@ spatialcellchat_detect_level <- function(srt, analysis.level, technology, compos
 
 spatialcellchat_image_map <- function(srt, sample_names, image = NULL) {
   images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
-  if (length(images) == 0L) return(stats::setNames(rep(list(NULL), length(sample_names)), sample_names))
+  if (length(images) == 0L) {
+    return(stats::setNames(rep(list(NULL), length(sample_names)), sample_names))
+  }
   if (is.null(image)) {
     if (length(images) > 1L) {
       log_message(
@@ -265,7 +281,9 @@ spatialcellchat_visium_spot_diameter <- function(srt, image) {
   )
   values <- suppressWarnings(as.numeric(unlist(candidates, use.names = FALSE)))
   values <- unique(values[is.finite(values) & values > 0])
-  if (length(values) != 1L) return(NULL)
+  if (length(values) != 1L) {
+    return(NULL)
+  }
   values[[1L]]
 }
 
@@ -500,12 +518,10 @@ spatialcellchat_call <- function(symbol, args, analysis.level) {
     }
   }
   if (is.function(original_sparse_fun) && is.function(sparse3d_fun)) {
-    compatibility_env[["my_as_sparse3Darray"]] <- function(
-      x,
-      ...,
-      strict = FALSE,
-      nonzero = FALSE
-    ) {
+    compatibility_env[["my_as_sparse3Darray"]] <- function(x,
+                                                           ...,
+                                                           strict = FALSE,
+                                                           nonzero = FALSE) {
       is_sparse_list <- is.list(x) && length(x) > 0L &&
         all(vapply(x, inherits, logical(1), what = "sparseMatrix"))
       if (!is_sparse_list) {
@@ -688,7 +704,9 @@ spatialcellchat_extract_table <- function(chat, sample, analysis.level, do.permu
 spatialcellchat_extract_pathways <- function(table) {
   valid <- !is.na(table$pathway_name) & nzchar(as.character(table$pathway_name))
   table <- table[valid, , drop = FALSE]
-  if (nrow(table) == 0L) return(data.frame())
+  if (nrow(table) == 0L) {
+    return(data.frame())
+  }
   stats::aggregate(
     table$score,
     by = list(
@@ -704,7 +722,9 @@ spatialcellchat_extract_pathways <- function(table) {
 }
 
 spatialcellchat_extract_network <- function(table) {
-  if (nrow(table) == 0L) return(data.frame())
+  if (nrow(table) == 0L) {
+    return(data.frame())
+  }
   score <- stats::aggregate(
     table$score,
     by = list(sender = table$sender, receiver = table$receiver, sample = table$sample),
@@ -742,13 +762,16 @@ spatialcellchat_run_one <- function(
 ) {
   seed_was_present <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
   if (seed_was_present) old_seed <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  on.exit({
-    if (seed_was_present) {
-      assign(".Random.seed", old_seed, envir = .GlobalEnv)
-    } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-      rm(".Random.seed", envir = .GlobalEnv)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (seed_was_present) {
+        assign(".Random.seed", old_seed, envir = .GlobalEnv)
+      } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+        rm(".Random.seed", envir = .GlobalEnv)
+      }
+    },
+    add = TRUE
+  )
   set.seed(as.integer(seed.use))
   chat <- spatialcellchat_call("createSpatialCellChat", list(
     object = expression,

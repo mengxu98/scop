@@ -742,7 +742,9 @@ cell2location_validate_assay <- function(srt, assay, arg) {
 }
 
 cell2location_validate_columns <- function(srt, columns, arg) {
-  if (is.null(columns) || length(columns) == 0L) return(invisible(TRUE))
+  if (is.null(columns) || length(columns) == 0L) {
+    return(invisible(TRUE))
+  }
   if (!is.character(columns) || any(!columns %in% colnames(srt@meta.data))) {
     log_message("{.arg {arg}} contains missing Seurat metadata columns", message_type = "error")
   }

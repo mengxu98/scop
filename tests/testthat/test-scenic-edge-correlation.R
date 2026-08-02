@@ -49,7 +49,9 @@ test_that("SCENICPlus edge correlation matches the legacy pair matrix", {
     rho <- vapply(seq_len(nrow(adjacency)), function(i) {
       tf <- adjacency[["TF"]][[i]]
       target <- adjacency[["target"]][[i]]
-      if (!tf %in% rownames(corr) || !target %in% colnames(corr)) return(NA_real_)
+      if (!tf %in% rownames(corr) || !target %in% colnames(corr)) {
+        return(NA_real_)
+      }
       as.numeric(corr[tf, target])
     }, numeric(1))
     rho
