@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -112,7 +112,7 @@ integration.</p>
 <span><span class="co"><span style="color: #0000BB;">#&gt;                                   /_/</span></span></span>
 <span><span class="co"><span style="color: #0000BB;">#&gt;       </span><span style="color: #BBBB00;">⬢</span><span style="color: #0000BB;">               </span><span style="color: #00BB00;">.</span><span style="color: #0000BB;">      </span><span style="color: #BBBBBB;">⬡</span><span style="color: #0000BB;">        </span><span style="color: #BB00BB;">.</span><span style="color: #0000BB;">          </span><span style="color: #00BBBB;">⬢</span></span></span>
 <span><span class="co">#&gt; <span style="color: #555555;">------------------------------------------------------------</span></span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">Version: 0.8.9 (2026-07-20 update)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">Version: 0.9.0 (2026-08-02 update)</span></span></span>
 <span><span class="co">#&gt; <span style="color: #0000BB;">Website: </span><span style="color: #0000BB; font-style: italic;">https://mengxu98.github.io/scop/</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #555555;">Python environment initialization is disabled</span></span></span>
@@ -143,7 +143,7 @@ you a baseline for deciding whether integration removes technical
 structure without erasing cell-type structure.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">panc8_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:15] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:02] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">panc8_sub</span>,</span>
@@ -164,35 +164,35 @@ Seurat object with a batch column.</p>
 <span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
 <span>  integration_methods <span class="op">=</span> <span class="st">"Harmony"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-08-02 13:04:20] <span style="color: #0000BB;">Run integration workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:21] Split `srt_merge` into `srt_list` by <span style="color: #0000BB;">"tech"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:22] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:23] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:23] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:23] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:23] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:24] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:24] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:24] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:24] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:24] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:24] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:24] Use the separate HVF from `srt_list`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:25] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:25] Finished check</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:25] Perform `Seurat::ScaleData()`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:25] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:04:26] Some PCA features are absent from scale.data and will be dropped: <span style="color: #0000BB;">"G0S2"</span>, <span style="color: #0000BB;">"MRC2"</span>, <span style="color: #0000BB;">"COL18A1"</span>, <span style="color: #0000BB;">"COL5A3"</span>, <span style="color: #0000BB;">"NOTCH3"</span>, <span style="color: #0000BB;">"CRLF1"</span>, <span style="color: #0000BB;">"PTGR1"</span>, <span style="color: #0000BB;">"IL11"</span>, <span style="color: #0000BB;">"NREP"</span>, <span style="color: #0000BB;">"PDLIM3"</span>, <span style="color: #0000BB;">"ENG"</span>, <span style="color: #0000BB;">"AQP3"</span>, <span style="color: #0000BB;">"SEMA7A"</span>, <span style="color: #0000BB;">"LIF"</span>, <span style="color: #0000BB;">"SNAI2"</span>, <span style="color: #0000BB;">"TFPI2"</span>, <span style="color: #0000BB;">"PECAM1"</span>, <span style="color: #0000BB;">"H19"</span>, …, <span style="color: #0000BB;">"CASP6"</span>, and <span style="color: #0000BB;">"TMC6"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:26] Perform <span style="color: #0000BB;">Harmony</span> integration</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:26] Using <span style="color: #0000BB;">"Harmonypca"</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>) as input</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:26] Adjust neighbor k from <span style="color: #0000BB;">20</span> to <span style="color: #0000BB;">20</span> for small-sample clustering</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:26] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">"louvain"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:26] Reorder clusters...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:26] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:26] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:29] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:32] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmonypca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:04:35] <span style="color: #0000BB;">Harmony</span> integration completed</span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-08-02 13:49:07] <span style="color: #0000BB;">Run integration workflow...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:09] Split `srt_merge` into `srt_list` by <span style="color: #0000BB;">"tech"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:10] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:10] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:10] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:11] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:11] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:11] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:11] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:11] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:11] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:11] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:11] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:11] Use the separate HVF from `srt_list`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:12] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:12] Finished check</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:12] Perform `Seurat::ScaleData()`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:13] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>)</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:49:13] Some PCA features are absent from scale.data and will be dropped: <span style="color: #0000BB;">"G0S2"</span>, <span style="color: #0000BB;">"MRC2"</span>, <span style="color: #0000BB;">"COL18A1"</span>, <span style="color: #0000BB;">"COL5A3"</span>, <span style="color: #0000BB;">"NOTCH3"</span>, <span style="color: #0000BB;">"CRLF1"</span>, <span style="color: #0000BB;">"PTGR1"</span>, <span style="color: #0000BB;">"IL11"</span>, <span style="color: #0000BB;">"NREP"</span>, <span style="color: #0000BB;">"PDLIM3"</span>, <span style="color: #0000BB;">"ENG"</span>, <span style="color: #0000BB;">"AQP3"</span>, <span style="color: #0000BB;">"SEMA7A"</span>, <span style="color: #0000BB;">"LIF"</span>, <span style="color: #0000BB;">"SNAI2"</span>, <span style="color: #0000BB;">"TFPI2"</span>, <span style="color: #0000BB;">"PECAM1"</span>, <span style="color: #0000BB;">"H19"</span>, …, <span style="color: #0000BB;">"CASP6"</span>, and <span style="color: #0000BB;">"TMC6"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:13] Perform <span style="color: #0000BB;">Harmony</span> integration</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:13] Using <span style="color: #0000BB;">"Harmonypca"</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>) as input</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:13] Adjust neighbor k from <span style="color: #0000BB;">20</span> to <span style="color: #0000BB;">20</span> for small-sample clustering</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:14] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">"louvain"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:14] Reorder clusters...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:14] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:14] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:17] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:20] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmonypca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span>)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:49:23] <span style="color: #0000BB;">Harmony</span> integration completed</span></span>
 <span></span>
 <span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Reductions</a></span><span class="op">(</span><span class="va">panc8_harmony</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Standardpca"       "StandardpcaUMAP2D" "StandardUMAP2D"   </span></span>
@@ -241,23 +241,23 @@ in reports when showing that integration changed the object.</li>
 <span>  integration_methods <span class="op">=</span> <span class="st">"Uncorrected"</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:37] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:37] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:37] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:38] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:38] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:38] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:38] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:38] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:38] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:38] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:38] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:38] Use the separate HVF from `srt_list`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:39] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:39] Finished check</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:39] Perform <span style="color: #0000BB;">Uncorrected</span> integration</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:40] Reorder clusters...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:04:40] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:25] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:26] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:26] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:26] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:26] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:26] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:26] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:26] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:26] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:27] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:27] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:27] Use the separate HVF from `srt_list`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:28] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:28] Finished check</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:28] Perform <span style="color: #0000BB;">Uncorrected</span> integration</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:28] Reorder clusters...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:49:28] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span></code></pre></div>
 <p>Other methods follow the same entry-point pattern, but may require
 additional runtime dependencies or matrix backends:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -303,7 +303,7 @@ labels, marker genes, and whether rare cell types remain separated.</p>
 <span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"INS"</span>, <span class="st">"GCG"</span>, <span class="st">"SST"</span>, <span class="st">"KRT19"</span><span class="op">)</span>,</span>
 <span>  reduction <span class="op">=</span> <span class="st">"HarmonyUMAP"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:04:49] <span style="color: #0000BB;">"INS"</span> are not in the features of <span style="color: #0000BB;">&lt;Seurat&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:49:38] <span style="color: #0000BB;">"INS"</span> are not in the features of <span style="color: #0000BB;">&lt;Seurat&gt;</span></span></span></code></pre></div>
 <p><img src="integration-workflow_files/figure-html/inspect-quality-3.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
 <p>When comparing methods, keep the input object fixed and compare the
 same metadata labels, marker genes, and diagnostic plots across methods.
