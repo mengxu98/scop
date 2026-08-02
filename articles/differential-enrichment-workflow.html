@@ -40,14 +40,10 @@
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
-    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -119,8 +115,8 @@ Keep those two evidence layers separate in the text of a report.</p>
 <span><span class="co">#&gt; <span style="color: #555555;">------------------------------------------------------------</span></span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
-<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:37:57] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
+<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 12:57:11] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">CellType</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -142,26 +138,21 @@ question.</p>
 <span>  fc.threshold <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  only.pos <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:01] Data type is log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:01] Start differential expression test</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:01] Find all markers(wilcox) among [1] 5 groups...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:01] Using <span style="color: #0000BB;">1</span> core</span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">⠙</span> [2026-07-28 03:38:01] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 0s</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:38:01] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">544ms</span></span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:01] Building results</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:38:02] Differential expression test completed</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 12:57:15] Data type is log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 12:57:15] Start differential expression test</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 12:57:15] Find all markers(wilcox) among [1] 5 groups...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 12:57:15] Differential expression test completed</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "DEtest_CellType"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_CellType</span><span class="op">$</span><span class="va">AllMarkers_wilcox</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           p_val avg_log2FC pct.1 pct.2     p_val_adj          gene group1</span></span>
-<span><span class="co">#&gt; 1 7.287773e-130   3.679046 0.897 0.096 5.597739e-126         Cyr61 Ductal</span></span>
-<span><span class="co">#&gt; 2 1.168267e-127   3.217619 0.937 0.118 8.973461e-124       Adamts1 Ductal</span></span>
-<span><span class="co">#&gt; 3 2.900413e-120   2.956891 0.976 0.173 2.227807e-116         Anxa2 Ductal</span></span>
-<span><span class="co">#&gt; 4 8.561291e-113   2.733121 0.949 0.147 6.575927e-109 1700011H14Rik Ductal</span></span>
-<span><span class="co">#&gt; 5 2.559824e-108   2.764483 0.960 0.229 1.966201e-104         Bicc1 Ductal</span></span>
-<span><span class="co">#&gt; 6 1.495170e-103   2.646007 0.905 0.147  1.148440e-99         Gsta3 Ductal</span></span>
+<span><span class="co">#&gt; 1 7.287773e-130   3.679046 0.897 0.096 1.165898e-125         Cyr61 Ductal</span></span>
+<span><span class="co">#&gt; 2 1.168267e-127   3.217619 0.937 0.118 1.868994e-123       Adamts1 Ductal</span></span>
+<span><span class="co">#&gt; 3 2.900413e-120   2.956891 0.976 0.173 4.640081e-116         Anxa2 Ductal</span></span>
+<span><span class="co">#&gt; 4 8.561291e-113   2.733121 0.949 0.147 1.369635e-108 1700011H14Rik Ductal</span></span>
+<span><span class="co">#&gt; 5 2.559824e-108   2.764483 0.960 0.229 4.095207e-104         Bicc1 Ductal</span></span>
+<span><span class="co">#&gt; 6 1.495170e-103   2.646007 0.905 0.147  2.391972e-99         Gsta3 Ductal</span></span>
 <span><span class="co">#&gt;   group2 test_group_number</span></span>
 <span><span class="co">#&gt; 1 others                 5</span></span>
 <span><span class="co">#&gt; 2 others                 5</span></span>
@@ -227,17 +218,21 @@ example <code>GO_BP</code>.</p>
 <span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span>
 <span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:22] Start <span style="color: #0000BB;">Enrichment</span> analysis</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:22] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:23] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-07-28 03:29:14</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:24] Permform enrichment...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:26] Using <span style="color: #0000BB;">1</span> core</span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">⠙</span> [2026-07-28 03:38:26] Running for <span style="color: #0000BB;">1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 2s</span></span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">⠹</span> [2026-07-28 03:38:26] Running for <span style="color: #0000BB;">3 </span>[<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■</span>      60% | ETA: <span style="color: #0000BB;"> 1s</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:38:26] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">2.7s</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 12:57:36] Start <span style="color: #0000BB;">Enrichment</span> analysis</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 12:57:36] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:26] Building results</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:38:29] <span style="color: #0000BB;">Enrichment</span> analysis done</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:11] Preparing database: <span style="color: #0000BB;">GO_BP</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:41] Convert ID types for the <span style="color: #0000BB;">GO_BP</span> database</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:41] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:42] Permform enrichment...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:43] Using <span style="color: #0000BB;">1</span> core</span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">⠙</span> [2026-08-02 13:02:43] Running for <span style="color: #0000BB;">1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 2s</span></span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">⠹</span> [2026-08-02 13:02:43] Running for <span style="color: #0000BB;">3 </span>[<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■</span>      60% | ETA: <span style="color: #0000BB;"> 1s</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:02:43] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">2.4s</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:43] Building results</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:02:46] <span style="color: #0000BB;">Enrichment</span> analysis done</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/DEtestPlot.html">DEtestPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
@@ -272,9 +267,9 @@ do not change the DE statistics.</p>
 <span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
 <span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TF"</span>, <span class="st">"CSPA"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:37] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:37] Loading cached: <span style="color: #0000BB;">TF</span> version: <span style="color: #0000BB;">AnimalTFDB4 nterm:2</span> created: <span style="color: #0000BB;">2026-07-28 03:30:24</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:38] Loading cached: <span style="color: #0000BB;">CSPA</span> version: <span style="color: #0000BB;">CSPA nterm:1</span> created: <span style="color: #0000BB;">2026-07-28 03:30:25</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:54] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:54] Preparing database: TF</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:55] Preparing database: CSPA</span></span>
 <span></span>
 <span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/FeatureHeatmap.html">FeatureHeatmap</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
@@ -287,24 +282,24 @@ do not change the DE statistics.</p>
 <span>  anno_terms <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  feature_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TF"</span>, <span class="st">"CSPA"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:41] Start <span style="color: #0000BB;">Enrichment</span> analysis</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:41] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:41] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-07-28 03:29:14</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:42] Permform enrichment...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:43] Using <span style="color: #0000BB;">1</span> core</span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">⠙</span> [2026-07-28 03:38:43] Running for <span style="color: #0000BB;">1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 2s</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:38:43] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">2.6s</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:57] Start <span style="color: #0000BB;">Enrichment</span> analysis</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:57] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:57] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-08-02 13:02:42</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:02:59] Permform enrichment...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:03:00] Using <span style="color: #0000BB;">1</span> core</span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">⠙</span> [2026-08-02 13:03:00] Running for <span style="color: #0000BB;">1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 2s</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:03:00] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">2.4s</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:43] Building results</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:38:46] <span style="color: #0000BB;">Enrichment</span> analysis done</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:03:00] Building results</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:03:02] <span style="color: #0000BB;">Enrichment</span> analysis done</span></span>
 <span><span class="co">#&gt; `use_raster` is automatically set to TRUE for a matrix with more than</span></span>
 <span><span class="co">#&gt; 2000 rows. You can control `use_raster` argument by explicitly setting</span></span>
 <span><span class="co">#&gt; TRUE/FALSE to it.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Set `ht_opt$message = FALSE` to turn off this message.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:46] The size of the heatmap is fixed because certain elements are not scalable.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:46] The width and height of the heatmap are determined by the size of the current viewport.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:46] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:03:02] The size of the heatmap is fixed because certain elements are not scalable.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:03:02] The width and height of the heatmap are determined by the size of the current viewport.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:03:02] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ht</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
 <p><img src="differential-enrichment-workflow_files/figure-html/feature-heatmap-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
 </div>
@@ -324,16 +319,16 @@ rows shown by <code><a href="../reference/EnrichmentPlot.html">EnrichmentPlot()<
 <span>  DE_threshold <span class="op">=</span> <span class="st">"avg_log2FC &gt; log2(1.5) &amp; p_val_adj &lt; 0.05"</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:58] Start <span style="color: #0000BB;">Enrichment</span> analysis</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:58] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:58] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-07-28 03:29:14</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:38:59] Permform enrichment...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:39:01] Using <span style="color: #0000BB;">3</span> cores</span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">⠙</span> [2026-07-28 03:39:01] Running for <span style="color: #0000BB;">2 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 4s</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:39:01] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">1.7s</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:03:14] Start <span style="color: #0000BB;">Enrichment</span> analysis</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:03:14] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:03:14] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-08-02 13:02:42</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:03:16] Permform enrichment...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:03:17] Using <span style="color: #0000BB;">3</span> cores</span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">⠙</span> [2026-08-02 13:03:17] Running for <span style="color: #0000BB;">3 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 2m</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:03:17] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">32.2s</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:39:01] Building results</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:39:02] <span style="color: #0000BB;">Enrichment</span> analysis done</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:03:17] Building results</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:03:49] <span style="color: #0000BB;">Enrichment</span> analysis done</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/EnrichmentPlot.html">EnrichmentPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
@@ -356,10 +351,7 @@ enrichmaps for term relationships.</p>
 <span><span class="co">#&gt; Also defined by 'BiocGenerics'</span></span>
 <span><span class="co">#&gt; Found more than one class "dist" in cache; using the first, from namespace 'spam'</span></span>
 <span><span class="co">#&gt; Also defined by 'BiocGenerics'</span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-07-28 03:39:04] Installing <span style="color: #0000BB;">1</span> R packages...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Loading metadata database</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Loading metadata database ... done</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-08-02 13:03:50] Installing <span style="color: #0000BB;">1</span> R packages...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; → Package library at <span style="color: #0000BB;">/home/runner/work/_temp/Library</span>.</span></span>
 <span><span class="co">#&gt; → Will <span style="font-style: italic;">install</span> 1 package.</span></span>
@@ -392,10 +384,10 @@ enrichmaps for term relationships.</p>
 <span><span class="co">#&gt; libfreetype-dev is already the newest version (2.13.2+dfsg-1ubuntu0.1).</span></span>
 <span><span class="co">#&gt; libpng-dev is already the newest version (1.6.43-5ubuntu0.6).</span></span>
 <span><span class="co">#&gt; pandoc is already the newest version (3.1.3+ds-2).</span></span>
-<span><span class="co">#&gt; 0 upgraded, 0 newly installed, 0 to remove and 69 not upgraded.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">shadowtext</span> 0.1.6  <span style="color: #9E9E9E;">(31ms)</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> 1 pkg + 55 deps: kept 54, added 1, dld 1 (243.58 kB) <span style="color: #B2B2B2;">[13.9s]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-07-28 03:39:18] <span style="color: #0000BB;">shadowtext</span> installed successfully</span></span></code></pre></div>
+<span><span class="co">#&gt; 0 upgraded, 0 newly installed, 0 to remove and 73 not upgraded.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Installed <span style="color: #0000BB;">shadowtext</span> 0.1.6  <span style="color: #9E9E9E;">(1s)</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> 1 pkg + 55 deps: kept 54, added 1, dld 1 (243.58 kB) <span style="color: #B2B2B2;">[5.7s]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:03:56] <span style="color: #0000BB;">shadowtext</span> installed successfully</span></span></code></pre></div>
 <p><img src="differential-enrichment-workflow_files/figure-html/enrichment-plots-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>

@@ -40,14 +40,10 @@
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
-    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -110,10 +106,10 @@ SPATA2 analysis step.</p>
 <tr class="odd">
 <td>Keep an existing scop Giotto pipeline</td>
 <td>
-<code><a href="../reference/SeuratToScopGiotto.html">SeuratToScopGiotto()</a></code>, <code><a href="../reference/RunGiottoWorkflow.html">RunGiottoWorkflow()</a></code>,
+<code><a href="../reference/SeuratToGiotto2.html">SeuratToGiotto2()</a></code>, <code><a href="../reference/RunGiottoWorkflow.html">RunGiottoWorkflow()</a></code>,
 <code><a href="../reference/GiottoPlot.html">GiottoPlot()</a></code>, <code><a href="../reference/AddGiottoToSeurat.html">AddGiottoToSeurat()</a></code>
 </td>
-<td>scop’s legacy <code>giotto2</code> workflow wrapper</td>
+<td>Legacy <code>giotto2</code> workflow wrapper</td>
 <td><code><a href="../reference/GiottoPlot.html">GiottoPlot()</a></code></td>
 </tr>
 <tr class="even">
@@ -169,8 +165,8 @@ symbols separately from the same registry.</p>
 <p>An <code>available</code> row means the package and required symbols
 for that route were found. <code>api_incompatible</code> means the
 package exists but a required current or legacy symbol is absent;
-install the matching Giotto generation rather than adding it to scop’s
-DESCRIPTION dependencies.</p>
+install the matching Giotto generation rather than adding it to the
+package DESCRIPTION dependencies.</p>
 </div>
 <div class="section level2">
 <h2 id="github-documentation-build-contract">GitHub documentation build contract<a class="anchor" aria-label="anchor" href="#github-documentation-build-contract"></a>
@@ -216,7 +212,7 @@ permanently red.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gobject</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/srt_to_giotto.html">srt_to_giotto</a></span><span class="op">(</span><span class="va">spatial</span>, image <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span>
 <span><span class="va">spatial_roundtrip</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/giotto_to_srt.html">giotto_to_srt</a></span><span class="op">(</span><span class="va">gobject</span><span class="op">)</span></span></code></pre></div>
-<p>For exact image selection, <code><a href="../reference/srt_to_giotto.html">srt_to_giotto()</a></code> uses scop’s
+<p>For exact image selection, <code><a href="../reference/srt_to_giotto.html">srt_to_giotto()</a></code> uses the
 controlled converter by default and returns only its native Giotto
 object. Advanced users may pass <code>use_official = TRUE</code>, but
 the controlled default is more stable across Giotto versions and
