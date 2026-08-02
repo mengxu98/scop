@@ -503,7 +503,7 @@ SpatialEcoTyperCompositionPlot <- function(
     p <- p + ggplot2::scale_y_continuous(labels = scales::percent)
   }
   if (!is.null(sample.by) && length(levels(dat$Sample)) > 1L) {
-    p <- p + ggplot2::facet_wrap(~ Sample, scales = "free_y")
+    p <- p + ggplot2::facet_wrap(~Sample, scales = "free_y")
   }
   p
 }

@@ -336,20 +336,20 @@
 #' ) |> thisplot::panel_fix(height = 4)
 #'
 #' pancreas_sub <- RunEnrichment(
-#'     pancreas_sub,
-#'     db = c("MP", "DO"),
-#'     group.by = "CellType",
-#'     convert_species = TRUE,
-#'     species = "Mus_musculus"
-#'   )
+#'   pancreas_sub,
+#'   db = c("MP", "DO"),
+#'   group.by = "CellType",
+#'   convert_species = TRUE,
+#'   species = "Mus_musculus"
+#' )
 #'
-#'   EnrichmentPlot(
-#'     pancreas_sub,
-#'     db = c("MP", "DO"),
-#'     group.by = "CellType",
-#'     group_use = "Ductal",
-#'     ncol = 1
-#'   )
+#' EnrichmentPlot(
+#'   pancreas_sub,
+#'   db = c("MP", "DO"),
+#'   group.by = "CellType",
+#'   group_use = "Ductal",
+#'   ncol = 1
+#' )
 EnrichmentPlot <- function(
   srt,
   db = "GO_BP",
@@ -1667,7 +1667,8 @@ EnrichmentPlot <- function(
   }
 
   combine_plot_list(
-    plist, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
+    plist,
+    combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
   )
 }
 

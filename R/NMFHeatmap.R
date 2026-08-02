@@ -758,19 +758,17 @@ nmf_heatmap_render_plot <- function(
       verbose = verbose
     )
     fixsize_env <- new.env(parent = emptyenv())
-    invisible(grid::grid.grabExpr(
-      {
-        fixsize_env[["value"]] <- heatmap_fixsize(
-          width = width,
-          width_sum = width_sum,
-          height = height,
-          height_sum = height_sum,
-          units = units,
-          ht_list = ht_list,
-          legend_list = legend_list
-        )
-      }
-    ))
+    invisible(grid::grid.grabExpr({
+      fixsize_env[["value"]] <- heatmap_fixsize(
+        width = width,
+        width_sum = width_sum,
+        height = height,
+        height_sum = height_sum,
+        units = units,
+        ht_list = ht_list,
+        legend_list = legend_list
+      )
+    }))
     fixsize <- fixsize_env[["value"]]
     rm(fixsize_env)
     ht_width <- fixsize[["ht_width"]]

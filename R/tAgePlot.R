@@ -113,7 +113,7 @@ tAgePlot <- function(
   theme_fun <- get_namespace_fun("thisplot", theme_use)
 
   point_alpha <- point_alpha %||% alpha
-  box_alpha  <- box_alpha  %||% alpha
+  box_alpha <- box_alpha %||% alpha
 
   plot <- ggplot2::ggplot(
     plot_df,

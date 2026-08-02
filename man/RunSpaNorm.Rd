@@ -78,24 +78,24 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
-  spatial <- RunSpaNorm(
-    spatial,
-    assay = "Spatial",
-    layer = "counts",
-    coord.cols = c("x", "y"),
-    new_assay = "SpaNorm",
-    store_spe = FALSE,
-    sample.p = 0.25,
-    verbose = FALSE
-  )
+spatial <- RunSpaNorm(
+  spatial,
+  assay = "Spatial",
+  layer = "counts",
+  coord.cols = c("x", "y"),
+  new_assay = "SpaNorm",
+  store_spe = FALSE,
+  sample.p = 0.25,
+  verbose = FALSE
+)
 
-  SpatialSpotPlot(
-    spatial,
-    features = rownames(spatial[["SpaNorm"]])[1:2],
-    assay = "SpaNorm",
-    layer = "data",
-    overlay_image = FALSE,
-    coord.cols = c("x", "y")
-  )
+SpatialSpotPlot(
+  spatial,
+  features = rownames(spatial[["SpaNorm"]])[1:2],
+  assay = "SpaNorm",
+  layer = "data",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
+)
 }
 \concept{spatial-producer}

@@ -16,9 +16,11 @@ make_paga_mock <- function(n_cells = 20, n_groups = 3, n_neighbors = 5, seed = 4
   n_dims <- 2
   embedding <- matrix(rnorm(n_cells * n_dims), nrow = n_cells, ncol = n_dims)
   velocity_embedding <- matrix(rnorm(n_cells * n_dims, sd = 0.5), nrow = n_cells, ncol = n_dims)
-  list(knn_idx = knn_idx, groups = groups, n_groups = n_groups,
-       n_cells = n_cells, embedding = embedding,
-       velocity_embedding = velocity_embedding)
+  list(
+    knn_idx = knn_idx, groups = groups, n_groups = n_groups,
+    n_cells = n_cells, embedding = embedding,
+    velocity_embedding = velocity_embedding
+  )
 }
 
 # ---------------------------------------------------------------------------
@@ -59,10 +61,12 @@ test_that("paga velocity transitions is deterministic", {
 test_that("velocity transitions with softmax_scale parameter", {
   dat <- make_paga_mock()
   out1 <- paga_velocity_transitions_cpp(
-    dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups, softmax_scale = 4.0
+    dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups,
+    softmax_scale = 4.0
   )
   out2 <- paga_velocity_transitions_cpp(
-    dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups, softmax_scale = 1.0
+    dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups,
+    softmax_scale = 1.0
   )
   expect_equal(dim(out1$transitions_confidence), dim(out2$transitions_confidence))
   # Different softmax scales should produce different matrices (on non-trivial data)
@@ -99,7 +103,8 @@ test_that("paga_root_cell_cpp returns valid cell indices", {
 })
 
 test_that("root cell first entry is in specified group", {
-  n_cells <- 30; n_groups <- 3
+  n_cells <- 30
+  n_groups <- 3
   set.seed(7)
   groups <- sample(1:n_groups, n_cells, replace = TRUE)
   embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
@@ -164,8 +169,10 @@ test_that("DPT with n_branchings returns branch count", {
   con[1, 2] <- con[2, 1] <- 0.8
   con[2, 3] <- con[3, 2] <- 0.6
   con[3, 4] <- con[4, 3] <- 0.4
-  for (i in 1:n_groups) for (j in 1:n_groups) {
-    if (con[i, j] == 0 && i != j) con[i, j] <- 0.05
+  for (i in 1:n_groups) {
+    for (j in 1:n_groups) {
+      if (con[i, j] == 0 && i != j) con[i, j] <- 0.05
+    }
   }
 
   out <- paga_diffusion_pseudotime_cpp(con, 1L, n_dcs = 3L, n_branchings = 2L, min_group_size = 0.01)

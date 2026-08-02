@@ -10,11 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  prepare-environment:
-    uses: ./.github/workflows/warm-renv-cache.yaml
-
   optional-backend:
-    needs: prepare-environment
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
@@ -51,8 +47,40 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Restore locked R environment 🧰
-        uses: ./.github/actions/prepare-renv
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Capture R library path 🔍
+        id: r-info
+        shell: bash
+        run: |
+          echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
+          echo "r-lib=$(Rscript -e 'cat(.libPaths()[1])')" >> "$GITHUB_OUTPUT"
+
+      - name: Restore R package cache ♻️
+        id: r-pkg-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-hard-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            r-hard-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          GITHUB_PAT: ${{ github.token }}
+        with:
+          extra-packages: any::testthat
+          needs: check
+          dependencies: '"hard"'
+          cache: false
+
+      - name: Save R package cache 💾
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-hard-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Install optional backend 📦
         uses: ./.github/actions/install-external-r-packages

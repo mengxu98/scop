@@ -220,7 +220,7 @@ knn_cross_topk_native <- function(reference, query, k, distance_metric) {
     reference <- reference - rowMeans(reference)
     query <- query - rowMeans(query)
     if (any(rowSums(reference * reference) <= 0) ||
-        any(rowSums(query * query) <= 0)) {
+      any(rowSums(query * query) <= 0)) {
       return(NULL)
     }
     distance_metric <- "cosine"

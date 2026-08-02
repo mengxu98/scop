@@ -1302,8 +1302,7 @@ heatmap_enrichment_stat_labels <- function(data, mode = "value", digits = 2) {
   value <- heatmap_enrichment_format_stat(data[["stat_strength"]], digits = digits)
   significance <- data[["stat_signif"]]
   significance[is.na(significance)] <- ""
-  switch(
-    mode,
+  switch(mode,
     none = rep("", nrow(data)),
     value = value,
     significance = significance,

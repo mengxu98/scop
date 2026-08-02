@@ -85,13 +85,15 @@ test_that("C++ GRNBoost2 preserves sparse zero ordering on larger matrices", {
   targets <- colnames(expr_dense)[51:150]
 
   dense <- RunGRNBoost2(
-    expr_dense, genes_in = "columns", regulators = regulators, targets = targets,
+    expr_dense,
+    genes_in = "columns", regulators = regulators, targets = targets,
     backend = "cpp", n_rounds = 30L, max_depth = 3L, max_features = 0.1,
     subsample = 0.9, early_stop_window_length = 25L, seed = 1234L,
     verbose = FALSE
   )
   sparse <- RunGRNBoost2(
-    Matrix::Matrix(expr_dense, sparse = TRUE), genes_in = "columns",
+    Matrix::Matrix(expr_dense, sparse = TRUE),
+    genes_in = "columns",
     regulators = regulators, targets = targets, backend = "cpp", n_rounds = 30L,
     max_depth = 3L, max_features = 0.1, subsample = 0.9,
     early_stop_window_length = 25L, seed = 1234L, verbose = FALSE

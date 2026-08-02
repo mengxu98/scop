@@ -371,7 +371,9 @@ RunSciBet <- function(
     payload$candidate_features <- common_features
   }
 
-  if (!isTRUE(return_object)) return(payload)
+  if (!isTRUE(return_object)) {
+    return(payload)
+  }
 
   srt_query[[annotation_col]] <- unname(predicted)
   srt_query[[score_col]] <- unname(score)

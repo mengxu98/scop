@@ -265,8 +265,7 @@ SpatialCoordinates <- function(
 }
 
 spatial_graph_weights <- function(distance, method, sigma = NULL) {
-  switch(
-    method,
+  switch(method,
     binary = rep(1, length(distance)),
     inverse_distance = 1 / (1 + distance),
     gaussian = {
@@ -349,8 +348,7 @@ spatial_graph_compute <- function(
     stringsAsFactors = FALSE
   )
   edges <- edges[
-    edges$from != edges$to & is.finite(edges$distance),
-    ,
+    edges$from != edges$to & is.finite(edges$distance), ,
     drop = FALSE
   ]
   if (!isTRUE(directed) && nrow(edges) > 0L) {

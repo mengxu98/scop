@@ -10,13 +10,15 @@ test_that("buildReferenceFromSeurat reads the variable-gene layer once", {
   srt <- Seurat::CreateSeuratObject(counts)
   SeuratObject::VariableFeatures(srt) <- rownames(srt)
   embeddings <- matrix(
-    seq_len(6), ncol = 2,
+    seq_len(6),
+    ncol = 2,
     dimnames = list(colnames(srt), c("DIM_1", "DIM_2"))
   )
   srt[["pca"]] <- SeuratObject::CreateDimReducObject(
     embeddings = embeddings,
     loadings = matrix(
-      seq_len(8), ncol = 2,
+      seq_len(8),
+      ncol = 2,
       dimnames = list(rownames(srt), c("PC_1", "PC_2"))
     ),
     assay = "RNA",

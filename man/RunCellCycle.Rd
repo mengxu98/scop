@@ -72,15 +72,15 @@ srt <- RunCellCycle(
   name = "Tricycle"
 )
 if ("Cyclone_cyclone_Phase" \%in\% colnames(srt@meta.data)) {
-    CellDimPlot(
-      srt,
-      reduction = "Tricycle_tricycleEmbedding",
-      group.by = "Cyclone_cyclone_Phase"
-    )
-  }
-  FeatureDimPlot(
+  CellDimPlot(
     srt,
     reduction = "Tricycle_tricycleEmbedding",
-    features = "Tricycle_tricyclePosition"
+    group.by = "Cyclone_cyclone_Phase"
   )
+}
+FeatureDimPlot(
+  srt,
+  reduction = "Tricycle_tricycleEmbedding",
+  features = "Tricycle_tricyclePosition"
+)
 }

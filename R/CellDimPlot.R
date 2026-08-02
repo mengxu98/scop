@@ -1576,7 +1576,8 @@ CellDimPlot <- function(
   )
 
   combine_plot_list(
-    plist, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
+    plist,
+    combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
   )
 }
 
@@ -2016,12 +2017,12 @@ cell_dim_nested_legend_data <- function(
 #' )
 #'
 #' CellDimPlot3D(
-#'  pancreas_sub,
-#'  group.by = "SubCellType",
-#'  plot_type = "density_surface",
-#'  reduction = "umap",
-#'  dims = c(1, 2),
-#'  density_label = TRUE
+#'   pancreas_sub,
+#'   group.by = "SubCellType",
+#'   plot_type = "density_surface",
+#'   reduction = "umap",
+#'   dims = c(1, 2),
+#'   density_label = TRUE
 #' )
 #'
 #' pancreas_sub <- RunSlingshot(
@@ -2448,7 +2449,7 @@ CellDimPlot3D <- function(
             x = ~x,
             y = ~y,
             z = ~z,
-            text = ~as.character(group),
+            text = ~ as.character(group),
             type = "scatter3d",
             mode = "text",
             textfont = list(size = 14, color = label_i$color[[1]]),
@@ -2464,7 +2465,7 @@ CellDimPlot3D <- function(
           x = ~x,
           y = ~y,
           z = ~z,
-          text = ~as.character(group),
+          text = ~ as.character(group),
           type = "scatter3d",
           mode = "text",
           textfont = list(size = 14, color = "black"),

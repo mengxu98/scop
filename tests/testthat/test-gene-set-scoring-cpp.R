@@ -209,7 +209,8 @@ test_that("PLAGE sparse standardization matches GSVA", {
   gene_sets <- list(a = rownames(expr)[1:7], b = rownames(expr)[5:15])
 
   cpp <- t(run_plage_scores(
-    expr, gene_sets, min_gs_size = 1L, max_gs_size = 50L,
+    expr, gene_sets,
+    min_gs_size = 1L, max_gs_size = 50L,
     dense_standardize = gene_set_scoring_plage_dense_standardize()
   ))
   reference <- GSVA::gsva(

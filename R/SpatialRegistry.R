@@ -47,7 +47,6 @@ spatial_method_registry <- function() {
     entry("RunSpaNorm", "analysis", "normalization", "RunSpaNorm.R", "SpaNorm", "spanorm", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
     entry("RunSpatialQM", "analysis", "quality_control", "RunSpatialQM.R", "SpatialQM", "spatialqm", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed", plot_function = "SpatialSpotPlot"),
     entry("RunSpotSweeper", "analysis", "quality_control", "RunSpotSweeper.R", "SpotSweeper", "spotsweeper", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
-
     entry("srt_to_giotto", "bridge", "framework_bridge", "SpatialFrameworkConvert.R", backend_id = "giotto;giotto_class", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
     entry("giotto_to_srt", "bridge", "framework_bridge", "SpatialFrameworkConvert.R", backend_id = "giotto_class", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
     entry("srt_to_spata2", "bridge", "framework_bridge", "SpatialFrameworkConvert.R", backend_id = "spata2", coordinate_space_current = "raw", coordinate_requirement = "backend_managed"),
@@ -69,7 +68,6 @@ spatial_method_registry <- function() {
     entry("RunGiottoCellProximity", "analysis", "framework_workflow", "RunGiottoSpatialMethods.R", "GiottoCellProximity", "giotto;giotto_class", "legacy", "legacy_display", "legacy_display", "backend_managed", plot_function = "GiottoPlot"),
     entry("RunGiottoSpatialGenes", "analysis", "framework_workflow", "RunGiottoSpatialMethods.R", "GiottoSpatialGenes", "giotto;giotto_class", "legacy", "legacy_display", "legacy_display", "backend_managed", plot_function = "GiottoPlot"),
     entry("RunGiottoSpatialModules", "analysis", "framework_workflow", "RunGiottoSpatialMethods.R", "GiottoSpatialModules", "giotto;giotto_class", "legacy", "legacy_display", "legacy_display", "backend_managed", plot_function = "GiottoPlot"),
-
     entry("RunDeconvolution", "analysis", "deconvolution", "RunDeconvolution.R", backend_id = "music;bisquerna;bayesprism;cibersort", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "DeconvolutionPlot", backend_requirement = "any"),
     entry("RunRCTD", "analysis", "deconvolution", "RunRCTD.R", "RCTD", "spacexr", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialDeconvolutionPlot"),
     entry("RunCSIDE", "analysis", "deconvolution", "RunCSIDE.R", "CSIDE", "spacexr", coordinate_space_current = "mixed", coordinate_space_target = "mixed", coordinate_requirement = "backend_managed"),
@@ -79,7 +77,6 @@ spatial_method_registry <- function() {
     entry("RunCell2location", "analysis", "deconvolution", "RunCell2location.R", "Cell2location", "cell2location", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "Cell2locationPlot"),
     entry("RunSpatialDWLS", "analysis", "deconvolution", "RunSpatialDWLS.R", "SpatialDWLS", "core", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialDeconvolutionPlot"),
     entry("RunSpatialEcoTyper", "analysis", "ecotype", "RunSpatialEcoTyper.R", "SpatialEcoTyper", "spatialecotyper", coordinate_space_current = "none", coordinate_space_target = "none", coordinate_requirement = "identity_only", plot_function = "SpatialEcoTyperSpatialPlot"),
-
     entry("RunBayesSpace", "analysis", "domain", "RunBayesSpace.R", "BayesSpace", "bayesspace", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
     entry("RunBANKSY", "analysis", "domain", "RunBANKSY.R", "BANKSY", "banksy", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
     entry("RunCytoSPACE", "analysis", "mapping", "RunCytoSPACE.R", "CytoSPACE", "core", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialSpotPlot"),
@@ -88,7 +85,6 @@ spatial_method_registry <- function() {
     entry("RunMERINGUE", "analysis", "feature_pattern", "RunMERINGUE.R", "MERINGUE", "meringue", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialVariableFeaturePlot"),
     entry("RunSpatialVariableFeatures", "analysis", "feature_pattern", "RunSpatialVariableFeatures.R", "SpatialVariableFeatures", "core;sparkx;nnsvg", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", scalability = "sparse_required", plot_function = "SpatialVariableFeaturePlot", backend_requirement = "any"),
     entry("RunSpatialGradientFeatures", "analysis", "feature_pattern", "RunSpatialGradientFeatures.R", "SpatialGradientFeatures", "core;spata2", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", plot_function = "SpatialGradientPlot", backend_requirement = "any"),
-
     entry("RunSpatialNetwork", "analysis", "network", "RunSpatialNetwork.R", "SpatialNetwork", "biocneighbors", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive", scalability = "sparse", plot_function = "SpatialNetworkPlot"),
     entry("RunSpatialNeighborhood", "analysis", "neighborhood", "RunSpatialNeighborhood.R", "SpatialNeighborhood", "core;spicyr", coordinate_space_current = "raw", coordinate_space_target = "raw", coordinate_requirement = "distance_sensitive", scalability = "sparse_required", plot_function = "SpatialNeighborhoodPlot", backend_requirement = "any"),
     entry("RunSpatialCellChat", "analysis", "communication", "RunSpatialCellChat.R", "SpatialCellChat", "spatialcellchat", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive", scalability = "sparse_required", plot_function = "SpatialCellChatPlot"),
@@ -99,7 +95,6 @@ spatial_method_registry <- function() {
     entry("RunSemlaLocalG", "analysis", "neighborhood", "RunSemla.R", "SemlaLocalG", "semla", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive"),
     entry("RunSemlaRadialDistance", "analysis", "neighborhood", "RunSemla.R", "SemlaRadialDistance", "semla", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive"),
     entry("RunSemlaRegionNeighbors", "analysis", "neighborhood", "RunSemla.R", "SemlaRegionNeighbors", "semla", coordinate_space_current = "raw", coordinate_requirement = "distance_sensitive"),
-
     entry("GiottoPlot", "plot", "visualization", "GiottoPlot.R", backend_id = "giotto;giotto_class", status = "legacy", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("DeconvolutionPlot", "plot", "visualization", "DeconvolutionPlot.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
     entry("SpatialDeconvolutionPlot", "plot", "visualization", "SpatialDeconvolutionPlot.R", coordinate_space_current = "display", coordinate_requirement = "display_only"),
@@ -357,7 +352,9 @@ ListSpatialMethods <- function(
 ) {
   registry <- spatial_method_registry()
   exact_filter <- function(data, column, value) {
-    if (is.null(value)) return(data)
+    if (is.null(value)) {
+      return(data)
+    }
     data[data[[column]] %in% value, , drop = FALSE]
   }
   registry <- exact_filter(registry, "task", task)
@@ -678,7 +675,9 @@ spatial_result_backend_versions <- function(backend_id) {
     installed = installed
   )
   versions <- vapply(packages, function(package) {
-    if (identical(package, "scop")) return(NA_character_)
+    if (identical(package, "scop")) {
+      return(NA_character_)
+    }
     tryCatch(as.character(utils::packageVersion(package)), error = function(e) NA_character_)
   }, character(1))
   versions[!is.na(versions)]
@@ -774,7 +773,9 @@ spatial_result_registry_row <- function(tool_name = NULL, bundle = NULL) {
   if (length(match_index) == 0L && length(family) == 1L && !is.na(family)) {
     match_index <- which(registry$tool_key == family)
   }
-  if (length(match_index) == 0L) return(NULL)
+  if (length(match_index) == 0L) {
+    return(NULL)
+  }
   registry[match_index[[1L]], , drop = FALSE]
 }
 
@@ -820,10 +821,14 @@ spatial_result_index <- function(object) {
   rows <- lapply(keys, function(key) {
     bundle <- object@tools[[key]]
     row <- spatial_result_registry_row(key, bundle)
-    if (is.null(row)) return(NULL)
+    if (is.null(row)) {
+      return(NULL)
+    }
     is_schema <- is.list(bundle) && identical(as.integer(bundle$schema_version %||% NA_integer_), 1L)
     is_default <- key %in% registry$tool_key
-    if (!is_schema && !is_default) return(NULL)
+    if (!is_schema && !is_default) {
+      return(NULL)
+    }
     data.frame(
       tool_name = key,
       registry_method = row$method[[1L]],
@@ -847,10 +852,18 @@ spatial_result_index <- function(object) {
 }
 
 spatial_result_payload_size <- function(x) {
-  if (is.null(x)) return(0L)
-  if (is.data.frame(x) || is.matrix(x)) return(nrow(x))
-  if (is.atomic(x)) return(length(x))
-  if (is.list(x)) return(length(x))
+  if (is.null(x)) {
+    return(0L)
+  }
+  if (is.data.frame(x) || is.matrix(x)) {
+    return(nrow(x))
+  }
+  if (is.atomic(x)) {
+    return(length(x))
+  }
+  if (is.list(x)) {
+    return(length(x))
+  }
   1L
 }
 
@@ -950,7 +963,9 @@ GetSpatialResult <- function(
   }
   key <- matches$tool_name[[1L]]
   bundle <- object@tools[[key]]
-  if (isTRUE(raw)) return(bundle)
+  if (isTRUE(raw)) {
+    return(bundle)
+  }
   normalized <- spatial_result_normalize(bundle, tool_name = key)
   if (isTRUE(validate)) spatial_result_validate(normalized)
   normalized
@@ -993,7 +1008,9 @@ SpatialResultInfo <- function(
     rows <- lapply(seq_len(nrow(index)), function(i) {
       key <- index$tool_name[[i]]
       bundle <- object@tools[[key]]
-      if (!is.list(bundle) || is.null(bundle$graphs)) return(NULL)
+      if (!is.list(bundle) || is.null(bundle$graphs)) {
+        return(NULL)
+      }
       graph_names <- names(bundle$graphs)
       if (is.null(graph_names)) graph_names <- as.character(seq_along(bundle$graphs))
       do.call(rbind, lapply(seq_along(bundle$graphs), function(j) {
@@ -1030,7 +1047,9 @@ SpatialResultInfo <- function(
     key <- index$tool_name[[i]]
     stored <- object@tools[[key]]
     state <- spatial_result_state(stored, object_cells = cells)
-    if (!include_empty && identical(state$state, "empty")) return(NULL)
+    if (!include_empty && identical(state$state, "empty")) {
+      return(NULL)
+    }
     normalized <- spatial_result_normalize(stored, tool_name = key)
     source <- normalized$source
     data.frame(

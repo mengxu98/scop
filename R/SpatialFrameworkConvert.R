@@ -159,13 +159,16 @@ spata2_call_converter <- function(fun, args) {
   existed <- exists("signatures", envir = env, inherits = FALSE)
   old <- if (existed) get("signatures", envir = env, inherits = FALSE) else NULL
   assign("signatures", signatures, envir = env)
-  on.exit({
-    if (existed) {
-      assign("signatures", old, envir = env)
-    } else if (exists("signatures", envir = env, inherits = FALSE)) {
-      rm(list = "signatures", envir = env)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (existed) {
+        assign("signatures", old, envir = env)
+      } else if (exists("signatures", envir = env, inherits = FALSE)) {
+        rm(list = "signatures", envir = env)
+      }
+    },
+    add = TRUE
+  )
   do.call(fun, args)
 }
 

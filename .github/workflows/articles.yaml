@@ -1,0 +1,119 @@
+# Builds only the articles whose vignette changed on push, so heavy
+# article computations never block the pkgdown reference build.  Manual
+# dispatch rebuilds every article.
+on:
+  push:
+    branches: [main, master, dev]
+  workflow_dispatch:
+
+name: articles
+
+permissions:
+  contents: write
+
+jobs:
+  articles:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: articles-${{ github.event_name != 'pull_request' || github.run_id }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Capture R library path 🔍
+        id: r-info
+        shell: bash
+        run: |
+          echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
+          echo "r-lib=$(Rscript -e 'cat(.libPaths()[1])')" >> "$GITHUB_OUTPUT"
+
+      - name: Restore R package cache ♻️
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          GITHUB_PAT: ${{ github.token }}
+        with:
+          extra-packages: any::pkgdown, local::.
+          needs: website
+          cache: false
+
+      - name: Save R package cache 💾
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-full-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Determine changed articles
+        id: changed
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" != "push" ]]; then
+            echo "articles=all" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          base="${{ github.event.before }}"
+          head="${{ github.sha }}"
+          if [[ "$base" =~ ^0+$ ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            # `github.event.before` is unreachable after a force-push;
+            # fall back to the parent commit instead of rebuilding all
+            # articles.
+            base="$head~1"
+            if [[ "$base" =~ ^0+$ ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+              echo "articles=all" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          articles="$(git diff --diff-filter=AM --name-only "$base" "$head" -- vignettes/ |
+            sed -n 's|^vignettes/\(.*\)[.]Rmd$|\1|p' |
+            sort -u |
+            paste -sd, -)"
+          echo "articles=${articles:-none}" >> "$GITHUB_OUTPUT"
+
+      - name: Build changed articles
+        shell: Rscript {0}
+        env:
+          CHANGED_ARTICLES: ${{ steps.changed.outputs.articles }}
+        run: |
+          articles <- Sys.getenv("CHANGED_ARTICLES")
+          if (!nzchar(articles) || identical(articles, "none")) {
+            message("No articles changed; skipping build.")
+            quit(status = 0L)
+          }
+          if (identical(articles, "all")) {
+            paths <- list.files(
+              "vignettes",
+              pattern = "[.]Rmd$",
+              recursive = TRUE,
+              full.names = TRUE
+            )
+            names <- tools::file_path_sans_ext(sub("^vignettes/", "", paths))
+          } else {
+            names <- strsplit(articles, ",", fixed = TRUE)[[1]]
+          }
+          pkgdown::build_articles_index()
+          for (name in names) {
+            message("Building article: ", name)
+            pkgdown::build_article(name)
+          }
+
+      - name: Deploy to GitHub pages 🚀
+        if: steps.changed.outputs.articles != 'none'
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        with:
+          clean: false
+          branch: gh-pages
+          folder: docs

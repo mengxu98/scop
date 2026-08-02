@@ -66,12 +66,12 @@
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")
 #' )
-#'   STdeconvolvePlot(
-#'     spatial,
-#'     plot_type = "pie",
-#'     overlay_image = FALSE,
-#'     coord.cols = c("x", "y")
-#'   )
+#' STdeconvolvePlot(
+#'   spatial,
+#'   plot_type = "pie",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
 RunSTdeconvolve <- function(
   srt,
   assay = NULL,

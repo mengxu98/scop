@@ -33,9 +33,11 @@ ListCCCMethods <- function() {
 }
 
 ccc_method_registry <- function() {
-  generic <- c("heatmap", "dot", "tile", "circle", "chord", "arrow",
+  generic <- c(
+    "heatmap", "dot", "tile", "circle", "chord", "arrow",
     "sigmoid", "bipartite", "embedding_network", "bar", "sankey",
-    "box", "violin")
+    "box", "violin"
+  )
   list(
     CellChat = list(
       method = "CellChat", producer = "RunCellChat", default = TRUE,
@@ -114,7 +116,9 @@ CCCResultInfo <- function(srt) {
   has_unified <- !is.null(srt@tools[["CCC"]])
   rows <- lapply(ccc_method_registry(), function(entry) {
     bundle <- srt@tools[[entry$method]]
-    status <- if (is.null(bundle)) "absent" else if (
+    status <- if (is.null(bundle)) {
+      "absent"
+    } else if (
       is.data.frame(bundle$primary_table %||% bundle$long_table) &&
         nrow(bundle$primary_table %||% bundle$long_table) > 0L
     ) {
@@ -255,7 +259,9 @@ GetCCCResult <- function(
 
 ccc_semantic_long_table <- function(df, method = NULL) {
   out <- standardize_long_df(df)
-  if (nrow(out) == 0L) return(out)
+  if (nrow(out) == 0L) {
+    return(out)
+  }
   if (!is.null(method)) out$method <- method
   if (!"method" %in% colnames(out)) out$method <- NA_character_
   for (nm in c("resource", "condition", "sample")) {
@@ -268,7 +274,8 @@ ccc_semantic_long_table <- function(df, method = NULL) {
   if (!"score_direction" %in% colnames(out)) out$score_direction <- "higher_better"
   if (!"pvalue_type" %in% colnames(out)) {
     out$pvalue_type <- ifelse(is.finite(suppressWarnings(as.numeric(out$pvalue))),
-      "backend_support", "not_available")
+      "backend_support", "not_available"
+    )
   }
   if (!"support_type" %in% colnames(out)) out$support_type <- "method_specific"
   if (!"priority_rank" %in% colnames(out)) out$priority_rank <- NA_real_
@@ -284,7 +291,8 @@ ccc_semantic_long_table <- function(df, method = NULL) {
     decreasing <- !length(direction) || !identical(direction[1], "lower_better")
     rank_value <- rep(NA_real_, length(idx))
     rank_value[finite] <- rank(if (decreasing) -score[finite] else score[finite],
-      ties.method = "average")
+      ties.method = "average"
+    )
     percentile <- rank_value / sum(finite)
     missing_rank <- !is.finite(out$priority_rank[idx])
     out$priority_rank[idx[missing_rank]] <- percentile[missing_rank]
@@ -300,7 +308,9 @@ ccc_filter_table_context <- function(
   condition = NULL,
   sample = NULL
 ) {
-  if (!is.data.frame(df) || nrow(df) == 0L) return(df)
+  if (!is.data.frame(df) || nrow(df) == 0L) {
+    return(df)
+  }
   if (!is.null(resource)) {
     available_resource <- if ("resource" %in% colnames(df)) {
       unique(as.character(df$resource))
@@ -334,8 +344,7 @@ ccc_filter_table_context <- function(
       )
     }
     df <- df[
-      as.character(df$condition) %in% as.character(condition),
-      ,
+      as.character(df$condition) %in% as.character(condition), ,
       drop = FALSE
     ]
   }
@@ -368,7 +377,9 @@ ccc_prepare_filtered_object <- function(
   condition = NULL,
   sample = NULL
 ) {
-  if (is.null(resource) && is.null(condition) && is.null(sample)) return(srt)
+  if (is.null(resource) && is.null(condition) && is.null(sample)) {
+    return(srt)
+  }
   method <- normalize_ccc_method(method)
   targets <- unique(c("CCC", if (!identical(method, "CCC")) method))
   targets <- targets[targets %in% names(srt@tools)]
@@ -391,7 +402,9 @@ ccc_prepare_filtered_object <- function(
 
 ccc_bind_long_tables <- function(pieces) {
   pieces <- Filter(function(x) is.data.frame(x) && nrow(x) > 0L, pieces)
-  if (length(pieces) == 0L) return(data.frame())
+  if (length(pieces) == 0L) {
+    return(data.frame())
+  }
   common <- Reduce(union, lapply(pieces, colnames))
   pieces <- lapply(pieces, function(x) {
     missing <- setdiff(common, colnames(x))
@@ -409,7 +422,9 @@ ccc_combine_methods <- function(
 ) {
   mode <- match.arg(mode)
   df <- ccc_semantic_long_table(df)
-  if (nrow(df) == 0L || identical(mode, "separate")) return(df)
+  if (nrow(df) == 0L || identical(mode, "separate")) {
+    return(df)
+  }
   if (identical(mode, "legacy")) {
     log_message(
       "{.val combine_methods = 'legacy'} sums backend scores on incompatible scales and is deprecated",
@@ -424,7 +439,9 @@ ccc_combine_methods <- function(
   has_interaction <- !is.na(df$ligand) & nzchar(trimws(as.character(df$ligand))) &
     !is.na(df$receptor) & nzchar(trimws(as.character(df$receptor)))
   df <- df[has_interaction, , drop = FALSE]
-  if (nrow(df) == 0L) return(df)
+  if (nrow(df) == 0L) {
+    return(df)
+  }
   methods <- unique(as.character(df$method))
   methods <- methods[!is.na(methods) & nzchar(methods)]
   df$.ccc_method_percentile <- 1

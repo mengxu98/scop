@@ -29,10 +29,12 @@ make_bayesspace_multi_image_object <- function() {
     row.names = c("Spot3", "Spot4")
   )
   srt[["slice1"]] <- SeuratObject::CreateFOV(
-    slice1, type = "centroids", assay = assay, key = "bs1_"
+    slice1,
+    type = "centroids", assay = assay, key = "bs1_"
   )
   srt[["slice2"]] <- SeuratObject::CreateFOV(
-    slice2, type = "centroids", assay = assay, key = "bs2_"
+    slice2,
+    type = "centroids", assay = assay, key = "bs2_"
   )
   srt
 }

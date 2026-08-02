@@ -21,30 +21,28 @@ make_choir_seurat <- function() {
 with_mock_choir <- function(code, backend = NULL) {
   received <- new.env(parent = emptyenv())
   if (is.null(backend)) {
-    backend <- function(
-      object,
-      key,
-      alpha,
-      p_adjust,
-      feature_set,
-      exclude_features,
-      n_iterations,
-      n_trees,
-      min_accuracy,
-      max_clusters,
-      normalization_method,
-      batch_correction_method,
-      batch_labels,
-      use_assay,
-      use_slot,
-      reduction,
-      var_features,
-      atac,
-      n_cores,
-      random_seed,
-      distance_awareness,
-      verbose
-    ) {
+    backend <- function(object,
+                        key,
+                        alpha,
+                        p_adjust,
+                        feature_set,
+                        exclude_features,
+                        n_iterations,
+                        n_trees,
+                        min_accuracy,
+                        max_clusters,
+                        normalization_method,
+                        batch_correction_method,
+                        batch_labels,
+                        use_assay,
+                        use_slot,
+                        reduction,
+                        var_features,
+                        atac,
+                        n_cores,
+                        random_seed,
+                        distance_awareness,
+                        verbose) {
       received$args <- as.list(environment())
       cluster_col <- paste0("CHOIR_clusters_", alpha)
       object@meta.data[[cluster_col]] <- rep(1:3, each = 2)
@@ -221,9 +219,12 @@ test_that("RunCHOIR rejects invalid backend results", {
     object
   }
   expect_error(
-    with_mock_choir({
-      RunCHOIR(srt, verbose = FALSE)
-    }, backend = missing_clusters),
+    with_mock_choir(
+      {
+        RunCHOIR(srt, verbose = FALSE)
+      },
+      backend = missing_clusters
+    ),
     "final cluster column"
   )
 
@@ -233,9 +234,12 @@ test_that("RunCHOIR rejects invalid backend results", {
     object
   }
   expect_error(
-    with_mock_choir({
-      RunCHOIR(srt, verbose = FALSE)
-    }, backend = changed_cells),
+    with_mock_choir(
+      {
+        RunCHOIR(srt, verbose = FALSE)
+      },
+      backend = changed_cells
+    ),
     "changed cell identities or cell order"
   )
 })
@@ -248,15 +252,21 @@ test_that("RunCHOIR does not accept a stale cluster column", {
   }
 
   expect_error(
-    with_mock_choir({
-      RunCHOIR(srt, verbose = FALSE)
-    }, backend = unchanged),
+    with_mock_choir(
+      {
+        RunCHOIR(srt, verbose = FALSE)
+      },
+      backend = unchanged
+    ),
     "Existing CHOIR output"
   )
   expect_error(
-    with_mock_choir({
-      RunCHOIR(srt, overwrite = TRUE, verbose = FALSE)
-    }, backend = unchanged),
+    with_mock_choir(
+      {
+        RunCHOIR(srt, overwrite = TRUE, verbose = FALSE)
+      },
+      backend = unchanged
+    ),
     "final cluster column"
   )
 })
@@ -340,15 +350,18 @@ test_that("RunCHOIR preserves a stable output column used for batches", {
     object
   }
 
-  with_mock_choir({
-    out <- RunCHOIR(
-      srt,
-      batch.by = "CHOIR_cluster",
-      cluster_colname = "CHOIR_cluster",
-      overwrite = TRUE,
-      verbose = FALSE
-    )
-  }, backend = backend)
+  with_mock_choir(
+    {
+      out <- RunCHOIR(
+        srt,
+        batch.by = "CHOIR_cluster",
+        cluster_colname = "CHOIR_cluster",
+        overwrite = TRUE,
+        verbose = FALSE
+      )
+    },
+    backend = backend
+  )
   expect_equal(as.character(out$CHOIR_cluster), rep(as.character(1:3), each = 2))
 
   srt$CHOIR_clusters_0.05 <- srt$batch
@@ -380,9 +393,12 @@ test_that("RunCHOIR requires complete upstream records", {
   }
 
   expect_error(
-    with_mock_choir({
-      RunCHOIR(srt, verbose = FALSE)
-    }, backend = missing_records),
+    with_mock_choir(
+      {
+        RunCHOIR(srt, verbose = FALSE)
+      },
+      backend = missing_records
+    ),
     "complete records"
   )
 })
@@ -407,9 +423,12 @@ test_that("RunCHOIR rejects invalid cluster labels", {
   }
 
   expect_error(
-    with_mock_choir({
-      RunCHOIR(srt, verbose = FALSE)
-    }, backend = invalid_labels),
+    with_mock_choir(
+      {
+        RunCHOIR(srt, verbose = FALSE)
+      },
+      backend = invalid_labels
+    ),
     "invalid final cluster labels"
   )
 })

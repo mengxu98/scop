@@ -162,8 +162,7 @@ pancreas_sub <- RunDEtest(
 
 de_df <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 de_df <- de_df[
-  de_df$p_val_adj < 0.05 & abs(de_df$avg_log2FC) > 0.25,
-  ,
+  de_df$p_val_adj < 0.05 & abs(de_df$avg_log2FC) > 0.25, ,
   drop = FALSE
 ]
 de_df$direction <- ifelse(de_df$avg_log2FC > 0, "Up", "Down")

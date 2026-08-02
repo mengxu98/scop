@@ -81,13 +81,13 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#'   spatial <- RunCSIDE(
-#'     spatial,
-#'     group.by = "region",
-#'     celltypes = c("Ductal", "Endocrine"),
-#'     gene_threshold = 0.00005,
-#'     cell_type_threshold = 125
-#'   )
+#' spatial <- RunCSIDE(
+#'   spatial,
+#'   group.by = "region",
+#'   celltypes = c("Ductal", "Endocrine"),
+#'   gene_threshold = 0.00005,
+#'   cell_type_threshold = 125
+#' )
 RunCSIDE <- function(
   srt,
   rctd_result = NULL,
@@ -373,8 +373,7 @@ cside_prepare_backend_inputs <- function(
   region_list,
   barcodes
 ) {
-  switch(
-    mode,
+  switch(mode,
     single = cside_prepare_single_input(
       srt = srt,
       explanatory.variable = explanatory.variable,
@@ -561,8 +560,7 @@ cside_run_backend <- function(
   celltypes = NULL,
   extra_args = list()
 ) {
-  base_args <- switch(
-    mode,
+  base_args <- switch(mode,
     single = list(
       myRCTD = rctd_result,
       explanatory.variable = inputs$explanatory.variable,
@@ -597,8 +595,7 @@ cside_run_backend <- function(
 
 cside_get_backend_fun <- function(mode) {
   check_r("dmcable/spacexr", verbose = FALSE)
-  fun <- switch(
-    mode,
+  fun <- switch(mode,
     single = "run.CSIDE.single",
     regions = "run.CSIDE.regions",
     general = "run.CSIDE",
@@ -838,10 +835,10 @@ cside_align_named_vector <- function(x, cells, arg) {
 
 cside_normalize_region_list <- function(region_list, cells) {
   if (!is.list(region_list) || length(region_list) < 3L) {
-      log_message(
-        "{.arg region_list} must contain at least three regions for spacexr run.CSIDE.regions. Use {.arg condition.by} for binary comparisons.",
-        message_type = "error"
-      )
+    log_message(
+      "{.arg region_list} must contain at least three regions for spacexr run.CSIDE.regions. Use {.arg condition.by} for binary comparisons.",
+      message_type = "error"
+    )
   }
   if (is.null(names(region_list)) || any(!nzchar(names(region_list)))) {
     names(region_list) <- paste0("region", seq_along(region_list))
@@ -853,10 +850,10 @@ cside_normalize_region_list <- function(region_list, cells) {
   keep <- lengths(region_list) > 0L
   region_list <- region_list[keep]
   if (length(region_list) < 3L) {
-      log_message(
-        "{.arg region_list} must contain at least three non-empty regions matching spatial spots for spacexr run.CSIDE.regions.",
-        message_type = "error"
-      )
+    log_message(
+      "{.arg region_list} must contain at least three non-empty regions matching spatial spots for spacexr run.CSIDE.regions.",
+      message_type = "error"
+    )
   }
   region_list
 }

@@ -70,35 +70,35 @@ dependency.
 data(islet_bulk)
 
 if (FALSE) {
-# Run CIBERSORT
-islet_bulk <- RunCIBERSORT(
-  object = islet_bulk,
-  sig_matrix = "LM22",
-  bulk_assay = "counts",
-  perm = 100,
-  QN = TRUE
-)
+  # Run CIBERSORT
+  islet_bulk <- RunCIBERSORT(
+    object = islet_bulk,
+    sig_matrix = "LM22",
+    bulk_assay = "counts",
+    perm = 100,
+    QN = TRUE
+  )
 
-# Immune abundance stacked bar plot
-p1 <- ImmuneAbundancePlot(
-  object = islet_bulk,
-  plot_type = "bar",
-  group.by = "condition"
-)
-p1
+  # Immune abundance stacked bar plot
+  p1 <- ImmuneAbundancePlot(
+    object = islet_bulk,
+    plot_type = "bar",
+    group.by = "condition"
+  )
+  p1
 
-# Immune cell correlation heatmap
-p2 <- ImmuneAbundancePlot(
-  object = islet_bulk,
-  plot_type = "cor"
-)
-p2
+  # Immune cell correlation heatmap
+  p2 <- ImmuneAbundancePlot(
+    object = islet_bulk,
+    plot_type = "cor"
+  )
+  p2
 
-# Gene-immune correlation butterfly plot
-p3 <- GeneImmuneCorPlot(
-  object = islet_bulk,
-  features = rownames(SummarizedExperiment::assay(islet_bulk, "counts"))[1:3]
-)
-p3
+  # Gene-immune correlation butterfly plot
+  p3 <- GeneImmuneCorPlot(
+    object = islet_bulk,
+    features = rownames(SummarizedExperiment::assay(islet_bulk, "counts"))[1:3]
+  )
+  p3
 }
 }

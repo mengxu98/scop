@@ -121,26 +121,26 @@ ImmuneAbundancePlot <- function(
       reverse = TRUE
     )
     plot <- ggplot2::ggplot(df, ggplot2::aes(
-        x = cell_type_2,
-        y = cell_type_1,
-        fill = cor
-      )) +
-        ggplot2::geom_tile(color = "white", linewidth = 0.5) +
-        ggplot2::scale_fill_gradientn(
-          colors = fill_cols,
-          limits = c(-1, 1),
-          na.value = "grey90",
-          name = "Correlation"
-        ) +
-        ggplot2::coord_equal() +
-        ggplot2::labs(title = title, subtitle = subtitle, x = NULL, y = NULL) +
-        theme_obj +
-        ggplot2::theme(
-          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, vjust = 1),
-          panel.grid = ggplot2::element_blank(),
-          legend.position = legend.position,
-          legend.direction = legend.direction
-        )
+      x = cell_type_2,
+      y = cell_type_1,
+      fill = cor
+    )) +
+      ggplot2::geom_tile(color = "white", linewidth = 0.5) +
+      ggplot2::scale_fill_gradientn(
+        colors = fill_cols,
+        limits = c(-1, 1),
+        na.value = "grey90",
+        name = "Correlation"
+      ) +
+      ggplot2::coord_equal() +
+      ggplot2::labs(title = title, subtitle = subtitle, x = NULL, y = NULL) +
+      theme_obj +
+      ggplot2::theme(
+        axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, vjust = 1),
+        panel.grid = ggplot2::element_blank(),
+        legend.position = legend.position,
+        legend.direction = legend.direction
+      )
     if (isTRUE(show_cor_label)) {
       plot <- plot + ggplot2::geom_text(
         ggplot2::aes(label = sprintf("%.2f", cor)),
@@ -463,8 +463,7 @@ immune_scale_matrix <- function(mat, scale = "none") {
   if (identical(scale, "none")) {
     return(mat)
   }
-  out <- switch(
-    scale,
+  out <- switch(scale,
     row = t(scale(t(mat))),
     column = scale(mat),
     mat

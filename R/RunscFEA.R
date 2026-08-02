@@ -849,21 +849,18 @@ scfea_volcano_plot_one <- function(
       plot_df <- stats
       in_pathway <- !is.na(plot_df$SM_anno) & plot_df$SM_anno == pathway_i
       pathway_up_df <- plot_df[
-        in_pathway & !is.na(plot_df$cohen_d) & plot_df$cohen_d > 0,
-        ,
+        in_pathway & !is.na(plot_df$cohen_d) & plot_df$cohen_d > 0, ,
         drop = FALSE
       ]
       pathway_down_df <- plot_df[
-        in_pathway & !is.na(plot_df$cohen_d) & plot_df$cohen_d < 0,
-        ,
+        in_pathway & !is.na(plot_df$cohen_d) & plot_df$cohen_d < 0, ,
         drop = FALSE
       ]
       label_df <- plot_df[
         in_pathway &
           !is.na(plot_df$p_val_adj) &
           plot_df$p_val_adj <= p_adj_cutoff &
-          abs(plot_df$cohen_d) >= cohen_cutoff,
-        ,
+          abs(plot_df$cohen_d) >= cohen_cutoff, ,
         drop = FALSE
       ]
 

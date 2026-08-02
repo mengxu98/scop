@@ -79,7 +79,8 @@ RunBenchmark <- function(
   benchmark_assert_flag(keep_objects, "keep_objects")
   benchmark_assert_flag(install_missing, "install_missing")
   benchmark_assert_number(
-    seed, "seed", lower = 0, upper = .Machine$integer.max, integer = TRUE
+    seed, "seed",
+    lower = 0, upper = .Machine$integer.max, integer = TRUE
   )
   benchmark_assert_number(timeout, "timeout", lower = 0, allow_infinite = TRUE)
   benchmark_assert_number(poll_interval, "poll_interval", lower = 0, strict = TRUE)
@@ -90,7 +91,8 @@ RunBenchmark <- function(
     n_clusters <- n_truth_clusters
   } else {
     benchmark_assert_number(
-      n_clusters, "n_clusters", lower = 2,
+      n_clusters, "n_clusters",
+      lower = 2,
       upper = .Machine$integer.max, integer = TRUE
     )
     n_clusters <- as.integer(n_clusters)
@@ -293,7 +295,9 @@ benchmark_resolve_adapters <- function(methods = NULL) {
     )
   }
   default_registry <- registry[available_adapters %in% stable_domain]
-  if (is.null(methods)) return(default_registry)
+  if (is.null(methods)) {
+    return(default_registry)
+  }
   if (!is.character(methods) || length(methods) == 0L || anyNA(methods)) {
     log_message("{.arg methods} must contain one or more method names", message_type = "error")
   }
@@ -556,7 +560,9 @@ benchmark_backend_versions <- function(backend_id) {
     spatial_result_backend_versions(backend_id),
     error = function(error) character()
   )
-  if (is.null(versions) || !is.atomic(versions)) return(character())
+  if (is.null(versions) || !is.atomic(versions)) {
+    return(character())
+  }
   out <- as.character(versions)
   names(out) <- names(versions)
   out
@@ -831,7 +837,8 @@ benchmark_child_entry <- function(
   set.seed(seed)
   start <- proc.time()[["elapsed"]]
   param_string <- get(
-    "benchmark_param_string", envir = asNamespace("scop"), inherits = FALSE
+    "benchmark_param_string",
+    envir = asNamespace("scop"), inherits = FALSE
   )
   result <- tryCatch(
     {
@@ -933,14 +940,17 @@ benchmark_execute_adapter <- function(srt, adapter, params) {
 }
 
 benchmark_process_tree_rss <- function(pid) {
-  tryCatch({
-    root <- ps::ps_handle(pid)
-    handles <- c(list(root), ps::ps_children(root, recursive = TRUE))
-    values <- vapply(handles, function(handle) {
-      tryCatch(as.numeric(ps::ps_memory_info(handle)[["rss"]]), error = function(e) NA_real_)
-    }, numeric(1))
-    if (all(is.na(values))) NA_real_ else sum(values, na.rm = TRUE)
-  }, error = function(e) NA_real_)
+  tryCatch(
+    {
+      root <- ps::ps_handle(pid)
+      handles <- c(list(root), ps::ps_children(root, recursive = TRUE))
+      values <- vapply(handles, function(handle) {
+        tryCatch(as.numeric(ps::ps_memory_info(handle)[["rss"]]), error = function(e) NA_real_)
+      }, numeric(1))
+      if (all(is.na(values))) NA_real_ else sum(values, na.rm = TRUE)
+    },
+    error = function(e) NA_real_
+  )
 }
 
 benchmark_kill_process_tree <- function(process) {

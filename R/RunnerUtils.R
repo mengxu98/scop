@@ -65,15 +65,18 @@ runner_system2 <- function(command, args, env, stdout, stderr) {
   if (length(env)) {
     do.call(Sys.setenv, as.list(env))
   }
-  on.exit({
-    restore <- !is.na(old_env)
-    if (any(restore)) {
-      do.call(Sys.setenv, as.list(old_env[restore]))
-    }
-    if (any(!restore)) {
-      Sys.unsetenv(names(old_env)[!restore])
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      restore <- !is.na(old_env)
+      if (any(restore)) {
+        do.call(Sys.setenv, as.list(old_env[restore]))
+      }
+      if (any(!restore)) {
+        Sys.unsetenv(names(old_env)[!restore])
+      }
+    },
+    add = TRUE
+  )
   system2(
     command = command,
     args = args,

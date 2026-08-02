@@ -189,8 +189,7 @@ Runscds <- function(
   sce <- Seurat::as.SingleCellExperiment(srt, assay = assay)
   scds_args <- list(...)
   new_xgboost_api <- "y" %in% names(formals(getExportedValue("xgboost", "xgboost")))
-  sce <- switch(
-    method,
+  sce <- switch(method,
     cxds = do.call(scds::cxds, c(list(sce = sce), scds_args)),
     bcds = if (new_xgboost_api) {
       do.call(scds_bcds_xgboost_compat, c(list(sce = sce), scds_args))

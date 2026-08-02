@@ -228,13 +228,11 @@ test_that("RunscMalignantRegion appends spatial region outputs", {
     row.names = paste0("Cell", 1:3)
   )
   funs <- list(
-    run_scmalignant_region = function(
-      test_input,
-      signature_gmt,
-      spatial_coordinates,
-      spatial_key,
-      ...
-    ) {
+    run_scmalignant_region = function(test_input,
+                                      signature_gmt,
+                                      spatial_coordinates,
+                                      spatial_key,
+                                      ...) {
       expect_identical(signature_gmt, gmt)
       expect_equal(dim(spatial_coordinates), c(3, 2))
       expect_identical(spatial_key, "custom_spatial")
@@ -339,6 +337,7 @@ test_that("RunscMalignantRegion native backend scores, clusters, and smooths", {
   srt$malignancy_probability <- c(rep(0.9, 6), rep(0.1, 6))
   srt$x <- rep(1:6, 2)
   srt$y <- rep(c(1, 10), each = 6)
+  skip_if_not_installed("BiocNeighbors")
   gmt <- tempfile(fileext = ".gmt")
   writeLines(
     paste(

@@ -50,9 +50,13 @@ test_that("semla wrappers reject non-Seurat input before backend work", {
 })
 
 test_that("semla optional dependency error is clear", {
-  testthat::skip_if(
-    semla_installed_without_loading(),
-    "semla is installed"
+  # check_r() auto-installs missing optional backends, so the
+  # "semla is missing" branch cannot be exercised by the environment;
+  # mock it to verify the error message stays clear regardless.
+  testthat::local_mocked_bindings(
+    check_r = function(...) {
+      stop("The semla package is required", call. = FALSE)
+    }
   )
   counts <- Matrix::sparseMatrix(
     i = c(1L, 2L),
@@ -120,7 +124,8 @@ test_that("Semla distance producers store schema-v1 provenance", {
   skip_if_no_semla_backend()
   srt <- make_semla_spatial_seurat()
   neighbors <- RunSemlaRegionNeighbors(
-    srt, column_name = "semla_region", column_labels = "A",
+    srt,
+    column_name = "semla_region", column_labels = "A",
     mode = "outer", column_key = "A_neighbor", verbose = FALSE
   )
   expect_equal(neighbors@tools[["SemlaRegionNeighbors"]][["schema_version"]], 1L)
@@ -131,7 +136,8 @@ test_that("Semla distance producers store schema-v1 provenance", {
   )
 
   radial <- RunSemlaRadialDistance(
-    srt, column_name = "semla_region", selected_groups = "A",
+    srt,
+    column_name = "semla_region", selected_groups = "A",
     column_suffix = "A_distance", verbose = FALSE
   )
   expect_equal(radial@tools[["SemlaRadialDistance"]][["schema_version"]], 1L)

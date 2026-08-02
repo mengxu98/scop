@@ -87,11 +87,12 @@ test_that("scvelo_filter_genes_cpp filters all-zero spliced genes", {
   n_genes <- 5
   n_cells <- 10
   spliced <- matrix(c(rep(0, n_cells), rep(100, n_cells * (n_genes - 1))),
-                    nrow = n_genes, ncol = n_cells, byrow = TRUE)
+    nrow = n_genes, ncol = n_cells, byrow = TRUE
+  )
   unspliced <- matrix(100, nrow = n_genes, ncol = n_cells)
 
   out <- scvelo_filter_genes_cpp(spliced, unspliced, min_counts = 1, min_counts_u = 5)
-  expect_equal(out[1], 0)  # first gene filtered (zero spliced)
+  expect_equal(out[1], 0) # first gene filtered (zero spliced)
   expect_true(all(out[-1] == 1))
 })
 
@@ -100,10 +101,11 @@ test_that("scvelo_filter_genes_cpp filters all-zero unspliced genes", {
   n_cells <- 10
   spliced <- matrix(100, nrow = n_genes, ncol = n_cells)
   unspliced <- matrix(c(rep(0, n_cells), rep(100, n_cells * (n_genes - 1))),
-                      nrow = n_genes, ncol = n_cells, byrow = TRUE)
+    nrow = n_genes, ncol = n_cells, byrow = TRUE
+  )
 
   out <- scvelo_filter_genes_cpp(spliced, unspliced, min_counts = 5, min_counts_u = 1)
-  expect_equal(out[1], 0)  # first gene filtered (zero unspliced)
+  expect_equal(out[1], 0) # first gene filtered (zero unspliced)
   expect_true(all(out[-1] == 1))
 })
 
@@ -212,7 +214,7 @@ test_that("scvelo_normalize_log_cpp rejects mismatched dimensions", {
 test_that("scvelo_moments_cpp rejects mismatched knn_idx rows", {
   spliced <- matrix(1, 5, 10)
   unspliced <- matrix(1, 5, 10)
-  knn_idx <- matrix(1L, nrow = 5, ncol = 3)  # only 5 rows, need 10
+  knn_idx <- matrix(1L, nrow = 5, ncol = 3) # only 5 rows, need 10
 
   expect_error(
     scvelo_moments_cpp(spliced, unspliced, knn_idx),

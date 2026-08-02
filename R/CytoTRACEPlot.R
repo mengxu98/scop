@@ -185,7 +185,8 @@ CytoTRACEPlot <- function(
   }
 
   combine_plot_list(
-    plist, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
+    plist,
+    combine = combine, nrow = nrow, ncol = ncol, byrow = byrow
   )
 }
 

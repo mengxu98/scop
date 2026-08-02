@@ -13,49 +13,49 @@
 #'
 #' @examples
 #' \dontrun{
-#'   PrepareEnv()
-#'   check_python("scvelo")
-#'   scv <- import("scvelo")
-#'   adata <- scv$datasets$pancreas()
-#'   pancreas <- adata_to_srt(adata)
-#'   set.seed(98)
-#'   cells <- sample(colnames(pancreas), size = 1000)
-#'   pancreas_sub <- pancreas[, cells]
-#'   pancreas_sub <- pancreas_sub[Matrix::rowSums(
-#'     GetAssayData5(
-#'       pancreas_sub,
-#'       layer = "counts"
-#'     )
-#'   ) > 0, ]
-#'   pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
-#'   pancreas_sub[["SubCellType"]] <- pancreas_sub[["clusters"]]
-#'   pancreas_sub[["clusters_coarse"]] <- pancreas_sub[["clusters"]] <- NULL
-#'   pancreas_sub[["Phase"]] <- ifelse(
-#'     pancreas_sub$S_score > pancreas_sub$G2M_score,
-#'     "S",
-#'     "G2M"
-#'   )
-#'   pancreas_sub[["Phase"]][apply(
-#'     pancreas_sub[[]][, c("S_score", "G2M_score")],
-#'     1,
-#'     max
-#'   ) < 0, ] <- "G1"
-#'   pancreas_sub[["Phase", drop = TRUE]] <- factor(
-#'     pancreas_sub[["Phase", drop = TRUE]],
-#'     levels = c("G1", "S", "G2M")
-#'   )
-#'   pancreas_sub$CellType <- gsub("_", "-", pancreas_sub$CellType)
-#'   pancreas_sub$CellType <- gsub(" ", "-", pancreas_sub$CellType)
-#'   pancreas_sub$SubCellType <- gsub("_", "-", pancreas_sub$SubCellType)
-#'   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
-#'   pancreas_sub@reductions$X_pca <- NULL
-#'   pancreas_sub@reductions$X_umap <- NULL
-#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#'   use_data(
+#' PrepareEnv()
+#' check_python("scvelo")
+#' scv <- import("scvelo")
+#' adata <- scv$datasets$pancreas()
+#' pancreas <- adata_to_srt(adata)
+#' set.seed(98)
+#' cells <- sample(colnames(pancreas), size = 1000)
+#' pancreas_sub <- pancreas[, cells]
+#' pancreas_sub <- pancreas_sub[Matrix::rowSums(
+#'   GetAssayData5(
 #'     pancreas_sub,
-#'     compress = "xz",
-#'     overwrite = TRUE
+#'     layer = "counts"
 #'   )
+#' ) > 0, ]
+#' pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
+#' pancreas_sub[["SubCellType"]] <- pancreas_sub[["clusters"]]
+#' pancreas_sub[["clusters_coarse"]] <- pancreas_sub[["clusters"]] <- NULL
+#' pancreas_sub[["Phase"]] <- ifelse(
+#'   pancreas_sub$S_score > pancreas_sub$G2M_score,
+#'   "S",
+#'   "G2M"
+#' )
+#' pancreas_sub[["Phase"]][apply(
+#'   pancreas_sub[[]][, c("S_score", "G2M_score")],
+#'   1,
+#'   max
+#' ) < 0, ] <- "G1"
+#' pancreas_sub[["Phase", drop = TRUE]] <- factor(
+#'   pancreas_sub[["Phase", drop = TRUE]],
+#'   levels = c("G1", "S", "G2M")
+#' )
+#' pancreas_sub$CellType <- gsub("_", "-", pancreas_sub$CellType)
+#' pancreas_sub$CellType <- gsub(" ", "-", pancreas_sub$CellType)
+#' pancreas_sub$SubCellType <- gsub("_", "-", pancreas_sub$SubCellType)
+#' pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
+#' pancreas_sub@reductions$X_pca <- NULL
+#' pancreas_sub@reductions$X_umap <- NULL
+#' use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+#' use_data(
+#'   pancreas_sub,
+#'   compress = "xz",
+#'   overwrite = TRUE
+#' )
 #' }
 #' @name pancreas_sub
 NULL
@@ -78,43 +78,43 @@ NULL
 #' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
 #'
 #' @examples
-#'   data(pancreas_sub)
-#'   thisutils::check_r("satijalab/seurat-data")
+#' data(pancreas_sub)
+#' thisutils::check_r("satijalab/seurat-data")
 #'
-#'   InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
-#'   InstallData("panc8")
-#'   data(panc8)
-#'   panc8 <- UpdateSeuratObject(panc8)
-#'   set.seed(98)
-#'   cells_sub <- unlist(
-#'     lapply(
-#'       split(colnames(panc8), panc8$dataset),
-#'       function(x) sample(x, size = 200)
-#'     )
+#' InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
+#' InstallData("panc8")
+#' data(panc8)
+#' panc8 <- UpdateSeuratObject(panc8)
+#' set.seed(98)
+#' cells_sub <- unlist(
+#'   lapply(
+#'     split(colnames(panc8), panc8$dataset),
+#'     function(x) sample(x, size = 200)
 #'   )
-#'   panc8_sub <- subset(panc8, cells = cells_sub)
-#'   counts <- GetAssayData5(
-#'     panc8_sub,
-#'     layer = "counts"
-#'   )
-#'   panc8_sub <- CreateSeuratObject(
-#'     counts = counts,
-#'     meta.data = panc8_sub@meta.data
-#'   )
-#'   panc8_sub <- panc8_sub[Matrix::rowSums(counts) > 0, ]
-#'   panc8_sub <- panc8_sub[toupper(
-#'     rownames(panc8_sub)
-#'   ) %in% toupper(
-#'     rownames(pancreas_sub)
-#'   ), ]
-#'   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
-#'   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#'   use_data(
-#'     panc8_sub,
-#'     compress = "xz",
-#'     overwrite = TRUE
-#'   )
+#' )
+#' panc8_sub <- subset(panc8, cells = cells_sub)
+#' counts <- GetAssayData5(
+#'   panc8_sub,
+#'   layer = "counts"
+#' )
+#' panc8_sub <- CreateSeuratObject(
+#'   counts = counts,
+#'   meta.data = panc8_sub@meta.data
+#' )
+#' panc8_sub <- panc8_sub[Matrix::rowSums(counts) > 0, ]
+#' panc8_sub <- panc8_sub[toupper(
+#'   rownames(panc8_sub)
+#' ) %in% toupper(
+#'   rownames(pancreas_sub)
+#' ), ]
+#' panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
+#' panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
+#' use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+#' use_data(
+#'   panc8_sub,
+#'   compress = "xz",
+#'   overwrite = TRUE
+#' )
 #' @name panc8_sub
 NULL
 
@@ -139,14 +139,14 @@ NULL
 #' `test/data/pbmc_multiome_1k.rds` in this repository.
 #'
 #' @examples
-#'   source("test/data/create_pbmcmultiome_sub.R")
-#'   pbmcmultiome_sub <- create_pbmcmultiome_sub()
-#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#'   use_data(
-#'     pbmcmultiome_sub,
-#'     compress = "xz",
-#'     overwrite = TRUE
-#'   )
+#' source("test/data/create_pbmcmultiome_sub.R")
+#' pbmcmultiome_sub <- create_pbmcmultiome_sub()
+#' use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+#' use_data(
+#'   pbmcmultiome_sub,
+#'   compress = "xz",
+#'   overwrite = TRUE
+#' )
 #' @name pbmcmultiome_sub
 NULL
 
@@ -296,19 +296,19 @@ NULL
 #'
 #' @concept data
 #' @examples
-#'   words_excluded <- c(
-#'     "the", "is", "and", "or", "a",
-#'     "in", "on", "under", "between", "of",
-#'     "through", "via", "along", "that",
-#'     "for", "with", "within", "without",
-#'     "cell", "cellular", "dna", "rna",
-#'     "protein", "peptide", "amino", "acid",
-#'     "development", "involved", "organization", "system",
-#'     "regulation", "regulated", "positive", "negative",
-#'     "response", "process", "processing", "small", "large", "change"
-#'   )
-#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#'   use_data(words_excluded, compress = "xz")
+#' words_excluded <- c(
+#'   "the", "is", "and", "or", "a",
+#'   "in", "on", "under", "between", "of",
+#'   "through", "via", "along", "that",
+#'   "for", "with", "within", "without",
+#'   "cell", "cellular", "dna", "rna",
+#'   "protein", "peptide", "amino", "acid",
+#'   "development", "involved", "organization", "system",
+#'   "regulation", "regulated", "positive", "negative",
+#'   "response", "process", "processing", "small", "large", "change"
+#' )
+#' use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+#' use_data(words_excluded, compress = "xz")
 #' @name words_excluded
 NULL
 
@@ -318,10 +318,10 @@ NULL
 #' @source
 #' \href{https://github.com/ggjlab/scMCA}{scMCA}
 #' @examples
-#'   thisutils::check_r(c("ggjlab/scMCA"))
-#'   ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
-#'   Encoding(colnames(ref_scMCA)) <- "latin1"
-#'   colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
-#'   # thisutils::get_namespace_fun("usethis", "use_data")(ref_scMCA, compress = "xz")
+#' thisutils::check_r(c("ggjlab/scMCA"))
+#' ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
+#' Encoding(colnames(ref_scMCA)) <- "latin1"
+#' colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
+#' # thisutils::get_namespace_fun("usethis", "use_data")(ref_scMCA, compress = "xz")
 #' @name ref_scMCA
 NULL

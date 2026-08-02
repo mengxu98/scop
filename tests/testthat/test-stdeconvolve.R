@@ -218,12 +218,14 @@ test_that("STdeconvolvePlot rejects missing, stale, and malformed stored results
     ncol = 2,
     dimnames = list(colnames(srt), c("topic_1", "topic_2"))
   )
-  make_bundle <- function(value) spatial_result_build(
-    bundle = list(theta = value, parameters = list(prefix = "Bad")),
-    method = "STdeconvolve",
-    result_type = "deconvolution",
-    provenance = list(producer = "RunSTdeconvolve", backend_id = "stdeconvolve")
-  )
+  make_bundle <- function(value) {
+    spatial_result_build(
+      bundle = list(theta = value, parameters = list(prefix = "Bad")),
+      method = "STdeconvolve",
+      result_type = "deconvolution",
+      provenance = list(producer = "RunSTdeconvolve", backend_id = "stdeconvolve")
+    )
+  }
 
   srt@tools$StaleST <- make_bundle(theta[-1, , drop = FALSE])
   expect_error(

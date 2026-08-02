@@ -199,11 +199,14 @@ RunPalantir <- function(
     KMP_WARNINGS = "0",
     KMP_DUPLICATE_LIB_OK = "TRUE"
   )
-  on.exit({
-    for (nm in names(old_env)) {
-      if (is.na(old_env[nm])) Sys.unsetenv(nm) else Sys.setenv(nm = old_env[nm])
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      for (nm in names(old_env)) {
+        if (is.na(old_env[nm])) Sys.unsetenv(nm) else Sys.setenv(nm = old_env[nm])
+      }
+    },
+    add = TRUE
+  )
   PrepareEnv(modules = "palantir")
   check_python("palantir", verbose = verbose)
   if (all(is.null(srt), is.null(adata))) {

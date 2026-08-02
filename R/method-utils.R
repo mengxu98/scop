@@ -419,8 +419,15 @@ vector_weighted_arrows <- function(
       "grid", "x", "y", "dx", "dy", "xend", "yend", "length"
     ), drop = FALSE])
   }
-  dist_mat <- as.matrix(stats::dist(centers))
-  positive_dist <- dist_mat[dist_mat > 0]
+  # Distances are computed row-wise (dx * dx + dy * dy), matching the
+  # C++ backend exactly, so tied distances rank identically on every
+  # platform instead of drifting at the last bit inside stats::dist().
+  row_distances <- t(apply(centers, 1, function(ci) {
+    dx <- centers[, 1] - ci[1]
+    dy <- centers[, 2] - ci[2]
+    sqrt(dx * dx + dy * dy)
+  }))
+  positive_dist <- row_distances[row_distances > 0]
   if (length(positive_dist) == 0L) {
     return(NULL)
   }
@@ -428,14 +435,15 @@ vector_weighted_arrows <- function(
   emb_range <- apply(emb, 2, range, na.rm = TRUE)
   out <- lapply(seq_len(nrow(centers)), function(i) {
     vec <- sweep(centers, 2, centers[i, ], "-")
-    vec_norm <- t(apply(vec, 1, function(x) {
-      len <- sqrt(sum(x^2))
+    distances <- row_distances[i, ]
+    vec_norm <- t(vapply(seq_len(nrow(vec)), function(j) {
+      len <- distances[j]
       if (!is.finite(len) || len == 0) {
         return(c(0, 0))
       }
-      x / len * one
-    }))
-    distance_weight <- p^(rank(dist_mat[i, ], ties.method = "first") - 1)
+      vec[j, ] / len * one
+    }, numeric(2)))
+    distance_weight <- p^(rank(distances, ties.method = "first") - 1)
     score_weight <- scores[i] - scores
     weight <- distance_weight * score_weight
     denom <- sum(abs(weight), na.rm = TRUE)

@@ -128,8 +128,7 @@ RunMetaCell <- function(
     }
   }
 
-  mc_result <- switch(
-    method,
+  mc_result <- switch(method,
     supercell = metacell_supercell(
       counts = counts,
       gamma = gamma,

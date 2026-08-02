@@ -717,7 +717,7 @@ spatial_integration_run_spatialmnn <- function(input, params, verbose = TRUE) {
 spatialmnn_supply_missing_imports <- function(fun) {
   env <- environment(fun)
   if (identical(environmentName(env), "atlasClustering") &&
-      !exists("str_split", envir = env, inherits = TRUE)) {
+    !exists("str_split", envir = env, inherits = TRUE)) {
     local_env <- new.env(parent = env)
     local_env$str_split <- get_namespace_fun("stringr", "str_split")
     environment(fun) <- local_env

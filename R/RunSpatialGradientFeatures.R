@@ -930,8 +930,7 @@ sgf_eval_annotation_threshold <- function(values, threshold) {
   if (!is.finite(cutoff)) {
     log_message("{.arg annotation.threshold} contains a non-finite cutoff", message_type = "error")
   }
-  out[finite] <- switch(
-    op,
+  out[finite] <- switch(op,
     ">" = values[finite] > cutoff,
     ">=" = values[finite] >= cutoff,
     "<" = values[finite] < cutoff,
@@ -1233,10 +1232,13 @@ sgf_extract_model_fits <- function(screening_out) {
 }
 
 sgf_slot_result <- function(screening_out, name) {
-  out <- tryCatch({
-    res <- methods::slot(screening_out, "results")
-    res[[name]]
-  }, error = function(e) NULL)
+  out <- tryCatch(
+    {
+      res <- methods::slot(screening_out, "results")
+      res[[name]]
+    },
+    error = function(e) NULL
+  )
   if (!is.data.frame(out)) {
     out <- data.frame()
   }
@@ -1628,11 +1630,11 @@ sgf_line_plot <- function(
     )
   } else {
     p <- p +
-    ggplot2::geom_line(
-      ggplot2::aes(y = .data[[y_col]]),
-      linewidth = line_size,
-      na.rm = TRUE
-    )
+      ggplot2::geom_line(
+        ggplot2::aes(y = .data[[y_col]]),
+        linewidth = line_size,
+        na.rm = TRUE
+      )
   }
   p <- p +
     ggplot2::facet_wrap(~variable, scales = "free_y", nrow = nrow, ncol = ncol) +

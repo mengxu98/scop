@@ -303,8 +303,7 @@ RunscTenifoldKnk <- function(
     verbose = verbose
   )
 
-  result <- switch(
-    backend,
+  result <- switch(backend,
     cpp = {
       for (pkg in c("scTenifoldNet", "RSpectra", "RhpcBLASctl", "MASS")) {
         check_r(pkg, verbose = FALSE)

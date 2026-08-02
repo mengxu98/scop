@@ -82,7 +82,7 @@ test_that("tage_elastic_net_predict_cpp handles missing features via imputation"
     imputer = c(0, 0, 10),
     center = c(0, 0, 0),
     scale = c(1, 1, 1),
-    coef = c(0, 0, 1),  # only the missing feature has non-zero coef
+    coef = c(0, 0, 1), # only the missing feature has non-zero coef
     intercept = 0.0
   )
 
@@ -94,8 +94,8 @@ test_that("tage_elastic_net_predict_cpp multi-feature prediction", {
   n_samples <- 2
   # Two features: gene_1 (row 1), gene_2 (row 2)
   expr <- matrix(c(
-    3, 7,   # gene_1
-    5, 1    # gene_2
+    3, 7, # gene_1
+    5, 1 # gene_2
   ), nrow = 2, ncol = n_samples, byrow = TRUE)
 
   # pred = intercept + coef1*(x1-c1)/s1 + coef2*(x2-c2)/s2
@@ -157,8 +157,8 @@ test_that("tage_elastic_net_predict_cpp rejects mismatched sizes", {
   expect_error(
     tage_elastic_net_predict_cpp(
       expr = expr,
-      feature_match = as.integer(c(1, 2)),  # 2 features
-      imputer = c(0, 0, 0),                  # 3 imputers (mismatch)
+      feature_match = as.integer(c(1, 2)), # 2 features
+      imputer = c(0, 0, 0), # 3 imputers (mismatch)
       center = c(0, 0),
       scale = c(1, 1),
       coef = c(0.5, 0.5),

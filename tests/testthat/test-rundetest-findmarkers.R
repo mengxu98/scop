@@ -290,6 +290,11 @@ test_that("RunDEtest all-in-one markers match the pairwise scop backend", {
   })
   pairwise <- do.call(rbind, pairwise)
   pairwise <- pairwise[, colnames(all_in_one), drop = FALSE]
+  # The all-in-one and pairwise paths may order tied rows differently
+  # across compilers; align by (group1, gene) so the comparison is
+  # row-order independent.
+  all_in_one <- all_in_one[order(all_in_one$group1, all_in_one$gene), ]
+  pairwise <- pairwise[order(pairwise$group1, pairwise$gene), ]
   rownames(pairwise) <- NULL
   rownames(all_in_one) <- NULL
 

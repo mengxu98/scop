@@ -164,6 +164,11 @@ test_that("FindAllMarkers supports feature subsets with Seurat parity", {
     verbose = FALSE
   ))
 
+  # Seurat and the scop implementation may order tied rows differently
+  # across compilers and platforms; align by (cluster, gene) so the
+  # parity comparison is row-order independent.
+  expected <- expected[order(expected$cluster, expected$gene), ]
+  actual <- actual[order(actual$cluster, actual$gene), ]
   rownames(expected) <- NULL
   rownames(actual) <- NULL
   expect_equal(actual, expected, tolerance = 1e-12)

@@ -2392,19 +2392,17 @@ GroupHeatmap <- function(
 
   if (isTRUE(fix)) {
     fixsize_env <- new.env(parent = emptyenv())
-    invisible(grid::grid.grabExpr(
-      {
-        fixsize_env[["value"]] <- heatmap_fixsize(
-          width = width,
-          width_sum = width_sum,
-          height = height,
-          height_sum = height_sum,
-          units = units,
-          ht_list = ht_list,
-          legend_list = lgd
-        )
-      }
-    ))
+    invisible(grid::grid.grabExpr({
+      fixsize_env[["value"]] <- heatmap_fixsize(
+        width = width,
+        width_sum = width_sum,
+        height = height,
+        height_sum = height_sum,
+        units = units,
+        ht_list = ht_list,
+        legend_list = lgd
+      )
+    }))
     fixsize <- fixsize_env[["value"]]
     rm(fixsize_env)
     ht_width <- fixsize[["ht_width"]]

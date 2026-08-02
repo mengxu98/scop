@@ -428,8 +428,7 @@ benchmark_efficiency_plot <- function(
   data <- data[
     data$status == "success" &
       is.finite(data$runtime_s) & data$runtime_s > 0 &
-      is.finite(data$peak_memory_mb) & data$peak_memory_mb > 0,
-    ,
+      is.finite(data$peak_memory_mb) & data$peak_memory_mb > 0, ,
     drop = FALSE
   ]
   if (nrow(data) == 0L) {
@@ -539,7 +538,9 @@ benchmark_wrap_method <- function(x, width = 22L) {
 }
 
 benchmark_plot_method_labels <- function(result, methods) {
-  if (!"tier" %in% colnames(result$summary)) return(methods)
+  if (!"tier" %in% colnames(result$summary)) {
+    return(methods)
+  }
   tiers <- stats::setNames(as.character(result$summary$tier), result$summary$method)
   ifelse(tiers[methods] == "legacy", paste0(methods, " [legacy]"), methods)
 }
@@ -565,8 +566,12 @@ benchmark_publication_theme <- function() {
 }
 
 benchmark_resource_log <- function(values, resource_scale) {
-  if (identical(resource_scale, "log10")) return(TRUE)
-  if (identical(resource_scale, "linear")) return(FALSE)
+  if (identical(resource_scale, "log10")) {
+    return(TRUE)
+  }
+  if (identical(resource_scale, "linear")) {
+    return(FALSE)
+  }
   values <- values[is.finite(values) & values > 0]
   length(values) >= 2L && max(values) / min(values) >= 10
 }
@@ -649,7 +654,9 @@ benchmark_metric_heatmap <- function(
 benchmark_normalize_metric <- function(values, direction) {
   finite <- is.finite(values)
   out <- rep(NA_real_, length(values))
-  if (!any(finite)) return(out)
+  if (!any(finite)) {
+    return(out)
+  }
   limits <- range(values[finite])
   if (diff(limits) == 0) {
     out[finite] <- 0.5
@@ -719,7 +726,8 @@ benchmark_trim_text <- function(x, width) {
 benchmark_empty_panel <- function(title, subtitle) {
   ggplot2::ggplot() +
     ggplot2::annotate(
-      "text", x = 0.5, y = 0.5,
+      "text",
+      x = 0.5, y = 0.5,
       label = subtitle,
       color = "#6B7280",
       size = 3,

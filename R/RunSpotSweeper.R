@@ -76,21 +76,21 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#'   spatial <- RunSpotSweeper(
-#'     spatial,
-#'     assay = "Spatial",
-#'     coord.cols = c("x", "y"),
-#'     n_neighbors = 12,
-#'     run_artifact = FALSE,
-#'     verbose = FALSE
-#'   )
+#' spatial <- RunSpotSweeper(
+#'   spatial,
+#'   assay = "Spatial",
+#'   coord.cols = c("x", "y"),
+#'   n_neighbors = 12,
+#'   run_artifact = FALSE,
+#'   verbose = FALSE
+#' )
 #'
-#'   SpatialSpotPlot(
-#'     spatial,
-#'     group.by = "SpotSweeper_QC",
-#'     overlay_image = FALSE,
-#'     coord.cols = c("x", "y")
-#'   )
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "SpotSweeper_QC",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
 RunSpotSweeper <- function(
   srt,
   assay = NULL,

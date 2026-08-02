@@ -3267,8 +3267,8 @@ bbknn_native_matrix <- function(embedding, batches, params = list()) {
   connectivity_product <- connectivity * connectivity_transpose
   set_op_mix_ratio <- as.numeric(params[["set_op_mix_ratio"]] %||% 1)
   if (!is.finite(set_op_mix_ratio) ||
-      set_op_mix_ratio < 0 ||
-      set_op_mix_ratio > 1) {
+    set_op_mix_ratio < 0 ||
+    set_op_mix_ratio > 1) {
     log_message(
       "{.arg set_op_mix_ratio} must be between 0 and 1",
       message_type = "error"

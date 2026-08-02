@@ -127,12 +127,12 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
-  spatial <- RunCSIDE(
-    spatial,
-    group.by = "region",
-    celltypes = c("Ductal", "Endocrine"),
-    gene_threshold = 0.00005,
-    cell_type_threshold = 125
-  )
+spatial <- RunCSIDE(
+  spatial,
+  group.by = "region",
+  celltypes = c("Ductal", "Endocrine"),
+  gene_threshold = 0.00005,
+  cell_type_threshold = 125
+)
 }
 \concept{spatial-producer}
