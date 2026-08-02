@@ -124,47 +124,47 @@ bundled human pancreas integration subset, which has a
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:48] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:45] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
 <span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunIntegration.html">RunIntegration</a></span><span class="op">(</span></span>
 <span>  srt_merge <span class="op">=</span> <span class="va">panc8_sub</span>,</span>
 <span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
 <span>  integration_methods <span class="op">=</span> <span class="st">"Harmony"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-08-02 13:40:51] <span style="color: #0000BB;">Run integration workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:51] Split `srt_merge` into `srt_list` by <span style="color: #0000BB;">"tech"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:52] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:40:52] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:52] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:40:52] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:52] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:40:53] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:53] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:53] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:40:53] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:53] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:53] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 13:40:53] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:53] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:53] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:54] Use the separate HVF from `srt_list`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:54] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:54] Finished check</span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-08-02 14:04:48] <span style="color: #0000BB;">Run integration workflow...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:49] Split `srt_merge` into `srt_list` by <span style="color: #0000BB;">"tech"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:50] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 14:04:50] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:50] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 14:04:50] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:50] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 14:04:50] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:50] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 14:04:50] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:50] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:50] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-08-02 14:04:51] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:51] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:51] Use the separate HVF from `srt_list`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:52] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:52] Finished check</span></span>
 <span><span class="co">#&gt; Warning: No layers found matching search pattern provided</span></span>
 <span><span class="co">#&gt; Warning: Layer 'scale.data' is empty</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:40:58] Perform `Seurat::ScaleData()`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:00] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:00] Perform <span style="color: #0000BB;">Harmony</span> integration</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:00] Using <span style="color: #0000BB;">"Harmonypca"</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>) as input</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:01] Adjust neighbor k from <span style="color: #0000BB;">20</span> to <span style="color: #0000BB;">20</span> for small-sample clustering</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:01] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">"louvain"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:01] Reorder clusters...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:01] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:01] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:04] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:07] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmonypca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 13:41:10] <span style="color: #0000BB;">Harmony</span> integration completed</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:56] Perform `Seurat::ScaleData()`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:57] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:58] Perform <span style="color: #0000BB;">Harmony</span> integration</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:58] Using <span style="color: #0000BB;">"Harmonypca"</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>) as input</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:58] Adjust neighbor k from <span style="color: #0000BB;">20</span> to <span style="color: #0000BB;">20</span> for small-sample clustering</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:59] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">"louvain"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:59] Reorder clusters...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:59] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:04:59] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:01] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:04] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmonypca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-08-02 14:05:07] <span style="color: #0000BB;">Harmony</span> integration completed</span></span></code></pre></div>
 <p>When query and reference use different gene-name conventions,
 standardize names before mapping. Keep the name conversion explicit so
 that annotation results can be traced later. The example converts human
@@ -186,7 +186,7 @@ capitalization.</p>
 <span>  newnames <span class="op">=</span> <span class="va">genenames</span>,</span>
 <span>  assays <span class="op">=</span> <span class="st">"RNA"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:10] Rename features for the assay: RNA</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:08] Rename features for the assay: RNA</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="project-query-cells-onto-a-reference">Project Query Cells Onto a Reference<a class="anchor" aria-label="anchor" href="#project-query-cells-onto-a-reference"></a>
@@ -200,12 +200,12 @@ system.</p>
 <span>  srt_ref <span class="op">=</span> <span class="va">panc8_rename</span>,</span>
 <span>  ref_umap <span class="op">=</span> <span class="st">"HarmonyUMAP2D"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:10] Use the features to calculate distance metric</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:11] Data type is log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:11] Data type is log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:11] Use <span style="color: #0000BB;">632</span> features to calculate distance</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:11] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:12] Running UMAP projection</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:08] Use the features to calculate distance metric</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:08] Data type is log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:09] Data type is log-normalized</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:09] Use <span style="color: #0000BB;">632</span> features to calculate distance</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:09] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:09] Running UMAP projection</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/ProjectionPlot.html">ProjectionPlot</a></span><span class="op">(</span></span>
 <span>  srt_query <span class="op">=</span> <span class="va">srt_query</span>,</span>
@@ -246,12 +246,12 @@ reference profiles are available but not individual reference cells.</p>
 <span>  bulk_ref <span class="op">=</span> <span class="va">ref_scMCA</span>,</span>
 <span>  filter_lowfreq <span class="op">=</span> <span class="fl">20</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:14] Use [1] 549 features to calculate distance.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:14] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:14] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:14] Calculate similarity...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:14] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:15] Predict cell type...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:12] Use [1] 549 features to calculate distance.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:12] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:12] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:12] Calculate similarity...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:12] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:12] Predict cell type...</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
@@ -278,18 +278,18 @@ biology are close enough for nearest-neighbor transfer.</p>
 <span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
 <span>  filter_lowfreq <span class="op">=</span> <span class="fl">20</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:15] Use the HVF to calculate distance metric</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:15] Use [1] 632 features to calculate distance.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:13] Use the HVF to calculate distance metric</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:13] Use [1] 632 features to calculate distance.</span></span>
 <span><span class="co">#&gt; As of Seurat v5, we recommend using AggregateExpression to perform pseudo-bulk analysis.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:15] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:13] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:15] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:13] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:15] Calculate similarity...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:13] Calculate similarity...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:15] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:13] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:15] Predict cell type...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:13] Predict cell type...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #555555;">This message is displayed once per session.</span></span></span>
 <span></span>
@@ -317,13 +317,13 @@ multiple labels flags ambiguity.</p>
 <span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  show_column_names <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:16] Use the HVF to calculate distance metric</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:16] Use [1] 632 features to calculate distance.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:16] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:16] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:16] Calculate similarity...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:16] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 13:41:16] Predict cell type...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:14] Use the HVF to calculate distance metric</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:14] Use [1] 632 features to calculate distance.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:14] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:14] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:14] Calculate similarity...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:14] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-08-02 14:05:14] Predict cell type...</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ht</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
 <p><img src="cell-annotation-workflow_files/figure-html/correlation-heatmap-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
 </div>
