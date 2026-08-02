@@ -3,16 +3,14 @@ pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   cell-annotation-workflow: cell-annotation-workflow.html
-  cell-cell-communication-workflow: cell-cell-communication-workflow.html
   differential-enrichment-workflow: differential-enrichment-workflow.html
   integration-workflow: integration-workflow.html
-  interactive-scexplorer-workflow: interactive-scexplorer-workflow.html
   reproduce-pancreatic-endocrinogenesis: reproduce-pancreatic-endocrinogenesis.html
   single-cell-main-workflow: single-cell-main-workflow.html
   spatial-framework-bridges: spatial-framework-bridges.html
   spatial-main-workflow: spatial-main-workflow.html
   trajectory-dynamic-workflow: trajectory-dynamic-workflow.html
-last_built: 2026-07-28T03:20Z
+last_built: 2026-08-02T07:57Z
 urls:
   reference: https://mengxu98.github.io/scop/reference
   article: https://mengxu98.github.io/scop/articles
