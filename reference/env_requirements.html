@@ -11,7 +11,7 @@ All packages will be installed using uv as the primary tool."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,8 +22,17 @@ All packages will be installed using uv as the primary tool."></head><body>
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -70,7 +79,8 @@ All packages will be installed using uv as the primary tool.</p>
 
 <dl><dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
 <dd><p>The Python version of the environment.
-Default is <code>"3.10-1"</code>.</p></dd>
+Default is <code>"3.10-1"</code>. Python <code>"3.9-1"</code> is reserved for the standalone
+<code>"cell2fate"</code> module.</p></dd>
 
 
 <dt id="arg-include-optional">include_optional<a class="anchor" aria-label="anchor" href="#arg-include-optional"></a></dt>
@@ -80,13 +90,14 @@ Default is <code>"3.10-1"</code>.</p></dd>
 <dt id="arg-modules">modules<a class="anchor" aria-label="anchor" href="#arg-modules"></a></dt>
 <dd><p>Optional requirement modules to include. Supported values are
 <code>"scanpy"</code>, <code>"scvi"</code>, <code>"scanorama"</code>, <code>"bbknn"</code>, <code>"celltypist"</code>,
-<code>"cellphonedb"</code>, <code>"magic"</code>, <code>"scrublet"</code>, <code>"doubletdetection"</code>,
+<code>"cellphonedb"</code>, <code>"cell2location"</code>, <code>"cell2fate"</code>, <code>"magic"</code>, <code>"scrublet"</code>, <code>"doubletdetection"</code>,
 <code>"sccoda"</code>, <code>"doublet"</code>, <code>"palantir"</code>, <code>"scvelo"</code>, <code>"cellrank"</code>, <code>"wot"</code>,
 <code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"multimap"</code>,
 <code>"scomm"</code>, <code>"scenic"</code>, <code>"seacells"</code>, <code>"tage"</code>,
-<code>"scmalignantfinder"</code>, <code>"secact"</code>, <code>"scpagwas"</code>, and
+<code>"scmalignantfinder"</code>, <code>"secact"</code>, <code>"scpagwas"</code>, <code>"choir"</code>, and
 <code>"external_wrappers"</code>. If <code>NULL</code>, the default environment is returned. The default
-excludes <code>"sccoda"</code>, <code>"scomm"</code>, and <code>"scenic"</code> because these workflows
+excludes <code>"cell2location"</code>, <code>"cell2fate"</code>, <code>"sccoda"</code>, <code>"scomm"</code>, and
+<code>"scenic"</code> because these workflows
 require dependency stacks that should be prepared explicitly. The
 <code>"scenic"</code> module is standalone and always uses Python <code>"3.10-1"</code>.</p></dd>
 
@@ -128,9 +139,9 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                     matplotlib </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                           "matplotlib==3.10.8" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                          numba </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                "numba==0.59.1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                "numba==0.66.0" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                       llvmlite </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                             "llvmlite==0.42.0" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                             "llvmlite==0.48.0" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                          numpy </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                "numpy==1.26.4" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                      packaging </span>
@@ -146,7 +157,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                         loompy </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                       "loompy" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                     scvi-tools </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                            "scvi-tools==1.2.1" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                            "scvi-tools==1.3.3" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                            jax </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                             "jax[cpu]==0.4.38" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                         scglue </span>
@@ -240,7 +251,7 @@ Default is <code>TRUE</code>.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

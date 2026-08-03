@@ -11,7 +11,7 @@ Seurat object is not modified."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,8 +22,17 @@ Seurat object is not modified."></head><body>
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -105,7 +114,8 @@ variable features are used, falling back to all assay features.</p></dd>
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
 <dd><p>Name of the Seurat spatial image used by the spatial workflow.
-If <code>NULL</code>, the first image is used when present.</p></dd>
+Required when multiple images are present; a single image is selected
+automatically when <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
@@ -146,16 +156,16 @@ object is always returned in the <code>giotto</code> element.</p></dd>
 
 <dt id="arg-conversion-params">conversion_params<a class="anchor" aria-label="anchor" href="#arg-conversion-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code>Giotto::createGiottoObject()</code>.</p></dd>
+<code><a href="https://giotto-suite.github.io/GiottoClass/reference/create_giotto.html" class="external-link">Giotto::createGiottoObject()</a></code>.</p></dd>
 
 
 <dt id="arg-preprocess-params">preprocess_params<a class="anchor" aria-label="anchor" href="#arg-preprocess-params"></a></dt>
-<dd><p>Additional parameters passed to <code>Giotto::runPCA()</code>.</p></dd>
+<dd><p>Additional parameters passed to <code><a href="https://rdrr.io/pkg/Giotto/man/runPCA.html" class="external-link">Giotto::runPCA()</a></code>.</p></dd>
 
 
 <dt id="arg-network-params">network_params<a class="anchor" aria-label="anchor" href="#arg-network-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code>Giotto::createNearestNetwork()</code>.</p></dd>
+<code><a href="https://giotto-suite.github.io/GiottoClass/reference/createNearestNetwork.html" class="external-link">Giotto::createNearestNetwork()</a></code>.</p></dd>
 
 
 <dt id="arg-cluster-params">cluster_params<a class="anchor" aria-label="anchor" href="#arg-cluster-params"></a></dt>
@@ -211,9 +221,6 @@ cluster assignments, Giotto metadata, parameters, features, and cells.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunGiottoCluster-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu">check_r</span><span class="op">(</span><span class="st">"giotto-suite/Giotto"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">spatial</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
@@ -230,10 +237,20 @@ cluster assignments, Giotto metadata, parameters, features, and cells.</p>
 <span class="r-in"><span>  resolution <span class="op">=</span> <span class="fl">0.4</span>,</span></span>
 <span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:53:47] Create temporary <span style="color: #0000BB;">Giotto</span> object from <span style="color: #0000BB;">&lt;Seurat&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:53:48] Run <span style="color: #0000BB;">Giotto</span> PCA and nearest-network clustering</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> a custom vector of genes will be used to subset the matrix</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting dimension reduction [cell][rna] pca</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 04:53:51] <span style="color: #0000BB;">Giotto</span> clustering completed; returning standalone result without modifying `srt`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">giotto_clusters</span><span class="op">$</span><span class="va">clusters</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_r("giotto-suite/Giotto", verbose = FALSE):</span> could not find function "check_r"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    cluster</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TGGTATCGGTCTGTAT-1       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ATTATCTCGACAGATC-1       2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TGAGATCAAATACTCA-1       2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CTGGTCCTAACTTGGC-1       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ATAGTCTTTGACGTGC-1       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GGGTGGTCCAGCCTGT-1       4</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -246,7 +263,7 @@ cluster assignments, Giotto metadata, parameters, features, and cells.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

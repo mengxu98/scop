@@ -11,7 +11,7 @@ standalone result; the input Seurat object is not modified."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,8 +22,17 @@ standalone result; the input Seurat object is not modified."></head><body>
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -98,13 +107,14 @@ additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></d
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>Features to test with <code>Giotto::binSpect()</code>. If <code>NULL</code>,
+<dd><p>Features to test with <code><a href="https://rdrr.io/pkg/Giotto/man/binSpect.html" class="external-link">Giotto::binSpect()</a></code>. If <code>NULL</code>,
 current variable features are used, falling back to all assay features.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
 <dd><p>Name of the Seurat spatial image used by the spatial workflow.
-If <code>NULL</code>, the first image is used when present.</p></dd>
+Required when multiple images are present; a single image is selected
+automatically when <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
@@ -114,7 +124,7 @@ when no image is available.</p></dd>
 
 <dt id="arg-network-method">network_method<a class="anchor" aria-label="anchor" href="#arg-network-method"></a></dt>
 <dd><p>Spatial network method passed to
-<code>Giotto::createSpatialNetwork()</code>.</p></dd>
+<code><a href="https://giotto-suite.github.io/GiottoClass/reference/createSpatialNetwork.html" class="external-link">Giotto::createSpatialNetwork()</a></code>.</p></dd>
 
 
 <dt id="arg-network-name">network_name<a class="anchor" aria-label="anchor" href="#arg-network-name"></a></dt>
@@ -122,7 +132,7 @@ when no image is available.</p></dd>
 
 
 <dt id="arg-bin-method">bin_method<a class="anchor" aria-label="anchor" href="#arg-bin-method"></a></dt>
-<dd><p>Binarization method passed to <code>Giotto::binSpect()</code>.</p></dd>
+<dd><p>Binarization method passed to <code><a href="https://rdrr.io/pkg/Giotto/man/binSpect.html" class="external-link">Giotto::binSpect()</a></code>.</p></dd>
 
 
 <dt id="arg-set-variable-features">set_variable_features<a class="anchor" aria-label="anchor" href="#arg-set-variable-features"></a></dt>
@@ -146,16 +156,16 @@ object is always returned in the <code>giotto</code> element.</p></dd>
 
 <dt id="arg-conversion-params">conversion_params<a class="anchor" aria-label="anchor" href="#arg-conversion-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code>Giotto::createGiottoObject()</code>.</p></dd>
+<code><a href="https://giotto-suite.github.io/GiottoClass/reference/create_giotto.html" class="external-link">Giotto::createGiottoObject()</a></code>.</p></dd>
 
 
 <dt id="arg-network-params">network_params<a class="anchor" aria-label="anchor" href="#arg-network-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code>Giotto::createSpatialNetwork()</code>.</p></dd>
+<code><a href="https://giotto-suite.github.io/GiottoClass/reference/createSpatialNetwork.html" class="external-link">Giotto::createSpatialNetwork()</a></code>.</p></dd>
 
 
 <dt id="arg-binspect-params">binSpect_params<a class="anchor" aria-label="anchor" href="#arg-binspect-params"></a></dt>
-<dd><p>Additional parameters passed to <code>Giotto::binSpect()</code>.</p></dd>
+<dd><p>Additional parameters passed to <code><a href="https://rdrr.io/pkg/Giotto/man/binSpect.html" class="external-link">Giotto::binSpect()</a></code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -209,9 +219,6 @@ and cells.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunGiottoSpatialGenes-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu">check_r</span><span class="op">(</span><span class="st">"giotto-suite/Giotto"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
@@ -226,8 +233,20 @@ and cells.</p>
 <span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">50</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_r("giotto-suite/Giotto", verbose = FALSE):</span> could not find function "check_r"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting spatial network [cell] Delaunay_network</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> This is the single parameter version of binSpect</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 1. matrix binarization complete</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2. spatial enrichment test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 3. (optional) average expression of high</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  expressing cells calculated</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 4. (optional) number of high expressing cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  calculated</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 04:54:02] <span style="color: #0000BB;">Giotto</span> spatial genes completed; returning standalone result without modifying `srt`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -240,7 +259,7 @@ and cells.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

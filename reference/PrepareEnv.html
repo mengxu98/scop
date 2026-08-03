@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,8 +18,17 @@
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -58,6 +67,8 @@
 <span>  force <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  modules <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pip_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  components <span class="op">=</span> <span class="st">"python"</span>,</span>
+<span>  cores <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -100,19 +111,13 @@ Default is <code>FALSE</code>.</p></dd>
 <dt id="arg-modules">modules<a class="anchor" aria-label="anchor" href="#arg-modules"></a></dt>
 <dd><p>Optional Python dependency modules to install in addition to
 the default scientific stack.
-Supported values are <code>"scanpy"</code>, <code>"scvi"</code>, <code>"glue"</code>, <code>"scanorama"</code>, <code>"bbknn"</code>,
-<code>"celltypist"</code>, <code>"cellphonedb"</code>, <code>"magic"</code>, <code>"scrublet"</code>,
-<code>"sccoda"</code>, <code>"doubletdetection"</code>, <code>"doublet"</code>, <code>"palantir"</code>, <code>"scvelo"</code>,
-<code>"cellrank"</code>, <code>"wot"</code>, <code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"multimap"</code>,
-<code>"scomm"</code>, <code>"scenic"</code>, <code>"seacells"</code>, <code>"tage"</code>,
-<code>"scmalignantfinder"</code>, <code>"secact"</code>, <code>"scpagwas"</code>, and
-<code>"external_wrappers"</code>.
 If <code>NULL</code> or omitted in <code>PrepareEnv()</code>, the default environment is installed.
-The default excludes <code>"sccoda"</code> and <code>"scomm"</code> because their TensorFlow stacks
-are not compatible with the default JAX/scVI stack in the same environment;
-request them explicitly for scCODA/scOMM workflows. <code>"scenic"</code> is also
-excluded from the default environment and is prepared in <code>"scenic_env"</code> by
-default because SCENIC requires an older Python/numpy stack. On Windows, the
+The default excludes <code>"cell2location"</code>, <code>"cell2fate"</code>, <code>"sccoda"</code>, and
+<code>"scomm"</code> because these workflows use long-running or incompatible dependency
+stacks. Cell2fate is prepared in a standalone <code>"cell2fate_env"</code> with Python
+3.9. <code>"scenic"</code> is also excluded from the default environment and is prepared
+in <code>"scenic_env"</code> by default because SCENIC requires an older Python/numpy
+stack. On Windows, the
 default also excludes <code>"scvi"</code>, <code>"glue"</code>, and <code>"multimap"</code> because those
 upstream stacks are more reliable when requested explicitly for
 method-specific workflows.</p></dd>
@@ -120,6 +125,21 @@ method-specific workflows.</p></dd>
 
 <dt id="arg-pip-options">pip_options<a class="anchor" aria-label="anchor" href="#arg-pip-options"></a></dt>
 <dd><p>Additional command line arguments to be passed to <code>uv</code>/<code>pip</code> when installing pip packages.</p></dd>
+
+
+<dt id="arg-components">components<a class="anchor" aria-label="anchor" href="#arg-components"></a></dt>
+<dd><p>Components to prepare. Supported values are <code>"python"</code>,
+<code>"r"</code>, and <code>"all"</code>; <code>"all"</code> expands to both Python and R. The default,
+<code>"python"</code>, preserves the existing Python-only behavior. The R component
+collects packages declared through <code>check_r()</code> and checks/installs them,
+including optional workflow dependencies not listed in <code>DESCRIPTION</code>.
+CHOIR is R-only, so <code>PrepareEnv(modules = "choir")</code> prepares its pinned
+optional R backend without creating a Python environment.</p></dd>
+
+
+<dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
+<dd><p>Number of workers for R-package installation. Use <code>NULL</code> (the
+default) to let pak select its worker count automatically.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -141,7 +161,7 @@ Default is <code>TRUE</code>.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

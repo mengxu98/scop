@@ -11,7 +11,7 @@ object when possible."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,8 +22,17 @@ object when possible."></head><body>
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -155,7 +164,7 @@ for <code>"single"</code>, <code>"multi"</code>, and <code>"recover"</code> unle
 
 <dt id="arg-celltypes">celltypes<a class="anchor" aria-label="anchor" href="#arg-celltypes"></a></dt>
 <dd><p>Optional named vector of cell types passed to
-<code>SpatialEcoTyper::RecoverSE()</code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/SpatialEcoTyper/man/RecoverSE.html" class="external-link">SpatialEcoTyper::RecoverSE()</a></code>.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
@@ -240,7 +249,7 @@ from the returned <code>SpatialEcoTyper</code> metadata.</p></dd>
 
 
 <dt id="arg-normalization-method-nmf-ranks-nrun-per-rank-min-coph-region-downsample-by-region-subresolution-seed">normalization.method, nmf_ranks, nrun.per.rank, min.coph, Region, downsample.by.region, subresolution, seed<a class="anchor" aria-label="anchor" href="#arg-normalization-method-nmf-ranks-nrun-per-rank-min-coph-region-downsample-by-region-subresolution-seed"></a></dt>
-<dd><p>Parameters passed to <code>SpatialEcoTyper::MultiSpatialEcoTyper()</code>.</p></dd>
+<dd><p>Parameters passed to <code><a href="https://rdrr.io/pkg/SpatialEcoTyper/man/MultiSpatialEcoTyper.html" class="external-link">SpatialEcoTyper::MultiSpatialEcoTyper()</a></code>.</p></dd>
 
 
 <dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
@@ -249,27 +258,27 @@ from the returned <code>SpatialEcoTyper</code> metadata.</p></dd>
 
 
 <dt id="arg-ws">Ws<a class="anchor" aria-label="anchor" href="#arg-ws"></a></dt>
-<dd><p>Pretrained basis matrices passed to <code>SpatialEcoTyper::RecoverSE()</code>.</p></dd>
+<dd><p>Pretrained basis matrices passed to <code><a href="https://rdrr.io/pkg/SpatialEcoTyper/man/RecoverSE.html" class="external-link">SpatialEcoTyper::RecoverSE()</a></code>.</p></dd>
 
 
 <dt id="arg-ncell-per-run">ncell.per.run<a class="anchor" aria-label="anchor" href="#arg-ncell-per-run"></a></dt>
 <dd><p>Number of cells processed per run by
-<code>SpatialEcoTyper::RecoverSE()</code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/SpatialEcoTyper/man/RecoverSE.html" class="external-link">SpatialEcoTyper::RecoverSE()</a></code>.</p></dd>
 
 
 <dt id="arg-min-score">min.score<a class="anchor" aria-label="anchor" href="#arg-min-score"></a></dt>
 <dd><p>Minimum prediction score passed to
-<code>SpatialEcoTyper::RecoverSE()</code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/SpatialEcoTyper/man/RecoverSE.html" class="external-link">SpatialEcoTyper::RecoverSE()</a></code>.</p></dd>
 
 
 <dt id="arg-w">W<a class="anchor" aria-label="anchor" href="#arg-w"></a></dt>
 <dd><p>Pretrained basis matrix passed to
-<code>SpatialEcoTyper::DeconvoluteSE()</code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/SpatialEcoTyper/man/DeconvoluteSE.html" class="external-link">SpatialEcoTyper::DeconvoluteSE()</a></code>.</p></dd>
 
 
 <dt id="arg-nsample-per-run">nsample.per.run<a class="anchor" aria-label="anchor" href="#arg-nsample-per-run"></a></dt>
 <dd><p>Number of samples processed per run by
-<code>SpatialEcoTyper::DeconvoluteSE()</code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/SpatialEcoTyper/man/DeconvoluteSE.html" class="external-link">SpatialEcoTyper::DeconvoluteSE()</a></code>.</p></dd>
 
 
 <dt id="arg-sum-one">sum2one<a class="anchor" aria-label="anchor" href="#arg-sum-one"></a></dt>
@@ -316,6 +325,7 @@ returned.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">srt</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span></span>
+<span class="r-in"><span><span class="va">srt</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">srt</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">srt</span><span class="op">$</span><span class="va">CellType</span> <span class="op">&lt;-</span> <span class="va">srt</span><span class="op">$</span><span class="va">coda_label</span></span></span>
 <span class="r-in"><span><span class="va">srt</span><span class="op">$</span><span class="va">SpatialEcoTyper_SE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">srt</span><span class="op">$</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">srt</span><span class="op">$</span><span class="va">x</span><span class="op">)</span>, <span class="st">"SE1"</span>, <span class="st">"SE2"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">srt</span><span class="op">$</span><span class="va">sample</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">srt</span><span class="op">$</span><span class="va">y</span> <span class="op">&gt;</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">srt</span><span class="op">$</span><span class="va">y</span><span class="op">)</span>, <span class="st">"slice_a"</span>, <span class="st">"slice_b"</span><span class="op">)</span></span></span>
@@ -333,10 +343,8 @@ returned.</p>
 <span class="r-in"><span>  position <span class="op">=</span> <span class="st">"fill"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunSpatialEcoTyper-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">srt</span><span class="op">$</span><span class="va">sample</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu">check_r</span><span class="op">(</span><span class="st">"digitalcytometry/SpatialEcoTyper"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="va">srt</span> <span class="op">&lt;-</span> <span class="fu">RunSpatialEcoTyper</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">srt</span>,</span></span>
 <span class="r-in"><span>  celltype.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
@@ -344,22 +352,61 @@ returned.</p>
 <span class="r-in"><span>  y.by <span class="op">=</span> <span class="st">"y"</span>,</span></span>
 <span class="r-in"><span>  nfeatures <span class="op">=</span> <span class="fl">100</span>,</span></span>
 <span class="r-in"><span>  ncores <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  allow_partial <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>replacing previous import ‘Matrix::unpack’ by ‘tidyr::unpack’ when loading ‘SpatialEcoTyper’</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>replacing previous import ‘Matrix::expand’ by ‘tidyr::expand’ when loading ‘SpatialEcoTyper’</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>replacing previous import ‘Matrix::pack’ by ‘tidyr::pack’ when loading ‘SpatialEcoTyper’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'spdep':</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   method   from</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   plot.mst ape </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-03 05:26:51.086717 Construct spatial meta cells for each cell type</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Excluding cell types due to insufficient spatial metacells: panin, fat.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total spatial neighborhoods: 1147; total spatial meta cells: 1440</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-03 05:26:51.427764 PCA for each cell type</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>You're computing too large a percentage of total singular values, use a standard svd instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-03 05:26:53.171447 Construct cell-type-specific similarity network</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Removing 889 spatial neighborhoods with fewer than 2 distinct cell types.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-03 05:26:53.314548 Similarity network fusion</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-03 05:26:53.316561 Normalize networks ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-03 05:26:53.324753 Calculate the local transition matrix ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-03 05:26:53.589604 Perform the diffusion ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-03 05:26:53.591276 Iteration: 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-03 05:26:53.6553 Iteration: 2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-03 05:26:53.749149 Iteration: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-03 05:26:53.846149 Iteration: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-03 05:26:53.943779 Iteration: 5</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-03 05:26:54.040606 Iteration: 6</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-03 05:26:54.137374 Iteration: 7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-03 05:26:54.346012 Iteration: 8</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-03 05:26:54.443497 Iteration: 9</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-03 05:26:54.540511 Iteration: 10</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-03 05:26:54.694251 Create Seurat object and perform clustering analysis</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> To use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> This message will be shown once per session</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">srt</span> <span class="op">&lt;-</span> <span class="fu">RunSpatialEcoTyper</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">srt</span>,</span></span>
-<span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"multi"</span>,</span></span>
-<span class="r-in"><span>  celltype.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  sample.by <span class="op">=</span> <span class="st">"sample"</span>,</span></span>
-<span class="r-in"><span>  x.by <span class="op">=</span> <span class="st">"x"</span>,</span></span>
-<span class="r-in"><span>  y.by <span class="op">=</span> <span class="st">"y"</span>,</span></span>
-<span class="r-in"><span>  nfeatures <span class="op">=</span> <span class="fl">100</span>,</span></span>
-<span class="r-in"><span>  ncores <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># A genuine multi-sample spatial input is required for conserved-SE discovery.</span></span></span>
+<span class="r-in"><span><span class="co"># The bundled object contains one sample, so this is a parameter template.</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">srt</span> <span class="op">&lt;-</span> <span class="fu">RunSpatialEcoTyper</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">multi_sample_srt</span>,</span></span>
+<span class="r-in"><span>    mode <span class="op">=</span> <span class="st">"multi"</span>,</span></span>
+<span class="r-in"><span>    celltype.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>    sample.by <span class="op">=</span> <span class="st">"sample"</span>,</span></span>
+<span class="r-in"><span>    x.by <span class="op">=</span> <span class="st">"x"</span>,</span></span>
+<span class="r-in"><span>    y.by <span class="op">=</span> <span class="st">"y"</span>,</span></span>
+<span class="r-in"><span>    nfeatures <span class="op">=</span> <span class="fl">100</span>,</span></span>
+<span class="r-in"><span>    ncores <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE):</span> could not find function "check_r"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -371,7 +418,7 @@ returned.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

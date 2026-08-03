@@ -15,7 +15,7 @@ dependency installable with BiocManager::install("Statial").'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,8 +26,17 @@ dependency installable with BiocManager::install("Statial").'></head><body>
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -84,6 +93,7 @@ dependency installable with <code>BiocManager::install("Statial")</code>.</p>
 <span>  store_results <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  store_input <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  coordinate_space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw"</span>, <span class="st">"legacy_display"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -101,21 +111,22 @@ dependency installable with <code>BiocManager::install("Statial")</code>.</p>
 
 
 <dt id="arg-r">r<a class="anchor" aria-label="anchor" href="#arg-r"></a></dt>
-<dd><p>Numeric radius or radii used by <code>Statial::Kontextual()</code>.</p></dd>
+<dd><p>Numeric radius or radii used by <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>, expressed
+in the selected coordinate units.</p></dd>
 
 
 <dt id="arg-from-to-parent">from, to, parent<a class="anchor" aria-label="anchor" href="#arg-from-to-parent"></a></dt>
-<dd><p>Cell or spot labels passed to <code>Statial::Kontextual()</code>.
+<dd><p>Cell or spot labels passed to <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>.
 Ignored when <code>parent_df</code> is supplied.</p></dd>
 
 
 <dt id="arg-parent-df">parent_df<a class="anchor" aria-label="anchor" href="#arg-parent-df"></a></dt>
-<dd><p>Optional data frame from <code>Statial::parentCombinations()</code>.</p></dd>
+<dd><p>Optional data frame from <code><a href="https://sydneybiox.github.io/Statial/reference/parentCombinations.html" class="external-link">Statial::parentCombinations()</a></code>.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
-<dd><p>Name of the Seurat spatial image. If <code>NULL</code>, the first image is
-used when present.</p></dd>
+<dd><p>Name of the Seurat spatial image. Required when multiple images
+are present; a single image is selected automatically when <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-sample-by">sample.by<a class="anchor" aria-label="anchor" href="#arg-sample-by"></a></dt>
@@ -142,7 +153,8 @@ coordinates are available.</p></dd>
 
 <dt id="arg-window-window-length">window, window.length<a class="anchor" aria-label="anchor" href="#arg-window-window-length"></a></dt>
 <dd><p>Window arguments passed to
-<code>Statial::Kontextual()</code>.</p></dd>
+<code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>. Numeric window lengths use the selected coordinate
+units.</p></dd>
 
 
 <dt id="arg-include-original">include_original<a class="anchor" aria-label="anchor" href="#arg-include-original"></a></dt>
@@ -150,7 +162,7 @@ coordinates are available.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>Number of cores passed to <code>Statial::Kontextual()</code>.</p></dd>
+<dd><p>Number of cores passed to <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>.</p></dd>
 
 
 <dt id="arg-tool-name">tool_name<a class="anchor" aria-label="anchor" href="#arg-tool-name"></a></dt>
@@ -171,8 +183,14 @@ coordinates are available.</p></dd>
 Default is <code>TRUE</code>.</p></dd>
 
 
+<dt id="arg-coordinate-space">coordinate_space<a class="anchor" aria-label="anchor" href="#arg-coordinate-space"></a></dt>
+<dd><p>Coordinate system used for spatial relationships.
+The default is raw acquisition coordinates; <code>"legacy_display"</code> remains an
+explicit compatibility option.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional named arguments passed to <code>Statial::Kontextual()</code>.</p></dd>
+<dd><p>Additional named arguments passed to <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -186,25 +204,42 @@ Default is <code>TRUE</code>.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu">check_r</span><span class="op">(</span><span class="st">"Statial"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">coda_label</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">labels</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunStatialKontextual</span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>      group.by <span class="op">=</span> <span class="st">"coda_label"</span>,</span></span>
-<span class="r-in"><span>      r <span class="op">=</span> <span class="fl">50</span>,</span></span>
-<span class="r-in"><span>      from <span class="op">=</span> <span class="va">labels</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>      to <span class="op">=</span> <span class="va">labels</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>      parent <span class="op">=</span> <span class="va">labels</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>      coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>      verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">StatialKontextual</span><span class="op">$</span><span class="va">summary</span></span></span>
-<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">coda_label</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">labels</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunStatialKontextual</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">spatial</span>,</span></span>
+<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"coda_label"</span>,</span></span>
+<span class="r-in"><span>    r <span class="op">=</span> <span class="fl">50</span>,</span></span>
+<span class="r-in"><span>    from <span class="op">=</span> <span class="va">labels</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>    to <span class="op">=</span> <span class="va">labels</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>    parent <span class="op">=</span> <span class="va">labels</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>    coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">StatialKontextual</span><span class="op">$</span><span class="va">summary</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_r("Statial", verbose = FALSE):</span> could not find function "check_r"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $n_records</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $n_images</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $n_tests</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $radii</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $n_localized</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $n_dispersed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $top_relationships</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   imageID             test original kontextual  r inhomL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 sample1 collagen__islets      -50        -50 50  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -216,7 +251,7 @@ Default is <code>TRUE</code>.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
