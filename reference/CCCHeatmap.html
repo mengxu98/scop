@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,8 +18,17 @@
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -106,6 +115,9 @@
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_scop"</span>,</span>
 <span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  combine_methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"separate"</span>, <span class="st">"support"</span>, <span class="st">"rank"</span>, <span class="st">"legacy"</span><span class="op">)</span>,</span>
+<span>  resource <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -300,11 +312,14 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
-<dd><p>Legend position.</p></dd>
+<dd><p>The position of legends,
+one of <code>"none"</code>, <code>"left"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"top"</code>.
+Default is <code>"right"</code>.</p></dd>
 
 
 <dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
-<dd><p>Legend direction.</p></dd>
+<dd><p>The direction of the legend in the plot.
+Can be one of <code>"vertical"</code> or <code>"horizontal"</code>.</p></dd>
 
 
 <dt id="arg-font-size">font.size<a class="anchor" aria-label="anchor" href="#arg-font-size"></a></dt>
@@ -312,15 +327,29 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>Theme function used for styling.</p></dd>
+<dd><p>Theme used. Can be a character string or a theme function.
+Default is <code>"theme_scop"</code>.</p></dd>
 
 
 <dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>Arguments passed to the theme function.</p></dd>
+<dd><p>Other arguments passed to the <code>theme_use</code>.
+Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Whether to print messages.</p></dd>
+
+
+<dt id="arg-combine-methods">combine_methods<a class="anchor" aria-label="anchor" href="#arg-combine-methods"></a></dt>
+<dd><p>Behavior when <code>method = "CCC"</code>. <code>"separate"</code> returns
+one panel per backend, <code>"support"</code> counts supporting backends, <code>"rank"</code>
+combines within-method percentile ranks for visualization, and <code>"legacy"</code>
+retains the deprecated raw-score aggregation.</p></dd>
+
+
+<dt id="arg-resource-sample">resource, sample<a class="anchor" aria-label="anchor" href="#arg-resource-sample"></a></dt>
+<dd><p>Optional resource and sample/context filters for
+unified CCC results.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -335,23 +364,23 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:17] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:18] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-07-02 08:17:19] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:19] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:19] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:19] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:19] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:19] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:19] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:20] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:21] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:21] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:21] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-02 08:17:24] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:40] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:40] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-03 03:44:41] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:41] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:41] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:41] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:41] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:41] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:41] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:42] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:43] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:43] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:43] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 03:44:47] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pc1</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Embeddings.html" class="external-link">Embeddings</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="st">"Standardpca"</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">ct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">CellType</span><span class="op">)</span></span></span>
@@ -369,8 +398,26 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  group_cmp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ConditionA"</span>, <span class="st">"ConditionB"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 08:17:24] Start <span style="color: #0000BB;">CellChat</span> analysis</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(name):</span> there is no package called ‘CellChat’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:44:47] Start <span style="color: #0000BB;">CellChat</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:45:45] Processing condition: <span style="color: #0000BB;">"ConditionA"</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Create a CellChat object from a data matrix"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set cell identities for the new CellChat object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> The cell groups used for CellChat analysis are  Ductal, Ngn3-high-EP, Endocrine, Ngn3-low-EP, Pre-endocrine </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> The number of highly variable ligand-receptor pairs used for signaling inference is 542 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> triMean is used for calculating the average gene expression per cell group. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2026-08-03 03:45:47.37821]"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2026-08-03 03:46:08.441003]"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:46:08] Processing condition: <span style="color: #0000BB;">"ConditionB"</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Create a CellChat object from a data matrix"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Set cell identities for the new CellChat object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> The cell groups used for CellChat analysis are  Endocrine, Ngn3-high-EP, Ductal, Ngn3-low-EP, Pre-endocrine </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> The number of highly variable ligand-receptor pairs used for signaling inference is 597 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> triMean is used for calculating the average gene expression per cell group. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2026-08-03 03:46:10.448173]"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2026-08-03 03:46:31.637773]"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:46:31] Merging CellChat objects for comparison <span style="color: #0000BB;">"ConditionA_vs_ConditionB"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 03:46:32] <span style="color: #0000BB;">CellChat</span> analysis completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -380,8 +427,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  display_by <span class="op">=</span> <span class="st">"aggregation"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dataset_object(srt, condition = condition, dataset = dataset):</span> Unable to determine which CellChat object to plot. Please specify</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> `condition`</span>
+<span class="r-plt img"><img src="CCCHeatmap-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -392,8 +438,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  sender.use <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dataset_object(srt, condition = condition, dataset = dataset):</span> Unable to determine which CellChat object to plot. Please specify</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> `condition`</span>
+<span class="r-plt img"><img src="CCCHeatmap-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -404,8 +449,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  receiver.use <span class="op">=</span> <span class="st">"Ngn3-low-EP"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dataset_object(srt, condition = condition, dataset = dataset):</span> Unable to determine which CellChat object to plot. Please specify</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> `condition`</span>
+<span class="r-plt img"><img src="CCCHeatmap-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -415,8 +459,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  display_by <span class="op">=</span> <span class="st">"aggregation"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dataset_object(srt, condition = condition, dataset = dataset):</span> Unable to determine which CellChat object to plot. Please specify</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> `condition`</span>
+<span class="r-plt img"><img src="CCCHeatmap-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -427,8 +470,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  facet_by <span class="op">=</span> <span class="st">"sender"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">10</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dataset_object(srt, condition = condition, dataset = dataset):</span> Unable to determine which CellChat object to plot. Please specify</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> `condition`</span>
+<span class="r-plt img"><img src="CCCHeatmap-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -440,8 +482,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  color.by <span class="op">=</span> <span class="st">"pvalue"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">10</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in get_dataset_object(srt, condition = condition, dataset = dataset):</span> Unable to determine which CellChat object to plot. Please specify</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> `condition`</span>
+<span class="r-plt img"><img src="CCCHeatmap-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -450,7 +491,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bubble"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in use_cc_single_condition(srt, condition = condition):</span> `condition` must be one of CellChat result names or comparison names</span>
+<span class="r-plt img"><img src="CCCHeatmap-7.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -459,7 +500,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bubble"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in use_cc_single_condition(srt, condition = condition):</span> `condition` must be one of CellChat result names or comparison names</span>
+<span class="r-plt img"><img src="CCCHeatmap-8.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -470,7 +511,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in use_cc_single_condition(srt, condition = condition):</span> `condition` must be one of CellChat result names or comparison names</span>
+<span class="r-plt img"><img src="CCCHeatmap-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -481,7 +522,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in use_cc_single_condition(srt, condition = condition):</span> `condition` must be one of CellChat result names or comparison names</span>
+<span class="r-plt img"><img src="CCCHeatmap-10.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -493,7 +534,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">3.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in use_cc_single_condition(srt, condition = condition):</span> `condition` must be one of CellChat result names or comparison names</span>
+<span class="r-plt img"><img src="CCCHeatmap-11.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CCCHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -506,7 +547,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">3.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in .cc_get_cmp(srt = srt, condition = condition):</span> Comparison <span style="color: #0000BB;">"ConditionA_vs_ConditionB"</span> not found in CellChat results</span>
+<span class="r-plt img"><img src="CCCHeatmap-12.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -518,7 +559,7 @@ square. When both are <code>NULL</code>, a square-cell size is computed automati
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

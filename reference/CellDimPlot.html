@@ -9,7 +9,7 @@ Plotting cell points on a reduced 2D plane and coloring according to the groups.
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,14 +27,10 @@ Plotting cell points on a reduced 2D plane and coloring according to the groups.
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
-    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -262,7 +258,14 @@ If <code>FALSE</code>, cell points with NA level will be removed from the plot.<
 
 
 <dt id="arg-pt-size">pt.size<a class="anchor" aria-label="anchor" href="#arg-pt-size"></a></dt>
-<dd><p>The size of the points in the plot. Default is <code>NULL</code>, which automatically scales point diameter with the square root of the number of plotted cells.</p></dd>
+<dd><p>The size of the points in the plot. Default is <code>NULL</code>, which
+automatically scales point diameter with the square root of the number of
+plotted cells while keeping a readable minimum size of <code>0.3</code>. Automatically
+sized raster plots use at least a two-pixel radius at the reference
+<code>raster.dpi = c(512, 512)</code>. Point sizes are scaled with <code>raster.dpi</code>, so their
+relative appearance remains stable when the raster resolution changes.
+Non-raster point sizes use fixed physical units; increase <code>pt.size</code>
+proportionally when exporting to an unusually large canvas.</p></dd>
 
 
 <dt id="arg-pt-alpha">pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-alpha"></a></dt>
@@ -788,23 +791,23 @@ Default is <code>TRUE</code>.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:12] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:12] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-07-22 10:29:12] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:12] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:12] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:12] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:12] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:12] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:13] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:14] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:15] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:15] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:15] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:15] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-22 10:29:20] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:03] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:03] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-03 03:50:03] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:03] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:03] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:04] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:04] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:04] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:04] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:04] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:05] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:05] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:05] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 03:50:10] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
@@ -1150,8 +1153,8 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  backend <span class="op">=</span> <span class="st">"cpp"</span>,</span></span>
 <span class="r-in"><span>  return_seurat <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:53] Running <span style="color: #0000BB;">PAGA</span> with <span style="color: #0000BB;">BiocNeighbors</span> using <span style="color: #0000BB;">29</span> neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-22 10:29:53] <span style="color: #0000BB;">PAGA</span> cpp backend completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:29] Running <span style="color: #0000BB;">PAGA</span> with <span style="color: #0000BB;">BiocNeighbors</span> using <span style="color: #0000BB;">29</span> neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 03:50:29] <span style="color: #0000BB;">PAGA</span> cpp backend completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -1197,12 +1200,13 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  nonlinear_reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span></span>
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"stochastic"</span>,</span></span>
 <span class="r-in"><span>  backend <span class="op">=</span> <span class="st">"cpp"</span>,</span></span>
+<span class="r-in"><span>  show_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  return_seurat <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:29:54] Running scanpy-compatible preprocessing (<span style="color: #0000BB;">15998</span> features -&gt; filter + normalize)...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-22 10:30:01] Running <span style="color: #0000BB;">scVelo</span> <span style="color: #0000BB;">"stochastic"</span> mode with `backend = 'cpp'` (<span style="color: #0000BB;">10590</span> features)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-22 10:30:15] <span style="color: #0000BB;">scVelo</span> <span style="color: #0000BB;">"stochastic"</span> mode completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-22 10:30:15] <span style="color: #0000BB;">scVelo</span> cpp backend completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:31] Running scanpy-compatible preprocessing (<span style="color: #0000BB;">15998</span> features -&gt; filter + normalize)...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 03:50:36] Running <span style="color: #0000BB;">scVelo</span> <span style="color: #0000BB;">"stochastic"</span> mode with `backend = 'cpp'` (<span style="color: #0000BB;">10590</span> features)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 03:50:49] <span style="color: #0000BB;">scVelo</span> <span style="color: #0000BB;">"stochastic"</span> mode completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 03:50:49] <span style="color: #0000BB;">scVelo</span> cpp backend completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CellDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

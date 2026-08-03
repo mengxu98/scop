@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Spatial and single-cell omics analysis pipeline • scop</title>
+<title>Single-cell and Spatial omics analysis pipeline • scop</title>
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Spatial and single-cell omics analysis pipeline">
-<meta name="description" content="An R package for spatial and single-cell omics analysis, integration, visualization, and interactive exploration.">
-<meta property="og:description" content="An R package for spatial and single-cell omics analysis, integration, visualization, and interactive exploration.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Single-cell and Spatial omics analysis pipeline">
+<meta name="description" content="An R package for single-cell and spatial omics analysis, integration, visualization, and interactive exploration.">
+<meta property="og:description" content="An R package for single-cell and spatial omics analysis, integration, visualization, and interactive exploration.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,8 +35,17 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
@@ -61,7 +70,7 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="scop-spatial-and-single-cell-omics-analysis-pipeline">scop: Spatial and single-cell omics analysis pipeline<a class="anchor" aria-label="anchor" href="#scop-spatial-and-single-cell-omics-analysis-pipeline"></a>
+<div class="page-header"><h1 id="scop-single-cell-and-spatial-omics-analysis-pipeline">scop: Single-cell and Spatial omics analysis pipeline<a class="anchor" aria-label="anchor" href="#scop-single-cell-and-spatial-omics-analysis-pipeline"></a>
 </h1></div>
 <!-- badges: start -->
 
@@ -69,7 +78,7 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p><a href="https://github.com/mengxu98/scop" class="external-link">scop</a> is an <em>R</em> package for comprehensive spatial and single-cell omics analysis, providing modular workflows for analyzing, integrating, visualizing, and interactively exploring spatial, and single-cell omics data.</p>
+<p><a href="https://github.com/mengxu98/scop" class="external-link">scop</a> is an <em>R</em> package for comprehensive single-cell and spatial omics analysis, providing modular workflows for analyzing, integrating, visualizing, and interactively exploring single-cell and spatial omics data.</p>
 <blockquote>
 <p>Documentation: <a href="https://mengxu98.github.io/scop/" class="uri">https://mengxu98.github.io/scop/</a></p>
 <p>Function reference and examples: <a href="https://mengxu98.github.io/scop/reference/" class="uri">https://mengxu98.github.io/scop/reference/</a></p>
@@ -80,21 +89,22 @@
 <li>Pipelines embedded with multiple methods for normalization, highly variable feature selection, feature reduction (PCA, ICA, NMF, MDS, <a href="https://github.com/willtownes/glmpca" class="external-link">GLMPCA</a>, <a href="https://github.com/lmcinnes/umap" class="external-link">UMAP</a>, <a href="https://github.com/eamid/trimap" class="external-link">TriMap</a>, <a href="https://github.com/lferry007/LargeVis" class="external-link">LargeVis</a>, <a href="https://github.com/YingfanWang/PaCMAP" class="external-link">PaCMAP</a>, <a href="https://github.com/KrishnaswamyLab/PHATE" class="external-link">PHATE</a>, <a href="https://bioconductor.org/packages/release/bioc/html/destiny.html" class="external-link">DM</a>, FR), and cell population identification, including optional <a href="https://bioconductor.org/packages/release/bioc/html/scran.html" class="external-link">scran</a>-based deconvolution normalization and HVF modeling.</li>
 <li>Pipelines embedded with multiple integration methods for scRNA-seq data, including Uncorrected, <a href="https://github.com/satijalab/seurat" class="external-link">Seurat</a> CCA/RPCA workflows, <a href="https://github.com/scverse/scvi-tools" class="external-link">scVI</a>, <a href="http://www.bioconductor.org/packages/release/bioc/html/batchelor.html" class="external-link">MNN</a>, <a href="http://www.bioconductor.org/packages/release/bioc/html/batchelor.html" class="external-link">fastMNN</a>, <a href="https://github.com/immunogenomics/harmony" class="external-link">Harmony</a>, <a href="https://github.com/brianhie/scanorama" class="external-link">Scanorama</a>, <a href="https://github.com/Teichlab/bbknn" class="external-link">BBKNN</a>, <a href="https://github.com/quadbiolab/simspec" class="external-link">CSS</a>, <a href="https://github.com/elolab/Coralysis" class="external-link">Coralysis</a>, <a href="https://github.com/welch-lab/liger" class="external-link">LIGER</a>, <a href="https://github.com/kharchenkolab/conos" class="external-link">Conos</a>, and <a href="https://bioconductor.org/packages/release/bioc/html/sva.html" class="external-link">ComBat</a>.</li>
 <li>Pipelines embedded with RNA + ATAC and multimodal integration methods, including Seurat v5 integration, WNN-based integration, <a href="https://github.com/gao-lab/GLUE" class="external-link">GLUE</a>, <a href="https://github.com/Teichlab/MultiMAP" class="external-link">MultiMAP</a>, and cross-modality co-embedding workflows.</li>
-<li>Multiple methods for automatic annotation of single-cell data (<a href="https://github.com/Teichlab/celltypist" class="external-link">CellTypist</a>, <a href="https://github.com/PaulingLiu/scibet" class="external-link">SciBet</a>, <a href="https://github.com/dviraran/SingleR" class="external-link">SingleR</a>, <a href="https://github.com/hemberg-lab/scmap" class="external-link">Scmap</a>, KNNPredict) and methods for projection between single-cell datasets (CSSMap, PCAMap, SeuratMap, <a href="https://github.com/immunogenomics/symphony" class="external-link">SymphonyMap</a>).</li>
-<li>Bulk transcriptomics and cellular composition workflows, including differential expression via <a href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html" class="external-link">DESeq2</a>, <a href="https://bioconductor.org/packages/release/bioc/html/edgeR.html" class="external-link">edgeR</a>, <a href="https://bioconductor.org/packages/release/bioc/html/limma.html" class="external-link">limma-voom</a>, and <a href="https://bioconductor.org/packages/release/bioc/html/variancePartition.html" class="external-link">dream</a>, deconvolution via <a href="https://github.com/xuranw/MuSiC" class="external-link">MuSiC</a>, <a href="https://cran.r-project.org/package=BisqueRNA" class="external-link">BisqueRNA</a>, and <a href="https://github.com/Danko-Lab/BayesPrism" class="external-link">BayesPrism</a>, cell-type-specific differential expression via <a href="https://bioconductor.org/packages/release/bioc/html/TOAST.html" class="external-link">TOAST</a>, and composition analysis with <a href="https://bioconductor.org/packages/release/bioc/html/miloR.html" class="external-link">Milo</a>, <a href="https://bioconductor.org/packages/release/bioc/html/speckle.html" class="external-link">propeller</a>, <a href="https://github.com/theislab/scCODA" class="external-link">scCODA</a>, permutation-based tests, and <a href="https://github.com/rpolicastro/scProportionTest" class="external-link">scProportionTest</a>.</li>
+<li>Multiple methods for automatic annotation of single-cell data (<a href="https://github.com/Teichlab/celltypist" class="external-link">CellTypist</a>, <a href="https://github.com/PaulingLiu/scibet" class="external-link">SciBet</a>, <a href="https://github.com/dviraran/SingleR" class="external-link">SingleR</a>, <a href="https://github.com/hemberg-lab/scmap" class="external-link">Scmap</a>, KNNPredict), significance-based hierarchical clustering with <a href="https://github.com/immunogenomics/CHOIR" class="external-link">CHOIR</a>, and methods for projection between single-cell datasets (CSSMap, PCAMap, SeuratMap, <a href="https://github.com/immunogenomics/symphony" class="external-link">SymphonyMap</a>).</li>
+<li>Bulk transcriptomics and cellular composition workflows, including differential expression via <a href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html" class="external-link">DESeq2</a>, <a href="https://bioconductor.org/packages/release/bioc/html/edgeR.html" class="external-link">edgeR</a>, <a href="https://bioconductor.org/packages/release/bioc/html/limma.html" class="external-link">limma-voom</a>, and <a href="https://bioconductor.org/packages/release/bioc/html/variancePartition.html" class="external-link">dream</a>, deconvolution via <a href="https://github.com/xuranw/MuSiC" class="external-link">MuSiC</a>, <a href="https://cran.r-project.org/package=BisqueRNA" class="external-link">BisqueRNA</a>, <a href="https://github.com/Danko-Lab/BayesPrism" class="external-link">BayesPrism</a>, and <a href="https://github.com/BayraktarLab/cell2location" class="external-link">Cell2location</a>, cell-type-specific differential expression via <a href="https://bioconductor.org/packages/release/bioc/html/TOAST.html" class="external-link">TOAST</a>, and composition analysis with <a href="https://bioconductor.org/packages/release/bioc/html/miloR.html" class="external-link">Milo</a>, <a href="https://bioconductor.org/packages/release/bioc/html/speckle.html" class="external-link">propeller</a>, <a href="https://github.com/theislab/scCODA" class="external-link">scCODA</a>, permutation-based tests, and <a href="https://github.com/rpolicastro/scProportionTest" class="external-link">scProportionTest</a>.</li>
 <li>Multiple single-cell downstream analyses:
 <ul>
-<li>Differential expression and perturbation analysis: identification of differential features, expressed marker identification, rare-cell population detection with <a href="https://github.com/xiaolab-xjtu/RareQ" class="external-link">RareQ</a>, phenotype-associated cell selection with <a href="https://github.com/sunduanchen/Scissor" class="external-link">Scissor</a>, network comparison with <a href="https://github.com/cailab-tamu/scTenifoldNet" class="external-link">scTenifoldNet</a>, and in-silico perturbation analysis with <a href="https://github.com/cailab-tamu/scTenifoldKnk" class="external-link">scTenifoldKnk</a>.</li>
-<li>Enrichment, and functional scoring: over-representation analysis, <a href="https://www.gsea-msigdb.org/gsea/index.jsp" class="external-link">GSEA</a> analysis, <a href="https://github.com/rcastelo/GSVA" class="external-link">GSVA</a>, metabolic pathway activity inference via <a href="https://github.com/wu-yc/scMetabolism" class="external-link">scMetabolism</a>, and metabolic flux estimation via <a href="https://github.com/changwn/scFEA" class="external-link">scFEA</a>.</li>
-<li>Transcription factor activity analysis via <a href="https://github.com/saezlab/dorothea" class="external-link">DoRothEA</a>, and dynamic enrichment analysis.</li>
-<li>Cellular potency: <a href="https://github.com/digitalcytometry/cytotrace2" class="external-link">CytoTRACE 2</a> for predicting cellular differentiation potential.</li>
-<li>RNA velocity: <a href="https://github.com/theislab/scvelo" class="external-link">RNA velocity</a>, <a href="https://github.com/theislab/paga" class="external-link">PAGA</a>, <a href="https://github.com/dpeerlab/Palantir" class="external-link">Palantir</a>, <a href="https://github.com/theislab/cellrank" class="external-link">CellRank</a>, <a href="https://github.com/broadinstitute/wot" class="external-link">WOT</a>.</li>
-<li>Trajectory inference: <a href="https://bioconductor.org/packages/release/bioc/html/slingshot.html" class="external-link">Slingshot</a>, <a href="https://github.com/mengxu98/monocle" class="external-link">Monocle2</a>, <a href="https://github.com/cole-trapnell-lab/monocle3" class="external-link">Monocle3</a>, identification of dynamic features.</li>
-<li>Cell-cell communication: <a href="https://github.com/jinworks/CellChat" class="external-link">CellChat</a>, <a href="https://github.com/ventolab/CellphoneDB" class="external-link">CellphoneDB</a>, <a href="https://github.com/saeyslab/nichenetr" class="external-link">NicheNet</a>, <a href="https://github.com/saeyslab/multinichenetr" class="external-link">MultiNicheNet</a>, and <a href="https://github.com/saezlab/liana" class="external-link">LIANA</a>.</li>
+<li>Differential expression and perturbation analysis: identification of differential features, expressed marker identification, rare-cell population detection with <a href="https://github.com/xiaolab-xjtu/RareQ" class="external-link">RareQ</a>, phenotype-associated cell selection with <a href="https://github.com/sunduanchen/Scissor" class="external-link">Scissor</a>, feature-weight phenotype scoring with <a href="https://github.com/jumphone/FWP" class="external-link">FWP</a>, network comparison with <a href="https://github.com/cailab-tamu/scTenifoldNet" class="external-link">scTenifoldNet</a>, and in-silico perturbation analysis with <a href="https://github.com/cailab-tamu/scTenifoldKnk" class="external-link">scTenifoldKnk</a>.</li>
+<li>Enrichment, and functional scoring: over-representation analysis, <a href="https://www.gsea-msigdb.org/gsea/index.jsp" class="external-link">GSEA</a> analysis, <a href="https://github.com/rcastelo/GSVA" class="external-link">GSVA</a>, <a href="https://bioconductor.org/packages/release/bioc/html/AUCell.html" class="external-link">AUCell</a>, <a href="https://github.com/carmonalab/UCell" class="external-link">UCell</a>, metabolic pathway activity inference via <a href="https://github.com/wu-yc/scMetabolism" class="external-link">scMetabolism</a>, and metabolic flux estimation via <a href="https://github.com/changwn/scFEA" class="external-link">scFEA</a>.</li>
+<li>Transcription factor activity analysis via <a href="https://github.com/saezlab/dorothea" class="external-link">DoRothEA</a>, <a href="https://github.com/aertslab/SCENIC" class="external-link">SCENIC</a>/<a href="https://github.com/aertslab/scenicplus" class="external-link">SCENIC+</a>, <a href="https://github.com/aertslab/GRNBoost2" class="external-link">GRNBoost2</a>, <a href="https://bioconductor.org/packages/release/bioc/html/GENIE3.html" class="external-link">GENIE3</a>, and <a href="https://github.com/aertslab/RcisTarget" class="external-link">cisTarget</a>, and dynamic enrichment analysis.</li>
+<li>CNV analysis from scRNA-seq with <a href="https://github.com/navinlabcode/copykat" class="external-link">copykat</a>, <a href="https://github.com/broadinstitute/inferCNV" class="external-link">infercnv</a>, <a href="https://github.com/cevoae/SCEVAN" class="external-link">SCEVAN</a>, and <a href="https://github.com/rujinwang/fastCNV" class="external-link">fastCNV</a>, plus tumor microenvironment scoring via <a href="https://github.com/mengxu98/estimate" class="external-link">ESTIMATE</a>.</li>
+<li>Cellular potency: <a href="https://github.com/digitalcytometry/cytotrace2" class="external-link">CytoTRACE 2</a> and <a href="https://github.com/jumphone/FitDevo" class="external-link">FitDevo</a> for predicting cellular differentiation potential.</li>
+<li>RNA velocity: <a href="https://github.com/theislab/scvelo" class="external-link">RNA velocity</a>, <a href="https://github.com/petruccigroup/cell2fate" class="external-link">Cell2fate</a>, <a href="https://github.com/theislab/paga" class="external-link">PAGA</a>, <a href="https://github.com/dpeerlab/Palantir" class="external-link">Palantir</a>, <a href="https://github.com/theislab/cellrank" class="external-link">CellRank</a>, <a href="https://github.com/broadinstitute/wot" class="external-link">WOT</a>.</li>
+<li>Trajectory inference: <a href="https://bioconductor.org/packages/release/bioc/html/slingshot.html" class="external-link">Slingshot</a>, <a href="https://github.com/mengxu98/monocle" class="external-link">Monocle2</a>, <a href="https://github.com/cole-trapnell-lab/monocle3" class="external-link">Monocle3</a>, developmental direction inference with <a href="https://github.com/jumphone/Vector" class="external-link">VECTOR</a>, and identification of dynamic features.</li>
+<li>Cell-cell communication: <a href="https://github.com/jinworks/CellChat" class="external-link">CellChat</a>, spatially constrained <a href="https://github.com/jinworks/SpatialCellChat" class="external-link">SpatialCellChat</a>, <a href="https://github.com/ventolab/CellphoneDB" class="external-link">CellphoneDB</a>, <a href="https://github.com/saeyslab/nichenetr" class="external-link">NicheNet</a>, <a href="https://github.com/saeyslab/multinichenetr" class="external-link">MultiNicheNet</a>, and <a href="https://github.com/saezlab/liana" class="external-link">LIANA</a>.</li>
 <li>Cellular composition analysis: differential abundance and proportion testing across conditions.</li>
-<li>Spatial analysis: <a href="https://github.com/edward130603/BayesSpace" class="external-link">BayesSpace</a> and <a href="https://github.com/digitalcytometry/cytospace" class="external-link">CytoSPACE</a>.</li>
 </ul>
 </li>
+<li>Spatial analysis: modular domain (<a href="https://github.com/prabhakarlab/Banksy" class="external-link">Banksy</a>, <a href="https://github.com/edward130603/BayesSpace" class="external-link">BayesSpace</a>, <a href="https://github.com/feiyoung/PRECAST" class="external-link">PRECAST</a>), feature, neighborhood, integration, deconvolution (<a href="https://github.com/MarcElosua/SPOTlight" class="external-link">SPOTlight</a>, <a href="https://github.com/sdtemple/SpaNorm" class="external-link">SpaNorm</a>, <a href="https://github.com/yelabucsf/CARD" class="external-link">CARDspa</a>), spot QC (<a href="https://github.com/pfizer-opensource/SpotSweeper" class="external-link">SpotSweeper</a>), and SpatialCellChat communication workflows; native spatial networks and cell-boundary visualization; and lightweight bridges to Giotto and SPATA2 without wrapping their full frameworks. Use <code><a href="reference/ListSpatialMethods.html">ListSpatialMethods()</a></code>, <code><a href="reference/SpatialBackendStatus.html">SpatialBackendStatus()</a></code>, and <code><a href="reference/SpatialResultInfo.html">SpatialResultInfo()</a></code> to discover methods, diagnose optional backends, and inspect stored results; use <code><a href="reference/SpatialCoordinates.html">SpatialCoordinates()</a></code>, <code><a href="reference/GetSpatialResult.html">GetSpatialResult()</a></code>, and <code><a href="reference/GetSpatialGraph.html">GetSpatialGraph()</a></code> for stable read-only access to coordinates, result bundles, and graphs. See the <a href="vignettes/spatial-framework-bridges.Rmd">Giotto compatibility and framework bridge guide</a> before choosing between the legacy workflow and native bridges.</li>
 <li>High-quality data visualization methods.</li>
 <li>Fast deployment of single-cell data into SCExplorer, a <a href="https://shiny.rstudio.com/" class="external-link">shiny</a> app that provides an interactive visualization interface.</li>
 </ul>
@@ -104,7 +114,7 @@
 </h2>
 <ul>
 <li>
-<a href="#scop-single-cell-omics-analysis-pipeline">scop: Spatial and Cellular Omics analysis Pipeline</a>
+<a href="#scop-single-cell-and-spatial-omics-analysis-pipeline">scop: Single-cell and Spatial omics analysis pipeline</a>
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#table-of-contents">Table of Contents</a></li>
@@ -260,7 +270,7 @@
 <span><span class="co">#&gt;  1 layer present: counts</span></span>
 <span><span class="co">#&gt;  2 other assays present: spliced, unspliced</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  An object of class Seurat </span></span>
 <span><span class="co">#&gt;  47994 features across 1000 samples within 3 assays </span></span>
@@ -374,10 +384,10 @@
 <p>Example data for integration is a subsetted version of <a href="https://github.com/satijalab/seurat-data" class="external-link">panc8(eight human pancreas datasets)</a></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
-<span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/integration_scop.html">integration_scop</a></span><span class="op">(</span></span>
+<span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunIntegration.html">RunIntegration</a></span><span class="op">(</span></span>
 <span>  srt_merge <span class="op">=</span> <span class="va">panc8_sub</span>,</span>
 <span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
-<span>  integration_method <span class="op">=</span> <span class="st">"Harmony"</span></span>
+<span>  integration_methods <span class="op">=</span> <span class="st">"Harmony"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">panc8_sub</span>,</span>
@@ -385,7 +395,7 @@
 <span>  reduction <span class="op">=</span> <span class="st">"HarmonyUMAP"</span>,</span>
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/integration_scop-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunIntegration-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="cell-annotation">Cell annotation<a class="anchor" aria-label="anchor" href="#cell-annotation"></a>
@@ -915,7 +925,7 @@
 <p><a href="https://mengxu98.github.io/scop/reference/CellStatPlot.html"><strong>CellStatPlot</strong></a><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-2.png" alt="Example2"></p>
 <p><a href="https://mengxu98.github.io/scop/reference/FeatureStatPlot.html"><strong>FeatureStatPlot</strong></a><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-3.png" alt="Example3"></p>
 <p><a href="https://mengxu98.github.io/scop/reference/GroupHeatmap.html"><strong>GroupHeatmap</strong></a><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-4.png" alt="Example3"></p>
-<p>You can also find more examples in the documentation of the function: <a href="https://mengxu98.github.io/scop/reference/integration_scop.html">integration_scop</a>, <a href="https://mengxu98.github.io/scop/reference/RunKNNMap.html">RunKNNMap</a>, <a href="https://mengxu98.github.io/scop/reference/RunPalantir.html">RunPalantir</a>, etc.</p>
+<p>You can also find more examples in the documentation of the function: <a href="https://mengxu98.github.io/scop/reference/RunIntegration.html">RunIntegration</a>, <a href="https://mengxu98.github.io/scop/reference/RunKNNMap.html">RunKNNMap</a>, <a href="https://mengxu98.github.io/scop/reference/RunPalantir.html">RunPalantir</a>, etc.</p>
 </div>
 </div>
 </div>
@@ -976,7 +986,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

@@ -19,7 +19,7 @@ per gene."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,8 +30,17 @@ per gene."></head><body>
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -81,16 +90,19 @@ per gene.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"test/data/create_pbmcmultiome_sub.R"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu">create_pbmcmultiome_sub</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">use_data</span> <span class="op">&lt;-</span> <span class="fu">get_namespace_fun</span><span class="op">(</span><span class="st">"usethis"</span>, <span class="st">"use_data"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">use_data</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">pbmcmultiome_sub</span>,</span></span>
-<span class="r-in"><span>    compress <span class="op">=</span> <span class="st">"xz"</span>,</span></span>
-<span class="r-in"><span>    overwrite <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"test/data/create_pbmcmultiome_sub.R"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot open file 'test/data/create_pbmcmultiome_sub.R': No such file or directory</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in file(filename, "r", encoding = encoding):</span> cannot open the connection</span>
+<span class="r-in"><span><span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu">create_pbmcmultiome_sub</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in create_pbmcmultiome_sub():</span> could not find function "create_pbmcmultiome_sub"</span>
+<span class="r-in"><span><span class="va">use_data</span> <span class="op">&lt;-</span> <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/get_namespace_fun.html" class="external-link">get_namespace_fun</a></span><span class="op">(</span><span class="st">"usethis"</span>, <span class="st">"use_data"</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(name):</span> there is no package called ‘usethis’</span>
+<span class="r-in"><span><span class="fu">use_data</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pbmcmultiome_sub</span>,</span></span>
+<span class="r-in"><span>  compress <span class="op">=</span> <span class="st">"xz"</span>,</span></span>
+<span class="r-in"><span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in use_data(pbmcmultiome_sub, compress = "xz", overwrite = TRUE):</span> could not find function "use_data"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -102,7 +114,7 @@ per gene.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

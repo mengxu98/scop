@@ -11,7 +11,7 @@ The list contains the annotation data for each specified annotation source."></h
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,8 +22,17 @@ The list contains the annotation data for each specified annotation source."></h
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -196,11 +205,11 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:06] Species: <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:30:54] Species: <span style="color: #0000BB;">"Homo_sapiens"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:30] Preparing database: <span style="color: #0000BB;">GO_BP</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:39] Convert ID types for the <span style="color: #0000BB;">GO_BP</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:39] Converted ID types using local annotation package <span style="color: #0000BB;">org.Hs.eg.db</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:21] Preparing database: <span style="color: #0000BB;">GO_BP</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:30] Convert ID types for the <span style="color: #0000BB;">GO_BP</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:31] Converted ID types using local annotation package <span style="color: #0000BB;">org.Hs.eg.db</span></span>
 <span class="r-in"><span><span class="fu"><a href="ListDB.html">ListDB</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span></span></span>
@@ -208,7 +217,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                         identifier version</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                 comment  timestamp                       date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 3.23.1 nterm:14209|Homo_sapiens-GO_BP 1782983921 2026-07-02 09:18:41.069673</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 3.23.1 nterm:14209|Homo_sapiens-GO_BP 1785731733 2026-08-03 04:35:32.792341</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           db_version            db_name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 3.23.1 nterm:14209 Homo_sapiens-GO_BP</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                                    file</span>
@@ -228,24 +237,61 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Based on homologous gene conversion,</span></span></span>
 <span class="r-in"><span><span class="co"># prepare a gene annotation database that originally does not exist in the species.</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">db_list</span> <span class="op">&lt;-</span> <span class="fu">PrepareDB</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
-<span class="r-in"><span>    db <span class="op">=</span> <span class="st">"MP"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="ListDB.html">ListDB</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
-<span class="r-in"><span>    db <span class="op">=</span> <span class="st">"MP"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">db_list</span><span class="op">[[</span><span class="st">"Homo_sapiens"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"MP"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"TERM2GENE"</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">db_list</span> <span class="op">&lt;-</span> <span class="fu">PrepareDB</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
+<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"MP"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:33] Species: <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-03 04:35:33] Use the mouse annotation to create the MP database for <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:33] Preparing <span style="color: #0000BB;">MP</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:43] Convert species for the <span style="color: #0000BB;">MP</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:43] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:43] Using the <span style="color: #0000BB;">116</span> version of ensembl database...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:43] Downloading the ensembl database from <span style="color: #0000BB;">https://jun2026.archive.ensembl.org</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:45] Searching the dataset <span style="color: #0000BB;">mmusculus</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:46] Connecting to the dataset <span style="color: #0000BB;">mmusculus_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:35:49] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:03] <span style="color: #0000BB;">14161</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:06] <span style="color: #0000BB;">3</span> genes mapped with <span style="color: #0000BB;">"entrez_symbol"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:08] <span style="color: #0000BB;">12</span> genes mapped with <span style="color: #0000BB;">"uniprot_symbol"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:10] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">14176 genes mapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">47 genes unmapped</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:17] Convert ID types for the <span style="color: #0000BB;">MP</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:17] Converted ID types using local annotation package <span style="color: #0000BB;">org.Hs.eg.db</span></span>
+<span class="r-in"><span><span class="fu"><a href="ListDB.html">ListDB</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
+<span class="r-in"><span>  db <span class="op">=</span> <span class="st">"MP"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         identifier version</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                               comment</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 2026-08-03(converted from Mus_musculus) nterm:10774|Homo_sapiens-MP</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    timestamp                       date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1785731778 2026-08-03 04:36:17.892138</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                            db_version         db_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 2026-08-03(converted from Mus_musculus) nterm:10774 Homo_sapiens-MP</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                    file</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 /home/runner/.cache/R/R.cache/a1fe9dc31b158523aff04f9d524c4819.Rcache</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        Species DB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Homo_sapiens MP</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">db_list</span><span class="op">[[</span><span class="st">"Homo_sapiens"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"MP"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"TERM2GENE"</span><span class="op">]</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         Term      ensembl_id symbol entrez_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 MP:0000600 ENSG00000139687    RB1      5925</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 MP:0001716 ENSG00000139687    RB1      5925</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 MP:0001698 ENSG00000139687    RB1      5925</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 MP:0001092 ENSG00000139687    RB1      5925</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 MP:0000961 ENSG00000139687    RB1      5925</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 MP:0000828 ENSG00000139687    RB1      5925</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># You can also build a custom database based on the gene sets you have</span></span></span>
 <span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu"><a href="CycGenePrefetch.html">CycGenePrefetch</a></span><span class="op">(</span><span class="st">"Homo_sapiens"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:41] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-02 09:18:41] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:17] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 04:36:18] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
 <span class="r-in"><span><span class="va">custom_TERM2GENE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    term <span class="op">=</span> <span class="st">"S_genes"</span>,</span></span>
@@ -272,26 +318,26 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  custom_IDtype <span class="op">=</span> <span class="st">"symbol"</span>,</span></span>
 <span class="r-in"><span>  custom_version <span class="op">=</span> <span class="st">"Seurat_v5"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:41] Species: <span style="color: #0000BB;">"Homo_sapiens"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:41] Convert ID types for the <span style="color: #0000BB;">CellCycle</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:41] Converted ID types using local annotation package <span style="color: #0000BB;">org.Hs.eg.db</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:41] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-07-02 09:18:42] Use the <span style="color: #0000BB;">"Homo_sapiens"</span> annotation to create the <span style="color: #0000BB;">"CellCycle"</span> database for <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:42] Convert species for the <span style="color: #0000BB;">CellCycle</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:42] Connect to the Ensembl archives...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:42] Using the <span style="color: #0000BB;">116</span> version of ensembl database...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:42] Downloading the ensembl database from <span style="color: #0000BB;">https://jun2026.archive.ensembl.org</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:18] Species: <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:18] Convert ID types for the <span style="color: #0000BB;">CellCycle</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:18] Converted ID types using local annotation package <span style="color: #0000BB;">org.Hs.eg.db</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:18] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-03 04:36:18] Use the <span style="color: #0000BB;">"Homo_sapiens"</span> annotation to create the <span style="color: #0000BB;">"CellCycle"</span> database for <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:18] Convert species for the <span style="color: #0000BB;">CellCycle</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:18] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:18] Using the <span style="color: #0000BB;">116</span> version of ensembl database...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:18] Downloading the ensembl database from <span style="color: #0000BB;">https://jun2026.archive.ensembl.org</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:44] Searching the dataset <span style="color: #0000BB;">hsapiens</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:44] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:47] Converting the geneIDs...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:49] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:49] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:19] Searching the dataset <span style="color: #0000BB;">hsapiens</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:20] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:23] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:25] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:25] ==============================</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">97 genes mapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">0 genes unmapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:49] Convert ID types for the <span style="color: #0000BB;">CellCycle</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:49] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:26] Convert ID types for the <span style="color: #0000BB;">CellCycle</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:26] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
 <span class="r-in"><span><span class="fu"><a href="ListDB.html">ListDB</a></span><span class="op">(</span>db <span class="op">=</span> <span class="st">"CellCycle"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                         identifier version</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 Rcache v0.1.7 (R package R.cache by Henrik Bengtsson)              0.1.7</span>
@@ -300,8 +346,8 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                              Seurat_v5 nterm:2|Homo_sapiens-CellCycle</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 Seurat_v5(converted from Homo_sapiens) nterm:2|Mus_musculus-CellCycle</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    timestamp                       date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1782983922 2026-07-02 09:18:41.994828</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1782983929 2026-07-02 09:18:49.412487</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1785731778 2026-08-03 04:36:18.295058</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1785731786  2026-08-03 04:36:26.12446</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                       db_version                db_name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                              Seurat_v5 nterm:2 Homo_sapiens-CellCycle</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 Seurat_v5(converted from Homo_sapiens) nterm:2 Mus_musculus-CellCycle</span>
@@ -313,8 +359,8 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 Mus_musculus CellCycle</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">db_list</span> <span class="op">&lt;-</span> <span class="fu">PrepareDB</span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Mus_musculus"</span>, db <span class="op">=</span> <span class="st">"CellCycle"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:49] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-02 09:18:49] Loading cached: <span style="color: #0000BB;">CellCycle</span> version: <span style="color: #0000BB;">Seurat_v5(converted from Homo_sapiens) nterm:2</span> created: <span style="color: #0000BB;">2026-07-02 09:18:49</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:26] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:36:26] Loading cached: <span style="color: #0000BB;">CellCycle</span> version: <span style="color: #0000BB;">Seurat_v5(converted from Homo_sapiens) nterm:2</span> created: <span style="color: #0000BB;">2026-08-03 04:36:26</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">db_list</span><span class="op">[[</span><span class="st">"Mus_musculus"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"CellCycle"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"TERM2GENE"</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
@@ -336,7 +382,7 @@ Default is <code>TRUE</code>.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

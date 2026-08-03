@@ -11,7 +11,7 @@ backend."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,8 +22,17 @@ backend."></head><body>
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial transcriptomics</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -78,7 +87,8 @@ backend.</p>
 <span>  create_card_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  card_deconvolution_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  coordinate_space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw"</span>, <span class="st">"legacy_display"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -176,6 +186,13 @@ Default is <code>TRUE</code>.</p></dd>
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional parameters passed to the RCTD run step.</p></dd>
 
+
+<dt id="arg-coordinate-space">coordinate_space<a class="anchor" aria-label="anchor" href="#arg-coordinate-space"></a></dt>
+<dd><p>Coordinate space used for distance-sensitive input.
+The default is raw acquisition coordinates, so backend distances use raw
+coordinate units. Use <code>"legacy_display"</code> explicitly to reproduce the
+display-scaled coordinates used before scop 0.9.0.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -210,21 +227,15 @@ are stored in <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunCARD-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"scatterpie"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"CARD_dominant_type"</span>,</span></span>
-<span class="r-in"><span>    plot_type <span class="op">=</span> <span class="st">"pie"</span>,</span></span>
-<span class="r-in"><span>    overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>    coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CARD_dominant_type"</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"pie"</span>,</span></span>
+<span class="r-in"><span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunCARD-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu">check_r</span><span class="op">(</span><span class="st">"CARD"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">||</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu">check_r</span><span class="op">(</span><span class="st">"CARDspa"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">features_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span><span class="op">)</span>, <span class="fl">300</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunCARD</span><span class="op">(</span></span></span>
@@ -236,8 +247,11 @@ are stored in <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="va">features_use</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_r("CARD", verbose = FALSE):</span> could not find function "check_r"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ## QC on scRNASeq dataset! ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ## QC on spatially-resolved dataset! ...</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in tryCatchOne(expr, names, parentenv, handlers[[1L]]):</span> <span style="color: #0000BB;">CARDspa</span> could not select informative genes from the supplied feature</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> set. Try a broader `features` set or less restrictive filtering. Backend error:</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> invalid 'length' argument</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -249,7 +263,7 @@ are stored in <code>srt@tools[[tool_name]]</code>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

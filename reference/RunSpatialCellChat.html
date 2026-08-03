@@ -11,7 +11,7 @@ and composition-level results retain distinct interpretations."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,14 +29,10 @@ and composition-level results retain distinct interpretations."></head><body>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
-    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -239,7 +235,7 @@ count used by backend filtering.</p></dd>
 
 <dt id="arg-store-object">store.object<a class="anchor" aria-label="anchor" href="#arg-store-object"></a></dt>
 <dd><p>`"minimal"` stores normalized tables, coordinates, and
-diagnostics. `"full"` additionally stores each native backend object.</p></dd>
+diagnostics. `"full"` additionally stores each upstream backend object.</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
@@ -248,7 +244,7 @@ be replaced.</p></dd>
 
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p>Backend for scop's unified CCC post-processing only; it does
+<dd><p>Backend for unified CCC post-processing only; it does
 not change the SpatialCellChat inference engine.</p></dd>
 
 
@@ -284,9 +280,9 @@ always expressed in microns. Display coordinates are retained only for
 plotting stored results.</p>
 <p>Objects with multiple images require an explicit `image` selection. When
 `sample.by` contains multiple samples, supply a named character vector that
-maps every sample to one image. Native backend objects are omitted by default
+maps every sample to one image. Upstream backend objects are omitted by default
 because they can be large; use `store.object = "full"` only if subsequent
-SpatialCellChat-native analysis is needed.</p>
+additional analysis with the upstream SpatialCellChat object is needed.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

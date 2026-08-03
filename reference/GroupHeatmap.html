@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,14 +25,10 @@
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/interactive-scexplorer-workflow.html">Interactive SCExplorer workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Cell-cell communication</h6></li>
-    <li><a class="dropdown-item" href="../articles/cell-cell-communication-workflow.html">Cell-cell communication workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -121,10 +117,25 @@
 <span>  anno_keys <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  anno_features <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  terms_width <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"in"</span><span class="op">)</span>,</span>
+<span>  terms_stat_width <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">1.35</span>, <span class="st">"in"</span><span class="op">)</span>,</span>
 <span>  terms_fontsize <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  terms_stat <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  terms_stat_digits <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  terms_stat_test <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  terms_stat_label <span class="op">=</span> <span class="st">"value"</span>,</span>
+<span>  terms_stat_axis <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  terms_stat_background_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  terms_stat_border <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  terms_stat_border_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  terms_stat_border_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  terms_stat_label_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  terms_group_background <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  terms_background_palcolor <span class="op">=</span> <span class="st">"grey98"</span>,</span>
+<span>  terms_background_alpha <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  terms_border <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  terms_border_palcolor <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  terms_border_size <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  terms_text_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  terms_bar_palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  keys_width <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">2</span>, <span class="st">"in"</span><span class="op">)</span>,</span>
 <span>  keys_fontsize <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  features_width <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">2</span>, <span class="st">"in"</span><span class="op">)</span>,</span>
@@ -471,13 +482,18 @@ Default is <code>FALSE</code>.</p></dd>
 Default is <code>unit(4, "in")</code>.</p></dd>
 
 
+<dt id="arg-terms-stat-width">terms_stat_width<a class="anchor" aria-label="anchor" href="#arg-terms-stat-width"></a></dt>
+<dd><p>A unit specifying the width of the independent
+term-statistic bar-chart annotation.</p></dd>
+
+
 <dt id="arg-terms-fontsize">terms_fontsize<a class="anchor" aria-label="anchor" href="#arg-terms-fontsize"></a></dt>
 <dd><p>A numeric vector specifying the font size(s) for term annotations.
 Default is <code>8</code>.</p></dd>
 
 
 <dt id="arg-terms-stat">terms_stat<a class="anchor" aria-label="anchor" href="#arg-terms-stat"></a></dt>
-<dd><p>Which enrichment statistic to show after each term.
+<dd><p>Which enrichment statistic controls the term bars.
 Use <code>"none"</code> to hide the bar background, <code>"score"</code> for <code>-log10</code> of the
 active p-value metric, or any column from the enrichment result such as
 <code>"p.adjust"</code>, <code>"pvalue"</code>, <code>"qvalue"</code>,
@@ -485,13 +501,79 @@ active p-value metric, or any column from the enrichment result such as
 
 
 <dt id="arg-terms-stat-digits">terms_stat_digits<a class="anchor" aria-label="anchor" href="#arg-terms-stat-digits"></a></dt>
-<dd><p>Number of significant digits for numeric term
-statistics.</p></dd>
+<dd><p>Number of significant digits for statistic labels
+and axis tick labels.</p></dd>
 
 
-<dt id="arg-terms-stat-test">terms_stat_test<a class="anchor" aria-label="anchor" href="#arg-terms-stat-test"></a></dt>
-<dd><p>Logical. Whether to show the numeric term statistic
-value at the right side of each term when <code>terms_stat</code> is enabled.</p></dd>
+<dt id="arg-terms-stat-label">terms_stat_label<a class="anchor" aria-label="anchor" href="#arg-terms-stat-label"></a></dt>
+<dd><p>Label placed on or beside each statistic bar:
+<code>"none"</code>, <code>"value"</code>, <code>"significance"</code>, or <code>"both"</code>.</p></dd>
+
+
+<dt id="arg-terms-stat-axis">terms_stat_axis<a class="anchor" aria-label="anchor" href="#arg-terms-stat-axis"></a></dt>
+<dd><p>Logical. Whether to draw a shared statistic axis
+outside and below the final enrichment block.</p></dd>
+
+
+<dt id="arg-terms-stat-background-palcolor">terms_stat_background_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-stat-background-palcolor"></a></dt>
+<dd><p>Background color of the independent
+statistic panels. <code>NULL</code> inherits the corresponding term-panel background.</p></dd>
+
+
+<dt id="arg-terms-stat-border">terms_stat_border<a class="anchor" aria-label="anchor" href="#arg-terms-stat-border"></a></dt>
+<dd><p>Logical. Whether to draw borders around statistic
+panels. <code>NULL</code> inherits <code>terms_border</code>.</p></dd>
+
+
+<dt id="arg-terms-stat-border-palcolor">terms_stat_border_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-stat-border-palcolor"></a></dt>
+<dd><p>Border color of statistic panels. <code>NULL</code>
+inherits <code>terms_border_palcolor</code>.</p></dd>
+
+
+<dt id="arg-terms-stat-border-size">terms_stat_border_size<a class="anchor" aria-label="anchor" href="#arg-terms-stat-border-size"></a></dt>
+<dd><p>Border line width of statistic panels. <code>NULL</code>
+inherits <code>terms_border_size</code>.</p></dd>
+
+
+<dt id="arg-terms-stat-label-palcolor">terms_stat_label_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-stat-label-palcolor"></a></dt>
+<dd><p>Color of labels drawn on statistic bars.
+<code>NULL</code> automatically uses black or white according to bar luminance.</p></dd>
+
+
+<dt id="arg-terms-group-background">terms_group_background<a class="anchor" aria-label="anchor" href="#arg-terms-group-background"></a></dt>
+<dd><p>Logical. Whether term blocks use translucent
+<code>feature_split</code> colors as their backgrounds.</p></dd>
+
+
+<dt id="arg-terms-background-palcolor">terms_background_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-background-palcolor"></a></dt>
+<dd><p>Background color used when
+<code>terms_group_background = FALSE</code>.</p></dd>
+
+
+<dt id="arg-terms-background-alpha">terms_background_alpha<a class="anchor" aria-label="anchor" href="#arg-terms-background-alpha"></a></dt>
+<dd><p>Alpha transparency of term-block backgrounds.</p></dd>
+
+
+<dt id="arg-terms-border">terms_border<a class="anchor" aria-label="anchor" href="#arg-terms-border"></a></dt>
+<dd><p>Logical. Whether to draw borders around term blocks.</p></dd>
+
+
+<dt id="arg-terms-border-palcolor">terms_border_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-border-palcolor"></a></dt>
+<dd><p>Border color of term blocks.</p></dd>
+
+
+<dt id="arg-terms-border-size">terms_border_size<a class="anchor" aria-label="anchor" href="#arg-terms-border-size"></a></dt>
+<dd><p>Border line width of term blocks.</p></dd>
+
+
+<dt id="arg-terms-text-palcolor">terms_text_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-text-palcolor"></a></dt>
+<dd><p>Fixed term text color. <code>NULL</code> retains colors mapped
+from enrichment significance.</p></dd>
+
+
+<dt id="arg-terms-bar-palcolor">terms_bar_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-bar-palcolor"></a></dt>
+<dd><p>Fixed statistic-bar color. <code>NULL</code> makes each bar
+use the same color as its corresponding term text.</p></dd>
 
 
 <dt id="arg-keys-width">keys_width<a class="anchor" aria-label="anchor" href="#arg-keys-width"></a></dt>
@@ -817,7 +899,7 @@ Default is <code>"inch"</code>, Options are <code>"mm"</code>, <code>"cm"</code>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>The number of cores to use for parallelization with <a href="https://rdrr.io/pkg/foreach/man/foreach.html" class="external-link">foreach::foreach</a>.
+<dd><p>The number of worker processes to use for parallelization.
 Default is <code>1</code>.</p></dd>
 
 
@@ -866,23 +948,23 @@ Default is <code>TRUE</code>.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="standard_scop.html">standard_scop</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:08] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:08] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-07-28 03:31:08] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:08] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:09] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:09] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:09] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:09] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:09] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:09] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:10] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:10] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:10] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-28 03:31:15] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:41] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:41] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-03 04:25:41] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:41] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:41] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:42] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:42] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:42] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:42] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:42] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:43] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:43] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:43] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 04:25:51] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">ht1</span> <span class="op">&lt;-</span> <span class="fu">GroupHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
@@ -912,23 +994,17 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CSPA"</span>, <span class="st">"TF"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:16] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:16] Loading cached: <span style="color: #0000BB;">CSPA</span> version: <span style="color: #0000BB;">CSPA nterm:1</span> created: <span style="color: #0000BB;">2026-07-28 03:30:25</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:16] Loading cached: <span style="color: #0000BB;">TF</span> version: <span style="color: #0000BB;">AnimalTFDB4 nterm:2</span> created: <span style="color: #0000BB;">2026-07-28 03:30:24</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:52] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:52] Loading cached: <span style="color: #0000BB;">CSPA</span> version: <span style="color: #0000BB;">CSPA nterm:1</span> created: <span style="color: #0000BB;">2026-08-03 04:13:20</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:52] Loading cached: <span style="color: #0000BB;">TF</span> version: <span style="color: #0000BB;">AnimalTFDB4 nterm:2</span> created: <span style="color: #0000BB;">2026-08-03 03:44:36</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:18] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:18] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:18] Find all markers(wilcox) among [1] 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:18] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-07-28 03:31:18] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 2s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-07-28 03:31:18] Running for <span style="color: #0000BB;">Endocrine </span>[<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■</span>      60% | ETA: <span style="color: #0000BB;"> 1s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-28 03:31:18] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">2.6s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:18] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-28 03:31:21] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:54] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:54] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:25:54] Find all markers(wilcox) among [1] 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 04:25:54] Differential expression test completed</span>
 <span class="r-in"><span><span class="va">de_filter</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_CellType</span><span class="op">$</span><span class="va">AllMarkers_wilcox</span>,</span></span>
 <span class="r-in"><span>  <span class="va">p_val_adj</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">avg_log2FC</span> <span class="op">&gt;</span> <span class="fl">1</span></span></span>
@@ -962,21 +1038,21 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  anno_keys <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  anno_features <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:29] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:29] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:29] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-07-28 03:29:14</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:30] Permform enrichment...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:31] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-07-28 03:31:31] Running for <span style="color: #0000BB;">1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 7s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-07-28 03:31:31] Running for <span style="color: #0000BB;">2 </span>[<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■</span>        40% | ETA: <span style="color: #0000BB;"> 5s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠸</span> [2026-07-28 03:31:31] Running for <span style="color: #0000BB;">4 </span>[<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■■■</span>    80% | ETA: <span style="color: #0000BB;"> 2s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-28 03:31:31] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">8.9s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:26:01] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:26:01] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:26:01] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-08-03 04:15:04</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:26:02] Permform enrichment...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:26:04] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-03 04:26:04] Running for <span style="color: #0000BB;">1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 8s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-08-03 04:26:04] Running for <span style="color: #0000BB;">2 </span>[<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■</span>        40% | ETA: <span style="color: #0000BB;"> 6s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠸</span> [2026-08-03 04:26:04] Running for <span style="color: #0000BB;">4 </span>[<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■■■</span>    80% | ETA: <span style="color: #0000BB;"> 2s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 04:26:04] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">9.3s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:31:31] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-07-28 03:31:40] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:32:21] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:32:21] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-07-28 03:32:21] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:26:04] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-03 04:26:13] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:26:54] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:26:54] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-03 04:26:54] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-in"><span><span class="va">ht3</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="GroupHeatmap-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
