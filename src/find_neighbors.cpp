@@ -294,7 +294,8 @@ static void cross_knn_worker(const std::vector<float>& reference,
 Rcpp::IntegerMatrix annoy_build_search(Rcpp::NumericMatrix data,
                                        int k,
                                        int n_trees,
-                                       int cores) {
+                                       int cores,
+                                       int search_k = -1) {
   const int rows = data.nrow();
   const int dims = data.ncol();
   if (rows <= 0 || dims <= 0 || k <= 0 || k > rows) {
@@ -326,7 +327,7 @@ Rcpp::IntegerMatrix annoy_build_search(Rcpp::NumericMatrix data,
         distances.clear();
         index.get_nns_by_vector(
           packed.data() + static_cast<size_t>(row) * dims,
-          k, -1, &found, &distances);
+          k, search_k, &found, &distances);
         for (int rank = 0; rank < k; ++rank) {
           out[row + rank * rows] = found[rank] + 1;
         }

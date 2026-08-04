@@ -90,7 +90,7 @@ FindNeighbors.Seurat <- function(
   raw_idx <- tryCatch(
     annoy_build_search(
       data = data.use,
-      k = min(k.use + 1L, n_cells),
+      k = k.use,
       n_trees = n_trees,
       cores = cores
     ),
@@ -102,9 +102,9 @@ FindNeighbors.Seurat <- function(
   nn_idx <- matrix(NA_integer_, nrow = n_cells, ncol = k.use)
   for (i in seq_len(n_cells)) {
     hits <- raw_idx[i, ]
-    hits <- hits[!is.na(hits) & hits != i]
+    hits <- hits[!is.na(hits)]
     if (length(hits) < k.use) {
-      fill <- setdiff(seq_len(n_cells), c(i, hits))
+      fill <- setdiff(seq_len(n_cells), hits)
       hits <- c(hits, fill[seq_len(min(length(fill), k.use - length(hits)))])
     }
     nn_idx[i, ] <- hits[seq_len(k.use)]
@@ -147,9 +147,7 @@ FindNeighbors.Seurat <- function(
   )
   snn <- Matrix::tcrossprod(membership)
   snn@x <- snn@x / (2 * k.use - snn@x)
-  snn@x[snn@x <= prune.SNN] <- 0
-  snn <- Matrix::drop0(snn)
-  Matrix::diag(snn) <- 0
+  snn@x[snn@x < prune.SNN] <- 0
   snn <- Matrix::drop0(snn)
   snn <- methods::as(snn, "generalMatrix")
   snn <- methods::as(snn, "Graph")
