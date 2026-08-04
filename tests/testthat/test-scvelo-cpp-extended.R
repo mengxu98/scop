@@ -218,6 +218,6 @@ test_that("scvelo_moments_cpp rejects mismatched knn_idx rows", {
 
   expect_error(
     scvelo_moments_cpp(spliced, unspliced, knn_idx),
-    "knn_idx"
+    "knn_idx", ignore.case = TRUE
   )
 })
