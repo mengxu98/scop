@@ -526,8 +526,10 @@ Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}
 \item{cores}{The number of worker processes to use for parallelization.
 Default is \code{1}.}
 
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Optional integer seed. When supplied, every input receives a
+deterministic independent L'Ecuyer-CMRG random-number stream, making results
+reproducible across worker counts and scheduling order. The caller's random
+number state is restored when the call finishes.}
 
 \item{legend.position}{A character vector specifying the side to place the legends.
 Options are \code{"right"}, \code{"left"}, \code{"top"}, or \code{"bottom"}.

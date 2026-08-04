@@ -105,9 +105,9 @@ local({
     else
       renv_ansify_default(text)
   }
-
+  
   renv_ansify_enabled <- function() {
-
+  
     override <- Sys.getenv("RENV_ANSIFY_ENABLED", unset = NA)
     if (!is.na(override))
       return(as.logical(override))
@@ -228,7 +228,7 @@ local({
   
     # ensure the target library path exists; required for file.copy(..., recursive = TRUE)
     dir.create(library, showWarnings = FALSE, recursive = TRUE)
-
+  
     # try to install renv from cache
     md5 <- attr(version, "md5", exact = TRUE)
     if (length(md5)) {
@@ -267,7 +267,7 @@ local({
     catf("")
     return(invisible())
   }
-
+  
   renv_bootstrap_tests_running <- function() {
     getOption("renv.tests.running", default = FALSE)
   }
@@ -1248,7 +1248,7 @@ local({
       }
     )
   }
-
+  
   renv_bootstrap_run_impl <- function(project, libpath, version) {
   
     # perform bootstrap

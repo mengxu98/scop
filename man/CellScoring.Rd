@@ -108,8 +108,10 @@ separately and stored with a method suffix such as \code{"GO_AUCell"} or
 When \code{NULL}, manual \code{features = list(...)} input is stored in \code{meta.data} by default,
 while database-derived results stay assay-only when \code{new_assay = TRUE}.}
 
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Optional integer seed. When supplied, every input receives a
+deterministic independent L'Ecuyer-CMRG random-number stream, making results
+reproducible across worker counts and scheduling order. The caller's random
+number state is restored when the call finishes.}
 
 \item{cores}{The number of worker processes to use for parallelization.
 Default is \code{1}.}
