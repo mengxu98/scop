@@ -10,7 +10,7 @@
 ^pkgdown$
 ^\.github$
 ^\.posit$
-^\.claude$
+(^|/)\.claude($|/)
 ^README\.Rmd$
 ^LICENSE\.md$
 ^SCExplorer$
@@ -43,7 +43,7 @@
 ^\.git($|/)
 ^src/Makevars$
 ^\.gitignore$
-^\.reasonix$
+(^|/)\.reasonix($|/)
 ^\.env$
 ^\.codegraph$
 ^\.omicos$

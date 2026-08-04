@@ -202,8 +202,10 @@ Default is \code{data}.}
 
 \item{assay}{Assay to use in differential expression testing}
 
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Optional integer seed. When supplied, every input receives a
+deterministic independent L'Ecuyer-CMRG random-number stream, making results
+reproducible across worker counts and scheduling order. The caller's random
+number state is restored when the call finishes.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

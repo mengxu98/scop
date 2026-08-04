@@ -26,7 +26,7 @@ Default is \code{data}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Other arguments to pass to \link[Seurat:FetchData]{Seurat::FetchData}.}
+\item{...}{Other arguments to pass to \link[Seurat:reexports]{Seurat::FetchData}.}
 }
 \description{
 FetchData but with zeroes for unavailable genes
