@@ -550,10 +550,6 @@ filter_de_data_group_use <- function(de_df, group_use = NULL) {
   de_df
 }
 
-get_bulk_de_plot_data <- function(srt) {
-  resolve_detest_result(object = srt)
-}
-
 clip_log2fc_symmetric <- function(df, fc_col = "avg_log2FC") {
   res <- thisplot::clip_symmetric_range(data = df, value_col = fc_col)
   list(df = res$data, fc_lim = res$limits)
