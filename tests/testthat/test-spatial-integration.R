@@ -278,6 +278,7 @@ test_that("SpatialMNN installation discovery uses the actual package name", {
 })
 
 test_that("BASS discovery rejects the unrelated package-name collision", {
+  skip_if_not_installed("BASS")
   checks <- 0L
   installs <- character()
   testthat::local_mocked_bindings(

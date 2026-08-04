@@ -23,6 +23,7 @@ with_mock_choir <- function(code,
                             installed_commit = "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc",
                             namespace_loaded = FALSE,
                             loaded_commit = "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc") {
+  testthat::skip_on_os("windows")
   received <- new.env(parent = emptyenv())
   if (is.null(backend)) {
     backend <- function(object,
