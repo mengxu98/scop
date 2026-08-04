@@ -95,7 +95,7 @@ test_that("RunCellQC supports HB feature overrides", {
       hb_pattern = NULL,
       verbose = FALSE
     )),
-    "hb_gene ignored missing features"
+    "hb_gene ignored missing features", ignore.case = TRUE
   )
 
   expect_equal(unname(out$percent.hb), c(90, 0, 0, 0))

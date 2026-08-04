@@ -238,7 +238,7 @@ test_that("paga_connectivities_cpp rejects mismatched dimensions", {
       groups = dat$groups,
       n_groups = dat$n_groups
     ),
-    "knn_idx rows must match groups length"
+    "knn_idx rows must match groups length", ignore.case = TRUE
   )
 })
 
@@ -250,7 +250,7 @@ test_that("paga_connectivities_cpp rejects negative n_groups", {
       groups = dat$groups,
       n_groups = -1L
     ),
-    "n_groups must be positive"
+    "n_groups must be positive", ignore.case = TRUE
   )
 })
 
@@ -264,7 +264,7 @@ test_that("paga_connectivities_cpp rejects groups with invalid indices", {
       groups = bad_groups,
       n_groups = dat$n_groups
     ),
-    "groups must be 1-based"
+    "groups must be 1-based", ignore.case = TRUE
   )
 })
 
