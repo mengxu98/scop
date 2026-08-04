@@ -3718,6 +3718,68 @@ resolve_detest_result <- function(
       !layer %in% names(object@tools) ||
         length(grep(pattern = "AllMarkers", names(object@tools[[layer]]))) == 0
     ) {
+      rgg <- object@misc[["rank_genes_groups"]]
+      if (!is.null(rgg) && is.list(rgg)) {
+        log_message(
+          "Using the {.val rank_genes_groups} result converted from an AnnData object",
+          message_type = "warning"
+        )
+        extract_field <- function(field) {
+          v <- rgg[[field]]
+          if (is.null(v)) {
+            return(NULL)
+          }
+          if (is.data.frame(v)) {
+            v <- as.matrix(v)
+          }
+          if (is.list(v)) {
+            v <- do.call(cbind, v)
+          }
+          v
+        }
+        rgg_groups <- as.character(rgg[["groups"]])
+        if (is.null(rgg_groups)) {
+          rgg_groups <- colnames(extract_field("names"))
+        }
+        if (length(rgg_groups) == 0) {
+          log_message(
+            "Cannot find the group names in the {.val rank_genes_groups} result",
+            message_type = "error"
+          )
+        }
+        names_mat <- extract_field("names")
+        if (is.null(names_mat) || ncol(names_mat) != length(rgg_groups)) {
+          log_message(
+            "The shape of {.val rank_genes_groups} does not match the group names",
+            message_type = "error"
+          )
+        }
+        rgg_res <- data.frame(
+          gene = as.vector(names_mat),
+          group1 = rep(rgg_groups, each = nrow(names_mat)),
+          stringsAsFactors = FALSE
+        )
+        for (field in c("logfoldchanges", "pvals", "pvals_adj")) {
+          mat <- extract_field(field)
+          if (!is.null(mat) && ncol(mat) == length(rgg_groups)) {
+            rgg_res[[field]] <- as.vector(mat)
+          }
+        }
+        colnames(rgg_res)[colnames(rgg_res) == "logfoldchanges"] <- "avg_log2FC"
+        colnames(rgg_res)[colnames(rgg_res) == "pvals"] <- "p_val"
+        colnames(rgg_res)[colnames(rgg_res) == "pvals_adj"] <- "p_val_adj"
+        group2 <- rgg[["params"]][["reference"]] %||% "rest"
+        rgg_res[["group2"]] <- ifelse(
+          grepl(" vs ", rgg_res[["group1"]], fixed = TRUE),
+          sub(".* vs ", "", rgg_res[["group1"]]),
+          group2
+        )
+        if (any(grepl(" vs ", rgg_res[["group1"]], fixed = TRUE))) {
+          rgg_res[["group1"]] <- sub(" vs .*", "", rgg_res[["group1"]])
+        }
+        rgg_res[["method"]] <- rgg[["params"]][["method"]] %||% "wilcoxon"
+        return(detest_res(rgg_res))
+      }
       log_message(
         "Cannot find the DEtest result for the group {.val {group.by}}. Perform {.fn RunDEtest} first",
         message_type = "error"

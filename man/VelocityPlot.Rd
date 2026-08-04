@@ -58,7 +58,10 @@ If not specified, will use the reduction returned by \link{DefaultReduction}.}
 \item{cells}{A character vector of cell names to use.}
 
 \item{velocity}{Name of the velocity to use for plotting.
-Default is \code{"stochastic"}.}
+Default is \code{"stochastic"}. If the corresponding velocity embedding
+(e.g. \code{stochastic_umap}) is not found, falls back to the scVelo
+convention (\code{velocity_umap}), which is what an object converted from
+an AnnData (via \link{adata_to_srt}) contains.}
 
 \item{plot_type}{Type of plot to create.
 Can be \code{"raw"}, \code{"grid"}, or \code{"stream"}.}

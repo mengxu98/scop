@@ -6,7 +6,7 @@
 \usage{
 PAGAPlot(
   srt,
-  paga = srt@tools[["PAGA"]],
+  paga = NULL,
   type = "connectivities",
   reduction = NULL,
   dims = c(1, 2),
@@ -71,7 +71,8 @@ PAGAPlot(
 \item{srt}{A Seurat object.}
 
 \item{paga}{The PAGA result from the Seurat object.
-Default is \code{srt@tools[["PAGA"]]}.}
+Default is \code{srt@tools[["PAGA"]]}, falling back to \code{srt@misc[["paga"]]}
+(e.g. a PAGA result converted from an AnnData object).}
 
 \item{type}{The type of plot to generate.
 Possible values are \code{"connectivities"} (default) and \code{"connectivities_tree"}.}

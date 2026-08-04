@@ -1,3 +1,12 @@
+# scop (development)
+
+* **changed**:
+  * Python-converted object interop: consumers now tolerate results converted from an AnnData via `adata_to_srt()` without re-running scop wrappers.
+    * `PAGAPlot()` falls back to `srt@misc[["paga"]]` (scanpy PAGA) when `srt@tools[["PAGA"]]` is absent, and aligns group ordering with the `meta.data` factor levels.
+    * `VelocityPlot()`/`CellDimPlot(velocity=)`, `RunPAGA(use_rna_velocity)`, and `RunCellRank()` fall back to the scVelo reduction naming (e.g. `velocity_umap`) and `dpt_pseudotime` when the scop-specific keys (`stochastic_umap`, `stochastic_pseudotime`) are not found.
+    * DE consumers (`VolcanoPlot()`, `DEtestPlot()`, `RunEnrichment()`, `RunGSEA()`, ...) read scanpy `rank_genes_groups` results stored in `srt@misc[["rank_genes_groups"]]` when no `RunDEtest()` result exists.
+    * `RunScissor()` graph auto-detection recognizes converted graph names (e.g. `RNA snn`) and falls back to `connectivities`.
+
 # scop 0.9.0 (2026-08-02)
 
 * **feat**:

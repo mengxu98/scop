@@ -30,6 +30,9 @@
 #' Default is `TRUE`.
 #' @param mode Velocity estimation models to use.
 #' Can be `"deterministic"`, `"stochastic"`, or `"dynamical"`.
+#' If the corresponding velocity reduction (e.g. `stochastic_umap`) is not
+#' found, falls back to the scVelo convention (e.g. `velocity_umap`), which is
+#' what an object converted from an AnnData (via [adata_to_srt]) contains.
 #' @param fitting_by Method used to fit gene velocities for dynamical modeling.
 #' Default is `"stochastic"`.
 #' @param magic_impute Flag indicating whether to perform magic imputation.
@@ -573,9 +576,27 @@ run_cellrank_cpp <- function(
   )
 
   velocity_reduction <- paste0(mode, "_", nonlinear_reduction)
+  velocity_reduction_fallback <- if (!identical(mode, "velocity")) {
+    paste0("velocity", "_", nonlinear_reduction)
+  } else {
+    NULL
+  }
+  if (identical(kernel_type, "velocity") &&
+    !velocity_reduction %in% names(srt@reductions) &&
+    !is.null(velocity_reduction_fallback) &&
+    velocity_reduction_fallback %in% names(srt@reductions)) {
+    log_message(
+      "Using {.val {velocity_reduction_fallback}} as the velocity reduction (e.g. an object converted from scVelo)",
+      message_type = "warning",
+      verbose = verbose
+    )
+    velocity_reduction <- velocity_reduction_fallback
+  }
   pt_key <- paste0(mode, "_pseudotime")
   needs_velocity <- identical(kernel_type, "velocity") ||
-    (identical(kernel_type, "pseudotime") && !pt_key %in% colnames(srt@meta.data))
+    (identical(kernel_type, "pseudotime") &&
+      !pt_key %in% colnames(srt@meta.data) &&
+      !"dpt_pseudotime" %in% colnames(srt@meta.data))
   if (isTRUE(needs_velocity) && !velocity_reduction %in% names(srt@reductions)) {
     log_message(
       "Running {.fn RunSCVELO} cpp backend before {.fn RunCellRank}",
@@ -659,8 +680,17 @@ run_cellrank_cpp <- function(
       T_mat <- tw * T_mat + cw * C_mat
     }
   } else if (kernel_type == "pseudotime") {
-    if (pt_key %in% colnames(srt@meta.data)) {
-      pseudotime <- as.numeric(srt@meta.data[[pt_key]])
+    pt_use <- pt_key
+    if (!pt_use %in% colnames(srt@meta.data) && "dpt_pseudotime" %in% colnames(srt@meta.data)) {
+      pt_use <- "dpt_pseudotime"
+      log_message(
+        "Using {.val {pt_use}} as the pseudotime (e.g. an object converted from scanpy)",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    if (pt_use %in% colnames(srt@meta.data)) {
+      pseudotime <- as.numeric(srt@meta.data[[pt_use]])
     } else {
       log_message("Pseudotime not found; computing via velocity pseudotime", message_type = "warning", verbose = verbose)
       ts_result <- scvelo_terminal_states_cpp(
