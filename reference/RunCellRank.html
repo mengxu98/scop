@@ -179,7 +179,10 @@ Default is <code>"umap"</code>.</p></dd>
 
 <dt id="arg-mode">mode<a class="anchor" aria-label="anchor" href="#arg-mode"></a></dt>
 <dd><p>Velocity estimation models to use.
-Can be <code>"deterministic"</code>, <code>"stochastic"</code>, or <code>"dynamical"</code>.</p></dd>
+Can be <code>"deterministic"</code>, <code>"stochastic"</code>, or <code>"dynamical"</code>.
+If the corresponding velocity reduction (e.g. <code>stochastic_umap</code>) is not
+found, falls back to the scVelo convention (e.g. <code>velocity_umap</code>), which is
+what an object converted from an AnnData (via <a href="adata_to_srt.html">adata_to_srt</a>) contains.</p></dd>
 
 
 <dt id="arg-fitting-by">fitting_by<a class="anchor" aria-label="anchor" href="#arg-fitting-by"></a></dt>
