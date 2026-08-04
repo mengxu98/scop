@@ -8,7 +8,10 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams thisplot::GraphPlot
 #' @param velocity Name of the velocity to use for plotting.
-#' Default is `"stochastic"`.
+#' Default is `"stochastic"`. If the corresponding velocity embedding
+#' (e.g. `stochastic_umap`) is not found, falls back to the scVelo
+#' convention (`velocity_umap`), which is what an object converted from
+#' an AnnData (via [adata_to_srt]) contains.
 #' @param plot_type Type of plot to create.
 #' Can be `"raw"`, `"grid"`, or `"stream"`.
 #' @param group_palette Name of the palette to use for coloring the groups.
@@ -169,10 +172,21 @@ VelocityPlot <- function(
   }
   v_reduction <- paste0(velocity, "_", reduction)
   if (!v_reduction %in% names(srt@reductions)) {
-    log_message(
-      "Cannot find the velocity embedding {.val {v_reduction}}",
-      message_type = "error"
-    )
+    v_reduction_fallback <- paste0("velocity", "_", reduction)
+    if (!identical(velocity, "velocity") &&
+      v_reduction_fallback %in% names(srt@reductions)) {
+      log_message(
+        "Cannot find the velocity embedding {.val {v_reduction}}, using {.val {v_reduction_fallback}} instead (e.g. an object converted from scVelo)",
+        message_type = "warning",
+        verbose = verbose
+      )
+      v_reduction <- v_reduction_fallback
+    } else {
+      log_message(
+        "Cannot find the velocity embedding {.val {v_reduction}}",
+        message_type = "error"
+      )
+    }
   }
   x_emb <- srt@reductions[[reduction]]@cell.embeddings[, dims]
   v_emb <- srt@reductions[[v_reduction]]@cell.embeddings[, dims]

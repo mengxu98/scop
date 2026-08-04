@@ -14,7 +14,9 @@
 #' @param use_rna_velocity Whether to use RNA velocity for PAGA analysis.
 #' Default is `FALSE`.
 #' @param vkey The name of the RNA velocity data to use if `use_rna_velocity` is `TRUE`.
-#' Default is `"stochastic"`.
+#' Default is `"stochastic"`. If the corresponding velocity embedding is not
+#' found, falls back to the scVelo convention (e.g. `velocity_umap`), which is
+#' what an object converted from an AnnData (via [adata_to_srt]) contains.
 #' @param embedded_with_PAGA Whether to embed data using PAGA layout.
 #' Default is `FALSE`.
 #' @param paga_layout The layout for plotting PAGA graph.
@@ -450,7 +452,11 @@ run_paga_cpp <- function(
     vel_candidates <- unique(c(
       if (!is.null(nonlinear_reduction)) paste0(vkey, "_", nonlinear_reduction),
       paste0(vkey, "_velocity_embedding"),
-      vkey
+      vkey,
+      if (!is.null(nonlinear_reduction) && !identical(vkey, "velocity")) {
+        paste0("velocity", "_", nonlinear_reduction)
+      },
+      if (!identical(vkey, "velocity")) "velocity_velocity_embedding"
     ))
     vel_key <- vel_candidates[vel_candidates %in% names(srt@reductions)][1]
     if (!vel_key %in% names(srt@reductions)) {

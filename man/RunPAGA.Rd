@@ -85,7 +85,9 @@ Default is \code{30}.}
 Default is \code{FALSE}.}
 
 \item{vkey}{The name of the RNA velocity data to use if \code{use_rna_velocity} is \code{TRUE}.
-Default is \code{"stochastic"}.}
+Default is \code{"stochastic"}. If the corresponding velocity embedding is not
+found, falls back to the scVelo convention (e.g. \code{velocity_umap}), which is
+what an object converted from an AnnData (via \link{adata_to_srt}) contains.}
 
 \item{embedded_with_PAGA}{Whether to embed data using PAGA layout.
 Default is \code{FALSE}.}

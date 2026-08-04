@@ -589,8 +589,11 @@ scissor_default_graph <- function(srt, assay) {
   candidates <- c(
     paste0(assay, "_snn"),
     paste0(assay, "_SNN"),
+    paste0(assay, " snn"),
+    paste0(assay, " SNN"),
     paste0(assay, "_nn"),
     paste0(assay, "_NN"),
+    paste0(assay, " nn"),
     paste0("Standard", "pca", "_SNN"),
     paste0("Standard", "pca", "_KNN")
   )
@@ -598,13 +601,16 @@ scissor_default_graph <- function(srt, assay) {
   if (length(hit) > 0L) {
     return(hit[[1]])
   }
-  snn <- grep("_snn$", graph_names, value = TRUE, ignore.case = TRUE)
+  snn <- grep("[_ ]snn$", graph_names, value = TRUE, ignore.case = TRUE)
   if (length(snn) > 0L) {
     return(snn[[1]])
   }
-  nn <- grep("_knn$|_nn$", graph_names, value = TRUE, ignore.case = TRUE)
+  nn <- grep("[_ ]knn$|[_ ]nn$", graph_names, value = TRUE, ignore.case = TRUE)
   if (length(nn) > 0L) {
     return(nn[[1]])
+  }
+  if ("connectivities" %in% graph_names) {
+    return("connectivities")
   }
   NULL
 }

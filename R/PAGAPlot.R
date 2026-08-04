@@ -7,7 +7,8 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams thisplot::GraphPlot
 #' @param paga The PAGA result from the Seurat object.
-#' Default is `srt@tools[["PAGA"]]`.
+#' Default is `srt@tools[["PAGA"]]`, falling back to `srt@misc[["paga"]]`
+#' (e.g. a PAGA result converted from an AnnData object).
 #' @param type The type of plot to generate.
 #' Possible values are `"connectivities"` (default) and `"connectivities_tree"`.
 #' @param show_transition Whether to display transitions between different cell states.
@@ -97,7 +98,7 @@
 #' )
 PAGAPlot <- function(
   srt,
-  paga = srt@tools[["PAGA"]],
+  paga = NULL,
   type = "connectivities",
   reduction = NULL,
   dims = c(1, 2),
@@ -158,6 +159,9 @@ PAGAPlot <- function(
   verbose = TRUE
 ) {
   if (is.null(paga)) {
+    paga <- srt@tools[["PAGA"]] %||% srt@misc[["paga"]]
+  }
+  if (is.null(paga)) {
     log_message(
       "Cannot find the paga result",
       message_type = "error"
@@ -172,12 +176,39 @@ PAGAPlot <- function(
   } else {
     use_triangular <- "upper"
   }
+  if (is.null(paga[[type]])) {
+    log_message(
+      "Cannot find the {.val {type}} in the paga result",
+      message_type = "error"
+    )
+  }
   connectivities <- paga[[type]]
-  transition <- paga[["transitions_confidence"]]
   groups <- paga[["groups"]]
+  if (!groups %in% colnames(srt@meta.data)) {
+    log_message(
+      "Cannot find the group column {.val {groups}} in the meta.data",
+      message_type = "error"
+    )
+  }
   if (!is.factor(srt@meta.data[[groups]])) {
     srt@meta.data[[groups]] <- factor(srt@meta.data[[groups]])
   }
+  group_levels <- levels(srt@meta.data[[groups]])
+  for (nm in c(type, "transitions_confidence")) {
+    mat <- paga[[nm]]
+    if (!is.null(mat) && !is.null(rownames(mat))) {
+      ord <- match(group_levels, rownames(mat))
+      if (anyNA(ord)) {
+        log_message(
+          "Group names in the paga result do not match those in the meta.data",
+          message_type = "error"
+        )
+      }
+      paga[[nm]] <- mat[ord, ord]
+    }
+  }
+  connectivities <- paga[[type]]
+  transition <- paga[["transitions_confidence"]]
   if (nlevels(srt@meta.data[[groups]]) != nrow(connectivities)) {
     log_message(
       "nlevels in ", groups, " is not identical with the group in paga",
