@@ -677,8 +677,8 @@ parallel_all_in_one_dgc <- function(x_sexp, groups, group_sizes) {
     .Call(`_scop_parallel_all_in_one_dgc`, x_sexp, groups, group_sizes)
 }
 
-annoy_build_search <- function(data, k, n_trees, cores) {
-    .Call(`_scop_annoy_build_search`, data, k, n_trees, cores)
+annoy_build_search <- function(data, k, n_trees, cores, search_k = -1L) {
+    .Call(`_scop_annoy_build_search`, data, k, n_trees, cores, search_k)
 }
 
 annoy_cross_knn <- function(reference, query, k, n_trees, metric, cores) {

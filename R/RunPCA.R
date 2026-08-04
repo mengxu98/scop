@@ -36,10 +36,15 @@ RunPCA.default <- function(
   if (!is.double(obj)) {
     storage.mode(obj) <- "double"
   }
-  nv <- tryCatch(
-    pca_backend_run(obj, as.integer(npcs), isTRUE(weight.by.var)),
-    error = function(e) NULL
-  )
+  backend <- list(...)[["backend"]] %||% "irlba"
+  backend <- match.arg(backend, c("irlba", "cpp"))
+  nv <- NULL
+  if (identical(backend, "cpp")) {
+    nv <- tryCatch(
+      pca_backend_run(obj, as.integer(npcs), isTRUE(weight.by.var)),
+      error = function(e) NULL
+    )
+  }
   if (!is.null(nv)) {
     feature.loadings <- nv$loadings
     cell.embeddings <- nv$embeddings

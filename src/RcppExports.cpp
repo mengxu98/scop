@@ -2694,8 +2694,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // annoy_build_search
-Rcpp::IntegerMatrix annoy_build_search(Rcpp::NumericMatrix data, int k, int n_trees, int cores);
-RcppExport SEXP _scop_annoy_build_search(SEXP dataSEXP, SEXP kSEXP, SEXP n_treesSEXP, SEXP coresSEXP) {
+Rcpp::IntegerMatrix annoy_build_search(Rcpp::NumericMatrix data, int k, int n_trees, int cores, int search_k);
+RcppExport SEXP _scop_annoy_build_search(SEXP dataSEXP, SEXP kSEXP, SEXP n_treesSEXP, SEXP coresSEXP, SEXP search_kSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2703,7 +2703,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
     Rcpp::traits::input_parameter< int >::type n_trees(n_treesSEXP);
     Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
-    rcpp_result_gen = Rcpp::wrap(annoy_build_search(data, k, n_trees, cores));
+    Rcpp::traits::input_parameter< int >::type search_k(search_kSEXP);
+    rcpp_result_gen = Rcpp::wrap(annoy_build_search(data, k, n_trees, cores, search_k));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -3109,7 +3110,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_spatial_gradient_screening_cpp", (DL_FUNC) &_scop_spatial_gradient_screening_cpp, 10},
     {"_scop_spatial_variable_score_cpp", (DL_FUNC) &_scop_spatial_variable_score_cpp, 5},
     {"_scop_parallel_all_in_one_dgc", (DL_FUNC) &_scop_parallel_all_in_one_dgc, 3},
-    {"_scop_annoy_build_search", (DL_FUNC) &_scop_annoy_build_search, 4},
+    {"_scop_annoy_build_search", (DL_FUNC) &_scop_annoy_build_search, 5},
     {"_scop_annoy_cross_knn", (DL_FUNC) &_scop_annoy_cross_knn, 6},
     {"_scop_exact_knn_f32", (DL_FUNC) &_scop_exact_knn_f32, 3},
     {"_scop_cross_knn_f32", (DL_FUNC) &_scop_cross_knn_f32, 5},
