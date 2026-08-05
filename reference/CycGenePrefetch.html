@@ -34,7 +34,9 @@ the cell cycle genes of the corresponding species were captured by homologous ge
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
@@ -115,8 +117,8 @@ Default is <code>TRUE</code>.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Homo_sapiens"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 14:14:42] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 14:14:42] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 14:49:02] Prefetching cell cycle genes for <span style="color: #0000BB;">"Homo_sapiens"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 14:49:02] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Homo_sapiens"</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ res         : NULL</span>
@@ -126,21 +128,22 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ cc_G2M_genes: chr [1:54] "HMGB2" "CDK1" "NUSAP1" "UBE2C" ...</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ccgenes</span> <span class="op">&lt;-</span> <span class="fu">CycGenePrefetch</span><span class="op">(</span><span class="st">"Mus_musculus"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 14:14:42] Prefetching cell cycle genes for <span style="color: #0000BB;">"Mus_musculus"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 14:14:43] Connect to the Ensembl archives...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 14:14:43] Using the <span style="color: #0000BB;">116</span> version of ensembl database...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 14:14:43] Downloading the ensembl database from <span style="color: #0000BB;">https://jun2026.archive.ensembl.org</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 14:49:03] Prefetching cell cycle genes for <span style="color: #0000BB;">"Mus_musculus"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 14:49:03] Connect to the Ensembl archives...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 14:49:03] Using the <span style="color: #0000BB;">116</span> version of ensembl database...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 14:49:03] Downloading the ensembl database from <span style="color: #0000BB;">https://jun2026.archive.ensembl.org</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying www mirror</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 14:14:49] Searching the dataset <span style="color: #0000BB;">hsapiens</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 14:15:49] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 14:16:14] Converting the geneIDs...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 14:17:17] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 14:17:17] ==============================</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ensembl site unresponsive, trying asia mirror</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 14:49:14] Searching the dataset <span style="color: #0000BB;">hsapiens</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 14:49:14] Connecting to the dataset <span style="color: #0000BB;">hsapiens_gene_ensembl</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 14:49:17] Converting the geneIDs...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 14:49:20] <span style="color: #0000BB;">97</span> genes mapped with <span style="color: #0000BB;">"ensembl_symbol"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 14:49:20] ==============================</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #00BB00;">97 genes mapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       <span style="color: #BB0000;">0 genes unmapped</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       ==============================</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 14:17:17] Cached conversion results for <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 14:17:17] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 14:49:20] Cached conversion results for <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 14:49:20] Cell cycle gene prefetching completed <span style="color: #0000BB;">"Mus_musculus"</span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ccgenes</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ res         :List of 7</span>

@@ -38,7 +38,9 @@ various options for DE analysis."></head><body>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
@@ -364,32 +366,32 @@ Default is <code>1</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:18] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:18] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-04 15:03:18] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:01] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:01] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-05 15:34:01] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 1/1 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:19] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:19] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:19] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:19] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:19] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:19] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:19] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:20] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:20] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:20] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:03:29] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:01] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:01] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:02] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:02] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:02] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:02] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:02] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:02] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:03] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:03] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:03] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:34:10] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDEtest</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  only.pos <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:29] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:29] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:29] Find all markers(wilcox) among [1] 8 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:03:30] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:11] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:11] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:11] Find all markers(wilcox) among [1] 8 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:34:11] Differential expression test completed</span>
 <span class="r-in"><span><span class="va">AllMarkers</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_SubCellType</span><span class="op">$</span><span class="va">AllMarkers_wilcox</span>,</span></span>
 <span class="r-in"><span>  <span class="va">p_val_adj</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">avg_log2FC</span> <span class="op">&gt;</span> <span class="fl">1</span></span></span>
@@ -400,9 +402,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  feature_split <span class="op">=</span> <span class="va">AllMarkers</span><span class="op">$</span><span class="va">group1</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:31] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:31] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:31] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:12] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:12] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:12] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-in"><span><span class="va">ht1</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -418,9 +420,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
 <span class="r-in"><span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:33] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:33] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:33] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:15] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:15] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:15] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-in"><span><span class="va">ht2</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -430,15 +432,15 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  markers_type <span class="op">=</span> <span class="st">"paired"</span>,</span></span>
 <span class="r-in"><span>  cores <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:34] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:34] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:34] Find paired markers(wilcox) among [1] 8 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:34] Using <span style="color: #0000BB;">2</span> cores</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-04 15:03:34] Running for <span style="color: #0000BB;">5 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">28</span>]              4% | ETA: <span style="color: #0000BB;">21m</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:03:34] Completed <span style="color: #0000BB;">28</span> tasks in <span style="color: #0000BB;">46.8s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:16] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:16] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:16] Find paired markers(wilcox) among [1] 8 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:16] Using <span style="color: #0000BB;">2</span> cores</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-05 15:34:16] Running for <span style="color: #0000BB;">5 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">28</span>]              4% | ETA: <span style="color: #0000BB;">19m</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:34:16] Completed <span style="color: #0000BB;">28</span> tasks in <span style="color: #0000BB;">43.6s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:03:34] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:04:21] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:34:16] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:35:00] Differential expression test completed</span>
 <span class="r-in"><span><span class="va">PairedMarkers</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_SubCellType</span><span class="op">$</span><span class="va">PairedMarkers_wilcox</span>,</span></span>
 <span class="r-in"><span>  <span class="va">p_val_adj</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">avg_log2FC</span> <span class="op">&gt;</span> <span class="fl">1</span></span></span>
@@ -449,9 +451,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  feature_split <span class="op">=</span> <span class="va">PairedMarkers</span><span class="op">$</span><span class="va">group1</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:28] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:28] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:28] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:06] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:06] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:06] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-in"><span><span class="va">ht3</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -462,45 +464,45 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  integration_method <span class="op">=</span> <span class="st">"Uncorrected"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`integration_method` is deprecated; use `integration_methods` instead. It will be removed in scop 1.0.0.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-08-04 15:04:31] <span style="color: #0000BB;">Run integration workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:31] Split `srt_merge` into `srt_list` by <span style="color: #0000BB;">"tech"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:32] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-04 15:04:32] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-08-05 15:35:09] <span style="color: #0000BB;">Run integration workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:10] Split `srt_merge` into `srt_list` by <span style="color: #0000BB;">"tech"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:10] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-05 15:35:10] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 1/5 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:32] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-04 15:04:32] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:10] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-05 15:35:11] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 2/5 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:32] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-04 15:04:33] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:11] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-05 15:35:11] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 3/5 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:33] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-04 15:04:33] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:11] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-05 15:35:11] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 4/5 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:33] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-04 15:04:33] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:11] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-05 15:35:11] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 5/5 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:33] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:33] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:34] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:34] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:36] Perform <span style="color: #0000BB;">Uncorrected</span> integration</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:11] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:11] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:12] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:12] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:14] Perform <span style="color: #0000BB;">Uncorrected</span> integration</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No layers found matching search pattern provided</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘scale.data’ is empty</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:36] Perform `Seurat::ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:37] Perform <span style="color: #0000BB;">"pca"</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:37] Adjust neighbor k from <span style="color: #0000BB;">20</span> to <span style="color: #0000BB;">20</span> for small-sample clustering</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:38] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">"louvain"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:38] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:38] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:39] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Uncorrectedpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:46] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Uncorrectedpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:04:53] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Uncorrectedpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:05:00] <span style="color: #0000BB;">Uncorrected</span> integration completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:14] Perform `Seurat::ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:15] Perform <span style="color: #0000BB;">"pca"</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:15] Adjust neighbor k from <span style="color: #0000BB;">20</span> to <span style="color: #0000BB;">20</span> for small-sample clustering</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:16] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">"louvain"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:16] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:16] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:17] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Uncorrectedpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:23] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Uncorrectedpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:29] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Uncorrectedpca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:35:36] <span style="color: #0000BB;">Uncorrected</span> integration completed</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celltype"</span>, <span class="st">"tech"</span><span class="op">)</span></span></span>
@@ -514,16 +516,16 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  markers_type <span class="op">=</span> <span class="st">"conserved"</span>,</span></span>
 <span class="r-in"><span>  cores <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:01] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:01] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:01] Find conserved markers(wilcox) among [1] 13 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:01] Using <span style="color: #0000BB;">2</span> cores</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-04 15:05:01] Running for <span style="color: #0000BB;">acinar </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>]              8% | ETA: <span style="color: #0000BB;"> 5m</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-08-04 15:05:01] Running for <span style="color: #0000BB;">beta </span>[<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] <span style="color: #00BB00;">■■■</span>         31% | ETA: <span style="color: #0000BB;"> 1m</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:05:01] Completed <span style="color: #0000BB;">13</span> tasks in <span style="color: #0000BB;">26.1s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:37] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:37] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:37] Find conserved markers(wilcox) among [1] 13 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:37] Using <span style="color: #0000BB;">2</span> cores</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-05 15:35:37] Running for <span style="color: #0000BB;">acinar </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>]              8% | ETA: <span style="color: #0000BB;"> 4m</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-08-05 15:35:37] Running for <span style="color: #0000BB;">macrophage </span>[<span style="color: #0000BB;">12</span>/<span style="color: #0000BB;">13</span>] <span style="color: #00BB00;">■■■■■■■■■</span>   92% | ETA: <span style="color: #0000BB;"> </span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:35:37] Completed <span style="color: #0000BB;">13</span> tasks in <span style="color: #0000BB;">24.6s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:01] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:05:27] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:35:37] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:36:02] Differential expression test completed</span>
 <span class="r-in"><span><span class="va">ConservedMarkers1</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_celltype</span><span class="op">$</span><span class="va">ConservedMarkers_wilcox</span>,</span></span>
 <span class="r-in"><span>  <span class="va">p_val_adj</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">avg_log2FC</span> <span class="op">&gt;</span> <span class="fl">1</span></span></span>
@@ -547,9 +549,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> TRUE/FALSE to it.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Set `ht_opt$message = FALSE` to turn off this message.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:33] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:33] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:33] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:06] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:06] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:06] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-in"><span><span class="va">ht4</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -560,15 +562,16 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  markers_type <span class="op">=</span> <span class="st">"conserved"</span>,</span></span>
 <span class="r-in"><span>  cores <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:36] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:36] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:36] Find conserved markers(wilcox) among [1] 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:36] Using <span style="color: #0000BB;">2</span> cores</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-04 15:05:36] Running for <span style="color: #0000BB;">celseq2 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 2m</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:05:36] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">26.1s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:08] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:08] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:08] Find conserved markers(wilcox) among [1] 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:08] Using <span style="color: #0000BB;">2</span> cores</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-05 15:36:08] Running for <span style="color: #0000BB;">celseq2 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;"> 1m</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-08-05 15:36:08] Running for <span style="color: #0000BB;">smartseq2 </span>[<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■</span>      60% | ETA: <span style="color: #0000BB;">15s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:36:08] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">23.4s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:05:36] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:06:02] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:08] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:36:32] Differential expression test completed</span>
 <span class="r-in"><span><span class="va">ConservedMarkers2</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_tech</span><span class="op">$</span><span class="va">ConservedMarkers_wilcox</span>,</span></span>
 <span class="r-in"><span>  <span class="va">p_val_adj</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">avg_log2FC</span> <span class="op">&gt;</span> <span class="fl">1</span></span></span>
@@ -581,9 +584,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  split.by <span class="op">=</span> <span class="st">"celltype"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:03] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:03] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:03] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:33] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:33] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:33] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-in"><span><span class="va">ht4</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -594,16 +597,17 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  markers_type <span class="op">=</span> <span class="st">"disturbed"</span>,</span></span>
 <span class="r-in"><span>  cores <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:08] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:08] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:08] Find disturbed markers(wilcox) among [1] 13 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:08] Using <span style="color: #0000BB;">2</span> cores</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-04 15:06:08] Running for <span style="color: #0000BB;">acinar </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>]              8% | ETA: <span style="color: #0000BB;"> 5m</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-08-04 15:06:08] Running for <span style="color: #0000BB;">beta </span>[<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">13</span>] <span style="color: #00BB00;">■■■</span>         31% | ETA: <span style="color: #0000BB;"> 1m</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:06:08] Completed <span style="color: #0000BB;">13</span> tasks in <span style="color: #0000BB;">30s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:38] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:38] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:38] Find disturbed markers(wilcox) among [1] 13 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:38] Using <span style="color: #0000BB;">2</span> cores</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-05 15:36:38] Running for <span style="color: #0000BB;">acinar </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">13</span>]              8% | ETA: <span style="color: #0000BB;"> 5m</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-08-05 15:36:38] Running for <span style="color: #0000BB;">delta </span>[<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">13</span>] <span style="color: #00BB00;">■</span>           15% | ETA: <span style="color: #0000BB;"> 2m</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠸</span> [2026-08-05 15:36:38] Running for <span style="color: #0000BB;">endothelial </span>[<span style="color: #0000BB;">9</span>/<span style="color: #0000BB;">13</span>] <span style="color: #00BB00;">■■■■■■</span>      69% | ETA: <span style="color: #0000BB;">1</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:36:38] Completed <span style="color: #0000BB;">13</span> tasks in <span style="color: #0000BB;">27.9s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:08] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:06:39] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:36:38] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:37:06] Differential expression test completed</span>
 <span class="r-in"><span><span class="va">DisturbedMarkers</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DEtest_celltype</span><span class="op">$</span><span class="va">DisturbedMarkers_wilcox</span>,</span></span>
 <span class="r-in"><span>  <span class="va">p_val_adj</span> <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">avg_log2FC</span> <span class="op">&gt;</span> <span class="fl">1</span> <span class="op">&amp;</span> <span class="va">var1</span> <span class="op">==</span> <span class="st">"smartseq2"</span></span></span>
@@ -621,9 +625,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> TRUE/FALSE to it.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Set `ht_opt$message = FALSE` to turn off this message.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:41] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:41] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:41] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:37:09] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:37:09] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:37:09] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-in"><span><span class="va">ht5</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-7.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -639,9 +643,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"celltype"</span>,</span></span>
 <span class="r-in"><span>  split.by <span class="op">=</span> <span class="st">"tech"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:56] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:56] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:06:56] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:37:23] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:37:23] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:37:23] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-in"><span><span class="va">ht6</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-8.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -655,11 +659,11 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  grouping.var <span class="op">=</span> <span class="st">"tech"</span>,</span></span>
 <span class="r-in"><span>  numerator <span class="op">=</span> <span class="st">"smartseq2"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-04 15:07:06] When 'grouping.var' is specified, 'exp_method' can only be 'log2fc'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-05 15:37:34] When 'grouping.var' is specified, 'exp_method' can only be 'log2fc'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>When 'grouping.var' is specified, 'exp_method' can only be 'log2fc'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:07:08] The size of the heatmap is fixed because certain elements are not scalable.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:07:08] The width and height of the heatmap are determined by the size of the current viewport.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:07:08] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:37:35] The size of the heatmap is fixed because certain elements are not scalable.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:37:35] The width and height of the heatmap are determined by the size of the current viewport.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:37:35] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
 <span class="r-in"><span><span class="va">ht7</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDEtest-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -687,13 +691,13 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
 <span class="r-in"><span>  only.pos <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:07:10] Start sample-level differential testing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:37:37] Start sample-level differential testing</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> calcNormFactors has been renamed to normLibSizes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> calcNormFactors has been renamed to normLibSizes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> calcNormFactors has been renamed to normLibSizes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> calcNormFactors has been renamed to normLibSizes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> calcNormFactors has been renamed to normLibSizes</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:07:11] Sample-level differential testing completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:37:38] Sample-level differential testing completed</span>
 <span class="r-in"><span><span class="fu"><a href="DEtestPlot.html">DEtestPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
@@ -715,13 +719,13 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in"><span>  fc.threshold <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  only.pos <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:07:12] Start sample-level differential testing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:37:39] Start sample-level differential testing</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> calcNormFactors has been renamed to normLibSizes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> calcNormFactors has been renamed to normLibSizes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> calcNormFactors has been renamed to normLibSizes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> calcNormFactors has been renamed to normLibSizes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> calcNormFactors has been renamed to normLibSizes</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:07:15] Sample-level differential testing completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:37:42] Sample-level differential testing completed</span>
 <span class="r-in"><span><span class="fu"><a href="DEtestPlot.html">DEtestPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>

@@ -32,7 +32,9 @@
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
@@ -214,19 +216,27 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  store_networks <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 15:39:49] Run <span style="color: #0000BB;">scTenifoldKnk</span> knockout for <span style="color: #0000BB;">"Pdx1"</span> using <span style="color: #0000BB;">"r"</span> backend</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |======================================================================| 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 15:39:56] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `srt@tools[[scTenifoldKnk]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 16:09:27] Run <span style="color: #0000BB;">scTenifoldKnk</span> knockout for <span style="color: #0000BB;">"Pdx1"</span> using <span style="color: #0000BB;">"r"</span> backend</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building 3 gene regulatory networks (200 cells each)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Networks <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  33% | ETA:  6s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Networks <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  67% | ETA:  3s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Networks <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Network construction complete: 3 networks</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [X] Tensor: 301 x 301 x 3 (K=3)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [X] CP decomposition complete (norm explained: 39.9%)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Manifold alignment: 301 shared genes, d=2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Manifold alignment complete: 2 dimensions</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 16:09:47] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `srt@tools[[scTenifoldKnk]]`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dr</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">scTenifoldKnk</span><span class="op">$</span><span class="va">diffRegulation</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dr</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       gene     distance        Z         FC      p.value        p.adj</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1     Pdx1 6.561133e-04 3.961694 7251.32977 0.000000e+00 0.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 292   Cd81 7.531816e-05 2.334319   95.55631 1.437441e-22 2.163349e-20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 256   Myl6 3.422043e-05 1.852224   19.72563 8.939449e-06 8.969248e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 84   Actg1 3.355487e-05 1.840879   18.96580 1.330824e-05 1.001445e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 148   Ssr2 2.707015e-05 1.718822   12.34359 4.425038e-04 2.663873e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 156 Sec61b 2.486587e-05 1.671538   10.41519 1.249829e-03 6.269975e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     Pdx1 6.754982e-04 3.963089 7458.81278 0.000000e+00 0.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 292   Cd81 7.505946e-05 2.316055   92.09419 8.264751e-22 1.243845e-19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 256   Myl6 3.581292e-05 1.864745   20.96529 4.676796e-06 4.692386e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 84   Actg1 3.437486e-05 1.841072   19.31538 1.108104e-05 8.338484e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 148   Ssr2 2.780289e-05 1.720629   12.63575 3.784388e-04 2.278201e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 156 Sec61b 2.552481e-05 1.673092   10.64992 1.100757e-03 5.522129e-02</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="scTenifoldKnkPlot.html">scTenifoldKnkPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"effect"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunScTenifoldKnk-1.png" alt="" width="700" height="433"></span>
