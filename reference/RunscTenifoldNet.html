@@ -32,7 +32,9 @@
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98/scop" title="GitHub" aria-label="GitHub repository"><span class="fa fab fa-github fa-lg"></span></a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mengxu98" title="MengXu" aria-label="MengXu's GitHub profile"><span class="fa fas fa-home fa-lg"></span></a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
@@ -199,20 +201,48 @@ with results stored in <code>object@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span>  store_networks <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-04 16:01:34] Run <span style="color: #0000BB;">scTenifoldNet</span> comparison using upstream implementation</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |==                                                                    |   3%  |                                                                              |==                                                                    |   4%  |                                                                              |===                                                                   |   4%  |                                                                              |====                                                                  |   5%  |                                                                              |====                                                                  |   6%  |                                                                              |=====                                                                 |   6%  |                                                                              |=====                                                                 |   7%  |                                                                              |======================================================================| 100%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |                                                                      |   1%  |                                                                              |=                                                                     |   1%  |                                                                              |=                                                                     |   2%  |                                                                              |==                                                                    |   2%  |                                                                              |======================================================================| 100%</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-04 16:01:38] <span style="color: #0000BB;">scTenifoldNet</span> results stored in `object@tools[[scTenifoldNet]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 16:30:58] Run <span style="color: #0000BB;">scTenifoldNet</span> comparison using upstream implementation</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">scTenifoldNet Pipeline</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Step 2/6: CPM normalization</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [X] CPM normalization: 300 genes x 253 cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [X] CPM normalization complete</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [Y] CPM normalization: 300 genes x 355 cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [Y] CPM normalization complete</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Shared genes: 300</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Step 3/6: Building gene regulatory networks</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [X] Building 3 gene regulatory networks (200 cells each)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [X] Networks <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  33% | ETA:  4s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [X] Networks <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  67% | ETA:  2s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [X] Networks <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [X] Network construction complete: 3 networks</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [Y] Building 3 gene regulatory networks (200 cells each)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [Y] Networks <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  67% | ETA:  2s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> [Y] Networks <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [Y] Network construction complete: 3 networks</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Step 4/6: Tensor decomposition</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [X] Tensor: 300 x 300 x 3 (K=3)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [X] CP decomposition complete (norm explained: 26.3%)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [Y] Tensor: 300 x 300 x 3 (K=3)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [Y] CP decomposition complete (norm explained: 24.7%)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Step 5/6: Manifold alignment</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Manifold alignment: 300 shared genes, d=2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Manifold alignment complete: 2 dimensions</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Step 6/6: Differential regulation analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Computing distances for 300 genes</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential regulation complete: 2/300 significant genes (FDR &lt; 0.05)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> scTenifoldNet pipeline complete</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 16:31:11] <span style="color: #0000BB;">scTenifoldNet</span> results stored in `object@tools[[scTenifoldNet]]`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dr</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">scTenifoldNet</span><span class="op">$</span><span class="va">diffRegulation</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dr</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         gene    distance        Z        FC      p.value       p.adj</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25  Hsp90ab1 0.004553045 1.660546 20.824368 5.033841e-06 0.001510152</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26      Rps2 0.004154439 1.590437 17.337751 3.129086e-05 0.004693629</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 125    Hspa8 0.003136144 1.383049  9.880067 1.670788e-03 0.167078817</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47      Ftl1 0.002977463 1.346001  8.905553 2.843048e-03 0.193654167</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 177 Hsp90aa1 0.002938524 1.336669  8.674141 3.227569e-03 0.193654167</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 155   Sec61b 0.002786133 1.299164  7.797794 5.231006e-03 0.240336435</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25  Hsp90ab1 0.004510967 1.690887 20.524738 5.886555e-06 0.001765966</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26      Rps2 0.004049140 1.605500 16.537272 4.770310e-05 0.007155465</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 125    Hspa8 0.003194686 1.424532 10.294248 1.334455e-03 0.133445509</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 177 Hsp90aa1 0.003058008 1.392084  9.432257 2.132018e-03 0.144242440</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47      Ftl1 0.003022130 1.383375  9.212227 2.404041e-03 0.144242440</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 155   Sec61b 0.002831187 1.335586  8.084916 4.463519e-03 0.223175954</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="scTenifoldNetPlot.html">scTenifoldNetPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"effect"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunscTenifoldNet-1.png" alt="" width="700" height="433"></span>
