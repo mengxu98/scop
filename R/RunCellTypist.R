@@ -203,11 +203,7 @@ RunCellTypist <- function(
     !isTRUE(insert_decision)
   args[["return_obs"]] <- direct_obs_return
 
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
   celltypist_result <- do.call(functions$CellTypist, args)
 
   if (isTRUE(return_seurat)) {
@@ -439,11 +435,7 @@ TrainCellTypist <- function(
     }
   }
 
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
 
   model <- functions$TrainCellTypist(
     adata = adata,
@@ -586,11 +578,7 @@ CellTypistModels <- function(
   )
   PrepareEnv(modules = "celltypist")
   check_python("celltypist==1.7.1", verbose = verbose)
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
 
   result <- functions$CellTypistModels(
     action = action,

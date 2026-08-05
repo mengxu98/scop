@@ -312,11 +312,7 @@ RunSCVELO <- function(
     palcolor = palcolor
   )
 
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
 
   adata <- do.call(functions$SCVELO, args)
 

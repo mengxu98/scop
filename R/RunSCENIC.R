@@ -271,11 +271,7 @@ RunSCENIC <- function(
   )
   configure_python_runtime(scenic_python)
 
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
 
   log_message(
     "Preparing {.pkg SCENIC} input matrix",

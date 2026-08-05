@@ -527,11 +527,7 @@ run_scenicplus_python <- function(
     python_path <- conda_python(conda = conda_resolved, envname = envname)
     assert_python_runtime_switchable(python_path)
     configure_python_runtime(python_path)
-    functions <- reticulate::import_from_path(
-      "functions",
-      path = system.file("python", package = "scop", mustWork = TRUE),
-      convert = TRUE
-    )
+    functions <- scop_python_import("functions", convert = TRUE)
     functions$ExtractSCENICPlusTables(
       scplus_object = scplus_object,
       output_dir = python_result_dir,

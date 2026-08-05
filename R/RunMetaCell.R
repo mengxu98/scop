@@ -406,11 +406,7 @@ metacell_seacells <- function(
     modules = c("scanpy", "seacells")
   )
 
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
 
   pca_reduction <- tryCatch(
     DefaultReduction(srt, pattern = "pca"),
