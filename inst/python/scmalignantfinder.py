@@ -1,22 +1,14 @@
 import os
 from pathlib import Path
-from pathlib import Path
-import importlib.util
 
-_LOG_MESSAGE_ENV = os.environ.get("SCOP_LOG_MESSAGE_PATH")
-_LOG_MESSAGE_PATH = (
-    Path(_LOG_MESSAGE_ENV)
-    if _LOG_MESSAGE_ENV
-    else Path(__file__).resolve().parent / "log_message.py"
-)
-if not _LOG_MESSAGE_PATH.exists():
-    raise ImportError(f"Cannot load log_message module from {_LOG_MESSAGE_PATH}")
-_LOG_MESSAGE_SPEC = importlib.util.spec_from_file_location(
-    "scop_log_message", _LOG_MESSAGE_PATH
-)
-_LOG_MESSAGE_MODULE = importlib.util.module_from_spec(_LOG_MESSAGE_SPEC)
-_LOG_MESSAGE_SPEC.loader.exec_module(_LOG_MESSAGE_MODULE)
-log_message = _LOG_MESSAGE_MODULE.log_message
+try:
+    from log_message import log_message
+except ModuleNotFoundError as e:
+    raise ImportError(
+        "Cannot import 'log_message' from the thisutils R package. "
+        "Install thisutils (>= 0.4.8) and configure the Python "
+        "environment with ConfigureEnv()."
+    ) from e
 
 
 def _expand_path(path):

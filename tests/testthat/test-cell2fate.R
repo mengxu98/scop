@@ -955,7 +955,11 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
     python,
     c(shQuote(script), shQuote(runner)),
     stdout = output,
-    stderr = output
+    stderr = output,
+    env = paste0(
+      "PYTHONPATH=",
+      system.file("python", package = "thisutils", mustWork = TRUE)
+    )
   )
 
   expect_identical(

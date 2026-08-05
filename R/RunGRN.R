@@ -564,11 +564,7 @@ grnboost_python <- function(
     )
   )
   configure_python_runtime(python_path)
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
   functions$RunSCENICGrn(
     expression_mtx = expr_csv,
     regulators = regulators_file,
@@ -669,11 +665,7 @@ regdiffusion_python <- function(
     )
   )
   configure_python_runtime(python_path)
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
   functions$RunSCENICRegDiffusion(
     expression_mtx = expr_csv,
     regulators = regulators_file,

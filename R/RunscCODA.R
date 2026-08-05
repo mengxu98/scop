@@ -120,11 +120,7 @@ RunscCODA <- function(
   )
   count_mat[rownames(count_tab), colnames(count_tab)] <- as.matrix(count_tab)
 
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
   py_output <- functions$ScCODA(
     counts = as.data.frame(count_mat, stringsAsFactors = FALSE),
     metadata = data.frame(

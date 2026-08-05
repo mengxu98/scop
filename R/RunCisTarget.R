@@ -342,11 +342,7 @@ cisTarget_python <- function(
   )
   configure_python_runtime(python_path)
 
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
 
   # Build expression matrix CSV if not provided
   if (is.null(expression_mtx)) {

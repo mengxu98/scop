@@ -1,3 +1,34 @@
+scop_python_import <- function(module, convert = TRUE) {
+  python_dir <- system.file("python", package = "thisutils", mustWork = FALSE)
+  if (!nzchar(python_dir)) {
+    log_message(
+      "thisutils ({.code >= 0.4.8}) does not provide a Python {.file log_message} module",
+      message_type = "error"
+    )
+  }
+  if (isFALSE(reticulate::py_available(initialize = FALSE))) {
+    log_message(
+      "Python is not initialized. Run {.code ConfigureEnv()} first",
+      message_type = "error"
+    )
+  }
+  if (isFALSE(reticulate::py_eval(
+    "'log_message' in __import__('sys').modules",
+    convert = TRUE
+  ))) {
+    reticulate::import_from_path(
+      "log_message",
+      path = python_dir,
+      convert = FALSE
+    )
+  }
+  reticulate::import_from_path(
+    module,
+    path = system.file("python", package = "scop", mustWork = TRUE),
+    convert = convert
+  )
+}
+
 runner_script_path <- function(script, backend) {
   candidates <- c(
     system.file("python", script, package = "scop", mustWork = FALSE),
@@ -52,12 +83,14 @@ runner_system2 <- function(command, args, env, stdout, stderr) {
       message_type = "error"
     )
   }
-  log_message_path <- system.file(
-    "python", "log_message.py",
-    package = "thisutils"
-  )
-  if (nzchar(log_message_path)) {
-    env <- c(env, SCOP_LOG_MESSAGE_PATH = log_message_path)
+  log_message_dir <- system.file("python", package = "thisutils", mustWork = FALSE)
+  if (nzchar(log_message_dir)) {
+    python_path <- unique(c(
+      log_message_dir,
+      strsplit(Sys.getenv("PYTHONPATH", unset = ""), .Platform$path.sep, fixed = TRUE)[[1]]
+    ))
+    python_path <- python_path[nzchar(python_path)]
+    env <- c(env, PYTHONPATH = paste(python_path, collapse = .Platform$path.sep))
   }
   if (!length(env)) {
     return(system2(

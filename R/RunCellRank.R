@@ -397,11 +397,7 @@ RunCellRank <- function(
   ]
 
   log_message("Running {.pkg CellRank} analysis...", verbose = verbose)
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
   result <- do.call(functions$CellRank, args)
   log_message(
     "{.pkg CellRank} analysis completed",

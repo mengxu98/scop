@@ -255,11 +255,7 @@ RunPAGA <- function(
     palcolor = palcolor
   )
 
-  functions <- reticulate::import_from_path(
-    "functions",
-    path = system.file("python", package = "scop", mustWork = TRUE),
-    convert = TRUE
-  )
+  functions <- scop_python_import("functions", convert = TRUE)
   log_message("Running {.pkg PAGA} analysis...", verbose = verbose)
   adata <- do.call(functions$PAGA, args)
   log_message(
