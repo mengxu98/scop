@@ -13,7 +13,7 @@ template:
 navbar:
   structure:
     left:  [articles, reference, tutorials, news]
-    right: [github, mengxu, lightswitch]
+    right: [search, github, mengxu, lightswitch]
 
   components:
     github:
