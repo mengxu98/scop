@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <thisutils/log_message.h>
+#include <cmath>
 #include <vector>
 #ifdef _OPENMP
 #include <omp.h>
@@ -70,23 +71,36 @@ List sparse_row_mean_var(IntegerVector p, IntegerVector i, NumericVector x,
   const int* pp = INTEGER(p);
   const int* ip = INTEGER(i);
   const double* xp = REAL(x);
-  RowAccumulation rows = accumulate_rows(pp, ip, xp, nrow, ncol);
+
+  std::vector<double> sum(nrow, 0.0);
+  const int nnz_total = x.size();
+  for (int k = 0; k < nnz_total; ++k) {
+    sum[ip[k]] += xp[k];
+  }
 
   NumericVector mu(nrow);
   NumericVector variance(nrow);
-  IntegerVector nnz(nrow);
+  IntegerVector nnz_out(nrow);
   const double n = static_cast<double>(ncol);
   const double denom = n - 1.0;
-
   for (int row = 0; row < nrow; ++row) {
-    mu[row] = rows.sum[row] / n;
-    variance[row] = (rows.sumsq[row] - n * mu[row] * mu[row]) / denom;
+    mu[row] = sum[row] / n;
+  }
+  std::vector<double> rowvar(nrow, 0.0);
+  std::vector<int> nzero(nrow, ncol);
+  for (int k = 0; k < nnz_total; ++k) {
+    const int row = ip[k];
+    rowvar[row] += std::pow(xp[k] - mu[row], 2);
+    nzero[row] -= 1;
+  }
+  for (int row = 0; row < nrow; ++row) {
+    variance[row] = (rowvar[row] + mu[row] * mu[row] * nzero[row]) / denom;
     if (variance[row] < 0.0) variance[row] = 0.0;
-    nnz[row] = rows.count[row];
+    nnz_out[row] = ncol - nzero[row];
   }
 
   return List::create(Named("mean") = mu, Named("variance") = variance,
-                      Named("nnz") = nnz);
+                      Named("nnz") = nnz_out);
 }
 
 // [[Rcpp::export]]
@@ -164,66 +178,35 @@ NumericVector sparse_row_var_std(IntegerVector p, IntegerVector i, NumericVector
                                          int nrow, int ncol,
                                          NumericVector mu, NumericVector sd,
                                          double vmax, IntegerVector nnzPerRow) {
-  std::vector<double> inv_sd_vec(nrow);
-  std::vector<double> mu_isd_vec(nrow);
-  prepare_standardization(mu, sd, inv_sd_vec, mu_isd_vec);
+  const double* mup = REAL(mu);
+  const double* sdp = REAL(sd);
+  const int* nnz = INTEGER(nnzPerRow);
 
   std::vector<double> sumSq(nrow, 0.0);
   const int* pp = INTEGER(p);
   const int* ip = INTEGER(i);
   const double* xp = REAL(x);
 
-#ifdef _OPENMP
-  const int max_threads = omp_get_max_threads();
-  if (max_threads > 1 && ncol >= max_threads * 64) {
-    std::vector<std::vector<double> > local(max_threads, std::vector<double>(nrow, 0.0));
-#pragma omp parallel
-    {
-      const int tid = omp_get_thread_num();
-      std::vector<double>& acc = local[tid];
-#pragma omp for schedule(static)
-      for (int col = 0; col < ncol; ++col) {
-        for (int pos = pp[col]; pos < pp[col + 1]; ++pos) {
-          const int row = ip[pos];
-          const double isd = inv_sd_vec[row];
-          if (isd == 0.0) continue;
-          double z = xp[pos] * isd - mu_isd_vec[row];
-          if (z > vmax) z = vmax;
-          acc[row] += z * z;
-        }
-      }
-    }
-    for (int t = 0; t < max_threads; ++t) {
-      for (int row = 0; row < nrow; ++row) {
-        sumSq[row] += local[t][row];
-      }
-    }
-  } else {
-#endif
   for (int col = 0; col < ncol; ++col) {
     for (int pos = pp[col]; pos < pp[col + 1]; ++pos) {
       const int row = ip[pos];
-      const double isd = inv_sd_vec[row];
-      if (isd == 0.0) continue;
-      double z = xp[pos] * isd - mu_isd_vec[row];
+      if (sdp[row] == 0.0) continue;
+      double z = (xp[pos] - mup[row]) / sdp[row];
       if (z > vmax) z = vmax;
-      sumSq[row] += z * z;
+      sumSq[row] += std::pow(z, 2);
     }
   }
-#ifdef _OPENMP
-  }
-#endif
 
   NumericVector result(nrow);
   const double denom = ncol - 1.0;
   for (int row = 0; row < nrow; ++row) {
-    if (inv_sd_vec[row] == 0.0) {
+    if (sdp[row] == 0.0) {
       result[row] = 0.0;
       continue;
     }
-    const int nZero = ncol - nnzPerRow[row];
-    const double zeroVal = mu_isd_vec[row];
-    const double total = sumSq[row] + zeroVal * zeroVal * nZero;
+    const int nZero = ncol - nnz[row];
+    const double zeroVal = (0.0 - mup[row]) / sdp[row];
+    const double total = sumSq[row] + std::pow(zeroVal, 2) * nZero;
     result[row] = total / denom;
   }
   return result;
@@ -233,9 +216,8 @@ NumericVector sparse_row_var_std(IntegerVector p, IntegerVector i, NumericVector
 NumericVector sparse_row_var_std_dgc_list(List mats, int nrow,
                                           NumericVector mu, NumericVector sd,
                                           double vmax) {
-  std::vector<double> inv_sd_vec(nrow);
-  std::vector<double> mu_isd_vec(nrow);
-  prepare_standardization(mu, sd, inv_sd_vec, mu_isd_vec);
+  const double* mup = REAL(mu);
+  const double* sdp = REAL(sd);
 
   std::vector<double> sumSq(nrow, 0.0);
   std::vector<int> nnz(nrow, 0);
@@ -259,12 +241,11 @@ NumericVector sparse_row_var_std_dgc_list(List mats, int nrow,
     for (int col = 0; col < ncol; ++col) {
       for (int pos = pp[col]; pos < pp[col + 1]; ++pos) {
         const int row = ip[pos];
-        const double isd = inv_sd_vec[row];
         nnz[row] += 1;
-        if (isd == 0.0) continue;
-        double z = xp[pos] * isd - mu_isd_vec[row];
+        if (sdp[row] == 0.0) continue;
+        double z = (xp[pos] - mup[row]) / sdp[row];
         if (z > vmax) z = vmax;
-        sumSq[row] += z * z;
+        sumSq[row] += std::pow(z, 2);
       }
     }
   }
@@ -272,13 +253,13 @@ NumericVector sparse_row_var_std_dgc_list(List mats, int nrow,
   NumericVector result(nrow);
   const double denom = ncol_total - 1.0;
   for (int row = 0; row < nrow; ++row) {
-    if (inv_sd_vec[row] == 0.0) {
+    if (sdp[row] == 0.0) {
       result[row] = 0.0;
       continue;
     }
     const int nZero = ncol_total - nnz[row];
-    const double zeroVal = mu_isd_vec[row];
-    const double total = sumSq[row] + zeroVal * zeroVal * nZero;
+    const double zeroVal = (0.0 - mup[row]) / sdp[row];
+    const double total = sumSq[row] + std::pow(zeroVal, 2) * nZero;
     result[row] = total / denom;
   }
   return result;
