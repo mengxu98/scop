@@ -256,31 +256,23 @@ Neighborhood enrichment is label-level spatial association. Context models are
 feature-level spatial association. Keep those interpretations separate in
 reports.
 
-Use the shared discovery APIs before choosing an optional method. They read one
-registry, so the method list, backend diagnosis, result keys, coordinate
-contract, and recommended plot cannot drift into separate hard-coded lists.
-
-```r
-ListSpatialMethods(task = "neighborhood")
-SpatialBackendStatus(method = c("RunSpatialNeighborhood", "RunMistyR"))
-SpatialResultInfo(spatial)
-```
-
-New small-method results use schema v1 while keeping method-specific fields at
-their historical top-level paths. Read a normalized copy through
-`GetSpatialResult()` instead of depending on the internal `@tools` layout.
-Custom `tool_name` values remain discoverable. Legacy Giotto, SPATA2, and Semla
-results are adapted only in the returned copy and are never migrated in place.
+Spatial results follow the same structure as single-cell analyses in SCOP:
+each producer stores its output as a plain key in `srt@tools`, for example
+`spatial@tools$MistyR` or `spatial@tools$SpatialNeighborhood`, with
+method-specific fields at the top level plus `parameters` and `summary`.
+Read results directly from `srt@tools[[tool_name]]` and pass them to the
+dedicated plot functions. Custom `tool_name` values are honored exactly as
+written.
 
 ```r
 coords <- SpatialCoordinates(spatial, image = "slice1", space = "raw")
-network_result <- GetSpatialResult(spatial, tool_name = "SpatialNetwork")
+network_result <- spatial@tools$SpatialNetwork
 network_graph <- GetSpatialGraph(
   res = network_result,
   format = "sparse",
   value = "weight"
 )
-SpatialResultInfo(spatial, detail = "graphs")
+names(spatial@tools)
 ```
 
 Distance-sensitive methods retain `coordinate_space = "legacy_display"` as
@@ -330,9 +322,7 @@ can derive the conversion ratio as `65 / spot_diameter_fullres` when the
 selected image contains exactly one trusted full-resolution spot diameter;
 otherwise provide `ratio` explicitly. Never substitute a low-resolution display
 scale. This article uses one slice; multi-sample objects are run independently
-and require an explicit `sample.by` and named image mapping. Check the optional
-backend without changing the environment with
-`SpatialBackendStatus(backend = "spatialcellchat")`.
+and require an explicit `sample.by` and named image mapping.
 
 ```{r spatial-cellchat, eval=FALSE}
 spatial <- RunSpatialCellChat(
@@ -351,8 +341,7 @@ spatial <- RunSpatialCellChat(
 CCCNetworkPlot(spatial, method = "SpatialCellChat", plot_type = "circle")
 CCCHeatmap(spatial, method = "SpatialCellChat", plot_type = "bubble")
 SpatialCellChatPlot(spatial, plot_type = "incoming")
-SpatialResultInfo(spatial, method = "RunSpatialCellChat")
-result <- GetSpatialResult(spatial, method = "RunSpatialCellChat")
+result <- spatial@tools$SpatialCellChat
 ```
 
 `store.object = "minimal"` stores normalized interaction, pathway, network,

@@ -586,19 +586,6 @@ glue_gene_coord_table <- function(annotation_df, field = c("gene_name", "gene_id
   )
 }
 
-glue_logical_col <- function(x) {
-  if (is.logical(x)) {
-    return(x %in% TRUE)
-  }
-  if (is.factor(x)) {
-    x <- as.character(x)
-  }
-  if (is.character(x)) {
-    return(toupper(x) %in% "TRUE")
-  }
-  as.logical(x) %in% TRUE
-}
-
 glue_feature_names <- function(srt, assay = NULL) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   feature_names <- tryCatch(

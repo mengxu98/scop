@@ -11,7 +11,7 @@ make_spatial_deconvolution_plot_object <- function() {
   srt
 }
 
-add_spatial_deconvolution_result <- function(srt, key, method, producer) {
+add_spatial_deconvolution_result <- function(srt, key) {
   proportions <- matrix(
     c(
       0.8, 0.2,
@@ -23,46 +23,24 @@ add_spatial_deconvolution_result <- function(srt, key, method, producer) {
     byrow = TRUE,
     dimnames = list(colnames(srt), c("Alpha", "Beta"))
   )
-  srt@tools[[key]] <- spatial_result_build(
-    bundle = list(proportions = proportions, cells = colnames(srt)),
-    method = method,
-    result_type = "deconvolution",
-    provenance = list(producer = producer, backend_id = "test")
+  srt@tools[[key]] <- list(
+    proportions = proportions,
+    cells = colnames(srt),
+    parameters = list(coordinate_space = "raw")
   )
   srt
 }
 
-test_that("spatial producer registry exposes truthful plot functions", {
-  registry <- ListSpatialMethods()
-  expected <- c(
-    RunRCTD = "SpatialDeconvolutionPlot",
-    RunCARD = "SpatialDeconvolutionPlot",
-    RunSPOTlight = "SpatialDeconvolutionPlot",
-    RunSpatialDWLS = "SpatialDeconvolutionPlot"
-  )
-  actual <- stats::setNames(registry$plot_function, registry$method)
-  expect_identical(unname(actual[names(expected)]), unname(expected))
-  expect_true(is.na(actual[["RunCSIDE"]]))
-  expect_identical(actual[["RunDeconvolution"]], "DeconvolutionPlot")
-})
-
 test_that("SpatialDeconvolutionPlot consumes each compatible stored family", {
-  specs <- list(
-    c("RCTD", "RunRCTD"),
-    c("CARD", "RunCARD"),
-    c("SPOTlight", "RunSPOTlight"),
-    c("SpatialDWLS", "RunSpatialDWLS")
-  )
-  for (spec in specs) {
+  keys <- c("RCTD", "CARD", "SPOTlight", "SpatialDWLS")
+  for (key in keys) {
     srt <- add_spatial_deconvolution_result(
       make_spatial_deconvolution_plot_object(),
-      key = paste0(spec[[1L]], "Custom"),
-      method = spec[[1L]],
-      producer = spec[[2L]]
+      key = paste0(key, "Custom")
     )
     plots <- SpatialDeconvolutionPlot(
       srt,
-      tool_name = paste0(spec[[1L]], "Custom"),
+      tool_name = paste0(key, "Custom"),
       combine = FALSE,
       overlay_image = FALSE
     )
@@ -75,41 +53,51 @@ test_that("SpatialDeconvolutionPlot consumes each compatible stored family", {
     )))
     expect_s3_class(SpatialDeconvolutionPlot(
       srt,
-      tool_name = paste0(spec[[1L]], "Custom"),
+      tool_name = paste0(key, "Custom"),
       plot_type = "dominant",
       overlay_image = FALSE
     ), "ggplot")
   }
 })
 
-test_that("SpatialDeconvolutionPlot discovers one result and supports layouts", {
+test_that("SpatialDeconvolutionPlot requires an explicit result and supports layouts", {
   srt <- add_spatial_deconvolution_result(
     make_spatial_deconvolution_plot_object(),
-    "CustomCARD", "CARD", "RunCARD"
+    "CARD"
+  )
+  expect_error(
+    SpatialDeconvolutionPlot(srt),
+    "tool_name.*explicit"
   )
   expect_s3_class(SpatialDeconvolutionPlot(
     srt,
+    tool_name = "CARD",
     overlay_image = FALSE,
     nrow = 1,
     byrow = FALSE
   ), "patchwork")
   expect_s3_class(SpatialDeconvolutionPlot(
     srt,
-    tool_name = "CustomCARD",
+    tool_name = "CARD",
     cell_types = "Alpha",
     overlay_image = FALSE
   ), "ggplot")
   expect_error(
-    SpatialDeconvolutionPlot(srt, tool_name = "CustomCARD", cell_types = "Missing"),
+    SpatialDeconvolutionPlot(srt, tool_name = "CARD", cell_types = "Missing"),
     "Unknown.*cell_types"
   )
-  srt <- add_spatial_deconvolution_result(srt, "CustomRCTD", "RCTD", "RunRCTD")
-  expect_error(SpatialDeconvolutionPlot(srt), "Select exactly one")
+  srt <- add_spatial_deconvolution_result(srt, "RCTD")
+  expect_s3_class(SpatialDeconvolutionPlot(
+    srt,
+    tool_name = "RCTD",
+    cell_types = "Beta",
+    overlay_image = FALSE
+  ), "ggplot")
 })
 
 test_that("SpatialDeconvolutionPlot rejects empty, partial, stale, and wrong results", {
   srt <- make_spatial_deconvolution_plot_object()
-  srt <- add_spatial_deconvolution_result(srt, "CustomCARD", "CARD", "RunCARD")
+  srt <- add_spatial_deconvolution_result(srt, "CustomCARD")
 
   bad <- srt
   bad@tools$CustomCARD$proportions <- NULL
@@ -139,11 +127,7 @@ test_that("SpatialDeconvolutionPlot rejects empty, partial, stale, and wrong res
   )
   expect_error(SpatialDeconvolutionPlot(bad, "CustomCARD"), "must be numeric")
 
-  bad@tools$CustomCARD$proportions <- srt@tools$CustomCARD$proportions
-  bad@tools$CustomCARD$provenance$producer <- "RunCSIDE"
-  expect_error(SpatialDeconvolutionPlot(bad, "CustomCARD"), "not a supported")
-
-  expect_error(SpatialDeconvolutionPlot(srt, "MissingKey"), "No stored spatial result")
+  expect_error(SpatialDeconvolutionPlot(srt, "MissingKey"), "not a spatial deconvolution result")
 })
 
 test_that("RunRCTD writes custom-key plot-ready proportions", {
@@ -183,7 +167,7 @@ test_that("RunRCTD writes custom-key plot-ready proportions", {
     coord.cols = c("col", "row"),
     verbose = FALSE
   )
-  expect_identical(out@tools$RCTDCustom$source$coordinate_space, "raw")
+  expect_identical(out@tools$RCTDCustom$parameters$coordinate_space, "raw")
   expect_false("RCTD" %in% names(out@tools))
   expect_identical(rownames(out@tools$RCTDCustom$proportions), colnames(out))
   expect_s3_class(SpatialDeconvolutionPlot(

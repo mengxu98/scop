@@ -4,8 +4,8 @@
 #' Run `spacexr` C-SIDE after RCTD to test cell type-specific spatial or
 #' condition-aware differential expression. C-SIDE stores effect and
 #' significance results, not spot-level cell-type proportions, so it has no
-#' recommended proportion plot in the spatial registry. Inspect its stored
-#' tables with [GetSpatialResult()] or plot an explicit summary column with
+#' recommended proportion plot. Inspect its stored
+#' tables in `srt@tools[[tool_name]]` or plot an explicit summary column with
 #' [SpatialSpotPlot()].
 #'
 #' @md
@@ -214,18 +214,6 @@ RunCSIDE <- function(
       ),
       cells = inputs$barcodes
     )
-    srt@tools[[tool_name]] <- spatial_result_build(
-      bundle = srt@tools[[tool_name]],
-      method = "CSIDE",
-      result_type = "deconvolution",
-      source = rctd_context$source,
-      provenance = list(
-        producer = "RunCSIDE",
-        backend_id = "spacexr",
-        parent_tool = rctd_context$tool_name,
-        parent_schema_version = rctd_context$schema_version
-      )
-    )
   }
 
   log_message(
@@ -239,46 +227,12 @@ cside_rctd_context <- function(srt, rctd_result = NULL) {
   if (!is.null(rctd_result)) {
     return(list(
       input_type = "external_rctd_result",
-      tool_name = NA_character_,
-      schema_version = NA_integer_,
-      source = list(
-        image = NA_character_,
-        coordinate_space = "backend_managed",
-        selection_strategy = "external_rctd_result",
-        lineage_status = "external_input_without_scop_source"
-      )
+      tool_name = NA_character_
     ))
   }
-
-  stored <- srt@tools[["RCTD"]]
-  has_schema <- is.list(stored) &&
-    identical(as.integer(stored$schema_version %||% NA_integer_), 1L)
-  source <- if (has_schema && is.list(stored$source)) {
-    stored$source
-  } else {
-    list(
-      image = NA_character_,
-      coordinate_space = "backend_managed",
-      selection_strategy = "stored_legacy_rctd",
-      lineage_status = "stored_rctd_without_schema_source"
-    )
-  }
-  source <- utils::modifyList(
-    source,
-    list(
-      parent_tool = "RCTD",
-      lineage_status = if (has_schema) {
-        "inherited_from_stored_rctd"
-      } else {
-        source$lineage_status
-      }
-    )
-  )
   list(
     input_type = "stored_rctd_result",
-    tool_name = "RCTD",
-    schema_version = if (has_schema) 1L else NA_integer_,
-    source = source
+    tool_name = "RCTD"
   )
 }
 

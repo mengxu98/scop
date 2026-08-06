@@ -264,12 +264,6 @@ RunSpotSweeper <- function(
         artifacts = if (is.null(artifact_out)) NULL else artifact_out$result
       )
     )
-    srt@tools[[tool_name]] <- spatial_result_build(
-      bundle = srt@tools[[tool_name]],
-      method = "SpotSweeper",
-      result_type = "quality_control",
-      provenance = list(producer = "RunSpotSweeper", backend_id = "spotsweeper")
-    )
   }
 
   failed <- sum(srt[[paste0(prefix, "_QC"), drop = TRUE]] == "Fail", na.rm = TRUE)

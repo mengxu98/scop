@@ -1,5 +1,5 @@
 ---
-title: "Spatial framework bridges and Giotto compatibility"
+title: "Spatial framework bridges"
 ---
 
 ```{r setup, include=FALSE}
@@ -10,23 +10,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-scop supports Giotto in two deliberately separate ways. The older workflow is
-kept for compatibility, while the newer bridge functions exchange native
-framework objects without wrapping every Giotto or SPATA2 analysis step.
+scop exchanges native objects with the Giotto and SPATA2 frameworks through
+dedicated bridge functions. Each bridge processes exactly one image at a time
+and never wraps the target framework's analysis or plotting API.
 
-## Choose the interface before starting
+## Choose the interface
 
 | Goal | Interface | Returned object | Plotting |
 |---|---|---|---|
-| Keep an existing scop Giotto pipeline | `SeuratToGiotto2()`, `RunGiottoWorkflow()`, `GiottoPlot()`, `AddGiottoToSeurat()` | Legacy `giotto2` workflow wrapper | `GiottoPlot()` |
 | Move one Seurat image into Giotto | `srt_to_giotto()` | Native Giotto object | Giotto's native plotting API |
 | Move a native Giotto object into Seurat | `giotto_to_srt()` | New Seurat object | scop or Seurat plotting |
 | Move between Seurat and SPATA2 | `srt_to_spata2()`, `spata2_to_srt()` | Native SPATA2 or Seurat object | Framework-native plotting |
-
-Do not mix the two Giotto styles in one pipeline. In particular,
-`RunGiottoWorkflow()` expects the legacy scop wrapper, whereas
-`srt_to_giotto()` intentionally returns a native Giotto object instead of that
-wrapper.
 
 ## Giotto version boundary
 
@@ -35,43 +29,20 @@ helpers across the `Giotto` and `GiottoClass` namespaces. scop resolves these
 optional functions at runtime and does not add Giotto to Imports, Depends, or
 Suggests.
 
-The new reverse bridge selects `giottoToSeuratV5()` for Seurat 5 and
-`giottoToSeuratV4()` for Seurat 4. These converters are expected from a current
-GiottoClass installation. If an older Giotto installation does not provide
-them, update Giotto before using `giotto_to_srt()`.
-
-The legacy workflow remains available for older scripts and is not migrated to
-the new bridge result container. This compatibility promise applies to its
-public arguments, `giotto2` return structure, stored result names, and
-`GiottoPlot()` behavior.
-
-Use `SpatialBackendStatus()` to distinguish installation from API
-compatibility. `Giotto` and `GiottoClass` are reported separately because the
-runtime dispatcher resolves their symbols separately from the same registry.
-
-```r
-SpatialBackendStatus(backend = c("giotto", "giotto_class"), api_check = TRUE)
-```
-
-An `available` row means the package and required symbols for that route were
-found. `api_incompatible` means the package exists but a required current or
-legacy symbol is absent; install the matching Giotto generation rather than
-adding it to the package DESCRIPTION dependencies.
+The forward bridge selects `seuratToGiottoV5()` for Seurat 5 and
+`seuratToGiottoV4()` for Seurat 4. The reverse bridge selects
+`giottoToSeuratV5()` for Seurat 5 and `giottoToSeuratV4()` for Seurat 4.
+These converters are expected from a current GiottoClass installation. If an
+older Giotto installation does not provide them, update Giotto before using
+the bridges.
 
 ## GitHub documentation build contract
-
-The pkgdown site documents both generations of the Giotto interface. Legacy
-topics remain under **Spatial Framework Bridges and Giotto Workflows**, next to
-the native bridge topics; they are not aliases for one another and neither set
-is removed when the other is updated.
 
 Giotto, GiottoClass, and SPATA2 remain runtime-optional backends. The examples
 in this article are deliberately shown but not evaluated during the GitHub
 pkgdown build, so publishing the documentation does not select or install a
-particular Giotto generation. Reference pages are still parsed and indexed,
-and backend/version checks run when a user calls a legacy workflow or a new
-bridge. This keeps the site build independent from optional framework releases
-while preserving visible documentation for both interfaces.
+particular framework generation. Reference pages are still parsed and indexed,
+and dependency checks run when a user calls a bridge.
 
 On pull requests, the GitHub workflow validates the complete reference index.
 After a merge to `main`, changes that include source, reference, or pkgdown
@@ -81,15 +52,11 @@ check against the then-current dependency ecosystem.
 
 Ordinary package and pkgdown checks remain independent of a user's Giotto
 installation. A Giotto compatibility failure must be classified as a scop
-regression, an upstream Giotto API regression, or a runner failure. Current API
-failures block a spatial release. Legacy API failures do not block unrelated
-pull requests, but must be resolved or documented before the spatial feature
-freeze is lifted. This keeps old Giotto support visible without making every
-documentation build permanently red.
+regression, an upstream Giotto API regression, or a runner failure.
 
 ## Single-image conversion
 
-The new bridges process exactly one image at a time:
+The bridges process exactly one image at a time:
 
 - a single image is selected automatically;
 - a multi-image object requires an explicit `image`;
@@ -100,11 +67,6 @@ The new bridges process exactly one image at a time:
 gobject <- srt_to_giotto(spatial, image = "slice1")
 spatial_roundtrip <- giotto_to_srt(gobject)
 ```
-
-For exact image selection, `srt_to_giotto()` uses the controlled converter
-by default and returns only its native Giotto object. Advanced users may pass
-`use_official = TRUE`, but the controlled default is more stable across Giotto
-versions and multi-image Seurat objects.
 
 ## SPATA2 bridge
 

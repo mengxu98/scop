@@ -128,14 +128,14 @@ not change the SpatialCellChat inference engine.}
 \item{verbose}{Whether to print progress messages.}
 }
 \value{
-The input `Seurat` object with a schema-v1 SpatialCellChat bundle in
-  `srt@tools$SpatialCellChat` and standardized CCC results under the distinct
-  method name `"SpatialCellChat"`.
+The input `Seurat` object with a plain SpatialCellChat result bundle
+  in `srt@tools$SpatialCellChat` and standardized CCC results under the
+  distinct method name `"SpatialCellChat"`.
 }
 \description{
-Run the SpatialCellChat v3 backend with explicit micron-scale coordinates,
-sample isolation, truthful provenance, and schema-v1 storage. Cell-, spot-,
-and composition-level results retain distinct interpretations.
+Run the SpatialCellChat v3 backend with explicit micron-scale coordinates
+and sample isolation. Cell-, spot-, and composition-level results retain
+distinct interpretations.
 }
 \details{
 `RunSpatialCellChat()` keeps spatial and non-spatial communication results
@@ -192,8 +192,6 @@ if (all(unlist(
     species = "Mus_musculus",
     store.object = "minimal"
   )
-  SpatialBackendStatus(backend = "spatialcellchat")
-  SpatialResultInfo(spatial, method = "RunSpatialCellChat")
   SpatialCellChatPlot(spatial, sample = "anterior1", plot_type = "incoming")
 }
 }
@@ -203,7 +201,7 @@ if (all(unlist(
 [SpatialCellChat](https://github.com/jinworks/SpatialCellChat)
 }
 \seealso{
-[GetSpatialResult], [GetCCCObject], [SpatialCellChatPlot],
+[GetCCCObject], [SpatialCellChatPlot],
 [CCCNetworkPlot], [CCCHeatmap], [CCCStatPlot]
 }
 \concept{spatial-producer}

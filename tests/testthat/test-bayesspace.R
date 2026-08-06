@@ -76,11 +76,9 @@ test_that("RunBayesSpace stores raw coordinate provenance and aligned cells", {
   })
 
   result <- out@tools[["BayesSpace"]]
-  expect_identical(result$schema_version, 1L)
-  expect_identical(result$source$coordinate_space, "raw")
-  expect_identical(result$source$coord.cols, c("col", "row"))
-  expect_identical(result$source$image, NA_character_)
-  expect_identical(result$source$selection_strategy, "metadata_columns")
+  expect_identical(result$parameters$coordinate_space, "raw")
+  expect_identical(result$parameters$coord.cols, c("col", "row"))
+  expect_identical(result$parameters$image, NA_character_)
   expect_identical(result$cells, colnames(out))
   expect_identical(result$coords$cell_id, colnames(out))
   expect_identical(rownames(result$colData), colnames(out))

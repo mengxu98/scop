@@ -64,7 +64,7 @@ test_that("RunSpatialIntegration writes standardized results for merged Seurat",
   expect_true("SpatialIntegration" %in% names(out@tools))
   expect_equal(out@tools$SpatialIntegration$active_method, "PRECAST")
   expect_equal(out@tools$SpatialIntegration$parameters$sample.by, "sample")
-  expect_identical(out@tools$SpatialIntegration$source$coordinate_space, "raw")
+  expect_identical(out@tools$SpatialIntegration$parameters$coordinate_space, "raw")
   expect_named(out@tools$SpatialIntegration$summary, c("n_cells", "domains", "samples"))
   expect_named(out@tools$SpatialIntegration$summary$domains, c("domain", "count"))
   expect_named(out@tools$SpatialIntegration$summary$samples, c("sample", "count"))
@@ -73,7 +73,6 @@ test_that("RunSpatialIntegration writes standardized results for merged Seurat",
     "SpatialIntegration_PRECAST_aligned_y"
   ) %in% colnames(out@meta.data)))
 })
-
 test_that("RunSpatialIntegration supports list input and preserves sample labels", {
   srt <- make_spatial_integration_seurat()
   srt_list <- Seurat::SplitObject(srt, split.by = "sample")
@@ -199,7 +198,7 @@ test_that("SpatialMNN follows the atlasClustering three-stage API", {
   )
   expect_identical(observed, c("stage_1", "stage_2"))
   expect_true(all(!is.na(out$SpatialIntegration_SpatialMNN_domain)))
-  expect_identical(out@tools$SpatialIntegration$source$coordinate_space, "raw")
+  expect_identical(out@tools$SpatialIntegration$parameters$coordinate_space, "raw")
 })
 
 test_that("PRECAST receives selected features and its SelectModel object argument", {
@@ -297,21 +296,4 @@ test_that("BASS discovery rejects the unrelated package-name collision", {
     spatial_integration_run_bass(input = list(), params = list())
   )
   expect_identical(installs, "zhengli09/BASS")
-})
-
-test_that("integration backends declare all producer entry points", {
-  registry <- spatial_backend_registry()
-  expect_setequal(
-    spatial_backend_required_symbols(registry$precast),
-    c("CreatePRECASTObject", "AddAdjList", "AddParSetting", "PRECAST", "SelectModel")
-  )
-  expect_setequal(
-    spatial_backend_required_symbols(registry$bass),
-    c("createBASSObject", "BASS.preprocess", "BASS.run")
-  )
-  expect_identical(registry$spatialmnn$package, "atlasClustering")
-  expect_setequal(
-    spatial_backend_required_symbols(registry$spatialmnn),
-    c("stage_1", "stage_2")
-  )
 })

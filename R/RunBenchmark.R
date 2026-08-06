@@ -1,7 +1,7 @@
 #' @title Benchmark spatial domain clustering methods
 #'
 #' @description
-#' Run registered spatial domain clustering methods from the same immutable
+#' Run supported spatial domain clustering methods from the same immutable
 #' input, compare their aligned labels with a gold standard, and record
 #' classification quality, elapsed time, and sampled peak process-tree memory.
 #' Each method runs in an isolated R process so one failed backend does not
@@ -12,9 +12,8 @@
 #' @param srt A spatial `Seurat` object.
 #' @param gold_standard Either one metadata column in `srt` or a named vector
 #' whose names match the spot names in `srt`.
-#' @param methods Spatial domain methods to benchmark. `NULL` uses every stable
-#' registered domain producer. Use `"all"` to additionally include supported
-#' legacy baselines such as GiottoCluster, or select them explicitly. Method
+#' @param methods Spatial domain methods to benchmark. `NULL` uses every
+#' benchmarked producer (`BayesSpace`, `BANKSY`, and `SmoothClust`). Method
 #' names may be written with or without the `Run` prefix.
 #' @param method_params Named list of per-method argument lists. Arguments are
 #' passed to the corresponding SCOP producer, never directly to its backend.
@@ -25,8 +24,7 @@
 #' values are `"ARI"`, `"NMI"`, and `"purity"`. All three are retained in
 #' the result summary.
 #' @param keep_objects Whether to keep each successful method's full producer
-#' result, including standalone legacy results when explicitly selected. The
-#' default keeps only aligned labels and compact run metadata.
+#' result. The default keeps only aligned labels and compact run metadata.
 #' @param install_missing Whether missing optional backends may enter their
 #' producer's normal `check_r()` installation path. The default records them as
 #' unavailable without changing the R library.
@@ -37,8 +35,8 @@
 #' process start and result serialization. `Inf` disables the timeout.
 #' @param poll_interval Seconds between process-tree memory samples.
 #'
-#' @return A `benchmark_result` object. Use `as.data.frame()` for its summary,
-#' `plot()` or [BenchmarkPlot()] for visualization, and `$predictions` for the
+#' @return A `benchmark_result` object. Use `result$summary` for the quality
+#' table, [BenchmarkPlot()] for visualization, and `$predictions` for the
 #' aligned labels.
 #' @concept spatial-producer
 #' @export
@@ -98,18 +96,19 @@ RunBenchmark <- function(
     n_clusters <- as.integer(n_clusters)
   }
   metrics <- benchmark_resolve_metrics(metrics)
-  adapters <- benchmark_resolve_adapters(methods)
-  method_params <- benchmark_resolve_method_params(method_params, adapters)
-  prepared_params <- lapply(names(adapters), function(method) {
+  methods <- benchmark_resolve_methods(methods)
+  method_params <- benchmark_normalize_method_params(method_params, methods)
+  prepared_params <- lapply(methods, function(method) {
     benchmark_complete_method_params(
-      adapter = adapters[[method]],
+      method = method,
       params = method_params[[method]] %||% list(),
       n_clusters = n_clusters,
       seed = seed
     )
   })
-  names(prepared_params) <- names(adapters)
-  availability_results <- lapply(adapters, benchmark_method_availability_safe)
+  names(prepared_params) <- methods
+  availability_results <- lapply(methods, benchmark_method_availability_safe)
+  names(availability_results) <- methods
   will_execute <- isTRUE(install_missing) | vapply(
     availability_results,
     function(availability) identical(availability$status, "available"),
@@ -129,16 +128,15 @@ RunBenchmark <- function(
     package_context <- benchmark_package_context()
   }
 
-  run_results <- vector("list", length(adapters))
-  names(run_results) <- names(adapters)
+  run_results <- vector("list", length(methods))
+  names(run_results) <- methods
 
-  for (method in names(adapters)) {
-    adapter <- adapters[[method]]
+  for (method in methods) {
     params <- prepared_params[[method]]
     availability <- availability_results[[method]]
     if (!will_execute[[method]]) {
       run_results[[method]] <- benchmark_unavailable_result(
-        adapter = adapter,
+        method = method,
         params = params,
         availability = availability,
         poll_interval = poll_interval
@@ -161,7 +159,7 @@ RunBenchmark <- function(
     run_results[[method]] <- benchmark_run_isolated(
       input_path = input_path,
       run_dir = run_dir,
-      adapter = adapter,
+      method = method,
       params = params,
       seed = seed,
       keep_object = keep_objects,
@@ -187,7 +185,7 @@ RunBenchmark <- function(
   benchmark_build_result(
     srt = srt,
     truth = truth,
-    adapters = adapters,
+    methods = methods,
     run_results = run_results,
     metrics = metrics,
     n_clusters = n_clusters,
@@ -199,161 +197,81 @@ RunBenchmark <- function(
   )
 }
 
-#' @export
-print.benchmark_result <- function(x, ...) {
-  cat("<benchmark_result>\n")
-  cat("  workflow: spatial domain clustering\n")
-  cat("  methods: ", nrow(x$summary), "\n", sep = "")
-  status_text <- paste(
-    names(table(x$summary$status)),
-    as.integer(table(x$summary$status)),
-    sep = "=",
-    collapse = ", "
-  )
-  cat("  status: ", status_text, "\n", sep = "")
-  print(x$summary, row.names = FALSE)
-  invisible(x)
-}
+benchmark_method_aliases <- c(
+  "bayesspace" = "BayesSpace",
+  "runbayesspace" = "BayesSpace",
+  "banksy" = "BANKSY",
+  "runbanksy" = "BANKSY",
+  "smoothclust" = "SmoothClust",
+  "runsmoothclust" = "SmoothClust"
+)
 
-#' @export
-as.data.frame.benchmark_result <- function(x, row.names = NULL, optional = FALSE, ...) {
-  as.data.frame(x$summary, row.names = row.names, optional = optional, ...)
-}
-
-#' @export
-plot.benchmark_result <- function(x, ...) {
-  BenchmarkPlot(data = x, plot_type = "overview", ...)
-}
-
-benchmark_adapter_registry <- function() {
-  list(
-    BayesSpace = list(
-      method = "BayesSpace",
-      function_name = "RunBayesSpace",
-      aliases = c("BayesSpace", "RunBayesSpace"),
-      backend_id = "bayesspace",
-      tool_key = "BayesSpace",
-      cluster_colname = "BayesSpace_cluster",
-      cluster_arg = "q",
-      seed_arg = NA_character_
-    ),
-    BANKSY = list(
-      method = "BANKSY",
-      function_name = "RunBANKSY",
-      aliases = c("BANKSY", "Banksy", "RunBANKSY", "RunBanksy"),
-      backend_id = "banksy",
-      tool_key = "BANKSY",
-      cluster_colname = "BANKSY_cluster",
-      cluster_arg = NA_character_,
-      seed_arg = "seed"
-    ),
-    SmoothClust = list(
-      method = "SmoothClust",
-      function_name = "RunSmoothClust",
-      aliases = c("SmoothClust", "smoothclust", "RunSmoothClust"),
-      backend_id = "smoothclust",
-      tool_key = "SmoothClust",
-      cluster_colname = "SmoothClust_cluster",
-      cluster_arg = "n_clusters",
-      seed_arg = "seed",
-      workflow = "SpatialDomain",
-      tier = "stable",
-      output_type = "seurat"
-    ),
-    GiottoCluster = list(
-      method = "GiottoCluster",
-      function_name = "RunGiottoCluster",
-      aliases = c("GiottoCluster", "Giotto", "RunGiottoCluster"),
-      backend_id = "giotto",
-      tool_key = "GiottoCluster",
-      cluster_colname = "Giotto_cluster",
-      cluster_arg = NA_character_,
-      seed_arg = "seed",
-      workflow = "SpatialDomainLegacy",
-      tier = "legacy",
-      output_type = "giotto_cluster"
-    )
+benchmark_method_runner <- function(method) {
+  switch(method,
+    BayesSpace = RunBayesSpace,
+    BANKSY = RunBANKSY,
+    SmoothClust = RunSmoothClust,
+    log_message("Unknown benchmark method {.val {method}}", message_type = "error")
   )
 }
 
-benchmark_resolve_adapters <- function(methods = NULL) {
-  registry <- benchmark_adapter_registry()
-  stable_domain <- spatial_method_registry()
-  stable_domain <- stable_domain[
-    stable_domain$task == "domain" &
-      stable_domain$kind == "analysis" &
-      stable_domain$status == "stable",
-    "method",
-    drop = TRUE
-  ]
-  available_adapters <- vapply(registry, `[[`, character(1), "function_name")
-  missing_adapters <- setdiff(stable_domain, available_adapters)
-  if (length(missing_adapters) > 0L) {
-    log_message(
-      "Stable spatial domain producers lack benchmark adapters: {.val {missing_adapters}}",
-      message_type = "error"
-    )
-  }
-  default_registry <- registry[available_adapters %in% stable_domain]
+benchmark_method_package <- function(method) {
+  switch(method,
+    BayesSpace = "BayesSpace",
+    BANKSY = "Banksy",
+    SmoothClust = "smoothclust",
+    log_message("Unknown benchmark method {.val {method}}", message_type = "error")
+  )
+}
+
+benchmark_resolve_methods <- function(methods = NULL) {
+  defaults <- c("BayesSpace", "BANKSY", "SmoothClust")
   if (is.null(methods)) {
-    return(default_registry)
+    return(defaults)
   }
   if (!is.character(methods) || length(methods) == 0L || anyNA(methods)) {
     log_message("{.arg methods} must contain one or more method names", message_type = "error")
   }
-  if (any(tolower(methods) == "all")) {
-    if (length(methods) != 1L) {
-      log_message("{.val all} cannot be combined with other {.arg methods}", message_type = "error")
-    }
-    return(registry)
-  }
-  alias_map <- do.call(c, unname(lapply(registry, function(x) {
-    stats::setNames(rep(x$method, length(x$aliases)), tolower(x$aliases))
-  })))
-  resolved <- unname(alias_map[tolower(methods)])
+  resolved <- unname(benchmark_method_aliases[tolower(methods)])
   if (anyNA(resolved)) {
     unknown <- methods[is.na(resolved)]
     log_message(
-      "Unknown benchmark methods: {.val {unknown}}. Available methods are {.val {names(registry)}}",
+      "Unknown benchmark methods: {.val {unknown}}. Available methods are {.val {defaults}}",
       message_type = "error"
     )
   }
-  resolved <- unique(resolved)
-  registry[resolved]
+  unique(resolved)
 }
 
-benchmark_resolve_method_params <- function(method_params, adapters) {
+benchmark_normalize_method_params <- function(method_params, methods) {
   if (!is.list(method_params)) {
     log_message("{.arg method_params} must be a named list", message_type = "error")
   }
+  out <- stats::setNames(rep(list(list()), length(methods)), methods)
   if (length(method_params) == 0L) {
-    return(stats::setNames(rep(list(list()), length(adapters)), names(adapters)))
+    return(out)
   }
-  if (is.null(names(method_params)) || any(!nzchar(names(method_params)))) {
+  nms <- names(method_params)
+  if (is.null(nms) || any(!nzchar(nms))) {
     log_message("{.arg method_params} must be named by method", message_type = "error")
   }
-  all_adapters <- benchmark_adapter_registry()
-  alias_map <- do.call(c, unname(lapply(all_adapters, function(x) {
-    stats::setNames(rep(x$method, length(x$aliases)), tolower(x$aliases))
-  })))
-  resolved_names <- unname(alias_map[tolower(names(method_params))])
-  if (anyNA(resolved_names)) {
+  resolved <- unname(benchmark_method_aliases[tolower(nms)])
+  if (anyNA(resolved)) {
     log_message(
-      "Unknown methods in {.arg method_params}: {.val {names(method_params)[is.na(resolved_names)]}}",
+      "Unknown methods in {.arg method_params}: {.val {nms[is.na(resolved)]}}",
       message_type = "error"
     )
   }
-  if (anyDuplicated(resolved_names)) {
+  if (anyDuplicated(resolved)) {
     log_message("{.arg method_params} contains duplicated method aliases", message_type = "error")
   }
-  outside <- setdiff(resolved_names, names(adapters))
+  outside <- setdiff(resolved, methods)
   if (length(outside) > 0L) {
     log_message(
       "{.arg method_params} includes methods not selected by {.arg methods}: {.val {outside}}",
       message_type = "error"
     )
   }
-  out <- stats::setNames(rep(list(list()), length(adapters)), names(adapters))
   for (i in seq_along(method_params)) {
     value <- method_params[[i]]
     if (
@@ -367,24 +285,29 @@ benchmark_resolve_method_params <- function(method_params, adapters) {
         )
     ) {
       log_message(
-        "Parameters for {.val {names(method_params)[[i]]}} must be a uniquely named list",
+        "Parameters for {.val {nms[[i]]}} must be a uniquely named list",
         message_type = "error"
       )
     }
     if ("srt" %in% names(value)) {
       log_message("{.arg method_params} cannot replace the benchmark input {.arg srt}", message_type = "error")
     }
-    out[[resolved_names[[i]]]] <- value
+    out[[resolved[[i]]]] <- value
   }
   out
 }
 
-benchmark_complete_method_params <- function(adapter, params, n_clusters, seed) {
-  cluster_arg <- adapter$cluster_arg
+benchmark_complete_method_params <- function(method, params, n_clusters, seed) {
+  cluster_arg <- switch(method,
+    BayesSpace = "q",
+    BANKSY = NA_character_,
+    SmoothClust = "n_clusters",
+    log_message("Unknown benchmark method {.val {method}}", message_type = "error")
+  )
   if (!is.na(cluster_arg) && !cluster_arg %in% names(params)) {
     params[[cluster_arg]] <- as.integer(n_clusters)
   }
-  seed_arg <- adapter$seed_arg
+  seed_arg <- if (identical(method, "BayesSpace")) NA_character_ else "seed"
   if (!is.na(seed_arg) && !seed_arg %in% names(params)) {
     params[[seed_arg]] <- as.integer(seed)
   }
@@ -507,32 +430,20 @@ benchmark_require_runtime <- function() {
   invisible(TRUE)
 }
 
-benchmark_method_availability <- function(adapter) {
-  status <- SpatialBackendStatus(
-    method = adapter$function_name,
-    api_check = TRUE,
-    refresh = TRUE
-  )
-  if (nrow(status) == 0L) {
-    return(list(status = "missing", detail = "backend is not registered", versions = character()))
-  }
-  available <- all(status$availability == "available")
-  detail <- paste(
-    paste0(status$backend_id, "=", status$availability),
-    collapse = "; "
-  )
-  versions <- benchmark_backend_versions(adapter$backend_id)
+benchmark_method_availability <- function(method) {
+  package <- benchmark_method_package(method)
+  installed <- isTRUE(requireNamespace(package, quietly = TRUE))
   list(
-    status = if (available) "available" else paste(unique(status$availability), collapse = ","),
-    detail = detail,
-    versions = versions
+    status = if (installed) "available" else "missing",
+    detail = paste0(package, "=", if (installed) "available" else "missing"),
+    versions = benchmark_backend_versions(package)
   )
 }
 
-benchmark_method_availability_safe <- function(adapter) {
+benchmark_method_availability_safe <- function(method) {
   tryCatch(
     {
-      availability <- benchmark_method_availability(adapter)
+      availability <- benchmark_method_availability(method)
       if (
         !is.list(availability) ||
           !is.character(availability$status) || length(availability$status) != 1L ||
@@ -555,17 +466,15 @@ benchmark_method_availability_safe <- function(adapter) {
   )
 }
 
-benchmark_backend_versions <- function(backend_id) {
-  versions <- tryCatch(
-    spatial_result_backend_versions(backend_id),
-    error = function(error) character()
+benchmark_backend_versions <- function(package) {
+  version <- tryCatch(
+    as.character(utils::packageVersion(package)),
+    error = function(e) NA_character_
   )
-  if (is.null(versions) || !is.atomic(versions)) {
+  if (is.na(version)) {
     return(character())
   }
-  out <- as.character(versions)
-  names(out) <- names(versions)
-  out
+  stats::setNames(version, package)
 }
 
 benchmark_param_string <- function(params, name, default) {
@@ -579,7 +488,7 @@ benchmark_param_string <- function(params, name, default) {
   }
 }
 
-benchmark_unavailable_result <- function(adapter, params, availability, poll_interval) {
+benchmark_unavailable_result <- function(method, params, availability, poll_interval) {
   now <- Sys.time()
   list(
     status = "unavailable",
@@ -594,7 +503,7 @@ benchmark_unavailable_result <- function(adapter, params, availability, poll_int
     finished_at = now,
     parameters = params,
     cluster_colname = benchmark_param_string(
-      params, "cluster_colname", adapter$cluster_colname
+      params, "cluster_colname", paste0(method, "_cluster")
     ),
     backend_versions = availability$versions,
     memory_method = "sampled process-tree RSS",
@@ -618,7 +527,7 @@ benchmark_package_context <- function() {
 benchmark_run_isolated <- function(
   input_path,
   run_dir,
-  adapter,
+  method,
   params,
   seed,
   keep_object,
@@ -644,7 +553,7 @@ benchmark_run_isolated <- function(
         ready_path = ready_path,
         go_path = go_path,
         done_path = done_path,
-        adapter = adapter,
+        method = method,
         params = params,
         seed = seed,
         keep_object = keep_object,
@@ -662,7 +571,7 @@ benchmark_run_isolated <- function(
   if (inherits(process, "error")) {
     return(benchmark_failed_isolated_result(
       status = "failed", error = conditionMessage(process),
-      adapter = adapter, params = params, started_at = started_at,
+      method = method, params = params, started_at = started_at,
       poll_interval = poll_interval
     ))
   }
@@ -683,7 +592,7 @@ benchmark_run_isolated <- function(
     benchmark_kill_process_tree(process)
     return(benchmark_failed_isolated_result(
       status = "timeout", error = "Timed out before backend execution started",
-      adapter = adapter, params = params, started_at = started_at,
+      method = method, params = params, started_at = started_at,
       poll_interval = poll_interval
     ))
   }
@@ -691,7 +600,7 @@ benchmark_run_isolated <- function(
     process$wait(timeout = 5000)
     return(benchmark_failed_isolated_result(
       status = "failed", error = benchmark_process_error(stderr_path, stdout_path),
-      adapter = adapter, params = params, started_at = started_at,
+      method = method, params = params, started_at = started_at,
       poll_interval = poll_interval
     ))
   }
@@ -714,7 +623,7 @@ benchmark_run_isolated <- function(
     benchmark_kill_process_tree(process)
     return(benchmark_failed_isolated_result(
       status = "timeout", error = "Benchmark method exceeded timeout",
-      adapter = adapter, params = params, started_at = started_at,
+      method = method, params = params, started_at = started_at,
       baseline_bytes = baseline_bytes, peak_bytes = peak_bytes,
       poll_interval = poll_interval
     ))
@@ -731,7 +640,7 @@ benchmark_run_isolated <- function(
     benchmark_kill_process_tree(process)
     return(benchmark_failed_isolated_result(
       status = "timeout", error = "Benchmark result serialization exceeded timeout",
-      adapter = adapter, params = params, started_at = started_at,
+      method = method, params = params, started_at = started_at,
       baseline_bytes = baseline_bytes, peak_bytes = peak_bytes,
       poll_interval = poll_interval
     ))
@@ -740,7 +649,7 @@ benchmark_run_isolated <- function(
   if (!file.exists(result_path)) {
     return(benchmark_failed_isolated_result(
       status = "failed", error = benchmark_process_error(stderr_path, stdout_path),
-      adapter = adapter, params = params, started_at = started_at,
+      method = method, params = params, started_at = started_at,
       baseline_bytes = baseline_bytes, peak_bytes = peak_bytes,
       poll_interval = poll_interval
     ))
@@ -750,7 +659,7 @@ benchmark_run_isolated <- function(
     return(benchmark_failed_isolated_result(
       status = "failed",
       error = paste("Failed to read isolated benchmark result:", conditionMessage(child)),
-      adapter = adapter, params = params, started_at = started_at,
+      method = method, params = params, started_at = started_at,
       baseline_bytes = baseline_bytes, peak_bytes = peak_bytes,
       poll_interval = poll_interval
     ))
@@ -759,7 +668,7 @@ benchmark_run_isolated <- function(
   if (!is.null(child_error)) {
     return(benchmark_failed_isolated_result(
       status = "failed", error = child_error,
-      adapter = adapter, params = params, started_at = started_at,
+      method = method, params = params, started_at = started_at,
       baseline_bytes = baseline_bytes, peak_bytes = peak_bytes,
       poll_interval = poll_interval
     ))
@@ -773,7 +682,7 @@ benchmark_run_isolated <- function(
   child$started_at <- started_at
   child$finished_at <- Sys.time()
   child$parameters <- params
-  child$backend_versions <- benchmark_backend_versions(adapter$backend_id)
+  child$backend_versions <- benchmark_backend_versions(benchmark_method_package(method))
   child$memory_method <- "sampled process-tree RSS"
   child$poll_interval <- poll_interval
   child
@@ -813,7 +722,7 @@ benchmark_child_entry <- function(
   ready_path,
   go_path,
   done_path,
-  adapter,
+  method,
   params,
   seed,
   keep_object,
@@ -842,8 +751,8 @@ benchmark_child_entry <- function(
   )
   result <- tryCatch(
     {
-      execute <- get("benchmark_execute_adapter", envir = asNamespace("scop"), inherits = FALSE)
-      value <- execute(srt = srt, adapter = adapter, params = params)
+      execute <- get("benchmark_execute_method", envir = asNamespace("scop"), inherits = FALSE)
+      value <- execute(srt = srt, method = method, params = params)
       list(
         ok = TRUE,
         error = "",
@@ -859,7 +768,7 @@ benchmark_child_entry <- function(
         prediction = NULL,
         object = NULL,
         cluster_colname = param_string(
-          params, "cluster_colname", adapter$cluster_colname
+          params, "cluster_colname", paste0(method, "_cluster")
         )
       )
     }
@@ -870,58 +779,22 @@ benchmark_child_entry <- function(
   invisible(TRUE)
 }
 
-benchmark_execute_adapter <- function(srt, adapter, params) {
-  fun <- get(adapter$function_name, envir = asNamespace("scop"), inherits = FALSE)
+benchmark_execute_method <- function(srt, method, params) {
+  function_name <- paste0("Run", method)
+  fun <- benchmark_method_runner(method)
   args <- c(list(srt = srt), params)
   output <- do.call(fun, args)
-  if (identical(adapter$output_type, "giotto_cluster")) {
-    if (
-      !inherits(output, "giotto2_cluster") ||
-        !is.data.frame(output$clusters) ||
-        !"cluster" %in% colnames(output$clusters)
-    ) {
-      log_message(adapter$function_name, " did not return a valid giotto2_cluster result",
-        message_type = "error"
-      )
-    }
-    cells <- colnames(srt)
-    output_cells <- rownames(output$clusters)
-    if (
-      is.null(output_cells) || length(output_cells) != length(cells) ||
-        anyDuplicated(output_cells) || !setequal(cells, output_cells)
-    ) {
-      log_message(
-        adapter$function_name, " returned a non-identical set of spot identifiers",
-        message_type = "error"
-      )
-    }
-    prediction <- output$clusters[cells, "cluster", drop = TRUE]
-    prediction <- stats::setNames(as.character(prediction), cells)
-    prediction[is.na(prediction) | !nzchar(prediction)] <- NA_character_
-    if (all(is.na(prediction))) {
-      log_message(adapter$function_name, " returned no usable cluster assignments",
-        message_type = "error"
-      )
-    }
-    return(list(
-      object = output,
-      prediction = prediction,
-      cluster_colname = benchmark_param_string(
-        params, "cluster_colname", adapter$cluster_colname
-      )
-    ))
-  }
   if (!inherits(output, "Seurat")) {
-    log_message(adapter$function_name, " did not return a Seurat object",
+    log_message(function_name, " did not return a Seurat object",
       message_type = "error"
     )
   }
   cluster_colname <- benchmark_param_string(
-    params, "cluster_colname", adapter$cluster_colname
+    params, "cluster_colname", paste0(method, "_cluster")
   )
   if (!cluster_colname %in% colnames(output@meta.data)) {
     log_message(
-      adapter$function_name, " did not create cluster column ", cluster_colname,
+      function_name, " did not create cluster column ", cluster_colname,
       message_type = "error"
     )
   }
@@ -932,7 +805,7 @@ benchmark_execute_adapter <- function(srt, adapter, params) {
       !setequal(cells, output_cells)
   ) {
     log_message(
-      adapter$function_name, " returned a non-identical set of spot identifiers",
+      function_name, " returned a non-identical set of spot identifiers",
       message_type = "error"
     )
   }
@@ -940,7 +813,7 @@ benchmark_execute_adapter <- function(srt, adapter, params) {
   prediction <- stats::setNames(as.character(prediction), cells)
   prediction[is.na(prediction) | !nzchar(prediction)] <- NA_character_
   if (all(is.na(prediction))) {
-    log_message(adapter$function_name, " returned no usable cluster assignments",
+    log_message(function_name, " returned no usable cluster assignments",
       message_type = "error"
     )
   }
@@ -980,7 +853,7 @@ benchmark_process_error <- function(stderr_path, stdout_path) {
 benchmark_failed_isolated_result <- function(
   status,
   error,
-  adapter,
+  method,
   params,
   started_at,
   baseline_bytes = NA_real_,
@@ -1005,9 +878,9 @@ benchmark_failed_isolated_result <- function(
     finished_at = Sys.time(),
     parameters = params,
     cluster_colname = benchmark_param_string(
-      params, "cluster_colname", adapter$cluster_colname
+      params, "cluster_colname", paste0(method, "_cluster")
     ),
-    backend_versions = benchmark_backend_versions(adapter$backend_id),
+    backend_versions = benchmark_backend_versions(benchmark_method_package(method)),
     memory_method = "sampled process-tree RSS",
     poll_interval = poll_interval
   )
@@ -1016,7 +889,7 @@ benchmark_failed_isolated_result <- function(
 benchmark_build_result <- function(
   srt,
   truth,
-  adapters,
+  methods,
   run_results,
   metrics,
   n_clusters,
@@ -1082,8 +955,7 @@ benchmark_build_result <- function(
     }
     summary_rows[[method]] <- data.frame(
       method = method,
-      workflow = adapters[[method]]$workflow %||% "SpatialDomain",
-      tier = adapters[[method]]$tier %||% "stable",
+      workflow = "SpatialDomain",
       ARI = values[["ARI"]],
       NMI = values[["NMI"]],
       purity = values[["purity"]],
@@ -1097,14 +969,12 @@ benchmark_build_result <- function(
       error = run$error %||% "",
       stringsAsFactors = FALSE
     )
-    adapter <- adapters[[method]]
     run_rows[[method]] <- data.frame(
       method = method,
-      function_name = adapter$function_name,
-      backend_id = adapter$backend_id,
-      workflow = adapter$workflow %||% "SpatialDomain",
-      tier = adapter$tier %||% "stable",
-      tool_key = benchmark_param_string(run$parameters, "tool_name", adapter$tool_key),
+      function_name = paste0("Run", method),
+      backend_id = tolower(method),
+      workflow = "SpatialDomain",
+      tool_key = benchmark_param_string(run$parameters, "tool_name", method),
       cluster_colname = run$cluster_colname,
       status = run$status,
       error = run$error %||% "",
@@ -1150,7 +1020,7 @@ benchmark_build_result <- function(
       method = summary$method[[i]],
       metric = metric_specs$metric,
       value = as.numeric(unlist(summary[i, metric_specs$metric, drop = FALSE], use.names = FALSE)),
-      workflow = adapters[[summary$method[[i]]]]$workflow %||% "SpatialDomain",
+      workflow = "SpatialDomain",
       direction = metric_specs$direction,
       status = summary$status[[i]],
       stringsAsFactors = FALSE
@@ -1161,7 +1031,6 @@ benchmark_build_result <- function(
 
   structure(
     list(
-      schema_version = "1.0.0",
       method = "Benchmark",
       result_type = "benchmark",
       summary = summary,
@@ -1176,11 +1045,11 @@ benchmark_build_result <- function(
       ),
       provenance = list(
         producer = "RunBenchmark",
-        backend_id = paste(vapply(adapters, `[[`, character(1), "backend_id"), collapse = ";"),
+        backend_id = paste(tolower(methods), collapse = ";"),
         scop_version = as.character(utils::packageVersion("scop"))
       ),
       parameters = list(
-        methods = names(adapters),
+        methods = methods,
         metrics = metrics,
         n_clusters = n_clusters,
         keep_objects = keep_objects,

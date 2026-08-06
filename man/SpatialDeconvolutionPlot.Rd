@@ -19,8 +19,8 @@ SpatialDeconvolutionPlot(
 \arguments{
 \item{srt}{A spatial \code{Seurat} object containing a stored deconvolution result.}
 
-\item{tool_name}{Exact key in \code{srt@tools}. If \code{NULL}, exactly one compatible
-stored result must be discoverable.}
+\item{tool_name}{Explicit non-empty key in \code{srt@tools}. Results are never
+discovered implicitly.}
 
 \item{cell_types}{Optional cell types to display. The default uses all stored
 cell types.}
@@ -40,10 +40,11 @@ A \code{ggplot}, \code{patchwork}, or named list of \code{ggplot} objects.
 }
 \description{
 Plot spot-by-cell-type proportions stored by \code{\link[=RunRCTD]{RunRCTD()}}, \code{\link[=RunCARD]{RunCARD()}},
-\code{\link[=RunSPOTlight]{RunSPOTlight()}}, or \code{\link[=RunSpatialDWLS]{RunSpatialDWLS()}}. The plot reads a schema-v1 result
-through \code{\link[=GetSpatialResult]{GetSpatialResult()}} and never reruns a deconvolution backend.
-\code{\link[=RunCSIDE]{RunCSIDE()}} is intentionally excluded because its output represents
-differential or context effects rather than cell-type proportions.
+\code{\link[=RunSPOTlight]{RunSPOTlight()}}, or \code{\link[=RunSpatialDWLS]{RunSpatialDWLS()}}. The plot reads the stored result
+directly from \code{srt@tools[[tool_name]]} and never reruns a deconvolution
+backend. \code{\link[=RunCSIDE]{RunCSIDE()}} is intentionally excluded because its output
+represents differential or context effects rather than cell-type
+proportions.
 }
 \examples{
 data(visium_human_pancreas_sub)

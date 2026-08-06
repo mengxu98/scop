@@ -7,7 +7,6 @@ get_cc_obj <- function(x) {
   }
   x@tools[["CellChat"]]
 }
-
 cc_names <- function(srt) {
   store <- get_cc_obj(srt)
   if (is.null(store) || is.null(store$results)) {
@@ -780,63 +779,16 @@ custom_cc_bubble_plot <- function(
   )
 }
 
-ccc_method_candidates <- function() {
-  names(ccc_method_registry())
-}
-
-normalize_ccc_method <- function(method) {
-  alias_map <- c(
-    "CCC" = "CCC",
-    "CellPhoneDB" = "CellphoneDB",
-    "CellphoneDB" = "CellphoneDB",
-    "Liana" = "LIANA",
-    "liana" = "LIANA",
-    "NicheNet" = "Nichenetr",
-    "MultiNicheNet" = "MultiNichenetr",
-    "SpatialCellChat" = "SpatialCellChat",
-    "MDIC3" = "MDIC3"
-  )
-  alias_map_lower <- c(
-    "ccc" = "CCC",
-    "unified" = "CCC",
-    "cellchat" = "CellChat",
-    "spatialcellchat" = "SpatialCellChat",
-    "spatial_cellchat" = "SpatialCellChat",
-    "spatial cellchat" = "SpatialCellChat",
-    "cellphonedb" = "CellphoneDB",
-    "cellphone_db" = "CellphoneDB",
-    "cellphone db" = "CellphoneDB",
-    "liana" = "LIANA",
-    "nichenet" = "Nichenetr",
-    "nichenetr" = "Nichenetr",
-    "multinichenet" = "MultiNichenetr",
-    "multinichenetr" = "MultiNichenetr",
-    "mdic3" = "MDIC3"
-  )
-  method_chr <- as.character(method)[1]
-  if (is.na(method_chr) || !nzchar(method_chr)) {
-    log_message(
-      "{.arg method} must be a non-empty string or NULL to auto-detect",
-      message_type = "error"
-    )
-  }
-  method_chr <- trimws(method_chr)
-  if (method_chr %in% names(alias_map)) {
-    return(unname(alias_map[[method_chr]]))
-  }
-  key <- tolower(method_chr)
-  if (key %in% names(alias_map_lower)) {
-    return(unname(alias_map_lower[[key]]))
-  }
-  method_chr
-}
-
 detect_method <- function(srt, method = NULL) {
   if (!is.null(method)) {
     return(normalize_ccc_method(method))
   }
-  candidates <- ccc_method_candidates()
-  available <- candidates[candidates %in% names(srt@tools)]
+  available <- names(srt@tools)[vapply(names(srt@tools), function(candidate) {
+    tryCatch({
+      ccc_method_runner(candidate)
+      TRUE
+    }, error = function(e) FALSE)
+  }, logical(1))]
   if (length(available) == 1L) {
     return(available[1])
   }
@@ -948,8 +900,12 @@ ccc_available_methods <- function(srt) {
       message_type = "error"
     )
   }
-  methods <- ccc_method_candidates()
-  methods[methods %in% names(srt@tools)]
+  names(srt@tools)[vapply(names(srt@tools), function(candidate) {
+    tryCatch({
+      ccc_method_runner(candidate)
+      TRUE
+    }, error = function(e) FALSE)
+  }, logical(1))]
 }
 
 ccc_build_cellchat_long_table <- function(srt, thresh = 0.05) {
@@ -1020,7 +976,7 @@ ccc_bundle_long_table <- function(srt, method, bundle = NULL, thresh = 0.05) {
   }
   df$method <- method
   provenance <- bundle$provenance %||% list()
-  df$producer <- provenance$producer %||% ccc_registry_entry(method)$producer
+  df$producer <- provenance$producer %||% paste0("Run", method)
   backend_version <- provenance$backend_version %||%
     provenance$backend_versions %||% NA_character_
   if (length(backend_version) > 1L) {
@@ -1066,8 +1022,7 @@ ccc_build_unified_bundle <- function(
       methods = methods,
       updated_at = as.character(Sys.time()),
       backend = backend,
-      backend_scope = "result aggregation and unified-table construction",
-      schema = "scop_ccc_unified_v2"
+      backend_scope = "result aggregation and unified-table construction"
     )
   )
 }
@@ -1122,8 +1077,7 @@ ccc_update_unified_bundle <- function(
       updated_method = method,
       updated_at = as.character(Sys.time()),
       backend = backend,
-      backend_scope = "result aggregation and unified-table construction",
-      schema = "scop_ccc_unified_v2"
+      backend_scope = "result aggregation and unified-table construction"
     )
   )
   srt
@@ -1156,45 +1110,6 @@ get_group_by <- function(srt, method) {
   }
   bundle <- get_bundle(srt, method = method)
   bundle$parameters$group.by %||% NULL
-}
-
-ccc_pair_table <- function(
-  srt,
-  method,
-  condition = NULL,
-  dataset = 1,
-  slot.name = "net",
-  signaling = NULL,
-  pairLR.use = NULL,
-  sources.use = NULL,
-  targets.use = NULL,
-  thresh = 0.05,
-  backend = c("cpp", "r")
-) {
-  backend <- match.arg(backend)
-  method <- detect_method(srt = srt, method = method)
-  df <- ccc_long_table_for_method(
-    srt = srt,
-    method = method,
-    condition = condition,
-    dataset = dataset,
-    slot.name = slot.name,
-    signaling = signaling,
-    pairLR.use = pairLR.use,
-    sources.use = sources.use,
-    targets.use = targets.use,
-    thresh = thresh
-  )
-  df <- standardize_long_df(df)
-  df <- filter_long_df(
-    df = df,
-    sender.use = sources.use,
-    receiver.use = targets.use,
-    signaling = signaling,
-    pairLR.use = pairLR.use
-  )
-  df <- ccc_mark_significance(df, thresh = thresh)
-  aggregate_ccc_long(df, backend = backend)
 }
 
 ccc_plot_data <- function(
@@ -3073,131 +2988,6 @@ ccc_reduce_chord_pairs <- function(pair_plot, strength_df, max.groups = 8) {
   )
 }
 
-ccc_heatmap_plot <- function(
-  pair_df,
-  interaction_df = NULL,
-  display_by = "aggregation",
-  top_n = 20,
-  edge_value = "sum",
-  color.by = "score",
-  x_text_angle = 90,
-  facet_by = NULL,
-  show_row_names = TRUE,
-  show_column_names = TRUE,
-  title = NULL,
-  subtitle = NULL,
-  value_palette = "RdBu",
-  value_palcolor = NULL,
-  legend.position = "right",
-  legend.direction = "vertical",
-  font.size = 10,
-  theme_use = "theme_scop",
-  theme_args = list()
-) {
-  fill_cols <- palette_colors(
-    palette = value_palette,
-    palcolor = value_palcolor,
-    n = 9
-  )
-  if (identical(display_by, "interaction")) {
-    plot_df <- top_interactions(
-      interaction_df,
-      top_n = top_n,
-      value_col = "score"
-    )
-    if (is.null(plot_df) || nrow(plot_df) == 0L) {
-      log_message(
-        "No interaction-level CCC records are available for heatmap plotting",
-        message_type = "error"
-      )
-    }
-    sc <- scale_var(plot_df, color.by = color.by, agg_value = edge_value)
-    if (is.null(facet_by)) {
-      p <- ggplot2::ggplot(
-        plot_df,
-        ggplot2::aes(
-          x = interaction_label,
-          y = pair,
-          fill = .data[[sc$var]]
-        )
-      ) +
-        ggplot2::geom_tile(color = "white") +
-        ggplot2::labs(x = "Interaction", y = "Pair", fill = sc$label)
-    } else if (identical(facet_by, "sender")) {
-      p <- ggplot2::ggplot(
-        plot_df,
-        ggplot2::aes(
-          x = interaction_label,
-          y = receiver,
-          fill = .data[[sc$var]]
-        )
-      ) +
-        ggplot2::geom_tile(color = "white") +
-        ggplot2::facet_wrap(~sender, scales = "free_y") +
-        ggplot2::labs(x = "Interaction", y = "Receiver", fill = sc$label)
-    } else {
-      p <- ggplot2::ggplot(
-        plot_df,
-        ggplot2::aes(
-          x = interaction_label,
-          y = sender,
-          fill = .data[[sc$var]]
-        )
-      ) +
-        ggplot2::geom_tile(color = "white") +
-        ggplot2::facet_wrap(~receiver, scales = "free_y") +
-        ggplot2::labs(x = "Interaction", y = "Sender", fill = sc$label)
-    }
-  } else {
-    plot_df <- top_pairs(pair_df, top_n = top_n, value_col = edge_value)
-    if (is.null(plot_df) || nrow(plot_df) == 0L) {
-      log_message(
-        "No aggregated sender-receiver interactions are available for heatmap plotting",
-        message_type = "error"
-      )
-    }
-    sc <- scale_var(plot_df, color.by = color.by, agg_value = edge_value)
-    p <- ggplot2::ggplot(
-      plot_df,
-      ggplot2::aes(
-        x = sender,
-        y = receiver,
-        fill = .data[[sc$var]]
-      )
-    ) +
-      ggplot2::geom_tile(color = "white") +
-      ggplot2::geom_text(
-        ggplot2::aes(label = round(.data[[edge_value]], 2)),
-        size = 3
-      ) +
-      ggplot2::labs(x = "Sender", y = "Receiver", fill = sc$label)
-  }
-  p <- p +
-    ggplot2::scale_fill_gradientn(colours = fill_cols) +
-    ggplot2::theme(
-      axis.text.x = if (isTRUE(show_column_names)) {
-        ggplot2::element_text(angle = x_text_angle, hjust = 1)
-      } else {
-        ggplot2::element_blank()
-      },
-      axis.text.y = if (isTRUE(show_row_names)) {
-        ggplot2::element_text()
-      } else {
-        ggplot2::element_blank()
-      }
-    )
-  finalize_cc_plot(
-    p,
-    title = title,
-    subtitle = subtitle,
-    legend.position = legend.position,
-    legend.direction = legend.direction,
-    theme_use = theme_use,
-    theme_args = theme_args,
-    font.size = font.size
-  )
-}
-
 ccc_flow_plot_df <- function(
   pair_df,
   interaction_df = NULL,
@@ -3895,154 +3685,6 @@ ccc_flow_network_plot <- function(
       axis.line = ggplot2::element_blank(),
       plot.margin = ggplot2::margin(5.5, 28, 5.5, 28)
     )
-}
-
-ccc_dot_plot <- function(
-  pair_df,
-  interaction_df = NULL,
-  display_by = "aggregation",
-  top_n = 20,
-  edge_value = "sum",
-  color.by = "score",
-  x_text_angle = 90,
-  facet_by = NULL,
-  title = NULL,
-  subtitle = NULL,
-  value_palette = "RdBu",
-  value_palcolor = NULL,
-  legend.position = "right",
-  legend.direction = "vertical",
-  font.size = 10,
-  theme_use = "theme_scop",
-  theme_args = list()
-) {
-  if (identical(display_by, "interaction")) {
-    plot_df <- top_interactions(
-      interaction_df,
-      top_n = top_n,
-      value_col = "score"
-    )
-    if (is.null(plot_df) || nrow(plot_df) == 0L) {
-      log_message(
-        "No interaction-level CCC records are available for dot plotting",
-        message_type = "error"
-      )
-    }
-    sc <- scale_var(plot_df, color.by = color.by, agg_value = edge_value)
-    if (is.null(facet_by)) {
-      p <- ggplot2::ggplot(
-        plot_df,
-        ggplot2::aes(
-          x = interaction_label,
-          y = pair,
-          size = score,
-          fill = .data[[sc$var]]
-        )
-      ) +
-        ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.2) +
-        ggplot2::labs(
-          x = "Interaction",
-          y = "Pair",
-          size = "score",
-          fill = sc$label
-        )
-    } else if (identical(facet_by, "sender")) {
-      p <- ggplot2::ggplot(
-        plot_df,
-        ggplot2::aes(
-          x = interaction_label,
-          y = receiver,
-          size = score,
-          fill = .data[[sc$var]]
-        )
-      ) +
-        ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.2) +
-        ggplot2::facet_wrap(~sender, scales = "free_y") +
-        ggplot2::labs(
-          x = "Interaction",
-          y = "Receiver",
-          size = "score",
-          fill = sc$label
-        )
-    } else {
-      p <- ggplot2::ggplot(
-        plot_df,
-        ggplot2::aes(
-          x = interaction_label,
-          y = sender,
-          size = score,
-          fill = .data[[sc$var]]
-        )
-      ) +
-        ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.2) +
-        ggplot2::facet_wrap(~receiver, scales = "free_y") +
-        ggplot2::labs(
-          x = "Interaction",
-          y = "Sender",
-          size = "score",
-          fill = sc$label
-        )
-    }
-  } else {
-    plot_df <- top_pairs(pair_df, top_n = top_n, value_col = edge_value)
-    if (is.null(plot_df) || nrow(plot_df) == 0L) {
-      log_message(
-        "No aggregated sender-receiver interactions are available for dot plotting",
-        message_type = "error"
-      )
-    }
-    sc <- scale_var(plot_df, color.by = color.by, agg_value = edge_value)
-    p <- ggplot2::ggplot(
-      plot_df,
-      ggplot2::aes(
-        x = sender,
-        y = receiver,
-        size = count,
-        fill = .data[[sc$var]]
-      )
-    ) +
-      ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.2) +
-      ggplot2::labs(
-        x = "Sender",
-        y = "Receiver",
-        size = "count",
-        fill = sc$label
-      ) +
-      ggplot2::coord_equal()
-  }
-  fill_cols <- palette_colors(
-    palette = value_palette,
-    palcolor = value_palcolor,
-    n = 9
-  )
-  p <- p +
-    ggplot2::scale_fill_gradientn(colours = fill_cols) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(angle = x_text_angle, hjust = 1)
-    )
-  p <- p +
-    ggplot2::labs(title = title, subtitle = subtitle) +
-    ggplot2::theme_void(base_size = font.size) +
-    ggplot2::theme(
-      plot.title = ggplot2::element_text(
-        size = font.size * 1.15,
-        face = "bold"
-      ),
-      plot.subtitle = ggplot2::element_text(size = font.size),
-      legend.position = legend.position,
-      legend.direction = legend.direction,
-      panel.background = ggplot2::element_blank(),
-      panel.border = ggplot2::element_blank(),
-      plot.background = ggplot2::element_blank(),
-      panel.grid = ggplot2::element_blank(),
-      axis.line = ggplot2::element_blank(),
-      axis.ticks = ggplot2::element_blank(),
-      axis.title.x = ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_blank(),
-      axis.text.x = ggplot2::element_text(color = "black"),
-      axis.text.y = ggplot2::element_blank()
-    )
-  p
 }
 
 ccc_source_target_dot_plot <- function(
@@ -5890,63 +5532,6 @@ ccc_dim_network_layers <- function(
   layer_list[!vapply(layer_list, is.null, logical(1))]
 }
 
-ccc_bar_plot <- function(
-  df,
-  top_n = 20,
-  title = NULL,
-  subtitle = NULL,
-  link_palette = "RdBu",
-  link_palcolor = NULL,
-  legend.position = "right",
-  legend.direction = "vertical",
-  font.size = 10,
-  theme_use = "theme_scop",
-  theme_args = list()
-) {
-  if (is.null(df) || nrow(df) == 0L) {
-    log_message(
-      "No interaction records are available for bar plotting",
-      message_type = "error"
-    )
-  }
-  agg <- stats::aggregate(
-    x = df$score,
-    by = list(
-      interaction_name = df$interaction_name,
-      sender = df$sender,
-      receiver = df$receiver
-    ),
-    FUN = sum,
-    na.rm = TRUE
-  )
-  agg$pair <- paste(agg$sender, "->", agg$receiver)
-  agg <- agg[order(agg$x, decreasing = TRUE), , drop = FALSE]
-  agg <- utils::head(agg, top_n)
-  cols <- palette_colors(
-    unique(agg$pair),
-    palette = link_palette,
-    palcolor = link_palcolor
-  )
-  p <- ggplot2::ggplot(
-    agg,
-    ggplot2::aes(x = stats::reorder(interaction_name, x), y = x, fill = pair)
-  ) +
-    ggplot2::geom_col() +
-    ggplot2::coord_flip() +
-    ggplot2::scale_fill_manual(values = cols) +
-    ggplot2::labs(x = NULL, y = "Aggregated score", fill = "Pair")
-  finalize_cc_plot(
-    p,
-    title = title,
-    subtitle = subtitle,
-    legend.position = legend.position,
-    legend.direction = legend.direction,
-    theme_use = theme_use,
-    theme_args = theme_args,
-    font.size = font.size
-  )
-}
-
 ccc_standardize_ligand_target_df <- function(
   df,
   top_n = 20,
@@ -6104,44 +5689,4 @@ ccc_standardize_ligand_target_df <- function(
   df$ligand <- factor(df$ligand, levels = rev(ligand_levels))
   df$target <- factor(df$target, levels = target_levels)
   df
-}
-
-ccc_ligand_target_plot <- function(
-  df,
-  top_n = 20,
-  title = NULL,
-  subtitle = NULL,
-  value_palette = "RdBu",
-  value_palcolor = NULL,
-  legend.position = "right",
-  legend.direction = "vertical",
-  font.size = 10,
-  theme_use = "theme_scop",
-  theme_args = list()
-) {
-  df <- ccc_standardize_ligand_target_df(df = df, top_n = top_n)
-
-  cols <- palette_colors(
-    palette = value_palette,
-    palcolor = value_palcolor,
-    n = 9
-  )
-  p <- ggplot2::ggplot(
-    df,
-    ggplot2::aes(x = target, y = ligand, fill = weight)
-  ) +
-    ggplot2::geom_tile(color = "white") +
-    ggplot2::scale_fill_gradientn(colours = cols) +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
-    ggplot2::labs(x = "Target", y = "Ligand", fill = "weight")
-  finalize_cc_plot(
-    p,
-    title = title,
-    subtitle = subtitle,
-    legend.position = legend.position,
-    legend.direction = legend.direction,
-    theme_use = theme_use,
-    theme_args = theme_args,
-    font.size = font.size
-  )
 }

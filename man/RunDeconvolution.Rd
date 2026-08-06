@@ -87,4 +87,4 @@ DeconvolutionPlot(islet_bulk, plot_type = "box")
 \seealso{
 \link{DeconvolutionPlot}
 }
-\concept{spatial-producer}
+\concept{bulk-analysis}

@@ -31,23 +31,6 @@ test_that("distance-sensitive spatial producers default to raw coordinates", {
   expect_identical(unname(defaults), rep("raw", length(defaults)))
 })
 
-test_that("registry advertises the migrated raw coordinate contract", {
-  registry <- spatial_method_registry()
-  rows <- registry[match(raw_default_spatial_methods, registry$method), , drop = FALSE]
-
-  expect_false(anyNA(rows$method))
-  expect_identical(rows$method, raw_default_spatial_methods)
-  expect_identical(
-    rows$coordinate_space_current,
-    rep("raw", length(raw_default_spatial_methods))
-  )
-  expect_identical(
-    rows$coordinate_space_target,
-    rep("raw", length(raw_default_spatial_methods))
-  )
-  expect_true(all(rows$coordinate_requirement == "distance_sensitive"))
-})
-
 test_that("raw is the real public default on an image-backed Visium object", {
   skip_if_not_installed("BiocNeighbors")
   data("visium_human_pancreas_sub", package = "scop")
@@ -102,7 +85,7 @@ test_that("raw is the real public default on an image-backed Visium object", {
     verbose = FALSE
   )
   expect_identical(
-    out@tools$SpatialNeighborhood$source$coordinate_space,
+    out@tools$SpatialNeighborhood$parameters$coordinate_space,
     "raw"
   )
 })
@@ -125,7 +108,7 @@ test_that("legacy display coordinates remain an explicit compatibility path", {
     verbose = FALSE
   )
   expect_identical(
-    out@tools$SpatialNeighborhood$source$coordinate_space,
+    out@tools$SpatialNeighborhood$parameters$coordinate_space,
     "legacy_display"
   )
 })

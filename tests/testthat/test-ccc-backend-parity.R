@@ -1,3 +1,42 @@
+# Reference implementation kept only as a test oracle for the C++ aggregation path.
+ccc_pair_table <- function(
+  srt,
+  method,
+  condition = NULL,
+  dataset = 1,
+  slot.name = "net",
+  signaling = NULL,
+  pairLR.use = NULL,
+  sources.use = NULL,
+  targets.use = NULL,
+  thresh = 0.05,
+  backend = c("cpp", "r")
+) {
+  backend <- match.arg(backend)
+  method <- detect_method(srt = srt, method = method)
+  df <- ccc_long_table_for_method(
+    srt = srt,
+    method = method,
+    condition = condition,
+    dataset = dataset,
+    slot.name = slot.name,
+    signaling = signaling,
+    pairLR.use = pairLR.use,
+    sources.use = sources.use,
+    targets.use = targets.use,
+    thresh = thresh
+  )
+  df <- standardize_long_df(df)
+  df <- filter_long_df(
+    df = df,
+    sender.use = sources.use,
+    receiver.use = targets.use,
+    signaling = signaling,
+    pairLR.use = pairLR.use
+  )
+  df <- ccc_mark_significance(df, thresh = thresh)
+  aggregate_ccc_long(df, backend = backend)
+}
 test_that("aggregate_ccc_long cpp backend matches the R backend", {
   df <- data.frame(
     sender = c("B", "A", "A", "B", NA, "A"),
@@ -995,12 +1034,12 @@ test_that("ccc_pair_table accepts backend parameter", {
     metadata = list(methods = "CellChat", backend = "r")
   )
 
-  result_r <- getFromNamespace("ccc_pair_table", "scop")(
+  result_r <- ccc_pair_table(
     srt = srt,
     method = "CellChat",
     backend = "r"
   )
-  result_cpp <- getFromNamespace("ccc_pair_table", "scop")(
+  result_cpp <- ccc_pair_table(
     srt = srt,
     method = "CellChat",
     backend = "cpp"

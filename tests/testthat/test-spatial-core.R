@@ -1,3 +1,24 @@
+# Reference implementation kept only as a test oracle for the display/raw round trip.
+spatial_coords_to_raw <- function(display, transform) {
+  out <- as.data.frame(display, stringsAsFactors = FALSE)
+  if (!all(c("x", "y") %in% colnames(out))) {
+    log_message("{.arg display} must contain x and y columns", message_type = "error")
+  }
+  scale <- transform$scale %||% 1
+  if (length(scale) != 1L || !is.finite(scale) || scale <= 0) {
+    log_message("Raw conversion requires a positive finite scale", message_type = "error")
+  }
+  if (isTRUE(transform$y_flip)) {
+    height <- transform$image_height
+    if (length(height) != 1L || !is.finite(height)) {
+      log_message("Raw conversion requires a finite image height", message_type = "error")
+    }
+    out$y <- height - as.numeric(out$y)
+  }
+  out$x <- as.numeric(out$x) / scale
+  out$y <- as.numeric(out$y) / scale
+  out
+}
 test_that("spatial graph core handles sparse edge cases", {
   skip_if_not_installed("BiocNeighbors")
   collinear <- data.frame(cell_id = letters[1:5], x = 1:5, y = 0)
@@ -249,38 +270,25 @@ test_that("analysis and plotting never silently select the first spatial image",
   expect_identical(nrow(plotted$data), 1000L)
 })
 
-test_that("schema-v1 results support custom keys and legacy read-only views", {
+test_that("spatial results are stored as plain tools keys and read directly", {
   counts <- matrix(
     seq_len(12),
     nrow = 3,
     dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
   )
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
-  srt@tools$custom_misty <- spatial_result_build(
-    bundle = list(results = list(table = data.frame(value = 1))),
-    method = "MistyR",
-    result_type = "neighborhood",
-    provenance = list(producer = "RunMistyR", backend_id = "mistyr")
+  srt@tools$custom_misty <- list(
+    results = list(table = data.frame(value = 1)),
+    parameters = list(coordinate_space = "raw", image = "slice1")
   )
-  info <- SpatialResultInfo(srt)
-  expect_identical(info$tool_name, "custom_misty")
-  expect_identical(info$schema_version, 1L)
-  expect_identical(GetSpatialResult(srt, method = "RunMistyR")$method, "MistyR")
-  expect_identical(GetSpatialResult(srt, tool_name = "custom_misty", raw = TRUE), srt@tools$custom_misty)
-  srt@tools$custom_misty_2 <- srt@tools$custom_misty
-  expect_error(GetSpatialResult(srt, method = "RunMistyR"), "Multiple spatial results")
-  expect_identical(GetSpatialResult(srt, tool_name = "custom_misty_2")$method, "MistyR")
-  srt@tools$custom_misty_2 <- NULL
+  expect_identical(srt@tools$custom_misty, srt@tools[["custom_misty"]])
 
   srt@tools$StatialKontextual <- list(
     table = data.frame(value = 1),
     parameters = list(coordinate_space = "raw", image = "slice1")
   )
-  before <- srt@tools$StatialKontextual
-  normalized <- GetSpatialResult(srt, tool_name = "StatialKontextual")
-  expect_identical(normalized$schema_version, 1L)
-  expect_identical(normalized$method, "StatialKontextual")
-  expect_identical(srt@tools$StatialKontextual, before)
+  expect_identical(srt@tools$StatialKontextual$parameters$coordinate_space, "raw")
+  expect_true(is.list(srt@tools$StatialKontextual$table))
 })
 
 test_that("GetSpatialGraph converts without synchronizing Seurat graphs", {
@@ -302,9 +310,8 @@ test_that("GetSpatialGraph converts without synchronizing Seurat graphs", {
   expect_length(SeuratObject::Graphs(out), 0L)
   expect_s4_class(GetSpatialGraph(out, format = "seurat"), "Graph")
   expect_error(GetSpatialGraph(out, format = "sparse", value = "distance"), "Zero-distance")
-  graph_info <- SpatialResultInfo(out, detail = "graphs")
-  expect_identical(graph_info$graph_name, "knn_k1")
-  expect_true(graph_info$active)
+  expect_identical(names(out@tools$SpatialNetwork$graphs), "knn_k1")
+  expect_identical(out@tools$SpatialNetwork$active_graph, "knn_k1")
 })
 
 test_that("boundary validator preserves polygon and ring order", {

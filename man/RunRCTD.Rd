@@ -84,7 +84,7 @@ The default is raw acquisition coordinates, so backend distances use raw
 coordinate units. Use \code{"legacy_display"} explicitly to reproduce the
 display-scaled coordinates used before scop 0.9.0.}
 
-\item{tool_name}{Name used to store the schema-v1 result in \code{srt@tools}.}
+\item{tool_name}{Name used to store the plain result bundle in \code{srt@tools}.}
 }
 \value{
 A \code{Seurat} object with RCTD proportion columns in metadata and

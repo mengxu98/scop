@@ -2,15 +2,16 @@
 #'
 #' @description
 #' Plot spot-by-cell-type proportions stored by [RunRCTD()], [RunCARD()],
-#' [RunSPOTlight()], or [RunSpatialDWLS()]. The plot reads a schema-v1 result
-#' through [GetSpatialResult()] and never reruns a deconvolution backend.
-#' [RunCSIDE()] is intentionally excluded because its output represents
-#' differential or context effects rather than cell-type proportions.
+#' [RunSPOTlight()], or [RunSpatialDWLS()]. The plot reads the stored result
+#' directly from `srt@tools[[tool_name]]` and never reruns a deconvolution
+#' backend. [RunCSIDE()] is intentionally excluded because its output
+#' represents differential or context effects rather than cell-type
+#' proportions.
 #'
 #' @md
 #' @param srt A spatial `Seurat` object containing a stored deconvolution result.
-#' @param tool_name Exact key in `srt@tools`. If `NULL`, exactly one compatible
-#' stored result must be discoverable.
+#' @param tool_name Explicit non-empty key in `srt@tools`. Results are never
+#' discovered implicitly.
 #' @param cell_types Optional cell types to display. The default uses all stored
 #' cell types.
 #' @param plot_type Plot proportions as separate point maps, one dominant-type
@@ -61,13 +62,19 @@ SpatialDeconvolutionPlot <- function(
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   plot_type <- match.arg(plot_type)
-  tool_name <- spatial_deconvolution_resolve_tool(srt, tool_name)
-  stored <- GetSpatialResult(srt, tool_name = tool_name)
-  allowed <- c("RunRCTD", "RunCARD", "RunSPOTlight", "RunSpatialDWLS")
-  producer <- stored$provenance$producer %||% NA_character_
-  if (length(producer) != 1L || is.na(producer) || !producer %in% allowed) {
+  if (
+    is.null(tool_name) || !is.character(tool_name) || length(tool_name) != 1L ||
+      is.na(tool_name) || !nzchar(tool_name)
+  ) {
     log_message(
-      "Stored result {.val {tool_name}} is not a supported spatial proportion result",
+      "{.arg tool_name} must be an explicit non-empty key in {.code srt@tools}",
+      message_type = "error"
+    )
+  }
+  stored <- srt@tools[[tool_name]]
+  if (!is.list(stored)) {
+    log_message(
+      "Stored result {.val {tool_name}} is not a spatial deconvolution result",
       message_type = "error"
     )
   }
@@ -136,25 +143,6 @@ SpatialDeconvolutionPlot <- function(
     byrow = byrow,
     guides = "collect"
   ) + patchwork::plot_annotation(title = paste0(tool_name, " proportions"))
-}
-
-spatial_deconvolution_resolve_tool <- function(srt, tool_name = NULL) {
-  if (!is.null(tool_name)) {
-    if (length(tool_name) != 1L || !is.character(tool_name) || is.na(tool_name) || !nzchar(tool_name)) {
-      log_message("{.arg tool_name} must be a single non-empty string", message_type = "error")
-    }
-    return(tool_name)
-  }
-  index <- spatial_result_index(srt)
-  allowed <- c("RunRCTD", "RunCARD", "RunSPOTlight", "RunSpatialDWLS")
-  matches <- index$tool_name[index$registry_method %in% allowed]
-  if (length(matches) != 1L) {
-    log_message(
-      "Select exactly one compatible stored result with {.arg tool_name}; found {.val {length(matches)}}",
-      message_type = "error"
-    )
-  }
-  matches[[1L]]
 }
 
 spatial_deconvolution_proportions <- function(x, spot_ids, tool_name) {

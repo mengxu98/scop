@@ -897,7 +897,6 @@ RunKNNPredict <- function(
 
   return(srt_query)
 }
-
 knn_match_prob_max <- function(match_prob) {
   check_r("matrixStats", verbose = FALSE)
   out <- matrixStats::rowMaxs(as.matrix(match_prob))
@@ -922,18 +921,4 @@ knn_vote_labels <- function(labels, levels = unique(as.character(labels))) {
   best[keep] <- levels[out$best[keep]]
   names(best) <- rownames(labels)
   list(probability = probability, best = best)
-}
-
-knn_match_best_labels <- function(match_prob) {
-  match_prob <- as.matrix(match_prob)
-  if (!all(is.finite(match_prob))) {
-    return(apply(
-      match_prob,
-      1L,
-      function(x) names(x)[order(x, decreasing = TRUE)][1L]
-    ))
-  }
-  out <- colnames(match_prob)[max.col(match_prob, ties.method = "first")]
-  names(out) <- rownames(match_prob)
-  out
 }

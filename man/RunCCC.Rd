@@ -21,7 +21,7 @@ RunCCC(
 
 \item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
 
-\item{methods}{Registered cell-cell communication methods to run. The
+\item{methods}{Supported cell-cell communication methods to run. The
 default core methods are \code{"CellChat"}, \code{"CellphoneDB"}, and \code{"LIANA"}.
 NicheNet, MultiNicheNet, SpatialCellChat, and MDIC3 can be selected when
 their design-specific arguments are supplied through \code{method_params}.

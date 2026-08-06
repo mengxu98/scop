@@ -89,7 +89,7 @@ A \code{Seurat} object with CNV metadata columns and a result bundle in
 }
 \description{
 Run expression-based single-cell or spatial copy-number alteration backends
-and store the results in a unified SCOP schema.
+and store the results in a consistent SCOP result bundle.
 }
 \examples{
 \dontrun{

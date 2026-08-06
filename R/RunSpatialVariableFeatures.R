@@ -270,15 +270,6 @@ RunSpatialVariableFeatures <- function(
         set_variable_features = set_variable_features
       )
     )
-    srt@tools[["SpatialVariableFeatures"]] <- spatial_result_build(
-      bundle = srt@tools[["SpatialVariableFeatures"]],
-      method = "SpatialVariableFeatures",
-      result_type = "feature_pattern",
-      provenance = list(
-        producer = "RunSpatialVariableFeatures",
-        backend_id = if (native_method) backend else method
-      )
-    )
   }
   log_message(
     "Stored {.val {length(top_features)}} spatial variable features",

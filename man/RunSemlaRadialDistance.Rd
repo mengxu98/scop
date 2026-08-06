@@ -38,8 +38,8 @@ A \code{Seurat} object.
 \description{
 Use \code{semla::RadialDistance()} to calculate distances from selected spatial
 regions and write the returned columns to Seurat metadata.
-SCOP provides no dedicated plot for this result; retrieve its schema record
-with \code{\link[=GetSpatialResult]{GetSpatialResult()}} and inspect the recorded metadata columns.
+SCOP provides no dedicated plot for this result; inspect the recorded
+metadata columns in \code{srt@tools[["SemlaRadialDistance"]]}.
 }
 \examples{
 data(visium_human_pancreas_sub)

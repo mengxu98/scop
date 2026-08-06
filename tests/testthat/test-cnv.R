@@ -55,7 +55,7 @@ mock_cnv_backend <- function(...) {
   )
 }
 
-test_that("RunCNV stores unified schema and aligned metadata", {
+test_that("RunCNV stores a unified result bundle and aligned metadata", {
   srt <- make_cnv_seurat()
   testthat::local_mocked_bindings(
     cnv_run_backend = function(method, counts, ...) {
@@ -609,7 +609,7 @@ test_that("fastCNV rejects unsupported mouse genome before backend execution", {
   )
 })
 
-test_that("CNVPlot returns bar, heatmap, and tree objects from stored schema", {
+test_that("CNVPlot returns bar, heatmap, and tree objects from stored results", {
   srt <- make_cnv_seurat()
   testthat::local_mocked_bindings(
     cnv_run_backend = function(...) mock_cnv_backend()

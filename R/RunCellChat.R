@@ -179,7 +179,7 @@ RunCellChat <- function(
     )
   }
 
-  bundle <- make_cc_bundle(
+  bundle <- list(
     results = results,
     comparisons = comparisons,
     parameters = list(
@@ -205,7 +205,6 @@ RunCellChat <- function(
   bundle$primary_table <- cellchat_long
   bundle$pair_table <- aggregate_ccc_long(cellchat_long, backend = backend)
   bundle$metadata <- list(
-    schema = "scop_ccc_unified_v2",
     updated_at = as.character(Sys.time()),
     backend = backend
   )
@@ -229,7 +228,6 @@ RunCellChat <- function(
   )
   srt
 }
-
 validate_cc_input <- function(
   srt,
   group.by,
@@ -510,14 +508,6 @@ build_comparison_results <- function(
   out
 }
 
-make_cc_bundle <- function(results, comparisons = list(), parameters = list()) {
-  list(
-    results = results,
-    comparisons = comparisons,
-    parameters = parameters
-  )
-}
-
 DoCellChat <- function(
   object,
   assay = NULL,
@@ -604,186 +594,5 @@ cellchat_database <- function(species) {
   log_message(
     "Cannot load {.pkg CellChat} database object {.val {data_name}}. Update {.pkg CellChat} or report the output of {.code utils::data(package = 'CellChat')}.",
     message_type = "error"
-  )
-}
-
-subset_cellchat_mod <- function(
-  object,
-  idents.use,
-  thresh = 0.05,
-  verbose = TRUE
-) {
-  labels <- object@idents
-  if (object@options$mode == "merged") {
-    log_message(
-      "Use the joint cell labels from the merged CellChat object",
-      verbose = verbose
-    )
-    labels <- object@idents$joint
-  }
-  if (!is.factor(labels)) {
-    labels <- factor(labels)
-  }
-
-  level_use0 <- levels(labels)
-  level_use <- levels(labels)[levels(labels) %in% unique(labels)]
-  level_use <- level_use[level_use %in% idents.use]
-  level_use_index <- which(as.character(labels) %in% level_use)
-  cells_use <- names(labels)[level_use_index]
-
-  log_message(
-    "The subset of cell groups used for CellChat analysis are {.val {level_use}}",
-    verbose = verbose
-  )
-
-  data_subset <- object@data[, level_use_index, drop = FALSE]
-  data_signaling_subset <- object@data.signaling[,
-    level_use_index,
-    drop = FALSE
-  ]
-  meta_subset <- object@meta[level_use_index, , drop = FALSE]
-
-  if (object@options$mode == "merged") {
-    idents <- object@idents[1:(length(object@idents) - 1)]
-    group_existing_index <- which(level_use0 %in% level_use)
-
-    net_subset <- vector("list", length = length(object@net))
-    netP_subset <- vector("list", length = length(object@netP))
-    idents_subset <- vector("list", length = length(idents))
-    names(net_subset) <- names(object@net)
-    names(netP_subset) <- names(object@netP)
-    names(idents_subset) <- names(object@idents[1:(length(object@idents) - 1)])
-
-    images_subset <- vector("list", length = length(idents))
-    names(images_subset) <- names(object@idents[1:(length(object@idents) - 1)])
-
-    for (i in seq_along(idents)) {
-      log_message(
-        "Update slots object@images, object@net, object@netP, object@idents in dataset {.val {names(object@idents)[i]}}",
-        verbose = verbose
-      )
-      images <- object@images[[i]]
-      for (images_j in names(images)) {
-        values <- images[[images_j]]
-        if (images_j %in% c("coordinates")) {
-          images[[images_j]] <- values[level_use_index, , drop = FALSE]
-        }
-        if (images_j %in% c("distance")) {
-          images[[images_j]] <- values[
-            group_existing_index,
-            group_existing_index,
-            drop = FALSE
-          ]
-        }
-      }
-      images_subset[[i]] <- images
-
-      net <- object@net[[i]]
-      for (net.j in names(net)) {
-        values <- net[[net.j]]
-        if (net.j %in% c("prob", "pval")) {
-          net[[net.j]] <- values[
-            group_existing_index,
-            group_existing_index, ,
-            drop = FALSE
-          ]
-        }
-        if (net.j %in% c("count", "sum", "weight")) {
-          net[[net.j]] <- values[
-            group_existing_index,
-            group_existing_index,
-            drop = FALSE
-          ]
-        }
-      }
-      net_subset[[i]] <- net
-
-      netP <- get_namespace_fun("CellChat", "computeCommunProbPathway")(
-        net = net_subset[[i]],
-        pairLR.use = object@LR[[i]]$LRsig,
-        thresh = thresh
-      )
-      netP$centr <- get_namespace_fun("CellChat", "netAnalysis_computeCentrality")(
-        net = net_subset[[i]]$prob
-      )
-      netP_subset[[i]] <- netP
-
-      idents_subset[[i]] <- idents[[i]][names(idents[[i]]) %in% cells_use]
-      idents_subset[[i]] <- factor(
-        idents_subset[[i]],
-        levels = levels(idents[[i]])[levels(idents[[i]]) %in% level_use]
-      )
-    }
-
-    idents_subset$joint <- factor(
-      object@idents$joint[level_use_index],
-      levels = level_use
-    )
-  } else {
-    group_existing_index <- which(level_use0 %in% level_use)
-
-    images <- object@images
-    for (images_j in names(images)) {
-      values <- images[[images_j]]
-      if (images_j %in% c("coordinates")) {
-        images[[images_j]] <- values[level_use_index, , drop = FALSE]
-      }
-      if (images_j %in% c("distance")) {
-        images[[images_j]] <- values[
-          group_existing_index,
-          group_existing_index,
-          drop = FALSE
-        ]
-      }
-    }
-    images_subset <- images
-
-    net <- object@net
-    for (net.j in names(net)) {
-      values <- net[[net.j]]
-      if (net.j %in% c("prob", "pval")) {
-        net[[net.j]] <- values[
-          group_existing_index,
-          group_existing_index, ,
-          drop = FALSE
-        ]
-      }
-      if (net.j %in% c("count", "sum", "weight")) {
-        net[[net.j]] <- values[
-          group_existing_index,
-          group_existing_index,
-          drop = FALSE
-        ]
-      }
-    }
-    net_subset <- net
-
-    netP <- get_namespace_fun("CellChat", "computeCommunProbPathway")(
-      net = net_subset,
-      pairLR.use = object@LR$LRsig,
-      thresh = thresh
-    )
-    netP$centr <- get_namespace_fun("CellChat", "netAnalysis_computeCentrality")(
-      net = net_subset$prob
-    )
-    netP_subset <- netP
-
-    idents_subset <- object@idents[level_use_index]
-    idents_subset <- factor(idents_subset, levels = level_use)
-  }
-
-  methods::new(
-    Class = "CellChat",
-    data = data_subset,
-    data.signaling = data_signaling_subset,
-    images = images_subset,
-    net = net_subset,
-    netP = netP_subset,
-    meta = meta_subset,
-    idents = idents_subset,
-    var.features = object@var.features,
-    LR = object@LR,
-    DB = object@DB,
-    options = object@options
   )
 }

@@ -86,18 +86,30 @@ test_that("RunCellQC computes HB percentage without changing default filtering",
 
 test_that("RunCellQC supports HB feature overrides", {
   srt <- cellqc_feature_test_object()
-
-  out <- expect_warning(
-    suppressMessages(RunCellQC(
-      srt,
-      qc_metrics = character(),
-      hb_gene = c("HBP1", "MISSING"),
-      hb_pattern = NULL,
-      verbose = FALSE
-    )),
-    "hb_gene ignored missing features", ignore.case = TRUE
+  warnings_seen <- character(0)
+  testthat::local_mocked_bindings(
+    log_message = function(msg, message_type = "info", ...) {
+      if (identical(message_type, "warning")) {
+        warnings_seen <<- c(warnings_seen, as.character(msg))
+      }
+      invisible(TRUE)
+    },
+    .package = "scop"
   )
 
+  out <- suppressMessages(RunCellQC(
+    srt,
+    qc_metrics = character(),
+    hb_gene = c("HBP1", "MISSING"),
+    hb_pattern = NULL,
+    verbose = FALSE
+  ))
+
+  expect_true(any(grepl(
+    "hb_gene ignored missing features",
+    warnings_seen,
+    ignore.case = TRUE
+  )))
   expect_equal(unname(out$percent.hb), c(90, 0, 0, 0))
 })
 
@@ -254,18 +266,26 @@ test_that("qc_features validates generated columns, definitions, and matches", {
     ),
     "lower <= upper"
   )
-  out <- expect_warning(
-    RunCellQC(
-      srt,
-      qc_metrics = character(),
-      qc_features = list(ok = list(
-        features = c("HBA1", "NOT_PRESENT"),
-        range = c(0, 5)
-      )),
-      verbose = FALSE
-    ),
-    "ignored missing features"
+  warnings_seen <- character(0)
+  testthat::local_mocked_bindings(
+    log_message = function(msg, message_type = "info", ...) {
+      if (identical(message_type, "warning")) {
+        warnings_seen <<- c(warnings_seen, as.character(msg))
+      }
+      invisible(TRUE)
+    },
+    .package = "scop"
   )
+  out <- RunCellQC(
+    srt,
+    qc_metrics = character(),
+    qc_features = list(ok = list(
+      features = c("HBA1", "NOT_PRESENT"),
+      range = c(0, 5)
+    )),
+    verbose = FALSE
+  )
+  expect_true(any(grepl("ignored missing features", warnings_seen)))
   expect_equal(unname(out$percent.ok), c(10, 0, 5, 0))
 })
 

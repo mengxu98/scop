@@ -170,13 +170,8 @@ RunSpatialNeighborhood <- function(
     method = method
   )
 
-  method_provenance <- list(
-    producer = "RunSpatialNeighborhood",
-    backend_id = if (identical(method, "observed")) "core" else "spicyr"
-  )
   method_bundle <- list(
     method = method,
-    provenance = method_provenance,
     pair_table = pair_table,
     long_table = long_table,
     observed_table = observed$pair_table,
@@ -216,15 +211,6 @@ RunSpatialNeighborhood <- function(
       long_table = long_table,
       summary = method_bundle$summary,
       parameters = method_bundle$parameters
-    )
-    srt@tools[[tool_name]] <- spatial_result_build(
-      bundle = srt@tools[[tool_name]],
-      method = "SpatialNeighborhood",
-      result_type = "neighborhood",
-      provenance = list(
-        producer = "RunSpatialNeighborhood",
-        backend_id = method_provenance$backend_id
-      )
     )
   }
 

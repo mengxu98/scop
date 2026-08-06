@@ -555,22 +555,6 @@ clip_log2fc_symmetric <- function(df, fc_col = "avg_log2FC") {
   list(df = res$data, fc_lim = res$limits)
 }
 
-filter_de_markers <- function(de_df, log2FC_cutoff, pvalue_cutoff) {
-  de_df_marker <- de_df[
-    abs(de_df[, "avg_log2FC"]) >= log2FC_cutoff &
-      de_df[, "p_val"] < pvalue_cutoff, ,
-    drop = FALSE
-  ]
-  if (nrow(de_df_marker) == 0) {
-    log_message(
-      "No genes pass the threshold. Please adjust the threshold.",
-      message_type = "warning"
-    )
-    return(NULL)
-  }
-  de_df_marker
-}
-
 filter_de_positive_results <- function(de_df) {
   de_df <- de_df[de_df[, "avg_log2FC"] > 0, , drop = FALSE]
   if (nrow(de_df) == 0) {

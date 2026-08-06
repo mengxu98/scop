@@ -67,7 +67,6 @@
 RunPHATE <- function(object, ...) {
   UseMethod(generic = "RunPHATE", object = object)
 }
-
 #' @rdname RunPHATE
 #' @method RunPHATE Seurat
 #' @export
@@ -397,64 +396,5 @@ run_phate_cpp_reduction <- function(
       backend = "cpp",
       t = diffusion_t
     )
-  )
-}
-
-phate_graphtools_affinity_r <- function(
-  dist_mat,
-  knn,
-  decay,
-  thresh = 1e-4,
-  knn_max = NULL
-) {
-  n_cells <- nrow(dist_mat)
-  if (!identical(ncol(dist_mat), n_cells)) {
-    log_message("PHATE distance matrix must be square", message_type = "error")
-  }
-  knn_max <- if (is.null(knn_max)) n_cells else min(as.integer(knn_max), n_cells)
-  rows <- vector("list", n_cells)
-  cols <- vector("list", n_cells)
-  vals <- vector("list", n_cells)
-  for (i in seq_len(n_cells)) {
-    ord <- order(dist_mat[i, ], decreasing = FALSE, na.last = NA)
-    ord <- ord[seq_len(min(knn_max, length(ord)))]
-    d <- dist_mat[i, ord]
-    bandwidth <- d[[min(knn, length(d))]]
-    if (!is.finite(bandwidth) || bandwidth <= 0) {
-      bandwidth <- .Machine$double.eps
-    }
-    weights <- exp(-((d / bandwidth)^decay))
-    keep <- is.finite(weights) & weights >= thresh
-    rows[[i]] <- rep(i - 1L, sum(keep))
-    cols[[i]] <- ord[keep] - 1L
-    vals[[i]] <- weights[keep]
-  }
-  rows <- c(unlist(rows, use.names = FALSE), seq_len(n_cells) - 1L)
-  cols <- c(unlist(cols, use.names = FALSE), seq_len(n_cells) - 1L)
-  vals <- c(unlist(vals, use.names = FALSE), rep(1, n_cells))
-  # graphtools default kernel_symm='+': (K + t(K)) / 2 before row-normalization.
-  key <- paste(rows, cols, sep = "\t")
-  rev_key <- paste(cols, rows, sep = "\t")
-  all_key <- union(key, rev_key)
-  value <- stats::setNames(vals, key)
-  rev_value <- stats::setNames(vals, rev_key)
-  sym_rows <- integer(length(all_key))
-  sym_cols <- integer(length(all_key))
-  sym_vals <- numeric(length(all_key))
-  for (idx in seq_along(all_key)) {
-    parts <- strsplit(all_key[[idx]], "\t", fixed = TRUE)[[1]]
-    sym_rows[[idx]] <- as.integer(parts[[1]])
-    sym_cols[[idx]] <- as.integer(parts[[2]])
-    pos1 <- match(all_key[[idx]], names(value))
-    pos2 <- match(all_key[[idx]], names(rev_value))
-    v1 <- if (is.na(pos1)) 0 else value[[pos1]]
-    v2 <- if (is.na(pos2)) 0 else rev_value[[pos2]]
-    sym_vals[[idx]] <- (v1 + v2) / 2
-  }
-  list(
-    affinity_rows = sym_rows,
-    affinity_cols = sym_cols,
-    affinity_vals = sym_vals,
-    n_cells = n_cells
   )
 }

@@ -78,8 +78,8 @@ test_that("RunSpatialNeighborhood stores standardized spicyR results", {
   expect_true(all(c("cell", "neighbor", "from", "to", "distance") %in% colnames(bundle$edge_table)))
   expect_named(bundle$summary, c("n_pairs", "n_edges", "top_pairs"))
   expect_equal(out@tools$SpatialNeighborhood$summary$n_pairs, nrow(bundle$pair_table))
-  expect_identical(out@tools$SpatialNeighborhood$provenance$backend_id, "spicyr")
-  expect_identical(bundle$provenance$backend_id, "spicyr")
+  expect_identical(out@tools$SpatialNeighborhood$active_method, "spicyR")
+  expect_identical(bundle$method, "spicyR")
 })
 
 test_that("RunSpatialNeighborhood defaults to native observed summaries", {
@@ -97,9 +97,9 @@ test_that("RunSpatialNeighborhood defaults to native observed summaries", {
   expect_true(nrow(bundle$pair_table) > 0)
   expect_true(all(!is.na(bundle$pair_table$subject)))
   expect_equal(unique(bundle$pair_table$method), "observed")
-  expect_identical(out@tools$SpatialNeighborhood$provenance$backend_id, "core")
-  expect_identical(out@tools$SpatialNeighborhood$source$coordinate_space, "raw")
-  expect_identical(bundle$provenance$backend_id, "core")
+  expect_identical(out@tools$SpatialNeighborhood$active_method, "observed")
+  expect_identical(out@tools$SpatialNeighborhood$parameters$coordinate_space, "raw")
+  expect_identical(bundle$method, "observed")
   expect_null(bundle$raw)
 })
 

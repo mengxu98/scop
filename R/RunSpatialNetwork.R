@@ -143,19 +143,12 @@ RunSpatialNetwork <- function(
     source = c(coord_result$source, list(transform = coord_result$transform))
   )
   store$active_graph <- graph.name
-  store <- spatial_result_build(
-    bundle = store,
-    method = "SpatialNetwork",
-    result_type = "network",
-    source = c(coord_result$source, list(transform = coord_result$transform)),
-    provenance = list(producer = "RunSpatialNetwork", backend_id = "biocneighbors"),
-    parameters = parameters,
-    summary = list(
-      active_graph = graph.name,
-      n_graphs = length(store$graphs),
-      n_nodes = nrow(nodes),
-      n_edges = nrow(edges)
-    )
+  store$parameters <- parameters
+  store$summary <- list(
+    active_graph = graph.name,
+    n_graphs = length(store$graphs),
+    n_nodes = nrow(nodes),
+    n_edges = nrow(edges)
   )
   srt@tools[["SpatialNetwork"]] <- store
   log_message(

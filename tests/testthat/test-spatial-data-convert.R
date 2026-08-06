@@ -22,16 +22,19 @@ test_that("Seurat and SpatialExperiment converters preserve coordinates", {
   expect_equal(unname(out$y), unname(srt$y))
 })
 
-test_that("SpatialExperiment bridges are registered and discoverable", {
-  registry <- spatial_method_registry()
-  bridges <- registry[registry$method %in% c("srt_to_spe", "spe_to_srt"), ]
-  expect_setequal(bridges$method, c("srt_to_spe", "spe_to_srt"))
-  expect_true(all(bridges$kind == "bridge"))
-  expect_true(all(bridges$task == "framework_bridge"))
-  expect_setequal(
-    ListSpatialMethods(kind = "bridge")$method[
-      ListSpatialMethods(kind = "bridge")$method %in% c("srt_to_spe", "spe_to_srt")
-    ],
-    c("srt_to_spe", "spe_to_srt")
-  )
+test_that("SpatialExperiment bridges round-trip stored coordinates", {
+  counts <- Matrix::Matrix(matrix(c(1, 0, 2, 3, 4, 5), nrow = 2), sparse = TRUE)
+  rownames(counts) <- c("Gene1", "Gene2")
+  colnames(counts) <- paste0("Spot", 1:3)
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$x <- c(10, 20, 30)
+  srt$y <- c(1, 2, 3)
+  srt$sample <- c("S1", "S1", "S2")
+
+  spe <- srt_to_spe(srt, layer = "counts")
+  expect_s4_class(spe, "SpatialExperiment")
+  out <- spe_to_srt(spe, assay = "Spatial")
+  expect_s4_class(out, "Seurat")
+  expect_equal(unname(out$x), unname(srt$x))
+  expect_equal(unname(out$y), unname(srt$y))
 })

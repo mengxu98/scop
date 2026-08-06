@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams RunCellChat
-#' @param methods Registered cell-cell communication methods to run. The
+#' @param methods Supported cell-cell communication methods to run. The
 #' default core methods are `"CellChat"`, `"CellphoneDB"`, and `"LIANA"`.
 #' NicheNet, MultiNicheNet, SpatialCellChat, and MDIC3 can be selected when
 #' their design-specific arguments are supplied through `method_params`.
@@ -51,15 +51,7 @@ RunCCC <- function(
   }
 
   methods <- unique(vapply(methods, normalize_ccc_method, character(1)))
-  registry <- ccc_method_registry()
-  supported <- names(registry)
-  unsupported <- setdiff(methods, supported)
-  if (length(unsupported) > 0L) {
-    log_message(
-      "Unsupported CCC methods: {.val {unsupported}}. Use {.fn ListCCCMethods} to inspect registered methods.",
-      message_type = "error"
-    )
-  }
+  invisible(lapply(methods, ccc_method_runner))
 
   method_params <- ccc_normalize_run_params(method_params)
   status <- list()
@@ -106,7 +98,7 @@ RunCCC <- function(
       thresh = thresh,
       params = method_params[[method]] %||% list()
     )
-    fun <- get(registry[[method]]$producer, mode = "function")
+    fun <- ccc_method_runner(method)
 
     start <- proc.time()[["elapsed"]]
     result <- tryCatch(
@@ -229,7 +221,6 @@ ccc_run_method_args <- function(
   thresh,
   params = list()
 ) {
-  entry <- ccc_registry_entry(method)
   protected <- intersect(c("srt", "object", "group.by"), names(params))
   if (length(protected) > 0L) {
     log_message(
@@ -241,7 +232,7 @@ ccc_run_method_args <- function(
   }
 
   base <- list(group.by = group.by, verbose = verbose)
-  base[[entry$object_arg]] <- srt
+  base[[if (identical(method, "MDIC3")) "object" else "srt"]] <- srt
   if (!identical(method, "MDIC3") && !"backend" %in% names(params)) {
     base$backend <- backend
   }
@@ -252,8 +243,14 @@ ccc_run_method_args <- function(
 }
 
 ccc_preflight_method <- function(method, srt, params = list()) {
-  entry <- ccc_registry_entry(method)
-  required <- if (identical(method, "MDIC3")) character(0) else entry$required
+  required <- switch(method,
+    Nichenetr = "receiver",
+    MultiNichenetr = c(
+      "sample.by", "condition.by", "condition_oi",
+      "condition_reference", "receiver_celltypes"
+    ),
+    character(0)
+  )
   missing <- required[
     !required %in% names(params) |
       vapply(required, function(nm) {
