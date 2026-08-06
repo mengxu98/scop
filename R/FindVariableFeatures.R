@@ -295,13 +295,47 @@ FindVariableFeatures.StdAssay <- function(
       }
       out
     })
-    hvf.info <- variable_features_vst_sparse_layers(
-      unname(data_layers),
-      nselect = nfeatures,
-      span = span,
-      clip = clip,
-      verbose = verbose
+    feature_table <- methods::slot(object, "features")
+    gene_names <- rownames(feature_table)
+    layer_hvf <- vector("list", length(counts_layers))
+    for (li in seq_along(counts_layers)) {
+      lname <- counts_layers[[li]]
+      ldata <- data_layers[[li]]
+      hvf_layer <- variable_features_vst_sparse(
+        ldata,
+        nselect = nfeatures,
+        span = span,
+        clip = clip,
+        verbose = verbose
+      )
+      layer_features <- feature_table[, lname]
+      if (is.null(layer_features)) {
+        layer_features <- gene_names
+      } else if (is.logical(layer_features)) {
+        layer_features <- gene_names[layer_features]
+      }
+      rownames(hvf_layer) <- layer_features
+      hvf_layer <- hvf_layer[match(gene_names, layer_features), , drop = FALSE]
+      rownames(hvf_layer) <- gene_names
+      colnames(hvf_layer) <- paste("vf_vst", lname, colnames(hvf_layer), sep = "_")
+      layer_hvf[[li]] <- hvf_layer
+    }
+    object[["var.features"]] <- NULL
+    object[["var.features.rank"]] <- NULL
+    meta_data <- methods::slot(object, "meta.data")
+    new_cols <- unlist(lapply(layer_hvf, colnames), use.names = FALSE)
+    hvf_columns <- do.call(c, lapply(layer_hvf, as.list))
+    names(hvf_columns) <- new_cols
+    meta_data <- meta_data[, setdiff(colnames(meta_data), new_cols), drop = FALSE]
+    meta_data[new_cols] <- hvf_columns
+    methods::slot(object, "meta.data") <- meta_data
+    consensus_features <- SeuratObject::VariableFeatures(
+      object,
+      nfeatures = nfeatures,
+      method = "vst"
     )
+    SeuratObject::VariableFeatures(object) <- consensus_features
+    return(object)
   }
   colnames(hvf.info) <- paste("vf_vst_counts", colnames(hvf.info), sep = "_")
   rownames(hvf.info) <- SeuratObject::Features(object, layer = "counts")

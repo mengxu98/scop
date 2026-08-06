@@ -159,17 +159,18 @@ test_that("ScaleData handles split Assay5 data layers", {
   srt <- Seurat::CreateSeuratObject(counts)
   srt$batch <- rep(c("a", "b"), each = 30)
   assay <- SeuratObject::DefaultAssay(srt)
-  srt_single <- srt
-  srt_single <- NormalizeData(srt_single, verbose = FALSE)
-  srt_single <- FindVariableFeatures(srt_single, nfeatures = 20, verbose = FALSE)
-  srt_single <- ScaleData(
-    srt_single,
-    features = SeuratObject::VariableFeatures(srt_single),
-    verbose = FALSE
-  )
-
   srt[[assay]] <- split(srt[[assay]], f = srt$batch)
   srt <- NormalizeData(srt, verbose = FALSE)
+  seurat_layered <- Seurat::FindVariableFeatures(
+    srt,
+    nfeatures = 20,
+    verbose = FALSE
+  )
+  seurat_layered <- Seurat::ScaleData(
+    seurat_layered,
+    features = SeuratObject::VariableFeatures(seurat_layered),
+    verbose = FALSE
+  )
   srt <- FindVariableFeatures(srt, nfeatures = 20, verbose = FALSE)
 
   expect_no_error(
@@ -184,13 +185,14 @@ test_that("ScaleData handles split Assay5 data layers", {
     nrow(SeuratObject::LayerData(srt, layer = "scale.data")),
     20L
   )
-  expect_equal(
+  expect_identical(
     SeuratObject::VariableFeatures(srt),
-    SeuratObject::VariableFeatures(srt_single)
+    SeuratObject::VariableFeatures(seurat_layered)
   )
+  scale_data <- SeuratObject::LayerData(srt, layer = "scale.data")
   expect_equal(
-    as.matrix(SeuratObject::LayerData(srt, layer = "scale.data")),
-    as.matrix(SeuratObject::LayerData(srt_single, layer = "scale.data")),
+    as.matrix(scale_data),
+    as.matrix(SeuratObject::LayerData(seurat_layered, layer = "scale.data")),
     tolerance = 1e-12
   )
 })
