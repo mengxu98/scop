@@ -80,7 +80,6 @@ RunLimmaVoom <- function(
   )
 }
 
-
 RunEdgeR <- function(
   count_matrix,
   condition,
@@ -159,7 +158,6 @@ RunEdgeR <- function(
     )
   )
 }
-
 
 RunDESeq2 <- function(
   count_matrix,
@@ -253,7 +251,6 @@ RunDESeq2 <- function(
     )
   )
 }
-
 
 RunDream <- function(
   count_matrix,
@@ -398,7 +395,6 @@ RunDream <- function(
     )
   )
 }
-
 
 dispatch_de <- function(
   ctx,
@@ -566,7 +562,6 @@ dispatch_de <- function(
   }
 }
 
-
 build_context <- function(
   mode = c("pure_bulk"),
   bulk_se,
@@ -645,7 +640,6 @@ build_context <- function(
   )
 }
 
-
 resolve_condition_pair <- function(
   condition,
   condition1 = NULL,
@@ -671,14 +665,12 @@ resolve_condition_pair <- function(
   list(condition1 = condition1, condition2 = condition2)
 }
 
-
 compose_comparison_label <- function(group, comparison) {
   if (identical(group, "all")) {
     return(as.character(comparison))
   }
   paste(group, comparison, sep = "_")
 }
-
 
 prepare_de_comparisons <- function(
   condition,
@@ -736,7 +728,6 @@ prepare_de_comparisons <- function(
   })
 }
 
-
 normalize_de_markers_type <- function(markers_type) {
   if (!is.character(markers_type) || length(markers_type) != 1) {
     log_message(
@@ -762,7 +753,6 @@ normalize_de_markers_type <- function(markers_type) {
   }
   out
 }
-
 
 coerce_de_schema <- function(df) {
   if (is.null(df) || nrow(df) == 0) {
@@ -945,7 +935,6 @@ FoldChange.default <- function(
   colnames(fc.results) <- c(fc.name, "pct.1", "pct.2")
   return(fc.results)
 }
-
 
 PerformDE <- function(
   object,
@@ -3670,17 +3659,6 @@ detest_method_key <- function(test.use) {
     )
   }
   out
-}
-
-detest_key_method <- function(method_name) {
-  key <- as.character(method_name) %||% ""
-  method_map <- c(
-    de_limma_voom = "limma",
-    de_edgeR_qlf = "edgeR",
-    de_DESeq2 = "DESeq2",
-    de_dream = "dream"
-  )
-  unname(method_map[[key]]) %||% key
 }
 
 store_meta <- function(object, name, value) {

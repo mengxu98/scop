@@ -93,13 +93,7 @@ test_that("RunSemlaSpatialNetwork stores semla network results", {
   expect_false(is.null(out@tools[["SemlaSpatialNetwork"]]))
   expect_type(out@tools[["SemlaSpatialNetwork"]][["network"]], "list")
   expect_equal(out@tools[["SemlaSpatialNetwork"]][["parameters"]][["nNeighbors"]], 3)
-  expect_equal(out@tools[["SemlaSpatialNetwork"]][["schema_version"]], 1L)
-  expect_equal(out@tools[["SemlaSpatialNetwork"]][["provenance"]][["backend_id"]], "semla")
-  expect_identical(out@tools$SemlaSpatialNetwork$source$coordinate_space, "raw")
-  expect_identical(
-    out@tools$SemlaSpatialNetwork$source$unit,
-    "full_resolution_pixel"
-  )
+  expect_identical(out@tools[["SemlaSpatialNetwork"]][["parameters"]][["coords"]], "pixels")
   expect_identical(out@tools$SemlaSpatialNetwork$cells, colnames(out))
 })
 
@@ -115,12 +109,14 @@ test_that("RunSemlaLocalG writes local G metadata", {
   )
   expect_s4_class(out, "Seurat")
   expect_true(all(paste0("Gi[", features, "]") %in% colnames(out@meta.data)))
-  expect_equal(out@tools[["SemlaLocalG"]][["schema_version"]], 1L)
-  expect_equal(out@tools[["SemlaLocalG"]][["provenance"]][["producer"]], "RunSemlaLocalG")
-  expect_identical(out@tools$SemlaLocalG$source$coordinate_space, "raw")
+  expect_identical(out@tools[["SemlaLocalG"]][["parameters"]][["features"]], features)
+  expect_identical(
+    out@tools[["SemlaLocalG"]][["output_columns"]],
+    paste0("Gi[", features, "]")
+  )
 })
 
-test_that("Semla distance producers store schema-v1 provenance", {
+test_that("Semla distance producers store plain result parameters", {
   skip_if_no_semla_backend()
   srt <- make_semla_spatial_seurat()
   neighbors <- RunSemlaRegionNeighbors(
@@ -128,11 +124,13 @@ test_that("Semla distance producers store schema-v1 provenance", {
     column_name = "semla_region", column_labels = "A",
     mode = "outer", column_key = "A_neighbor", verbose = FALSE
   )
-  expect_equal(neighbors@tools[["SemlaRegionNeighbors"]][["schema_version"]], 1L)
-  expect_equal(neighbors@tools[["SemlaRegionNeighbors"]][["provenance"]][["backend_id"]], "semla")
   expect_identical(
-    neighbors@tools$SemlaRegionNeighbors$source$coordinate_space,
-    "raw"
+    neighbors@tools[["SemlaRegionNeighbors"]][["parameters"]][["column_name"]],
+    "semla_region"
+  )
+  expect_identical(
+    neighbors@tools[["SemlaRegionNeighbors"]][["parameters"]][["column_key"]],
+    "A_neighbor"
   )
 
   radial <- RunSemlaRadialDistance(
@@ -140,28 +138,12 @@ test_that("Semla distance producers store schema-v1 provenance", {
     column_name = "semla_region", selected_groups = "A",
     column_suffix = "A_distance", verbose = FALSE
   )
-  expect_equal(radial@tools[["SemlaRadialDistance"]][["schema_version"]], 1L)
-  expect_equal(radial@tools[["SemlaRadialDistance"]][["provenance"]][["producer"]], "RunSemlaRadialDistance")
-  expect_identical(radial@tools$SemlaRadialDistance$source$unit, "full_resolution_pixel")
-})
-
-test_that("semla provenance records native multi-image partitioning", {
-  srt <- make_semla_multi_image_object()
-  staffli <- list(
-    meta_data = data.frame(
-      barcode = colnames(srt),
-      sampleID = c("1", "1", "2", "2")
-    )
-  )
-  srt@tools[["Staffli"]] <- staffli
-
-  source <- semla_spatial_source(srt, coords = "pixels")
-  expect_identical(source$image, NA_character_)
-  expect_identical(source$images, c("slice1", "slice2"))
-  expect_identical(source$image_policy, "native_multi_image")
   expect_identical(
-    source$selection_strategy,
-    "all_images_partitioned_by_staffli_sampleID"
+    radial@tools[["SemlaRadialDistance"]][["parameters"]][["column_suffix"]],
+    "A_distance"
   )
-  expect_identical(source$sample_ids, c("1", "2"))
+  expect_identical(
+    radial@tools[["SemlaRadialDistance"]][["output_columns"]],
+    "A_distance"
+  )
 })

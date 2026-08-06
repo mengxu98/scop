@@ -94,7 +94,10 @@ Default is \code{"umap"}.}
 \item{basis}{The basis to use for reduction, e.g., \code{"UMAP"}.}
 
 \item{mode}{Velocity estimation models to use.
-Can be \code{"deterministic"}, \code{"stochastic"}, or \code{"dynamical"}.}
+Can be \code{"deterministic"}, \code{"stochastic"}, or \code{"dynamical"}.
+If the corresponding velocity reduction (e.g. \code{stochastic_umap}) is not
+found, falls back to the scVelo convention (e.g. \code{velocity_umap}), which is
+what an object converted from an AnnData (via \link{adata_to_srt}) contains.}
 
 \item{fitting_by}{Method used to fit gene velocities for dynamical modeling.
 Default is \code{"stochastic"}.}

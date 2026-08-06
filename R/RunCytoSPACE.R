@@ -280,16 +280,6 @@ RunCytoSPACE <- function(
         prefix = prefix
       )
     )
-    srt@tools[["CytoSPACE"]] <- spatial_result_build(
-      bundle = srt@tools[["CytoSPACE"]],
-      method = "CytoSPACE",
-      result_type = "mapping",
-      source = c(
-        attr(coords, "spatial_source") %||% list(),
-        list(transform = attr(coords, "spatial_transform"))
-      ),
-      provenance = list(producer = "RunCytoSPACE", backend_id = "cpp_assignment")
-    )
   }
 
   log_message(

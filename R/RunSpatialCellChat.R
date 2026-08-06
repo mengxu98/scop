@@ -19,21 +19,6 @@ spatialcellchat_required_symbols <- function(analysis.level = c("cell", "spot", 
   c(common, aggregate_symbol)
 }
 
-spatialcellchat_remote_info <- function() {
-  desc <- tryCatch(utils::packageDescription(.spatialcellchat_package), error = function(e) NULL)
-  list(
-    package_version = if (is.null(desc)) NA_character_ else as.character(desc$Version %||% NA_character_),
-    remote_sha = if (is.null(desc)) NA_character_ else as.character(desc$RemoteSha %||% NA_character_),
-    remote_repo = if (is.null(desc)) {
-      .spatialcellchat_repository
-    } else {
-      as.character(
-        desc$RemoteRepo %||% .spatialcellchat_repository
-      )
-    }
-  )
-}
-
 spatialcellchat_validate_scalar <- function(x, name, positive = FALSE, allow_null = FALSE) {
   if (is.null(x) && isTRUE(allow_null)) {
     return(invisible(TRUE))
@@ -441,7 +426,7 @@ spatialcellchat_database <- function(species, database, custom.db = NULL) {
 spatialcellchat_call <- function(symbol, args, analysis.level) {
   if (!symbol %in% spatialcellchat_required_symbols(analysis.level)) {
     log_message(
-      "Function {.fn {symbol}} is not registered for SpatialCellChat analysis level {.val {analysis.level}}",
+      "Function {.fn {symbol}} is not supported for SpatialCellChat analysis level {.val {analysis.level}}",
       message_type = "error"
     )
   }
@@ -821,9 +806,9 @@ spatialcellchat_run_one <- function(
 #' @title Run Spatial CellChat analysis
 #'
 #' @description
-#' Run the SpatialCellChat v3 backend with explicit micron-scale coordinates,
-#' sample isolation, truthful provenance, and schema-v1 storage. Cell-, spot-,
-#' and composition-level results retain distinct interpretations.
+#' Run the SpatialCellChat v3 backend with explicit micron-scale coordinates
+#' and sample isolation. Cell-, spot-, and composition-level results retain
+#' distinct interpretations.
 #'
 #' @details
 #' `RunSpatialCellChat()` keeps spatial and non-spatial communication results
@@ -912,9 +897,9 @@ spatialcellchat_run_one <- function(
 #'   not change the SpatialCellChat inference engine.
 #' @param verbose Whether to print progress messages.
 #'
-#' @return The input `Seurat` object with a schema-v1 SpatialCellChat bundle in
-#'   `srt@tools$SpatialCellChat` and standardized CCC results under the distinct
-#'   method name `"SpatialCellChat"`.
+#' @return The input `Seurat` object with a plain SpatialCellChat result bundle
+#'   in `srt@tools$SpatialCellChat` and standardized CCC results under the
+#'   distinct method name `"SpatialCellChat"`.
 #'
 #' @examples
 #' # SpatialCellChat is a runtime-optional backend and a full run can be slow.
@@ -942,8 +927,6 @@ spatialcellchat_run_one <- function(
 #'     species = "Mus_musculus",
 #'     store.object = "minimal"
 #'   )
-#'   SpatialBackendStatus(backend = "spatialcellchat")
-#'   SpatialResultInfo(spatial, method = "RunSpatialCellChat")
 #'   SpatialCellChatPlot(spatial, sample = "anterior1", plot_type = "incoming")
 #' }
 #' }
@@ -951,7 +934,7 @@ spatialcellchat_run_one <- function(
 #' @references
 #' [SpatialCellChat](https://github.com/jinworks/SpatialCellChat)
 #'
-#' @seealso [GetSpatialResult], [GetCCCObject], [SpatialCellChatPlot],
+#' @seealso [GetCCCObject], [SpatialCellChatPlot],
 #' [CCCNetworkPlot], [CCCHeatmap], [CCCStatPlot]
 #'
 #' @concept spatial-producer
@@ -1242,31 +1225,11 @@ RunSpatialCellChat <- function(
     backend = backend,
     backend_scope = "unified CCC result aggregation"
   )
-  remote <- spatialcellchat_remote_info()
-  bundle <- spatial_result_build(
-    bundle = list(
-      results = results,
-      active_result = result.name,
-      long_table = long_table,
-      cells = unique(unlist(lapply(sample_results, function(x) x$coordinates$cell_id), use.names = FALSE))
-    ),
-    method = "SpatialCellChat",
-    result_type = "communication",
-    source = list(
-      image = unname(unlist(image_map, use.names = FALSE)),
-      coordinate_space = "raw",
-      analysis_unit = "micron",
-      samples = source_by_sample,
-      assay = assay,
-      layer = layer
-    ),
-    provenance = list(
-      producer = "RunSpatialCellChat",
-      backend_id = "spatialcellchat",
-      backend_versions = stats::setNames(remote$package_version, .spatialcellchat_package),
-      remote_sha = remote$remote_sha,
-      remote_repo = remote$remote_repo
-    ),
+  bundle <- list(
+    results = results,
+    active_result = result.name,
+    long_table = long_table,
+    cells = unique(unlist(lapply(sample_results, function(x) x$coordinates$cell_id), use.names = FALSE)),
     parameters = parameters,
     summary = list(
       result_name = result.name,
@@ -1335,7 +1298,10 @@ GetCCCObject <- function(
 }
 
 spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample = NULL) {
-  bundle <- GetSpatialResult(object, method = "RunSpatialCellChat")
+  bundle <- object@tools[["SpatialCellChat"]]
+  if (is.null(bundle)) {
+    log_message("SpatialCellChat results are absent", message_type = "error")
+  }
   result.name <- result.name %||% bundle$active_result
   result <- bundle$results[[result.name]]
   if (is.null(result)) log_message("Unknown SpatialCellChat result {.val {result.name}}", message_type = "error")

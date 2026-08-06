@@ -1,18 +1,4 @@
-marker_pair_options <- function(dots) {
-  list(
-    test = dots[["test.use"]] %||% "wilcox",
-    layer = dots[["slot"]] %||% "data",
-    logfc = dots[["logfc.threshold"]] %||% 0.1,
-    min_pct = dots[["min.pct"]] %||% 0.01,
-    base = dots[["base"]] %||% 2,
-    positive = dots[["only.pos"]] %||% FALSE,
-    min_diff = dots[["min.diff.pct"]] %||% -Inf,
-    cell_cap = dots[["max.cells.per.ident"]] %||% Inf,
-    min_group = dots[["min.cells.group"]] %||% 3,
-    min_feature = dots[["min.cells.feature"]] %||% 3,
-    pseudocount = dots[["pseudocount.use"]] %||% 1
-  )
-}
+
 
 marker_pair_supported <- function(
   opts,

@@ -103,7 +103,7 @@ test_that("RunCARD writes proportions and tool results", {
   expect_equal(colnames(out@tools$CARD$weights), c("Alpha", "Beta"))
   expect_identical(rownames(out@tools$CARD$proportions), colnames(out))
   expect_identical(out@tools$CARD$cells, colnames(out))
-  expect_identical(out@tools$CARD$source$coordinate_space, "raw")
+  expect_identical(out@tools$CARD$parameters$coordinate_space, "raw")
   expect_equal(out@tools$CARD$backend_package, "CARD")
   expect_named(out@tools$CARD$summary, c("n_spots", "n_types", "dominant_counts", "max_prop"))
 })
@@ -376,14 +376,9 @@ test_that("CARD stored results use SpatialDeconvolutionPlot", {
       invisible(TRUE)
     }
   )
-  pair$spatial@tools$CARD <- spatial_result_build(
-    bundle = list(
-      proportions = as.matrix(pair$spatial@meta.data[, c("CARD_prop_Alpha", "CARD_prop_Beta")]),
-      cells = colnames(pair$spatial)
-    ),
-    method = "CARD",
-    result_type = "deconvolution",
-    provenance = list(producer = "RunCARD", backend_id = "card")
+  pair$spatial@tools$CARD <- list(
+    proportions = as.matrix(pair$spatial@meta.data[, c("CARD_prop_Alpha", "CARD_prop_Beta")]),
+    cells = colnames(pair$spatial)
   )
   colnames(pair$spatial@tools$CARD$proportions) <- c("Alpha", "Beta")
   p1 <- SpatialDeconvolutionPlot(

@@ -326,7 +326,7 @@ benchmark_quality_plot <- function(
   data$metric <- factor(data$metric, levels = metrics)
   method_breaks <- seq_along(rev(method_levels))
   names(method_breaks) <- rev(method_levels)
-  method_labels <- benchmark_plot_method_labels(result, names(method_breaks))
+  method_labels <- names(method_breaks)
   metric_offsets <- stats::setNames(
     seq(-0.22, 0.22, length.out = length(metrics)),
     metrics
@@ -443,7 +443,7 @@ benchmark_efficiency_plot <- function(
   y_log <- benchmark_resource_log(data$memory_display, resource_scale)
   data$method <- factor(data$method, levels = method_levels)
   data$method_label <- benchmark_wrap_method(
-    benchmark_plot_method_labels(result, as.character(data$method)),
+    as.character(data$method),
     width = 18L
   )
   data$resource_label <- paste0(
@@ -537,14 +537,6 @@ benchmark_wrap_method <- function(x, width = 22L) {
   )
 }
 
-benchmark_plot_method_labels <- function(result, methods) {
-  if (!"tier" %in% colnames(result$summary)) {
-    return(methods)
-  }
-  tiers <- stats::setNames(as.character(result$summary$tier), result$summary$method)
-  ifelse(tiers[methods] == "legacy", paste0(methods, " [legacy]"), methods)
-}
-
 benchmark_publication_theme <- function() {
   ggplot2::theme(
     text = ggplot2::element_text(color = "#263238"),
@@ -618,7 +610,7 @@ benchmark_metric_heatmap <- function(
       na.value = "#F1F2F4"
     ) +
     ggplot2::scale_y_discrete(labels = function(x) {
-      benchmark_wrap_method(benchmark_plot_method_labels(result, x))
+      benchmark_wrap_method(x)
     }) +
     ggplot2::labs(
       title = "Direction-aware benchmark matrix",

@@ -236,19 +236,27 @@ test_that("RunSecActCCC allows condition_meta NULL and ignores case labels", {
     }
   )
 
+  warnings_seen <- character(0)
+  testthat::local_mocked_bindings(
+    log_message = function(msg, message_type = "info", ...) {
+      if (identical(message_type, "warning")) {
+        warnings_seen <<- c(warnings_seen, as.character(msg))
+      }
+      invisible(TRUE)
+    },
+    .package = "scop"
+  )
   with_mock_secact(funs, {
-    expect_warning(
-      out <- RunSecActCCC(
-        srt = srt,
-        mode = "scRNAseq",
-        cellType_meta = "celltype",
-        conditionCase = "case",
-        conditionControl = "control",
-        verbose = FALSE
-      ),
-      "ignored"
+    out <- RunSecActCCC(
+      srt = srt,
+      mode = "scRNAseq",
+      cellType_meta = "celltype",
+      conditionCase = "case",
+      conditionControl = "control",
+      verbose = FALSE
     )
   })
+  expect_true(any(grepl("ignored", warnings_seen)))
 
   expect_true("SecAct_CCC" %in% names(out@tools))
 })

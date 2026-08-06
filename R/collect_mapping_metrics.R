@@ -47,23 +47,3 @@ collect_mapping_metrics <- function(
     confusion = as.data.frame.matrix(table(predicted, truth))
   )
 }
-
-majority_map <- function(predicted, truth) {
-  predicted <- as.character(predicted)
-  truth <- as.character(truth)
-  keep <- !is.na(predicted) & !is.na(truth)
-  predicted <- predicted[keep]
-  truth <- truth[keep]
-  if (length(predicted) == 0) {
-    return(character(0))
-  }
-  tab <- table(predicted, truth)
-  apply(tab, 1, function(x) colnames(tab)[which.max(x)])
-}
-
-apply_majority_map <- function(predicted, truth) {
-  mapping <- majority_map(predicted = predicted, truth = truth)
-  mapped <- unname(mapping[as.character(predicted)])
-  mapped[is.na(mapped)] <- "unclassified"
-  factor(mapped)
-}

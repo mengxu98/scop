@@ -140,27 +140,6 @@ spatial_coords_to_display <- function(raw, transform) {
   out
 }
 
-spatial_coords_to_raw <- function(display, transform) {
-  out <- as.data.frame(display, stringsAsFactors = FALSE)
-  if (!all(c("x", "y") %in% colnames(out))) {
-    log_message("{.arg display} must contain x and y columns", message_type = "error")
-  }
-  scale <- transform$scale %||% 1
-  if (length(scale) != 1L || !is.finite(scale) || scale <= 0) {
-    log_message("Raw conversion requires a positive finite scale", message_type = "error")
-  }
-  if (isTRUE(transform$y_flip)) {
-    height <- transform$image_height
-    if (length(height) != 1L || !is.finite(height)) {
-      log_message("Raw conversion requires a finite image height", message_type = "error")
-    }
-    out$y <- height - as.numeric(out$y)
-  }
-  out$x <- as.numeric(out$x) / scale
-  out$y <- as.numeric(out$y) / scale
-  out
-}
-
 spatial_analysis_coords <- function(
   srt,
   image = NULL,

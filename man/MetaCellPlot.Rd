@@ -109,7 +109,7 @@ Default is \code{list()}.}
 layers/scales (\code{cells}, \code{fill_scale}, \code{centroids}, \code{scale_fill},
 \code{scale_size}, \code{labels}) instead of a complete plot.}
 
-\item{...}{Additional arguments passed to \code{\link[ggplot2:geom_point]{ggplot2::geom_point()}} for metacell
+\item{...}{Additional arguments passed to \code{\link[ggplot2:geom_point]{geom_point()}} for metacell
 centroids.}
 }
 \value{

@@ -159,7 +159,7 @@ test_that("STdeconvolvePlot reads custom tool names and stored prefixes", {
     overlay_image = FALSE
   )
   expect_s3_class(p, "ggplot")
-  expect_identical(GetSpatialResult(out, tool_name = "STdeconvolveFull")$parameters$prefix, "STFull")
+  expect_identical(out@tools$STdeconvolveFull$parameters$prefix, "STFull")
 })
 
 test_that("STdeconvolvePlot uses readable automatic layouts and supports lists", {
@@ -170,15 +170,10 @@ test_that("STdeconvolvePlot uses readable automatic layouts and supports lists",
     dimnames = list(colnames(srt), paste0("topic_", 1:7))
   )
   theta <- theta / rowSums(theta)
-  srt@tools$STSeven <- spatial_result_build(
-    bundle = list(
-      theta = theta,
-      parameters = list(prefix = "STSeven"),
-      summary = spatial_weight_summary(theta)
-    ),
-    method = "STdeconvolve",
-    result_type = "deconvolution",
-    provenance = list(producer = "RunSTdeconvolve", backend_id = "stdeconvolve")
+  srt@tools$STSeven <- list(
+    theta = theta,
+    parameters = list(prefix = "STSeven"),
+    summary = spatial_weight_summary(theta)
   )
 
   plots <- STdeconvolvePlot(
@@ -210,7 +205,7 @@ test_that("STdeconvolvePlot uses readable automatic layouts and supports lists",
 
 test_that("STdeconvolvePlot rejects missing, stale, and malformed stored results", {
   srt <- make_stdeconvolve_seurat()
-  expect_error(STdeconvolvePlot(srt, tool_name = "missing"), "No stored spatial result")
+  expect_error(STdeconvolvePlot(srt, tool_name = "missing"), "was not produced by")
 
   theta <- matrix(
     0.5,
@@ -219,12 +214,7 @@ test_that("STdeconvolvePlot rejects missing, stale, and malformed stored results
     dimnames = list(colnames(srt), c("topic_1", "topic_2"))
   )
   make_bundle <- function(value) {
-    spatial_result_build(
-      bundle = list(theta = value, parameters = list(prefix = "Bad")),
-      method = "STdeconvolve",
-      result_type = "deconvolution",
-      provenance = list(producer = "RunSTdeconvolve", backend_id = "stdeconvolve")
-    )
+    list(theta = value, parameters = list(prefix = "Bad"))
   }
 
   srt@tools$StaleST <- make_bundle(theta[-1, , drop = FALSE])

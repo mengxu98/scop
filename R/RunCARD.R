@@ -277,16 +277,6 @@ RunCARD <- function(
         card_deconvolution_params = card_deconvolution_params
       )
     )
-    srt@tools[[tool_name]] <- spatial_result_build(
-      bundle = srt@tools[[tool_name]],
-      method = "CARD",
-      result_type = "deconvolution",
-      source = c(
-        attr(coords, "spatial_source") %||% list(),
-        list(transform = attr(coords, "spatial_transform"))
-      ),
-      provenance = list(producer = "RunCARD", backend_id = "card")
-    )
   }
 
   log_message(

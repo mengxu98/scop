@@ -3426,11 +3426,6 @@ ccc_side_has_bar <- function(...) {
   "bar" %in% annos
 }
 
-ccc_side_has_box <- function(...) {
-  annos <- unlist(list(...), use.names = FALSE)
-  "box" %in% annos
-}
-
 ccc_side_has_distribution <- function(...) {
   annos <- unlist(list(...), use.names = FALSE)
   any(c("box", "histogram", "density", "violin") %in% annos)

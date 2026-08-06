@@ -86,8 +86,8 @@ stored in \code{srt@tools[[tool_name]]} when \code{store_results = TRUE}.
 Run \code{spacexr} C-SIDE after RCTD to test cell type-specific spatial or
 condition-aware differential expression. C-SIDE stores effect and
 significance results, not spot-level cell-type proportions, so it has no
-recommended proportion plot in the spatial registry. Inspect its stored
-tables with \code{\link[=GetSpatialResult]{GetSpatialResult()}} or plot an explicit summary column with
+recommended proportion plot. Inspect its stored
+tables in \code{srt@tools[[tool_name]]} or plot an explicit summary column with
 \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.
 }
 \examples{

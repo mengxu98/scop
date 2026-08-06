@@ -1,3 +1,17 @@
+# Reference implementation kept only as a test oracle for the C++ path.
+knn_match_best_labels <- function(match_prob) {
+  match_prob <- as.matrix(match_prob)
+  if (!all(is.finite(match_prob))) {
+    return(apply(
+      match_prob,
+      1L,
+      function(x) names(x)[order(x, decreasing = TRUE)][1L]
+    ))
+  }
+  out <- colnames(match_prob)[max.col(match_prob, ties.method = "first")]
+  names(out) <- rownames(match_prob)
+  out
+}
 test_that("RunKNNPredict probability maxima retain row labels and missing values", {
   probabilities <- matrix(
     c(0.1, 0.7, NA_real_, 0.5, 0.4, NA_real_),

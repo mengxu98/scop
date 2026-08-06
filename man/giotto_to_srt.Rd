@@ -19,7 +19,9 @@ Convert a native Giotto object into a new Seurat object.
 }
 \details{
 The bridge selects the GiottoClass v4 or v5 converter according to the
-installed Seurat major version. Older Giotto installations without these
-converters should continue using the legacy scop Giotto workflow or be
-updated before reverse conversion.
+installed Seurat major version. For round trips produced by
+[srt_to_giotto()], normalize the Seurat input first (for example with
+[Seurat::NormalizeData()]); the official GiottoClass converter records an
+empty normalized layer otherwise, which its reverse converter cannot read
+back.
 }

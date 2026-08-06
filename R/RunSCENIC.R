@@ -1603,33 +1603,6 @@ scenic_normalize_max_regulon_targets <- function(max_regulon_targets) {
   max(1L, as.integer(max_regulon_targets))
 }
 
-scenic_cistarget_auc <- function(
-  rankings,
-  total_genes,
-  rank_threshold = 5000,
-  auc_threshold = 0.05
-) {
-  rank_threshold <- min(as.integer(rank_threshold), as.integer(total_genes) - 1L)
-  rank_cutoff <- as.integer(round(auc_threshold * total_genes)) - 1L
-  if (rank_cutoff < 1L || rank_cutoff > rank_threshold) {
-    log_message(
-      "{.arg auc_threshold} and {.arg rank_threshold} produce an invalid cisTarget rank cutoff",
-      message_type = "error"
-    )
-  }
-  n_genes <- ncol(rankings)
-  max_auc <- (rank_cutoff + 1L) * n_genes
-  apply(rankings, 1, function(ranks) {
-    ranks <- ranks[is.finite(ranks) & ranks <= rank_cutoff]
-    if (length(ranks) == 0) {
-      return(0)
-    }
-    x <- c(sort(as.integer(ranks)), rank_cutoff)
-    y <- seq_len(length(x) - 1L)
-    sum(diff(x) * y) / max_auc
-  })
-}
-
 scenic_cistarget_recovery <- function(
   ranks,
   rank_threshold = 5000
@@ -1640,28 +1613,6 @@ scenic_cistarget_recovery <- function(
   }
   recovered <- tabulate(as.integer(ranks) + 1L, nbins = rank_threshold)
   cumsum(recovered)
-}
-
-scenic_cistarget_avg2sd_recovery <- function(
-  rankings,
-  total_genes,
-  rank_threshold = 5000
-) {
-  rank_threshold <- min(as.integer(rank_threshold), as.integer(total_genes) - 1L)
-  n_features <- nrow(rankings)
-  if (n_features == 0L) {
-    return(rep(0, rank_threshold))
-  }
-  recovery_sum <- numeric(rank_threshold)
-  recovery_sumsq <- numeric(rank_threshold)
-  for (idx in seq_len(n_features)) {
-    recovery <- scenic_cistarget_recovery(rankings[idx, ], rank_threshold = rank_threshold)
-    recovery_sum <- recovery_sum + recovery
-    recovery_sumsq <- recovery_sumsq + recovery * recovery
-  }
-  recovery_mean <- recovery_sum / n_features
-  recovery_var <- pmax(recovery_sumsq / n_features - recovery_mean * recovery_mean, 0)
-  recovery_mean + 2 * sqrt(recovery_var)
 }
 
 scenic_population_sd <- function(x) {

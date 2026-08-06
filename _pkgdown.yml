@@ -185,13 +185,9 @@ reference:
 
 - title: "Spatial Analysis"
 
-- subtitle: "Spatial Method Discovery and Diagnostics"
+- subtitle: "Spatial Result Access"
 - contents:
-  - ListSpatialMethods
-  - SpatialBackendStatus
-  - SpatialResultInfo
   - SpatialCoordinates
-  - GetSpatialResult
   - GetSpatialGraph
 
 - subtitle: "Spatial QC and Normalization"
@@ -200,27 +196,12 @@ reference:
   - RunSpatialQM
   - RunSpotSweeper
 
-- subtitle: "Spatial Framework Bridges and Giotto Workflows"
+- subtitle: "Spatial Framework Bridges"
 - contents:
   - srt_to_giotto
   - giotto_to_srt
   - srt_to_spata2
   - spata2_to_srt
-  - SeuratToGiotto2
-  - RunGiottoWorkflow
-  - GiottoPreprocess
-  - GiottoReduce
-  - GiottoCluster
-  - GiottoSpatialNetwork
-  - GiottoSpatialGenes
-  - GiottoSpatialModules
-  - GiottoCellProximity
-  - GiottoHMRF
-  - AddGiottoToSeurat
-  - RunGiottoCluster
-  - RunGiottoCellProximity
-  - RunGiottoSpatialGenes
-  - RunGiottoSpatialModules
 
 - subtitle: "Spatial Deconvolution and Ecotypes"
 - contents:
@@ -260,7 +241,6 @@ reference:
 
 - subtitle: "Spatial Visualization"
 - contents:
-  - GiottoPlot
   - SpatialEcoTyperCompositionPlot
   - SpatialEcoTyperSpatialPlot
   - SpatialGradientPlot
@@ -404,9 +384,6 @@ reference:
 - subtitle: "Cell-Cell Communication Analysis"
 - contents:
   - RunCCC
-  - ListCCCMethods
-  - CCCResultInfo
-  - GetCCCResult
   - RunSecAct
   - RunSecActCCC
   - RunSecActSignalingPattern

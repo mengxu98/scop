@@ -20,7 +20,7 @@ STdeconvolvePlot(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{tool_name}{Exact schema-v1 result key written by
+\item{tool_name}{Result key written to \code{srt@tools} by
 \code{RunSTdeconvolve()}.}
 
 \item{topics}{Topic names, topic numbers, or metadata columns to plot. If
@@ -48,7 +48,7 @@ plots is returned.}
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.
 }
 \description{
-Plot schema-v1 topic proportions without rerunning the optional backend.
+Plot stored topic proportions without rerunning the optional backend.
 Multi-topic point maps use one shared proportion scale and reserve title
 space above the automatic layout.
 }

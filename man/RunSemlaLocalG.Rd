@@ -42,8 +42,8 @@ A \code{Seurat} object.
 Use \code{semla::RunLocalG()} on a Staffli-enabled Seurat object. Results are
 written by semla to metadata or to an assay, depending on
 \code{store_in_metadata}.
-SCOP provides no dedicated plot for this result; retrieve its schema record
-with \code{\link[=GetSpatialResult]{GetSpatialResult()}} and inspect the recorded output columns or assay.
+SCOP provides no dedicated plot for this result; inspect the recorded output
+columns or assay in \code{srt@tools[["SemlaLocalG"]]}.
 }
 \examples{
 data(visium_human_pancreas_sub)

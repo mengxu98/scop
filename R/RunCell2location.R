@@ -385,30 +385,14 @@ RunCell2location <- function(
     )
     backend_versions <- unlist(manifest$versions %||% character(), use.names = TRUE)
     backend_versions <- as.character(backend_versions[!is.na(backend_versions)])
-    srt_out@tools[[tool_name]] <- spatial_result_build(
-      bundle = list(
-        abundance = abundance,
-        proportions = proportions,
-        reference_signatures = signatures,
-        input_summary = prepared$summary,
-        manifest = manifest,
-        files = files,
-        cells = rownames(proportions)
-      ),
-      method = "Cell2location",
-      result_type = "deconvolution",
-      source = list(
-        image = character(),
-        coordinate_space = "none",
-        transform = NULL,
-        assay = prepared$assay,
-        layer = layer
-      ),
-      provenance = list(
-        producer = "RunCell2location",
-        backend_id = "cell2location",
-        backend_versions = backend_versions
-      ),
+    srt_out@tools[[tool_name]] <- list(
+      abundance = abundance,
+      proportions = proportions,
+      reference_signatures = signatures,
+      input_summary = prepared$summary,
+      manifest = manifest,
+      files = files,
+      cells = rownames(proportions),
       parameters = result_parameters,
       summary = spatial_weight_summary(proportions)
     )

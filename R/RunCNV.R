@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Run expression-based single-cell or spatial copy-number alteration backends
-#' and store the results in a unified SCOP schema.
+#' and store the results in a consistent SCOP result bundle.
 #'
 #' @md
 #' @inheritParams RunStandardWorkflow
@@ -221,12 +221,7 @@ RunCNV <- function(
   methods_store[[method]] <- method_bundle
   srt@tools[[tool_name]] <- list(
     active_method = method,
-    methods = methods_store,
-    metadata = list(
-      schema = "scop_cnv_v1",
-      supported_methods = c("copykat", "fastCNV", "scevan", "infercnv", "numbat", "casper"),
-      allele_aware_methods = c("numbat", "casper")
-    )
+    methods = methods_store
   )
   srt <- Seurat::LogSeuratCommand(srt)
 

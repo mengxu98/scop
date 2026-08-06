@@ -28,7 +28,7 @@
 #' @param min_cells Minimum number of reference cells required for each cell
 #' type. Old `spacexr` RCTD requires at least 25 cells per type.
 #' @param prefix Prefix for metadata columns.
-#' @param tool_name Name used to store the schema-v1 result in `srt@tools`.
+#' @param tool_name Name used to store the plain result bundle in `srt@tools`.
 #' @param store_results Whether to store detailed RCTD results in `srt@tools`.
 #' @param round_counts Whether to round non-integer counts to the nearest
 #' integer before passing data to `spacexr`. RCTD requires integer count
@@ -377,16 +377,6 @@ RunRCTD <- function(
       ),
       object = backend$object
     )
-    srt@tools[[tool_name]] <- spatial_result_build(
-      bundle = srt@tools[[tool_name]],
-      method = "RCTD",
-      result_type = "deconvolution",
-      source = c(
-        attr(coords, "spatial_source") %||% list(),
-        list(transform = attr(coords, "spatial_transform"))
-      ),
-      provenance = list(producer = "RunRCTD", backend_id = "spacexr")
-    )
   }
 
   log_message(
@@ -525,13 +515,6 @@ rctd_get_count_matrix <- function(
   mat
 }
 
-rctd_nonzero_shared_features <- function(st_counts, ref_counts) {
-  st_counts <- methods::as(st_counts, "dgCMatrix")
-  ref_counts <- methods::as(ref_counts, "dgCMatrix")
-  quality <- rctd_sparse_quality_cpp(st_counts, ref_counts)
-  rownames(st_counts)[quality$keep_features]
-}
-
 rctd_get_spatial_coords <- function(
   srt,
   spot_ids,
@@ -548,6 +531,10 @@ rctd_get_spatial_coords <- function(
   )
 }
 
+rctd_spacexr_exports <- function() {
+  getNamespaceExports("spacexr")
+}
+
 rctd_run_spacexr <- function(
   st_counts,
   coords,
@@ -561,13 +548,10 @@ rctd_run_spacexr <- function(
   run_rctd_params
 ) {
   rctd_require_namespaces("spacexr")
-  exports <- getNamespaceExports("spacexr")
-  spec <- spatial_backend_registry()[["spacexr"]]
-  selected_api <- spatial_backend_required_symbols(spec, exports = exports)
-  new_api <- spec$symbol_sets[["new"]]
-  legacy_api <- spec$symbol_sets[["legacy"]]
-
-  if (all(new_api %in% exports) && identical(selected_api, new_api)) {
+  exports <- rctd_spacexr_exports()
+  new_api <- c("createRctd", "runRctd")
+  legacy_api <- c("SpatialRNA", "Reference", "create.RCTD", "run.RCTD")
+  if (all(new_api %in% exports)) {
     return(rctd_run_spacexr_new(
       st_counts = st_counts,
       coords = coords,
@@ -581,7 +565,7 @@ rctd_run_spacexr <- function(
       run_rctd_params = run_rctd_params
     ))
   }
-  if (all(legacy_api %in% exports) && identical(selected_api, legacy_api)) {
+  if (all(legacy_api %in% exports)) {
     return(rctd_run_spacexr_old(
       st_counts = st_counts,
       coords = coords,
@@ -754,30 +738,4 @@ rctd_orient_weights <- function(weights, spot_ids, label_map) {
   display[is.na(display)] <- colnames(mat)[is.na(display)]
   colnames(mat) <- make.unique(display, sep = "_")
   mat
-}
-
-rctd_normalize_weights <- function(weights) {
-  weights <- as.matrix(weights)
-  rctd_normalize_weights_cpp(weights)
-}
-
-rctd_add_metadata <- function(srt, weights, prefix = "RCTD", metadata = NULL) {
-  all_spots <- colnames(srt)
-  if (is.null(metadata)) {
-    metadata <- rctd_metadata_cpp(as.matrix(weights), all_spots)
-    full_weights <- metadata$weights
-  } else {
-    full_weights <- metadata$full_weights
-  }
-  meta <- as.data.frame(full_weights, check.names = FALSE)
-  prop_cols <- paste0(
-    prefix,
-    "_prop_",
-    make.unique(make.names(colnames(full_weights)), sep = "_")
-  )
-  colnames(meta) <- prop_cols
-
-  meta[[paste0(prefix, "_dominant_type")]] <- metadata$dominant
-  meta[[paste0(prefix, "_max_prop")]] <- metadata$max_prop
-  Seurat::AddMetaData(srt, metadata = meta)
 }

@@ -224,13 +224,7 @@ RunBayesSpace <- function(
   if (isTRUE(store_sce)) {
     tool$sce <- sce
   }
-  srt@tools[["BayesSpace"]] <- spatial_result_build(
-    bundle = tool,
-    method = "BayesSpace",
-    result_type = "domain",
-    source = coordinate_input$source,
-    provenance = list(producer = "RunBayesSpace", backend_id = "bayesspace")
-  )
+  srt@tools[["BayesSpace"]] <- tool
 
   log_message(
     "{.pkg BayesSpace} clusters stored in metadata column {.val {cluster_colname}}",

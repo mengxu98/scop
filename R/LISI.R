@@ -202,7 +202,6 @@ RunLISI <- function(
   )
   srt
 }
-
 #' @title Plot LISI scores
 #'
 #' @description
@@ -273,29 +272,5 @@ LISIPlot <- function(
     theme_args = theme_args,
     verbose = verbose,
     ...
-  )
-}
-
-lisi_feature_boxplot <- function(
-  srt,
-  features,
-  palette = "Chinese",
-  palcolor = NULL,
-  boxplot_jitter = FALSE,
-  theme_use = "theme_scop",
-  theme_args = list(),
-  verbose = TRUE
-) {
-  feature_boxplot(
-    srt = srt,
-    features = features,
-    palette = palette,
-    palcolor = palcolor,
-    boxplot_jitter = boxplot_jitter,
-    theme_use = theme_use,
-    theme_args = theme_args,
-    verbose = verbose,
-    y_label = "LISI",
-    empty_message = "No valid observations available for LISI boxplot"
   )
 }

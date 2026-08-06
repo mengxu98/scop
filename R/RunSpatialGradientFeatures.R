@@ -238,7 +238,18 @@ RunSpatialGradientFeatures <- function(
       )
     )
   } else {
-    sgf_require_spata2()
+    if (!isTRUE(tryCatch(
+      unname(unlist(check_r("theMILOlab/SPATA2", verbose = FALSE)))[1],
+      error = function(e) FALSE
+    ))) {
+      log_message(
+        paste(
+          "Please install SPATA2 before running spatial gradient screening.",
+          "Official installation uses devtools::install_github('theMILOlab/SPATA2')."
+        ),
+        message_type = "error"
+      )
+    }
     if (is.null(spata_object)) {
       resolved_image <- spatial_image_resolve(
         srt = srt,
@@ -630,32 +641,20 @@ SpatialGradientPlot <- function(
 }
 
 
-sgf_require_spata2 <- function() {
-  if (!sgf_spata2_available()) {
-    log_message(
-      paste(
-        "Please install SPATA2 before running spatial gradient screening.",
-        "Official installation uses devtools::install_github('theMILOlab/SPATA2')."
-      ),
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
-sgf_spata2_available <- function() {
-  status <- tryCatch(
-    check_r("theMILOlab/SPATA2", verbose = FALSE),
-    error = function(e) FALSE
-  )
-  isTRUE(unname(unlist(status))[1])
-}
-
 sgf_spata_fun <- function(fun, required = TRUE) {
   pkg <- "SPATA2"
-  if (!sgf_spata2_available()) {
+  if (!isTRUE(tryCatch(
+    unname(unlist(check_r("theMILOlab/SPATA2", verbose = FALSE)))[1],
+    error = function(e) FALSE
+  ))) {
     if (isTRUE(required)) {
-      sgf_require_spata2()
+      log_message(
+        paste(
+          "Please install SPATA2 before running spatial gradient screening.",
+          "Official installation uses devtools::install_github('theMILOlab/SPATA2')."
+        ),
+        message_type = "error"
+      )
     }
     return(NULL)
   }
@@ -1422,26 +1421,18 @@ sgf_store_result <- function(
     srt@tools[["SpatialGradientFeatures"]] <- list()
   }
   srt@tools[["SpatialGradientFeatures"]][[result_name]] <- result[expected]
-  source <- source %||% result$source %||% list()
-  source$assay <- assay
-  srt@tools[["SpatialGradientFeatures"]] <- spatial_result_build(
-    bundle = srt@tools[["SpatialGradientFeatures"]],
-    method = "SpatialGradientFeatures",
-    result_type = "feature_pattern",
-    source = source,
-    provenance = list(
-      producer = "RunSpatialGradientFeatures",
-      backend_id = if (identical(backend, "cpp")) "core" else "spata2"
-    ),
-    parameters = list(result_name = result_name, assay = assay, backend = backend),
-    summary = list(
-      active_result = result_name,
-      top_features = vars,
-      n_results = length(setdiff(
-        names(srt@tools[["SpatialGradientFeatures"]]),
-        c("method", "schema_version", "result_type", "source", "provenance", "parameters", "summary")
-      ))
-    )
+  srt@tools[["SpatialGradientFeatures"]]$parameters <- list(
+    result_name = result_name,
+    assay = assay,
+    backend = backend
+  )
+  srt@tools[["SpatialGradientFeatures"]]$summary <- list(
+    active_result = result_name,
+    top_features = vars,
+    n_results = length(setdiff(
+      names(srt@tools[["SpatialGradientFeatures"]]),
+      c("parameters", "summary")
+    ))
   )
   if (isTRUE(set_variable_features) && length(vars) > 0L) {
     SeuratObject::VariableFeatures(srt, assay = assay) <- vars
@@ -1457,10 +1448,7 @@ sgf_get_result <- function(srt, result_name = NULL) {
       message_type = "error"
     )
   }
-  metadata_names <- c(
-    "method", "schema_version", "result_type", "source", "provenance",
-    "parameters", "summary"
-  )
+  metadata_names <- c("parameters", "summary")
   result_names <- setdiff(names(all_results), metadata_names)
   if (is.null(result_name)) {
     result_name <- all_results$summary$active_result %||% result_names[length(result_names)]

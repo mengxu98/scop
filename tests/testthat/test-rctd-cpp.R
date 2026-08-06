@@ -1,3 +1,14 @@
+# Reference implementations kept only as test oracles for the C++ paths.
+rctd_nonzero_shared_features <- function(st_counts, ref_counts) {
+  st_counts <- methods::as(st_counts, "dgCMatrix")
+  ref_counts <- methods::as(ref_counts, "dgCMatrix")
+  quality <- rctd_sparse_quality_cpp(st_counts, ref_counts)
+  rownames(st_counts)[quality$keep_features]
+}
+rctd_normalize_weights <- function(weights) {
+  weights <- as.matrix(weights)
+  rctd_normalize_weights_cpp(weights)
+}
 test_that("RCTD sparse quality helper matches R sparse summaries", {
   st_dense <- matrix(
     c(
@@ -144,20 +155,29 @@ test_that("RCTD normalizes check_r list results without adding a backend helper"
 })
 
 test_that("spacexr API variants prefer new and accept complete legacy exports", {
-  spec <- spatial_backend_registry()[["spacexr"]]
-  expect_identical(
-    spatial_backend_required_symbols(spec, exports = spec$symbol_sets$new),
-    spec$symbol_sets$new
+  new_api <- c("createRctd", "runRctd")
+  legacy_api <- c("SpatialRNA", "Reference", "create.RCTD", "run.RCTD")
+  args <- list(
+    st_counts = matrix(1, 2, 2), coords = data.frame(x = 1:2, y = 1:2),
+    st_numi = 1:2, ref_counts = matrix(1, 2, 2), ref_labels = c("A", "B"),
+    ref_numi = 1:2, rctd_mode = "doublet", max_cores = 1,
+    create_rctd_params = list(), run_rctd_params = list()
   )
-  expect_identical(
-    spatial_backend_required_symbols(spec, exports = spec$symbol_sets$legacy),
-    spec$symbol_sets$legacy
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    rctd_require_namespaces = function(...) invisible(TRUE),
+    rctd_run_spacexr_new = function(...) "new_api",
+    rctd_run_spacexr_old = function(...) "old_api",
+    rctd_spacexr_exports = function() new_api
   )
-  expect_identical(
-    spatial_backend_required_symbols(
-      spec,
-      exports = c(spec$symbol_sets$new, spec$symbol_sets$legacy)
-    ),
-    spec$symbol_sets$new
+  expect_identical(do.call(rctd_run_spacexr, args), "new_api")
+
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    rctd_require_namespaces = function(...) invisible(TRUE),
+    rctd_run_spacexr_new = function(...) stop("new API must not run"),
+    rctd_run_spacexr_old = function(...) "old_api",
+    rctd_spacexr_exports = function() legacy_api
   )
+  expect_identical(do.call(rctd_run_spacexr, args), "old_api")
 })

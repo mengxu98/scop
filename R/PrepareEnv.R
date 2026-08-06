@@ -1147,57 +1147,6 @@ configure_python_runtime <- function(python_path) {
   invisible(TRUE)
 }
 
-set_python_env <- function(conda, envname, verbose = TRUE) {
-  Sys.unsetenv("RETICULATE_PYTHON")
-  options(reticulate.miniconda.enabled = FALSE)
-
-  configure_python_thread_env()
-
-  python_path <- conda_python(
-    conda = conda,
-    envname = envname
-  )
-
-  configure_python_runtime(python_path)
-
-  reticulate::use_python(
-    python_path,
-    required = TRUE
-  )
-
-  tryCatch(
-    {
-      reticulate::py_run_string(
-        "
-import os
-os.environ['OMP_NUM_THREADS'] = '1'
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-os.environ['MKL_NUM_THREADS'] = '1'
-os.environ['VECLIB_MAXIMUM_THREADS'] = '1'
-os.environ['NUMEXPR_NUM_THREADS'] = '1'
-os.environ['KMP_WARNINGS'] = '0'
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
-os.environ['NUMBA_NUM_THREADS'] = '1'
-try:
-    import numba
-    if hasattr(numba, 'set_num_threads'):
-        try:
-            numba.set_num_threads(1)
-        except RuntimeError:
-            pass
-    if hasattr(numba, 'config'):
-        numba.config.NUMBA_NUM_THREADS = 1
-except ImportError:
-    pass
-except Exception:
-    pass
-"
-      )
-    },
-    error = function(e) {}
-  )
-}
-
 ensure_scomm_runtime_support <- function(
   envname,
   conda,
@@ -2398,14 +2347,6 @@ conda_info_json <- function(conda = "auto") {
   NULL
 }
 
-conda_env_list_json <- function(conda = "auto") {
-  conda <- resolve_conda(conda)
-  if (is.null(conda)) {
-    return(NULL)
-  }
-  run_conda_json(conda, c("env", "list", "--json"))
-}
-
 conda_manager_type <- function(conda = "auto") {
   if (identical(conda, "auto")) {
     conda <- resolve_conda(conda)
@@ -2534,14 +2475,6 @@ conda_env_path <- function(
     return(existing[[1]])
   }
   paths[[1]]
-}
-
-infer_conda_envs_dir <- function(conda = "auto") {
-  envs_dir <- get_conda_envs_dir(conda = conda)
-  if (is.null(envs_dir)) {
-    return(NULL)
-  }
-  normalizePath(envs_dir, winslash = "/", mustWork = FALSE)
 }
 
 find_conda <- function() {

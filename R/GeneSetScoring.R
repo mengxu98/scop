@@ -110,16 +110,6 @@ gene_set_scoring_drop_invalid_score_sets <- function(scores) {
   scores[, keep, drop = FALSE]
 }
 
-gene_set_scoring_keep_variable_rows <- function(expr) {
-  if (inherits(expr, "dgCMatrix")) {
-    keep <- sparse_row_has_variable_finite(expr)
-    return(expr[keep, , drop = FALSE])
-  }
-  expr_mat <- as_matrix(expr)
-  keep <- dense_row_has_variable_finite(expr_mat)
-  expr[keep, , drop = FALSE]
-}
-
 gene_set_scoring_normalize_chunk_size <- function(
   chunk_size,
   n_genes = NULL,
@@ -813,18 +803,6 @@ orient_plage_scores <- function(scores, expr, gene_sets) {
   scores
 }
 
-run_metabolism_auc <- function(
-  expr_counts,
-  gene_sets,
-  strategy = c("sparse", "topk", "full")
-) {
-  run_aucell_scores(
-    expr_counts = expr_counts,
-    gene_sets = gene_sets,
-    strategy = strategy
-  )
-}
-
 run_vision_scores <- function(
   expr_counts,
   gene_sets,
@@ -883,6 +861,3 @@ run_vision_scores <- function(
 }
 
 run_metabolism_gene_set_indices <- gene_set_scoring_indices
-run_metabolism_require_namespace <- function(pkg, ...) {
-  check_r(pkg, verbose = FALSE)
-}

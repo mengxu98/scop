@@ -1,260 +1,71 @@
-#' @title List SCOP cell-cell communication methods
-#'
-#' @description
-#' Returns the CCC producers integrated with SCOP's Seurat result, scheduler,
-#' unified table, and plotting interfaces.
-#'
-#' @return A data frame describing registered CCC methods and capabilities.
-#' @export
-ListCCCMethods <- function() {
-  registry <- ccc_method_registry()
-  rows <- lapply(registry, function(x) {
-    data.frame(
-      method = x$method,
-      producer = x$producer,
-      default = isTRUE(x$default),
-      requirements = paste(x$required, collapse = ", "),
-      result_types = paste(
-        c(
-          "long", "pair", "primary", "raw",
-          if (identical(x$method, "LIANA")) "consensus",
-          if (isTRUE(x$native_result)) "native"
-        ),
-        collapse = ", "
-      ),
-      generic_plots = paste(x$generic_plots, collapse = ", "),
-      native_plots = paste(x$native_plots, collapse = ", "),
-      stringsAsFactors = FALSE
-    )
-  })
-  out <- do.call(rbind, rows)
-  rownames(out) <- NULL
-  out
-}
+# CCC method dispatch --------------------------------------------------------
 
-ccc_method_registry <- function() {
-  generic <- c(
-    "heatmap", "dot", "tile", "circle", "chord", "arrow",
-    "sigmoid", "bipartite", "embedding_network", "bar", "sankey",
-    "box", "violin"
+normalize_ccc_method <- function(method) {
+  alias_map <- c(
+    "CCC" = "CCC",
+    "CellPhoneDB" = "CellphoneDB",
+    "CellphoneDB" = "CellphoneDB",
+    "Liana" = "LIANA",
+    "liana" = "LIANA",
+    "NicheNet" = "Nichenetr",
+    "MultiNicheNet" = "MultiNichenetr",
+    "SpatialCellChat" = "SpatialCellChat",
+    "MDIC3" = "MDIC3"
   )
-  list(
-    CellChat = list(
-      method = "CellChat", producer = "RunCellChat", default = TRUE,
-      required = character(0), object_arg = "srt",
-      generic_plots = generic,
-      native_plots = c("pathway", "role", "ranknet", "diff_network"),
-      native_result = TRUE
-    ),
-    CellphoneDB = list(
-      method = "CellphoneDB", producer = "RunCellphoneDB", default = TRUE,
-      required = character(0), object_arg = "srt",
-      generic_plots = generic, native_plots = character(0)
-    ),
-    LIANA = list(
-      method = "LIANA", producer = "RunLIANA", default = TRUE,
-      required = character(0), object_arg = "srt",
-      generic_plots = generic, native_plots = c("consensus_rank")
-    ),
-    Nichenetr = list(
-      method = "Nichenetr", producer = "RunNichenetr", default = FALSE,
-      required = "receiver", object_arg = "srt",
-      generic_plots = generic,
-      native_plots = c("ligand_target", "ligand_activity", "gene")
-    ),
-    MultiNichenetr = list(
-      method = "MultiNichenetr", producer = "RunMultiNichenetr", default = FALSE,
-      required = c(
-        "sample.by", "condition.by", "condition_oi",
-        "condition_reference", "receiver_celltypes"
-      ),
-      object_arg = "srt", generic_plots = generic,
-      native_plots = c("ligand_target", "ligand_activity", "gene")
-    ),
-    SpatialCellChat = list(
-      method = "SpatialCellChat", producer = "RunSpatialCellChat", default = FALSE,
-      required = character(0), object_arg = "srt",
-      generic_plots = generic,
-      native_plots = c(
-        "spatial_network", "lr_spatial", "pathway", "incoming", "outgoing",
-        "diffusion"
-      ),
-      native_result = TRUE
-    ),
-    MDIC3 = list(
-      method = "MDIC3", producer = "RunMDIC3", default = FALSE,
-      required = "grn or grn_method", object_arg = "object",
-      generic_plots = generic, native_plots = character(0)
-    )
+  alias_map_lower <- c(
+    "ccc" = "CCC",
+    "unified" = "CCC",
+    "cellchat" = "CellChat",
+    "spatialcellchat" = "SpatialCellChat",
+    "spatial_cellchat" = "SpatialCellChat",
+    "spatial cellchat" = "SpatialCellChat",
+    "cellphonedb" = "CellphoneDB",
+    "cellphone_db" = "CellphoneDB",
+    "cellphone db" = "CellphoneDB",
+    "liana" = "LIANA",
+    "nichenet" = "Nichenetr",
+    "nichenetr" = "Nichenetr",
+    "multinichenet" = "MultiNichenetr",
+    "multinichenetr" = "MultiNichenetr",
+    "mdic3" = "MDIC3"
   )
-}
-
-ccc_registry_entry <- function(method) {
-  method <- normalize_ccc_method(method)
-  entry <- ccc_method_registry()[[method]]
-  if (is.null(entry)) {
+  method_chr <- as.character(method)[1]
+  if (is.na(method_chr) || !nzchar(method_chr)) {
     log_message(
-      "Unsupported CCC method {.val {method}}. Use {.fn ListCCCMethods} to inspect registered methods.",
+      "{.arg method} must be a non-empty string or NULL to auto-detect",
       message_type = "error"
     )
   }
-  entry
+  method_chr <- trimws(method_chr)
+  if (method_chr %in% names(alias_map)) {
+    return(unname(alias_map[[method_chr]]))
+  }
+  key <- tolower(method_chr)
+  if (key %in% names(alias_map_lower)) {
+    return(unname(alias_map_lower[[key]]))
+  }
+  method_chr
 }
 
-#' @title Inspect CCC results stored in a Seurat object
-#'
-#' @param srt A Seurat object.
-#'
-#' @return A data frame with one row per registered CCC method.
-#' @export
-CCCResultInfo <- function(srt) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
-  run_status <- srt@tools[["RunCCC"]]$status %||% data.frame()
-  unified_methods <- ccc_unified_methods(srt)
-  has_unified <- !is.null(srt@tools[["CCC"]])
-  rows <- lapply(ccc_method_registry(), function(entry) {
-    bundle <- srt@tools[[entry$method]]
-    status <- if (is.null(bundle)) {
-      "absent"
-    } else if (
-      is.data.frame(bundle$primary_table %||% bundle$long_table) &&
-        nrow(bundle$primary_table %||% bundle$long_table) > 0L
-    ) {
-      "completed"
-    } else {
-      "incomplete"
-    }
-    if (
-      !identical(status, "completed") &&
-        nrow(run_status) > 0L && entry$method %in% run_status$method
-    ) {
-      run_value <- run_status$status[match(entry$method, run_status$method)]
-      if (!is.na(run_value) && nzchar(run_value)) status <- run_value
-    }
-    if (
-      identical(status, "completed") && has_unified &&
-        !entry$method %in% unified_methods
-    ) {
-      status <- "stale"
-    }
-    data.frame(
-      method = entry$method,
-      status = status,
-      rows = if (is.null(bundle)) 0L else nrow(bundle$primary_table %||% bundle$long_table %||% data.frame()),
-      schema = as.character(bundle$metadata$schema %||% NA_character_),
-      stringsAsFactors = FALSE
-    )
-  })
-  out <- do.call(rbind, rows)
-  rownames(out) <- NULL
-  out
-}
-
-#' @title Get a standardized or native CCC result
-#'
-#' @param srt A Seurat object.
-#' @param method A registered CCC method.
-#' @param type Result representation.
-#' @param resource Optional LIANA resource when retrieving a consensus.
-#' @param condition Stored CellChat or SpatialCellChat result name when
-#' retrieving a native object.
-#' @param sample Stored SpatialCellChat sample when retrieving a native object.
-#'
-#' @return The requested stored result.
-#' @export
-GetCCCResult <- function(
-  srt,
-  method,
-  type = c("primary", "long", "pair", "consensus", "raw", "native"),
-  resource = NULL,
-  condition = NULL,
-  sample = NULL
-) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
+ccc_method_runner <- function(method) {
   method <- normalize_ccc_method(method)
-  type <- match.arg(type)
-  bundle <- get_bundle(srt, method)
-  semantic_method <- if (identical(method, "CCC")) NULL else method
-  if (
-    identical(method, "CellChat") && type %in% c("primary", "long", "pair")
-  ) {
-    cellchat_long <- bundle$primary_table %||% bundle$long_table
-    if (!is.data.frame(cellchat_long) || nrow(cellchat_long) == 0L) {
-      cellchat_long <- ccc_build_cellchat_long_table(srt)
-    }
-    if (identical(type, "pair")) {
-      return(bundle$pair_table %||% aggregate_ccc_long(cellchat_long))
-    }
-    return(ccc_semantic_long_table(cellchat_long, method = method))
-  }
-  out <- switch(type,
-    primary = ccc_semantic_long_table(
-      bundle$primary_table %||% bundle$long_table,
-      method = semantic_method
-    ),
-    long = ccc_semantic_long_table(bundle$long_table, method = semantic_method),
-    pair = {
-      pair_table <- bundle$primary_pair_table %||% bundle$pair_table
-      if (is.null(pair_table)) {
-        long_table <- bundle$primary_table %||% bundle$long_table
-        if (is.data.frame(long_table)) {
-          pair_table <- aggregate_ccc_long(long_table, backend = "r")
-        }
-      }
-      pair_table
-    },
-    consensus = {
-      if (!is.null(resource)) {
-        bundle$consensus_by_resource[[resource]]
-      } else {
-        bundle$consensus_table
-      }
-    },
-    raw = {
-      raw_result <- bundle$results %||% bundle$raw_result %||% bundle$raw
-      if (is.null(raw_result) && identical(method, "MDIC3")) {
-        raw_fields <- intersect(
-          c(
-            "mdic3_matrix", "cellular_communication",
-            "cellular_communication_log", "celltype_communication_raw",
-            "celltype_communication"
-          ),
-          names(bundle)
-        )
-        if (length(raw_fields) > 0L) raw_result <- bundle[raw_fields]
-      }
-      raw_result
-    },
-    native = {
-      if (identical(method, "CellChat")) {
-        GetCCCObject(
-          object = srt,
-          method = "CellChat",
-          result.name = condition
-        )
-      } else if (identical(method, "SpatialCellChat")) {
-        GetCCCObject(
-          object = srt,
-          method = "SpatialCellChat",
-          result.name = condition,
-          sample = sample
-        )
-      } else {
-        bundle$native_object %||% bundle$cellchat_object
-      }
-    }
+  switch(method,
+    CellChat = RunCellChat,
+    CellphoneDB = RunCellphoneDB,
+    LIANA = RunLIANA,
+    Nichenetr = RunNichenetr,
+    MultiNichenetr = RunMultiNichenetr,
+    SpatialCellChat = RunSpatialCellChat,
+    MDIC3 = RunMDIC3,
+    ccc_unsupported_method(method)
   )
-  if (is.null(out)) {
-    log_message(
-      "Result type {.val {type}} is not available for {.val {method}}",
-      message_type = "error"
-    )
-  }
-  out
+}
+
+ccc_unsupported_method <- function(method) {
+  log_message(
+    "Unsupported CCC method {.val {method}}",
+    message_type = "error"
+  )
 }
 
 ccc_semantic_long_table <- function(df, method = NULL) {

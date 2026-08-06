@@ -61,9 +61,6 @@ local_mock_spatialcellchat_backend <- function(fail = FALSE) {
     spatialcellchat_extract_table = function(chat, sample, analysis.level, do.permutation) {
       mock_spatialcellchat_table(sample, analysis.level)
     },
-    spatialcellchat_remote_info = function() {
-      list(package_version = "0.1.0", remote_sha = "abc123", remote_repo = "jinworks/SpatialCellChat")
-    },
     .package = "scop",
     .env = parent.frame()
   )
@@ -95,7 +92,6 @@ test_that("coordinate conversion is explicit and micron based", {
     "explicit positive"
   )
 })
-
 test_that("strict auto detection refuses ambiguous generic data", {
   srt <- make_spatialcellchat_test_object()
   expect_error(
@@ -329,12 +325,9 @@ test_that("RunSpatialCellChat stores truthful schema and unified CCC rows", {
     backend = "r",
     verbose = FALSE
   )
-  expect_identical(out@tools$SpatialCellChat$schema_version, 1L)
-  expect_identical(out@tools$SpatialCellChat$provenance$backend_id, "spatialcellchat")
-  expect_identical(out@tools$SpatialCellChat$provenance$remote_sha, "abc123")
-  expect_identical(out@tools$SpatialCellChat$source$analysis_unit, "micron")
-  expect_equal(out@tools$SpatialCellChat$source$samples$ALL$interaction_range_um, 250)
-  expect_equal(out@tools$SpatialCellChat$source$samples$ALL$scale_distance, 0.2)
+  expect_identical(out@tools$SpatialCellChat$active_result, "default")
+  expect_equal(out@tools$SpatialCellChat$parameters$interaction.range, 250)
+  expect_equal(out@tools$SpatialCellChat$parameters$scale.distance, 0.2)
   expect_null(out@tools$SpatialCellChat$results$default$ALL$native_object)
   stored_coords <- out@tools$SpatialCellChat$results$default$ALL$coordinates
   expect_true(all(c(
@@ -344,8 +337,7 @@ test_that("RunSpatialCellChat stores truthful schema and unified CCC rows", {
   spatial_rows <- out@tools$CCC$long_table$method == "SpatialCellChat"
   expect_true(any(spatial_rows))
   expect_true(all(out@tools$CCC$long_table$spatially_constrained[spatial_rows]))
-  expect_identical(GetSpatialResult(out, method = "RunSpatialCellChat")$method, "SpatialCellChat")
-  expect_identical(SpatialResultInfo(out)$plot_function, "SpatialCellChatPlot")
+  expect_identical(out@tools$SpatialCellChat$long_table$method, rep("SpatialCellChat", 2))
   expect_error(GetCCCObject(out, method = "SpatialCellChat"), "not stored")
   expect_s3_class(SpatialCellChatPlot(out, plot_type = "incoming"), "ggplot")
   expect_s3_class(SpatialCellChatPlot(out, plot_type = "spatial_network"), "ggplot")
@@ -427,7 +419,7 @@ test_that("CellChat and SpatialCellChat rows coexist without method theft", {
     method = "CCC",
     methods = "CellChat",
     long_table = cellchat,
-    metadata = list(schema = "scop_ccc_unified_v1")
+    metadata = list()
   )
   out <- RunSpatialCellChat(
     srt,
@@ -534,11 +526,4 @@ test_that("full storage exposes native objects and protects result names", {
     ),
     "already exists"
   )
-})
-
-test_that("SpatialCellChat is discoverable through the spatial registries", {
-  methods <- ListSpatialMethods(pattern = "SpatialCellChat")
-  expect_true(all(c("RunSpatialCellChat", "SpatialCellChatPlot") %in% methods$method))
-  backend <- SpatialBackendStatus(backend = "spatialcellchat", api_check = FALSE, refresh = TRUE)
-  expect_identical(backend$repository, "jinworks/SpatialCellChat")
 })

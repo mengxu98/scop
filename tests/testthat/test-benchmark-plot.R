@@ -45,7 +45,7 @@ test_that("BenchmarkPlot selects publication benchmark views", {
   expect_s3_class(BenchmarkPlot(data = result, plot_type = "efficiency"), "ggplot")
   expect_s3_class(BenchmarkPlot(data = result, plot_type = "heatmap"), "ggplot")
   expect_s3_class(BenchmarkPlot(data = result), "patchwork")
-  expect_s3_class(plot(result), "patchwork")
+  expect_s3_class(BenchmarkPlot(data = result, plot_type = "overview"), "patchwork")
 })
 
 test_that("quality ordering and automatic log scales are explicit", {
@@ -71,15 +71,6 @@ test_that("quality view uses score tracks and explicit direction", {
   expect_true(any(vapply(quality$layers, function(layer) {
     inherits(layer$geom, "GeomSegment")
   }, logical(1))))
-})
-
-test_that("legacy benchmark tiers are visible without changing method identity", {
-  result <- make_benchmark_plot_result(rep("success", 3))
-  result$summary$tier <- c("stable", "stable", "legacy")
-  labels <- benchmark_plot_method_labels(result, result$summary$method)
-  expect_identical(labels[[1]], "BayesSpace")
-  expect_match(labels[[3]], "\\[legacy\\]")
-  expect_no_error(ggplot2::ggplot_build(BenchmarkPlot(data = result, plot_type = "quality")))
 })
 
 test_that("heatmap normalization respects metric direction", {

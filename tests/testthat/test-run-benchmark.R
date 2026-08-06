@@ -14,15 +14,15 @@ make_benchmark_seurat <- function() {
 
 mock_benchmark_runs <- function(code) {
   testthat::local_mocked_bindings(
-    benchmark_method_availability = function(adapter) {
+    benchmark_method_availability = function(method) {
       list(status = "available", detail = "available", versions = c(mock = "1.0"))
     },
     benchmark_package_context = function() list(source_path = NULL, libpath = .libPaths()),
-    benchmark_run_isolated = function(input_path, run_dir, adapter, params, seed, keep_object,
+    benchmark_run_isolated = function(input_path, run_dir, method, params, seed, keep_object,
                                       timeout, poll_interval, package_context) {
       object <- readRDS(input_path)
       truth <- object$gold
-      prediction <- switch(adapter$method,
+      prediction <- switch(method,
         BayesSpace = c("1", "1", "2", "2", "3", "3"),
         BANKSY = c("x", "x", "y", "y", "z", NA_character_),
         SmoothClust = c("1", "2", "1", "2", "1", "2")
@@ -31,25 +31,26 @@ mock_benchmark_runs <- function(code) {
       list(
         status = "success", error = "", prediction = prediction,
         object = if (keep_object) object else NULL,
-        runtime_s = switch(adapter$method,
+        runtime_s = switch(method,
           BayesSpace = 2,
           BANKSY = 1,
           SmoothClust = 4
         ),
         baseline_memory_mb = 100,
-        peak_memory_mb = switch(adapter$method,
+        peak_memory_mb = switch(method,
           BayesSpace = 250,
           BANKSY = 150,
           SmoothClust = 500
         ),
-        memory_delta_mb = switch(adapter$method,
+        memory_delta_mb = switch(method,
           BayesSpace = 150,
           BANKSY = 50,
           SmoothClust = 400
         ),
         started_at = Sys.time(), finished_at = Sys.time(),
         parameters = params,
-        cluster_colname = params$cluster_colname %||% adapter$cluster_colname,
+        cluster_colname = params$cluster_colname %||%
+          paste0(method, "_cluster"),
         backend_versions = c(mock = "1.0"),
         memory_method = "sampled process-tree RSS",
         poll_interval = poll_interval
@@ -59,75 +60,58 @@ mock_benchmark_runs <- function(code) {
   force(code)
 }
 
-test_that("benchmark adapters cover every stable spatial domain producer", {
-  stable <- spatial_method_registry()
-  stable <- stable$method[
-    stable$task == "domain" & stable$kind == "analysis" & stable$status == "stable"
-  ]
-  adapters <- benchmark_adapter_registry()
-  defaults <- benchmark_resolve_adapters()
-  expect_setequal(vapply(defaults, `[[`, character(1), "function_name"), stable)
-  expect_true(all(stable %in% vapply(adapters, `[[`, character(1), "function_name")))
-  expect_identical(benchmark_resolve_adapters("all")$GiottoCluster$tier, "legacy")
+test_that("benchmark methods resolve by alias and stable defaults", {
+  expect_identical(
+    benchmark_resolve_methods(),
+    c("BayesSpace", "BANKSY", "SmoothClust")
+  )
+  expect_identical(
+    benchmark_resolve_methods(c("runbayesspace", "Banksy", "smoothclust")),
+    c("BayesSpace", "BANKSY", "SmoothClust")
+  )
+  expect_error(benchmark_resolve_methods("unknown"), "Unknown benchmark methods")
 })
 
 test_that("method aliases and cluster-count parameters resolve deterministically", {
-  adapters <- benchmark_resolve_adapters(c("runbayesspace", "Banksy", "smoothclust"))
-  expect_named(adapters, c("BayesSpace", "BANKSY", "SmoothClust"))
-
-  params <- benchmark_resolve_method_params(
+  methods <- c("BayesSpace", "BANKSY", "SmoothClust")
+  params <- benchmark_normalize_method_params(
     list(runbayesspace = list(q = 4), banksy = list(resolution = 0.4)),
-    adapters
+    methods
   )
   expect_identical(params$BayesSpace$q, 4)
   expect_identical(params$BANKSY$resolution, 0.4)
-  expect_identical(benchmark_complete_method_params(adapters$BayesSpace, list(), 3, 17)$q, 3L)
-  expect_identical(benchmark_complete_method_params(adapters$SmoothClust, list(), 3, 17)$n_clusters, 3L)
-  expect_identical(benchmark_complete_method_params(adapters$SmoothClust, list(), 3, 17)$seed, 17L)
-  expect_identical(benchmark_complete_method_params(adapters$BANKSY, list(), 3, 17)$seed, 17L)
-  expect_identical(benchmark_complete_method_params(adapters$BANKSY, list(seed = 9), 3, 17)$seed, 9)
-  expect_false("n_clusters" %in% names(benchmark_complete_method_params(adapters$BANKSY, list(), 3, 17)))
+  expect_identical(benchmark_complete_method_params("BayesSpace", list(), 3, 17)$q, 3L)
+  expect_identical(benchmark_complete_method_params("SmoothClust", list(), 3, 17)$n_clusters, 3L)
+  expect_identical(benchmark_complete_method_params("SmoothClust", list(), 3, 17)$seed, 17L)
+  expect_identical(benchmark_complete_method_params("BANKSY", list(), 3, 17)$seed, 17L)
+  expect_identical(benchmark_complete_method_params("BANKSY", list(seed = 9), 3, 17)$seed, 9)
+  expect_false("n_clusters" %in% names(benchmark_complete_method_params("BANKSY", list(), 3, 17)))
 
-  expect_error(benchmark_resolve_adapters("unknown"), "Unknown benchmark methods")
-  expect_named(benchmark_resolve_adapters("Giotto"), "GiottoCluster")
-  expect_error(benchmark_resolve_adapters(c("all", "BANKSY")), "cannot be combined")
   expect_error(
-    benchmark_resolve_method_params(list(BayesSpace = list(), RunBayesSpace = list()), adapters),
+    benchmark_normalize_method_params(
+      list(BayesSpace = list(), RunBayesSpace = list()), methods
+    ),
     "duplicated method aliases"
   )
   duplicated_params <- list(1, 2)
   names(duplicated_params) <- c("q", "q")
   expect_error(
-    benchmark_resolve_method_params(list(BayesSpace = duplicated_params), adapters),
+    benchmark_normalize_method_params(
+      list(BayesSpace = duplicated_params), methods
+    ),
     "uniquely named list"
   )
-})
-
-test_that("Giotto legacy adapter validates and aligns standalone cluster output", {
-  object <- make_benchmark_seurat()
-  adapter <- benchmark_adapter_registry()$GiottoCluster
-  giotto <- structure(
-    list(clusters = data.frame(
-      cluster = c("C", "A", "B", "A", "C", "B"),
-      row.names = rev(colnames(object)),
-      stringsAsFactors = FALSE
-    )),
-    class = c("giotto2_cluster", "giotto2_result", "list")
-  )
-  testthat::local_mocked_bindings(
-    RunGiottoCluster = function(srt, ...) giotto
-  )
-  out <- benchmark_execute_adapter(object, adapter, list())
-  expect_identical(names(out$prediction), colnames(object))
-  expect_identical(unname(out$prediction), c("B", "C", "A", "B", "A", "C"))
-  expect_identical(out$cluster_colname, "Giotto_cluster")
 })
 
 test_that("all-unavailable dry runs do not require subprocess dependencies", {
   object <- make_benchmark_seurat()
   testthat::local_mocked_bindings(
-    benchmark_method_availability = function(adapter) {
-      list(status = "missing", detail = paste0(adapter$backend_id, "=missing"), versions = character())
+    benchmark_method_availability = function(method) {
+      list(
+        status = "missing",
+        detail = paste0(tolower(method), "=missing"),
+        versions = character()
+      )
     },
     benchmark_require_runtime = function() stop("runtime must not be checked"),
     benchmark_package_context = function() stop("package context must not be resolved")
@@ -140,14 +124,13 @@ test_that("all-unavailable dry runs do not require subprocess dependencies", {
   expect_equal(length(result$objects), 0L)
   expect_s3_class(BenchmarkPlot(data = result), "patchwork")
   expect_no_error(patchwork::patchworkGrob(BenchmarkPlot(data = result)))
-  expect_silent(as.data.frame(result))
-  expect_output(print(result), "unavailable=3")
+  expect_true(is.data.frame(result$summary))
 })
 
 test_that("availability diagnostic errors remain method-local and truthful", {
   object <- make_benchmark_seurat()
   testthat::local_mocked_bindings(
-    benchmark_method_availability = function(adapter) stop("registry diagnostic broke"),
+    benchmark_method_availability = function(method) stop("availability diagnostic broke"),
     benchmark_require_runtime = function() stop("runtime must not be checked")
   )
   result <- RunBenchmark(object, "gold", methods = c("BayesSpace", "BANKSY"), verbose = FALSE)
@@ -156,11 +139,10 @@ test_that("availability diagnostic errors remain method-local and truthful", {
 })
 
 test_that("malformed availability diagnostics are treated as unavailable", {
-  adapter <- benchmark_adapter_registry()$BayesSpace
   testthat::local_mocked_bindings(
-    benchmark_method_availability = function(adapter) list(status = NULL)
+    benchmark_method_availability = function(method) list(status = NULL)
   )
-  availability <- benchmark_method_availability_safe(adapter)
+  availability <- benchmark_method_availability_safe("BayesSpace")
   expect_identical(availability$status, "diagnostic_error")
   expect_match(availability$detail, "invalid result")
 })
@@ -169,18 +151,18 @@ test_that("install_missing enters the producer path instead of pretending unavai
   object <- make_benchmark_seurat()
   runtime_checks <- 0L
   testthat::local_mocked_bindings(
-    benchmark_method_availability = function(adapter) {
+    benchmark_method_availability = function(method) {
       list(status = "missing", detail = "backend missing", versions = character())
     },
     benchmark_require_runtime = function() {
       runtime_checks <<- runtime_checks + 1L
       invisible(TRUE)
     },
-    benchmark_run_isolated = function(input_path, run_dir, adapter, params, seed, keep_object,
+    benchmark_run_isolated = function(input_path, run_dir, method, params, seed, keep_object,
                                       timeout, poll_interval, package_context) {
       benchmark_failed_isolated_result(
         status = "failed", error = "producer installation failed",
-        adapter = adapter, params = params, started_at = Sys.time(),
+        method = method, params = params, started_at = Sys.time(),
         poll_interval = poll_interval
       )
     }
@@ -198,14 +180,14 @@ test_that("install_missing enters the producer path instead of pretending unavai
 test_that("malformed predictions fail one method without aborting the batch", {
   object <- make_benchmark_seurat()
   testthat::local_mocked_bindings(
-    benchmark_method_availability = function(adapter) {
+    benchmark_method_availability = function(method) {
       list(status = "available", detail = "available", versions = character())
     },
     benchmark_package_context = function() list(source_path = NULL, libpath = .libPaths()),
-    benchmark_run_isolated = function(input_path, run_dir, adapter, params, seed, keep_object,
+    benchmark_run_isolated = function(input_path, run_dir, method, params, seed, keep_object,
                                       timeout, poll_interval, package_context) {
       object <- readRDS(input_path)
-      prediction <- if (adapter$method == "BayesSpace") {
+      prediction <- if (method == "BayesSpace") {
         unname(as.character(object$gold))
       } else {
         stats::setNames(as.character(object$gold), colnames(object))
@@ -214,7 +196,8 @@ test_that("malformed predictions fail one method without aborting the batch", {
         status = "success", error = "", prediction = prediction, object = NULL,
         runtime_s = 0.1, baseline_memory_mb = 50, peak_memory_mb = 60,
         memory_delta_mb = 10, started_at = Sys.time(), finished_at = Sys.time(),
-        parameters = params, cluster_colname = adapter$cluster_colname,
+        parameters = params,
+        cluster_colname = paste0(method, "_cluster"),
         backend_versions = character(), memory_method = "sampled process-tree RSS",
         poll_interval = poll_interval
       )
@@ -296,7 +279,7 @@ test_that("RunBenchmark aligns spots and retains metrics and resource measuremen
   expect_equal(result$summary$peak_memory_mb, c(250, 150))
   expect_identical(result$predictions$spot_id[1:6], colnames(object))
   expect_named(result$objects, c("BayesSpace", "BANKSY"))
-  expect_s3_class(as.data.frame(result), "data.frame")
+  expect_true(is.data.frame(result$summary))
   expect_setequal(unique(result$metrics$direction), c("higher", "lower"))
   expect_true(all(c("parameters", "backend_versions", "cluster_colname") %in% names(result$runs)))
   expect_identical(result$runs$parameters[[2]]$seed, 1L)
@@ -333,17 +316,21 @@ test_that("custom producer result keys are recorded truthfully", {
 })
 
 test_that("invalid backend-specific names cannot corrupt benchmark bookkeeping", {
-  adapter <- benchmark_adapter_registry()$BANKSY
   failed <- benchmark_failed_isolated_result(
     status = "failed", error = "producer rejected arguments",
-    adapter = adapter,
+    method = "BANKSY",
     params = list(cluster_colname = c("a", "b"), tool_name = c("x", "y")),
     started_at = Sys.time(), poll_interval = 0.1
   )
-  expect_identical(failed$cluster_colname, adapter$cluster_colname)
   expect_identical(
-    benchmark_param_string(failed$parameters, "tool_name", adapter$tool_key),
-    adapter$tool_key
+    failed$cluster_colname,
+    "BANKSY_cluster"
+  )
+  expect_identical(
+    benchmark_param_string(
+      failed$parameters, "tool_name", "BANKSY"
+    ),
+    "BANKSY"
   )
 })
 
@@ -360,21 +347,22 @@ test_that("gold-standard vectors require exact unique spot identifiers", {
 test_that("failed and unavailable methods do not receive pseudo metrics", {
   object <- make_benchmark_seurat()
   testthat::local_mocked_bindings(
-    benchmark_method_availability = function(adapter) {
-      if (adapter$method == "BANKSY") {
+    benchmark_method_availability = function(method) {
+      if (method == "BANKSY") {
         list(status = "missing", detail = "banksy=missing", versions = character())
       } else {
         list(status = "available", detail = "available", versions = character())
       }
     },
     benchmark_package_context = function() list(source_path = NULL, libpath = .libPaths()),
-    benchmark_run_isolated = function(input_path, run_dir, adapter, params, seed, keep_object,
+    benchmark_run_isolated = function(input_path, run_dir, method, params, seed, keep_object,
                                       timeout, poll_interval, package_context) {
       list(
         status = "failed", error = "backend error", prediction = NULL, object = NULL,
         runtime_s = NA_real_, baseline_memory_mb = 80, peak_memory_mb = 90,
         memory_delta_mb = 10, started_at = Sys.time(), finished_at = Sys.time(),
-        parameters = params, cluster_colname = adapter$cluster_colname,
+        parameters = params,
+        cluster_colname = paste0(method, "_cluster"),
         backend_versions = character(), memory_method = "sampled process-tree RSS",
         poll_interval = poll_interval
       )
@@ -393,16 +381,16 @@ test_that("failed and unavailable methods do not receive pseudo metrics", {
 test_that("timeout status remains method-local in a mixed batch", {
   object <- make_benchmark_seurat()
   testthat::local_mocked_bindings(
-    benchmark_method_availability = function(adapter) {
+    benchmark_method_availability = function(method) {
       list(status = "available", detail = "available", versions = character())
     },
     benchmark_package_context = function() list(source_path = NULL, libpath = .libPaths()),
-    benchmark_run_isolated = function(input_path, run_dir, adapter, params, seed, keep_object,
+    benchmark_run_isolated = function(input_path, run_dir, method, params, seed, keep_object,
                                       timeout, poll_interval, package_context) {
-      if (adapter$method == "BayesSpace") {
+      if (method == "BayesSpace") {
         return(benchmark_failed_isolated_result(
           status = "timeout", error = "method exceeded timeout",
-          adapter = adapter, params = params, started_at = Sys.time(),
+          method = method, params = params, started_at = Sys.time(),
           poll_interval = poll_interval
         ))
       }
@@ -413,7 +401,8 @@ test_that("timeout status remains method-local in a mixed batch", {
         object = NULL, runtime_s = 0.1, baseline_memory_mb = 50,
         peak_memory_mb = 60, memory_delta_mb = 10,
         started_at = Sys.time(), finished_at = Sys.time(), parameters = params,
-        cluster_colname = adapter$cluster_colname, backend_versions = character(),
+        cluster_colname = paste0(method, "_cluster"),
+        backend_versions = character(),
         memory_method = "sampled process-tree RSS", poll_interval = poll_interval
       )
     }
@@ -428,34 +417,33 @@ test_that("timeout status remains method-local in a mixed batch", {
   expect_identical(unique(result$predictions$method), "BANKSY")
 })
 
-test_that("adapter execution requires exact spot identity and expected output", {
+test_that("method execution requires exact spot identity and expected output", {
   object <- make_benchmark_seurat()
-  adapter <- benchmark_adapter_registry()$SmoothClust
   valid <- object[, rev(colnames(object))]
   valid$SmoothClust_cluster <- rev(c("1", "1", "2", "2", "3", "3"))
   testthat::local_mocked_bindings(
     RunSmoothClust = function(srt, ...) valid
   )
-  aligned <- benchmark_execute_adapter(object, adapter, list())
+  aligned <- benchmark_execute_method(object, "SmoothClust", list())
   expect_identical(names(aligned$prediction), colnames(object))
 
   testthat::local_mocked_bindings(
     RunSmoothClust = function(srt, ...) "not Seurat"
   )
-  expect_error(benchmark_execute_adapter(object, adapter, list()), "did not return a Seurat")
+  expect_error(benchmark_execute_method(object, "SmoothClust", list()), "did not return a Seurat")
 
   missing_column <- object
   testthat::local_mocked_bindings(
     RunSmoothClust = function(srt, ...) missing_column
   )
-  expect_error(benchmark_execute_adapter(object, adapter, list()), "did not create cluster column")
+  expect_error(benchmark_execute_method(object, "SmoothClust", list()), "did not create cluster column")
 
   missing_spot <- object[, -1]
   missing_spot$SmoothClust_cluster <- "1"
   testthat::local_mocked_bindings(
     RunSmoothClust = function(srt, ...) missing_spot
   )
-  expect_error(benchmark_execute_adapter(object, adapter, list()), "non-identical set")
+  expect_error(benchmark_execute_method(object, "SmoothClust", list()), "non-identical set")
 })
 
 test_that("process-tree RSS is measured and supervised children are terminated", {
@@ -469,7 +457,7 @@ test_that("process-tree RSS is measured and supervised children are terminated",
 
 benchmark_test_child <- function(
   input_path, result_path, ready_path, go_path, done_path,
-  adapter, params, seed, keep_object, source_path
+  method, params, seed, keep_object, source_path
 ) {
   object <- readRDS(input_path)
   file.create(ready_path)
@@ -481,7 +469,7 @@ benchmark_test_child <- function(
     ok = TRUE, error = "",
     prediction = stats::setNames(as.character(object$gold), colnames(object)),
     object = NULL, runtime_s = params$sleep,
-    cluster_colname = adapter$cluster_colname
+    cluster_colname = "SmoothClust_cluster"
   )
   file.create(done_path)
   saveRDS(result, result_path, compress = FALSE)
@@ -489,7 +477,7 @@ benchmark_test_child <- function(
 
 benchmark_invalid_child <- function(
   input_path, result_path, ready_path, go_path, done_path,
-  adapter, params, seed, keep_object, source_path
+  method, params, seed, keep_object, source_path
 ) {
   file.create(ready_path)
   while (!file.exists(go_path)) Sys.sleep(0.01)
@@ -499,7 +487,7 @@ benchmark_invalid_child <- function(
 
 benchmark_corrupt_child <- function(
   input_path, result_path, ready_path, go_path, done_path,
-  adapter, params, seed, keep_object, source_path
+  method, params, seed, keep_object, source_path
 ) {
   file.create(ready_path)
   while (!file.exists(go_path)) Sys.sleep(0.01)
@@ -509,7 +497,7 @@ benchmark_corrupt_child <- function(
 
 benchmark_crash_child <- function(
   input_path, result_path, ready_path, go_path, done_path,
-  adapter, params, seed, keep_object, source_path
+  method, params, seed, keep_object, source_path
 ) {
   stop("child crashed before ready")
 }
@@ -518,12 +506,11 @@ test_that("isolated monitor records runtime memory and timeout status", {
   object <- make_benchmark_seurat()
   input_path <- tempfile(fileext = ".rds")
   saveRDS(object, input_path)
-  adapter <- benchmark_adapter_registry()$SmoothClust
   context <- list(source_path = NULL, libpath = .libPaths())
   success_dir <- tempfile("benchmark-success-")
   dir.create(success_dir)
   success <- benchmark_run_isolated(
-    input_path, success_dir, adapter,
+    input_path, success_dir, "SmoothClust",
     params = list(allocate = 3e6, sleep = 0.25), seed = 1,
     keep_object = FALSE, timeout = 5, poll_interval = 0.02,
     package_context = context, child_entry = benchmark_test_child
@@ -536,7 +523,7 @@ test_that("isolated monitor records runtime memory and timeout status", {
   timeout_dir <- tempfile("benchmark-timeout-")
   dir.create(timeout_dir)
   timed <- benchmark_run_isolated(
-    input_path, timeout_dir, adapter,
+    input_path, timeout_dir, "SmoothClust",
     params = list(allocate = 1, sleep = 30), seed = 1,
     keep_object = FALSE, timeout = 0.2, poll_interval = 0.02,
     package_context = context, child_entry = benchmark_test_child
@@ -548,7 +535,6 @@ test_that("invalid corrupt and crashed child results become failed runs", {
   object <- make_benchmark_seurat()
   input_path <- tempfile(fileext = ".rds")
   saveRDS(object, input_path)
-  adapter <- benchmark_adapter_registry()$SmoothClust
   context <- list(source_path = NULL, libpath = .libPaths())
   children <- list(
     invalid = benchmark_invalid_child,
@@ -559,7 +545,7 @@ test_that("invalid corrupt and crashed child results become failed runs", {
     run_dir <- tempfile(paste0("benchmark-", name, "-"))
     dir.create(run_dir)
     benchmark_run_isolated(
-      input_path, run_dir, adapter,
+      input_path, run_dir, "SmoothClust",
       params = list(), seed = 1, keep_object = FALSE,
       timeout = 5, poll_interval = 0.02, package_context = context,
       child_entry = children[[name]]
@@ -571,35 +557,43 @@ test_that("invalid corrupt and crashed child results become failed runs", {
   expect_match(results[[3]]$error, "child crashed before ready")
 })
 
-test_that("real child error handling resolves internal helpers from the namespace", {
+test_that("child error paths keep messages clean and defaults intact", {
   object <- make_benchmark_seurat()
   input_path <- tempfile(fileext = ".rds")
   saveRDS(object, input_path)
-  adapter <- list(
-    method = "MissingProducer",
-    function_name = "RunProducerThatDoesNotExist",
-    backend_id = "core",
-    cluster_colname = "missing_cluster"
-  )
-  run_dir <- tempfile("benchmark-real-child-error-")
+  run_dir <- tempfile("benchmark-child-error-")
   dir.create(run_dir)
   result <- benchmark_run_isolated(
-    input_path, run_dir, adapter,
-    params = list(), seed = 1, keep_object = FALSE,
+    input_path, run_dir, "SmoothClust",
+    params = list(cluster_colname = "bad"), seed = 1, keep_object = FALSE,
     timeout = 120, poll_interval = 0.05,
-    package_context = benchmark_package_context()
+    package_context = list(source_path = NULL, libpath = .libPaths()),
+    child_entry = function(input_path, result_path, ready_path, go_path,
+                           done_path, method, params, seed, keep_object, source_path) {
+      file.create(ready_path)
+      while (!file.exists(go_path)) Sys.sleep(0.01)
+      result <- list(
+        ok = FALSE, error = "backend rejected arguments", prediction = NULL,
+        object = NULL, runtime_s = 0.1,
+        cluster_colname = get("benchmark_param_string", envir = asNamespace("scop"))(
+          params, "cluster_colname", "SmoothClust_cluster"
+        )
+      )
+      file.create(done_path)
+      saveRDS(result, result_path, compress = FALSE)
+      invisible(TRUE)
+    }
   )
   expect_identical(result$status, "failed")
-  expect_match(result$error, "RunProducerThatDoesNotExist")
+  expect_match(result$error, "backend rejected arguments")
   expect_false(grepl("benchmark_param_string", result$error, fixed = TRUE))
-  expect_identical(result$cluster_colname, "missing_cluster")
+  expect_identical(result$cluster_colname, "bad")
 })
 
 test_that("repeated timeouts leave no new R subprocesses", {
   object <- make_benchmark_seurat()
   input_path <- tempfile(fileext = ".rds")
   saveRDS(object, input_path)
-  adapter <- benchmark_adapter_registry()$SmoothClust
   context <- list(source_path = NULL, libpath = .libPaths())
   r_processes <- function() {
     processes <- ps::ps()
@@ -610,7 +604,7 @@ test_that("repeated timeouts leave no new R subprocesses", {
     run_dir <- tempfile("benchmark-repeat-timeout-")
     dir.create(run_dir)
     benchmark_run_isolated(
-      input_path, run_dir, adapter,
+      input_path, run_dir, "SmoothClust",
       params = list(allocate = 1, sleep = 30), seed = i,
       keep_object = FALSE, timeout = 0.15, poll_interval = 0.02,
       package_context = context, child_entry = benchmark_test_child

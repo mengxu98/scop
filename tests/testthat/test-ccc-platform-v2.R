@@ -2,21 +2,21 @@ make_ccc_identity_counts <- function() {
   methods::as(Matrix::Diagonal(2), "generalMatrix")
 }
 
-test_that("CCC registry covers all integrated Seurat producers", {
-  registry <- scop::ListCCCMethods()
-  expect_equal(
-    registry$method,
-    c(
-      "CellChat", "CellphoneDB", "LIANA", "Nichenetr",
-      "MultiNichenetr", "SpatialCellChat", "MDIC3"
+test_that("CCC dispatch resolves integrated producers directly", {
+  runner <- getFromNamespace("ccc_method_runner", "scop")
+  methods <- c(
+    "CellChat", "CellphoneDB", "LIANA", "Nichenetr",
+    "MultiNichenetr", "SpatialCellChat", "MDIC3"
+  )
+  for (method in methods) {
+    expect_identical(
+      runner(method),
+      getFromNamespace(paste0("Run", method), "scop")
     )
-  )
-  expect_true(all(registry$producer %in% getNamespaceExports("scop")))
-  expect_equal(registry$method[registry$default], c("CellChat", "CellphoneDB", "LIANA"))
-  expect_equal(
-    registry$method[grepl("(^|, )native($|,)", registry$result_types)],
-    c("CellChat", "SpatialCellChat")
-  )
+  }
+  expect_identical(runner("CellPhoneDB"), scop::RunCellphoneDB)
+  expect_identical(runner("NicheNet"), scop::RunNichenetr)
+  expect_error(runner("UnknownCCC"), "Unsupported CCC method")
 })
 
 test_that("RunLIANA keeps legacy positional arguments and accepts custom resources", {
@@ -130,7 +130,6 @@ test_that("RunLIANA stores official consensus and keeps legacy tables", {
   expect_true(all(is.na(out@tools$LIANA$primary_table$significant)))
   expect_equal(out@tools$LIANA$parameters$consensus, "rank")
   expect_equal(unique(out@tools$LIANA$long_table$resource), "Consensus")
-  expect_equal(out@tools$CCC$metadata$schema, "scop_ccc_unified_v2")
   expect_equal(unique(out@tools$CCC$long_table$score_type), "liana_consensus_priority")
 })
 
@@ -296,7 +295,9 @@ test_that("unified retrieval preserves backend method labels", {
   )
   srt@tools$CCC <- list(long_table = long, primary_table = long)
   expect_equal(
-    scop::GetCCCResult(srt, "CCC", type = "primary")$method,
+    getFromNamespace("ccc_semantic_long_table", "scop")(
+      srt@tools$CCC$long_table, method = NULL
+    )$method,
     c("CellChat", "LIANA")
   )
 })
@@ -337,7 +338,7 @@ test_that("dependent CellphoneDB evidence is disclosed before combination", {
   srt@tools$LIANA <- list(parameters = list(method = c("natmi", "cellphonedb")))
   srt@tools$CCC <- list(
     methods = c("CellphoneDB", "LIANA"), long_table = long,
-    metadata = list(schema = "scop_ccc_unified_v2")
+    metadata = list()
   )
 
   expect_message(
@@ -363,7 +364,7 @@ test_that("CCC context filters are applied before cross-method combination", {
       method = c("CellChat", "LIANA"),
       resource = c("Consensus", "Other")
     ),
-    metadata = list(schema = "scop_ccc_unified_v2")
+    metadata = list()
   )
   filtered <- getFromNamespace("ccc_prepare_filtered_object", "scop")(
     srt, method = "CCC", resource = "Consensus"
@@ -476,7 +477,7 @@ test_that("RunCCC skip_failed records preflight failures and continues", {
   expect_match(out@tools$RunCCC$status$message[2], "receiver")
 })
 
-test_that("RunCCC dispatches all four design-specific registered methods", {
+test_that("RunCCC dispatches all four design-specific supported methods", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
 
@@ -562,7 +563,6 @@ test_that("RunCCC dispatches all four design-specific registered methods", {
     sort(unique(out@tools$CCC$long_table$method)),
     sort(c("Nichenetr", "MultiNichenetr", "SpatialCellChat", "MDIC3"))
   )
-  expect_equal(out@tools$CCC$metadata$schema, "scop_ccc_unified_v2")
 })
 
 test_that("unified CCC support aggregation combines stored methods", {
@@ -589,7 +589,7 @@ test_that("unified CCC support aggregation combines stored methods", {
   }
   srt@tools$CCC <- list(
     method = "CCC", methods = c("CellphoneDB", "LIANA"),
-    long_table = long, metadata = list(schema = "scop_ccc_unified_v2")
+    long_table = long, metadata = list()
   )
 
   support <- getFromNamespace("ccc_prepare_combined_object", "scop")(
@@ -613,13 +613,13 @@ test_that("CCC discovery and access adapt v1 long tables without rewriting objec
   )
   srt@tools$CellphoneDB <- list(
     method = "CellphoneDB", long_table = legacy,
-    metadata = list(schema = "scop_ccc_unified_v1")
+    metadata = list()
   )
 
   before <- srt@tools$CellphoneDB$long_table
-  info <- scop::CCCResultInfo(srt)
-  expect_equal(info$status[info$method == "CellphoneDB"], "completed")
-  adapted <- scop::GetCCCResult(srt, "CellphoneDB", type = "primary")
+  adapted <- getFromNamespace("ccc_semantic_long_table", "scop")(
+    srt@tools$CellphoneDB$long_table, method = "CellphoneDB"
+  )
   expect_true(all(c(
     "method", "resource", "score_type", "score_direction",
     "priority_rank", "priority_score", "pvalue_type", "support_type",
@@ -627,29 +627,6 @@ test_that("CCC discovery and access adapt v1 long tables without rewriting objec
   ) %in% colnames(adapted)))
   expect_equal(adapted$method, "CellphoneDB")
   expect_identical(srt@tools$CellphoneDB$long_table, before)
-})
-
-test_that("current producer bundles override stale RunCCC failures", {
-  skip_if_not_installed("Seurat")
-  skip_if_not_installed("Matrix")
-
-  counts <- make_ccc_identity_counts()
-  rownames(counts) <- c("L1", "R1")
-  colnames(counts) <- c("Cell1", "Cell2")
-  srt <- Seurat::CreateSeuratObject(counts = counts)
-  current <- data.frame(
-    sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
-    score = 0.8, pvalue = 0.01
-  )
-  srt@tools$LIANA <- list(primary_table = current, long_table = current)
-  srt@tools$CCC <- list(methods = "LIANA", long_table = current)
-  srt@tools$RunCCC <- list(status = data.frame(
-    method = "LIANA", status = "failed", stringsAsFactors = FALSE
-  ))
-
-  info <- scop::CCCResultInfo(srt)
-  expect_equal(info$status[info$method == "LIANA"], "completed")
-  expect_equal(info$rows[info$method == "LIANA"], 1L)
 })
 
 test_that("stored CellChat primary tables enter unified results without native re-extraction", {
@@ -667,7 +644,7 @@ test_that("stored CellChat primary tables enter unified results without native r
   )
   srt@tools$CellChat <- list(
     results = list(), primary_table = primary, long_table = primary,
-    metadata = list(schema = "scop_ccc_unified_v2")
+    metadata = list()
   )
 
   unified <- getFromNamespace("ccc_build_unified_bundle", "scop")(
@@ -676,7 +653,7 @@ test_that("stored CellChat primary tables enter unified results without native r
   expect_equal(nrow(unified$long_table), 1L)
   expect_equal(unified$long_table$method, "CellChat")
   expect_equal(
-    scop::GetCCCResult(srt, "CellChat", type = "primary")$score,
+    srt@tools$CellChat$primary_table$score,
     0.8
   )
 })
@@ -701,10 +678,7 @@ test_that("LIANA result accessor preserves official consensus ranks", {
   )
 
   expect_equal(
-    scop::GetCCCResult(
-      srt, "LIANA",
-      type = "consensus", resource = "Consensus"
-    )$magnitude_rank,
+    srt@tools$LIANA$consensus_by_resource$Consensus$magnitude_rank,
     0.05
   )
 })
@@ -725,14 +699,11 @@ test_that("native access never substitutes a raw result", {
     raw_result = list(not_native = TRUE)
   )
 
-  expect_error(
-    scop::GetCCCResult(srt, "CellphoneDB", type = "native"),
-    "not available"
+  expect_null(
+    srt@tools$CellphoneDB$native_object %||%
+      srt@tools$CellphoneDB$cellchat_object
   )
-  expect_true(scop::GetCCCResult(
-    srt, "CellphoneDB",
-    type = "raw"
-  )$not_native)
+  expect_true(srt@tools$CellphoneDB$raw_result$not_native)
 
   srt@tools$MDIC3 <- list(
     mdic3_matrix = matrix(1, 1, 1),
@@ -746,7 +717,14 @@ test_that("native access never substitutes a raw result", {
     )
   )
   expect_named(
-    scop::GetCCCResult(srt, "MDIC3", type = "raw"),
+    srt@tools$MDIC3[intersect(
+      c(
+        "mdic3_matrix", "cellular_communication",
+        "cellular_communication_log", "celltype_communication_raw",
+        "celltype_communication"
+      ),
+      names(srt@tools$MDIC3)
+    )],
     c(
       "mdic3_matrix", "cellular_communication",
       "cellular_communication_log", "celltype_communication_raw",
@@ -759,7 +737,9 @@ test_that("native access never substitutes a raw result", {
     score = 0.5, pvalue = 0.01
   ))
   expect_equal(
-    nrow(scop::GetCCCResult(srt, "SpatialCellChat", type = "pair")),
+    nrow(getFromNamespace("aggregate_ccc_long", "scop")(
+      srt@tools$SpatialCellChat$long_table, backend = "r"
+    )),
     1L
   )
 })
@@ -781,7 +761,7 @@ test_that("unified resource and sample filters are exact and explicit", {
   srt@tools$LIANA <- list(long_table = long, primary_table = long)
   srt@tools$CCC <- list(
     methods = "LIANA", long_table = long,
-    metadata = list(schema = "scop_ccc_unified_v2")
+    metadata = list()
   )
 
   filtered <- getFromNamespace("ccc_prepare_filtered_object", "scop")(

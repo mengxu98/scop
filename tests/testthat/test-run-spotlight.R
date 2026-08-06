@@ -191,14 +191,9 @@ test_that("SPOTlight stored results use SpatialDeconvolutionPlot", {
       invisible(TRUE)
     }
   )
-  pair$spatial@tools$SPOTlight <- spatial_result_build(
-    bundle = list(
-      proportions = as.matrix(pair$spatial@meta.data[, c("SPOTlight_prop_Alpha", "SPOTlight_prop_Beta")]),
-      cells = colnames(pair$spatial)
-    ),
-    method = "SPOTlight",
-    result_type = "deconvolution",
-    provenance = list(producer = "RunSPOTlight", backend_id = "spotlight")
+  pair$spatial@tools$SPOTlight <- list(
+    proportions = as.matrix(pair$spatial@meta.data[, c("SPOTlight_prop_Alpha", "SPOTlight_prop_Beta")]),
+    cells = colnames(pair$spatial)
   )
   colnames(pair$spatial@tools$SPOTlight$proportions) <- c("Alpha", "Beta")
   p1 <- SpatialDeconvolutionPlot(

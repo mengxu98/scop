@@ -1,3 +1,13 @@
+# Reference implementation kept only as a test oracle for the C++ path.
+gene_set_scoring_keep_variable_rows <- function(expr) {
+  if (inherits(expr, "dgCMatrix")) {
+    keep <- sparse_row_has_variable_finite(expr)
+    return(expr[keep, , drop = FALSE])
+  }
+  expr_mat <- as_matrix(expr)
+  keep <- dense_row_has_variable_finite(expr_mat)
+  expr[keep, , drop = FALSE]
+}
 reference_ssgsea_scores <- function(expr, gene_sets, alpha = 0.25, normalize = FALSE) {
   n_genes <- nrow(expr)
   n_cells <- ncol(expr)

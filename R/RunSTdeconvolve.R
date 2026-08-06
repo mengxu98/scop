@@ -199,12 +199,6 @@ RunSTdeconvolve <- function(
         round_counts = round_counts
       )
     )
-    srt@tools[[tool_name]] <- spatial_result_build(
-      bundle = srt@tools[[tool_name]],
-      method = "STdeconvolve",
-      result_type = "deconvolution",
-      provenance = list(producer = "RunSTdeconvolve", backend_id = "stdeconvolve")
-    )
   }
 
   log_message(
@@ -217,7 +211,7 @@ RunSTdeconvolve <- function(
 #' @title Plot STdeconvolve topic proportions
 #'
 #' @description
-#' Plot schema-v1 topic proportions without rerunning the optional backend.
+#' Plot stored topic proportions without rerunning the optional backend.
 #' Multi-topic point maps use one shared proportion scale and reserve title
 #' space above the automatic layout.
 #'
@@ -225,7 +219,7 @@ RunSTdeconvolve <- function(
 #' @inheritParams SpatialSpotPlot
 #' @param topics Topic names, topic numbers, or metadata columns to plot. If
 #' `NULL`, all topics in the stored result are used.
-#' @param tool_name Exact schema-v1 result key written by
+#' @param tool_name Result key written to `srt@tools` by
 #' `RunSTdeconvolve()`.
 #' @param prefix Metadata prefix used by `RunSTdeconvolve()`. If `NULL`, the
 #' prefix is read from the stored result.
@@ -274,8 +268,8 @@ STdeconvolvePlot <- function(
   }
   stdeconvolve_assert_scalar_string(tool_name, "tool_name")
   plot_type <- match.arg(plot_type)
-  stored <- GetSpatialResult(srt, tool_name = tool_name)
-  if (!identical(stored$method, "STdeconvolve")) {
+  stored <- srt@tools[[tool_name]]
+  if (!is.list(stored)) {
     log_message(
       "Stored result {.val {tool_name}} was not produced by {.fn RunSTdeconvolve}",
       message_type = "error"

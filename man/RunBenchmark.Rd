@@ -25,9 +25,8 @@ RunBenchmark(
 \item{gold_standard}{Either one metadata column in \code{srt} or a named vector
 whose names match the spot names in \code{srt}.}
 
-\item{methods}{Spatial domain methods to benchmark. \code{NULL} uses every stable
-registered domain producer. Use \code{"all"} to additionally include supported
-legacy baselines such as GiottoCluster, or select them explicitly. Method
+\item{methods}{Spatial domain methods to benchmark. \code{NULL} uses every
+benchmarked producer (\code{BayesSpace}, \code{BANKSY}, and \code{SmoothClust}). Method
 names may be written with or without the \code{Run} prefix.}
 
 \item{method_params}{Named list of per-method argument lists. Arguments are
@@ -42,8 +41,7 @@ values are \code{"ARI"}, \code{"NMI"}, and \code{"purity"}. All three are retain
 the result summary.}
 
 \item{keep_objects}{Whether to keep each successful method's full producer
-result, including standalone legacy results when explicitly selected. The
-default keeps only aligned labels and compact run metadata.}
+result. The default keeps only aligned labels and compact run metadata.}
 
 \item{install_missing}{Whether missing optional backends may enter their
 producer's normal \code{check_r()} installation path. The default records them as
@@ -62,12 +60,12 @@ process start and result serialization. \code{Inf} disables the timeout.}
 Default is \code{TRUE}.}
 }
 \value{
-A \code{benchmark_result} object. Use \code{as.data.frame()} for its summary,
-\code{plot()} or \code{\link[=BenchmarkPlot]{BenchmarkPlot()}} for visualization, and \verb{$predictions} for the
+A \code{benchmark_result} object. Use \code{result$summary} for the quality
+table, \code{\link[=BenchmarkPlot]{BenchmarkPlot()}} for visualization, and \verb{$predictions} for the
 aligned labels.
 }
 \description{
-Run registered spatial domain clustering methods from the same immutable
+Run supported spatial domain clustering methods from the same immutable
 input, compare their aligned labels with a gold standard, and record
 classification quality, elapsed time, and sampled peak process-tree memory.
 Each method runs in an isolated R process so one failed backend does not

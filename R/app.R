@@ -2160,7 +2160,7 @@ server <- function(input, output, session) {
 
     promisedData[["p1_dim"]] <- NULL
     promisedData[["p1_3d"]] <- NULL
-    promises::future_promise(
+    get_namespace_fun("promises", "future_promise")(
       {
         srt_tmp <- scop::FetchH5(
           data_file = data_file, meta_file = meta_file, name = dataset1,
@@ -2294,7 +2294,7 @@ server <- function(input, output, session) {
 
     promisedData[["p2_dim"]] <- NULL
     promisedData[["p2_3d"]] <- NULL
-    promises::future_promise(
+    get_namespace_fun("promises", "future_promise")(
       {
         srt_tmp <- scop::FetchH5(
           data_file = data_file, meta_file = meta_file, name = dataset2,
@@ -2431,7 +2431,7 @@ server <- function(input, output, session) {
     }
 
     promisedData[["p3"]] <- NULL
-    promises::future_promise(
+    get_namespace_fun("promises", "future_promise")(
       {
         srt_tmp <- scop::FetchH5(
           data_file = data_file, meta_file = meta_file, name = dataset3,
@@ -2580,7 +2580,7 @@ server <- function(input, output, session) {
     }
 
     promisedData[["p4"]] <- NULL
-    promises::future_promise(
+    get_namespace_fun("promises", "future_promise")(
       {
         srt_tmp <- scop::FetchH5(
           data_file = data_file, meta_file = meta_file, name = dataset4,

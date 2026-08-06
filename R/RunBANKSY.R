@@ -224,16 +224,6 @@ RunBANKSY <- function(
         tool_name = tool_name
       )
     )
-    srt@tools[[tool_name]] <- spatial_result_build(
-      bundle = srt@tools[[tool_name]],
-      method = "BANKSY",
-      result_type = "domain",
-      source = c(
-        attr(coords, "spatial_source") %||% list(),
-        list(transform = attr(coords, "spatial_transform"))
-      ),
-      provenance = list(producer = "RunBANKSY", backend_id = "banksy")
-    )
   }
 
   log_message(

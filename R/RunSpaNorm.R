@@ -140,12 +140,6 @@ RunSpaNorm <- function(
     if (isTRUE(store_spe)) {
       tool$spe <- result
     }
-    tool <- spatial_result_build(
-      bundle = tool,
-      method = "SpaNorm",
-      result_type = "normalization",
-      provenance = list(producer = "RunSpaNorm", backend_id = "spanorm")
-    )
     srt@tools[[tool_name]] <- tool
   }
 
