@@ -286,7 +286,8 @@ RunSCVELO <- function(
     "plot_dpi",
     "plot_prefix",
     "backend",
-    "compute_velocity_graph"
+    "compute_velocity_graph",
+    "max_dense_gib"
   )
   args <- args[!names(args) %in% params]
 
