@@ -392,7 +392,9 @@ RunCellRank <- function(
         "plot_dpi",
         "plot_prefix",
         "backend",
-        "backward"
+        "backward",
+        "allow_approximate",
+        "max_dense_gib"
       )
   ]
 

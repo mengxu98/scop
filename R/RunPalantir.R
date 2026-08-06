@@ -274,7 +274,8 @@ RunPalantir <- function(
     "plot_prefix",
     "legend.position",
     "cores",
-    "backend"
+    "backend",
+    "allow_approximate"
   )
   args <- args[!names(args) %in% params]
 
