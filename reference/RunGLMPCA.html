@@ -28,7 +28,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -213,59 +213,59 @@ Default is <code>11</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:57] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:57] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-05 15:42:57] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:29] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:29] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-07 01:13:29] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 1/1 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:57] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:57] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:57] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:57] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:57] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:57] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:58] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:58] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:58] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:58] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-05 15:42:58] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-05 15:43:07] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:29] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:29] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:29] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:29] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:29] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:29] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:30] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:30] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:30] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:30] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:13:30] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-07 01:13:38] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunGLMPCA</span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> GLMPC_ 1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Cartpt, Barx2, Cdkn2b, Gip, Aard, Pax6os1, Prl, Ucn3, Ptger3, G6pc2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Pcdh8, Pappa2, Slc30a8, Dusp26, 1700001C02Rik, Spock1, Acsbg1, Vgf, Bace2, Pcp4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Kctd8, Ceacam10, 3930402G23Rik, 1700015F17Rik, 4930426D05Rik, Fbln5, Ctxn2, Rnf138rt1, Scn9a, 2410021H03Rik </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Col1a1, AA986860, Gm6878, P2ry2, Il18, Ctgf, Guca2b, Scx, S100b, Plscr2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Pmp22, Sp140, Anxa9, Adamts16, Prickle2, Smoc2, Islr, 1110002O04Rik, Tmem178, Tns1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Cryab, Gsta3, Dcdc2a, Adgrg6, Tmem171, Isg15, Grin3a, Cxcl12, Gm20649, Apcs </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Barx2, Cartpt, Gm3448, Ptger3, Mesp1, Prl, Gip, Ceacam10, Spock1, Cdkn2b </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Dusp26, RP23-385E22.2, Pax6os1, Cypt3, 1700015F17Rik, 3930402G23Rik, RP23-428N8.3, 4930426D05Rik, Fbln5, Ucn3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Aard, Lrrc6, 1700001C02Rik, Kng2, Pcdh8, Tac1, 2410021H03Rik, Slc38a5, Gtf2ird2, A130057D12Rik </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Col23a1, Col1a1, Col6a1, Ctgf, Islr, Anxa1, Isg15, Zfp385b, Sp140, Ctsk </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   P2ry2, Hoxb4, Plscr2, Platr22, Kcnj8, Col3a1, Timp3, Edn1, Gm26633, Prickle2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Il18, Pgr, Grin3a, Tagln, Pkd2l1, Lsp1, Tmem119, 1110002O04Rik, Tmem100, AA986860 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> GLMPC_ 2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Guca2a, Gsg1l, Ifitm1, Adra2c, Fam71b, Laptm5, P2ry14, Tmprss6, Bhlhe22, Bhmt2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Dlgap1, Jakmip3, Bcas1os1, Slc4a1, Tff3, Nhs, Alb, Ins1, Wnt3, Nkpd1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Pou3f1, Rhbg, Tspear, Fam124a, Pdcd1, Lrrn2, Krtap17-1, Kcnq4, Slc39a2, Sema3g </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Sst, Aif1, Fam198b, Klhl14, Tac1, Edn1, Kcne2, RP23-58K20.3, Gtf2ird2, Platr22 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Ctsk, Elovl4, Hoxb4, Slit2, Col25a1, Aspm, Nkain4, Igfbp3, Kif2c, Plscr2 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Pkd2l1, Nlgn1, Gast, 4430402I18Rik, Cdc25c, D7Ertd443e, Bmp2, Pif1, Slc4a10, Tstd1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Bhlhe22, Klk11, Laptm5, Cd37, Bhlhe23, Tfap2c, Sema3g, Tmem114, Fgf8, Adra2c </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Neurod2, Krtap17-1, Epb42, Fam71b, Gm8773, Tgm7, Eya2, P2ry14, Glod5, Fgf18 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Nhlh1, Gm6086, Prom2, 1700128E19Rik, Cmklr1, Ppp1r14a, Wnt3, Ifitm1, Snai2, Lynx1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Sst, Aif1, Klhl14, Gm26633, Dkk2, Col1a2, Ctgf, Tnni3, Col25a1, Ctsk </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Col23a1, Lgr5, Crygn, Fam198b, RP23-428N8.3, Sp5, Fgb, Tac1, Zfp385b, Platr22 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Cbln4, Kcne2, Gad2, 4930426D05Rik, Col6a1, 4930539E08Rik, M1ap, Prrg1, Olfml2a, Isg15 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> GLMPC_ 3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Fgb, Col1a2, Klhl14, Gcg, Lgr5, Doc2a, Calb1, Gad2, Gast, Ryr3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Hist1h4a, Gm11744, 4930426D05Rik, Ctsk, Tstd1, 4930539E08Rik, Cbln4, Crygn, Dkk2, Col23a1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   P2ry2, Tac1, Pou6f2, Tgfb2, Arhgap36, Ctgf, RP23-428N8.3, BC043934, Sp140, Smpx </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Pif1, Msx1, Ppp1r17, Gtse1, Mmel1, Pf4, Mxd3, Depdc1a, Gm42984, Ccnb1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Nusap1, Hmmr, Igfbp3, Slfn2, Shox2, Sapcd2, Cbln1, Parpbp, Plk1, Cenpf </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Cnrip1, Aurka, Fgf8, Icosl, Cdx2, RP23-4H17.3, Cdc20, Kif20a, Cdc25c, Nhlh1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Col1a2, Gad2, Col6a1, Col23a1, Sparcl1, Gcg, Sp140, Islr, Calb1, Col1a1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Kcnj8, Guca2a, Col3a1, Tmem100, Galnt16, P2ry2, Hist1h4a, Pid1, Ryr3, Smpx </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   BC043934, Tstd1, Pou6f2, Fgb, Gsg1l, Ctsk, Tnni3, Itgb7, Fam46d, Gm6878 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Pif1, RP23-58K20.3, Igfbp3, Kcne2, Gm933, Aif1, Sst, Msx1, Fam198b, Iqgap3 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Aspm, Elovl4, Espl1, Depdc1a, Cdc25c, Kif2c, Nusap1, Cnrip1, Cenpf, Parpbp </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Ccnb1, Gtse1, Hmmr, Mmel1, Bub1, Plk1, Kif20a, Icosl, RP23-4H17.3, Kif18a </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> GLMPC_ 4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Gast, Bmp2, Lmod3, Ifit1bl1, 1500035N22Rik, Rerg, Ngf, RP23-385E22.2, Zfp97, Tnfaip8l3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Fam46d, Gm29440, Zcchc12, Avp, Gm13375, Mboat4, Tstd1, Arhgap22, Tmem255b, Sp140 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Pkd2l1, Cypt3, Nkx6-3, Nipal3, Tox2, 1110002O04Rik, Elovl4, Snai2, Rasgrp3, Trp53cor1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Crygn, P2ry1, Il1r2, Npy, Sp5, RP23-58K20.3, Aif1, Tmem215, Adam32, Lgr5 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Lrrc6, Adgrf5, Klhl14, Pid1, Arhgap36, 1700024G13Rik, Col25a1, Ins2, Gad2, Sytl4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Srgn, Slfn2, Iapp, Gm11789, Gm38112, Dkk2, Doc2a, Nnat, Ins1, Bace2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Npy, Sparcl1, Dlgap1, Galnt16, Ins1, Gm38112, Gm15640, Cldn18, Kcnj8, Col3a1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Gad2, Ins2, Sp5, Jakmip3, Nhs, P2ry1, Islr, Adam32, Tmem215, Arhgap36 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Hist1h1a, Syndig1l, Nckap5los, 1700024G13Rik, Col5a1, Fam124a, Slfn9, Nnat, Gm11789, Clspn </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Anxa1, Gast, D7Ertd443e, Tstd1, Platr22, Tnfaip8l3, Edn1, Bmp2, Ctsk, Ifit1bl1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Fcgr3, Cd37, Fam46d, Ltb, Gm29440, Sp140, Zfp97, Srgn, Lmod3, Lst1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Rerg, 1500035N22Rik, Fgf8, Fam198b, Pkd2l1, Gm15895, Ngf, Pou6f2, Ankrd1, Gm13375 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> GLMPC_ 5 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Il1r2, Fcgr3, Srgn, Coro1a, Slc4a10, Anxa1, Lrrc6, Cd37, Itgb7, Tyrobp </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Tmem100, 4933440M02Rik, 4430402I18Rik, Gtf2ird2, Kcnk10, Gm11636, Lmx1a, Sytl2, Lst1, Tssk6 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Agmo, Ppfibp2, Slfn2, Gm15895, Ncf2, Ltb, Gm6410, Lgr5, Ryr3, Chgb </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Sparcl1, Col3a1, Dkk2, Galnt16, Cbln4, Kcnj8, Tex36, Col6a1, Islr, Gpr6 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Col1a2, Col1a1, Col23a1, Gm933, Irs4, Ptpro, Olfml3, Spock1, Kcne2, Lrrtm3 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Gm15640, RP23-428N8.3, Colec12, Ghrl, Gm17455, Th, RP23-172P1.4, Ceacam10, Aunip, Clspn </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Cbln4, Tex36, Gm933, Ghrl, Irs4, Gpr6, Lrrtm3, Foxd3, Gm17455, Kcnj8 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Anxa1, Galnt16, Arhgap22, Sparcl1, Tnni3, Col3a1, Platr22, Col23a1, St8sia2, Avp </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   RP23-172P1.4, Col1a2, Spock1, Islr, Gm3448, Prickle2, Tmem119, Colec12, Col1a1, Ngf </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Srgn, Lst1, Fcgr3, Ryr3, Lmx1a, Tyrobp, Lrrc6, P2ry14, Il1r2, Kng2 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Coro1a, Slfn2, Pid1, 4933440M02Rik, Rac2, Gm6410, 4930426D05Rik, Klhl14, Slc4a10, Alox5ap </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Olfml2a, Gm37350, M1ap, Lgr5, Tac1, Gm11636, Ifitm1, Ncf2, Sp5, Fgb </span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
