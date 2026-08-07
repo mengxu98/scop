@@ -28,7 +28,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -83,9 +83,11 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The bridge selects the GiottoClass v4 or v5 converter according to the
-installed Seurat major version. Older Giotto installations without these
-converters should continue using the legacy scop Giotto workflow or be
-updated before reverse conversion.</p>
+installed Seurat major version. For round trips produced by
+[srt_to_giotto()], normalize the Seurat input first (for example with
+[Seurat::NormalizeData()]); the official GiottoClass converter records an
+empty normalized layer otherwise, which its reverse converter cannot read
+back.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

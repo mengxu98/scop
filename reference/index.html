@@ -28,7 +28,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges and Giotto compatibility</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -835,7 +835,7 @@
 
       <dl></dl></div><div class="section level2">
 
-      <h3 id="spatial-method-discovery-and-diagnostics">Spatial Method Discovery and Diagnostics<a class="anchor" aria-label="anchor" href="#spatial-method-discovery-and-diagnostics"></a></h3>
+      <h3 id="spatial-result-access">Spatial Result Access<a class="anchor" aria-label="anchor" href="#spatial-result-access"></a></h3>
 
 
       <dl></dl></div><div class="section level2">
@@ -845,38 +845,10 @@
 
       <dl><dt>
 
-          <code><a href="ListSpatialMethods.html">ListSpatialMethods()</a></code>
-
-        </dt>
-        <dd>List spatial methods</dd>
-
-        <dt>
-
-          <code><a href="SpatialBackendStatus.html">SpatialBackendStatus()</a></code>
-
-        </dt>
-        <dd>Inspect spatial backend availability</dd>
-
-        <dt>
-
-          <code><a href="SpatialResultInfo.html">SpatialResultInfo()</a></code>
-
-        </dt>
-        <dd>Inspect stored spatial results</dd>
-
-        <dt>
-
           <code><a href="SpatialCoordinates.html">SpatialCoordinates()</a></code>
 
         </dt>
         <dd>Read spatial coordinates with an explicit coordinate contract</dd>
-
-        <dt>
-
-          <code><a href="GetSpatialResult.html">GetSpatialResult()</a></code>
-
-        </dt>
-        <dd>Read one stored spatial result</dd>
 
         <dt>
 
@@ -916,7 +888,7 @@
         <dd>Run SpotSweeper spatial quality control</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="spatial-framework-bridges-and-giotto-workflows">Spatial Framework Bridges and Giotto Workflows<a class="anchor" aria-label="anchor" href="#spatial-framework-bridges-and-giotto-workflows"></a></h3>
+      <h3 id="spatial-framework-bridges">Spatial Framework Bridges<a class="anchor" aria-label="anchor" href="#spatial-framework-bridges"></a></h3>
 
 
       <dl></dl></div><div class="section level2">
@@ -951,111 +923,6 @@
 
         </dt>
         <dd>Convert SPATA2 to Seurat</dd>
-
-        <dt>
-
-          <code><a href="SeuratToGiotto2.html">SeuratToGiotto2()</a></code>
-
-        </dt>
-        <dd>Convert Seurat to an internal Giotto workflow object</dd>
-
-        <dt>
-
-          <code><a href="RunGiottoWorkflow.html">RunGiottoWorkflow()</a></code>
-
-        </dt>
-        <dd>Run a Giotto workflow</dd>
-
-        <dt>
-
-          <code><a href="GiottoPreprocess.html">GiottoPreprocess()</a></code>
-
-        </dt>
-        <dd>Preprocess an internal Giotto workflow object</dd>
-
-        <dt>
-
-          <code><a href="GiottoReduce.html">GiottoReduce()</a></code>
-
-        </dt>
-        <dd>Run Giotto dimensional reduction</dd>
-
-        <dt>
-
-          <code><a href="GiottoCluster.html">GiottoCluster()</a></code>
-
-        </dt>
-        <dd>Run Giotto nearest-network clustering</dd>
-
-        <dt>
-
-          <code><a href="GiottoSpatialNetwork.html">GiottoSpatialNetwork()</a></code>
-
-        </dt>
-        <dd>Create a Giotto spatial network</dd>
-
-        <dt>
-
-          <code><a href="GiottoSpatialGenes.html">GiottoSpatialGenes()</a></code>
-
-        </dt>
-        <dd>Run Giotto spatial gene detection</dd>
-
-        <dt>
-
-          <code><a href="GiottoSpatialModules.html">GiottoSpatialModules()</a></code>
-
-        </dt>
-        <dd>Run Giotto spatial co-expression modules</dd>
-
-        <dt>
-
-          <code><a href="GiottoCellProximity.html">GiottoCellProximity()</a></code>
-
-        </dt>
-        <dd>Run Giotto cell proximity enrichment</dd>
-
-        <dt>
-
-          <code><a href="GiottoHMRF.html">GiottoHMRF()</a></code>
-
-        </dt>
-        <dd>Run Giotto HMRF spatial domains</dd>
-
-        <dt>
-
-          <code><a href="AddGiottoToSeurat.html">AddGiottoToSeurat()</a></code>
-
-        </dt>
-        <dd>Add Giotto results back to Seurat</dd>
-
-        <dt>
-
-          <code><a href="RunGiottoCluster.html">RunGiottoCluster()</a></code>
-
-        </dt>
-        <dd>Run Giotto nearest-network clustering</dd>
-
-        <dt>
-
-          <code><a href="RunGiottoCellProximity.html">RunGiottoCellProximity()</a></code>
-
-        </dt>
-        <dd>Run Giotto cell proximity enrichment</dd>
-
-        <dt>
-
-          <code><a href="RunGiottoSpatialGenes.html">RunGiottoSpatialGenes()</a></code>
-
-        </dt>
-        <dd>Run Giotto spatial gene detection</dd>
-
-        <dt>
-
-          <code><a href="RunGiottoSpatialModules.html">RunGiottoSpatialModules()</a></code>
-
-        </dt>
-        <dd>Run Giotto spatial co-expression modules</dd>
       </dl></div><div class="section level2">
 
       <h3 id="spatial-deconvolution-and-ecotypes">Spatial Deconvolution and Ecotypes<a class="anchor" aria-label="anchor" href="#spatial-deconvolution-and-ecotypes"></a></h3>
@@ -1283,13 +1150,6 @@
 
 
       <dl><dt>
-
-          <code><a href="GiottoPlot.html">GiottoPlot()</a></code>
-
-        </dt>
-        <dd>Plot Giotto backend results</dd>
-
-        <dt>
 
           <code><a href="SpatialEcoTyperCompositionPlot.html">SpatialEcoTyperCompositionPlot()</a></code>
 
@@ -2133,27 +1993,6 @@
 
         </dt>
         <dd>Run common cell-cell communication analyses</dd>
-
-        <dt>
-
-          <code><a href="ListCCCMethods.html">ListCCCMethods()</a></code>
-
-        </dt>
-        <dd>List SCOP cell-cell communication methods</dd>
-
-        <dt>
-
-          <code><a href="CCCResultInfo.html">CCCResultInfo()</a></code>
-
-        </dt>
-        <dd>Inspect CCC results stored in a Seurat object</dd>
-
-        <dt>
-
-          <code><a href="GetCCCResult.html">GetCCCResult()</a></code>
-
-        </dt>
-        <dd>Get a standardized or native CCC result</dd>
 
         <dt>
 
