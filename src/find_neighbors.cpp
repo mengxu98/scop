@@ -440,6 +440,7 @@ Rcpp::List annoy_cross_knn(Rcpp::NumericMatrix reference,
       k, n_trees, cores);
   }
   thisutils::log_message("Annoy cross-kNN supports euclidean, angular, and manhattan", "error");
+  return Rcpp::List::create();
 }
 
 // [[Rcpp::export]]

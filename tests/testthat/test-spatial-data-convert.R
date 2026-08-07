@@ -23,6 +23,10 @@ test_that("Seurat and SpatialExperiment converters preserve coordinates", {
 })
 
 test_that("SpatialExperiment bridges round-trip stored coordinates", {
+  testthat::skip_if_not_installed("SpatialExperiment")
+  testthat::skip_if_not_installed("SummarizedExperiment")
+  testthat::skip_if_not_installed("S4Vectors")
+
   counts <- Matrix::Matrix(matrix(c(1, 0, 2, 3, 4, 5), nrow = 2), sparse = TRUE)
   rownames(counts) <- c("Gene1", "Gene2")
   colnames(counts) <- paste0("Spot", 1:3)

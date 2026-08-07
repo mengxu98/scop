@@ -951,16 +951,25 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
     ),
     script
   )
-  status <- system2(
-    python,
-    c(shQuote(script), shQuote(runner)),
-    stdout = output,
-    stderr = output,
-    env = paste0(
-      "PYTHONPATH=",
-      system.file("python", package = "thisutils", mustWork = TRUE)
+  status <- local({
+    old_pythonpath <- Sys.getenv("PYTHONPATH", unset = NA_character_)
+    Sys.setenv(
+      PYTHONPATH = system.file("python", package = "thisutils", mustWork = TRUE)
     )
-  )
+    on.exit({
+      if (is.na(old_pythonpath)) {
+        Sys.unsetenv("PYTHONPATH")
+      } else {
+        Sys.setenv(PYTHONPATH = old_pythonpath)
+      }
+    }, add = TRUE)
+    system2(
+      python,
+      c(shQuote(script), shQuote(runner)),
+      stdout = output,
+      stderr = output
+    )
+  })
 
   expect_identical(
     status,
