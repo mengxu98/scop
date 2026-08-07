@@ -1,4 +1,7 @@
 /* http://gregfranko.com/blog/jquery-best-practices/ */
+/* Forked from pkgdown 2.2.0 (inst/pkgdown/BS5/assets/pkgdown.js):
+   searchFuse is debounced (150 ms) so typing on large sites (e.g. 1000+
+   search index entries) doesn't run a full Fuse search on every keystroke. */
 (function ($) {
   $(function () {
 
@@ -113,23 +116,27 @@
       minLength: 2,
     };
     var q;
-    async function searchFuse(query, callback) {
-      await fuse;
+    var searchTimer;
+    function searchFuse(query, callback) {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(async function () {
+        await fuse;
 
-      var items;
-      if (!fuse) {
-        items = [];
-      } else {
-        q = query;
-        var results = fuse.search(query, { limit: 20 });
-        items = results
-          .filter((x) => x.score <= 0.75)
-          .map((x) => x.item);
-        if (items.length === 0) {
-          items = [{ dir: "Sorry 😿", previous_headings: "", title: "No results found.", what: "No results found.", path: window.location.href }];
+        var items;
+        if (!fuse) {
+          items = [];
+        } else {
+          q = query;
+          var results = fuse.search(query, { limit: 20 });
+          items = results
+            .filter((x) => x.score <= 0.75)
+            .map((x) => x.item);
+          if (items.length === 0) {
+            items = [{ dir: "Sorry 😿", previous_headings: "", title: "No results found.", what: "No results found.", path: window.location.href }];
+          }
         }
-      }
-      callback(items);
+        callback(items);
+      }, 150);
     }
     $("#search-input").autocomplete(options, [
       {
