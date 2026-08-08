@@ -1,16 +1,22 @@
 # scop (development)
 
 * **feat**:
+  * `RunCNV()` backend coverage: `copykat`, `fastCNV`, `SCEVAN`, `infercnv`, and `numbat` are now verified against their original pipelines on real bundled datasets (breast-cancer scRNA-seq, infercnv example, numbat ATC2 example), with exact prediction agreement for copykat/SCEVAN/numbat and Spearman rho = 1.0 for fastCNV/infercnv.
   * The MERINGUE C++ permutation kernel now traverses the weight matrix sparsely (row-major edge list, bit-identical accumulation): `nperm = 200` Moran p-values at 300 spots drop from ~442s to ~14s (~30x).
   * Removed wrappers whose upstream dependencies are unavailable or uncompilable: `RunSpatialQM()`, the `RunSemla*()` wrappers, the `BASS`/`SpatialMNN` branches of `RunSpatialIntegration()` (PRECAST unaffected), and the SPATA2 `backend = "r"` path of `RunSpatialGradientFeatures()` (C++ backend only; `srt_to_spata2()`/`spata2_to_srt()` removed as well).
   * `RunMERINGUE()` gains a `backend = c("cpp", "r")` option; the C++ kernels replicate `MERINGUE::moranTest()`/`moranPermutationTest()` to machine precision (including the `sample.kind` RNG stream). `backend = "r"` retains the original calls and honors `moran_params`.
   * Real-data consistency tests verify the wrappers against the original pipelines (CellChat, SpatialCellChat, LIANA, BayesSpace, MERINGUE, SPOTlight, SpaNorm, SpatialDWLS, RCTD, BANKSY, CARD, SpotSweeper, PRECAST).
 * **fixed**:
+  * `RunCNV()` attaches backend packages to the search path during execution so lazy data objects (copykat `full.anno`, fastCNV `geneMetadata`, numbat `gtf_hg38`) are resolvable from backend namespace code; `copykat` is installed from its GitHub source (`navinlabcode/copykat`) because it was removed from CRAN.
+  * `RunCNV(numbat)` prefers the plain `seg` column over `seg_label` when reading `joint_post` output, so segment identifiers are not polluted with the `(loh)` suffix.
+  * `RunCNV()` numbat extraction is vectorized (direct index assignment with duplicate averaging instead of row-by-row `aggregate`/`strsplit`, plus `split()`-partitioned bin statistics): a 300-seg x 2000-cell `joint_post` extraction drops from ~16s to ~1.3s (~12x) with bit-identical results.
   * `visium_mouse_brain_slices_sub` rebuilt with the current `SeuratObject` so bundled `VisiumV2` images can be subset again.
   * `RunRCTD()` extracts per-spot `all_weights` from `spacexr` >= 2.2 `doublet_mode = "multi"` results.
   * `RunSpotSweeper()` detects upstream `SpotSweeper::localVariance` breakage on `SpatialExperiment` colData and degrades gracefully.
   * `RunSpatialIntegration(PRECAST)` writes the raw coordinates expected by `CreatePRECASTObject`.
   * `RunLIANA()` recognizes `logfc_comb` (and other liana method score columns) as the interaction score.
+* **removed**:
+  * The `CaSpER` branch of `RunCNV()` is removed: `runCaSpER()` segfaults deterministically on R >= 4.5 (HMM `manualSegment`, even on 50 cells), upstream is unmaintained since 2019, and its Bioconductor dependency set is archived. `RunCNV()` now supports `copykat`, `fastCNV`, `scevan`, `infercnv`, and `numbat`.
 * **changed**:
   * `ListLIANAResources()` is replaced by `ListCCCDB()`, which enumerates ligand-receptor databases and prior models across all CCC backends with a unified `db`/`species`/`status` schema.
   * New `PrepareCCCDB()` prepares the CellTalk and CellChat databases (`TERM2GENE`/`TERM2NAME`, `R.cache`-backed); the CellTalk/CellChat branches were removed from `PrepareDB()`.
