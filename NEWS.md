@@ -1,11 +1,21 @@
 # scop (development)
 
+* **feat**:
+  * The MERINGUE C++ permutation kernel now traverses the weight matrix sparsely (row-major edge list, bit-identical accumulation): `nperm = 200` Moran p-values at 300 spots drop from ~442s to ~14s (~30x).
+  * Removed wrappers whose upstream dependencies are unavailable or uncompilable: `RunSpatialQM()`, the `RunSemla*()` wrappers, the `BASS`/`SpatialMNN` branches of `RunSpatialIntegration()` (PRECAST unaffected), and the SPATA2 `backend = "r"` path of `RunSpatialGradientFeatures()` (C++ backend only; `srt_to_spata2()`/`spata2_to_srt()` removed as well).
+  * `RunMERINGUE()` gains a `backend = c("cpp", "r")` option; the C++ kernels replicate `MERINGUE::moranTest()`/`moranPermutationTest()` to machine precision (including the `sample.kind` RNG stream). `backend = "r"` retains the original calls and honors `moran_params`.
+  * Real-data consistency tests verify the wrappers against the original pipelines (CellChat, SpatialCellChat, LIANA, BayesSpace, MERINGUE, SPOTlight, SpaNorm, SpatialDWLS, RCTD, BANKSY, CARD, SpotSweeper, PRECAST).
+* **fixed**:
+  * `visium_mouse_brain_slices_sub` rebuilt with the current `SeuratObject` so bundled `VisiumV2` images can be subset again.
+  * `RunRCTD()` extracts per-spot `all_weights` from `spacexr` >= 2.2 `doublet_mode = "multi"` results.
+  * `RunSpotSweeper()` detects upstream `SpotSweeper::localVariance` breakage on `SpatialExperiment` colData and degrades gracefully.
+  * `RunSpatialIntegration(PRECAST)` writes the raw coordinates expected by `CreatePRECASTObject`.
+  * `RunLIANA()` recognizes `logfc_comb` (and other liana method score columns) as the interaction score.
 * **changed**:
-  * Python-converted object interop: consumers now tolerate results converted from an AnnData via `adata_to_srt()` without re-running scop wrappers.
-    * `PAGAPlot()` falls back to `srt@misc[["paga"]]` (scanpy PAGA) when `srt@tools[["PAGA"]]` is absent, and aligns group ordering with the `meta.data` factor levels.
-    * `VelocityPlot()`/`CellDimPlot(velocity=)`, `RunPAGA(use_rna_velocity)`, and `RunCellRank()` fall back to the scVelo reduction naming (e.g. `velocity_umap`) and `dpt_pseudotime` when the scop-specific keys (`stochastic_umap`, `stochastic_pseudotime`) are not found.
-    * DE consumers (`VolcanoPlot()`, `DEtestPlot()`, `RunEnrichment()`, `RunGSEA()`, ...) read scanpy `rank_genes_groups` results stored in `srt@misc[["rank_genes_groups"]]` when no `RunDEtest()` result exists.
-    * `RunScissor()` graph auto-detection recognizes converted graph names (e.g. `RNA snn`) and falls back to `connectivities`.
+  * `ListLIANAResources()` is replaced by `ListCCCDB()`, which enumerates ligand-receptor databases and prior models across all CCC backends with a unified `db`/`species`/`status` schema.
+  * New `PrepareCCCDB()` prepares the CellTalk and CellChat databases (`TERM2GENE`/`TERM2NAME`, `R.cache`-backed); the CellTalk/CellChat branches were removed from `PrepareDB()`.
+  * Database listing outputs are unified (`ListDB()` and `ListCCCDB()` return plain data frames; colored console rendering is available via `thisplot::print_colored_table()`).
+  * Python-converted object interop: `PAGAPlot()`, `VelocityPlot()`/`CellDimPlot(velocity=)`, `RunPAGA(use_rna_velocity)`, `RunCellRank()`, DE consumers (`VolcanoPlot()`, `DEtestPlot()`, `RunEnrichment()`, `RunGSEA()`, ...), and `RunScissor()` now fall back to scanpy/scVelo result slots (`paga`, `rank_genes_groups`, `velocity_umap`, `dpt_pseudotime`, `connectivities`) stored by `adata_to_srt()`.
 
 # scop 0.9.0 (2026-08-02)
 

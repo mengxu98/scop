@@ -193,15 +193,12 @@ reference:
 - subtitle: "Spatial QC and Normalization"
 - contents:
   - RunSpaNorm
-  - RunSpatialQM
   - RunSpotSweeper
 
 - subtitle: "Spatial Framework Bridges"
 - contents:
   - srt_to_giotto
   - giotto_to_srt
-  - srt_to_spata2
-  - spata2_to_srt
 
 - subtitle: "Spatial Deconvolution and Ecotypes"
 - contents:
@@ -234,10 +231,6 @@ reference:
   - RunStatialKontextual
   - RunSpatialIntegration
   - RunMistyR
-  - RunSemlaSpatialNetwork
-  - RunSemlaLocalG
-  - RunSemlaRadialDistance
-  - RunSemlaRegionNeighbors
 
 - subtitle: "Spatial Visualization"
 - contents:
