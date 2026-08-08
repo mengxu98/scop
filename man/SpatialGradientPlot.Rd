@@ -103,7 +103,6 @@ A \code{ggplot} or \code{patchwork} object.
 }
 \description{
 Visualize normalized results produced by \code{RunSpatialGradientFeatures()}
-without requiring the original SPATA2 object.
 }
 \examples{
 counts <- matrix(

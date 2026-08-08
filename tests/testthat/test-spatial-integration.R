@@ -153,53 +153,6 @@ test_that("SpatialIntegrationPlot reuses SCOP plot helpers", {
   expect_s3_class(p_alignment, "ggplot")
 })
 
-test_that("SpatialMNN follows the atlasClustering three-stage API", {
-  srt <- make_spatial_integration_seurat()
-  observed <- character()
-  testthat::local_mocked_bindings(
-    check_r = function(...) list(atlasClustering = TRUE),
-    get_namespace_fun = function(package, name) {
-      expect_identical(package, "atlasClustering")
-      switch(name,
-        stage_1 = function(seu_ls, verbose) {
-          observed <<- c(observed, "stage_1")
-          expect_true(all(vapply(seu_ls, function(x) {
-            all(c("coord_x", "coord_y") %in% colnames(x@meta.data)) &&
-              "RNA" %in% SeuratObject::Assays(x) &&
-              identical(SeuratObject::DefaultAssay(x), "RNA")
-          }, logical(1))))
-          for (i in seq_along(seu_ls)) {
-            seu_ls[[i]]$merged_cluster <- rep(1:2, length.out = ncol(seu_ls[[i]]))
-          }
-          seu_ls
-        },
-        stage_2 = function(seu_ls, method, rtn_seurat, verbose) {
-          observed <<- c(observed, "stage_2")
-          expect_identical(method, "MNN")
-          expect_true(rtn_seurat)
-          list(cl_df = do.call(rbind, lapply(names(seu_ls), function(sample) {
-            data.frame(sample = sample, cluster = 1:2, louvain = c("D1", "D2"))
-          })))
-        },
-        stop("unexpected atlasClustering function")
-      )
-    }
-  )
-
-  out <- RunSpatialIntegration(
-    srt,
-    method = "SpatialMNN",
-    sample.by = "sample",
-    assay = "RNA",
-    layer = "counts",
-    coord.cols = c("col", "row"),
-    coordinate_space = "raw",
-    verbose = FALSE
-  )
-  expect_identical(observed, c("stage_1", "stage_2"))
-  expect_true(all(!is.na(out$SpatialIntegration_SpatialMNN_domain)))
-  expect_identical(out@tools$SpatialIntegration$parameters$coordinate_space, "raw")
-})
 
 test_that("PRECAST receives selected features and its SelectModel object argument", {
   input <- list(
@@ -235,65 +188,4 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
   expect_identical(out, list(step = "created"))
 })
 
-test_that("SpatialMNN installation discovery uses the actual package name", {
-  calls <- character()
-  testthat::local_mocked_bindings(
-    check_r = function(package, install = TRUE, verbose = TRUE) {
-      calls <<- c(calls, package)
-      if (identical(package, "atlasClustering")) {
-        return(list(atlasClustering = FALSE))
-      }
-      list(atlasClustering = TRUE)
-    },
-    get_namespace_fun = function(package, name) {
-      stage_1 <- function(seu_ls, ...) {
-        lapply(seu_ls, function(x) {
-          x$merged_cluster <- rep(1:2, length.out = ncol(x))
-          x
-        })
-      }
-      stage_2 <- function(seu_ls, ...) {
-        list(
-          cl_df = data.frame(
-            sample = "S1",
-            cluster = "1",
-            louvain = "1"
-          )
-        )
-      }
-      switch(name,
-        stage_1 = stage_1,
-        stage_2 = stage_2,
-        stage_3 = function(...) list(embedding = NULL, domains = NULL),
-        function(...) NULL
-      )
-    },
-    spatialmnn_prepare_seurat_list = function(...) list()
-  )
 
-  out <- spatial_integration_run_spatialmnn(input = list(), params = list())
-  expect_true(is.list(out))
-  expect_identical(calls, c("atlasClustering", "Pixel-Dream/spatialMNN"))
-})
-
-test_that("BASS discovery rejects the unrelated package-name collision", {
-  skip_if_not_installed("BASS")
-  checks <- 0L
-  installs <- character()
-  testthat::local_mocked_bindings(
-    bass_namespace_ready = function() {
-      checks <<- checks + 1L
-      checks > 1L
-    },
-    check_r = function(package, force = FALSE, verbose = TRUE) {
-      installs <<- c(installs, package)
-      expect_true(force)
-      invisible(TRUE)
-    }
-  )
-
-  expect_invisible(
-    spatial_integration_run_bass(input = list(), params = list())
-  )
-  expect_identical(installs, "zhengli09/BASS")
-})

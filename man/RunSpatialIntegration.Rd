@@ -6,7 +6,7 @@
 \usage{
 RunSpatialIntegration(
   object,
-  method = c("PRECAST", "BASS", "SpatialMNN"),
+  method = "PRECAST",
   sample.by = NULL,
   assay = NULL,
   layer = "counts",

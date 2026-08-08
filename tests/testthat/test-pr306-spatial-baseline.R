@@ -61,7 +61,6 @@ test_that("PR 306 new spatial entry points require explicit multi-image selectio
 
   expect_error(RunSpatialNetwork(srt, k = 1, verbose = FALSE), "Multiple spatial images")
   expect_error(srt_to_giotto(srt), "Multiple spatial images")
-  expect_error(srt_to_spata2(srt), "Multiple spatial images")
   expect_error(SpatialCellPlot(object = srt), "Multiple spatial images")
 })
 
