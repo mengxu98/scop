@@ -58,6 +58,7 @@ test_that("PrepareCCCDB validates db and species arguments", {
 })
 
 test_that("PrepareDB delegates CellChat and CellTalk to PrepareCCCDB", {
+  testthat::skip_if_not_installed("biomaRt")
   mock_env <- environment()
   captured <- list()
   testthat::local_mocked_bindings(

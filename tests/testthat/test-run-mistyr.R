@@ -115,7 +115,7 @@ test_that("RunMistyR builds views, collects results, and stores schema", {
   bundle <- out@tools$MistyR
   expect_identical(bundle$parameters$coordinate_space, "raw")
   expect_named(bundle, c(
-    "results", "summary", "results_folder", "features", "cells", "parameters",
+    "results", "summary", "results_folder", "features", "feature_map", "cells", "parameters",
     "views"
   ))
   expect_equal(bundle$features, paste0("Gene", 1:3))
