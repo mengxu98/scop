@@ -6,7 +6,7 @@
 \usage{
 RunCNV(
   srt,
-  method = c("copykat", "fastCNV", "scevan", "infercnv", "numbat", "casper"),
+  method = c("copykat", "fastCNV", "scevan", "infercnv", "numbat"),
   assay = NULL,
   layer = "counts",
   group.by = NULL,
@@ -17,9 +17,6 @@ RunCNV(
   sample.by = NULL,
   allele_counts = NULL,
   reference_counts = NULL,
-  loh = NULL,
-  loh_name_mapping = NULL,
-  cytoband = NULL,
   output_dir = NULL,
   prefix = "CNV",
   tool_name = "CNV",
@@ -32,7 +29,7 @@ RunCNV(
 \item{srt}{A \code{Seurat} object.}
 
 \item{method}{CNA/CNV backend. Supported backends are \code{"copykat"},
-\code{"fastCNV"}, \code{"scevan"}, \code{"infercnv"}, \code{"numbat"}, and \code{"casper"}.}
+\code{"fastCNV"}, \code{"scevan"}, \code{"infercnv"}, and \code{"numbat"}.}
 
 \item{assay}{Which assay to use.
 If \code{NULL}, the default assay of the Seurat object will be used.
@@ -62,12 +59,6 @@ to \code{numbat::run_numbat()} as \code{df_allele}.}
 
 \item{reference_counts}{Reference expression profile for \code{"numbat"}. This
 is forwarded to \code{numbat::run_numbat()} as \code{lambdas_ref}.}
-
-\item{loh}{B-allele frequency/LOH signal for \code{"casper"}.}
-
-\item{loh_name_mapping}{Optional CaSpER LOH-to-cell mapping table.}
-
-\item{cytoband}{Cytoband table for \code{"casper"}.}
 
 \item{output_dir}{Optional backend output directory.}
 
@@ -123,7 +114,7 @@ srt <- RunCNV(
   gene_order = gene_order
 )
 
-# Numbat and CaSpER can also be run when allele-aware preprocessing
+# Numbat can also be run when allele-aware preprocessing
 # outputs are available.
 
 CNVPlot(srt, plot_type = "heatmap", group.by = "CNV_prediction")
