@@ -19,12 +19,14 @@ spatial vignette describes loading these slices with
 A compact two-slice subset of the 10x Genomics mouse brain serial sagittal
 Visium dataset distributed as \code{stxBrain.SeuratData}. The object contains
 1000 tissue spots from each of the anterior serial sections \code{anterior1} and
-\code{anterior2}, with a \code{Spatial} assay, two Visium images, and tissue
-coordinates in metadata columns \code{x} and \code{y}. Metadata column \code{sample} stores
-the original slice label and is intended for multi-slice spatial integration
-examples that require a real \code{sample.by} column. To keep the package data
-small, the object retains the top 4000 genes ranked by total counts across
-the two selected slices.
+\code{anterior2}, with a \code{Spatial} assay, two centroid-based Visium images, and
+tissue coordinates in metadata columns \code{x} and \code{y}. Metadata column \code{sample}
+stores the original slice label and is intended for multi-slice spatial
+integration examples that require a real \code{sample.by} column. To keep the
+package data small, the object retains the top 4000 genes ranked by total
+counts across the two selected slices. The images are rebuilt as generic
+centroid FOVs so that the object can be subset with current \code{SeuratObject}
+releases.
 }
 \examples{
 data(visium_mouse_brain_slices_sub)
