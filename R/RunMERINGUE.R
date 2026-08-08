@@ -22,6 +22,12 @@
 #' `NULL`, top spatially autocorrelated features are used.
 #' @param neighbor_params,moran_params,cross_cor_params,module_params Named
 #' lists of additional arguments passed to the corresponding MERINGUE steps.
+#' @param backend Implementation used for the Moran autocorrelation tests.
+#' `"cpp"` uses a scop-compiled kernel that is numerically equivalent to
+#' `MERINGUE::moranTest()` and `MERINGUE::moranPermutationTest()` and is
+#' substantially faster for permutation tests; `"r"` calls the original
+#' MERINGUE functions directly. When `"cpp"` is selected, `moran_params` are
+#' ignored with a warning because the compiled kernel has no extra arguments.
 #'
 #' @return A `Seurat` object with MERINGUE results stored in
 #' `srt@tools[["MERINGUE"]]`. Top autocorrelated features are available at
@@ -82,9 +88,11 @@ RunMERINGUE <- function(
   moran_params = list(),
   cross_cor_params = list(),
   module_params = list(),
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  backend = c("cpp", "r")
 ) {
   coordinate_space <- match.arg(coordinate_space)
+  backend <- match.arg(backend)
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -167,7 +175,8 @@ RunMERINGUE <- function(
       nperm = nperm,
       ncores = ncores,
       seed = seed,
-      moran_params = moran_params
+      moran_params = moran_params,
+      backend = backend
     )
   }
 
@@ -242,7 +251,8 @@ RunMERINGUE <- function(
     pairwise_features = pairwise_features,
     set_variable_features = set_variable_features,
     store_results = store_results,
-    seed = seed
+    seed = seed,
+    backend = backend
   ))
   if (isTRUE(store_results)) {
     srt@tools[["MERINGUE"]] <- list(
@@ -362,11 +372,81 @@ meringue_run_autocorrelation <- function(
   nperm = 0,
   ncores = 1,
   seed = 11,
-  moran_params = list()
+  moran_params = list(),
+  backend = c("cpp", "r")
 ) {
+  backend <- match.arg(backend)
+  if (identical(backend, "cpp") && length(moran_params) > 0L) {
+    log_message(
+      "{.arg moran_params} are ignored by the cpp backend; they are only passed through to {.pkg MERINGUE} by the r backend",
+      message_type = "warning"
+    )
+  }
+  rounding_sample <- tryCatch(
+    identical(RNGkind()[3], "Rounding"),
+    error = function(e) FALSE
+  )
+  if (identical(backend, "cpp") && nperm <= 0L && nrow(expr) > 0L) {
+    expr_mat <- as.matrix(expr[, rownames(weight), drop = FALSE])
+    batch <- meringue_moran_matrix_cpp(
+      expr = expr_mat,
+      weight = weight,
+      alternative = alternative,
+      rounding_sample = rounding_sample
+    )
+    rows <- lapply(seq_len(nrow(expr)), function(i) {
+      feature <- rownames(expr)[[i]]
+      idx <- match(feature, rownames(batch))
+      out <- if (is.na(idx)) {
+        c(observed = NA_real_, expected = NA_real_, sd = NA_real_, p_value = NA_real_)
+      } else {
+        c(
+          observed = batch[idx, 1],
+          expected = batch[idx, 2],
+          sd = batch[idx, 3],
+          p_value = batch[idx, 4]
+        )
+      }
+      meringue_normalize_moran_result(out, feature = feature)
+    })
+    result <- do.call(rbind, rows)
+    result$p_value <- NA_real_
+    result$q_value <- NA_real_
+    result$score <- result$statistic
+    result$mean <- rowMeans(expr[result$feature, , drop = FALSE])
+    result$variance <- fast_row_vars(expr[result$feature, , drop = FALSE])
+    result$n_spots <- as.integer(expressed_spots[result$feature])
+    score_order <- ifelse(is.finite(result$score), result$score, -Inf)
+    p_order <- ifelse(is.finite(result$p_value), result$p_value, Inf)
+    q_order <- ifelse(is.finite(result$q_value), result$q_value, Inf)
+    result <- result[order(-score_order, p_order, q_order), , drop = FALSE]
+    result$rank <- seq_len(nrow(result))
+    rownames(result) <- NULL
+    result <- meringue_reorder_cols(
+      result,
+      c(
+        "feature", "rank", "statistic", "expected", "sd", "p_value",
+        "q_value", "score", "mean", "variance", "n_spots"
+      )
+    )
+    return(result)
+  }
   rows <- lapply(seq_len(nrow(expr)), function(i) {
     feature <- rownames(expr)[[i]]
-    out <- if (nperm > 0L) {
+    out <- if (identical(backend, "cpp")) {
+      z <- expr[i, ]
+      z <- z[rownames(weight)]
+      if (nperm > 0L) {
+        set.seed(seed)
+      }
+      meringue_moran_cpp(
+        z = z,
+        weight = weight,
+        n_perm = as.integer(nperm),
+        alternative = alternative,
+        rounding_sample = rounding_sample
+      )
+    } else if (nperm > 0L) {
       args <- utils::modifyList(
         list(
           z = expr[i, ],
