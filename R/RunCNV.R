@@ -1035,11 +1035,25 @@ cnv_matrix_from_numbat_joint_post <- function(joint_post, cells) {
   }
   segs <- unique(as.character(df[[seg_col]]))
   mat <- matrix(NA_real_, nrow = length(segs), ncol = length(cells), dimnames = list(segs, cells))
-  keys <- paste(as.character(df[[seg_col]]), as.character(df[[cell_col]]), sep = "\r")
-  values <- stats::aggregate(score, by = list(key = keys), FUN = mean, na.rm = TRUE)
-  split_key <- strsplit(values$key, "\r", fixed = TRUE)
-  for (i in seq_len(nrow(values))) {
-    mat[split_key[[i]][[1L]], split_key[[i]][[2L]]] <- values$x[[i]]
+  seg_ids <- as.character(df[[seg_col]])
+  cell_ids <- as.character(df[[cell_col]])
+  row_idx <- match(seg_ids, segs)
+  col_idx <- match(cell_ids, cells)
+  keep <- is.finite(row_idx) & is.finite(col_idx)
+  keys <- paste(seg_ids, cell_ids, sep = "\r")
+  first <- !duplicated(keys)
+  use <- keep & first
+  if (any(use)) {
+    mat[cbind(row_idx[use], col_idx[use])] <- score[use]
+  }
+  if (any(keep & !first)) {
+    dup_means <- stats::aggregate(
+      x = score[keep],
+      by = list(seg = seg_ids[keep], cell = cell_ids[keep]),
+      FUN = mean,
+      na.rm = TRUE
+    )
+    mat[cbind(match(dup_means$seg, segs), match(dup_means$cell, cells))] <- dup_means$x
   }
   bin_info <- cnv_numbat_bin_info(df, seg_col = seg_col, segs = segs)
   list(matrix = mat, bin_info = bin_info)
@@ -1067,9 +1081,10 @@ cnv_numbat_bin_info <- function(df, seg_col, segs) {
     gene = segs,
     stringsAsFactors = FALSE
   )
+  split_idx <- split(seq_len(nrow(df)), as.character(df[[seg_col]]))
   for (seg in segs) {
-    rows <- which(as.character(df[[seg_col]]) == seg)
-    if (length(rows) == 0L) {
+    rows <- split_idx[[seg]]
+    if (is.null(rows) || length(rows) == 0L) {
       next
     }
     i <- match(seg, out$bin_id)
