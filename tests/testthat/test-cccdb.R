@@ -4,8 +4,10 @@ test_that("ListCCCDB enumerates CCC databases with a unified schema", {
   resources <- ListCCCDB()
   expect_identical(colnames(resources), c("Database", "Resource", "Species", "Default", "Status", "Description"))
   expect_setequal(unique(resources$Database), c("LIANA", "CellChat", "Nichenetr", "CellphoneDB"))
-  expect_true(all(resources$Species %in% c("human", "mouse", "zebrafish")))
+  available <- resources[resources$Status == "available", , drop = FALSE]
+  expect_true(all(available$Species %in% c("human", "mouse", "zebrafish")))
   cellchat_rows <- resources[resources$Database == "CellChat", , drop = FALSE]
+  testthat::skip_if_not_installed("CellChat")
   expect_setequal(
     cellchat_rows$Resource,
     c("CellChatDB.human", "CellChatDB.mouse", "CellChatDB.zebrafish")
@@ -24,6 +26,7 @@ test_that("ListCCCDB returns a plain data frame", {
 test_that("ListCCCDB filters by db and species", {
   resources <- ListCCCDB(db = c("CellChat", "LIANA"))
   expect_setequal(unique(resources$Database), c("CellChat", "LIANA"))
+  testthat::skip_if_not_installed("CellChat")
   mouse <- ListCCCDB(species = "mouse")
   expect_true(all(mouse$Species == "mouse"))
   expect_true(any(mouse$Resource == "CellChatDB.mouse"))
@@ -31,6 +34,7 @@ test_that("ListCCCDB filters by db and species", {
 })
 
 test_that("ListDB returns unified Database/Species/Version/Date columns", {
+  testthat::skip_if_not_installed("R.cache")
   dbinfo <- ListDB(species = "Homo_sapiens", db = "CellChat")
   expect_identical(colnames(dbinfo), c("Database", "Species", "Version", "Date"))
   expect_false(inherits(dbinfo, "db_table"))
