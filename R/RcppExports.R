@@ -189,6 +189,14 @@ mdic3_score_cpp <- function(expression, grn, group) {
     .Call(`_scop_mdic3_score_cpp`, expression, grn, group)
 }
 
+meringue_moran_matrix_cpp <- function(expr, weight, alternative, rounding_sample = FALSE) {
+    .Call(`_scop_meringue_moran_matrix_cpp`, expr, weight, alternative, rounding_sample)
+}
+
+meringue_moran_cpp <- function(z, weight, n_perm, alternative, rounding_sample = FALSE) {
+    .Call(`_scop_meringue_moran_cpp`, z, weight, n_perm, alternative, rounding_sample)
+}
+
 manifold_exact_knn_cpp <- function(data, k, metric = 1L) {
     .Call(`_scop_manifold_exact_knn_cpp`, data, k, metric)
 }

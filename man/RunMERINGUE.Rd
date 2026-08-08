@@ -28,7 +28,8 @@ RunMERINGUE(
   moran_params = list(),
   cross_cor_params = list(),
   module_params = list(),
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  backend = c("cpp", "r")
 )
 }
 \arguments{
@@ -93,6 +94,13 @@ lists of additional arguments passed to the corresponding MERINGUE steps.}
 \item{coordinate_space}{Coordinate system used for MERINGUE distances. The
 default is raw acquisition coordinates; \code{"legacy_display"} remains an
 explicit compatibility option.}
+
+\item{backend}{Implementation used for the Moran autocorrelation tests.
+\code{"cpp"} uses a scop-compiled kernel that is numerically equivalent to
+\code{MERINGUE::moranTest()} and \code{MERINGUE::moranPermutationTest()} and is
+substantially faster for permutation tests; \code{"r"} calls the original
+MERINGUE functions directly. When \code{"cpp"} is selected, \code{moran_params} are
+ignored with a warning because the compiled kernel has no extra arguments.}
 }
 \value{
 A \code{Seurat} object with MERINGUE results stored in

@@ -690,6 +690,35 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// meringue_moran_matrix_cpp
+NumericMatrix meringue_moran_matrix_cpp(NumericMatrix expr, NumericMatrix weight, String alternative, bool rounding_sample);
+RcppExport SEXP _scop_meringue_moran_matrix_cpp(SEXP exprSEXP, SEXP weightSEXP, SEXP alternativeSEXP, SEXP rounding_sampleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type expr(exprSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type weight(weightSEXP);
+    Rcpp::traits::input_parameter< String >::type alternative(alternativeSEXP);
+    Rcpp::traits::input_parameter< bool >::type rounding_sample(rounding_sampleSEXP);
+    rcpp_result_gen = Rcpp::wrap(meringue_moran_matrix_cpp(expr, weight, alternative, rounding_sample));
+    return rcpp_result_gen;
+END_RCPP
+}
+// meringue_moran_cpp
+NumericVector meringue_moran_cpp(NumericVector z, NumericMatrix weight, int n_perm, String alternative, bool rounding_sample);
+RcppExport SEXP _scop_meringue_moran_cpp(SEXP zSEXP, SEXP weightSEXP, SEXP n_permSEXP, SEXP alternativeSEXP, SEXP rounding_sampleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type z(zSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type weight(weightSEXP);
+    Rcpp::traits::input_parameter< int >::type n_perm(n_permSEXP);
+    Rcpp::traits::input_parameter< String >::type alternative(alternativeSEXP);
+    Rcpp::traits::input_parameter< bool >::type rounding_sample(rounding_sampleSEXP);
+    rcpp_result_gen = Rcpp::wrap(meringue_moran_cpp(z, weight, n_perm, alternative, rounding_sample));
+    return rcpp_result_gen;
+END_RCPP
+}
 // manifold_exact_knn_cpp
 Rcpp::List manifold_exact_knn_cpp(Rcpp::NumericMatrix data, int k, int metric);
 RcppExport SEXP _scop_manifold_exact_knn_cpp(SEXP dataSEXP, SEXP kSEXP, SEXP metricSEXP) {
@@ -2988,6 +3017,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_sparse_row_has_variable_finite", (DL_FUNC) &_scop_sparse_row_has_variable_finite, 1},
     {"_scop_knn_vote_labels_cpp", (DL_FUNC) &_scop_knn_vote_labels_cpp, 2},
     {"_scop_mdic3_score_cpp", (DL_FUNC) &_scop_mdic3_score_cpp, 3},
+    {"_scop_meringue_moran_matrix_cpp", (DL_FUNC) &_scop_meringue_moran_matrix_cpp, 4},
+    {"_scop_meringue_moran_cpp", (DL_FUNC) &_scop_meringue_moran_cpp, 5},
     {"_scop_manifold_exact_knn_cpp", (DL_FUNC) &_scop_manifold_exact_knn_cpp, 3},
     {"_scop_pacmap_optimize_cpp", (DL_FUNC) &_scop_pacmap_optimize_cpp, 9},
     {"_scop_trimap_optimize_cpp", (DL_FUNC) &_scop_trimap_optimize_cpp, 10},

@@ -81,6 +81,7 @@ test_that("RunMERINGUE stores normalized autocorrelation, cross-correlation, and
     min_spots = 1,
     nfeatures = 3,
     pairwise_features = c("Gene1", "Gene2", "Gene4"),
+    backend = "r",
     verbose = FALSE
   )
 
@@ -125,6 +126,7 @@ test_that("MERINGUE retains permutation p values when permutations are requested
     mode = "autocorrelation",
     min_spots = 1,
     nperm = 10,
+    backend = "r",
     verbose = FALSE
   )
 
@@ -159,6 +161,7 @@ test_that("pairwise_features controls cross-correlation scope without implicit O
     mode = "cross_correlation",
     min_spots = 1,
     pairwise_features = c("Gene1", "Gene2"),
+    backend = "r",
     verbose = FALSE
   )
 
@@ -185,6 +188,7 @@ test_that("RunMERINGUE can compute optional cross-correlation p values", {
     min_spots = 1,
     pairwise_features = c("Gene1", "Gene2"),
     cross_cor_params = list(test = TRUE, n = 5),
+    backend = "r",
     verbose = FALSE
   )
 
@@ -205,6 +209,7 @@ test_that("RunMERINGUE top features are directly plottable with SpatialSpotPlot"
     mode = "autocorrelation",
     min_spots = 1,
     nfeatures = 2,
+    backend = "r",
     verbose = FALSE
   )
 
