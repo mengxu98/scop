@@ -25,9 +25,6 @@
 #' to `numbat::run_numbat()` as `df_allele`.
 #' @param reference_counts Reference expression profile for `"numbat"`. This
 #' is forwarded to `numbat::run_numbat()` as `lambdas_ref`.
-#' @param loh B-allele frequency/LOH signal for `"casper"`.
-#' @param loh_name_mapping Optional CaSpER LOH-to-cell mapping table.
-#' @param cytoband Cytoband table for `"casper"`.
 #' @param output_dir Optional backend output directory.
 #' @param prefix Prefix for metadata columns.
 #' @param tool_name Name used for `srt@tools`.
@@ -73,7 +70,7 @@
 #'   gene_order = gene_order
 #' )
 #'
-#' # Numbat and CaSpER can also be run when allele-aware preprocessing
+#' # Numbat can also be run when allele-aware preprocessing
 #' # outputs are available.
 #'
 #' CNVPlot(srt, plot_type = "heatmap", group.by = "CNV_prediction")
@@ -81,7 +78,7 @@
 #' }
 RunCNV <- function(
   srt,
-  method = c("copykat", "fastCNV", "scevan", "infercnv", "numbat", "casper"),
+  method = c("copykat", "fastCNV", "scevan", "infercnv", "numbat"),
   assay = NULL,
   layer = "counts",
   group.by = NULL,
@@ -92,9 +89,6 @@ RunCNV <- function(
   sample.by = NULL,
   allele_counts = NULL,
   reference_counts = NULL,
-  loh = NULL,
-  loh_name_mapping = NULL,
-  cytoband = NULL,
   output_dir = NULL,
   prefix = "CNV",
   tool_name = "CNV",
@@ -129,14 +123,12 @@ RunCNV <- function(
     srt = srt,
     assay = assay,
     method = method,
-    required = method %in% c("infercnv", "casper")
+    required = method %in% c("infercnv")
   )
   cnv_validate_backend_inputs(
     method = method,
     allele_counts = allele_counts,
     reference_counts = reference_counts,
-    loh = loh,
-    cytoband = cytoband,
     gene_order = gene_order_tbl
   )
   counts <- cnv_get_counts(
@@ -175,9 +167,6 @@ RunCNV <- function(
     sample.by = sample.by,
     allele_counts = allele_counts,
     reference_counts = reference_counts,
-    loh = loh,
-    loh_name_mapping = loh_name_mapping,
-    cytoband = cytoband,
     output_dir = output_dir,
     verbose = verbose,
     ...
@@ -200,8 +189,6 @@ RunCNV <- function(
       sample.by = sample.by,
       allele_counts = !is.null(allele_counts),
       reference_counts = !is.null(reference_counts),
-      loh = !is.null(loh),
-      cytoband = !is.null(cytoband),
       output_dir = output_dir,
       prefix = prefix,
       tool_name = tool_name
@@ -248,9 +235,6 @@ cnv_run_backend <- function(
   sample.by,
   allele_counts,
   reference_counts,
-  loh,
-  loh_name_mapping,
-  cytoband,
   output_dir,
   verbose,
   ...
@@ -586,64 +570,6 @@ cnv_run_numbat <- function(
   cnv_extract_numbat(result = result, cells = colnames(counts), output_dir = out_dir)
 }
 
-cnv_run_casper <- function(
-  counts,
-  reference_cells,
-  gene_order,
-  loh,
-  loh_name_mapping = NULL,
-  cytoband,
-  genome = "hg38",
-  output_dir = NULL,
-  verbose = TRUE,
-  ...
-) {
-  check_r("akdess/CaSpER", verbose = FALSE)
-  create_fun <- get_namespace_fun("CaSpER", "CreateCasperObject")
-  run_fun <- get_namespace_fun("CaSpER", "runCaSpER")
-  event_fun <- get_namespace_fun("CaSpER", "extractLargeScaleEvents")
-  annotation <- cnv_gene_order_to_casper_annotation(gene_order)
-  casper_args <- utils::modifyList(
-    list(
-      raw.data = as.matrix(counts),
-      annotation = annotation,
-      control.sample.ids = reference_cells,
-      cytoband = cytoband,
-      loh.name.mapping = loh_name_mapping,
-      cnv.scale = 3,
-      loh.scale = 3,
-      method = "iterative",
-      loh = loh,
-      project = "scop_cnv",
-      matrix.type = "raw",
-      sequencing.type = "single-cell",
-      log.transformed = FALSE,
-      genomeVersion = if (identical(genome, "hg19")) "hg19" else "hg38"
-    ),
-    list(...)
-  )
-  object <- cnv_call_backend_fun(create_fun, casper_args)
-  run_args <- utils::modifyList(
-    list(
-      object = object,
-      removeCentromere = TRUE,
-      cytoband = cytoband,
-      method = casper_args$method %||% "iterative"
-    ),
-    list(...)
-  )
-  final_objects <- cnv_call_backend_fun(run_fun, run_args)
-  event_args <- list(final.objects = final_objects)
-  final_mat <- tryCatch(
-    cnv_call_backend_fun(event_fun, event_args),
-    error = function(e) NULL
-  )
-  cnv_extract_casper(
-    result = list(final_objects = final_objects, large_scale_events = final_mat, object = object),
-    cells = colnames(counts)
-  )
-}
-
 cnv_extract_copykat <- function(result) {
   cnv_matrix <- result$CNAmat %||% result$CNA %||% result$cnv_matrix
   if (is.null(cnv_matrix)) {
@@ -754,42 +680,6 @@ cnv_extract_numbat <- function(result, cells, output_dir = NULL) {
     bin_info = bin_info %||% cnv_bin_info_from_matrix(mat),
     cell_info = cell_info,
     raw = cnv_light_raw(merged)
-  )
-}
-
-cnv_extract_casper <- function(result, cells) {
-  mat <- result$large_scale_events %||% result$finalChrMat %||% result$final_chr_mat
-  if (is.null(mat)) {
-    mat <- cnv_casper_matrix_from_objects(result$final_objects %||% result$objects %||% result)
-  }
-  if (is.null(mat)) {
-    candidates <- cnv_find_matrix_candidates(result, cells = cells)
-    mat <- candidates$matrix
-  }
-  if (is.null(mat)) {
-    log_message(
-      "{.pkg CaSpER} did not return a detectable CNV matrix",
-      message_type = "error"
-    )
-  }
-  mat <- as.matrix(mat)
-  storage.mode(mat) <- "double"
-  mat <- cnv_orient_matrix(mat, cells = cells)
-  bin_info <- cnv_casper_bin_info(mat)
-  score <- colMeans(abs(mat), na.rm = TRUE)
-  prediction <- ifelse(score > 0, "aneuploid", "diploid")
-  cell_info <- data.frame(
-    cell = colnames(mat),
-    score = as.numeric(score),
-    prediction = prediction,
-    stringsAsFactors = FALSE
-  )
-  rownames(cell_info) <- cell_info$cell
-  list(
-    cnv_matrix = mat,
-    bin_info = bin_info,
-    cell_info = cell_info,
-    raw = cnv_light_raw(result)
   )
 }
 
@@ -1145,56 +1035,6 @@ cnv_cell_info_from_numbat_clone_post <- function(clone_post, cells) {
   out
 }
 
-cnv_casper_matrix_from_objects <- function(x) {
-  if (is.null(x)) {
-    return(NULL)
-  }
-  objects <- if (is.list(x) && !isS4(x)) x else list(x)
-  for (object in objects) {
-    if (isS4(object) && "large.scale.cnv.events" %in% methods::slotNames(object)) {
-      events <- methods::slot(object, "large.scale.cnv.events")
-      mat <- cnv_casper_events_to_matrix(events)
-      if (!is.null(mat)) {
-        return(mat)
-      }
-    }
-  }
-  NULL
-}
-
-cnv_casper_events_to_matrix <- function(events) {
-  if (is.null(events) || !is.data.frame(events) || nrow(events) == 0L) {
-    return(NULL)
-  }
-  arms <- as.vector(rbind(paste0(seq_len(22), "p"), paste0(seq_len(22), "q")))
-  mat <- matrix(0, nrow = nrow(events), ncol = length(arms), dimnames = list(rownames(events), arms))
-  amp_col <- cnv_first_col(events, c("LargeScaleAmp", "largeScaleAmp", "amp"))
-  del_col <- cnv_first_col(events, c("LargeScaleDel", "largeScaleDel", "del"))
-  for (i in seq_len(nrow(events))) {
-    if (!is.null(amp_col)) {
-      amp <- unlist(strsplit(as.character(events[[amp_col]][[i]]), "\\s+"))
-      mat[i, intersect(amp, arms)] <- 1
-    }
-    if (!is.null(del_col)) {
-      del <- unlist(strsplit(as.character(events[[del_col]][[i]]), "\\s+"))
-      mat[i, intersect(del, arms)] <- -1
-    }
-  }
-  mat
-}
-
-cnv_casper_bin_info <- function(mat) {
-  data.frame(
-    bin_id = rownames(mat),
-    chr = sub("([0-9XYM]+)[pq]$", "chr\\1", rownames(mat), ignore.case = TRUE),
-    start = NA_real_,
-    end = NA_real_,
-    gene = rownames(mat),
-    stringsAsFactors = FALSE,
-    row.names = rownames(mat)
-  )
-}
-
 cnv_standardize_result <- function(
   result,
   method,
@@ -1266,13 +1106,12 @@ cnv_match_method <- function(method) {
     fastcnv = "fastCNV",
     scevan = "scevan",
     infercnv = "infercnv",
-    numbat = "numbat",
-    casper = "casper"
+    numbat = "numbat"
   )
   method_key <- tolower(method)
   if (!method_key %in% names(method_map)) {
     log_message(
-      "{.arg method} must be one of {.val copykat}, {.val fastCNV}, {.val scevan}, {.val infercnv}, {.val numbat}, or {.val casper}",
+      "{.arg method} must be one of {.val copykat}, {.val fastCNV}, {.val scevan}, {.val infercnv}, or {.val numbat}",
       message_type = "error"
     )
   }
@@ -1322,7 +1161,7 @@ cnv_get_counts <- function(srt, assay, layer) {
 }
 
 cnv_reference_cells <- function(srt, method, reference.by, reference) {
-  if (method %in% c("infercnv", "fastCNV", "casper") && (is.null(reference.by) || is.null(reference))) {
+  if (method %in% c("infercnv", "fastCNV") && (is.null(reference.by) || is.null(reference))) {
     log_message(
       "{.arg reference.by} and {.arg reference} are required for {.arg method = {method}}",
       message_type = "error"
@@ -1347,8 +1186,6 @@ cnv_validate_backend_inputs <- function(
   method,
   allele_counts = NULL,
   reference_counts = NULL,
-  loh = NULL,
-  cytoband = NULL,
   gene_order = NULL
 ) {
   if (identical(method, "numbat")) {
@@ -1361,26 +1198,6 @@ cnv_validate_backend_inputs <- function(
     if (is.null(reference_counts)) {
       log_message(
         "{.arg reference_counts} is required for {.arg method = 'numbat'}",
-        message_type = "error"
-      )
-    }
-  }
-  if (identical(method, "casper")) {
-    if (is.null(gene_order) || nrow(gene_order) == 0L) {
-      log_message(
-        "{.arg gene_order} is required for {.arg method = 'casper'}",
-        message_type = "error"
-      )
-    }
-    if (is.null(loh)) {
-      log_message(
-        "{.arg loh} is required for {.arg method = 'casper'}",
-        message_type = "error"
-      )
-    }
-    if (is.null(cytoband)) {
-      log_message(
-        "{.arg cytoband} is required for {.arg method = 'casper'}",
         message_type = "error"
       )
     }
@@ -1501,20 +1318,6 @@ cnv_normalize_gene_order <- function(gene_order, required = TRUE) {
     )
   }
   out
-}
-
-cnv_gene_order_to_casper_annotation <- function(gene_order) {
-  annotation <- data.frame(
-    Gene = gene_order$gene,
-    Chr = sub("^chr", "", gene_order$chr, ignore.case = TRUE),
-    Start = gene_order$start,
-    End = gene_order$end,
-    Position = rowMeans(cbind(gene_order$start, gene_order$end), na.rm = TRUE),
-    cytoband = NA_character_,
-    stringsAsFactors = FALSE
-  )
-  rownames(annotation) <- annotation$Gene
-  annotation
 }
 
 cnv_orient_matrix <- function(mat, cells) {
