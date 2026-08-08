@@ -290,6 +290,12 @@ RunNichenetr <- function(
     candidate_ligands <- unique(lr_df$from[
       lr_df$from %in% sender_expr & lr_df$to %in% receiver_expr
     ])
+    if (length(candidate_ligands) == 0L) {
+      log_message(
+        "No ligands expressed by the sender overlap receptors expressed by the receiver. Check {.arg sender}, {.arg receiver}, {.arg expression_pct}, and whether {.arg species} matches the gene symbols of {.arg srt}",
+        message_type = "error"
+      )
+    }
 
     ligand_activities <- predict_ligand_activities(
       geneset = geneset,

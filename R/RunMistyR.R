@@ -188,6 +188,7 @@ RunMistyR <- function(
       summary = summary,
       results_folder = run_path,
       features = input$features,
+      feature_map = input$feature_map,
       cells = input$cells,
       parameters = list(
         assay = assay,
@@ -264,6 +265,8 @@ mistyr_prepare_input <- function(
   expr <- as.matrix(expr)
   expr[!is.finite(expr)] <- 0
   expression <- as.data.frame(t(expr), check.names = FALSE)
+  original_features <- colnames(expression)
+  colnames(expression) <- make.names(colnames(expression), unique = TRUE)
   positions <- data.frame(
     x = as.numeric(coords$x),
     y = as.numeric(coords$y),
@@ -274,7 +277,8 @@ mistyr_prepare_input <- function(
     expression = expression,
     positions = positions,
     features = features,
-    cells = cells
+    cells = cells,
+    feature_map = stats::setNames(original_features, colnames(expression))
   )
 }
 
@@ -346,7 +350,17 @@ MistyRPlot <- function(
     log_message("MistyR result {.val {type}} is empty", message_type = "error")
   }
   if (!is.null(target) && "target" %in% colnames(tab)) {
-    tab <- tab[as.character(tab$target) %in% as.character(target), , drop = FALSE]
+    feature_map <- res$feature_map %||% NULL
+    target_backend <- as.character(target)
+    if (!is.null(feature_map)) {
+      reverse_map <- stats::setNames(names(feature_map), unname(feature_map))
+      mapped <- unname(reverse_map[target_backend])
+      mapped <- mapped[!is.na(mapped)]
+      if (length(mapped) > 0L) {
+        target_backend <- unique(c(mapped, target_backend))
+      }
+    }
+    tab <- tab[as.character(tab$target) %in% target_backend, , drop = FALSE]
   }
   value_col <- intersect(c("value", "gain.R2", "contribution", "importance"), colnames(tab))[1L]
   if (is.na(value_col)) {
