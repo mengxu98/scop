@@ -187,25 +187,80 @@ RunLIANA <- function(
   srt
 }
 
-#' @title List LIANA ligand-receptor resources
+#' @title List CCC ligand-receptor and prior-model databases
 #'
 #' @description
-#' Lists the resources exposed by the installed LIANA backend. `Consensus` and
-#' `MouseConsensus` are curated ligand-receptor resources; they are distinct
-#' from LIANA's multi-method rank aggregation.
+#' Enumerates the ligand-receptor databases and prior models exposed by the
+#' installed cell-cell communication backends: LIANA resources,
+#' CellChat databases, NicheNet prior models, and CellphoneDB input data.
+#' Databases are listed without being loaded, and backends that are not
+#' installed or not configured are reported with their status instead of
+#' failing.
 #'
-#' @param species Optional species filter.
+#' @param db CCC backends to inspect. Any subset of `"LIANA"`,
+#' `"CellChat"`, `"Nichenetr"`, and `"CellphoneDB"`; the default inspects all
+#' supported backends.
+#' @param species Optional species filter: any subset of `"human"`,
+#' `"mouse"`, and `"zebrafish"`.
 #'
-#' @return A data frame describing the resources available from LIANA.
+#' @return A data frame with columns `db`, `resource`, `species`,
+#' `default`, `status`, and `description`. A row with an `NA` resource and a
+#' non-`"available"` status describes a backend that could not be inspected.
 #' @export
-ListLIANAResources <- function(species = NULL) {
-  check_r(c("saezlab/liana", "SingleCellExperiment"), verbose = FALSE)
+ListCCCDB <- function(
+  db = c("LIANA", "CellChat", "Nichenetr", "CellphoneDB"),
+  species = NULL
+) {
+  db <- match.arg(db, several.ok = TRUE)
   if (!is.null(species)) {
-    species <- match.arg(species, c("human", "mouse"))
+    species <- match.arg(species, c("human", "mouse", "zebrafish"), several.ok = TRUE)
   }
-  resources <- unique(as.character(liana_get_fun("show_resources")()))
+  pieces <- list()
+  if ("LIANA" %in% db) pieces[["LIANA"]] <- ccc_resources_liana()
+  if ("CellChat" %in% db) pieces[["CellChat"]] <- ccc_resources_cellchat()
+  if ("Nichenetr" %in% db) pieces[["Nichenetr"]] <- ccc_resources_nichenetr()
+  if ("CellphoneDB" %in% db) pieces[["CellphoneDB"]] <- ccc_resources_cellphonedb()
+  out <- do.call(rbind, pieces)
+  if (is.null(out)) {
+    return(data.frame())
+  }
+  rownames(out) <- NULL
+  if (!is.null(species)) {
+    out <- out[out$species %in% species, , drop = FALSE]
+  }
+  names(out)[match(c("db", "resource", "species", "default", "status", "description"), names(out))] <-
+    c("Database", "Resource", "Species", "Default", "Status", "Description")
+  out <- out[, c("Database", "Resource", "Species", "Default", "Status", "Description"), drop = FALSE]
+  out
+}
+
+ccc_resources_liana <- function() {
+  empty <- data.frame(
+    db = "LIANA",
+    resource = NA_character_,
+    species = NA_character_,
+    default = NA,
+    status = "backend_not_installed",
+    description = "Install saezlab/liana to inspect LIANA resources",
+    stringsAsFactors = FALSE
+  )
+  available <- tryCatch(
+    check_r(c("saezlab/liana", "SingleCellExperiment"), verbose = FALSE),
+    error = function(e) FALSE
+  )
+  if (!isTRUE(unname(unlist(available))[1])) {
+    return(empty)
+  }
+  resources <- tryCatch(
+    unique(as.character(liana_get_fun("show_resources")())),
+    error = function(e) character(0)
+  )
   resources <- resources[!is.na(resources) & nzchar(resources)]
-  out <- data.frame(
+  if (length(resources) == 0L) {
+    return(empty)
+  }
+  data.frame(
+    db = "LIANA",
     resource = resources,
     species = ifelse(resources == "MouseConsensus", "mouse", "human"),
     default = resources %in% c("Consensus", "MouseConsensus"),
@@ -213,11 +268,94 @@ ListLIANAResources <- function(species = NULL) {
     description = vapply(resources, liana_resource_description, character(1)),
     stringsAsFactors = FALSE
   )
-  if (!is.null(species)) {
-    out <- out[out$species == species, , drop = FALSE]
+}
+
+ccc_resources_cellchat <- function() {
+  if (!requireNamespace("CellChat", quietly = TRUE)) {
+    return(data.frame(
+      db = "CellChat",
+      resource = NA_character_,
+      species = NA_character_,
+      default = NA,
+      status = "backend_not_installed",
+      description = "Install jinworks/CellChat to inspect CellChat databases",
+      stringsAsFactors = FALSE
+    ))
   }
-  rownames(out) <- NULL
-  out
+  db_specs <- c(
+    human = "CellChatDB.human",
+    mouse = "CellChatDB.mouse",
+    zebrafish = "CellChatDB.zebrafish"
+  )
+  data.frame(
+    db = "CellChat",
+    resource = unname(db_specs),
+    species = names(db_specs),
+    default = TRUE,
+    status = "available",
+    description = paste0(
+      "CellChat curated ligand-receptor database (", names(db_specs), ")"
+    ),
+    stringsAsFactors = FALSE
+  )
+}
+
+ccc_resources_nichenetr <- function() {
+  if (!requireNamespace("nichenetr", quietly = TRUE)) {
+    return(data.frame(
+      db = "Nichenetr",
+      resource = NA_character_,
+      species = NA_character_,
+      default = NA,
+      status = "backend_not_installed",
+      description = "Install saeyslab/nichenetr to inspect NicheNet prior models",
+      stringsAsFactors = FALSE
+    ))
+  }
+  models <- data.frame(
+    resource = c(
+      "lr_network",
+      "ligand_target_matrix",
+      "weighted_networks",
+      "lr_network_mouse_21122021",
+      "ligand_target_matrix_nsga2r_final_mouse",
+      "weighted_networks_nsga2r_final_mouse"
+    ),
+    species = rep(c("human", "mouse"), each = 3),
+    stringsAsFactors = FALSE
+  )
+  models$db <- "Nichenetr"
+  models$default <- TRUE
+  models$status <- "available"
+  models$description <- "NicheNet prior model (package data or Zenodo download)"
+  models[, c("db", "resource", "species", "default", "status", "description"), drop = FALSE]
+}
+
+ccc_resources_cellphonedb <- function() {
+  py_ok <- tryCatch(
+    check_python(c("cellphonedb==5.0.1"), verbose = FALSE),
+    error = function(e) FALSE
+  )
+  if (!isTRUE(py_ok)) {
+    return(data.frame(
+      db = "CellphoneDB",
+      resource = NA_character_,
+      species = NA_character_,
+      default = NA,
+      status = "requires_python_cellphonedb",
+      description = "Configure the cellphonedb Python environment to inspect CellphoneDB input data",
+      stringsAsFactors = FALSE
+    ))
+  }
+  data.frame(
+    db = "CellphoneDB",
+    resource = c("complex_input", "gene_input", "curated_ligand_receptor"),
+    species = c("human", "human", "human"),
+    default = c(TRUE, TRUE, TRUE),
+    status = "available",
+    description = "CellphoneDB input data file inside the installed cellphonedb package",
+    stringsAsFactors = FALSE
+  )
 }
 
 liana_get_fun <- function(fun, package = "liana") {
@@ -257,12 +395,12 @@ liana_resolve_resources <- function(resource = NULL, species = c("human", "mouse
       message_type = "error"
     )
   }
-  available <- ListLIANAResources()
-  valid <- c(available$resource, "all", "custom")
+  available <- ListCCCDB(db = "LIANA")
+  valid <- c(available$Resource, "all", "custom")
   invalid <- setdiff(resource, valid)
   if (length(invalid) > 0L) {
     log_message(
-      "Unknown LIANA resources: {.val {invalid}}. Use {.fn ListLIANAResources} to inspect available resources.",
+      "Unknown LIANA resources: {.val {invalid}}. Use {.fn ListCCCDB} to inspect available databases.",
       message_type = "error"
     )
   }
@@ -272,7 +410,7 @@ liana_resolve_resources <- function(resource = NULL, species = c("human", "mouse
       message_type = "error"
     )
   }
-  if (species == "mouse" && any(resource %in% available$resource[available$species == "human"])) {
+  if (species == "mouse" && any(resource %in% available$Resource[available$Species == "human"])) {
     log_message(
       "Human LIANA resources cannot be selected with {.val species = 'mouse'}. Use {.val MouseConsensus} or {.val custom}.",
       message_type = "error"
@@ -420,6 +558,7 @@ liana_build_consensus <- function(
   )
 }
 
+
 #' @title Convert CCC results to a LIANA-like table
 #'
 #' @md
@@ -517,6 +656,7 @@ ccc_to_liana <- function(
     pvalue_col = pvalue_col
   )
 }
+
 
 #' @title Convert CCC results to OmicVerse communication AnnData
 #'
@@ -754,6 +894,7 @@ ccc_to_adata <- function(
   adata
 }
 
+
 ccc_result_long_table <- function(
   srt,
   method = NULL,
@@ -805,6 +946,7 @@ ccc_result_long_table <- function(
   df <- ccc_mark_significance(df, thresh = thresh)
   df
 }
+
 
 ccc_long_to_liana <- function(
   df,
@@ -945,6 +1087,7 @@ ccc_long_to_liana <- function(
   out
 }
 
+
 standardize_liana_result <- function(res) {
   raw <- ccc_flatten_liana_result(res)
   if (nrow(raw) == 0L) {
@@ -973,7 +1116,10 @@ standardize_liana_result <- function(res) {
       "ligand.expr",
       "receptor.expr",
       "weight",
-      "specificity"
+      "specificity",
+      "logfc_comb",
+      "log2fc",
+      "natmi.edge_specificity"
     )
   )
   pvalue <- ccc_numeric_column(
@@ -998,6 +1144,7 @@ standardize_liana_result <- function(res) {
   out <- ccc_mark_significance(out)
   out
 }
+
 
 ccc_flatten_liana_result <- function(x, path = character()) {
   if (is.null(x)) {
@@ -1026,6 +1173,7 @@ ccc_flatten_liana_result <- function(x, path = character()) {
   ccc_bind_long_tables(pieces)
 }
 
+
 ccc_parse_lr_label <- function(x) {
   x <- as.character(x)
   x[is.na(x)] <- ""
@@ -1052,24 +1200,6 @@ ccc_parse_lr_label <- function(x) {
   )
 }
 
-ccc_resolve_sample_col <- function(df, sample_col = NULL) {
-  if (!is.null(sample_col)) {
-    if (!sample_col %in% colnames(df)) {
-      log_message(
-        "{.arg sample_col} ({.val {sample_col}}) is not present in the CCC table",
-        message_type = "error"
-      )
-    }
-    return(sample_col)
-  }
-  candidates <- c("sample", "context", "condition", "dataset")
-  hit <- candidates[candidates %in% colnames(df)][1]
-  if (is.na(hit)) {
-    NULL
-  } else {
-    hit
-  }
-}
 
 ccc_numeric_column <- function(df, candidates) {
   for (candidate in candidates) {
@@ -1084,6 +1214,7 @@ ccc_numeric_column <- function(df, candidates) {
   }
   rep(NA_real_, nrow(df))
 }
+
 
 ccc_score_from_rank_like <- function(x) {
   x <- suppressWarnings(as.numeric(x))
@@ -1101,6 +1232,7 @@ ccc_score_from_rank_like <- function(x) {
   out
 }
 
+
 ccc_prepare_metric_values <- function(x, invert = FALSE, fill = 0) {
   x <- suppressWarnings(as.numeric(x))
   if (isTRUE(invert)) {
@@ -1109,6 +1241,7 @@ ccc_prepare_metric_values <- function(x, invert = FALSE, fill = 0) {
   x[!is.finite(x)] <- fill
   x
 }
+
 
 ccc_aggregate_liana_table <- function(out, sample_col = NULL, backend = c("cpp", "r")) {
   backend <- match.arg(backend)
@@ -1207,6 +1340,7 @@ ccc_aggregate_liana_table <- function(out, sample_col = NULL, backend = c("cpp",
   out
 }
 
+
 ccc_first_nonempty <- function(x, default = NA_character_) {
   x <- as.character(x)
   x <- x[!is.na(x) & nzchar(x)]
@@ -1215,4 +1349,67 @@ ccc_first_nonempty <- function(x, default = NA_character_) {
   } else {
     x[1]
   }
+}
+
+
+ccc_semantic_long_table <- function(df, method = NULL) {
+  out <- standardize_long_df(df)
+  if (nrow(out) == 0L) {
+    return(out)
+  }
+  if (!is.null(method)) out$method <- method
+  if (!"method" %in% colnames(out)) out$method <- NA_character_
+  for (nm in c("resource", "condition", "sample")) {
+    if (!nm %in% colnames(out)) out[[nm]] <- NA_character_
+  }
+  for (nm in c("producer", "backend_version")) {
+    if (!nm %in% colnames(out)) out[[nm]] <- NA_character_
+  }
+  if (!"score_type" %in% colnames(out)) out$score_type <- "backend_score"
+  if (!"score_direction" %in% colnames(out)) out$score_direction <- "higher_better"
+  if (!"pvalue_type" %in% colnames(out)) {
+    out$pvalue_type <- ifelse(is.finite(suppressWarnings(as.numeric(out$pvalue))),
+      "backend_support", "not_available"
+    )
+  }
+  if (!"support_type" %in% colnames(out)) out$support_type <- "method_specific"
+  if (!"priority_rank" %in% colnames(out)) out$priority_rank <- NA_real_
+  if (!"priority_score" %in% colnames(out)) out$priority_score <- NA_real_
+
+  method_values <- unique(as.character(out$method))
+  for (method_value in method_values) {
+    idx <- which(as.character(out$method) == method_value)
+    score <- suppressWarnings(as.numeric(out$score[idx]))
+    finite <- is.finite(score)
+    if (!any(finite)) next
+    direction <- unique(as.character(out$score_direction[idx]))
+    decreasing <- !length(direction) || !identical(direction[1], "lower_better")
+    rank_value <- rep(NA_real_, length(idx))
+    rank_value[finite] <- rank(if (decreasing) -score[finite] else score[finite],
+      ties.method = "average"
+    )
+    percentile <- rank_value / sum(finite)
+    missing_rank <- !is.finite(out$priority_rank[idx])
+    out$priority_rank[idx[missing_rank]] <- percentile[missing_rank]
+    missing_score <- !is.finite(out$priority_score[idx])
+    out$priority_score[idx[missing_score]] <- 1 - percentile[missing_score]
+  }
+  out
+}
+
+
+ccc_bind_long_tables <- function(pieces) {
+  pieces <- Filter(function(x) is.data.frame(x) && nrow(x) > 0L, pieces)
+  if (length(pieces) == 0L) {
+    return(data.frame())
+  }
+  common <- Reduce(union, lapply(pieces, colnames))
+  pieces <- lapply(pieces, function(x) {
+    missing <- setdiff(common, colnames(x))
+    for (nm in missing) x[[nm]] <- NA
+    x[, common, drop = FALSE]
+  })
+  out <- do.call(rbind, pieces)
+  rownames(out) <- NULL
+  out
 }

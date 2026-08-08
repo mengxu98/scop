@@ -47,10 +47,10 @@ test_that("LIANA resources are discovered from the optional backend", {
     .package = "scop"
   )
 
-  resources <- scop::ListLIANAResources()
-  expect_equal(resources$resource, c("Consensus", "CellChatDB", "MouseConsensus", "OmniPath"))
-  expect_equal(resources$species, c("human", "human", "mouse", "human"))
-  expect_equal(resources$status[resources$resource == "OmniPath"], "available")
+  resources <- scop::ListCCCDB(db = "LIANA")
+  expect_equal(resources$Resource, c("Consensus", "CellChatDB", "MouseConsensus", "OmniPath"))
+  expect_equal(resources$Species, c("human", "human", "mouse", "human"))
+  expect_equal(resources$Status[resources$Resource == "OmniPath"], "available")
 })
 
 test_that("RunLIANA stores official consensus and keeps legacy tables", {

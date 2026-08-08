@@ -328,3 +328,75 @@ ccc_run_status_df <- function(status) {
   rownames(out) <- NULL
   out
 }
+
+
+
+ccc_method_runner <- function(method) {
+  method <- normalize_ccc_method(method)
+  switch(method,
+    CellChat = RunCellChat,
+    CellphoneDB = RunCellphoneDB,
+    LIANA = RunLIANA,
+    Nichenetr = RunNichenetr,
+    MultiNichenetr = RunMultiNichenetr,
+    SpatialCellChat = RunSpatialCellChat,
+    MDIC3 = RunMDIC3,
+    ccc_unsupported_method(method)
+  )
+}
+
+
+normalize_ccc_method <- function(method) {
+  alias_map <- c(
+    "CCC" = "CCC",
+    "CellPhoneDB" = "CellphoneDB",
+    "CellphoneDB" = "CellphoneDB",
+    "Liana" = "LIANA",
+    "liana" = "LIANA",
+    "NicheNet" = "Nichenetr",
+    "MultiNicheNet" = "MultiNichenetr",
+    "SpatialCellChat" = "SpatialCellChat",
+    "MDIC3" = "MDIC3"
+  )
+  alias_map_lower <- c(
+    "ccc" = "CCC",
+    "unified" = "CCC",
+    "cellchat" = "CellChat",
+    "spatialcellchat" = "SpatialCellChat",
+    "spatial_cellchat" = "SpatialCellChat",
+    "spatial cellchat" = "SpatialCellChat",
+    "cellphonedb" = "CellphoneDB",
+    "cellphone_db" = "CellphoneDB",
+    "cellphone db" = "CellphoneDB",
+    "liana" = "LIANA",
+    "nichenet" = "Nichenetr",
+    "nichenetr" = "Nichenetr",
+    "multinichenet" = "MultiNichenetr",
+    "multinichenetr" = "MultiNichenetr",
+    "mdic3" = "MDIC3"
+  )
+  method_chr <- as.character(method)[1]
+  if (is.na(method_chr) || !nzchar(method_chr)) {
+    log_message(
+      "{.arg method} must be a non-empty string or NULL to auto-detect",
+      message_type = "error"
+    )
+  }
+  method_chr <- trimws(method_chr)
+  if (method_chr %in% names(alias_map)) {
+    return(unname(alias_map[[method_chr]]))
+  }
+  key <- tolower(method_chr)
+  if (key %in% names(alias_map_lower)) {
+    return(unname(alias_map_lower[[key]]))
+  }
+  method_chr
+}
+
+
+ccc_unsupported_method <- function(method) {
+  log_message(
+    "Unsupported CCC method {.val {method}}",
+    message_type = "error"
+  )
+}
