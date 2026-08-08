@@ -2,10 +2,8 @@
 #'
 #' @description
 #' Run spatial trajectory or annotation gradient screening for Seurat objects.
-#' The `"cpp"` backend avoids SPATA2 object construction for fast
 #' distance-based screening, while the `"r"` backend keeps full upstream
 #' SPATA2 SAS/STS behavior. Results are normalized into plain data.frames and
-#' stored in `srt@tools[["SpatialGradientFeatures"]]`; the SPATA2 object itself
 #' is never stored.
 #'
 #' @md
@@ -14,17 +12,13 @@
 #' @param reference Spatial reference type: `"trajectory"` for STS or
 #' `"annotation"` for SAS.
 #' @param backend Computation backend. `"cpp"` uses a compiled fast spatial
-#' gradient implementation and avoids SPATA2 object construction. `"r"`
 #' uses SPATA2 directly for full upstream SAS/STS behavior.
 #' @param result_name Name used to store this result. If `NULL`, a name is
 #' generated from `reference`.
-#' @param spata_object Optional pre-built SPATA2 object. If `NULL`, `srt` is
-#' converted with `SPATA2::asSPATA2()`.
 #' @param variables Numeric variables or genes passed to SPATA2. If `NULL`,
 #' `srt@tools[["SpatialVariableFeatures"]]` is used first, then variable
 #' features, then all assay features.
 #' @param sample_name,platform,img_scale_fct,assay_modality Arguments forwarded
-#' to `SPATA2::asSPATA2()` when `spata_object` is `NULL`.
 #' @param coord.cols Metadata coordinate columns used by the `"cpp"`
 #' backend when no image coordinates are available.
 #' @param coordinate_space Coordinate system used by the C++ distance
@@ -96,9 +90,8 @@
 RunSpatialGradientFeatures <- function(
   srt,
   reference = c("trajectory", "annotation"),
-  backend = c("cpp", "r"),
+  backend = "cpp",
   result_name = NULL,
-  spata_object = NULL,
   assay = NULL,
   layer = "data",
   variables = NULL,
@@ -148,7 +141,6 @@ RunSpatialGradientFeatures <- function(
   backend <- match.arg(backend)
   coordinate_space <- match.arg(coordinate_space)
   requested_image <- image
-  spata_object_supplied <- !is.null(spata_object)
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(
@@ -237,142 +229,6 @@ RunSpatialGradientFeatures <- function(
         min_spots = min_spots
       )
     )
-  } else {
-    if (!isTRUE(tryCatch(
-      unname(unlist(check_r("theMILOlab/SPATA2", verbose = FALSE)))[1],
-      error = function(e) FALSE
-    ))) {
-      log_message(
-        paste(
-          "Please install SPATA2 before running spatial gradient screening.",
-          "Official installation uses devtools::install_github('theMILOlab/SPATA2')."
-        ),
-        message_type = "error"
-      )
-    }
-    if (is.null(spata_object)) {
-      resolved_image <- spatial_image_resolve(
-        srt = srt,
-        image = image,
-        image_policy = "strict"
-      )
-      image <- resolved_image$image
-    }
-    spata_object <- spata_object %||% sgf_as_spata2(
-      srt = srt,
-      sample_name = sample_name %||% "scop_sample",
-      platform = platform,
-      assay = assay,
-      image = image,
-      img_scale_fct = img_scale_fct,
-      assay_modality = assay_modality,
-      verbose = verbose
-    )
-
-    if (identical(reference, "trajectory")) {
-      spata_object <- sgf_prepare_trajectory(
-        object = spata_object,
-        trajectory_id = trajectory_id,
-        start = start,
-        end = end,
-        traj_df = traj_df,
-        width = width,
-        verbose = verbose
-      )
-      screening_out <- sgf_run_trajectory_screening(
-        object = spata_object,
-        trajectory_id = trajectory_id,
-        variables = variables,
-        resolution = resolution,
-        width = width,
-        unit = unit,
-        sign_var = sign_var,
-        sign_threshold = sign_threshold,
-        model_add = model_add,
-        model_subset = model_subset,
-        model_remove = model_remove,
-        n_random = n_random,
-        seed = seed,
-        control = control,
-        verbose = verbose,
-        ...
-      )
-      annotation_ids_use <- character(0)
-    } else {
-      prep <- sgf_prepare_annotations(
-        object = spata_object,
-        annotation_ids = annotation_ids,
-        annotation.by = annotation.by,
-        annotation.groups = annotation.groups,
-        annotation.variable = annotation.variable,
-        annotation.threshold = annotation.threshold,
-        annotation_id = annotation_id,
-        verbose = verbose
-      )
-      spata_object <- prep$object
-      annotation_ids_use <- prep$annotation_ids
-      screening_out <- sgf_run_annotation_screening(
-        object = spata_object,
-        annotation_ids = annotation_ids_use,
-        variables = variables,
-        core = core,
-        distance = distance,
-        resolution = resolution,
-        angle_span = angle_span,
-        unit = unit,
-        sign_var = sign_var,
-        sign_threshold = sign_threshold,
-        model_add = model_add,
-        model_subset = model_subset,
-        model_remove = model_remove,
-        n_random = n_random,
-        seed = seed,
-        control = control,
-        verbose = verbose,
-        ...
-      )
-    }
-
-    result <- sgf_normalize_screening_result(
-      screening_out = screening_out,
-      spata_object = spata_object,
-      reference = reference,
-      variables = variables,
-      nfeatures = nfeatures,
-      trajectory_id = trajectory_id,
-      annotation_ids = annotation_ids_use,
-      distance = distance,
-      width = width,
-      unit = unit,
-      sign_var = sign_var,
-      sign_threshold = sign_threshold,
-      parameters = list(
-        result_name = result_name,
-        reference = reference,
-        backend = backend,
-        assay = assay,
-        layer = layer,
-        sample_name = sample_name %||% "scop_sample",
-        platform = platform,
-        image = image,
-        img_scale_fct = img_scale_fct,
-        assay_modality = assay_modality,
-        trajectory_id = trajectory_id,
-        annotation_ids = paste(annotation_ids_use, collapse = ","),
-        annotation.by = annotation.by,
-        annotation.groups = paste(annotation.groups %||% character(0), collapse = ","),
-        annotation.variable = annotation.variable,
-        annotation.threshold = annotation.threshold,
-        core = core,
-        distance = distance,
-        resolution = resolution,
-        unit = unit,
-        sign_var = sign_var,
-        sign_threshold = sign_threshold,
-        n_random = n_random,
-        seed = seed
-      )
-    )
   }
 
   if (isTRUE(store_results)) {
@@ -380,14 +236,9 @@ RunSpatialGradientFeatures <- function(
       image = image,
       coord.cols = coord.cols[seq_len(min(2L, length(coord.cols)))],
       image_policy = "strict",
-      coordinate_space = if (identical(backend, "cpp")) coordinate_space else "backend_native"
+      coordinate_space = coordinate_space
     )
-    if (!identical(backend, "cpp")) {
-      source$requested_coordinate_space <- coordinate_space
-    }
-    source$selection_strategy <- source$selection_strategy %||% if (spata_object_supplied) {
-      "provided_spata_object"
-    } else if (is.null(source$image)) {
+    source$selection_strategy <- source$selection_strategy %||% if (is.null(source$image)) {
       "metadata_coord_cols"
     } else if (!is.null(requested_image)) {
       "explicit_image"
@@ -418,7 +269,6 @@ RunSpatialGradientFeatures <- function(
 #'
 #' @description
 #' Visualize normalized results produced by `RunSpatialGradientFeatures()`
-#' without requiring the original SPATA2 object.
 #'
 #' @md
 #' @inheritParams SpatialSpotPlot
@@ -641,40 +491,7 @@ SpatialGradientPlot <- function(
 }
 
 
-sgf_spata_fun <- function(fun, required = TRUE) {
-  pkg <- "SPATA2"
-  if (!isTRUE(tryCatch(
-    unname(unlist(check_r("theMILOlab/SPATA2", verbose = FALSE)))[1],
-    error = function(e) FALSE
-  ))) {
-    if (isTRUE(required)) {
-      log_message(
-        paste(
-          "Please install SPATA2 before running spatial gradient screening.",
-          "Official installation uses devtools::install_github('theMILOlab/SPATA2')."
-        ),
-        message_type = "error"
-      )
-    }
-    return(NULL)
-  }
-  out <- tryCatch(get_namespace_fun(pkg, fun), error = function(e) NULL)
-  if (is.null(out) && isTRUE(required)) {
-    log_message(
-      "Installed SPATA2 does not provide required function {.fn {fun}}",
-      message_type = "error"
-    )
-  }
-  out
-}
 
-sgf_try_spata_call <- function(fun, args, required = FALSE) {
-  f <- sgf_spata_fun(fun, required = required)
-  if (is.null(f)) {
-    return(NULL)
-  }
-  tryCatch(do.call(f, args), error = function(e) NULL)
-}
 
 sgf_resolve_variables <- function(srt, assay, layer, variables = NULL) {
   if (is.null(variables)) {
@@ -698,30 +515,6 @@ sgf_resolve_variables <- function(srt, assay, layer, variables = NULL) {
   variables
 }
 
-sgf_as_spata2 <- function(
-  srt,
-  sample_name,
-  platform,
-  assay,
-  image,
-  img_scale_fct,
-  assay_modality,
-  verbose
-) {
-  args <- sgf_drop_nulls(list(
-    object = srt,
-    sample_name = sample_name,
-    platform = platform,
-    assay_name = assay,
-    assay_modality = assay_modality,
-    img_name = image,
-    img_scale_fct = img_scale_fct,
-    transfer_meta_data = TRUE,
-    transfer_dim_red = FALSE,
-    verbose = verbose
-  ))
-  do.call(sgf_spata_fun("asSPATA2"), args)
-}
 
 sgf_run_cpp_gradient <- function(
   srt,
@@ -970,76 +763,7 @@ sgf_cpp_trajectory <- function(reference, start, end, traj_df) {
   out
 }
 
-sgf_prepare_trajectory <- function(object, trajectory_id, start, end, traj_df, width, verbose) {
-  if (is.null(start) && is.null(end) && is.null(traj_df)) {
-    return(object)
-  }
-  invisible(verbose)
-  args <- sgf_drop_nulls(list(
-    object = object,
-    id = trajectory_id,
-    width = width,
-    traj_df = traj_df,
-    start = start,
-    end = end,
-    overwrite = TRUE
-  ))
-  do.call(sgf_spata_fun("addSpatialTrajectory"), args)
-}
 
-sgf_prepare_annotations <- function(
-  object,
-  annotation_ids,
-  annotation.by,
-  annotation.groups,
-  annotation.variable,
-  annotation.threshold,
-  annotation_id,
-  verbose
-) {
-  if (!is.null(annotation_ids) && length(annotation_ids) > 0L) {
-    return(list(object = object, annotation_ids = as.character(annotation_ids)))
-  }
-  if (!is.null(annotation.by) && !is.null(annotation.groups)) {
-    object <- do.call(sgf_spata_fun("createGroupAnnotations"), sgf_drop_nulls(list(
-      object = object,
-      grouping = annotation.by,
-      group = annotation.groups,
-      id = annotation_id,
-      tags = annotation_id,
-      overwrite = TRUE,
-      verbose = verbose
-    )))
-    return(list(
-      object = object,
-      annotation_ids = sgf_get_created_annotation_ids(object, annotation_id)
-    ))
-  }
-  if (!is.null(annotation.variable) && !is.null(annotation.threshold)) {
-    annotation.threshold <- sgf_format_annotation_threshold(annotation.threshold)
-    object <- do.call(sgf_spata_fun("createNumericAnnotations"), sgf_drop_nulls(list(
-      object = object,
-      variable = annotation.variable,
-      threshold = annotation.threshold,
-      id = annotation_id,
-      tags = annotation_id,
-      overwrite = TRUE,
-      verbose = verbose
-    )))
-    return(list(
-      object = object,
-      annotation_ids = sgf_get_created_annotation_ids(object, annotation_id)
-    ))
-  }
-  log_message(
-    paste(
-      "For {.arg reference = 'annotation'}, provide {.arg annotation_ids},",
-      "or {.arg annotation.by} with {.arg annotation.groups},",
-      "or {.arg annotation.variable} with {.arg annotation.threshold}"
-    ),
-    message_type = "error"
-  )
-}
 
 sgf_format_annotation_threshold <- function(threshold) {
   if (length(threshold) != 1L || is.na(threshold)) {
@@ -1073,224 +797,14 @@ sgf_format_annotation_threshold <- function(threshold) {
   )
 }
 
-sgf_get_created_annotation_ids <- function(object, annotation_id) {
-  ids <- sgf_try_spata_call(
-    "getSpatAnnIds",
-    list(object = object, tags = annotation_id, test = "any"),
-    required = FALSE
-  )
-  if (is.null(ids) || length(ids) == 0L) {
-    ids <- annotation_id
-  }
-  as.character(ids)
-}
 
-sgf_run_trajectory_screening <- function(
-  object,
-  trajectory_id,
-  variables,
-  resolution,
-  width,
-  unit,
-  sign_var,
-  sign_threshold,
-  model_add,
-  model_subset,
-  model_remove,
-  n_random,
-  seed,
-  control,
-  verbose,
-  ...
-) {
-  args <- sgf_drop_nulls(c(
-    list(
-      object = object,
-      id = trajectory_id,
-      variables = variables,
-      resolution = resolution,
-      width = width,
-      unit = unit,
-      sign_var = sign_var,
-      sign_threshold = sign_threshold,
-      model_add = model_add,
-      model_subset = model_subset,
-      model_remove = model_remove,
-      n_random = n_random,
-      seed = seed,
-      control = control,
-      verbose = verbose
-    ),
-    list(...)
-  ))
-  do.call(sgf_spata_fun("spatialTrajectoryScreening"), args)
-}
 
-sgf_run_annotation_screening <- function(
-  object,
-  annotation_ids,
-  variables,
-  core,
-  distance,
-  resolution,
-  angle_span,
-  unit,
-  sign_var,
-  sign_threshold,
-  model_add,
-  model_subset,
-  model_remove,
-  n_random,
-  seed,
-  control,
-  verbose,
-  ...
-) {
-  args <- sgf_drop_nulls(c(
-    list(
-      object = object,
-      ids = annotation_ids,
-      variables = variables,
-      core = core,
-      distance = distance,
-      resolution = resolution,
-      angle_span = angle_span,
-      unit = unit,
-      sign_var = sign_var,
-      sign_threshold = sign_threshold,
-      model_add = model_add,
-      model_subset = model_subset,
-      model_remove = model_remove,
-      n_random = n_random,
-      seed = seed,
-      control = control,
-      verbose = verbose
-    ),
-    list(...)
-  ))
-  do.call(sgf_spata_fun("spatialAnnotationScreening"), args)
-}
 
-sgf_normalize_screening_result <- function(
-  screening_out,
-  spata_object,
-  reference,
-  variables,
-  nfeatures,
-  trajectory_id,
-  annotation_ids,
-  distance,
-  width,
-  unit,
-  sign_var,
-  sign_threshold,
-  parameters
-) {
-  significance <- sgf_extract_significance(screening_out)
-  model_fits <- sgf_extract_model_fits(screening_out)
-  top_variables <- sgf_top_variables(
-    screening_out = screening_out,
-    significance = significance,
-    model_fits = model_fits,
-    nfeatures = nfeatures,
-    sign_var = sign_var,
-    sign_threshold = sign_threshold
-  )
-  screening_variables <- if (nrow(top_variables) > 0L) top_variables$variable else variables
-  screening <- sgf_extract_screening_df(
-    spata_object = spata_object,
-    screening_out = screening_out,
-    reference = reference,
-    variables = screening_variables,
-    trajectory_id = trajectory_id,
-    annotation_ids = annotation_ids,
-    distance = distance,
-    width = width,
-    unit = unit
-  )
-  list(
-    screening = screening,
-    significance = significance,
-    model_fits = model_fits,
-    top_variables = top_variables,
-    parameters = sgf_parameters_df(parameters)
-  )
-}
 
-sgf_extract_significance <- function(screening_out) {
-  df <- sgf_slot_result(screening_out, "significance")
-  if (!is.data.frame(df) || nrow(df) == 0L) {
-    df <- sgf_try_spata_call("getSgsResultsDf", list(screening_out), required = FALSE)
-  }
-  sgf_standardize_significance(df)
-}
 
-sgf_extract_model_fits <- function(screening_out) {
-  df <- sgf_slot_result(screening_out, "model_fits")
-  sgf_standardize_model_fits(df)
-}
 
-sgf_slot_result <- function(screening_out, name) {
-  out <- tryCatch(
-    {
-      res <- methods::slot(screening_out, "results")
-      res[[name]]
-    },
-    error = function(e) NULL
-  )
-  if (!is.data.frame(out)) {
-    out <- data.frame()
-  }
-  as.data.frame(out, stringsAsFactors = FALSE, check.names = FALSE)
-}
 
-sgf_extract_screening_df <- function(
-  spata_object,
-  screening_out,
-  reference,
-  variables,
-  trajectory_id,
-  annotation_ids,
-  distance,
-  width,
-  unit
-) {
-  variables <- unique(as.character(variables))
-  if (identical(reference, "trajectory")) {
-    raw <- sgf_try_spata_candidates(
-      "getStsDf",
-      list(
-        sgf_drop_nulls(list(object = spata_object, variables = variables, id = trajectory_id, width = width, unit = unit)),
-        sgf_drop_nulls(list(spata_object, variables = variables, id = trajectory_id)),
-        list(screening_out)
-      )
-    )
-  } else {
-    raw <- sgf_try_spata_candidates(
-      "getSasDf",
-      list(
-        sgf_drop_nulls(list(object = spata_object, variables = variables, ids = annotation_ids, distance = distance, unit = unit)),
-        sgf_drop_nulls(list(spata_object, variables = variables, ids = annotation_ids)),
-        list(screening_out)
-      )
-    )
-  }
-  sgf_standardize_screening_df(raw, reference = reference)
-}
 
-sgf_try_spata_candidates <- function(fun, candidates) {
-  f <- sgf_spata_fun(fun, required = FALSE)
-  if (is.null(f)) {
-    return(data.frame())
-  }
-  for (args in candidates) {
-    out <- tryCatch(do.call(f, args), error = function(e) NULL)
-    if (is.data.frame(out)) {
-      return(as.data.frame(out, stringsAsFactors = FALSE, check.names = FALSE))
-    }
-  }
-  data.frame()
-}
 
 sgf_standardize_significance <- function(df) {
   df <- sgf_as_df(df)
@@ -1340,7 +854,7 @@ sgf_top_variables <- function(
   sign_var,
   sign_threshold
 ) {
-  vars <- sgf_try_spata_call("getSgsResultsVec", list(screening_out), required = FALSE)
+  vars <- NULL
   vars <- if (is.null(vars)) character(0) else unique(as.character(vars))
   if (length(vars) == 0L && nrow(significance) > 0L) {
     sign_use <- significance
@@ -1363,6 +877,7 @@ sgf_top_variables <- function(
   rownames(top) <- NULL
   sgf_reorder_cols(top, c("variable", "rank", "fdr", "p_value", "best_model", "mae", "rmse"))
 }
+
 
 sgf_best_model_fits <- function(model_fits) {
   if (!is.data.frame(model_fits) || nrow(model_fits) == 0L) {

@@ -89,38 +89,7 @@ test_that("SPATA2 output tables are standardized to stable column names", {
   expect_equal(unique(screening$reference), "trajectory")
 })
 
-test_that("numeric annotation thresholds are converted for SPATA2", {
-  expect_equal(sgf_format_annotation_threshold(0), ">0")
-  expect_equal(sgf_format_annotation_threshold("0"), ">0")
-  expect_equal(sgf_format_annotation_threshold(" > 0 "), ">0")
-  expect_equal(sgf_format_annotation_threshold("<= 1"), "<=1")
-  expect_equal(sgf_format_annotation_threshold("kmeans_high"), "kmeans_high")
-  expect_error(sgf_format_annotation_threshold(NA_real_), "annotation.threshold")
-})
 
-test_that("SPATA2 trajectory preparation does not forward unsupported verbose", {
-  testthat::local_mocked_bindings(
-    sgf_spata_fun = function(fun, required = TRUE) {
-      force(fun)
-      force(required)
-      function(...) list(...)
-    }
-  )
-
-  args <- sgf_prepare_trajectory(
-    object = list(id = "mock"),
-    trajectory_id = "traj",
-    start = c(1, 2),
-    end = c(3, 4),
-    traj_df = NULL,
-    width = NULL,
-    verbose = TRUE
-  )
-
-  expect_equal(args$id, "traj")
-  expect_true(isTRUE(args$overwrite))
-  expect_false("verbose" %in% names(args))
-})
 
 test_that("cpp backend coordinates prefer metadata coord.cols", {
   srt <- make_spatial_gradient_seurat()
@@ -357,23 +326,3 @@ test_that("SpatialGradientPlot reuses stored assay layer for surface plots", {
   expect_s3_class(p, "patchwork")
 })
 
-test_that("RunSpatialGradientFeatures has a clear optional SPATA2 dependency error", {
-  spata2_pkg <- paste0("SPATA", "2")
-  testthat::skip_if(requireNamespace(spata2_pkg, quietly = TRUE))
-  srt <- make_spatial_gradient_seurat()
-
-  expect_error(
-    RunSpatialGradientFeatures(
-      srt,
-      reference = "trajectory",
-      backend = "r",
-      variables = "Gene1",
-      start = c(1, 1),
-      end = c(2, 2),
-      layer = "counts",
-      n_random = 1,
-      verbose = FALSE
-    ),
-    "install SPATA2"
-  )
-})

@@ -90,7 +90,7 @@
 #' )
 RunSpatialIntegration <- function(
   object,
-  method = c("PRECAST", "BASS", "SpatialMNN"),
+  method = "PRECAST",
   sample.by = NULL,
   assay = NULL,
   layer = "counts",
@@ -566,9 +566,7 @@ spatial_integration_sparse_matrix <- function(mat) {
 spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) {
   params <- list(...)
   switch(method,
-    PRECAST = spatial_integration_run_precast(input, params, verbose = verbose),
-    BASS = spatial_integration_run_bass(input, params, verbose = verbose),
-    SpatialMNN = spatial_integration_run_spatialmnn(input, params, verbose = verbose)
+    PRECAST = spatial_integration_run_precast(input, params, verbose = verbose)
   )
 }
 
@@ -579,6 +577,20 @@ spatial_integration_run_precast <- function(input, params, verbose = TRUE) {
   par_fun <- get_namespace_fun("PRECAST", "AddParSetting")
   run_fun <- get_namespace_fun("PRECAST", "PRECAST")
   select_fun <- get_namespace_fun("PRECAST", "SelectModel")
+  if (
+    !is.null(input$srt_list) &&
+      length(input$coords_list) == length(input$srt_list)
+  ) {
+    for (k in seq_along(input$srt_list)) {
+      cd <- input$coords_list[[k]]
+      if (all(c("x", "y") %in% colnames(cd))) {
+        srt_k <- input$srt_list[[k]]
+        srt_k$row <- cd[colnames(srt_k), "y"]
+        srt_k$col <- cd[colnames(srt_k), "x"]
+        input$srt_list[[k]] <- srt_k
+      }
+    }
+  }
   obj <- spatial_integration_call(
     create_fun,
     utils::modifyList(
@@ -613,219 +625,10 @@ spatial_integration_run_precast <- function(input, params, verbose = TRUE) {
   )
 }
 
-spatial_integration_run_bass <- function(input, params, verbose = TRUE) {
-  if (!bass_namespace_ready()) {
-    check_r("zhengli09/BASS", force = TRUE, verbose = FALSE)
-  }
-  if (!bass_namespace_ready()) {
-    log_message(
-      "The installed {.pkg BASS} is not the spatial transcriptomics backend from {.url https://github.com/zhengli09/BASS}",
-      message_type = "error"
-    )
-  }
-  create_fun <- get_namespace_fun("BASS", "createBASSObject")
-  preprocess_fun <- get_namespace_fun("BASS", "BASS.preprocess")
-  run_fun <- get_namespace_fun("BASS", "BASS.run")
-  post_fun <- tryCatch(get_namespace_fun("BASS", "BASS.postprocess"), error = function(e) NULL)
-  bass <- spatial_integration_call(
-    create_fun,
-    c(
-      list(
-        X = input$expr_list,
-        xy = input$coords_list,
-        C = params$C %||% params$n_domains %||% 7,
-        R = params$R %||% length(input$samples)
-      ),
-      params$create_params %||% list()
-    )
-  )
-  bass <- spatial_integration_call(
-    preprocess_fun,
-    c(list(BASS = bass), params$preprocess_params %||% list())
-  )
-  bass <- spatial_integration_call(run_fun, c(list(BASS = bass), params$run_params %||% list()))
-  if (is.function(post_fun)) {
-    bass <- spatial_integration_call(post_fun, c(list(BASS = bass), params$postprocess_params %||% list()))
-  }
-  spatial_integration_extract_backend(
-    raw_result = bass,
-    method = "BASS",
-    input = input
-  )
-}
-
-bass_namespace_ready <- function() {
-  required <- c("createBASSObject", "BASS.preprocess", "BASS.run")
-  desc <- tryCatch(utils::packageDescription("BASS"), error = function(e) NULL)
-  if (is.null(desc) || !grepl("spatial", desc[["Description"]] %||% "", ignore.case = TRUE)) {
-    return(FALSE)
-  }
-  symbols <- tryCatch(ls(asNamespace("BASS"), all.names = TRUE), error = function(e) character())
-  all(required %in% symbols)
-}
-
-spatial_integration_run_spatialmnn <- function(input, params, verbose = TRUE) {
-  installed <- check_r("atlasClustering", install = FALSE, verbose = FALSE)
-  if (!isTRUE(installed[["atlasClustering"]])) {
-    check_r("Pixel-Dream/spatialMNN", verbose = FALSE)
-  }
-  pkg <- "atlasClustering"
-  stage1_fun <- get_namespace_fun(pkg, "stage_1")
-  stage2_fun <- get_namespace_fun(pkg, "stage_2")
-  stage2_fun <- spatialmnn_supply_missing_imports(stage2_fun)
-  backend_input <- spatialmnn_prepare_seurat_list(input)
-  stage1 <- spatial_integration_call(
-    stage1_fun,
-    utils::modifyList(
-      list(seu_ls = backend_input, verbose = verbose),
-      params$stage1_params %||% list()
-    )
-  )
-  stage2 <- spatial_integration_call(
-    stage2_fun,
-    utils::modifyList(
-      list(
-        seu_ls = stage1,
-        method = "MNN",
-        rtn_seurat = TRUE,
-        verbose = verbose
-      ),
-      params$stage2_params %||% params$run_params %||% list()
-    )
-  )
-  if (!is.list(stage2) || is.null(stage2$cl_df)) {
-    log_message(
-      "{.pkg atlasClustering} {.fn stage_2} did not return {.code cl_df}",
-      message_type = "error"
-    )
-  }
-  domains <- spatialmnn_domains_from_stage2(
-    stage1 = stage1,
-    cl_df = stage2$cl_df,
-    input = input,
-    cl_key = params$stage2_params$cl_key %||% "merged_cluster",
-    domain_col = params$domain_col %||% "louvain"
-  )
-  list(
-    domains = domains,
-    raw_result = list(stage1 = stage1, stage2 = stage2)
-  )
-}
-
-spatialmnn_supply_missing_imports <- function(fun) {
-  env <- environment(fun)
-  if (identical(environmentName(env), "atlasClustering") &&
-    !exists("str_split", envir = env, inherits = TRUE)) {
-    local_env <- new.env(parent = env)
-    local_env$str_split <- get_namespace_fun("stringr", "str_split")
-    environment(fun) <- local_env
-  }
-  fun
-}
-
-spatialmnn_domains_from_stage2 <- function(
-  stage1,
-  cl_df,
-  input,
-  cl_key = "merged_cluster",
-  domain_col = "louvain"
-) {
-  required <- c("sample", "cluster", domain_col)
-  if (!is.data.frame(cl_df) || !all(required %in% colnames(cl_df))) {
-    log_message(
-      "{.pkg atlasClustering} {.fn stage_2} result must contain {.field sample}, {.field cluster}, and {.field {domain_col}} columns",
-      message_type = "error"
-    )
-  }
-  keys <- paste(cl_df$sample, cl_df$cluster, sep = "\r")
-  if (anyDuplicated(keys)) {
-    log_message(
-      "{.pkg atlasClustering} {.fn stage_2} returned duplicate sample-cluster rows",
-      message_type = "error"
-    )
-  }
-  lookup <- stats::setNames(as.character(cl_df[[domain_col]]), keys)
-  domains <- character()
-  for (sample in input$samples) {
-    object <- stage1[[sample]]
-    if (!inherits(object, "Seurat") || !cl_key %in% colnames(object@meta.data)) {
-      log_message(
-        "SpatialMNN stage 1 did not return {.field {cl_key}} for sample {.val {sample}}",
-        message_type = "error"
-      )
-    }
-    spot_keys <- paste(sample, object@meta.data[[cl_key]], sep = "\r")
-    if (any(!spot_keys %in% names(lookup))) {
-      log_message(
-        "SpatialMNN stage 2 labels do not cover every stage 1 cluster in sample {.val {sample}}",
-        message_type = "error"
-      )
-    }
-    values <- unname(lookup[spot_keys])
-    if (any(!is.na(values) & !nzchar(values))) {
-      log_message(
-        "SpatialMNN stage 2 returned empty labels for sample {.val {sample}}",
-        message_type = "error"
-      )
-    }
-    names(values) <- colnames(object)
-    domains <- c(domains, values)
-  }
-  domains[input$cells]
-}
-
-spatialmnn_prepare_seurat_list <- function(input) {
-  samples <- input$samples
-  out <- input$srt_list[samples]
-  for (sample in samples) {
-    object <- out[[sample]]
-    cells <- colnames(object)
-    coords <- input$coords_list[[sample]]
-    expr <- input$expr_list[[sample]]
-    if (is.null(coords) || !setequal(rownames(coords), cells)) {
-      log_message(
-        "SpatialMNN coordinates do not match the spots in sample {.val {sample}}",
-        message_type = "error"
-      )
-    }
-    if (is.null(expr) || !setequal(colnames(expr), cells)) {
-      log_message(
-        "SpatialMNN expression does not match the spots in sample {.val {sample}}",
-        message_type = "error"
-      )
-    }
-    coords <- coords[cells, , drop = FALSE]
-    expr <- expr[, cells, drop = FALSE]
-    if (any(!is.finite(coords$x) | !is.finite(coords$y))) {
-      log_message(
-        "SpatialMNN coordinates must be finite for sample {.val {sample}}",
-        message_type = "error"
-      )
-    }
-    object$coord_x <- coords$x
-    object$coord_y <- coords$y
-    object[["RNA"]] <- SeuratObject::CreateAssay5Object(counts = expr)
-    SeuratObject::DefaultAssay(object) <- "RNA"
-    out[[sample]] <- object
-  }
-  out
-}
-
 spatial_integration_extract_backend <- function(raw_result, method, input) {
   if (is.list(raw_result) && any(c("embedding", "domains", "aligned_coords") %in% names(raw_result))) {
     raw_result$raw_result <- raw_result$raw_result %||% raw_result
     return(raw_result)
-  }
-  if (identical(method, "BASS")) {
-    domains <- tryCatch(raw_result@results$z, error = function(e) NULL)
-    if (is.matrix(domains)) {
-      domains <- domains[, 1L]
-    }
-    if (!is.null(domains)) {
-      domains <- as.character(domains)
-      names(domains) <- input$cells[seq_along(domains)]
-    }
-    return(list(domains = domains, raw_result = raw_result))
   }
   if (identical(method, "PRECAST") && inherits(raw_result, "PRECASTObj")) {
     return(spatial_integration_extract_precast(raw_result, input))

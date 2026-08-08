@@ -7,9 +7,8 @@
 RunSpatialGradientFeatures(
   srt,
   reference = c("trajectory", "annotation"),
-  backend = c("cpp", "r"),
+  backend = "cpp",
   result_name = NULL,
-  spata_object = NULL,
   assay = NULL,
   layer = "data",
   variables = NULL,
@@ -60,14 +59,10 @@ RunSpatialGradientFeatures(
 \code{"annotation"} for SAS.}
 
 \item{backend}{Computation backend. \code{"cpp"} uses a compiled fast spatial
-gradient implementation and avoids SPATA2 object construction. \code{"r"}
 uses SPATA2 directly for full upstream SAS/STS behavior.}
 
 \item{result_name}{Name used to store this result. If \code{NULL}, a name is
 generated from \code{reference}.}
-
-\item{spata_object}{Optional pre-built SPATA2 object. If \code{NULL}, \code{srt} is
-converted with \code{SPATA2::asSPATA2()}.}
 
 \item{assay}{Which assay to use.
 If \code{NULL}, the default assay of the Seurat object will be used.
@@ -80,8 +75,7 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 \code{srt@tools[["SpatialVariableFeatures"]]} is used first, then variable
 features, then all assay features.}
 
-\item{sample_name, platform, img_scale_fct, assay_modality}{Arguments forwarded
-to \code{SPATA2::asSPATA2()} when \code{spata_object} is \code{NULL}.}
+\item{sample_name, platform, img_scale_fct, assay_modality}{Arguments forwarded}
 
 \item{image}{Name of the Seurat spatial image used by the spatial workflow.
 Required when multiple images are present; a single image is selected
@@ -141,10 +135,8 @@ A \code{Seurat} object with spatial gradient screening results stored in
 }
 \description{
 Run spatial trajectory or annotation gradient screening for Seurat objects.
-The \code{"cpp"} backend avoids SPATA2 object construction for fast
 distance-based screening, while the \code{"r"} backend keeps full upstream
 SPATA2 SAS/STS behavior. Results are normalized into plain data.frames and
-stored in \code{srt@tools[["SpatialGradientFeatures"]]}; the SPATA2 object itself
 is never stored.
 }
 \examples{
