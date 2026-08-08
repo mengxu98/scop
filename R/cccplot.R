@@ -5690,3 +5690,276 @@ ccc_standardize_ligand_target_df <- function(
   df$target <- factor(df$target, levels = target_levels)
   df
 }
+
+
+
+ccc_filter_table_context <- function(
+  df,
+  resource = NULL,
+  condition = NULL,
+  sample = NULL
+) {
+  if (!is.data.frame(df) || nrow(df) == 0L) {
+    return(df)
+  }
+  if (!is.null(resource)) {
+    available_resource <- if ("resource" %in% colnames(df)) {
+      unique(as.character(df$resource))
+    } else {
+      character(0)
+    }
+    available_resource <- available_resource[
+      !is.na(available_resource) & nzchar(available_resource)
+    ]
+    if (length(available_resource) == 0L) {
+      log_message(
+        "The selected CCC result does not provide {.arg resource} provenance",
+        message_type = "error"
+      )
+    }
+    df <- df[as.character(df$resource) %in% as.character(resource), , drop = FALSE]
+  }
+  if (!is.null(condition)) {
+    available_condition <- if ("condition" %in% colnames(df)) {
+      unique(as.character(df$condition))
+    } else {
+      character(0)
+    }
+    available_condition <- available_condition[
+      !is.na(available_condition) & nzchar(available_condition)
+    ]
+    if (length(available_condition) == 0L) {
+      log_message(
+        "The selected CCC result does not provide {.arg condition} provenance",
+        message_type = "error"
+      )
+    }
+    df <- df[
+      as.character(df$condition) %in% as.character(condition), ,
+      drop = FALSE
+    ]
+  }
+  if (!is.null(sample)) {
+    sample_col <- c("sample", "context", "dataset")
+    sample_col <- sample_col[sample_col %in% colnames(df)][1]
+    available_sample <- if (!is.na(sample_col)) {
+      unique(as.character(df[[sample_col]]))
+    } else {
+      character(0)
+    }
+    available_sample <- available_sample[
+      !is.na(available_sample) & nzchar(available_sample)
+    ]
+    if (is.na(sample_col) || length(available_sample) == 0L) {
+      log_message(
+        "The selected CCC result does not provide sample or context provenance",
+        message_type = "error"
+      )
+    }
+    df <- df[as.character(df[[sample_col]]) %in% as.character(sample), , drop = FALSE]
+  }
+  df
+}
+
+
+ccc_prepare_filtered_object <- function(
+  srt,
+  method,
+  resource = NULL,
+  condition = NULL,
+  sample = NULL
+) {
+  if (is.null(resource) && is.null(condition) && is.null(sample)) {
+    return(srt)
+  }
+  method <- normalize_ccc_method(method)
+  targets <- unique(c("CCC", if (!identical(method, "CCC")) method))
+  targets <- targets[targets %in% names(srt@tools)]
+  for (target in targets) {
+    bundle <- srt@tools[[target]]
+    for (field in c("long_table", "primary_table", "consensus_table")) {
+      if (is.data.frame(bundle[[field]])) {
+        bundle[[field]] <- ccc_filter_table_context(
+          bundle[[field]],
+          resource = resource,
+          condition = condition,
+          sample = sample
+        )
+      }
+    }
+    srt@tools[[target]] <- bundle
+  }
+  srt
+}
+
+
+ccc_combine_methods <- function(
+  df,
+  mode = c("separate", "support", "rank", "legacy")
+) {
+  mode <- match.arg(mode)
+  df <- ccc_semantic_long_table(df)
+  if (nrow(df) == 0L || identical(mode, "separate")) {
+    return(df)
+  }
+  if (identical(mode, "legacy")) {
+    log_message(
+      "{.val combine_methods = 'legacy'} sums backend scores on incompatible scales and is deprecated",
+      message_type = "warning"
+    )
+    return(df)
+  }
+  required <- c("sender", "receiver", "ligand", "receptor", "method")
+  if (!all(required %in% colnames(df))) {
+    log_message("Unified CCC data are missing method or interaction identifiers", message_type = "error")
+  }
+  has_interaction <- !is.na(df$ligand) & nzchar(trimws(as.character(df$ligand))) &
+    !is.na(df$receptor) & nzchar(trimws(as.character(df$receptor)))
+  df <- df[has_interaction, , drop = FALSE]
+  if (nrow(df) == 0L) {
+    return(df)
+  }
+  methods <- unique(as.character(df$method))
+  methods <- methods[!is.na(methods) & nzchar(methods)]
+  df$.ccc_method_percentile <- 1
+  for (method_i in methods) {
+    idx <- which(as.character(df$method) == method_i)
+    raw_rank <- suppressWarnings(as.numeric(df$priority_rank[idx]))
+    finite <- is.finite(raw_rank)
+    if (any(finite)) {
+      percentile <- (rank(raw_rank[finite], ties.method = "average") - 1) /
+        max(1, sum(finite) - 1)
+      df$.ccc_method_percentile[idx[finite]] <- percentile
+    }
+  }
+  key_cols <- c("sender", "receiver", "ligand", "receptor")
+  key <- do.call(paste, c(lapply(df[key_cols], as.character), sep = "\r"))
+  split_idx <- split(seq_len(nrow(df)), key, drop = TRUE)
+  rows <- lapply(split_idx, function(idx) {
+    x <- df[idx, , drop = FALSE]
+    row <- x[1, , drop = FALSE]
+    support_methods <- unique(as.character(x$method))
+    support_methods <- support_methods[!is.na(support_methods) & nzchar(support_methods)]
+    row$method <- "CCC"
+    row$support_methods <- paste(sort(support_methods), collapse = ";")
+    row$support_count <- length(support_methods)
+    row$support_fraction <- length(support_methods) / max(1L, length(methods))
+    if (identical(mode, "support")) {
+      row$score <- row$support_count
+      row$priority_score <- row$support_fraction
+      row$priority_rank <- 1 - row$support_fraction
+      row$score_type <- "method_support_count"
+      row$support_type <- "cross_method_support"
+    } else {
+      rank_values <- suppressWarnings(as.numeric(x$.ccc_method_percentile))
+      ranks <- tapply(
+        rank_values,
+        as.character(x$method),
+        function(value) {
+          value <- value[is.finite(value)]
+          if (length(value)) mean(value) else 1
+        }
+      )
+      ranks <- as.numeric(ranks)
+      missing_methods <- max(0L, length(methods) - length(ranks))
+      ranks <- c(ranks, rep(1, missing_methods))
+      mean_rank <- if (length(ranks)) mean(ranks) else 1
+      row$score <- 1 - mean_rank
+      row$priority_score <- 1 - mean_rank
+      row$priority_rank <- mean_rank
+      row$score_type <- "mean_within_method_percentile"
+      row$support_type <- "scop_visualization_consensus"
+    }
+    row$.ccc_method_percentile <- NULL
+    row$pvalue <- NA_real_
+    row$pvalue_type <- "not_available"
+    row$significant <- row$support_count > 0L
+    row
+  })
+  ccc_bind_long_tables(rows)
+}
+
+
+ccc_prepare_combined_object <- function(
+  srt,
+  method,
+  combine_methods = c("separate", "support", "rank", "legacy")
+) {
+  combine_methods <- match.arg(combine_methods)
+  method <- normalize_ccc_method(method)
+  if (!identical(method, "CCC") || identical(combine_methods, "separate")) {
+    return(srt)
+  }
+  bundle <- srt@tools[["CCC"]]
+  if (is.null(bundle)) {
+    bundle <- ccc_build_unified_bundle(srt)
+  }
+  liana_methods <- tolower(as.character(
+    srt@tools[["LIANA"]]$parameters$method %||% character(0)
+  ))
+  if (
+    combine_methods %in% c("support", "rank") &&
+      all(c("CellphoneDB", "LIANA") %in% (bundle$methods %||% character(0))) &&
+      "cellphonedb" %in% liana_methods
+  ) {
+    log_message(
+      paste0(
+        "Standalone CellphoneDB and the LIANA consensus are not independent ",
+        "evidence because LIANA includes its CellPhoneDB scoring method; ",
+        "interpret this as backend agreement, not independent validation"
+      ),
+      message_type = "warning"
+    )
+  }
+  bundle$long_table <- ccc_combine_methods(bundle$long_table, mode = combine_methods)
+  bundle$pair_table <- aggregate_ccc_long(bundle$long_table, backend = "r")
+  bundle$metadata$combine_methods <- combine_methods
+  srt@tools[["CCC"]] <- bundle
+  srt
+}
+
+
+ccc_plot_methods_separately <- function(call, srt, env) {
+  unified <- ccc_semantic_long_table(srt@tools[["CCC"]]$long_table)
+  methods <- unique(as.character(unified$method))
+  methods <- methods[!is.na(methods) & nzchar(methods) & methods != "CCC"]
+  plots <- lapply(methods, function(method) {
+    method_table <- unified[as.character(unified$method) == method, , drop = FALSE]
+    bundle <- srt@tools[[method]] %||% list(method = method)
+    bundle$long_table <- method_table
+    bundle$primary_table <- method_table
+    bundle$pair_table <- aggregate_ccc_long(method_table, backend = "r")
+    method_object <- srt
+    method_object@tools[[method]] <- bundle
+    next_call <- call
+    next_call$srt <- method_object
+    next_call$method <- method
+    next_call$combine_methods <- "legacy"
+    next_call$resource <- NULL
+    next_call$condition <- NULL
+    next_call$sample <- NULL
+    eval(next_call, envir = env)
+  })
+  names(plots) <- methods
+  plots
+}
+
+
+ccc_resolve_sample_col <- function(df, sample_col = NULL) {
+  if (!is.null(sample_col)) {
+    if (!sample_col %in% colnames(df)) {
+      log_message(
+        "{.arg sample_col} ({.val {sample_col}}) is not present in the CCC table",
+        message_type = "error"
+      )
+    }
+    return(sample_col)
+  }
+  candidates <- c("sample", "context", "condition", "dataset")
+  hit <- candidates[candidates %in% colnames(df)][1]
+  if (is.na(hit)) {
+    NULL
+  } else {
+    hit
+  }
+}

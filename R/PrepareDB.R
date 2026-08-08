@@ -333,7 +333,7 @@ PrepareDB <- function(
 
     if (isFALSE(db_update) && is.null(custom_TERM2GENE)) {
       for (term in db) {
-        dbinfo <- ListDB(species = sps, db = term)
+        dbinfo <- list_db_cache_entries(species = sps, db = term)
         if (nrow(dbinfo) > 0 && !is.null(dbinfo)) {
           if (db_version == "latest") {
             pathname <- dbinfo[
@@ -2626,256 +2626,22 @@ PrepareDB <- function(
           }
         }
 
-        ## CellTalk -----------------
-        if (any(db == "CellTalk") && (!"CellTalk" %in% names(db_list[[sps]]))) {
-          if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
-            if (isTRUE(convert_species)) {
-              log_message(
-                "Use the human annotation to create the CellTalk database for {.val {sps}}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              db_species["CellTalk"] <- "Homo_sapiens"
-            } else {
-              log_message(
-                "{.pkg CellTalk} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider using {.arg convert_species=TRUE}",
-                message_type = "error"
-              )
-            }
-          }
-          log_message("Preparing {.pkg CellTalk} database", verbose = verbose)
-          url <- switch(db_species["CellTalk"],
-            "Homo_sapiens" = "https://raw.githubusercontent.com/ZJUFanLab/CellTalkDB/master/database/human_lr_pair.rds",
-            "Mus_musculus" = "https://raw.githubusercontent.com/ZJUFanLab/CellTalkDB/master/database/mouse_lr_pair.rds"
-          )
-
-          celltalk_file <- switch(db_species["CellTalk"],
-            "Homo_sapiens" = "human_lr_pair.rds",
-            "Mus_musculus" = "mouse_lr_pair.rds"
-          )
-          source_file <- preparedb_local_source_file(
+        ## CellTalk / CellChat -----------------
+        ccc_db_use <- intersect(db, c("CellTalk", "CellChat"))
+        if (length(ccc_db_use) > 0L &&
+          any(!ccc_db_use %in% names(db_list[[sps]]))) {
+          ccc_prepared <- PrepareCCCDB(
+            species = sps,
+            db = ccc_db_use,
+            convert_species = convert_species,
             data_dir = data_dir,
-            db = "CellTalk",
-            pattern = switch(db_species["CellTalk"],
-              "Homo_sapiens" = "^human_lr_pair\\.rds$",
-              "Mus_musculus" = "^mouse_lr_pair\\.rds$"
-            ),
+            db_version = db_version,
+            db_update = db_update,
             verbose = verbose
           )
-          source_is_temp <- FALSE
-          if (is.null(source_file)) {
-            source_file <- tempfile()
-            source_is_temp <- TRUE
-            download(url = url, destfile = source_file)
-          }
-          lr <- readRDS(source_file)
-          if (isTRUE(source_is_temp)) {
-            unlink(source_file)
-          }
-          version <- "v1.0"
-
-          lr[["ligand_gene_symbol2"]] <- paste0(
-            "ligand_",
-            lr[["ligand_gene_symbol"]]
-          )
-          lr[["receptor_gene_symbol2"]] <- paste0(
-            "receptor_",
-            lr[["receptor_gene_symbol"]]
-          )
-          TERM2GENE <- rbind(
-            data.frame(
-              "Term" = lr[["ligand_gene_symbol2"]],
-              "symbol" = lr[["receptor_gene_symbol"]]
-            ),
-            data.frame(
-              "Term" = lr[["receptor_gene_symbol2"]],
-              "symbol" = lr[["ligand_gene_symbol"]]
-            )
-          )
-          TERM2NAME <- TERM2GENE[, c(1, 1)]
-          colnames(TERM2GENE) <- c("Term", default_id_types[["CellTalk"]])
-          colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
-          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
-          db_list[[db_species["CellTalk"]]][["CellTalk"]][[
-            "TERM2GENE"
-          ]] <- TERM2GENE
-          db_list[[db_species["CellTalk"]]][["CellTalk"]][[
-            "TERM2NAME"
-          ]] <- TERM2NAME
-          db_list[[db_species["CellTalk"]]][["CellTalk"]][[
-            "version"
-          ]] <- version
-          if (sps == db_species["CellTalk"]) {
-            R.cache::saveCache(
-              db_list[[db_species["CellTalk"]]][["CellTalk"]],
-              key = list(
-                version,
-                as.character(db_species["CellTalk"]),
-                "CellTalk"
-              ),
-              comment = paste0(
-                version,
-                " nterm:",
-                length(TERM2NAME[[1]]),
-                "|",
-                db_species["CellTalk"],
-                "-CellTalk"
-              )
-            )
-          }
-        }
-
-        ## CellChat -----------------
-        if (any(db == "CellChat") && (!"CellChat" %in% names(db_list[[sps]]))) {
-          if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
-            if (isTRUE(convert_species)) {
-              log_message(
-                "Use the human annotation to create the CellChat database for {.val {sps}}",
-                message_type = "warning",
-                verbose = verbose
-              )
-              db_species["CellChat"] <- "Homo_sapiens"
-            } else {
-              log_message(
-                "{.pkg CellChat} database only support {.val {c('Homo_sapiens', 'Mus_musculus')}}. Consider using {.arg convert_species=TRUE}",
-                message_type = "error"
-              )
-            }
-          }
-          log_message("Preparing {.pkg CellChat} database", verbose = verbose)
-          url <- paste0(
-            "https://raw.githubusercontent.com/sqjin/CellChat/master/data/CellChatDB.",
-            switch(db_species["CellChat"],
-              "Homo_sapiens" = "human.rda",
-              "Mus_musculus" = "mouse.rda",
-              "Danio_rerio" = "zebrafish.rda"
-            )
-          )
-          cellchat_file <- paste0(
-            "CellChatDB.",
-            switch(db_species["CellChat"],
-              "Homo_sapiens" = "human.rda",
-              "Mus_musculus" = "mouse.rda",
-              "Danio_rerio" = "zebrafish.rda"
-            )
-          )
-          source_file <- preparedb_local_source_file(
-            data_dir = data_dir,
-            db = "CellChat",
-            pattern = switch(db_species["CellChat"],
-              "Homo_sapiens" = "^CellChatDB\\.human\\.rda$",
-              "Mus_musculus" = "^CellChatDB\\.mouse\\.rda$",
-              "Danio_rerio" = "^CellChatDB\\.zebrafish\\.rda$"
-            ),
-            verbose = verbose
-          )
-          source_is_temp <- FALSE
-          if (is.null(source_file)) {
-            source_file <- tempfile()
-            source_is_temp <- TRUE
-            download(url = url, destfile = source_file)
-          }
-          load(source_file)
-          lr <- get(paste0(
-            "CellChatDB.",
-            switch(db_species["CellChat"],
-              "Homo_sapiens" = "human",
-              "Mus_musculus" = "mouse",
-              "Danio_rerio" = "zebrafish"
-            )
-          ))[["interaction"]]
-          if (isTRUE(source_is_temp)) {
-            temp <- source_file
-            download(
-              url = "https://raw.githubusercontent.com/sqjin/CellChat/master/DESCRIPTION",
-              destfile = temp
-            )
-            version <- grep(
-              pattern = "Version",
-              x = readLines(temp),
-              value = TRUE
-            )
-            version <- gsub(
-              pattern = "(.*Version: )|(</td>)",
-              replacement = "",
-              x = version
-            )
-            unlink(temp)
-          } else {
-            version <- if (identical(db_version, "latest")) "local" else db_version
-          }
-
-          lr_list <- strsplit(lr$interaction_name, split = "_")
-          lr[["ligand_gene_symbol"]] <- paste0(
-            "ligand_",
-            sapply(lr_list, function(x) x[[1]])
-          )
-          lr[["receptor_list"]] <- lapply(
-            lr_list,
-            function(x) paste0("receptor_", x[2:length(x)])
-          )
-          lr <- unnest_fun(data = lr, cols = "receptor_list", keep_empty = FALSE)
-          TERM2GENE <- rbind(
-            data.frame(
-              "Term" = lr[["ligand_gene_symbol"]],
-              "symbol" = gsub(
-                pattern = "receptor_",
-                replacement = "",
-                lr[["receptor_list"]]
-              )
-            ),
-            data.frame(
-              "Term" = lr[["receptor_list"]],
-              "symbol" = gsub(
-                pattern = "ligand_",
-                replacement = "",
-                lr[["ligand_gene_symbol"]]
-              )
-            )
-          )
-
-          if (db_species["CellChat"] == "Homo_sapiens") {
-            TERM2GENE[["symbol"]] <- toupper(TERM2GENE[["symbol"]])
-          } else if (db_species["CellChat"] == "Mus_musculus") {
-            TERM2GENE[["symbol"]] <- capitalize(
-              TERM2GENE[["symbol"]],
-              force_tolower = TRUE
-            )
-          } else if (db_species["CellChat"] == "Danio_rerio") {
-            TERM2GENE[["symbol"]] <- tolower(TERM2GENE[["symbol"]])
-          }
-          TERM2NAME <- TERM2GENE[, c(1, 1)]
-          colnames(TERM2GENE) <- c("Term", default_id_types[["CellChat"]])
-          colnames(TERM2NAME) <- c("Term", "Name")
-          TERM2GENE <- stats::na.omit(unique(TERM2GENE))
-          TERM2NAME <- stats::na.omit(unique(TERM2NAME))
-          db_list[[db_species["CellChat"]]][["CellChat"]][[
-            "TERM2GENE"
-          ]] <- TERM2GENE
-          db_list[[db_species["CellChat"]]][["CellChat"]][[
-            "TERM2NAME"
-          ]] <- TERM2NAME
-          db_list[[db_species["CellChat"]]][["CellChat"]][[
-            "version"
-          ]] <- version
-          if (sps == db_species["CellChat"]) {
-            R.cache::saveCache(
-              db_list[[db_species["CellChat"]]][["CellChat"]],
-              key = list(
-                version,
-                as.character(db_species["CellChat"]),
-                "CellChat"
-              ),
-              comment = paste0(
-                version,
-                " nterm:",
-                length(TERM2NAME[[1]]),
-                "|",
-                db_species["CellChat"],
-                "-CellChat"
-              )
-            )
+          for (ccc_db in ccc_db_use) {
+            if (!ccc_db %in% names(ccc_prepared[[sps]])) next
+            db_list[[sps]][[ccc_db]] <- ccc_prepared[[sps]][[ccc_db]]
           }
         }
       } else {

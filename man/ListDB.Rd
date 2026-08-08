@@ -2,29 +2,30 @@
 % Please edit documentation in R/ListDB.R
 \name{ListDB}
 \alias{ListDB}
-\title{List cached databases}
+\title{List cached gene annotation databases}
 \usage{
 ListDB(species = c("Homo_sapiens", "Mus_musculus"), db = NULL)
 }
 \arguments{
-\item{species}{A character vector of species for which to retrieve database information.
-Default is \code{c("Homo_sapiens", "Mus_musculus")}.}
+\item{species}{A character vector specifying the species.
+Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
-\item{db}{The pattern to match against the database names.
-Default is \code{NULL}, which matches all databases.}
+\item{db}{A character vector of database names (for example \code{"GO_BP"},
+\code{"KEGG"}, \code{"CellChat"}), or a regular expression. If \code{NULL}, all databases
+are listed.}
 }
 \value{
-A data frame containing information about the databases,
-including a \code{Species} column and a \code{DB} column.
+A data frame with columns \code{Database}, \code{Species}, \code{Version}, and
+\code{Date}.
 }
 \description{
-Retrieves information about databases based on a given species and database name.
+Lists the gene annotation databases cached by \link{PrepareDB} and
+\link{PrepareCCCDB} in the R.cache root, optionally filtered by species and
+database name. Each row describes one cached database with its version and
+creation date.
 }
 \examples{
 ListDB(species = "Homo_sapiens")
 ListDB(species = c("Homo_sapiens", "Mus_musculus"))
 ListDB(species = "Mus_musculus", db = "GO_BP")
-}
-\seealso{
-\link{PrepareDB}
 }

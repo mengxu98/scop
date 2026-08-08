@@ -1,25 +1,49 @@
-#' @title List cached databases
+#' @title List cached gene annotation databases
 #'
 #' @description
-#' Retrieves information about databases based on a given species and database name.
+#' Lists the gene annotation databases cached by [PrepareDB] and
+#' [PrepareCCCDB] in the R.cache root, optionally filtered by species and
+#' database name. Each row describes one cached database with its version and
+#' creation date.
 #'
 #' @md
-#' @param species A character vector of species for which to retrieve database information.
-#' Default is `c("Homo_sapiens", "Mus_musculus")`.
-#' @param db The pattern to match against the database names.
-#' Default is `NULL`, which matches all databases.
+#' @param species A character vector specifying the species.
+#' Can be `"Homo_sapiens"` or `"Mus_musculus"`.
+#' @param db A character vector of database names (for example `"GO_BP"`,
+#' `"KEGG"`, `"CellChat"`), or a regular expression. If `NULL`, all databases
+#' are listed.
 #'
-#' @return A data frame containing information about the databases,
-#' including a `Species` column and a `DB` column.
-#'
-#' @seealso [PrepareDB]
-#'
+#' @return A data frame with columns `Database`, `Species`, `Version`, and
+#' `Date`.
 #' @export
+#'
 #' @examples
 #' ListDB(species = "Homo_sapiens")
 #' ListDB(species = c("Homo_sapiens", "Mus_musculus"))
 #' ListDB(species = "Mus_musculus", db = "GO_BP")
 ListDB <- function(
+  species = c("Homo_sapiens", "Mus_musculus"),
+  db = NULL
+) {
+  dbinfo <- list_db_cache_entries(species = species, db = db)
+  if (is.null(dbinfo) || nrow(dbinfo) == 0L) {
+    return(dbinfo)
+  }
+  out <- data.frame(
+    Database = dbinfo[["DB"]],
+    Species = dbinfo[["Species"]],
+    Version = dbinfo[["db_version"]],
+    Date = dbinfo[["date"]],
+    stringsAsFactors = FALSE
+  )
+  out <- out[order(out[["Species"]], out[["Database"]]), , drop = FALSE]
+  rownames(out) <- NULL
+  out
+}
+
+# Full R.cache metadata for the databases (file, timestamp, version, comment)
+# used by PrepareDB/PrepareCCCDB cache loading and by ListDB.
+list_db_cache_entries <- function(
   species = c("Homo_sapiens", "Mus_musculus"),
   db = NULL
 ) {
@@ -67,5 +91,5 @@ ListDB <- function(
     drop = FALSE
   ]
   rownames(dbinfo) <- NULL
-  return(dbinfo)
+  dbinfo
 }
