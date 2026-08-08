@@ -9,7 +9,7 @@
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object.
 #' @param method CNA/CNV backend. Supported backends are `"copykat"`,
-#' `"fastCNV"`, `"scevan"`, `"infercnv"`, `"numbat"`, and `"casper"`.
+#' `"fastCNV"`, `"scevan"`, `"infercnv"`, and `"numbat"`.
 #' @param layer Assay layer used as the expression matrix.
 #' @param group.by Optional metadata column forwarded to supported backends and
 #' stored as cell annotation.
@@ -304,18 +304,6 @@ cnv_run_backend <- function(
       output_dir = output_dir,
       verbose = verbose,
       ...
-    ),
-    casper = cnv_run_casper(
-      counts = counts,
-      reference_cells = reference_cells,
-      gene_order = gene_order,
-      loh = loh,
-      loh_name_mapping = loh_name_mapping,
-      cytoband = cytoband,
-      genome = genome,
-      output_dir = output_dir,
-      verbose = verbose,
-      ...
     )
   )
 }
@@ -330,8 +318,10 @@ cnv_run_copykat <- function(
   verbose = TRUE,
   ...
 ) {
-  check_r("copykat", verbose = FALSE)
+  check_r("navinlabcode/copykat", verbose = FALSE)
   copykat_fun <- get_namespace_fun("copykat", "copykat")
+  attached_copykat <- cnv_attach_package_data("copykat")
+  on.exit(if (isTRUE(attached_copykat)) detach("package:copykat", character.only = TRUE), add = TRUE)
   genome_use <- switch(genome,
     hg38 = "hg20",
     hg19 = "hg19",
@@ -351,14 +341,36 @@ cnv_run_copykat <- function(
     ),
     list(...)
   )
-  oldwd <- NULL
-  if (!is.null(output_dir)) {
-    oldwd <- getwd()
-    setwd(output_dir)
-    on.exit(setwd(oldwd), add = TRUE)
+  run_dir <- output_dir %||% tempfile("scop_copykat_")
+  if (!dir.exists(run_dir)) {
+    dir.create(run_dir, recursive = TRUE, showWarnings = FALSE)
   }
+  oldwd <- getwd()
+  setwd(run_dir)
+  on.exit(setwd(oldwd), add = TRUE)
   result <- cnv_call_backend_fun(copykat_fun, args)
   cnv_extract_copykat(result)
+}
+
+cnv_attach_package_data <- function(package) {
+  package_env <- paste0("package:", package)
+  if (package_env %in% search()) {
+    return(invisible(FALSE))
+  }
+  attached <- tryCatch(
+    {
+      suppressPackageStartupMessages(attachNamespace(package))
+      TRUE
+    },
+    error = function(e) FALSE
+  )
+  if (isTRUE(attached)) {
+    log_message(
+      "Attached {.pkg {package}} to the search path so its lazy data objects are resolvable by the backend",
+      message_type = "info"
+    )
+  }
+  invisible(attached)
 }
 
 cnv_run_fastcnv <- function(
@@ -382,6 +394,8 @@ cnv_run_fastcnv <- function(
     )
   }
   fastcnv_fun <- get_namespace_fun("fastCNV", "fastCNV")
+  attached_fastcnv <- cnv_attach_package_data("fastCNV")
+  on.exit(if (isTRUE(attached_fastcnv)) detach("package:fastCNV", character.only = TRUE), add = TRUE)
   sample_input <- cnv_fastcnv_sample_input(srt = srt, sample.by = sample.by)
   args <- utils::modifyList(
     list(
@@ -431,18 +445,17 @@ cnv_run_scevan <- function(
       par_cores = 1,
       SUBCLONES = TRUE,
       plotTree = FALSE,
-      organism = if (identical(genome, "mm10")) "mouse" else "human",
-      out_dir = output_dir
+      organism = if (identical(genome, "mm10")) "mouse" else "human"
     ),
     list(...)
   )
-  run_dir <- output_dir %||% getwd()
-  oldwd <- NULL
-  if (!is.null(output_dir)) {
-    oldwd <- getwd()
-    setwd(output_dir)
-    on.exit(setwd(oldwd), add = TRUE)
+  run_dir <- output_dir %||% tempfile("scop_scevan_")
+  if (!dir.exists(run_dir)) {
+    dir.create(run_dir, recursive = TRUE, showWarnings = FALSE)
   }
+  oldwd <- getwd()
+  setwd(run_dir)
+  on.exit(setwd(oldwd), add = TRUE)
   result <- cnv_call_backend_fun(scevan_fun, args)
   cnv_extract_scevan(
     result = result,
@@ -554,6 +567,8 @@ cnv_run_numbat <- function(
     dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
   }
   run_fun <- get_namespace_fun("numbat", "run_numbat")
+  attached_numbat <- cnv_attach_package_data("numbat")
+  on.exit(if (isTRUE(attached_numbat)) detach("package:numbat", character.only = TRUE), add = TRUE)
   args <- utils::modifyList(
     list(
       count_mat = counts,
@@ -1011,7 +1026,7 @@ cnv_object_fields <- function(x) {
 cnv_matrix_from_numbat_joint_post <- function(joint_post, cells) {
   df <- as.data.frame(joint_post, check.names = FALSE)
   cell_col <- cnv_first_col(df, c("cell", "barcode", "cell_id", "Cell"))
-  seg_col <- cnv_first_col(df, c("seg_label", "seg", "seg_cons", "component", "CNV"))
+  seg_col <- cnv_first_col(df, c("seg", "seg_label", "seg_cons", "component", "CNV"))
   state_col <- cnv_first_col(df, c("cnv_state_post", "cnv_state", "state_post", "state", "cnv_states"))
   if (is.null(cell_col) || is.null(seg_col)) {
     return(list(matrix = NULL, bin_info = NULL))
