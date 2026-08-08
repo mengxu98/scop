@@ -694,6 +694,24 @@ rctd_run_spacexr_old <- function(
   )
   result <- do.call(run_rctd, run_args)
   weights <- result@results$weights
+  if (is.null(weights) && is.list(result@results)) {
+    first <- result@results[[1L]]
+    if (is.list(first) && !is.null(first$all_weights)) {
+      cell_types <- result@cell_type_info$renorm[[2]]
+      weights <- do.call(rbind, lapply(result@results, function(x) x$all_weights))
+      if (is.null(rownames(weights))) {
+        rownames(weights) <- colnames(result@spatialRNA@counts)
+      }
+      colnames(weights) <- cell_types
+      weights <- methods::as(Matrix::Matrix(weights, sparse = TRUE), "CsparseMatrix")
+    }
+  }
+  if (is.null(weights)) {
+    log_message(
+      "spacexr returned no weight matrix in {.val {rctd_mode}} mode; check the installed spacexr version",
+      message_type = "error"
+    )
+  }
   if ("normalize_weights" %in% getNamespaceExports("spacexr")) {
     normalize_weights <- get_namespace_fun("spacexr", "normalize_weights")
     weights <- normalize_weights(weights)

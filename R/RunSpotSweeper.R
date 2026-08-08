@@ -539,10 +539,52 @@ spot_sweeper_run_artifacts <- function(
       result[[sample]] <- sample_coldata
       next
     }
+    spe_sample <- spe[, idx]
+    sample_coldata <- spot_sweeper_coldata(spe_sample)
+    upstream_subset_ok <- tryCatch(
+      ncol(subset(spe_sample, , TRUE)) == ncol(spe_sample),
+      error = function(e) FALSE
+    )
+    if (isTRUE(upstream_subset_ok) && nrow(sample_coldata) > 0L) {
+      probe_cd <- SummarizedExperiment::colData(spe_sample)
+      probe_cd$coords <- SpatialExperiment::spatialCoords(spe_sample)
+      probe_col <- intersect("percent.mito", colnames(probe_cd))[1]
+      upstream_subset_ok <- if (!is.na(probe_col)) {
+        tryCatch(
+          is.numeric(probe_cd[seq_len(min(3, nrow(probe_cd))), probe_col]),
+          error = function(e) FALSE
+        )
+      } else {
+        TRUE
+      }
+    }
+    if (!isTRUE(upstream_subset_ok)) {
+      log_message(
+        "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: the installed {.pkg SpotSweeper} {.fn localVariance} breaks on {.cls SpatialExperiment} colData (matrix coordinate column breaks {.code DataFrame[i, j]} extraction); only local-outlier QC is stored",
+        message_type = "warning"
+      )
+      sample_coldata$artifact <- FALSE
+      sample_coldata$.SpotSweeper_artifact_skip_reason <- "upstream bug in SpotSweeper::localVariance"
+      combined <- spot_sweeper_merge_coldata(combined, sample_coldata)
+      result[[sample]] <- sample_coldata
+      next
+    }
     log_message(
       "Run {.pkg SpotSweeper} artifact detection for sample {.val {sample}}",
       verbose = verbose
     )
+    sample_coldata <- spot_sweeper_coldata(spe_sample)
+    if ("sample_id" %in% colnames(sample_coldata) &&
+      length(unique(as.character(sample_coldata[["sample_id"]]))) > 1L) {
+      log_message(
+        "The colData column {.val sample_id} has multiple values; {.pkg SpotSweeper} artifact detection calls {.fn localVariance} without forwarding {.arg samples} and defaults to the {.val sample_id} column, so it is pinned to the current sample for this per-sample run",
+        verbose = verbose
+      )
+      SummarizedExperiment::colData(spe_sample)[["sample_id"]] <- rep(
+        as.character(sample),
+        nrow(SummarizedExperiment::colData(spe_sample))
+      )
+    }
     args <- c(
       list(
         spe = spe_sample,
@@ -556,7 +598,24 @@ spot_sweeper_run_artifacts <- function(
       ),
       spot_sweeper_filter_args(artifact_fun, extra_args)
     )
-    spe_sample <- do.call(artifact_fun, args)
+    spe_sample <- tryCatch(
+      do.call(artifact_fun, args),
+      error = function(e) e
+    )
+    if (inherits(spe_sample, "error")) {
+      log_message(
+        "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: the installed {.pkg SpotSweeper} {.fn findArtifacts} failed ({conditionMessage(spe_sample)}); only local-outlier QC is stored",
+        message_type = "warning"
+      )
+      sample_coldata$artifact <- FALSE
+      sample_coldata$.SpotSweeper_artifact_skip_reason <- paste0(
+        "upstream failure in SpotSweeper::findArtifacts: ",
+        conditionMessage(spe_sample)
+      )
+      combined <- spot_sweeper_merge_coldata(combined, sample_coldata)
+      result[[sample]] <- sample_coldata
+      next
+    }
     sample_coldata <- spot_sweeper_coldata(spe_sample)
     sample_coldata$.SpotSweeper_artifact_skip_reason <- NA_character_
     combined <- spot_sweeper_merge_coldata(combined, sample_coldata)

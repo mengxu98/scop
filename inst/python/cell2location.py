@@ -11,9 +11,16 @@ import argparse
 import hashlib
 import importlib.metadata
 import json
+import os
 import shutil
+import sys
 from pathlib import Path
 from typing import Any
+
+sys.path = [
+    p for p in sys.path
+    if p != os.path.dirname(os.path.abspath(__file__))
+]
 
 import anndata as ad
 import numpy as np
