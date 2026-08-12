@@ -127,7 +127,13 @@ test_that("RunLIANA stores official consensus and keeps legacy tables", {
   expect_equal(out@tools$LIANA$consensus_table$specificity_rank, 0.02)
   expect_equal(out@tools$LIANA$primary_table$score_type, "liana_consensus_priority")
   expect_equal(out@tools$LIANA$primary_table$pvalue_type, "specificity_rank_not_pvalue")
-  expect_true(all(is.na(out@tools$LIANA$primary_table$significant)))
+  expect_false("significant" %in% colnames(out@tools$LIANA$primary_table))
+  expect_false("aggregate_rank" %in% colnames(out@tools$LIANA$primary_table))
+  expect_equal(out@tools$LIANA$primary_table$interaction_name, "L1_R1")
+  expect_equal(out@tools$LIANA$primary_table$interaction_label, "L1 - R1")
+  expect_equal(out@tools$LIANA$primary_table$pair_lr, "L1-R1")
+  expect_equal(out@tools$LIANA$primary_table$interaction_display, "L1 - R1")
+  expect_false(anyNA(out@tools$LIANA$primary_table))
   expect_equal(out@tools$LIANA$parameters$consensus, "rank")
   expect_equal(unique(out@tools$LIANA$long_table$resource), "Consensus")
   expect_equal(unique(out@tools$CCC$long_table$score_type), "liana_consensus_priority")
@@ -238,6 +244,23 @@ test_that("LIANA aggregates multiple resources independently", {
   expect_equal(sort(unique(out$table$resource)), c("CellChatDB", "Consensus"))
 })
 
+test_that("LIANA aggregate consensus keeps official aggregate rank semantics", {
+  consensus <- data.frame(
+    source = "A", target = "B", ligand.complex = "L1",
+    receptor.complex = "R1", aggregate_rank = 0.15
+  )
+  out <- getFromNamespace("liana_standardize_consensus", "scop")(
+    consensus, resource = "Consensus", mode = "aggregate"
+  )
+
+  expect_equal(out$aggregate_rank, 0.15)
+  expect_equal(out$priority_rank, 0.15)
+  expect_equal(out$pvalue, 0.15)
+  expect_equal(out$pvalue_type, "aggregate_rank_not_pvalue")
+  expect_false("significant" %in% colnames(out))
+  expect_false(anyNA(out))
+})
+
 test_that("cross-method combination separates support and visualization rank semantics", {
   df <- data.frame(
     sender = c("A", "A", "A", "A", "A"),
@@ -278,6 +301,45 @@ test_that("LIANA export aggregation keeps resources separate", {
   )
   expect_equal(nrow(out), 2)
   expect_equal(sort(out$resource), c("CellChatDB", "Consensus"))
+})
+
+test_that("LIANA primary export fills interaction identifiers without inventing aggregate rank", {
+  df <- data.frame(
+    sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
+    interaction_name = NA_character_, score = 0.9, pvalue = 0.2,
+    method = "LIANA", resource = "Consensus",
+    magnitude_rank = 0.1, specificity_rank = 0.2,
+    priority_rank = 0.1, priority_score = 0.9,
+    pvalue_type = "specificity_rank_not_pvalue"
+  )
+  out <- getFromNamespace("ccc_long_to_liana", "scop")(
+    df, aggregate = TRUE
+  )
+
+  expect_equal(out$interaction_name, "L1_R1")
+  expect_equal(out$interaction_name_2, "L1 - R1")
+  expect_equal(out$pair_lr, "L1-R1")
+  expect_false("aggregate_rank" %in% colnames(out))
+  expect_false(anyNA(out))
+})
+
+test_that("mixed CCC export ignores missing consensus semantic labels", {
+  df <- data.frame(
+    sender = c("A", "A"), receiver = c("B", "B"),
+    ligand = c("L1", "L2"), receptor = c("R1", "R2"),
+    interaction_name = c("L1_R1", "L2_R2"),
+    score = c(0.9, 0.8), pvalue = c(0.1, 0.2),
+    method = c("LIANA", "SpatialCellChat"),
+    pvalue_type = c("specificity_rank_not_pvalue", NA_character_)
+  )
+
+  expect_no_error(
+    out <- getFromNamespace("ccc_long_to_liana", "scop")(
+      df, aggregate = TRUE, sample_col = "method"
+    )
+  )
+  expect_equal(nrow(out), 2)
+  expect_false("aggregate_rank" %in% colnames(out))
 })
 
 test_that("unified retrieval preserves backend method labels", {

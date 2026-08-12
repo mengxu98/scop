@@ -386,7 +386,8 @@ reference:
   - GetCCCObject
   - RunCellphoneDB
   - RunLIANA
-  - ListLIANAResources
+  - ListCCCDB
+  - PrepareCCCDB
   - RunMDIC3
   - RunNichenetr
   - RunMultiNichenetr
