@@ -244,13 +244,10 @@ ccc_resources_liana <- function() {
     description = "Install saezlab/liana to inspect LIANA resources",
     stringsAsFactors = FALSE
   )
-  available <- tryCatch(
+  tryCatch(
     check_r(c("saezlab/liana", "SingleCellExperiment"), verbose = FALSE),
-    error = function(e) FALSE
+    error = function(e) NULL
   )
-  if (!isTRUE(unname(unlist(available))[1])) {
-    return(empty)
-  }
   resources <- tryCatch(
     unique(as.character(liana_get_fun("show_resources")())),
     error = function(e) character(0)

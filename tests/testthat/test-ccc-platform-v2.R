@@ -53,6 +53,28 @@ test_that("LIANA resources are discovered from the optional backend", {
   expect_equal(resources$Status[resources$Resource == "OmniPath"], "available")
 })
 
+test_that("LIANA resource discovery follows the resolvable backend across libraries", {
+  check_called <- FALSE
+  testthat::local_mocked_bindings(
+    check_r = function(...) {
+      check_called <<- TRUE
+      invisible(list(liana = FALSE, SingleCellExperiment = FALSE))
+    },
+    liana_get_fun = function(fun, package = "liana") {
+      expect_equal(package, "liana")
+      expect_equal(fun, "show_resources")
+      function() c("Consensus", "MouseConsensus")
+    },
+    .package = "scop"
+  )
+
+  resources <- scop::ListCCCDB(db = "LIANA")
+  expect_true(check_called)
+  expect_equal(resources$Resource, c("Consensus", "MouseConsensus"))
+  expect_equal(resources$Species, c("human", "mouse"))
+  expect_true(all(resources$Status == "available"))
+})
+
 test_that("RunLIANA stores official consensus and keeps legacy tables", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
