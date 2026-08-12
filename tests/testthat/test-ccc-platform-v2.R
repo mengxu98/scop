@@ -323,6 +323,25 @@ test_that("LIANA primary export fills interaction identifiers without inventing 
   expect_false(anyNA(out))
 })
 
+test_that("mixed CCC export ignores missing consensus semantic labels", {
+  df <- data.frame(
+    sender = c("A", "A"), receiver = c("B", "B"),
+    ligand = c("L1", "L2"), receptor = c("R1", "R2"),
+    interaction_name = c("L1_R1", "L2_R2"),
+    score = c(0.9, 0.8), pvalue = c(0.1, 0.2),
+    method = c("LIANA", "SpatialCellChat"),
+    pvalue_type = c("specificity_rank_not_pvalue", NA_character_)
+  )
+
+  expect_no_error(
+    out <- getFromNamespace("ccc_long_to_liana", "scop")(
+      df, aggregate = TRUE, sample_col = "method"
+    )
+  )
+  expect_equal(nrow(out), 2)
+  expect_false("aggregate_rank" %in% colnames(out))
+})
+
 test_that("unified retrieval preserves backend method labels", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
