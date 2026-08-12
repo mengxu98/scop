@@ -1091,9 +1091,15 @@ ccc_long_to_liana <- function(
     out <- ccc_aggregate_liana_table(out, sample_col = sample_col)
   }
   liana_rank_consensus <- "pvalue_type" %in% colnames(out) &&
-    any(as.character(out$pvalue_type) == "specificity_rank_not_pvalue")
+    any(
+      as.character(out$pvalue_type) == "specificity_rank_not_pvalue",
+      na.rm = TRUE
+    )
   liana_aggregate_consensus <- "pvalue_type" %in% colnames(out) &&
-    any(as.character(out$pvalue_type) == "aggregate_rank_not_pvalue")
+    any(
+      as.character(out$pvalue_type) == "aggregate_rank_not_pvalue",
+      na.rm = TRUE
+    )
   if (
     !"specificity_rank" %in% colnames(out) &&
       !liana_aggregate_consensus
