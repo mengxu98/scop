@@ -441,25 +441,38 @@ liana_standardize_consensus <- function(df, resource, mode) {
   if (is.null(df) || !is.data.frame(df) || nrow(df) == 0L) {
     return(data.frame())
   }
-  magnitude_rank <- if ("magnitude_rank" %in% colnames(df)) {
+  has_magnitude_rank <- "magnitude_rank" %in% colnames(df)
+  magnitude_rank <- if (has_magnitude_rank) {
     suppressWarnings(as.numeric(df$magnitude_rank))
   } else {
     rep(NA_real_, nrow(df))
   }
-  specificity_rank <- if ("specificity_rank" %in% colnames(df)) {
+  has_specificity_rank <- "specificity_rank" %in% colnames(df)
+  specificity_rank <- if (has_specificity_rank) {
     suppressWarnings(as.numeric(df$specificity_rank))
   } else {
     rep(NA_real_, nrow(df))
   }
-  aggregate_rank <- if ("aggregate_rank" %in% colnames(df)) {
+  has_aggregate_rank <- "aggregate_rank" %in% colnames(df)
+  aggregate_rank <- if (has_aggregate_rank) {
     suppressWarnings(as.numeric(df$aggregate_rank))
   } else {
     rep(NA_real_, nrow(df))
   }
   out <- standardize_long_df(df)
-  out$magnitude_rank <- magnitude_rank
-  out$specificity_rank <- specificity_rank
-  out$aggregate_rank <- aggregate_rank
+  interaction_name <- paste(out$ligand, out$receptor, sep = "_")
+  interaction_label <- paste(out$ligand, out$receptor, sep = " - ")
+  missing_interaction <- is.na(out$interaction_name) |
+    !nzchar(as.character(out$interaction_name))
+  out$interaction_name[missing_interaction] <- interaction_name[missing_interaction]
+  missing_label <- is.na(out$interaction_label) |
+    !nzchar(as.character(out$interaction_label))
+  out$interaction_label[missing_label] <- interaction_label[missing_label]
+  out$pair_lr <- paste(out$ligand, out$receptor, sep = "-")
+  out$interaction_display <- out$interaction_label
+  if (has_magnitude_rank) out$magnitude_rank <- magnitude_rank
+  if (has_specificity_rank) out$specificity_rank <- specificity_rank
+  if (has_aggregate_rank) out$aggregate_rank <- aggregate_rank
   out$priority_rank <- if (identical(mode, "rank")) magnitude_rank else aggregate_rank
   finite <- is.finite(out$priority_rank)
   out$priority_score <- NA_real_
@@ -488,7 +501,10 @@ liana_standardize_consensus <- function(df, resource, mode) {
   } else {
     "liana_aggregate"
   }
-  ccc_mark_significance(out)
+  out <- ccc_mark_significance(out)
+  out$significant <- NULL
+  out$neglog10_pvalue <- NULL
+  out
 }
 
 liana_build_consensus <- function(
@@ -1034,6 +1050,10 @@ ccc_long_to_liana <- function(
   } else {
     out$interacting_pair
   }
+  missing_interaction <- is.na(out$interaction_name) |
+    !nzchar(out$interaction_name)
+  out$interaction_name[missing_interaction] <-
+    out$interacting_pair[missing_interaction]
   out$classification <- as.character(df$classification %||% df$pathway_name)
   out$classification[is.na(out$classification) | !nzchar(out$classification)] <- "Unclassified"
   out$method <- if ("method" %in% colnames(df)) as.character(df$method) else NA_character_
@@ -1070,13 +1090,29 @@ ccc_long_to_liana <- function(
   if (isTRUE(aggregate)) {
     out <- ccc_aggregate_liana_table(out, sample_col = sample_col)
   }
-  if (!"specificity_rank" %in% colnames(out)) {
+  liana_rank_consensus <- "pvalue_type" %in% colnames(out) &&
+    any(
+      as.character(out$pvalue_type) == "specificity_rank_not_pvalue",
+      na.rm = TRUE
+    )
+  liana_aggregate_consensus <- "pvalue_type" %in% colnames(out) &&
+    any(
+      as.character(out$pvalue_type) == "aggregate_rank_not_pvalue",
+      na.rm = TRUE
+    )
+  if (
+    !"specificity_rank" %in% colnames(out) &&
+      !liana_aggregate_consensus
+  ) {
     out$specificity_rank <- rank(-out$score, ties.method = "average", na.last = "keep")
   }
-  if (!"magnitude_rank" %in% colnames(out)) {
+  if (
+    !"magnitude_rank" %in% colnames(out) &&
+      !liana_aggregate_consensus
+  ) {
     out$magnitude_rank <- out$specificity_rank
   }
-  if (!"aggregate_rank" %in% colnames(out)) {
+  if (!"aggregate_rank" %in% colnames(out) && !liana_rank_consensus) {
     out$aggregate_rank <- ifelse(
       is.finite(out$pvalue),
       out$pvalue,
