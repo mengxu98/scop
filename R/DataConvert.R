@@ -221,7 +221,21 @@ srt_to_adata <- function(
   neighbor_names <- intersect(neighbor_names, names(srt@neighbors))
   obsp_list <- list()
   for (graph in graph_names) {
-    obsp_list[[graph]] <- srt[[graph]]
+    graph_matrix <- srt[[graph]]
+    if (
+      !is.null(rownames(graph_matrix)) &&
+        !is.null(colnames(graph_matrix)) &&
+        all(cell_order %in% rownames(graph_matrix)) &&
+        all(cell_order %in% colnames(graph_matrix))
+    ) {
+      graph_matrix <- graph_matrix[cell_order, cell_order, drop = FALSE]
+    }
+    # R sparse matrices are column-compressed and reticulate therefore emits
+    # scipy.csc_matrix. Scanpy's Neighbors reader requires CSR specifically
+    # when estimating n_neighbors from an existing AnnData graph.
+    obsp_list[[graph]] <- scipy_sparse$csr_matrix(
+      reticulate::r_to_py(graph_matrix)
+    )
   }
   for (neighbor in neighbor_names) {
     obsp_list[[neighbor]] <- srt[[neighbor]]
@@ -255,6 +269,12 @@ srt_to_adata <- function(
       "{.val tools} slot is not converted",
       message_type = "warning",
       verbose = verbose
+    )
+  }
+  if (all(c("connectivities", "distances") %in% names(obsp_list))) {
+    uns_list[["neighbors"]] <- list(
+      connectivities_key = "connectivities",
+      distances_key = "distances"
     )
   }
   if (length(uns_list) > 0) {

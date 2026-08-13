@@ -47,7 +47,9 @@ The default excludes \code{"cell2location"}, \code{"cell2fate"}, \code{"sccoda"}
 stacks. Cell2fate is prepared in a standalone \code{"cell2fate_env"} with Python
 3.9. \code{"scenic"} is also excluded from the default environment and is prepared
 in \code{"scenic_env"} by default because SCENIC requires an older Python/numpy
-stack. On Windows, the
+stack. \code{"scmalignantfinder"} is prepared in a standalone
+\code{"scmalignantfinder_env"} because its upstream package pins an older
+scanpy/anndata stack. On Windows, the
 default also excludes \code{"scvi"}, \code{"glue"}, and \code{"multimap"} because those
 upstream stacks are more reliable when requested explicitly for
 method-specific workflows.}

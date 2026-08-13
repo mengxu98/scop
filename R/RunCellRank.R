@@ -290,6 +290,21 @@ RunCellRank <- function(
   plot_format <- match.arg(plot_format)
 
   if (use_connectivity_kernel) {
+    if (velocity_weight <= 0 && connectivity_weight <= 0) {
+      velocity_weight <- 0.5
+      connectivity_weight <- 0.5
+      log_message(
+        "Both kernel weights are non-positive; using equal weights",
+        message_type = "warning",
+        verbose = verbose
+      )
+    } else if (velocity_weight <= 0) {
+      velocity_weight <- 0
+      connectivity_weight <- 1
+    } else if (connectivity_weight <= 0) {
+      velocity_weight <- 1
+      connectivity_weight <- 0
+    }
     weight_sum <- velocity_weight + connectivity_weight
     if (abs(weight_sum - 1.0) > 0.01) {
       log_message(
@@ -418,37 +433,31 @@ RunCellRank <- function(
     # Map Python obs column names → C++ standard names
     py_to_cpp_cols <- c(
       macrostates_fwd = "cellrank_macrostate",
-      term_states_fwd = "cellrank_terminal_states",
-      term_states_fwd_probs = "cellrank_fate_confidence"
+      term_states_fwd = "cellrank_terminal_states"
     )
     missing_py_cols <- character(0)
     for (py_col in names(py_to_cpp_cols)) {
       cpp_col <- py_to_cpp_cols[[py_col]]
       if (py_col %in% colnames(srt_out@meta.data)) {
         vals <- srt_out@meta.data[[py_col]]
-        # Convert factor/categorical to integer for macrostate/terminal_states
-        if (cpp_col != "cellrank_fate_confidence") {
-          vals_chr <- as.character(vals)
-          empty_state <- vals_chr %in% c("transient", "unassigned", "NA", "nan", "")
-          if (any(empty_state, na.rm = TRUE)) {
-            non_empty <- vals_chr[!empty_state & !is.na(vals_chr)]
-            if (length(non_empty) > 0) {
-              state_ids <- as.integer(factor(non_empty))
-              out_vals <- integer(length(vals_chr))
-              out_vals[!empty_state & !is.na(vals_chr)] <- state_ids
-              srt_out@meta.data[[cpp_col]] <- out_vals
-            } else {
-              srt_out@meta.data[[cpp_col]] <- integer(length(vals_chr))
-            }
-          } else if (is.factor(vals)) {
-            srt_out@meta.data[[cpp_col]] <- as.integer(vals)
-          } else if (is.numeric(vals) || is.integer(vals)) {
-            srt_out@meta.data[[cpp_col]] <- as.integer(vals)
+        vals_chr <- as.character(vals)
+        empty_state <- vals_chr %in% c("transient", "unassigned", "NA", "nan", "")
+        if (any(empty_state, na.rm = TRUE)) {
+          non_empty <- vals_chr[!empty_state & !is.na(vals_chr)]
+          if (length(non_empty) > 0) {
+            state_ids <- as.integer(factor(non_empty))
+            out_vals <- integer(length(vals_chr))
+            out_vals[!empty_state & !is.na(vals_chr)] <- state_ids
+            srt_out@meta.data[[cpp_col]] <- out_vals
           } else {
-            srt_out@meta.data[[cpp_col]] <- as.integer(factor(vals))
+            srt_out@meta.data[[cpp_col]] <- integer(length(vals_chr))
           }
-        } else if (cpp_col == "cellrank_fate_confidence") {
-          srt_out@meta.data[[cpp_col]] <- as.numeric(vals)
+        } else if (is.factor(vals)) {
+          srt_out@meta.data[[cpp_col]] <- as.integer(vals)
+        } else if (is.numeric(vals) || is.integer(vals)) {
+          srt_out@meta.data[[cpp_col]] <- as.integer(vals)
+        } else {
+          srt_out@meta.data[[cpp_col]] <- as.integer(factor(vals))
         }
       } else {
         missing_py_cols <- c(missing_py_cols, py_col)
@@ -484,6 +493,27 @@ RunCellRank <- function(
         rownames(ap) <- colnames(srt_out)
       }
     }
+    if ("term_states_fwd_probs" %in% colnames(srt_out@meta.data)) {
+      srt_out@meta.data[["cellrank_terminal_membership_confidence"]] <-
+        as.numeric(srt_out@meta.data[["term_states_fwd_probs"]])
+    }
+    fate_confidence_source <- "unavailable"
+    if (!is.null(ap)) {
+      srt_out@meta.data[["cellrank_fate_confidence"]] <-
+        cellrank_fate_confidence_from_absorption(ap)
+      fate_confidence_source <- paste0(ap_key, " row maximum")
+    } else if ("term_states_fwd_probs" %in% colnames(srt_out@meta.data)) {
+      # Preserve the historical column when fate probabilities are unavailable,
+      # but record that this is only a terminal-membership fallback.
+      srt_out@meta.data[["cellrank_fate_confidence"]] <-
+        as.numeric(srt_out@meta.data[["term_states_fwd_probs"]])
+      fate_confidence_source <- "term_states_fwd_probs fallback"
+      log_message(
+        "CellRank fate probabilities were unavailable; using terminal-state membership confidence as a fallback",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
 
     # ── Store standard tools$CellRank slot ──
     srt_out@tools[["CellRank"]] <- list(
@@ -501,7 +531,8 @@ RunCellRank <- function(
         estimator_type = estimator_type,
         n_macrostates = n_macrostates,
         n_cells_terminal = n_cells_terminal,
-        backward = backward
+        backward = backward,
+        fate_confidence_source = fate_confidence_source
       )
     )
 
@@ -532,6 +563,107 @@ RunCellRank <- function(
     return(adata)
   }
 }
+
+cellrank_fate_confidence_from_absorption <- function(absorption) {
+  absorption <- as.matrix(absorption)
+  if (!is.numeric(absorption) || length(dim(absorption)) != 2L || !ncol(absorption)) {
+    log_message(
+      "CellRank absorption probabilities must be a numeric matrix with at least one lineage",
+      message_type = "error"
+    )
+  }
+  if (any(!is.finite(absorption))) {
+    log_message("CellRank absorption probabilities contain non-finite values", message_type = "error")
+  }
+  apply(absorption, 1L, max)
+}
+
+cellrank_normalize_sparse_transition <- function(
+  transition,
+  min_self_loop = 0.01
+) {
+  transition <- Matrix::drop0(Matrix::Matrix(transition, sparse = TRUE))
+  if (nrow(transition) != ncol(transition)) {
+    log_message("CellRank transition matrix must be square", message_type = "error")
+  }
+  if (length(transition@x)) {
+    transition@x[!is.finite(transition@x) | transition@x < 0] <- 0
+    transition <- Matrix::drop0(transition)
+  }
+  row_sums <- Matrix::rowSums(transition)
+  zero_rows <- which(!is.finite(row_sums) | row_sums <= 1e-12)
+  if (length(zero_rows)) {
+    transition <- transition + Matrix::sparseMatrix(
+      i = zero_rows,
+      j = zero_rows,
+      x = 1,
+      dims = dim(transition)
+    )
+    row_sums <- Matrix::rowSums(transition)
+  }
+  transition <- Matrix::Diagonal(x = 1 / pmax(row_sums, 1e-12)) %*% transition
+
+  diagonal <- Matrix::diag(transition)
+  needs_loop <- which(!is.finite(diagonal) | diagonal < min_self_loop)
+  if (length(needs_loop)) {
+    transition <- transition + Matrix::sparseMatrix(
+      i = needs_loop,
+      j = needs_loop,
+      x = min_self_loop - pmax(diagonal[needs_loop], 0),
+      dims = dim(transition)
+    )
+  }
+  row_sums <- Matrix::rowSums(transition)
+  Matrix::drop0(Matrix::Diagonal(x = 1 / pmax(row_sums, 1e-12)) %*% transition)
+}
+
+cellrank_density_normalize_connectivities <- function(connectivities) {
+  connectivities <- Matrix::drop0(Matrix::Matrix(connectivities, sparse = TRUE))
+  if (nrow(connectivities) != ncol(connectivities)) {
+    log_message("CellRank connectivity matrix must be square", message_type = "error")
+  }
+  density <- Matrix::colSums(connectivities)
+  density[!is.finite(density) | density <= 1e-15] <- 1
+  density_inverse <- Matrix::Diagonal(x = 1 / density)
+  cellrank_normalize_sparse_transition(
+    density_inverse %*% connectivities %*% density_inverse,
+    min_self_loop = 0
+  )
+}
+
+cellrank_hard_threshold_kernel <- function(
+  connectivities,
+  pseudotime,
+  frac_to_keep = 0.3,
+  backward = FALSE
+) {
+  connectivities <- Matrix::drop0(Matrix::Matrix(connectivities, sparse = TRUE))
+  if (nrow(connectivities) != ncol(connectivities) || length(pseudotime) != nrow(connectivities)) {
+    log_message(
+      "CellRank connectivities and pseudotime dimensions do not agree",
+      message_type = "error"
+    )
+  }
+  if (!is.numeric(frac_to_keep) || length(frac_to_keep) != 1L ||
+    !is.finite(frac_to_keep) || frac_to_keep < 0 || frac_to_keep > 1) {
+    log_message("{.arg frac_to_keep} must be between 0 and 1", message_type = "error")
+  }
+  pseudotime <- as.numeric(pseudotime)
+  if (any(!is.finite(pseudotime))) {
+    log_message("CellRank pseudotime contains non-finite values", message_type = "error")
+  }
+  connectivities <- methods::as(
+    methods::as(connectivities, "generalMatrix"),
+    "CsparseMatrix"
+  )
+  cellrank_hard_threshold_kernel_cpp(
+    connectivities = connectivities,
+    pseudotime = pseudotime,
+    frac_to_keep = frac_to_keep,
+    backward = isTRUE(backward)
+  )
+}
+
 run_cellrank_cpp <- function(
   srt, assay_y, layer_y, group.by,
   linear_reduction, nonlinear_reduction,
@@ -544,6 +676,22 @@ run_cellrank_cpp <- function(
   cores, return_seurat, verbose
 ) {
   estimator_type <- match.arg(estimator_type)
+  if (isTRUE(use_connectivity_kernel)) {
+    if (velocity_weight <= 0 && connectivity_weight <= 0) {
+      velocity_weight <- 0.5
+      connectivity_weight <- 0.5
+    } else if (velocity_weight <= 0) {
+      velocity_weight <- 0
+      connectivity_weight <- 1
+    } else if (connectivity_weight <= 0) {
+      velocity_weight <- 1
+      connectivity_weight <- 0
+    } else {
+      weight_sum <- velocity_weight + connectivity_weight
+      velocity_weight <- velocity_weight / weight_sum
+      connectivity_weight <- connectivity_weight / weight_sum
+    }
+  }
   if (is.null(srt)) {
     log_message("{.arg backend = 'cpp'} requires {.arg srt}", message_type = "error")
   }
@@ -591,10 +739,15 @@ run_cellrank_cpp <- function(
     velocity_reduction <- velocity_reduction_fallback
   }
   pt_key <- paste0(mode, "_pseudotime")
+  graph_connectivities <- if ("connectivities" %in% names(srt@graphs)) {
+    srt@graphs[["connectivities"]][cells, cells, drop = FALSE]
+  } else {
+    NULL
+  }
+  has_pseudotime <- pt_key %in% colnames(srt@meta.data) ||
+    "dpt_pseudotime" %in% colnames(srt@meta.data)
   needs_velocity <- identical(kernel_type, "velocity") ||
-    (identical(kernel_type, "pseudotime") &&
-      !pt_key %in% colnames(srt@meta.data) &&
-      !"dpt_pseudotime" %in% colnames(srt@meta.data))
+    (identical(kernel_type, "pseudotime") && !has_pseudotime)
   if (isTRUE(needs_velocity) && !velocity_reduction %in% names(srt@reductions)) {
     log_message(
       "Running {.fn RunSCVELO} cpp backend before {.fn RunCellRank}",
@@ -640,43 +793,52 @@ run_cellrank_cpp <- function(
     n_threads = as.integer(cores)
   )
   graph_transition <- NULL
-  if (kernel_type %in% c("pseudotime", "cytotrace") && "connectivities" %in% names(srt@graphs)) {
-    graph_transition <- as_matrix(srt@graphs[["connectivities"]][cells, cells, drop = FALSE])
+  if (isTRUE(use_connectivity_kernel) && !is.null(graph_connectivities)) {
+    graph_transition <- as.matrix(
+      cellrank_density_normalize_connectivities(graph_connectivities)
+    )
     storage.mode(graph_transition) <- "double"
-    graph_transition[!is.finite(graph_transition)] <- 0
-    graph_transition[graph_transition < 0] <- 0
-    diag(graph_transition) <- pmax(diag(graph_transition), 0.01)
-    row_sums <- rowSums(graph_transition)
-    zero_rows <- !is.finite(row_sums) | row_sums <= 1e-12
-    if (any(zero_rows)) {
-      graph_transition[zero_rows, ] <- 0
-      graph_transition[cbind(which(zero_rows), which(zero_rows))] <- 1
-      row_sums <- rowSums(graph_transition)
+  }
+
+  combine_with_connectivity <- function(main_transition) {
+    if (!isTRUE(use_connectivity_kernel) || connectivity_weight <= 0) {
+      return(list(transition = main_transition, combined = FALSE))
     }
-    graph_transition <- graph_transition / pmax(row_sums, 1e-12)
+    connectivity_transition <- graph_transition
+    if (is.null(connectivity_transition)) {
+      connectivity_transition <- cellrank_connectivity_kernel_cpp(
+        knn_idx = knn[["idx"]],
+        knn_dist = knn[["dist"]]
+      )
+    }
+    if (velocity_weight <= 0) {
+      return(list(transition = connectivity_transition, combined = TRUE))
+    }
+    weight_sum <- velocity_weight + connectivity_weight
+    list(
+      transition =
+        (velocity_weight / weight_sum) * main_transition +
+          (connectivity_weight / weight_sum) * connectivity_transition,
+      combined = TRUE
+    )
   }
 
   # Build transition matrix based on kernel_type
   T_mat <- NULL
   kernel_used <- kernel_type
+  pseudotime_source <- NULL
 
   if (kernel_type == "velocity") {
-    T_mat <- cellrank_velocity_kernel_cpp(
+    main_transition <- cellrank_velocity_kernel_cpp(
       velocity_embedding = ve,
       embedding = nonlinear_embedding,
       knn_idx = knn[["idx"]],
       backward = isTRUE(backward),
       softmax_scale = softmax_scale
     )
-    if (isTRUE(use_connectivity_kernel) && connectivity_weight > 0 && velocity_weight > 0) {
-      C_mat <- cellrank_connectivity_kernel_cpp(
-        knn_idx = knn[["idx"]],
-        knn_dist = knn[["dist"]]
-      )
-      tw <- velocity_weight / (velocity_weight + connectivity_weight)
-      cw <- connectivity_weight / (velocity_weight + connectivity_weight)
-      T_mat <- tw * T_mat + cw * C_mat
-    }
+    combined <- combine_with_connectivity(main_transition)
+    T_mat <- combined$transition
+    if (isTRUE(combined$combined)) kernel_used <- "velocity_connectivity_combined"
   } else if (kernel_type == "pseudotime") {
     pt_use <- pt_key
     if (!pt_use %in% colnames(srt@meta.data) && "dpt_pseudotime" %in% colnames(srt@meta.data)) {
@@ -690,7 +852,11 @@ run_cellrank_cpp <- function(
     if (pt_use %in% colnames(srt@meta.data)) {
       pseudotime <- as.numeric(srt@meta.data[[pt_use]])
     } else {
-      log_message("Pseudotime not found; computing via velocity pseudotime", message_type = "warning", verbose = verbose)
+      log_message(
+        "Pseudotime not found; computing velocity pseudotime",
+        message_type = "warning",
+        verbose = verbose
+      )
       ts_result <- scvelo_terminal_states_cpp(
         velocity_embedding = ve, embedding = nonlinear_embedding,
         knn_idx = knn[["idx"]], n_neighbors_velo = knn_k, seed = 0L
@@ -702,31 +868,38 @@ run_cellrank_cpp <- function(
         n_neighbors_velo = knn_k
       )
       pseudotime <- as.numeric(vpt_result[["pseudotime"]])
+      pt_use <- "velocity_pseudotime_fallback"
     }
-    if (!is.null(graph_transition) && !isTRUE(backward)) {
-      T_mat <- graph_transition
-      kernel_used <- paste0(kernel_type, "_connectivities")
+    pseudotime_source <- pt_use
+    main_transition <- if (!is.null(graph_connectivities)) {
+      as.matrix(cellrank_hard_threshold_kernel(
+        connectivities = graph_connectivities,
+        pseudotime = pseudotime,
+        frac_to_keep = 0.3,
+        backward = isTRUE(backward)
+      ))
     } else {
-      T_mat <- cellrank_pseudotime_kernel_cpp(
+      cellrank_pseudotime_kernel_cpp(
         pseudotime = pseudotime,
         knn_idx = knn[["idx"]],
         cell_weights = rep(1, length(pseudotime)),
         backward = isTRUE(backward)
       )
     }
+    combined <- combine_with_connectivity(main_transition)
+    T_mat <- combined$transition
+    if (isTRUE(combined$combined)) kernel_used <- "pseudotime_connectivity_combined"
   } else if (kernel_type == "cytotrace") {
-    if (!is.null(graph_transition) && !isTRUE(backward)) {
-      T_mat <- graph_transition
-      kernel_used <- paste0(kernel_type, "_connectivities")
-    } else {
-      cytotrace_expr <- as.matrix(GetAssayData5(srt, assay = assay_y[[1L]], layer = layer_y))
-      gene_counts <- colSums(cytotrace_expr > 0)
-      T_mat <- cellrank_cytotrace_kernel_cpp(
-        gene_counts = as.numeric(gene_counts),
-        knn_idx = knn[["idx"]],
-        backward = isTRUE(backward)
-      )
-    }
+    cytotrace_expr <- as.matrix(GetAssayData5(srt, assay = assay_y[[1L]], layer = layer_y))
+    gene_counts <- colSums(cytotrace_expr > 0)
+    main_transition <- cellrank_cytotrace_kernel_cpp(
+      gene_counts = as.numeric(gene_counts),
+      knn_idx = knn[["idx"]],
+      backward = isTRUE(backward)
+    )
+    combined <- combine_with_connectivity(main_transition)
+    T_mat <- combined$transition
+    if (isTRUE(combined$combined)) kernel_used <- "cytotrace_connectivity_combined"
   } else {
     # Default: velocity kernel (original inline computation)
     T_mat <- matrix(0, n_cells, n_cells)
@@ -756,7 +929,21 @@ run_cellrank_cpp <- function(
   }
 
   storage.mode(T_mat) <- "double"
-  n_mac <- if (is.null(n_macrostates)) 5L else as.integer(n_macrostates)
+  n_mac <- if (is.null(n_macrostates)) {
+    n_schur <- if (n_cells < 100L) {
+      5L
+    } else if (n_cells < 500L) {
+      8L
+    } else if (n_cells < 2000L) {
+      10L
+    } else {
+      15L
+    }
+    max(2L, n_schur - 2L)
+  } else {
+    as.integer(n_macrostates)
+  }
+  n_mac <- min(n_mac, n_cells)
 
   # Choose estimator
   if (identical(estimator_type, "cflare")) {
@@ -764,101 +951,6 @@ run_cellrank_cpp <- function(
   } else {
     result <- cellrank_gpcca_cpp(T_ = T_mat, n_states = n_mac, n_cells_terminal = as.integer(n_cells_terminal))
   }
-  if (!is.null(graph_transition) && !isTRUE(backward) && "macrostate_assignment" %in% names(result)) {
-    macro <- as.integer(result[["macrostate_assignment"]])
-    macro_tab <- table(macro)
-    eligible <- macro_tab[macro_tab >= as.integer(n_cells_terminal)]
-    degenerate_macro <- length(macro_tab) <= 1L || max(as.integer(macro_tab), na.rm = TRUE) > 0.5 * length(macro)
-    if (length(eligible) > 0) {
-      terminal_macro <- as.integer(names(eligible)[which.min(as.integer(eligible))])
-      terminal_cells <- which(macro == terminal_macro)
-      other_cells <- which(macro != terminal_macro)
-      if (length(other_cells) > 0 && length(terminal_cells) > 0) {
-        boundary_score <- rowSums(graph_transition[other_cells, terminal_cells, drop = FALSE]) +
-          colSums(graph_transition[terminal_cells, other_cells, drop = FALSE])
-        terminal_cells <- c(
-          terminal_cells,
-          other_cells[which.max(boundary_score)]
-        )
-      }
-      terminal_states <- integer(length(macro))
-      terminal_states[terminal_cells] <- 1L
-      used_component_fallback <- FALSE
-      if (
-        isTRUE(degenerate_macro) &&
-          "stationary_distribution" %in% names(result)
-      ) {
-        n <- nrow(graph_transition)
-        visited <- rep(FALSE, n)
-        component <- integer(n)
-        component_id <- 0L
-        adj <- (graph_transition > 1e-12) | (t(graph_transition) > 1e-12)
-        diag(adj) <- FALSE
-        for (i in seq_len(n)) {
-          if (visited[i]) next
-          component_id <- component_id + 1L
-          queue <- i
-          visited[i] <- TRUE
-          component[i] <- component_id
-          head <- 1L
-          while (head <= length(queue)) {
-            u <- queue[[head]]
-            head <- head + 1L
-            nb <- which(adj[u, ])
-            nb <- nb[!visited[nb]]
-            if (length(nb) > 0L) {
-              visited[nb] <- TRUE
-              component[nb] <- component_id
-              queue <- c(queue, nb)
-            }
-          }
-        }
-        comp_size <- tabulate(component, nbins = component_id)
-        largest_component <- which.max(comp_size)
-        terminal_states <- as.integer(component != largest_component)
-        pi <- as.numeric(result[["stationary_distribution"]])
-        main_candidates <- which(component == largest_component & is.finite(pi))
-        if (length(main_candidates) > 0L) {
-          add_n <- as.integer(n_cells_terminal)
-          if (identical(estimator_type, "gpcca")) {
-            add_n <- add_n + 2L
-          }
-          add_n <- min(add_n, length(main_candidates))
-          add_cells <- main_candidates[order(pi[main_candidates], decreasing = TRUE)]
-          terminal_states[utils::head(add_cells, add_n)] <- 1L
-        }
-        used_component_fallback <- TRUE
-      }
-      if (
-        !isTRUE(used_component_fallback) &&
-          estimator_type %in% c("cflare", "gpcca") &&
-          "stationary_distribution" %in% names(result)
-      ) {
-        pi <- as.numeric(result[["stationary_distribution"]])
-        if (identical(kernel_type, "cytotrace") || identical(estimator_type, "gpcca")) {
-          add_n <- as.integer(n_cells_terminal) + 1L
-          drop_n <- 1L
-        } else {
-          add_n <- max(1L, ceiling(as.integer(n_cells_terminal) / 3L))
-          drop_n <- 0L
-        }
-        candidates <- which(terminal_states == 0L & is.finite(pi))
-        if (length(candidates) > 0) {
-          add_cells <- candidates[order(pi[candidates], decreasing = TRUE)]
-          terminal_states[utils::head(add_cells, add_n)] <- 1L
-        }
-        if (drop_n > 0L) {
-          selected <- which(terminal_states > 0L & is.finite(pi))
-          if (length(selected) > drop_n) {
-            drop_cells <- selected[order(pi[selected], decreasing = FALSE)]
-            terminal_states[utils::head(drop_cells, drop_n)] <- 0L
-          }
-        }
-      }
-      result[["terminal_states"]] <- terminal_states
-    }
-  }
-
   srt[["cellrank_terminal_states"]] <- as.integer(result[["terminal_states"]])
   srt[["cellrank_fate_confidence"]] <- as.numeric(result[["fate_confidence"]])
   srt[["cellrank_macrostate"]] <- as.integer(result[["macrostate_assignment"]])
@@ -885,12 +977,22 @@ run_cellrank_cpp <- function(
   if ("coarse_transition" %in% names(result)) {
     srt@tools[["CellRank"]]$coarse_transition <- result[["coarse_transition"]]
   }
+  if ("absorption_method" %in% names(result)) {
+    srt@tools[["CellRank"]]$absorption_diagnostics <- list(
+      method = result[["absorption_method"]],
+      iterations = result[["absorption_iterations"]],
+      residual = result[["absorption_residual"]],
+      converged = result[["absorption_converged"]],
+      n_terminal_states = result[["n_terminal_states"]],
+      n_terminal_cells = result[["n_terminal_cells"]]
+    )
+  }
 
   srt@tools[["CellRank"]] <- c(srt@tools[["CellRank"]], list(
     backend = "cpp",
     implementation = list(
       exact_reference = FALSE,
-      scope = "transition-kernel and approximate macrostate estimation",
+      scope = "shared-graph transition kernel, approximate macrostates, and cell-level absorption",
       dense_working_set_gib_lower_bound = dense_estimate_gib
     ),
     estimator = paste0(estimator_type, "_approximation"),
@@ -904,6 +1006,7 @@ run_cellrank_cpp <- function(
       softmax_scale = softmax_scale, n_macrostates = n_mac,
       n_cells_terminal = as.integer(n_cells_terminal),
       backward = backward,
+      pseudotime_source = pseudotime_source,
       max_dense_gib = max_dense_gib
     )
   ))

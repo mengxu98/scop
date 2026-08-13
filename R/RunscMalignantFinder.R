@@ -745,11 +745,24 @@ scmf_native_region <- function(
 }
 
 scmf_prepare_python <- function(verbose = TRUE) {
-  if (isTRUE(scmf_python_classifier_available())) {
+  explicit_python <- Sys.getenv("RETICULATE_PYTHON", unset = "")
+  python_initialized <- isTRUE(reticulate::py_available(initialize = FALSE))
+  if ((nzchar(explicit_python) || python_initialized) &&
+      isTRUE(scmf_python_classifier_available())) {
     return(invisible(TRUE))
   }
-  PrepareEnv(modules = "scmalignantfinder", verbose = verbose)
-  ok <- check_python("scMalignantFinder", pip = TRUE, verbose = verbose)
+  envname <- "scmalignantfinder_env"
+  PrepareEnv(
+    envname = envname,
+    modules = "scmalignantfinder",
+    verbose = verbose
+  )
+  ok <- check_python(
+    "scMalignantFinder",
+    envname = envname,
+    pip = TRUE,
+    verbose = verbose
+  )
   if (isFALSE(ok) || !isTRUE(scmf_python_classifier_available())) {
     log_message(
       "Failed to locate a usable {.pkg scMalignantFinder} classifier module in the active Python environment.",
@@ -761,13 +774,13 @@ scmf_prepare_python <- function(verbose = TRUE) {
 
 scmf_python_classifier_available <- function() {
   isTRUE(tryCatch(
-    reticulate::py_module_available("scmalignantfinder.classifier"),
+    reticulate::py_module_available("scMalignantFinder.classifier"),
     error = function(e) FALSE
   ))
 }
 
 import_scmalignantfinder <- function(convert = TRUE) {
-  reticulate::import("scmalignantfinder.classifier", convert = convert)
+  scop_python_import("scmalignantfinder", convert = convert)
 }
 
 scmf_check_one_input <- function(srt = NULL, adata = NULL, h5ad = NULL) {

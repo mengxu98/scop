@@ -15,6 +15,9 @@ RunLISI(
   perplexity = 30,
   tol = 1e-05,
   max_iter = 50,
+  knn_algorithm = c("auto", "brute_force", "clustered"),
+  cores = NULL,
+  max_dense_bytes = Inf,
   overwrite = TRUE,
   verbose = TRUE
 )
@@ -46,6 +49,15 @@ Default is \code{"LISI"} when multiple reductions are provided, otherwise
 Default is \code{1e-5}.}
 
 \item{max_iter}{Maximum number of binary-search iterations. Default is \code{50}.}
+
+\item{knn_algorithm}{Exact nearest-neighbor strategy passed to
+\code{\link[thisutils:compute_lisi]{thisutils::compute_lisi()}}. Default is \code{"auto"}.}
+
+\item{cores}{Number of LISI C++ worker threads. \code{NULL} (the default) lets
+\code{\link[thisutils:compute_lisi]{thisutils::compute_lisi()}} select the available hardware threads.}
+
+\item{max_dense_bytes}{Maximum estimated bytes allowed for LISI's dense
+input and C++ copy. Default is \code{Inf}, which preserves unrestricted behavior.}
 
 \item{overwrite}{Whether to overwrite existing metadata columns. Default is \code{TRUE}.}
 

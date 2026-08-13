@@ -5,15 +5,24 @@ from __future__ import annotations
 import argparse
 from contextlib import contextmanager
 import hashlib
+import importlib
 import importlib.metadata
 import json
 import os
 import random
 import re
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any
+
+RUNNER_DIR = Path(__file__).resolve().parent
+sys.path = [
+    entry
+    for entry in sys.path
+    if Path(entry or os.curdir).resolve() != RUNNER_DIR
+]
 
 import anndata as ad
 import numpy as np
@@ -33,6 +42,18 @@ except ModuleNotFoundError as e:
 BACKEND_COMMIT = "c03d1ca0bb963f550001c6070d4986a61ec8456a"
 PRODUCER = "RunCell2fate"
 RUNNER_SCHEMA_VERSION = 1
+
+
+def _load_cell2fate_backend():
+    backend = importlib.import_module("cell2fate")
+    utilities = importlib.import_module("cell2fate.utils")
+    backend_path = Path(getattr(backend, "__file__", "")).resolve()
+    if backend_path == Path(__file__).resolve():
+        log_message(
+            "Cell2fate runner shadowed the installed cell2fate package",
+            message_type="error",
+        )
+    return backend, utilities
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -557,7 +578,7 @@ def run(config: dict[str, Any]) -> None:
 
 
 def _run_locked(config: dict[str, Any], lock_token: str) -> None:
-    import cell2fate as c2f
+    c2f, c2f_utils = _load_cell2fate_backend()
 
     observed_commit = _installed_backend_commit()
     result_dir = Path(config["result_dir"])
@@ -635,7 +656,7 @@ def _run_locked(config: dict[str, Any], lock_token: str) -> None:
         if cells_per_cluster is None:
             cells_per_cluster = adata.n_obs
         n_var_genes = min(int(config["n_var_genes"]), adata.n_vars)
-        adata = c2f.utils.get_training_data(
+        adata = c2f_utils.get_training_data(
             adata,
             cells_per_cluster=int(cells_per_cluster),
             cluster_column=cluster_column,
@@ -652,7 +673,7 @@ def _run_locked(config: dict[str, Any], lock_token: str) -> None:
 
         n_modules = config.get("n_modules")
         if n_modules is None:
-            n_modules = int(c2f.utils.get_max_modules(adata))
+            n_modules = int(c2f_utils.get_max_modules(adata))
         if int(n_modules) < 1:
             log_message("Cell2fate requires at least one module", message_type="error")
 

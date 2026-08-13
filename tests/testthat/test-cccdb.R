@@ -1,7 +1,11 @@
 # ListCCCDB and PrepareCCCDB unit tests.
 
 test_that("ListCCCDB enumerates CCC databases with a unified schema", {
+  liana_loaded <- "liana" %in% loadedNamespaces()
+  tcltk_loaded <- "tcltk" %in% loadedNamespaces()
   resources <- ListCCCDB()
+  expect_identical("liana" %in% loadedNamespaces(), liana_loaded)
+  expect_identical("tcltk" %in% loadedNamespaces(), tcltk_loaded)
   expect_identical(colnames(resources), c("Database", "Resource", "Species", "Default", "Status", "Description"))
   expect_setequal(unique(resources$Database), c("LIANA", "CellChat", "Nichenetr", "CellphoneDB"))
   available <- resources[resources$Status == "available", , drop = FALSE]
@@ -13,7 +17,11 @@ test_that("ListCCCDB enumerates CCC databases with a unified schema", {
     c("CellChatDB.human", "CellChatDB.mouse", "CellChatDB.zebrafish")
   )
   expect_true(all(cellchat_rows$Default))
-  expect_true(all(resources$Status == "available"))
+  expect_true(all(resources$Status %in% c(
+    "available",
+    "backend_not_installed",
+    "requires_python_cellphonedb"
+  )))
 })
 
 test_that("ListCCCDB returns a plain data frame", {

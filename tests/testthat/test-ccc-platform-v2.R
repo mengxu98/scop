@@ -37,14 +37,23 @@ test_that("RunLIANA keeps legacy positional arguments and accepts custom resourc
 })
 
 test_that("LIANA resources are discovered from the optional backend", {
+  liana_dir <- withr::local_tempdir()
+  saveRDS(
+    stats::setNames(
+      vector("list", 4L),
+      c("Consensus", "CellChatDB", "MouseConsensus", "OmniPath")
+    ),
+    file.path(liana_dir, "omni_resources.rds")
+  )
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
-    liana_get_fun = function(fun, package = "liana") {
-      expect_equal(package, "liana")
-      expect_equal(fun, "show_resources")
-      function() c("Consensus", "CellChatDB", "MouseConsensus", "OmniPath")
-    },
     .package = "scop"
+  )
+  testthat::local_mocked_bindings(
+    find.package = function(package, ...) {
+      if (identical(package, "liana")) liana_dir else tempdir()
+    },
+    .package = "base"
   )
 
   resources <- scop::ListCCCDB(db = "LIANA")
@@ -88,6 +97,13 @@ test_that("RunLIANA stores official consensus and keeps legacy tables", {
 
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
+    liana_resolve_resources = function(resource = NULL, species = "human") {
+      if (is.null(resource)) {
+        if (identical(species, "mouse")) "MouseConsensus" else "Consensus"
+      } else {
+        resource
+      }
+    },
     liana_get_fun = function(fun, package = "liana") {
       if (identical(package, "SingleCellExperiment")) {
         return(function(...) list(...))
@@ -157,6 +173,13 @@ test_that("LIANA consensus failure does not mutate the Seurat object", {
   )
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
+    liana_resolve_resources = function(resource = NULL, species = "human") {
+      if (is.null(resource)) {
+        if (identical(species, "mouse")) "MouseConsensus" else "Consensus"
+      } else {
+        resource
+      }
+    },
     liana_get_fun = function(fun, package = "liana") {
       if (identical(package, "SingleCellExperiment")) {
         return(function(...) list(...))

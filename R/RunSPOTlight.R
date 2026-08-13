@@ -58,12 +58,18 @@
 #'   coord.cols = c("x", "y")
 #' )
 #'
-#' data(pancreas_sub)
-#' features_use <- head(intersect(rownames(spatial), rownames(pancreas_sub)), 300)
+#' data(panc8_sub)
+#' spatial <- spatial[, seq_len(120)]
+#' reference <- panc8_sub[, panc8_sub$celltype %in% c("ductal", "alpha", "beta")]
+#' reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
+#' features_use <- intersect(
+#'   SeuratObject::VariableFeatures(reference),
+#'   rownames(spatial)
+#' )
 #' spatial <- RunSPOTlight(
 #'   srt = spatial,
-#'   reference = pancreas_sub,
-#'   reference_label = "CellType",
+#'   reference = reference,
+#'   reference_label = "celltype",
 #'   assay = "Spatial",
 #'   reference_assay = "RNA",
 #'   features = features_use,

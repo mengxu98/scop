@@ -71,8 +71,13 @@ def _normalise_train_params(value: Any) -> dict[str, Any]:
     params = dict(value or {})
     if "devices" in params:
         if "device" in params:
-            log_message("Use only one of 'device' or legacy 'devices' in cell2location train parameters", message_type="error")
+            log_message("Use only one of 'device' or 'devices' in cell2location train parameters", message_type="error")
         params["device"] = params.pop("devices")
+    if (
+        str(params.get("accelerator", "")).lower() == "cpu"
+        and str(params.get("device", "")).lower() == "cpu"
+    ):
+        params["device"] = 1
     return params
 
 

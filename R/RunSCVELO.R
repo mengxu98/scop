@@ -520,6 +520,8 @@ run_scvelo_cpp <- function(
   )
   spliced_n <- normed[["spliced_norm"]]
   unspliced_n <- normed[["unspliced_norm"]]
+  rm(spliced, unspliced, spliced_raw, unspliced_raw, normed)
+  invisible(gc(full = TRUE))
   linear_embedding_all <- as.matrix(
     srt@reductions[[linear_reduction]]@cell.embeddings[cells, , drop = FALSE]
   )
@@ -535,10 +537,14 @@ run_scvelo_cpp <- function(
   moments <- scvelo_moments_connectivities_cpp(
     spliced = spliced_n,
     unspliced = unspliced_n,
-    knn_idx = knn[["idx"]]
+    knn_idx = knn[["idx"]],
+    compute_second_order = "stochastic" %in% mode_use
   )
   Ms <- moments[["Ms"]]
   Mu <- moments[["Mu"]]
+  n_moment_features <- nrow(spliced_n)
+  rm(spliced_n, unspliced_n)
+  invisible(gc(full = TRUE))
 
   # Extract UMAP embedding for velocity projection (visualization only)
   nonlinear_embedding <- as.matrix(
@@ -577,7 +583,7 @@ run_scvelo_cpp <- function(
 
   for (m in mode_use) {
     log_message(
-      "Running {.pkg scVelo} {.val {m}} mode with {.arg backend = 'cpp'} ({.val {nrow(spliced_n)}} features)",
+      "Running {.pkg scVelo} {.val {m}} mode with {.arg backend = 'cpp'} ({.val {n_moment_features}} features)",
       verbose = verbose
     )
 
@@ -690,9 +696,6 @@ run_scvelo_cpp <- function(
     if ("velocity_genes" %in% names(velocity)) {
       graph_gene_idx <- as.logical(velocity[["velocity_genes"]]) &
         highly_variable_keep
-      if ("r2" %in% names(velocity)) {
-        graph_gene_idx <- graph_gene_idx & as.numeric(velocity[["r2"]]) > 0.3
-      }
       graph_gene_idx[is.na(graph_gene_idx)] <- FALSE
       if (sum(graph_gene_idx) < 2L) {
         graph_gene_idx <- rep(TRUE, nrow(Ms))

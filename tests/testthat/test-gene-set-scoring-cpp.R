@@ -208,6 +208,31 @@ test_that("PLAGE gene-gene covariance path matches right singular vector scores"
   expect_equal(cpp, ref, tolerance = 1e-12, ignore_attr = TRUE)
 })
 
+test_that("PLAGE leading-eigen path is deterministic and matches full SVD", {
+  set.seed(20260810)
+  expr <- matrix(stats::rpois(120 * 360, lambda = 0.8), nrow = 120)
+  expr[expr < 2] <- 0
+  gene_sets <- list(1:80, 21:110, c(1:45, 76:120))
+  expr_sparse <- methods::as(
+    Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix"
+  )
+
+  first <- plage_dense(
+    expr_sparse, gene_sets,
+    min_size = 1L, max_size = 500L, dense_standardize = TRUE
+  )
+  second <- plage_dense(
+    expr_sparse, gene_sets,
+    min_size = 1L, max_size = 500L, dense_standardize = TRUE
+  )
+  reference <- reference_plage_scores(
+    expr, gene_sets, min_size = 1L, max_size = 500L
+  )
+
+  expect_identical(first, second)
+  expect_equal(first, reference, tolerance = 1e-12, ignore_attr = TRUE)
+})
+
 test_that("PLAGE sparse standardization matches GSVA", {
   skip_if_not_installed("GSVA")
   set.seed(20260711)
@@ -252,7 +277,11 @@ test_that("PLAGE dense standardization matches the CellScoring GSVA contract", {
     max_gs_size = 50L,
     dense_standardize = TRUE
   ))
-  cpp <- orient_plage_scores(cpp, expr, gene_sets)
+  expect_equal(
+    orient_plage_scores(cpp, expr, gene_sets),
+    cpp,
+    tolerance = 1e-12
+  )
   reference <- GSVA::gsva(
     GSVA::plageParam(
       exprData = expr, geneSets = gene_sets, minSize = 1L, maxSize = 50L
@@ -343,7 +372,7 @@ test_that("native Gaussian GSVA is an opt-in result-compatible kernel", {
     kcdf = "Gaussian",
     min_gs_size = 1L,
     max_gs_size = 50L,
-    sparse = FALSE,
+    sparse = TRUE,
     kernel = "native"
   )
   delegated <- run_gsva_scores(
@@ -352,15 +381,15 @@ test_that("native Gaussian GSVA is an opt-in result-compatible kernel", {
     kcdf = "Gaussian",
     min_gs_size = 1L,
     max_gs_size = 50L,
-    sparse = FALSE,
+    sparse = TRUE,
     kernel = "delegated"
   )
 
   expect_identical(dim(native), dim(delegated))
-  correlations <- vapply(seq_len(ncol(native)), function(i) {
-    stats::cor(native[, i], delegated[, i], method = "spearman")
-  }, numeric(1L))
-  expect_gte(min(correlations), 0.95)
+  # The native kernel replicates GSVA::gsva's default sparse Gaussian
+  # algorithm exactly (kcdf values over nonzero entries, sparse ranks,
+  # dense random walk); scores must match the delegated reference.
+  expect_equal(as.numeric(native), as.numeric(delegated), tolerance = 1e-12)
   expect_error(
     run_gsva_scores(
       expr_sparse,
@@ -395,5 +424,5 @@ test_that("RunGSVA selects the native Gaussian kernel through backend", {
     verbose = FALSE
   )
 
-  expect_true(all(c("GSVA_A", "GSVA_B") %in% colnames(out[[]])))
+  expect_true(all(c("GSVA_a", "GSVA_b") %in% colnames(out[[]])))
 })

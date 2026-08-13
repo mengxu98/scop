@@ -7,10 +7,38 @@ scop_python_import <- function(module, convert = TRUE) {
     )
   }
   if (isFALSE(reticulate::py_available(initialize = FALSE))) {
-    log_message(
-      "Python is not initialized. Run {.code ConfigureEnv()} first",
-      message_type = "error"
+    configured_python <- normalize_python_runtime_path(
+      Sys.getenv("RETICULATE_PYTHON", unset = "")
     )
+    if (is.null(configured_python) || !file.exists(configured_python)) {
+      log_message(
+        "Python is not configured. Run {.code PrepareEnv()} before importing scop Python helpers",
+        message_type = "error"
+      )
+    }
+    initialization_error <- ""
+    initialized <- tryCatch(
+      {
+        reticulate::use_python(configured_python, required = TRUE)
+        isTRUE(reticulate::py_available(initialize = TRUE))
+      },
+      error = function(e) {
+        initialization_error <<- conditionMessage(e)
+        FALSE
+      }
+    )
+    if (!initialized) {
+      detail <- if (nzchar(initialization_error)) {
+        paste0(": ", initialization_error)
+      } else {
+        ""
+      }
+      log_message(
+        "Unable to initialize configured Python runtime {.file {configured_python}}{detail}",
+        message_type = "error"
+      )
+    }
+    assert_python_runtime_switchable(configured_python)
   }
   if (isFALSE(reticulate::py_eval(
     "'log_message' in __import__('sys').modules",

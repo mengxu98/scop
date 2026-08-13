@@ -137,13 +137,48 @@ test_that("giotto bridges run check_r before resolving the converter", {
 
 test_that("srt_to_giotto and giotto_to_srt round-trip with a real GiottoClass", {
   skip_if_not_installed("GiottoClass")
-  data(visium_human_pancreas_sub, package = "scop")
-  srt <- visium_human_pancreas_sub
-  srt <- Seurat::NormalizeData(srt, assay = "Spatial", verbose = FALSE)
-  g <- suppressWarnings(suppressMessages(srt_to_giotto(srt)))
-  expect_s4_class(g, "giotto")
-  srt2 <- suppressWarnings(suppressMessages(giotto_to_srt(g)))
-  expect_s4_class(srt2, "Seurat")
-  expect_true(ncol(srt2) > 0)
-  expect_true(all(c("counts", "data") %in% SeuratObject::Layers(srt2, assay = "rna")))
+  skip_if_not_installed("callr")
+
+  package_path <- getNamespaceInfo(asNamespace("scop"), "path")
+  source_tree <- file.exists(file.path(package_path, ".Rbuildignore"))
+  result <- callr::r(
+    function(package_path, source_tree, libpath) {
+      if (!source_tree) {
+        libpath <- unique(c(dirname(package_path), libpath))
+      }
+      .libPaths(libpath)
+      if (source_tree) {
+        pkgload::load_all(package_path, quiet = TRUE)
+      }
+
+      data_env <- new.env(parent = emptyenv())
+      utils::data(
+        list = "visium_human_pancreas_sub",
+        package = "scop",
+        envir = data_env
+      )
+      srt <- Seurat::NormalizeData(
+        data_env$visium_human_pancreas_sub,
+        assay = "Spatial",
+        verbose = FALSE
+      )
+      to_giotto <- getExportedValue("scop", "srt_to_giotto")
+      to_seurat <- getExportedValue("scop", "giotto_to_srt")
+      g <- suppressWarnings(suppressMessages(to_giotto(srt)))
+      srt2 <- suppressWarnings(suppressMessages(to_seurat(g)))
+
+      list(
+        is_giotto = methods::is(g, "giotto"),
+        is_seurat = methods::is(srt2, "Seurat"),
+        cells = ncol(srt2),
+        layers = SeuratObject::Layers(srt2, assay = "rna")
+      )
+    },
+    args = list(package_path, source_tree, .libPaths())
+  )
+
+  expect_true(result$is_giotto)
+  expect_true(result$is_seurat)
+  expect_true(result$cells > 0)
+  expect_true(all(c("counts", "data") %in% result$layers))
 })

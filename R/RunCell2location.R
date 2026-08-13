@@ -181,7 +181,7 @@ RunCell2location <- function(
 
   PrepareEnv(envname = envname, modules = "cell2location", verbose = verbose)
   ok <- check_python(
-    c("cell2location==0.1.5", "scvi-tools<1.2", "scanpy", "anndata", "numpy", "pandas", "scipy", "torch"),
+    c("cell2location==0.1.5", "scvi-tools==1.3.3", "scanpy", "anndata", "numpy", "pandas", "scipy", "torch"),
     envname = envname,
     verbose = FALSE
   )

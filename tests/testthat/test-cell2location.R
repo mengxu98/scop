@@ -39,10 +39,57 @@ test_that("cell2location environment module pins compatible versions", {
   req <- env_requirements(modules = "cell2location")
   expect_identical(unname(req$packages[["cell2location"]]), "cell2location==0.1.5")
   expect_identical(unname(req$packages[["scvi-tools"]]), "scvi-tools==1.3.3")
+  expect_identical(unname(req$packages[["flax"]]), "flax==0.10.4")
+  expect_identical(unname(req$packages[["optax"]]), "optax==0.2.5")
+  expect_identical(
+    unname(req$packages[["orbax-checkpoint"]]),
+    "orbax-checkpoint==0.8.0"
+  )
+  expect_identical(unname(req$packages[["tensorstore"]]), "tensorstore==0.1.65")
+  expect_identical(unname(req$packages[["hdf5"]]), "hdf5==2.1.0")
+  expect_identical(unname(req$install_methods[["hdf5"]]), "conda")
   expect_identical(unname(req$packages[["numba"]]), "numba==0.66.0")
   expect_identical(unname(req$packages[["llvmlite"]]), "llvmlite==0.48.0")
   modules <- getFromNamespace("normalize_env_modules", "scop")("cell2location")
   expect_setequal(modules, c("cell2location", "scanpy", "scvi"))
+})
+
+test_that("cell2location runner translates trainer devices to Pyro device", {
+  python <- unname(Sys.which(c("python3", "python")))
+  python <- python[nzchar(python)][1]
+  skip_if(is.na(python), "Python is not available")
+  runner <- getFromNamespace("runner_script_path", "scop")(
+    "cell2location.py",
+    "cell2location"
+  )
+  script <- tempfile(fileext = ".py")
+  writeLines(
+    c(
+      "import runpy",
+      "import sys",
+      "import types",
+      "for name in ('anndata', 'numpy', 'pandas'):",
+      "    sys.modules[name] = types.ModuleType(name)",
+      "log_module = types.ModuleType('log_message')",
+      "log_module.log_message = lambda *args, **kwargs: None",
+      "sys.modules['log_message'] = log_module",
+      "module = runpy.run_path(sys.argv[1], run_name='cell2location_test')",
+      "normalise = module['_normalise_train_params']",
+      "assert normalise({'device': 'cpu', 'max_epochs': 2}) == {'device': 'cpu', 'max_epochs': 2}",
+      "assert normalise({'devices': 1}) == {'device': 1}",
+      "assert normalise({'accelerator': 'cpu', 'device': 'cpu'}) == {'accelerator': 'cpu', 'device': 1}",
+      "print('device-normalisation-ok')"
+    ),
+    script
+  )
+  output <- suppressWarnings(system2(
+    python,
+    c(script, runner),
+    stdout = TRUE,
+    stderr = TRUE
+  ))
+  expect_identical(attr(output, "status") %||% 0L, 0L)
+  expect_true(any(output == "device-normalisation-ok"))
 })
 
 test_that("cell2location input preparation filters labels and aligns genes", {
@@ -93,10 +140,14 @@ test_that("RunCell2location writes abundance, proportions, and reproducible tool
   )
   result_dir <- tempfile("cell2location result with spaces ")
   dir.create(result_dir)
+  checked_python_packages <- NULL
   testthat::local_mocked_bindings(
     .package = "scop",
     PrepareEnv = function(...) invisible(NULL),
-    check_python = function(...) TRUE,
+    check_python = function(packages, ...) {
+      checked_python_packages <<- packages
+      TRUE
+    },
     conda_python = function(...) Sys.which("python3"),
     resolve_conda = function(...) "mamba",
     runner_script_path = function(...) "cell2location.py",
@@ -148,6 +199,8 @@ test_that("RunCell2location writes abundance, proportions, and reproducible tool
   )
   expect_true(is.list(out@tools$Cell2location$parameters))
   expect_true(is.list(out@tools$Cell2location$summary))
+  expect_true("scvi-tools==1.3.3" %in% checked_python_packages)
+  expect_false(any(grepl("^scvi-tools<1\\.2$", checked_python_packages)))
 })
 
 test_that("RunCell2location does not mutate Seurat when Python fails", {

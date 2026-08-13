@@ -135,6 +135,8 @@ RunGSVA <- function(
 ) {
   log_message("Start {.pkg GSVA} analysis", verbose = verbose)
 
+  dots <- list(...)
+
   kcdf_defaulted <- missing(kcdf)
   method <- unique(tolower(as.character(method)))
   backend <- match.arg(backend)
@@ -527,13 +529,6 @@ RunGSVA <- function(
       if (!is.matrix(gsva_scores)) {
         gsva_scores <- as_matrix(gsva_scores)
       }
-      if (identical(method, "plage")) {
-        gsva_scores <- orient_plage_scores(
-          scores = gsva_scores,
-          expr = expr_filtered,
-          gene_sets = gene_sets_filtered
-        )
-      }
     } else {
       if (method == "gsva") {
         param <- GSVA::gsvaParam(
@@ -553,8 +548,7 @@ RunGSVA <- function(
           minSize = min_size,
           maxSize = max_size,
           alpha = tau,
-          normalize = ssgsea.norm,
-          verbose = verbose
+          normalize = ssgsea.norm
         )
       } else if (method == "zscore") {
         param <- GSVA::zscoreParam(
@@ -572,10 +566,18 @@ RunGSVA <- function(
         )
       }
 
-      gsva_scores <- GSVA::gsva(
-        param = param,
-        verbose = verbose
-      )
+      gsva_scores <- if (is.null(dots[["BPPARAM"]])) {
+        GSVA::gsva(
+          param = param,
+          verbose = verbose
+        )
+      } else {
+        GSVA::gsva(
+          param = param,
+          verbose = verbose,
+          BPPARAM = dots[["BPPARAM"]]
+        )
+      }
 
       if (inherits(gsva_scores, "SummarizedExperiment")) {
         gsva_scores <- SummarizedExperiment::assay(gsva_scores)
@@ -599,10 +601,10 @@ RunGSVA <- function(
     )
     term_names <- unname(term_name_lookup[term_ids])
     term_names[is.na(term_names)] <- term_ids[is.na(term_names)]
-    term_names <- capitalize(
-      trimws(as.character(term_names)),
-      force_tolower = TRUE
-    )
+    term_names <- trimws(as.character(term_names))
+    if (!isTRUE(custom_input_supplied)) {
+      term_names <- capitalize(term_names, force_tolower = TRUE)
+    }
     term_gene_lookup <- gene_sets
     term_gene_ids <- vapply(
       term_ids,

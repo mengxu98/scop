@@ -13,6 +13,7 @@ RunscCODA(
   reference_cell_type = NULL,
   credible_effect_threshold = 0.95,
   n_mcmc_samples = 20000L,
+  reuse_reverse_comparisons = TRUE,
   envname = "sccoda_env",
   conda = "auto",
   seed = 11,
@@ -42,6 +43,10 @@ or identical to \code{split.by}, virtual samples are created within each
 credible effects.}
 
 \item{n_mcmc_samples}{Number of MCMC samples requested in scCODA.}
+
+\item{reuse_reverse_comparisons}{Reuse each fitted pair for the reverse
+direction by negating effect estimates and swapping interval bounds. This
+avoids fitting the same two-group model twice. Default is \code{TRUE}.}
 
 \item{envname}{Name of the conda-compatible environment used by scCODA.
 Defaults to \code{"sccoda_env"} to keep the TensorFlow/scCODA stack isolated

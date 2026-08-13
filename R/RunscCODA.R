@@ -6,6 +6,9 @@
 #' @param credible_effect_threshold Inclusion probability threshold for
 #' credible effects.
 #' @param n_mcmc_samples Number of MCMC samples requested in scCODA.
+#' @param reuse_reverse_comparisons Reuse each fitted pair for the reverse
+#' direction by negating effect estimates and swapping interval bounds. This
+#' avoids fitting the same two-group model twice. Default is `TRUE`.
 #' @param envname Name of the conda-compatible environment used by scCODA.
 #' Defaults to `"sccoda_env"` to keep the TensorFlow/scCODA stack isolated
 #' from the default Python environment.
@@ -23,11 +26,22 @@ RunscCODA <- function(
   reference_cell_type = NULL,
   credible_effect_threshold = 0.95,
   n_mcmc_samples = 20000L,
+  reuse_reverse_comparisons = TRUE,
   envname = "sccoda_env",
   conda = "auto",
   seed = 11,
   verbose = TRUE
 ) {
+  if (
+    !is.logical(reuse_reverse_comparisons) ||
+      length(reuse_reverse_comparisons) != 1L ||
+      is.na(reuse_reverse_comparisons)
+  ) {
+    log_message(
+      "{.arg reuse_reverse_comparisons} must be {.val TRUE} or {.val FALSE}",
+      message_type = "error"
+    )
+  }
   check_r("reticulate", verbose = FALSE)
   PrepareEnv(envname = envname, conda = conda, modules = "sccoda")
   conda <- resolve_conda(conda)
@@ -88,37 +102,25 @@ RunscCODA <- function(
     comparison = comparison,
     include_bidirectional = TRUE
   )
-  comparison_names <- apply(comparisons_condition, 1, function(x) {
-    paste0(x[1], "_vs_", x[2])
-  })
-
   dat <- meta_data[, c(group.by, split.by, sample.by), drop = FALSE]
   colnames(dat) <- c("cluster", "condition", "sample")
   dat$cluster <- as.character(dat$cluster)
   dat$condition <- as.character(dat$condition)
   dat$sample <- as.character(dat$sample)
 
-  sample_meta <- stats::aggregate(
-    condition ~ sample,
-    data = dat,
-    FUN = function(x) {
-      ux <- unique(x)
-      ux[1]
-    }
-  )
-  sample_meta <- sample_meta[order(sample_meta$sample), , drop = FALSE]
-  rownames(sample_meta) <- sample_meta$sample
+  if (any(!stats::complete.cases(dat))) {
+    log_message(
+      "{.arg group.by}, {.arg split.by}, and {.arg sample.by} cannot contain missing values for {.pkg scCODA}",
+      message_type = "error"
+    )
+  }
 
-  sample_levels <- sample_meta$sample
-  cluster_levels <- sort(unique(dat$cluster))
-  count_tab <- stats::xtabs(~ sample + cluster, data = dat)
-  count_mat <- matrix(
-    0,
-    nrow = length(sample_levels),
-    ncol = length(cluster_levels),
-    dimnames = list(sample_levels, cluster_levels)
-  )
-  count_mat[rownames(count_tab), colnames(count_tab)] <- as.matrix(count_tab)
+  sample_input <- build_sccoda_sample_inputs(dat)
+  sample_meta <- sample_input$metadata
+  count_mat <- sample_input$counts
+  comparison_pairs <- lapply(seq_len(nrow(comparisons_condition)), function(i) {
+    unname(as.character(comparisons_condition[i, ]))
+  })
 
   reticulate::use_python(python_path, required = TRUE)
   reticulate::py_available(initialize = TRUE)
@@ -126,17 +128,18 @@ RunscCODA <- function(
   py_output <- functions$ScCODA(
     counts = as.data.frame(count_mat, stringsAsFactors = FALSE),
     metadata = data.frame(
-      sample = sample_levels,
-      condition = sample_meta[sample_levels, "condition"],
+      sample = sample_meta$sample,
+      condition = sample_meta$condition,
       stringsAsFactors = FALSE
     ),
     condition_key = "condition",
     sample_key = "sample",
-    comparisons = as.list(comparison_names),
+    comparisons = comparison_pairs,
     reference_cell_type = reference_cell_type %||% "",
     credible_effect_threshold = as.double(credible_effect_threshold),
     random_seed = as.integer(seed),
     mcmc_samples = as.integer(n_mcmc_samples),
+    reuse_reverse_comparisons = reuse_reverse_comparisons,
     verbose = verbose
   )
 
@@ -212,6 +215,7 @@ RunscCODA <- function(
     result_levels = "group",
     details = list(
       python = py_output,
+      sample_mapping = sample_input$mapping,
       reference_cell_type = reference_cell_type,
       credible_effect_threshold = credible_effect_threshold
     ),
@@ -219,7 +223,69 @@ RunscCODA <- function(
       sample.by = sample.by,
       reference_cell_type = reference_cell_type,
       credible_effect_threshold = credible_effect_threshold,
-      n_mcmc_samples = n_mcmc_samples
+      n_mcmc_samples = n_mcmc_samples,
+      reuse_reverse_comparisons = reuse_reverse_comparisons
     )
+  )
+}
+
+build_sccoda_sample_inputs <- function(dat) {
+  required <- c("cluster", "condition", "sample")
+  if (!all(required %in% colnames(dat))) {
+    stop(
+      "scCODA sample input requires columns: ",
+      paste(required, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  dat <- as.data.frame(dat[, required, drop = FALSE], stringsAsFactors = FALSE)
+  dat[] <- lapply(dat, as.character)
+  if (any(!stats::complete.cases(dat))) {
+    stop("scCODA sample input cannot contain missing values", call. = FALSE)
+  }
+
+  sample_pairs <- unique(dat[, c("sample", "condition"), drop = FALSE])
+  sample_pairs <- sample_pairs[
+    order(sample_pairs$sample, sample_pairs$condition),
+    ,
+    drop = FALSE
+  ]
+  rownames(sample_pairs) <- NULL
+  sample_pairs$sample_key <- sprintf(".scop_sample_%06d", seq_len(nrow(sample_pairs)))
+
+  dat$sample_key <- NA_character_
+  for (i in seq_len(nrow(sample_pairs))) {
+    matches <- dat$sample == sample_pairs$sample[[i]] &
+      dat$condition == sample_pairs$condition[[i]]
+    dat$sample_key[matches] <- sample_pairs$sample_key[[i]]
+  }
+  if (anyNA(dat$sample_key)) {
+    stop("Failed to map scCODA sample-condition pairs", call. = FALSE)
+  }
+
+  sample_meta <- data.frame(
+    sample = sample_pairs$sample_key,
+    condition = sample_pairs$condition,
+    original_sample = sample_pairs$sample,
+    stringsAsFactors = FALSE
+  )
+  rownames(sample_meta) <- sample_meta$sample
+
+  sample_levels <- sample_meta$sample
+  cluster_levels <- sort(unique(dat$cluster))
+  count_tab <- stats::xtabs(~ sample_key + cluster, data = dat)
+  count_mat <- matrix(
+    0,
+    nrow = length(sample_levels),
+    ncol = length(cluster_levels),
+    dimnames = list(sample_levels, cluster_levels)
+  )
+  count_mat[rownames(count_tab), colnames(count_tab)] <- as.matrix(count_tab)
+
+  list(
+    counts = count_mat,
+    metadata = sample_meta,
+    mapping = sample_pairs[, c("sample_key", "sample", "condition"), drop = FALSE]
   )
 }

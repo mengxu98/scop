@@ -202,12 +202,7 @@ test_that("srt_to_adata stacks split Assay5 layers into sparse X", {
   skip_if_not_installed("SeuratObject")
   skip_if_not_installed("Matrix")
   skip_if_not_installed("reticulate")
-  skip_if_not(reticulate::py_module_available("anndata"))
-  skip_if_not(reticulate::py_module_available("scipy"))
-
-  old_skip_python_prepare <- getOption("scop_skip_python_prepare", FALSE)
-  options(scop_skip_python_prepare = TRUE)
-  on.exit(options(scop_skip_python_prepare = old_skip_python_prepare), add = TRUE)
+  skip_if_not_installed("callr")
 
   set.seed(1)
   counts <- Matrix::rsparsematrix(20, 12, density = 0.2)
@@ -223,21 +218,50 @@ test_that("srt_to_adata stacks split Assay5 layers into sparse X", {
   layers <- SeuratObject::Layers(srt[[assay]], search = "counts")
   expect_setequal(layers, c("counts.a", "counts.b"))
 
-  adata <- srt_to_adata(
-    srt,
-    assay_x = assay,
-    layer_x = "counts",
-    verbose = FALSE
-  )
+  package_path <- getNamespaceInfo(asNamespace("scop"), "path")
+  source_tree <- file.exists(file.path(package_path, ".Rbuildignore"))
+  result <- callr::r(
+    function(srt, assay, package_path, source_tree, libpath) {
+      if (!source_tree) {
+        libpath <- unique(c(dirname(package_path), libpath))
+      }
+      .libPaths(libpath)
+      if (source_tree) {
+        pkgload::load_all(package_path, quiet = TRUE)
+      }
+      if (!reticulate::py_module_available("anndata") ||
+          !reticulate::py_module_available("scipy")) {
+        return(list(available = FALSE))
+      }
 
-  expect_identical(reticulate::py_to_r(adata$X$format), "csr")
+      options(scop_skip_python_prepare = TRUE)
+      to_adata <- getExportedValue("scop", "srt_to_adata")
+      adata <- to_adata(
+        srt,
+        assay_x = assay,
+        layer_x = "counts",
+        verbose = FALSE
+      )
+      list(
+        available = TRUE,
+        format = reticulate::py_to_r(adata$X$format),
+        shape = unlist(reticulate::py_to_r(adata$X$shape)),
+        obs_names = reticulate::py_to_r(adata$obs_names$to_list()),
+        obs_rows = nrow(reticulate::py_to_r(adata$obs))
+      )
+    },
+    args = list(srt, assay, package_path, source_tree, .libPaths())
+  )
+  skip_if_not(isTRUE(result$available), "Python modules anndata and scipy are unavailable")
+
+  expect_identical(result$format, "csr")
   expect_equal(
-    unlist(reticulate::py_to_r(adata$X$shape)),
+    result$shape,
     c(ncol(srt), nrow(srt[[assay]]))
   )
   expect_identical(
-    reticulate::py_to_r(adata$obs_names$to_list()),
+    result$obs_names,
     colnames(srt)
   )
-  expect_equal(nrow(reticulate::py_to_r(adata$obs)), ncol(srt))
+  expect_equal(result$obs_rows, ncol(srt))
 })

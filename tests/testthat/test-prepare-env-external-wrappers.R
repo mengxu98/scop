@@ -12,12 +12,16 @@ test_that("scMalignantFinder module declares Python runtime requirements", {
 
   expect_identical(
     unname(req$packages[["scMalignantFinder"]]),
-    "git+https://github.com/Jonyyqn/scMalignantFinder.git"
+    paste0(
+      "git+https://github.com/Jonyyqn/scMalignantFinder.git@",
+      "6ed094279c7adbbca30f2c73245fc074894d3715"
+    )
   )
-  expect_identical(unname(req$packages[["xgboost"]]), "xgboost")
   expect_identical(unname(req$install_methods[["scMalignantFinder"]]), "pip")
-  expect_identical(unname(req$install_methods[["xgboost"]]), "pip")
-  expect_true("scanpy" %in% names(req$packages))
+  expect_identical(unname(req$packages[["numpy"]]), "numpy==1.26.4")
+  expect_identical(unname(req$packages[["pyarrow"]]), "pyarrow==14.0.2")
+  expect_false("xgboost" %in% names(req$packages))
+  expect_false("scanpy" %in% names(req$packages))
 })
 
 test_that("external wrapper R packages remain optional explicit installs", {

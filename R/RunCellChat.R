@@ -519,7 +519,22 @@ DoCellChat <- function(
 ) {
   assay <- assay %||% DefaultAssay(object)
 
-  metadata <- data.frame(label = Idents(object))
+  cell_labels <- as.character(Idents(object))
+  if (any(cell_labels == "0")) {
+    replacement <- "C0"
+    while (replacement %in% cell_labels) {
+      replacement <- paste0(replacement, "_")
+    }
+    cell_labels[cell_labels == "0"] <- replacement
+    warning(
+      sprintf(
+        "Cell labels contain the CellChat-reserved value \"0\"; remapped to \"%s\"",
+        replacement
+      ),
+      call. = FALSE
+    )
+  }
+  metadata <- data.frame(label = cell_labels)
   metadata <- cbind(metadata, object@meta.data)
 
   expr_mat <- tryCatch(
@@ -578,8 +593,7 @@ cellchat_database <- function(species) {
     )
   )
 
-  cellchat_ns_env <- asNamespace("CellChat")
-  db <- get0(data_name, envir = cellchat_ns_env, inherits = FALSE)
+  db <- get_namespace_fun("CellChat", data_name)
   if (!is.null(db)) {
     return(db)
   }

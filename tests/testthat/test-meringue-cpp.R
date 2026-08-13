@@ -174,6 +174,52 @@ test_that("meringue_moran_cpp permutation matches MERINGUE::moranPermutationTest
   }
 })
 
+test_that("meringue permutation batch matches the seeded per-gene kernel", {
+  skip_on_cran()
+  skip_if_not_installed("MERINGUE")
+
+  srt <- meringue_real_input()
+  expr <- Seurat::GetAssayData(
+    srt,
+    assay = SeuratObject::DefaultAssay(srt),
+    layer = "data"
+  )
+  features <- meringue_real_features(srt, k = 12)
+  weight <- meringue_test_weight(srt)
+  rounding <- tryCatch(
+    identical(RNGkind()[3], "Rounding"),
+    error = function(e) FALSE
+  )
+
+  set.seed(11)
+  batch <- scop:::meringue_moran_matrix_cpp(
+    as.matrix(expr[features, rownames(weight)]),
+    weight,
+    "greater",
+    rounding,
+    n_perm = 100L,
+    n_threads = 2L
+  )
+  expect_identical(rownames(batch), features)
+  expect_identical(
+    colnames(batch),
+    c("observed", "expected", "sd", "p_value", "N")
+  )
+
+  for (i in seq_along(features)) {
+    z <- expr[features[[i]], rownames(weight)]
+    set.seed(11)
+    per_gene <- scop:::meringue_moran_cpp(
+      z = z,
+      weight = weight,
+      n_perm = 100L,
+      alternative = "greater",
+      rounding_sample = rounding
+    )
+    expect_equal(batch[i, ], per_gene, tolerance = 1e-12)
+  }
+})
+
 test_that("RunMERINGUE cpp and r backends give identical autocorrelation tables", {
   skip_on_cran()
   skip_if_not_installed("MERINGUE")

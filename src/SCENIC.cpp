@@ -2010,6 +2010,12 @@ DataFrame grnboost_tree_node_candidates(
 NumericMatrix scenic_ctx_recovery(IntegerMatrix ranks, NumericVector weights, int rank_threshold) {
   const int n_features = ranks.nrow();
   const int n_targets = ranks.ncol();
+  if (weights.size() != n_targets) {
+    thisutils::log_message(
+      "SCENIC recovery weights must have one value per rank-matrix column",
+      "error"
+    );
+  }
   rank_threshold = std::max(1, rank_threshold);
 
   NumericMatrix out(n_features, rank_threshold);

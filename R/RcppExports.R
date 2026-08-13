@@ -25,6 +25,10 @@ cibersort_cpp <- function(signature, mixture, perm = 0L, QN = TRUE, absolute = F
     .Call(`_scop_cibersort_cpp`, signature, mixture, perm, QN, absolute, cores, seed, verbose)
 }
 
+cellrank_hard_threshold_kernel_cpp <- function(connectivities, pseudotime, frac_to_keep = 0.3, backward = FALSE) {
+    .Call(`_scop_cellrank_hard_threshold_kernel_cpp`, connectivities, pseudotime, frac_to_keep, backward)
+}
+
 cellrank_validate_transition_matrix_cpp <- function(T_, eps = 1e-10, min_self_loop = 0.01) {
     .Call(`_scop_cellrank_validate_transition_matrix_cpp`, T_, eps, min_self_loop)
 }
@@ -189,8 +193,8 @@ mdic3_score_cpp <- function(expression, grn, group) {
     .Call(`_scop_mdic3_score_cpp`, expression, grn, group)
 }
 
-meringue_moran_matrix_cpp <- function(expr, weight, alternative, rounding_sample = FALSE) {
-    .Call(`_scop_meringue_moran_matrix_cpp`, expr, weight, alternative, rounding_sample)
+meringue_moran_matrix_cpp <- function(expr, weight, alternative, rounding_sample = FALSE, n_perm = 0L, n_threads = 1L) {
+    .Call(`_scop_meringue_moran_matrix_cpp`, expr, weight, alternative, rounding_sample, n_perm, n_threads)
 }
 
 meringue_moran_cpp <- function(z, weight, n_perm, alternative, rounding_sample = FALSE) {
@@ -477,8 +481,8 @@ scvelo_moments_cpp <- function(spliced, unspliced, knn_idx) {
     .Call(`_scop_scvelo_moments_cpp`, spliced, unspliced, knn_idx)
 }
 
-scvelo_moments_connectivities_cpp <- function(spliced, unspliced, knn_idx) {
-    .Call(`_scop_scvelo_moments_connectivities_cpp`, spliced, unspliced, knn_idx)
+scvelo_moments_connectivities_cpp <- function(spliced, unspliced, knn_idx, compute_second_order = TRUE) {
+    .Call(`_scop_scvelo_moments_connectivities_cpp`, spliced, unspliced, knn_idx, compute_second_order)
 }
 
 scvelo_second_order_moments_cpp <- function(spliced, unspliced, knn_idx) {

@@ -1631,13 +1631,25 @@ dim_plot_graph_layers <- function(
   }
 
   net_cells <- rownames(dat)
-  net_mat <- as_matrix(graph[net_cells, net_cells, drop = FALSE])
-  net_mat[net_mat == 0] <- NA
-  net_mat[upper.tri(net_mat)] <- NA
-  net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
-  net_df[, "value"] <- as.numeric(net_df[, "value"])
-  net_df[, "Var1"] <- as.character(net_df[, "Var1"])
-  net_df[, "Var2"] <- as.character(net_df[, "Var2"])
+  net_sub <- graph[net_cells, net_cells, drop = FALSE]
+  if (inherits(net_sub, "sparseMatrix")) {
+    tri <- Matrix::summary(net_sub)
+    keep <- tri[, 1L] >= tri[, 2L]
+    net_df <- data.frame(
+      Var1 = rownames(net_sub)[tri[keep, 1L]],
+      Var2 = colnames(net_sub)[tri[keep, 2L]],
+      value = as.numeric(tri[keep, 3L]),
+      stringsAsFactors = FALSE
+    )
+  } else {
+    net_mat <- as_matrix(net_sub)
+    net_mat[net_mat == 0] <- NA
+    net_mat[upper.tri(net_mat)] <- NA
+    net_df <- reshape2::melt(net_mat, na.rm = TRUE, stringsAsFactors = FALSE)
+    net_df[, "value"] <- as.numeric(net_df[, "value"])
+    net_df[, "Var1"] <- as.character(net_df[, "Var1"])
+    net_df[, "Var2"] <- as.character(net_df[, "Var2"])
+  }
   net_df[, "x"] <- dat[net_df[, "Var1"], "x"]
   net_df[, "y"] <- dat[net_df[, "Var1"], "y"]
   net_df[, "xend"] <- dat[net_df[, "Var2"], "x"]

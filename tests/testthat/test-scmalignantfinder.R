@@ -21,7 +21,7 @@ with_mock_scmalignantfinder <- function(funs, code) {
   testthat::local_mocked_bindings(
     .package = "scop",
     PrepareEnv = function(modules, ...) {
-      expect_identical(modules, "scanpy")
+      expect_identical(modules, "scmalignantfinder")
       invisible(TRUE)
     },
     check_python = function(packages, ...) {
@@ -215,6 +215,44 @@ test_that("RunscMalignantFinder errors when the configured environment lacks the
   )
 
   expect_true("scMalignantFinder" %in% checks)
+})
+
+test_that("scMalignantFinder availability uses the official case-sensitive module", {
+  checked <- character()
+  testthat::local_mocked_bindings(
+    .package = "reticulate",
+    py_module_available = function(module) {
+      checked <<- c(checked, module)
+      TRUE
+    }
+  )
+
+  available <- getFromNamespace(
+    "scmf_python_classifier_available", "scop"
+  )()
+
+  expect_true(available)
+  expect_identical(checked, "scMalignantFinder.classifier")
+})
+
+test_that("scMalignantFinder imports the bundled scop bridge", {
+  imported <- list()
+  sentinel <- new.env(parent = emptyenv())
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    scop_python_import = function(module, convert = TRUE) {
+      imported <<- list(module = module, convert = convert)
+      sentinel
+    }
+  )
+
+  out <- getFromNamespace("import_scmalignantfinder", "scop")(
+    convert = FALSE
+  )
+
+  expect_identical(out, sentinel)
+  expect_identical(imported$module, "scmalignantfinder")
+  expect_false(imported$convert)
 })
 
 test_that("RunscMalignantRegion appends spatial region outputs", {
@@ -447,6 +485,12 @@ test_that("scMalignantFinder Python bridge is installed as an isolated module", 
   skip_if(is.na(py_file), "scMalignantFinder Python bridge file is not available")
   source <- paste(readLines(py_file, warn = FALSE), collapse = intToUtf8(10))
   expect_match(source, "def run_scmalignantfinder", fixed = TRUE)
+  expect_match(source, "def _ensure_writable_anndata", fixed = TRUE)
+  expect_match(
+    source,
+    '"test_input": _ensure_writable_anndata',
+    fixed = TRUE
+  )
   expect_match(source, "def run_scmalignant_region", fixed = TRUE)
   expect_match(source, "def run_scmalignant_states", fixed = TRUE)
 

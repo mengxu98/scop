@@ -110,6 +110,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cellrank_hard_threshold_kernel_cpp
+Eigen::SparseMatrix<double> cellrank_hard_threshold_kernel_cpp(const Eigen::MappedSparseMatrix<double> connectivities, NumericVector pseudotime, double frac_to_keep, bool backward);
+RcppExport SEXP _scop_cellrank_hard_threshold_kernel_cpp(SEXP connectivitiesSEXP, SEXP pseudotimeSEXP, SEXP frac_to_keepSEXP, SEXP backwardSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::MappedSparseMatrix<double> >::type connectivities(connectivitiesSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type pseudotime(pseudotimeSEXP);
+    Rcpp::traits::input_parameter< double >::type frac_to_keep(frac_to_keepSEXP);
+    Rcpp::traits::input_parameter< bool >::type backward(backwardSEXP);
+    rcpp_result_gen = Rcpp::wrap(cellrank_hard_threshold_kernel_cpp(connectivities, pseudotime, frac_to_keep, backward));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cellrank_validate_transition_matrix_cpp
 List cellrank_validate_transition_matrix_cpp(NumericMatrix T_, double eps, double min_self_loop);
 RcppExport SEXP _scop_cellrank_validate_transition_matrix_cpp(SEXP T_SEXP, SEXP epsSEXP, SEXP min_self_loopSEXP) {
@@ -691,8 +705,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // meringue_moran_matrix_cpp
-NumericMatrix meringue_moran_matrix_cpp(NumericMatrix expr, NumericMatrix weight, String alternative, bool rounding_sample);
-RcppExport SEXP _scop_meringue_moran_matrix_cpp(SEXP exprSEXP, SEXP weightSEXP, SEXP alternativeSEXP, SEXP rounding_sampleSEXP) {
+NumericMatrix meringue_moran_matrix_cpp(NumericMatrix expr, NumericMatrix weight, String alternative, bool rounding_sample, int n_perm, int n_threads);
+RcppExport SEXP _scop_meringue_moran_matrix_cpp(SEXP exprSEXP, SEXP weightSEXP, SEXP alternativeSEXP, SEXP rounding_sampleSEXP, SEXP n_permSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -700,7 +714,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type weight(weightSEXP);
     Rcpp::traits::input_parameter< String >::type alternative(alternativeSEXP);
     Rcpp::traits::input_parameter< bool >::type rounding_sample(rounding_sampleSEXP);
-    rcpp_result_gen = Rcpp::wrap(meringue_moran_matrix_cpp(expr, weight, alternative, rounding_sample));
+    Rcpp::traits::input_parameter< int >::type n_perm(n_permSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(meringue_moran_matrix_cpp(expr, weight, alternative, rounding_sample, n_perm, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1761,15 +1777,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // scvelo_moments_connectivities_cpp
-List scvelo_moments_connectivities_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx);
-RcppExport SEXP _scop_scvelo_moments_connectivities_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP) {
+List scvelo_moments_connectivities_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx, bool compute_second_order);
+RcppExport SEXP _scop_scvelo_moments_connectivities_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP, SEXP compute_second_orderSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_moments_connectivities_cpp(spliced, unspliced, knn_idx));
+    Rcpp::traits::input_parameter< bool >::type compute_second_order(compute_second_orderSEXP);
+    rcpp_result_gen = Rcpp::wrap(scvelo_moments_connectivities_cpp(spliced, unspliced, knn_idx, compute_second_order));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2976,6 +2993,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_ccc_aggregate_long_cpp", (DL_FUNC) &_scop_ccc_aggregate_long_cpp, 4},
     {"_scop_ccc_aggregate_liana_table_cpp", (DL_FUNC) &_scop_ccc_aggregate_liana_table_cpp, 12},
     {"_scop_cibersort_cpp", (DL_FUNC) &_scop_cibersort_cpp, 8},
+    {"_scop_cellrank_hard_threshold_kernel_cpp", (DL_FUNC) &_scop_cellrank_hard_threshold_kernel_cpp, 4},
     {"_scop_cellrank_validate_transition_matrix_cpp", (DL_FUNC) &_scop_cellrank_validate_transition_matrix_cpp, 3},
     {"_scop_cellrank_stationary_distribution_cpp", (DL_FUNC) &_scop_cellrank_stationary_distribution_cpp, 3},
     {"_scop_cellrank_schur_cpp", (DL_FUNC) &_scop_cellrank_schur_cpp, 2},
@@ -3017,7 +3035,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_sparse_row_has_variable_finite", (DL_FUNC) &_scop_sparse_row_has_variable_finite, 1},
     {"_scop_knn_vote_labels_cpp", (DL_FUNC) &_scop_knn_vote_labels_cpp, 2},
     {"_scop_mdic3_score_cpp", (DL_FUNC) &_scop_mdic3_score_cpp, 3},
-    {"_scop_meringue_moran_matrix_cpp", (DL_FUNC) &_scop_meringue_moran_matrix_cpp, 4},
+    {"_scop_meringue_moran_matrix_cpp", (DL_FUNC) &_scop_meringue_moran_matrix_cpp, 6},
     {"_scop_meringue_moran_cpp", (DL_FUNC) &_scop_meringue_moran_cpp, 5},
     {"_scop_manifold_exact_knn_cpp", (DL_FUNC) &_scop_manifold_exact_knn_cpp, 3},
     {"_scop_pacmap_optimize_cpp", (DL_FUNC) &_scop_pacmap_optimize_cpp, 9},
@@ -3089,7 +3107,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scvelo_filter_genes_cpp", (DL_FUNC) &_scop_scvelo_filter_genes_cpp, 4},
     {"_scop_scvelo_normalize_log_cpp", (DL_FUNC) &_scop_scvelo_normalize_log_cpp, 2},
     {"_scop_scvelo_moments_cpp", (DL_FUNC) &_scop_scvelo_moments_cpp, 3},
-    {"_scop_scvelo_moments_connectivities_cpp", (DL_FUNC) &_scop_scvelo_moments_connectivities_cpp, 3},
+    {"_scop_scvelo_moments_connectivities_cpp", (DL_FUNC) &_scop_scvelo_moments_connectivities_cpp, 4},
     {"_scop_scvelo_second_order_moments_cpp", (DL_FUNC) &_scop_scvelo_second_order_moments_cpp, 3},
     {"_scop_scvelo_deterministic_cpp", (DL_FUNC) &_scop_scvelo_deterministic_cpp, 6},
     {"_scop_scvelo_stochastic_cpp", (DL_FUNC) &_scop_scvelo_stochastic_cpp, 6},

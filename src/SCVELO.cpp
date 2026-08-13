@@ -118,7 +118,8 @@ List scvelo_moments_cpp(
 List scvelo_moments_connectivities_cpp(
     NumericMatrix spliced,
     NumericMatrix unspliced,
-    IntegerMatrix knn_idx)
+    IntegerMatrix knn_idx,
+    bool compute_second_order = true)
 {
   const int n_genes = spliced.nrow();
   const int n_cells = spliced.ncol();
@@ -156,14 +157,18 @@ List scvelo_moments_connectivities_cpp(
 
   NumericMatrix Ms(n_genes, n_cells);
   NumericMatrix Mu(n_genes, n_cells);
-  NumericMatrix Mss(n_genes, n_cells);
-  NumericMatrix Mus(n_genes, n_cells);
+  NumericMatrix Mss;
+  NumericMatrix Mus;
+  if (compute_second_order) {
+    Mss = NumericMatrix(n_genes, n_cells);
+    Mus = NumericMatrix(n_genes, n_cells);
+  }
   const double* spliced_ptr = REAL(spliced);
   const double* unspliced_ptr = REAL(unspliced);
   double* Ms_ptr = REAL(Ms);
   double* Mu_ptr = REAL(Mu);
-  double* Mss_ptr = REAL(Mss);
-  double* Mus_ptr = REAL(Mus);
+  double* Mss_ptr = compute_second_order ? REAL(Mss) : nullptr;
+  double* Mus_ptr = compute_second_order ? REAL(Mus) : nullptr;
 
   for (int cell = 0; cell < n_cells; ++cell) {
     const int start = offsets[cell];
@@ -180,13 +185,28 @@ List scvelo_moments_connectivities_cpp(
         const double u = unspliced_ptr[in_idx];
         Ms_ptr[out_idx] += s * inv;
         Mu_ptr[out_idx] += u * inv;
-        Mss_ptr[out_idx] += s * s * inv;
-        Mus_ptr[out_idx] += s * u * inv;
+        if (compute_second_order) {
+          Mss_ptr[out_idx] += s * s * inv;
+          Mus_ptr[out_idx] += s * u * inv;
+        }
       }
     }
   }
 
-  return List::create(_["Ms"] = Ms, _["Mu"] = Mu, _["Mss"] = Mss, _["Mus"] = Mus);
+  if (compute_second_order) {
+    return List::create(
+      _["Ms"] = Ms,
+      _["Mu"] = Mu,
+      _["Mss"] = Mss,
+      _["Mus"] = Mus
+    );
+  }
+  return List::create(
+    _["Ms"] = Ms,
+    _["Mu"] = Mu,
+    _["Mss"] = R_NilValue,
+    _["Mus"] = R_NilValue
+  );
 }
 
 // [[Rcpp::export]]
@@ -242,6 +262,28 @@ List scvelo_second_order_moments_cpp(
 
 // ── 4. Deterministic velocity + embedding ─────────────────────────────────────
 
+static double scvelo_quantile_linear(
+    std::vector<double> values,
+    double probability)
+{
+  if (values.empty()) return 0.0;
+  probability = std::max(0.0, std::min(1.0, probability));
+  const double position =
+    probability * static_cast<double>(values.size() - 1);
+  const std::size_t lower = static_cast<std::size_t>(std::floor(position));
+  const std::size_t upper = static_cast<std::size_t>(std::ceil(position));
+  std::nth_element(values.begin(), values.begin() + lower, values.end());
+  const double lower_value = values[lower];
+  if (upper == lower) return lower_value;
+  std::nth_element(
+    values.begin() + lower + 1,
+    values.begin() + upper,
+    values.end()
+  );
+  const double fraction = position - static_cast<double>(lower);
+  return lower_value + fraction * (values[upper] - lower_value);
+}
+
 // [[Rcpp::export]]
 List scvelo_deterministic_cpp(
     NumericMatrix Ms,
@@ -264,105 +306,153 @@ List scvelo_deterministic_cpp(
 
   // --- Estimate gamma per gene ---
   NumericVector gamma(n_genes);
+  NumericVector offset(n_genes);
   NumericVector gamma_r2(n_genes);
-  IntegerVector velocity_genes(n_genes, 1);
+  IntegerVector velocity_genes(n_genes);
 
   #ifdef _OPENMP
   #pragma omp parallel for schedule(dynamic, 16)
   #endif
   for (int g = 0; g < n_genes; ++g) {
-    // Collect valid (s, u) pairs
-    std::vector<double> s_vals, u_vals;
-    s_vals.reserve(n_cells);
-    u_vals.reserve(n_cells);
+    // scVelo includes zero-valued moments when it finds the per-gene extreme
+    // quantile. Dropping zeros changes both the cutoff and fitted coefficient
+    // on sparse single-cell data.
+    double s_max = 0.0, u_max = 0.0;
     for (int c = 0; c < n_cells; ++c) {
-      double s = Ms(g, c);
-      double u = Mu(g, c);
-      if (s > 0 && u >= 0) {
-        s_vals.push_back(s);
-        u_vals.push_back(u);
-      }
+      const double s = Ms(g, c);
+      const double u = Mu(g, c);
+      if (!std::isfinite(s) || !std::isfinite(u)) continue;
+      s_max = std::max(s_max, s);
+      u_max = std::max(u_max, u);
     }
-    int nv = (int)s_vals.size();
-    if (nv < 2) { gamma[g] = 0.0; gamma_r2[g] = 0.0; velocity_genes[g] = 0; continue; }
-
-    // Quantile filtering if perc > 0: match Python parity_bridge.py
-    // Python: norm = s/max(s) + u/max(u), keep top perc%
-    if (perc > 0.0 && perc < 100.0) {
-      // Compute normalized (s/u) metric
-      double s_max = 0.0, u_max = 0.0;
-      for (int i = 0; i < nv; ++i) {
-        if (s_vals[i] > s_max) s_max = s_vals[i];
-        if (u_vals[i] > u_max) u_max = u_vals[i];
-      }
-      if (s_max < 1e-10) s_max = 1e-10;
-      if (u_max < 1e-10) u_max = 1e-10;
-
-      std::vector<double> norm(nv);
-      for (int i = 0; i < nv; ++i)
-        norm[i] = s_vals[i] / s_max + u_vals[i] / u_max;
-
-      // Compute percentile cutoff
-      std::vector<double> norm_sorted = norm;
-      std::sort(norm_sorted.begin(), norm_sorted.end());
-      int cutoff_idx = (int)(nv * perc / 100.0);
-      if (cutoff_idx >= nv) cutoff_idx = nv - 1;
-      double cutoff = norm_sorted[cutoff_idx];
-
-      // Keep only cells with norm >= cutoff
-      std::vector<double> sk, uk;
-      for (int i = 0; i < nv; ++i) {
-        if (norm[i] >= cutoff) {
-          sk.push_back(s_vals[i]);
-          uk.push_back(u_vals[i]);
-        }
-      }
-      // Fallback: if too few, use all
-      if (sk.size() < 3) {
-        sk = s_vals;
-        uk = u_vals;
-      }
-      s_vals = sk;
-      u_vals = uk;
-      nv = (int)s_vals.size();
+    const double s_scale = std::max(1e-3, s_max);
+    const double u_scale = std::max(1e-3, u_max);
+    std::vector<double> normalized(n_cells);
+    for (int c = 0; c < n_cells; ++c) {
+      const double s = Ms(g, c);
+      const double u = Mu(g, c);
+      normalized[c] = std::isfinite(s) && std::isfinite(u)
+        ? s / s_scale + u / u_scale
+        : -std::numeric_limits<double>::infinity();
     }
+    const bool trim = perc > 0.0 && perc < 100.0;
+    const double cutoff = trim
+      ? scvelo_quantile_linear(normalized, perc / 100.0)
+      : -std::numeric_limits<double>::infinity();
 
-    // OLS through origin (or with offset) on (potentially filtered) data
+    // Extreme-quantile regression used for the actual velocity residual.
     double sx = 0.0, sy = 0.0, sxx = 0.0, sxy = 0.0;
-    int used = nv;
-    for (int i = 0; i < nv; ++i) {
-      double x = s_vals[i];
-      double y = u_vals[i];
-      sx += x; sy += y; sxx += x*x; sxy += x*y;
+    int used = 0;
+    for (int c = 0; c < n_cells; ++c) {
+      const double s = Ms(g, c);
+      const double u = Mu(g, c);
+      if (!std::isfinite(s) || !std::isfinite(u) || normalized[c] < cutoff) {
+        continue;
+      }
+      sx += s;
+      sy += u;
+      sxx += s * s;
+      sxy += s * u;
+      ++used;
     }
-    if (used < 2 || sxx < 1e-12) { gamma[g] = 0.0; gamma_r2[g] = 0.0; velocity_genes[g] = 0; continue; }
-
-    if (fit_offset) {
-      double mx = sx / used, my = sy / used;
-      double var_x = sxx / used - mx * mx;
-      if (var_x <= 0) { gamma[g] = 0.0; gamma_r2[g] = 0.0; velocity_genes[g] = 0; continue; }
-      gamma[g] = (sxy / used - mx * my) / var_x;
+    if (used == 0 || sxx <= 0.0) {
+      gamma[g] = 0.0;
+      offset[g] = 0.0;
+    } else if (fit_offset) {
+      const double mx = sx / static_cast<double>(used);
+      const double my = sy / static_cast<double>(used);
+      const double var_x = sxx / static_cast<double>(used) - mx * mx;
+      gamma[g] = var_x > 0.0
+        ? (sxy / static_cast<double>(used) - mx * my) / var_x
+        : 0.0;
+      offset[g] = my - gamma[g] * mx;
+      if (offset[g] < 0.0) {
+        gamma[g] = sxy / sxx;
+        offset[g] = 0.0;
+      }
     } else {
       gamma[g] = sxy / sxx;
+      offset[g] = 0.0;
     }
-    if (!std::isfinite(gamma[g]) || gamma[g] < 0.0) { gamma[g] = 0.0; }
+    if (!std::isfinite(gamma[g])) gamma[g] = 0.0;
+    if (!std::isfinite(offset[g])) offset[g] = 0.0;
 
-    // R² on all original data
-    double ss_res = 0.0, ss_tot = 0.0;
-    double mean_u = sy / used;
-    for (int i = 0; i < nv; ++i) {
-      double pred = gamma[g] * s_vals[i];
-      ss_res += (u_vals[i] - pred) * (u_vals[i] - pred);
-      ss_tot += (u_vals[i] - mean_u) * (u_vals[i] - mean_u);
+    // scVelo uses a separate untrimmed regression for adjusted R² and gene
+    // selection, while retaining the trimmed fit above for the residual.
+    double full_sx = 0.0, full_sy = 0.0, full_sxx = 0.0, full_sxy = 0.0;
+    int full_used = 0;
+    bool has_ms = false, has_mu = false;
+    for (int c = 0; c < n_cells; ++c) {
+      const double s = Ms(g, c);
+      const double u = Mu(g, c);
+      if (!std::isfinite(s) || !std::isfinite(u)) continue;
+      full_sx += s;
+      full_sy += u;
+      full_sxx += s * s;
+      full_sxy += s * u;
+      has_ms = has_ms || s > 0.0;
+      has_mu = has_mu || u > 0.0;
+      ++full_used;
     }
-    gamma_r2[g] = ss_tot > 1e-12 ? 1.0 - ss_res / ss_tot : 0.0;
+    double adjusted_gamma = 0.0, adjusted_offset = 0.0;
+    if (full_used > 0 && full_sxx > 0.0) {
+      if (fit_offset) {
+        const double mx = full_sx / static_cast<double>(full_used);
+        const double my = full_sy / static_cast<double>(full_used);
+        const double var_x =
+          full_sxx / static_cast<double>(full_used) - mx * mx;
+        adjusted_gamma = var_x > 0.0
+          ? (full_sxy / static_cast<double>(full_used) - mx * my) / var_x
+          : 0.0;
+        adjusted_offset = my - adjusted_gamma * mx;
+        if (adjusted_offset < 0.0) {
+          adjusted_gamma = full_sxy / full_sxx;
+          adjusted_offset = 0.0;
+        }
+      } else {
+        adjusted_gamma = full_sxy / full_sxx;
+      }
+    }
+    if (!std::isfinite(adjusted_gamma)) adjusted_gamma = 0.0;
+    if (!std::isfinite(adjusted_offset)) adjusted_offset = 0.0;
+    const double mean_u = full_used > 0
+      ? full_sy / static_cast<double>(full_used)
+      : 0.0;
+    double ss_res = 0.0, ss_tot = 0.0;
+    for (int c = 0; c < n_cells; ++c) {
+      const double s = Ms(g, c);
+      const double u = Mu(g, c);
+      if (!std::isfinite(s) || !std::isfinite(u)) continue;
+      const double residual_adjusted =
+        u - adjusted_gamma * s - adjusted_offset;
+      ss_res += residual_adjusted * residual_adjusted;
+      const double centered_u = u - mean_u;
+      ss_tot += centered_u * centered_u;
+    }
+    gamma_r2[g] = ss_tot > 0.0 ? 1.0 - ss_res / ss_tot : 0.0;
+    if (!std::isfinite(gamma_r2[g])) gamma_r2[g] = 0.0;
+    velocity_genes[g] =
+      gamma_r2[g] > 0.01 && gamma[g] > 0.01 && has_ms && has_mu;
+  }
+
+  int n_velocity_genes = 0;
+  for (int g = 0; g < n_genes; ++g) {
+    n_velocity_genes += velocity_genes[g] > 0 ? 1 : 0;
+  }
+  if (n_velocity_genes < 2 && n_genes > 0) {
+    std::vector<double> r2_values(n_genes);
+    for (int g = 0; g < n_genes; ++g) r2_values[g] = gamma_r2[g];
+    const double relaxed_r2 = scvelo_quantile_linear(r2_values, 0.80);
+    for (int g = 0; g < n_genes; ++g) {
+      velocity_genes[g] = gamma_r2[g] > relaxed_r2;
+    }
   }
 
   // Residual velocity
   NumericMatrix residual(n_genes, n_cells);
   for (int c = 0; c < n_cells; ++c) {
     for (int g = 0; g < n_genes; ++g) {
-      residual(g, c) = Mu(g, c) - gamma[g] * Ms(g, c);
+      residual(g, c) = Mu(g, c) - gamma[g] * Ms(g, c) - offset[g];
     }
   }
 

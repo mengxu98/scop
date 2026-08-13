@@ -567,18 +567,21 @@ RunUMAP2.default <- function(
           message_type = "error"
         )
       }
-      graph_topk <- run_sparse_topk_by_column(
+      graph_topk <- thisutils::run_sparse_topk_stored(
         x = object,
         k = n.neighbors,
+        by = "col",
         decreasing = TRUE
       )
       idx <- graph_topk[["idx"]]
       connectivity <- graph_topk[["value"]]
-      idx[is.na(idx)] <- sample(
+      missing_topk <- is.na(idx) | is.na(connectivity)
+      idx[missing_topk] <- sample(
         1:nrow(object),
-        size = sum(is.na(idx)),
+        size = sum(missing_topk),
         replace = TRUE
       )
+      connectivity[missing_topk] <- 0
       nn <- list(
         idx = idx,
         dist = max(connectivity) -
@@ -731,13 +734,21 @@ RunUMAP2.default <- function(
       return(reduction)
     }
     if (inherits(x = object, what = "Graph")) {
-      graph_topk <- run_sparse_topk_by_column(
+      graph_topk <- thisutils::run_sparse_topk_stored(
         x = object,
         k = n.neighbors,
+        by = "col",
         decreasing = TRUE
       )
       match_k <- graph_topk[["idx"]]
       match_k_connectivity <- graph_topk[["value"]]
+      missing_topk <- is.na(match_k) | is.na(match_k_connectivity)
+      match_k[missing_topk] <- sample(
+        1:nrow(object),
+        size = sum(missing_topk),
+        replace = TRUE
+      )
+      match_k_connectivity[missing_topk] <- 0
       object <- list(
         idx = match_k,
         dist = max(match_k_connectivity) - match_k_connectivity

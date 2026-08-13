@@ -62,14 +62,19 @@ jobs:
 
       - name: Test coverage 📊
         run: |
-          covr_flags <- getOption("covr.flags")
-          options(covr.flags = stats::setNames(rep("", length(covr_flags)), names(covr_flags)))
-          covr::codecov(
-            quiet = FALSE,
-            clean = FALSE,
-            install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
-          )
-        shell: Rscript {0}
+          # PRECAST's parallel Rcpp backend overflows the 8 MB default
+          # runner stack (documented in its vignette); lift the limit.
+          ulimit -s unlimited
+          Rscript -e '
+            covr_flags <- getOption("covr.flags")
+            options(covr.flags = stats::setNames(rep("", length(covr_flags)), names(covr_flags)))
+            covr::codecov(
+              quiet = FALSE,
+              clean = FALSE,
+              install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
+            )
+          '
+        shell: bash
 
       - name: Show testthat output
         if: always()

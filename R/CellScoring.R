@@ -468,7 +468,7 @@ CellScoring <- function(
       expr_sp <- expr_data[, cells_sp, drop = FALSE]
       aucell_option_names <- c(
         "featureType", "plotStats", "splitByBlocks", "BPPARAM",
-        "keepZeroesAsNA", "nCores", "mctype", "normAUC", "aucMaxRank"
+        "keepZeroesAsNA", "normAUC", "aucMaxRank"
       )
       use_official_rankings <- any(names(dots) %in% aucell_option_names)
       if (isTRUE(use_official_rankings)) {
@@ -581,11 +581,6 @@ CellScoring <- function(
             max_gs_size = max_size,
             dense_standardize = TRUE
           )
-          gs_scores <- Matrix::t(orient_plage_scores(
-            scores = Matrix::t(as_matrix(gs_scores)),
-            expr = expr_sp,
-            gene_sets = features
-          ))
         }
         filtered <- names(features)[
           !names(features) %in% colnames(gs_scores)
@@ -624,8 +619,7 @@ CellScoring <- function(
             minSize = min_size,
             maxSize = max_size,
             alpha = tau,
-            normalize = ssgsea.norm,
-            verbose = verbose
+            normalize = ssgsea.norm
           )
         } else if (method == "zscore") {
           param <- GSVA::zscoreParam(
@@ -642,10 +636,15 @@ CellScoring <- function(
             maxSize = max_size
           )
         }
-        gs_scores <- GSVA::gsva(
-          param = param,
-          verbose = verbose
-        )
+        gs_scores <- if (is.null(dots[["BPPARAM"]])) {
+          GSVA::gsva(param = param, verbose = verbose)
+        } else {
+          GSVA::gsva(
+            param = param,
+            verbose = verbose,
+            BPPARAM = dots[["BPPARAM"]]
+          )
+        }
         if (inherits(gs_scores, "SummarizedExperiment")) {
           gs_scores <- SummarizedExperiment::assay(gs_scores)
         }

@@ -1442,6 +1442,21 @@ def CellRank(
         use_cytotrace = False
         use_wot = False
 
+        def has_scanpy_neighbors():
+            if "neighbors" not in adata.uns:
+                return False
+            neighbors = adata.uns["neighbors"]
+            if not hasattr(neighbors, "get"):
+                return False
+            connectivities_key = neighbors.get(
+                "connectivities_key", "connectivities"
+            )
+            distances_key = neighbors.get("distances_key", "distances")
+            return (
+                connectivities_key in adata.obsp
+                and distances_key in adata.obsp
+            )
+
         if kernel_type == "velocity":
             has_velocity_data = (
                 "spliced" in adata.layers and "unspliced" in adata.layers
@@ -1522,7 +1537,7 @@ def CellRank(
                     )
                     exit()
 
-                if "connectivities" not in adata.obsp:
+                if not has_scanpy_neighbors():
                     sc.pp.neighbors(
                         adata, n_neighbors=n_neighbors, n_pcs=n_pcs, use_rep=rep_key
                     )
@@ -1616,7 +1631,7 @@ def CellRank(
                         verbose=verbose,
                     )
                     rep_key = get_rep_key()
-                    if "connectivities" not in adata.obsp:
+                    if not has_scanpy_neighbors():
                         sc.pp.neighbors(
                             adata, n_neighbors=n_neighbors, n_pcs=n_pcs, use_rep=rep_key
                         )
@@ -1879,7 +1894,7 @@ def CellRank(
                     use_velocity = False
 
         def ensure_neighbors():
-            if "connectivities" not in adata.obsp:
+            if not has_scanpy_neighbors():
                 log_message(
                     "Neighbors not found. Computing neighbors...",
                     message_type="info",
@@ -2230,7 +2245,6 @@ def CellRank(
                             )
                             gpcca_failed = True
                             estimator_type = "CFLARE"
-                            raise
                     else:
                         raise
 
@@ -2242,11 +2256,12 @@ def CellRank(
                     )
                     estimator.set_terminal_states(n_cells=n_cells_terminal)
 
-                log_message(
-                    "{.pkg GPCCA} estimator completed successfully",
-                    message_type="success",
-                    verbose=verbose,
-                )
+                if not gpcca_failed:
+                    log_message(
+                        "{.pkg GPCCA} estimator completed successfully",
+                        message_type="success",
+                        verbose=verbose,
+                    )
 
             except (ValueError, RuntimeError) as e:
                 if (
@@ -3595,6 +3610,11 @@ def Palantir(
 
             terminal_cells = list(terminal_cells_dict.keys())
 
+        # reticulate converts a length-one R character vector to a Python
+        # string. Palantir expects an Index/array-like collection of terminal
+        # states, so preserve the public R vector contract for singleton input.
+        terminal_cells = as_list(terminal_cells)
+
         if terminal_cells is None:
             log_message(
                 "{.arg terminal_cells}: None", message_type="info", verbose=verbose
@@ -4914,11 +4934,55 @@ def CellphoneDB(
         raise
 
 
-def _sccoda_parse_comparison_name(name):
-    parts = str(name).split("_vs_")
+def _sccoda_parse_comparison(comparison):
+    if isinstance(comparison, str):
+        parts = comparison.split("_vs_")
+    else:
+        try:
+            parts = list(comparison)
+        except TypeError as exc:
+            raise ValueError(
+                f"Invalid scCODA comparison {comparison!r}; expected a pair"
+            ) from exc
     if len(parts) != 2:
-        raise ValueError(f"Invalid comparison name '{name}', expected A_vs_B")
-    return parts[0], parts[1]
+        raise ValueError(
+            f"Invalid scCODA comparison {comparison!r}; expected a pair"
+        )
+    return str(parts[0]), str(parts[1])
+
+
+def _sccoda_formula(condition_key, reference):
+    return f"C({condition_key}, Treatment({str(reference)!r}))"
+
+
+def _sccoda_reverse_result_rows(rows):
+    reversed_rows = []
+    for source in rows:
+        target = dict(source)
+        for column in ("obs_log2FD", "boot_mean_log2FD"):
+            if column in source and source[column] is not None:
+                target[column] = -source[column]
+        lower = source.get("boot_CI_2.5")
+        upper = source.get("boot_CI_97.5")
+        if upper is not None:
+            target["boot_CI_2.5"] = -upper
+        if lower is not None:
+            target["boot_CI_97.5"] = -lower
+        reversed_rows.append(target)
+    return reversed_rows
+
+
+def _sccoda_set_random_seed(seed):
+    import random
+    import tensorflow as tf
+
+    seed = int(seed)
+    random.seed(seed)
+    tf.keras.utils.set_random_seed(seed)
+    try:
+        tf.config.experimental.enable_op_determinism()
+    except (AttributeError, RuntimeError):
+        pass
 
 
 def _sccoda_fallback_pair(
@@ -5005,12 +5069,14 @@ def ScCODA(
     credible_effect_threshold=0.95,
     random_seed=11,
     mcmc_samples=20000,
+    reuse_reverse_comparisons=True,
     verbose=True,
 ):
     import numpy as np
     import pandas as pd
 
     np.random.seed(int(random_seed))
+    _sccoda_set_random_seed(random_seed)
 
     counts_df = pd.DataFrame(counts).copy()
     meta_df = pd.DataFrame(metadata).copy()
@@ -5043,12 +5109,14 @@ def ScCODA(
         comparisons = []
         for i in range(len(groups)):
             for j in range(i + 1, len(groups)):
-                comparisons.append(f"{groups[i]}_vs_{groups[j]}")
-                comparisons.append(f"{groups[j]}_vs_{groups[i]}")
+                comparisons.append((groups[i], groups[j]))
+                comparisons.append((groups[j], groups[i]))
 
-    comparisons = [str(x) for x in comparisons]
     result_map = {}
     sccoda_ok = []
+    pair_cache = {}
+    reused_reverse = []
+    fit_count = 0
 
     try:
         import sccoda.util.comp_ana as comp_ana
@@ -5056,8 +5124,23 @@ def ScCODA(
     except Exception as e:
         raise ImportError(f"Unable to import scCODA: {e}") from e
 
-    for comp_name in comparisons:
-        cluster_1, cluster_2 = _sccoda_parse_comparison_name(comp_name)
+    for comparison in comparisons:
+        cluster_1, cluster_2 = _sccoda_parse_comparison(comparison)
+        comp_name = f"{cluster_1}_vs_{cluster_2}"
+        pair_key = tuple(sorted((cluster_1, cluster_2)))
+        cached = pair_cache.get(pair_key) if bool(reuse_reverse_comparisons) else None
+        if cached is not None:
+            cached_cluster_1, cached_cluster_2, cached_rows = cached
+            if cluster_1 == cached_cluster_1 and cluster_2 == cached_cluster_2:
+                result_rows = [dict(row) for row in cached_rows]
+            elif cluster_1 == cached_cluster_2 and cluster_2 == cached_cluster_1:
+                result_rows = _sccoda_reverse_result_rows(cached_rows)
+                reused_reverse.append(comp_name)
+            else:
+                raise RuntimeError(f"Invalid cached scCODA pair for '{comp_name}'")
+            result_map[comp_name] = result_rows
+            sccoda_ok.append(comp_name)
+            continue
 
         keep = meta_df[condition_key].isin([cluster_1, cluster_2])
         sub_meta = meta_df.loc[keep].copy()
@@ -5079,7 +5162,7 @@ def ScCODA(
 
         model = comp_ana.CompositionalAnalysis(
             cdata,
-            formula=f"C({condition_key}, Treatment('{cluster_1}'))",
+            formula=_sccoda_formula(condition_key, cluster_1),
             reference_cell_type=ref_cell,
         )
 
@@ -5088,6 +5171,7 @@ def ScCODA(
             num_burnin=max(1, min(5000, int(mcmc_samples) // 4)),
             verbose=bool(verbose),
         )
+        fit_count += 1
         _, effects_df = fit.summary_prepare()
         effects_df = pd.DataFrame(effects_df).reset_index()
 
@@ -5126,12 +5210,18 @@ def ScCODA(
             pd.to_numeric(summary_df["inclusion_prob"], errors="coerce")
             >= float(credible_effect_threshold)
         )
-        result_map[comp_name] = summary_df.to_dict(orient="records")
+        result_rows = summary_df.to_dict(orient="records")
+        if bool(reuse_reverse_comparisons):
+            pair_cache[pair_key] = (cluster_1, cluster_2, result_rows)
+        result_map[comp_name] = result_rows
         sccoda_ok.append(comp_name)
 
     return {
         "engine": "sccoda",
         "successful_sccoda_comparisons": sccoda_ok,
+        "unique_sccoda_fits": fit_count,
+        "reuse_reverse_comparisons": bool(reuse_reverse_comparisons),
+        "reused_reverse_comparisons": reused_reverse,
         "results": result_map,
     }
 

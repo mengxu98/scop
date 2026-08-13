@@ -26,6 +26,11 @@ marker_get_data <- function(object, assay_obj, layer) {
   data_use
 }
 
+marker_assay_is_chromatin <- function(object, assay = NULL) {
+  assay <- assay %||% SeuratObject::DefaultAssay(object)
+  inherits(object[[assay]], "ChromatinAssay")
+}
+
 marker_all_supported <- function(
   extra_args,
   features,
@@ -267,8 +272,42 @@ FindAllMarkers.Seurat <- function(
   densify = FALSE,
   ...
 ) {
+  dots <- list(...)
+  run_seurat <- function() {
+    do.call(
+      get_namespace_fun("Seurat", "FindAllMarkers"),
+      c(
+        list(
+          object = object,
+          assay = assay,
+          features = features,
+          group.by = group.by,
+          logfc.threshold = logfc.threshold,
+          test.use = test.use,
+          slot = slot,
+          min.pct = min.pct,
+          min.diff.pct = min.diff.pct,
+          node = node,
+          verbose = verbose,
+          only.pos = only.pos,
+          max.cells.per.ident = max.cells.per.ident,
+          random.seed = random.seed,
+          latent.vars = latent.vars,
+          min.cells.feature = min.cells.feature,
+          min.cells.group = min.cells.group,
+          mean.fxn = mean.fxn,
+          fc.name = fc.name,
+          base = base,
+          return.thresh = return.thresh,
+          densify = densify
+        ),
+        dots
+      )
+    )
+  }
   if (
-    !marker_all_supported(
+    marker_assay_is_chromatin(object, assay) ||
+      !marker_all_supported(
       extra_args = list(...),
       features = features,
       group.by = group.by,
@@ -284,7 +323,7 @@ FindAllMarkers.Seurat <- function(
       base = base
     )
   ) {
-    log_message("FindAllMarkers.Seurat received unsupported arguments for the scop implementation.", message_type = "error")
+    return(run_seurat())
   }
 
   ctx <- marker_context(
