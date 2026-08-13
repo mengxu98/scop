@@ -79,6 +79,7 @@ test_that("RunPHATE cpp backend stores a finite reduction", {
 })
 
 test_that("RunPHATE cpp backend projects cells from a bounded landmark graph", {
+  skip_if_not_installed("BiocNeighbors")
   data("pancreas_sub", package = "scop")
   srt <- suppressWarnings(RunStandardWorkflow(
     pancreas_sub[, seq_len(80)],
