@@ -23,6 +23,9 @@ RunIntegration(
   lisi_perplexity = 30,
   lisi_tol = 1e-05,
   lisi_max_iter = 50,
+  lisi_knn_algorithm = c("auto", "brute_force", "clustered"),
+  lisi_cores = NULL,
+  lisi_max_dense_bytes = Inf,
   compute_metrics = FALSE,
   metrics_batch_col = NULL,
   metrics_celltype_col = NULL,
@@ -112,6 +115,15 @@ Default is \code{30}.}
 
 \item{lisi_max_iter}{Maximum iterations used in the LISI binary search.
 Default is \code{50}.}
+
+\item{lisi_knn_algorithm}{Exact nearest-neighbor strategy used by LISI.
+Default is \code{"auto"}.}
+
+\item{lisi_cores}{Number of LISI C++ worker threads. Default is \code{NULL},
+which lets \code{\link[thisutils:compute_lisi]{thisutils::compute_lisi()}} select the available hardware threads.}
+
+\item{lisi_max_dense_bytes}{Maximum estimated bytes allowed for LISI's dense
+input and C++ copy. Default is \code{Inf}.}
 
 \item{compute_metrics}{Whether to compute integration summary metrics on the
 selected reduction. Default is \code{FALSE}.}

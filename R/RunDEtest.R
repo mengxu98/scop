@@ -1174,7 +1174,9 @@ RunDEtestFindAllMarkers <- function(
   p.adjust.method,
   ...
 ) {
-  supported <- identical(test.use, "wilcox") &&
+  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  supported <- !marker_assay_is_chromatin(srt, assay) &&
+    identical(test.use, "wilcox") &&
     identical(layer, "data") &&
     is.null(latent.vars) &&
     is.null(mean.fxn) &&
@@ -1436,6 +1438,55 @@ aggregate_counts_by_group <- function(counts, groups) {
   agg
 }
 
+RunDEtestStopOnParallelErrors <- function(results, context) {
+  if (is.null(results) || !is.list(results)) {
+    return(invisible(results))
+  }
+  failed <- vapply(
+    results,
+    function(result) inherits(result, "parallelize_error"),
+    logical(1)
+  )
+  if (!any(failed)) {
+    return(invisible(results))
+  }
+  messages <- unique(vapply(
+    results[failed],
+    function(result) result$error %||% "Unknown worker error",
+    character(1)
+  ))
+  stop(
+    paste0(context, " failed: ", paste(messages, collapse = "; ")),
+    call. = FALSE
+  )
+}
+
+RunDEtestNormalizeDataLayer <- function(srt, assay, reason, verbose) {
+  if (inherits(srt[[assay]], "ChromatinAssay")) {
+    log_message(
+      paste0(reason, " Performing Signac::RunTFIDF()."),
+      message_type = "warning",
+      verbose = verbose
+    )
+    return(Signac::RunTFIDF(
+      object = srt,
+      assay = assay,
+      verbose = FALSE
+    ))
+  }
+  log_message(
+    paste0(reason, " Performing NormalizeData(LogNormalize)."),
+    message_type = "warning",
+    verbose = verbose
+  )
+  NormalizeData(
+    object = srt,
+    assay = assay,
+    normalization.method = "LogNormalize",
+    verbose = FALSE
+  )
+}
+
 RunDEtest_limma <- function(
   count_matrix,
   condition,
@@ -1600,9 +1651,9 @@ RunDEtest_pseudobulk <- function(
       message_type = "error"
     )
   }
-  if (!test.use %in% c("limma", "edgeR")) {
+  if (!test.use %in% detest_sample_methods()) {
     log_message(
-      "Sample-level differential testing currently supports only {.val limma} and {.val edgeR}.",
+      "Sample-level differential testing supports {.val limma}, {.val edgeR}, {.val DESeq2}, and {.val dream}.",
       message_type = "error"
     )
   }
@@ -1777,6 +1828,10 @@ RunDEtest_pseudobulk <- function(
       markers
     }
   )
+  RunDEtestStopOnParallelErrors(
+    all_markers,
+    context = "Sample-level differential testing"
+  )
   all_markers <- do.call(rbind.data.frame, all_markers)
   tool_name <- if (is.null(group.by)) {
     "DEtest_pseudobulk"
@@ -1872,7 +1927,8 @@ RunDEtest_pseudobulk <- function(
 #' @param meta.method A character value specifying the method to use for combining p-values in the conserved markers test.
 #' Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "votep".
 #' @param norm.method Normalization method for fold change calculation when layer is 'data'.
-#' Default is `"LogNormalize"`.
+#' For a raw `ChromatinAssay`, `RunDEtest()` first applies
+#' [Signac::RunTFIDF()]; other assays default to `"LogNormalize"`.
 #' @param sample_col Metadata column storing biological sample IDs.
 #' Required when `test.use` is a sample-level pseudobulk method on `Seurat`.
 #' @param condition_col Metadata column storing condition labels.
@@ -2266,7 +2322,7 @@ RunDEtest.Seurat <- function(
     fc.threshold <- base^logfc.threshold
   }
 
-  sample_level_methods <- c("edgeR", "limma", "DESeq2", "dream")
+  sample_level_methods <- detest_sample_methods()
   is_sample_level <- test.use %in% sample_level_methods
   if (is_sample_level) {
     if (markers_type != "all") {
@@ -2320,7 +2376,7 @@ RunDEtest.Seurat <- function(
 
   if (!is.null(sample_col) || !is.null(condition_col)) {
     log_message(
-      "{.arg sample_col} and {.arg condition_col} are only used by {.val edgeR} and {.val limma}. Ignoring them for cell-level differential testing.",
+      "{.arg sample_col} and {.arg condition_col} are only used by sample-level methods. Ignoring them for cell-level differential testing.",
       message_type = "warning",
       verbose = verbose
     )
@@ -2344,16 +2400,11 @@ RunDEtest.Seurat <- function(
     identical(layer, "data") &&
       (is.null(data_layer) || any(dim(data_layer) == 0L))
   ) {
-    log_message(
-      "The {.arg data} layer is missing. Performing {.fun NormalizeData}({.val LogNormalize}).",
-      message_type = "warning",
-      verbose = verbose
-    )
-    srt <- NormalizeData(
-      object = srt,
+    srt <- RunDEtestNormalizeDataLayer(
+      srt = srt,
       assay = assay,
-      normalization.method = "LogNormalize",
-      verbose = FALSE
+      reason = "The data layer is missing.",
+      verbose = verbose
     )
   }
 
@@ -2366,29 +2417,19 @@ RunDEtest.Seurat <- function(
   }
   if (layer == "data" && status != "log_normalized_counts") {
     if (status == "raw_counts") {
-      log_message(
-        "Data in the {.arg data} layer is raw counts. Perform {.fun NormalizeData}({.val LogNormalize})",
-        message_type = "warning",
-        verbose = verbose
-      )
-      srt <- NormalizeData(
-        object = srt,
+      srt <- RunDEtestNormalizeDataLayer(
+        srt = srt,
         assay = assay,
-        normalization.method = "LogNormalize",
-        verbose = FALSE
+        reason = "Data in the data layer contains raw counts.",
+        verbose = verbose
       )
     }
     if (status == "raw_normalized_counts") {
-      log_message(
-        "Data in the {.arg data} layer is raw_normalized_counts. Perform {.fun NormalizeData}({.val LogNormalize})",
-        message_type = "warning",
-        verbose = verbose
-      )
-      srt <- NormalizeData(
-        object = srt,
+      srt <- RunDEtestNormalizeDataLayer(
+        srt = srt,
         assay = assay,
-        normalization.method = "LogNormalize",
-        verbose = FALSE
+        reason = "Data in the data layer contains raw normalized counts.",
+        verbose = verbose
       )
     }
     if (status == "unknown") {
@@ -2773,6 +2814,10 @@ RunDEtest.Seurat <- function(
           cores = cores,
           verbose = verbose
         )
+        RunDEtestStopOnParallelErrors(
+          AllMarkers,
+          context = "All-marker differential testing"
+        )
         AllMarkers <- do.call(rbind.data.frame, AllMarkers)
       }
       if (!is.null(AllMarkers) && nrow(AllMarkers) > 0) {
@@ -2870,12 +2915,13 @@ RunDEtest.Seurat <- function(
           cores = cores,
           verbose = verbose
         )
+        RunDEtestStopOnParallelErrors(
+          pair_results,
+          context = "Paired differential testing"
+        )
         marker_lookup <- list()
         fc_col <- paste0("avg_log", base, "FC")
         for (result in pair_results) {
-          if (inherits(result, "parallelize_error")) {
-            next
-          }
           forward <- result$markers
           if (is.null(forward) || nrow(forward) == 0L) {
             next
@@ -2915,6 +2961,10 @@ RunDEtest.Seurat <- function(
           verbose = verbose
         )
       }
+      RunDEtestStopOnParallelErrors(
+        PairedMarkers,
+        context = "Paired differential testing"
+      )
       PairedMarkers <- do.call(rbind.data.frame, PairedMarkers)
       if (!is.null(PairedMarkers) && nrow(PairedMarkers) > 0) {
         rownames(PairedMarkers) <- NULL
@@ -2998,6 +3048,10 @@ RunDEtest.Seurat <- function(
         },
         cores = cores,
         verbose = verbose
+      )
+      RunDEtestStopOnParallelErrors(
+        ConservedMarkers,
+        context = "Conserved-marker differential testing"
       )
       ConservedMarkers <- do.call(
         rbind.data.frame,
@@ -3134,6 +3188,10 @@ RunDEtest.Seurat <- function(
         verbose = verbose
       )
 
+      RunDEtestStopOnParallelErrors(
+        DisturbedMarkers,
+        context = "Disturbed-marker differential testing"
+      )
       DisturbedMarkers <- do.call(rbind.data.frame, DisturbedMarkers)
       if (!is.null(DisturbedMarkers) && nrow(DisturbedMarkers) > 0) {
         rownames(DisturbedMarkers) <- NULL
@@ -3439,6 +3497,15 @@ RunDEtest_DESeq2 <- function(
   if (ncol(count_use) < 2 || any(table(cond_use) < 2)) {
     return(NULL)
   }
+  count_use <- count_use[rowSums(count_use) > 0, , drop = FALSE]
+  if (nrow(count_use) == 0L) {
+    return(data.frame())
+  }
+  size_factor_type <- if (all(rowSums(count_use == 0) > 0L)) {
+    "poscounts"
+  } else {
+    "ratio"
+  }
 
   out <- tryCatch(
     {
@@ -3452,7 +3519,7 @@ RunDEtest_DESeq2 <- function(
         colData = col_data,
         design = ~condition
       )
-      dds <- DESeq(dds, quiet = TRUE)
+      dds <- DESeq(dds, quiet = TRUE, sfType = size_factor_type)
       res <- DESeq_results(
         dds,
         contrast = c("condition", condition2, condition1)
@@ -3494,7 +3561,7 @@ RunDEtest_DESeq2 <- function(
       }
       out_df
     },
-    error = function(e) NULL
+    error = function(e) stop(conditionMessage(e), call. = FALSE)
   )
   out
 }
@@ -3630,7 +3697,7 @@ RunDEtest_dream <- function(
       }
       out_df
     },
-    error = function(e) NULL
+    error = function(e) stop(conditionMessage(e), call. = FALSE)
   )
   out
 }

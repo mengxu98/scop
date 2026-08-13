@@ -37,6 +37,46 @@ ccc_pair_table <- function(
   df <- ccc_mark_significance(df, thresh = thresh)
   aggregate_ccc_long(df, backend = backend)
 }
+
+test_that("DoCellChat preserves an existing C0 identity when remapping zero", {
+  counts <- methods::as(Matrix::Matrix(
+    matrix(
+      c(1, 0, 0, 1),
+      nrow = 2L,
+      dimnames = list(c("gene1", "gene2"), c("cell1", "cell2"))
+    ),
+    sparse = TRUE
+  ), "dgCMatrix")
+  srt <- SeuratObject::CreateSeuratObject(counts = counts)
+  SeuratObject::Idents(srt) <- factor(c("0", "C0"), levels = c("0", "C0"))
+  captured <- NULL
+  testthat::local_mocked_bindings(
+    get_namespace_fun = function(package, name) {
+      expect_identical(package, "CellChat")
+      expect_identical(name, "createCellChat")
+      function(object, meta, group.by) {
+        captured <<- meta
+        stop("captured CellChat metadata")
+      }
+    },
+    .package = "scop"
+  )
+
+  expect_warning(
+    expect_error(
+      DoCellChat(
+        srt,
+        layer = "counts",
+        species = "Homo_sapiens"
+      ),
+      "captured CellChat metadata"
+    ),
+    'remapped to "C0_"'
+  )
+  expect_identical(captured$label, c("C0_", "C0"))
+  expect_identical(length(unique(captured$label)), 2L)
+})
+
 test_that("aggregate_ccc_long cpp backend matches the R backend", {
   df <- data.frame(
     sender = c("B", "A", "A", "B", NA, "A"),

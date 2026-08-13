@@ -27,7 +27,13 @@ ListDB <- function(
 ) {
   dbinfo <- list_db_cache_entries(species = species, db = db)
   if (is.null(dbinfo) || nrow(dbinfo) == 0L) {
-    return(dbinfo)
+    return(data.frame(
+      Database = character(),
+      Species = character(),
+      Version = character(),
+      Date = character(),
+      stringsAsFactors = FALSE
+    ))
   }
   out <- data.frame(
     Database = dbinfo[["DB"]],

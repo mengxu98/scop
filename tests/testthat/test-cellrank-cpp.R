@@ -1,16 +1,17 @@
 # Tests for CellRank C++ backend
 #
 # Covers:
-#   1. cellrank_validate_transition_matrix_cpp
-#   2. cellrank_stationary_distribution_cpp
-#   3. cellrank_schur_cpp (eigen-based)
-#   4. cellrank_auto_n_states_cpp
-#   5. cellrank_velocity_kernel_cpp
-#   6. cellrank_pseudotime_kernel_cpp
-#   7. cellrank_cytotrace_kernel_cpp
-#   8. cellrank_cflare_cpp
-#   9. cellrank_gpcca_cpp
-#  10. cellrank_lineage_drivers_cpp
+#   1. cellrank_hard_threshold_kernel_cpp
+#   2. cellrank_validate_transition_matrix_cpp
+#   3. cellrank_stationary_distribution_cpp
+#   4. cellrank_schur_cpp (real Schur)
+#   5. cellrank_auto_n_states_cpp
+#   6. cellrank_velocity_kernel_cpp
+#   7. cellrank_pseudotime_kernel_cpp
+#   8. cellrank_cytotrace_kernel_cpp
+#   9. cellrank_cflare_cpp
+#  10. cellrank_gpcca_cpp
+#  11. cellrank_lineage_drivers_cpp
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -34,7 +35,57 @@ make_knn_idx <- function(n_cells, n_neighbors = 5, seed = 42) {
 }
 
 # ---------------------------------------------------------------------------
-# 1. Validate transition matrix
+# 1. Sparse hard-threshold pseudotime kernel
+# ---------------------------------------------------------------------------
+
+test_that("CellRank hard threshold reproduces NumPy 1.26 quicksort ties", {
+  n <- 32L
+  graph <- Matrix::sparseMatrix(
+    i = rep(1L, n - 1L),
+    j = seq.int(2L, n),
+    x = rep(1, n - 1L),
+    dims = c(n, n)
+  )
+  pseudotime <- c(1, rep(0, n - 1L))
+
+  observed <- cellrank_hard_threshold_kernel_cpp(
+    graph,
+    pseudotime = pseudotime,
+    frac_to_keep = 0.3,
+    backward = FALSE
+  )
+  # np.flip(np.argsort(rep(1, 31)))[:9] under NumPy 1.26.4 selects
+  # zero-based positions 30, 14, 1:7. The graph columns start at R column 2.
+  selected <- c(32L, 16L, 3:9)
+  expected <- Matrix::sparseMatrix(
+    i = c(rep(1L, length(selected)), seq.int(2L, n)),
+    j = c(selected, seq.int(2L, n)),
+    x = c(rep(1 / length(selected), length(selected)), rep(1, n - 1L)),
+    dims = c(n, n)
+  )
+
+  expect_equal(as.matrix(observed), as.matrix(expected), tolerance = 1e-15)
+  expect_equal(as.numeric(Matrix::rowSums(observed)), rep(1, n), tolerance = 1e-15)
+
+  hard_threshold <- getFromNamespace("cellrank_hard_threshold_kernel", "scop")
+  expect_equal(
+    as.matrix(hard_threshold(graph, pseudotime, frac_to_keep = 0.3)),
+    as.matrix(expected),
+    tolerance = 1e-15
+  )
+
+  backward <- cellrank_hard_threshold_kernel_cpp(
+    graph,
+    pseudotime = pseudotime,
+    frac_to_keep = 0.3,
+    backward = TRUE
+  )
+  expect_equal(which(as.numeric(backward[1, ]) > 0), seq.int(2L, n))
+  expect_equal(as.numeric(backward[1, seq.int(2L, n)]), rep(1 / 31, 31), tolerance = 1e-15)
+})
+
+# ---------------------------------------------------------------------------
+# 2. Validate transition matrix
 # ---------------------------------------------------------------------------
 
 test_that("cellrank_validate_transition_matrix_cpp fixes NaN/Inf", {
@@ -72,7 +123,7 @@ test_that("stationary distribution satisfies pi = pi * T", {
 })
 
 # ---------------------------------------------------------------------------
-# 3. Schur (eigen-based) decomposition
+# 3. Real Schur decomposition
 # ---------------------------------------------------------------------------
 
 test_that("cellrank_schur_cpp returns valid components", {
@@ -85,6 +136,17 @@ test_that("cellrank_schur_cpp returns valid components", {
   expect_true(all(out$macrostate_assignment >= 1))
   expect_true(all(out$macrostate_assignment <= 5))
   expect_equal(length(out$stationary_distribution), n)
+  expect_equal(length(out$eigenvalues_imaginary), 5)
+  expect_identical(out$method, "lapack_real_schur")
+
+  schur_vectors <- as.matrix(out$schur_vectors)
+  projected <- schur_vectors %*%
+    crossprod(schur_vectors, T %*% schur_vectors)
+  expect_lt(
+    norm(T %*% schur_vectors - projected, type = "F") /
+      norm(T %*% schur_vectors, type = "F"),
+    1e-10
+  )
 })
 
 test_that("cellrank_schur_cpp defaults to n_components = 2 for small matrices", {
@@ -303,6 +365,56 @@ test_that("GPCCA absorption probabilities between 0 and 1", {
   ap <- out$absorption_probabilities
   expect_true(all(ap >= 0, na.rm = TRUE))
   expect_true(all(ap <= 1 + 1e-6, na.rm = TRUE))
+})
+
+test_that("GPCCA preserves complex-conjugate invariant subspaces", {
+  n <- 60L
+  block_size <- 20L
+  transition <- matrix(0, n, n)
+  for (cell0 in 0:(n - 1L)) {
+    block <- cell0 %/% block_size
+    block_start <- block * block_size
+    position <- cell0 - block_start
+    row <- cell0 + 1L
+    transition[row, row] <- transition[row, row] + 0.38
+    transition[row, block_start + ((position - 1L) %% block_size) + 1L] <-
+      transition[row, block_start + ((position - 1L) %% block_size) + 1L] + 0.24
+    transition[row, block_start + ((position + 1L) %% block_size) + 1L] <-
+      transition[row, block_start + ((position + 1L) %% block_size) + 1L] + 0.24
+    transition[row, block_start + ((position + 5L) %% block_size) + 1L] <-
+      transition[row, block_start + ((position + 5L) %% block_size) + 1L] + 0.08
+    forward <- ((block + 1L) %% 3L) * block_size + position + 1L
+    backward <- ((block - 1L) %% 3L) * block_size + position + 1L
+    transition[row, forward] <- transition[row, forward] +
+      if (block < 2L) 0.045 else 0.005
+    transition[row, backward] <- transition[row, backward] +
+      if (block > 0L) 0.005 else 0.001
+    transition[row, ] <- transition[row, ] / sum(transition[row, ])
+  }
+
+  result <- cellrank_gpcca_cpp(
+    T_ = transition,
+    n_states = 3L,
+    n_cells_terminal = 3L
+  )
+  assignment <- max.col(result$chi)
+  block_assignment <- vapply(
+    split(assignment, rep(seq_len(3L), each = block_size)),
+    function(x) {
+      expect_length(unique(x), 1L)
+      x[[1L]]
+    },
+    integer(1L)
+  )
+
+  expect_identical(result$membership_method, "optimized_inner_simplex")
+  expect_true(result$membership_optimization_converged)
+  expect_lte(
+    result$membership_objective_final,
+    result$membership_objective_initial + 1e-12
+  )
+  expect_gt(min(apply(result$chi, 1L, max)), 0.99)
+  expect_length(unique(block_assignment), 3L)
 })
 
 # ---------------------------------------------------------------------------

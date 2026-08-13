@@ -93,12 +93,19 @@ tables in \code{srt@tools[[tool_name]]} or plot an explicit summary column with
 \examples{
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
-spatial$region <- ifelse(spatial$x > stats::median(spatial$x), "right", "left")
-spatial$CSIDE_n_sig <- ifelse(spatial$region == "right", 12, 4)
+spatial$region <- cut(
+  spatial$x,
+  breaks = stats::quantile(spatial$x, probs = seq(0, 1, length.out = 4)),
+  include.lowest = TRUE,
+  labels = c("left", "middle", "right")
+)
+spatial$CSIDE_n_sig <- unname(
+  c(left = 4, middle = 8, right = 12)[as.character(spatial$region)]
+)
 spatial$CSIDE_mode <- "regions"
 cside_result <- data.frame(
   feature = rownames(spatial)[1:4],
-  celltype = rep(c("Ductal", "Endocrine"), each = 2),
+  celltype = rep(c("ductal", "alpha"), each = 2),
   parameter = "right_vs_left",
   logFC = c(1.2, 0.8, -0.9, -1.1),
   statistic = c(4.1, 3.5, -3.2, -3.8),
@@ -127,12 +134,32 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
+data(panc8_sub)
+spatial <- spatial[, seq_len(120)]
+reference <- panc8_sub[, panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")]
+reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
+features_use <- intersect(
+  SeuratObject::VariableFeatures(reference),
+  rownames(spatial)
+)
+spatial <- RunRCTD(
+  spatial,
+  reference = reference,
+  reference_label = "celltype",
+  features = features_use,
+  rctd_mode = "full",
+  max_cores = 1,
+  min_cells = 25,
+  verbose = FALSE
+)
+spatial <- spatial[, rownames(spatial@tools$RCTD$weights)]
 spatial <- RunCSIDE(
   spatial,
   group.by = "region",
-  celltypes = c("Ductal", "Endocrine"),
+  celltypes = c("ductal", "alpha"),
   gene_threshold = 0.00005,
-  cell_type_threshold = 125
+  cell_type_threshold = 5,
+  verbose = FALSE
 )
 }
 \concept{spatial-producer}

@@ -1,6 +1,11 @@
 test_that("AUCell consistency strategy matches official AUCell scores", {
   skip_if_not_installed("AUCell")
 
+  if ("AUCell" %in% loadedNamespaces()) {
+    unloadNamespace("AUCell")
+  }
+  expect_false("AUCell" %in% loadedNamespaces())
+
   set.seed(42)
   expr <- Matrix::rsparsematrix(120, 24, density = 0.08)
   expr@x <- abs(round(expr@x * 5))
@@ -19,6 +24,7 @@ test_that("AUCell consistency strategy matches official AUCell scores", {
       gene_sets = gene_sets
     )
   )
+  expect_true("AUCell" %in% loadedNamespaces())
   set.seed(11)
   observed <- suppressWarnings(
     getFromNamespace("run_aucell_official_scores", "scop")(

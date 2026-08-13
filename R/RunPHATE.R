@@ -219,6 +219,7 @@ RunPHATE.default <- function(
       n_landmark = n_landmark,
       t = t,
       gamma = gamma,
+      n_pca = n_pca,
       knn_dist = knn_dist,
       knn_max = knn_max,
       t_max = t_max,
@@ -299,6 +300,7 @@ run_phate_cpp_reduction <- function(
   n_landmark = 2000,
   t = "auto",
   gamma = 1,
+  n_pca = 100,
   knn_dist = "euclidean",
   knn_max = NULL,
   t_max = 100,
@@ -338,6 +340,23 @@ run_phate_cpp_reduction <- function(
   if (is.null(rownames(data_use))) {
     rownames(data_use) <- paste0("cell_", seq_len(nrow(data_use)))
   }
+  cell_names <- rownames(data_use)
+  n_pca_used <- NULL
+  if (!is.null(n_pca)) {
+    n_pca <- max(1L, min(as.integer(n_pca), ncol(data_use), nrow(data_use) - 1L))
+    if (n_pca < ncol(data_use) && nrow(data_use) > 1L) {
+      check_r("irlba", verbose = FALSE)
+      data_use <- irlba::prcomp_irlba(
+        data_use,
+        n = n_pca,
+        center = TRUE,
+        scale. = FALSE
+      )$x
+      rownames(data_use) <- cell_names
+      n_pca_used <- n_pca
+      invisible(gc(full = TRUE))
+    }
+  }
   n_cells <- nrow(data_use)
   if (n_cells < 1) {
     log_message("PHATE input must contain at least one cell", message_type = "error")
@@ -350,6 +369,86 @@ run_phate_cpp_reduction <- function(
     min(max(knn, as.integer(knn_max)), max(1L, n_cells - 1L))
   }
   t_max <- as.integer(t_max)
+  minimum_landmarks <- if (n_cells > 1L) 2L else 1L
+  n_landmark <- max(
+    minimum_landmarks,
+    min(as.integer(n_landmark), n_cells)
+  )
+
+  if (n_cells > n_landmark) {
+    landmark_index <- sort(sample.int(n_cells, n_landmark, replace = FALSE))
+    landmark_reduction <- run_phate_cpp_reduction(
+      object = data_use[landmark_index, , drop = FALSE],
+      assay = assay,
+      n_components = n_components,
+      knn = min(knn, n_landmark - 1L),
+      decay = decay,
+      n_landmark = n_landmark,
+      t = t,
+      gamma = gamma,
+      n_pca = NULL,
+      knn_dist = knn_dist,
+      knn_max = knn_max,
+      t_max = t_max,
+      do_cluster = FALSE,
+      mds = mds,
+      reduction.key = reduction.key
+    )
+    landmark_embedding <- SeuratObject::Embeddings(landmark_reduction)
+    projection_k <- max(1L, min(knn_search, n_landmark))
+    check_r("BiocNeighbors", verbose = FALSE)
+    projection <- BiocNeighbors::queryKNN(
+      X = data_use[landmark_index, , drop = FALSE],
+      query = data_use,
+      k = projection_k,
+      BNPARAM = BiocNeighbors::HnswParam(
+        ef.search = max(50L, 3L * projection_k),
+        distance = "Euclidean"
+      ),
+      num.threads = 1L
+    )
+    bandwidth_column <- min(knn, ncol(projection$distance))
+    bandwidth <- pmax(
+      projection$distance[, bandwidth_column],
+      .Machine$double.eps
+    )
+    weights <- exp(-(
+      projection$distance / bandwidth
+    )^as.numeric(decay))
+    weights[!is.finite(weights)] <- 0
+    weight_totals <- rowSums(weights)
+    zero_weight <- weight_totals <= 0
+    if (any(zero_weight)) {
+      weights[zero_weight, ] <- 0
+      weights[cbind(which(zero_weight), 1L)] <- 1
+      weight_totals[zero_weight] <- 1
+    }
+    weights <- weights / weight_totals
+    embedding <- matrix(0, n_cells, n_components)
+    for (neighbor in seq_len(ncol(projection$index))) {
+      embedding <- embedding +
+        landmark_embedding[projection$index[, neighbor], , drop = FALSE] *
+          weights[, neighbor]
+    }
+    embedding[landmark_index, ] <- landmark_embedding
+    colnames(embedding) <- paste0(reduction.key, seq_len(ncol(embedding)))
+    rownames(embedding) <- cell_names
+    return(Seurat::CreateDimReducObject(
+      embeddings = embedding,
+      key = reduction.key,
+      assay = assay,
+      global = TRUE,
+      misc = list(
+        backend = "cpp",
+        t = SeuratObject::Misc(landmark_reduction, slot = "t"),
+        landmark = TRUE,
+        n_landmarks = n_landmark,
+        landmark_cells = cell_names[landmark_index],
+        projection_k = projection_k,
+        n_pca = n_pca_used
+      )
+    ))
+  }
 
   affinity <- phate_graphtools_affinity_data_cpp(
     data = data_use,
@@ -394,7 +493,10 @@ run_phate_cpp_reduction <- function(
     global = TRUE,
     misc = list(
       backend = "cpp",
-      t = diffusion_t
+      t = diffusion_t,
+      landmark = FALSE,
+      n_landmarks = n_cells,
+      n_pca = n_pca_used
     )
   )
 }

@@ -1,7 +1,9 @@
-// [[Rcpp::depends(RcppArmadillo, cli)]]
+// [[Rcpp::depends(RcppArmadillo, RcppEigen, RSpectra, cli)]]
 #include <RcppArmadillo.h>
 #include <thisutils/log_message.h>
 #include <thisutils/cli_progress.h>
+#include <Spectra/MatOp/DenseSymMatProd.h>
+#include <Spectra/SymEigsSolver.h>
 #include <algorithm>
 #include <cstdint>
 #include <cmath>
@@ -1829,17 +1831,60 @@ NumericMatrix plage_dense(
       // eigendecompose ZZ' (effective_size × effective_size) instead of Z'Z (n_cells × n_cells).
       // This is O(effective_size³ + effective_size² × n_cells) vs O(n_cells³).
       arma::mat gene_cov = z * z.t();
-      arma::vec eigval;
-      arma::mat eigvec;
-      ok = arma::eig_sym(eigval, eigvec, gene_cov);
-      if (ok && eigvec.n_cols > 0) {
-        // u is the first left singular vector (eigenvector of ZZ')
-        arma::vec u = eigvec.col(eigvec.n_cols - 1);
+      arma::vec u;
+      bool leading_ok = false;
+      if (effective_size >= 64) {
+        Eigen::Map<const Eigen::MatrixXd> gene_cov_eigen(
+          gene_cov.memptr(), effective_size, effective_size
+        );
+        Spectra::DenseSymMatProd<double> op(gene_cov_eigen);
+        const int n_eigen = 2;
+        const int ncv = std::min(effective_size, 10);
+        Spectra::SymEigsSolver<
+          double,
+          Spectra::LARGEST_ALGE,
+          Spectra::DenseSymMatProd<double>
+        > eigs(&op, n_eigen, ncv);
+        Eigen::VectorXd initial(effective_size);
+        for (int row = 0; row < effective_size; ++row) {
+          initial(row) = std::sin(0.5 * static_cast<double>(row + 1)) +
+            std::cos(0.17 * static_cast<double>(row + 1));
+        }
+        eigs.init(initial.data());
+        const int nconv = eigs.compute(
+          3000, 1e-14, Spectra::LARGEST_ALGE
+        );
+        if (eigs.info() == Spectra::SUCCESSFUL && nconv >= n_eigen) {
+          const Eigen::VectorXd values_top = eigs.eigenvalues();
+          const double gap_scale = std::max(1.0, std::abs(values_top(0)));
+          if (R_finite(values_top(0)) && R_finite(values_top(1)) &&
+              values_top(0) - values_top(1) > 1e-12 * gap_scale) {
+            const Eigen::VectorXd u_top = eigs.eigenvectors().col(0);
+            u.set_size(static_cast<arma::uword>(effective_size));
+            for (int row = 0; row < effective_size; ++row) {
+              u(static_cast<arma::uword>(row)) = u_top(row);
+            }
+            leading_ok = true;
+          }
+        }
+      }
+      if (!leading_ok) {
+        // Small, degenerate, or non-converged problems keep the exact LAPACK
+        // path so the established PLAGE contract remains the fallback.
+        arma::vec eigval;
+        arma::mat eigvec;
+        leading_ok = arma::eig_sym(eigval, eigvec, gene_cov);
+        if (leading_ok && eigvec.n_cols > 0) {
+          u = eigvec.col(eigvec.n_cols - 1);
+        }
+      }
+      if (leading_ok && u.n_elem > 0) {
         // Convert to right singular vector: v = Z'u, then normalize
         first_v = z.t() * u;
         double norm_val = arma::norm(first_v, 2);
         if (norm_val > 0.0) {
           first_v /= norm_val;
+          ok = true;
         }
       }
     } else if (n_cells <= 256) {
@@ -1911,132 +1956,6 @@ NumericMatrix plage_dense(
   }
 
   return scores;
-}
-
-static double gsva_sample_sd_from_freq(
-  const std::map<double, int>& freq,
-  int n
-) {
-  if (n < 2) {
-    return R_NaN;
-  }
-
-  long double sum = 0.0;
-  for (std::map<double, int>::const_iterator it = freq.begin(); it != freq.end(); ++it) {
-    sum += static_cast<long double>(it->first) * static_cast<long double>(it->second);
-  }
-
-  long double mean = sum / static_cast<long double>(n);
-  if (R_finite(static_cast<double>(mean))) {
-    sum = 0.0;
-    for (std::map<double, int>::const_iterator it = freq.begin(); it != freq.end(); ++it) {
-      sum += (static_cast<long double>(it->first) - mean) * static_cast<long double>(it->second);
-    }
-    mean += sum / static_cast<long double>(n);
-  }
-
-  sum = 0.0;
-  for (std::map<double, int>::const_iterator it = freq.begin(); it != freq.end(); ++it) {
-    const long double diff = static_cast<long double>(it->first) - mean;
-    sum += diff * diff * static_cast<long double>(it->second);
-  }
-
-  return std::sqrt(static_cast<double>(sum / static_cast<long double>(n - 1)));
-}
-
-// Fast normal CDF approximation (absolute error below 7.5e-8).  Gaussian
-// GSVA spends most of its time evaluating kernel CDFs, so calling R::pnorm()
-// for every value pair makes the otherwise native implementation quadratic
-// with a very large constant.
-static inline double gsva_fast_pnorm(double x) {
-  if (x <= -8.0) return 0.0;
-  if (x >= 8.0) return 1.0;
-  const double ax = std::fabs(x);
-  const double t = 1.0 / (1.0 + 0.2316419 * ax);
-  const double poly = t * (
-    0.319381530 + t * (
-      -0.356563782 + t * (
-        1.781477937 + t * (
-          -1.821255978 + t * 1.330274429
-        )
-      )
-    )
-  );
-  const double upper = std::exp(-0.5 * ax * ax) * 0.3989422804014327 * poly;
-  const double cdf = 1.0 - upper;
-  return (x >= 0.0) ? cdf : 1.0 - cdf;
-}
-
-static void gsva_gaussian_kcdf_binned(
-  const std::map<double, int>& freq,
-  int n_cells,
-  double bw,
-  std::map<double, double>& z_by_value
-) {
-  const int n_unique = static_cast<int>(freq.size());
-  if (n_unique == 0) return;
-
-  // Keep the exact route for genuinely discrete rows. Continuous log-normalized
-  // single-cell rows otherwise have one value per cell and make the original
-  // O(unique^2) R::pnorm loop dominate runtime.
-  if (n_unique <= 16) {
-    for (std::map<double, int>::const_iterator y_it = freq.begin(); y_it != freq.end(); ++y_it) {
-      double cdf = 0.0;
-      for (std::map<double, int>::const_iterator x_it = freq.begin(); x_it != freq.end(); ++x_it) {
-        cdf += static_cast<double>(x_it->second) *
-          R::pnorm(y_it->first - x_it->first, 0.0, bw, true, false);
-      }
-      cdf /= static_cast<double>(n_cells);
-      cdf = std::max(1e-15, std::min(1.0 - 1e-15, cdf));
-      z_by_value[y_it->first] = -std::log((1.0 - cdf) / cdf);
-    }
-    return;
-  }
-
-  const double lower = freq.begin()->first;
-  const double upper = freq.rbegin()->first;
-  const double range = upper - lower;
-  if (!R_finite(range) || range <= 0.0) {
-    z_by_value[lower] = 0.0;
-    return;
-  }
-
-  const int n_bins = std::min(64, n_unique);
-  std::vector<int> bin_count(n_bins, 0);
-  std::vector<double> bin_sum(n_bins, 0.0);
-  std::map<double, int> bin_by_value;
-  const double scale = static_cast<double>(n_bins - 1) / range;
-  for (std::map<double, int>::const_iterator it = freq.begin(); it != freq.end(); ++it) {
-    int bin = static_cast<int>(std::floor((it->first - lower) * scale + 0.5));
-    bin = std::max(0, std::min(n_bins - 1, bin));
-    bin_by_value[it->first] = bin;
-    bin_count[bin] += it->second;
-    bin_sum[bin] += it->first * static_cast<double>(it->second);
-  }
-
-  std::vector<double> bin_value(n_bins, 0.0);
-  for (int bin = 0; bin < n_bins; ++bin) {
-    bin_value[bin] = (bin_count[bin] > 0) ?
-      bin_sum[bin] / static_cast<double>(bin_count[bin]) :
-      lower + static_cast<double>(bin) / scale;
-  }
-  std::vector<double> cdf_by_bin(n_bins, 0.5);
-  for (int y_bin = 0; y_bin < n_bins; ++y_bin) {
-    if (bin_count[y_bin] == 0) continue;
-    double cdf = 0.0;
-    for (int x_bin = 0; x_bin < n_bins; ++x_bin) {
-      if (bin_count[x_bin] == 0) continue;
-      cdf += static_cast<double>(bin_count[x_bin]) *
-        gsva_fast_pnorm((bin_value[y_bin] - bin_value[x_bin]) / bw);
-    }
-    cdf /= static_cast<double>(n_cells);
-    cdf = std::max(1e-15, std::min(1.0 - 1e-15, cdf));
-    cdf_by_bin[y_bin] = cdf;
-  }
-  for (std::map<double, int>::const_iterator it = bin_by_value.begin(); it != bin_by_value.end(); ++it) {
-    const double cdf = cdf_by_bin[it->second];
-    z_by_value[it->first] = -std::log((1.0 - cdf) / cdf);
-  }
 }
 
 struct GsvaRankEntry {
@@ -2528,6 +2447,68 @@ static NumericMatrix gsva_score_transformed_rows(
   return scores;
 }
 
+// GSVA 2.0.7 Gaussian-kernel helpers (kernel_estimation.c): a precomputed
+// standard-normal CDF table with 10000 integer-truncated steps over [-10, 10],
+// and the sample sd with the same two-pass mean correction as GSVA's C sd().
+
+static const std::vector<double>& gsva_gaussian_pnorm_table() {
+  static std::vector<double> table;
+  if (table.empty()) {
+    table.reserve(10001);
+    for (int i = 0; i <= 10000; ++i) {
+      table.push_back(R::pnorm(
+        10.0 * static_cast<double>(i) / 10000.0,
+        0.0,
+        1.0,
+        true,
+        false
+      ));
+    }
+  }
+  return table;
+}
+
+static double gsva_precomputed_cdf(
+  double x,
+  double sigma,
+  const std::vector<double>& table
+) {
+  const double v = x / sigma;
+  if (v < -10.0) {
+    return 0.0;
+  }
+  if (v > 10.0) {
+    return 1.0;
+  }
+  const int idx = static_cast<int>(std::fabs(v) / 10.0 * 10000.0);
+  const double cdf = table[idx];
+  return (v < 0) ? (1.0 - cdf) : cdf;
+}
+
+static double gsva_sample_sd_gaussian(const double* values, int n) {
+  if (n < 2) {
+    return NA_REAL;
+  }
+  long double sum = 0.0L;
+  for (int i = 0; i < n; ++i) {
+    sum += static_cast<long double>(values[i]);
+  }
+  long double mean = sum / static_cast<long double>(n);
+  if (R_finite(static_cast<double>(mean))) {
+    sum = 0.0L;
+    for (int i = 0; i < n; ++i) {
+      sum += static_cast<long double>(values[i]) - mean;
+    }
+    mean += sum / static_cast<long double>(n);
+  }
+  sum = 0.0L;
+  for (int i = 0; i < n; ++i) {
+    const long double diff = static_cast<long double>(values[i]) - mean;
+    sum += diff * diff;
+  }
+  return std::sqrt(static_cast<double>(sum / static_cast<long double>(n - 1)));
+}
+
 // [[Rcpp::export]]
 NumericMatrix gsva_gaussian_dense(
   S4 expr,
@@ -2537,17 +2518,23 @@ NumericMatrix gsva_gaussian_dense(
   double tau = 1.0,
   int chunk_size = 0
 ) {
-  // Enable z-score KDE path (frequency-based with zeros, log-odds transform,
-  // unified gene ranking) — closer to GSVA R's density() → ecdf() → qnorm().
-  // The sparse_exact path is kept as fallback in gsva_sparse_exact.
-  // return gsva_sparse_exact(
-  //   expr,
-  //   gene_sets,
-  //   true,
-  //   max_diff,
-  //   abs_ranking,
-  //   tau
-  // );
+  // Exact replica of GSVA::gsva(kcdf = "Gaussian") with the default sparse
+  // algorithm (gsvaParam(sparse = TRUE), the default for dgCMatrix input):
+  //   - row_d_nologodds: bandwidth sd(nonzero values)/4, step-function normal
+  //     CDF table with 10000 integer-truncated steps over [-10, 10];
+  //   - kcdf values only at nonzero entries (zeros rank 0);
+  //   - per-column rank() with ties.method = "last" (larger gene index gets
+  //     the smaller rank among ties);
+  //   - ranks2stats sparse branch: dense remap r_dense (zeros 1..nzs in gene
+  //     order, nonzeros shifted by +nzs), decordstat = p - r_dense + 1,
+  //     symrnkstat = |(nnz+1)/2 - 1| for zeros and |(nnz+1)/2 - (r+1)| for
+  //     nonzeros;
+  //   - dense random walk over the decreasing order statistics: every set gene
+  //     (expressed or zero-expression) is placed at its decordstat position
+  //     with its symmetric rank statistic;
+  //   - score: maxDiff ? (absRanking ? pos-neg : pos+neg) : max(pos, |neg|).
+  // chunk_size is accepted for interface compatibility; per-cell working
+  // memory is O(n_genes) and needs no chunking.
 
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -2573,10 +2560,9 @@ NumericMatrix gsva_gaussian_dense(
   for (int gene = 0; gene < n_genes; ++gene) {
     row_ptr[gene + 1] = row_ptr[gene] + row_counts[gene];
   }
-  const int nnz = row_ptr[n_genes];
+  const int nnz_total = row_ptr[n_genes];
   std::vector<int> row_cursor(row_ptr);
-  std::vector<int> row_cells(nnz);
-  std::vector<double> row_values(nnz);
+  std::vector<double> row_values(nnz_total);
 
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
@@ -2584,7 +2570,6 @@ NumericMatrix gsva_gaussian_dense(
       const double value = values[ptr];
       if (R_finite(value) && value != 0.0) {
         const int out = row_cursor[gene]++;
-        row_cells[out] = cell;
         row_values[out] = value;
       }
     }
@@ -2606,45 +2591,198 @@ NumericMatrix gsva_gaussian_dense(
     sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
   }
 
-  std::vector<double> row_z_zero(n_genes, R_NaN);
-  std::vector<double> row_z_values(nnz, R_NaN);
+  const std::vector<double>& pnorm_table = gsva_gaussian_pnorm_table();
+
+  // Per-gene Gaussian KDE over the nonzero values: unique values with counts,
+  // the step-function CDF evaluated at each unique value, and the bandwidth.
+  std::vector<std::vector<double> > gene_values(n_genes);
+  std::vector<std::vector<double> > gene_cdfs(n_genes);
   for (int gene = 0; gene < n_genes; ++gene) {
-    std::map<double, int> freq;
     const int row_start = row_ptr[gene];
     const int row_end = row_ptr[gene + 1];
-    freq[0.0] = n_cells - (row_end - row_start);
-    for (int ptr = row_start; ptr < row_end; ++ptr) {
-      ++freq[row_values[ptr]];
+    const int nnz_g = row_end - row_start;
+    if (nnz_g == 0) {
+      continue;
     }
-
-    double bw = gsva_sample_sd_from_freq(freq, n_cells) / 4.0;
-    if (!R_finite(bw) || bw == 0.0) {
+    double bw = gsva_sample_sd_gaussian(&row_values[row_start], nnz_g) / 4.0;
+    if (ISNA(bw) || bw == 0.0) {
       bw = 0.001;
     }
+    std::vector<double> uniq;
+    std::vector<int> cnt;
+    {
+      std::vector<double> sorted(row_values.begin() + row_start, row_values.begin() + row_end);
+      std::sort(sorted.begin(), sorted.end());
+      for (std::size_t k = 0; k < sorted.size();) {
+        std::size_t e = k + 1;
+        while (e < sorted.size() && sorted[e] == sorted[k]) {
+          ++e;
+        }
+        uniq.push_back(sorted[k]);
+        cnt.push_back(static_cast<int>(e - k));
+        k = e;
+      }
+    }
+    std::vector<double> cdf_vals(uniq.size(), 0.0);
+    for (std::size_t y_i = 0; y_i < uniq.size(); ++y_i) {
+      double acc = 0.0;
+      for (std::size_t x_i = 0; x_i < uniq.size(); ++x_i) {
+        acc += static_cast<double>(cnt[x_i]) *
+          gsva_precomputed_cdf(uniq[y_i] - uniq[x_i], bw, pnorm_table);
+      }
+      cdf_vals[y_i] = acc / static_cast<double>(nnz_g);
+    }
+    gene_values[gene].swap(uniq);
+    gene_cdfs[gene].swap(cdf_vals);
+  }
 
-    std::map<double, double> z_by_value;
-    gsva_gaussian_kcdf_binned(freq, n_cells, bw, z_by_value);
+  NumericMatrix scores(n_cells, n_sets);
 
-    row_z_zero[gene] = z_by_value[0.0];
-    for (int ptr = row_start; ptr < row_end; ++ptr) {
-      row_z_values[ptr] = z_by_value[row_values[ptr]];
+  std::vector<std::pair<double, int> > rank_entries;
+  rank_entries.reserve(n_genes);
+  std::vector<int> decordstat(n_genes, 0);
+  std::vector<double> symrnkstat(n_genes, 0.0);
+  std::vector<double> stepcdfin(n_genes, 0.0);
+  std::vector<int> stepcdfout(n_genes, 1);
+  std::vector<int> touched;
+  touched.reserve(n_genes);
+
+  for (int cell = 0; cell < n_cells; ++cell) {
+    rank_entries.clear();
+    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+      const int gene = row_idx[ptr];
+      const double value = values[ptr];
+      if (!R_finite(value) || value == 0.0) {
+        continue;
+      }
+      const std::vector<double>& gv = gene_values[gene];
+      const std::vector<double>& gc = gene_cdfs[gene];
+      const std::vector<double>::const_iterator it =
+        std::lower_bound(gv.begin(), gv.end(), value);
+      if (it == gv.end() || *it != value) {
+        continue;
+      }
+      rank_entries.push_back(std::make_pair(
+        gc[static_cast<std::size_t>(it - gv.begin())],
+        gene
+      ));
+    }
+    const int nnz = static_cast<int>(rank_entries.size());
+
+    // Ascending rank by CDF value; ties keep the largest gene index first,
+    // matching rank(x, ties.method = "last").
+    std::sort(
+      rank_entries.begin(),
+      rank_entries.end(),
+      [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
+        if (a.first < b.first) {
+          return true;
+        }
+        if (a.first > b.first) {
+          return false;
+        }
+        return a.second > b.second;
+      }
+    );
+
+    const double nnz1div2 = static_cast<double>(nnz + 1) / 2.0;
+    const double zerosymrnkstat = std::fabs(nnz1div2 - 1.0);
+    // Genes absent from this cell get decordstat > nnz so the walk classifies
+    // them as zero-expression genes; expressed genes are filled below.
+    std::fill(decordstat.begin(), decordstat.end(), n_genes + 1);
+    std::fill(symrnkstat.begin(), symrnkstat.end(), 0.0);
+    for (int rank_i = 0; rank_i < nnz; ++rank_i) {
+      const int gene = rank_entries[rank_i].second;
+      const int r = rank_i + 1;
+      decordstat[gene] = nnz - r + 1;
+      symrnkstat[gene] = std::fabs(nnz1div2 - static_cast<double>(r + 1));
+    }
+
+    // Prefix count of zero-expression genes by gene index. A zero-expression
+    // set gene with k zero genes at or before it (gene order) gets the dense
+    // rank k and decreasing order statistic p - k + 1, matching GSVA 2.0.7's
+    // .ranks2stats dense remap of the sparse ranks.
+    std::vector<int> zero_prefix(n_genes, 0);
+    {
+      std::vector<char> expressed(n_genes, 0);
+      for (int rank_i = 0; rank_i < nnz; ++rank_i) {
+        expressed[rank_entries[rank_i].second] = 1;
+      }
+      int zero_run = 0;
+      for (int gene = 0; gene < n_genes; ++gene) {
+        if (!expressed[gene]) {
+          ++zero_run;
+        }
+        zero_prefix[gene] = zero_run;
+      }
+    }
+    // The cumulative sums below mutate every position of stepcdfin/stepcdfout,
+    // so the arrays are fully reset before each set's placement.
+
+    for (int set_i = 0; set_i < n_sets; ++set_i) {
+      const std::vector<int>& set = sets[set_i];
+      const int set_size = static_cast<int>(set.size());
+      if (set_size <= 0 || set_size >= n_genes) {
+        scores(cell, set_i) = R_NaN;
+        continue;
+      }
+      std::fill(stepcdfin.begin(), stepcdfin.end(), 0.0);
+      std::fill(stepcdfout.begin(), stepcdfout.end(), 1);
+      for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
+        const int gene = *it;
+        int pos;
+        double stat;
+        if (decordstat[gene] <= nnz) {
+          pos = decordstat[gene];
+          stat = (tau == 1.0)
+            ? symrnkstat[gene]
+            : std::pow(symrnkstat[gene], tau);
+        } else {
+          // Zero-expression gene: dense rank = zero_prefix[gene], so
+          // dos = p - zero_prefix[gene] + 1, with the shared zero stat.
+          pos = n_genes - zero_prefix[gene] + 1;
+          stat = (tau == 1.0)
+            ? zerosymrnkstat
+            : std::pow(zerosymrnkstat, tau);
+        }
+        stepcdfout[pos - 1] = 0;
+        stepcdfin[pos - 1] = stat;
+      }
+
+      for (int i = 1; i < n_genes; ++i) {
+        stepcdfin[i] += stepcdfin[i - 1];
+        stepcdfout[i] += stepcdfout[i - 1];
+      }
+
+      double score = R_NaN;
+      const double total_in = stepcdfin[n_genes - 1];
+      const double total_out = static_cast<double>(stepcdfout[n_genes - 1]);
+      if (total_in > 0.0 && total_out > 0.0) {
+        double walk_pos = 0.0;
+        double walk_neg = 0.0;
+        for (int i = 0; i < n_genes; ++i) {
+          const double wlk =
+            stepcdfin[i] / total_in -
+            static_cast<double>(stepcdfout[i]) / total_out;
+          if (wlk > walk_pos) {
+            walk_pos = wlk;
+          }
+          if (wlk < walk_neg) {
+            walk_neg = wlk;
+          }
+        }
+        if (max_diff) {
+          score = abs_ranking ? (walk_pos - walk_neg) : (walk_pos + walk_neg);
+        } else {
+          score = (walk_pos > std::fabs(walk_neg)) ? walk_pos : walk_neg;
+        }
+      }
+      scores(cell, set_i) = score;
+
     }
   }
-  std::vector<double>().swap(row_values);
 
-  return gsva_score_transformed_rows(
-    n_genes,
-    n_cells,
-    sets,
-    row_ptr,
-    row_cells,
-    row_z_values,
-    row_z_zero,
-    max_diff,
-    abs_ranking,
-    tau,
-    chunk_size
-  );
+  return scores;
 }
 
 // [[Rcpp::export]]

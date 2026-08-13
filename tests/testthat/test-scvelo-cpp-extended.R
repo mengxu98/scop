@@ -197,6 +197,118 @@ test_that("scvelo_moments_cpp is deterministic", {
   expect_equal(m1, m2)
 })
 
+test_that("connectivity moments can skip unused second-order matrices", {
+  set.seed(20260810)
+  spliced <- matrix(stats::rexp(8L * 12L), 8L, 12L)
+  unspliced <- matrix(stats::rexp(8L * 12L), 8L, 12L)
+  knn_idx <- t(vapply(seq_len(12L), function(cell) {
+    sample(setdiff(seq_len(12L), cell), 4L)
+  }, integer(4L)))
+
+  full <- scvelo_moments_connectivities_cpp(
+    spliced,
+    unspliced,
+    knn_idx,
+    compute_second_order = TRUE
+  )
+  first_order <- scvelo_moments_connectivities_cpp(
+    spliced,
+    unspliced,
+    knn_idx,
+    compute_second_order = FALSE
+  )
+
+  expect_equal(first_order$Ms, full$Ms, tolerance = 0)
+  expect_equal(first_order$Mu, full$Mu, tolerance = 0)
+  expect_null(first_order$Mss)
+  expect_null(first_order$Mus)
+  expect_equal(full$Mss, scvelo_second_order_moments_cpp(
+    spliced,
+    unspliced,
+    knn_idx
+  )$Mss, tolerance = 0)
+})
+
+test_that("deterministic scVelo fit matches extreme-quantile semantics", {
+  set.seed(20260810)
+  n_genes <- 24L
+  n_cells <- 80L
+  Ms <- matrix(stats::rgamma(n_genes * n_cells, shape = 1.5), n_genes)
+  Ms[matrix(stats::runif(length(Ms)), n_genes) < 0.55] <- 0
+  Mu <- matrix(pmax(
+    0,
+    Ms * stats::runif(n_genes, 0.25, 0.9) +
+      matrix(stats::rnorm(length(Ms), sd = 0.18), n_genes)
+  ), nrow = n_genes)
+  Mu[1L, ] <- 0
+  Ms[2L, ] <- 0
+  Mu[3:5, ] <- matrix(stats::rexp(3L * n_cells), 3L)
+  knn_idx <- t(vapply(seq_len(n_cells), function(cell) {
+    sample(setdiff(seq_len(n_cells), cell), 8L)
+  }, integer(8L)))
+  embedding <- matrix(stats::rnorm(n_cells * 2L), n_cells, 2L)
+
+  reference_fit <- lapply(seq_len(n_genes), function(gene) {
+    s <- Ms[gene, ]
+    u <- Mu[gene, ]
+    normalized <- s / max(max(s), 1e-3) + u / max(max(u), 1e-3)
+    keep <- normalized >= stats::quantile(normalized, 0.95, type = 7)
+    denominator <- sum(s[keep]^2)
+    gamma <- if (denominator > 0) sum(s[keep] * u[keep]) / denominator else 0
+    denominator_all <- sum(s^2)
+    gamma_all <- if (denominator_all > 0) sum(s * u) / denominator_all else 0
+    total <- sum((u - mean(u))^2)
+    residual_sum <- sum((u - gamma_all * s)^2)
+    r2 <- if (total > 0) 1 - residual_sum / total else 0
+    c(gamma = gamma, r2 = r2)
+  })
+  reference_fit <- do.call(rbind, reference_fit)
+  velocity_genes <- reference_fit[, "r2"] > 0.01 &
+    reference_fit[, "gamma"] > 0.01 &
+    rowSums(Ms > 0) > 0 & rowSums(Mu > 0) > 0
+  if (sum(velocity_genes) < 2L) {
+    velocity_genes <- reference_fit[, "r2"] >
+      stats::quantile(reference_fit[, "r2"], 0.80, type = 7)
+  }
+  expect_gt(sum(velocity_genes), 1L)
+  expect_true(any(!velocity_genes))
+
+  observed <- scvelo_deterministic_cpp(
+    Ms = Ms,
+    Mu = Mu,
+    knn_idx = knn_idx,
+    embedding = embedding,
+    fit_offset = FALSE,
+    perc = 95
+  )
+
+  expect_equal(observed$gamma, reference_fit[, "gamma"], tolerance = 1e-12)
+  expect_equal(observed$r2, reference_fit[, "r2"], tolerance = 1e-12)
+  expect_identical(as.logical(observed$velocity_genes), velocity_genes)
+  expect_equal(
+    observed$residual,
+    Mu - reference_fit[, "gamma"] * Ms,
+    tolerance = 1e-12
+  )
+
+  confidence <- scvelo_velocity_confidence_cpp(
+    Ms = Ms[velocity_genes, , drop = FALSE],
+    residual = observed$residual[velocity_genes, , drop = FALSE],
+    knn_idx = knn_idx
+  )
+  centered <- sweep(
+    observed$residual[velocity_genes, , drop = FALSE],
+    2L,
+    colMeans(observed$residual[velocity_genes, , drop = FALSE]),
+    "-"
+  )
+  expect_equal(
+    confidence$velocity_length,
+    round(sqrt(colSums(centered^2)), 2),
+    tolerance = 1e-12
+  )
+})
+
 # ---------------------------------------------------------------------------
 # 4. Input validation
 # ---------------------------------------------------------------------------

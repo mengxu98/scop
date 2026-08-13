@@ -28,7 +28,9 @@
 #' stacks. Cell2fate is prepared in a standalone `"cell2fate_env"` with Python
 #' 3.9. `"scenic"` is also excluded from the default environment and is prepared
 #' in `"scenic_env"` by default because SCENIC requires an older Python/numpy
-#' stack. On Windows, the
+#' stack. `"scmalignantfinder"` is prepared in a standalone
+#' `"scmalignantfinder_env"` because its upstream package pins an older
+#' scanpy/anndata stack. On Windows, the
 #' default also excludes `"scvi"`, `"glue"`, and `"multimap"` because those
 #' upstream stacks are more reliable when requested explicitly for
 #' method-specific workflows.
@@ -111,6 +113,27 @@ PrepareEnv <- function(
         message_type = "warning"
       )
       version <- "3.9-1"
+    }
+  }
+  if ("scmalignantfinder" %in% modules) {
+    scmalignantfinder_allowed <- c(
+      "scmalignantfinder", "scanpy", "secact", "scpagwas", "choir"
+    )
+    if (length(setdiff(modules, scmalignantfinder_allowed)) > 0) {
+      log_message(
+        "{.arg modules = 'scmalignantfinder'} must be prepared as a standalone Python environment.",
+        message_type = "error"
+      )
+    }
+    if (is.null(envname)) {
+      envname <- "scmalignantfinder_env"
+    }
+    if (!identical(version, "3.10-1")) {
+      log_message(
+        "{.pkg scMalignantFinder} requires its upstream Python 3.10 dependency stack; using {.val 3.10-1} in {.val {envname}}.",
+        message_type = "warning"
+      )
+      version <- "3.10-1"
     }
   }
   envname <- get_envname(envname)
@@ -1048,6 +1071,14 @@ python_runtime_restart_hint <- function(envname = "scop_env", modules = NULL) {
   if ("scenic" %in% modules) {
     return(scenic_runtime_restart_hint(envname = envname))
   }
+  if ("scmalignantfinder" %in% modules) {
+    return(paste0(
+      "Restart R, then run ",
+      "PrepareEnv(envname = \"", envname,
+      "\", modules = \"scmalignantfinder\") ",
+      "before RunscMalignantFinder()."
+    ))
+  }
   if ("cellphonedb" %in% modules) {
     return(paste0(
       "Restart R, then run ",
@@ -1555,14 +1586,29 @@ env_requirements <- function(
     }
     version <- "3.9-1"
   }
-  if (identical(version, "3.9-1") && !"cell2fate" %in% modules) {
+  if ("scmalignantfinder" %in% modules) {
+    scmalignantfinder_allowed <- c(
+      "scmalignantfinder", "scanpy", "secact", "scpagwas", "choir"
+    )
+    if (length(setdiff(modules, scmalignantfinder_allowed)) > 0) {
+      log_message(
+        "{.arg modules = 'scmalignantfinder'} must be used as a standalone Python environment module.",
+        message_type = "error"
+      )
+    }
+    version <- "3.10-1"
+  }
+  if (identical(version, "3.9-1") &&
+      !any(c("cell2fate", "scmalignantfinder") %in% modules)) {
     log_message(
       "{.arg version = '3.9-1'} is only supported for the standalone {.val cell2fate} module.",
       message_type = "error"
     )
   }
 
-  base_requirements <- if (any(c("scenic", "cell2fate") %in% modules)) {
+  base_requirements <- if ("scmalignantfinder" %in% modules) {
+    scmalignantfinder_core_python_requirements()
+  } else if (any(c("scenic", "cell2fate") %in% modules)) {
     scenic_core_python_requirements()
   } else {
     core_python_requirements()
@@ -1574,6 +1620,9 @@ env_requirements <- function(
   module_requirements <- env_module_requirements()
 
   for (module in modules) {
+    if ("scmalignantfinder" %in% modules && identical(module, "scanpy")) {
+      next
+    }
     req_i <- module_requirements[[module]]
     if (is.null(req_i)) {
       next
@@ -1676,6 +1725,22 @@ scenic_core_python_requirements <- function() {
   )
 }
 
+scmalignantfinder_core_python_requirements <- function() {
+  list(
+    packages = c(
+      "setuptools" = "setuptools<81",
+      "numpy" = "numpy==1.26.4",
+      "pyarrow" = "pyarrow==14.0.2"
+    ),
+    install_methods = c(
+      "setuptools" = "pip",
+      "numpy" = "pip",
+      "pyarrow" = "pip"
+    ),
+    package_aliases = list()
+  )
+}
+
 scenic_backend_package <- function() {
   paste0("py", "scenic")
 }
@@ -1716,10 +1781,20 @@ scvi_python_requirements <- function() {
 cell2location_python_requirements <- function() {
   list(
     packages = c(
-      "cell2location" = "cell2location==0.1.5"
+      "cell2location" = "cell2location==0.1.5",
+      "flax" = "flax==0.10.4",
+      "optax" = "optax==0.2.5",
+      "orbax-checkpoint" = "orbax-checkpoint==0.8.0",
+      "tensorstore" = "tensorstore==0.1.65",
+      "hdf5" = "hdf5==2.1.0"
     ),
     install_methods = c(
-      "cell2location" = "pip"
+      "cell2location" = "pip",
+      "flax" = "pip",
+      "optax" = "pip",
+      "orbax-checkpoint" = "pip",
+      "tensorstore" = "pip",
+      "hdf5" = "conda"
     ),
     package_aliases = list()
   )
@@ -1937,12 +2012,13 @@ seacells_python_requirements <- function() {
 
 scmalignantfinder_python_requirements <- function() {
   packages <- c(
-    "scMalignantFinder" = "git+https://github.com/Jonyyqn/scMalignantFinder.git",
-    "xgboost" = "xgboost"
+    "scMalignantFinder" = paste0(
+      "git+https://github.com/Jonyyqn/scMalignantFinder.git@",
+      "6ed094279c7adbbca30f2c73245fc074894d3715"
+    )
   )
   install_methods <- c(
-    "scMalignantFinder" = "pip",
-    "xgboost" = "pip"
+    "scMalignantFinder" = "pip"
   )
   if (is_osx()) {
     packages <- c(packages, "libcxx" = "libcxx")

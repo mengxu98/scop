@@ -25,6 +25,12 @@
 #' @param tol Tolerance used in the binary search for the target perplexity.
 #' Default is `1e-5`.
 #' @param max_iter Maximum number of binary-search iterations. Default is `50`.
+#' @param knn_algorithm Exact nearest-neighbor strategy passed to
+#' [thisutils::compute_lisi()]. Default is `"auto"`.
+#' @param cores Number of LISI C++ worker threads. `NULL` (the default) lets
+#' [thisutils::compute_lisi()] select the available hardware threads.
+#' @param max_dense_bytes Maximum estimated bytes allowed for LISI's dense
+#' input and C++ copy. Default is `Inf`, which preserves unrestricted behavior.
 #' @param overwrite Whether to overwrite existing metadata columns. Default is `TRUE`.
 #'
 #' @return A modified `Seurat` object.
@@ -69,6 +75,9 @@ RunLISI <- function(
   perplexity = 30,
   tol = 1e-5,
   max_iter = 50,
+  knn_algorithm = c("auto", "brute_force", "clustered"),
+  cores = NULL,
+  max_dense_bytes = Inf,
   overwrite = TRUE,
   verbose = TRUE
 ) {
@@ -106,6 +115,32 @@ RunLISI <- function(
       message_type = "error"
     )
   }
+  knn_algorithm <- match.arg(knn_algorithm)
+  if (
+    !is.null(cores) && (
+      length(cores) != 1L || !is.numeric(cores) ||
+        is.na(cores) || !is.finite(cores) || cores < 1 ||
+        cores > .Machine$integer.max || cores != floor(cores)
+    )
+  ) {
+    log_message(
+      "{.arg cores} must be NULL or a single positive integer",
+      message_type = "error"
+    )
+  }
+  if (!is.null(cores)) {
+    cores <- as.integer(cores)
+  }
+  if (
+    length(max_dense_bytes) != 1L || !is.numeric(max_dense_bytes) ||
+      is.na(max_dense_bytes) || max_dense_bytes < 0 ||
+      (!is.finite(max_dense_bytes) && !identical(max_dense_bytes, Inf))
+  ) {
+    log_message(
+      "{.arg max_dense_bytes} must be a single non-negative number or {.val Inf}",
+      message_type = "error"
+    )
+  }
   if (is.null(prefix)) {
     prefix <- reductions
   }
@@ -128,6 +163,7 @@ RunLISI <- function(
   lisi_df_all <- list()
   lisi_cols_all <- character(0)
   dims_all <- list()
+  estimated_dense_bytes_all <- list()
   for (i in seq_along(reductions)) {
     reduction_i <- reductions[[i]]
     prefix_i <- prefix[[i]] %||% reduction_i
@@ -164,13 +200,25 @@ RunLISI <- function(
       "Compute {.pkg LISI} scores from reduction {.val {reduction_i}}",
       verbose = verbose
     )
+    embedding_i <- emb[, dims_i, drop = FALSE]
+    estimated_dense_bytes <-
+      as.double(nrow(embedding_i)) * as.double(ncol(embedding_i)) * 8 * 2
+    if (estimated_dense_bytes > max_dense_bytes) {
+      log_message(
+        "Estimated dense {.pkg LISI} input and copy require {.val {format(estimated_dense_bytes, scientific = FALSE)}} bytes, which exceeds {.arg max_dense_bytes} ({.val {format(max_dense_bytes, scientific = FALSE)}} bytes)",
+        message_type = "error"
+      )
+    }
     lisi_df <- thisutils::compute_lisi(
-      X = emb[, dims_i, drop = FALSE],
+      X = embedding_i,
       meta_data = srt@meta.data,
       label_colnames = label_colnames,
       perplexity = perplexity,
       tol = tol,
-      max_iter = max_iter
+      max_iter = max_iter,
+      knn_algorithm = knn_algorithm,
+      n_threads = cores,
+      max_dense_bytes = max_dense_bytes
     )
     colnames(lisi_df) <- lisi_cols
     lisi_df <- lisi_df[colnames(srt), , drop = FALSE]
@@ -179,6 +227,7 @@ RunLISI <- function(
     lisi_df_all[[reduction_i]] <- lisi_df
     lisi_cols_all <- c(lisi_cols_all, lisi_cols)
     dims_all[[reduction_i]] <- dims_i
+    estimated_dense_bytes_all[[reduction_i]] <- estimated_dense_bytes
   }
 
   lisi_scores <- do.call(cbind, lisi_df_all)
@@ -191,7 +240,11 @@ RunLISI <- function(
     colnames = lisi_cols_all,
     perplexity = perplexity,
     tol = tol,
-    max_iter = max_iter
+    max_iter = max_iter,
+    knn_algorithm = knn_algorithm,
+    cores = cores,
+    max_dense_bytes = max_dense_bytes,
+    estimated_dense_bytes = estimated_dense_bytes_all
   )
 
   log_message(

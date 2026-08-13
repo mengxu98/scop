@@ -67,6 +67,25 @@ test_that("RunCIBERSORT defaults to the native cpp backend", {
   expect_false(out$details$package_backend)
 })
 
+test_that("RunCIBERSORT cpp backend preserves numeric sample names", {
+  dat <- make_cibersort_mock(seed = 111)
+  colnames(dat$mixture) <- as.character(seq_len(ncol(dat$mixture)))
+  out <- RunCIBERSORT(
+    count_matrix = dat$mixture,
+    sig_matrix = dat$signature,
+    backend = "cpp",
+    perm = 0,
+    QN = FALSE,
+    verbose = FALSE
+  )
+
+  expect_equal(out$status, "success")
+  expect_identical(
+    rownames(out$details$proportion_matrix),
+    colnames(dat$mixture)
+  )
+})
+
 test_that("RunDeconvolution selects cpp for CIBERSORT by default", {
   skip_if_not_installed("SummarizedExperiment")
   dat <- make_cibersort_mock(seed = 12)
@@ -114,7 +133,8 @@ test_that("RunCIBERSORT r backend installs Moonerss/CIBERSORT with check_r", {
         fit[["RMSE"]] <- 0
         fit
       }
-    }
+    },
+    .package = "scop"
   )
 
   out <- RunCIBERSORT(
@@ -129,6 +149,44 @@ test_that("RunCIBERSORT r backend installs Moonerss/CIBERSORT with check_r", {
   expect_length(calls, 1L)
   expect_identical(calls[[1]]$packages, "Moonerss/CIBERSORT")
   expect_false(calls[[1]]$verbose)
+})
+
+test_that("RunCIBERSORT restores numeric sample names from unnamed backend output", {
+  dat <- make_cibersort_mock(seed = 130)
+  colnames(dat$mixture) <- as.character(seq_len(ncol(dat$mixture)))
+  testthat::local_mocked_bindings(
+    check_r = function(...) TRUE,
+    get_namespace_fun = function(pkg, fun) {
+      function(sig_matrix, mixture_file, ...) {
+        fit <- as.data.frame(matrix(
+          1 / ncol(sig_matrix),
+          nrow = ncol(mixture_file),
+          ncol = ncol(sig_matrix),
+          dimnames = list(NULL, colnames(sig_matrix))
+        ))
+        fit[["P-value"]] <- 0
+        fit[["Correlation"]] <- 1
+        fit[["RMSE"]] <- 0
+        fit
+      }
+    },
+    .package = "scop"
+  )
+
+  out <- RunCIBERSORT(
+    count_matrix = dat$mixture,
+    sig_matrix = dat$signature,
+    backend = "r",
+    perm = 0,
+    QN = FALSE,
+    verbose = FALSE
+  )
+
+  expect_equal(out$status, "success")
+  expect_identical(
+    rownames(out$details$proportion_matrix),
+    colnames(dat$mixture)
+  )
 })
 
 test_that("RunCIBERSORT cpp backend supports permutations and quantile normalization", {
@@ -197,12 +255,17 @@ test_that("RunCIBERSORT cpp backend stores SummarizedExperiment metadata", {
 })
 
 test_that("RunBayesPrism accepts sample.by from RunDeconvolution dispatch", {
-  expect_true("sample.by" %in% names(formals(RunBayesPrism)))
+  run_bayesprism <- get("RunBayesPrism", envir = asNamespace("scop"))
+  expect_true("sample.by" %in% names(formals(run_bayesprism)))
 })
 
 test_that("RunCIBERSORT cpp backend matches the R backend on small deterministic data", {
   skip_if_not_installed("CIBERSORT")
   dat <- make_cibersort_mock(seed = 4)
+  previous_future_plan <- future::plan()
+  withr::defer(future::plan(previous_future_plan))
+  future::plan(future::sequential)
+  withr::local_options(future.globals.maxSize = 123456)
   old <- suppressWarnings(RunCIBERSORT(
     count_matrix = dat$mixture,
     sig_matrix = dat$signature,
@@ -211,6 +274,8 @@ test_that("RunCIBERSORT cpp backend matches the R backend on small deterministic
     QN = FALSE,
     verbose = FALSE
   ))
+  expect_s3_class(future::plan(), "sequential")
+  expect_identical(getOption("future.globals.maxSize"), 123456)
   new <- RunCIBERSORT(
     count_matrix = dat$mixture,
     sig_matrix = dat$signature,

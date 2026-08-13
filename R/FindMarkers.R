@@ -187,27 +187,75 @@ FindMarkers.Seurat <- function(
   ...
 ) {
   dots <- list(...)
+  cells.1 <- dots[["cells.1"]]
+  cells.2 <- dots[["cells.2"]]
   run_seurat <- function() {
+    object.use <- object
+    ident.1.use <- ident.1
+    ident.2.use <- ident.2
+    dots.use <- dots
+    if (!is.null(dots.use[["layer"]])) {
+      dots.use[["slot"]] <- dots.use[["layer"]]
+      dots.use[["layer"]] <- NULL
+    }
+    dots.use[["norm.method"]] <- NULL
+    if (
+      is.null(ident.1.use) &&
+        !is.null(cells.1) &&
+        (is.null(group.by) || identical(group.by, "ident")) &&
+        is.null(subset.ident)
+    ) {
+      cellnames.use <- if (is.null(reduction)) {
+        assay.use <- assay %||% SeuratObject::DefaultAssay(object.use)
+        colnames(object.use[[assay.use]])
+      } else {
+        rownames(object.use[[reduction]])
+      }
+      cells.1.use <- as.character(cells.1)
+      cells.2.use <- if (is.null(cells.2)) {
+        setdiff(cellnames.use, cells.1.use)
+      } else {
+        as.character(cells.2)
+      }
+      if (
+        !all(cells.1.use %in% cellnames.use) ||
+          !all(cells.2.use %in% cellnames.use)
+      ) {
+        stop("Cells in one or both requested groups are not present in the selected data.", call. = FALSE)
+      }
+      if (length(intersect(cells.1.use, cells.2.use)) > 0L) {
+        stop("The requested cell groups must not overlap.", call. = FALSE)
+      }
+      temporary_idents <- stats::setNames(
+        rep(".scop_other", ncol(object.use)),
+        colnames(object.use)
+      )
+      temporary_idents[cells.1.use] <- ".scop_group1"
+      temporary_idents[cells.2.use] <- ".scop_group2"
+      SeuratObject::Idents(object.use) <- temporary_idents
+      ident.1.use <- ".scop_group1"
+      ident.2.use <- ".scop_group2"
+      dots.use[["cells.1"]] <- NULL
+      dots.use[["cells.2"]] <- NULL
+    }
     do.call(
       get_namespace_fun("Seurat", "FindMarkers.Seurat"),
       c(
         list(
-          object = object,
-          ident.1 = ident.1,
-          ident.2 = ident.2,
+          object = object.use,
+          ident.1 = ident.1.use,
+          ident.2 = ident.2.use,
           latent.vars = latent.vars,
           group.by = group.by,
           subset.ident = subset.ident,
           assay = assay,
           reduction = reduction
         ),
-        dots
+        dots.use
       )
     )
   }
 
-  cells.1 <- dots[["cells.1"]]
-  cells.2 <- dots[["cells.2"]]
   features <- dots[["features"]]
   test.use <- dots[["test.use"]] %||% "wilcox"
   layer <- dots[["layer"]] %||% dots[["slot"]] %||% "data"
@@ -247,7 +295,8 @@ FindMarkers.Seurat <- function(
     pseudocount = pseudocount.use
   )
   if (
-    !marker_pair_supported(
+    marker_assay_is_chromatin(object, assay) ||
+      !marker_pair_supported(
       opts = opts,
       ident.1 = ident.1,
       cells.1 = cells.1,

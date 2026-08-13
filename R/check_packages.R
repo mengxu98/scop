@@ -40,7 +40,7 @@ check_python <- function(
   verbose = TRUE,
   ...
 ) {
-  packages <- unique(resolve_requested_python_packages(packages))
+  packages <- unique_python_requirements(packages)
   envname <- get_envname(envname)
   conda <- resolve_conda(conda)
   pip_options <- normalize_cli_args(pip_options)
@@ -165,6 +165,10 @@ exist_python_pkgs <- function(
   )
   pkg_name_mapping <- requirements$package_aliases
 
+  installed_package_names <- canonical_python_distribution_name(
+    all_installed$package
+  )
+
   for (i in seq_along(packages)) {
     pkg <- packages[i]
     requirement <- parse_python_requirement(pkg, fallback_name = names(pkg))
@@ -185,17 +189,13 @@ exist_python_pkgs <- function(
     }
 
     found_pkg_name <- NULL
-    if (length(check_pkg_names) > 1) {
-      for (chk_name in check_pkg_names) {
-        if (chk_name %in% all_installed$package) {
-          found_pkg_name <- chk_name
-          break
-        }
-      }
-    } else {
-      if (check_pkg_names %in% all_installed$package) {
-        found_pkg_name <- check_pkg_names
-      }
+    installed_index <- match(
+      canonical_python_distribution_name(check_pkg_names),
+      installed_package_names
+    )
+    installed_index <- installed_index[!is.na(installed_index)]
+    if (length(installed_index) > 0L) {
+      found_pkg_name <- all_installed$package[[installed_index[[1L]]]]
     }
 
     if (!is.null(found_pkg_name)) {
@@ -248,6 +248,15 @@ exist_python_pkgs <- function(
   return(packages_installed)
 }
 
+canonical_python_distribution_name <- function(name) {
+  tolower(gsub("[-_.]+", "-", trimws(as.character(name))))
+}
+
+unique_python_requirements <- function(packages) {
+  packages <- resolve_requested_python_packages(packages)
+  packages[!duplicated(unname(packages))]
+}
+
 resolve_requested_python_packages <- function(packages) {
   requirements <- env_requirements(
     include_optional = TRUE
@@ -274,6 +283,10 @@ resolve_requested_python_packages <- function(packages) {
 }
 
 parse_python_requirement <- function(pkg, fallback_name = NULL) {
+  requirement_name <- function(name) {
+    sub("\\[.*\\]$", "", trimws(as.character(name)))
+  }
+
   if (grepl("^git\\+", pkg)) {
     pkg_name <- fallback_name %||%
       basename(strsplit(pkg, "@", fixed = TRUE)[[1]][1])
@@ -289,14 +302,14 @@ parse_python_requirement <- function(pkg, fallback_name = NULL) {
   parts <- regmatches(pkg, match)[[1]]
   if (length(parts) == 4) {
     return(list(
-      name = fallback_name %||% trimws(parts[2]),
+      name = fallback_name %||% requirement_name(parts[2]),
       operator = trimws(parts[3]),
       version = trimws(parts[4])
     ))
   }
 
   list(
-    name = fallback_name %||% pkg,
+    name = fallback_name %||% requirement_name(pkg),
     operator = NA_character_,
     version = NA_character_
   )

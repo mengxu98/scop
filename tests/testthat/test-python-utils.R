@@ -77,3 +77,38 @@ test_that("runner log tails stay bounded and retain the final lines", {
   expect_identical(tail_lines[[20L]], "final sentinel")
   expect_false(any(!nzchar(tail_lines)))
 })
+
+test_that("Python distribution matching follows canonical package names", {
+  canonical <- getFromNamespace("canonical_python_distribution_name", "scop")
+  expect_identical(
+    canonical(c("scCODA", "tf_keras", "scvi.tools", "python-igraph")),
+    c("sccoda", "tf-keras", "scvi-tools", "python-igraph")
+  )
+})
+
+test_that("Python requirements preserve names while removing duplicates", {
+  unique_requirements <- getFromNamespace("unique_python_requirements", "scop")
+  packages <- c(
+    jax = "jax[cpu]==0.4.38",
+    scanpy = "scanpy==1.11.3",
+    jax_duplicate = "jax[cpu]==0.4.38"
+  )
+
+  expect_identical(
+    unique_requirements(packages),
+    c(jax = "jax[cpu]==0.4.38", scanpy = "scanpy==1.11.3")
+  )
+})
+
+test_that("Python requirement parsing treats extras as distribution metadata", {
+  parse <- getFromNamespace("parse_python_requirement", "scop")
+
+  expect_identical(
+    parse("jax[cpu]==0.4.38"),
+    list(name = "jax", operator = "==", version = "0.4.38")
+  )
+  expect_identical(
+    parse("requests[socks]"),
+    list(name = "requests", operator = NA_character_, version = NA_character_)
+  )
+})

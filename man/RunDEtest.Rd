@@ -182,7 +182,8 @@ of the two groups, currently only used for poisson and negative binomial tests}
 \item{min.cells.group}{Minimum number of cells in one of the groups}
 
 \item{norm.method}{Normalization method for fold change calculation when layer is 'data'.
-Default is \code{"LogNormalize"}.}
+For a raw \code{ChromatinAssay}, \code{RunDEtest()} first applies
+\code{\link[Signac:RunTFIDF]{Signac::RunTFIDF()}}; other assays default to \code{"LogNormalize"}.}
 
 \item{sample_col}{Metadata column storing biological sample IDs.
 Required when \code{test.use} is a sample-level pseudobulk method on \code{Seurat}.}

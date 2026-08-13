@@ -74,7 +74,7 @@
   * `AnnotateFeatures()`: Replaced per-detail `sapply(… "[")` with type-stable `vapply(…, character(1))` to avoid implicit list-to-character coercion.
   * `run_scomm()`: Deferred dense conversion for reference and query subsetting by removing premature `as.matrix()` calls; sparse matrices are subset first, then densified only when required.
   * `RunUMAP2()`: Replaced `isSymmetric(as.matrix(graph))` with sparse-aware `Matrix::isSymmetric(graph)` in symmetry checks and graph subset sampling, avoiding dense materialization of large neighbor graphs.
-  * `RunUMAP2()`: Replaced `apply(as.matrix(graph), 2, order)` in the uwot-predict path with the internal C++ sparse column top-k helper (`run_sparse_topk_by_column()`), avoiding full dense conversion and column-wise R-level `apply()`.
+  * `RunUMAP2()`: Replaced `apply(as.matrix(graph), 2, order)` in the uwot-predict path with `thisutils::run_sparse_topk_stored(by = "col")`, avoiding full dense conversion and column-wise R-level `apply()` while retaining graph-edge semantics.
   * `RunDimsReduction()` (PCA centering): Uses `SeuratObject::LayerData(…, features = features)` to read only HVF rows from `scale.data` instead of loading the full matrix followed by manual subsetting.
   * `RunMDS()`: Removed `as.matrix()` before `Matrix::t()`; `proxyC::dist` now receives the sparse matrix directly, avoiding dense conversion of large count matrices.
   * `integration.R` (fastMNN): Removed three `as.matrix()` calls passed to `batchelor::fastMNN()`, which accepts sparse matrices directly via `SingleCellExperiment`.

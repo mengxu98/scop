@@ -52,7 +52,8 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
   )
   wrapped_weights <- as.matrix(wrapped@tools$RCTD$weights)
 
-  # original pipeline with the same inputs
+  # original pipeline with the same inputs; spacexr exposes two generations of
+  # API (Bioc 1.4.0: createRctd/runRctd, GitHub 2.x: SpatialRNA/create.RCTD)
   labels <- scop:::resolve_reference_labels(reference, "CellType")
   names(labels) <- colnames(reference)
   labels <- labels[!is.na(labels) & nzchar(as.character(labels))]
@@ -76,15 +77,40 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
   ref_numi <- cq$ref_numi
   names(ref_numi) <- colnames(rf)
 
-  puck <- spacexr::SpatialRNA(coords, st, st_numi)
-  ref <- spacexr::Reference(rf, label_map$labels, ref_numi)
-  rctd <- spacexr::create.RCTD(puck, ref, max_cores = 1)
-  rctd <- spacexr::run.RCTD(rctd, doublet_mode = "multi")
-  cell_types <- rctd@cell_type_info$renorm[[2]]
-  original <- do.call(rbind, lapply(rctd@results, function(x) x$all_weights))
-  rownames(original) <- colnames(rctd@spatialRNA@counts)
-  colnames(original) <- cell_types
-  original <- spacexr::normalize_weights(original)
+  exports <- getNamespaceExports("spacexr")
+  if (all(c("createRctd", "runRctd") %in% exports)) {
+    testthat::skip_if_not_installed("SpatialExperiment")
+    spatial_spe <- SpatialExperiment::SpatialExperiment(
+      assays = list(counts = st),
+      colData = S4Vectors::DataFrame(nUMI = st_numi, row.names = colnames(st)),
+      spatialCoords = as.matrix(coords)
+    )
+    reference_se <- SummarizedExperiment::SummarizedExperiment(
+      assays = list(counts = rf),
+      colData = S4Vectors::DataFrame(
+        cell_type = label_map$labels,
+        nUMI = ref_numi,
+        row.names = colnames(rf)
+      )
+    )
+    rctd_data <- spacexr::createRctd(spatial_spe, reference_se, cell_type_col = "cell_type")
+    rctd_result <- spacexr::runRctd(rctd_data, rctd_mode = "multi", max_cores = 1)
+    original <- as.matrix(SummarizedExperiment::assay(rctd_result, "weights"))
+    # the new API stores cell types as rows and spots as columns
+    if (sum(colnames(original) %in% colnames(st)) > sum(rownames(original) %in% colnames(st))) {
+      original <- t(original)
+    }
+  } else {
+    puck <- spacexr::SpatialRNA(coords, st, st_numi)
+    ref <- spacexr::Reference(rf, label_map$labels, ref_numi)
+    rctd <- spacexr::create.RCTD(puck, ref, max_cores = 1)
+    rctd <- spacexr::run.RCTD(rctd, doublet_mode = "multi")
+    cell_types <- rctd@cell_type_info$renorm[[2]]
+    original <- do.call(rbind, lapply(rctd@results, function(x) x$all_weights))
+    rownames(original) <- colnames(rctd@spatialRNA@counts)
+    colnames(original) <- cell_types
+    original <- spacexr::normalize_weights(original)
+  }
 
   display_map <- label_map$cell_types
   names(display_map) <- label_map$backend
@@ -172,6 +198,9 @@ test_that("RunCARD(CARDspa) proportions match the original CARDspa pipeline", {
   genes_use <- intersect(rownames(srt), rownames(reference))
   srt <- srt[genes_use, ]
 
+  # CARD's deconvolution draws random initial values; pin the RNG so the
+  # wrapped and original runs see identical random draws
+  set.seed(42)
   wrapped <- RunCARD(
     srt,
     reference = reference,
@@ -232,6 +261,7 @@ test_that("RunCARD(CARDspa) proportions match the original CARDspa pipeline", {
     colnames(informative_counts)[Matrix::colSums(informative_counts) > 0])
   CARDspa_obj@spatial_countMat <- st_counts[, supported, drop = FALSE]
   deconv_fun <- get("CARD_deconvolution", asNamespace("CARDspa"))
+  set.seed(42)
   original <- do.call(
     deconv_fun,
     getFromNamespace("card_match_formals", "scop")(

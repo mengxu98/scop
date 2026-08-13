@@ -386,13 +386,18 @@ meringue_run_autocorrelation <- function(
     identical(RNGkind()[3], "Rounding"),
     error = function(e) FALSE
   )
-  if (identical(backend, "cpp") && nperm <= 0L && nrow(expr) > 0L) {
+  if (identical(backend, "cpp") && nrow(expr) > 0L) {
     expr_mat <- as.matrix(expr[, rownames(weight), drop = FALSE])
+    if (nperm > 0L) {
+      set.seed(seed)
+    }
     batch <- meringue_moran_matrix_cpp(
       expr = expr_mat,
       weight = weight,
       alternative = alternative,
-      rounding_sample = rounding_sample
+      rounding_sample = rounding_sample,
+      n_perm = as.integer(nperm),
+      n_threads = as.integer(ncores)
     )
     rows <- lapply(seq_len(nrow(expr)), function(i) {
       feature <- rownames(expr)[[i]]
@@ -410,8 +415,14 @@ meringue_run_autocorrelation <- function(
       meringue_normalize_moran_result(out, feature = feature)
     })
     result <- do.call(rbind, rows)
-    result$p_value <- NA_real_
-    result$q_value <- NA_real_
+    if (nperm == 0L) {
+      result$p_value <- NA_real_
+    }
+    result$q_value <- if (all(is.na(result$p_value))) {
+      NA_real_
+    } else {
+      stats::p.adjust(result$p_value, method = "BH")
+    }
     result$score <- result$statistic
     result$mean <- rowMeans(expr[result$feature, , drop = FALSE])
     result$variance <- fast_row_vars(expr[result$feature, , drop = FALSE])

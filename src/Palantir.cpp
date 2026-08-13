@@ -431,11 +431,59 @@ List palantir_pseudotime_cpp(
     }
   }
   if (disconnected) {
-    thisutils::log_message(
-      "Palantir kNN graph is disconnected; increase knn or provide "
-      "a connected embedding",
-      "error"
-    );
+    // Match palantir python `core._connect_graph`: instead of rejecting the
+    // graph, bridge the disconnected components exactly like the Python
+    // reference. Python connects the farthest reachable cell (from the start
+    // cell) to its nearest unreachable cell in multiscale space, adding one
+    // Euclidean-distance edge per iteration and recomputing reachability.
+    // Tie-breaking follows cell index order, matching pandas first-max /
+    // first-min on the reindexed distance series. After bridging every
+    // waypoint reaches every cell, so the D matrix below is recomputed on the
+    // bridged graph for exact parity with the Python pseudotime.
+    std::vector<double> reach_dists;
+    dijkstra_graph(n, graph, start_cell, reach_dists);
+    while (true) {
+      bool any_unreachable = false;
+      int farthest_reachable = -1;
+      double farthest_d = -1.0;
+      for (int i = 0; i < n; ++i) {
+        if (!std::isfinite(reach_dists[i])) {
+          any_unreachable = true;
+          continue;
+        }
+        if (reach_dists[i] > farthest_d) {
+          farthest_d = reach_dists[i];
+          farthest_reachable = i;
+        }
+      }
+      if (!any_unreachable) break;
+      int nearest_unreachable = -1;
+      double nearest_sq = std::numeric_limits<double>::infinity();
+      for (int i = 0; i < n; ++i) {
+        if (std::isfinite(reach_dists[i])) continue;
+        double dd = 0.0;
+        for (int dim = 0; dim < d; ++dim) {
+          const double diff = ms_data(farthest_reachable, dim) - ms_data(i, dim);
+          dd += diff * diff;
+        }
+        if (dd < nearest_sq) {
+          nearest_sq = dd;
+          nearest_unreachable = i;
+        }
+      }
+      const double bridge_weight = std::sqrt(nearest_sq);
+      graph[farthest_reachable].push_back({nearest_unreachable, bridge_weight});
+      graph[nearest_unreachable].push_back({farthest_reachable, bridge_weight});
+      dijkstra_graph(n, graph, start_cell, reach_dists);
+    }
+    // Recompute the waypoint distance matrix on the bridged graph.
+    for (int s = 0; s < n_wp; ++s) {
+      std::vector<double> dists_v;
+      dijkstra_graph(n, graph, wp_offsets[s], dists_v);
+      for (int i = 0; i < n; ++i) {
+        D(s, i) = dists_v[i];
+      }
+    }
   }
 
   // Bandwidth for weight matrix

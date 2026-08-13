@@ -77,3 +77,88 @@ test_that("RunPHATE cpp backend stores a finite reduction", {
   expect_equal(SeuratObject::Misc(out[["phate_cpp"]], slot = "backend"), "cpp")
   expect_equal(SeuratObject::Misc(out[["phate_cpp"]], slot = "t"), 3L)
 })
+
+test_that("RunPHATE cpp backend projects cells from a bounded landmark graph", {
+  data("pancreas_sub", package = "scop")
+  srt <- suppressWarnings(RunStandardWorkflow(
+    pancreas_sub[, seq_len(80)],
+    verbose = FALSE
+  ))
+
+  out1 <- RunPHATE(
+    srt,
+    reduction = "Standardpca",
+    dims = 1:5,
+    backend = "cpp",
+    n_components = 2,
+    knn = 5,
+    n_landmark = 20,
+    t = 3,
+    mds = "classic",
+    reduction.name = "phate_landmark_1",
+    verbose = FALSE,
+    seed.use = 20260810
+  )
+  out2 <- RunPHATE(
+    srt,
+    reduction = "Standardpca",
+    dims = 1:5,
+    backend = "cpp",
+    n_components = 2,
+    knn = 5,
+    n_landmark = 20,
+    t = 3,
+    mds = "classic",
+    reduction.name = "phate_landmark_2",
+    verbose = FALSE,
+    seed.use = 20260810
+  )
+
+  embedding1 <- SeuratObject::Embeddings(out1[["phate_landmark_1"]])
+  embedding2 <- SeuratObject::Embeddings(out2[["phate_landmark_2"]])
+  expect_equal(dim(embedding1), c(80L, 2L))
+  expect_true(all(is.finite(embedding1)))
+  expect_equal(embedding1, embedding2, tolerance = 0)
+  expect_true(SeuratObject::Misc(out1[["phate_landmark_1"]], slot = "landmark"))
+  expect_equal(
+    SeuratObject::Misc(out1[["phate_landmark_1"]], slot = "n_landmarks"),
+    20L
+  )
+})
+
+test_that("RunPHATE cpp prevents a one-landmark degenerate embedding", {
+  skip_if_not_installed("BiocNeighbors")
+  data_use <- matrix(
+    c(
+      0, 0, 0,
+      1, 0, 0,
+      2, 1, 0,
+      3, 1, 1,
+      4, 2, 1,
+      5, 3, 2
+    ),
+    nrow = 6L,
+    byrow = TRUE,
+    dimnames = list(paste0("cell", seq_len(6L)), NULL)
+  )
+
+  set.seed(20260813)
+  reduction <- run_phate_cpp_reduction(
+    data_use,
+    assay = "RNA",
+    n_components = 1L,
+    knn = 2L,
+    n_landmark = 1L,
+    t = 2L,
+    n_pca = NULL
+  )
+  embedding <- SeuratObject::Embeddings(reduction)
+
+  expect_equal(dim(embedding), c(6L, 1L))
+  expect_true(all(is.finite(embedding)))
+  expect_gt(diff(range(embedding)), 0)
+  expect_identical(
+    SeuratObject::Misc(reduction, slot = "n_landmarks"),
+    2L
+  )
+})

@@ -44,6 +44,12 @@
 #' @param lisi_tol Tolerance used in the LISI binary search. Default is `1e-5`.
 #' @param lisi_max_iter Maximum iterations used in the LISI binary search.
 #' Default is `50`.
+#' @param lisi_knn_algorithm Exact nearest-neighbor strategy used by LISI.
+#' Default is `"auto"`.
+#' @param lisi_cores Number of LISI C++ worker threads. Default is `NULL`,
+#' which lets [thisutils::compute_lisi()] select the available hardware threads.
+#' @param lisi_max_dense_bytes Maximum estimated bytes allowed for LISI's dense
+#' input and C++ copy. Default is `Inf`.
 #' @param compute_metrics Whether to compute integration summary metrics on the
 #' selected reduction. Default is `FALSE`.
 #' @param metrics_batch_col Metadata column used for batch-mixing metrics.
@@ -239,6 +245,9 @@ RunIntegration <- function(
   lisi_perplexity = 30,
   lisi_tol = 1e-5,
   lisi_max_iter = 50,
+  lisi_knn_algorithm = c("auto", "brute_force", "clustered"),
+  lisi_cores = NULL,
+  lisi_max_dense_bytes = Inf,
   compute_metrics = FALSE,
   metrics_batch_col = NULL,
   metrics_celltype_col = NULL,
@@ -723,6 +732,9 @@ RunIntegration <- function(
       perplexity = lisi_perplexity,
       tol = lisi_tol,
       max_iter = lisi_max_iter,
+      knn_algorithm = lisi_knn_algorithm,
+      cores = lisi_cores,
+      max_dense_bytes = lisi_max_dense_bytes,
       verbose = verbose
     )
   }

@@ -128,6 +128,31 @@ test_that("RunUMAP2 crops requested dims to available embeddings", {
   expect_equal(ncol(Seurat::Embeddings(out, "crop_umap")), 2)
 })
 
+test_that("RunUMAP2 graph path handles fewer stored edges than requested", {
+  graph <- Matrix::sparseMatrix(
+    i = c(1, 2, 2, 3, 3, 4, 4, 5),
+    j = c(2, 1, 3, 2, 4, 3, 5, 4),
+    x = 1,
+    dims = c(5, 5),
+    dimnames = list(paste0("cell", 1:5), paste0("cell", 1:5))
+  )
+  graph <- methods::as(graph, "Graph")
+
+  out <- RunUMAP2(
+    graph,
+    assay = "RNA",
+    n.neighbors = 3,
+    n.components = 2,
+    n.epochs = 10,
+    seed.use = 41,
+    verbose = FALSE
+  )
+
+  expect_s4_class(out, "DimReduc")
+  expect_equal(dim(Seurat::Embeddings(out)), c(5, 2))
+  expect_false(anyNA(Seurat::Embeddings(out)))
+})
+
 test_that("CIBERSORT matrix validation handles sparse matrices once", {
   mat <- Matrix::Matrix(
     c(1, 0, 3, 4, 5, 6),

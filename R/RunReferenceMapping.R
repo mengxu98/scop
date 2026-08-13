@@ -228,11 +228,27 @@ RunReferenceMapping <- function(
   used_features <- features
   if (!is.null(reference_label)) {
     if (identical(label_method, "Seurat")) {
+      label_weight_reduction <- atac_weight_reduction(
+        srt = srt,
+        prefix = prefix,
+        weight_reduction = NULL,
+        verbose = verbose
+      )
+      label_dims_use <- intersect(
+        dims,
+        seq_len(ncol(Seurat::Embeddings(srt, reduction = label_weight_reduction)))
+      )
+      if (length(label_dims_use) == 0) {
+        log_message(
+          "No valid dimensions remain for the ATAC label-transfer weight reduction",
+          message_type = "error"
+        )
+      }
       srt <- atac_transfer_labels(
         srt = srt,
         assay = assay,
         prefix = prefix,
-        linear_reduction_dims_use = query_dims_use,
+        linear_reduction_dims_use = label_dims_use,
         reference = reference,
         reference_assay = reference_assay,
         reference_reduction = reference_reduction,
@@ -240,7 +256,7 @@ RunReferenceMapping <- function(
         reference_label = reference_label,
         add_gene_activity = FALSE,
         gene_activity_assay = gene_activity_assay,
-        weight_reduction = "ref.pca",
+        weight_reduction = label_weight_reduction,
         features = features,
         prediction_prefix = "predicted_",
         k.weight = k.weight_use,

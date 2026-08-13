@@ -245,14 +245,19 @@ ccc_resources_liana <- function() {
     stringsAsFactors = FALSE
   )
   available <- tryCatch(
-    check_r(c("saezlab/liana", "SingleCellExperiment"), verbose = FALSE),
+    check_r(
+      c("saezlab/liana", "SingleCellExperiment"),
+      install = FALSE,
+      verbose = FALSE
+    ),
     error = function(e) FALSE
   )
-  if (!isTRUE(unname(unlist(available))[1])) {
+  if (!all(unname(unlist(available)))) {
     return(empty)
   }
+  resource_path <- file.path(find.package("liana"), "omni_resources.rds")
   resources <- tryCatch(
-    unique(as.character(liana_get_fun("show_resources")())),
+    unique(as.character(names(readRDS(resource_path)))),
     error = function(e) character(0)
   )
   resources <- resources[!is.na(resources) & nzchar(resources)]
@@ -271,7 +276,7 @@ ccc_resources_liana <- function() {
 }
 
 ccc_resources_cellchat <- function() {
-  if (!requireNamespace("CellChat", quietly = TRUE)) {
+  if (!check_pkg_status("CellChat", lib = .libPaths())) {
     return(data.frame(
       db = "CellChat",
       resource = NA_character_,
@@ -301,7 +306,7 @@ ccc_resources_cellchat <- function() {
 }
 
 ccc_resources_nichenetr <- function() {
-  if (!requireNamespace("nichenetr", quietly = TRUE)) {
+  if (!check_pkg_status("nichenetr", lib = .libPaths())) {
     return(data.frame(
       db = "Nichenetr",
       resource = NA_character_,

@@ -397,21 +397,35 @@ test_that("palantir_pseudotime_cpp rejects invalid start_cell", {
   )
 })
 
-test_that("palantir_pseudotime_cpp rejects disconnected waypoint graphs", {
+test_that("palantir_pseudotime_cpp bridges disconnected waypoint graphs", {
   cluster_a <- cbind(seq(0, 0.05, length.out = 6), 0)
   cluster_b <- cbind(seq(10, 10.05, length.out = 6), 10)
   ms_data <- rbind(cluster_a, cluster_b)
 
-  expect_error(
-    palantir_pseudotime_cpp(
-      ms_data = ms_data,
-      start_cell = 0L,
-      waypoints = as.integer(c(1, 4, 7, 10)),
-      knn = 3L,
-      max_iterations = 5L
-    ),
-    "kNN graph is disconnected"
+  # k=3 leaves the two clusters disconnected; the python reference bridges the
+  # graph instead of failing, so the C++ backend must return a finite
+  # pseudotime covering every cell.
+  res <- palantir_pseudotime_cpp(
+    ms_data = ms_data,
+    start_cell = 0L,
+    waypoints = as.integer(c(1, 4, 7, 10)),
+    knn = 3L,
+    max_iterations = 5L
   )
+  expect_true(all(is.finite(res$pseudotime)))
+  expect_equal(length(res$pseudotime), nrow(ms_data))
+})
+
+test_that("Palantir Python wrapper normalizes singleton terminal cells", {
+  python_source <- readLines(
+    system.file("python", "functions.py", package = "scop"),
+    warn = FALSE
+  )
+  expect_true(any(grepl(
+    "terminal_cells = as_list(terminal_cells)",
+    python_source,
+    fixed = TRUE
+  )))
 })
 
 test_that("palantir_pseudotime_cpp is deterministic", {

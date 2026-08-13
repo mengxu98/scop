@@ -315,6 +315,109 @@ test_that("CellRank public C++ path records approximation and memory scope", {
   )
 })
 
+test_that("CellRank C++ pseudotime path preserves direction before connectivity mixing", {
+  skip_if_not_installed("BiocNeighbors")
+
+  srt <- make_cpp_backend_safety_object()
+  srt$dpt_pseudotime <- seq(0, 1, length.out = ncol(srt))
+  out <- RunCellRank(
+    srt = srt,
+    group.by = "group",
+    linear_reduction = "pca",
+    nonlinear_reduction = "umap",
+    kernel_type = "pseudotime",
+    n_neighbors = 5L,
+    backend = "cpp",
+    allow_approximate = TRUE,
+    show_plot = FALSE,
+    verbose = FALSE
+  )
+
+  expect_identical(
+    out@tools$CellRank$kernel,
+    "pseudotime_connectivity_combined"
+  )
+  expect_identical(out@tools$CellRank$parameters$n_macrostates, 3L)
+})
+
+test_that("CellRank hard pseudotime threshold retains a stochastic directed graph", {
+  hard_threshold <- getFromNamespace("cellrank_hard_threshold_kernel", "scop")
+  graph <- Matrix::sparseMatrix(
+    i = c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4),
+    j = c(2, 3, 4, 1, 3, 4, 1, 2, 4, 1, 2, 3),
+    x = c(3, 2, 1, 3, 2, 1, 2, 2, 1, 1, 1, 1),
+    dims = c(4, 4)
+  )
+  transition <- hard_threshold(
+    graph,
+    pseudotime = c(0, 0.25, 0.5, 1),
+    frac_to_keep = 0.3
+  )
+
+  expect_equal(as.numeric(Matrix::rowSums(transition)), rep(1, 4), tolerance = 1e-12)
+  expect_gt(transition[1, 2], 0)
+  expect_equal(sum(transition[4, 1:3]), 0)
+  expect_equal(transition[4, 4], 1)
+})
+
+test_that("CellRank connectivity kernel applies CellRank density normalization", {
+  density_normalize <- getFromNamespace(
+    "cellrank_density_normalize_connectivities",
+    "scop"
+  )
+  graph <- Matrix::sparseMatrix(
+    i = c(1, 1, 2, 2, 2, 3, 3, 4),
+    j = c(2, 3, 1, 3, 4, 1, 2, 2),
+    x = c(1, 2, 1, 3, 1, 2, 3, 1),
+    dims = c(4, 4)
+  )
+  density <- Matrix::colSums(graph)
+  inverse <- Matrix::Diagonal(x = 1 / density)
+  expected <- inverse %*% graph %*% inverse
+  expected <- Matrix::Diagonal(x = 1 / Matrix::rowSums(expected)) %*% expected
+  observed <- density_normalize(graph)
+
+  expect_equal(as.matrix(observed), as.matrix(expected), tolerance = 1e-12)
+  expect_equal(as.numeric(Matrix::rowSums(observed)), rep(1, 4), tolerance = 1e-12)
+})
+
+test_that("CellRank GPCCA solves cell-level absorption for every macrostate", {
+  transition <- matrix(0, 12, 12)
+  for (i in seq_len(12)) {
+    transition[i, i] <- 0.2
+    if (i > 1L) transition[i, i - 1L] <- transition[i, i - 1L] + 0.4
+    if (i < 12L) transition[i, i + 1L] <- transition[i, i + 1L] + 0.4
+    transition[i, ] <- transition[i, ] / sum(transition[i, ])
+  }
+  result <- cellrank_gpcca_cpp(
+    T_ = transition,
+    n_states = 3L,
+    n_cells_terminal = 1L
+  )
+
+  expect_equal(dim(result$absorption_probabilities), c(12L, 3L))
+  expect_equal(as.numeric(rowSums(result$absorption_probabilities)), rep(1, 12), tolerance = 1e-8)
+  expect_equal(sum(result$terminal_states != 0L), 3L)
+  expect_true(result$absorption_converged)
+  expect_true(result$absorption_method %in% c("sparse_lu", "fixed_point"))
+  expect_true(result$membership_method %in% c(
+    "optimized_inner_simplex",
+    "inner_simplex_optimization_limit",
+    "absolute_schur_fallback"
+  ))
+  expect_equal(as.numeric(rowSums(result$chi)), rep(1, 12), tolerance = 1e-8)
+  expect_true(all(result$chi >= 0))
+  if (!identical(result$membership_method, "absolute_schur_fallback")) {
+    expect_length(result$simplex_indices, 3L)
+    expect_true(all(result$simplex_indices >= 1L & result$simplex_indices <= 12L))
+    expect_lte(
+      result$membership_objective_final,
+      result$membership_objective_initial + 1e-12
+    )
+  }
+  expect_gt(length(unique(result$fate_confidence)), 3L)
+})
+
 test_that("CIBERSORT diagnostics are buffered instead of discarded", {
   source_path <- testthat::test_path("..", "..", "src", "cibersort_libsvm.cpp")
   testthat::skip_if_not(

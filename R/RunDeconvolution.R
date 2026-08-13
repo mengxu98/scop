@@ -1025,10 +1025,15 @@ run_cibersort_bundle <- function(
       ))
     }
 
-    parsed <- parse_cibersort_result(cbind(
+    fit_table <- cbind(
       as.data.frame(fit$proportion_matrix, check.names = FALSE),
       as.data.frame(fit$statistics, check.names = FALSE)
-    ))
+    )
+    fit_table <- cibersort_restore_sample_names(
+      fit_table,
+      sample_names = colnames(count_matrix)
+    )
+    parsed <- parse_cibersort_result(fit_table)
     return(list(
       status = "success",
       reason = NULL,
@@ -1068,6 +1073,12 @@ run_cibersort_bundle <- function(
     dots
   )
   call_args <- call_args[names(call_args) %in% names(formals(cibersort_fun))]
+  previous_future_plan <- future::plan()
+  previous_future_options <- options("future.globals.maxSize")
+  on.exit({
+    future::plan(previous_future_plan)
+    options(previous_future_options)
+  }, add = TRUE)
   fit <- tryCatch(
     do.call(cibersort_fun, call_args),
     error = function(e) e
@@ -1095,6 +1106,10 @@ run_cibersort_bundle <- function(
     ))
   }
 
+  fit <- cibersort_restore_sample_names(
+    fit,
+    sample_names = colnames(count_matrix)
+  )
   parsed <- parse_cibersort_result(fit)
   list(
     status = "success",
@@ -1219,15 +1234,40 @@ resolve_cibersort_signature <- function(sig_matrix = "LM22", verbose = TRUE) {
   )
 }
 
+cibersort_restore_sample_names <- function(fit, sample_names) {
+  df <- as.data.frame(fit, check.names = FALSE)
+  has_mixture_column <- "Mixture" %in% colnames(df)
+  row_names <- rownames(df)
+  default_row_names <- is.null(row_names) || identical(
+    row_names,
+    as.character(seq_len(nrow(df)))
+  )
+  if (
+    !has_mixture_column && default_row_names &&
+      length(sample_names) == nrow(df) && !anyNA(sample_names) &&
+      all(nzchar(sample_names)) && !anyDuplicated(sample_names)
+  ) {
+    # Keep the provenance explicit because valid sample names such as
+    # "1", "2", ... are otherwise indistinguishable from automatic
+    # data.frame row names in parse_cibersort_result().
+    df[["Mixture"]] <- as.character(sample_names)
+  }
+  df
+}
+
 parse_cibersort_result <- function(fit) {
   df <- as.data.frame(fit, check.names = FALSE)
-  if ("Mixture" %in% colnames(df)) {
+  has_mixture_column <- "Mixture" %in% colnames(df)
+  if (has_mixture_column) {
     rownames(df) <- as.character(df$Mixture)
     df$Mixture <- NULL
   }
+  default_row_names <- is.null(rownames(df)) || identical(
+    rownames(df),
+    as.character(seq_len(nrow(df)))
+  )
   if (
-    is.null(rownames(df)) ||
-      all(rownames(df) %in% as.character(seq_len(nrow(df))))
+    !has_mixture_column && default_row_names
   ) {
     log_message(
       "{.pkg CIBERSORT} results must contain sample names in rownames or a {.field Mixture} column.",

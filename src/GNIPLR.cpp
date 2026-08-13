@@ -49,8 +49,7 @@ arma::vec gniplr_project(
   const arma::uword n = regulator.n_elem;
   std::vector<arma::uword> order(n);
   for (arma::uword i = 0; i < n; ++i) order[i] = i;
-  std::sort(order.begin(), order.end(), [&](arma::uword a, arma::uword b) {
-    if (regulator[a] == regulator[b]) return target[a] < target[b];
+  std::stable_sort(order.begin(), order.end(), [&](arma::uword a, arma::uword b) {
     return regulator[a] < regulator[b];
   });
   arma::vec x(n), y(n), t(n);
@@ -136,8 +135,17 @@ double gniplr_granger_lag(const arma::vec& a, const arma::vec& b, int lag) {
 
 double gniplr_granger(const arma::vec& a, const arma::vec& b, int max_lag) {
   max_lag = std::max(1, std::min(3, max_lag));
-  arma::vec aa = (300.0 * a) / 90001.0;
-  arma::vec bb = (300.0 * b) / 90001.0;
+  std::vector<arma::uword> order(a.n_elem);
+  for (arma::uword i = 0; i < a.n_elem; ++i) order[i] = i;
+  std::stable_sort(order.begin(), order.end(), [&](arma::uword lhs, arma::uword rhs) {
+    return a[lhs] < a[rhs];
+  });
+  arma::vec aa(a.n_elem);
+  arma::vec bb(b.n_elem);
+  for (arma::uword i = 0; i < a.n_elem; ++i) {
+    aa[i] = (300.0 * a[order[i]]) / 90001.0;
+    bb[i] = (300.0 * b[order[i]]) / 90001.0;
+  }
   double best = 1.0;
   for (int lag = 1; lag <= max_lag; ++lag) {
     best = std::min(best, gniplr_granger_lag(aa, bb, lag));

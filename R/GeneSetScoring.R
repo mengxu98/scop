@@ -317,14 +317,15 @@ run_aucell_official_scores <- function(
   ...
 ) {
   check_r("AUCell", verbose = FALSE)
+  calc_auc <- get_namespace_fun("AUCell", "AUCell_calcAUC")
   tie_method <- match.arg(tie_method)
   expr_rank <- if (identical(tie_method, "first")) {
     expr_mat <- as_matrix(expr_counts)
-    rankings <- vapply(
-      seq_len(ncol(expr_mat)),
-      function(cell) as.integer(rank(-expr_mat[, cell], ties.method = "first")),
-      integer(nrow(expr_mat))
-    )
+    n_cells <- ncol(expr_mat)
+    rankings <- matrix(0L, nrow = nrow(expr_mat), ncol = n_cells)
+    for (cell in seq_len(n_cells)) {
+      rankings[, cell] <- as.integer(rank(-expr_mat[, cell], ties.method = "first"))
+    }
     dimnames(rankings) <- dimnames(expr_mat)
     methods::new(
       "aucellResults",
@@ -336,7 +337,7 @@ run_aucell_official_scores <- function(
       plotStats = FALSE
     )
   }
-  cells_auc <- AUCell::AUCell_calcAUC(
+  cells_auc <- calc_auc(
     geneSets = gene_sets,
     rankings = expr_rank,
     ...
@@ -531,13 +532,37 @@ run_gsva_scores <- function(
 ) {
   kcdf <- match.arg(kcdf)
   kernel <- match.arg(kernel)
+  sparse_input <- inherits(expr_counts, "sparseMatrix")
   if (identical(kernel, "auto")) {
-    kernel <- if (identical(kcdf, "Gaussian")) "native" else "delegated"
+    kernel <- if (
+      identical(kcdf, "Gaussian") &&
+        (isTRUE(sparse) || (is.null(sparse) && sparse_input))
+    ) {
+      "native"
+    } else {
+      "delegated"
+    }
   }
 
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
   keep_features <- Matrix::rowSums(expr_counts) > 0
   expr_counts <- expr_counts[keep_features, , drop = FALSE]
+  if (nrow(expr_counts) > 0L && inherits(expr_counts, "dgCMatrix")) {
+    nz_by_row <- split(
+      expr_counts@x,
+      factor(expr_counts@i, levels = seq_len(nrow(expr_counts)) - 1L)
+    )
+    nz_min <- vapply(nz_by_row, function(v) {
+      if (length(v)) min(v) else NA_real_
+    }, numeric(1))
+    nz_max <- vapply(nz_by_row, function(v) {
+      if (length(v)) max(v) else NA_real_
+    }, numeric(1))
+    constant_nz <- nz_min == nz_max & !is.na(nz_min)
+    if (any(constant_nz)) {
+      expr_counts <- expr_counts[!constant_nz, , drop = FALSE]
+    }
+  }
   gene_set_idx <- gene_set_scoring_indices(
     gene_sets = gene_sets,
     feature_names = rownames(expr_counts)

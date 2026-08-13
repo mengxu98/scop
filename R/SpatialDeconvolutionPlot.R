@@ -26,15 +26,18 @@
 #'
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' data(pancreas_sub)
-#' shared <- head(intersect(
-#'   rownames(visium_human_pancreas_sub),
-#'   rownames(pancreas_sub)
-#' ), 40)
+#' data(panc8_sub)
+#' spatial <- visium_human_pancreas_sub[, seq_len(20)]
+#' reference <- panc8_sub[, panc8_sub$celltype %in% c("ductal", "alpha", "beta")]
+#' reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
+#' shared <- intersect(
+#'   SeuratObject::VariableFeatures(reference),
+#'   rownames(spatial)
+#' )
 #' spatial <- RunSpatialDWLS(
-#'   visium_human_pancreas_sub[shared, 1:20],
-#'   reference = pancreas_sub,
-#'   reference_label = "CellType",
+#'   spatial[shared, ],
+#'   reference = reference,
+#'   reference_label = "celltype",
 #'   features = shared,
 #'   coord.cols = c("x", "y"),
 #'   normalize = FALSE,

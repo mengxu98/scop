@@ -44,6 +44,55 @@ test_that("GSVA cpp default keeps R backend consistency on small input", {
   expect_gte(rho, 0.95)
 })
 
+test_that("ssGSEA R backends support the current GSVA parameter API", {
+  skip_if_not_installed("GSVA")
+  skip_if_not_installed("Seurat")
+
+  set.seed(20260810)
+  counts <- Matrix::Matrix(
+    matrix(stats::rpois(60 * 12, lambda = 1), nrow = 60),
+    sparse = TRUE
+  )
+  rownames(counts) <- paste0("gene", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("cell", seq_len(ncol(counts)))
+  srt <- Seurat::NormalizeData(
+    Seurat::CreateSeuratObject(counts = counts),
+    verbose = FALSE
+  )
+  features <- list(
+    set_a = rownames(counts)[1:20],
+    set_b = rownames(counts)[21:45]
+  )
+
+  scored <- suppressWarnings(CellScoring(
+    srt,
+    features = features,
+    method = "ssGSEA",
+    backend = "r",
+    minGSSize = 1,
+    classification = FALSE,
+    name = "ssgsea_r",
+    verbose = FALSE
+  ))
+  expect_true(all(
+    paste0("ssgsea_r_", names(features)) %in% colnames(scored@meta.data)
+  ))
+
+  run <- suppressWarnings(RunGSVA(
+    srt,
+    features = features,
+    method = "ssgsea",
+    backend = "r",
+    minGSSize = 1,
+    new_assay = FALSE,
+    store_metadata = TRUE,
+    verbose = FALSE
+  ))
+  expect_true(all(
+    paste0("GSVA_", names(features)) %in% colnames(run@meta.data)
+  ))
+})
+
 test_that("CellScoring split cpp path avoids SplitObject and preserves grouped scores", {
   skip_if_not_installed("Seurat")
 

@@ -46,6 +46,20 @@ def _read_anndata(test_input):
     return test_input
 
 
+def _ensure_writable_anndata(test_input):
+    """Copy only AnnData inputs whose expression buffer is read-only."""
+    if isinstance(test_input, (str, os.PathLike)):
+        return test_input
+    matrix = getattr(test_input, "X", None)
+    values = getattr(matrix, "data", matrix)
+    flags = getattr(values, "flags", None)
+    if flags is None or bool(flags.writeable):
+        return test_input
+    copied = test_input.copy()
+    copied.X = copied.X.copy()
+    return copied
+
+
 def _load_smf_module(module_name):
     import importlib.util
     import sys
@@ -104,7 +118,7 @@ def run_scmalignantfinder(
     classifier = _load_smf_module("classifier")
 
     kwargs = {
-        "test_input": _expand_pathlike(test_input),
+        "test_input": _ensure_writable_anndata(_expand_pathlike(test_input)),
         "pretrain_dir": _expand_path(pretrain_dir),
         "train_h5ad_path": _expand_path(train_h5ad_path),
         "feature_path": _expand_path(feature_path),
