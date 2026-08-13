@@ -374,9 +374,10 @@ RunKNNMap <- function(
         use_nan = TRUE
       )
     }
-    knn_topk <- run_dense_topk_by_column(
+    knn_topk <- run_dense_topk(
       x = d,
       k = k,
+      by = "col",
       decreasing = FALSE
     )
     match_k <- knn_topk[["idx"]]

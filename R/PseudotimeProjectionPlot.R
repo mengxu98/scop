@@ -768,9 +768,10 @@ compute_pseudotime_on_gradient <- function(
         method = "euclidean",
         use_nan = TRUE
       )
-      neighbors_matrix <- run_dense_topk_by_column(
+      neighbors_matrix <- run_dense_topk(
         x = d,
         k = k_use + 1L,
+        by = "col",
         decreasing = FALSE
       )[["idx"]]
       neighbors_matrix <- neighbors_matrix[, seq_len(k_use) + 1L, drop = FALSE]
@@ -795,9 +796,10 @@ compute_pseudotime_on_gradient <- function(
       method = "euclidean",
       use_nan = TRUE
     )
-    neighbors_matrix <- run_dense_topk_by_column(
+    neighbors_matrix <- run_dense_topk(
       x = d,
       k = k_use + 1L,
+      by = "col",
       decreasing = FALSE
     )[["idx"]]
   }
