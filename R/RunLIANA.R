@@ -244,20 +244,16 @@ ccc_resources_liana <- function() {
     description = "Install saezlab/liana to inspect LIANA resources",
     stringsAsFactors = FALSE
   )
-  available <- tryCatch(
+  tryCatch(
     check_r(
       c("saezlab/liana", "SingleCellExperiment"),
       install = FALSE,
       verbose = FALSE
     ),
-    error = function(e) FALSE
+    error = function(e) NULL
   )
-  if (!all(unname(unlist(available)))) {
-    return(empty)
-  }
-  resource_path <- file.path(find.package("liana"), "omni_resources.rds")
   resources <- tryCatch(
-    unique(as.character(names(readRDS(resource_path)))),
+    unique(as.character(get_namespace_fun("liana", "show_resources")())),
     error = function(e) character(0)
   )
   resources <- resources[!is.na(resources) & nzchar(resources)]

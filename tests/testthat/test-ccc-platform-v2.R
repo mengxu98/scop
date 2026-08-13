@@ -37,29 +37,42 @@ test_that("RunLIANA keeps legacy positional arguments and accepts custom resourc
 })
 
 test_that("LIANA resources are discovered from the optional backend", {
-  liana_dir <- withr::local_tempdir()
-  saveRDS(
-    stats::setNames(
-      vector("list", 4L),
-      c("Consensus", "CellChatDB", "MouseConsensus", "OmniPath")
-    ),
-    file.path(liana_dir, "omni_resources.rds")
-  )
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
-    .package = "scop"
-  )
-  testthat::local_mocked_bindings(
-    find.package = function(package, ...) {
-      if (identical(package, "liana")) liana_dir else tempdir()
+    get_namespace_fun = function(package, fun) {
+      expect_equal(package, "liana")
+      expect_equal(fun, "show_resources")
+      function() c("Consensus", "CellChatDB", "MouseConsensus", "OmniPath")
     },
-    .package = "base"
+    .package = "scop"
   )
 
   resources <- scop::ListCCCDB(db = "LIANA")
   expect_equal(resources$Resource, c("Consensus", "CellChatDB", "MouseConsensus", "OmniPath"))
   expect_equal(resources$Species, c("human", "human", "mouse", "human"))
   expect_equal(resources$Status[resources$Resource == "OmniPath"], "available")
+})
+
+test_that("LIANA resource discovery follows the resolvable backend across libraries", {
+  check_called <- FALSE
+  testthat::local_mocked_bindings(
+    check_r = function(...) {
+      check_called <<- TRUE
+      invisible(list(liana = FALSE, SingleCellExperiment = FALSE))
+    },
+    get_namespace_fun = function(package, fun) {
+      expect_equal(package, "liana")
+      expect_equal(fun, "show_resources")
+      function() c("Consensus", "MouseConsensus")
+    },
+    .package = "scop"
+  )
+
+  resources <- scop::ListCCCDB(db = "LIANA")
+  expect_true(check_called)
+  expect_equal(resources$Resource, c("Consensus", "MouseConsensus"))
+  expect_equal(resources$Species, c("human", "mouse"))
+  expect_true(all(resources$Status == "available"))
 })
 
 test_that("RunLIANA stores official consensus and keeps legacy tables", {
