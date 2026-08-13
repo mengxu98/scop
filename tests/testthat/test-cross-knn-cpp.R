@@ -18,9 +18,10 @@ test_that("cross kNN matches the raw cosine and euclidean rankings", {
     } else {
       proxyC::dist(reference, query, method = metric, use_nan = TRUE)
     }
-    expected <- thisutils::run_dense_topk_by_column(
+    expected <- thisutils::run_dense_topk(
       as.matrix(raw_distance),
       k = 3L,
+      by = "col",
       decreasing = FALSE
     )
     actual <- cross_knn_f32(
@@ -61,7 +62,7 @@ test_that("native cross kNN supports exact Pearson and Spearman rankings", {
     } else {
       list(reference = reference, query = query)
     }
-    expected <- thisutils::run_dense_topk_by_column(
+    expected <- thisutils::run_dense_topk(
       1 - proxyC::simil(
         expected_input$reference,
         expected_input$query,
@@ -69,6 +70,7 @@ test_that("native cross kNN supports exact Pearson and Spearman rankings", {
         use_nan = TRUE
       ),
       k = 2L,
+      by = "col",
       decreasing = FALSE
     )
     actual <- knn_cross_topk_native(reference, query, 2L, metric)
@@ -116,9 +118,10 @@ test_that("cross kNN preserves raw tie ordering", {
     } else {
       proxyC::dist(reference, query, method = metric, use_nan = TRUE)
     }
-    expected <- thisutils::run_dense_topk_by_column(
+    expected <- thisutils::run_dense_topk(
       as.matrix(raw_distance),
       k = 4L,
+      by = "col",
       decreasing = FALSE
     )
     actual <- cross_knn_f32(reference, query, 4L, metric, cores = 2L)
