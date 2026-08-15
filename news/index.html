@@ -88,7 +88,7 @@
 <ul><li>Cell-cell communication:
 <ul><li>
 <code><a href="../reference/RunLIANA.html">RunLIANA()</a></code> now stores LIANA’s official multi-method consensus from <code>rank_aggregate()</code> or <code>liana_aggregate()</code> alongside the historical method-stacked and scop-postprocessed tables. Human and mouse defaults use the <code>Consensus</code> and <code>MouseConsensus</code> ligand-receptor resources, respectively, and multiple resources are aggregated independently.</li>
-<li>Added <code><a href="../reference/ListLIANAResources.html">ListLIANAResources()</a></code>, <code>ListCCCMethods()</code>, <code>CCCResultInfo()</code>, and <code>GetCCCResult()</code> for resource discovery and Seurat-centered CCC result access.</li>
+<li>Added <code>ListLIANAResources()</code>, <code>ListCCCMethods()</code>, <code>CCCResultInfo()</code>, and <code>GetCCCResult()</code> for resource discovery and Seurat-centered CCC result access.</li>
 <li>
 <code><a href="../reference/RunCCC.html">RunCCC()</a></code> now registers all seven SCOP CCC producers while retaining CellChat, CellPhoneDB, and LIANA as the default core run. Unified CCC plotting separates backends by default and provides explicit support-count and within-method percentile-rank views.</li>
 <li>Hardened unified CCC plotting and access semantics: context filters are applied before cross-method support/rank combinations, CellChat cached rows honor the requested significance threshold, LIANA resources remain separate during export, and unified retrieval preserves backend labels. <code>RunCCC(skip_failed = TRUE)</code> now records preflight failures without aborting otherwise runnable methods.</li>
@@ -108,7 +108,7 @@
 <li>
 <code><a href="../reference/RunUMAP2.html">RunUMAP2()</a></code>: Replaced <code>isSymmetric(as.matrix(graph))</code> with sparse-aware <code>Matrix::isSymmetric(graph)</code> in symmetry checks and graph subset sampling, avoiding dense materialization of large neighbor graphs.</li>
 <li>
-<code><a href="../reference/RunUMAP2.html">RunUMAP2()</a></code>: Replaced <code>apply(as.matrix(graph), 2, order)</code> in the uwot-predict path with the internal C++ sparse column top-k helper (<code>run_sparse_topk_by_column()</code>), avoiding full dense conversion and column-wise R-level <code><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply()</a></code>.</li>
+<code><a href="../reference/RunUMAP2.html">RunUMAP2()</a></code>: Replaced <code>apply(as.matrix(graph), 2, order)</code> in the uwot-predict path with <code>thisutils::run_sparse_topk_stored(by = "col")</code>, avoiding full dense conversion and column-wise R-level <code><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply()</a></code> while retaining graph-edge semantics.</li>
 <li>
 <code><a href="../reference/RunDimsReduction.html">RunDimsReduction()</a></code> (PCA centering): Uses <code>SeuratObject::LayerData(…, features = features)</code> to read only HVF rows from <code>scale.data</code> instead of loading the full matrix followed by manual subsetting.</li>
 <li>

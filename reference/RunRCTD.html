@@ -164,12 +164,12 @@ non-integer reference counts can run directly.</p></dd>
 
 <dt id="arg-create-rctd-params">create_rctd_params<a class="anchor" aria-label="anchor" href="#arg-create-rctd-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code><a href="https://rdrr.io/pkg/spacexr/man/createRCTD.html" class="external-link">spacexr::createRctd()</a></code> or <code>spacexr::create.RCTD()</code>.</p></dd>
+<code>spacexr::createRctd()</code> or <code><a href="https://rdrr.io/pkg/spacexr/man/create.RCTD.html" class="external-link">spacexr::create.RCTD()</a></code>.</p></dd>
 
 
 <dt id="arg-run-rctd-params">run_rctd_params<a class="anchor" aria-label="anchor" href="#arg-run-rctd-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code><a href="https://rdrr.io/pkg/spacexr/man/runRCTD.html" class="external-link">spacexr::runRctd()</a></code> or <code>spacexr::run.RCTD()</code>.</p></dd>
+<code>spacexr::runRctd()</code> or <code><a href="https://rdrr.io/pkg/spacexr/man/run.RCTD.html" class="external-link">spacexr::run.RCTD()</a></code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -234,13 +234,28 @@ are also stored in <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunRCTD-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">features_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span><span class="op">)</span>, <span class="fl">300</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">spatial</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">120</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
+<span class="r-in"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="va">panc8_sub</span><span class="op">[</span>, <span class="va">panc8_sub</span><span class="op">$</span><span class="va">celltype</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ductal"</span>, <span class="st">"alpha"</span>, <span class="st">"beta"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">reference</span>, nfeatures <span class="op">=</span> <span class="fl">300</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">features_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">reference</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunRCTD</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  srt <span class="op">=</span> <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>  reference <span class="op">=</span> <span class="va">pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  reference_label <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
+<span class="r-in"><span>  reference <span class="op">=</span> <span class="va">reference</span>,</span></span>
+<span class="r-in"><span>  reference_label <span class="op">=</span> <span class="st">"celltype"</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
 <span class="r-in"><span>  reference_assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
 <span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
@@ -248,13 +263,44 @@ are also stored in <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="va">features_use</span>,</span></span>
 <span class="r-in"><span>  rctd_mode <span class="op">=</span> <span class="st">"full"</span>,</span></span>
 <span class="r-in"><span>  max_cores <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  min_cells <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  prefix <span class="op">=</span> <span class="st">"RCTD"</span></span></span>
+<span class="r-in"><span>  min_cells <span class="op">=</span> <span class="fl">25</span>,</span></span>
+<span class="r-in"><span>  prefix <span class="op">=</span> <span class="st">"RCTD"</span>,</span></span>
+<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:36:04] Drop <span style="color: #0000BB;">593</span> reference cells with zero UMI</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:36:04] Drop <span style="color: #0000BB;">58</span> spatial spots with zero UMI for RCTD</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-07 01:36:04] Run <span style="color: #0000BB;">spacexr</span> RCTD with <span style="color: #0000BB;">4</span> features, <span style="color: #0000BB;">1928</span> spatial spots, and <span style="color: #0000BB;">407</span> reference cells</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_UMI(nUMI, "Reference", require_2d = TRUE, require_int = require_int,     min_UMI = min_UMI):</span> Reference: nUMI values are all less than min_UMI = 100. Please reduce the min_UMI parameter or ensure that cells have sufficient UMI counts.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Reference: some nUMI values are less than min_UMI = 100, and these cells will be removed. Optionally, you may lower the min_UMI parameter.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Begin: process_cell_type_info</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of cells in reference: 694</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of genes in reference: 97</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ductal   beta  alpha </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    211    304    179 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> End: process_cell_type_info</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> create.RCTD: getting regression differentially expressed genes: </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 24</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 51</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 82</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> create.RCTD: getting platform effect normalization differentially expressed genes: </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 27</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 8</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 55</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 90</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> fitBulk: decomposing bulk</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> chooseSigma: using initial Q_mat with sigma =  1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 565.708541011282</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.84</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 554.037735497346</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.69</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 544.81606233551</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.61</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 540.997124129871</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.53</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 538.284148657321</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.45</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 537.061480361226</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.44</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 537.038433383715</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.44</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">rctd_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"^RCTD_prop_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span></span>

@@ -88,7 +88,8 @@ spatial module analysis for a spatial <code>Seurat</code> object.</p>
 <span>  moran_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  cross_cor_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  module_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  coordinate_space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw"</span>, <span class="st">"legacy_display"</span><span class="op">)</span></span>
+<span>  coordinate_space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw"</span>, <span class="st">"legacy_display"</span><span class="op">)</span>,</span>
+<span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"r"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -198,6 +199,15 @@ lists of additional arguments passed to the corresponding MERINGUE steps.</p></d
 <dd><p>Coordinate system used for MERINGUE distances. The
 default is raw acquisition coordinates; <code>"legacy_display"</code> remains an
 explicit compatibility option.</p></dd>
+
+
+<dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
+<dd><p>Implementation used for the Moran autocorrelation tests.
+<code>"cpp"</code> uses a scop-compiled kernel that is numerically equivalent to
+<code><a href="https://rdrr.io/pkg/MERINGUE/man/moranTest.html" class="external-link">MERINGUE::moranTest()</a></code> and <code><a href="https://rdrr.io/pkg/MERINGUE/man/moranPermutationTest.html" class="external-link">MERINGUE::moranPermutationTest()</a></code> and is
+substantially faster for permutation tests; <code>"r"</code> calls the original
+MERINGUE functions directly. When <code>"cpp"</code> is selected, <code>moran_params</code> are
+ignored with a warning because the compiled kernel has no extra arguments.</p></dd>
 
 </dl></div>
     <div class="section level2">

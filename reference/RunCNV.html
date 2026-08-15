@@ -66,7 +66,7 @@ and store the results in a consistent SCOP result bundle.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RunCNV</span><span class="op">(</span></span>
 <span>  <span class="va">srt</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"copykat"</span>, <span class="st">"fastCNV"</span>, <span class="st">"scevan"</span>, <span class="st">"infercnv"</span>, <span class="st">"numbat"</span>, <span class="st">"casper"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"copykat"</span>, <span class="st">"fastCNV"</span>, <span class="st">"scevan"</span>, <span class="st">"infercnv"</span>, <span class="st">"numbat"</span><span class="op">)</span>,</span>
 <span>  assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -77,9 +77,6 @@ and store the results in a consistent SCOP result bundle.</p>
 <span>  sample.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  allele_counts <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  reference_counts <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  loh <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  loh_name_mapping <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cytoband <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  prefix <span class="op">=</span> <span class="st">"CNV"</span>,</span>
 <span>  tool_name <span class="op">=</span> <span class="st">"CNV"</span>,</span>
@@ -99,7 +96,7 @@ and store the results in a consistent SCOP result bundle.</p>
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
 <dd><p>CNA/CNV backend. Supported backends are <code>"copykat"</code>,
-<code>"fastCNV"</code>, <code>"scevan"</code>, <code>"infercnv"</code>, <code>"numbat"</code>, and <code>"casper"</code>.</p></dd>
+<code>"fastCNV"</code>, <code>"scevan"</code>, <code>"infercnv"</code>, and <code>"numbat"</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
@@ -149,18 +146,6 @@ to <code>numbat::run_numbat()</code> as <code>df_allele</code>.</p></dd>
 <dt id="arg-reference-counts">reference_counts<a class="anchor" aria-label="anchor" href="#arg-reference-counts"></a></dt>
 <dd><p>Reference expression profile for <code>"numbat"</code>. This
 is forwarded to <code>numbat::run_numbat()</code> as <code>lambdas_ref</code>.</p></dd>
-
-
-<dt id="arg-loh">loh<a class="anchor" aria-label="anchor" href="#arg-loh"></a></dt>
-<dd><p>B-allele frequency/LOH signal for <code>"casper"</code>.</p></dd>
-
-
-<dt id="arg-loh-name-mapping">loh_name_mapping<a class="anchor" aria-label="anchor" href="#arg-loh-name-mapping"></a></dt>
-<dd><p>Optional CaSpER LOH-to-cell mapping table.</p></dd>
-
-
-<dt id="arg-cytoband">cytoband<a class="anchor" aria-label="anchor" href="#arg-cytoband"></a></dt>
-<dd><p>Cytoband table for <code>"casper"</code>.</p></dd>
 
 
 <dt id="arg-output-dir">output_dir<a class="anchor" aria-label="anchor" href="#arg-output-dir"></a></dt>
@@ -232,7 +217,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  gene_order <span class="op">=</span> <span class="va">gene_order</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Numbat and CaSpER can also be run when allele-aware preprocessing</span></span></span>
+<span class="r-in"><span><span class="co"># Numbat can also be run when allele-aware preprocessing</span></span></span>
 <span class="r-in"><span><span class="co"># outputs are available.</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CNVPlot.html">CNVPlot</a></span><span class="op">(</span><span class="va">srt</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span>, group.by <span class="op">=</span> <span class="st">"CNV_prediction"</span><span class="op">)</span></span></span>

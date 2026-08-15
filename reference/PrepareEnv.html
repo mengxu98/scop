@@ -119,7 +119,9 @@ The default excludes <code>"cell2location"</code>, <code>"cell2fate"</code>, <co
 stacks. Cell2fate is prepared in a standalone <code>"cell2fate_env"</code> with Python
 3.9. <code>"scenic"</code> is also excluded from the default environment and is prepared
 in <code>"scenic_env"</code> by default because SCENIC requires an older Python/numpy
-stack. On Windows, the
+stack. <code>"scmalignantfinder"</code> is prepared in a standalone
+<code>"scmalignantfinder_env"</code> because its upstream package pins an older
+scanpy/anndata stack. On Windows, the
 default also excludes <code>"scvi"</code>, <code>"glue"</code>, and <code>"multimap"</code> because those
 upstream stacks are more reliable when requested explicitly for
 method-specific workflows.</p></dd>
