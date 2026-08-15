@@ -282,6 +282,18 @@ ccc_preflight_method <- function(method, srt, params = list()) {
       }
     }
   }
+  if (identical(method, "SpaTalk")) {
+    mode <- params$mode %||% "auto"
+    spot_mode <- identical(mode, "spot") ||
+      (identical(mode, "auto") && !is.null(params$reference))
+    if (isTRUE(spot_mode) &&
+        (is.null(params$reference) || is.null(params$reference.group.by))) {
+      log_message(
+        "CCC method {.val SpaTalk} in spot mode requires {.arg reference} and {.arg reference.group.by}",
+        message_type = "error"
+      )
+    }
+  }
   if (
     identical(method, "MDIC3") &&
       is.null(params$grn) &&
@@ -370,6 +382,11 @@ ccc_method_specs <- function() {
       aliases = c("spatialcellchat", "spatial_cellchat", "spatial cellchat"),
       required_params = character(), object_arg = "srt", pass_backend = TRUE,
       pass_thresh = FALSE, requires_spatial = TRUE
+    ),
+    SpaTalk = list(
+      runner = "RunSpaTalk", aliases = "spatalk", required_params = character(),
+      object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
+      requires_spatial = TRUE
     ),
     MDIC3 = list(
       runner = "RunMDIC3", aliases = "mdic3", required_params = character(),
