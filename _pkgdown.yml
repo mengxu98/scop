@@ -387,6 +387,7 @@ reference:
   - RunCellphoneDB
   - RunLIANA
   - RunSpaTalk
+  - RunCOMMOT
   - ListCCCDB
   - PrepareCCCDB
   - RunMDIC3
@@ -407,6 +408,7 @@ reference:
   - CCCNetworkPlot
   - CCCStatPlot
   - SpaTalkPlot
+  - COMMOTPlot
 
 - subtitle: "Gene Regulatory Network Inference"
 - contents:

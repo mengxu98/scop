@@ -25,7 +25,7 @@ test_that("private CCC method specs centralize dispatch metadata", {
     names(specs),
     c(
       "CellChat", "CellphoneDB", "LIANA", "Nichenetr",
-      "MultiNichenetr", "SpatialCellChat", "SpaTalk", "MDIC3"
+      "MultiNichenetr", "SpatialCellChat", "SpaTalk", "COMMOT", "MDIC3"
     )
   )
   expect_true(all(vapply(specs, function(x) {

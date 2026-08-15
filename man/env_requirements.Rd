@@ -13,20 +13,20 @@ env_requirements(
 }
 \arguments{
 \item{version}{The Python version of the environment.
-Default is \code{"3.10-1"}. Python \code{"3.9-1"} is reserved for the standalone
-\code{"cell2fate"} module.}
+Default is \code{"3.10-1"}. Python \code{"3.9-1"} is reserved for standalone modules
+such as \code{"cell2fate"} and \code{"commot"}.}
 
 \item{include_optional}{Whether to include optional Python dependencies.}
 
 \item{modules}{Optional requirement modules to include. Supported values are
 \code{"scanpy"}, \code{"scvi"}, \code{"scanorama"}, \code{"bbknn"}, \code{"celltypist"},
-\code{"cellphonedb"}, \code{"cell2location"}, \code{"cell2fate"}, \code{"magic"}, \code{"scrublet"}, \code{"doubletdetection"},
+\code{"cellphonedb"}, \code{"cell2location"}, \code{"cell2fate"}, \code{"commot"}, \code{"magic"}, \code{"scrublet"}, \code{"doubletdetection"},
 \code{"sccoda"}, \code{"doublet"}, \code{"palantir"}, \code{"scvelo"}, \code{"cellrank"}, \code{"wot"},
 \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"multimap"},
 \code{"scomm"}, \code{"scenic"}, \code{"seacells"}, \code{"tage"},
 \code{"scmalignantfinder"}, \code{"secact"}, \code{"scpagwas"}, \code{"choir"}, and
 \code{"external_wrappers"}. If \code{NULL}, the default environment is returned. The default
-excludes \code{"cell2location"}, \code{"cell2fate"}, \code{"sccoda"}, \code{"scomm"}, and
+excludes \code{"cell2location"}, \code{"cell2fate"}, \code{"commot"}, \code{"sccoda"}, \code{"scomm"}, and
 \code{"scenic"} because these workflows
 require dependency stacks that should be prepared explicitly. The
 \code{"scenic"} module is standalone and always uses Python \code{"3.10-1"}.}
