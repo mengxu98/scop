@@ -19,6 +19,27 @@ test_that("CCC dispatch resolves integrated producers directly", {
   expect_error(runner("UnknownCCC"), "Unsupported CCC method")
 })
 
+test_that("private CCC method specs centralize dispatch metadata", {
+  specs <- getFromNamespace("ccc_method_specs", "scop")()
+  expect_identical(
+    names(specs),
+    c(
+      "CellChat", "CellphoneDB", "LIANA", "Nichenetr",
+      "MultiNichenetr", "SpatialCellChat", "MDIC3"
+    )
+  )
+  expect_true(all(vapply(specs, function(x) {
+    all(c(
+      "runner", "aliases", "required_params", "object_arg",
+      "pass_backend", "pass_thresh", "requires_spatial"
+    ) %in% names(x))
+  }, logical(1))))
+  expect_identical(
+    getFromNamespace("ccc_registered_methods", "scop")(),
+    names(specs)
+  )
+})
+
 test_that("RunLIANA keeps legacy positional arguments and accepts custom resources", {
   expect_equal(
     names(formals(scop::RunLIANA))[1:9],
