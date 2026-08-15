@@ -114,10 +114,11 @@ Default is <code>FALSE</code>.</p></dd>
 <dd><p>Optional Python dependency modules to install in addition to
 the default scientific stack.
 If <code>NULL</code> or omitted in <code>PrepareEnv()</code>, the default environment is installed.
-The default excludes <code>"cell2location"</code>, <code>"cell2fate"</code>, <code>"sccoda"</code>, and
+The default excludes <code>"cell2location"</code>, <code>"cell2fate"</code>, <code>"commot"</code>, <code>"sccoda"</code>, and
 <code>"scomm"</code> because these workflows use long-running or incompatible dependency
-stacks. Cell2fate is prepared in a standalone <code>"cell2fate_env"</code> with Python
-3.9. <code>"scenic"</code> is also excluded from the default environment and is prepared
+stacks. Cell2fate and COMMOT are prepared in standalone <code>"cell2fate_env"</code>
+and <code>"commot_env"</code> environments with Python 3.9. <code>"scenic"</code> is also excluded
+from the default environment and is prepared
 in <code>"scenic_env"</code> by default because SCENIC requires an older Python/numpy
 stack. <code>"scmalignantfinder"</code> is prepared in a standalone
 <code>"scmalignantfinder_env"</code> because its upstream package pins an older
