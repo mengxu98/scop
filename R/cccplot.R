@@ -783,12 +783,7 @@ detect_method <- function(srt, method = NULL) {
   if (!is.null(method)) {
     return(normalize_ccc_method(method))
   }
-  available <- names(srt@tools)[vapply(names(srt@tools), function(candidate) {
-    tryCatch({
-      ccc_method_runner(candidate)
-      TRUE
-    }, error = function(e) FALSE)
-  }, logical(1))]
+  available <- intersect(names(srt@tools), ccc_registered_methods())
   if (length(available) == 1L) {
     return(available[1])
   }
@@ -900,12 +895,7 @@ ccc_available_methods <- function(srt) {
       message_type = "error"
     )
   }
-  names(srt@tools)[vapply(names(srt@tools), function(candidate) {
-    tryCatch({
-      ccc_method_runner(candidate)
-      TRUE
-    }, error = function(e) FALSE)
-  }, logical(1))]
+  intersect(names(srt@tools), ccc_registered_methods())
 }
 
 ccc_build_cellchat_long_table <- function(srt, thresh = 0.05) {
