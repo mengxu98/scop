@@ -151,7 +151,9 @@ Suggests:
 Remotes:
     mengxu98/thisutils,
     mengxu98/thisplot,
-    jinworks/SpatialCellChat
+    jinworks/SpatialCellChat,
+    linxihui/NNLM,
+    ZJUFanLab/SpaTalk
 LinkingTo:
     cli,
     Rcpp,

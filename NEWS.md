@@ -1,6 +1,7 @@
 # scop (development)
 
 * **feat**:
+  * Added `RunSpaTalk()` and `SpaTalkPlot()` for official SpaTalk single-cell and spot-reference spatial communication workflows with compact unified CCC storage.
   * `RunCNV()` backend coverage: `copykat`, `fastCNV`, `SCEVAN`, `infercnv`, and `numbat` are now verified against their original pipelines on real bundled datasets (breast-cancer scRNA-seq, infercnv example, numbat ATC2 example), with exact prediction agreement for copykat/SCEVAN/numbat and Spearman rho = 1.0 for fastCNV/infercnv.
   * The MERINGUE C++ permutation kernel now traverses the weight matrix sparsely (row-major edge list, bit-identical accumulation): `nperm = 200` Moran p-values at 300 spots drop from ~442s to ~14s (~30x).
   * Removed wrappers whose upstream dependencies are unavailable or uncompilable: `RunSpatialQM()`, the `RunSemla*()` wrappers, the `BASS`/`SpatialMNN` branches of `RunSpatialIntegration()` (PRECAST unaffected), and the SPATA2 `backend = "r"` path of `RunSpatialGradientFeatures()` (C++ backend only; `srt_to_spata2()`/`spata2_to_srt()` removed as well).
