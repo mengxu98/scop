@@ -23,10 +23,11 @@
 #' @param modules Optional Python dependency modules to install in addition to
 #' the default scientific stack.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
-#' The default excludes `"cell2location"`, `"cell2fate"`, `"sccoda"`, and
+#' The default excludes `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, and
 #' `"scomm"` because these workflows use long-running or incompatible dependency
-#' stacks. Cell2fate is prepared in a standalone `"cell2fate_env"` with Python
-#' 3.9. `"scenic"` is also excluded from the default environment and is prepared
+#' stacks. Cell2fate and COMMOT are prepared in standalone `"cell2fate_env"`
+#' and `"commot_env"` environments with Python 3.9. `"scenic"` is also excluded
+#' from the default environment and is prepared
 #' in `"scenic_env"` by default because SCENIC requires an older Python/numpy
 #' stack. `"scmalignantfinder"` is prepared in a standalone
 #' `"scmalignantfinder_env"` because its upstream package pins an older
@@ -110,6 +111,24 @@ PrepareEnv <- function(
     if (!identical(version, "3.9-1")) {
       log_message(
         "{.pkg cell2fate} requires its upstream Python 3.9 dependency stack; using {.val 3.9-1} in {.val {envname}}.",
+        message_type = "warning"
+      )
+      version <- "3.9-1"
+    }
+  }
+  if ("commot" %in% modules) {
+    if (length(setdiff(modules, "commot")) > 0) {
+      log_message(
+        "{.arg modules = 'commot'} must be prepared as a standalone environment.",
+        message_type = "error"
+      )
+    }
+    if (is.null(envname)) {
+      envname <- "commot_env"
+    }
+    if (!identical(version, "3.9-1")) {
+      log_message(
+        "{.pkg commot} uses its official Python 3.9 dependency stack; using {.val 3.9-1} in {.val {envname}}.",
         message_type = "warning"
       )
       version <- "3.9-1"
@@ -458,6 +477,7 @@ supported_env_modules <- function() {
     "cellphonedb",
     "cell2location",
     "cell2fate",
+    "commot",
     "magic",
     "scfea",
     "scrublet",
@@ -490,6 +510,7 @@ default_env_modules <- function() {
     "scfea",
     "cell2location",
     "cell2fate",
+    "commot",
     "sccoda",
     "scomm",
     "scenic",
@@ -547,6 +568,7 @@ env_module_requirements <- function() {
     cellphonedb = cellphonedb_python_requirements(),
     cell2location = cell2location_python_requirements(),
     cell2fate = cell2fate_python_requirements(),
+    commot = commot_python_requirements(),
     magic = magic_python_requirements(),
     scfea = scfea_python_requirements(),
     scrublet = scrublet_python_requirements(),
@@ -609,6 +631,12 @@ normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
   if ("cell2fate" %in% modules && length(setdiff(modules, "cell2fate")) > 0) {
     log_message(
       "{.arg modules = 'cell2fate'} must be used as a standalone environment module.",
+      message_type = "error"
+    )
+  }
+  if ("commot" %in% modules && length(setdiff(modules, "commot")) > 0) {
+    log_message(
+      "{.arg modules = 'commot'} must be used as a standalone environment module.",
       message_type = "error"
     )
   }
@@ -1526,18 +1554,18 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' @md
 #' @inheritParams thisutils::log_message
 #' @param version The Python version of the environment.
-#' Default is `"3.10-1"`. Python `"3.9-1"` is reserved for the standalone
-#' `"cell2fate"` module.
+#' Default is `"3.10-1"`. Python `"3.9-1"` is reserved for standalone modules
+#' such as `"cell2fate"` and `"commot"`.
 #' @param include_optional Whether to include optional Python dependencies.
 #' @param modules Optional requirement modules to include. Supported values are
 #' `"scanpy"`, `"scvi"`, `"scanorama"`, `"bbknn"`, `"celltypist"`,
-#' `"cellphonedb"`, `"cell2location"`, `"cell2fate"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
+#' `"cellphonedb"`, `"cell2location"`, `"cell2fate"`, `"commot"`, `"magic"`, `"scrublet"`, `"doubletdetection"`,
 #' `"sccoda"`, `"doublet"`, `"palantir"`, `"scvelo"`, `"cellrank"`, `"wot"`,
 #' `"phate"`, `"pacmap"`, `"trimap"`, `"multimap"`,
 #' `"scomm"`, `"scenic"`, `"seacells"`, `"tage"`,
 #' `"scmalignantfinder"`, `"secact"`, `"scpagwas"`, `"choir"`, and
 #' `"external_wrappers"`. If `NULL`, the default environment is returned. The default
-#' excludes `"cell2location"`, `"cell2fate"`, `"sccoda"`, `"scomm"`, and
+#' excludes `"cell2location"`, `"cell2fate"`, `"commot"`, `"sccoda"`, `"scomm"`, and
 #' `"scenic"` because these workflows
 #' require dependency stacks that should be prepared explicitly. The
 #' `"scenic"` module is standalone and always uses Python `"3.10-1"`.
@@ -1586,6 +1614,15 @@ env_requirements <- function(
     }
     version <- "3.9-1"
   }
+  if ("commot" %in% modules) {
+    if (length(setdiff(modules, "commot")) > 0) {
+      log_message(
+        "{.arg modules = 'commot'} must be used as a standalone environment module.",
+        message_type = "error"
+      )
+    }
+    version <- "3.9-1"
+  }
   if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_allowed <- c(
       "scmalignantfinder", "scanpy", "secact", "scpagwas", "choir"
@@ -1599,14 +1636,16 @@ env_requirements <- function(
     version <- "3.10-1"
   }
   if (identical(version, "3.9-1") &&
-      !any(c("cell2fate", "scmalignantfinder") %in% modules)) {
+      !any(c("cell2fate", "commot", "scmalignantfinder") %in% modules)) {
     log_message(
-      "{.arg version = '3.9-1'} is only supported for the standalone {.val cell2fate} module.",
+      "{.arg version = '3.9-1'} is only supported for standalone Python 3.9 modules such as {.val cell2fate} and {.val commot}.",
       message_type = "error"
     )
   }
 
-  base_requirements <- if ("scmalignantfinder" %in% modules) {
+  base_requirements <- if ("commot" %in% modules) {
+    commot_core_python_requirements()
+  } else if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_core_python_requirements()
   } else if (any(c("scenic", "cell2fate") %in% modules)) {
     scenic_core_python_requirements()
@@ -1814,6 +1853,48 @@ cell2fate_python_requirements <- function() {
       "cell2fate" = "pip"
     ),
     package_aliases = list()
+  )
+}
+
+commot_python_requirements <- function() {
+  list(
+    packages = c(
+      "commot" = paste0(
+        "git+https://github.com/zcang/COMMOT.git@",
+        "d117445bc07eaa19109c7609e97d9e35b26e99ca"
+      )
+    ),
+    install_methods = c("commot" = "pip"),
+    package_aliases = list()
+  )
+}
+
+commot_core_python_requirements <- function() {
+  packages <- c(
+    "setuptools" = "setuptools<81",
+    "numpy" = "numpy==1.22.4",
+    "pandas" = "pandas==1.4.4",
+    "scipy" = "scipy==1.9.3",
+    "scikit-learn" = "scikit-learn==1.0.2",
+    "anndata" = "anndata==0.7.8",
+    "scanpy" = "scanpy==1.8.2",
+    "POT" = "POT==0.8.2",
+    "networkx" = "networkx==2.5.1",
+    "plotly" = "plotly==5.3.1",
+    "pysal" = "pysal==2.6.0",
+    "karateclub" = "karateclub==1.2.2",
+    "leidenalg" = "leidenalg==0.9.1",
+    "python-igraph" = "python-igraph==0.10.4",
+    "python-louvain" = "python-louvain==0.15",
+    "importlib-metadata" = "importlib-metadata<8",
+    "matplotlib" = "matplotlib==3.5.3",
+    "numba" = "numba==0.56.4",
+    "llvmlite" = "llvmlite==0.39.1"
+  )
+  list(
+    packages = packages,
+    install_methods = stats::setNames(rep("pip", length(packages)), names(packages)),
+    package_aliases = list("python-igraph" = "igraph", "POT" = "ot")
   )
 }
 
