@@ -388,6 +388,11 @@ ccc_method_specs <- function() {
       object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
       requires_spatial = TRUE
     ),
+    COMMOT = list(
+      runner = "RunCOMMOT", aliases = "commot", required_params = character(),
+      object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
+      requires_spatial = TRUE
+    ),
     MDIC3 = list(
       runner = "RunMDIC3", aliases = "mdic3", required_params = character(),
       object_arg = "object", pass_backend = FALSE, pass_thresh = FALSE,
