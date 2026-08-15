@@ -25,7 +25,9 @@
 #' @param compute_velocity_confidence Whether to compute velocity confidence metrics.
 #' @param compute_velocity_graph Whether to compute and store the velocity graph
 #' for downstream terminal-state or pseudotime calculations. If `NULL`, compute
-#' the graph only when terminal states or pseudotime are requested.
+#' and store the graph only when terminal states or pseudotime are requested.
+#' The velocity embedding itself is always graph-projected, matching
+#' `scv.tl.velocity_embedding`.
 #' @param compute_terminal_states Whether to compute terminal states (root and end points).
 #' @param compute_pseudotime Whether to compute velocity pseudotime.
 #' @param compute_paga Whether to compute PAGA (Partition-based graph abstraction).
@@ -341,6 +343,39 @@ RunSCVELO <- function(
   }
 }
 
+# Replicates scvelo.tools.velocity_embedding's autoscale step.
+#
+# scvelo calls matplotlib's quiver autoscaling:
+#   V_emb /= 3 * quiver_autoscale(X_emb, V_emb)
+# where quiver_autoscale() is computed with `plt.subplots()` defaults
+# (figsize = 6.4 x 4.8, subplot rect = [0.125, 0.11, 0.9, 0.88], 5% margins).
+# With `scale_units = "xy"` the figure size and dpi cancel, leaving a
+# deterministic, data-dependent scale that depends only on the embedding
+# ranges and the axes-bbox aspect ratio.
+velocity_embedding_autoscale <- function(embedding, velocity_embedding) {
+  if (ncol(embedding) < 2L || nrow(embedding) == 0L) {
+    return(velocity_embedding)
+  }
+  rx <- diff(range(embedding[, 1L], na.rm = TRUE))
+  ry <- diff(range(embedding[, 2L], na.rm = TRUE))
+  if (!is.finite(rx) || !is.finite(ry) || rx <= 0 || ry <= 0) {
+    return(velocity_embedding)
+  }
+  # matplotlib default axes bbox: width = (0.9 - 0.125) * 6.4,
+  # height = (0.88 - 0.11) * 4.8.
+  bbox_aspect <- ((0.88 - 0.11) * 4.8) / ((0.9 - 0.125) * 6.4)
+  ratio <- bbox_aspect * rx / ry
+  vx <- velocity_embedding[, 1L]
+  vy <- velocity_embedding[, 2L]
+  mean_pixel_norm <- mean(sqrt(vx^2 + (vy * ratio)^2), na.rm = TRUE)
+  if (!is.finite(mean_pixel_norm) || mean_pixel_norm <= 0) {
+    return(velocity_embedding)
+  }
+  sn <- max(10, sqrt(nrow(embedding)))
+  quiver_autoscale <- 1.8 * sn * mean_pixel_norm / (1.1 * rx)
+  velocity_embedding / (3 * quiver_autoscale)
+}
+
 run_scvelo_cpp <- function(
   srt,
   assay_x,
@@ -480,38 +515,6 @@ run_scvelo_cpp <- function(
   unspliced <- as.matrix(unspliced_raw[keep, , drop = FALSE])
   storage.mode(spliced) <- "double"
   storage.mode(unspliced) <- "double"
-  feature_meta <- tryCatch(srt[[assay_x]]@meta.data, error = function(e) NULL)
-  highly_variable_keep <- rep(TRUE, length(features_out))
-  variable_features <- tryCatch(
-    SeuratObject::VariableFeatures(srt[[assay_x]]),
-    error = function(e) character(0)
-  )
-  if (length(variable_features) > 0L) {
-    highly_variable_keep <- features_out %in% variable_features
-    if (sum(highly_variable_keep) < 2L) {
-      highly_variable_keep <- rep(TRUE, length(features_out))
-    }
-  } else if (!is.null(feature_meta)) {
-    hvg_col <- intersect(
-      c("highly_variable", "highly_variable_genes"),
-      colnames(feature_meta)
-    )
-    if (length(hvg_col) > 0L) {
-      if ("features" %in% colnames(feature_meta)) {
-        feature_key <- as.character(feature_meta[["features"]])
-        feature_idx <- match(features_out, feature_key)
-        hvg_raw <- feature_meta[feature_idx, hvg_col[[1L]], drop = TRUE]
-      } else {
-        hvg_raw <- feature_meta[features_out, hvg_col[[1L]], drop = TRUE]
-      }
-      hvg_chr <- tolower(as.character(hvg_raw))
-      highly_variable_keep <- hvg_chr %in% c("true", "1", "yes")
-      highly_variable_keep[is.na(highly_variable_keep)] <- FALSE
-      if (sum(highly_variable_keep) < 2L) {
-        highly_variable_keep <- rep(TRUE, length(features_out))
-      }
-    }
-  }
   normed <- scvelo_normalize_scanpy_cpp(
     spliced = spliced,
     unspliced = unspliced,
@@ -542,8 +545,10 @@ run_scvelo_cpp <- function(
   )
   Ms <- moments[["Ms"]]
   Mu <- moments[["Mu"]]
+  Mss <- moments[["Mss"]]
+  Mus <- moments[["Mus"]]
   n_moment_features <- nrow(spliced_n)
-  rm(spliced_n, unspliced_n)
+  rm(moments, spliced_n, unspliced_n)
   invisible(gc(full = TRUE))
 
   # Extract UMAP embedding for velocity projection (visualization only)
@@ -592,8 +597,8 @@ run_scvelo_cpp <- function(
       velocity <- scvelo_stochastic_cpp(
         Ms = Ms,
         Mu = Mu,
-        Mss = moments[["Mss"]],
-        Mus = moments[["Mus"]],
+        Mss = Mss,
+        Mus = Mus,
         knn_idx = knn[["idx"]],
         embedding = nonlinear_embedding
       )
@@ -651,15 +656,14 @@ run_scvelo_cpp <- function(
       log_message("Unknown mode {.val {m}}", message_type = "error")
     }
 
-    velocity_embedding <- velocity[["velocity_embedding"]]
-    rownames(velocity_embedding) <- cells
-    colnames(velocity_embedding) <- colnames(nonlinear_embedding)
+    # Second-order moments are only consumed by the stochastic fit; release
+    # them before building the graph / projection working set.
+    if (length(mode_use) == 1L && exists("Mss", inherits = FALSE)) {
+      rm(Mss, Mus)
+      invisible(gc(full = TRUE))
+    }
+
     velocity_reduction <- paste0(m, "_", nonlinear_reduction)
-    srt[[velocity_reduction]] <- SeuratObject::CreateDimReducObject(
-      embeddings = velocity_embedding,
-      assay = spliced_assay,
-      key = paste0(gsub("_", "", velocity_reduction), "_")
-    )
     conf_key <- paste0(m, "_confidence")
     len_key <- paste0(m, "_length")
     srt[[conf_key]] <- as.numeric(velocity[["confidence"]])
@@ -694,8 +698,7 @@ run_scvelo_cpp <- function(
     }
     graph_gene_idx <- rep(TRUE, nrow(Ms))
     if ("velocity_genes" %in% names(velocity)) {
-      graph_gene_idx <- as.logical(velocity[["velocity_genes"]]) &
-        highly_variable_keep
+      graph_gene_idx <- as.logical(velocity[["velocity_genes"]])
       graph_gene_idx[is.na(graph_gene_idx)] <- FALSE
       if (sum(graph_gene_idx) < 2L) {
         graph_gene_idx <- rep(TRUE, nrow(Ms))
@@ -711,16 +714,19 @@ run_scvelo_cpp <- function(
     srt[[len_key]] <- as.numeric(vc_main[["velocity_length"]])
     srt@tools[["SCVELO"]][[m]]$confidence_detail <- vc_main[["confidence"]]
     srt@tools[["SCVELO"]][[m]]$confidence_diff <- vc_main[["confidence_diff"]]
+    # Velocity graph (cosine similarity on gene space, sparse format).
+    # The graph is always computed so the stored velocity embedding follows
+    # scv.tl.velocity_embedding's graph-projected path; the graph itself is
+    # kept only when the user requested it for downstream analyses.
+    vg <- scvelo_velocity_graph_cpp(
+      Ms = Ms[graph_gene_idx, , drop = FALSE],
+      Mu = Mu[graph_gene_idx, , drop = FALSE],
+      residual = vg_residual[graph_gene_idx, , drop = FALSE],
+      knn_idx = knn[["idx"]],
+      sqrt_transform = identical(m, "stochastic"),
+      n_recurse_neighbors = 1L
+    )
     if (isTRUE(compute_velocity_graph)) {
-      # Velocity graph (cosine similarity on gene space, sparse format)
-      vg <- scvelo_velocity_graph_cpp(
-        Ms = Ms[graph_gene_idx, , drop = FALSE],
-        Mu = Mu[graph_gene_idx, , drop = FALSE],
-        residual = vg_residual[graph_gene_idx, , drop = FALSE],
-        knn_idx = knn[["idx"]],
-        sqrt_transform = identical(m, "stochastic"),
-        n_recurse_neighbors = 1L
-      )
       srt@tools[["SCVELO"]][[m]]$velocity_graph <- list(
         rows = vg[["velocity_graph_rows"]],
         cols = vg[["velocity_graph_cols"]],
@@ -729,30 +735,31 @@ run_scvelo_cpp <- function(
         neg_cols = vg[["velocity_graph_neg_cols"]],
         neg_vals = vg[["velocity_graph_neg_vals"]]
       )
-      velocity_embedding_graph <- scvelo_project_velocity_embedding_cpp(
-        graph_rows = vg[["velocity_graph_rows"]],
-        graph_cols = vg[["velocity_graph_cols"]],
-        graph_vals = vg[["velocity_graph_vals"]],
-        graph_neg_rows = vg[["velocity_graph_neg_rows"]],
-        graph_neg_cols = vg[["velocity_graph_neg_cols"]],
-        graph_neg_vals = vg[["velocity_graph_neg_vals"]],
-        embedding = nonlinear_embedding,
-        scale = 7.25,
-        self_transitions = TRUE,
-        use_negative_cosines = TRUE
-      )
-      # scvelo rescales projected velocities with matplotlib quiver autoscaling.
-      # This backend uses a deterministic approximation to keep plotted arrow
-      # magnitudes on the same order as scv.tl.velocity_embedding output.
-      velocity_embedding_graph <- velocity_embedding_graph / 5.6
-      rownames(velocity_embedding_graph) <- cells
-      colnames(velocity_embedding_graph) <- colnames(nonlinear_embedding)
-      srt[[velocity_reduction]] <- SeuratObject::CreateDimReducObject(
-        embeddings = velocity_embedding_graph,
-        assay = spliced_assay,
-        key = paste0(gsub("_", "", velocity_reduction), "_")
-      )
     }
+    velocity_embedding_graph <- scvelo_project_velocity_embedding_cpp(
+      graph_rows = vg[["velocity_graph_rows"]],
+      graph_cols = vg[["velocity_graph_cols"]],
+      graph_vals = vg[["velocity_graph_vals"]],
+      graph_neg_rows = vg[["velocity_graph_neg_rows"]],
+      graph_neg_cols = vg[["velocity_graph_neg_cols"]],
+      graph_neg_vals = vg[["velocity_graph_neg_vals"]],
+      embedding = nonlinear_embedding,
+      scale = 10,
+      self_transitions = TRUE,
+      use_negative_cosines = TRUE
+    )
+    # Match scv.tl.velocity_embedding's matplotlib quiver autoscaling.
+    velocity_embedding_graph <- velocity_embedding_autoscale(
+      embedding = nonlinear_embedding,
+      velocity_embedding = velocity_embedding_graph
+    )
+    rownames(velocity_embedding_graph) <- cells
+    colnames(velocity_embedding_graph) <- colnames(nonlinear_embedding)
+    srt[[velocity_reduction]] <- SeuratObject::CreateDimReducObject(
+      embeddings = velocity_embedding_graph,
+      assay = spliced_assay,
+      key = paste0(gsub("_", "", velocity_reduction), "_")
+    )
 
     # Terminal states
     if (isTRUE(compute_terminal_states)) {

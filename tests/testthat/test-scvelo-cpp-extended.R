@@ -255,10 +255,8 @@ test_that("deterministic scVelo fit matches extreme-quantile semantics", {
     keep <- normalized >= stats::quantile(normalized, 0.95, type = 7)
     denominator <- sum(s[keep]^2)
     gamma <- if (denominator > 0) sum(s[keep] * u[keep]) / denominator else 0
-    denominator_all <- sum(s^2)
-    gamma_all <- if (denominator_all > 0) sum(s * u) / denominator_all else 0
     total <- sum((u - mean(u))^2)
-    residual_sum <- sum((u - gamma_all * s)^2)
+    residual_sum <- sum((u - gamma * s)^2)
     r2 <- if (total > 0) 1 - residual_sum / total else 0
     c(gamma = gamma, r2 = r2)
   })

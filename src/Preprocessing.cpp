@@ -62,28 +62,35 @@ List scvelo_normalize_scanpy_cpp(
   }
   std::sort(sorted_s.begin(), sorted_s.end());
   std::sort(sorted_u.begin(), sorted_u.end());
-  double median_s = sorted_s[n_cells / 2];
-  double median_u = sorted_u[n_cells / 2];
+  // numpy.median averages the two middle values for even-length input;
+  // scvelo's normalize_per_cell uses np.median(get_initial_size(...)).
+  const bool even = n_cells % 2 == 0;
+  const int mid = n_cells / 2;
+  double median_s = even
+    ? 0.5 * (sorted_s[mid - 1] + sorted_s[mid])
+    : sorted_s[mid];
+  double median_u = even
+    ? 0.5 * (sorted_u[mid - 1] + sorted_u[mid])
+    : sorted_u[mid];
   if (median_s <= 0) median_s = 1.0;
   if (median_u <= 0) median_u = 1.0;
 
-  NumericMatrix ns(n_genes, n_cells);
-  NumericMatrix nu(n_genes, n_cells);
-
+  // Normalize in place and return the input matrices, avoiding two dense
+  // 84 MB-class copies for large single-cell datasets.
   for (int c = 0; c < n_cells; ++c) {
     double scale_s = initial_spliced_totals[c] > 0
       ? median_s / initial_spliced_totals[c] : 1.0;
     double scale_u = initial_unspliced_totals[c] > 0
       ? median_u / initial_unspliced_totals[c] : 1.0;
     for (int g = 0; g < n_genes; ++g) {
-      ns(g, c) = spliced(g, c) * scale_s;
-      nu(g, c) = unspliced(g, c) * scale_u;
+      spliced(g, c) *= scale_s;
+      unspliced(g, c) *= scale_u;
     }
   }
 
   return List::create(
-    _["spliced_norm"] = ns,
-    _["unspliced_norm"] = nu
+    _["spliced_norm"] = spliced,
+    _["unspliced_norm"] = unspliced
   );
 }
 
