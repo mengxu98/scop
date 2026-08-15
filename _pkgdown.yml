@@ -386,6 +386,7 @@ reference:
   - GetCCCObject
   - RunCellphoneDB
   - RunLIANA
+  - RunSpaTalk
   - ListCCCDB
   - PrepareCCCDB
   - RunMDIC3
@@ -405,6 +406,7 @@ reference:
   - CCCHeatmap
   - CCCNetworkPlot
   - CCCStatPlot
+  - SpaTalkPlot
 
 - subtitle: "Gene Regulatory Network Inference"
 - contents:
