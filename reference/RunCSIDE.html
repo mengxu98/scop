@@ -113,7 +113,7 @@ tables in <code>srt@tools[[tool_name]]</code> or plot an explicit summary column
 
 <dt id="arg-explanatory-variable">explanatory.variable<a class="anchor" aria-label="anchor" href="#arg-explanatory-variable"></a></dt>
 <dd><p>Named numeric vector used by
-<code>spacexr::run.CSIDE.single()</code>. Names must match spatial spot names.</p></dd>
+<code><a href="https://rdrr.io/pkg/spacexr/man/run.CSIDE.single.html" class="external-link">spacexr::run.CSIDE.single()</a></code>. Names must match spatial spot names.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
@@ -123,21 +123,21 @@ tables in <code>srt@tools[[tool_name]]</code> or plot an explicit summary column
 
 <dt id="arg-condition-by">condition.by<a class="anchor" aria-label="anchor" href="#arg-condition-by"></a></dt>
 <dd><p>Binary metadata column converted to a 0/1 explanatory
-variable for <code>spacexr::run.CSIDE.single()</code>.</p></dd>
+variable for <code><a href="https://rdrr.io/pkg/spacexr/man/run.CSIDE.single.html" class="external-link">spacexr::run.CSIDE.single()</a></code>.</p></dd>
 
 
 <dt id="arg-design">design<a class="anchor" aria-label="anchor" href="#arg-design"></a></dt>
-<dd><p>Numeric design matrix used by <code>spacexr::run.CSIDE()</code>.
+<dd><p>Numeric design matrix used by <code><a href="https://rdrr.io/pkg/spacexr/man/run.CSIDE.html" class="external-link">spacexr::run.CSIDE()</a></code>.
 Row names must match <code>barcodes</code> or spatial spot names.</p></dd>
 
 
 <dt id="arg-region-list">region_list<a class="anchor" aria-label="anchor" href="#arg-region-list"></a></dt>
 <dd><p>Named list of barcode vectors used by
-<code>spacexr::run.CSIDE.regions()</code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/spacexr/man/run.CSIDE.regions.html" class="external-link">spacexr::run.CSIDE.regions()</a></code>.</p></dd>
 
 
 <dt id="arg-barcodes">barcodes<a class="anchor" aria-label="anchor" href="#arg-barcodes"></a></dt>
-<dd><p>Barcodes used by <code>spacexr::run.CSIDE()</code> or
+<dd><p>Barcodes used by <code><a href="https://rdrr.io/pkg/spacexr/man/run.CSIDE.html" class="external-link">spacexr::run.CSIDE()</a></code> or
 <code>spacexr::run.CSIDE.intercept()</code>. If <code>NULL</code>, row names of <code>design</code> or all
 spatial spots are used where applicable.</p></dd>
 
@@ -200,12 +200,19 @@ stored in <code>srt@tools[[tool_name]]</code> when <code>store_results = TRUE</c
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span><span class="op">$</span><span class="va">region</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">x</span><span class="op">)</span>, <span class="st">"right"</span>, <span class="st">"left"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span><span class="op">$</span><span class="va">CSIDE_n_sig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">region</span> <span class="op">==</span> <span class="st">"right"</span>, <span class="fl">12</span>, <span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span><span class="op">$</span><span class="va">region</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">spatial</span><span class="op">$</span><span class="va">x</span>,</span></span>
+<span class="r-in"><span>  breaks <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">x</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, length.out <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  include.lowest <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"left"</span>, <span class="st">"middle"</span>, <span class="st">"right"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span><span class="op">$</span><span class="va">CSIDE_n_sig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>left <span class="op">=</span> <span class="fl">4</span>, middle <span class="op">=</span> <span class="fl">8</span>, right <span class="op">=</span> <span class="fl">12</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">region</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span><span class="op">$</span><span class="va">CSIDE_mode</span> <span class="op">&lt;-</span> <span class="st">"regions"</span></span></span>
 <span class="r-in"><span><span class="va">cside_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  feature <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  celltype <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Endocrine"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  celltype <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ductal"</span>, <span class="st">"alpha"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  parameter <span class="op">=</span> <span class="st">"right_vs_left"</span>,</span></span>
 <span class="r-in"><span>  logFC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.2</span>, <span class="fl">0.8</span>, <span class="op">-</span><span class="fl">0.9</span>, <span class="op">-</span><span class="fl">1.1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  statistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4.1</span>, <span class="fl">3.5</span>, <span class="op">-</span><span class="fl">3.2</span>, <span class="op">-</span><span class="fl">3.8</span><span class="op">)</span>,</span></span>
@@ -236,15 +243,87 @@ stored in <code>srt@tools[[tool_name]]</code> when <code>store_results = TRUE</c
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunCSIDE-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">spatial</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">120</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
+<span class="r-in"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="va">panc8_sub</span><span class="op">[</span>, <span class="va">panc8_sub</span><span class="op">$</span><span class="va">celltype</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ductal"</span>, <span class="st">"alpha"</span>, <span class="st">"beta"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">reference</span>, nfeatures <span class="op">=</span> <span class="fl">300</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">features_use</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">reference</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunRCTD.html">RunRCTD</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
+<span class="r-in"><span>  reference <span class="op">=</span> <span class="va">reference</span>,</span></span>
+<span class="r-in"><span>  reference_label <span class="op">=</span> <span class="st">"celltype"</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="va">features_use</span>,</span></span>
+<span class="r-in"><span>  rctd_mode <span class="op">=</span> <span class="st">"full"</span>,</span></span>
+<span class="r-in"><span>  max_cores <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  min_cells <span class="op">=</span> <span class="fl">25</span>,</span></span>
+<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Reference: some nUMI values are less than min_UMI = 100, and these cells will be removed. Optionally, you may lower the min_UMI parameter.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Begin: process_cell_type_info</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of cells in reference: 694</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of genes in reference: 97</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ductal   beta  alpha </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    211    304    179 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> End: process_cell_type_info</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> create.RCTD: getting regression differentially expressed genes: </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 24</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 51</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 82</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> create.RCTD: getting platform effect normalization differentially expressed genes: </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 27</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 8</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 55</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 90</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> fitBulk: decomposing bulk</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> chooseSigma: using initial Q_mat with sigma =  1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 565.708541011282</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.84</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 554.037735497346</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.69</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 544.81606233551</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.61</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 540.997124129871</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.53</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 538.284148657321</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.45</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 537.061480361226</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.44</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 537.038433383715</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.44</span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">spatial</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">RCTD</span><span class="op">$</span><span class="va">weights</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunCSIDE</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"region"</span>,</span></span>
-<span class="r-in"><span>  celltypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ductal"</span>, <span class="st">"Endocrine"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  celltypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ductal"</span>, <span class="st">"alpha"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  gene_threshold <span class="op">=</span> <span class="fl">0.00005</span>,</span></span>
-<span class="r-in"><span>  cell_type_threshold <span class="op">=</span> <span class="fl">125</span></span></span>
+<span class="r-in"><span>  cell_type_threshold <span class="op">=</span> <span class="fl">5</span>,</span></span>
+<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in cside_resolve_rctd_result(srt = srt, rctd_result = rctd_result):</span> No RCTD object was supplied. Run `RunRCTD()` with an old-api <span style="color: #0000BB;">spacexr</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> backend first, or provide `rctd_result` explicitly.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in cside_normalize_region_list(region_list = region_list, cells = colnames(srt)):</span> `region_list` must contain at least three regions for spacexr</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> run.CSIDE.regions. Use `condition.by` for binary comparisons.</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
