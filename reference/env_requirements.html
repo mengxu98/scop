@@ -81,8 +81,8 @@ All packages will be installed using uv as the primary tool.</p>
 
 <dl><dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
 <dd><p>The Python version of the environment.
-Default is <code>"3.10-1"</code>. Python <code>"3.9-1"</code> is reserved for the standalone
-<code>"cell2fate"</code> module.</p></dd>
+Default is <code>"3.10-1"</code>. Python <code>"3.9-1"</code> is reserved for standalone modules
+such as <code>"cell2fate"</code> and <code>"commot"</code>.</p></dd>
 
 
 <dt id="arg-include-optional">include_optional<a class="anchor" aria-label="anchor" href="#arg-include-optional"></a></dt>
@@ -92,13 +92,13 @@ Default is <code>"3.10-1"</code>. Python <code>"3.9-1"</code> is reserved for th
 <dt id="arg-modules">modules<a class="anchor" aria-label="anchor" href="#arg-modules"></a></dt>
 <dd><p>Optional requirement modules to include. Supported values are
 <code>"scanpy"</code>, <code>"scvi"</code>, <code>"scanorama"</code>, <code>"bbknn"</code>, <code>"celltypist"</code>,
-<code>"cellphonedb"</code>, <code>"cell2location"</code>, <code>"cell2fate"</code>, <code>"magic"</code>, <code>"scrublet"</code>, <code>"doubletdetection"</code>,
+<code>"cellphonedb"</code>, <code>"cell2location"</code>, <code>"cell2fate"</code>, <code>"commot"</code>, <code>"magic"</code>, <code>"scrublet"</code>, <code>"doubletdetection"</code>,
 <code>"sccoda"</code>, <code>"doublet"</code>, <code>"palantir"</code>, <code>"scvelo"</code>, <code>"cellrank"</code>, <code>"wot"</code>,
 <code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"multimap"</code>,
 <code>"scomm"</code>, <code>"scenic"</code>, <code>"seacells"</code>, <code>"tage"</code>,
 <code>"scmalignantfinder"</code>, <code>"secact"</code>, <code>"scpagwas"</code>, <code>"choir"</code>, and
 <code>"external_wrappers"</code>. If <code>NULL</code>, the default environment is returned. The default
-excludes <code>"cell2location"</code>, <code>"cell2fate"</code>, <code>"sccoda"</code>, <code>"scomm"</code>, and
+excludes <code>"cell2location"</code>, <code>"cell2fate"</code>, <code>"commot"</code>, <code>"sccoda"</code>, <code>"scomm"</code>, and
 <code>"scenic"</code> because these workflows
 require dependency stacks that should be prepared explicitly. The
 <code>"scenic"</code> module is standalone and always uses Python <code>"3.10-1"</code>.</p></dd>
