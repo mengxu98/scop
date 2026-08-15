@@ -272,11 +272,14 @@ static double scvelo_quantile_linear(
     probability * static_cast<double>(values.size() - 1);
   const std::size_t lower = static_cast<std::size_t>(std::floor(position));
   const std::size_t upper = static_cast<std::size_t>(std::ceil(position));
+  // Match numpy.percentile(..., method="linear").
   std::nth_element(values.begin(), values.begin() + lower, values.end());
   const double lower_value = values[lower];
   if (upper == lower) return lower_value;
+  // The upper order statistic lies in [lower, end); the first nth_element
+  // only fixed values[lower], so search the tail for values[upper].
   std::nth_element(
-    values.begin() + lower + 1,
+    values.begin() + lower,
     values.begin() + upper,
     values.end()
   );
@@ -377,44 +380,21 @@ List scvelo_deterministic_cpp(
     if (!std::isfinite(gamma[g])) gamma[g] = 0.0;
     if (!std::isfinite(offset[g])) offset[g] = 0.0;
 
-    // scVelo uses a separate untrimmed regression for adjusted R² and gene
-    // selection, while retaining the trimmed fit above for the residual.
-    double full_sx = 0.0, full_sy = 0.0, full_sxx = 0.0, full_sxy = 0.0;
+    // scVelo's scv.tl.velocity(..., r2_adjusted=None) keeps the quantile
+    // residual for R2 and velocity-gene selection; no separate untrimmed
+    // regression is fitted in that default path.
+    double full_sy = 0.0;
     int full_used = 0;
     bool has_ms = false, has_mu = false;
     for (int c = 0; c < n_cells; ++c) {
       const double s = Ms(g, c);
       const double u = Mu(g, c);
       if (!std::isfinite(s) || !std::isfinite(u)) continue;
-      full_sx += s;
       full_sy += u;
-      full_sxx += s * s;
-      full_sxy += s * u;
       has_ms = has_ms || s > 0.0;
       has_mu = has_mu || u > 0.0;
       ++full_used;
     }
-    double adjusted_gamma = 0.0, adjusted_offset = 0.0;
-    if (full_used > 0 && full_sxx > 0.0) {
-      if (fit_offset) {
-        const double mx = full_sx / static_cast<double>(full_used);
-        const double my = full_sy / static_cast<double>(full_used);
-        const double var_x =
-          full_sxx / static_cast<double>(full_used) - mx * mx;
-        adjusted_gamma = var_x > 0.0
-          ? (full_sxy / static_cast<double>(full_used) - mx * my) / var_x
-          : 0.0;
-        adjusted_offset = my - adjusted_gamma * mx;
-        if (adjusted_offset < 0.0) {
-          adjusted_gamma = full_sxy / full_sxx;
-          adjusted_offset = 0.0;
-        }
-      } else {
-        adjusted_gamma = full_sxy / full_sxx;
-      }
-    }
-    if (!std::isfinite(adjusted_gamma)) adjusted_gamma = 0.0;
-    if (!std::isfinite(adjusted_offset)) adjusted_offset = 0.0;
     const double mean_u = full_used > 0
       ? full_sy / static_cast<double>(full_used)
       : 0.0;
@@ -423,9 +403,8 @@ List scvelo_deterministic_cpp(
       const double s = Ms(g, c);
       const double u = Mu(g, c);
       if (!std::isfinite(s) || !std::isfinite(u)) continue;
-      const double residual_adjusted =
-        u - adjusted_gamma * s - adjusted_offset;
-      ss_res += residual_adjusted * residual_adjusted;
+      const double residual = u - gamma[g] * s - offset[g];
+      ss_res += residual * residual;
       const double centered_u = u - mean_u;
       ss_tot += centered_u * centered_u;
     }
@@ -511,24 +490,94 @@ List scvelo_stochastic_cpp(
   IntegerVector velocity_genes(n_genes, 1);
   std::vector<double> deterministic_res_std(n_genes, 1.0);
   std::vector<char> stochastic_update_gene(n_genes, 1);
+  // scVelo stochastic mode first runs compute_deterministic(perc=[5, 95])
+  // with fit_offset=False: an upper-quantile (95th percentile) regression
+  // supplies the initial gamma, and its residual supplies the R2 used for
+  // velocity-gene selection. Mirror that here; the stochastic generalized
+  // fit below then refits gamma for the selected velocity genes only.
+  #ifdef _OPENMP
+  #pragma omp parallel for schedule(dynamic, 16)
+  #endif
   for (int g = 0; g < n_genes; ++g) {
+    double s_max = 0.0, u_max = 0.0;
+    for (int c = 0; c < n_cells; ++c) {
+      const int idx = c * n_genes + g;
+      const double s = Ms_ptr[idx];
+      const double u = Mu_ptr[idx];
+      if (!std::isfinite(s) || !std::isfinite(u)) continue;
+      s_max = std::max(s_max, s);
+      u_max = std::max(u_max, u);
+    }
+    const double s_scale = std::max(1e-3, s_max);
+    const double u_scale = std::max(1e-3, u_max);
+    std::vector<double> normalized(n_cells);
+    for (int c = 0; c < n_cells; ++c) {
+      const int idx = c * n_genes + g;
+      const double s = Ms_ptr[idx];
+      const double u = Mu_ptr[idx];
+      normalized[c] = std::isfinite(s) && std::isfinite(u)
+        ? s / s_scale + u / u_scale
+        : -std::numeric_limits<double>::infinity();
+    }
+    const double cutoff = scvelo_quantile_linear(normalized, 0.95);
+
+    // Upper-quantile regression (no intercept) for the velocity residual.
     double num_det = 0.0, den_det = 0.0;
     for (int c = 0; c < n_cells; ++c) {
       const int idx = c * n_genes + g;
-      double s = Ms_ptr[idx];
-      double u = Mu_ptr[idx];
-      if (!std::isfinite(s) || !std::isfinite(u)) continue;
+      const double s = Ms_ptr[idx];
+      const double u = Mu_ptr[idx];
+      if (!std::isfinite(s) || !std::isfinite(u) || normalized[c] < cutoff) {
+        continue;
+      }
       num_det += s * u;
       den_det += s * s;
     }
     const double gamma_det = den_det > 1e-12 ? num_det / den_det : 0.0;
     gamma[g] = std::isfinite(gamma_det) && gamma_det > 0.0 ? gamma_det : 0.0;
 
+    // scVelo's scv.tl.velocity(..., r2_adjusted=None) uses the quantile
+    // residual for R2 and velocity-gene selection.
+    double full_sy = 0.0;
+    int full_used = 0;
+    bool has_ms = false, has_mu = false;
+    for (int c = 0; c < n_cells; ++c) {
+      const int idx = c * n_genes + g;
+      const double s = Ms_ptr[idx];
+      const double u = Mu_ptr[idx];
+      if (!std::isfinite(s) || !std::isfinite(u)) continue;
+      full_sy += u;
+      has_ms = has_ms || s > 0.0;
+      has_mu = has_mu || u > 0.0;
+      ++full_used;
+    }
+    double mean_u = full_used > 0
+      ? full_sy / static_cast<double>(full_used)
+      : 0.0;
+    double ss_res = 0.0, ss_tot = 0.0;
+    for (int c = 0; c < n_cells; ++c) {
+      const int idx = c * n_genes + g;
+      const double s = Ms_ptr[idx];
+      const double u = Mu_ptr[idx];
+      if (!std::isfinite(s) || !std::isfinite(u)) continue;
+      const double r = u - gamma[g] * s;
+      ss_res += r * r;
+      const double centered_u = u - mean_u;
+      ss_tot += centered_u * centered_u;
+    }
+    gamma_r2[g] = ss_tot > 1e-12 ? 1.0 - ss_res / ss_tot : 0.0;
+    if (!std::isfinite(gamma_r2[g])) gamma_r2[g] = 0.0;
+    velocity_genes[g] =
+      (gamma_r2[g] > 0.01 && gamma[g] > 0.01 && has_ms && has_mu) ? 1 : 0;
+
+    // Residual std for the generalized least squares uses the quantile
+    // residual, matching scVelo's `_residual.std(0)` after
+    // compute_deterministic.
     double res_mean = 0.0;
     int n_res = 0;
     for (int c = 0; c < n_cells; ++c) {
       const int idx = c * n_genes + g;
-      double r = Mu_ptr[idx] - gamma_det * Ms_ptr[idx];
+      const double r = Mu_ptr[idx] - gamma[g] * Ms_ptr[idx];
       if (!std::isfinite(r)) continue;
       res_mean += r;
       ++n_res;
@@ -537,11 +586,13 @@ List scvelo_stochastic_cpp(
     double res_var = 0.0;
     for (int c = 0; c < n_cells; ++c) {
       const int idx = c * n_genes + g;
-      double r = Mu_ptr[idx] - gamma_det * Ms_ptr[idx];
+      const double r = Mu_ptr[idx] - gamma[g] * Ms_ptr[idx];
       if (!std::isfinite(r)) continue;
       res_var += (r - res_mean) * (r - res_mean);
     }
-    double res_std = n_res > 0 ? std::sqrt(res_var / static_cast<double>(n_res)) : 1.0;
+    const double res_std = n_res > 0
+      ? std::sqrt(res_var / static_cast<double>(n_res))
+      : 1.0;
     if (std::isfinite(res_std) && res_std < 1e-8) {
       stochastic_update_gene[g] = 0;
       gamma_r2[g] = 1.0;
@@ -549,47 +600,16 @@ List scvelo_stochastic_cpp(
       deterministic_res_std[g] = 1.0;
       continue;
     }
-    if (!std::isfinite(res_std) || res_std < 1e-8) res_std = 1.0;
-    deterministic_res_std[g] = res_std;
-
-    double mean_u = 0.0;
-    int n_u = 0;
-    for (int c = 0; c < n_cells; ++c) {
-      const int idx = c * n_genes + g;
-      double u = Mu_ptr[idx];
-      if (!std::isfinite(u)) continue;
-      mean_u += u;
-      ++n_u;
-    }
-    mean_u = n_u > 0 ? mean_u / static_cast<double>(n_u) : 0.0;
-    double ss_res = 0.0, ss_tot = 0.0;
-    bool has_ms = false, has_mu = false;
-    for (int c = 0; c < n_cells; ++c) {
-      const int idx = c * n_genes + g;
-      double s = Ms_ptr[idx];
-      double u = Mu_ptr[idx];
-      if (std::isfinite(s) && s > 0.0) has_ms = true;
-      if (std::isfinite(u) && u > 0.0) has_mu = true;
-      if (!std::isfinite(s) || !std::isfinite(u)) continue;
-      double r = u - gamma[g] * s;
-      ss_res += r * r;
-      ss_tot += (u - mean_u) * (u - mean_u);
-    }
-    gamma_r2[g] = ss_tot > 1e-12 ? 1.0 - ss_res / ss_tot : 0.0;
-    if (!std::isfinite(gamma_r2[g])) gamma_r2[g] = 0.0;
-    velocity_genes[g] = (gamma_r2[g] > 0.01 && gamma[g] > 0.01 && has_ms && has_mu) ? 1 : 0;
+    deterministic_res_std[g] =
+      std::isfinite(res_std) && res_std >= 1e-8 ? res_std : 1.0;
   }
 
   int n_velocity_genes = 0;
   for (int g = 0; g < n_genes; ++g) n_velocity_genes += velocity_genes[g] > 0 ? 1 : 0;
   if (n_velocity_genes < 2 && n_genes > 0) {
-    std::vector<double> r2_sorted(n_genes);
-    for (int g = 0; g < n_genes; ++g) r2_sorted[g] = gamma_r2[g];
-    std::sort(r2_sorted.begin(), r2_sorted.end());
-    int idx80 = static_cast<int>(std::floor(0.80 * static_cast<double>(n_genes - 1)));
-    if (idx80 < 0) idx80 = 0;
-    if (idx80 >= n_genes) idx80 = n_genes - 1;
-    const double min_r2 = r2_sorted[idx80];
+    std::vector<double> r2_values(n_genes);
+    for (int g = 0; g < n_genes; ++g) r2_values[g] = gamma_r2[g];
+    const double min_r2 = scvelo_quantile_linear(r2_values, 0.80);
     n_velocity_genes = 0;
     for (int g = 0; g < n_genes; ++g) {
       velocity_genes[g] = gamma_r2[g] > min_r2 ? 1 : 0;
@@ -599,6 +619,9 @@ List scvelo_stochastic_cpp(
 
   // Match scvelo: stochastic generalized fit updates gamma only for
   // deterministic velocity genes; non-selected genes keep deterministic gamma.
+  #ifdef _OPENMP
+  #pragma omp parallel for schedule(dynamic, 16)
+  #endif
   for (int g = 0; g < n_genes; ++g) {
     if (velocity_genes[g] == 0 || !stochastic_update_gene[g]) continue;
 
@@ -871,7 +894,11 @@ NumericMatrix scvelo_project_velocity_embedding_cpp(
     double ub = conf_sorted[lo] * (1.0 - frac) + conf_sorted[hi] * frac;
     for (int i = 0; i < n_cells; ++i) {
       double self_prob = std::min(1.0, std::max(0.0, ub - max_conf[i]));
-      if (self_prob != 0.0) rows[i].push_back(std::make_pair(i, self_prob));
+      if (self_prob != 0.0) {
+        // scvelo sets the diagonal to `self_prob` before applying `expm1`,
+        // so the diagonal entry is `expm1(self_prob * scale)`.
+        rows[i].push_back(std::make_pair(i, std::expm1(self_prob * scale)));
+      }
     }
   }
 

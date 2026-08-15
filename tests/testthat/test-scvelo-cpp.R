@@ -65,6 +65,50 @@ make_scvelo_mock <- function(
   )
 }
 
+make_velocity_plot_object <- function() {
+  counts <- matrix(
+    1,
+    nrow = 2,
+    ncol = 6,
+    dimnames = list(paste0("gene", 1:2), paste0("cell", 1:6))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
+  embedding <- cbind(
+    UMAP_1 = seq(-1, 1, length.out = 6),
+    UMAP_2 = c(-1, -0.4, 0, 0.3, 0.7, 1)
+  )
+  rownames(embedding) <- colnames(srt)
+  velocity <- cbind(
+    velocity_1 = rep(0.25, 6),
+    velocity_2 = rep(0.1, 6)
+  )
+  rownames(velocity) <- colnames(srt)
+  srt[["umap"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = embedding,
+    key = "UMAP_",
+    assay = "RNA"
+  )
+  srt[["stochastic_umap"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = velocity,
+    key = "velocity_",
+    assay = "RNA"
+  )
+  srt
+}
+
+test_that("VelocityPlot keeps arrowheads device-independent", {
+  layers <- VelocityPlot(
+    make_velocity_plot_object(),
+    reduction = "umap",
+    plot_type = "raw",
+    return_layer = TRUE
+  )
+  arrow_length <- layers$velocity_layer[[1]]$geom_params$arrow$length
+  expect_identical(grid::unitType(arrow_length), "mm")
+  expect_equal(as.numeric(arrow_length), 1.5)
+  expect_equal(layers$velocity_layer[[1]]$aes_params$linewidth, 0.25)
+})
+
 # ---------------------------------------------------------------------------
 # 1. Basic structural tests
 # ---------------------------------------------------------------------------

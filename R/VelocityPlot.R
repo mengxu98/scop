@@ -222,9 +222,10 @@ VelocityPlot <- function(
     )
     df_field[["length_perc"]] <- df_field[["length"]] / global_size
 
-    arrow_length <- grid::unit(
-      mean(df_field[["length_perc"]], na.rm = TRUE), "npc"
-    )
+    # Arrowheads must be device-independent. Scaling them in npc units makes
+    # dense velocity fields collapse into solid triangles when velocities are
+    # large relative to the embedding extent.
+    arrow_length <- grid::unit(1.5, "mm")
 
     if (!is.null(group.by)) {
       df_field[["group.by"]] <- srt@meta.data[
@@ -241,6 +242,8 @@ VelocityPlot <- function(
             type = "closed",
             angle = arrow_angle
           ),
+          linewidth = 0.25,
+          alpha = 0.75,
           lineend = "round",
           linejoin = "mitre",
           inherit.aes = FALSE
@@ -270,6 +273,8 @@ VelocityPlot <- function(
             type = "closed",
             angle = arrow_angle
           ),
+          linewidth = 0.25,
+          alpha = 0.75,
           lineend = "round",
           linejoin = "mitre",
           inherit.aes = FALSE
@@ -299,9 +304,7 @@ VelocityPlot <- function(
     )
     df_field[["length_perc"]] <- df_field[["length"]] / global_size
 
-    arrow_length <- grid::unit(
-      mean(df_field[["length_perc"]], na.rm = TRUE), "npc"
-    )
+    arrow_length <- grid::unit(1.5, "mm")
     velocity_layer <- list(
       geom_segment(
         data = df_field,
@@ -312,6 +315,8 @@ VelocityPlot <- function(
           type = "closed",
           angle = arrow_angle
         ),
+        linewidth = 0.3,
+        alpha = 0.8,
         lineend = "round",
         linejoin = "mitre",
         inherit.aes = FALSE
@@ -492,7 +497,6 @@ VelocityPlot <- function(
     return(
       ggplot() +
         velocity_layer +
-        lab_layer +
         lab_layer +
         theme_layer
     )
