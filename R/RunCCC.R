@@ -221,6 +221,7 @@ ccc_run_method_args <- function(
   thresh,
   params = list()
 ) {
+  spec <- ccc_method_spec(method)
   protected <- intersect(c("srt", "object", "group.by"), names(params))
   if (length(protected) > 0L) {
     log_message(
@@ -232,25 +233,19 @@ ccc_run_method_args <- function(
   }
 
   base <- list(group.by = group.by, verbose = verbose)
-  base[[if (identical(method, "MDIC3")) "object" else "srt"]] <- srt
-  if (!identical(method, "MDIC3") && !"backend" %in% names(params)) {
+  base[[spec$object_arg]] <- srt
+  if (isTRUE(spec$pass_backend) && !"backend" %in% names(params)) {
     base$backend <- backend
   }
-  if (identical(method, "CellChat") && !"thresh" %in% names(params)) {
+  if (isTRUE(spec$pass_thresh) && !"thresh" %in% names(params)) {
     base$thresh <- thresh
   }
   utils::modifyList(base, params, keep.null = TRUE)
 }
 
 ccc_preflight_method <- function(method, srt, params = list()) {
-  required <- switch(method,
-    Nichenetr = "receiver",
-    MultiNichenetr = c(
-      "sample.by", "condition.by", "condition_oi",
-      "condition_reference", "receiver_celltypes"
-    ),
-    character(0)
-  )
+  spec <- ccc_method_spec(method)
+  required <- spec$required_params
   missing <- required[
     !required %in% names(params) |
       vapply(required, function(nm) {
@@ -297,7 +292,7 @@ ccc_preflight_method <- function(method, srt, params = list()) {
       message_type = "error"
     )
   }
-  if (identical(method, "SpatialCellChat")) {
+  if (isTRUE(spec$requires_spatial)) {
     coord_cols <- params$coord.cols %||% c("col", "row")
     has_coords <- all(coord_cols %in% colnames(srt[[]]))
     has_images <- length(srt@images) > 0L
@@ -332,49 +327,72 @@ ccc_run_status_df <- function(status) {
 
 
 ccc_method_runner <- function(method) {
-  method <- normalize_ccc_method(method)
-  switch(method,
-    CellChat = RunCellChat,
-    CellphoneDB = RunCellphoneDB,
-    LIANA = RunLIANA,
-    Nichenetr = RunNichenetr,
-    MultiNichenetr = RunMultiNichenetr,
-    SpatialCellChat = RunSpatialCellChat,
-    MDIC3 = RunMDIC3,
-    ccc_unsupported_method(method)
-  )
+  spec <- ccc_method_spec(method)
+  get(spec$runner, mode = "function", inherits = TRUE)
 }
 
 
+ccc_method_specs <- function() {
+  list(
+    CellChat = list(
+      runner = "RunCellChat", aliases = "cellchat", required_params = character(),
+      object_arg = "srt", pass_backend = TRUE, pass_thresh = TRUE,
+      requires_spatial = FALSE
+    ),
+    CellphoneDB = list(
+      runner = "RunCellphoneDB",
+      aliases = c("cellphonedb", "cellphone_db", "cellphone db"),
+      required_params = character(), object_arg = "srt", pass_backend = TRUE,
+      pass_thresh = FALSE, requires_spatial = FALSE
+    ),
+    LIANA = list(
+      runner = "RunLIANA", aliases = "liana", required_params = character(),
+      object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
+      requires_spatial = FALSE
+    ),
+    Nichenetr = list(
+      runner = "RunNichenetr", aliases = c("nichenet", "nichenetr"),
+      required_params = "receiver", object_arg = "srt", pass_backend = TRUE,
+      pass_thresh = FALSE, requires_spatial = FALSE
+    ),
+    MultiNichenetr = list(
+      runner = "RunMultiNichenetr",
+      aliases = c("multinichenet", "multinichenetr"),
+      required_params = c(
+        "sample.by", "condition.by", "condition_oi",
+        "condition_reference", "receiver_celltypes"
+      ),
+      object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
+      requires_spatial = FALSE
+    ),
+    SpatialCellChat = list(
+      runner = "RunSpatialCellChat",
+      aliases = c("spatialcellchat", "spatial_cellchat", "spatial cellchat"),
+      required_params = character(), object_arg = "srt", pass_backend = TRUE,
+      pass_thresh = FALSE, requires_spatial = TRUE
+    ),
+    MDIC3 = list(
+      runner = "RunMDIC3", aliases = "mdic3", required_params = character(),
+      object_arg = "object", pass_backend = FALSE, pass_thresh = FALSE,
+      requires_spatial = FALSE
+    )
+  )
+}
+
+ccc_method_spec <- function(method, error = TRUE) {
+  method <- normalize_ccc_method(method)
+  spec <- ccc_method_specs()[[method]]
+  if (is.null(spec) && isTRUE(error)) {
+    ccc_unsupported_method(method)
+  }
+  spec
+}
+
+ccc_registered_methods <- function() {
+  names(ccc_method_specs())
+}
+
 normalize_ccc_method <- function(method) {
-  alias_map <- c(
-    "CCC" = "CCC",
-    "CellPhoneDB" = "CellphoneDB",
-    "CellphoneDB" = "CellphoneDB",
-    "Liana" = "LIANA",
-    "liana" = "LIANA",
-    "NicheNet" = "Nichenetr",
-    "MultiNicheNet" = "MultiNichenetr",
-    "SpatialCellChat" = "SpatialCellChat",
-    "MDIC3" = "MDIC3"
-  )
-  alias_map_lower <- c(
-    "ccc" = "CCC",
-    "unified" = "CCC",
-    "cellchat" = "CellChat",
-    "spatialcellchat" = "SpatialCellChat",
-    "spatial_cellchat" = "SpatialCellChat",
-    "spatial cellchat" = "SpatialCellChat",
-    "cellphonedb" = "CellphoneDB",
-    "cellphone_db" = "CellphoneDB",
-    "cellphone db" = "CellphoneDB",
-    "liana" = "LIANA",
-    "nichenet" = "Nichenetr",
-    "nichenetr" = "Nichenetr",
-    "multinichenet" = "MultiNichenetr",
-    "multinichenetr" = "MultiNichenetr",
-    "mdic3" = "MDIC3"
-  )
   method_chr <- as.character(method)[1]
   if (is.na(method_chr) || !nzchar(method_chr)) {
     log_message(
@@ -383,12 +401,16 @@ normalize_ccc_method <- function(method) {
     )
   }
   method_chr <- trimws(method_chr)
-  if (method_chr %in% names(alias_map)) {
-    return(unname(alias_map[[method_chr]]))
-  }
   key <- tolower(method_chr)
-  if (key %in% names(alias_map_lower)) {
-    return(unname(alias_map_lower[[key]]))
+  if (key %in% c("ccc", "unified")) {
+    return("CCC")
+  }
+  specs <- ccc_method_specs()
+  for (canonical in names(specs)) {
+    aliases <- unique(tolower(c(canonical, specs[[canonical]]$aliases)))
+    if (key %in% aliases) {
+      return(canonical)
+    }
   }
   method_chr
 }
