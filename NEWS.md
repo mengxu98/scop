@@ -9,6 +9,7 @@
   * `RunMERINGUE()` gains a `backend = c("cpp", "r")` option; the C++ kernels replicate `MERINGUE::moranTest()`/`moranPermutationTest()` to machine precision (including the `sample.kind` RNG stream). `backend = "r"` retains the original calls and honors `moran_params`.
   * Real-data consistency tests verify the wrappers against the original pipelines (CellChat, SpatialCellChat, LIANA, BayesSpace, MERINGUE, SPOTlight, SpaNorm, SpatialDWLS, RCTD, BANKSY, CARD, SpotSweeper, PRECAST).
 * **fixed**:
+  * `RunSpaTalk()` now reuses stored `RunRCTD()` weights through SpaTalk method 2, records the deconvolution source, and accepts a working installed SpaTalk package even when its DESCRIPTION lacks GitHub remote metadata.
   * `RunLIANA()` now preserves the field set returned by LIANA's official consensus mode: rank consensus no longer gains all-`NA` aggregate/significance placeholders, aggregate consensus no longer gains all-`NA` magnitude/specificity placeholders, and deterministic ligand-receptor display identifiers are completed during SCOP/LIANA export.
   * `RunCNV()` attaches backend packages to the search path during execution so lazy data objects (copykat `full.anno`, fastCNV `geneMetadata`, numbat `gtf_hg38`) are resolvable from backend namespace code; `copykat` is installed from its GitHub source (`navinlabcode/copykat`) because it was removed from CRAN.
   * `RunCNV(numbat)` prefers the plain `seg` column over `seg_label` when reading `joint_post` output, so segment identifiers are not polluted with the `(loh)` suffix.

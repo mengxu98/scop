@@ -13,11 +13,9 @@ make_spatalk_test_object <- function() {
 
 mock_spatalk_bindings <- function(dec_seen = NULL, fail_cci = FALSE) {
   testthat::local_mocked_bindings(
-    check_r = function(repos, verbose = FALSE, ...) {
-      expect_identical(
-        repos,
-        c("linxihui/NNLM", "ZJUFanLab/SpaTalk")
-      )
+    check_r = function(repos, verbose = FALSE, install = TRUE, ...) {
+      expect_identical(repos, c("NNLM", "SpaTalk"))
+      expect_false(install)
       list(NNLM = TRUE, SpaTalk = TRUE)
     },
     get_namespace_fun = function(package, fun) {
@@ -32,10 +30,15 @@ mock_spatalk_bindings <- function(dec_seen = NULL, fail_cci = FALSE) {
           )
         },
         dec_celltype = function(object, sc_data, sc_celltype, method = 1, dec_result = NULL, ...) {
-          if (!is.null(dec_seen)) dec_seen$value <- TRUE
-          object$coef <- matrix(
-            c(0.7, 0.3, 0.2, 0.8), nrow = 2,
-            dimnames = list(colnames(object$data$rawdata)[1:2], c("A", "B"))
+          if (!is.null(dec_seen)) {
+            dec_seen$value <- TRUE
+            dec_seen$method <- method
+            dec_seen$dec_result <- dec_result
+          }
+          object$coef <- dec_result %||% matrix(
+            rep(c(0.7, 0.3), ncol(object$data$rawdata)), ncol = 2,
+            byrow = TRUE,
+            dimnames = list(colnames(object$data$rawdata), c("A", "B"))
           )
           object
         },
@@ -78,6 +81,43 @@ mock_spatalk_bindings <- function(dec_seen = NULL, fail_cci = FALSE) {
   )
 }
 
+test_that("SpaTalk preflight accepts installed packages without remote metadata", {
+  seen <- new.env(parent = emptyenv())
+  seen$calls <- list()
+  testthat::local_mocked_bindings(
+    check_r = function(repos, verbose = FALSE, install = TRUE, ...) {
+      seen$calls[[length(seen$calls) + 1L]] <- list(repos = repos, install = install)
+      list(NNLM = TRUE, SpaTalk = TRUE)
+    },
+    .package = "scop"
+  )
+  expect_invisible(spatalk_check_r())
+  expect_length(seen$calls, 1L)
+  expect_identical(seen$calls[[1L]]$repos, c("NNLM", "SpaTalk"))
+  expect_false(seen$calls[[1L]]$install)
+})
+
+test_that("SpaTalk preflight falls back to official repositories when absent", {
+  seen <- new.env(parent = emptyenv())
+  seen$calls <- list()
+  testthat::local_mocked_bindings(
+    check_r = function(repos, verbose = FALSE, install = TRUE, ...) {
+      seen$calls[[length(seen$calls) + 1L]] <- list(repos = repos, install = install)
+      if (identical(repos, c("NNLM", "SpaTalk"))) {
+        return(list(NNLM = FALSE, SpaTalk = FALSE))
+      }
+      list(NNLM = TRUE, SpaTalk = TRUE)
+    },
+    .package = "scop"
+  )
+  expect_invisible(spatalk_check_r())
+  expect_length(seen$calls, 2L)
+  expect_identical(
+    seen$calls[[2L]]$repos,
+    c("linxihui/NNLM", "ZJUFanLab/SpaTalk")
+  )
+})
+
 test_that("RunSpaTalk stores official single-cell results and unified CCC rows", {
   srt <- make_spatalk_test_object()
   mock_spatalk_bindings()
@@ -111,8 +151,69 @@ test_that("RunSpaTalk spot mode runs NNLM deconvolution and can retain native ou
     backend = "r", verbose = FALSE
   )
   expect_true(seen$value)
+  expect_identical(seen$method, 1L)
+  expect_null(seen$dec_result)
   expect_true(is.list(out@tools$SpaTalk$results$default$native_object))
   expect_true(is.matrix(out@tools$SpaTalk$results$default$deconvolution))
+})
+
+test_that("RunSpaTalk reuses stored RCTD weights with SpaTalk method 2", {
+  spatial <- make_spatalk_test_object()
+  reference <- make_spatalk_test_object()
+  reference$ref_type <- c("A", "A", "B", "B")
+  weights <- matrix(
+    c(0.1, 0.9, 0.2, 0.8, 0.3, 0.7, 0.4, 0.6),
+    ncol = 2, byrow = TRUE,
+    dimnames = list(rev(colnames(spatial)), c("A", "B"))
+  )
+  spatial@tools$RCTD <- list(weights = weights)
+  seen <- new.env(parent = emptyenv())
+  seen$value <- FALSE
+  mock_spatalk_bindings(dec_seen = seen)
+
+  out <- RunSpaTalk(
+    spatial, group.by = "celltype", mode = "spot",
+    reference = reference, reference.group.by = "ref_type",
+    deconvolution = "RCTD", coord.cols = c("col", "row"),
+    backend = "r", verbose = FALSE
+  )
+
+  expected <- weights[colnames(spatial), , drop = FALSE]
+  expect_true(seen$value)
+  expect_identical(seen$method, 2L)
+  expect_identical(seen$dec_result, expected)
+  expect_identical(
+    out@tools$SpaTalk$parameters$deconvolution_source,
+    "srt@tools$RCTD$weights"
+  )
+  expect_identical(out@tools$SpaTalk$results$default$deconvolution, expected)
+  expect_null(out@tools$SpaTalk$parameters$backend_args$dec_result)
+})
+
+test_that("RunSpaTalk accepts an explicit external deconvolution matrix", {
+  spatial <- make_spatalk_test_object()
+  reference <- make_spatalk_test_object()
+  reference$ref_type <- c("A", "A", "B", "B")
+  dec_result <- matrix(
+    rep(c(0.6, 0.4), ncol(spatial)), ncol = 2, byrow = TRUE,
+    dimnames = list(colnames(spatial), c("A", "B"))
+  )
+  seen <- new.env(parent = emptyenv())
+  mock_spatalk_bindings(dec_seen = seen)
+
+  out <- RunSpaTalk(
+    spatial, group.by = "celltype", mode = "spot",
+    reference = reference, reference.group.by = "ref_type",
+    deconvolution = "none", dec_result = dec_result,
+    coord.cols = c("col", "row"), backend = "r", verbose = FALSE
+  )
+
+  expect_identical(seen$method, 2L)
+  expect_identical(seen$dec_result, dec_result)
+  expect_identical(
+    out@tools$SpaTalk$parameters$deconvolution_source,
+    "dec_result argument"
+  )
 })
 
 test_that("RunSpaTalk validates spot inputs before backend execution", {
@@ -133,6 +234,27 @@ test_that("RunSpaTalk validates spot inputs before backend execution", {
       deconvolution = "none", coord.cols = c("col", "row"), verbose = FALSE
     ),
     "dec_result"
+  )
+  expect_error(
+    RunSpaTalk(
+      spatial, group.by = "celltype", mode = "spot",
+      reference = reference, reference.group.by = "ref_type",
+      deconvolution = "RCTD", coord.cols = c("col", "row"), verbose = FALSE
+    ),
+    "Stored RCTD weights are absent"
+  )
+  invalid <- matrix(
+    c(1, 0, 0, 1, 1, 0), ncol = 2, byrow = TRUE,
+    dimnames = list(colnames(spatial)[1:3], c("A", "B"))
+  )
+  spatial@tools$RCTD <- list(weights = invalid)
+  expect_error(
+    RunSpaTalk(
+      spatial, group.by = "celltype", mode = "spot",
+      reference = reference, reference.group.by = "ref_type",
+      deconvolution = "RCTD", coord.cols = c("col", "row"), verbose = FALSE
+    ),
+    "is missing 1 selected"
   )
 })
 
