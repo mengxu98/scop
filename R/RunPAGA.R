@@ -428,6 +428,7 @@ run_paga_cpp <- function(
       group_sizes = as.numeric(paga[["group_sizes"]]),
       min_group_size = min_group_size
     )
+    names(dpt$pseudotime) <- group_levels
     srt@tools[["PAGA"]]$pseudotime <- dpt$pseudotime
     srt@tools[["PAGA"]]$diffusion_components <- dpt$diffusion_components
     srt@tools[["PAGA"]]$diffusion_eigenvalues <- dpt$diffusion_eigenvalues
@@ -435,7 +436,6 @@ run_paga_cpp <- function(
     srt@tools[["PAGA"]]$parameters$n_dcs <- n_dcs
     srt@tools[["PAGA"]]$parameters$infer_pseudotime <- TRUE
     srt@tools[["PAGA"]]$parameters$n_branchings <- n_branchings
-    names(dpt$pseudotime) <- group_levels
     log_message(
       "{.pkg PAGA} diffusion pseudotime computed (root: {.val {group_levels[root_grp]}})",
       message_type = "success",

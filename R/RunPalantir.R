@@ -572,7 +572,7 @@ run_palantir_cpp <- function(
     ms_data_scaled <- ms_data
   }
 
-  n_wp_target <- min(as.integer(num_waypoints), n_cells)
+  n_wp_target <- as.integer(num_waypoints)
   wp <- palantir_maxmin_waypoints_cpp(
     ms_data = ms_data_scaled,
     num_waypoints = as.integer(n_wp_target),
@@ -765,6 +765,7 @@ run_palantir_cpp <- function(
   colnames(branch_probs_all) <- colnames(branch_probs)
 
   ent <- palantir_row_entropy_cpp(branch_probs_all)
+  names(ent) <- cell_names
   srt[["palantir_pseudotime"]] <- pseudotime[colnames(srt)]
   srt[["palantir_diff_potential"]] <- ent[colnames(srt)]
   branch_meta <- as.data.frame(branch_probs_all[colnames(srt), , drop = FALSE])

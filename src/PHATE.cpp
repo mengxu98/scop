@@ -266,12 +266,13 @@ NumericMatrix phate_diffusion_operator_cpp(
     Pt = Pt * P;
   }
 
-  // Convert to log-space: log(P^t + epsilon) for potential distance
-  const double eps = 1e-10;
+  // Convert to log-space: log(P^t + epsilon) for potential distance.
+  // scVelo/PHATE uses a small floor of 1e-7 before the log.
+  const double eps = 1e-7;
   mat logPt = zeros<mat>(n_cells, n_cells);
   for (int i = 0; i < n_cells; ++i) {
     for (int j = 0; j < n_cells; ++j) {
-      logPt(i, j) = std::log(std::max(Pt(i, j), eps));
+      logPt(i, j) = std::log(Pt(i, j) + eps);
     }
   }
 
@@ -379,34 +380,37 @@ NumericMatrix phate_metric_mds_cpp(
 
   mat dist(D.begin(), n, n, false);
 
-  // Double-center the squared distance matrix: B = -0.5 * J * D² * J
+  // Match phate.mds.classic exactly: double-center the squared distance
+  // matrix, then run PCA on it (scores = U * singular_values).
   mat D2 = dist % dist;  // element-wise square
 
-  // Centering matrix J = I - (1/n) * 1*1^T
-  vec one_vec = arma::ones<vec>(n);
-  mat J = eye<mat>(n, n) - (one_vec * one_vec.t()) / static_cast<double>(n);
+  // Center columns (Python classic subtracts the column mean first).
+  mat centered = D2;
+  for (int j = 0; j < n; ++j) {
+    double col_mean = 0.0;
+    for (int i = 0; i < n; ++i) col_mean += D2(i, j);
+    col_mean /= static_cast<double>(n);
+    for (int i = 0; i < n; ++i) centered(i, j) -= col_mean;
+  }
+  // Center rows.
+  for (int i = 0; i < n; ++i) {
+    double row_mean = 0.0;
+    for (int j = 0; j < n; ++j) row_mean += centered(i, j);
+    row_mean /= static_cast<double>(n);
+    for (int j = 0; j < n; ++j) centered(i, j) -= row_mean;
+  }
 
-  mat B = -0.5 * J * D2 * J;
+  // PCA via SVD of the centered matrix.
+  mat U;
+  vec s;
+  mat V;
+  svd(U, s, V, centered);
 
-  // Eigendecomposition of B (symmetric)
-  vec eigval;
-  mat eigvec;
-  eig_sym(eigval, eigvec, B);
-
-  // Sort eigenvalues descending (Armadillo returns ascending)
-  // Take top n_components
   NumericMatrix embedding(n, n_components);
   for (int c = 0; c < n_components; ++c) {
-    int src = n - 1 - c;  // descending order
-    double ev = eigval(src);
-    if (ev <= 0.0) {
-      // Fill remaining columns with zeros
-      for (int i = 0; i < n; ++i) embedding(i, c) = 0.0;
-    } else {
-      double scale = std::sqrt(ev);
-      for (int i = 0; i < n; ++i) {
-        embedding(i, c) = eigvec(i, src) * scale;
-      }
+    double sv = s(c);
+    for (int i = 0; i < n; ++i) {
+      embedding(i, c) = U(i, c) * sv;
     }
   }
 
@@ -414,9 +418,8 @@ NumericMatrix phate_metric_mds_cpp(
 }
 
 // ── 5. Optimal diffusion time via Von Neumann entropy ─────────────────────
-// Finds the optimal t by minimizing the rate of change of
-// Von Neumann entropy of the powered diffusion operator.
-// Returns: optimal t (1 ≤ t ≤ t_max)
+// Matches phate.vne.compute_von_neumann_entropy + find_knee_point.
+// Returns: optimal t as selected by the Python phate reference.
 //
 // [[Rcpp::export]]
 int phate_find_optimal_t_cpp(
@@ -447,34 +450,99 @@ int phate_find_optimal_t_cpp(
     }
   }
 
-  // Compute VNE at each t
-  mat Pt = P;
+  // Compute VNE exactly as phate.vne.compute_von_neumann_entropy:
+  // singular values of P, then for each t use singular_values^(t+1).
+  vec sv;
+  mat U;
+  mat V;
+  svd(U, sv, V, P);
+  const double dbl_eps = std::numeric_limits<double>::epsilon();
   std::vector<double> vne_vals(t_max);
   for (int t = 0; t < t_max; ++t) {
-    if (t > 0) Pt = Pt * P;
-
-    // Von Neumann entropy: -sum(λ * log(λ))
-    vec eigval;
-    mat eigvec;
-    eig_sym(eigval, eigvec, (Pt + Pt.t()) / 2.0);  // symmetrize for stability
+    double sum_eig = 0.0;
+    for (int i = 0; i < n_cells; ++i) {
+      double v = std::pow(sv(i), static_cast<double>(t + 1));
+      sum_eig += v;
+    }
     double vne = 0.0;
     for (int i = 0; i < n_cells; ++i) {
-      double lambda = std::abs(eigval(i));
-      if (lambda > 1e-15) vne -= lambda * std::log(lambda);
+      double v = std::pow(sv(i), static_cast<double>(t + 1));
+      double prob = sum_eig > 0.0 ? v / sum_eig : 0.0;
+      prob += dbl_eps;
+      if (prob > 0.0) vne -= prob * std::log(prob);
     }
     vne_vals[t] = vne;
   }
 
-  // Find knee point: max second derivative (minimum rate of VNE change)
-  int optimal_t = 1;
-  double min_curvature = std::numeric_limits<double>::max();
-  for (int t = 1; t < t_max - 1; ++t) {
-    double curvature = std::abs(vne_vals[t+1] - 2.0 * vne_vals[t] + vne_vals[t-1]);
-    if (curvature < min_curvature) {
-      min_curvature = curvature;
-      optimal_t = t + 1;
+  // Find knee point exactly as phate.vne.find_knee_point.
+  if (t_max < 3) return 1;
+  std::vector<double> x(t_max), y(t_max);
+  for (int i = 0; i < t_max; ++i) {
+    x[i] = static_cast<double>(i);
+    y[i] = vne_vals[i];
+  }
+
+  const int m = t_max - 1;  // number of cumulative fits
+  std::vector<double> sigma_xy(m), sigma_x(m), sigma_y(m), sigma_xx(m);
+  std::vector<double> mfwd(m), bfwd(m), mbck(m), bbck(m);
+
+  // Python's find_knee_point accumulates from two points onward
+  // (np.cumsum(...)[1:]), so the first fit covers x[0] and x[1].
+  double cs_x = x[0], cs_y = y[0], cs_xx = x[0] * x[0], cs_xy = x[0] * y[0];
+  for (int i = 0; i < m; ++i) {
+    cs_x += x[i + 1];
+    cs_y += y[i + 1];
+    cs_xx += x[i + 1] * x[i + 1];
+    cs_xy += x[i + 1] * y[i + 1];
+    const double nn = static_cast<double>(i + 2);
+    const double det = nn * cs_xx - cs_x * cs_x;
+    if (std::abs(det) > 1e-15) {
+      mfwd[i] = (nn * cs_xy - cs_x * cs_y) / det;
+      bfwd[i] = -(cs_x * cs_xy - cs_xx * cs_y) / det;
+    } else {
+      mfwd[i] = 0.0;
+      bfwd[i] = 0.0;
     }
   }
 
-  return std::max(1, optimal_t);
+  // Reverse fit: first fit covers the last two points.
+  cs_x = x[t_max - 1]; cs_y = y[t_max - 1];
+  cs_xx = x[t_max - 1] * x[t_max - 1];
+  cs_xy = x[t_max - 1] * y[t_max - 1];
+  for (int i = 0; i < m; ++i) {
+    const int rev = t_max - 2 - i;
+    cs_x += x[rev];
+    cs_y += y[rev];
+    cs_xx += x[rev] * x[rev];
+    cs_xy += x[rev] * y[rev];
+    const double nn = static_cast<double>(i + 2);
+    const double det = nn * cs_xx - cs_x * cs_x;
+    if (std::abs(det) > 1e-15) {
+      mbck[m - 1 - i] = (nn * cs_xy - cs_x * cs_y) / det;
+      bbck[m - 1 - i] = -(cs_x * cs_xy - cs_xx * cs_y) / det;
+    } else {
+      mbck[m - 1 - i] = 0.0;
+      bbck[m - 1 - i] = 0.0;
+    }
+  }
+
+  double best_error = std::numeric_limits<double>::max();
+  int loc = 1;
+  for (int breakpt = 1; breakpt < t_max - 1; ++breakpt) {
+    double err = 0.0;
+    for (int i = 0; i <= breakpt; ++i) {
+      const double pred = mfwd[breakpt - 1] * x[i] + bfwd[breakpt - 1];
+      err += std::abs(pred - y[i]);
+    }
+    for (int i = breakpt; i < t_max; ++i) {
+      const double pred = mbck[breakpt - 1] * x[i] + bbck[breakpt - 1];
+      err += std::abs(pred - y[i]);
+    }
+    if (err < best_error) {
+      best_error = err;
+      loc = breakpt;
+    }
+  }
+
+  return static_cast<int>(x[loc]);
 }
