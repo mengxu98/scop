@@ -17,7 +17,8 @@ RunSpaTalk(
   reference.layer = "counts",
   image = NULL,
   coord.cols = c("col", "row"),
-  deconvolution = c("NNLM", "none"),
+  deconvolution = c("NNLM", "RCTD", "none"),
+  rctd.tool = "RCTD",
   result.name = "default",
   store.object = c("minimal", "full"),
   overwrite = FALSE,
@@ -49,7 +50,12 @@ supplied and single-cell mode otherwise.}
 \item{coord.cols}{Metadata coordinate columns used when no image is present.}
 
 \item{deconvolution}{Spot deconvolution mode. `"NNLM"` runs SpaTalk method 1;
-`"none"` requires a named `dec_result` matrix in `...`.}
+`"RCTD"` reuses `srt@tools[[rctd.tool]]$weights` from [RunRCTD()] (or an
+explicitly supplied `dec_result`); `"none"` requires a named external
+`dec_result` matrix in `...`. Imported matrices use SpaTalk method 2.}
+
+\item{rctd.tool}{Tool key containing stored RCTD weights when
+`deconvolution = "RCTD"`.}
 
 \item{result.name}{Stored result name.}
 

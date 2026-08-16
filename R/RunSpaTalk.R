@@ -9,10 +9,17 @@ spatalk_required_symbols <- function() {
 }
 
 spatalk_check_r <- function() {
-  available <- check_r(
-    c(.spatalk_nnlm_repository, .spatalk_repository),
+  package_status <- check_r(
+    c("NNLM", .spatalk_package),
+    install = FALSE,
     verbose = FALSE
   )
+  package_status <- unname(unlist(package_status, use.names = FALSE))
+  package_status <- suppressWarnings(as.logical(package_status))
+  if (length(package_status) == 2L && !anyNA(package_status) && all(package_status)) {
+    return(invisible(TRUE))
+  }
+  available <- check_r(c(.spatalk_nnlm_repository, .spatalk_repository), verbose = FALSE)
   available <- unname(unlist(available, use.names = FALSE))
   available <- suppressWarnings(as.logical(available))
   if (length(available) != 2L || anyNA(available) || !all(available)) {
@@ -157,6 +164,110 @@ spatalk_reference_input <- function(reference, reference.group.by, assay, layer)
   list(expression = expression, labels = labels, assay = assay)
 }
 
+spatalk_normalize_ids <- function(x) {
+  gsub("[ -]", "_", as.character(x))
+}
+
+spatalk_prepare_dec_result <- function(dec_result, spot_ids, reference_labels, source) {
+  if (!is.matrix(dec_result) && !methods::is(dec_result, "Matrix")) {
+    log_message(
+      "SpaTalk {.arg dec_result} from {.val {source}} must be a numeric matrix",
+      message_type = "error"
+    )
+  }
+  dec_result <- as.matrix(dec_result)
+  if (!is.numeric(dec_result) || nrow(dec_result) == 0L || ncol(dec_result) == 0L ||
+      is.null(rownames(dec_result)) || is.null(colnames(dec_result)) ||
+      anyNA(rownames(dec_result)) || anyNA(colnames(dec_result)) ||
+      any(!nzchar(rownames(dec_result))) || any(!nzchar(colnames(dec_result))) ||
+      anyDuplicated(rownames(dec_result)) || anyDuplicated(colnames(dec_result))) {
+    log_message(
+      "SpaTalk {.arg dec_result} from {.val {source}} must have unique spot and cell-type names",
+      message_type = "error"
+    )
+  }
+  if (any(!is.finite(dec_result)) || any(dec_result < 0)) {
+    log_message(
+      "SpaTalk {.arg dec_result} from {.val {source}} must contain finite non-negative weights",
+      message_type = "error"
+    )
+  }
+  missing_spots <- setdiff(spot_ids, rownames(dec_result))
+  if (length(missing_spots) > 0L) {
+    log_message(
+      "SpaTalk {.arg dec_result} from {.val {source}} is missing {.val {length(missing_spots)}} selected spot{?s}",
+      message_type = "error"
+    )
+  }
+  dec_result <- dec_result[spot_ids, , drop = FALSE]
+  if (any(rowSums(dec_result) <= 0)) {
+    log_message(
+      "SpaTalk {.arg dec_result} from {.val {source}} has selected spots with zero total weight",
+      message_type = "error"
+    )
+  }
+  normalized_types <- spatalk_normalize_ids(colnames(dec_result))
+  normalized_reference <- spatalk_normalize_ids(unique(reference_labels))
+  if (anyDuplicated(normalized_types) || anyDuplicated(normalized_reference)) {
+    log_message(
+      "SpaTalk cell-type names become duplicated after replacing spaces or hyphens with underscores",
+      message_type = "error"
+    )
+  }
+  unknown_types <- setdiff(normalized_types, normalized_reference)
+  if (length(unknown_types) > 0L) {
+    log_message(
+      "SpaTalk {.arg dec_result} cell types are absent from {.arg reference.group.by}: {.val {paste(unknown_types, collapse = ', ')}}",
+      message_type = "error"
+    )
+  }
+  dec_result
+}
+
+spatalk_deconvolution_spec <- function(
+  srt, input, reference_input, deconvolution, rctd.tool, dots
+) {
+  dec_result <- dots$dec_result %||% NULL
+  dots$dec_result <- NULL
+  if (identical(deconvolution, "NNLM")) {
+    if (!is.null(dec_result)) {
+      log_message(
+        "Do not supply {.arg dec_result} with {.arg deconvolution = 'NNLM'}; use {.val RCTD} or {.val none}",
+        message_type = "error"
+      )
+    }
+    return(list(method = 1L, dec_result = NULL, source = "SpaTalk NNLM", dots = dots))
+  }
+  source <- "dec_result argument"
+  if (identical(deconvolution, "RCTD") && is.null(dec_result)) {
+    if (!is.character(rctd.tool) || length(rctd.tool) != 1L || is.na(rctd.tool) || !nzchar(rctd.tool)) {
+      log_message("{.arg rctd.tool} must be one non-empty tool name", message_type = "error")
+    }
+    stored <- srt@tools[[rctd.tool]]
+    dec_result <- stored$weights %||% NULL
+    source <- paste0("srt@tools$", rctd.tool, "$weights")
+    if (is.null(dec_result)) {
+      log_message(
+        "Stored RCTD weights are absent at {.code {source}}; run {.fn RunRCTD} first or provide {.arg dec_result}",
+        message_type = "error"
+      )
+    }
+  }
+  if (is.null(dec_result)) {
+    log_message(
+      "{.arg deconvolution = 'none'} requires a named {.arg dec_result} matrix in {.arg ...}",
+      message_type = "error"
+    )
+  }
+  dec_result <- spatalk_prepare_dec_result(
+    dec_result = dec_result,
+    spot_ids = input$cells,
+    reference_labels = reference_input$labels,
+    source = source
+  )
+  list(method = 2L, dec_result = dec_result, source = source, dots = dots)
+}
+
 spatalk_pick_col <- function(df, candidates) {
   hit <- intersect(candidates, colnames(df))
   if (length(hit) == 0L) NULL else hit[[1L]]
@@ -240,7 +351,11 @@ spatalk_validate_bundle <- function(bundle) {
 #' @param image Explicit spatial image. Required for multi-image objects.
 #' @param coord.cols Metadata coordinate columns used when no image is present.
 #' @param deconvolution Spot deconvolution mode. `"NNLM"` runs SpaTalk method 1;
-#'   `"none"` requires a named `dec_result` matrix in `...`.
+#'   `"RCTD"` reuses `srt@tools[[rctd.tool]]$weights` from [RunRCTD()] (or an
+#'   explicitly supplied `dec_result`); `"none"` requires a named external
+#'   `dec_result` matrix in `...`. Imported matrices use SpaTalk method 2.
+#' @param rctd.tool Tool key containing stored RCTD weights when
+#'   `deconvolution = "RCTD"`.
 #' @param result.name Stored result name.
 #' @param store.object Whether to store the full upstream SpaTalk object.
 #' @param overwrite Whether to replace an existing named result.
@@ -281,7 +396,8 @@ RunSpaTalk <- function(
   reference.layer = "counts",
   image = NULL,
   coord.cols = c("col", "row"),
-  deconvolution = c("NNLM", "none"),
+  deconvolution = c("NNLM", "RCTD", "none"),
+  rctd.tool = "RCTD",
   result.name = "default",
   store.object = c("minimal", "full"),
   overwrite = FALSE,
@@ -312,10 +428,15 @@ RunSpaTalk <- function(
     }
   }
   dots <- list(...)
-  if (identical(mode, "spot") && identical(deconvolution, "none") && is.null(dots$dec_result)) {
-    log_message("{.arg deconvolution = 'none'} requires {.arg dec_result} in {.arg ...}", message_type = "error")
-  }
   spot_max_cell <- dots$spot_max_cell %||% if (identical(mode, "single_cell")) 1L else 30L
+  deconvolution_spec <- NULL
+  if (identical(mode, "spot")) {
+    deconvolution_spec <- spatalk_deconvolution_spec(
+      srt = srt, input = input, reference_input = reference_input,
+      deconvolution = deconvolution, rctd.tool = rctd.tool, dots = dots
+    )
+    dots <- deconvolution_spec$dots
+  }
 
   spatalk_check_r()
   create_fun <- spatalk_get_fun("createSpaTalk")
@@ -351,7 +472,8 @@ RunSpaTalk <- function(
         object = native,
         sc_data = reference_input$expression,
         sc_celltype = reference_input$labels,
-        method = 1
+        method = deconvolution_spec$method,
+        dec_result = deconvolution_spec$dec_result
       ),
       dots
     )
@@ -380,6 +502,9 @@ RunSpaTalk <- function(
     reference.layer = reference.layer, image = input$source$image %||% image,
     coord.cols = coord.cols, coordinate_space = "raw",
     deconvolution = deconvolution, result.name = result.name,
+    deconvolution_source = deconvolution_spec$source %||% "single-cell labels",
+    rctd.tool = if (identical(deconvolution, "RCTD")) rctd.tool else NULL,
+    dec_result_dimensions = if (is.null(deconvolution_spec$dec_result)) NULL else dim(deconvolution_spec$dec_result),
     store.object = store.object, spot_max_cell = spot_max_cell,
     backend = backend, backend_scope = "unified CCC result aggregation",
     backend_args = dots
