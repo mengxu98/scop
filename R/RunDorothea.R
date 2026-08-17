@@ -80,7 +80,20 @@
 #'   features = tf_use,
 #'   ncol = 2
 #' )
+#' FeatureStatPlot(
+#'   pancreas_sub,
+#'   assay = "dorothea",
+#'   stat.by = tf_use,
+#'   group.by = "CellType",
+#'   plot_type = "violin"
+#' )
 #'
+#' DorotheaPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   features = "Sox9",
+#'   plot_type = "dim"
+#' )
 #' DorotheaPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -89,7 +102,6 @@
 #'   plot_type = "bar",
 #'   top_n = 20
 #' )
-#'
 #' ht <- DorotheaPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
@@ -97,6 +109,14 @@
 #'   top_n = 20
 #' )
 #' ht$plot
+#' DorotheaPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   group1 = "Endocrine",
+#'   group2 = "Ductal",
+#'   features = "Sox9",
+#'   plot_type = "targets"
+#' )
 RunDorothea <- function(
   srt,
   assay = NULL,
@@ -327,6 +347,7 @@ RunDorothea <- function(
   srt@tools[["Dorothea"]] <- list(
     scores = scores,
     result = res_df,
+    regulons = regulons,
     regulon_summary = data.frame(
       n_tfs = length(unique(regulons[["tf"]])),
       n_targets = length(unique(regulons[["target"]])),

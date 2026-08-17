@@ -9,7 +9,7 @@ DorotheaPlot(
   group.by,
   group1 = NULL,
   group2 = NULL,
-  plot_type = c("bar", "lollipop", "heatmap", "volcano"),
+  plot_type = c("bar", "lollipop", "heatmap", "volcano", "dim", "stat", "targets"),
   tool_name = "Dorothea",
   assay_name = NULL,
   features = NULL,
@@ -29,6 +29,14 @@ DorotheaPlot(
   group_palcolor = NULL,
   exp_method = c("zscore", "raw"),
   heatmap_args = list(),
+  dim_args = list(),
+  stat_args = list(),
+  compare_expression = TRUE,
+  expression_assay = NULL,
+  expression_layer = "data",
+  stat_plot_type = c("violin", "box", "dot", "bar", "col"),
+  nlabel = 10,
+  reduction = NULL,
   bar_width = 0.72,
   point_size = 3.2,
   aspect.ratio = NULL,
@@ -52,25 +60,31 @@ DorotheaPlot(
 \item{group.by}{Metadata column used to define groups.}
 
 \item{group1, group2}{Two group labels to compare. Required for \code{"bar"},
-\code{"lollipop"}, and \code{"volcano"}. Positive logFC means higher TF activity in
-\code{group1}. Ignored when \code{plot_type = "heatmap"}.}
+\code{"lollipop"}, \code{"volcano"}, and \code{"targets"}. Positive logFC means higher
+TF activity (or target expression) in \code{group1}. Ignored for \code{"heatmap"},
+\code{"dim"}, and \code{"stat"}.}
 
 \item{plot_type}{Plot type. \code{"bar"} and \code{"lollipop"} show signed activity
-differences, \code{"volcano"} shows significance versus logFC, and \code{"heatmap"}
-draws a \code{\link[=GroupHeatmap]{GroupHeatmap()}} of TF activity.}
+differences, \code{"volcano"} shows TF-level significance versus logFC,
+\code{"heatmap"} draws a \code{\link[=GroupHeatmap]{GroupHeatmap()}} of TF activity, \code{"dim"} compares
+activity and expression on embeddings, \code{"stat"} draws activity
+distributions, and \code{"targets"} shows a regulon-target volcano.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry created by \code{\link[=RunDorothea]{RunDorothea()}}.}
 
-\item{assay_name}{Assay used for \code{plot_type = "heatmap"}. If \code{NULL}, the
-assay stored by \code{\link[=RunDorothea]{RunDorothea()}} is used, or \code{"dorothea"}.}
+\item{assay_name}{Assay used for \code{"heatmap"}, \code{"dim"}, and \code{"stat"}. If
+\code{NULL}, the assay stored by \code{\link[=RunDorothea]{RunDorothea()}} is used, or \code{"dorothea"}.}
 
 \item{features}{TFs to plot. If \code{NULL}, comparison plots use the top
-\code{top_n} TFs, and heatmaps use the \code{top_n} most variable TFs.}
+\code{top_n} TFs, heatmaps and \code{"stat"} use the \code{top_n} most variable TFs,
+\code{"dim"} uses TFs present in both activity and expression assays, and
+\code{"targets"} uses the TF with the largest absolute activity difference.}
 
 \item{top_n}{Number of TFs to show when \code{features = NULL}. Set \code{NULL} to
 show all tested TFs.}
 
-\item{test.use}{Statistical test used for each TF in comparison plots.}
+\item{test.use}{Statistical test used for each TF or target gene in
+comparison plots.}
 
 \item{p.adjust.method}{Method passed to \link[stats:p.adjust]{stats::p.adjust}.}
 
@@ -84,7 +98,7 @@ comparison plots.}
 \item{p_floor}{Lower bound used before \code{-log10()} transformation.}
 
 \item{padjustCutoff}{Adjusted p-value cutoff used to mark significant TFs
-in \code{"volcano"} plots.}
+in \code{"volcano"} plots and non-supporting targets in \code{"targets"} plots.}
 
 \item{palette, palcolor}{Palette passed to \code{palette_colors()} for comparison
 plots. Default is \code{"RdBu"}.}
@@ -93,16 +107,37 @@ plots. Default is \code{"RdBu"}.}
 when \code{plot_type = "heatmap"}.}
 
 \item{group_palette, group_palcolor}{Group annotation palette passed to
-\code{\link[=GroupHeatmap]{GroupHeatmap()}}.}
+\code{\link[=GroupHeatmap]{GroupHeatmap()}} and \code{\link[=CellDimPlot]{CellDimPlot()}}.}
 
 \item{exp_method}{Scaling method passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}} for
 \code{plot_type = "heatmap"}.}
 
 \item{heatmap_args}{Additional arguments passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}}.}
 
+\item{dim_args}{Additional arguments passed to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} and
+\code{\link[=CellDimPlot]{CellDimPlot()}} when \code{plot_type = "dim"}.}
+
+\item{stat_args}{Additional arguments passed to \code{\link[=FeatureStatPlot]{FeatureStatPlot()}} when
+\code{plot_type = "stat"}.}
+
+\item{compare_expression}{Whether \code{"dim"} also plots TF gene expression
+beside TF activity. Default is \code{TRUE}.}
+
+\item{expression_assay, expression_layer}{Assay and layer used for TF
+expression in \code{"dim"} and for target genes in \code{"targets"}.}
+
+\item{stat_plot_type}{Distribution plot type passed to \code{\link[=FeatureStatPlot]{FeatureStatPlot()}}
+when \code{plot_type = "stat"}.}
+
+\item{nlabel}{Number of target genes labeled in \code{"targets"} plots.}
+
+\item{reduction}{Reduction used by \code{"dim"} plots. If \code{NULL}, the default
+reduction of \code{srt} is used.}
+
 \item{bar_width}{Width of bars in \code{"bar"} plots.}
 
-\item{point_size}{Point size in \code{"lollipop"} and \code{"volcano"} plots.}
+\item{point_size}{Point size in \code{"lollipop"}, \code{"volcano"}, and
+\code{"targets"} plots.}
 
 \item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
 
@@ -133,15 +168,19 @@ Default is \code{list()}.}
 Default is \code{TRUE}.}
 }
 \value{
-For \code{"bar"}, \code{"lollipop"}, and \code{"volcano"}, a \code{ggplot} object, or a
-list with \code{plot} and \code{data} when \code{return_data = TRUE}. For \code{"heatmap"}, the
-list returned by \code{\link[=GroupHeatmap]{GroupHeatmap()}}.
+For \code{"bar"}, \code{"lollipop"}, \code{"volcano"}, \code{"dim"}, \code{"stat"}, and
+\code{"targets"}, a \code{ggplot} or patchwork object, or a list with \code{plot} and
+\code{data} when \code{return_data = TRUE}. For \code{"heatmap"}, the list returned by
+\code{\link[=GroupHeatmap]{GroupHeatmap()}}.
 }
 \description{
 Visualize DoRothEA TF activity stored by \code{\link[=RunDorothea]{RunDorothea()}}. Comparison plots
 (\code{"bar"}, \code{"lollipop"}, \code{"volcano"}) test two groups and show the mean
 activity difference \code{group1 - group2}. \code{"heatmap"} uses \code{\link[=GroupHeatmap]{GroupHeatmap()}}
-to summarize activity across all groups in \code{group.by}.
+to summarize activity across all groups in \code{group.by}. \code{"dim"} compares TF
+activity with TF expression on embeddings, \code{"stat"} draws per-group
+activity distributions with \code{\link[=FeatureStatPlot]{FeatureStatPlot()}}, and \code{"targets"} shows a
+regulon-target volcano for one TF.
 }
 \examples{
 data(pancreas_sub)
@@ -179,7 +218,31 @@ ht <- DorotheaPlot(
   top_n = 20
 )
 ht$plot
+
+DorotheaPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  features = "Sox9",
+  plot_type = "dim"
+)
+
+DorotheaPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  features = c("Sox9", "Neurod1", "Pdx1"),
+  plot_type = "stat",
+  stat_plot_type = "violin"
+)
+
+DorotheaPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  group1 = "Endocrine",
+  group2 = "Ductal",
+  features = "Sox9",
+  plot_type = "targets"
+)
 }
 \seealso{
-\link{RunDorothea}, \link{GroupHeatmap}, \link{FeatureDimPlot}
+\link{RunDorothea}, \link{GroupHeatmap}, \link{FeatureDimPlot}, \link{FeatureStatPlot}
 }

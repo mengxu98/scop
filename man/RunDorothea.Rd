@@ -114,7 +114,20 @@ FeatureDimPlot(
   features = tf_use,
   ncol = 2
 )
+FeatureStatPlot(
+  pancreas_sub,
+  assay = "dorothea",
+  stat.by = tf_use,
+  group.by = "CellType",
+  plot_type = "violin"
+)
 
+DorotheaPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  features = "Sox9",
+  plot_type = "dim"
+)
 DorotheaPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -123,7 +136,6 @@ DorotheaPlot(
   plot_type = "bar",
   top_n = 20
 )
-
 ht <- DorotheaPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -131,6 +143,14 @@ ht <- DorotheaPlot(
   top_n = 20
 )
 ht$plot
+DorotheaPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  group1 = "Endocrine",
+  group2 = "Ductal",
+  features = "Sox9",
+  plot_type = "targets"
+)
 }
 \references{
 Garcia-Alonso, L., Holland, C.H., Ibrahim, M.M., Turei, D.,
