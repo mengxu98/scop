@@ -267,21 +267,30 @@ RunPAGA <- function(
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {
-      return(srt_out)
+      srt_final <- srt_out
     } else {
       srt_out1 <- srt_append(
         srt_raw = srt,
         srt_append = srt_out
       )
-      srt_out2 <- srt_append(
+      srt_final <- srt_append(
         srt_raw = srt_out1,
         srt_append = srt_out,
         pattern = "(paga)|(distances)|(connectivities)|(draw_graph)",
         overwrite = TRUE,
         verbose = FALSE
       )
-      return(srt_out2)
     }
+    paga_res <- srt_final@misc[["paga"]]
+    if (!is.null(paga_res)) {
+      if (is.null(paga_res[["groups"]])) {
+        paga_res[["groups"]] <- group.by
+      }
+      paga_res[["backend"]] <- "python"
+      srt_final@tools[["PAGA"]] <- paga_res
+      srt_final@misc[["paga"]] <- NULL
+    }
+    return(srt_final)
   } else {
     return(adata)
   }

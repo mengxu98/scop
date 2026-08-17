@@ -322,10 +322,10 @@ RunSCVELO <- function(
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {
-      return(srt_out)
+      srt_final <- srt_out
     } else {
       srt_out1 <- srt_append(srt_raw = srt, srt_append = srt_out)
-      srt_out2 <- srt_append(
+      srt_final <- srt_append(
         srt_raw = srt_out1,
         srt_append = srt_out,
         pattern = paste0(
@@ -336,8 +336,56 @@ RunSCVELO <- function(
         overwrite = TRUE,
         verbose = FALSE
       )
-      return(srt_out2)
     }
+    reduction_names <- names(srt_final@reductions)
+    meta_names <- colnames(srt_final@meta.data)
+    misc_names <- names(srt_final@misc)
+    scvelo_tools <- list(
+      backend = "python",
+      group.by = group.by,
+      parameters = list(
+        linear_reduction = linear_reduction,
+        nonlinear_reduction = nonlinear_reduction,
+        n_pcs = n_pcs,
+        n_neighbors = n_neighbors
+      ),
+      mode = mode
+    )
+    for (m in mode) {
+      velocity_reduction <- reduction_names[
+        grepl(paste0("^", m, "_"), reduction_names, ignore.case = TRUE) |
+          grepl("^velocity_", reduction_names, ignore.case = TRUE)
+      ]
+      conf_key <- intersect(
+        c(paste0(m, "_confidence"), "velocity_confidence"), meta_names
+      )
+      len_key <- intersect(
+        c(paste0(m, "_length"), "velocity_length"), meta_names
+      )
+      pt_key <- intersect(
+        c(paste0(m, "_pseudotime"), "velocity_pseudotime"), meta_names
+      )
+      graph_key <- intersect(
+        c(paste0(m, "_graph"), "velocity_graph"), misc_names
+      )
+      scvelo_tools[[m]] <- list(
+        velocity_reduction = if (length(velocity_reduction) > 0L) {
+          velocity_reduction[[1L]]
+        } else {
+          NULL
+        },
+        confidence_key = if (length(conf_key) > 0L) conf_key[[1L]] else NULL,
+        length_key = if (length(len_key) > 0L) len_key[[1L]] else NULL,
+        pseudotime_key = if (length(pt_key) > 0L) pt_key[[1L]] else NULL,
+        velocity_graph = if (length(graph_key) > 0L) {
+          srt_final@misc[[graph_key[[1L]]]]
+        } else {
+          NULL
+        }
+      )
+    }
+    srt_final@tools[["SCVELO"]] <- scvelo_tools
+    return(srt_final)
   } else {
     return(adata)
   }
