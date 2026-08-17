@@ -90,4 +90,3 @@ if (length(available) == 2L && all(available)) {
 \references{
 <https://github.com/ZJUFanLab/SpaTalk>
 }
-\concept{spatial-producer}

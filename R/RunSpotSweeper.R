@@ -51,7 +51,6 @@
 #' @return A `Seurat` object with SpotSweeper QC metadata. When
 #' `store_results = TRUE`, detailed results are stored in
 #' `srt@tools[[tool_name]]`.
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples

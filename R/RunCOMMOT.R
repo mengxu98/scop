@@ -312,7 +312,6 @@ commot_validate_bundle <- function(bundle) {
 #' @return The input `Seurat` object with `srt@tools$COMMOT` and unified CCC
 #'   results updated.
 #' @references <https://github.com/zcang/COMMOT>
-#' @concept spatial-producer
 #' @export
 RunCOMMOT <- function(
   srt,

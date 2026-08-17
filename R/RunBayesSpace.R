@@ -28,7 +28,6 @@
 #' @return A `Seurat` object with BayesSpace clusters in metadata and raw
 #' results in `srt@tools[["BayesSpace"]]`.
 #'
-#' @concept spatial-producer
 #' @export
 #' @examples
 #' data(visium_human_pancreas_sub)

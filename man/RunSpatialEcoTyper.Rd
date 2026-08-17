@@ -225,4 +225,3 @@ if (FALSE) {
   )
 }
 }
-\concept{spatial-producer}

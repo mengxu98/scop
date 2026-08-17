@@ -35,4 +35,3 @@ head(visium_human_pancreas_sub@meta.data[, c("x", "y")])
 SpatialSpotPlot(visium_human_pancreas_sub, group.by = "coda_label")
 
 }
-\concept{data}

@@ -324,4 +324,3 @@ spatial_bayes <- RunStandardWorkflow(
 )
 SpatialSpotPlot(spatial_bayes, group.by = "BayesSpace_cluster")
 }
-\concept{spatial-producer}

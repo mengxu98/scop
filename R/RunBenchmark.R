@@ -38,7 +38,6 @@
 #' @return A `benchmark_result` object. Use `result$summary` for the quality
 #' table, [BenchmarkPlot()] for visualization, and `$predictions` for the
 #' aligned labels.
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples

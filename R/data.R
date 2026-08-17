@@ -6,7 +6,6 @@
 #'
 #' @md
 #' @format A `Seurat` object.
-#' @concept data
 #' @source
 #' \href{https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html}{scvelo.datasets.pancreas},
 #' \href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
@@ -70,7 +69,6 @@ NULL
 #'
 #' @md
 #' @format A `Seurat` object.
-#' @concept data
 #' @source
 #' \href{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-5061/}{E-MTAB-5061},
 #' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81076}{GSE81076},
@@ -131,7 +129,6 @@ NULL
 #'
 #' @md
 #' @format A `Seurat` object.
-#' @concept data
 #' @source
 #' Derived from the PBMC multiome reference data distributed through
 #' \href{https://github.com/satijalab/seurat-data}{SeuratData} /
@@ -168,7 +165,6 @@ NULL
 #' @md
 #' @format A `Seurat` object with 5000 genes, 1986 spots, and one Visium image
 #' named `slice1`.
-#' @concept data
 #' @source
 #' Derived from the GSE254829 human PanIN 10x
 #' Visium dataset:
@@ -204,7 +200,6 @@ NULL
 #' @md
 #' @format A `Seurat` object with 4000 genes, 2000 spots, and two Visium images
 #' named `anterior1` and `anterior2`.
-#' @concept data
 #' @source
 #' Derived from the 10x Genomics mouse brain serial section 1 sagittal anterior
 #' Visium dataset distributed through
@@ -241,7 +236,6 @@ NULL
 #' @md
 #' @format A `SummarizedExperiment` object with 19876 genes and 8 bulk RNA-seq
 #' samples.
-#' @concept data
 #' @source
 #' Derived from
 #' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE152615}{GSE152615}.
@@ -274,7 +268,6 @@ NULL
 #'   \item{common_gene_aliases}{Data frame mapping common gene symbols to aliases.}
 #'   \item{source}{List with source method, source data, and DOI metadata.}
 #' }
-#' @concept data
 #' @source
 #' Derived from `tidyestimate` 1.1.1 CRAN data files, which are derived from the
 #' MD Anderson ESTIMATE implementation. The scoring references are
@@ -296,7 +289,6 @@ NULL
 #' The variable `words_excluded` represents the words that are excluded during keyword enrichment analysis or keyword extraction process.
 #' These mainly include words that are excessively redundant or of little value.
 #'
-#' @concept data
 #' @examples
 #' words_excluded <- c(
 #'   "the", "is", "and", "or", "a",
@@ -316,7 +308,6 @@ NULL
 
 #' @title Reference datasets for cell type annotation in single-cell RNA data
 #'
-#' @concept data
 #' @source
 #' \href{https://github.com/ggjlab/scMCA}{scMCA}
 #' @examples

@@ -42,4 +42,3 @@ SpatialSpotPlot(
 )
 
 }
-\concept{data}

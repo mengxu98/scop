@@ -90,4 +90,3 @@ bench
 BenchmarkPlot(data = bench)
 }
 }
-\concept{spatial-producer}

@@ -121,7 +121,6 @@
 #' the signaled error carries the same table in its `standard_spatial_stages`
 #' attribute with that stage marked `"failed"`.
 #'
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples

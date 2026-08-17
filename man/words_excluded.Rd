@@ -22,4 +22,3 @@ words_excluded <- c(
 use_data <- thisutils::get_namespace_fun("usethis", "use_data")
 use_data(words_excluded, compress = "xz")
 }
-\concept{data}
