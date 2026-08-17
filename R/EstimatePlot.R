@@ -34,7 +34,7 @@ EstimateScorePlot <- function(
   resolved <- resolve_estimate_scores(object = object, score.data = score.data)
   mat <- estimate_select_scores(resolved$matrix, scores = scores)
   dots <- list(...)
-  theme_obj <- resolve_legacy_plot_theme(
+  theme_obj <- apply_plot_theme(
     theme_use = dots$theme_use %||% "theme_scop",
     theme_args = dots$theme_args %||% list()
   )
@@ -269,7 +269,7 @@ EstimateGenePlot <- function(
   gene_mat <- gene_mat[common_samples, , drop = FALSE]
 
   dots <- list(...)
-  theme_obj <- resolve_legacy_plot_theme(
+  theme_obj <- apply_plot_theme(
     theme_use = dots$theme_use %||% "theme_scop",
     theme_args = dots$theme_args %||% list()
   )

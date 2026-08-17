@@ -25,7 +25,6 @@
 #'
 #' @return A `Seurat` object with spatial integration results stored in
 #' metadata, reductions, and `srt@tools[[tool_name]]`.
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples
@@ -315,18 +314,34 @@ SpatialIntegrationPlot <- function(
         message_type = "error"
       )
     }
-    return(CellDimPlot(
-      srt = srt,
-      group.by = group.by,
-      reduction = reduction,
-      split.by = sample.by,
-      combine = combine,
-      palette = palette,
-      palcolor = palcolor,
-      theme_use = theme_use,
-      theme_args = theme_args,
-      ...
-    ))
+    dots <- list(...)
+    if (is.null(dots$show_stat)) {
+      dots$show_stat <- FALSE
+    }
+    embedding_plots <- do.call(
+      CellDimPlot,
+      c(
+        list(
+          srt = srt,
+          group.by = group.by,
+          reduction = reduction,
+          split.by = sample.by,
+          combine = FALSE,
+          palette = palette,
+          palcolor = palcolor,
+          theme_use = theme_use,
+          theme_args = theme_args
+        ),
+        dots
+      )
+    )
+    if (isFALSE(combine)) {
+      return(embedding_plots)
+    }
+    if (length(embedding_plots) == 1L) {
+      return(embedding_plots[[1L]])
+    }
+    return(patchwork::wrap_plots(embedding_plots, guides = "collect"))
   }
 
   if (identical(plot_type, "composition")) {
@@ -937,8 +952,12 @@ spatial_integration_composition_plot <- function(
   ggplot2::ggplot(tab, ggplot2::aes(x = .data$sample, y = .data$fraction, fill = .data$domain)) +
     ggplot2::geom_col(width = 0.75, color = "white", linewidth = 0.2) +
     ggplot2::scale_fill_manual(values = cols) +
+    ggplot2::scale_y_continuous(
+      labels = scales::percent_format(accuracy = 1),
+      expand = ggplot2::expansion(mult = c(0, 0.02))
+    ) +
     ggplot2::labs(x = sample.by, y = "Fraction", fill = group.by) +
-    spatial_integration_plot_theme(theme_use, theme_args)
+    apply_plot_theme(theme_use, theme_args)
 }
 
 spatial_integration_alignment_plot <- function(
@@ -997,17 +1016,7 @@ spatial_integration_alignment_plot <- function(
     ggplot2::facet_grid(.data$sample ~ .data$coordinate) +
     ggplot2::coord_equal() +
     ggplot2::labs(x = NULL, y = NULL, fill = group.by) +
-    spatial_integration_plot_theme(theme_use, theme_args)
-}
-
-spatial_integration_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
-  if (identical(theme_use, "theme_scop")) {
-    return(do.call(theme_scop, theme_args))
-  }
-  if (is.character(theme_use)) {
-    return(do.call(get(theme_use, mode = "function"), theme_args))
-  }
-  do.call(theme_use, theme_args)
+    apply_plot_theme(theme_use, theme_args)
 }
 
 spatial_integration_call <- function(fun, args) {

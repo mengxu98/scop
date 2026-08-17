@@ -341,4 +341,13 @@ test_that("SpatialEcoTyper plotting helpers return ggplot objects", {
   )
   expect_s3_class(p1, "ggplot")
   expect_s3_class(p2, "ggplot")
+  expect_false(inherits(p2$coordinates, "CoordFlip"))
+  srt$sample <- c("slice1", "slice1", "slice2", "slice2")
+  p3 <- SpatialEcoTyperCompositionPlot(
+    srt,
+    se.by = "SpatialEcoTyper_SE",
+    sample.by = "sample",
+    verbose = FALSE
+  )
+  expect_true(p3$facet$params$free$x)
 })

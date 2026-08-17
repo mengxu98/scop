@@ -16,7 +16,8 @@
 #' @param palette,palcolor Palette name or explicit colors.
 #' @param fill.alpha Polygon fill opacity.
 #' @param boundary.color,boundary.linewidth Boundary appearance.
-#' @param theme_use,theme_args scop theme and its arguments.
+#' @param theme_use,theme_args Theme used to style the plot. Default is
+#' `"theme_spatial"`.
 #' @param ... Additional arguments passed to `ggplot2::geom_polygon()`.
 #'
 #' @return A `ggplot` or patchwork object.
@@ -48,7 +49,7 @@ SpatialCellPlot <- function(
   fill.alpha = 0.7,
   boundary.color = "grey30",
   boundary.linewidth = 0.1,
-  theme_use = "theme_scop",
+  theme_use = "theme_spatial",
   theme_args = list(),
   ...
 ) {
@@ -171,7 +172,7 @@ SpatialCellPlot <- function(
     }
     p <- p +
       ggplot2::labs(x = NULL, y = NULL, fill = value_name) +
-      spatial_dim_drop_coord(do.call(theme_use, theme_args))
+      apply_plot_theme(theme_use = theme_use, theme_args = theme_args)
     if (isTRUE(crop)) {
       xr <- range(dat$x, na.rm = TRUE)
       yr <- range(dat$y, na.rm = TRUE)

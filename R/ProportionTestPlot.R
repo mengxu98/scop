@@ -434,7 +434,7 @@ plot_proportion_effect <- function(
       y = ylab
     ) +
     coord_flip() +
-    proportion_theme(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args) +
     theme(
       aspect.ratio = aspect.ratio,
       legend.position = legend.position,
@@ -654,20 +654,6 @@ proportion_projection_suffix <- function(comparison_name) {
 
 proportion_sig_label <- function(FDR_threshold, log2FD_threshold) {
   paste("FDR <", FDR_threshold, "& abs(Log2FD) >", round(log2FD_threshold, 2))
-}
-
-proportion_theme <- function(theme_use, theme_args) {
-  tryCatch(
-    {
-      if (is.function(theme_use)) {
-        return(do.call(theme_use, theme_args))
-      }
-      do.call(theme_use, theme_args)
-    },
-    error = function(e) {
-      do.call("theme_scop", list())
-    }
-  )
 }
 
 proportion_title <- function(df) {

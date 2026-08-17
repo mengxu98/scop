@@ -107,10 +107,12 @@ tAgePlot <- function(
     levels = names(sort(tapply(plot_df[[score_col]], plot_df[[group.by]], stats::median, na.rm = TRUE)))
   )
 
-  if (identical(theme_use, "theme_scop")) {
-    theme_use <- "theme_this"
+  theme_use <- resolve_plot_theme_use(theme_use)
+  theme_fun <- if (is.function(theme_use)) {
+    theme_use
+  } else {
+    get_namespace_fun("thisplot", theme_use)
   }
-  theme_fun <- get_namespace_fun("thisplot", theme_use)
 
   point_alpha <- point_alpha %||% alpha
   box_alpha <- box_alpha %||% alpha

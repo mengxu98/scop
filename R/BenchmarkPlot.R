@@ -387,9 +387,23 @@ benchmark_quality_plot <- function(
       y = NULL,
       color = NULL
     ) +
-    do.call(theme_use, theme_args) +
-    benchmark_publication_theme() +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
+      text = ggplot2::element_text(color = "#263238"),
+      axis.text = ggplot2::element_text(size = 7, color = "#263238"),
+      axis.title = ggplot2::element_text(size = 7.5, color = "#263238"),
+      axis.line = ggplot2::element_line(linewidth = 0.35, color = "#343A40"),
+      panel.border = ggplot2::element_blank(),
+      plot.background = ggplot2::element_rect(fill = "white", color = NA),
+      panel.background = ggplot2::element_rect(fill = "white", color = NA),
+      axis.ticks = ggplot2::element_line(linewidth = 0.3, color = "#343A40"),
+      axis.ticks.length = grid::unit(1.3, "mm"),
+      legend.text = ggplot2::element_text(size = 7),
+      legend.title = ggplot2::element_text(size = 7),
+      legend.key.height = grid::unit(3.2, "mm"),
+      legend.key.width = grid::unit(4.2, "mm"),
+      legend.background = ggplot2::element_blank(),
+      legend.box.background = ggplot2::element_blank(),
       panel.grid.major.y = ggplot2::element_blank(),
       panel.grid.minor = ggplot2::element_blank(),
       panel.grid.major.x = ggplot2::element_line(color = "#EEF0F3", linewidth = 0.3),
@@ -494,9 +508,23 @@ benchmark_efficiency_plot <- function(
       y = paste0("Peak memory (", if (memory_in_gb) "GB" else "MB", if (y_log) ", log10" else "", ")"),
       fill = "Mean quality"
     ) +
-    do.call(theme_use, theme_args) +
-    benchmark_publication_theme() +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
+      text = ggplot2::element_text(color = "#263238"),
+      axis.text = ggplot2::element_text(size = 7, color = "#263238"),
+      axis.title = ggplot2::element_text(size = 7.5, color = "#263238"),
+      axis.line = ggplot2::element_line(linewidth = 0.35, color = "#343A40"),
+      panel.border = ggplot2::element_blank(),
+      plot.background = ggplot2::element_rect(fill = "white", color = NA),
+      panel.background = ggplot2::element_rect(fill = "white", color = NA),
+      axis.ticks = ggplot2::element_line(linewidth = 0.3, color = "#343A40"),
+      axis.ticks.length = grid::unit(1.3, "mm"),
+      legend.text = ggplot2::element_text(size = 7),
+      legend.title = ggplot2::element_text(size = 7),
+      legend.key.height = grid::unit(3.2, "mm"),
+      legend.key.width = grid::unit(4.2, "mm"),
+      legend.background = ggplot2::element_blank(),
+      legend.box.background = ggplot2::element_blank(),
       panel.grid = ggplot2::element_blank(),
       legend.position = "bottom",
       legend.direction = "horizontal",
@@ -534,26 +562,6 @@ benchmark_wrap_method <- function(x, width = 22L) {
     function(label) paste(strwrap(label, width = width), collapse = "\n"),
     character(1),
     USE.NAMES = FALSE
-  )
-}
-
-benchmark_publication_theme <- function() {
-  ggplot2::theme(
-    text = ggplot2::element_text(color = "#263238"),
-    axis.text = ggplot2::element_text(size = 7, color = "#263238"),
-    axis.title = ggplot2::element_text(size = 7.5, color = "#263238"),
-    axis.line = ggplot2::element_line(linewidth = 0.35, color = "#343A40"),
-    panel.border = ggplot2::element_blank(),
-    plot.background = ggplot2::element_rect(fill = "white", color = NA),
-    panel.background = ggplot2::element_rect(fill = "white", color = NA),
-    axis.ticks = ggplot2::element_line(linewidth = 0.3, color = "#343A40"),
-    axis.ticks.length = grid::unit(1.3, "mm"),
-    legend.text = ggplot2::element_text(size = 7),
-    legend.title = ggplot2::element_text(size = 7),
-    legend.key.height = grid::unit(3.2, "mm"),
-    legend.key.width = grid::unit(4.2, "mm"),
-    legend.background = ggplot2::element_blank(),
-    legend.box.background = ggplot2::element_blank()
   )
 }
 
@@ -619,9 +627,21 @@ benchmark_metric_heatmap <- function(
       y = NULL,
       fill = "Relative\nperformance"
     ) +
-    do.call(theme_use, theme_args) +
-    benchmark_publication_theme() +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
+      text = ggplot2::element_text(color = "#263238"),
+      axis.text = ggplot2::element_text(size = 7, color = "#263238"),
+      axis.title = ggplot2::element_text(size = 7.5, color = "#263238"),
+      panel.border = ggplot2::element_blank(),
+      plot.background = ggplot2::element_rect(fill = "white", color = NA),
+      panel.background = ggplot2::element_rect(fill = "white", color = NA),
+      axis.ticks.length = grid::unit(1.3, "mm"),
+      legend.text = ggplot2::element_text(size = 7),
+      legend.title = ggplot2::element_text(size = 7),
+      legend.key.height = grid::unit(3.2, "mm"),
+      legend.key.width = grid::unit(4.2, "mm"),
+      legend.background = ggplot2::element_blank(),
+      legend.box.background = ggplot2::element_blank(),
       panel.grid = ggplot2::element_blank(),
       axis.line = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank(),
@@ -1049,7 +1069,7 @@ benchmark_summary_barplot <- function(
       x = "",
       y = "Score"
     ) +
-    do.call(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
       legend.position = "none",
       panel.grid.major.x = ggplot2::element_blank(),
@@ -1303,7 +1323,7 @@ feature_boxplot <- function(
       x = "",
       y = y_label
     ) +
-    do.call(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
       aspect.ratio = 1,
       axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, vjust = 1),

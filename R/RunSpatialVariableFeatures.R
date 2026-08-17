@@ -35,7 +35,6 @@
 #' @return A `Seurat` object with spatial variable feature results stored in
 #' `srt@tools[["SpatialVariableFeatures"]]`. Top feature names are available
 #' at `srt@tools[["SpatialVariableFeatures"]]$summary$top_features`.
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples
@@ -697,13 +696,13 @@ spatial_variable_summary_plot <- function(
       alpha = 0.5,
       na.rm = TRUE
     ) +
-    ggplot2::scale_color_manual(values = cols, drop = FALSE) +
+    ggplot2::scale_color_manual(values = cols, drop = FALSE, guide = "none") +
     ggplot2::labs(
       x = score_col,
       y = NULL,
-      color = "Feature"
+      color = NULL
     ) +
-    resolve_method_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+    apply_plot_theme(theme_use = theme_use, theme_args = theme_args, fallback = ggplot2::theme_minimal) +
     ggplot2::theme(legend.position = legend.position)
   if (isTRUE(has_significance)) {
     p <- p +

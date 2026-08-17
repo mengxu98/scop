@@ -404,9 +404,7 @@ scissor_stat_plot <- function(
   theme_args,
   ...
 ) {
-  if (identical(theme_use, "theme_scop")) {
-    theme_use <- "theme_this"
-  }
+  theme_use <- resolve_plot_theme_use(theme_use)
   if (!is.null(group.by) && !group.by %in% colnames(srt@meta.data)) {
     log_message(
       "Column {.val {group.by}} not found in {.cls Seurat}",

@@ -167,9 +167,7 @@ PAGAPlot <- function(
       message_type = "error"
     )
   }
-  if (identical(theme_use, "theme_scop")) {
-    theme_use <- "theme_this"
-  }
+  theme_use <- resolve_plot_theme_use(theme_use)
   if (type == "connectivities_tree") {
     use_triangular <- "both"
     edge_threshold <- 0

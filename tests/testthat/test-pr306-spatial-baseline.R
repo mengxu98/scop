@@ -51,7 +51,11 @@ test_that("PR 306 spatial graph plotting supports all result input modes", {
   srt <- RunSpatialNetwork(make_pr306_spatial_object(), k = 1, verbose = FALSE)
   res <- srt@tools$SpatialNetwork
 
-  expect_s3_class(SpatialNetworkPlot(object = srt), "ggplot")
+  p <- SpatialNetworkPlot(object = srt)
+  expect_s3_class(p, "ggplot")
+  expect_null(p$labels$subtitle)
+  expect_equal(p$layers[[2]]$aes_params$size, 6)
+  expect_s3_class(ggplot2::calc_element("axis.text.x", p$theme), "element_blank")
   expect_s3_class(SpatialNetworkPlot(res = res), "ggplot")
   expect_s3_class(SpatialNetworkPlot(object = srt, res = res), "ggplot")
 })
@@ -74,4 +78,19 @@ test_that("PR 306 cell plotting rejects spot centers as polygons", {
     SpatialCellPlot(boundaries = centers),
     "at least three distinct vertices"
   )
+})
+
+test_that("spatial boundary plots use the shared axis-free spatial theme", {
+  boundaries <- data.frame(
+    cell_id = rep(c("cell1", "cell2"), each = 4),
+    polygon_id = rep(c("p1", "p2"), each = 4),
+    ring_id = 1,
+    vertex_order = rep(1:4, 2),
+    x = c(0, 1, 1, 0, 1.2, 2.2, 2.2, 1.2),
+    y = c(0, 0, 1, 1, 0, 0, 1, 1),
+    cell_type = rep(c("A", "B"), each = 4)
+  )
+  p <- SpatialCellPlot(boundaries = boundaries, group.by = "cell_type")
+  expect_s3_class(p, "ggplot")
+  expect_s3_class(ggplot2::calc_element("axis.text.x", p$theme), "element_blank")
 })

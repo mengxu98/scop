@@ -358,12 +358,10 @@ CellStatPlot <- function(
 ) {
   cells <- cells %||% colnames(srt@assays[[1]])
   meta_data <- srt@meta.data[cells, , drop = FALSE]
-  if (identical(theme_use, "theme_scop")) {
-    theme_use <- "theme_this"
-  }
   plot_type <- match.arg(plot_type)
   stat_type <- match.arg(stat_type)
   position <- match.arg(position)
+  theme_use <- resolve_plot_theme_use(theme_use)
   if (identical(plot_type, "chord") && length(stat.by) != 2L) {
     cli::cli_abort("{.arg stat.by} must contain exactly two metadata columns when {.arg plot_type = 'chord'}")
   }

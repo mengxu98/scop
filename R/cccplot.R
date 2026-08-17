@@ -286,31 +286,6 @@ cmp_cc_label <- function(cmp, comp_idx = c(1, 2)) {
   paste0(nm[1], "_vs_", nm[2])
 }
 
-cc_theme <- function(theme_use = "theme_scop", theme_args = list()) {
-  if (is.null(theme_use)) {
-    return(NULL)
-  }
-  if (inherits(theme_use, "theme")) {
-    return(theme_use)
-  }
-  theme_fun <- if (is.character(theme_use)) {
-    tryCatch(
-      get(theme_use, mode = "function", inherits = TRUE),
-      error = function(e) NULL
-    )
-  } else if (is.function(theme_use)) {
-    theme_use
-  } else {
-    NULL
-  }
-
-  if (is.null(theme_fun)) {
-    theme_fun <- ggplot2::theme_bw
-  }
-
-  do.call(theme_fun, theme_args)
-}
-
 finalize_cc_plot <- function(
   p,
   title = NULL,
@@ -328,7 +303,11 @@ finalize_cc_plot <- function(
   if (!inherits(p, c("gg", "ggplot"))) {
     return(p)
   }
-  theme_obj <- cc_theme(theme_use = theme_use, theme_args = theme_args)
+  theme_obj <- apply_plot_theme(
+    theme_use = theme_use,
+    theme_args = theme_args,
+    allow_null = TRUE
+  )
 
   p <- p +
     ggplot2::labs(
@@ -466,7 +445,11 @@ patchwork_cc <- function(
       font.size = font.size
     ))
   }
-  theme_obj <- cc_theme(theme_use = theme_use, theme_args = theme_args)
+  theme_obj <- apply_plot_theme(
+    theme_use = theme_use,
+    theme_args = theme_args,
+    allow_null = TRUE
+  )
   if (!is.null(title) || !is.null(subtitle)) {
     p <- p + patchwork::plot_annotation(title = title, subtitle = subtitle)
   }
@@ -2730,7 +2713,7 @@ ccc_scatter_plot <- function(
 
   p <- p +
     ggplot2::labs(title = title, subtitle = subtitle) +
-    cc_theme(theme_use = theme_use, theme_args = theme_args) +
+    apply_plot_theme(theme_use = theme_use, theme_args = theme_args, allow_null = TRUE) +
     ggplot2::theme(
       text = ggplot2::element_text(size = font.size),
       legend.key.height = grid::unit(0.15, "in"),
@@ -4467,7 +4450,7 @@ ccc_sankey_plot <- function(
   theme_args = list()
 ) {
   check_r("thisplot", verbose = FALSE)
-  plot_theme_use <- if (identical(theme_use, "theme_scop")) "theme_this" else theme_use
+  plot_theme_use <- resolve_plot_theme_use(theme_use)
   min_receiver_flow <- suppressWarnings(as.numeric(min_receiver_flow)[1])
   if (!is.finite(min_receiver_flow) || min_receiver_flow < 0) {
     min_receiver_flow <- 0

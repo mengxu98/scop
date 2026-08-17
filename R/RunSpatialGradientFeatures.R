@@ -53,7 +53,6 @@
 #'
 #' @return A `Seurat` object with spatial gradient screening results stored in
 #' `srt@tools[["SpatialGradientFeatures"]]`.
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples
@@ -1141,9 +1140,9 @@ sgf_line_plot <- function(
   }
   p <- p +
     ggplot2::facet_wrap(~variable, scales = "free_y", nrow = nrow, ncol = ncol) +
-    ggplot2::scale_color_manual(values = cols) +
-    ggplot2::labs(x = "Gradient distance", y = "Expression", color = "Variable") +
-    resolve_method_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+    ggplot2::scale_color_manual(values = cols, guide = "none") +
+    ggplot2::labs(x = "Gradient distance", y = "Expression") +
+    apply_plot_theme(theme_use = theme_use, theme_args = theme_args, fallback = ggplot2::theme_minimal) +
     ggplot2::theme(legend.position = legend.position)
   p
 }
@@ -1168,14 +1167,23 @@ sgf_summary_plot <- function(
   if (!"rmse" %in% colnames(df)) {
     df$rmse <- NA_real_
   }
-  df$variable <- factor(df$variable, levels = rev(df$variable))
+  df <- df[order(df$rank, na.last = TRUE), , drop = FALSE]
+  df$variable <- factor(df$variable, levels = rev(as.character(df$variable)))
+  use_rmse <- any(is.finite(df$rmse))
+  df$.metric <- if (isTRUE(use_rmse)) df$rmse else df$rank
   cols <- sgf_feature_colors(as.character(df$variable), palette = palette, palcolor = palcolor)
-  ggplot2::ggplot(df, ggplot2::aes(x = .data[["rank"]], y = .data[["variable"]], color = .data[["variable"]])) +
-    ggplot2::geom_point(ggplot2::aes(size = .data[["rmse"]]), na.rm = TRUE) +
-    ggplot2::scale_color_manual(values = cols) +
+  ggplot2::ggplot(df, ggplot2::aes(x = .data[[".metric"]], y = .data[["variable"]], color = .data[["variable"]])) +
+    ggplot2::geom_segment(
+      ggplot2::aes(x = 0, xend = .data[[".metric"]], yend = .data[["variable"]]),
+      linewidth = 0.35,
+      alpha = 0.45,
+      na.rm = TRUE
+    ) +
+    ggplot2::geom_point(size = 2.2, na.rm = TRUE) +
+    ggplot2::scale_color_manual(values = cols, guide = "none") +
     ggplot2::scale_y_discrete(drop = FALSE) +
-    ggplot2::labs(x = "Rank", y = NULL, color = "Variable", size = "RMSE") +
-    resolve_method_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+    ggplot2::labs(x = if (isTRUE(use_rmse)) "RMSE" else "Rank", y = NULL) +
+    apply_plot_theme(theme_use = theme_use, theme_args = theme_args, fallback = ggplot2::theme_minimal) +
     ggplot2::theme(legend.position = legend.position)
 }
 
@@ -1202,9 +1210,14 @@ sgf_model_plot <- function(
   }
   ggplot2::ggplot(df, ggplot2::aes(x = .data[["model"]], y = .data[["variable"]], fill = .data[["rmse"]])) +
     ggplot2::geom_tile(color = "white", linewidth = 0.2) +
+    ggplot2::geom_text(
+      ggplot2::aes(label = ifelse(is.finite(.data[["rmse"]]), formatC(.data[["rmse"]], format = "f", digits = 2), "")),
+      size = 3,
+      color = "grey15"
+    ) +
     ggplot2::scale_fill_gradientn(colors = rev(sgf_gradient_colors(palette, palcolor)), na.value = "grey85") +
     ggplot2::labs(x = "Model", y = NULL, fill = "RMSE") +
-    resolve_method_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+    apply_plot_theme(theme_use = theme_use, theme_args = theme_args, fallback = ggplot2::theme_minimal) +
     ggplot2::theme(
       legend.position = legend.position,
       axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
