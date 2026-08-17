@@ -322,10 +322,10 @@ RunSCVELO <- function(
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {
-      return(srt_out)
+      srt_final <- srt_out
     } else {
       srt_out1 <- srt_append(srt_raw = srt, srt_append = srt_out)
-      srt_out2 <- srt_append(
+      srt_final <- srt_append(
         srt_raw = srt_out1,
         srt_append = srt_out,
         pattern = paste0(
@@ -336,11 +336,78 @@ RunSCVELO <- function(
         overwrite = TRUE,
         verbose = FALSE
       )
-      return(srt_out2)
     }
+    srt_final@tools[["SCVELO"]] <- build_scvelo_python_tools(
+      srt_final,
+      group.by = group.by,
+      mode = mode,
+      linear_reduction = linear_reduction,
+      nonlinear_reduction = nonlinear_reduction,
+      n_pcs = n_pcs,
+      n_neighbors = n_neighbors
+    )
+    return(srt_final)
   } else {
     return(adata)
   }
+}
+
+# Expose the python scVelo result through srt@tools[["SCVELO"]] so both
+# backends share the same location (Tool(srt, "SCVELO")). scanpy/scVelo scatter
+# their outputs across reductions/meta.data/graphs/misc via adata_to_srt(); this
+# records, per mode, where those results live (rather than duplicating the large
+# matrices). Values are probed from the already-converted object, so a missing
+# result is stored as NULL instead of failing.
+build_scvelo_python_tools <- function(
+  srt,
+  group.by,
+  mode,
+  linear_reduction = NULL,
+  nonlinear_reduction = NULL,
+  n_pcs = NULL,
+  n_neighbors = NULL
+) {
+  reduction_names <- names(srt@reductions)
+  meta_names <- colnames(srt@meta.data)
+  misc_names <- names(srt@misc)
+  res <- list(
+    backend = "python",
+    group.by = group.by,
+    parameters = list(
+      linear_reduction = linear_reduction,
+      nonlinear_reduction = nonlinear_reduction,
+      n_pcs = n_pcs,
+      n_neighbors = n_neighbors
+    ),
+    mode = mode
+  )
+  first_match <- function(x) if (length(x) > 0L) x[[1L]] else NULL
+  for (m in mode) {
+    velocity_reduction <- first_match(reduction_names[
+      grepl(paste0("^", m, "_"), reduction_names, ignore.case = TRUE) |
+        grepl("^velocity_", reduction_names, ignore.case = TRUE)
+    ])
+    conf_key <- first_match(intersect(
+      c(paste0(m, "_confidence"), "velocity_confidence"), meta_names
+    ))
+    len_key <- first_match(intersect(
+      c(paste0(m, "_length"), "velocity_length"), meta_names
+    ))
+    pt_key <- first_match(intersect(
+      c(paste0(m, "_pseudotime"), "velocity_pseudotime"), meta_names
+    ))
+    graph_key <- first_match(intersect(
+      c(paste0(m, "_graph"), "velocity_graph"), misc_names
+    ))
+    res[[m]] <- list(
+      velocity_reduction = velocity_reduction,
+      confidence_key = conf_key,
+      length_key = len_key,
+      pseudotime_key = pt_key,
+      velocity_graph = if (!is.null(graph_key)) srt@misc[[graph_key]] else NULL
+    )
+  }
+  res
 }
 
 # Replicates scvelo.tools.velocity_embedding's autoscale step.

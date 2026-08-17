@@ -348,21 +348,87 @@ RunPalantir <- function(
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {
-      return(srt_out)
+      srt_final <- srt_out
     } else {
       srt_out1 <- srt_append(srt_raw = srt, srt_append = srt_out)
-      srt_out2 <- srt_append(
+      srt_final <- srt_append(
         srt_raw = srt_out1,
         srt_append = srt_out,
         pattern = "(palantir)|(dm_kernel)|(_diff_potential)",
         overwrite = TRUE,
         verbose = FALSE
       )
-      return(srt_out2)
     }
+    srt_final@tools[["Palantir"]] <- build_palantir_python_tools(
+      srt_final,
+      group.by = group.by,
+      linear_reduction = linear_reduction,
+      nonlinear_reduction = nonlinear_reduction,
+      n_pcs = n_pcs,
+      n_neighbors = n_neighbors
+    )
+    return(srt_final)
   } else {
     return(adata)
   }
+}
+
+# Expose the python Palantir result through srt@tools[["Palantir"]] so both
+# backends share the same location (Tool(srt, "Palantir")). The python backend
+# writes palantir_pseudotime / palantir_diff_potential / per-terminal branch
+# probabilities to meta.data, the diffusion map to a reduction, and the diffusion
+# kernel to misc via adata_to_srt(); this collects them into the authoritative
+# @tools slot, matching the cpp backend's structure. Values are probed from the
+# already-converted object, so missing results are stored as NULL.
+build_palantir_python_tools <- function(
+  srt,
+  group.by = NULL,
+  linear_reduction = NULL,
+  nonlinear_reduction = NULL,
+  n_pcs = NULL,
+  n_neighbors = NULL
+) {
+  meta_names <- colnames(srt@meta.data)
+  reduction_names <- names(srt@reductions)
+  branch_cols <- setdiff(
+    grep("_diff_potential$", meta_names, value = TRUE),
+    "palantir_diff_potential"
+  )
+  branch_probs <- if (length(branch_cols) > 0L) {
+    as.matrix(srt@meta.data[, branch_cols, drop = FALSE])
+  } else {
+    NULL
+  }
+  dm_reduction <- reduction_names[
+    grepl("palantir.*dm", reduction_names, ignore.case = TRUE)
+  ]
+  list(
+    backend = "python",
+    group.by = group.by,
+    pseudotime = if ("palantir_pseudotime" %in% meta_names) {
+      srt@meta.data[["palantir_pseudotime"]]
+    } else {
+      NULL
+    },
+    diff_potential = if ("palantir_diff_potential" %in% meta_names) {
+      srt@meta.data[["palantir_diff_potential"]]
+    } else {
+      NULL
+    },
+    branch_probs = branch_probs,
+    diffusion_map_reduction = if (length(dm_reduction) > 0L) {
+      dm_reduction[[1L]]
+    } else {
+      NULL
+    },
+    dm_kernel = srt@misc[["dm_kernel"]],
+    parameters = list(
+      linear_reduction = linear_reduction,
+      nonlinear_reduction = nonlinear_reduction,
+      n_pcs = n_pcs,
+      n_neighbors = n_neighbors
+    )
+  )
 }
 
 run_palantir_cpp <- function(
