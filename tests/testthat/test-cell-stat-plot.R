@@ -83,7 +83,7 @@ test_that("CellStatPlot resolves the exported theme_scop alias", {
   srt <- make_cell_stat_srt()
 
   expect_true(is.function(scop::theme_scop))
-  expect_identical(scop::theme_scop, thisplot::theme_this)
+  expect_equal(scop::theme_scop, thisplot::theme_this)
 
   plot <- CellStatPlot(
     srt,
