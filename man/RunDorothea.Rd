@@ -98,24 +98,58 @@ pancreas_sub <- RunDorothea(
   species = "Mus_musculus",
   confidence = c("A", "B", "C"),
   method = "ulm",
-  minsize = 5,
-  new_assay = FALSE
+  minsize = 5
 )
 
 pancreas_sub@tools$Dorothea$regulon_summary
 head(pancreas_sub@tools$Dorothea$result)
 
-activity_cols <- head(
-  grep("^dorothea_", colnames(pancreas_sub@meta.data), value = TRUE),
-  2
+tf_use <- intersect(
+  c("Sox9", "Neurod1", "Pdx1", "Foxa2"),
+  rownames(pancreas_sub@tools$Dorothea$scores)
 )
-head(pancreas_sub@meta.data[, activity_cols, drop = FALSE])
-
 FeatureDimPlot(
   pancreas_sub,
-  features = activity_cols,
-  reduction = "StandardUMAP2D",
+  assay = "dorothea",
+  features = tf_use,
   ncol = 2
+)
+FeatureStatPlot(
+  pancreas_sub,
+  assay = "dorothea",
+  stat.by = tf_use,
+  group.by = "CellType",
+  plot_type = "violin"
+)
+
+DorotheaPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  features = "Sox9",
+  plot_type = "dim"
+)
+DorotheaPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  group1 = "Endocrine",
+  group2 = "Ductal",
+  plot_type = "bar",
+  top_n = 20
+)
+ht <- DorotheaPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "heatmap",
+  top_n = 20
+)
+ht$plot
+DorotheaPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  group1 = "Endocrine",
+  group2 = "Ductal",
+  features = "Sox9",
+  plot_type = "targets"
 )
 }
 \references{
