@@ -42,6 +42,7 @@ test_that("RunDorothea writes TF activity metadata when storing a new assay", {
   )
 
   expect_true("dorothea" %in% SeuratObject::Assays(out))
+  expect_true("regulons" %in% names(out@tools$Dorothea))
   expect_true(all(c("dorothea_TF1", "dorothea_TF2") %in% colnames(out@meta.data)))
   expect_equal(unname(out$dorothea_TF1), c(1, 2, 3))
   expect_equal(unname(out$dorothea_TF2), c(-1, -2, -3))
@@ -95,4 +96,131 @@ test_that("RunDorothea can skip TF activity metadata", {
   expect_false(any(grepl("^dorothea_", colnames(out@meta.data))))
   expect_true("scores" %in% names(out@tools$Dorothea))
   expect_false(out@tools$Dorothea$parameters$add_meta)
+})
+
+local({
+  make_dorothea_srt <- function() {
+    counts <- matrix(
+      c(
+        5, 0, 4, 1,
+        0, 3, 2, 6
+      ),
+      nrow = 2,
+      byrow = TRUE,
+      dimnames = list(c("Gene1", "Gene2"), paste0("Cell", 1:4))
+    )
+    srt <- Seurat::CreateSeuratObject(
+      counts = methods::as(Matrix::Matrix(counts, sparse = TRUE), "dgCMatrix")
+    )
+    srt <- Seurat::NormalizeData(srt, verbose = FALSE)
+    srt$CellType <- c("A", "A", "B", "B")
+    scores <- matrix(
+      c(
+        1, 2, -1, -2,
+        -3, -1, 2, 4
+      ),
+      nrow = 2,
+      byrow = TRUE,
+      dimnames = list(c("TF1", "TF2"), colnames(srt))
+    )
+    srt <- dorothea_attach_assay(srt, scores, "dorothea")
+    embeddings <- matrix(
+      c(0, 1, 0, 1, 0, 0, 1, 1),
+      ncol = 2,
+      dimnames = list(colnames(srt), c("UMAP_1", "UMAP_2"))
+    )
+    srt[["umap"]] <- Seurat::CreateDimReducObject(
+      embeddings = embeddings,
+      key = "UMAP_",
+      assay = "RNA"
+    )
+    srt@tools[["Dorothea"]] <- list(
+      scores = scores,
+      regulons = data.frame(
+        tf = c("TF1", "TF1", "TF2"),
+        target = c("Gene1", "Gene2", "Gene2"),
+        mor = c(1, -1, 1),
+        stringsAsFactors = FALSE
+      ),
+      parameters = list(assay_name = "dorothea")
+    )
+    srt
+  }
+
+  test_that("DorotheaPlot bar and lollipop return ggplot objects", {
+    srt <- make_dorothea_srt()
+    p_bar <- DorotheaPlot(
+      srt,
+      group.by = "CellType",
+      group1 = "A",
+      group2 = "B",
+      plot_type = "bar",
+      verbose = FALSE
+    )
+    p_lollipop <- DorotheaPlot(
+      srt,
+      group.by = "CellType",
+      group1 = "A",
+      group2 = "B",
+      plot_type = "lollipop",
+      verbose = FALSE
+    )
+    p_volcano <- DorotheaPlot(
+      srt,
+      group.by = "CellType",
+      group1 = "A",
+      group2 = "B",
+      plot_type = "volcano",
+      verbose = FALSE
+    )
+    expect_s3_class(p_bar, "ggplot")
+    expect_s3_class(p_lollipop, "ggplot")
+    expect_s3_class(p_volcano, "ggplot")
+  })
+
+  test_that("DorotheaPlot heatmap uses GroupHeatmap on the dorothea assay", {
+    srt <- make_dorothea_srt()
+    ht <- DorotheaPlot(
+      srt,
+      group.by = "CellType",
+      plot_type = "heatmap",
+      features = c("TF1", "TF2"),
+      verbose = FALSE
+    )
+    expect_true(is.list(ht))
+    expect_true("plot" %in% names(ht))
+    expect_true("matrix_list" %in% names(ht))
+    expect_equal(sort(rownames(ht$matrix_list[[1]])), c("TF1", "TF2"))
+  })
+
+  test_that("DorotheaPlot dim, stat, and targets return ggplot objects", {
+    srt <- make_dorothea_srt()
+    p_dim <- DorotheaPlot(
+      srt,
+      group.by = "CellType",
+      features = "TF1",
+      plot_type = "dim",
+      reduction = "umap",
+      verbose = FALSE
+    )
+    p_stat <- DorotheaPlot(
+      srt,
+      group.by = "CellType",
+      features = c("TF1", "TF2"),
+      plot_type = "stat",
+      verbose = FALSE
+    )
+    p_targets <- DorotheaPlot(
+      srt,
+      group.by = "CellType",
+      group1 = "A",
+      group2 = "B",
+      features = "TF1",
+      plot_type = "targets",
+      verbose = FALSE
+    )
+    expect_true(inherits(p_dim, "ggplot") || inherits(p_dim, "patchwork"))
+    expect_true(inherits(p_stat, "ggplot") || inherits(p_stat, "patchwork"))
+    expect_s3_class(p_targets, "ggplot")
+  })
 })

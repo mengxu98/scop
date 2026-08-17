@@ -64,24 +64,58 @@
 #'   species = "Mus_musculus",
 #'   confidence = c("A", "B", "C"),
 #'   method = "ulm",
-#'   minsize = 5,
-#'   new_assay = FALSE
+#'   minsize = 5
 #' )
 #'
 #' pancreas_sub@tools$Dorothea$regulon_summary
 #' head(pancreas_sub@tools$Dorothea$result)
 #'
-#' activity_cols <- head(
-#'   grep("^dorothea_", colnames(pancreas_sub@meta.data), value = TRUE),
-#'   2
+#' tf_use <- intersect(
+#'   c("Sox9", "Neurod1", "Pdx1", "Foxa2"),
+#'   rownames(pancreas_sub@tools$Dorothea$scores)
 #' )
-#' head(pancreas_sub@meta.data[, activity_cols, drop = FALSE])
-#'
 #' FeatureDimPlot(
 #'   pancreas_sub,
-#'   features = activity_cols,
-#'   reduction = "StandardUMAP2D",
+#'   assay = "dorothea",
+#'   features = tf_use,
 #'   ncol = 2
+#' )
+#' FeatureStatPlot(
+#'   pancreas_sub,
+#'   assay = "dorothea",
+#'   stat.by = tf_use,
+#'   group.by = "CellType",
+#'   plot_type = "violin"
+#' )
+#'
+#' DorotheaPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   features = "Sox9",
+#'   plot_type = "dim"
+#' )
+#' DorotheaPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   group1 = "Endocrine",
+#'   group2 = "Ductal",
+#'   plot_type = "bar",
+#'   top_n = 20
+#' )
+#' ht <- DorotheaPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   plot_type = "heatmap",
+#'   top_n = 20
+#' )
+#' ht$plot
+#' DorotheaPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   group1 = "Endocrine",
+#'   group2 = "Ductal",
+#'   features = "Sox9",
+#'   plot_type = "targets"
 #' )
 RunDorothea <- function(
   srt,
@@ -288,14 +322,10 @@ RunDorothea <- function(
   scores <- scores[, colnames(srt), drop = FALSE]
 
   if (isTRUE(new_assay)) {
-    srt[[assay_name]] <- Seurat::CreateAssayObject(data = scores)
-    srt[[assay_name]] <- Seurat::AddMetaData(
-      object = srt[[assay_name]],
-      metadata = data.frame(
-        termnames = rownames(scores),
-        row.names = rownames(scores),
-        stringsAsFactors = FALSE
-      )
+    srt <- dorothea_attach_assay(
+      srt = srt,
+      scores = scores,
+      assay_name = assay_name
     )
     log_message(
       "{.pkg DoRothEA} TF activity scores stored in assay {.val {assay_name}}",
@@ -317,6 +347,7 @@ RunDorothea <- function(
   srt@tools[["Dorothea"]] <- list(
     scores = scores,
     result = res_df,
+    regulons = regulons,
     regulon_summary = data.frame(
       n_tfs = length(unique(regulons[["tf"]])),
       n_targets = length(unique(regulons[["target"]])),
@@ -357,312 +388,29 @@ dorothea_get_run_fun <- function(method) {
   )
 }
 
-#' @title Plot differential DoRothEA TF activity
-#'
-#' @description
-#' Compare DoRothEA transcription factor activity between two groups and draw
-#' a signed bar plot. Bar height is the mean activity difference
-#' `group1 - group2`; fill color is the signed `-log10(p)` or
-#' `-log10(adjusted p)`, where the sign follows the activity difference.
-#'
-#' @md
-#' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object containing results from [RunDorothea()].
-#' @param group.by Metadata column used to define groups.
-#' @param group1,group2 Two group labels to compare. Positive logFC means
-#' higher TF activity in `group1`.
-#' @param tool_name Name of the `srt@tools` entry created by [RunDorothea()].
-#' @param features TFs to plot. If `NULL`, all TFs are tested and the top
-#' `top_n` TFs are shown.
-#' @param top_n Number of TFs to show when `features = NULL`. Set `NULL` to
-#' show all tested TFs.
-#' @param test.use Statistical test used for each TF.
-#' @param p.adjust.method Method passed to [stats::p.adjust].
-#' @param color.by P-value column used for bar fill.
-#' @param rank.by Metric used to select top TFs when `features = NULL`.
-#' @param sort.by Metric used to order TFs on the x-axis.
-#' @param p_floor Lower bound used before `-log10()` transformation.
-#' @param bar_width Width of bars.
-#' @param cols Color vector of length 3 for low, midpoint, and high values.
-#' @param title,xlab,ylab,fill.title Axis, plot, and legend titles.
-#' @param angle X-axis text angle.
-#' @param hjust,vjust X-axis text justification.
-#' @param theme_use Theme function used to style the plot.
-#' @param theme_args Other arguments passed to `theme_use`.
-#' @param return_data Whether to return a list with the plot and statistics.
-#'
-#' @return A `ggplot` object, or a list with `plot` and `data` when
-#' `return_data = TRUE`.
-#' @export
-#'
-#' @examples
-#' data(pancreas_sub)
-#' pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#' pancreas_sub <- RunDorothea(
-#'   pancreas_sub,
-#'   layer = "counts",
-#'   species = "Mus_musculus",
-#'   method = "ulm",
-#'   minsize = 5,
-#'   new_assay = FALSE
-#' )
-#' groups <- unique(as.character(pancreas_sub$CellType))
-#' DorotheaPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   group1 = groups[1],
-#'   group2 = groups[2]
-#' )
-DorotheaPlot <- function(
-  srt,
-  group.by,
-  group1,
-  group2,
-  tool_name = "Dorothea",
-  features = NULL,
-  top_n = 30,
-  test.use = c("wilcox.test", "t.test"),
-  p.adjust.method = "BH",
-  color.by = c("p_val", "p_val_adj"),
-  rank.by = c("abs_logFC", "p_val", "p_val_adj", "logFC"),
-  sort.by = c("logFC", "abs_logFC", "p_val", "p_val_adj"),
-  p_floor = .Machine$double.xmin,
-  bar_width = 0.85,
-  cols = c("#2166AC", "white", "#B2182B"),
-  title = NULL,
-  xlab = NULL,
-  ylab = "logFC",
-  fill.title = NULL,
-  angle = 90,
-  hjust = 1,
-  vjust = 0.5,
-  theme_use = "theme_scop",
-  theme_args = list(),
-  return_data = FALSE,
-  verbose = TRUE
-) {
-  if (!inherits(srt, "Seurat")) {
-    log_message(
-      "{.arg srt} must be a {.cls Seurat} object",
-      message_type = "error"
+dorothea_attach_assay <- function(srt, scores, assay_name) {
+  scores <- as.matrix(scores)
+  missing_cells <- setdiff(colnames(srt), colnames(scores))
+  if (length(missing_cells) > 0L) {
+    pad <- matrix(
+      NA_real_,
+      nrow = nrow(scores),
+      ncol = length(missing_cells),
+      dimnames = list(rownames(scores), missing_cells)
     )
+    scores <- cbind(scores, pad)
   }
-  if (length(group.by) != 1L || !group.by %in% colnames(srt@meta.data)) {
-    log_message(
-      "{.arg group.by} must be one metadata column in {.arg srt}",
-      message_type = "error"
+  scores <- scores[, colnames(srt), drop = FALSE]
+  assay_object <- suppressWarnings(Seurat::CreateAssayObject(data = scores))
+  assay_object <- Seurat::AddMetaData(
+    object = assay_object,
+    metadata = data.frame(
+      termnames = rownames(scores),
+      row.names = rownames(scores),
+      stringsAsFactors = FALSE
     )
-  }
-  if (
-    !tool_name %in% names(srt@tools) || is.null(srt@tools[[tool_name]]$scores)
-  ) {
-    log_message(
-      "No DoRothEA scores found in {.code srt@tools[[{tool_name}]]$scores}",
-      message_type = "error"
-    )
-  }
-  test.use <- match.arg(test.use)
-  color.by <- match.arg(color.by)
-  rank.by <- match.arg(rank.by)
-  sort.by <- match.arg(sort.by)
-  if (
-    length(group1) != 1L ||
-      length(group2) != 1L ||
-      any(is.na(c(group1, group2)))
-  ) {
-    log_message(
-      "{.arg group1} and {.arg group2} must each be a single group label",
-      message_type = "error"
-    )
-  }
-  if (!is.null(top_n)) {
-    if (length(top_n) != 1L || is.na(top_n) || top_n < 1) {
-      log_message(
-        "{.arg top_n} must be a positive integer or {.code NULL}",
-        message_type = "error"
-      )
-    }
-    top_n <- as.integer(top_n)
-  }
-  if (length(cols) != 3L) {
-    log_message(
-      "{.arg cols} must contain three colors: low, midpoint, and high",
-      message_type = "error"
-    )
-  }
-
-  scores <- as.matrix(srt@tools[[tool_name]]$scores)
-  groups <- as.character(srt@meta.data[[group.by]])
-  names(groups) <- rownames(srt@meta.data)
-  cells <- intersect(colnames(scores), names(groups))
-  cells <- cells[groups[cells] %in% c(group1, group2)]
-  if (length(cells) == 0L) {
-    log_message(
-      "No cells from {.val {group1}} or {.val {group2}} are shared between DoRothEA scores and metadata",
-      message_type = "error"
-    )
-  }
-  cells1 <- cells[groups[cells] == group1]
-  cells2 <- cells[groups[cells] == group2]
-  if (length(cells1) == 0L || length(cells2) == 0L) {
-    log_message(
-      "Both {.arg group1} and {.arg group2} must contain cells",
-      message_type = "error"
-    )
-  }
-
-  features_is_null <- is.null(features)
-  if (features_is_null) {
-    features <- rownames(scores)
-  } else {
-    features <- unique(as.character(features))
-    missing_features <- setdiff(features, rownames(scores))
-    if (length(missing_features) > 0L) {
-      log_message(
-        "Dropping TFs not found in DoRothEA scores: {.val {missing_features}}",
-        message_type = "warning",
-        verbose = verbose
-      )
-    }
-    features <- intersect(features, rownames(scores))
-  }
-  if (length(features) == 0L) {
-    log_message(
-      "No TFs are available for plotting",
-      message_type = "error"
-    )
-  }
-
-  log_message(
-    "Compare DoRothEA TF activity: {.val {group1}} vs {.val {group2}}",
-    verbose = verbose
   )
-  mat1 <- scores[features, cells1, drop = FALSE]
-  mat2 <- scores[features, cells2, drop = FALSE]
-  mean1 <- Matrix::rowMeans(mat1, na.rm = TRUE)
-  mean2 <- Matrix::rowMeans(mat2, na.rm = TRUE)
-  p_val <- vapply(
-    features,
-    function(tf) {
-      x <- as.numeric(mat1[tf, ])
-      y <- as.numeric(mat2[tf, ])
-      x <- x[is.finite(x)]
-      y <- y[is.finite(y)]
-      if (length(x) < 1L || length(y) < 1L) {
-        return(NA_real_)
-      }
-      tryCatch(
-        switch(test.use,
-          wilcox.test = stats::wilcox.test(x, y)$p.value,
-          t.test = stats::t.test(x, y)$p.value
-        ),
-        error = function(e) NA_real_
-      )
-    },
-    numeric(1)
-  )
-  stat_df <- data.frame(
-    TF = features,
-    group1 = group1,
-    group2 = group2,
-    mean1 = as.numeric(mean1[features]),
-    mean2 = as.numeric(mean2[features]),
-    logFC = as.numeric(mean1[features] - mean2[features]),
-    p_val = p_val,
-    stringsAsFactors = FALSE
-  )
-  stat_df$p_val[!is.finite(stat_df$p_val) | stat_df$p_val < 0] <- NA_real_
-  stat_df$p_val_adj <- stats::p.adjust(stat_df$p_val, method = p.adjust.method)
-  stat_df$neglog10_p_val <- -log10(pmax(stat_df$p_val, p_floor, na.rm = TRUE))
-  stat_df$neglog10_p_val_adj <- -log10(pmax(
-    stat_df$p_val_adj,
-    p_floor,
-    na.rm = TRUE
-  ))
-  stat_df$signed_neglog10_p_val <- sign(stat_df$logFC) * stat_df$neglog10_p_val
-  stat_df$signed_neglog10_p_val_adj <- sign(stat_df$logFC) *
-    stat_df$neglog10_p_val_adj
-  stat_df$neglog10_p_val[!is.finite(stat_df$neglog10_p_val)] <- 0
-  stat_df$neglog10_p_val_adj[!is.finite(stat_df$neglog10_p_val_adj)] <- 0
-  stat_df$signed_neglog10_p_val[!is.finite(stat_df$signed_neglog10_p_val)] <- 0
-  stat_df$signed_neglog10_p_val_adj[
-    !is.finite(stat_df$signed_neglog10_p_val_adj)
-  ] <- 0
-
-  if (isTRUE(features_is_null) && !is.null(top_n)) {
-    top_n <- min(as.integer(top_n), nrow(stat_df))
-    if (rank.by == "abs_logFC") {
-      rank_order <- order(-abs(stat_df$logFC), stat_df$p_val, na.last = TRUE)
-    } else if (rank.by == "logFC") {
-      rank_order <- order(-stat_df$logFC, stat_df$p_val, na.last = TRUE)
-    } else {
-      rank_order <- order(
-        stat_df[[rank.by]],
-        -abs(stat_df$logFC),
-        na.last = TRUE
-      )
-    }
-    stat_df <- stat_df[rank_order[seq_len(top_n)], , drop = FALSE]
-  }
-
-  if (sort.by == "abs_logFC") {
-    plot_order <- order(-abs(stat_df$logFC), -stat_df$logFC, na.last = TRUE)
-  } else if (sort.by == "logFC") {
-    plot_order <- order(stat_df$logFC, decreasing = TRUE)
-  } else {
-    plot_order <- order(stat_df[[sort.by]], -abs(stat_df$logFC), na.last = TRUE)
-  }
-  stat_df <- stat_df[plot_order, , drop = FALSE]
-  stat_df$TF <- factor(stat_df$TF, levels = stat_df$TF)
-
-  fill_col <- switch(color.by,
-    p_val = "signed_neglog10_p_val",
-    p_val_adj = "signed_neglog10_p_val_adj"
-  )
-  max_fill <- max(abs(stat_df[[fill_col]]), na.rm = TRUE)
-  if (!is.finite(max_fill) || max_fill == 0) {
-    max_fill <- 1
-  }
-  title <- title %||% paste(group1, "vs.", group2)
-  fill.title <- fill.title %||%
-    ifelse(
-      color.by == "p_val",
-      "-log10(p)",
-      "-log10(padj)"
-    )
-  p <- ggplot2::ggplot(
-    stat_df,
-    ggplot2::aes(x = TF, y = logFC, fill = .data[[fill_col]])
-  ) +
-    ggplot2::geom_col(width = bar_width) +
-    ggplot2::geom_hline(yintercept = 0, color = "grey80", linewidth = 0.4) +
-    ggplot2::scale_fill_gradient2(
-      low = cols[1],
-      mid = cols[2],
-      high = cols[3],
-      midpoint = 0,
-      limits = c(-max_fill, max_fill),
-      labels = abs,
-      name = fill.title
-    ) +
-    ggplot2::labs(
-      title = title,
-      x = xlab,
-      y = ylab
-    ) +
-    do.call(theme_use, theme_args) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(
-        angle = angle,
-        hjust = hjust,
-        vjust = vjust
-      ),
-      panel.grid.major.x = ggplot2::element_blank(),
-      panel.grid.minor.x = ggplot2::element_blank()
-    )
-
-  if (isTRUE(return_data)) {
-    return(list(plot = p, data = stat_df))
-  }
-  p
+  suppressWarnings(srt[[assay_name]] <- assay_object)
+  srt
 }
+

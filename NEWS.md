@@ -8,6 +8,7 @@
   * Removed wrappers whose upstream dependencies are unavailable or uncompilable: `RunSpatialQM()`, the `RunSemla*()` wrappers, the `BASS`/`SpatialMNN` branches of `RunSpatialIntegration()` (PRECAST unaffected), and the SPATA2 `backend = "r"` path of `RunSpatialGradientFeatures()` (C++ backend only; `srt_to_spata2()`/`spata2_to_srt()` removed as well).
   * `RunMERINGUE()` gains a `backend = c("cpp", "r")` option; the C++ kernels replicate `MERINGUE::moranTest()`/`moranPermutationTest()` to machine precision (including the `sample.kind` RNG stream). `backend = "r"` retains the original calls and honors `moran_params`.
   * Real-data consistency tests verify the wrappers against the original pipelines (CellChat, SpatialCellChat, LIANA, BayesSpace, MERINGUE, SPOTlight, SpaNorm, SpatialDWLS, RCTD, BANKSY, CARD, SpotSweeper, PRECAST).
+  * `DorotheaPlot()` now follows the shared scop plot style: horizontal `"bar"`/`"lollipop"` comparison plots, `"volcano"`, `"heatmap"` via `GroupHeatmap()`, `"dim"` (activity vs expression on embeddings), `"stat"` (`FeatureStatPlot` distributions), and `"targets"` (regulon-target volcano). `RunDorothea()` examples show `FeatureDimPlot()` / `FeatureStatPlot()` on the TF-activity assay.
 * **fixed**:
   * `RunSpaTalk()` now reuses stored `RunRCTD()` weights through SpaTalk method 2, records the deconvolution source, and accepts a working installed SpaTalk package even when its DESCRIPTION lacks GitHub remote metadata.
   * `RunLIANA()` now preserves the field set returned by LIANA's official consensus mode: rank consensus no longer gains all-`NA` aggregate/significance placeholders, aggregate consensus no longer gains all-`NA` magnitude/specificity placeholders, and deterministic ligand-receptor display identifiers are completed during SCOP/LIANA export.
@@ -19,6 +20,7 @@
   * `RunSpotSweeper()` detects upstream `SpotSweeper::localVariance` breakage on `SpatialExperiment` colData and degrades gracefully.
   * `RunSpatialIntegration(PRECAST)` writes the raw coordinates expected by `CreatePRECASTObject`.
   * `RunLIANA()` recognizes `logfc_comb` (and other liana method score columns) as the interaction score.
+  * Exported `theme_scop` / `theme_spatial` are listed in the pkgdown reference index; the `theme_scop` alias test compares function equality rather than identity so installed-package checks pass.
 * **removed**:
   * The `CaSpER` branch of `RunCNV()` is removed: `runCaSpER()` segfaults deterministically on R >= 4.5 (HMM `manualSegment`, even on 50 cells), upstream is unmaintained since 2019, and its Bioconductor dependency set is archived. `RunCNV()` now supports `copykat`, `fastCNV`, `scevan`, `infercnv`, and `numbat`.
 * **changed**:
