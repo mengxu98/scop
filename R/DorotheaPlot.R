@@ -4,7 +4,10 @@
 #' Visualize DoRothEA TF activity stored by [RunDorothea()]. Comparison plots
 #' (`"bar"`, `"lollipop"`, `"volcano"`) test two groups and show the mean
 #' activity difference `group1 - group2`. `"heatmap"` uses [GroupHeatmap()]
-#' to summarize activity across all groups in `group.by`.
+#' to summarize activity across all groups in `group.by`. `"dim"` compares TF
+#' activity with TF expression on embeddings, `"stat"` draws per-group
+#' activity distributions with [FeatureStatPlot()], and `"targets"` shows a
+#' regulon-target volcano for one TF.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -12,19 +15,25 @@
 #' @param srt A `Seurat` object containing results from [RunDorothea()].
 #' @param group.by Metadata column used to define groups.
 #' @param group1,group2 Two group labels to compare. Required for `"bar"`,
-#' `"lollipop"`, and `"volcano"`. Positive logFC means higher TF activity in
-#' `group1`. Ignored when `plot_type = "heatmap"`.
+#' `"lollipop"`, `"volcano"`, and `"targets"`. Positive logFC means higher
+#' TF activity (or target expression) in `group1`. Ignored for `"heatmap"`,
+#' `"dim"`, and `"stat"`.
 #' @param plot_type Plot type. `"bar"` and `"lollipop"` show signed activity
-#' differences, `"volcano"` shows significance versus logFC, and `"heatmap"`
-#' draws a [GroupHeatmap()] of TF activity.
+#' differences, `"volcano"` shows TF-level significance versus logFC,
+#' `"heatmap"` draws a [GroupHeatmap()] of TF activity, `"dim"` compares
+#' activity and expression on embeddings, `"stat"` draws activity
+#' distributions, and `"targets"` shows a regulon-target volcano.
 #' @param tool_name Name of the `srt@tools` entry created by [RunDorothea()].
-#' @param assay_name Assay used for `plot_type = "heatmap"`. If `NULL`, the
-#' assay stored by [RunDorothea()] is used, or `"dorothea"`.
+#' @param assay_name Assay used for `"heatmap"`, `"dim"`, and `"stat"`. If
+#' `NULL`, the assay stored by [RunDorothea()] is used, or `"dorothea"`.
 #' @param features TFs to plot. If `NULL`, comparison plots use the top
-#' `top_n` TFs, and heatmaps use the `top_n` most variable TFs.
+#' `top_n` TFs, heatmaps and `"stat"` use the `top_n` most variable TFs,
+#' `"dim"` uses TFs present in both activity and expression assays, and
+#' `"targets"` uses the TF with the largest absolute activity difference.
 #' @param top_n Number of TFs to show when `features = NULL`. Set `NULL` to
 #' show all tested TFs.
-#' @param test.use Statistical test used for each TF in comparison plots.
+#' @param test.use Statistical test used for each TF or target gene in
+#' comparison plots.
 #' @param p.adjust.method Method passed to [stats::p.adjust].
 #' @param color.by P-value column used for comparison-plot color scales.
 #' @param rank.by Metric used to select top TFs when `features = NULL` in
@@ -32,18 +41,32 @@
 #' @param sort.by Metric used to order TFs in `"bar"` and `"lollipop"` plots.
 #' @param p_floor Lower bound used before `-log10()` transformation.
 #' @param padjustCutoff Adjusted p-value cutoff used to mark significant TFs
-#' in `"volcano"` plots.
+#' in `"volcano"` plots and non-supporting targets in `"targets"` plots.
 #' @param palette,palcolor Palette passed to `palette_colors()` for comparison
 #' plots. Default is `"RdBu"`.
 #' @param heatmap_palette,heatmap_palcolor Palette passed to [GroupHeatmap()]
 #' when `plot_type = "heatmap"`.
 #' @param group_palette,group_palcolor Group annotation palette passed to
-#' [GroupHeatmap()].
+#' [GroupHeatmap()] and [CellDimPlot()].
 #' @param exp_method Scaling method passed to [GroupHeatmap()] for
 #' `plot_type = "heatmap"`.
 #' @param heatmap_args Additional arguments passed to [GroupHeatmap()].
+#' @param dim_args Additional arguments passed to [FeatureDimPlot()] and
+#' [CellDimPlot()] when `plot_type = "dim"`.
+#' @param stat_args Additional arguments passed to [FeatureStatPlot()] when
+#' `plot_type = "stat"`.
+#' @param compare_expression Whether `"dim"` also plots TF gene expression
+#' beside TF activity. Default is `TRUE`.
+#' @param expression_assay,expression_layer Assay and layer used for TF
+#' expression in `"dim"` and for target genes in `"targets"`.
+#' @param stat_plot_type Distribution plot type passed to [FeatureStatPlot()]
+#' when `plot_type = "stat"`.
+#' @param nlabel Number of target genes labeled in `"targets"` plots.
+#' @param reduction Reduction used by `"dim"` plots. If `NULL`, the default
+#' reduction of `srt` is used.
 #' @param bar_width Width of bars in `"bar"` plots.
-#' @param point_size Point size in `"lollipop"` and `"volcano"` plots.
+#' @param point_size Point size in `"lollipop"`, `"volcano"`, and
+#' `"targets"` plots.
 #' @param title,xlab,ylab,fill.title Axis, plot, and legend titles.
 #' @param flip Whether to draw comparison bar/lollipop plots horizontally.
 #' Default is `TRUE`.
@@ -51,11 +74,12 @@
 #' diverging comparison scales. Kept for backward compatibility.
 #' @param return_data Whether to return a list with the plot and statistics.
 #'
-#' @return For `"bar"`, `"lollipop"`, and `"volcano"`, a `ggplot` object, or a
-#' list with `plot` and `data` when `return_data = TRUE`. For `"heatmap"`, the
-#' list returned by [GroupHeatmap()].
+#' @return For `"bar"`, `"lollipop"`, `"volcano"`, `"dim"`, `"stat"`, and
+#' `"targets"`, a `ggplot` or patchwork object, or a list with `plot` and
+#' `data` when `return_data = TRUE`. For `"heatmap"`, the list returned by
+#' [GroupHeatmap()].
 #'
-#' @seealso [RunDorothea], [GroupHeatmap], [FeatureDimPlot]
+#' @seealso [RunDorothea], [GroupHeatmap], [FeatureDimPlot], [FeatureStatPlot]
 #'
 #' @export
 #'
@@ -95,12 +119,44 @@
 #'   top_n = 20
 #' )
 #' ht$plot
+#'
+#' DorotheaPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   features = "Sox9",
+#'   plot_type = "dim"
+#' )
+#'
+#' DorotheaPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   features = c("Sox9", "Neurod1", "Pdx1"),
+#'   plot_type = "stat",
+#'   stat_plot_type = "violin"
+#' )
+#'
+#' DorotheaPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   group1 = "Endocrine",
+#'   group2 = "Ductal",
+#'   features = "Sox9",
+#'   plot_type = "targets"
+#' )
 DorotheaPlot <- function(
   srt,
   group.by,
   group1 = NULL,
   group2 = NULL,
-  plot_type = c("bar", "lollipop", "heatmap", "volcano"),
+  plot_type = c(
+    "bar",
+    "lollipop",
+    "heatmap",
+    "volcano",
+    "dim",
+    "stat",
+    "targets"
+  ),
   tool_name = "Dorothea",
   assay_name = NULL,
   features = NULL,
@@ -120,6 +176,14 @@ DorotheaPlot <- function(
   group_palcolor = NULL,
   exp_method = c("zscore", "raw"),
   heatmap_args = list(),
+  dim_args = list(),
+  stat_args = list(),
+  compare_expression = TRUE,
+  expression_assay = NULL,
+  expression_layer = "data",
+  stat_plot_type = c("violin", "box", "dot", "bar", "col"),
+  nlabel = 10,
+  reduction = NULL,
   bar_width = 0.72,
   point_size = 3.2,
   aspect.ratio = NULL,
@@ -162,6 +226,7 @@ DorotheaPlot <- function(
   rank.by <- match.arg(rank.by)
   sort.by <- match.arg(sort.by)
   exp_method <- match.arg(exp_method)
+  stat_plot_type <- match.arg(stat_plot_type)
   if (!is.null(top_n)) {
     if (length(top_n) != 1L || is.na(top_n) || top_n < 1) {
       log_message(
@@ -183,11 +248,31 @@ DorotheaPlot <- function(
       message_type = "error"
     )
   }
+  if (!is.list(dim_args)) {
+    log_message(
+      "{.arg dim_args} must be a list",
+      message_type = "error"
+    )
+  }
+  if (!is.list(stat_args)) {
+    log_message(
+      "{.arg stat_args} must be a list",
+      message_type = "error"
+    )
+  }
+  if (length(nlabel) != 1L || is.na(nlabel) || nlabel < 0) {
+    log_message(
+      "{.arg nlabel} must be a non-negative integer",
+      message_type = "error"
+    )
+  }
+  nlabel <- as.integer(nlabel)
 
   scores <- as.matrix(srt@tools[[tool_name]]$scores)
   assay_name <- assay_name %||%
     srt@tools[[tool_name]]$parameters$assay_name %||%
     "dorothea"
+  expression_assay <- dorothea_expression_assay(srt, expression_assay)
 
   if (identical(plot_type, "heatmap")) {
     ht <- dorothea_plot_heatmap(
@@ -213,6 +298,98 @@ DorotheaPlot <- function(
       )
     }
     return(ht)
+  }
+
+  if (identical(plot_type, "dim")) {
+    out <- dorothea_plot_dim(
+      srt = srt,
+      scores = scores,
+      group.by = group.by,
+      assay_name = assay_name,
+      features = features,
+      top_n = top_n,
+      compare_expression = compare_expression,
+      expression_assay = expression_assay,
+      expression_layer = expression_layer,
+      reduction = reduction,
+      palette = palette,
+      palcolor = palcolor,
+      group_palette = group_palette,
+      group_palcolor = group_palcolor,
+      theme_use = theme_use,
+      theme_args = theme_args,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      dim_args = dim_args,
+      title = title,
+      verbose = verbose
+    )
+    if (isTRUE(return_data)) {
+      return(out)
+    }
+    return(out$plot)
+  }
+
+  if (identical(plot_type, "stat")) {
+    out <- dorothea_plot_stat(
+      srt = srt,
+      scores = scores,
+      group.by = group.by,
+      assay_name = assay_name,
+      features = features,
+      top_n = top_n,
+      stat_plot_type = stat_plot_type,
+      group_palette = group_palette,
+      group_palcolor = group_palcolor,
+      theme_use = theme_use,
+      theme_args = theme_args,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      aspect.ratio = aspect.ratio,
+      title = title,
+      ylab = ylab,
+      stat_args = stat_args,
+      verbose = verbose
+    )
+    if (isTRUE(return_data)) {
+      return(out)
+    }
+    return(out$plot)
+  }
+
+  if (identical(plot_type, "targets")) {
+    out <- dorothea_plot_targets(
+      srt = srt,
+      scores = scores,
+      group.by = group.by,
+      group1 = group1,
+      group2 = group2,
+      tool_name = tool_name,
+      features = features,
+      expression_assay = expression_assay,
+      expression_layer = expression_layer,
+      test.use = test.use,
+      p.adjust.method = p.adjust.method,
+      p_floor = p_floor,
+      padjustCutoff = padjustCutoff,
+      palette = palette,
+      palcolor = palcolor,
+      point_size = point_size,
+      nlabel = nlabel,
+      title = title,
+      xlab = xlab,
+      ylab = ylab,
+      theme_use = theme_use,
+      theme_args = theme_args,
+      aspect.ratio = aspect.ratio,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      verbose = verbose
+    )
+    if (isTRUE(return_data)) {
+      return(out)
+    }
+    return(out$plot)
   }
 
   stat_df <- dorothea_compare_activity(
@@ -689,35 +866,12 @@ dorothea_plot_heatmap <- function(
   title,
   verbose
 ) {
-  if (is.null(features)) {
-    tf_var <- apply(scores, 1, stats::var, na.rm = TRUE)
-    tf_var <- tf_var[is.finite(tf_var)]
-    if (length(tf_var) == 0L) {
-      log_message(
-        "No TFs with finite activity variance are available for the heatmap",
-        message_type = "error"
-      )
-    }
-    n_keep <- if (is.null(top_n)) length(tf_var) else min(top_n, length(tf_var))
-    features <- names(sort(tf_var, decreasing = TRUE))[seq_len(n_keep)]
-  } else {
-    features <- unique(as.character(features))
-    missing_features <- setdiff(features, rownames(scores))
-    if (length(missing_features) > 0L) {
-      log_message(
-        "Dropping TFs not found in DoRothEA scores: {.val {missing_features}}",
-        message_type = "warning",
-        verbose = verbose
-      )
-    }
-    features <- intersect(features, rownames(scores))
-  }
-  if (length(features) == 0L) {
-    log_message(
-      "No TFs are available for plotting",
-      message_type = "error"
-    )
-  }
+  features <- dorothea_resolve_features(
+    scores = scores,
+    features = features,
+    top_n = top_n,
+    verbose = verbose
+  )
 
   if (!assay_name %in% SeuratObject::Assays(srt)) {
     srt <- dorothea_attach_assay(
@@ -757,4 +911,484 @@ dorothea_plot_heatmap <- function(
   )
   args[names(heatmap_args)] <- heatmap_args
   do.call(GroupHeatmap, args)
+}
+
+dorothea_resolve_features <- function(scores, features, top_n, verbose) {
+  if (is.null(features)) {
+    tf_var <- apply(scores, 1, stats::var, na.rm = TRUE)
+    tf_var <- tf_var[is.finite(tf_var)]
+    if (length(tf_var) == 0L) {
+      log_message(
+        "No TFs with finite activity variance are available for plotting",
+        message_type = "error"
+      )
+    }
+    n_keep <- if (is.null(top_n)) length(tf_var) else min(top_n, length(tf_var))
+    features <- names(sort(tf_var, decreasing = TRUE))[seq_len(n_keep)]
+  } else {
+    features <- unique(as.character(features))
+    missing_features <- setdiff(features, rownames(scores))
+    if (length(missing_features) > 0L) {
+      log_message(
+        "Dropping TFs not found in DoRothEA scores: {.val {missing_features}}",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    features <- intersect(features, rownames(scores))
+  }
+  if (length(features) == 0L) {
+    log_message(
+      "No TFs are available for plotting",
+      message_type = "error"
+    )
+  }
+  features
+}
+
+dorothea_expression_assay <- function(srt, expression_assay = NULL) {
+  assays <- SeuratObject::Assays(srt)
+  if (!is.null(expression_assay)) {
+    if (!expression_assay %in% assays) {
+      log_message(
+        "{.arg expression_assay} {.val {expression_assay}} is not present in {.arg srt}",
+        message_type = "error"
+      )
+    }
+    return(expression_assay)
+  }
+  if ("RNA" %in% assays) {
+    return("RNA")
+  }
+  SeuratObject::DefaultAssay(srt)
+}
+
+dorothea_match_feature <- function(feature, rownames_vec) {
+  if (feature %in% rownames_vec) {
+    return(feature)
+  }
+  hit <- rownames_vec[tolower(rownames_vec) == tolower(feature)]
+  if (length(hit) == 1L) {
+    return(hit[[1L]])
+  }
+  NA_character_
+}
+
+dorothea_ensure_assay <- function(srt, scores, assay_name) {
+  if (!assay_name %in% SeuratObject::Assays(srt)) {
+    srt <- dorothea_attach_assay(
+      srt = srt,
+      scores = scores,
+      assay_name = assay_name
+    )
+  }
+  srt
+}
+
+dorothea_plot_dim <- function(
+  srt,
+  scores,
+  group.by,
+  assay_name,
+  features,
+  top_n,
+  compare_expression,
+  expression_assay,
+  expression_layer,
+  reduction,
+  palette,
+  palcolor,
+  group_palette,
+  group_palcolor,
+  theme_use,
+  theme_args,
+  legend.position,
+  legend.direction,
+  dim_args,
+  title,
+  verbose
+) {
+  expr_names <- tryCatch(
+    rownames(srt[[expression_assay]]),
+    error = function(e) character()
+  )
+  if (is.null(features) && isTRUE(compare_expression) && length(expr_names) > 0L) {
+    shared <- rownames(scores)[
+      tolower(rownames(scores)) %in% tolower(expr_names)
+    ]
+    if (length(shared) > 0L) {
+      features <- dorothea_resolve_features(
+        scores = scores[shared, , drop = FALSE],
+        features = NULL,
+        top_n = top_n,
+        verbose = verbose
+      )
+    }
+  }
+  features <- dorothea_resolve_features(
+    scores = scores,
+    features = features,
+    top_n = if (is.null(features)) top_n else NULL,
+    verbose = verbose
+  )
+  srt <- dorothea_ensure_assay(srt, scores, assay_name)
+
+  log_message(
+    "Draw DoRothEA embedding plots for {.val {length(features)}} TFs",
+    verbose = verbose
+  )
+
+  cell_formals <- names(formals(CellDimPlot))
+  feat_formals <- names(formals(FeatureDimPlot))
+  cell_args <- list(
+    srt = srt,
+    group.by = group.by,
+    reduction = reduction,
+    palette = group_palette,
+    palcolor = group_palcolor,
+    label = TRUE,
+    title = "Cell types",
+    theme_use = theme_use,
+    theme_args = theme_args,
+    legend.position = legend.position,
+    legend.direction = legend.direction
+  )
+  extra_cell <- dim_args[intersect(names(dim_args), cell_formals)]
+  extra_cell <- extra_cell[setdiff(names(extra_cell), c("srt", "group.by"))]
+  cell_args[names(extra_cell)] <- extra_cell
+  p_cell <- do.call(CellDimPlot, cell_args)
+
+  tf_plots <- lapply(features, function(tf) {
+    act_args <- list(
+      srt = srt,
+      features = tf,
+      assay = assay_name,
+      layer = "data",
+      reduction = reduction,
+      palette = palette,
+      palcolor = palcolor,
+      bg_cutoff = -Inf,
+      title = paste(tf, "activity"),
+      legend.title = "Activity",
+      theme_use = theme_use,
+      theme_args = theme_args,
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      combine = TRUE
+    )
+    extra_feat <- dim_args[intersect(names(dim_args), feat_formals)]
+    extra_feat <- extra_feat[setdiff(
+      names(extra_feat),
+      c("srt", "features", "assay", "layer", "title", "legend.title")
+    )]
+    act_args[names(extra_feat)] <- extra_feat
+    p_act <- do.call(FeatureDimPlot, act_args)
+
+    expr_feature <- dorothea_match_feature(tf, expr_names)
+    if (!isTRUE(compare_expression) || is.na(expr_feature)) {
+      if (isTRUE(compare_expression) && is.na(expr_feature)) {
+        log_message(
+          "No matching expression feature for TF {.val {tf}} in assay {.val {expression_assay}}",
+          message_type = "warning",
+          verbose = verbose
+        )
+      }
+      return(p_act)
+    }
+    exp_args <- act_args
+    exp_args$features <- expr_feature
+    exp_args$assay <- expression_assay
+    exp_args$layer <- expression_layer
+    exp_args$palette <- dim_args$expression_palette %||% "Spectral"
+    exp_args$palcolor <- dim_args$expression_palcolor
+    exp_args$bg_cutoff <- dim_args$expression_bg_cutoff %||% 0
+    exp_args$title <- paste(expr_feature, "expression")
+    exp_args$legend.title <- "Expression"
+    p_exp <- do.call(FeatureDimPlot, exp_args)
+    patchwork::wrap_plots(p_act, p_exp, ncol = 2)
+  })
+
+  if (length(features) == 1L && isTRUE(compare_expression)) {
+    expr_feature <- dorothea_match_feature(features[[1L]], expr_names)
+    if (!is.na(expr_feature)) {
+      p <- patchwork::wrap_plots(p_cell, tf_plots[[1L]], ncol = 2, widths = c(1, 2))
+      if (!is.null(title)) {
+        p <- p + patchwork::plot_annotation(title = title)
+      }
+      return(list(plot = p, data = features))
+    }
+  }
+  p <- patchwork::wrap_plots(
+    c(list(p_cell), tf_plots),
+    ncol = 1
+  )
+  if (!is.null(title)) {
+    p <- p + patchwork::plot_annotation(title = title)
+  }
+  list(plot = p, data = features)
+}
+
+dorothea_plot_stat <- function(
+  srt,
+  scores,
+  group.by,
+  assay_name,
+  features,
+  top_n,
+  stat_plot_type,
+  group_palette,
+  group_palcolor,
+  theme_use,
+  theme_args,
+  legend.position,
+  legend.direction,
+  aspect.ratio,
+  title,
+  ylab,
+  stat_args,
+  verbose
+) {
+  features <- dorothea_resolve_features(
+    scores = scores,
+    features = features,
+    top_n = top_n,
+    verbose = verbose
+  )
+  srt <- dorothea_ensure_assay(srt, scores, assay_name)
+  log_message(
+    "Draw DoRothEA activity distributions for {.val {length(features)}} TFs",
+    verbose = verbose
+  )
+  args <- list(
+    srt = srt,
+    stat.by = features,
+    group.by = group.by,
+    assay = assay_name,
+    layer = "data",
+    plot_type = stat_plot_type,
+    palette = group_palette,
+    palcolor = group_palcolor,
+    ylab = ylab %||% "TF activity",
+    title = title,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    aspect.ratio = aspect.ratio
+  )
+  extra <- stat_args[intersect(names(stat_args), names(formals(FeatureStatPlot)))]
+  extra <- extra[setdiff(names(extra), c("srt", "stat.by", "assay", "layer"))]
+  args[names(extra)] <- extra
+  list(plot = do.call(FeatureStatPlot, args), data = features)
+}
+
+dorothea_plot_targets <- function(
+  srt,
+  scores,
+  group.by,
+  group1,
+  group2,
+  tool_name,
+  features,
+  expression_assay,
+  expression_layer,
+  test.use,
+  p.adjust.method,
+  p_floor,
+  padjustCutoff,
+  palette,
+  palcolor,
+  point_size,
+  nlabel,
+  title,
+  xlab,
+  ylab,
+  theme_use,
+  theme_args,
+  aspect.ratio,
+  legend.position,
+  legend.direction,
+  verbose
+) {
+  regulons <- srt@tools[[tool_name]]$regulons
+  if (is.null(regulons) || !"tf" %in% colnames(regulons)) {
+    log_message(
+      "No DoRothEA regulons found in {.code srt@tools[[{tool_name}]]$regulons}. Re-run {.fn RunDorothea}.",
+      message_type = "error"
+    )
+  }
+  if (is.null(features)) {
+    stat_df <- dorothea_compare_activity(
+      srt = srt,
+      scores = scores,
+      group.by = group.by,
+      group1 = group1,
+      group2 = group2,
+      features = NULL,
+      top_n = 1L,
+      test.use = test.use,
+      p.adjust.method = p.adjust.method,
+      rank.by = "abs_logFC",
+      sort.by = "abs_logFC",
+      p_floor = p_floor,
+      verbose = FALSE
+    )
+    features <- as.character(stat_df$TF[[1L]])
+  }
+  if (length(features) != 1L) {
+    log_message(
+      "{.arg plot_type = 'targets'} accepts a single TF in {.arg features}",
+      message_type = "error"
+    )
+  }
+  tf <- features[[1L]]
+  tf_use <- dorothea_match_feature(tf, unique(as.character(regulons$tf)))
+  if (is.na(tf_use)) {
+    log_message(
+      "TF {.val {tf}} is not present in the stored DoRothEA regulons",
+      message_type = "error"
+    )
+  }
+  net <- regulons[as.character(regulons$tf) == tf_use, , drop = FALSE]
+  expr <- GetAssayData5(
+    srt,
+    assay = expression_assay,
+    layer = expression_layer
+  )
+  if (nrow(expr) == 0L && !identical(expression_layer, "counts")) {
+    expr <- GetAssayData5(
+      srt,
+      assay = expression_assay,
+      layer = "counts"
+    )
+  }
+  expr <- as.matrix(expr)
+  target_map <- vapply(
+    as.character(net$target),
+    function(gene) dorothea_match_feature(gene, rownames(expr)),
+    character(1)
+  )
+  keep <- !is.na(target_map)
+  if (!any(keep)) {
+    log_message(
+      "None of the {.val {tf_use}} targets are present in assay {.val {expression_assay}}",
+      message_type = "error"
+    )
+  }
+  if (any(!keep)) {
+    log_message(
+      "Dropping {.val {sum(!keep)}} {.val {tf_use}} targets missing from assay {.val {expression_assay}}",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
+  net <- net[keep, , drop = FALSE]
+  net$target_expr <- unname(target_map[keep])
+  target_mat <- expr[unique(net$target_expr), , drop = FALSE]
+  log_message(
+    "Draw DoRothEA regulon-target volcano for {.val {tf_use}} ({.val {nrow(net)}} targets)",
+    verbose = verbose
+  )
+  target_stat <- dorothea_compare_activity(
+    srt = srt,
+    scores = target_mat,
+    group.by = group.by,
+    group1 = group1,
+    group2 = group2,
+    features = rownames(target_mat),
+    top_n = NULL,
+    test.use = test.use,
+    p.adjust.method = p.adjust.method,
+    rank.by = "abs_logFC",
+    sort.by = "abs_logFC",
+    p_floor = p_floor,
+    verbose = FALSE
+  )
+  plot_df <- merge(
+    net,
+    target_stat,
+    by.x = "target_expr",
+    by.y = "TF",
+    all.x = TRUE,
+    sort = FALSE
+  )
+  plot_df$mor <- as.numeric(plot_df$mor)
+  plot_df$support <- ifelse(
+    is.finite(plot_df$logFC) & is.finite(plot_df$mor) & plot_df$mor != 0,
+    ifelse(sign(plot_df$mor) * sign(plot_df$logFC) > 0, "Support", "Oppose"),
+    "NS"
+  )
+  cutoff <- padjustCutoff %||% 0.05
+  plot_df$support[
+    !is.finite(plot_df$p_val_adj) | plot_df$p_val_adj > cutoff
+  ] <- "NS"
+  cols <- palette_colors(
+    c("Oppose", "NS", "Support"),
+    palette = palette,
+    palcolor = palcolor
+  )
+  if (is.null(names(cols)) || !all(c("Oppose", "NS", "Support") %in% names(cols))) {
+    cols <- unname(cols)[seq_len(min(3L, length(cols)))]
+    if (length(cols) < 3L) {
+      cols <- rep(cols, length.out = 3L)
+    }
+    names(cols) <- c("Oppose", "NS", "Support")
+  } else {
+    cols <- cols[c("Oppose", "NS", "Support")]
+  }
+  theme_use <- apply_plot_theme(theme_use, theme_args)
+  label_n <- min(nlabel, nrow(plot_df))
+  label_df <- plot_df[integer(), , drop = FALSE]
+  if (label_n > 0L) {
+    rank_score <- abs(plot_df$logFC) * plot_df$neglog10_p_val_adj
+    rank_score[!is.finite(rank_score)] <- 0
+    label_df <- plot_df[order(-rank_score), , drop = FALSE][seq_len(label_n), , drop = FALSE]
+  }
+  p <- ggplot2::ggplot(
+    plot_df,
+    ggplot2::aes(
+      x = .data[["logFC"]],
+      y = .data[["neglog10_p_val_adj"]],
+      color = .data[["support"]],
+      size = abs(.data[["mor"]])
+    )
+  ) +
+    ggplot2::geom_vline(xintercept = 0, color = "grey75", linewidth = 0.35) +
+    ggplot2::geom_hline(
+      yintercept = -log10(cutoff),
+      color = "grey75",
+      linewidth = 0.35,
+      linetype = 2
+    ) +
+    ggplot2::geom_point(alpha = 0.85) +
+    ggplot2::scale_color_manual(values = cols, drop = FALSE, name = NULL) +
+    ggplot2::scale_size_continuous(name = "|MoR|", range = c(1.6, max(point_size, 1.6) + 2)) +
+    ggplot2::labs(
+      title = title %||% paste0(tf_use, " targets (", group1, " vs. ", group2, ")"),
+      x = xlab %||% paste0(group1, " - ", group2),
+      y = ylab %||% "-log10(adjusted p-value)"
+    ) +
+    ggplot2::guides(
+      size = ggplot2::guide_legend(order = 1, override.aes = list(color = "grey30")),
+      color = ggplot2::guide_legend(order = 2, override.aes = list(size = 3))
+    ) +
+    theme_use +
+    ggplot2::theme(
+      aspect.ratio = aspect.ratio,
+      legend.position = legend.position,
+      legend.direction = legend.direction
+    )
+  if (nrow(label_df) > 0L) {
+    p <- p +
+      ggrepel::geom_text_repel(
+        data = label_df,
+        ggplot2::aes(label = .data[["target_expr"]]),
+        min.segment.length = 0,
+        max.overlaps = 100,
+        segment.colour = "grey40",
+        size = 3.2,
+        show.legend = FALSE
+      )
+  }
+  list(plot = p, data = plot_df)
 }
