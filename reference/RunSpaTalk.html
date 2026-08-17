@@ -80,7 +80,8 @@ and added to SCOP's unified CCC table.</p>
 <span>  reference.layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
 <span>  image <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"col"</span>, <span class="st">"row"</span><span class="op">)</span>,</span>
-<span>  deconvolution <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NNLM"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
+<span>  deconvolution <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NNLM"</span>, <span class="st">"RCTD"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
+<span>  rctd.tool <span class="op">=</span> <span class="st">"RCTD"</span>,</span>
 <span>  result.name <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  store.object <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimal"</span>, <span class="st">"full"</span><span class="op">)</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -137,7 +138,14 @@ supplied and single-cell mode otherwise.</p></dd>
 
 <dt id="arg-deconvolution">deconvolution<a class="anchor" aria-label="anchor" href="#arg-deconvolution"></a></dt>
 <dd><p>Spot deconvolution mode. `"NNLM"` runs SpaTalk method 1;
-`"none"` requires a named `dec_result` matrix in `...`.</p></dd>
+`"RCTD"` reuses `srt@tools[[rctd.tool]]$weights` from [RunRCTD()] (or an
+explicitly supplied `dec_result`); `"none"` requires a named external
+`dec_result` matrix in `...`. Imported matrices use SpaTalk method 2.</p></dd>
+
+
+<dt id="arg-rctd-tool">rctd.tool<a class="anchor" aria-label="anchor" href="#arg-rctd-tool"></a></dt>
+<dd><p>Tool key containing stored RCTD weights when
+`deconvolution = "RCTD"`.</p></dd>
 
 
 <dt id="arg-result-name">result.name<a class="anchor" aria-label="anchor" href="#arg-result-name"></a></dt>
