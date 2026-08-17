@@ -200,7 +200,7 @@ scenic_parse_genomic_region <- function(region) {
   region <- as.character(region)
   region_clean <- gsub(",", "", region, fixed = TRUE)
   matches <- regexec(
-    "^([^:[:space:]-]+)[:_-]([0-9]+)[:_-]([0-9]+)$",
+    "^([^:[:space:]-]+)[:_-]([0-9.]+(?:[eE][+-]?[0-9]+)?)[:_-]([0-9.]+(?:[eE][+-]?[0-9]+)?)$",
     region_clean
   )
   parts <- regmatches(region_clean, matches)

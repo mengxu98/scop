@@ -12,8 +12,8 @@ SCENICPlot(
   layer = "data",
   plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "heatmap_dotplot",
     "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim",
-    "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "target_bar",
-    "coverage"),
+    "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "egrn",
+    "overlap", "target_bar", "coverage"),
   features = NULL,
   reduction = NULL,
   dims = c(1, 2),
@@ -57,9 +57,11 @@ SCENICPlot(
   coverage_args = list(),
   max_targets = 20,
   max_edges = Inf,
-  network_layout = c("fr", "nicely", "kk", "lgl", "drl"),
+  network_layout = c("auto", "star", "hub", "tripartite", "bipartite", "circle", "fr",
+    "nicely", "kk", "lgl", "drl"),
   network_tf = NULL,
-  label_nodes = c("tfs", "all", "none"),
+  network_include_regions = TRUE,
+  label_nodes = c("auto", "tfs", "all", "none"),
   network_label_top_n = 60,
   combine = TRUE,
   ncol = 3,
@@ -95,8 +97,10 @@ SCENICPlot(
 plot. \code{"heatmap_dotplot"} colors dots by TF expression and sizes them by
 RSS. \code{"eregulon_dim"} compares TF expression and regulon AUC on embeddings.
 \code{"coverage"} shows ATAC accessibility with region–gene links for a target
-locus. Other options summarize RSS, regulon activity, regulon sizes, or
-TF-target subnetworks.}
+locus. \code{"network"} draws regulon hub networks. \code{"network_graph"} draws a
+global TF–target graph. \code{"egrn"} draws the SCENIC+ TF–region–gene GRN.
+\code{"overlap"} shows pairwise eRegulon target overlap. Other options summarize
+RSS, regulon activity, or regulon sizes.}
 
 \item{features}{Optional TF/regulon names used by activity, network, and
 target plots. Values can match either \code{"Sox9"} or \code{"Sox9(+)"}. Explicit
@@ -183,8 +187,9 @@ the same legend range.}
 \code{plot_type = "activity_heatmap"} or \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} for \code{plot_type = "rss_heatmap"}.}
 
 \item{palette, palcolor}{Palette passed to \code{palette_colors()} for
-\code{"rss_dotplot"}, \code{"heatmap_dotplot"}, \code{"regulon_size"}, and
-\code{"target_bar"} color scales.}
+\code{"rss_dotplot"}, \code{"heatmap_dotplot"}, \code{"regulon_size"}, \code{"target_bar"},
+and network node colors. Network plots keep publication TF/region/gene
+colors when \code{palette = "RdYlBu"} unless \code{palcolor} is set.}
 
 \item{compare_expression}{Whether \code{"activity_dim"} also plots TF gene
 expression beside regulon activity. \code{"eregulon_dim"} always compares
@@ -215,13 +220,23 @@ network-style plots.}
 \item{max_edges}{Maximum number of TF-target edges shown in global network
 plots. Edges are ranked by absolute weight when a weight column is present.}
 
-\item{network_layout}{Graph layout used by network plots. \code{"fr"} matches the
-force-directed Fruchterman-Reingold layout used in Pando examples.}
+\item{network_layout}{Graph layout used by network plots. \code{"auto"} selects
+\code{"star"} for \code{"network"}, \code{"hub"} for \code{"network_graph"}, and
+\code{"tripartite"} for \code{"egrn"}. \code{"star"} places the TF in the center with
+targets on a ring (inner ring = regions when SCENIC+ triplets are present).
+\code{"hub"} places TFs on a circle with unique targets around each TF.
+\code{"tripartite"} is the SCENIC+ eGRN layout (TF | region | gene). \code{"fr"} and
+\code{"kk"} are force-directed layouts initialized from a circle.}
 
-\item{network_tf}{Optional TF names used when \code{plot_type = "network"}. If
-\code{NULL}, \code{features}, \code{highlight_tf}, or the top RSS regulons are used.}
+\item{network_tf}{Optional TF names used when \code{plot_type} is \code{"network"} or
+\code{"egrn"}. If \code{NULL}, \code{features}, \code{highlight_tf}, or the top RSS regulons
+are used.}
 
-\item{label_nodes}{Which nodes to label in network plots.}
+\item{network_include_regions}{Whether SCENIC+ \code{"network"} / \code{"network_graph"}
+plots use TF–region–gene triplets when they are stored. Default is \code{TRUE}.}
+
+\item{label_nodes}{Which nodes to label in network plots. \code{"auto"} labels
+all nodes in hub/eGRN plots and high-degree TFs in global graphs.}
 
 \item{network_label_top_n}{Maximum number of high-degree TF nodes labeled in
 \code{plot_type = "network_graph"} when \code{label_nodes = "tfs"}.}
@@ -267,8 +282,8 @@ keeps all requested top or highlighted TF labels.}
 
 \item{...}{Additional arguments passed directly to the underlying
 \code{\link[=GroupHeatmap]{GroupHeatmap()}} or \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} call when \code{plot_type} is
-\code{"activity_heatmap"} or \code{"rss_heatmap"}. For example, \code{width} and \code{height}
-can be supplied directly.}
+\code{"activity_heatmap"}, \code{"rss_heatmap"}, or \code{"overlap"}. For example, \code{width}
+and \code{height} can be supplied directly.}
 }
 \value{
 A list containing \code{rss_matrix}, \code{rank_table}, \code{top_table}, \code{plots},
@@ -284,6 +299,10 @@ defaults (\code{tool_name = "SCENICPlus"}, \code{assay = "scenicplus"}).
 TF expression, size = RSS). \code{"eregulon_dim"} compares TF expression with
 gene-based AUC, and region-based AUC when it is stored. \code{"coverage"} draws
 accessibility and region–gene link tracks for one target locus.
+\code{"network"} draws per-TF regulon hubs (TF at the center, targets on a ring;
+SCENIC+ adds an inner region ring when triplets are stored). \code{"egrn"} is
+the SCENIC+ enhancer-driven GRN (TF, region, and gene nodes). \code{"overlap"}
+is the eRegulon target-gene Jaccard heatmap.
 }
 \examples{
 \dontrun{
@@ -399,6 +418,18 @@ SCENICPlot(
   plot_type = "target_bar",
   features = example_regulons,
   max_targets = 20
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "overlap",
+  features = example_regulons
+)
+SCENICPlusPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "egrn",
+  features = example_tfs
 )
 SCENICPlusPlot(
   pancreas_sub,

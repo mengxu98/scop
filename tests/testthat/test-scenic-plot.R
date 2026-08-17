@@ -433,7 +433,7 @@ test_that("SCENICPlusPlot eregulon_dim includes region AUC when stored", {
   expect_gt(length(out$plots), 1)
 })
 
-test_that("SCENICPlusPlot network falls back to tf_gene edges", {
+test_that("SCENICPlusPlot network uses TF-region-gene hubs from triplets", {
   dat <- make_scenicplus_plot_mock()
   out <- SCENICPlusPlot(
     dat$srt,
@@ -445,6 +445,95 @@ test_that("SCENICPlusPlot network falls back to tf_gene edges", {
 
   expect_s3_class(out$plot, "ggplot")
   expect_true("Jun" %in% out$plot_data$nodes$name)
+  expect_true("region" %in% as.character(out$plot_data$nodes$node_type))
+  expect_true("gene" %in% as.character(out$plot_data$nodes$node_type))
+  tf_node <- out$plot_data$nodes[out$plot_data$nodes$name == "Jun", ]
+  expect_equal(tf_node$x, 0, tolerance = 1e-8)
+  expect_equal(tf_node$y, 0, tolerance = 1e-8)
+  expect_true(all(c("tf_region", "region_gene") %in% out$plot_data$edges$edge_type))
+})
+
+test_that("SCENICPlot network places the TF at the hub center", {
+  dat <- make_scenic_plot_mock()
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "network",
+    features = "Jun",
+    verbose = FALSE
+  )
+
+  tf_node <- out$plot_data$nodes[out$plot_data$nodes$name == "Jun", ]
+  gene_nodes <- out$plot_data$nodes[out$plot_data$nodes$node_type == "gene", ]
+  expect_equal(tf_node$x, 0, tolerance = 1e-8)
+  expect_equal(tf_node$y, 0, tolerance = 1e-8)
+  expect_true(all(gene_nodes$x^2 + gene_nodes$y^2 > 1))
+  expect_true(all(out$plot_data$edges$from == "Jun"))
+})
+
+test_that("SCENICPlusPlot egrn draws a tripartite TF-region-gene layout", {
+  dat <- make_scenicplus_plot_mock()
+  out <- SCENICPlusPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "egrn",
+    features = "Jun",
+    verbose = FALSE
+  )
+
+  nodes <- out$plot_data$nodes
+  expect_true(all(c("TF", "region", "gene") %in% as.character(nodes$node_type)))
+  tf_x <- unique(nodes$x[as.character(nodes$node_type) == "TF"])
+  region_x <- unique(nodes$x[as.character(nodes$node_type) == "region"])
+  gene_x <- unique(nodes$x[as.character(nodes$node_type) == "gene"])
+  expect_lt(tf_x, region_x)
+  expect_lt(region_x, gene_x)
+})
+
+test_that("SCENICPlot overlap returns pairwise Jaccard values", {
+  dat <- make_scenic_plot_mock()
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "overlap",
+    features = c("Jun(+)", "Atf3(+)", "Fos(+)"),
+    verbose = FALSE
+  )
+
+  expect_s3_class(out$plot, "ggplot")
+  expect_true(all(c("regulon_1", "regulon_2", "jaccard") %in% colnames(out$plot_data)))
+  diag <- out$plot_data$regulon_1 == out$plot_data$regulon_2
+  expect_true(all(out$plot_data$jaccard[diag] == 1))
+})
+
+test_that("SCENIC network_graph hub layout keeps TFs off a single line", {
+  dat <- make_scenic_plot_mock()
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "network_graph",
+    max_targets = 5,
+    verbose = FALSE
+  )
+
+  tf_nodes <- out$plot_data$nodes[as.character(out$plot_data$nodes$node_type) == "TF", ]
+  expect_gt(nrow(tf_nodes), 2)
+  expect_gt(sd(tf_nodes$x), 0.2)
+  expect_gt(sd(tf_nodes$y), 0.2)
+})
+
+test_that("SCENICPlusPlot network can disable region nodes", {
+  dat <- make_scenicplus_plot_mock()
+  out <- SCENICPlusPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "network",
+    features = "Jun",
+    network_include_regions = FALSE,
+    verbose = FALSE
+  )
+
+  expect_false("region" %in% as.character(out$plot_data$nodes$node_type))
   expect_true(all(out$plot_data$edges$from == "Jun"))
 })
 
@@ -464,10 +553,15 @@ test_that("scenic_match_regulon_features matches SCENIC+ eRegulon names", {
 })
 
 test_that("scenic_parse_genomic_region accepts Signac and SCENIC+ coordinates", {
-  parsed <- scenic_parse_genomic_region(c("chr1-100-200", "chr1:300-400", "chr2_500_600"))
-  expect_equal(parsed$seqnames, c("chr1", "chr1", "chr2"))
-  expect_equal(parsed$start, c(100, 300, 500))
-  expect_equal(parsed$end, c(200, 400, 600))
+  parsed <- scenic_parse_genomic_region(c(
+    "chr1-100-200",
+    "chr1:300-400",
+    "chr2_500_600",
+    "chr1-1e+06-1000499"
+  ))
+  expect_equal(parsed$seqnames, c("chr1", "chr1", "chr2", "chr1"))
+  expect_equal(parsed$start, c(100, 300, 500, 1e6))
+  expect_equal(parsed$end, c(200, 400, 600, 1000499))
 })
 
 test_that("SCENICPlusPlot coverage returns region-gene tracks", {
