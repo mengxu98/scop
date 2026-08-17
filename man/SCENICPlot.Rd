@@ -2,7 +2,7 @@
 % Please edit documentation in R/SCENICPlot.R
 \name{SCENICPlot}
 \alias{SCENICPlot}
-\title{Plot top regulon specificity scores from SCENIC results}
+\title{Plot SCENIC or SCENIC+ regulon activity and specificity}
 \usage{
 SCENICPlot(
   srt,
@@ -10,9 +10,9 @@ SCENICPlot(
   tool_name = "SCENIC",
   assay = "scenic",
   layer = "data",
-  plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "activity_heatmap",
-    "activity_violin", "activity_dim", "activity_cor_dumbbell", "regulon_size",
-    "network_graph", "network", "target_bar"),
+  plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "heatmap_dotplot",
+    "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim",
+    "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "target_bar"),
   features = NULL,
   reduction = NULL,
   dims = c(1, 2),
@@ -43,6 +43,13 @@ SCENICPlot(
   heatmap_group_palcolor = NULL,
   heatmap_limits = NULL,
   heatmap_args = list(),
+  palette = "RdYlBu",
+  palcolor = NULL,
+  compare_expression = FALSE,
+  expression_assay = NULL,
+  expression_layer = "data",
+  expression_scale = TRUE,
+  dim_args = list(),
   max_targets = 20,
   max_edges = Inf,
   network_layout = c("fr", "nicely", "kk", "lgl", "drl"),
@@ -69,7 +76,7 @@ SCENICPlot(
 }
 \arguments{
 \item{srt}{A Seurat object containing SCENIC results from
-\code{\link[=RunSCENIC]{RunSCENIC()}}.}
+\code{\link[=RunSCENIC]{RunSCENIC()}} or SCENIC+ results from \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}.}
 
 \item{group.by}{Metadata column used as the cell group annotation.}
 
@@ -80,7 +87,9 @@ SCENICPlot(
 \item{layer}{Assay layer used as a fallback source of regulon activity.}
 
 \item{plot_type}{Plot type. \code{"rss_rank"} keeps the original regulon RSS rank
-plot. Other options summarize RSS, regulon activity, regulon sizes, or
+plot. \code{"heatmap_dotplot"} colors dots by TF expression and sizes them by
+RSS. \code{"eregulon_dim"} compares TF expression and regulon AUC on embeddings.
+Other options summarize RSS, regulon activity, regulon sizes, or
 TF-target subnetworks.}
 
 \item{features}{Optional TF/regulon names used by activity, network, and
@@ -167,6 +176,24 @@ the same legend range.}
 \item{heatmap_args}{Additional arguments passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}} for
 \code{plot_type = "activity_heatmap"} or \code{\link[=FeatureHeatmap]{FeatureHeatmap()}} for \code{plot_type = "rss_heatmap"}.}
 
+\item{palette, palcolor}{Palette passed to \code{palette_colors()} for
+\code{"rss_dotplot"}, \code{"heatmap_dotplot"}, \code{"regulon_size"}, and
+\code{"target_bar"} color scales.}
+
+\item{compare_expression}{Whether \code{"activity_dim"} also plots TF gene
+expression beside regulon activity. \code{"eregulon_dim"} always compares
+expression with activity.}
+
+\item{expression_assay, expression_layer}{Assay and layer used for TF
+expression in \code{"heatmap_dotplot"}, \code{"activity_dim"}, and \code{"eregulon_dim"}.
+If \code{expression_assay} is \code{NULL}, \code{"RNA"} is used when present.}
+
+\item{expression_scale}{Whether \code{"heatmap_dotplot"} z-scores TF expression
+across groups.}
+
+\item{dim_args}{Additional arguments passed to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} and
+\code{\link[=CellDimPlot]{CellDimPlot()}} when \code{plot_type} is \code{"activity_dim"} or \code{"eregulon_dim"}.}
+
 \item{max_targets}{Maximum number of target genes shown per TF/regulon in
 network-style plots.}
 
@@ -235,8 +262,12 @@ full \code{heatmap} result returned by \code{\link[=FeatureHeatmap]{FeatureHeatm
 Otherwise, a plot object or list of plots.
 }
 \description{
-Calculate regulon specificity score (RSS) from SCENIC regulon activity and
-plot the top regulons for each group.
+Visualize regulon specificity scores (RSS) and activity stored by
+\code{\link[=RunSCENIC]{RunSCENIC()}} or \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}. Use \code{\link[=SCENICPlusPlot]{SCENICPlusPlot()}} for SCENIC+
+defaults (\code{tool_name = "SCENICPlus"}, \code{assay = "scenicplus"}).
+\code{"heatmap_dotplot"} matches the official SCENIC+ signature figure (color =
+TF expression, size = RSS). \code{"eregulon_dim"} compares TF expression with
+gene-based AUC, and region-based AUC when it is stored.
 }
 \examples{
 \dontrun{
@@ -258,6 +289,19 @@ scenic_rss$plot
 example_regulons <- unique(scenic_rss$top_table$regulon)[1:2]
 example_tfs <- unique(scenic_rss$top_table$TF)[1:2]
 
+FeatureDimPlot(
+  pancreas_sub,
+  features = example_regulons,
+  assay = "scenic",
+  reduction = "StandardpcaUMAP2D"
+)
+FeatureStatPlot(
+  pancreas_sub,
+  stat.by = example_regulons,
+  group.by = "CellType",
+  assay = "scenic"
+)
+
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_heatmap")
 SCENICPlot(
   pancreas_sub,
@@ -267,6 +311,7 @@ SCENICPlot(
   height = 3
 )
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_dotplot")
+SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap_dotplot")
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "activity_heatmap")
 SCENICPlot(
   pancreas_sub,
@@ -300,6 +345,13 @@ SCENICPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "activity_dim",
+  features = example_regulons,
+  compare_expression = TRUE
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "eregulon_dim",
   features = example_regulons
 )
 SCENICPlot(
@@ -333,4 +385,8 @@ SCENICPlot(
   max_targets = 20
 )
 }
+}
+\seealso{
+\link{RunSCENIC}, \link{RunSCENICPlus}, \link{SCENICPlusPlot}, \link{GroupHeatmap},
+\link{FeatureHeatmap}, \link{FeatureDimPlot}, \link{FeatureStatPlot}
 }
