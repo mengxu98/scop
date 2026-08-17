@@ -937,8 +937,6 @@ spatialcellchat_run_one <- function(
 #' @seealso [GetCCCObject], [SpatialCellChatPlot],
 #' [CCCNetworkPlot], [CCCHeatmap], [CCCStatPlot]
 #'
-#' @concept spatial-producer
-#'
 #' @export
 RunSpatialCellChat <- function(
   srt,

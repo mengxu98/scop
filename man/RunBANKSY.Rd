@@ -137,4 +137,3 @@ spatial <- RunBANKSY(
   verbose = FALSE
 )
 }
-\concept{spatial-producer}

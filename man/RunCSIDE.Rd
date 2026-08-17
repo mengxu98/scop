@@ -162,4 +162,3 @@ spatial <- RunCSIDE(
   verbose = FALSE
 )
 }
-\concept{spatial-producer}

@@ -20,7 +20,6 @@
 #' @return A `Seurat` object with SpaNorm-normalized expression stored in
 #' `new_assay`. When `store_results = TRUE`, parameters, coordinates, features,
 #' cells, and optional backend output are stored in `srt@tools[[tool_name]]`.
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples

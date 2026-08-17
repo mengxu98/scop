@@ -16,4 +16,3 @@ Encoding(colnames(ref_scMCA)) <- "latin1"
 colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
 # thisutils::get_namespace_fun("usethis", "use_data")(ref_scMCA, compress = "xz")
 }
-\concept{data}

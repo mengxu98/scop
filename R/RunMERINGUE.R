@@ -32,7 +32,6 @@
 #' @return A `Seurat` object with MERINGUE results stored in
 #' `srt@tools[["MERINGUE"]]`. Top autocorrelated features are available at
 #' `srt@tools[["MERINGUE"]]$summary$top_features`.
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples

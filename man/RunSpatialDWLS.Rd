@@ -87,4 +87,3 @@ SpatialSpotPlot(spatial, group.by = "SpatialDWLS_dominant_type")
 SpatialSpotPlot(spatial, group.by = "SpatialDWLS_dominant_type", plot_type = "pie")
 }
 }
-\concept{spatial-producer}

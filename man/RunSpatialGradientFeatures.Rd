@@ -171,4 +171,3 @@ SpatialGradientPlot(
   coord.cols = c("x", "y")
 )
 }
-\concept{spatial-producer}

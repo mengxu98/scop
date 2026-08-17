@@ -137,4 +137,3 @@ srt <- RunSpatialIntegration(
   verbose = FALSE
 )
 }
-\concept{spatial-producer}

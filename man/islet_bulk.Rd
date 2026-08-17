@@ -28,4 +28,3 @@ head(rownames(islet_bulk))
 table(SummarizedExperiment::colData(islet_bulk)$condition)
 
 }
-\concept{data}

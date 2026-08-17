@@ -141,4 +141,3 @@ spatial <- RunMERINGUE(
   verbose = FALSE
 )
 }
-\concept{spatial-producer}

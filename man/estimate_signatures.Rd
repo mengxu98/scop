@@ -30,4 +30,3 @@ names(estimate_signatures)
 lengths(estimate_signatures[c("stromal_signature", "immune_signature", "common_genes")])
 
 }
-\concept{data}

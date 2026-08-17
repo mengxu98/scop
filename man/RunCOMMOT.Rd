@@ -83,4 +83,3 @@ placed inside the Seurat object.
 \references{
 <https://github.com/zcang/COMMOT>
 }
-\concept{spatial-producer}

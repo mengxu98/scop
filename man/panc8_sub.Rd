@@ -57,4 +57,3 @@ use_data(
   overwrite = TRUE
 )
 }
-\concept{data}

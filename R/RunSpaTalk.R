@@ -251,7 +251,6 @@ spatalk_validate_bundle <- function(bundle) {
 #' @return The input `Seurat` object with `srt@tools$SpaTalk` and unified CCC
 #'   results updated.
 #' @references <https://github.com/ZJUFanLab/SpaTalk>
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples

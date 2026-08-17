@@ -61,4 +61,3 @@ use_data(
 )
 }
 }
-\concept{data}

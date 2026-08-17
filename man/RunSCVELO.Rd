@@ -163,7 +163,9 @@ Default is \code{5}.}
 
 \item{compute_velocity_graph}{Whether to compute and store the velocity graph
 for downstream terminal-state or pseudotime calculations. If \code{NULL}, compute
-the graph only when terminal states or pseudotime are requested.}
+and store the graph only when terminal states or pseudotime are requested.
+The velocity embedding itself is always graph-projected, matching
+\code{scv.tl.velocity_embedding}.}
 
 \item{compute_terminal_states}{Whether to compute terminal states (root and end points).}
 

@@ -75,4 +75,3 @@ spatial <- RunSpotQC(
 )
 SpatialSpotPlot(spatial, group.by = "SpotQC")
 }
-\concept{spatial-producer}

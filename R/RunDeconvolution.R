@@ -32,7 +32,6 @@
 #'
 #' @seealso [DeconvolutionPlot]
 #'
-#' @concept bulk-analysis
 #' @export
 #'
 #' @examples

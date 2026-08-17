@@ -55,7 +55,6 @@
 #' reference cells across 20 annotated cell types, and the complete two-stage
 #' model implemented by this function.
 #'
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples

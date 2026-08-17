@@ -204,4 +204,3 @@ if (all(unlist(
 [GetCCCObject], [SpatialCellChatPlot],
 [CCCNetworkPlot], [CCCHeatmap], [CCCStatPlot]
 }
-\concept{spatial-producer}
