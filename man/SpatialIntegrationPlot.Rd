@@ -61,8 +61,7 @@ Default is \code{"Chinese"}.}
 \item{palcolor}{Custom colors used to create a color palette.
 Default is \code{NULL}.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
+\item{theme_use}{Theme function name. Default is \code{"theme_spatial"}.}
 
 \item{theme_args}{Other arguments passed to the \code{theme_use}.
 Default is \code{list()}.}

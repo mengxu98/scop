@@ -191,6 +191,19 @@ test_that("SpatialNeighborhoodPlot returns scop-style ggplot objects", {
   expect_s3_class(p_network, "ggplot")
   expect_s3_class(p_empty, "ggplot")
   expect_s3_class(p_spatial, "ggplot")
+  expect_true(any(vapply(
+    p_network$layers,
+    function(layer) inherits(layer$geom, "GeomLabel"),
+    logical(1)
+  )))
+  curve_layers <- Filter(
+    function(layer) inherits(layer$geom, "GeomCurve"),
+    p_network$layers
+  )
+  if (length(curve_layers) > 0L) {
+    expect_identical(grid::unitType(curve_layers[[1]]$geom_params$arrow$length), "mm")
+    expect_equal(as.numeric(curve_layers[[1]]$geom_params$arrow$length), 1.5)
+  }
   expect_silent(print(p_network))
 })
 

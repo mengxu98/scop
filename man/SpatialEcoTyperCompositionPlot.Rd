@@ -10,7 +10,7 @@ SpatialEcoTyperCompositionPlot(
   group.by = "CellType",
   sample.by = NULL,
   position = c("fill", "stack"),
-  palette = "Spectral",
+  palette = "Paired",
   palcolor = NULL,
   legend.position = "right",
   theme_use = "theme_scop",

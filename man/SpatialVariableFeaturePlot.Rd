@@ -75,8 +75,7 @@ Default is \code{NULL}.}
 one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
 Default is \code{"right"}.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
+\item{theme_use}{Theme function name. Default is \code{"theme_spatial"}.}
 
 \item{theme_args}{Other arguments passed to the \code{theme_use}.
 Default is \code{list()}.}

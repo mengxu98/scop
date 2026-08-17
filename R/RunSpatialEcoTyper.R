@@ -80,7 +80,6 @@
 #' results stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
 #' For matrix input with `mode = "deconvolute"`, the abundance matrix is
 #' returned.
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples
@@ -369,7 +368,7 @@ SpatialEcoTyperSpatialPlot <- function(
   image = NULL,
   overlay_image = TRUE,
   coord.cols = c(x.by, y.by),
-  palette = "Spectral",
+  palette = "Paired",
   palcolor = NULL,
   theme_use = "theme_scop",
   ...
@@ -434,7 +433,7 @@ SpatialEcoTyperCompositionPlot <- function(
   group.by = "CellType",
   sample.by = NULL,
   position = c("fill", "stack"),
-  palette = "Spectral",
+  palette = "Paired",
   palcolor = NULL,
   legend.position = "right",
   theme_use = "theme_scop",
@@ -487,23 +486,28 @@ SpatialEcoTyperCompositionPlot <- function(
     ggplot2::aes(x = .data$SE, y = .data$n, fill = .data$Group)
   ) +
     ggplot2::geom_col(width = 0.78, position = position) +
-    ggplot2::coord_flip() +
     ggplot2::scale_fill_manual(values = fill_cols, drop = FALSE) +
     ggplot2::labs(
       x = se.by,
       y = if (identical(position, "fill")) "Fraction" else "Cell count",
       fill = group.by
     ) +
-    spatialecotyper_plot_theme(
+    apply_plot_theme(
       theme_use = theme_use,
       theme_args = theme_args
     ) +
-    ggplot2::theme(legend.position = legend.position)
+    ggplot2::theme(
+      legend.position = legend.position,
+      axis.text.x = ggplot2::element_text(
+        angle = if (length(levels(dat$SE)) > 5L || any(nchar(levels(dat$SE)) > 8L)) 45 else 0,
+        hjust = if (length(levels(dat$SE)) > 5L || any(nchar(levels(dat$SE)) > 8L)) 1 else 0.5
+      )
+    )
   if (identical(position, "fill")) {
     p <- p + ggplot2::scale_y_continuous(labels = scales::percent)
   }
   if (!is.null(sample.by) && length(levels(dat$Sample)) > 1L) {
-    p <- p + ggplot2::facet_wrap(~Sample, scales = "free_y")
+    p <- p + ggplot2::facet_wrap(~Sample, nrow = 1, scales = "free_x")
   }
   p
 }
@@ -1325,11 +1329,4 @@ spatialecotyper_temp_outdir <- function(prefix) {
     tempdir(),
     paste0(prefix, "_", format(Sys.time(), "%Y%m%d%H%M%S"))
   )
-}
-
-spatialecotyper_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
-  if (identical(theme_use, "theme_scop")) {
-    return(do.call(theme_scop, theme_args))
-  }
-  do.call(theme_use, theme_args)
 }

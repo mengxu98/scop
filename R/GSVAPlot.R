@@ -490,7 +490,10 @@ GSVAPlot <- function(
     theme_fun <- if (is.function(theme_use)) {
       theme_use
     } else {
-      get(theme_use, mode = "function", inherits = TRUE)
+      resolve_plot_theme_use(theme_use)
+    }
+    if (is.character(theme_fun)) {
+      theme_fun <- get(theme_fun, mode = "function", inherits = TRUE)
     }
     return(thisplot::StatPlot(
       meta.data = score_df,

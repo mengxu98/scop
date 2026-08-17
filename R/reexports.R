@@ -18,6 +18,19 @@ dplyr::`%>%`
 #' @export
 rlang::`%||%`
 
+#' Default ggplot2 theme for scop plots
+#'
+#' Backward-compatible alias of [thisplot::theme_this()]. Plot helpers default
+#' to `theme_use = "theme_scop"`. Exporting this name lets users call
+#' `theme_scop()` after `library(scop)` without `:::`.
+#'
+#' @md
+#' @inheritParams thisplot::theme_this
+#' @inherit thisplot::theme_this return
+#' @seealso [thisplot::theme_this()]
+#' @export
+#' @examples
+#' theme_scop()
 theme_scop <- thisplot::theme_this
 
 utils::globalVariables(

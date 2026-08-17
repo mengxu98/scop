@@ -70,3 +70,26 @@ test_that("CellStatPlot forwards major grid settings to StatPlot", {
   expect_identical(plot$theme$panel.grid.major$linetype, 3)
   expect_identical(plot$theme$panel.grid.major$linewidth, 0.7)
 })
+
+test_that("CellStatPlot match.arg defaults work without explicit choices", {
+  srt <- make_cell_stat_srt()
+
+  expect_no_error(
+    CellStatPlot(srt, stat.by = "celltype", group.by = "group")
+  )
+})
+
+test_that("CellStatPlot resolves the exported theme_scop alias", {
+  srt <- make_cell_stat_srt()
+
+  expect_true(is.function(scop::theme_scop))
+  expect_identical(scop::theme_scop, thisplot::theme_this)
+
+  plot <- CellStatPlot(
+    srt,
+    stat.by = "celltype",
+    group.by = "group",
+    theme_use = "theme_scop"
+  )
+  expect_s3_class(plot, "ggplot")
+})

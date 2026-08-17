@@ -5,6 +5,7 @@
 #' coordinates. Results are stored as named graphs in
 #' `srt@tools$SpatialNetwork`.
 #'
+#' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object.
 #' @param method Network method, either `"knn"` or `"radius"`.
 #' @param image Seurat image name. A single image is selected automatically;
@@ -17,24 +18,16 @@
 #'   generated from the image, method, and method parameter.
 #' @param overwrite Whether an existing graph with the same name may be
 #'   replaced.
-#' @inheritParams thisutils::log_message
 #'
 #' @return The input `Seurat` object with a `SpatialNetwork` result in
 #'   `srt@tools`.
 #'
 #' @examples
-#' counts <- matrix(
-#'   c(3, 1, 0, 2, 0, 4, 1, 0, 2, 1, 3, 0),
-#'   nrow = 3,
-#'   dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
-#' )
-#' srt <- SeuratObject::CreateSeuratObject(counts)
-#' srt$col <- c(0, 1, 0, 1)
-#' srt$row <- c(0, 0, 1, 1)
-#' srt <- RunSpatialNetwork(srt, k = 2, verbose = FALSE)
-#' SpatialNetworkPlot(srt)
+#' data(visium_human_pancreas_sub)
+#' spatial <- visium_human_pancreas_sub
+#' spatial <- RunSpatialNetwork(spatial, k = 6, verbose = FALSE)
+#' SpatialNetworkPlot(spatial, group.by = "coda_label")
 #'
-#' @concept spatial-producer
 #' @export
 RunSpatialNetwork <- function(
   srt,
@@ -271,7 +264,8 @@ GetSpatialGraph <- function(
 #' @param palette,palcolor Palette name or explicit colors.
 #' @param raster Whether to rasterize only the node layer.
 #' @param raster.dpi Node rasterization resolution.
-#' @param theme_use,theme_args scop theme and its arguments.
+#' @param theme_use,theme_args Theme used to style the plot. Default is
+#' `"theme_spatial"`.
 #'
 #' @return A `ggplot` object.
 #'
@@ -289,7 +283,7 @@ SpatialNetworkPlot <- function(
   palcolor = NULL,
   raster = FALSE,
   raster.dpi = 300,
-  theme_use = "theme_scop",
+  theme_use = "theme_spatial",
   theme_args = list()
 ) {
   if (!is.null(object) && !inherits(object, "Seurat")) {
@@ -392,7 +386,7 @@ SpatialNetworkPlot <- function(
     color = edge.color,
     linewidth = edge.linewidth
   )
-  pt.size <- pt.size %||% 1
+  pt.size <- pt.size %||% min(max(3000 / nrow(nodes), 1), 6)
   if (is.null(group.by)) {
     node_layer <- ggplot2::geom_point(
       data = nodes,
@@ -452,8 +446,7 @@ SpatialNetworkPlot <- function(
     ) +
     ggplot2::labs(
       x = NULL,
-      y = NULL,
-      subtitle = if (identical(plot_space, "raw")) "coordinate space: raw" else NULL
+      y = NULL
     ) +
-    spatial_dim_drop_coord(do.call(theme_use, theme_args))
+    apply_plot_theme(theme_use = theme_use, theme_args = theme_args)
 }

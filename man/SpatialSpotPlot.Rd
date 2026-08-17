@@ -39,7 +39,7 @@ SpatialSpotPlot(
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = NULL,
-  theme_use = "theme_scop",
+  theme_use = "theme_spatial",
   theme_args = list(),
   combine = TRUE,
   nrow = NULL,
@@ -92,9 +92,8 @@ are present; a single image is selected automatically when \code{NULL}.}
 
 \item{flip.y}{Whether to reverse the y axis for metadata coordinates.}
 
-\item{show_axes}{Whether to keep axis text, ticks, and grid lines. The
-default \code{FALSE} is intended for polished spatial maps; set \code{TRUE} for
-coordinate debugging.}
+\item{show_axes}{Whether to keep axis text, ticks, and grid lines when
+\code{theme_use} is \code{"theme_spatial"}. Default is \code{FALSE}.}
 
 \item{split.by}{Name of a column in meta.data column to split plot by.
 Default is \code{NULL}.}
@@ -135,8 +134,7 @@ Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
 \item{legend.title}{Title for the legend. Default is \code{NULL}, which uses the group name.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
+\item{theme_use}{Theme function name. Default is \code{"theme_spatial"}.}
 
 \item{theme_args}{Other arguments passed to the \code{theme_use}.
 Default is \code{list()}.}

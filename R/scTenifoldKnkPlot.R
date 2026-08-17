@@ -417,19 +417,6 @@ scTenifoldNetPlot <- function(
   )
 }
 
-sctenifold_plot_theme <- function(theme_use, theme_args = list()) {
-  if (is.null(theme_use)) {
-    return(ggplot2::theme())
-  }
-  if (inherits(theme_use, "theme")) {
-    return(theme_use)
-  }
-  if (identical(theme_use, "theme_scop")) {
-    theme_use <- thisplot::theme_this
-  }
-  do.call(theme_use, theme_args)
-}
-
 sctenifold_status_colors <- function(cols.sig, cols.ns, cols.ko) {
   c(Knockout = cols.ko, Significant = cols.sig, NS = cols.ns)
 }
@@ -491,7 +478,7 @@ sctenifold_plot_qq <- function(
       color = NULL,
       title = title %||% "scTenifoldKnk differential regulation"
     ) +
-    sctenifold_plot_theme(theme_use, theme_args)
+    apply_plot_theme(theme_use, theme_args, fallback = ggplot2::theme)
   if (isTRUE(label)) {
     label_df <- dr[
       dr$gene %in% sctenifold_label_genes(dr, features, min(nlabel, top_n)), ,
@@ -556,7 +543,7 @@ sctenifold_plot_effect <- function(
       color = NULL,
       title = title %||% "Top scTenifoldKnk effects"
     ) +
-    sctenifold_plot_theme(theme_use, theme_args)
+    apply_plot_theme(theme_use, theme_args, fallback = ggplot2::theme)
   if (isTRUE(label)) {
     p <- p +
       ggplot2::geom_text(
@@ -688,10 +675,8 @@ sctenifold_plot_network <- function(
 
   graph_theme_use <- if (inherits(theme_use, "theme")) {
     function(...) theme_use
-  } else if (identical(theme_use, "theme_scop")) {
-    thisplot::theme_this
   } else {
-    theme_use
+    resolve_plot_theme_use(theme_use)
   }
   p <- thisplot::GraphPlot(
     node = node_plot,
@@ -863,7 +848,7 @@ sctenifold_plot_manifold <- function(
         end_label
       )
     ) +
-    sctenifold_plot_theme(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args, fallback = ggplot2::theme) +
     ggplot2::theme(aspect.ratio = manifold.aspect.ratio)
   if (isTRUE(label)) {
     p <- p +

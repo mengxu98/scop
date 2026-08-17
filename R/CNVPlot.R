@@ -390,7 +390,11 @@ cnv_plot_bar <- function(
       },
       expand = ggplot2::expansion(mult = c(0, 0.05))
     ) +
-    cnv_plot_theme(theme_use = theme_use, theme_args = theme_args)
+    apply_plot_theme(
+      theme_use = theme_use,
+      theme_args = theme_args,
+      fallback = ggplot2::theme
+    )
 }
 
 cnv_plot_tree <- function(
@@ -575,12 +579,3 @@ cnv_order_cnv_levels <- function(values) {
   values[order(rank, values)]
 }
 
-cnv_plot_theme <- function(theme_use = "theme_scop", theme_args = list()) {
-  if (is.null(theme_use)) {
-    return(ggplot2::theme())
-  }
-  if (inherits(theme_use, "theme")) {
-    return(theme_use)
-  }
-  do.call(theme_use, theme_args)
-}

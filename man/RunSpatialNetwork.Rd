@@ -50,16 +50,9 @@ coordinates. Results are stored as named graphs in
 `srt@tools$SpatialNetwork`.
 }
 \examples{
-counts <- matrix(
-  c(3, 1, 0, 2, 0, 4, 1, 0, 2, 1, 3, 0),
-  nrow = 3,
-  dimnames = list(paste0("gene", 1:3), paste0("spot", 1:4))
-)
-srt <- SeuratObject::CreateSeuratObject(counts)
-srt$col <- c(0, 1, 0, 1)
-srt$row <- c(0, 0, 1, 1)
-srt <- RunSpatialNetwork(srt, k = 2, verbose = FALSE)
-SpatialNetworkPlot(srt)
+data(visium_human_pancreas_sub)
+spatial <- visium_human_pancreas_sub
+spatial <- RunSpatialNetwork(spatial, k = 6, verbose = FALSE)
+SpatialNetworkPlot(spatial, group.by = "coda_label")
 
 }
-\concept{spatial-producer}

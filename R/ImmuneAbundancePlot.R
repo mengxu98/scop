@@ -104,7 +104,7 @@ ImmuneAbundancePlot <- function(
     cell_type_order = cell_type_order
   )
 
-  theme_obj <- resolve_legacy_plot_theme(
+  theme_obj <- apply_plot_theme(
     theme_use = theme_use,
     theme_args = theme_args
   )

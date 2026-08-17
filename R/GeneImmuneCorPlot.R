@@ -140,7 +140,7 @@ GeneImmuneCorPlot <- function(
   if (length(link_sizes) == length(abs_levels)) {
     link_sizes <- stats::setNames(as.numeric(link_sizes), abs_levels)
   }
-  theme_obj <- resolve_legacy_plot_theme(
+  theme_obj <- apply_plot_theme(
     theme_use = theme_use,
     theme_args = theme_args
   )

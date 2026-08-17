@@ -18,7 +18,7 @@ SpatialCellPlot(
   fill.alpha = 0.7,
   boundary.color = "grey30",
   boundary.linewidth = 0.1,
-  theme_use = "theme_scop",
+  theme_use = "theme_spatial",
   theme_args = list(),
   ...
 )
@@ -46,7 +46,8 @@ SpatialCellPlot(
 
 \item{boundary.color, boundary.linewidth}{Boundary appearance.}
 
-\item{theme_use, theme_args}{scop theme and its arguments.}
+\item{theme_use, theme_args}{Theme used to style the plot. Default is
+`"theme_spatial"`.}
 
 \item{...}{Additional arguments passed to `ggplot2::geom_polygon()`.}
 }

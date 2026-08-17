@@ -17,7 +17,7 @@ SpatialNetworkPlot(
   palcolor = NULL,
   raster = FALSE,
   raster.dpi = 300,
-  theme_use = "theme_scop",
+  theme_use = "theme_spatial",
   theme_args = list()
 )
 }
@@ -40,7 +40,8 @@ SpatialNetworkPlot(
 
 \item{raster.dpi}{Node rasterization resolution.}
 
-\item{theme_use, theme_args}{scop theme and its arguments.}
+\item{theme_use, theme_args}{Theme used to style the plot. Default is
+`"theme_spatial"`.}
 }
 \value{
 A `ggplot` object.

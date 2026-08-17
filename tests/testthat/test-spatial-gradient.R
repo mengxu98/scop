@@ -242,14 +242,23 @@ test_that("SpatialGradientPlot handles stored results and missing tables clearly
   )
   expect_s3_class(p_line_lm, "ggplot")
   expect_s3_class(p_line_lm$layers[[2]]$geom, "GeomSmooth")
-  expect_s3_class(
-    SpatialGradientPlot(srt, result_name = "mock", plot_type = "summary", theme_use = NULL),
-    "ggplot"
+  p_summary <- SpatialGradientPlot(
+    srt,
+    result_name = "mock",
+    plot_type = "summary",
+    theme_use = NULL
   )
-  expect_s3_class(
-    SpatialGradientPlot(srt, result_name = "mock", plot_type = "model", theme_use = NULL),
-    "ggplot"
+  expect_s3_class(p_summary, "ggplot")
+  expect_identical(p_summary$labels$x, "RMSE")
+  expect_identical(p_summary$scales$get_scales("colour")$guide, "none")
+  p_model <- SpatialGradientPlot(
+    srt,
+    result_name = "mock",
+    plot_type = "model",
+    theme_use = NULL
   )
+  expect_s3_class(p_model, "ggplot")
+  expect_s3_class(p_model$layers[[2]]$geom, "GeomText")
   expect_s3_class(
     SpatialGradientPlot(
       srt,
@@ -325,4 +334,3 @@ test_that("SpatialGradientPlot reuses stored assay layer for surface plots", {
   )
   expect_s3_class(p, "patchwork")
 })
-

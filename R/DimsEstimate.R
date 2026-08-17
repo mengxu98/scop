@@ -575,9 +575,7 @@ DimsEstimatePlot <- function(
   selection_color <- palcolor[1]
   cumulative_color <- palcolor[2]
   variance_color <- palcolor[3]
-  if (identical(theme_use, "theme_scop")) {
-    theme_use <- "theme_this"
-  }
+  theme_use <- resolve_plot_theme_use(theme_use)
 
   apply_theme <- function(p) {
     p +

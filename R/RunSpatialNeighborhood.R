@@ -42,7 +42,6 @@
 #' @param ... Additional arguments passed to the selected backend.
 #'
 #' @return A `Seurat` object with results stored in `srt@tools[[tool_name]]`.
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples
@@ -804,7 +803,7 @@ spatial_neighborhood_heatmap_plot <- function(
     do.call(ggplot2::geom_tile, c(list(color = "white"), spatial_neighborhood_linewidth_arg(0.2))) +
     ggplot2::scale_fill_gradientn(colors = cols, na.value = "grey90") +
     ggplot2::labs(x = "To", y = "From", fill = legend.title %||% value) +
-    spatial_neighborhood_theme(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args, allow_null = TRUE) +
     ggplot2::theme(
       legend.position = legend.position,
       legend.direction = legend.direction,
@@ -882,7 +881,7 @@ spatial_neighborhood_network_plot <- function(
       edge_aes,
       curvature = 0.18,
       alpha = 0.7,
-      arrow = grid::arrow(type = "closed", length = grid::unit(0.018, "npc")),
+      arrow = grid::arrow(type = "closed", length = grid::unit(1.5, "mm")),
       lineend = "round"
     )
   }
@@ -915,10 +914,15 @@ spatial_neighborhood_network_plot <- function(
       color = "grey20",
       stroke = 0.3
     ) +
-    ggplot2::geom_text(
+    ggplot2::geom_label(
       data = node_plot,
       ggplot2::aes(x = .data$x, y = .data$y, label = .data$name),
-      size = 3
+      size = 3,
+      fill = "white",
+      color = "grey20",
+      alpha = 0.9,
+      label.padding = grid::unit(0.12, "lines"),
+      label.r = grid::unit(0.08, "lines")
     ) +
     ggplot2::scale_color_manual(
       values = c(
@@ -927,13 +931,15 @@ spatial_neighborhood_network_plot <- function(
         ns = cols.ns,
         observed = cols.ns
       ),
-      drop = FALSE
+      drop = TRUE
     ) +
     ggplot2::scale_continuous_identity(aesthetics = "stroke", guide = "none") +
     edge_scale +
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.12)) +
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.12)) +
     ggplot2::coord_equal() +
     ggplot2::labs(x = NULL, y = NULL, color = legend.title %||% "Direction") +
-    spatial_neighborhood_theme(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args, allow_null = TRUE) +
     ggplot2::theme(
       axis.text = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank(),
@@ -975,7 +981,7 @@ spatial_neighborhood_stat_plot <- function(
       drop = FALSE
     ) +
     ggplot2::labs(x = NULL, y = value, fill = legend.title %||% "Direction") +
-    spatial_neighborhood_theme(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args, allow_null = TRUE) +
     ggplot2::theme(
       legend.position = legend.position,
       legend.direction = legend.direction
@@ -1149,22 +1155,6 @@ spatial_neighborhood_numeric_col <- function(df, col) {
     return(rep(NA_real_, nrow(df)))
   }
   suppressWarnings(as.numeric(df[[col]]))
-}
-
-spatial_neighborhood_theme <- function(theme_use = "theme_scop", theme_args = list()) {
-  if (is.null(theme_use)) {
-    return(NULL)
-  }
-  tryCatch(
-    {
-      if (is.function(theme_use)) {
-        do.call(theme_use, theme_args)
-      } else {
-        do.call(theme_use, theme_args)
-      }
-    },
-    error = function(e) ggplot2::theme_bw()
-  )
 }
 
 spatial_neighborhood_linewidth_name <- function() {

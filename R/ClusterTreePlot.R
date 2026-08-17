@@ -567,9 +567,7 @@ clustertree_single_plot <- function(
   theme_use = "theme_scop",
   theme_args = list()
 ) {
-  if (identical(theme_use, "theme_scop")) {
-    theme_use <- "theme_this"
-  }
+  theme_use <- resolve_plot_theme_use(theme_use)
   nodes <- tree_data$nodes
   edges <- tree_data$edges
   edge_cols <- palette_colors(

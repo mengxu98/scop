@@ -42,7 +42,6 @@
 #'
 #' @return A `Seurat` object with results stored in `srt@tools[[tool_name]]`
 #' when `store_results = TRUE`.
-#' @concept spatial-producer
 #' @export
 #'
 #' @examples
@@ -387,7 +386,7 @@ MistyRPlot <- function(
     title = paste("MISTy", type),
     ylab = value_col,
     flip = TRUE,
-    theme_use = theme_scop
+    theme_use = thisplot::theme_this
   )
 }
 

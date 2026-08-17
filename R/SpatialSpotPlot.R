@@ -27,9 +27,9 @@
 #' @param crop Whether to crop the panel to plotted spots.
 #' @param coord.cols Metadata coordinate columns used when no image is available.
 #' @param flip.y Whether to reverse the y axis for metadata coordinates.
-#' @param show_axes Whether to keep axis text, ticks, and grid lines. The
-#' default `FALSE` is intended for polished spatial maps; set `TRUE` for
-#' coordinate debugging.
+#' @param show_axes Whether to keep axis text, ticks, and grid lines when
+#' `theme_use` is `"theme_spatial"`. Default is `FALSE`.
+#' @param theme_use Theme function name. Default is `"theme_spatial"`.
 #' @param pt.size Point size.
 #' @param pie.radius,pie.radius.scale Radius controls for `plot_type = "pie"`.
 #' If `pie.radius` is `NULL`, the radius is estimated from spot spacing and
@@ -89,7 +89,7 @@ SpatialSpotPlot <- function(
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = NULL,
-  theme_use = "theme_scop",
+  theme_use = "theme_spatial",
   theme_args = list(),
   combine = TRUE,
   nrow = NULL,
@@ -294,7 +294,7 @@ spatial_dim_long_plot <- function(
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = NULL,
-  theme_use = "theme_blank",
+  theme_use = "theme_spatial",
   theme_args = list(),
   combine = TRUE,
   nrow = NULL,
@@ -347,10 +347,10 @@ spatial_dim_long_plot <- function(
     pt.size <- min(3000 / nrow(df), 2)
   }
 
-  theme_obj <- spatial_theme(
+  theme_args$show_axes <- show_axes
+  theme_obj <- apply_plot_theme(
     theme_use = theme_use,
-    theme_args = theme_args,
-    show_axes = show_axes
+    theme_args = theme_args
   )
   values <- df[[color.by]]
   p <- ggplot2::ggplot(df, ggplot2::aes(x = .data$x, y = .data$y))
@@ -473,7 +473,7 @@ spatial_dim_pie_plot <- function(
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = NULL,
-  theme_use = "theme_blank",
+  theme_use = "theme_spatial",
   theme_args = list()
 ) {
   check_r("scatterpie", verbose = FALSE)
@@ -534,10 +534,10 @@ spatial_dim_pie_plot <- function(
     palette = palette,
     palcolor = palcolor
   )
-  theme_obj <- spatial_theme(
+  theme_args$show_axes <- show_axes
+  theme_obj <- apply_plot_theme(
     theme_use = theme_use,
-    theme_args = theme_args,
-    show_axes = show_axes
+    theme_args = theme_args
   )
   p <- ggplot2::ggplot(plot_dat, ggplot2::aes(x = x, y = y))
   if (isTRUE(overlay_image) && !is.null(coords$image)) {
@@ -910,14 +910,14 @@ spatial_dim_single_plot <- function(
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = value_name,
-  theme_use = "theme_blank",
+  theme_use = "theme_spatial",
   theme_args = list(),
   show_axes = FALSE
 ) {
-  theme_obj <- spatial_theme(
+  theme_args$show_axes <- show_axes
+  theme_obj <- apply_plot_theme(
     theme_use = theme_use,
-    theme_args = theme_args,
-    show_axes = show_axes
+    theme_args = theme_args
   )
   p <- ggplot2::ggplot(plot_dat, ggplot2::aes(x = .data$x, y = .data$y))
   if (isTRUE(overlay_image) && !is.null(image_info)) {

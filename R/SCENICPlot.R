@@ -727,8 +727,12 @@ scenic_plot_rss_rank <- function(
         size = point_size,
         color = top_color
       ) +
-      scenic_plot_theme() +
+      theme_scop() +
       ggplot2::theme(
+        axis.title = ggplot2::element_text(colour = "black", size = 12),
+        axis.text = ggplot2::element_text(colour = "black", size = 10),
+        plot.title = ggplot2::element_text(face = "bold"),
+        panel.grid.minor = ggplot2::element_blank(),
         axis.text.x = ggplot2::element_blank(),
         axis.ticks.x = ggplot2::element_blank()
       ) +
@@ -892,7 +896,13 @@ scenic_plot_rss_dotplot <- function(rss_matrix, top_table, features = NULL, titl
     ggplot2::geom_point(alpha = 0.9) +
     ggplot2::scale_color_gradientn(colors = c("#2C7BB6", "#FFFFBF", "#D7191C")) +
     ggplot2::scale_size(range = c(1, 6)) +
-    scenic_plot_theme() +
+    theme_scop() +
+    ggplot2::theme(
+      axis.title = ggplot2::element_text(colour = "black", size = 12),
+      axis.text = ggplot2::element_text(colour = "black", size = 10),
+      plot.title = ggplot2::element_text(face = "bold"),
+      panel.grid.minor = ggplot2::element_blank()
+    ) +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
     ggplot2::labs(x = NULL, y = NULL, size = "RSS", color = "RSS", title = title %||% "SCENIC RSS dot plot")
 
@@ -1310,7 +1320,13 @@ scenic_plot_activity_cor_dumbbell <- function(
     ggplot2::scale_color_manual(values = cor_cols, drop = FALSE) +
     ggplot2::scale_fill_manual(values = cor_cols, drop = FALSE, guide = "none") +
     ggplot2::scale_shape_manual(values = shape_values, drop = FALSE) +
-    scenic_plot_theme() +
+    theme_scop() +
+    ggplot2::theme(
+      axis.title = ggplot2::element_text(colour = "black", size = 12),
+      axis.text = ggplot2::element_text(colour = "black", size = 10),
+      plot.title = ggplot2::element_text(face = "bold"),
+      panel.grid.minor = ggplot2::element_blank()
+    ) +
     ggplot2::theme(
       panel.grid.major.y = ggplot2::element_line(color = "grey86", linewidth = 0.35),
       panel.grid.minor = ggplot2::element_blank(),
@@ -1452,7 +1468,13 @@ scenic_plot_regulon_size <- function(srt, tool_name, top_table, features = NULL,
     ggplot2::aes(x = .data[["target_count"]], y = .data[["regulon"]])
   ) +
     ggplot2::geom_col(fill = "#E69F00", width = 0.75) +
-    scenic_plot_theme() +
+    theme_scop() +
+    ggplot2::theme(
+      axis.title = ggplot2::element_text(colour = "black", size = 12),
+      axis.text = ggplot2::element_text(colour = "black", size = 10),
+      plot.title = ggplot2::element_text(face = "bold"),
+      panel.grid.minor = ggplot2::element_blank()
+    ) +
     ggplot2::labs(x = "Target genes", y = NULL, title = title %||% "SCENIC regulon size")
 
   list(plot = plot, plots = list(plot), data = size_data)
@@ -1603,7 +1625,13 @@ scenic_plot_target_bar <- function(srt, tool_name, top_table, features = NULL, m
     ggplot2::aes(x = .data[[value_col]], y = .data[["target"]])
   ) +
     ggplot2::geom_col(fill = "#E69F00", width = 0.75) +
-    scenic_plot_theme() +
+    theme_scop() +
+    ggplot2::theme(
+      axis.title = ggplot2::element_text(colour = "black", size = 12),
+      axis.text = ggplot2::element_text(colour = "black", size = 10),
+      plot.title = ggplot2::element_text(face = "bold"),
+      panel.grid.minor = ggplot2::element_blank()
+    ) +
     ggplot2::facet_wrap(ggplot2::vars(.data[["regulon"]]), scales = "free_y") +
     ggplot2::labs(
       x = if (identical(value_col, "importance")) "GRNBoost2 importance" else "Target rank",
@@ -1753,7 +1781,13 @@ scenic_network_ggplot <- function(
     ) +
     ggplot2::scale_linewidth(range = edge_width_range, guide = "none") +
     ggplot2::coord_equal() +
-    scenic_plot_theme() +
+    theme_scop() +
+    ggplot2::theme(
+      axis.title = ggplot2::element_text(colour = "black", size = 12),
+      axis.text = ggplot2::element_text(colour = "black", size = 10),
+      plot.title = ggplot2::element_text(face = "bold"),
+      panel.grid.minor = ggplot2::element_blank()
+    ) +
     ggplot2::theme(
       axis.text = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank(),
@@ -1776,16 +1810,6 @@ scenic_degree_breaks <- function(degree) {
   breaks <- pretty(c(1, max_degree), n = 3)
   breaks <- breaks[breaks > 0 & breaks <= max_degree]
   unique(breaks)
-}
-
-scenic_plot_theme <- function() {
-  theme_scop() +
-    ggplot2::theme(
-      axis.title = ggplot2::element_text(colour = "black", size = 12),
-      axis.text = ggplot2::element_text(colour = "black", size = 10),
-      plot.title = ggplot2::element_text(face = "bold"),
-      panel.grid.minor = ggplot2::element_blank()
-    )
 }
 
 scenic_plot_feature_heatmap_from_matrix <- function(

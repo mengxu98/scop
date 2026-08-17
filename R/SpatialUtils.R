@@ -56,10 +56,10 @@ spatial_metadata_coords <- function(srt, coord.cols = c("col", "row")) {
 spatial_empty_plot <- function(
   message,
   title = NULL,
-  theme_use = "theme_blank",
+  theme_use = "theme_spatial",
   theme_args = list()
 ) {
-  theme_obj <- spatial_theme(theme_use = theme_use, theme_args = theme_args)
+  theme_obj <- apply_plot_theme(theme_use = theme_use, theme_args = theme_args)
   ggplot2::ggplot(data.frame(x = 0, y = 0, label = message), ggplot2::aes(x, y)) +
     ggplot2::geom_text(ggplot2::aes(label = .data$label), size = 3.6, color = "grey35") +
     ggplot2::labs(title = title, x = NULL, y = NULL) +
@@ -67,25 +67,39 @@ spatial_empty_plot <- function(
     theme_obj
 }
 
-spatial_theme <- function(
-  theme_use = "theme_blank",
-  theme_args = list(),
-  show_axes = FALSE
+#' ggplot2 theme for spatial plots
+#'
+#' Built on [theme_scop()] with axes, ticks, and panel grid hidden by default.
+#' Spatial plot helpers default to `theme_use = "theme_spatial"`.
+#'
+#' @md
+#' @param show_axes Whether to keep axis titles, text, ticks, and grid lines.
+#' Default is `FALSE`.
+#' @inheritParams theme_scop
+#' @inherit theme_scop return
+#' @seealso [theme_scop()]
+#' @export
+#' @examples
+#' theme_spatial()
+theme_spatial <- function(
+  show_axes = FALSE,
+  aspect.ratio = 1,
+  base_size = 12,
+  ...
 ) {
-  theme_obj <- resolve_method_plot_theme(
-    theme_use = theme_use,
-    theme_args = theme_args
-  )
+  out <- theme_scop(aspect.ratio = aspect.ratio, base_size = base_size, ...)
   if (isFALSE(show_axes)) {
-    theme_obj <- theme_obj +
+    out <- out +
       ggplot2::theme(
         axis.title = ggplot2::element_blank(),
         axis.text = ggplot2::element_blank(),
         axis.ticks = ggplot2::element_blank(),
+        axis.line = ggplot2::element_blank(),
+        panel.border = ggplot2::element_blank(),
         panel.grid = ggplot2::element_blank()
       )
   }
-  theme_obj
+  out
 }
 
 spatial_crop_limits <- function(x, y, pad_fraction = 0.04, min_pad = 0) {

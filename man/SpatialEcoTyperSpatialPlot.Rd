@@ -12,7 +12,7 @@ SpatialEcoTyperSpatialPlot(
   image = NULL,
   overlay_image = TRUE,
   coord.cols = c(x.by, y.by),
-  palette = "Spectral",
+  palette = "Paired",
   palcolor = NULL,
   theme_use = "theme_scop",
   ...
@@ -35,8 +35,7 @@ are present; a single image is selected automatically when \code{NULL}.}
 
 \item{palette, palcolor}{Palette passed to \code{palette_colors()}.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
+\item{theme_use}{Theme function name. Default is \code{"theme_spatial"}.}
 
 \item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.}
 }

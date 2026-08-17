@@ -49,7 +49,8 @@ proportions.
 \examples{
 data(visium_human_pancreas_sub)
 data(panc8_sub)
-spatial <- visium_human_pancreas_sub[, seq_len(20)]
+keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 200)))
+spatial <- visium_human_pancreas_sub[, keep_spots]
 reference <- panc8_sub[, panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
 shared <- intersect(

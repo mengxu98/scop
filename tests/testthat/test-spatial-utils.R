@@ -1,3 +1,9 @@
+test_that("theme_spatial is an exported ggplot2 theme", {
+  expect_true(is.function(scop::theme_spatial))
+  expect_s3_class(theme_spatial(), c("theme", "gg"))
+  expect_s3_class(theme_spatial(show_axes = TRUE), c("theme", "gg"))
+})
+
 test_that("spatial coordinate resolver prefers x/y before col/row", {
   counts <- Matrix::Matrix(matrix(1, nrow = 2, ncol = 3), sparse = TRUE)
   rownames(counts) <- c("Gene1", "Gene2")

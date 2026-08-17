@@ -92,8 +92,7 @@ Can be one of \code{"vertical"} or \code{"horizontal"}.}
 
 \item{legend.title}{Title for the legend. Default is \code{NULL}, which uses the group name.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
+\item{theme_use}{Theme function name. Default is \code{"theme_spatial"}.}
 
 \item{theme_args}{Other arguments passed to the \code{theme_use}.
 Default is \code{list()}.}
