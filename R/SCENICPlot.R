@@ -6,7 +6,8 @@
 #' defaults (`tool_name = "SCENICPlus"`, `assay = "scenicplus"`).
 #' `"heatmap_dotplot"` matches the official SCENIC+ signature figure (color =
 #' TF expression, size = RSS). `"eregulon_dim"` compares TF expression with
-#' gene-based AUC, and region-based AUC when it is stored.
+#' gene-based AUC, and region-based AUC when it is stored. `"coverage"` draws
+#' accessibility and region–gene link tracks for one target locus.
 #'
 #' @md
 #' @inheritParams CellDimPlot
@@ -19,7 +20,8 @@
 #' @param plot_type Plot type. `"rss_rank"` keeps the original regulon RSS rank
 #' plot. `"heatmap_dotplot"` colors dots by TF expression and sizes them by
 #' RSS. `"eregulon_dim"` compares TF expression and regulon AUC on embeddings.
-#' Other options summarize RSS, regulon activity, regulon sizes, or
+#' `"coverage"` shows ATAC accessibility with region–gene links for a target
+#' locus. Other options summarize RSS, regulon activity, regulon sizes, or
 #' TF-target subnetworks.
 #' @param features Optional TF/regulon names used by activity, network, and
 #' target plots. Values can match either `"Sox9"` or `"Sox9(+)"`. Explicit
@@ -99,6 +101,12 @@
 #' across groups.
 #' @param dim_args Additional arguments passed to [FeatureDimPlot()] and
 #' [CellDimPlot()] when `plot_type` is `"activity_dim"` or `"eregulon_dim"`.
+#' @param atac_assay Chromatin assay used by `plot_type = "coverage"`. If
+#' `NULL`, `"peaks"` or `"ATAC"` is used when present.
+#' @param extend.upstream,extend.downstream Bases added around the selected
+#' region–gene locus in `"coverage"` plots.
+#' @param coverage_args Additional arguments passed to [CoverageTrackPlot()]
+#' when fragment files are available for `"coverage"` plots.
 #' @param ... Additional arguments passed directly to the underlying
 #' [GroupHeatmap()] or [FeatureHeatmap()] call when `plot_type` is
 #' `"activity_heatmap"` or `"rss_heatmap"`. For example, `width` and `height`
@@ -140,8 +148,8 @@
 #' full `heatmap` result returned by [FeatureHeatmap()] or [GroupHeatmap()].
 #' Otherwise, a plot object or list of plots.
 #'
-#' @seealso [RunSCENIC], [RunSCENICPlus], [SCENICPlusPlot], [GroupHeatmap],
-#' [FeatureHeatmap], [FeatureDimPlot], [FeatureStatPlot]
+#' @seealso [RunSCENIC], [RunSCENICPlus], [SCENICPlusPlot], [CoverageTrackPlot],
+#' [GroupHeatmap], [FeatureHeatmap], [FeatureDimPlot], [FeatureStatPlot]
 #'
 #' @export
 #'
@@ -260,6 +268,12 @@
 #'   features = example_regulons,
 #'   max_targets = 20
 #' )
+#' SCENICPlusPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   plot_type = "coverage",
+#'   features = example_tfs
+#' )
 #' }
 SCENICPlot <- function(
   srt,
@@ -280,7 +294,8 @@ SCENICPlot <- function(
     "regulon_size",
     "network_graph",
     "network",
-    "target_bar"
+    "target_bar",
+    "coverage"
   ),
   features = NULL,
   reduction = NULL,
@@ -319,6 +334,10 @@ SCENICPlot <- function(
   expression_layer = "data",
   expression_scale = TRUE,
   dim_args = list(),
+  atac_assay = NULL,
+  extend.upstream = 50000,
+  extend.downstream = 50000,
+  coverage_args = list(),
   max_targets = 20,
   max_edges = Inf,
   network_layout = c("fr", "nicely", "kk", "lgl", "drl"),
@@ -759,6 +778,25 @@ SCENICPlot <- function(
       palette = palette,
       palcolor = palcolor,
       title = title
+    ),
+    coverage = scenic_plot_coverage(
+      srt = srt,
+      tool_name = tool_name,
+      group.by = group.by,
+      group_annotation = group_annotation,
+      group_names = group_names,
+      features = features,
+      top_table = top_table,
+      atac_assay = atac_assay,
+      extend.upstream = extend.upstream,
+      extend.downstream = extend.downstream,
+      palette = palette,
+      palcolor = palcolor,
+      group_palette = heatmap_group_palette,
+      group_palcolor = heatmap_group_palcolor,
+      coverage_args = coverage_args,
+      title = title,
+      verbose = verbose
     )
   )
 

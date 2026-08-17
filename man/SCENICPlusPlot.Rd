@@ -11,7 +11,8 @@ SCENICPlusPlot(
   assay = "scenicplus",
   plot_type = c("heatmap_dotplot", "rss_rank", "rss_heatmap", "rss_dotplot",
     "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim",
-    "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "target_bar"),
+    "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "target_bar",
+    "coverage"),
   ...
 )
 }
@@ -39,7 +40,8 @@ A \code{\link[=SCENICPlot]{SCENICPlot()}} wrapper with SCENIC+ defaults (\code{t
 official SCENIC+ signature figure: color is TF expression and size is
 regulon specificity score (RSS). \code{"eregulon_dim"} compares TF expression
 with gene-based AUC, and region-based AUC when it is stored in
-\code{srt@tools$SCENICPlus}.
+\code{srt@tools$SCENICPlus}. \code{"coverage"} draws accessibility and region–gene
+tracks for a target locus.
 }
 \examples{
 \dontrun{
@@ -86,6 +88,12 @@ SCENICPlusPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "network",
+  features = example_regulons
+)
+SCENICPlusPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "coverage",
   features = example_regulons
 )
 }

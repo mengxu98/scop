@@ -12,7 +12,8 @@ SCENICPlot(
   layer = "data",
   plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "heatmap_dotplot",
     "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim",
-    "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "target_bar"),
+    "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "target_bar",
+    "coverage"),
   features = NULL,
   reduction = NULL,
   dims = c(1, 2),
@@ -50,6 +51,10 @@ SCENICPlot(
   expression_layer = "data",
   expression_scale = TRUE,
   dim_args = list(),
+  atac_assay = NULL,
+  extend.upstream = 50000,
+  extend.downstream = 50000,
+  coverage_args = list(),
   max_targets = 20,
   max_edges = Inf,
   network_layout = c("fr", "nicely", "kk", "lgl", "drl"),
@@ -89,7 +94,8 @@ SCENICPlot(
 \item{plot_type}{Plot type. \code{"rss_rank"} keeps the original regulon RSS rank
 plot. \code{"heatmap_dotplot"} colors dots by TF expression and sizes them by
 RSS. \code{"eregulon_dim"} compares TF expression and regulon AUC on embeddings.
-Other options summarize RSS, regulon activity, regulon sizes, or
+\code{"coverage"} shows ATAC accessibility with region–gene links for a target
+locus. Other options summarize RSS, regulon activity, regulon sizes, or
 TF-target subnetworks.}
 
 \item{features}{Optional TF/regulon names used by activity, network, and
@@ -194,6 +200,15 @@ across groups.}
 \item{dim_args}{Additional arguments passed to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} and
 \code{\link[=CellDimPlot]{CellDimPlot()}} when \code{plot_type} is \code{"activity_dim"} or \code{"eregulon_dim"}.}
 
+\item{atac_assay}{Chromatin assay used by \code{plot_type = "coverage"}. If
+\code{NULL}, \code{"peaks"} or \code{"ATAC"} is used when present.}
+
+\item{extend.upstream, extend.downstream}{Bases added around the selected
+region–gene locus in \code{"coverage"} plots.}
+
+\item{coverage_args}{Additional arguments passed to \code{\link[=CoverageTrackPlot]{CoverageTrackPlot()}}
+when fragment files are available for \code{"coverage"} plots.}
+
 \item{max_targets}{Maximum number of target genes shown per TF/regulon in
 network-style plots.}
 
@@ -267,7 +282,8 @@ Visualize regulon specificity scores (RSS) and activity stored by
 defaults (\code{tool_name = "SCENICPlus"}, \code{assay = "scenicplus"}).
 \code{"heatmap_dotplot"} matches the official SCENIC+ signature figure (color =
 TF expression, size = RSS). \code{"eregulon_dim"} compares TF expression with
-gene-based AUC, and region-based AUC when it is stored.
+gene-based AUC, and region-based AUC when it is stored. \code{"coverage"} draws
+accessibility and region–gene link tracks for one target locus.
 }
 \examples{
 \dontrun{
@@ -384,9 +400,15 @@ SCENICPlot(
   features = example_regulons,
   max_targets = 20
 )
+SCENICPlusPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "coverage",
+  features = example_tfs
+)
 }
 }
 \seealso{
-\link{RunSCENIC}, \link{RunSCENICPlus}, \link{SCENICPlusPlot}, \link{GroupHeatmap},
-\link{FeatureHeatmap}, \link{FeatureDimPlot}, \link{FeatureStatPlot}
+\link{RunSCENIC}, \link{RunSCENICPlus}, \link{SCENICPlusPlot}, \link{CoverageTrackPlot},
+\link{GroupHeatmap}, \link{FeatureHeatmap}, \link{FeatureDimPlot}, \link{FeatureStatPlot}
 }

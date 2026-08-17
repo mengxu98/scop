@@ -23,7 +23,23 @@ make_scenic_plot_mock <- function(seed = 1, add_embedding = FALSE) {
       colnames(srt)
     )
   )
-  srt@tools$SCENIC <- list(scores_cells_by_regulon = t(auc))
+  srt@tools$SCENIC <- list(
+    scores_cells_by_regulon = t(auc),
+    regulon_list = list(
+      `Jun(+)` = c("Gene1", "Gene2", "Atf3"),
+      `Atf3(+)` = c("Gene1", "Fos"),
+      `Fos(+)` = c("Gene2", "Klf4"),
+      `Klf4(+)` = c("Gene1", "Sox9"),
+      `Sox9(+)` = c("Klf4", "Birc3"),
+      `Birc3(+)` = c("Gene2")
+    ),
+    adjacency = data.frame(
+      TF = c("Jun", "Jun", "Atf3", "Fos", "Klf4", "Sox9", "Birc3"),
+      target = c("Gene1", "Gene2", "Fos", "Klf4", "Sox9", "Birc3", "Gene2"),
+      importance = c(5, 4, 3, 2.5, 2, 3.5, 1),
+      stringsAsFactors = FALSE
+    )
+  )
   if (isTRUE(add_embedding)) {
     emb <- cbind(
       UMAP_1 = as.numeric(as.integer(factor(srt$CellType))),
@@ -55,22 +71,43 @@ make_scenicplus_plot_mock <- function(seed = 11) {
     importance = c(4, 3, 2, 5),
     stringsAsFactors = FALSE
   )
+  peak_names <- c(
+    "chr1-1000000-1000499",
+    "chr1-1002000-1002499",
+    "chr1-1004000-1004499",
+    "chr1-1008000-1008499",
+    "chr1-1012000-1012499"
+  )
   triplets <- data.frame(
-    TF = c("Jun", "Jun", "Atf3", "Sox9"),
-    region = c("chr1:1-2", "chr1:3-4", "chr2:1-2", "chr3:1-2"),
-    gene = c("Gene1", "Gene2", "Gene1", "Klf4"),
+    TF = c("Jun", "Jun", "Jun", "Sox9"),
+    region = peak_names[c(1, 2, 3, 5)],
+    gene = c("Gene1", "Gene1", "Gene2", "Klf4"),
     score = c(0.8, 0.6, 0.5, 0.9),
     stringsAsFactors = FALSE
   )
+  region_gene <- triplets[, c("region", "gene", "score", "TF")]
   region_auc <- auc
   region_auc[] <- region_auc[] * 0.7
   dat$srt[["scenicplus"]] <- Seurat::CreateAssayObject(counts = as.matrix(auc))
+  peak_counts <- matrix(
+    stats::rpois(length(peak_names) * ncol(dat$srt), lambda = 4),
+    nrow = length(peak_names),
+    ncol = ncol(dat$srt),
+    dimnames = list(peak_names, colnames(dat$srt))
+  )
+  peak_counts[1:3, dat$srt$CellType == "A"] <- peak_counts[1:3, dat$srt$CellType == "A"] + 8
+  chromatin <- Signac::CreateChromatinAssay(
+    counts = Matrix::Matrix(peak_counts, sparse = TRUE),
+    sep = c("-", "-")
+  )
+  dat$srt[["peaks"]] <- chromatin
   dat$srt@tools$SCENICPlus <- list(
     scores = scores,
     auc = t(as.matrix(auc)),
     regulon_list = regulon_list,
     tf_gene = tf_gene,
     triplets = triplets,
+    region_gene = region_gene,
     auc_regions = region_auc
   )
   dat$srt@tools$SCENIC <- NULL
@@ -424,4 +461,47 @@ test_that("scenic_match_regulon_features matches SCENIC+ eRegulon names", {
     scenic_match_regulon_features("Jun", available),
     "Jun_direct_+/+_(3g)"
   )
+})
+
+test_that("scenic_parse_genomic_region accepts Signac and SCENIC+ coordinates", {
+  parsed <- scenic_parse_genomic_region(c("chr1-100-200", "chr1:300-400", "chr2_500_600"))
+  expect_equal(parsed$seqnames, c("chr1", "chr1", "chr2"))
+  expect_equal(parsed$start, c(100, 300, 500))
+  expect_equal(parsed$end, c(200, 400, 600))
+})
+
+test_that("SCENICPlusPlot coverage returns region-gene tracks", {
+  skip_if_not_installed("Signac")
+  dat <- make_scenicplus_plot_mock()
+  out <- SCENICPlusPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "coverage",
+    features = "Gene1",
+    extend.upstream = 1000,
+    extend.downstream = 1000,
+    verbose = FALSE
+  )
+
+  expect_true(inherits(out$plot, c("ggplot", "patchwork")))
+  expect_true(all(out$plot_data$gene == "Gene1"))
+  expect_true(all(c("region", "start", "end", "score") %in% colnames(out$plot_data)))
+  expect_gt(nrow(out$plot_data), 0)
+})
+
+test_that("SCENICPlusPlot coverage resolves TF features to target genes", {
+  skip_if_not_installed("Signac")
+  dat <- make_scenicplus_plot_mock()
+  out <- SCENICPlusPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "coverage",
+    features = "Jun",
+    extend.upstream = 1000,
+    extend.downstream = 1000,
+    verbose = FALSE
+  )
+
+  expect_true(all(out$plot_data$TF == "Jun"))
+  expect_true("Gene1" %in% out$plot_data$gene)
 })

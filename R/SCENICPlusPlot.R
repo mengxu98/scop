@@ -6,7 +6,8 @@
 #' official SCENIC+ signature figure: color is TF expression and size is
 #' regulon specificity score (RSS). `"eregulon_dim"` compares TF expression
 #' with gene-based AUC, and region-based AUC when it is stored in
-#' `srt@tools$SCENICPlus`.
+#' `srt@tools$SCENICPlus`. `"coverage"` draws accessibility and region–gene
+#' tracks for a target locus.
 #'
 #' @md
 #' @inheritParams SCENICPlot
@@ -71,6 +72,12 @@
 #'   plot_type = "network",
 #'   features = example_regulons
 #' )
+#' SCENICPlusPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   plot_type = "coverage",
+#'   features = example_regulons
+#' )
 #' }
 SCENICPlusPlot <- function(
   srt,
@@ -90,7 +97,8 @@ SCENICPlusPlot <- function(
     "regulon_size",
     "network_graph",
     "network",
-    "target_bar"
+    "target_bar",
+    "coverage"
   ),
   ...
 ) {
