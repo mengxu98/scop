@@ -81,6 +81,8 @@ reference:
   - FeatureHeatmap
   - FeatureStatPlot
   - GroupHeatmap
+  - theme_scop
+  - theme_spatial
 
 - subtitle: "Quality Control"
 - contents:

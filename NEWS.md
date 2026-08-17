@@ -19,6 +19,7 @@
   * `RunSpotSweeper()` detects upstream `SpotSweeper::localVariance` breakage on `SpatialExperiment` colData and degrades gracefully.
   * `RunSpatialIntegration(PRECAST)` writes the raw coordinates expected by `CreatePRECASTObject`.
   * `RunLIANA()` recognizes `logfc_comb` (and other liana method score columns) as the interaction score.
+  * Exported `theme_scop` / `theme_spatial` are listed in the pkgdown reference index; the `theme_scop` alias test compares function equality rather than identity so installed-package checks pass.
 * **removed**:
   * The `CaSpER` branch of `RunCNV()` is removed: `runCaSpER()` segfaults deterministically on R >= 4.5 (HMM `manualSegment`, even on 50 cells), upstream is unmaintained since 2019, and its Bioconductor dependency set is archived. `RunCNV()` now supports `copykat`, `fastCNV`, `scevan`, `infercnv`, and `numbat`.
 * **changed**:
