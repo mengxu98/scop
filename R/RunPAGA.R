@@ -267,24 +267,45 @@ RunPAGA <- function(
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {
-      return(srt_out)
+      srt_final <- srt_out
     } else {
       srt_out1 <- srt_append(
         srt_raw = srt,
         srt_append = srt_out
       )
-      srt_out2 <- srt_append(
+      srt_final <- srt_append(
         srt_raw = srt_out1,
         srt_append = srt_out,
         pattern = "(paga)|(distances)|(connectivities)|(draw_graph)",
         overwrite = TRUE,
         verbose = FALSE
       )
-      return(srt_out2)
     }
+    return(promote_paga_to_tools(srt_final, group.by = group.by))
   } else {
     return(adata)
   }
+}
+
+# Store the scanpy PAGA result in srt@tools[["PAGA"]] so the python backend
+# exposes results through the same location as the cpp backend
+# (Tool(srt, "PAGA")). scanpy keeps PAGA in adata.uns, which adata_to_srt()
+# maps to srt@misc[["paga"]]; this promotes that copy to the authoritative
+# @tools slot and drops the @misc duplicate. Consumers such as PAGAPlot() keep
+# a `@tools[["PAGA"]] %||% @misc[["paga"]]` fallback so previously saved objects
+# still work.
+promote_paga_to_tools <- function(srt, group.by) {
+  paga_res <- srt@misc[["paga"]]
+  if (is.null(paga_res)) {
+    return(srt)
+  }
+  if (is.null(paga_res[["groups"]])) {
+    paga_res[["groups"]] <- group.by
+  }
+  paga_res[["backend"]] <- "python"
+  srt@tools[["PAGA"]] <- paga_res
+  srt@misc[["paga"]] <- NULL
+  srt
 }
 
 run_paga_cpp <- function(
