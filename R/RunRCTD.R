@@ -165,8 +165,8 @@ RunRCTD <- function(
   rctd_mode <- match.arg(rctd_mode)
   coordinate_space <- match.arg(coordinate_space)
   rctd_assert_scalar_string(tool_name, "tool_name")
-  max_cores <- rctd_check_max_cores(max_cores)
-  min_cells <- rctd_check_min_cells(min_cells)
+  max_cores <- rctd_check_single_positive(max_cores, "max_cores")
+  min_cells <- rctd_check_single_positive(min_cells, "min_cells")
   validate_scalar_flag(round_counts, "round_counts")
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
@@ -396,34 +396,19 @@ rctd_assert_scalar_string <- function(x, arg_name) {
   validate_scalar_string(x, arg_name)
 }
 
-rctd_check_max_cores <- function(max_cores) {
+rctd_check_single_positive <- function(x, arg_name) {
   if (
-    length(max_cores) != 1L ||
-      !is.numeric(max_cores) ||
-      is.na(max_cores) ||
-      max_cores < 1
+    length(x) != 1L ||
+      !is.numeric(x) ||
+      is.na(x) ||
+      x < 1
   ) {
     log_message(
-      "{.arg max_cores} must be a single positive number",
+      "{.arg {arg_name}} must be a single positive number",
       message_type = "error"
     )
   }
-  as.integer(max_cores)
-}
-
-rctd_check_min_cells <- function(min_cells) {
-  if (
-    length(min_cells) != 1L ||
-      !is.numeric(min_cells) ||
-      is.na(min_cells) ||
-      min_cells < 1
-  ) {
-    log_message(
-      "{.arg min_cells} must be a single positive number",
-      message_type = "error"
-    )
-  }
-  as.integer(min_cells)
+  as.integer(x)
 }
 
 rctd_validate_named_param_list <- function(x, arg_name) {

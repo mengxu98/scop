@@ -422,20 +422,6 @@ RunCOMMOT <- function(
   srt
 }
 
-commot_get_result <- function(object, result.name = NULL) {
-  if (!inherits(object, "Seurat")) {
-    log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
-  }
-  bundle <- object@tools[["COMMOT"]]
-  if (is.null(bundle)) log_message("COMMOT results are absent", message_type = "error")
-  if (is.null(result.name) && length(bundle$results) > 1L) {
-    log_message("Multiple COMMOT results are stored; select {.arg result.name}", message_type = "error")
-  }
-  result.name <- result.name %||% bundle$active_result
-  result <- bundle$results[[result.name]]
-  if (is.null(result)) log_message("Unknown COMMOT result {.val {result.name}}", message_type = "error")
-  list(bundle = bundle, result = result, result.name = result.name)
-}
 
 commot_plot_object <- function(object, stored) {
   bundle <- stored$bundle
@@ -481,7 +467,7 @@ COMMOTPlot <- function(
   ...
 ) {
   plot_type <- match.arg(plot_type)
-  stored <- commot_get_result(object, result.name)
+  stored <- tool_bundle_get_result(object, "COMMOT", result.name)
   if (identical(plot_type, "network")) {
     plot_object <- commot_plot_object(object, stored)
     return(do.call(CCCNetworkPlot, c(list(srt = plot_object, method = "COMMOT", plot_type = "circle"), list(...))))
