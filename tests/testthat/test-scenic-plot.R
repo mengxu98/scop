@@ -533,7 +533,7 @@ test_that("SCENICPlot network draws multiple TF hubs in one plot", {
   expect_gt(sd(tf_nodes$y), 0.2)
   expect_null(out$plot$labels$title)
   expect_null(out$plot$labels$subtitle)
-}))
+})
 
 test_that("SCENICPlusPlot egrn draws TF, region, and gene nodes", {
   dat <- make_scenicplus_plot_mock()
