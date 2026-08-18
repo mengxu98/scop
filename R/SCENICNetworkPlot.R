@@ -953,15 +953,15 @@ scenic_network_style_data <- function(
     if (identical(node_type, "TF")) {
       fill_color[[idx]] <- unname(tf_cols[[node_name]])
       border_color[[idx]] <- "#1A1A1A"
-      node_size[[idx]] <- 8.2
+      node_size[[idx]] <- 8
     } else if (identical(node_type, "region")) {
       fill_color[[idx]] <- "#2E2E2E"
       border_color[[idx]] <- "#2E2E2E"
-      node_size[[idx]] <- 3.2
+      node_size[[idx]] <- 3.5
     } else {
       fill_color[[idx]] <- "#E0E0E0"
       border_color[[idx]] <- "#3F3F3F"
-      node_size[[idx]] <- 3.8
+      node_size[[idx]] <- 4
     }
   }
   node_data[["node_color"]] <- fill_color
