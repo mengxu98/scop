@@ -10,6 +10,10 @@
 #   7. Numerical stability: zero-variance KNN structure
 #   8. run_paga_cpp integration via mock Seurat
 #   9. Backend parity: results are deterministic
+#  10. paga_velocity_transitions_cpp
+#  11. paga_root_cell_cpp
+#  12. paga_diffusion_pseudotime_cpp (updated with n_branchings, min_group_size)
+#  13. cell_dpt_pseudotime_cpp + RunPAGA dpt_pseudotime integration
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -29,12 +33,21 @@ make_paga_mock <- function(
     candidates <- setdiff(seq_len(n_cells), i)
     knn_idx[i, ] <- sort(sample(candidates, n_neighbors))
   }
+  n_dims <- 2
+  embedding <- matrix(rnorm(n_cells * n_dims), nrow = n_cells, ncol = n_dims)
+  velocity_embedding <- matrix(
+    rnorm(n_cells * n_dims, sd = 0.5),
+    nrow = n_cells,
+    ncol = n_dims
+  )
   list(
     knn_idx = knn_idx,
     groups = groups,
     n_groups = n_groups,
     n_cells = n_cells,
-    n_neighbors = n_neighbors
+    n_neighbors = n_neighbors,
+    embedding = embedding,
+    velocity_embedding = velocity_embedding
   )
 }
 
@@ -296,4 +309,293 @@ test_that("directed_edges diagonal counts intra-group KNN edges", {
   # Inter-group connectivities should be 0
   expect_equal(out$connectivities[1, 2], 0)
   expect_equal(out$connectivities[2, 1], 0)
+})
+
+# ---------------------------------------------------------------------------
+# 10. Velocity transitions
+# ---------------------------------------------------------------------------
+
+test_that("paga_velocity_transitions_cpp returns valid structure", {
+  dat <- make_paga_mock()
+  out <- paga_velocity_transitions_cpp(
+    velocity_embedding = dat$velocity_embedding,
+    knn_idx = dat$knn_idx,
+    groups = dat$groups,
+    n_groups = dat$n_groups
+  )
+  expect_type(out, "list")
+  expect_true("transitions_confidence" %in% names(out))
+  expect_true("transitions_confidence_tree" %in% names(out))
+  expect_true("group_sizes" %in% names(out))
+  tc <- out$transitions_confidence
+  expect_equal(dim(tc), c(dat$n_groups, dat$n_groups))
+  expect_true(all(tc >= 0))
+  # Rows should sum to ~1 (or 0 if no transitions)
+  rs <- rowSums(tc)
+  expect_true(all(abs(rs[rs > 0] - 1) < 1e-8))
+})
+
+test_that("paga velocity transitions is deterministic", {
+  dat <- make_paga_mock(seed = 11)
+  out1 <- paga_velocity_transitions_cpp(
+    dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups
+  )
+  out2 <- paga_velocity_transitions_cpp(
+    dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups
+  )
+  expect_equal(out1$transitions_confidence, out2$transitions_confidence)
+})
+
+test_that("velocity transitions with softmax_scale parameter", {
+  dat <- make_paga_mock()
+  out1 <- paga_velocity_transitions_cpp(
+    dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups,
+    softmax_scale = 4.0
+  )
+  out2 <- paga_velocity_transitions_cpp(
+    dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups,
+    softmax_scale = 1.0
+  )
+  expect_equal(dim(out1$transitions_confidence), dim(out2$transitions_confidence))
+  # Different softmax scales should produce different matrices (on non-trivial data)
+  expect_true(!identical(out1$transitions_confidence, out2$transitions_confidence))
+})
+
+test_that("group_sizes from velocity transitions match input", {
+  dat <- make_paga_mock(n_cells = 30, n_groups = 4, seed = 5)
+  out <- paga_velocity_transitions_cpp(
+    dat$velocity_embedding, dat$knn_idx, dat$groups, dat$n_groups
+  )
+  expect_length(out$group_sizes, dat$n_groups)
+  expect_equal(sum(out$group_sizes), dat$n_cells, tolerance = 1e-10)
+})
+
+# ---------------------------------------------------------------------------
+# 11. Root cell
+# ---------------------------------------------------------------------------
+
+test_that("paga_root_cell_cpp returns valid cell indices", {
+  dat <- make_paga_mock()
+  root_cells <- paga_root_cell_cpp(
+    embedding = dat$embedding,
+    groups = dat$groups,
+    root_group = 1L
+  )
+  expect_type(root_cells, "integer")
+  expect_true(length(root_cells) >= 1)
+  # All returned cells should be in group 1
+  for (r in root_cells) {
+    expect_true(r >= 1 && r <= dat$n_cells)
+    expect_equal(dat$groups[r], 1)
+  }
+})
+
+test_that("root cell first entry is in specified group", {
+  n_cells <- 30
+  n_groups <- 3
+  set.seed(7)
+  groups <- sample(1:n_groups, n_cells, replace = TRUE)
+  embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
+
+  for (g in 1:n_groups) {
+    if (any(groups == g)) {
+      root_cells <- paga_root_cell_cpp(embedding, as.integer(groups), as.integer(g))
+      expect_equal(groups[root_cells[1]], g)
+    }
+  }
+})
+
+test_that("root cell is deterministic for same input", {
+  dat <- make_paga_mock(seed = 42)
+  root1 <- paga_root_cell_cpp(dat$embedding, dat$groups, 1L)
+  root2 <- paga_root_cell_cpp(dat$embedding, dat$groups, 1L)
+  expect_equal(root1, root2)
+})
+
+# ---------------------------------------------------------------------------
+# 12. Diffusion pseudotime (updated)
+# ---------------------------------------------------------------------------
+
+test_that("paga_diffusion_pseudotime_cpp returns valid structure", {
+  n_groups <- 4
+  set.seed(1)
+  con <- matrix(runif(n_groups * n_groups), n_groups, n_groups)
+  con <- (con + t(con)) / 2
+  diag(con) <- 1
+
+  out <- paga_diffusion_pseudotime_cpp(
+    connectivities = con, root_group = 1L, n_dcs = 3L,
+    n_branchings = 0L, min_group_size = 0.01
+  )
+  expect_type(out, "list")
+  expect_true("pseudotime" %in% names(out))
+  expect_true("diffusion_components" %in% names(out))
+  expect_true("diffusion_eigenvalues" %in% names(out))
+  expect_length(out$pseudotime, n_groups)
+  # Pseudotime should be non-negative
+  expect_true(all(out$pseudotime >= 0))
+  # Pseudotime should be in [0, 1] (normalized)
+  expect_true(max(out$pseudotime) <= 1 + 1e-10)
+})
+
+test_that("DPT root group has pseudotime 0", {
+  n_groups <- 4
+  set.seed(2)
+  con <- matrix(runif(n_groups * n_groups), n_groups, n_groups)
+  con <- (con + t(con)) / 2
+  diag(con) <- 1
+
+  out <- paga_diffusion_pseudotime_cpp(con, root_group = 1L, n_dcs = 3L)
+  # Root group (group 1, index 1) should have pseudotime 0
+  expect_equal(out$pseudotime[out$root_group], 0, tolerance = 1e-10)
+})
+
+test_that("DPT with n_branchings returns branch count", {
+  n_groups <- 5
+  set.seed(3)
+  con <- diag(1, n_groups)
+  con[1, 2] <- con[2, 1] <- 0.8
+  con[2, 3] <- con[3, 2] <- 0.6
+  con[3, 4] <- con[4, 3] <- 0.4
+  for (i in 1:n_groups) {
+    for (j in 1:n_groups) {
+      if (con[i, j] == 0 && i != j) con[i, j] <- 0.05
+    }
+  }
+
+  out <- paga_diffusion_pseudotime_cpp(con, 1L, n_dcs = 3L, n_branchings = 2L, min_group_size = 0.01)
+  expect_true(out$n_branchings_found >= 0)
+})
+
+# ---------------------------------------------------------------------------
+# 13. Cell-level DPT + RunPAGA integration
+# ---------------------------------------------------------------------------
+
+test_that("cell_dpt_pseudotime_cpp returns per-cell pseudotime", {
+  dat <- make_paga_mock(n_cells = 12, n_groups = 3, n_neighbors = 4, seed = 9)
+  knn_dist <- matrix(NA_real_, dat$n_cells, ncol(dat$knn_idx))
+  for (i in seq_len(dat$n_cells)) {
+    for (k in seq_len(ncol(dat$knn_idx))) {
+      j <- dat$knn_idx[i, k]
+      knn_dist[i, k] <- sqrt(sum((dat$embedding[i, ] - dat$embedding[j, ])^2))
+    }
+  }
+  root_cells <- paga_root_cell_cpp(
+    embedding = dat$embedding[, 1:2, drop = FALSE],
+    groups = dat$groups,
+    root_group = 1L
+  )
+  out <- cell_dpt_pseudotime_cpp(
+    knn_idx = dat$knn_idx,
+    knn_dist = knn_dist,
+    root_cell = root_cells[[1L]],
+    n_dcs = 3L
+  )
+  expect_type(out, "list")
+  expect_length(out$pseudotime, dat$n_cells)
+  expect_true(all(out$pseudotime >= 0))
+  expect_true(max(out$pseudotime) <= 1 + 1e-10)
+  expect_equal(out$pseudotime[out$root_cell], 0, tolerance = 1e-10)
+})
+
+test_that("RunPAGA cpp infer_pseudotime writes dpt_pseudotime to meta.data", {
+  skip_if_not_installed("BiocNeighbors")
+
+  set.seed(1)
+  n_cells <- 24L
+  cells <- paste0("cell", seq_len(n_cells))
+  counts <- Matrix::Matrix(
+    matrix(stats::rpois(40 * n_cells, lambda = 3), nrow = 40),
+    sparse = TRUE,
+    dimnames = list(paste0("gene", seq_len(40)), cells)
+  )
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$group <- factor(rep(c("g1", "g2", "g3"), length.out = n_cells))
+  pca <- matrix(
+    stats::rnorm(n_cells * 6L),
+    nrow = n_cells,
+    dimnames = list(cells, paste0("PC_", seq_len(6L)))
+  )
+  umap <- pca[, 1:2, drop = FALSE]
+  colnames(umap) <- paste0("UMAP_", 1:2)
+  srt[["pca"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = pca,
+    assay = "RNA",
+    key = "PC_"
+  )
+  srt[["umap"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = umap,
+    assay = "RNA",
+    key = "UMAP_"
+  )
+
+  out <- RunPAGA(
+    srt = srt,
+    group.by = "group",
+    linear_reduction = "pca",
+    nonlinear_reduction = "umap",
+    n_neighbors = 5L,
+    backend = "cpp",
+    infer_pseudotime = TRUE,
+    root_group = "g1",
+    show_plot = FALSE,
+    verbose = FALSE
+  )
+
+  expect_true("dpt_pseudotime" %in% colnames(out@meta.data))
+  expect_length(out$dpt_pseudotime, ncol(out))
+  expect_true(all(out$dpt_pseudotime >= 0))
+  expect_true(max(out$dpt_pseudotime) <= 1 + 1e-10)
+  expect_true(!is.null(out@tools$PAGA$dpt_pseudotime))
+  expect_equal(out@tools$PAGA$dpt_pseudotime, out$dpt_pseudotime)
+})
+
+test_that("RunPAGA skips dense cell-level DPT on large inputs", {
+  skip_if_not_installed("BiocNeighbors")
+
+  n_cells <- 4100L
+  cells <- paste0("cell", seq_len(n_cells))
+  counts <- Matrix::Matrix(
+    matrix(1, nrow = 5, ncol = n_cells),
+    sparse = TRUE,
+    dimnames = list(paste0("gene", seq_len(5)), cells)
+  )
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$group <- factor(rep(c("g1", "g2"), length.out = n_cells))
+  pca <- matrix(
+    stats::rnorm(n_cells * 4L),
+    nrow = n_cells,
+    dimnames = list(cells, paste0("PC_", seq_len(4L)))
+  )
+  umap <- pca[, 1:2, drop = FALSE]
+  colnames(umap) <- paste0("UMAP_", 1:2)
+  srt[["pca"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = pca,
+    assay = "RNA",
+    key = "PC_"
+  )
+  srt[["umap"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = umap,
+    assay = "RNA",
+    key = "UMAP_"
+  )
+
+  expect_warning(
+    out <- RunPAGA(
+      srt = srt,
+      group.by = "group",
+      linear_reduction = "pca",
+      nonlinear_reduction = "umap",
+      n_neighbors = 5L,
+      backend = "cpp",
+      infer_pseudotime = TRUE,
+      root_group = "g1",
+      show_plot = FALSE,
+      verbose = TRUE
+    ),
+    "skipped cell-level"
+  )
+  expect_false("dpt_pseudotime" %in% colnames(out@meta.data))
+  expect_null(out@tools$PAGA$dpt_pseudotime)
+  expect_false(is.null(out@tools$PAGA$pseudotime))
 })

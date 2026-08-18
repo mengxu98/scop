@@ -753,7 +753,7 @@ run_cellrank_cpp <- function(
       "Running {.fn RunSCVELO} cpp backend before {.fn RunCellRank}",
       verbose = verbose
     )
-    srt <- run_scvelo_cpp(
+    srt <- run_scanpy_cpp(
       srt = srt, assay_y = assay_y, layer_y = layer_y, group.by = group.by,
       linear_reduction = linear_reduction, nonlinear_reduction = nonlinear_reduction,
       n_pcs = n_pcs, n_neighbors = n_neighbors, mode = mode,
@@ -857,11 +857,11 @@ run_cellrank_cpp <- function(
         message_type = "warning",
         verbose = verbose
       )
-      ts_result <- scvelo_terminal_states_cpp(
+      ts_result <- scanpy_terminal_states_cpp(
         velocity_embedding = ve, embedding = nonlinear_embedding,
         knn_idx = knn[["idx"]], n_neighbors_velo = knn_k, seed = 0L
       )
-      vpt_result <- scvelo_pseudotime_cpp(
+      vpt_result <- scanpy_pseudotime_cpp(
         velocity_embedding = ve, embedding = nonlinear_embedding,
         knn_idx = knn[["idx"]], root_cells = ts_result[["root_cells"]],
         end_points = ts_result[["end_points"]],

@@ -1,6 +1,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
 #include <thisutils/log_message.h>
+#include "thread_utils.h"
 #include "cibersort_libsvm.h"
 #include <algorithm>
 #include <atomic>
@@ -55,18 +56,6 @@ struct LinearSvrTrainingData {
     }
   }
 };
-
-int cibersort_worker_count(int requested, int n_tasks) {
-  if (requested <= 1 || n_tasks <= 1) {
-    return 1;
-  }
-  int cores = std::min(requested, n_tasks);
-  const unsigned int hardware = std::thread::hardware_concurrency();
-  if (hardware > 0) {
-    cores = std::min(cores, static_cast<int>(hardware));
-  }
-  return std::max(1, cores);
-}
 
 std::uint64_t splitmix64(std::uint64_t x) {
   x += 0x9e3779b97f4a7c15ULL;
@@ -339,7 +328,7 @@ void parallel_for_tasks(int n_tasks, int cores, Function fn) {
   if (n_tasks <= 0) {
     return;
   }
-  const int workers = cibersort_worker_count(cores, n_tasks);
+  const int workers = worker_count(cores, n_tasks);
   if (workers <= 1) {
     for (int i = 0; i < n_tasks; ++i) {
       fn(i);

@@ -1,4 +1,4 @@
-# Tests for scVelo C++ backend (scvelo_stochastic_embedding_cpp)
+# Tests for scVelo C++ backend (scanpy_stochastic_embedding_cpp)
 #
 # Structure:
 #   1. Helper: mock spliced/unspliced/KNN/embedding data
@@ -15,7 +15,7 @@
 # Helpers
 # ---------------------------------------------------------------------------
 
-make_scvelo_mock <- function(
+make_scanpy_mock <- function(
   n_genes = 10,
   n_cells = 20,
   n_neighbors = 4,
@@ -113,9 +113,9 @@ test_that("VelocityPlot keeps arrowheads device-independent", {
 # 1. Basic structural tests
 # ---------------------------------------------------------------------------
 
-test_that("scvelo_stochastic_embedding_cpp returns a named list with correct fields", {
-  dat <- make_scvelo_mock()
-  out <- scvelo_stochastic_embedding_cpp(
+test_that("scanpy_stochastic_embedding_cpp returns a named list with correct fields", {
+  dat <- make_scanpy_mock()
+  out <- scanpy_stochastic_embedding_cpp(
     spliced = dat$spliced,
     unspliced = dat$unspliced,
     knn_idx = dat$knn_idx,
@@ -166,7 +166,7 @@ test_that("scvelo handles all-zero expression", {
   set.seed(1)
   embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
 
-  out <- scvelo_stochastic_embedding_cpp(
+  out <- scanpy_stochastic_embedding_cpp(
     spliced = spliced,
     unspliced = unspliced,
     knn_idx = knn_idx,
@@ -200,7 +200,7 @@ test_that("scvelo estimates gamma ~ 1 when unspliced = spliced", {
   set.seed(1)
   embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
 
-  out <- scvelo_stochastic_embedding_cpp(
+  out <- scanpy_stochastic_embedding_cpp(
     spliced = spliced,
     unspliced = unspliced,
     knn_idx = knn_idx,
@@ -227,7 +227,7 @@ test_that("scvelo handles single cell gracefully", {
   embedding <- matrix(runif(2), nrow = 1, ncol = 2)
 
   expect_error(
-    scvelo_stochastic_embedding_cpp(
+    scanpy_stochastic_embedding_cpp(
       spliced = spliced,
       unspliced = unspliced,
       knn_idx = knn_idx,
@@ -254,7 +254,7 @@ test_that("scvelo works with 1 neighbor", {
   }
   embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
 
-  out <- scvelo_stochastic_embedding_cpp(
+  out <- scanpy_stochastic_embedding_cpp(
     spliced = spliced,
     unspliced = unspliced,
     knn_idx = knn_idx,
@@ -269,15 +269,15 @@ test_that("scvelo works with 1 neighbor", {
 # 6. Determinism
 # ---------------------------------------------------------------------------
 
-test_that("scvelo_stochastic_embedding_cpp is deterministic", {
-  dat <- make_scvelo_mock(seed = 42)
-  out1 <- scvelo_stochastic_embedding_cpp(
+test_that("scanpy_stochastic_embedding_cpp is deterministic", {
+  dat <- make_scanpy_mock(seed = 42)
+  out1 <- scanpy_stochastic_embedding_cpp(
     spliced = dat$spliced,
     unspliced = dat$unspliced,
     knn_idx = dat$knn_idx,
     embedding = dat$embedding
   )
-  out2 <- scvelo_stochastic_embedding_cpp(
+  out2 <- scanpy_stochastic_embedding_cpp(
     spliced = dat$spliced,
     unspliced = dat$unspliced,
     knn_idx = dat$knn_idx,
@@ -308,7 +308,7 @@ test_that("scvelo gamma reflects relationship between spliced and unspliced", {
   }
   embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
 
-  out <- scvelo_stochastic_embedding_cpp(
+  out <- scanpy_stochastic_embedding_cpp(
     spliced = spliced,
     unspliced = unspliced,
     knn_idx = knn_idx,
@@ -324,9 +324,9 @@ test_that("scvelo gamma reflects relationship between spliced and unspliced", {
 # ---------------------------------------------------------------------------
 
 test_that("scvelo rejects mismatched spliced/unspliced dimensions", {
-  dat <- make_scvelo_mock()
+  dat <- make_scanpy_mock()
   expect_error(
-    scvelo_stochastic_embedding_cpp(
+    scanpy_stochastic_embedding_cpp(
       spliced = dat$spliced[1:5, , drop = FALSE], # different n_genes
       unspliced = dat$unspliced,
       knn_idx = dat$knn_idx,
@@ -337,9 +337,9 @@ test_that("scvelo rejects mismatched spliced/unspliced dimensions", {
 })
 
 test_that("scvelo rejects mismatched knn_idx rows vs cells", {
-  dat <- make_scvelo_mock()
+  dat <- make_scanpy_mock()
   expect_error(
-    scvelo_stochastic_embedding_cpp(
+    scanpy_stochastic_embedding_cpp(
       spliced = dat$spliced,
       unspliced = dat$unspliced,
       knn_idx = dat$knn_idx[1:5, , drop = FALSE],
@@ -350,9 +350,9 @@ test_that("scvelo rejects mismatched knn_idx rows vs cells", {
 })
 
 test_that("scvelo rejects mismatched embedding rows vs cells", {
-  dat <- make_scvelo_mock()
+  dat <- make_scanpy_mock()
   expect_error(
-    scvelo_stochastic_embedding_cpp(
+    scanpy_stochastic_embedding_cpp(
       spliced = dat$spliced,
       unspliced = dat$unspliced,
       knn_idx = dat$knn_idx,
@@ -388,7 +388,7 @@ test_that("scvelo embedding output is finite and well-scaled", {
   set.seed(99)
   embedding <- matrix(rnorm(n_cells * 2), nrow = n_cells, ncol = 2)
 
-  out <- scvelo_stochastic_embedding_cpp(
+  out <- scanpy_stochastic_embedding_cpp(
     spliced = spliced,
     unspliced = unspliced,
     knn_idx = knn_idx,

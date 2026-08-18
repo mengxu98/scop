@@ -343,7 +343,7 @@ cnv_plot_bar <- function(
   ...
 ) {
   position <- match.arg(position)
-  value <- value %||% cnv_prediction_col(srt, method = method) %||% cnv_cluster_col(srt, method = method)
+  value <- value %||% cnv_col(srt, method, "prediction") %||% cnv_col(srt, method, "cluster")
   if (is.null(value) || !value %in% colnames(srt@meta.data)) {
     log_message(
       "No CNV prediction or cluster metadata column is available for bar plotting",
@@ -464,8 +464,8 @@ cnv_require_matrix <- function(bundle) {
 
 cnv_default_group_col <- function(srt, method) {
   for (candidate in c(
-    cnv_prediction_col(srt, method = method),
-    cnv_cluster_col(srt, method = method)
+    cnv_col(srt, method, "prediction"),
+    cnv_col(srt, method, "cluster")
   )) {
     if (is.null(candidate)) {
       next
@@ -479,14 +479,14 @@ cnv_default_group_col <- function(srt, method) {
 }
 
 cnv_default_value_col <- function(srt, method) {
-  pred <- cnv_prediction_col(srt, method = method)
+  pred <- cnv_col(srt, method, "prediction")
   if (!is.null(pred)) {
     vals <- srt@meta.data[[pred]]
     if (any(!is.na(vals) & nzchar(as.character(vals)))) {
       return(pred)
     }
   }
-  score <- cnv_score_col(srt, method = method)
+  score <- cnv_col(srt, method, "score")
   if (!is.null(score)) {
     return(score)
   }
@@ -496,26 +496,8 @@ cnv_default_value_col <- function(srt, method) {
   )
 }
 
-cnv_score_col <- function(srt, method) {
-  candidates <- c(paste0("CNV_", method, "_score"), "CNV_score")
-  hit <- candidates[candidates %in% colnames(srt@meta.data)]
-  if (length(hit) == 0L) {
-    return(NULL)
-  }
-  hit[[1L]]
-}
-
-cnv_prediction_col <- function(srt, method) {
-  candidates <- c(paste0("CNV_", method, "_prediction"), "CNV_prediction")
-  hit <- candidates[candidates %in% colnames(srt@meta.data)]
-  if (length(hit) == 0L) {
-    return(NULL)
-  }
-  hit[[1L]]
-}
-
-cnv_cluster_col <- function(srt, method) {
-  candidates <- c(paste0("CNV_", method, "_cluster"), "CNV_cluster")
+cnv_col <- function(srt, method, suffix) {
+  candidates <- c(paste0("CNV_", method, "_", suffix), paste0("CNV_", suffix))
   hit <- candidates[candidates %in% colnames(srt@meta.data)]
   if (length(hit) == 0L) {
     return(NULL)

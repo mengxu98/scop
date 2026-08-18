@@ -1697,15 +1697,6 @@ ccc_cellchat_signaling_genes <- function(
   receiver.use = NULL,
   thresh = 0.05
 ) {
-  split_gene_tokens <- function(x) {
-    x <- as.character(x)
-    x <- x[!is.na(x) & nzchar(x)]
-    if (length(x) == 0L) {
-      return(character(0))
-    }
-    unique(unlist(strsplit(x, "_", fixed = TRUE), use.names = FALSE))
-  }
-
   df <- ccc_cellchat_subset_df(
     object = object,
     signaling = signaling,
@@ -1717,9 +1708,9 @@ ccc_cellchat_signaling_genes <- function(
     return(character(0))
   }
   gene_pool <- unique(c(
-    split_gene_tokens(df$ligand),
-    split_gene_tokens(df$receptor),
-    split_gene_tokens(df$interaction_name)
+    ccc_split_gene_tokens(df$ligand),
+    ccc_split_gene_tokens(df$receptor),
+    ccc_split_gene_tokens(df$interaction_name)
   ))
   ccc_match_seurat_genes(gene_pool, rownames(seurat_object))
 }

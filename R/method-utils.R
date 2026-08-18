@@ -549,3 +549,19 @@ resolve_reduction_name <- function(object, reduction) {
   }
   NULL
 }
+
+tool_bundle_get_result <- function(object, tool, result.name = NULL) {
+  if (!inherits(object, "Seurat")) {
+    log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
+  }
+  bundle <- object@tools[[tool]]
+  if (is.null(bundle)) log_message("{.val {tool}} results are absent", message_type = "error")
+  if (is.null(result.name) && length(bundle$results) > 1L) {
+    log_message("Multiple {.val {tool}} results are stored; select {.arg result.name}", message_type = "error")
+  }
+  result.name <- result.name %||% bundle$active_result
+  result <- bundle$results[[result.name]]
+  if (is.null(result)) log_message("Unknown {.val {tool}} result {.val {result.name}}", message_type = "error")
+  list(bundle = bundle, result = result, result.name = result.name)
+}
+
