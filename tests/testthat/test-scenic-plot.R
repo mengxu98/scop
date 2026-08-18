@@ -511,7 +511,29 @@ test_that("SCENICPlot network places the TF at the hub center", {
   expect_equal(tf_node$y, 0, tolerance = 1e-8)
   expect_true(all(gene_nodes$x^2 + gene_nodes$y^2 > 1))
   expect_true(all(out$plot_data$edges$from == "TF1"))
+  expect_null(out$plot$labels$title)
+  expect_null(out$plot$labels$subtitle)
 })
+
+test_that("SCENICPlot network draws multiple TF hubs in one plot", {
+  dat <- make_scenic_plot_mock()
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "network",
+    features = c("TF1", "TF2", "TF3"),
+    verbose = FALSE
+  )
+
+  expect_s3_class(out$plot, "ggplot")
+  expect_false(inherits(out$plot, "patchwork"))
+  tf_nodes <- out$plot_data$nodes[as.character(out$plot_data$nodes$node_type) == "TF", ]
+  expect_true(all(c("TF1", "TF2", "TF3") %in% tf_nodes$name))
+  expect_gt(sd(tf_nodes$x), 0.2)
+  expect_gt(sd(tf_nodes$y), 0.2)
+  expect_null(out$plot$labels$title)
+  expect_null(out$plot$labels$subtitle)
+}))
 
 test_that("SCENICPlusPlot egrn draws TF, region, and gene nodes", {
   dat <- make_scenicplus_plot_mock()
@@ -526,6 +548,8 @@ test_that("SCENICPlusPlot egrn draws TF, region, and gene nodes", {
   nodes <- out$plot_data$nodes
   expect_true(all(c("TF", "region", "gene") %in% as.character(nodes$node_type)))
   expect_true("TF1" %in% nodes$name)
+  expect_null(out$plot$labels$title)
+  expect_null(out$plot$labels$subtitle)
 })
 
 test_that("SCENIC network node sizes are TF 8, gene 4, region 3.5", {
@@ -596,6 +620,8 @@ test_that("SCENIC network_graph legend labels include RSS cell types", {
   )
 
   expect_s3_class(out$plot, "ggplot")
+  expect_null(out$plot$labels$title)
+  expect_null(out$plot$labels$subtitle)
   built <- ggplot2::ggplot_build(out$plot)
   labels <- unlist(lapply(built$plot$scales$scales, function(sc) {
     if (!inherits(sc, "ScaleDiscrete") || !any(sc$aesthetics == "fill")) {
