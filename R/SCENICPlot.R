@@ -191,8 +191,8 @@
 #'   plot_type = "rss_rank"
 #' )
 #' scenic_rss$plot
-#' example_regulons <- unique(scenic_rss$top_table$regulon)[1:2]
-#' example_tfs <- unique(scenic_rss$top_table$TF)[1:2]
+#' example_regulons <- unique(scenic_rss$top_table$regulon)[1:3]
+#' example_tfs <- unique(scenic_rss$top_table$TF)[1:3]
 #'
 #' FeatureDimPlot(
 #'   pancreas_sub,
@@ -271,16 +271,17 @@
 #'   pancreas_sub,
 #'   group.by = "CellType",
 #'   plot_type = "network_graph",
-#'   max_targets = 10,
-#'   max_edges = 500,
-#'   label_nodes = "tfs"
+#'   features = example_tfs,
+#'   max_targets = 12,
+#'   max_edges = 200,
+#'   label_nodes = "all"
 #' )
 #' SCENICPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
 #'   plot_type = "network",
-#'   network_tf = example_tfs,
-#'   max_targets = 30
+#'   features = example_tfs[[1]],
+#'   max_targets = 20
 #' )
 #' SCENICPlot(
 #'   pancreas_sub,
@@ -299,7 +300,16 @@
 #'   pancreas_sub,
 #'   group.by = "CellType",
 #'   plot_type = "egrn",
-#'   features = example_tfs
+#'   features = example_tfs,
+#'   max_targets = 10
+#' )
+#' SCENICPlusPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   plot_type = "network_graph",
+#'   features = example_tfs,
+#'   max_targets = 8,
+#'   label_nodes = "all"
 #' )
 #' SCENICPlusPlot(
 #'   pancreas_sub,

@@ -61,7 +61,8 @@ scenicplus_dot <- SCENICPlusPlot(
   group.by = "CellType"
 )
 scenicplus_dot$plot
-example_regulons <- unique(scenicplus_dot$top_table$regulon)[1:2]
+example_regulons <- unique(scenicplus_dot$top_table$regulon)[1:3]
+example_tfs <- unique(scenicplus_dot$top_table$TF)[1:3]
 
 FeatureDimPlot(
   pancreas_sub,
@@ -91,13 +92,23 @@ SCENICPlusPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "network",
-  features = example_regulons
+  features = example_tfs[[1]],
+  max_targets = 20
 )
 SCENICPlusPlot(
   pancreas_sub,
   group.by = "CellType",
   plot_type = "egrn",
-  features = example_regulons
+  features = example_tfs,
+  max_targets = 10
+)
+SCENICPlusPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "network_graph",
+  features = example_tfs,
+  max_targets = 8,
+  label_nodes = "all"
 )
 SCENICPlusPlot(
   pancreas_sub,

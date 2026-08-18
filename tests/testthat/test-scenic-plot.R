@@ -495,6 +495,26 @@ test_that("SCENICPlusPlot egrn draws TF, region, and gene nodes", {
   expect_true("Jun" %in% nodes$name)
 })
 
+test_that("SCENIC+ region diamonds are larger than the previous pin-head default", {
+  dat <- make_scenicplus_plot_mock()
+  out <- SCENICPlusPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "egrn",
+    features = "Jun",
+    verbose = FALSE
+  )
+  styled <- scenic_network_style_data(
+    node_data = out$plot_data$nodes,
+    edge_plot = out$plot_data$edges,
+    edge_data = out$plot_data$edges
+  )
+  region_size <- unique(styled$nodes$node_size[as.character(styled$nodes$node_type) == "region"])
+  gene_size <- unique(styled$nodes$node_size[as.character(styled$nodes$node_type) == "gene"])
+  expect_gte(region_size, 3)
+  expect_lt(region_size, gene_size)
+})
+
 test_that("SCENICPlusPlot egrn can use a tripartite layout", {
   dat <- make_scenicplus_plot_mock()
   out <- SCENICPlusPlot(

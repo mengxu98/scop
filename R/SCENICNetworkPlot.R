@@ -1017,7 +1017,7 @@ scenic_network_style_data <- function(
     } else if (identical(node_type, "region")) {
       fill_color[[idx]] <- "#2E2E2E"
       border_color[[idx]] <- "#2E2E2E"
-      node_size[[idx]] <- 1.8
+      node_size[[idx]] <- 3.2
     } else {
       fill_color[[idx]] <- "#E0E0E0"
       border_color[[idx]] <- "#3F3F3F"
@@ -1144,7 +1144,7 @@ scenic_network_ggplot <- function(
         size = .data[["node_size"]]
       ),
       shape = 23,
-      stroke = 0.2,
+      stroke = 0.35,
       show.legend = FALSE
     )
   }
