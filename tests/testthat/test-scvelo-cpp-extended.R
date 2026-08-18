@@ -1,21 +1,21 @@
 # Tests for scVelo C++ backend — extended coverage
 #
-# Existing test-scvelo-cpp.R covers: scvelo_stochastic_embedding_cpp (9 tests)
+# Existing test-scvelo-cpp.R covers: scanpy_stochastic_embedding_cpp (9 tests)
 # This file adds coverage for independently-testable pipeline components:
-#   1. scvelo_filter_genes_cpp — gene filtering
-#   2. scvelo_normalize_log_cpp — per-cell normalization + log1p
-#   3. scvelo_moments_cpp — first-order moments (KNN smoothing)
+#   1. scanpy_filter_genes_cpp — gene filtering
+#   2. scanpy_normalize_log_cpp — per-cell normalization + log1p
+#   3. scanpy_moments_cpp — first-order moments (KNN smoothing)
 #
-# NOTE: scvelo_deterministic_cpp, scvelo_velocity_confidence_cpp,
-# scvelo_velocity_transition_cpp, and scvelo_velocity_graph_cpp require
+# NOTE: scanpy_deterministic_cpp, scanpy_velocity_confidence_cpp,
+# scanpy_velocity_transition_cpp, and scanpy_velocity_graph_cpp require
 # dependent intermediate computations (Ms, residual, embedding) and are
-# better tested via integration the run_scvelo_cpp wrapper or benchmark.
+# better tested via integration the run_scanpy_cpp wrapper or benchmark.
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-make_scvelo_data <- function(
+make_scanpy_data <- function(
   n_genes = 20,
   n_cells = 30,
   n_neighbors = 8,
@@ -51,12 +51,12 @@ make_scvelo_data <- function(
 }
 
 # ---------------------------------------------------------------------------
-# 1. scvelo_filter_genes_cpp
+# 1. scanpy_filter_genes_cpp
 # ---------------------------------------------------------------------------
 
-test_that("scvelo_filter_genes_cpp returns 0/1 indicator vector", {
-  dat <- make_scvelo_data()
-  out <- scvelo_filter_genes_cpp(
+test_that("scanpy_filter_genes_cpp returns 0/1 indicator vector", {
+  dat <- make_scanpy_data()
+  out <- scanpy_filter_genes_cpp(
     spliced = dat$spliced,
     unspliced = dat$unspliced,
     min_counts = 2,
@@ -67,13 +67,13 @@ test_that("scvelo_filter_genes_cpp returns 0/1 indicator vector", {
   expect_length(out, dat$n_genes)
 })
 
-test_that("scvelo_filter_genes_cpp keeps all genes with high counts", {
+test_that("scanpy_filter_genes_cpp keeps all genes with high counts", {
   n_genes <- 10
   n_cells <- 20
   spliced <- matrix(100, nrow = n_genes, ncol = n_cells)
   unspliced <- matrix(50, nrow = n_genes, ncol = n_cells)
 
-  out <- scvelo_filter_genes_cpp(
+  out <- scanpy_filter_genes_cpp(
     spliced = spliced,
     unspliced = unspliced,
     min_counts = 10,
@@ -83,7 +83,7 @@ test_that("scvelo_filter_genes_cpp keeps all genes with high counts", {
   expect_true(all(out == 1))
 })
 
-test_that("scvelo_filter_genes_cpp filters all-zero spliced genes", {
+test_that("scanpy_filter_genes_cpp filters all-zero spliced genes", {
   n_genes <- 5
   n_cells <- 10
   spliced <- matrix(c(rep(0, n_cells), rep(100, n_cells * (n_genes - 1))),
@@ -91,12 +91,12 @@ test_that("scvelo_filter_genes_cpp filters all-zero spliced genes", {
   )
   unspliced <- matrix(100, nrow = n_genes, ncol = n_cells)
 
-  out <- scvelo_filter_genes_cpp(spliced, unspliced, min_counts = 1, min_counts_u = 5)
+  out <- scanpy_filter_genes_cpp(spliced, unspliced, min_counts = 1, min_counts_u = 5)
   expect_equal(out[1], 0) # first gene filtered (zero spliced)
   expect_true(all(out[-1] == 1))
 })
 
-test_that("scvelo_filter_genes_cpp filters all-zero unspliced genes", {
+test_that("scanpy_filter_genes_cpp filters all-zero unspliced genes", {
   n_genes <- 5
   n_cells <- 10
   spliced <- matrix(100, nrow = n_genes, ncol = n_cells)
@@ -104,25 +104,25 @@ test_that("scvelo_filter_genes_cpp filters all-zero unspliced genes", {
     nrow = n_genes, ncol = n_cells, byrow = TRUE
   )
 
-  out <- scvelo_filter_genes_cpp(spliced, unspliced, min_counts = 5, min_counts_u = 1)
+  out <- scanpy_filter_genes_cpp(spliced, unspliced, min_counts = 5, min_counts_u = 1)
   expect_equal(out[1], 0) # first gene filtered (zero unspliced)
   expect_true(all(out[-1] == 1))
 })
 
-test_that("scvelo_filter_genes_cpp is deterministic", {
-  dat <- make_scvelo_data(seed = 5)
-  out1 <- scvelo_filter_genes_cpp(dat$spliced, dat$unspliced, 2, 1)
-  out2 <- scvelo_filter_genes_cpp(dat$spliced, dat$unspliced, 2, 1)
+test_that("scanpy_filter_genes_cpp is deterministic", {
+  dat <- make_scanpy_data(seed = 5)
+  out1 <- scanpy_filter_genes_cpp(dat$spliced, dat$unspliced, 2, 1)
+  out2 <- scanpy_filter_genes_cpp(dat$spliced, dat$unspliced, 2, 1)
   expect_equal(out1, out2)
 })
 
 # ---------------------------------------------------------------------------
-# 2. scvelo_normalize_log_cpp
+# 2. scanpy_normalize_log_cpp
 # ---------------------------------------------------------------------------
 
-test_that("scvelo_normalize_log_cpp returns correct structure", {
-  dat <- make_scvelo_data()
-  norm <- scvelo_normalize_log_cpp(
+test_that("scanpy_normalize_log_cpp returns correct structure", {
+  dat <- make_scanpy_data()
+  norm <- scanpy_normalize_log_cpp(
     spliced = dat$spliced,
     unspliced = dat$unspliced
   )
@@ -136,33 +136,33 @@ test_that("scvelo_normalize_log_cpp returns correct structure", {
   expect_true(all(norm$unspliced_norm >= 0))
 })
 
-test_that("scvelo_normalize_log_cpp handles all-zero input", {
+test_that("scanpy_normalize_log_cpp handles all-zero input", {
   n_genes <- 5
   n_cells <- 10
   spliced <- matrix(0, nrow = n_genes, ncol = n_cells)
   unspliced <- matrix(0, nrow = n_genes, ncol = n_cells)
 
-  norm <- scvelo_normalize_log_cpp(spliced, unspliced)
+  norm <- scanpy_normalize_log_cpp(spliced, unspliced)
   expect_equal(norm$spliced_norm, matrix(0, n_genes, n_cells))
   expect_equal(norm$unspliced_norm, matrix(0, n_genes, n_cells))
 })
 
-test_that("scvelo_normalize_log_cpp is deterministic", {
-  dat <- make_scvelo_data(seed = 5)
-  out1 <- scvelo_normalize_log_cpp(dat$spliced, dat$unspliced)
-  out2 <- scvelo_normalize_log_cpp(dat$spliced, dat$unspliced)
+test_that("scanpy_normalize_log_cpp is deterministic", {
+  dat <- make_scanpy_data(seed = 5)
+  out1 <- scanpy_normalize_log_cpp(dat$spliced, dat$unspliced)
+  out2 <- scanpy_normalize_log_cpp(dat$spliced, dat$unspliced)
   expect_equal(out1, out2)
 })
 
 # ---------------------------------------------------------------------------
-# 3. scvelo_moments_cpp
+# 3. scanpy_moments_cpp
 # ---------------------------------------------------------------------------
 
-test_that("scvelo_moments_cpp returns correct structure", {
-  dat <- make_scvelo_data()
-  norm <- scvelo_normalize_log_cpp(dat$spliced, dat$unspliced)
+test_that("scanpy_moments_cpp returns correct structure", {
+  dat <- make_scanpy_data()
+  norm <- scanpy_normalize_log_cpp(dat$spliced, dat$unspliced)
 
-  moments <- scvelo_moments_cpp(
+  moments <- scanpy_moments_cpp(
     spliced = norm$spliced_norm,
     unspliced = norm$unspliced_norm,
     knn_idx = dat$knn_idx
@@ -175,25 +175,25 @@ test_that("scvelo_moments_cpp returns correct structure", {
   expect_true(all(is.finite(moments$Mu)))
 })
 
-test_that("scvelo_moments_cpp includes self in neighborhood average", {
+test_that("scanpy_moments_cpp includes self in neighborhood average", {
   # With 1 cell and 0 neighbors, moments should equal input
   spliced <- matrix(runif(10), nrow = 10, ncol = 1)
   unspliced <- matrix(runif(10), nrow = 10, ncol = 1)
   # KNN with no valid neighbors (all NA)
   knn_idx <- matrix(NA_integer_, nrow = 1, ncol = 2)
 
-  moments <- scvelo_moments_cpp(spliced, unspliced, knn_idx)
+  moments <- scanpy_moments_cpp(spliced, unspliced, knn_idx)
   # Should equal the input (self only)
   expect_equal(moments$Ms[, 1], spliced[, 1], tolerance = 1e-10)
   expect_equal(moments$Mu[, 1], unspliced[, 1], tolerance = 1e-10)
 })
 
-test_that("scvelo_moments_cpp is deterministic", {
-  dat <- make_scvelo_data(seed = 7)
-  norm <- scvelo_normalize_log_cpp(dat$spliced, dat$unspliced)
+test_that("scanpy_moments_cpp is deterministic", {
+  dat <- make_scanpy_data(seed = 7)
+  norm <- scanpy_normalize_log_cpp(dat$spliced, dat$unspliced)
 
-  m1 <- scvelo_moments_cpp(norm$spliced_norm, norm$unspliced_norm, dat$knn_idx)
-  m2 <- scvelo_moments_cpp(norm$spliced_norm, norm$unspliced_norm, dat$knn_idx)
+  m1 <- scanpy_moments_cpp(norm$spliced_norm, norm$unspliced_norm, dat$knn_idx)
+  m2 <- scanpy_moments_cpp(norm$spliced_norm, norm$unspliced_norm, dat$knn_idx)
   expect_equal(m1, m2)
 })
 
@@ -205,13 +205,13 @@ test_that("connectivity moments can skip unused second-order matrices", {
     sample(setdiff(seq_len(12L), cell), 4L)
   }, integer(4L)))
 
-  full <- scvelo_moments_connectivities_cpp(
+  full <- scanpy_moments_connectivities_cpp(
     spliced,
     unspliced,
     knn_idx,
     compute_second_order = TRUE
   )
-  first_order <- scvelo_moments_connectivities_cpp(
+  first_order <- scanpy_moments_connectivities_cpp(
     spliced,
     unspliced,
     knn_idx,
@@ -222,7 +222,7 @@ test_that("connectivity moments can skip unused second-order matrices", {
   expect_equal(first_order$Mu, full$Mu, tolerance = 0)
   expect_null(first_order$Mss)
   expect_null(first_order$Mus)
-  expect_equal(full$Mss, scvelo_second_order_moments_cpp(
+  expect_equal(full$Mss, scanpy_second_order_moments_cpp(
     spliced,
     unspliced,
     knn_idx
@@ -271,7 +271,7 @@ test_that("deterministic scVelo fit matches extreme-quantile semantics", {
   expect_gt(sum(velocity_genes), 1L)
   expect_true(any(!velocity_genes))
 
-  observed <- scvelo_deterministic_cpp(
+  observed <- scanpy_deterministic_cpp(
     Ms = Ms,
     Mu = Mu,
     knn_idx = knn_idx,
@@ -289,7 +289,7 @@ test_that("deterministic scVelo fit matches extreme-quantile semantics", {
     tolerance = 1e-12
   )
 
-  confidence <- scvelo_velocity_confidence_cpp(
+  confidence <- scanpy_velocity_confidence_cpp(
     Ms = Ms[velocity_genes, , drop = FALSE],
     residual = observed$residual[velocity_genes, , drop = FALSE],
     knn_idx = knn_idx
@@ -311,9 +311,9 @@ test_that("deterministic scVelo fit matches extreme-quantile semantics", {
 # 4. Input validation
 # ---------------------------------------------------------------------------
 
-test_that("scvelo_normalize_log_cpp rejects mismatched dimensions", {
+test_that("scanpy_normalize_log_cpp rejects mismatched dimensions", {
   expect_error(
-    scvelo_normalize_log_cpp(
+    scanpy_normalize_log_cpp(
       spliced = matrix(1, 5, 10),
       unspliced = matrix(1, 3, 10)
     ),
@@ -321,13 +321,13 @@ test_that("scvelo_normalize_log_cpp rejects mismatched dimensions", {
   )
 })
 
-test_that("scvelo_moments_cpp rejects mismatched knn_idx rows", {
+test_that("scanpy_moments_cpp rejects mismatched knn_idx rows", {
   spliced <- matrix(1, 5, 10)
   unspliced <- matrix(1, 5, 10)
   knn_idx <- matrix(1L, nrow = 5, ncol = 3) # only 5 rows, need 10
 
   expect_error(
-    scvelo_moments_cpp(spliced, unspliced, knn_idx),
+    scanpy_moments_cpp(spliced, unspliced, knn_idx),
     "knn_idx", ignore.case = TRUE
   )
 })

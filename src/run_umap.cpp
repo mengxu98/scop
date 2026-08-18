@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <thisutils/log_message.h>
+#include "numeric_utils.h"
 #include <cstdint>
 #include <cstdlib>
 
@@ -38,19 +39,6 @@ extern "C" int loader_process_is_current(void) {
   return process_id() == loaded_pid ? 1 : 0;
 }
 
-static std::vector<float> numeric_matrix_to_float(Rcpp::NumericMatrix x) {
-  const int rows = x.nrow();
-  const int cols = x.ncol();
-  std::vector<float> out(static_cast<size_t>(rows) * cols);
-  for (int row = 0; row < rows; ++row) {
-    for (int col = 0; col < cols; ++col) {
-      out[static_cast<size_t>(row) * cols + col] =
-        static_cast<float>(x(row, col));
-    }
-  }
-  return out;
-}
-
 static Rcpp::NumericMatrix float_layout_to_matrix(const std::vector<float>& x,
                                                   int rows,
                                                   int cols) {
@@ -76,7 +64,7 @@ Rcpp::List runumap_knn(Rcpp::NumericMatrix X,
     thisutils::log_message("invalid kNN dimensions", "error");
   }
 
-  std::vector<float> input = numeric_matrix_to_float(X);
+  std::vector<float> input = matrix_as_row_float(X);
   std::vector<int32_t> indices(static_cast<size_t>(rows) * k);
   std::vector<float> distances(static_cast<size_t>(rows) * k);
   const int code = knn_descent_f32(
@@ -124,7 +112,7 @@ Rcpp::NumericMatrix runumap_layout(Rcpp::NumericMatrix init,
     thisutils::log_message("invalid UMAP layout dimensions", "error");
   }
 
-  std::vector<float> embedding = numeric_matrix_to_float(init);
+  std::vector<float> embedding = matrix_as_row_float(init);
   std::vector<int32_t> from(static_cast<size_t>(edges));
   std::vector<int32_t> to(static_cast<size_t>(edges));
   std::vector<float> sample_every(static_cast<size_t>(edges));

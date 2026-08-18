@@ -105,16 +105,16 @@ dynamic_row_unique_counts_sparse_cpp <- function(x) {
     .Call(`_scop_dynamic_row_unique_counts_sparse_cpp`, x)
 }
 
-scvelo_dynamical_nm_cpp <- function(Ms, Mu, use_genes, max_iter = 10L, init_alpha = -1.0, init_beta = -1.0, init_gamma = -1.0) {
-    .Call(`_scop_scvelo_dynamical_nm_cpp`, Ms, Mu, use_genes, max_iter, init_alpha, init_beta, init_gamma)
+scanpy_dynamical_nm_cpp <- function(Ms, Mu, use_genes, max_iter = 10L, init_alpha = -1.0, init_beta = -1.0, init_gamma = -1.0) {
+    .Call(`_scop_scanpy_dynamical_nm_cpp`, Ms, Mu, use_genes, max_iter, init_alpha, init_beta, init_gamma)
 }
 
-scvelo_dynamical_velocity_cpp <- function(Ms, Mu, alpha, beta, gamma, t_, knn_idx, embedding) {
-    .Call(`_scop_scvelo_dynamical_velocity_cpp`, Ms, Mu, alpha, beta, gamma, t_, knn_idx, embedding)
+scanpy_dynamical_velocity_cpp <- function(Ms, Mu, alpha, beta, gamma, t_, knn_idx, embedding) {
+    .Call(`_scop_scanpy_dynamical_velocity_cpp`, Ms, Mu, alpha, beta, gamma, t_, knn_idx, embedding)
 }
 
-scvelo_dynamical_em_cpp <- function(Ms, Mu, use_genes, max_iter_em = 10L, conv_tol = 1e-6, em_oversampling = 2L, init_alpha = -1.0, init_beta = -1.0, init_gamma = -1.0) {
-    .Call(`_scop_scvelo_dynamical_em_cpp`, Ms, Mu, use_genes, max_iter_em, conv_tol, em_oversampling, init_alpha, init_beta, init_gamma)
+scanpy_dynamical_em_cpp <- function(Ms, Mu, use_genes, max_iter_em = 10L, conv_tol = 1e-6, em_oversampling = 2L, init_alpha = -1.0, init_beta = -1.0, init_gamma = -1.0) {
+    .Call(`_scop_scanpy_dynamical_em_cpp`, Ms, Mu, use_genes, max_iter_em, conv_tol, em_oversampling, init_alpha, init_beta, init_gamma)
 }
 
 feature_cor_geometric_mean_sparse_cpp <- function(x, log_normalized) {
@@ -273,6 +273,18 @@ paga_diffusion_pseudotime_cpp <- function(connectivities, root_group, n_dcs = 10
     .Call(`_scop_paga_diffusion_pseudotime_cpp`, connectivities, root_group, n_dcs, n_branchings, group_sizes, min_group_size)
 }
 
+gauss_connectivities_cpp <- function(knn_idx, knn_dist) {
+    .Call(`_scop_gauss_connectivities_cpp`, knn_idx, knn_dist)
+}
+
+dpt_from_connectivities_cpp <- function(connectivities, root_cell, n_dcs = 10L) {
+    .Call(`_scop_dpt_from_connectivities_cpp`, connectivities, root_cell, n_dcs)
+}
+
+cell_dpt_pseudotime_cpp <- function(knn_idx, knn_dist, root_cell, n_dcs = 10L) {
+    .Call(`_scop_cell_dpt_pseudotime_cpp`, knn_idx, knn_dist, root_cell, n_dcs)
+}
+
 paga_velocity_transitions_cpp <- function(velocity_embedding, knn_idx, groups, n_groups, softmax_scale = 4.0) {
     .Call(`_scop_paga_velocity_transitions_cpp`, velocity_embedding, knn_idx, groups, n_groups, softmax_scale)
 }
@@ -353,28 +365,28 @@ pretsa_curve_summary_cpp <- function(fitted, expression, pseudotime) {
     .Call(`_scop_pretsa_curve_summary_cpp`, fitted, expression, pseudotime)
 }
 
-scvelo_filter_genes_scanpy_cpp <- function(spliced, unspliced, min_counts = 3L, min_counts_u = 3L) {
-    .Call(`_scop_scvelo_filter_genes_scanpy_cpp`, spliced, unspliced, min_counts, min_counts_u)
+scanpy_filter_genes_cpp <- function(spliced, unspliced, min_counts = 3L, min_counts_u = 3L) {
+    .Call(`_scop_scanpy_filter_genes_cpp`, spliced, unspliced, min_counts, min_counts_u)
 }
 
-scvelo_normalize_scanpy_cpp <- function(spliced, unspliced, initial_spliced_totals, initial_unspliced_totals) {
-    .Call(`_scop_scvelo_normalize_scanpy_cpp`, spliced, unspliced, initial_spliced_totals, initial_unspliced_totals)
+scanpy_normalize_cpp <- function(spliced, unspliced, initial_spliced_totals, initial_unspliced_totals) {
+    .Call(`_scop_scanpy_normalize_cpp`, spliced, unspliced, initial_spliced_totals, initial_unspliced_totals)
 }
 
-scvelo_pca_scanpy_cpp <- function(X, n_pcs = 30L) {
-    .Call(`_scop_scvelo_pca_scanpy_cpp`, X, n_pcs)
+scanpy_pca_cpp <- function(X, n_pcs = 30L) {
+    .Call(`_scop_scanpy_pca_cpp`, X, n_pcs)
 }
 
-scvelo_knn_scanpy_cpp <- function(coords, n_neighbors = 10L, exclude_self = TRUE) {
-    .Call(`_scop_scvelo_knn_scanpy_cpp`, coords, n_neighbors, exclude_self)
+scanpy_knn_cpp <- function(coords, n_neighbors = 10L, exclude_self = TRUE) {
+    .Call(`_scop_scanpy_knn_cpp`, coords, n_neighbors, exclude_self)
 }
 
-scvelo_filter_genes_shared_cpp <- function(spliced, unspliced, min_shared_counts = 30L) {
-    .Call(`_scop_scvelo_filter_genes_shared_cpp`, spliced, unspliced, min_shared_counts)
+scanpy_filter_genes_shared_cpp <- function(spliced, unspliced, min_shared_counts = 30L) {
+    .Call(`_scop_scanpy_filter_genes_shared_cpp`, spliced, unspliced, min_shared_counts)
 }
 
-scvelo_preprocess_scanpy_cpp <- function(spliced, unspliced, n_pcs = 30L, n_neighbors = 10L, min_counts = 3L, min_counts_u = 3L) {
-    .Call(`_scop_scvelo_preprocess_scanpy_cpp`, spliced, unspliced, n_pcs, n_neighbors, min_counts, min_counts_u)
+scanpy_preprocess_cpp <- function(spliced, unspliced, n_pcs = 30L, n_neighbors = 10L, min_counts = 3L, min_counts_u = 3L) {
+    .Call(`_scop_scanpy_preprocess_cpp`, spliced, unspliced, n_pcs, n_neighbors, min_counts, min_counts_u)
 }
 
 proportion_bootstrap_log2fd <- function(v1, v2, n_bootstrap = 1000L, pseudocount = 1e-5, verbose = FALSE) {
@@ -469,80 +481,76 @@ scenicplus_triplets_cpp <- function(tf_gene_tf, tf_gene_target, tf_gene_importan
     .Call(`_scop_scenicplus_triplets_cpp`, tf_gene_tf, tf_gene_target, tf_gene_importance, region_gene_region, region_gene_gene, region_gene_score, tf_region_tf, tf_region_region, tf_region_score)
 }
 
-scvelo_filter_genes_cpp <- function(spliced, unspliced, min_counts = 3L, min_counts_u = 3L) {
-    .Call(`_scop_scvelo_filter_genes_cpp`, spliced, unspliced, min_counts, min_counts_u)
+scanpy_normalize_log_cpp <- function(spliced, unspliced) {
+    .Call(`_scop_scanpy_normalize_log_cpp`, spliced, unspliced)
 }
 
-scvelo_normalize_log_cpp <- function(spliced, unspliced) {
-    .Call(`_scop_scvelo_normalize_log_cpp`, spliced, unspliced)
+scanpy_moments_cpp <- function(spliced, unspliced, knn_idx) {
+    .Call(`_scop_scanpy_moments_cpp`, spliced, unspliced, knn_idx)
 }
 
-scvelo_moments_cpp <- function(spliced, unspliced, knn_idx) {
-    .Call(`_scop_scvelo_moments_cpp`, spliced, unspliced, knn_idx)
+scanpy_moments_connectivities_cpp <- function(spliced, unspliced, knn_idx, compute_second_order = TRUE) {
+    .Call(`_scop_scanpy_moments_connectivities_cpp`, spliced, unspliced, knn_idx, compute_second_order)
 }
 
-scvelo_moments_connectivities_cpp <- function(spliced, unspliced, knn_idx, compute_second_order = TRUE) {
-    .Call(`_scop_scvelo_moments_connectivities_cpp`, spliced, unspliced, knn_idx, compute_second_order)
+scanpy_second_order_moments_cpp <- function(spliced, unspliced, knn_idx) {
+    .Call(`_scop_scanpy_second_order_moments_cpp`, spliced, unspliced, knn_idx)
 }
 
-scvelo_second_order_moments_cpp <- function(spliced, unspliced, knn_idx) {
-    .Call(`_scop_scvelo_second_order_moments_cpp`, spliced, unspliced, knn_idx)
+scanpy_deterministic_cpp <- function(Ms, Mu, knn_idx, embedding, fit_offset = FALSE, perc = 0.0) {
+    .Call(`_scop_scanpy_deterministic_cpp`, Ms, Mu, knn_idx, embedding, fit_offset, perc)
 }
 
-scvelo_deterministic_cpp <- function(Ms, Mu, knn_idx, embedding, fit_offset = FALSE, perc = 0.0) {
-    .Call(`_scop_scvelo_deterministic_cpp`, Ms, Mu, knn_idx, embedding, fit_offset, perc)
+scanpy_stochastic_cpp <- function(Ms, Mu, Mss, Mus, knn_idx, embedding) {
+    .Call(`_scop_scanpy_stochastic_cpp`, Ms, Mu, Mss, Mus, knn_idx, embedding)
 }
 
-scvelo_stochastic_cpp <- function(Ms, Mu, Mss, Mus, knn_idx, embedding) {
-    .Call(`_scop_scvelo_stochastic_cpp`, Ms, Mu, Mss, Mus, knn_idx, embedding)
+scanpy_velocity_graph_cpp <- function(Ms, Mu, residual, knn_idx, n_neighbors_velo = -1L, softmax_scale = 4.0, sqrt_transform = FALSE, n_recurse_neighbors = 1L) {
+    .Call(`_scop_scanpy_velocity_graph_cpp`, Ms, Mu, residual, knn_idx, n_neighbors_velo, softmax_scale, sqrt_transform, n_recurse_neighbors)
 }
 
-scvelo_velocity_graph_cpp <- function(Ms, Mu, residual, knn_idx, n_neighbors_velo = -1L, softmax_scale = 4.0, sqrt_transform = FALSE, n_recurse_neighbors = 1L) {
-    .Call(`_scop_scvelo_velocity_graph_cpp`, Ms, Mu, residual, knn_idx, n_neighbors_velo, softmax_scale, sqrt_transform, n_recurse_neighbors)
+scanpy_project_velocity_embedding_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale = 10.0, self_transitions = TRUE, use_negative_cosines = TRUE) {
+    .Call(`_scop_scanpy_project_velocity_embedding_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale, self_transitions, use_negative_cosines)
 }
 
-scvelo_project_velocity_embedding_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale = 10.0, self_transitions = TRUE, use_negative_cosines = TRUE) {
-    .Call(`_scop_scvelo_project_velocity_embedding_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale, self_transitions, use_negative_cosines)
+scanpy_velocity_confidence_cpp <- function(Ms, residual, knn_idx) {
+    .Call(`_scop_scanpy_velocity_confidence_cpp`, Ms, residual, knn_idx)
 }
 
-scvelo_velocity_confidence_cpp <- function(Ms, residual, knn_idx) {
-    .Call(`_scop_scvelo_velocity_confidence_cpp`, Ms, residual, knn_idx)
+scanpy_velocity_transition_cpp <- function(Ms, residual, knn_idx, n_neighbors_velo = -1L, softmax_scale = 10.0) {
+    .Call(`_scop_scanpy_velocity_transition_cpp`, Ms, residual, knn_idx, n_neighbors_velo, softmax_scale)
 }
 
-scvelo_velocity_transition_cpp <- function(Ms, residual, knn_idx, n_neighbors_velo = -1L, softmax_scale = 10.0) {
-    .Call(`_scop_scvelo_velocity_transition_cpp`, Ms, residual, knn_idx, n_neighbors_velo, softmax_scale)
+scanpy_terminal_states_transition_cpp <- function(transition_matrix, knn_idx) {
+    .Call(`_scop_scanpy_terminal_states_transition_cpp`, transition_matrix, knn_idx)
 }
 
-scvelo_terminal_states_transition_cpp <- function(transition_matrix, knn_idx) {
-    .Call(`_scop_scvelo_terminal_states_transition_cpp`, transition_matrix, knn_idx)
+scanpy_terminal_states_cpp <- function(velocity_embedding, embedding, knn_idx, n_neighbors_velo = 10L, seed = 0L) {
+    .Call(`_scop_scanpy_terminal_states_cpp`, velocity_embedding, embedding, knn_idx, n_neighbors_velo, seed)
 }
 
-scvelo_terminal_states_cpp <- function(velocity_embedding, embedding, knn_idx, n_neighbors_velo = 10L, seed = 0L) {
-    .Call(`_scop_scvelo_terminal_states_cpp`, velocity_embedding, embedding, knn_idx, n_neighbors_velo, seed)
+scanpy_terminal_states_graph_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, eps = 1e-3) {
+    .Call(`_scop_scanpy_terminal_states_graph_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, eps)
 }
 
-scvelo_terminal_states_graph_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, eps = 1e-3) {
-    .Call(`_scop_scvelo_terminal_states_graph_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, eps)
+scanpy_pseudotime_transition_cpp <- function(transition_matrix, root_cells, end_points) {
+    .Call(`_scop_scanpy_pseudotime_transition_cpp`, transition_matrix, root_cells, end_points)
 }
 
-scvelo_pseudotime_transition_cpp <- function(transition_matrix, root_cells, end_points) {
-    .Call(`_scop_scvelo_pseudotime_transition_cpp`, transition_matrix, root_cells, end_points)
+scanpy_pseudotime_cpp <- function(velocity_embedding, embedding, knn_idx, root_cells, end_points, n_neighbors_velo = 10L) {
+    .Call(`_scop_scanpy_pseudotime_cpp`, velocity_embedding, embedding, knn_idx, root_cells, end_points, n_neighbors_velo)
 }
 
-scvelo_pseudotime_cpp <- function(velocity_embedding, embedding, knn_idx, root_cells, end_points, n_neighbors_velo = 10L) {
-    .Call(`_scop_scvelo_pseudotime_cpp`, velocity_embedding, embedding, knn_idx, root_cells, end_points, n_neighbors_velo)
+scanpy_pseudotime_graph_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs = 10L) {
+    .Call(`_scop_scanpy_pseudotime_graph_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs)
 }
 
-scvelo_pseudotime_graph_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs = 10L) {
-    .Call(`_scop_scvelo_pseudotime_graph_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs)
+scanpy_velocity_genes_cpp <- function(Ms, velocity) {
+    .Call(`_scop_scanpy_velocity_genes_cpp`, Ms, velocity)
 }
 
-scvelo_velocity_genes_cpp <- function(Ms, velocity) {
-    .Call(`_scop_scvelo_velocity_genes_cpp`, Ms, velocity)
-}
-
-scvelo_stochastic_embedding_cpp <- function(spliced, unspliced, knn_idx, embedding) {
-    .Call(`_scop_scvelo_stochastic_embedding_cpp`, spliced, unspliced, knn_idx, embedding)
+scanpy_stochastic_embedding_cpp <- function(spliced, unspliced, knn_idx, embedding) {
+    .Call(`_scop_scanpy_stochastic_embedding_cpp`, spliced, unspliced, knn_idx, embedding)
 }
 
 sctenifold_pcnet_covariance_raw <- function(x, n_comp = 3L, ncv = 0L, maxit = 1000L, tol = 1e-10, cores = 1L) {

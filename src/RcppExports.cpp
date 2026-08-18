@@ -378,9 +378,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_dynamical_nm_cpp
-List scvelo_dynamical_nm_cpp(NumericMatrix Ms, NumericMatrix Mu, IntegerVector use_genes, int max_iter, double init_alpha, double init_beta, double init_gamma);
-RcppExport SEXP _scop_scvelo_dynamical_nm_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP use_genesSEXP, SEXP max_iterSEXP, SEXP init_alphaSEXP, SEXP init_betaSEXP, SEXP init_gammaSEXP) {
+// scanpy_dynamical_nm_cpp
+List scanpy_dynamical_nm_cpp(NumericMatrix Ms, NumericMatrix Mu, IntegerVector use_genes, int max_iter, double init_alpha, double init_beta, double init_gamma);
+RcppExport SEXP _scop_scanpy_dynamical_nm_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP use_genesSEXP, SEXP max_iterSEXP, SEXP init_alphaSEXP, SEXP init_betaSEXP, SEXP init_gammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -391,13 +391,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type init_alpha(init_alphaSEXP);
     Rcpp::traits::input_parameter< double >::type init_beta(init_betaSEXP);
     Rcpp::traits::input_parameter< double >::type init_gamma(init_gammaSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_dynamical_nm_cpp(Ms, Mu, use_genes, max_iter, init_alpha, init_beta, init_gamma));
+    rcpp_result_gen = Rcpp::wrap(scanpy_dynamical_nm_cpp(Ms, Mu, use_genes, max_iter, init_alpha, init_beta, init_gamma));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_dynamical_velocity_cpp
-List scvelo_dynamical_velocity_cpp(NumericMatrix Ms, NumericMatrix Mu, NumericVector alpha, NumericVector beta, NumericVector gamma, NumericVector t_, IntegerMatrix knn_idx, NumericMatrix embedding);
-RcppExport SEXP _scop_scvelo_dynamical_velocity_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP t_SEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP) {
+// scanpy_dynamical_velocity_cpp
+List scanpy_dynamical_velocity_cpp(NumericMatrix Ms, NumericMatrix Mu, NumericVector alpha, NumericVector beta, NumericVector gamma, NumericVector t_, IntegerMatrix knn_idx, NumericMatrix embedding);
+RcppExport SEXP _scop_scanpy_dynamical_velocity_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP t_SEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -409,13 +409,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type t_(t_SEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type embedding(embeddingSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_dynamical_velocity_cpp(Ms, Mu, alpha, beta, gamma, t_, knn_idx, embedding));
+    rcpp_result_gen = Rcpp::wrap(scanpy_dynamical_velocity_cpp(Ms, Mu, alpha, beta, gamma, t_, knn_idx, embedding));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_dynamical_em_cpp
-List scvelo_dynamical_em_cpp(NumericMatrix Ms, NumericMatrix Mu, IntegerVector use_genes, int max_iter_em, double conv_tol, int em_oversampling, double init_alpha, double init_beta, double init_gamma);
-RcppExport SEXP _scop_scvelo_dynamical_em_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP use_genesSEXP, SEXP max_iter_emSEXP, SEXP conv_tolSEXP, SEXP em_oversamplingSEXP, SEXP init_alphaSEXP, SEXP init_betaSEXP, SEXP init_gammaSEXP) {
+// scanpy_dynamical_em_cpp
+List scanpy_dynamical_em_cpp(NumericMatrix Ms, NumericMatrix Mu, IntegerVector use_genes, int max_iter_em, double conv_tol, int em_oversampling, double init_alpha, double init_beta, double init_gamma);
+RcppExport SEXP _scop_scanpy_dynamical_em_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP use_genesSEXP, SEXP max_iter_emSEXP, SEXP conv_tolSEXP, SEXP em_oversamplingSEXP, SEXP init_alphaSEXP, SEXP init_betaSEXP, SEXP init_gammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -428,7 +428,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type init_alpha(init_alphaSEXP);
     Rcpp::traits::input_parameter< double >::type init_beta(init_betaSEXP);
     Rcpp::traits::input_parameter< double >::type init_gamma(init_gammaSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_dynamical_em_cpp(Ms, Mu, use_genes, max_iter_em, conv_tol, em_oversampling, init_alpha, init_beta, init_gamma));
+    rcpp_result_gen = Rcpp::wrap(scanpy_dynamical_em_cpp(Ms, Mu, use_genes, max_iter_em, conv_tol, em_oversampling, init_alpha, init_beta, init_gamma));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -995,6 +995,45 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gauss_connectivities_cpp
+NumericMatrix gauss_connectivities_cpp(IntegerMatrix knn_idx, NumericMatrix knn_dist);
+RcppExport SEXP _scop_gauss_connectivities_cpp(SEXP knn_idxSEXP, SEXP knn_distSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type knn_dist(knn_distSEXP);
+    rcpp_result_gen = Rcpp::wrap(gauss_connectivities_cpp(knn_idx, knn_dist));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dpt_from_connectivities_cpp
+List dpt_from_connectivities_cpp(NumericMatrix connectivities, int root_cell, int n_dcs);
+RcppExport SEXP _scop_dpt_from_connectivities_cpp(SEXP connectivitiesSEXP, SEXP root_cellSEXP, SEXP n_dcsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type connectivities(connectivitiesSEXP);
+    Rcpp::traits::input_parameter< int >::type root_cell(root_cellSEXP);
+    Rcpp::traits::input_parameter< int >::type n_dcs(n_dcsSEXP);
+    rcpp_result_gen = Rcpp::wrap(dpt_from_connectivities_cpp(connectivities, root_cell, n_dcs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cell_dpt_pseudotime_cpp
+List cell_dpt_pseudotime_cpp(IntegerMatrix knn_idx, NumericMatrix knn_dist, int root_cell, int n_dcs);
+RcppExport SEXP _scop_cell_dpt_pseudotime_cpp(SEXP knn_idxSEXP, SEXP knn_distSEXP, SEXP root_cellSEXP, SEXP n_dcsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type knn_dist(knn_distSEXP);
+    Rcpp::traits::input_parameter< int >::type root_cell(root_cellSEXP);
+    Rcpp::traits::input_parameter< int >::type n_dcs(n_dcsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cell_dpt_pseudotime_cpp(knn_idx, knn_dist, root_cell, n_dcs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // paga_velocity_transitions_cpp
 List paga_velocity_transitions_cpp(NumericMatrix velocity_embedding, IntegerMatrix knn_idx, IntegerVector groups, int n_groups, double softmax_scale);
 RcppExport SEXP _scop_paga_velocity_transitions_cpp(SEXP velocity_embeddingSEXP, SEXP knn_idxSEXP, SEXP groupsSEXP, SEXP n_groupsSEXP, SEXP softmax_scaleSEXP) {
@@ -1271,9 +1310,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_filter_genes_scanpy_cpp
-IntegerVector scvelo_filter_genes_scanpy_cpp(NumericMatrix spliced, NumericMatrix unspliced, int min_counts, int min_counts_u);
-RcppExport SEXP _scop_scvelo_filter_genes_scanpy_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP min_countsSEXP, SEXP min_counts_uSEXP) {
+// scanpy_filter_genes_cpp
+IntegerVector scanpy_filter_genes_cpp(NumericMatrix spliced, NumericMatrix unspliced, int min_counts, int min_counts_u);
+RcppExport SEXP _scop_scanpy_filter_genes_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP min_countsSEXP, SEXP min_counts_uSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1281,13 +1320,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
     Rcpp::traits::input_parameter< int >::type min_counts(min_countsSEXP);
     Rcpp::traits::input_parameter< int >::type min_counts_u(min_counts_uSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_filter_genes_scanpy_cpp(spliced, unspliced, min_counts, min_counts_u));
+    rcpp_result_gen = Rcpp::wrap(scanpy_filter_genes_cpp(spliced, unspliced, min_counts, min_counts_u));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_normalize_scanpy_cpp
-List scvelo_normalize_scanpy_cpp(NumericMatrix spliced, NumericMatrix unspliced, NumericVector initial_spliced_totals, NumericVector initial_unspliced_totals);
-RcppExport SEXP _scop_scvelo_normalize_scanpy_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP initial_spliced_totalsSEXP, SEXP initial_unspliced_totalsSEXP) {
+// scanpy_normalize_cpp
+List scanpy_normalize_cpp(NumericMatrix spliced, NumericMatrix unspliced, NumericVector initial_spliced_totals, NumericVector initial_unspliced_totals);
+RcppExport SEXP _scop_scanpy_normalize_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP initial_spliced_totalsSEXP, SEXP initial_unspliced_totalsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1295,51 +1334,51 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type initial_spliced_totals(initial_spliced_totalsSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type initial_unspliced_totals(initial_unspliced_totalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_normalize_scanpy_cpp(spliced, unspliced, initial_spliced_totals, initial_unspliced_totals));
+    rcpp_result_gen = Rcpp::wrap(scanpy_normalize_cpp(spliced, unspliced, initial_spliced_totals, initial_unspliced_totals));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_pca_scanpy_cpp
-List scvelo_pca_scanpy_cpp(NumericMatrix X, int n_pcs);
-RcppExport SEXP _scop_scvelo_pca_scanpy_cpp(SEXP XSEXP, SEXP n_pcsSEXP) {
+// scanpy_pca_cpp
+List scanpy_pca_cpp(NumericMatrix X, int n_pcs);
+RcppExport SEXP _scop_scanpy_pca_cpp(SEXP XSEXP, SEXP n_pcsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
     Rcpp::traits::input_parameter< int >::type n_pcs(n_pcsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_pca_scanpy_cpp(X, n_pcs));
+    rcpp_result_gen = Rcpp::wrap(scanpy_pca_cpp(X, n_pcs));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_knn_scanpy_cpp
-List scvelo_knn_scanpy_cpp(NumericMatrix coords, int n_neighbors, bool exclude_self);
-RcppExport SEXP _scop_scvelo_knn_scanpy_cpp(SEXP coordsSEXP, SEXP n_neighborsSEXP, SEXP exclude_selfSEXP) {
+// scanpy_knn_cpp
+List scanpy_knn_cpp(NumericMatrix coords, int n_neighbors, bool exclude_self);
+RcppExport SEXP _scop_scanpy_knn_cpp(SEXP coordsSEXP, SEXP n_neighborsSEXP, SEXP exclude_selfSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type coords(coordsSEXP);
     Rcpp::traits::input_parameter< int >::type n_neighbors(n_neighborsSEXP);
     Rcpp::traits::input_parameter< bool >::type exclude_self(exclude_selfSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_knn_scanpy_cpp(coords, n_neighbors, exclude_self));
+    rcpp_result_gen = Rcpp::wrap(scanpy_knn_cpp(coords, n_neighbors, exclude_self));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_filter_genes_shared_cpp
-IntegerVector scvelo_filter_genes_shared_cpp(NumericMatrix spliced, NumericMatrix unspliced, int min_shared_counts);
-RcppExport SEXP _scop_scvelo_filter_genes_shared_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP min_shared_countsSEXP) {
+// scanpy_filter_genes_shared_cpp
+IntegerVector scanpy_filter_genes_shared_cpp(NumericMatrix spliced, NumericMatrix unspliced, int min_shared_counts);
+RcppExport SEXP _scop_scanpy_filter_genes_shared_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP min_shared_countsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
     Rcpp::traits::input_parameter< int >::type min_shared_counts(min_shared_countsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_filter_genes_shared_cpp(spliced, unspliced, min_shared_counts));
+    rcpp_result_gen = Rcpp::wrap(scanpy_filter_genes_shared_cpp(spliced, unspliced, min_shared_counts));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_preprocess_scanpy_cpp
-List scvelo_preprocess_scanpy_cpp(NumericMatrix spliced, NumericMatrix unspliced, int n_pcs, int n_neighbors, int min_counts, int min_counts_u);
-RcppExport SEXP _scop_scvelo_preprocess_scanpy_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP n_pcsSEXP, SEXP n_neighborsSEXP, SEXP min_countsSEXP, SEXP min_counts_uSEXP) {
+// scanpy_preprocess_cpp
+List scanpy_preprocess_cpp(NumericMatrix spliced, NumericMatrix unspliced, int n_pcs, int n_neighbors, int min_counts, int min_counts_u);
+RcppExport SEXP _scop_scanpy_preprocess_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP n_pcsSEXP, SEXP n_neighborsSEXP, SEXP min_countsSEXP, SEXP min_counts_uSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1349,7 +1388,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type n_neighbors(n_neighborsSEXP);
     Rcpp::traits::input_parameter< int >::type min_counts(min_countsSEXP);
     Rcpp::traits::input_parameter< int >::type min_counts_u(min_counts_uSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_preprocess_scanpy_cpp(spliced, unspliced, n_pcs, n_neighbors, min_counts, min_counts_u));
+    rcpp_result_gen = Rcpp::wrap(scanpy_preprocess_cpp(spliced, unspliced, n_pcs, n_neighbors, min_counts, min_counts_u));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1737,48 +1776,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_filter_genes_cpp
-IntegerVector scvelo_filter_genes_cpp(NumericMatrix spliced, NumericMatrix unspliced, int min_counts, int min_counts_u);
-RcppExport SEXP _scop_scvelo_filter_genes_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP min_countsSEXP, SEXP min_counts_uSEXP) {
+// scanpy_normalize_log_cpp
+List scanpy_normalize_log_cpp(NumericMatrix spliced, NumericMatrix unspliced);
+RcppExport SEXP _scop_scanpy_normalize_log_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
-    Rcpp::traits::input_parameter< int >::type min_counts(min_countsSEXP);
-    Rcpp::traits::input_parameter< int >::type min_counts_u(min_counts_uSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_filter_genes_cpp(spliced, unspliced, min_counts, min_counts_u));
+    rcpp_result_gen = Rcpp::wrap(scanpy_normalize_log_cpp(spliced, unspliced));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_normalize_log_cpp
-List scvelo_normalize_log_cpp(NumericMatrix spliced, NumericMatrix unspliced);
-RcppExport SEXP _scop_scvelo_normalize_log_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_normalize_log_cpp(spliced, unspliced));
-    return rcpp_result_gen;
-END_RCPP
-}
-// scvelo_moments_cpp
-List scvelo_moments_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx);
-RcppExport SEXP _scop_scvelo_moments_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP) {
+// scanpy_moments_cpp
+List scanpy_moments_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx);
+RcppExport SEXP _scop_scanpy_moments_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_moments_cpp(spliced, unspliced, knn_idx));
+    rcpp_result_gen = Rcpp::wrap(scanpy_moments_cpp(spliced, unspliced, knn_idx));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_moments_connectivities_cpp
-List scvelo_moments_connectivities_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx, bool compute_second_order);
-RcppExport SEXP _scop_scvelo_moments_connectivities_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP, SEXP compute_second_orderSEXP) {
+// scanpy_moments_connectivities_cpp
+List scanpy_moments_connectivities_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx, bool compute_second_order);
+RcppExport SEXP _scop_scanpy_moments_connectivities_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP, SEXP compute_second_orderSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1786,26 +1811,26 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
     Rcpp::traits::input_parameter< bool >::type compute_second_order(compute_second_orderSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_moments_connectivities_cpp(spliced, unspliced, knn_idx, compute_second_order));
+    rcpp_result_gen = Rcpp::wrap(scanpy_moments_connectivities_cpp(spliced, unspliced, knn_idx, compute_second_order));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_second_order_moments_cpp
-List scvelo_second_order_moments_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx);
-RcppExport SEXP _scop_scvelo_second_order_moments_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP) {
+// scanpy_second_order_moments_cpp
+List scanpy_second_order_moments_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx);
+RcppExport SEXP _scop_scanpy_second_order_moments_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type spliced(splicedSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_second_order_moments_cpp(spliced, unspliced, knn_idx));
+    rcpp_result_gen = Rcpp::wrap(scanpy_second_order_moments_cpp(spliced, unspliced, knn_idx));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_deterministic_cpp
-List scvelo_deterministic_cpp(NumericMatrix Ms, NumericMatrix Mu, IntegerMatrix knn_idx, NumericMatrix embedding, bool fit_offset, double perc);
-RcppExport SEXP _scop_scvelo_deterministic_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP, SEXP fit_offsetSEXP, SEXP percSEXP) {
+// scanpy_deterministic_cpp
+List scanpy_deterministic_cpp(NumericMatrix Ms, NumericMatrix Mu, IntegerMatrix knn_idx, NumericMatrix embedding, bool fit_offset, double perc);
+RcppExport SEXP _scop_scanpy_deterministic_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP, SEXP fit_offsetSEXP, SEXP percSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1815,13 +1840,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type embedding(embeddingSEXP);
     Rcpp::traits::input_parameter< bool >::type fit_offset(fit_offsetSEXP);
     Rcpp::traits::input_parameter< double >::type perc(percSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_deterministic_cpp(Ms, Mu, knn_idx, embedding, fit_offset, perc));
+    rcpp_result_gen = Rcpp::wrap(scanpy_deterministic_cpp(Ms, Mu, knn_idx, embedding, fit_offset, perc));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_stochastic_cpp
-List scvelo_stochastic_cpp(NumericMatrix Ms, NumericMatrix Mu, NumericMatrix Mss, NumericMatrix Mus, IntegerMatrix knn_idx, NumericMatrix embedding);
-RcppExport SEXP _scop_scvelo_stochastic_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP MssSEXP, SEXP MusSEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP) {
+// scanpy_stochastic_cpp
+List scanpy_stochastic_cpp(NumericMatrix Ms, NumericMatrix Mu, NumericMatrix Mss, NumericMatrix Mus, IntegerMatrix knn_idx, NumericMatrix embedding);
+RcppExport SEXP _scop_scanpy_stochastic_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP MssSEXP, SEXP MusSEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1831,13 +1856,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type Mus(MusSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type embedding(embeddingSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_stochastic_cpp(Ms, Mu, Mss, Mus, knn_idx, embedding));
+    rcpp_result_gen = Rcpp::wrap(scanpy_stochastic_cpp(Ms, Mu, Mss, Mus, knn_idx, embedding));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_velocity_graph_cpp
-List scvelo_velocity_graph_cpp(NumericMatrix Ms, NumericMatrix Mu, NumericMatrix residual, IntegerMatrix knn_idx, int n_neighbors_velo, double softmax_scale, bool sqrt_transform, int n_recurse_neighbors);
-RcppExport SEXP _scop_scvelo_velocity_graph_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP residualSEXP, SEXP knn_idxSEXP, SEXP n_neighbors_veloSEXP, SEXP softmax_scaleSEXP, SEXP sqrt_transformSEXP, SEXP n_recurse_neighborsSEXP) {
+// scanpy_velocity_graph_cpp
+List scanpy_velocity_graph_cpp(NumericMatrix Ms, NumericMatrix Mu, NumericMatrix residual, IntegerMatrix knn_idx, int n_neighbors_velo, double softmax_scale, bool sqrt_transform, int n_recurse_neighbors);
+RcppExport SEXP _scop_scanpy_velocity_graph_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP residualSEXP, SEXP knn_idxSEXP, SEXP n_neighbors_veloSEXP, SEXP softmax_scaleSEXP, SEXP sqrt_transformSEXP, SEXP n_recurse_neighborsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1849,13 +1874,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type softmax_scale(softmax_scaleSEXP);
     Rcpp::traits::input_parameter< bool >::type sqrt_transform(sqrt_transformSEXP);
     Rcpp::traits::input_parameter< int >::type n_recurse_neighbors(n_recurse_neighborsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_velocity_graph_cpp(Ms, Mu, residual, knn_idx, n_neighbors_velo, softmax_scale, sqrt_transform, n_recurse_neighbors));
+    rcpp_result_gen = Rcpp::wrap(scanpy_velocity_graph_cpp(Ms, Mu, residual, knn_idx, n_neighbors_velo, softmax_scale, sqrt_transform, n_recurse_neighbors));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_project_velocity_embedding_cpp
-NumericMatrix scvelo_project_velocity_embedding_cpp(IntegerVector graph_rows, IntegerVector graph_cols, NumericVector graph_vals, IntegerVector graph_neg_rows, IntegerVector graph_neg_cols, NumericVector graph_neg_vals, NumericMatrix embedding, double scale, bool self_transitions, bool use_negative_cosines);
-RcppExport SEXP _scop_scvelo_project_velocity_embedding_cpp(SEXP graph_rowsSEXP, SEXP graph_colsSEXP, SEXP graph_valsSEXP, SEXP graph_neg_rowsSEXP, SEXP graph_neg_colsSEXP, SEXP graph_neg_valsSEXP, SEXP embeddingSEXP, SEXP scaleSEXP, SEXP self_transitionsSEXP, SEXP use_negative_cosinesSEXP) {
+// scanpy_project_velocity_embedding_cpp
+NumericMatrix scanpy_project_velocity_embedding_cpp(IntegerVector graph_rows, IntegerVector graph_cols, NumericVector graph_vals, IntegerVector graph_neg_rows, IntegerVector graph_neg_cols, NumericVector graph_neg_vals, NumericMatrix embedding, double scale, bool self_transitions, bool use_negative_cosines);
+RcppExport SEXP _scop_scanpy_project_velocity_embedding_cpp(SEXP graph_rowsSEXP, SEXP graph_colsSEXP, SEXP graph_valsSEXP, SEXP graph_neg_rowsSEXP, SEXP graph_neg_colsSEXP, SEXP graph_neg_valsSEXP, SEXP embeddingSEXP, SEXP scaleSEXP, SEXP self_transitionsSEXP, SEXP use_negative_cosinesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1869,26 +1894,26 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type scale(scaleSEXP);
     Rcpp::traits::input_parameter< bool >::type self_transitions(self_transitionsSEXP);
     Rcpp::traits::input_parameter< bool >::type use_negative_cosines(use_negative_cosinesSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_project_velocity_embedding_cpp(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale, self_transitions, use_negative_cosines));
+    rcpp_result_gen = Rcpp::wrap(scanpy_project_velocity_embedding_cpp(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, embedding, scale, self_transitions, use_negative_cosines));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_velocity_confidence_cpp
-List scvelo_velocity_confidence_cpp(NumericMatrix Ms, NumericMatrix residual, IntegerMatrix knn_idx);
-RcppExport SEXP _scop_scvelo_velocity_confidence_cpp(SEXP MsSEXP, SEXP residualSEXP, SEXP knn_idxSEXP) {
+// scanpy_velocity_confidence_cpp
+List scanpy_velocity_confidence_cpp(NumericMatrix Ms, NumericMatrix residual, IntegerMatrix knn_idx);
+RcppExport SEXP _scop_scanpy_velocity_confidence_cpp(SEXP MsSEXP, SEXP residualSEXP, SEXP knn_idxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type Ms(MsSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type residual(residualSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_velocity_confidence_cpp(Ms, residual, knn_idx));
+    rcpp_result_gen = Rcpp::wrap(scanpy_velocity_confidence_cpp(Ms, residual, knn_idx));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_velocity_transition_cpp
-NumericMatrix scvelo_velocity_transition_cpp(NumericMatrix Ms, NumericMatrix residual, IntegerMatrix knn_idx, int n_neighbors_velo, double softmax_scale);
-RcppExport SEXP _scop_scvelo_velocity_transition_cpp(SEXP MsSEXP, SEXP residualSEXP, SEXP knn_idxSEXP, SEXP n_neighbors_veloSEXP, SEXP softmax_scaleSEXP) {
+// scanpy_velocity_transition_cpp
+NumericMatrix scanpy_velocity_transition_cpp(NumericMatrix Ms, NumericMatrix residual, IntegerMatrix knn_idx, int n_neighbors_velo, double softmax_scale);
+RcppExport SEXP _scop_scanpy_velocity_transition_cpp(SEXP MsSEXP, SEXP residualSEXP, SEXP knn_idxSEXP, SEXP n_neighbors_veloSEXP, SEXP softmax_scaleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1897,25 +1922,25 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
     Rcpp::traits::input_parameter< int >::type n_neighbors_velo(n_neighbors_veloSEXP);
     Rcpp::traits::input_parameter< double >::type softmax_scale(softmax_scaleSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_velocity_transition_cpp(Ms, residual, knn_idx, n_neighbors_velo, softmax_scale));
+    rcpp_result_gen = Rcpp::wrap(scanpy_velocity_transition_cpp(Ms, residual, knn_idx, n_neighbors_velo, softmax_scale));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_terminal_states_transition_cpp
-List scvelo_terminal_states_transition_cpp(NumericMatrix transition_matrix, IntegerMatrix knn_idx);
-RcppExport SEXP _scop_scvelo_terminal_states_transition_cpp(SEXP transition_matrixSEXP, SEXP knn_idxSEXP) {
+// scanpy_terminal_states_transition_cpp
+List scanpy_terminal_states_transition_cpp(NumericMatrix transition_matrix, IntegerMatrix knn_idx);
+RcppExport SEXP _scop_scanpy_terminal_states_transition_cpp(SEXP transition_matrixSEXP, SEXP knn_idxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type transition_matrix(transition_matrixSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_terminal_states_transition_cpp(transition_matrix, knn_idx));
+    rcpp_result_gen = Rcpp::wrap(scanpy_terminal_states_transition_cpp(transition_matrix, knn_idx));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_terminal_states_cpp
-List scvelo_terminal_states_cpp(NumericMatrix velocity_embedding, NumericMatrix embedding, IntegerMatrix knn_idx, int n_neighbors_velo, int seed);
-RcppExport SEXP _scop_scvelo_terminal_states_cpp(SEXP velocity_embeddingSEXP, SEXP embeddingSEXP, SEXP knn_idxSEXP, SEXP n_neighbors_veloSEXP, SEXP seedSEXP) {
+// scanpy_terminal_states_cpp
+List scanpy_terminal_states_cpp(NumericMatrix velocity_embedding, NumericMatrix embedding, IntegerMatrix knn_idx, int n_neighbors_velo, int seed);
+RcppExport SEXP _scop_scanpy_terminal_states_cpp(SEXP velocity_embeddingSEXP, SEXP embeddingSEXP, SEXP knn_idxSEXP, SEXP n_neighbors_veloSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1924,13 +1949,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
     Rcpp::traits::input_parameter< int >::type n_neighbors_velo(n_neighbors_veloSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_terminal_states_cpp(velocity_embedding, embedding, knn_idx, n_neighbors_velo, seed));
+    rcpp_result_gen = Rcpp::wrap(scanpy_terminal_states_cpp(velocity_embedding, embedding, knn_idx, n_neighbors_velo, seed));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_terminal_states_graph_cpp
-List scvelo_terminal_states_graph_cpp(IntegerVector graph_rows, IntegerVector graph_cols, NumericVector graph_vals, IntegerVector graph_neg_rows, IntegerVector graph_neg_cols, NumericVector graph_neg_vals, IntegerMatrix knn_idx, double eps);
-RcppExport SEXP _scop_scvelo_terminal_states_graph_cpp(SEXP graph_rowsSEXP, SEXP graph_colsSEXP, SEXP graph_valsSEXP, SEXP graph_neg_rowsSEXP, SEXP graph_neg_colsSEXP, SEXP graph_neg_valsSEXP, SEXP knn_idxSEXP, SEXP epsSEXP) {
+// scanpy_terminal_states_graph_cpp
+List scanpy_terminal_states_graph_cpp(IntegerVector graph_rows, IntegerVector graph_cols, NumericVector graph_vals, IntegerVector graph_neg_rows, IntegerVector graph_neg_cols, NumericVector graph_neg_vals, IntegerMatrix knn_idx, double eps);
+RcppExport SEXP _scop_scanpy_terminal_states_graph_cpp(SEXP graph_rowsSEXP, SEXP graph_colsSEXP, SEXP graph_valsSEXP, SEXP graph_neg_rowsSEXP, SEXP graph_neg_colsSEXP, SEXP graph_neg_valsSEXP, SEXP knn_idxSEXP, SEXP epsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1942,26 +1967,26 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type graph_neg_vals(graph_neg_valsSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
     Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_terminal_states_graph_cpp(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, eps));
+    rcpp_result_gen = Rcpp::wrap(scanpy_terminal_states_graph_cpp(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, eps));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_pseudotime_transition_cpp
-List scvelo_pseudotime_transition_cpp(NumericMatrix transition_matrix, NumericVector root_cells, NumericVector end_points);
-RcppExport SEXP _scop_scvelo_pseudotime_transition_cpp(SEXP transition_matrixSEXP, SEXP root_cellsSEXP, SEXP end_pointsSEXP) {
+// scanpy_pseudotime_transition_cpp
+List scanpy_pseudotime_transition_cpp(NumericMatrix transition_matrix, NumericVector root_cells, NumericVector end_points);
+RcppExport SEXP _scop_scanpy_pseudotime_transition_cpp(SEXP transition_matrixSEXP, SEXP root_cellsSEXP, SEXP end_pointsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type transition_matrix(transition_matrixSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type root_cells(root_cellsSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type end_points(end_pointsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_pseudotime_transition_cpp(transition_matrix, root_cells, end_points));
+    rcpp_result_gen = Rcpp::wrap(scanpy_pseudotime_transition_cpp(transition_matrix, root_cells, end_points));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_pseudotime_cpp
-List scvelo_pseudotime_cpp(NumericMatrix velocity_embedding, NumericMatrix embedding, IntegerMatrix knn_idx, NumericVector root_cells, NumericVector end_points, int n_neighbors_velo);
-RcppExport SEXP _scop_scvelo_pseudotime_cpp(SEXP velocity_embeddingSEXP, SEXP embeddingSEXP, SEXP knn_idxSEXP, SEXP root_cellsSEXP, SEXP end_pointsSEXP, SEXP n_neighbors_veloSEXP) {
+// scanpy_pseudotime_cpp
+List scanpy_pseudotime_cpp(NumericMatrix velocity_embedding, NumericMatrix embedding, IntegerMatrix knn_idx, NumericVector root_cells, NumericVector end_points, int n_neighbors_velo);
+RcppExport SEXP _scop_scanpy_pseudotime_cpp(SEXP velocity_embeddingSEXP, SEXP embeddingSEXP, SEXP knn_idxSEXP, SEXP root_cellsSEXP, SEXP end_pointsSEXP, SEXP n_neighbors_veloSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1971,13 +1996,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type root_cells(root_cellsSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type end_points(end_pointsSEXP);
     Rcpp::traits::input_parameter< int >::type n_neighbors_velo(n_neighbors_veloSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_pseudotime_cpp(velocity_embedding, embedding, knn_idx, root_cells, end_points, n_neighbors_velo));
+    rcpp_result_gen = Rcpp::wrap(scanpy_pseudotime_cpp(velocity_embedding, embedding, knn_idx, root_cells, end_points, n_neighbors_velo));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_pseudotime_graph_cpp
-List scvelo_pseudotime_graph_cpp(IntegerVector graph_rows, IntegerVector graph_cols, NumericVector graph_vals, IntegerVector graph_neg_rows, IntegerVector graph_neg_cols, NumericVector graph_neg_vals, IntegerMatrix knn_idx, NumericVector root_cells, NumericVector end_points, int n_dcs);
-RcppExport SEXP _scop_scvelo_pseudotime_graph_cpp(SEXP graph_rowsSEXP, SEXP graph_colsSEXP, SEXP graph_valsSEXP, SEXP graph_neg_rowsSEXP, SEXP graph_neg_colsSEXP, SEXP graph_neg_valsSEXP, SEXP knn_idxSEXP, SEXP root_cellsSEXP, SEXP end_pointsSEXP, SEXP n_dcsSEXP) {
+// scanpy_pseudotime_graph_cpp
+List scanpy_pseudotime_graph_cpp(IntegerVector graph_rows, IntegerVector graph_cols, NumericVector graph_vals, IntegerVector graph_neg_rows, IntegerVector graph_neg_cols, NumericVector graph_neg_vals, IntegerMatrix knn_idx, NumericVector root_cells, NumericVector end_points, int n_dcs);
+RcppExport SEXP _scop_scanpy_pseudotime_graph_cpp(SEXP graph_rowsSEXP, SEXP graph_colsSEXP, SEXP graph_valsSEXP, SEXP graph_neg_rowsSEXP, SEXP graph_neg_colsSEXP, SEXP graph_neg_valsSEXP, SEXP knn_idxSEXP, SEXP root_cellsSEXP, SEXP end_pointsSEXP, SEXP n_dcsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1991,25 +2016,25 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type root_cells(root_cellsSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type end_points(end_pointsSEXP);
     Rcpp::traits::input_parameter< int >::type n_dcs(n_dcsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_pseudotime_graph_cpp(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs));
+    rcpp_result_gen = Rcpp::wrap(scanpy_pseudotime_graph_cpp(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_velocity_genes_cpp
-NumericVector scvelo_velocity_genes_cpp(NumericMatrix Ms, NumericMatrix velocity);
-RcppExport SEXP _scop_scvelo_velocity_genes_cpp(SEXP MsSEXP, SEXP velocitySEXP) {
+// scanpy_velocity_genes_cpp
+NumericVector scanpy_velocity_genes_cpp(NumericMatrix Ms, NumericMatrix velocity);
+RcppExport SEXP _scop_scanpy_velocity_genes_cpp(SEXP MsSEXP, SEXP velocitySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type Ms(MsSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type velocity(velocitySEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_velocity_genes_cpp(Ms, velocity));
+    rcpp_result_gen = Rcpp::wrap(scanpy_velocity_genes_cpp(Ms, velocity));
     return rcpp_result_gen;
 END_RCPP
 }
-// scvelo_stochastic_embedding_cpp
-List scvelo_stochastic_embedding_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx, NumericMatrix embedding);
-RcppExport SEXP _scop_scvelo_stochastic_embedding_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP) {
+// scanpy_stochastic_embedding_cpp
+List scanpy_stochastic_embedding_cpp(NumericMatrix spliced, NumericMatrix unspliced, IntegerMatrix knn_idx, NumericMatrix embedding);
+RcppExport SEXP _scop_scanpy_stochastic_embedding_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2017,7 +2042,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type unspliced(unsplicedSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type embedding(embeddingSEXP);
-    rcpp_result_gen = Rcpp::wrap(scvelo_stochastic_embedding_cpp(spliced, unspliced, knn_idx, embedding));
+    rcpp_result_gen = Rcpp::wrap(scanpy_stochastic_embedding_cpp(spliced, unspliced, knn_idx, embedding));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -3013,9 +3038,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_cytotrace2_main", (DL_FUNC) &_scop_cytotrace2_main, 7},
     {"_scop_dynamic_row_unique_counts_dense_cpp", (DL_FUNC) &_scop_dynamic_row_unique_counts_dense_cpp, 1},
     {"_scop_dynamic_row_unique_counts_sparse_cpp", (DL_FUNC) &_scop_dynamic_row_unique_counts_sparse_cpp, 1},
-    {"_scop_scvelo_dynamical_nm_cpp", (DL_FUNC) &_scop_scvelo_dynamical_nm_cpp, 7},
-    {"_scop_scvelo_dynamical_velocity_cpp", (DL_FUNC) &_scop_scvelo_dynamical_velocity_cpp, 8},
-    {"_scop_scvelo_dynamical_em_cpp", (DL_FUNC) &_scop_scvelo_dynamical_em_cpp, 9},
+    {"_scop_scanpy_dynamical_nm_cpp", (DL_FUNC) &_scop_scanpy_dynamical_nm_cpp, 7},
+    {"_scop_scanpy_dynamical_velocity_cpp", (DL_FUNC) &_scop_scanpy_dynamical_velocity_cpp, 8},
+    {"_scop_scanpy_dynamical_em_cpp", (DL_FUNC) &_scop_scanpy_dynamical_em_cpp, 9},
     {"_scop_feature_cor_geometric_mean_sparse_cpp", (DL_FUNC) &_scop_feature_cor_geometric_mean_sparse_cpp, 2},
     {"_scop_fitdevo_spearman_weights_cpp", (DL_FUNC) &_scop_fitdevo_spearman_weights_cpp, 2},
     {"_scop_gniplr_cpp", (DL_FUNC) &_scop_gniplr_cpp, 6},
@@ -3055,6 +3080,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_bbknn_fuzzy_membership_cpp", (DL_FUNC) &_scop_bbknn_fuzzy_membership_cpp, 4},
     {"_scop_paga_connectivities_cpp", (DL_FUNC) &_scop_paga_connectivities_cpp, 3},
     {"_scop_paga_diffusion_pseudotime_cpp", (DL_FUNC) &_scop_paga_diffusion_pseudotime_cpp, 6},
+    {"_scop_gauss_connectivities_cpp", (DL_FUNC) &_scop_gauss_connectivities_cpp, 2},
+    {"_scop_dpt_from_connectivities_cpp", (DL_FUNC) &_scop_dpt_from_connectivities_cpp, 3},
+    {"_scop_cell_dpt_pseudotime_cpp", (DL_FUNC) &_scop_cell_dpt_pseudotime_cpp, 4},
     {"_scop_paga_velocity_transitions_cpp", (DL_FUNC) &_scop_paga_velocity_transitions_cpp, 5},
     {"_scop_paga_root_cell_cpp", (DL_FUNC) &_scop_paga_root_cell_cpp, 3},
     {"_scop_phate_graphtools_affinity_data_cpp", (DL_FUNC) &_scop_phate_graphtools_affinity_data_cpp, 5},
@@ -3075,12 +3103,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_palantir_row_entropy_cpp", (DL_FUNC) &_scop_palantir_row_entropy_cpp, 1},
     {"_scop_pretsa_fit_block_cpp", (DL_FUNC) &_scop_pretsa_fit_block_cpp, 4},
     {"_scop_pretsa_curve_summary_cpp", (DL_FUNC) &_scop_pretsa_curve_summary_cpp, 3},
-    {"_scop_scvelo_filter_genes_scanpy_cpp", (DL_FUNC) &_scop_scvelo_filter_genes_scanpy_cpp, 4},
-    {"_scop_scvelo_normalize_scanpy_cpp", (DL_FUNC) &_scop_scvelo_normalize_scanpy_cpp, 4},
-    {"_scop_scvelo_pca_scanpy_cpp", (DL_FUNC) &_scop_scvelo_pca_scanpy_cpp, 2},
-    {"_scop_scvelo_knn_scanpy_cpp", (DL_FUNC) &_scop_scvelo_knn_scanpy_cpp, 3},
-    {"_scop_scvelo_filter_genes_shared_cpp", (DL_FUNC) &_scop_scvelo_filter_genes_shared_cpp, 3},
-    {"_scop_scvelo_preprocess_scanpy_cpp", (DL_FUNC) &_scop_scvelo_preprocess_scanpy_cpp, 6},
+    {"_scop_scanpy_filter_genes_cpp", (DL_FUNC) &_scop_scanpy_filter_genes_cpp, 4},
+    {"_scop_scanpy_normalize_cpp", (DL_FUNC) &_scop_scanpy_normalize_cpp, 4},
+    {"_scop_scanpy_pca_cpp", (DL_FUNC) &_scop_scanpy_pca_cpp, 2},
+    {"_scop_scanpy_knn_cpp", (DL_FUNC) &_scop_scanpy_knn_cpp, 3},
+    {"_scop_scanpy_filter_genes_shared_cpp", (DL_FUNC) &_scop_scanpy_filter_genes_shared_cpp, 3},
+    {"_scop_scanpy_preprocess_cpp", (DL_FUNC) &_scop_scanpy_preprocess_cpp, 6},
     {"_scop_proportion_bootstrap_log2fd", (DL_FUNC) &_scop_proportion_bootstrap_log2fd, 5},
     {"_scop_proportion_bootstrap_stats", (DL_FUNC) &_scop_proportion_bootstrap_stats, 5},
     {"_scop_pseudotime_velocity_knn", (DL_FUNC) &_scop_pseudotime_velocity_knn, 4},
@@ -3104,25 +3132,24 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scenic_ctx_auc_nes", (DL_FUNC) &_scop_scenic_ctx_auc_nes, 3},
     {"_scop_scenicplus_region_gene_cor", (DL_FUNC) &_scop_scenicplus_region_gene_cor, 4},
     {"_scop_scenicplus_triplets_cpp", (DL_FUNC) &_scop_scenicplus_triplets_cpp, 9},
-    {"_scop_scvelo_filter_genes_cpp", (DL_FUNC) &_scop_scvelo_filter_genes_cpp, 4},
-    {"_scop_scvelo_normalize_log_cpp", (DL_FUNC) &_scop_scvelo_normalize_log_cpp, 2},
-    {"_scop_scvelo_moments_cpp", (DL_FUNC) &_scop_scvelo_moments_cpp, 3},
-    {"_scop_scvelo_moments_connectivities_cpp", (DL_FUNC) &_scop_scvelo_moments_connectivities_cpp, 4},
-    {"_scop_scvelo_second_order_moments_cpp", (DL_FUNC) &_scop_scvelo_second_order_moments_cpp, 3},
-    {"_scop_scvelo_deterministic_cpp", (DL_FUNC) &_scop_scvelo_deterministic_cpp, 6},
-    {"_scop_scvelo_stochastic_cpp", (DL_FUNC) &_scop_scvelo_stochastic_cpp, 6},
-    {"_scop_scvelo_velocity_graph_cpp", (DL_FUNC) &_scop_scvelo_velocity_graph_cpp, 8},
-    {"_scop_scvelo_project_velocity_embedding_cpp", (DL_FUNC) &_scop_scvelo_project_velocity_embedding_cpp, 10},
-    {"_scop_scvelo_velocity_confidence_cpp", (DL_FUNC) &_scop_scvelo_velocity_confidence_cpp, 3},
-    {"_scop_scvelo_velocity_transition_cpp", (DL_FUNC) &_scop_scvelo_velocity_transition_cpp, 5},
-    {"_scop_scvelo_terminal_states_transition_cpp", (DL_FUNC) &_scop_scvelo_terminal_states_transition_cpp, 2},
-    {"_scop_scvelo_terminal_states_cpp", (DL_FUNC) &_scop_scvelo_terminal_states_cpp, 5},
-    {"_scop_scvelo_terminal_states_graph_cpp", (DL_FUNC) &_scop_scvelo_terminal_states_graph_cpp, 8},
-    {"_scop_scvelo_pseudotime_transition_cpp", (DL_FUNC) &_scop_scvelo_pseudotime_transition_cpp, 3},
-    {"_scop_scvelo_pseudotime_cpp", (DL_FUNC) &_scop_scvelo_pseudotime_cpp, 6},
-    {"_scop_scvelo_pseudotime_graph_cpp", (DL_FUNC) &_scop_scvelo_pseudotime_graph_cpp, 10},
-    {"_scop_scvelo_velocity_genes_cpp", (DL_FUNC) &_scop_scvelo_velocity_genes_cpp, 2},
-    {"_scop_scvelo_stochastic_embedding_cpp", (DL_FUNC) &_scop_scvelo_stochastic_embedding_cpp, 4},
+    {"_scop_scanpy_normalize_log_cpp", (DL_FUNC) &_scop_scanpy_normalize_log_cpp, 2},
+    {"_scop_scanpy_moments_cpp", (DL_FUNC) &_scop_scanpy_moments_cpp, 3},
+    {"_scop_scanpy_moments_connectivities_cpp", (DL_FUNC) &_scop_scanpy_moments_connectivities_cpp, 4},
+    {"_scop_scanpy_second_order_moments_cpp", (DL_FUNC) &_scop_scanpy_second_order_moments_cpp, 3},
+    {"_scop_scanpy_deterministic_cpp", (DL_FUNC) &_scop_scanpy_deterministic_cpp, 6},
+    {"_scop_scanpy_stochastic_cpp", (DL_FUNC) &_scop_scanpy_stochastic_cpp, 6},
+    {"_scop_scanpy_velocity_graph_cpp", (DL_FUNC) &_scop_scanpy_velocity_graph_cpp, 8},
+    {"_scop_scanpy_project_velocity_embedding_cpp", (DL_FUNC) &_scop_scanpy_project_velocity_embedding_cpp, 10},
+    {"_scop_scanpy_velocity_confidence_cpp", (DL_FUNC) &_scop_scanpy_velocity_confidence_cpp, 3},
+    {"_scop_scanpy_velocity_transition_cpp", (DL_FUNC) &_scop_scanpy_velocity_transition_cpp, 5},
+    {"_scop_scanpy_terminal_states_transition_cpp", (DL_FUNC) &_scop_scanpy_terminal_states_transition_cpp, 2},
+    {"_scop_scanpy_terminal_states_cpp", (DL_FUNC) &_scop_scanpy_terminal_states_cpp, 5},
+    {"_scop_scanpy_terminal_states_graph_cpp", (DL_FUNC) &_scop_scanpy_terminal_states_graph_cpp, 8},
+    {"_scop_scanpy_pseudotime_transition_cpp", (DL_FUNC) &_scop_scanpy_pseudotime_transition_cpp, 3},
+    {"_scop_scanpy_pseudotime_cpp", (DL_FUNC) &_scop_scanpy_pseudotime_cpp, 6},
+    {"_scop_scanpy_pseudotime_graph_cpp", (DL_FUNC) &_scop_scanpy_pseudotime_graph_cpp, 10},
+    {"_scop_scanpy_velocity_genes_cpp", (DL_FUNC) &_scop_scanpy_velocity_genes_cpp, 2},
+    {"_scop_scanpy_stochastic_embedding_cpp", (DL_FUNC) &_scop_scanpy_stochastic_embedding_cpp, 4},
     {"_scop_sctenifold_pcnet_covariance_raw", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_raw, 6},
     {"_scop_sctenifold_pcnet_covariance_sparse", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_sparse, 9},
     {"_scop_sctenifold_tensor_decomposition", (DL_FUNC) &_scop_sctenifold_tensor_decomposition, 5},
