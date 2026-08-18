@@ -436,6 +436,10 @@ test_that("SCENICPlusPlot eregulon_dim includes region AUC when stored", {
 test_that("SCENIC network palette remaps RdYlBu to Set1", {
   expect_equal(scenic_network_palette("RdYlBu"), "Set1")
   expect_equal(scenic_network_palette("Chinese"), "Chinese")
+  shared <- palette_colors(c("Jun", "Atf3", "Fos"), palette = "Set1")
+  one <- palette_colors("Atf3", palette = "Set1", palcolor = shared)
+  expect_equal(unname(one[["Atf3"]]), unname(shared[["Atf3"]]))
+  expect_false(identical(unname(shared[["Jun"]]), unname(shared[["Atf3"]])))
 })
 
 test_that("SCENICPlusPlot network uses TF-region-gene hubs from triplets", {

@@ -41,7 +41,7 @@ scenic_plot_network_graph <- function(
     palette = palette,
     palcolor = palcolor,
     title = title %||% "SCENIC TF–target network",
-    curvature = if (network_layout %in% c("star", "hub", "kk", "fr")) 0.12 else 0.12
+    curvature = if (network_layout %in% c("star", "hub", "kk", "fr")) 0.08 else 0.12
   )
   list(
     plot = plot,
@@ -78,6 +78,14 @@ scenic_plot_network <- function(
   }
   layout_use <- scenic_network_resolve_layout(network_layout, default = "star")
   split_panels <- identical(layout_use, "star") && length(tf_candidates) > 1L
+  panel_palcolor <- palcolor
+  if (isTRUE(split_panels)) {
+    panel_palcolor <- palette_colors(
+      tf_candidates,
+      palette = scenic_network_palette(palette),
+      palcolor = palcolor
+    )
+  }
 
   if (isTRUE(split_panels)) {
     plots <- list()
@@ -96,7 +104,7 @@ scenic_plot_network <- function(
         include_regions = network_include_regions,
         filter_tfs = TRUE,
         palette = palette,
-        palcolor = palcolor,
+        palcolor = panel_palcolor,
         title = tf,
         curvature = 0
       )
@@ -183,7 +191,7 @@ scenic_plot_egrn <- function(
     palette = palette,
     palcolor = palcolor,
     title = title %||% "SCENIC+ enhancer-driven GRN",
-    curvature = if (layout_use %in% c("star")) 0 else 0.18,
+    curvature = if (layout_use %in% c("star")) 0 else 0.08,
     prefer_triplets = TRUE
   )
 }
@@ -1011,9 +1019,9 @@ scenic_network_style_data <- function(
       border_color[[idx]] <- "#2E2E2E"
       node_size[[idx]] <- 1.8
     } else {
-      fill_color[[idx]] <- "#F2F2F2"
-      border_color[[idx]] <- "#5C5C5C"
-      node_size[[idx]] <- 3.4
+      fill_color[[idx]] <- "#E0E0E0"
+      border_color[[idx]] <- "#3F3F3F"
+      node_size[[idx]] <- 3.8
     }
   }
   node_data[["node_color"]] <- fill_color
@@ -1151,7 +1159,7 @@ scenic_network_ggplot <- function(
         size = .data[["node_size"]]
       ),
       shape = 21,
-      stroke = 0.35,
+      stroke = 0.45,
       show.legend = FALSE
     )
   }
