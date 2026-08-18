@@ -3311,12 +3311,15 @@ def PAGA(
 
         if infer_pseudotime is True:
             if root_group is not None and root_cell is None:
+                root_group_values = (
+                    [root_group] if isinstance(root_group, str) else list(root_group)
+                )
                 cell = adata.obs[group_by].index.values[
-                    adata.obs[group_by].isin(root_group)
+                    adata.obs[group_by].isin(root_group_values)
                 ]
-                root_group_cell = adata.obsm[basis][adata.obs[group_by].isin(root_group),][
-                    :, [0, 1]
-                ]
+                root_group_cell = adata.obsm[basis][
+                    adata.obs[group_by].isin(root_group_values), :
+                ][:, [0, 1]]
                 x = statistics.median(root_group_cell[:, 0])
                 y = statistics.median(root_group_cell[:, 1])
                 diff = np.array((x - root_group_cell[:, 0], y - root_group_cell[:, 1]))
