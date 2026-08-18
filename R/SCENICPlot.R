@@ -3,8 +3,8 @@
 #' @description
 #' Plot RSS and regulon activity from [RunSCENIC()] or [RunSCENICPlus()].
 #' Use [SCENICPlusPlot()] for SCENIC+ defaults. Network `palette = "RdYlBu"`
-#' uses `"Chinese"`. Multi-TF `"egrn"` / `"network_graph"` legends show the
-#' top RSS cell type.
+#' uses `"Chinese"`. `"network"` draws one hub per TF. Network plots have no
+#' title. Multi-TF legends show the top RSS cell type.
 #'
 #' @md
 #' @inheritParams CellDimPlot
@@ -53,13 +53,13 @@
 #' @param ... Extra heatmap arguments such as `width` and `height`.
 #' @param max_targets Max targets per TF in network plots.
 #' @param max_edges Max edges in `"network_graph"`.
-#' @param network_layout `"auto"`, `"star"`, `"kk"`, `"hub"`, `"tripartite"`, `"fr"`.
+#' @param network_layout `"auto"`, `"star"`, `"kk"`, `"hub"`, `"tripartite"`, `"fr"`. `"network"` uses `"star"` for one TF and `"hub"` for several.
 #' @param network_tf TFs for `"network"` / `"egrn"`.
 #' @param network_include_regions Use SCENIC+ triplets when stored.
 #' @param label_nodes `"auto"`, `"tfs"`, `"all"`, or `"none"`.
 #' @param network_label_top_n Max TF labels in `"network_graph"`.
 #' @param return_data Return RSS tables with plots.
-#' @param title Optional combined-plot title.
+#' @param title Optional combined-plot title. Ignored by `"network"`, `"network_graph"`, and `"egrn"`.
 #' @param point_color Rank-plot point color.
 #' @param top_color Top-regulon point color.
 #' @param point_size Point size.
@@ -91,7 +91,7 @@
 #' scenic_rss <- SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_rank")
 #' example_tfs <- unique(scenic_rss$top_table$TF)[1:3]
 #' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap_dotplot")
-#' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network", features = example_tfs[[1]])
+#' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network", features = example_tfs)
 #' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network_graph", features = example_tfs)
 #' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "egrn", features = example_tfs)
 #' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "coverage", features = example_tfs)
@@ -590,7 +590,6 @@ SCENICPlot <- function(
       network_include_regions = network_include_regions,
       palette = palette,
       palcolor = palcolor,
-      title = title,
       rank_table = rank_table
     ),
     network = scenic_plot_network(
@@ -606,9 +605,6 @@ SCENICPlot <- function(
       network_include_regions = network_include_regions,
       palette = palette,
       palcolor = palcolor,
-      combine = combine,
-      ncol = ncol,
-      title = title,
       rank_table = rank_table
     ),
     egrn = scenic_plot_egrn(
@@ -623,7 +619,6 @@ SCENICPlot <- function(
       label_nodes = label_nodes,
       palette = palette,
       palcolor = palcolor,
-      title = title,
       rank_table = rank_table
     ),
     overlap = scenic_plot_overlap(
