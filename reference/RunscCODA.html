@@ -105,7 +105,11 @@ or identical to <code>split.by</code>, virtual samples are created within each
 
 
 <dt id="arg-comparison">comparison<a class="anchor" aria-label="anchor" href="#arg-comparison"></a></dt>
-<dd><p>Optional: specify comparisons to perform.</p></dd>
+<dd><p>Optional pairs of condition labels. Each pair is
+<code>c(group1, group2)</code>. <code>obs_log2FD</code> is <code>log2(group1 / group2)</code>, matching
+<a href="RunDEtest.html">RunDEtest</a> / Seurat <code>ident.1</code> vs <code>ident.2</code>: positive values mean the cell
+type is more abundant in <code>group1</code>. If <code>NULL</code>, all pairwise comparisons are
+generated in both directions.</p></dd>
 
 
 <dt id="arg-reference-cell-type">reference_cell_type<a class="anchor" aria-label="anchor" href="#arg-reference-cell-type"></a></dt>

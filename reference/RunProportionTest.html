@@ -105,7 +105,11 @@ samples are created within each condition.</p></dd>
 
 
 <dt id="arg-comparison">comparison<a class="anchor" aria-label="anchor" href="#arg-comparison"></a></dt>
-<dd><p>Optional: specify comparisons to perform.</p></dd>
+<dd><p>Optional pairs of condition labels. Each pair is
+<code>c(group1, group2)</code>. <code>obs_log2FD</code> is <code>log2(group1 / group2)</code>, matching
+<a href="RunDEtest.html">RunDEtest</a> / Seurat <code>ident.1</code> vs <code>ident.2</code>: positive values mean the cell
+type is more abundant in <code>group1</code>. If <code>NULL</code>, all pairwise comparisons are
+generated in both directions.</p></dd>
 
 
 <dt id="arg-proportion-method">proportion_method<a class="anchor" aria-label="anchor" href="#arg-proportion-method"></a></dt>
@@ -182,10 +186,10 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  proportion_method <span class="op">=</span> <span class="st">"permutation"</span>,</span></span>
 <span class="r-in"><span>  comparison <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M"</span>, <span class="st">"G1"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-17 14:35:12] Start proportion test (<span style="color: #0000BB;">"permutation"</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-17 14:35:12] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-17 14:35:12] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"G1"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-17 14:35:13] Proportion test completed (<span style="color: #0000BB;">"permutation"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 09:17:46] Start proportion test (<span style="color: #0000BB;">"permutation"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 09:17:46] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"G1"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 09:17:46] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 09:17:47] Proportion test completed (<span style="color: #0000BB;">"permutation"</span>)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ProportionTestPlot.html">ProportionTestPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span></span></span>
