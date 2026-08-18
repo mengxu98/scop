@@ -113,6 +113,34 @@
 #'
 #' @return A Seurat object with SCENICPlus-style results.
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' data(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#' pancreas_sub <- RunSCENICPlus(
+#'   pancreas_sub,
+#'   backend = "python",
+#'   python_result_dir = "test/scenicplus"
+#' )
+#' scenicplus_dot <- SCENICPlusPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType"
+#' )
+#' example_regulons <- unique(scenicplus_dot$top_table$regulon)[1:2]
+#' FeatureDimPlot(
+#'   pancreas_sub,
+#'   features = example_regulons,
+#'   assay = "scenicplus",
+#'   reduction = "StandardpcaUMAP2D"
+#' )
+#' SCENICPlusPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   plot_type = "eregulon_dim",
+#'   features = example_regulons
+#' )
+#' }
 RunSCENICPlus <- function(
   srt,
   rna_assay = "RNA",
