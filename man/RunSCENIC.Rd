@@ -150,5 +150,28 @@ pancreas_sub <- RunSCENIC(
   pancreas_sub,
   species = "Mus_musculus"
 )
+scenic_rss <- SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "rss_rank"
+)
+example_regulons <- unique(scenic_rss$top_table$regulon)[1:2]
+FeatureDimPlot(
+  pancreas_sub,
+  features = example_regulons,
+  assay = "scenic",
+  reduction = "StandardpcaUMAP2D"
+)
+FeatureStatPlot(
+  pancreas_sub,
+  stat.by = example_regulons,
+  group.by = "CellType",
+  assay = "scenic"
+)
+SCENICPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "heatmap_dotplot"
+)
 }
 }
