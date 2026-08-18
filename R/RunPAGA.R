@@ -25,6 +25,10 @@
 #' Edges for weights below this threshold will not be drawn.
 #' @param point_size The point size for plotting.
 #' @param infer_pseudotime Whether to infer pseudotime.
+#' When `backend = "python"`, scanpy DPT stores per-cell values in
+#' `meta.data$dpt_pseudotime`. When `backend = "cpp"`, group-level pseudotime
+#' is stored in `srt@tools[["PAGA"]]$pseudotime` and per-cell values are also
+#' written to `meta.data$dpt_pseudotime`.
 #' @param root_group The group to use as the root for pseudotime inference.
 #' @param root_cell The cell to use as the root for pseudotime inference.
 #' @param n_dcs The number of diffusion components to use for pseudotime inference.
@@ -267,21 +271,30 @@ RunPAGA <- function(
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {
-      return(srt_out)
+      srt_final <- srt_out
     } else {
       srt_out1 <- srt_append(
         srt_raw = srt,
         srt_append = srt_out
       )
-      srt_out2 <- srt_append(
+      srt_final <- srt_append(
         srt_raw = srt_out1,
         srt_append = srt_out,
         pattern = "(paga)|(distances)|(connectivities)|(draw_graph)",
         overwrite = TRUE,
         verbose = FALSE
       )
-      return(srt_out2)
     }
+    paga_res <- srt_final@misc[["paga"]]
+    if (!is.null(paga_res)) {
+      if (is.null(paga_res[["groups"]])) {
+        paga_res[["groups"]] <- group.by
+      }
+      paga_res[["backend"]] <- "python"
+      srt_final@tools[["PAGA"]] <- paga_res
+      srt_final@misc[["paga"]] <- NULL
+    }
+    return(srt_final)
   } else {
     return(adata)
   }
@@ -441,6 +454,99 @@ run_paga_cpp <- function(
       message_type = "success",
       verbose = verbose
     )
+
+    root_grp_idx <- as.integer(root_grp[[1L]])
+    if (anyNA(root_grp_idx) || root_grp_idx < 1L) {
+      root_grp_idx <- 1L
+    }
+    dpt_embedding <- if (
+      !is.null(nonlinear_reduction) &&
+        nonlinear_reduction %in% names(srt@reductions)
+    ) {
+      as.matrix(srt@reductions[[nonlinear_reduction]]@cell.embeddings)
+    } else if (exists("embedding", inherits = FALSE)) {
+      embedding
+    } else {
+      emb <- as.matrix(srt@reductions[[linear_reduction]]@cell.embeddings)
+      if (!is.null(dims_use)) {
+        emb <- emb[, dims_use, drop = FALSE]
+      }
+      emb
+    }
+    storage.mode(dpt_embedding) <- "double"
+    dpt_embedding_2d <- dpt_embedding[
+      ,
+      seq_len(min(2L, ncol(dpt_embedding))),
+      drop = FALSE
+    ]
+
+    root_cell_idx <- if (
+      !is.null(root_cell) && root_cell %in% colnames(srt)
+    ) {
+      match(root_cell, colnames(srt))
+    } else {
+      if (!is.null(root_cell)) {
+        log_message(
+          "{.arg root_cell} {.val {root_cell}} not found; selecting root from {.arg root_group}",
+          message_type = "warning",
+          verbose = verbose
+        )
+      }
+      as.integer(
+        paga_root_cell_cpp(
+          embedding = dpt_embedding_2d,
+          groups = as.integer(groups),
+          root_group = root_grp_idx
+        )[[1L]]
+      )
+    }
+
+    if (isTRUE(paga_allow_cell_dpt(ncol(srt)))) {
+      connectivities <- connectivities_py(
+        knn_idx = knn[["idx"]],
+        knn_dist = knn[["dist"]],
+        n_obs = ncol(srt),
+        n_neighbors = ncol(knn[["idx"]]),
+        verbose = verbose
+      )
+      dpt_cell <- dpt_from_connectivities_cpp(
+        connectivities = connectivities,
+        root_cell = root_cell_idx,
+        n_dcs = as.integer(n_dcs)
+      )
+      dpt_cell_pt <- as.numeric(dpt_cell[["pseudotime"]])
+      names(dpt_cell_pt) <- colnames(srt)
+      srt[["dpt_pseudotime"]] <- dpt_cell_pt
+      srt@tools[["PAGA"]]$dpt_pseudotime <- dpt_cell_pt
+      srt@tools[["PAGA"]]$cell_diffusion_components <- dpt_cell[[
+        "diffusion_components"
+      ]]
+      srt@tools[["PAGA"]]$cell_diffusion_eigenvalues <- dpt_cell[[
+        "diffusion_eigenvalues"
+      ]]
+      srt@tools[["PAGA"]]$dpt_root_cell <- colnames(srt)[root_cell_idx]
+    } else {
+      log_message(
+        paste0(
+          "{.pkg PAGA} skipped cell-level {.val dpt_pseudotime} because the ",
+          "dense diffusion operator would require an O(n^2) allocation for ",
+          ncol(srt), " cells; group-level pseudotime remains available."
+        ),
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+    root_cells <- paga_root_cell_cpp(
+      embedding = dpt_embedding_2d,
+      groups = as.integer(groups),
+      root_group = root_grp_idx
+    )
+    srt@tools[["PAGA"]]$root_cells <- root_cells
+    log_message(
+      "{.pkg PAGA} cell-level {.val dpt_pseudotime} written to {.field meta.data} (root cell: {.val {colnames(srt)[root_cell_idx]}})",
+      message_type = "success",
+      verbose = verbose
+    )
   }
 
   # Velocity-based PAGA transitions
@@ -482,31 +588,64 @@ run_paga_cpp <- function(
     }
   }
 
-  # PAGA root cell selection
-  if (isTRUE(infer_pseudotime) && !is.null(nonlinear_reduction) && nonlinear_reduction %in% names(srt@reductions)) {
-    root_grp_idx <- if (!is.null(root_group)) match(root_group, group_levels) else 1L
-    if (anyNA(root_grp_idx) || length(root_grp_idx) == 0L) root_grp_idx <- 1L
-    emb_r <- srt@reductions[[nonlinear_reduction]]@cell.embeddings
-    storage.mode(emb_r) <- "double"
-    root_cells <- paga_root_cell_cpp(
-      embedding = emb_r,
-      groups = as.integer(groups),
-      root_group = as.integer(root_grp_idx[1])
-    )
-    srt@tools[["PAGA"]]$root_cells <- root_cells
-    log_message(
-      "PAGA root cell candidates: {.val {head(root_cells, 5)}}",
-      message_type = "success",
-      verbose = verbose
-    )
-  }
-
   log_message(
     "{.pkg PAGA} cpp backend completed",
     message_type = "success",
     verbose = verbose
   )
   srt
+}
+
+connectivities_py <- function(
+  knn_idx,
+  knn_dist,
+  n_obs,
+  n_neighbors,
+  verbose = TRUE
+) {
+  if (requireNamespace("reticulate", quietly = TRUE)) {
+    conn_module <- tryCatch(
+      reticulate::import("scanpy.neighbors._connectivity", delay_load = TRUE),
+      error = function(e) NULL
+    )
+    if (!is.null(conn_module)) {
+      umap_W <- tryCatch({
+        idx <- matrix(as.integer(knn_idx - 1L), nrow = nrow(knn_idx))
+        dist <- as.matrix(knn_dist)
+        storage.mode(dist) <- "double"
+        W <- conn_module$umap(
+          idx,
+          dist,
+          n_obs = as.integer(n_obs),
+          n_neighbors = as.integer(n_neighbors)
+        )
+        as.matrix(W)
+      }, error = function(e) NULL)
+      if (
+        !is.null(umap_W) &&
+          nrow(umap_W) == n_obs &&
+          ncol(umap_W) == n_obs
+      ) {
+        return(umap_W)
+      }
+      log_message(
+        "{.pkg scanpy} connectivity helper failed; using C++ Gaussian connectivity fallback for cell-level DPT",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+  }
+  gauss_connectivities_cpp(knn_idx = knn_idx, knn_dist = knn_dist)
+}
+
+paga_allow_cell_dpt <- function(n_cells, max_dense_cells = 4000L) {
+  n_cells <- as.integer(n_cells[[1L]])
+  max_dense_cells <- as.integer(max_dense_cells[[1L]])
+  !is.na(n_cells) &&
+    !is.na(max_dense_cells) &&
+    max_dense_cells >= 2L &&
+    n_cells >= 2L &&
+    n_cells <= max_dense_cells
 }
 
 paga_layout_igraph <- function(

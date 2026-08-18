@@ -348,18 +348,58 @@ RunPalantir <- function(
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {
-      return(srt_out)
+      srt_final <- srt_out
     } else {
       srt_out1 <- srt_append(srt_raw = srt, srt_append = srt_out)
-      srt_out2 <- srt_append(
+      srt_final <- srt_append(
         srt_raw = srt_out1,
         srt_append = srt_out,
         pattern = "(palantir)|(dm_kernel)|(_diff_potential)",
         overwrite = TRUE,
         verbose = FALSE
       )
-      return(srt_out2)
     }
+    meta_names <- colnames(srt_final@meta.data)
+    reduction_names <- names(srt_final@reductions)
+    branch_cols <- setdiff(
+      grep("_diff_potential$", meta_names, value = TRUE),
+      "palantir_diff_potential"
+    )
+    dm_reduction <- reduction_names[
+      grepl("palantir.*dm", reduction_names, ignore.case = TRUE)
+    ]
+    srt_final@tools[["Palantir"]] <- list(
+      backend = "python",
+      group.by = group.by,
+      pseudotime = if ("palantir_pseudotime" %in% meta_names) {
+        srt_final@meta.data[["palantir_pseudotime"]]
+      } else {
+        NULL
+      },
+      diff_potential = if ("palantir_diff_potential" %in% meta_names) {
+        srt_final@meta.data[["palantir_diff_potential"]]
+      } else {
+        NULL
+      },
+      branch_probs = if (length(branch_cols) > 0L) {
+        as.matrix(srt_final@meta.data[, branch_cols, drop = FALSE])
+      } else {
+        NULL
+      },
+      diffusion_map_reduction = if (length(dm_reduction) > 0L) {
+        dm_reduction[[1L]]
+      } else {
+        NULL
+      },
+      dm_kernel = srt_final@misc[["dm_kernel"]],
+      parameters = list(
+        linear_reduction = linear_reduction,
+        nonlinear_reduction = nonlinear_reduction,
+        n_pcs = n_pcs,
+        n_neighbors = n_neighbors
+      )
+    )
+    return(srt_final)
   } else {
     return(adata)
   }
