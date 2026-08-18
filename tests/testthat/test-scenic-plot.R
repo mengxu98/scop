@@ -433,6 +433,11 @@ test_that("SCENICPlusPlot eregulon_dim includes region AUC when stored", {
   expect_gt(length(out$plots), 1)
 })
 
+test_that("SCENIC network palette remaps RdYlBu to Set1", {
+  expect_equal(scenic_network_palette("RdYlBu"), "Set1")
+  expect_equal(scenic_network_palette("Chinese"), "Chinese")
+})
+
 test_that("SCENICPlusPlot network uses TF-region-gene hubs from triplets", {
   dat <- make_scenicplus_plot_mock()
   out <- SCENICPlusPlot(
@@ -471,7 +476,7 @@ test_that("SCENICPlot network places the TF at the hub center", {
   expect_true(all(out$plot_data$edges$from == "Jun"))
 })
 
-test_that("SCENICPlusPlot egrn draws a tripartite TF-region-gene layout", {
+test_that("SCENICPlusPlot egrn draws TF, region, and gene nodes", {
   dat <- make_scenicplus_plot_mock()
   out <- SCENICPlusPlot(
     dat$srt,
@@ -483,6 +488,21 @@ test_that("SCENICPlusPlot egrn draws a tripartite TF-region-gene layout", {
 
   nodes <- out$plot_data$nodes
   expect_true(all(c("TF", "region", "gene") %in% as.character(nodes$node_type)))
+  expect_true("Jun" %in% nodes$name)
+})
+
+test_that("SCENICPlusPlot egrn can use a tripartite layout", {
+  dat <- make_scenicplus_plot_mock()
+  out <- SCENICPlusPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "egrn",
+    features = "Jun",
+    network_layout = "tripartite",
+    verbose = FALSE
+  )
+
+  nodes <- out$plot_data$nodes
   tf_x <- unique(nodes$x[as.character(nodes$node_type) == "TF"])
   region_x <- unique(nodes$x[as.character(nodes$node_type) == "region"])
   gene_x <- unique(nodes$x[as.character(nodes$node_type) == "gene"])
@@ -512,6 +532,7 @@ test_that("SCENIC network_graph hub layout keeps TFs off a single line", {
     dat$srt,
     group.by = "CellType",
     plot_type = "network_graph",
+    network_layout = "hub",
     max_targets = 5,
     verbose = FALSE
   )

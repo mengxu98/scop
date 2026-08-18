@@ -188,10 +188,11 @@ the same legend range.}
 
 \item{palette, palcolor}{Palette passed to \code{palette_colors()} for
 \code{"rss_dotplot"}, \code{"heatmap_dotplot"}, \code{"regulon_size"}, \code{"target_bar"},
-and network node colors. Network plots follow \code{\link[=EnrichmentPlot]{EnrichmentPlot()}} network
-styling: TF-colored edges, \code{geom_label()} target pills, and double-ring TF
-hubs. When \code{palette = "RdYlBu"}, networks default to the \code{"Chinese"}
-discrete palette for regulon colors.}
+and network TF/edge colors. Network plots follow published SCENIC+/iRegulon
+figures: TF-colored edges, light-gray gene nodes, unlabeled region diamonds,
+and concentric or Kamada–Kawai layouts. When \code{palette = "RdYlBu"}, networks
+use \code{"Set1"} so multi-TF eGRNs match the red/green/blue language of
+SCENIC+ Nature Methods Fig. 2e.}
 
 \item{compare_expression}{Whether \code{"activity_dim"} also plots TF gene
 expression beside regulon activity. \code{"eregulon_dim"} always compares
@@ -223,12 +224,12 @@ network-style plots.}
 plots. Edges are ranked by absolute weight when a weight column is present.}
 
 \item{network_layout}{Graph layout used by network plots. \code{"auto"} selects
-\code{"star"} for \code{"network"}, \code{"hub"} for \code{"network_graph"}, and
-\code{"tripartite"} for \code{"egrn"}. \code{"star"} places the TF in the center with
-targets on a ring (inner ring = regions when SCENIC+ triplets are present).
-\code{"hub"} places TFs on a circle with unique targets around each TF.
-\code{"tripartite"} is the SCENIC+ eGRN layout (TF | region | gene). \code{"fr"} and
-\code{"kk"} are force-directed layouts initialized from a circle.}
+\code{"star"} for \code{"network"} (and single-TF \code{"egrn"}), \code{"kk"} for
+\code{"network_graph"} and multi-TF \code{"egrn"}. \code{"star"} is the SCENIC+
+concentrical / iRegulon hub (TF at the origin; inner ring = regions when
+triplets are present). \code{"hub"} places TFs on a circle with unique targets
+around each TF. \code{"tripartite"} is a column layout (TF | region | gene).
+\code{"fr"} and \code{"kk"} are force-directed layouts initialized from a circle.}
 
 \item{network_tf}{Optional TF names used when \code{plot_type} is \code{"network"} or
 \code{"egrn"}. If \code{NULL}, \code{features}, \code{highlight_tf}, or the top RSS regulons
@@ -238,7 +239,8 @@ are used.}
 plots use TF–region–gene triplets when they are stored. Default is \code{TRUE}.}
 
 \item{label_nodes}{Which nodes to label in network plots. \code{"auto"} labels
-all nodes in hub/eGRN plots and high-degree TFs in global graphs.}
+TFs plus target genes in star/eGRN plots (region coordinates stay unlabeled)
+and high-degree TFs in dense global graphs.}
 
 \item{network_label_top_n}{Maximum number of high-degree TF nodes labeled in
 \code{plot_type = "network_graph"} when \code{label_nodes = "tfs"}.}
@@ -301,10 +303,11 @@ defaults (\code{tool_name = "SCENICPlus"}, \code{assay = "scenicplus"}).
 TF expression, size = RSS). \code{"eregulon_dim"} compares TF expression with
 gene-based AUC, and region-based AUC when it is stored. \code{"coverage"} draws
 accessibility and region–gene link tracks for one target locus.
-\code{"network"} draws per-TF regulon hubs (TF at the center, targets on a ring;
-SCENIC+ adds an inner region ring when triplets are stored). \code{"egrn"} is
-the SCENIC+ enhancer-driven GRN (TF, region, and gene nodes). \code{"overlap"}
-is the eRegulon target-gene Jaccard heatmap.
+\code{"network"} draws per-TF regulon hubs after iRegulon/SCENIC+ concentrical
+figures (TF at the center, targets on a ring; SCENIC+ adds an inner region
+ring when triplets are stored). \code{"egrn"} is the SCENIC+ enhancer-driven GRN
+(Nature Methods 2023 Fig. 2e: TF, unlabeled region diamonds, and gene
+nodes). \code{"overlap"} is the eRegulon target-gene Jaccard heatmap.
 }
 \examples{
 \dontrun{

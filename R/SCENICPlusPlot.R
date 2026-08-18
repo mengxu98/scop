@@ -8,7 +8,8 @@
 #' with gene-based AUC, and region-based AUC when it is stored in
 #' `srt@tools$SCENICPlus`. `"coverage"` draws accessibility and region–gene
 #' tracks for a target locus. `"network"` and `"egrn"` follow published
-#' SCENIC+ GRN figures (regulon hubs and TF–region–gene graphs). `"overlap"`
+#' SCENIC+ / iRegulon GRN figures (concentric regulon hubs and Kamada–Kawai
+#' TF–region–gene graphs with unlabeled region diamonds). `"overlap"`
 #' shows eRegulon target Jaccard overlap.
 #'
 #' @md

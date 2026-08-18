@@ -8,10 +8,11 @@
 #' TF expression, size = RSS). `"eregulon_dim"` compares TF expression with
 #' gene-based AUC, and region-based AUC when it is stored. `"coverage"` draws
 #' accessibility and region–gene link tracks for one target locus.
-#' `"network"` draws per-TF regulon hubs (TF at the center, targets on a ring;
-#' SCENIC+ adds an inner region ring when triplets are stored). `"egrn"` is
-#' the SCENIC+ enhancer-driven GRN (TF, region, and gene nodes). `"overlap"`
-#' is the eRegulon target-gene Jaccard heatmap.
+#' `"network"` draws per-TF regulon hubs after iRegulon/SCENIC+ concentrical
+#' figures (TF at the center, targets on a ring; SCENIC+ adds an inner region
+#' ring when triplets are stored). `"egrn"` is the SCENIC+ enhancer-driven GRN
+#' (Nature Methods 2023 Fig. 2e: TF, unlabeled region diamonds, and gene
+#' nodes). `"overlap"` is the eRegulon target-gene Jaccard heatmap.
 #'
 #' @md
 #' @inheritParams CellDimPlot
@@ -96,10 +97,11 @@
 #' "rss_heatmap"`.
 #' @param palette,palcolor Palette passed to `palette_colors()` for
 #' `"rss_dotplot"`, `"heatmap_dotplot"`, `"regulon_size"`, `"target_bar"`,
-#' and network node colors. Network plots follow [EnrichmentPlot()] network
-#' styling: TF-colored edges, `geom_label()` target pills, and double-ring TF
-#' hubs. When `palette = "RdYlBu"`, networks default to the `"Chinese"`
-#' discrete palette for regulon colors.
+#' and network TF/edge colors. Network plots follow published SCENIC+/iRegulon
+#' figures: TF-colored edges, light-gray gene nodes, unlabeled region diamonds,
+#' and concentric or Kamada–Kawai layouts. When `palette = "RdYlBu"`, networks
+#' use `"Set1"` so multi-TF eGRNs match the red/green/blue language of
+#' SCENIC+ Nature Methods Fig. 2e.
 #' @param compare_expression Whether `"activity_dim"` also plots TF gene
 #' expression beside regulon activity. `"eregulon_dim"` always compares
 #' expression with activity.
@@ -125,19 +127,20 @@
 #' @param max_edges Maximum number of TF-target edges shown in global network
 #' plots. Edges are ranked by absolute weight when a weight column is present.
 #' @param network_layout Graph layout used by network plots. `"auto"` selects
-#' `"star"` for `"network"`, `"hub"` for `"network_graph"`, and
-#' `"tripartite"` for `"egrn"`. `"star"` places the TF in the center with
-#' targets on a ring (inner ring = regions when SCENIC+ triplets are present).
-#' `"hub"` places TFs on a circle with unique targets around each TF.
-#' `"tripartite"` is the SCENIC+ eGRN layout (TF | region | gene). `"fr"` and
-#' `"kk"` are force-directed layouts initialized from a circle.
+#' `"star"` for `"network"` (and single-TF `"egrn"`), `"kk"` for
+#' `"network_graph"` and multi-TF `"egrn"`. `"star"` is the SCENIC+
+#' concentrical / iRegulon hub (TF at the origin; inner ring = regions when
+#' triplets are present). `"hub"` places TFs on a circle with unique targets
+#' around each TF. `"tripartite"` is a column layout (TF | region | gene).
+#' `"fr"` and `"kk"` are force-directed layouts initialized from a circle.
 #' @param network_tf Optional TF names used when `plot_type` is `"network"` or
 #' `"egrn"`. If `NULL`, `features`, `highlight_tf`, or the top RSS regulons
 #' are used.
 #' @param network_include_regions Whether SCENIC+ `"network"` / `"network_graph"`
 #' plots use TF–region–gene triplets when they are stored. Default is `TRUE`.
 #' @param label_nodes Which nodes to label in network plots. `"auto"` labels
-#' all nodes in hub/eGRN plots and high-degree TFs in global graphs.
+#' TFs plus target genes in star/eGRN plots (region coordinates stay unlabeled)
+#' and high-degree TFs in dense global graphs.
 #' @param network_label_top_n Maximum number of high-degree TF nodes labeled in
 #' `plot_type = "network_graph"` when `label_nodes = "tfs"`.
 #' @param return_data Whether to return RSS matrices and ranking tables together

@@ -42,7 +42,8 @@ regulon specificity score (RSS). \code{"eregulon_dim"} compares TF expression
 with gene-based AUC, and region-based AUC when it is stored in
 \code{srt@tools$SCENICPlus}. \code{"coverage"} draws accessibility and region–gene
 tracks for a target locus. \code{"network"} and \code{"egrn"} follow published
-SCENIC+ GRN figures (regulon hubs and TF–region–gene graphs). \code{"overlap"}
+SCENIC+ / iRegulon GRN figures (concentric regulon hubs and Kamada–Kawai
+TF–region–gene graphs with unlabeled region diamonds). \code{"overlap"}
 shows eRegulon target Jaccard overlap.
 }
 \examples{
