@@ -4,6 +4,200 @@
 
 using namespace Rcpp;
 
+namespace {
+
+constexpr int kMaxDenseDptCells = 4000;
+
+void check_dense_dpt_size(int n_cells) {
+  if (n_cells > kMaxDenseDptCells) {
+    thisutils::log_message(
+      "cell-level DPT currently requires dense O(n^2) memory; reduce the dataset size or skip cell-level DPT",
+      "error"
+    );
+  }
+}
+
+NumericMatrix build_gauss_connectivities(
+    IntegerMatrix knn_idx,
+    NumericMatrix knn_dist)
+{
+  const int n_cells = knn_idx.nrow();
+  const int n_neighbors = knn_idx.ncol();
+  check_dense_dpt_size(n_cells);
+  if (knn_dist.nrow() != n_cells || knn_dist.ncol() != n_neighbors) {
+    thisutils::log_message("knn_idx and knn_dist must have the same dimensions", "error");
+  }
+
+  NumericMatrix W(n_cells, n_cells);
+  std::fill(W.begin(), W.end(), 0.0);
+  std::vector<double> sigma_sq(n_cells, 1e-20);
+
+  for (int i = 0; i < n_cells; ++i) {
+    double max_dsq = 0.0;
+    for (int col = 0; col < n_neighbors; ++col) {
+      const double d = knn_dist(i, col);
+      if (R_FINITE(d)) {
+        max_dsq = std::max(max_dsq, d * d);
+      }
+    }
+    sigma_sq[i] = std::max(max_dsq / 4.0, 1e-20);
+  }
+
+  for (int i = 0; i < n_cells; ++i) {
+    const double sigma_i = std::sqrt(sigma_sq[i]);
+    for (int col = 0; col < n_neighbors; ++col) {
+      int j = knn_idx(i, col);
+      if (j == NA_INTEGER) continue;
+      j -= 1;
+      if (j < 0 || j >= n_cells || j == i) continue;
+      const double d = knn_dist(i, col);
+      if (!R_FINITE(d)) continue;
+      const double dsq = d * d;
+      const double sigma_j = std::sqrt(sigma_sq[j]);
+      const double den = sigma_sq[i] + sigma_sq[j];
+      const double weight =
+        std::sqrt(2.0 * sigma_i * sigma_j / den) * std::exp(-dsq / den);
+      W(i, j) = weight;
+    }
+  }
+
+  for (int i = 0; i < n_cells; ++i) {
+    for (int col = 0; col < n_neighbors; ++col) {
+      int j = knn_idx(i, col);
+      if (j == NA_INTEGER) continue;
+      j -= 1;
+      if (j < 0 || j >= n_cells || j == i) continue;
+      if (W(j, i) == 0.0 && W(i, j) > 0.0) {
+        W(j, i) = W(i, j);
+      }
+    }
+  }
+
+  return W;
+}
+
+NumericMatrix transition_symmetric(const NumericMatrix& W) {
+  const int n_cells = W.nrow();
+  check_dense_dpt_size(n_cells);
+  if (W.ncol() != n_cells) {
+    thisutils::log_message("connectivities must be a square matrix", "error");
+  }
+
+  std::vector<double> q(n_cells, 0.0);
+  for (int j = 0; j < n_cells; ++j) {
+    for (int i = 0; i < n_cells; ++i) {
+      q[j] += W(i, j);
+    }
+    if (q[j] < 1e-20) q[j] = 1e-20;
+  }
+
+  NumericMatrix K(n_cells, n_cells);
+  for (int i = 0; i < n_cells; ++i) {
+    for (int j = 0; j < n_cells; ++j) {
+      K(i, j) = W(i, j) / (q[i] * q[j]);
+    }
+  }
+
+  std::vector<double> z(n_cells, 0.0);
+  for (int j = 0; j < n_cells; ++j) {
+    for (int i = 0; i < n_cells; ++i) {
+      z[j] += K(i, j);
+    }
+    z[j] = std::sqrt(std::max(z[j], 1e-20));
+  }
+
+  NumericMatrix Tsym(n_cells, n_cells);
+  for (int i = 0; i < n_cells; ++i) {
+    for (int j = 0; j < n_cells; ++j) {
+      Tsym(i, j) = K(i, j) / (z[i] * z[j]);
+    }
+  }
+  return Tsym;
+}
+
+List dpt_from_transition(
+    const NumericMatrix& transitions_sym,
+    int root_cell,
+    int n_dcs)
+{
+  const int n_cells = transitions_sym.nrow();
+  check_dense_dpt_size(n_cells);
+  if (root_cell < 1 || root_cell > n_cells) {
+    thisutils::log_message("root_cell must be a valid 1-based cell index", "error");
+  }
+
+  const int n_comps = std::min(n_dcs, n_cells - 1);
+  if (n_comps < 1) {
+    thisutils::log_message("n_dcs must be at least 1", "error");
+  }
+
+  Environment base("package:base");
+  Function eigen_fun = base["eigen"];
+  List eig = eigen_fun(transitions_sym, Named("symmetric", true));
+  NumericVector evals_all = eig["values"];
+  NumericMatrix evecs_all = eig["vectors"];
+
+  std::vector<std::pair<double, int>> pairs;
+  pairs.reserve(n_cells);
+  for (int i = 0; i < n_cells; ++i) {
+    pairs.push_back({evals_all[i], i});
+  }
+  std::sort(
+    pairs.begin(),
+    pairs.end(),
+    std::greater<std::pair<double, int>>()
+  );
+
+  NumericVector evals(n_comps);
+  NumericMatrix evecs(n_cells, n_comps);
+  for (int j = 0; j < n_comps; ++j) {
+    const int idx = pairs[j].second;
+    evals[j] = evals_all[idx];
+    for (int i = 0; i < n_cells; ++i) {
+      evecs(i, j) = evecs_all(i, idx);
+    }
+  }
+
+  NumericVector pseudotime(n_cells);
+  const int root = root_cell - 1;
+  for (int cell = 0; cell < n_cells; ++cell) {
+    double row = 0.0;
+    for (int j = 0; j < n_comps; ++j) {
+      const double ev = evals[j];
+      const double diff = evecs(cell, j) - evecs(root, j);
+      if (ev < 0.9994) {
+        row += std::pow(ev / (1.0 - ev) * diff, 2.0);
+      } else {
+        row += diff * diff;
+      }
+    }
+    pseudotime[cell] = std::sqrt(row);
+  }
+
+  double pmax = 0.0;
+  for (int i = 0; i < n_cells; ++i) {
+    if (R_FINITE(pseudotime[i]) && pseudotime[i] > pmax) {
+      pmax = pseudotime[i];
+    }
+  }
+  if (pmax > 0.0) {
+    for (int i = 0; i < n_cells; ++i) {
+      if (R_FINITE(pseudotime[i])) {
+        pseudotime[i] /= pmax;
+      }
+    }
+  }
+
+  return List::create(
+    _["pseudotime"] = pseudotime,
+    _["diffusion_components"] = evecs,
+    _["diffusion_eigenvalues"] = evals,
+    _["root_cell"] = root_cell
+  );
+}
+
+}  // namespace
+
 // [[Rcpp::export]]
 List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_groups) {
   const int n_cells = groups.size();
@@ -214,6 +408,44 @@ List paga_diffusion_pseudotime_cpp(
     _["diffusion_eigenvalues"] = eigvals_out,
     _["root_group"] = root + 1,
     _["n_branchings_found"] = n_branches_found
+  );
+}
+
+// ── 2b. Scanpy-compatible connectivities and cell-level DPT ──
+
+// [[Rcpp::export]]
+NumericMatrix gauss_connectivities_cpp(
+    IntegerMatrix knn_idx,
+    NumericMatrix knn_dist)
+{
+  return build_gauss_connectivities(knn_idx, knn_dist);
+}
+
+// [[Rcpp::export]]
+List dpt_from_connectivities_cpp(
+    NumericMatrix connectivities,
+    int root_cell,
+    int n_dcs = 10)
+{
+  if (connectivities.nrow() < 2) {
+    thisutils::log_message("at least two cells are required for cell-level DPT", "error");
+  }
+  NumericMatrix transitions_sym = transition_symmetric(connectivities);
+  return dpt_from_transition(transitions_sym, root_cell, n_dcs);
+}
+
+// [[Rcpp::export]]
+List cell_dpt_pseudotime_cpp(
+    IntegerMatrix knn_idx,
+    NumericMatrix knn_dist,
+    int root_cell,
+    int n_dcs = 10)
+{
+  NumericMatrix connectivities = build_gauss_connectivities(knn_idx, knn_dist);
+  return dpt_from_transition(
+    transition_symmetric(connectivities),
+    root_cell,
+    n_dcs
   );
 }
 

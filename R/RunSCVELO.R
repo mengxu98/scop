@@ -164,7 +164,7 @@ RunSCVELO <- function(
       unsupported_cpp,
       "RunSCVELO(backend = \"cpp\")"
     )
-    return(run_scvelo_cpp(
+    return(run_scanpy_cpp(
       srt = srt,
       assay_x = assay_x,
       assay_y = assay_y,
@@ -322,10 +322,10 @@ RunSCVELO <- function(
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
     if (is.null(srt)) {
-      return(srt_out)
+      srt_final <- srt_out
     } else {
       srt_out1 <- srt_append(srt_raw = srt, srt_append = srt_out)
-      srt_out2 <- srt_append(
+      srt_final <- srt_append(
         srt_raw = srt_out1,
         srt_append = srt_out,
         pattern = paste0(
@@ -336,8 +336,56 @@ RunSCVELO <- function(
         overwrite = TRUE,
         verbose = FALSE
       )
-      return(srt_out2)
     }
+    reduction_names <- names(srt_final@reductions)
+    meta_names <- colnames(srt_final@meta.data)
+    misc_names <- names(srt_final@misc)
+    scvelo_tools <- list(
+      backend = "python",
+      group.by = group.by,
+      parameters = list(
+        linear_reduction = linear_reduction,
+        nonlinear_reduction = nonlinear_reduction,
+        n_pcs = n_pcs,
+        n_neighbors = n_neighbors
+      ),
+      mode = mode
+    )
+    for (m in mode) {
+      velocity_reduction <- reduction_names[
+        grepl(paste0("^", m, "_"), reduction_names, ignore.case = TRUE) |
+          grepl("^velocity_", reduction_names, ignore.case = TRUE)
+      ]
+      conf_key <- intersect(
+        c(paste0(m, "_confidence"), "velocity_confidence"), meta_names
+      )
+      len_key <- intersect(
+        c(paste0(m, "_length"), "velocity_length"), meta_names
+      )
+      pt_key <- intersect(
+        c(paste0(m, "_pseudotime"), "velocity_pseudotime"), meta_names
+      )
+      graph_key <- intersect(
+        c(paste0(m, "_graph"), "velocity_graph"), misc_names
+      )
+      scvelo_tools[[m]] <- list(
+        velocity_reduction = if (length(velocity_reduction) > 0L) {
+          velocity_reduction[[1L]]
+        } else {
+          NULL
+        },
+        confidence_key = if (length(conf_key) > 0L) conf_key[[1L]] else NULL,
+        length_key = if (length(len_key) > 0L) len_key[[1L]] else NULL,
+        pseudotime_key = if (length(pt_key) > 0L) pt_key[[1L]] else NULL,
+        velocity_graph = if (length(graph_key) > 0L) {
+          srt_final@misc[[graph_key[[1L]]]]
+        } else {
+          NULL
+        }
+      )
+    }
+    srt_final@tools[["SCVELO"]] <- scvelo_tools
+    return(srt_final)
   } else {
     return(adata)
   }
@@ -376,7 +424,7 @@ velocity_embedding_autoscale <- function(embedding, velocity_embedding) {
   velocity_embedding / (3 * quiver_autoscale)
 }
 
-run_scvelo_cpp <- function(
+run_scanpy_cpp <- function(
   srt,
   assay_x,
   assay_y,
@@ -515,7 +563,7 @@ run_scvelo_cpp <- function(
   unspliced <- as.matrix(unspliced_raw[keep, , drop = FALSE])
   storage.mode(spliced) <- "double"
   storage.mode(unspliced) <- "double"
-  normed <- scvelo_normalize_scanpy_cpp(
+  normed <- scanpy_normalize_cpp(
     spliced = spliced,
     unspliced = unspliced,
     initial_spliced_totals = initial_spliced_totals,
@@ -535,9 +583,9 @@ run_scvelo_cpp <- function(
     1L,
     min(as.integer(n_neighbors) - 1L, nrow(linear_embedding) - 1L)
   )
-  knn <- scvelo_knn_scanpy_cpp(linear_embedding, knn_nonself, TRUE)
+  knn <- scanpy_knn_cpp(linear_embedding, knn_nonself, TRUE)
   knn_k <- ncol(knn[["idx"]])
-  moments <- scvelo_moments_connectivities_cpp(
+  moments <- scanpy_moments_connectivities_cpp(
     spliced = spliced_n,
     unspliced = unspliced_n,
     knn_idx = knn[["idx"]],
@@ -594,7 +642,7 @@ run_scvelo_cpp <- function(
 
     # Velocity estimation
     if (identical(m, "stochastic")) {
-      velocity <- scvelo_stochastic_cpp(
+      velocity <- scanpy_stochastic_cpp(
         Ms = Ms,
         Mu = Mu,
         Mss = Mss,
@@ -603,7 +651,7 @@ run_scvelo_cpp <- function(
         embedding = nonlinear_embedding
       )
     } else if (identical(m, "deterministic")) {
-      velocity <- scvelo_deterministic_cpp(
+      velocity <- scanpy_deterministic_cpp(
         Ms = Ms,
         Mu = Mu,
         knn_idx = knn[["idx"]],
@@ -626,7 +674,7 @@ run_scvelo_cpp <- function(
         fitting_by
       )
       if (identical(fitting_by, "em")) {
-        dyn_fit <- scvelo_dynamical_em_cpp(
+        dyn_fit <- scanpy_dynamical_em_cpp(
           Ms = Ms,
           Mu = Mu,
           use_genes = as.integer(dyn_genes),
@@ -634,7 +682,7 @@ run_scvelo_cpp <- function(
           conv_tol = 1e-6
         )
       } else {
-        dyn_fit <- scvelo_dynamical_nm_cpp(
+        dyn_fit <- scanpy_dynamical_nm_cpp(
           Ms = Ms,
           Mu = Mu,
           use_genes = as.integer(dyn_genes),
@@ -642,7 +690,7 @@ run_scvelo_cpp <- function(
         )
       }
       # Compute velocity from fitted dynamical parameters
-      velocity <- scvelo_dynamical_velocity_cpp(
+      velocity <- scanpy_dynamical_velocity_cpp(
         Ms = Ms,
         Mu = Mu,
         alpha = dyn_fit[["alpha"]],
@@ -705,7 +753,7 @@ run_scvelo_cpp <- function(
       }
     }
     srt@tools[["SCVELO"]][[m]]$n_velocity_graph_genes <- sum(graph_gene_idx)
-    vc_main <- scvelo_velocity_confidence_cpp(
+    vc_main <- scanpy_velocity_confidence_cpp(
       Ms = Ms[graph_gene_idx, , drop = FALSE],
       residual = vg_residual[graph_gene_idx, , drop = FALSE],
       knn_idx = knn[["idx"]]
@@ -718,7 +766,7 @@ run_scvelo_cpp <- function(
     # The graph is always computed so the stored velocity embedding follows
     # scv.tl.velocity_embedding's graph-projected path; the graph itself is
     # kept only when the user requested it for downstream analyses.
-    vg <- scvelo_velocity_graph_cpp(
+    vg <- scanpy_velocity_graph_cpp(
       Ms = Ms[graph_gene_idx, , drop = FALSE],
       Mu = Mu[graph_gene_idx, , drop = FALSE],
       residual = vg_residual[graph_gene_idx, , drop = FALSE],
@@ -736,7 +784,7 @@ run_scvelo_cpp <- function(
         neg_vals = vg[["velocity_graph_neg_vals"]]
       )
     }
-    velocity_embedding_graph <- scvelo_project_velocity_embedding_cpp(
+    velocity_embedding_graph <- scanpy_project_velocity_embedding_cpp(
       graph_rows = vg[["velocity_graph_rows"]],
       graph_cols = vg[["velocity_graph_cols"]],
       graph_vals = vg[["velocity_graph_vals"]],
@@ -769,7 +817,7 @@ run_scvelo_cpp <- function(
           message_type = "error"
         )
       }
-      ts <- scvelo_terminal_states_graph_cpp(
+      ts <- scanpy_terminal_states_graph_cpp(
         graph_rows = vg[["velocity_graph_rows"]],
         graph_cols = vg[["velocity_graph_cols"]],
         graph_vals = vg[["velocity_graph_vals"]],
@@ -789,7 +837,7 @@ run_scvelo_cpp <- function(
 
     # Velocity pseudotime
     if (isTRUE(compute_pseudotime) && isTRUE(compute_terminal_states)) {
-      vpt_result <- scvelo_pseudotime_graph_cpp(
+      vpt_result <- scanpy_pseudotime_graph_cpp(
         graph_rows = vg[["velocity_graph_rows"]],
         graph_cols = vg[["velocity_graph_cols"]],
         graph_vals = vg[["velocity_graph_vals"]],

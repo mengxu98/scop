@@ -531,20 +531,6 @@ RunSpaTalk <- function(
   srt
 }
 
-spatalk_get_result <- function(object, result.name = NULL) {
-  if (!inherits(object, "Seurat")) {
-    log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
-  }
-  bundle <- object@tools[["SpaTalk"]]
-  if (is.null(bundle)) log_message("SpaTalk results are absent", message_type = "error")
-  if (is.null(result.name) && length(bundle$results) > 1L) {
-    log_message("Multiple SpaTalk results are stored; select {.arg result.name}", message_type = "error")
-  }
-  result.name <- result.name %||% bundle$active_result
-  result <- bundle$results[[result.name]]
-  if (is.null(result)) log_message("Unknown SpaTalk result {.val {result.name}}", message_type = "error")
-  list(bundle = bundle, result = result, result.name = result.name)
-}
 
 spatalk_plot_object <- function(object, stored) {
   long_table <- stored$result$long_table %||% spatalk_long_table(stored$result$lr_table)
@@ -576,7 +562,7 @@ SpaTalkPlot <- function(
   ...
 ) {
   plot_type <- match.arg(plot_type)
-  stored <- spatalk_get_result(object, result.name)
+  stored <- tool_bundle_get_result(object, "SpaTalk", result.name)
   if (identical(plot_type, "network")) {
     plot_object <- spatalk_plot_object(object, stored)
     return(do.call(CCCNetworkPlot, c(list(srt = plot_object, method = "SpaTalk", plot_type = "circle"), list(...))))

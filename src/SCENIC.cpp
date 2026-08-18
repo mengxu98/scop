@@ -2,6 +2,7 @@
 // [[Rcpp::plugins(cpp14)]]
 #include <RcppArmadillo.h>
 #include <thisutils/log_message.h>
+#include "thread_utils.h"
 #include <algorithm>
 #include <atomic>
 #include <chrono>
@@ -939,16 +940,6 @@ static void scenic_profile_add_elapsed(
   profile->*slot += elapsed.count();
 }
 
-static int scenic_grn_worker_count(int requested, int n_tasks) {
-  if (n_tasks <= 1) return 1;
-  int cores = requested < 1 ? 1 : requested;
-  const unsigned int hardware = std::thread::hardware_concurrency();
-  if (hardware > 0) {
-    cores = std::min(cores, static_cast<int>(hardware));
-  }
-  return std::max(1, std::min(cores, n_tasks));
-}
-
 template <typename Expr>
 static void scenic_grnboost_run_targets(
     const Expr& expr,
@@ -1209,7 +1200,7 @@ static DataFrame scenic_grnboost_tree_impl(
   }
 
   const int workers = profile == nullptr ?
-    scenic_grn_worker_count(cores, static_cast<int>(targets.size())) : 1;
+    worker_count(cores, static_cast<int>(targets.size())) : 1;
   if (workers <= 1) {
     scenic_grnboost_run_targets(
       expr, regs, targets, 0, targets.size(), means, feature_orders,

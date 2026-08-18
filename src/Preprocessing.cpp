@@ -6,24 +6,30 @@
 #include <vector>
 #include <limits>
 #include <string>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 using namespace Rcpp;
 
 // ── 1. Filter genes (matching scv.pp.filter_genes exactly) ──────────────────
 
 // [[Rcpp::export]]
-IntegerVector scvelo_filter_genes_scanpy_cpp(
+IntegerVector scanpy_filter_genes_cpp(
     NumericMatrix spliced,     // genes × cells
     NumericMatrix unspliced,
     int min_counts = 3,
     int min_counts_u = 3)
 {
-  int n_genes = spliced.nrow();
-  int n_cells = spliced.ncol();
+  const int n_genes = spliced.nrow();
+  const int n_cells = spliced.ncol();
   if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
     thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
 
   IntegerVector keep(n_genes, 1);
+  #ifdef _OPENMP
+  #pragma omp parallel for schedule(dynamic, 16)
+  #endif
   for (int g = 0; g < n_genes; ++g) {
     double sum_s = 0.0, sum_u = 0.0;
     for (int c = 0; c < n_cells; ++c) {
@@ -41,7 +47,7 @@ IntegerVector scvelo_filter_genes_scanpy_cpp(
 // ── 2. Normalize per cell (matching scv.pp.normalize_per_cell, without log1p) ──
 
 // [[Rcpp::export]]
-List scvelo_normalize_scanpy_cpp(
+List scanpy_normalize_cpp(
     NumericMatrix spliced,     // genes × cells, ALREADY FILTERED
     NumericMatrix unspliced,   // genes × cells, ALREADY FILTERED
     NumericVector initial_spliced_totals,  // per-cell totals BEFORE filtering (length = n_cells)
@@ -100,7 +106,7 @@ List scvelo_normalize_scanpy_cpp(
 // Matches scanpy's pca(n_pcs, zero_center=True) up to eigenvector sign flips.
 
 // [[Rcpp::export]]
-List scvelo_pca_scanpy_cpp(
+List scanpy_pca_cpp(
     NumericMatrix X,           // genes × cells — will be transposed to cells×genes
     int n_pcs = 30)
 {
@@ -263,7 +269,7 @@ List scvelo_pca_scanpy_cpp(
 // ── 4. KNN via exact brute-force Euclidean (deterministic, matching scanpy) ──
 
 // [[Rcpp::export]]
-List scvelo_knn_scanpy_cpp(
+List scanpy_knn_cpp(
     NumericMatrix coords,      // cells × dims
     int n_neighbors = 10,
     bool exclude_self = true)
@@ -317,7 +323,7 @@ List scvelo_knn_scanpy_cpp(
 // ── 5. Filter genes with shared counts (min_shared_counts) ──────────────────
 
 // [[Rcpp::export]]
-IntegerVector scvelo_filter_genes_shared_cpp(
+IntegerVector scanpy_filter_genes_shared_cpp(
     NumericMatrix spliced,
     NumericMatrix unspliced,
     int min_shared_counts = 30)
@@ -345,7 +351,7 @@ IntegerVector scvelo_filter_genes_shared_cpp(
 // ── 6. Full scanpy-compatible preprocessing pipeline ───────────────────────
 
 // [[Rcpp::export]]
-List scvelo_preprocess_scanpy_cpp(
+List scanpy_preprocess_cpp(
     NumericMatrix spliced,         // genes × cells
     NumericMatrix unspliced,
     int n_pcs = 30,
@@ -372,7 +378,7 @@ List scvelo_preprocess_scanpy_cpp(
   }
 
   // Step 2: Filter genes
-  IntegerVector keep = scvelo_filter_genes_scanpy_cpp(spliced, unspliced, min_counts, min_counts_u);
+  IntegerVector keep = scanpy_filter_genes_cpp(spliced, unspliced, min_counts, min_counts_u);
 
   int n_keep = 0;
   for (int g = 0; g < n_genes; ++g) n_keep += keep[g] > 0;
@@ -394,7 +400,7 @@ List scvelo_preprocess_scanpy_cpp(
   }
 
   // Step 3: Normalize (NO log1p — matching scv.pp.normalize_per_cell)
-  List normed = scvelo_normalize_scanpy_cpp(spliced_f, unspliced_f,
+  List normed = scanpy_normalize_cpp(spliced_f, unspliced_f,
     initial_spliced_totals, initial_unspliced_totals);
   NumericMatrix spliced_n = normed["spliced_norm"];
   NumericMatrix unspliced_n = normed["unspliced_norm"];
@@ -405,14 +411,14 @@ List scvelo_preprocess_scanpy_cpp(
     for (int c = 0; c < n_cells; ++c)
       spliced_for_pca(g, c) = std::log1p(spliced_n(g, c));
 
-  List pca = scvelo_pca_scanpy_cpp(spliced_for_pca, n_pcs);
+  List pca = scanpy_pca_cpp(spliced_for_pca, n_pcs);
   NumericMatrix pca_scores = pca["scores"];
   int n_pcs_out = pca["n_pcs"];
 
   // Step 5: KNN in PCA space. scanpy stores n_neighbors - 1 non-self
   // distances when querying the training data itself.
   int knn_nonself = std::max(1, std::min(n_neighbors - 1, n_cells - 1));
-  List knn = scvelo_knn_scanpy_cpp(pca_scores, knn_nonself, true);
+  List knn = scanpy_knn_cpp(pca_scores, knn_nonself, true);
 
   return List::create(
     _["spliced_norm"] = spliced_n,

@@ -557,38 +557,179 @@ env_module_dependencies <- function() {
   )
 }
 
-env_module_requirements <- function() {
+env_python_spec <- function(packages, methods = "pip", aliases = list()) {
+  nms <- names(packages)
+  if (is.null(names(methods))) {
+    methods <- stats::setNames(rep(as.character(methods), length(packages)), nms)
+  }
   list(
-    scanpy = scanpy_python_requirements(),
-    scvi = scvi_python_requirements(),
-    glue = glue_python_requirements(),
-    scanorama = scanorama_python_requirements(),
-    bbknn = bbknn_python_requirements(),
-    celltypist = celltypist_python_requirements(),
-    cellphonedb = cellphonedb_python_requirements(),
-    cell2location = cell2location_python_requirements(),
-    cell2fate = cell2fate_python_requirements(),
-    commot = commot_python_requirements(),
-    magic = magic_python_requirements(),
-    scfea = scfea_python_requirements(),
-    scrublet = scrublet_python_requirements(),
-    sccoda = sccoda_python_requirements(),
-    doubletdetection = doubletdetection_python_requirements(),
-    palantir = palantir_python_requirements(),
-    scvelo = scvelo_python_requirements(),
-    cellrank = cellrank_python_requirements(),
-    wot = wot_python_requirements(),
-    phate = phate_python_requirements(),
-    pacmap = pacmap_python_requirements(),
-    trimap = trimap_python_requirements(),
-    multimap = multimap_python_requirements(),
-    scomm = scomm_python_requirements(),
-    scenic = scenic_python_requirements(),
-    regdiffusion = regdiffusion_python_requirements(),
-    scenicplus = scenicplus_python_requirements(),
-    seacells = seacells_python_requirements(),
-    tage = tage_python_requirements(),
-    scmalignantfinder = scmalignantfinder_python_requirements()
+    packages = packages,
+    install_methods = methods,
+    package_aliases = aliases
+  )
+}
+
+env_module_requirements <- function() {
+  scenic_backend <- scenic_backend_package()
+  scenic_pkg <- stats::setNames(scenic_backend_requirement(), scenic_backend)
+  scenic_method <- stats::setNames("pip", scenic_backend)
+  scmalignantfinder_packages <- c(
+    "scMalignantFinder" = paste0(
+      "git+https://github.com/Jonyyqn/scMalignantFinder.git@",
+      "6ed094279c7adbbca30f2c73245fc074894d3715"
+    )
+  )
+  scmalignantfinder_methods <- c("scMalignantFinder" = "pip")
+  if (is_osx()) {
+    scmalignantfinder_packages <- c(scmalignantfinder_packages, "libcxx" = "libcxx")
+    scmalignantfinder_methods <- c(scmalignantfinder_methods, "libcxx" = "conda")
+  }
+
+  list(
+    scanpy = env_python_spec(c(
+      "scanpy" = "scanpy==1.11.3",
+      "loompy" = "loompy"
+    )),
+    scvi = env_python_spec(
+      c(
+        "scvi-tools" = "scvi-tools==1.3.3",
+        "jax" = "jax[cpu]==0.4.38"
+      ),
+      methods = c(
+        "scvi-tools" = if (is_windows()) "pip" else "conda",
+        "jax" = "pip"
+      )
+    ),
+    glue = env_python_spec(
+      c(
+        "scglue" = "scglue==0.4.0",
+        "bedtools" = "bedtools",
+        "zlib" = "zlib"
+      ),
+      methods = c(
+        "scglue" = "pip",
+        "bedtools" = "conda",
+        "zlib" = "conda"
+      )
+    ),
+    scanorama = env_python_spec(c("scanorama" = "scanorama==1.7.4")),
+    bbknn = env_python_spec(c("bbknn" = "bbknn==1.6.0")),
+    celltypist = env_python_spec(c("celltypist" = "celltypist==1.7.1")),
+    cellphonedb = env_python_spec(c("cellphonedb" = "cellphonedb==5.0.1")),
+    cell2location = env_python_spec(
+      c(
+        "cell2location" = "cell2location==0.1.5",
+        "flax" = "flax==0.10.4",
+        "optax" = "optax==0.2.5",
+        "orbax-checkpoint" = "orbax-checkpoint==0.8.0",
+        "tensorstore" = "tensorstore==0.1.65",
+        "hdf5" = "hdf5==2.1.0"
+      ),
+      methods = c(
+        "cell2location" = "pip",
+        "flax" = "pip",
+        "optax" = "pip",
+        "orbax-checkpoint" = "pip",
+        "tensorstore" = "pip",
+        "hdf5" = "conda"
+      )
+    ),
+    cell2fate = env_python_spec(
+      c(
+        "jaxlib" = "jaxlib==0.4.10",
+        "cell2fate" = paste0(
+          "git+https://github.com/BayraktarLab/cell2fate.git@",
+          "c03d1ca0bb963f550001c6070d4986a61ec8456a"
+        )
+      ),
+      methods = c("jaxlib" = "conda", "cell2fate" = "pip")
+    ),
+    commot = env_python_spec(c(
+      "commot" = paste0(
+        "git+https://github.com/zcang/COMMOT.git@",
+        "d117445bc07eaa19109c7609e97d9e35b26e99ca"
+      )
+    )),
+    magic = env_python_spec(c("magic-impute" = "magic-impute==3.0.0")),
+    scfea = env_python_spec(c(
+      "torch" = "torch",
+      "numpy" = "numpy",
+      "pandas" = "pandas",
+      "tqdm" = "tqdm"
+    )),
+    scrublet = env_python_spec(c("scrublet" = "scrublet==0.2.3")),
+    sccoda = env_python_spec(
+      c(
+        "tensorflow" = "tensorflow==2.16.2",
+        "tensorflow-probability" = "tensorflow-probability==0.24.0",
+        "tf-keras" = "tf-keras==2.16.0",
+        "sccoda" = "sccoda==0.1.9"
+      ),
+      aliases = list("sccoda" = "scCODA", "tf-keras" = "tf_keras")
+    ),
+    doubletdetection = env_python_spec(c(
+      "doubletdetection" = "doubletdetection==4.3.0.post1",
+      "louvain" = "louvain==0.8.2"
+    )),
+    palantir = env_python_spec(c("palantir" = "palantir==1.4.1")),
+    scvelo = env_python_spec(c("scvelo" = "scvelo==0.3.3")),
+    cellrank = env_python_spec(c("cellrank" = "cellrank==2.0.7")),
+    wot = env_python_spec(c("wot" = "wot==1.0.8.post2")),
+    phate = env_python_spec(c("phate" = "phate==1.0.11")),
+    pacmap = env_python_spec(c("pacmap" = "pacmap==0.8.0")),
+    trimap = env_python_spec(c("trimap" = "trimap==1.1.4")),
+    multimap = env_python_spec(
+      c("multimap" = "git+https://github.com/Teichlab/MultiMAP.git"),
+      aliases = list("multimap" = "MultiMAP", "MultiMAP" = "multimap")
+    ),
+    scomm = env_python_spec(
+      c(
+        "tensorflow" = "tensorflow==2.16.2",
+        "keras" = "keras==3.3.3",
+        "tf_keras" = "tf_keras==2.16.0",
+        "ml_dtypes" = "ml-dtypes==0.3.2"
+      ),
+      aliases = list(
+        "tf_keras" = "tf-keras",
+        "tf-keras" = "tf_keras",
+        "ml_dtypes" = "ml-dtypes",
+        "ml-dtypes" = "ml_dtypes"
+      )
+    ),
+    scenic = env_python_spec(
+      c(
+        scenic_pkg,
+        "arboreto" = "arboreto==0.1.6",
+        "ctxcore" = "ctxcore==0.2.0",
+        "numpy" = "numpy==1.23.5",
+        "dask" = "dask==2024.2.1",
+        "distributed" = "distributed==2024.2.1",
+        "pyarrow" = "pyarrow"
+      ),
+      methods = c(
+        scenic_method,
+        "arboreto" = "pip",
+        "ctxcore" = "pip",
+        "numpy" = "pip",
+        "dask" = "pip",
+        "distributed" = "pip",
+        "pyarrow" = "pip"
+      )
+    ),
+    regdiffusion = env_python_spec(c("regdiffusion" = "regdiffusion")),
+    scenicplus = env_python_spec(c(
+      "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git"
+    )),
+    seacells = env_python_spec(c("SEACells" = "SEACells")),
+    tage = env_python_spec(c(
+      "joblib" = "joblib",
+      "pandas" = "pandas",
+      "scikit-learn" = "scikit-learn"
+    )),
+    scmalignantfinder = env_python_spec(
+      scmalignantfinder_packages,
+      methods = scmalignantfinder_methods
+    )
   )
 }
 
@@ -1788,87 +1929,6 @@ scenic_backend_requirement <- function(version = "0.12.1") {
   paste0(scenic_backend_package(), "==", version)
 }
 
-scanpy_python_requirements <- function() {
-  list(
-    packages = c(
-      "scanpy" = "scanpy==1.11.3",
-      "loompy" = "loompy"
-    ),
-    install_methods = c(
-      "scanpy" = "pip",
-      "loompy" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-scvi_python_requirements <- function() {
-  scvi_install_method <- if (is_windows()) "pip" else "conda"
-  list(
-    packages = c(
-      "scvi-tools" = "scvi-tools==1.3.3",
-      "jax" = "jax[cpu]==0.4.38"
-    ),
-    install_methods = c(
-      "scvi-tools" = scvi_install_method,
-      "jax" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-cell2location_python_requirements <- function() {
-  list(
-    packages = c(
-      "cell2location" = "cell2location==0.1.5",
-      "flax" = "flax==0.10.4",
-      "optax" = "optax==0.2.5",
-      "orbax-checkpoint" = "orbax-checkpoint==0.8.0",
-      "tensorstore" = "tensorstore==0.1.65",
-      "hdf5" = "hdf5==2.1.0"
-    ),
-    install_methods = c(
-      "cell2location" = "pip",
-      "flax" = "pip",
-      "optax" = "pip",
-      "orbax-checkpoint" = "pip",
-      "tensorstore" = "pip",
-      "hdf5" = "conda"
-    ),
-    package_aliases = list()
-  )
-}
-
-cell2fate_python_requirements <- function() {
-  list(
-    packages = c(
-      "jaxlib" = "jaxlib==0.4.10",
-      "cell2fate" = paste0(
-        "git+https://github.com/BayraktarLab/cell2fate.git@",
-        "c03d1ca0bb963f550001c6070d4986a61ec8456a"
-      )
-    ),
-    install_methods = c(
-      "jaxlib" = "conda",
-      "cell2fate" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-commot_python_requirements <- function() {
-  list(
-    packages = c(
-      "commot" = paste0(
-        "git+https://github.com/zcang/COMMOT.git@",
-        "d117445bc07eaa19109c7609e97d9e35b26e99ca"
-      )
-    ),
-    install_methods = c("commot" = "pip"),
-    package_aliases = list()
-  )
-}
-
 commot_core_python_requirements <- function() {
   packages <- c(
     "setuptools" = "setuptools<81",
@@ -1898,369 +1958,6 @@ commot_core_python_requirements <- function() {
   )
 }
 
-glue_python_requirements <- function() {
-  list(
-    packages = c(
-      "scglue" = "scglue==0.4.0",
-      "bedtools" = "bedtools",
-      "zlib" = "zlib"
-    ),
-    install_methods = c(
-      "scglue" = "pip",
-      "bedtools" = "conda",
-      "zlib" = "conda"
-    ),
-    package_aliases = list()
-  )
-}
-
-scanorama_python_requirements <- function() {
-  list(
-    packages = c(
-      "scanorama" = "scanorama==1.7.4"
-    ),
-    install_methods = c(
-      "scanorama" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-bbknn_python_requirements <- function() {
-  list(
-    packages = c(
-      "bbknn" = "bbknn==1.6.0"
-    ),
-    install_methods = c(
-      "bbknn" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-celltypist_python_requirements <- function() {
-  list(
-    packages = c(
-      "celltypist" = "celltypist==1.7.1"
-    ),
-    install_methods = c(
-      "celltypist" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-cellphonedb_python_requirements <- function() {
-  list(
-    packages = c(
-      "cellphonedb" = "cellphonedb==5.0.1"
-    ),
-    install_methods = c(
-      "cellphonedb" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-magic_python_requirements <- function() {
-  list(
-    packages = c(
-      "magic-impute" = "magic-impute==3.0.0"
-    ),
-    install_methods = c(
-      "magic-impute" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-scfea_python_requirements <- function() {
-  list(
-    packages = c(
-      "torch" = "torch",
-      "numpy" = "numpy",
-      "pandas" = "pandas",
-      "tqdm" = "tqdm"
-    ),
-    install_methods = c(
-      "torch" = "pip",
-      "numpy" = "pip",
-      "pandas" = "pip",
-      "tqdm" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-tage_python_requirements <- function() {
-  list(
-    packages = c(
-      "joblib" = "joblib",
-      "pandas" = "pandas",
-      "scikit-learn" = "scikit-learn"
-    ),
-    install_methods = c(
-      "joblib" = "pip",
-      "pandas" = "pip",
-      "scikit-learn" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-scrublet_python_requirements <- function() {
-  list(
-    packages = c(
-      "scrublet" = "scrublet==0.2.3"
-    ),
-    install_methods = c(
-      "scrublet" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-sccoda_python_requirements <- function() {
-  list(
-    packages = c(
-      "tensorflow" = "tensorflow==2.16.2",
-      "tensorflow-probability" = "tensorflow-probability==0.24.0",
-      "tf-keras" = "tf-keras==2.16.0",
-      "sccoda" = "sccoda==0.1.9"
-    ),
-    install_methods = c(
-      "tensorflow" = "pip",
-      "tensorflow-probability" = "pip",
-      "tf-keras" = "pip",
-      "sccoda" = "pip"
-    ),
-    package_aliases = list(
-      "sccoda" = "scCODA",
-      "tf-keras" = "tf_keras"
-    )
-  )
-}
-
-doubletdetection_python_requirements <- function() {
-  list(
-    packages = c(
-      "doubletdetection" = "doubletdetection==4.3.0.post1",
-      "louvain" = "louvain==0.8.2"
-    ),
-    install_methods = c(
-      "doubletdetection" = "pip",
-      "louvain" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-palantir_python_requirements <- function() {
-  list(
-    packages = c(
-      "palantir" = "palantir==1.4.1"
-    ),
-    install_methods = c(
-      "palantir" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-scvelo_python_requirements <- function() {
-  list(
-    packages = c(
-      "scvelo" = "scvelo==0.3.3"
-    ),
-    install_methods = c(
-      "scvelo" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-seacells_python_requirements <- function() {
-  list(
-    packages = c(
-      "SEACells" = "SEACells"
-    ),
-    install_methods = c(
-      "SEACells" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-scmalignantfinder_python_requirements <- function() {
-  packages <- c(
-    "scMalignantFinder" = paste0(
-      "git+https://github.com/Jonyyqn/scMalignantFinder.git@",
-      "6ed094279c7adbbca30f2c73245fc074894d3715"
-    )
-  )
-  install_methods <- c(
-    "scMalignantFinder" = "pip"
-  )
-  if (is_osx()) {
-    packages <- c(packages, "libcxx" = "libcxx")
-    install_methods <- c(install_methods, "libcxx" = "conda")
-  }
-
-  list(
-    packages = packages,
-    install_methods = install_methods,
-    package_aliases = list()
-  )
-}
-
-scenic_python_requirements <- function() {
-  scenic_backend <- scenic_backend_package()
-  scenic_package <- stats::setNames(scenic_backend_requirement(), scenic_backend)
-  scenic_install_method <- stats::setNames("pip", scenic_backend)
-  list(
-    packages = c(
-      scenic_package,
-      "arboreto" = "arboreto==0.1.6",
-      "ctxcore" = "ctxcore==0.2.0",
-      "numpy" = "numpy==1.23.5",
-      "dask" = "dask==2024.2.1",
-      "distributed" = "distributed==2024.2.1",
-      "pyarrow" = "pyarrow"
-    ),
-    install_methods = c(
-      scenic_install_method,
-      "arboreto" = "pip",
-      "ctxcore" = "pip",
-      "numpy" = "pip",
-      "dask" = "pip",
-      "distributed" = "pip",
-      "pyarrow" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-regdiffusion_python_requirements <- function() {
-  list(
-    packages = c(
-      "regdiffusion" = "regdiffusion"
-    ),
-    install_methods = c(
-      "regdiffusion" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-scenicplus_python_requirements <- function() {
-  list(
-    packages = c(
-      "scenicplus" = "scenicplus @ git+https://github.com/aertslab/scenicplus.git"
-    ),
-    install_methods = c(
-      "scenicplus" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-cellrank_python_requirements <- function() {
-  list(
-    packages = c(
-      "cellrank" = "cellrank==2.0.7"
-    ),
-    install_methods = c(
-      "cellrank" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-wot_python_requirements <- function() {
-  list(
-    packages = c(
-      "wot" = "wot==1.0.8.post2"
-    ),
-    install_methods = c(
-      "wot" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-phate_python_requirements <- function() {
-  list(
-    packages = c(
-      "phate" = "phate==1.0.11"
-    ),
-    install_methods = c(
-      "phate" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-pacmap_python_requirements <- function() {
-  list(
-    packages = c(
-      "pacmap" = "pacmap==0.8.0"
-    ),
-    install_methods = c(
-      "pacmap" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-trimap_python_requirements <- function() {
-  list(
-    packages = c(
-      "trimap" = "trimap==1.1.4"
-    ),
-    install_methods = c(
-      "trimap" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
-
-multimap_python_requirements <- function() {
-  list(
-    packages = c(
-      "multimap" = "git+https://github.com/Teichlab/MultiMAP.git"
-    ),
-    install_methods = c(
-      "multimap" = "pip"
-    ),
-    package_aliases = list(
-      "multimap" = "MultiMAP",
-      "MultiMAP" = "multimap"
-    )
-  )
-}
-
-scomm_python_requirements <- function() {
-  list(
-    packages = c(
-      "tensorflow" = "tensorflow==2.16.2",
-      "keras" = "keras==3.3.3",
-      "tf_keras" = "tf_keras==2.16.0",
-      "ml_dtypes" = "ml-dtypes==0.3.2"
-    ),
-    install_methods = c(
-      "tensorflow" = "pip",
-      "keras" = "pip",
-      "tf_keras" = "pip",
-      "ml_dtypes" = "pip"
-    ),
-    package_aliases = list(
-      "tf_keras" = "tf-keras",
-      "tf-keras" = "tf_keras",
-      "ml_dtypes" = "ml-dtypes",
-      "ml-dtypes" = "ml_dtypes"
-    )
-  )
-}
 
 env_exist <- function(
   conda = "auto",
