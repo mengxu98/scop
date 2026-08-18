@@ -96,8 +96,10 @@
 #' "rss_heatmap"`.
 #' @param palette,palcolor Palette passed to `palette_colors()` for
 #' `"rss_dotplot"`, `"heatmap_dotplot"`, `"regulon_size"`, `"target_bar"`,
-#' and network node colors. Network plots keep publication TF/region/gene
-#' colors when `palette = "RdYlBu"` unless `palcolor` is set.
+#' and network node colors. Network plots follow [EnrichmentPlot()] network
+#' styling: TF-colored edges, `geom_label()` target pills, and double-ring TF
+#' hubs. When `palette = "RdYlBu"`, networks default to the `"Chinese"`
+#' discrete palette for regulon colors.
 #' @param compare_expression Whether `"activity_dim"` also plots TF gene
 #' expression beside regulon activity. `"eregulon_dim"` always compares
 #' expression with activity.

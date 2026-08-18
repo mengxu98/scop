@@ -188,8 +188,10 @@ the same legend range.}
 
 \item{palette, palcolor}{Palette passed to \code{palette_colors()} for
 \code{"rss_dotplot"}, \code{"heatmap_dotplot"}, \code{"regulon_size"}, \code{"target_bar"},
-and network node colors. Network plots keep publication TF/region/gene
-colors when \code{palette = "RdYlBu"} unless \code{palcolor} is set.}
+and network node colors. Network plots follow \code{\link[=EnrichmentPlot]{EnrichmentPlot()}} network
+styling: TF-colored edges, \code{geom_label()} target pills, and double-ring TF
+hubs. When \code{palette = "RdYlBu"}, networks default to the \code{"Chinese"}
+discrete palette for regulon colors.}
 
 \item{compare_expression}{Whether \code{"activity_dim"} also plots TF gene
 expression beside regulon activity. \code{"eregulon_dim"} always compares
