@@ -11,7 +11,6 @@ scenic_plot_network_graph <- function(
   network_include_regions = TRUE,
   palette = "RdYlBu",
   palcolor = NULL,
-  title = NULL,
   rank_table = NULL
 ) {
   layout_use <- scenic_network_resolve_layout(network_layout, default = "kk")
@@ -28,7 +27,6 @@ scenic_plot_network_graph <- function(
     filter_tfs = FALSE,
     palette = palette,
     palcolor = palcolor,
-    title = title %||% "SCENIC TF–target network",
     curvature = if (layout_use %in% c("star", "hub", "kk", "fr")) 0.08 else 0.12,
     rank_table = rank_table,
     label_top_n = network_label_top_n
@@ -48,9 +46,6 @@ scenic_plot_network <- function(
   network_include_regions = TRUE,
   palette = "RdYlBu",
   palcolor = NULL,
-  combine = TRUE,
-  ncol = 3,
-  title = NULL,
   rank_table = NULL
 ) {
   tf_candidates <- scenic_network_tf_candidates(
@@ -62,65 +57,11 @@ scenic_plot_network <- function(
       message_type = "error"
     )
   }
-  layout_use <- scenic_network_resolve_layout(network_layout, default = "star")
-  split_panels <- identical(layout_use, "star") && length(tf_candidates) > 1L
-  panel_palcolor <- palcolor
-  tf_groups <- scenic_network_tf_groups(rank_table %||% top_table, tf_candidates)
-  if (isTRUE(split_panels)) {
-    panel_palcolor <- palette_colors(
-      tf_candidates,
-      palette = if (identical(palette, "RdYlBu")) "Chinese" else palette,
-      palcolor = palcolor
-    )
+  layout_use <- if (identical(network_layout, "auto") || is.null(network_layout)) {
+    if (length(tf_candidates) <= 1L) "star" else "hub"
+  } else {
+    network_layout
   }
-
-  if (isTRUE(split_panels)) {
-    plots <- list()
-    edge_list <- list()
-    node_list <- list()
-    for (tf in tf_candidates) {
-      grp <- tf_groups[[tf]]
-      panel_title <- if (!is.na(grp) && nzchar(grp)) {
-        paste0(tf, " (", grp, ")")
-      } else {
-        tf
-      }
-      one <- scenic_plot_one_network(
-        srt = srt,
-        tool_name = tool_name,
-        tfs = tf,
-        max_targets = max_targets,
-        max_edges = Inf,
-        network_layout = "star",
-        label_nodes = label_nodes,
-        highlight_tf = highlight_tf,
-        include_regions = network_include_regions,
-        filter_tfs = TRUE,
-        palette = palette,
-        palcolor = panel_palcolor,
-        title = panel_title,
-        curvature = 0,
-        rank_table = rank_table %||% top_table
-      )
-      plots[[tf]] <- one[["plot"]]
-      edge_list[[tf]] <- one[["data"]][["edges"]]
-      node_list[[tf]] <- one[["data"]][["nodes"]]
-    }
-    plot <- scenic_combine_plots(
-      plots,
-      combine = combine,
-      ncol = ncol,
-      title = title %||% "SCENIC regulon networks"
-    )
-    edges <- scenic_bind_named_dfs(edge_list, "TF")
-    nodes <- scenic_bind_named_dfs(node_list, "TF")
-    return(list(
-      plot = plot,
-      plots = plots,
-      data = list(edges = edges, nodes = nodes)
-    ))
-  }
-
   scenic_plot_one_network(
     srt = srt,
     tool_name = tool_name,
@@ -134,18 +75,6 @@ scenic_plot_network <- function(
     filter_tfs = TRUE,
     palette = palette,
     palcolor = palcolor,
-    title = if (!is.null(title)) {
-      title
-    } else if (length(tf_candidates) == 1L) {
-      grp <- tf_groups[[tf_candidates[[1]]]]
-      if (!is.na(grp) && nzchar(grp)) {
-        paste0(tf_candidates, " (", grp, ")")
-      } else {
-        tf_candidates
-      }
-    } else {
-      "SCENIC TF–target network"
-    },
     curvature = if (layout_use %in% c("star", "hub")) 0 else 0.16,
     rank_table = rank_table %||% top_table
   )
@@ -163,7 +92,6 @@ scenic_plot_egrn <- function(
   label_nodes = "auto",
   palette = "RdYlBu",
   palcolor = NULL,
-  title = NULL,
   rank_table = NULL
 ) {
   tf_candidates <- scenic_network_tf_candidates(
@@ -181,15 +109,6 @@ scenic_plot_egrn <- function(
       message_type = "warning"
     )
   }
-  plot_title <- title
-  if (is.null(plot_title) && length(tf_candidates) == 1L) {
-    grp <- scenic_network_tf_groups(rank_table %||% top_table, tf_candidates)[[1]]
-    plot_title <- if (!is.na(grp) && nzchar(grp)) {
-      paste0(tf_candidates, " (", grp, ")")
-    } else {
-      tf_candidates
-    }
-  }
   scenic_plot_one_network(
     srt = srt,
     tool_name = tool_name,
@@ -203,7 +122,6 @@ scenic_plot_egrn <- function(
     filter_tfs = TRUE,
     palette = palette,
     palcolor = palcolor,
-    title = plot_title %||% "SCENIC+ enhancer-driven GRN",
     curvature = if (identical(layout_use, "star")) 0 else 0.08,
     rank_table = rank_table %||% top_table
   )
@@ -271,7 +189,6 @@ scenic_plot_one_network <- function(
   filter_tfs,
   palette,
   palcolor,
-  title,
   curvature,
   rank_table = NULL,
   label_top_n = Inf
@@ -310,7 +227,6 @@ scenic_plot_one_network <- function(
     layout = network_layout,
     palette = palette,
     palcolor = palcolor,
-    title = title,
     curvature = curvature,
     rank_table = rank_table
   )
@@ -1036,7 +952,6 @@ scenic_network_ggplot <- function(
   edge_data,
   label_data,
   label_nodes = "auto",
-  title,
   layout = "star",
   palette = "RdYlBu",
   palcolor = NULL,
@@ -1268,7 +1183,8 @@ scenic_network_ggplot <- function(
     ggplot2::coord_equal(xlim = limits[["x"]], ylim = limits[["y"]], clip = "off") +
     theme_scop() +
     ggplot2::theme(
-      plot.title = ggplot2::element_text(face = "bold"),
+      plot.title = ggplot2::element_blank(),
+      plot.subtitle = ggplot2::element_blank(),
       axis.text = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank(),
       axis.title = ggplot2::element_blank(),
@@ -1280,7 +1196,7 @@ scenic_network_ggplot <- function(
       legend.position = "right",
       plot.margin = ggplot2::margin(8, 16, 8, 16)
     ) +
-    ggplot2::labs(title = title, x = NULL, y = NULL)
+    ggplot2::labs(title = NULL, subtitle = NULL, x = NULL, y = NULL)
 }
 
 scenic_radial_label_coords <- function(label_data, origin = c(0, 0), expand = 1.18) {
@@ -1331,18 +1247,3 @@ scenic_regulon_jaccard <- function(regulon_list) {
   mat
 }
 
-scenic_bind_named_dfs <- function(df_list, name_col) {
-  if (length(df_list) == 0L) {
-    return(NULL)
-  }
-  out <- do.call(
-    rbind,
-    lapply(names(df_list), function(nm) {
-      df <- df_list[[nm]]
-      df[[name_col]] <- nm
-      df
-    })
-  )
-  rownames(out) <- NULL
-  out
-}
