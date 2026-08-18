@@ -9,8 +9,9 @@
 #' `srt@tools$SCENICPlus`. `"coverage"` draws accessibility and region–gene
 #' tracks for a target locus. `"network"` and `"egrn"` follow published
 #' SCENIC+ / iRegulon GRN figures (concentric regulon hubs and Kamada–Kawai
-#' TF–region–gene graphs with unlabeled region diamonds). `"overlap"`
-#' shows eRegulon target Jaccard overlap.
+#' TF–region–gene graphs with unlabeled region diamonds). Multi-TF `"egrn"`
+#' and `"network_graph"` plots legend TF colors with the RSS top cell type.
+#' `"overlap"` shows eRegulon target Jaccard overlap.
 #'
 #' @md
 #' @inheritParams SCENICPlot

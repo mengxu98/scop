@@ -11,7 +11,8 @@ scenic_plot_network_graph <- function(
   network_include_regions = TRUE,
   palette = "RdYlBu",
   palcolor = NULL,
-  title = NULL
+  title = NULL,
+  rank_table = NULL
 ) {
   network_layout <- scenic_network_resolve_layout(network_layout, default = "kk")
   edge_data <- scenic_network_edges(
@@ -41,7 +42,8 @@ scenic_plot_network_graph <- function(
     palette = palette,
     palcolor = palcolor,
     title = title %||% "SCENIC TF–target network",
-    curvature = if (network_layout %in% c("star", "hub", "kk", "fr")) 0.08 else 0.12
+    curvature = if (network_layout %in% c("star", "hub", "kk", "fr")) 0.08 else 0.12,
+    rank_table = rank_table
   )
   list(
     plot = plot,
@@ -65,7 +67,8 @@ scenic_plot_network <- function(
   palcolor = NULL,
   combine = TRUE,
   ncol = 3,
-  title = NULL
+  title = NULL,
+  rank_table = NULL
 ) {
   tf_candidates <- scenic_network_tf_candidates(
     network_tf %||% features %||% highlight_tf %||% unique(top_table[["TF"]])
@@ -79,6 +82,7 @@ scenic_plot_network <- function(
   layout_use <- scenic_network_resolve_layout(network_layout, default = "star")
   split_panels <- identical(layout_use, "star") && length(tf_candidates) > 1L
   panel_palcolor <- palcolor
+  tf_groups <- scenic_network_tf_groups(rank_table %||% top_table, tf_candidates)
   if (isTRUE(split_panels)) {
     panel_palcolor <- palette_colors(
       tf_candidates,
@@ -92,6 +96,12 @@ scenic_plot_network <- function(
     edge_list <- list()
     node_list <- list()
     for (tf in tf_candidates) {
+      grp <- tf_groups[[tf]]
+      panel_title <- if (!is.na(grp) && nzchar(grp)) {
+        paste0(tf, " (", grp, ")")
+      } else {
+        tf
+      }
       one <- scenic_plot_one_network(
         srt = srt,
         tool_name = tool_name,
@@ -105,8 +115,9 @@ scenic_plot_network <- function(
         filter_tfs = TRUE,
         palette = palette,
         palcolor = panel_palcolor,
-        title = tf,
-        curvature = 0
+        title = panel_title,
+        curvature = 0,
+        rank_table = rank_table %||% top_table
       )
       plots[[tf]] <- one[["plot"]]
       edge_list[[tf]] <- one[["data"]][["edges"]]
@@ -140,8 +151,20 @@ scenic_plot_network <- function(
     filter_tfs = TRUE,
     palette = palette,
     palcolor = palcolor,
-    title = title %||% "SCENIC TF–target network",
-    curvature = if (layout_use %in% c("star", "hub")) 0 else 0.16
+    title = if (!is.null(title)) {
+      title
+    } else if (length(tf_candidates) == 1L) {
+      grp <- tf_groups[[tf_candidates[[1]]]]
+      if (!is.na(grp) && nzchar(grp)) {
+        paste0(tf_candidates, " (", grp, ")")
+      } else {
+        tf_candidates
+      }
+    } else {
+      "SCENIC TF–target network"
+    },
+    curvature = if (layout_use %in% c("star", "hub")) 0 else 0.16,
+    rank_table = rank_table %||% top_table
   )
 }
 
@@ -157,7 +180,8 @@ scenic_plot_egrn <- function(
   label_nodes = "auto",
   palette = "RdYlBu",
   palcolor = NULL,
-  title = NULL
+  title = NULL,
+  rank_table = NULL
 ) {
   tf_candidates <- scenic_network_tf_candidates(
     network_tf %||% features %||% highlight_tf %||% unique(top_table[["TF"]])
@@ -177,6 +201,15 @@ scenic_plot_egrn <- function(
       message_type = "warning"
     )
   }
+  plot_title <- title
+  if (is.null(plot_title) && length(tf_candidates) == 1L) {
+    grp <- scenic_network_tf_groups(rank_table %||% top_table, tf_candidates)[[1]]
+    plot_title <- if (!is.na(grp) && nzchar(grp)) {
+      paste0(tf_candidates, " (", grp, ")")
+    } else {
+      tf_candidates
+    }
+  }
   scenic_plot_one_network(
     srt = srt,
     tool_name = tool_name,
@@ -190,9 +223,10 @@ scenic_plot_egrn <- function(
     filter_tfs = TRUE,
     palette = palette,
     palcolor = palcolor,
-    title = title %||% "SCENIC+ enhancer-driven GRN",
+    title = plot_title %||% "SCENIC+ enhancer-driven GRN",
     curvature = if (layout_use %in% c("star")) 0 else 0.08,
-    prefer_triplets = TRUE
+    prefer_triplets = TRUE,
+    rank_table = rank_table %||% top_table
   )
 }
 
@@ -260,7 +294,8 @@ scenic_plot_one_network <- function(
   palcolor,
   title,
   curvature,
-  prefer_triplets = FALSE
+  prefer_triplets = FALSE,
+  rank_table = NULL
 ) {
   edge_data <- scenic_network_edges(
     srt = srt,
@@ -298,7 +333,8 @@ scenic_plot_one_network <- function(
     palette = palette,
     palcolor = palcolor,
     title = title,
-    curvature = curvature
+    curvature = curvature,
+    rank_table = rank_table
   )
   list(
     plot = plot,
@@ -1013,7 +1049,7 @@ scenic_network_style_data <- function(
     if (identical(node_type, "TF")) {
       fill_color[[idx]] <- unname(tf_cols[[node_name]])
       border_color[[idx]] <- "#1A1A1A"
-      node_size[[idx]] <- 13
+      node_size[[idx]] <- 8.2
     } else if (identical(node_type, "region")) {
       fill_color[[idx]] <- "#2E2E2E"
       border_color[[idx]] <- "#2E2E2E"
@@ -1055,6 +1091,53 @@ scenic_is_region_coordinate <- function(name) {
   grepl("^(chr|CHR)[^[:space:]]*[:_-][0-9]", as.character(name))
 }
 
+scenic_network_tf_groups <- function(rank_table, tfs) {
+  tfs <- unique(as.character(tfs))
+  tfs <- tfs[!is.na(tfs) & nzchar(tfs)]
+  out <- stats::setNames(rep(NA_character_, length(tfs)), tfs)
+  if (length(tfs) == 0L || is.null(rank_table) || nrow(rank_table) == 0L) {
+    return(out)
+  }
+  df <- rank_table
+  tf_id <- if ("TF" %in% colnames(df)) {
+    as.character(df[["TF"]])
+  } else if ("regulon" %in% colnames(df)) {
+    scenic_tf_from_regulon(df[["regulon"]])
+  } else {
+    return(out)
+  }
+  df <- df[tf_id %in% tfs, , drop = FALSE]
+  tf_id <- tf_id[tf_id %in% tfs]
+  if (nrow(df) == 0L || !"group" %in% colnames(df)) {
+    return(out)
+  }
+  df[["tf_id"]] <- tf_id
+  ord <- seq_len(nrow(df))
+  if ("specificity_score" %in% colnames(df)) {
+    score <- as.numeric(df[["specificity_score"]])
+    score[!is.finite(score)] <- -Inf
+    ord <- order(df[["tf_id"]], -score, df[["tf_id"]])
+  } else if ("rank" %in% colnames(df)) {
+    rank <- as.numeric(df[["rank"]])
+    rank[!is.finite(rank)] <- Inf
+    ord <- order(df[["tf_id"]], rank)
+  }
+  df <- df[ord, , drop = FALSE]
+  df <- df[!duplicated(df[["tf_id"]]), , drop = FALSE]
+  out[df[["tf_id"]]] <- as.character(df[["group"]])
+  out
+}
+
+scenic_network_legend_labels <- function(tf_cols, tf_groups) {
+  tfs <- names(tf_cols)
+  groups <- unname(tf_groups[tfs])
+  ifelse(
+    is.na(groups) | !nzchar(groups),
+    tfs,
+    paste0(tfs, " (", groups, ")")
+  )
+}
+
 scenic_network_ggplot <- function(
   node_data,
   edge_plot,
@@ -1067,7 +1150,8 @@ scenic_network_ggplot <- function(
   palcolor = NULL,
   curvature = 0,
   edge_width_range = c(0.32, 1.05),
-  network_blendmode = "average"
+  network_blendmode = "average",
+  rank_table = NULL
 ) {
   styled <- scenic_network_style_data(
     node_data = node_data,
@@ -1189,7 +1273,7 @@ scenic_network_ggplot <- function(
         color = .data[["label_color"]]
       ),
       fontface = "bold",
-      size = 3.55,
+      size = 2.6,
       show.legend = FALSE
     )
   }
@@ -1238,18 +1322,39 @@ scenic_network_ggplot <- function(
     }
   }
 
-  if (length(tf_cols) > 0L) {
+  if (length(tf_cols) > 1L) {
+    tf_groups <- scenic_network_tf_groups(rank_table, names(tf_cols))
+    legend_labels <- scenic_network_legend_labels(tf_cols, tf_groups)
+    legend_df <- data.frame(
+      x = mean(node_data[["x"]]),
+      y = mean(node_data[["y"]]),
+      label = legend_labels,
+      stringsAsFactors = FALSE
+    )
+    legend_name <- if (any(!is.na(unname(tf_groups)) & nzchar(unname(tf_groups)))) {
+      "TF (top cell type)"
+    } else {
+      "TF"
+    }
     p <- p +
       ggplot2::scale_color_identity(guide = "none") +
-      ggplot2::scale_fill_identity(
-        name = NULL,
-        guide = "legend",
-        labels = names(tf_cols),
-        breaks = unname(tf_cols)
+      ggplot2::scale_fill_identity(guide = "none") +
+      ggnewscale::new_scale_fill() +
+      ggplot2::geom_point(
+        data = legend_df,
+        ggplot2::aes(x = .data[["x"]], y = .data[["y"]], fill = .data[["label"]]),
+        shape = 21,
+        size = 4,
+        alpha = 0,
+        color = "#1A1A1A",
+        stroke = 0.5,
+        inherit.aes = FALSE
       ) +
-      ggplot2::guides(
-        fill = ggplot2::guide_legend(
-          override.aes = list(shape = 21, size = 5, color = "#1A1A1A", stroke = 0.6)
+      ggplot2::scale_fill_manual(
+        name = legend_name,
+        values = stats::setNames(unname(tf_cols), legend_labels),
+        guide = ggplot2::guide_legend(
+          override.aes = list(alpha = 1, size = 4, shape = 21, color = "#1A1A1A")
         )
       )
   } else {
@@ -1276,6 +1381,7 @@ scenic_network_ggplot <- function(
       panel.grid = ggplot2::element_blank(),
       legend.title = ggplot2::element_text(size = 11),
       legend.text = ggplot2::element_text(size = 10),
+      legend.position = "right",
       plot.margin = ggplot2::margin(8, 16, 8, 16)
     ) +
     ggplot2::labs(title = title, x = NULL, y = NULL)

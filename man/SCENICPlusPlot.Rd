@@ -43,8 +43,9 @@ with gene-based AUC, and region-based AUC when it is stored in
 \code{srt@tools$SCENICPlus}. \code{"coverage"} draws accessibility and region–gene
 tracks for a target locus. \code{"network"} and \code{"egrn"} follow published
 SCENIC+ / iRegulon GRN figures (concentric regulon hubs and Kamada–Kawai
-TF–region–gene graphs with unlabeled region diamonds). \code{"overlap"}
-shows eRegulon target Jaccard overlap.
+TF–region–gene graphs with unlabeled region diamonds). Multi-TF \code{"egrn"}
+and \code{"network_graph"} plots legend TF colors with the RSS top cell type.
+\code{"overlap"} shows eRegulon target Jaccard overlap.
 }
 \examples{
 \dontrun{

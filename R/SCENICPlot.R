@@ -99,9 +99,11 @@
 #' `"rss_dotplot"`, `"heatmap_dotplot"`, `"regulon_size"`, `"target_bar"`,
 #' and network TF/edge colors. Network plots follow published SCENIC+/iRegulon
 #' figures: TF-colored edges, light-gray gene nodes, unlabeled region diamonds,
-#' and concentric or Kamada–Kawai layouts. When `palette = "RdYlBu"`, networks
-#' use `"Set1"` so multi-TF eGRNs match the red/green/blue language of
-#' SCENIC+ Nature Methods Fig. 2e.
+#' and concentric or Kamada–Kawai layouts. Multi-TF `"egrn"` and `"network_graph"`
+#' plots add a legend of TF colors labeled with the RSS top cell type
+#' (`Jun (Ductal)`). Single-TF hubs put that cell type in the panel title.
+#' When `palette = "RdYlBu"`, networks use `"Set1"` so multi-TF eGRNs match
+#' the red/green/blue language of SCENIC+ Nature Methods Fig. 2e.
 #' @param compare_expression Whether `"activity_dim"` also plots TF gene
 #' expression beside regulon activity. `"eregulon_dim"` always compares
 #' expression with activity.
@@ -817,7 +819,8 @@ SCENICPlot <- function(
       network_include_regions = network_include_regions,
       palette = palette,
       palcolor = palcolor,
-      title = title
+      title = title,
+      rank_table = rank_table
     ),
     network = scenic_plot_network(
       srt = srt,
@@ -834,7 +837,8 @@ SCENICPlot <- function(
       palcolor = palcolor,
       combine = combine,
       ncol = ncol,
-      title = title
+      title = title,
+      rank_table = rank_table
     ),
     egrn = scenic_plot_egrn(
       srt = srt,
@@ -848,7 +852,8 @@ SCENICPlot <- function(
       label_nodes = label_nodes,
       palette = palette,
       palcolor = palcolor,
-      title = title
+      title = title,
+      rank_table = rank_table
     ),
     overlap = scenic_plot_overlap(
       srt = srt,

@@ -442,6 +442,24 @@ test_that("SCENIC network palette remaps RdYlBu to Set1", {
   expect_false(identical(unname(shared[["Jun"]]), unname(shared[["Atf3"]])))
 })
 
+test_that("network TF groups use the highest RSS cell type", {
+  rank_table <- data.frame(
+    group = c("A", "B", "A"),
+    regulon = c("Jun(+)", "Jun(+)", "Atf3(+)"),
+    TF = c("Jun", "Jun", "Atf3"),
+    specificity_score = c(0.2, 0.9, 0.5),
+    rank = c(2, 1, 1),
+    stringsAsFactors = FALSE
+  )
+  groups <- scenic_network_tf_groups(rank_table, c("Jun", "Atf3"))
+  expect_equal(unname(groups[["Jun"]]), "B")
+  expect_equal(unname(groups[["Atf3"]]), "A")
+  expect_equal(
+    scenic_network_legend_labels(c(Jun = "#E41A1C"), groups),
+    "Jun (B)"
+  )
+})
+
 test_that("SCENICPlusPlot network uses TF-region-gene hubs from triplets", {
   dat <- make_scenicplus_plot_mock()
   out <- SCENICPlusPlot(
@@ -511,8 +529,11 @@ test_that("SCENIC+ region diamonds are larger than the previous pin-head default
   )
   region_size <- unique(styled$nodes$node_size[as.character(styled$nodes$node_type) == "region"])
   gene_size <- unique(styled$nodes$node_size[as.character(styled$nodes$node_type) == "gene"])
+  tf_size <- unique(styled$nodes$node_size[as.character(styled$nodes$node_type) == "TF"])
   expect_gte(region_size, 3)
   expect_lt(region_size, gene_size)
+  expect_lt(tf_size, 10)
+  expect_gt(tf_size, gene_size)
 })
 
 test_that("SCENICPlusPlot egrn can use a tripartite layout", {
@@ -548,6 +569,27 @@ test_that("SCENICPlot overlap returns pairwise Jaccard values", {
   expect_true(all(c("regulon_1", "regulon_2", "jaccard") %in% colnames(out$plot_data)))
   diag <- out$plot_data$regulon_1 == out$plot_data$regulon_2
   expect_true(all(out$plot_data$jaccard[diag] == 1))
+})
+
+test_that("SCENIC network_graph legend labels include RSS cell types", {
+  dat <- make_scenic_plot_mock()
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "network_graph",
+    max_targets = 5,
+    verbose = FALSE
+  )
+
+  expect_s3_class(out$plot, "ggplot")
+  built <- ggplot2::ggplot_build(out$plot)
+  labels <- unlist(lapply(built$plot$scales$scales, function(sc) {
+    if (!inherits(sc, "ScaleDiscrete") || !any(sc$aesthetics == "fill")) {
+      return(character())
+    }
+    sc$get_breaks()
+  }))
+  expect_true(any(grepl("\\([ABC]\\)", labels)))
 })
 
 test_that("SCENIC network_graph hub layout keeps TFs off a single line", {
