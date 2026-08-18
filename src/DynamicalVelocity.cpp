@@ -319,7 +319,7 @@ static DynamicalPars fit_one_gene_dynamical(
 // ── Rcpp export: fit dynamical model per gene (Nelder-Mead, legacy) ───────
 
 // [[Rcpp::export]]
-List scvelo_dynamical_nm_cpp(
+List scanpy_dynamical_nm_cpp(
     NumericMatrix Ms,
     NumericMatrix Mu,
     IntegerVector use_genes,  // 1-based indices of genes to fit
@@ -425,7 +425,7 @@ List scvelo_dynamical_nm_cpp(
 }
 
 // [[Rcpp::export]]
-List scvelo_dynamical_velocity_cpp(
+List scanpy_dynamical_velocity_cpp(
     NumericMatrix Ms,
     NumericMatrix Mu,
     NumericVector alpha,
@@ -475,7 +475,7 @@ List scvelo_dynamical_velocity_cpp(
 // With switching time t_, cells before t_ follow (alpha, beta); after t_, alpha=0.
 
 // [[Rcpp::export]]
-List scvelo_dynamical_em_cpp(
+List scanpy_dynamical_em_cpp(
     NumericMatrix Ms,
     NumericMatrix Mu,
     IntegerVector use_genes,

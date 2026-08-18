@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <thisutils/log_message.h>
+#include "numeric_utils.h"
 #include <R_ext/Print.h>
 #define __ERROR_PRINTER_OVERRIDE__(...) Rprintf(__VA_ARGS__)
 #define ANNOYLIB_MULTITHREADED_BUILD
@@ -38,19 +39,6 @@ static int core_count(int requested, int jobs) {
   if (n < 1) n = 1;
   if (jobs > 0 && n > jobs) n = jobs;
   return n;
-}
-
-static std::vector<float> matrix_as_row_float(Rcpp::NumericMatrix data) {
-  const int rows = data.nrow();
-  const int cols = data.ncol();
-  std::vector<float> out(static_cast<size_t>(rows) * cols);
-  for (int row = 0; row < rows; ++row) {
-    for (int col = 0; col < cols; ++col) {
-      out[static_cast<size_t>(row) * cols + col] =
-        static_cast<float>(data(row, col));
-    }
-  }
-  return out;
 }
 
 static float squared_distance(const float* a, const float* b, int width) {

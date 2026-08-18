@@ -1,5 +1,6 @@
 #include <RcppArmadillo.h>
 #include <thisutils/log_message.h>
+#include "thread_utils.h"
 #include <thisutils/cli_progress.h>
 #include <Spectra/MatOp/DenseSymMatProd.h>
 #include <Spectra/SymEigsSolver.h>
@@ -102,19 +103,6 @@ public:
     }
   }
 };
-
-static int sctenifold_worker_count(int requested, int n_tasks) {
-  if (requested <= 1 || n_tasks <= 1) {
-    return 1;
-  }
-
-  int cores = std::min(requested, n_tasks);
-  const unsigned int hardware = std::thread::hardware_concurrency();
-  if (hardware > 0) {
-    cores = std::min(cores, static_cast<int>(hardware));
-  }
-  return std::max(1, cores);
-}
 
 static arma::mat sctenifold_crossprod(const arma::mat& x) {
   return x.t() * x;
@@ -329,7 +317,7 @@ static Eigen::MatrixXd sctenifold_pcnet_dual_raw_eigen(
     }
   };
 
-  const int n_workers = sctenifold_worker_count(cores, n_genes);
+  const int n_workers = worker_count(cores, n_genes);
   if (n_workers == 1) {
     for (int g = 0; g < n_genes; ++g) {
       compute_gene(g);
@@ -436,7 +424,7 @@ static Eigen::MatrixXd sctenifold_pcnet_primal_raw_eigen(
     }
   };
 
-  const int n_workers = sctenifold_worker_count(cores, n_genes);
+  const int n_workers = worker_count(cores, n_genes);
   if (n_workers == 1) {
     for (int g = 0; g < n_genes; ++g) {
       compute_gene(g);

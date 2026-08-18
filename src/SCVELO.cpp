@@ -7,42 +7,17 @@
 
 using namespace Rcpp;
 
-
 // ── 1. Filter genes ───────────────────────────────────────────────────────────
-
-// [[Rcpp::export]]
-IntegerVector scvelo_filter_genes_cpp(
-    NumericMatrix spliced,
-    NumericMatrix unspliced,
-    int min_counts = 3,
-    int min_counts_u = 3)
-{
-  const int n_genes = spliced.nrow();
-  const int n_cells = spliced.ncol();
-  if (unspliced.nrow() != n_genes || unspliced.ncol() != n_cells)
-    thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
-
-  IntegerVector keep(n_genes, 1);
-  #ifdef _OPENMP
-  #pragma omp parallel for schedule(dynamic, 16)
-  #endif
-  for (int g = 0; g < n_genes; ++g) {
-    double sum_s = 0.0, sum_u = 0.0;
-    for (int c = 0; c < n_cells; ++c) {
-      sum_s += spliced(g, c);
-      sum_u += unspliced(g, c);
-    }
-    if (sum_s < min_counts || sum_u < min_counts_u)
-      keep[g] = 0;
-  }
-  return keep;
-}
-
+// Gene filtering is implemented once in Preprocessing.cpp as
+// scanpy_filter_genes_cpp (matching scv.pp.filter_genes exactly, OpenMP).
+// The scVelo C++ pipeline performs the same threshold check in R
+// (run_scanpy_cpp) and via scanpy_preprocess_cpp, so no separate
+// cpp-side filter is needed here.
 
 // ── 2. Normalize per cell + log1p ─────────────────────────────────────────────
 
 // [[Rcpp::export]]
-List scvelo_normalize_log_cpp(
+List scanpy_normalize_log_cpp(
     NumericMatrix spliced,
     NumericMatrix unspliced)
 {
@@ -71,7 +46,7 @@ List scvelo_normalize_log_cpp(
 // ── 3. Compute moments (KNN smoothing) ────────────────────────────────────────
 
 // [[Rcpp::export]]
-List scvelo_moments_cpp(
+List scanpy_moments_cpp(
     NumericMatrix spliced,
     NumericMatrix unspliced,
     IntegerMatrix knn_idx)
@@ -115,7 +90,7 @@ List scvelo_moments_cpp(
 }
 
 // [[Rcpp::export]]
-List scvelo_moments_connectivities_cpp(
+List scanpy_moments_connectivities_cpp(
     NumericMatrix spliced,
     NumericMatrix unspliced,
     IntegerMatrix knn_idx,
@@ -210,7 +185,7 @@ List scvelo_moments_connectivities_cpp(
 }
 
 // [[Rcpp::export]]
-List scvelo_second_order_moments_cpp(
+List scanpy_second_order_moments_cpp(
     NumericMatrix spliced,
     NumericMatrix unspliced,
     IntegerMatrix knn_idx)
@@ -262,7 +237,7 @@ List scvelo_second_order_moments_cpp(
 
 // ── 4. Deterministic velocity + embedding ─────────────────────────────────────
 
-static double scvelo_quantile_linear(
+static double scanpy_quantile_linear(
     std::vector<double> values,
     double probability)
 {
@@ -288,7 +263,7 @@ static double scvelo_quantile_linear(
 }
 
 // [[Rcpp::export]]
-List scvelo_deterministic_cpp(
+List scanpy_deterministic_cpp(
     NumericMatrix Ms,
     NumericMatrix Mu,
     IntegerMatrix knn_idx,
@@ -340,7 +315,7 @@ List scvelo_deterministic_cpp(
     }
     const bool trim = perc > 0.0 && perc < 100.0;
     const double cutoff = trim
-      ? scvelo_quantile_linear(normalized, perc / 100.0)
+      ? scanpy_quantile_linear(normalized, perc / 100.0)
       : -std::numeric_limits<double>::infinity();
 
     // Extreme-quantile regression used for the actual velocity residual.
@@ -421,7 +396,7 @@ List scvelo_deterministic_cpp(
   if (n_velocity_genes < 2 && n_genes > 0) {
     std::vector<double> r2_values(n_genes);
     for (int g = 0; g < n_genes; ++g) r2_values[g] = gamma_r2[g];
-    const double relaxed_r2 = scvelo_quantile_linear(r2_values, 0.80);
+    const double relaxed_r2 = scanpy_quantile_linear(r2_values, 0.80);
     for (int g = 0; g < n_genes; ++g) {
       velocity_genes[g] = gamma_r2[g] > relaxed_r2;
     }
@@ -457,7 +432,7 @@ List scvelo_deterministic_cpp(
 // ── 5. Stochastic velocity + embedding (refactored, takes Ms/Mu as input) ──
 
 // [[Rcpp::export]]
-List scvelo_stochastic_cpp(
+List scanpy_stochastic_cpp(
     NumericMatrix Ms,
     NumericMatrix Mu,
     NumericMatrix Mss,
@@ -519,7 +494,7 @@ List scvelo_stochastic_cpp(
         ? s / s_scale + u / u_scale
         : -std::numeric_limits<double>::infinity();
     }
-    const double cutoff = scvelo_quantile_linear(normalized, 0.95);
+    const double cutoff = scanpy_quantile_linear(normalized, 0.95);
 
     // Upper-quantile regression (no intercept) for the velocity residual.
     double num_det = 0.0, den_det = 0.0;
@@ -609,7 +584,7 @@ List scvelo_stochastic_cpp(
   if (n_velocity_genes < 2 && n_genes > 0) {
     std::vector<double> r2_values(n_genes);
     for (int g = 0; g < n_genes; ++g) r2_values[g] = gamma_r2[g];
-    const double min_r2 = scvelo_quantile_linear(r2_values, 0.80);
+    const double min_r2 = scanpy_quantile_linear(r2_values, 0.80);
     n_velocity_genes = 0;
     for (int g = 0; g < n_genes; ++g) {
       velocity_genes[g] = gamma_r2[g] > min_r2 ? 1 : 0;
@@ -717,7 +692,7 @@ List scvelo_stochastic_cpp(
 // ── 6. Velocity graph (cosine similarity on gene space) ───────────────────────
 
 // [[Rcpp::export]]
-List scvelo_velocity_graph_cpp(
+List scanpy_velocity_graph_cpp(
     NumericMatrix Ms,
     NumericMatrix Mu,
     NumericMatrix residual,    // gene × cell velocity residuals
@@ -848,7 +823,7 @@ List scvelo_velocity_graph_cpp(
 }
 
 // [[Rcpp::export]]
-NumericMatrix scvelo_project_velocity_embedding_cpp(
+NumericMatrix scanpy_project_velocity_embedding_cpp(
     IntegerVector graph_rows,
     IntegerVector graph_cols,
     NumericVector graph_vals,
@@ -948,7 +923,7 @@ NumericMatrix scvelo_project_velocity_embedding_cpp(
 // ── 7. Velocity confidence metrics ─────────────────────────────────────────────
 
 // [[Rcpp::export]]
-List scvelo_velocity_confidence_cpp(
+List scanpy_velocity_confidence_cpp(
     NumericMatrix Ms,
     NumericMatrix residual,   // gene × cell velocity residuals
     IntegerMatrix knn_idx)    // cells × k (1-based)
@@ -972,7 +947,7 @@ List scvelo_velocity_confidence_cpp(
 // ── 8. Terminal states (root_cells, end_points via Markov eigenvectors) ───────
 
 // [[Rcpp::export]]
-NumericMatrix scvelo_velocity_transition_cpp(
+NumericMatrix scanpy_velocity_transition_cpp(
     NumericMatrix Ms,
     NumericMatrix residual,
     IntegerMatrix knn_idx,
@@ -1037,7 +1012,7 @@ NumericMatrix scvelo_velocity_transition_cpp(
   return T;
 }
 
-static NumericMatrix scvelo_backward_transition(const NumericMatrix& T_forward) {
+static NumericMatrix scanpy_backward_transition(const NumericMatrix& T_forward) {
   const int n_cells = T_forward.nrow();
   NumericMatrix T_backward(n_cells, n_cells);
   for (int i = 0; i < n_cells; ++i) {
@@ -1056,7 +1031,7 @@ static NumericMatrix scvelo_backward_transition(const NumericMatrix& T_forward) 
   return T_backward;
 }
 
-static NumericVector scvelo_smooth_connectivities(
+static NumericVector scanpy_smooth_connectivities(
     NumericVector score,
     IntegerMatrix knn_idx)
 {
@@ -1082,7 +1057,7 @@ static NumericVector scvelo_smooth_connectivities(
   return smoothed;
 }
 
-static NumericVector scvelo_clip_scale(NumericVector x) {
+static NumericVector scanpy_clip_scale(NumericVector x) {
   const int n_cells = x.size();
   std::vector<double> sorted;
   sorted.reserve(n_cells);
@@ -1110,7 +1085,7 @@ static NumericVector scvelo_clip_scale(NumericVector x) {
 }
 
 // [[Rcpp::export]]
-List scvelo_terminal_states_transition_cpp(
+List scanpy_terminal_states_transition_cpp(
     NumericMatrix transition_matrix,
     IntegerMatrix knn_idx)
 {
@@ -1131,12 +1106,12 @@ List scvelo_terminal_states_transition_cpp(
     }
   }
 
-  NumericMatrix T_backward = scvelo_backward_transition(T_forward);
+  NumericMatrix T_backward = scanpy_backward_transition(T_forward);
   NumericVector roots_raw = scop_util::stationary_distribution(T_backward, 1000, 1e-10);
   NumericVector ends_raw = scop_util::stationary_distribution(T_forward, 1000, 1e-10);
 
-  NumericVector root_cells = scvelo_clip_scale(scvelo_smooth_connectivities(roots_raw, knn_idx));
-  NumericVector end_points = scvelo_clip_scale(scvelo_smooth_connectivities(ends_raw, knn_idx));
+  NumericVector root_cells = scanpy_clip_scale(scanpy_smooth_connectivities(roots_raw, knn_idx));
+  NumericVector end_points = scanpy_clip_scale(scanpy_smooth_connectivities(ends_raw, knn_idx));
 
   int n_root = 0, n_end = 0;
   for (int i = 0; i < n_cells; ++i) {
@@ -1153,7 +1128,7 @@ List scvelo_terminal_states_transition_cpp(
 }
 
 // [[Rcpp::export]]
-List scvelo_terminal_states_cpp(
+List scanpy_terminal_states_cpp(
     NumericMatrix velocity_embedding,
     NumericMatrix embedding,
     IntegerMatrix knn_idx,
@@ -1200,8 +1175,8 @@ List scvelo_terminal_states_cpp(
   NumericVector roots_raw = scop_util::stationary_distribution(T_backward, 1000, 1e-10);
   NumericVector ends_raw = scop_util::stationary_distribution(T_forward, 1000, 1e-10);
 
-  NumericVector root_cells = scvelo_clip_scale(scvelo_smooth_connectivities(roots_raw, knn_idx));
-  NumericVector end_points = scvelo_clip_scale(scvelo_smooth_connectivities(ends_raw, knn_idx));
+  NumericVector root_cells = scanpy_clip_scale(scanpy_smooth_connectivities(roots_raw, knn_idx));
+  NumericVector end_points = scanpy_clip_scale(scanpy_smooth_connectivities(ends_raw, knn_idx));
 
   int n_root = 0, n_end = 0;
   for (int i = 0; i < n_cells; ++i) {
@@ -1217,7 +1192,7 @@ List scvelo_terminal_states_cpp(
   );
 }
 
-static NumericMatrix scvelo_graph_transition_matrix(
+static NumericMatrix scanpy_graph_transition_matrix(
     IntegerVector graph_rows,
     IntegerVector graph_cols,
     NumericVector graph_vals,
@@ -1258,7 +1233,7 @@ static NumericMatrix scvelo_graph_transition_matrix(
   return T;
 }
 
-static double scvelo_percentile(std::vector<double> x, double pct) {
+static double scanpy_percentile(std::vector<double> x, double pct) {
   if (x.empty()) return 0.0;
   std::sort(x.begin(), x.end());
   double pos = (pct / 100.0) * static_cast<double>(x.size() - 1);
@@ -1269,7 +1244,7 @@ static double scvelo_percentile(std::vector<double> x, double pct) {
   return x[lo] * (1.0 - w) + x[hi] * w;
 }
 
-static NumericMatrix scvelo_terminal_eigvecs(NumericMatrix T, double eps) {
+static NumericMatrix scanpy_terminal_eigvecs(NumericMatrix T, double eps) {
   const int n_cells = T.nrow();
   NumericMatrix TT(n_cells, n_cells);
   for (int i = 0; i < n_cells; ++i)
@@ -1298,8 +1273,8 @@ static NumericMatrix scvelo_terminal_eigvecs(NumericMatrix T, double eps) {
     for (int i = 0; i < n_cells; ++i)
       values.push_back(std::abs(evecs(i, idx).r));
 
-    double lower = scvelo_percentile(values, 2.0);
-    double upper = scvelo_percentile(values, 98.0);
+    double lower = scanpy_percentile(values, 2.0);
+    double upper = scanpy_percentile(values, 98.0);
     double vmax = 0.0;
     for (int i = 0; i < n_cells; ++i) {
       double value = values[i] < lower ? 0.0 : std::min(values[i], upper);
@@ -1314,7 +1289,7 @@ static NumericMatrix scvelo_terminal_eigvecs(NumericMatrix T, double eps) {
 }
 
 // [[Rcpp::export]]
-List scvelo_terminal_states_graph_cpp(
+List scanpy_terminal_states_graph_cpp(
     IntegerVector graph_rows,
     IntegerVector graph_cols,
     NumericVector graph_vals,
@@ -1326,27 +1301,27 @@ List scvelo_terminal_states_graph_cpp(
 {
   const int n_cells = knn_idx.nrow();
 
-  NumericMatrix T_backward = scvelo_graph_transition_matrix(
+  NumericMatrix T_backward = scanpy_graph_transition_matrix(
     graph_rows, graph_cols, graph_vals,
     graph_neg_rows, graph_neg_cols, graph_neg_vals,
     n_cells, true);
-  NumericMatrix root_eig = scvelo_terminal_eigvecs(T_backward, eps);
+  NumericMatrix root_eig = scanpy_terminal_eigvecs(T_backward, eps);
   NumericVector roots_raw(n_cells);
   for (int comp = 0; comp < root_eig.ncol(); ++comp)
     for (int i = 0; i < n_cells; ++i)
       roots_raw[i] += root_eig(i, comp);
-  NumericVector root_cells = scvelo_clip_scale(scvelo_smooth_connectivities(roots_raw, knn_idx));
+  NumericVector root_cells = scanpy_clip_scale(scanpy_smooth_connectivities(roots_raw, knn_idx));
 
-  NumericMatrix T_forward = scvelo_graph_transition_matrix(
+  NumericMatrix T_forward = scanpy_graph_transition_matrix(
     graph_rows, graph_cols, graph_vals,
     graph_neg_rows, graph_neg_cols, graph_neg_vals,
     n_cells, false);
-  NumericMatrix end_eig = scvelo_terminal_eigvecs(T_forward, eps);
+  NumericMatrix end_eig = scanpy_terminal_eigvecs(T_forward, eps);
   NumericVector ends_raw(n_cells);
   for (int comp = 0; comp < end_eig.ncol(); ++comp)
     for (int i = 0; i < n_cells; ++i)
       ends_raw[i] += end_eig(i, comp);
-  NumericVector end_points = scvelo_clip_scale(scvelo_smooth_connectivities(ends_raw, knn_idx));
+  NumericVector end_points = scanpy_clip_scale(scanpy_smooth_connectivities(ends_raw, knn_idx));
 
   return List::create(
     _["root_cells"] = root_cells,
@@ -1360,7 +1335,7 @@ List scvelo_terminal_states_graph_cpp(
 // ── 9. Velocity pseudotime from transition matrix (DPT via eigendecomposition) ─
 
 // [[Rcpp::export]]
-List scvelo_pseudotime_transition_cpp(
+List scanpy_pseudotime_transition_cpp(
     NumericMatrix transition_matrix,
     NumericVector root_cells,
     NumericVector end_points)
@@ -1466,7 +1441,7 @@ List scvelo_pseudotime_transition_cpp(
 }
 
 // [[Rcpp::export]]
-List scvelo_pseudotime_cpp(
+List scanpy_pseudotime_cpp(
     NumericMatrix velocity_embedding,
     NumericMatrix embedding,
     IntegerMatrix knn_idx,
@@ -1574,7 +1549,7 @@ List scvelo_pseudotime_cpp(
 }
 
 // [[Rcpp::export]]
-List scvelo_pseudotime_graph_cpp(
+List scanpy_pseudotime_graph_cpp(
     IntegerVector graph_rows,
     IntegerVector graph_cols,
     NumericVector graph_vals,
@@ -1654,7 +1629,7 @@ List scvelo_pseudotime_graph_cpp(
   }
 
   auto smoothed_argmax = [&](NumericVector score) {
-    NumericVector smoothed = scvelo_smooth_connectivities(score, knn_idx);
+    NumericVector smoothed = scanpy_smooth_connectivities(score, knn_idx);
     int best = 0;
     double best_val = smoothed[0];
     for (int i = 1; i < n_cells; ++i) {
@@ -1747,7 +1722,7 @@ List scvelo_pseudotime_graph_cpp(
 // ── 10. Rank velocity genes (Spearman-like correlation) ──────────────────────
 
 // [[Rcpp::export]]
-NumericVector scvelo_velocity_genes_cpp(
+NumericVector scanpy_velocity_genes_cpp(
     NumericMatrix Ms,
     NumericMatrix velocity)
 {
@@ -1780,19 +1755,19 @@ NumericVector scvelo_velocity_genes_cpp(
 // ── 11. Keep backward-compatible wrapper (same API as before) ─────────────────
 
 // [[Rcpp::export]]
-List scvelo_stochastic_embedding_cpp(
+List scanpy_stochastic_embedding_cpp(
   NumericMatrix spliced,
   NumericMatrix unspliced,
   IntegerMatrix knn_idx,
   NumericMatrix embedding
 ) {
   // Compute moments
-  List moments = scvelo_moments_cpp(spliced, unspliced, knn_idx);
+  List moments = scanpy_moments_cpp(spliced, unspliced, knn_idx);
   NumericMatrix Ms = moments["Ms"];
   NumericMatrix Mu = moments["Mu"];
-  List second = scvelo_second_order_moments_cpp(spliced, unspliced, knn_idx);
+  List second = scanpy_second_order_moments_cpp(spliced, unspliced, knn_idx);
   NumericMatrix Mss = second["Mss"];
   NumericMatrix Mus = second["Mus"];
   // Run stochastic embedding
-  return scvelo_stochastic_cpp(Ms, Mu, Mss, Mus, knn_idx, embedding);
+  return scanpy_stochastic_cpp(Ms, Mu, Mss, Mus, knn_idx, embedding);
 }

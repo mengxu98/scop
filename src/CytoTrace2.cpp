@@ -1,6 +1,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
 #include <thisutils/log_message.h>
+#include "thread_utils.h"
 #include <algorithm>
 #include <cmath>
 #include <vector>
@@ -10,16 +11,6 @@
 #include <atomic>
 
 using namespace Rcpp;
-
-int cytotrace2_worker_count(int requested, int n_tasks) {
-  if (n_tasks <= 1) return 1;
-  int n_workers = std::max(1, std::min(requested, n_tasks));
-  const unsigned int hardware = std::thread::hardware_concurrency();
-  if (hardware > 0) {
-    n_workers = std::min(n_workers, static_cast<int>(hardware));
-  }
-  return std::max(1, n_workers);
-}
 
 // ============================================================================
 // Utility functions
@@ -330,7 +321,7 @@ List cytotrace2_ensemble_predict(
 ) {
   int n_models = parameter_dict.size();
   int n_cells = rank_data.n_rows;
-  int n_workers = cytotrace2_worker_count(cores, n_models);
+  int n_workers = worker_count(cores, n_models);
 
   arma::mat sum_probs(n_cells, 6, arma::fill::zeros);
   arma::vec sum_order(n_cells, arma::fill::zeros);
@@ -708,7 +699,7 @@ List cytotrace2_knn_smooth(
     }
   };
 
-  int n_workers = cytotrace2_worker_count(cores, n_cells);
+  int n_workers = worker_count(cores, n_cells);
   if (n_workers == 1) {
     for (int i = 0; i < n_cells; i++) {
       smooth_one_cell(i);
