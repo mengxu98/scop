@@ -165,7 +165,7 @@ SCENICPlot(
 
 \item{max_edges}{Max edges in \code{"network_graph"}.}
 
-\item{network_layout}{\code{"auto"}, \code{"star"}, \code{"kk"}, \code{"hub"}, \code{"tripartite"}, \code{"fr"}.}
+\item{network_layout}{\code{"auto"}, \code{"star"}, \code{"kk"}, \code{"hub"}, \code{"tripartite"}, \code{"fr"}. \code{"network"} uses \code{"star"} for one TF and \code{"hub"} for several.}
 
 \item{network_tf}{TFs for \code{"network"} / \code{"egrn"}.}
 
@@ -183,7 +183,7 @@ Default is \code{NULL}, which means determined automatically based on the number
 
 \item{return_data}{Return RSS tables with plots.}
 
-\item{title}{Optional combined-plot title.}
+\item{title}{Optional combined-plot title. Ignored by \code{"network"}, \code{"network_graph"}, and \code{"egrn"}.}
 
 \item{point_color}{Rank-plot point color.}
 
@@ -215,8 +215,8 @@ Plot, or a list with \code{rss_matrix}, \code{rank_table}, \code{top_table}, \co
 \description{
 Plot RSS and regulon activity from \code{\link[=RunSCENIC]{RunSCENIC()}} or \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}.
 Use \code{\link[=SCENICPlusPlot]{SCENICPlusPlot()}} for SCENIC+ defaults. Network \code{palette = "RdYlBu"}
-uses \code{"Chinese"}. Multi-TF \code{"egrn"} / \code{"network_graph"} legends show the
-top RSS cell type.
+uses \code{"Chinese"}. \code{"network"} draws one hub per TF. Network plots have no
+title. Multi-TF legends show the top RSS cell type.
 }
 \examples{
 \dontrun{
@@ -231,7 +231,7 @@ pancreas_sub <- RunSCENIC(
 scenic_rss <- SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_rank")
 example_tfs <- unique(scenic_rss$top_table$TF)[1:3]
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap_dotplot")
-SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network", features = example_tfs[[1]])
+SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network", features = example_tfs)
 SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network_graph", features = example_tfs)
 SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "egrn", features = example_tfs)
 SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "coverage", features = example_tfs)
