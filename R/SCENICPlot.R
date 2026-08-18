@@ -102,8 +102,8 @@
 #' and concentric or Kamada–Kawai layouts. Multi-TF `"egrn"` and `"network_graph"`
 #' plots add a legend of TF colors labeled with the RSS top cell type
 #' (`Jun (Ductal)`). Single-TF hubs put that cell type in the panel title.
-#' When `palette = "RdYlBu"`, networks use `"Set1"` so multi-TF eGRNs match
-#' the red/green/blue language of SCENIC+ Nature Methods Fig. 2e.
+#' When `palette = "RdYlBu"` (the `SCENICPlot()` default), networks use the
+#' scop `"Chinese"` discrete palette.
 #' @param compare_expression Whether `"activity_dim"` also plots TF gene
 #' expression beside regulon activity. `"eregulon_dim"` always compares
 #' expression with activity.

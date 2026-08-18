@@ -193,8 +193,8 @@ figures: TF-colored edges, light-gray gene nodes, unlabeled region diamonds,
 and concentric or Kamada–Kawai layouts. Multi-TF \code{"egrn"} and \code{"network_graph"}
 plots add a legend of TF colors labeled with the RSS top cell type
 (\code{Jun (Ductal)}). Single-TF hubs put that cell type in the panel title.
-When \code{palette = "RdYlBu"}, networks use \code{"Set1"} so multi-TF eGRNs match
-the red/green/blue language of SCENIC+ Nature Methods Fig. 2e.}
+When \code{palette = "RdYlBu"} (the \code{SCENICPlot()} default), networks use the
+scop \code{"Chinese"} discrete palette.}
 
 \item{compare_expression}{Whether \code{"activity_dim"} also plots TF gene
 expression beside regulon activity. \code{"eregulon_dim"} always compares

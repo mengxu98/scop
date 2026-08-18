@@ -949,7 +949,7 @@ scenic_network_label_data <- function(
 
 scenic_network_palette <- function(palette) {
   if (identical(palette, "RdYlBu")) {
-    return("Set1")
+    return("Chinese")
   }
   palette
 }
@@ -1026,7 +1026,7 @@ scenic_network_style_data <- function(
   node_data,
   edge_plot,
   edge_data,
-  palette = "Set1",
+  palette = "Chinese",
   palcolor = NULL,
   network_blendmode = "average"
 ) {

@@ -12,7 +12,7 @@ make_scenic_plot_mock <- function(seed = 1, add_embedding = FALSE) {
   counts[1, ] <- seq_len(ncol(counts))
   counts[2, ] <- rev(seq_len(ncol(counts)))
   srt <- Seurat::CreateSeuratObject(counts = counts)
-  srt$CellType <- rep(c("A", "B", "C"), each = 4)
+  srt$CellType <- rep(c("Ductal", "Ngn3-high-EP", "Pre-endocrine"), each = 4)
 
   auc <- matrix(
     stats::runif(6 * 12),
@@ -95,7 +95,7 @@ make_scenicplus_plot_mock <- function(seed = 11) {
     ncol = ncol(dat$srt),
     dimnames = list(peak_names, colnames(dat$srt))
   )
-  peak_counts[1:3, dat$srt$CellType == "A"] <- peak_counts[1:3, dat$srt$CellType == "A"] + 8
+  peak_counts[1:3, dat$srt$CellType == "Ductal"] <- peak_counts[1:3, dat$srt$CellType == "Ductal"] + 8
   chromatin <- Signac::CreateChromatinAssay(
     counts = Matrix::Matrix(peak_counts, sparse = TRUE),
     sep = c("-", "-")
@@ -210,12 +210,12 @@ test_that("SCENICPlot activity heatmap returns drawable plot object", {
 test_that("SCENICPlot activity heatmap can order rows by RSS source group", {
   dat <- make_scenic_plot_mock(seed = 22)
   dat$auc[, ] <- 0
-  dat$auc["Jun(+)", dat$srt$CellType == "A"] <- 4
-  dat$auc["Atf3(+)", dat$srt$CellType == "A"] <- 3
-  dat$auc["Fos(+)", dat$srt$CellType == "B"] <- 4
-  dat$auc["Klf4(+)", dat$srt$CellType == "B"] <- 3
-  dat$auc["Sox9(+)", dat$srt$CellType == "C"] <- 4
-  dat$auc["Birc3(+)", dat$srt$CellType == "C"] <- 3
+  dat$auc["Jun(+)", dat$srt$CellType == "Ductal"] <- 4
+  dat$auc["Atf3(+)", dat$srt$CellType == "Ductal"] <- 3
+  dat$auc["Fos(+)", dat$srt$CellType == "Ngn3-high-EP"] <- 4
+  dat$auc["Klf4(+)", dat$srt$CellType == "Ngn3-high-EP"] <- 3
+  dat$auc["Sox9(+)", dat$srt$CellType == "Pre-endocrine"] <- 4
+  dat$auc["Birc3(+)", dat$srt$CellType == "Pre-endocrine"] <- 3
   dat$srt@tools$SCENIC <- list(scores_cells_by_regulon = t(dat$auc))
 
   out <- SCENICPlot(
@@ -232,7 +232,7 @@ test_that("SCENICPlot activity heatmap can order rows by RSS source group", {
   expect_length(regulons, 3)
   expect_equal(
     as.character(unique(out$plot_data$rss_group[match(regulons, out$plot_data$regulon)])),
-    c("A", "B", "C")
+    c("Ductal", "Ngn3-high-EP", "Pre-endocrine")
   )
   expect_true(all(c("rss_group", "rss_rank") %in% colnames(out$plot_data)))
 })
@@ -433,11 +433,11 @@ test_that("SCENICPlusPlot eregulon_dim includes region AUC when stored", {
   expect_gt(length(out$plots), 1)
 })
 
-test_that("SCENIC network palette remaps RdYlBu to Set1", {
-  expect_equal(scenic_network_palette("RdYlBu"), "Set1")
-  expect_equal(scenic_network_palette("Chinese"), "Chinese")
-  shared <- palette_colors(c("Jun", "Atf3", "Fos"), palette = "Set1")
-  one <- palette_colors("Atf3", palette = "Set1", palcolor = shared)
+test_that("SCENIC network palette remaps RdYlBu to Chinese", {
+  expect_equal(scenic_network_palette("RdYlBu"), "Chinese")
+  expect_equal(scenic_network_palette("Set1"), "Set1")
+  shared <- palette_colors(c("Jun", "Atf3", "Fos"), palette = "Chinese")
+  one <- palette_colors("Atf3", palette = "Chinese", palcolor = shared)
   expect_equal(unname(one[["Atf3"]]), unname(shared[["Atf3"]]))
   expect_false(identical(unname(shared[["Jun"]]), unname(shared[["Atf3"]])))
 })
@@ -589,7 +589,7 @@ test_that("SCENIC network_graph legend labels include RSS cell types", {
     }
     sc$get_breaks()
   }))
-  expect_true(any(grepl("\\([ABC]\\)", labels)))
+  expect_true(any(grepl("Ductal|Ngn3-high-EP|Pre-endocrine", labels)))
 })
 
 test_that("SCENIC network_graph hub layout keeps TFs off a single line", {
