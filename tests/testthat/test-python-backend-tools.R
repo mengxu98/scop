@@ -129,6 +129,7 @@ test_that("RunPalantir python backend records converted outputs in tools", {
   testthat::local_mocked_bindings(
     .package = "scop",
     PrepareEnv = function(...) NULL,
+    check_python = function(...) TRUE,
     py_to_r2 = function(x) x,
     scop_python_import = function(...) {
       list(Palantir = function(...) "fake_adata_out")
