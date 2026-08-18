@@ -8,7 +8,11 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
-#' @param comparison Optional: specify comparisons to perform.
+#' @param comparison Optional pairs of condition labels. Each pair is
+#' `c(group1, group2)`. `obs_log2FD` is `log2(group1 / group2)`, matching
+#' [RunDEtest] / Seurat `ident.1` vs `ident.2`: positive values mean the cell
+#' type is more abundant in `group1`. If `NULL`, all pairwise comparisons are
+#' generated in both directions.
 #' @param proportion_method Differential abundance method.
 #' One of `"permutation"`, `"milo"`, `"sccoda"`, or `"propeller"`.
 #' This argument is required.
@@ -219,7 +223,7 @@ RunProportionTest <- function(
 #' This method is a permutation-based statistical test for compositional shift
 #' rather than a dedicated biological model.
 #' Bootstrap confidence intervals are reported as uncertainty estimates for
-#' observed log2 fold-differences.
+#' observed log2 fold-differences (`log2(group1 / group2)`).
 #'
 #' @md
 #' @inheritParams RunProportionTest
@@ -256,7 +260,7 @@ RunPermutation <- function(
     comparison_name <- paste0(cluster_1, "_vs_", cluster_2)
 
     log_message(
-      "Running comparison: {.val {cluster_2}} vs {.val {cluster_1}}",
+      "Running comparison: {.val {cluster_1}} vs {.val {cluster_2}}",
       verbose = verbose
     )
 
@@ -624,7 +628,7 @@ sample_level_proportion_test <- function(
 
     m1 <- mean(v1, na.rm = TRUE)
     m2 <- mean(v2, na.rm = TRUE)
-    obs_log2FD <- log2((m2 + pseudocount) / (m1 + pseudocount))
+    obs_log2FD <- log2((m1 + pseudocount) / (m2 + pseudocount))
 
     t1 <- trans_fun(v1)
     t2 <- trans_fun(v2)
@@ -636,9 +640,9 @@ sample_level_proportion_test <- function(
         } else if (length(unique(c(v1, v2))) <= 1) {
           1
         } else if (length(v1) >= 2 && length(v2) >= 2) {
-          stats::t.test(t2, t1)$p.value
+          stats::t.test(t1, t2)$p.value
         } else {
-          stats::wilcox.test(t2, t1, exact = FALSE)$p.value
+          stats::wilcox.test(t1, t2, exact = FALSE)$p.value
         }
       },
       error = function(e) NA_real_

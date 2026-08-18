@@ -270,9 +270,9 @@ run_milo_da_r <- function(
         design_cols <- colnames(stats::model.matrix(design_formula, dsub))
         contrast_cols <- stats::setNames(design_cols, levels(dsub[[safe_split_by]]))
         contrast <- paste0(
-          contrast_cols[[condition_map[[cluster_2]]]],
+          contrast_cols[[condition_map[[cluster_1]]]],
           "-",
-          contrast_cols[[condition_map[[cluster_1]]]]
+          contrast_cols[[condition_map[[cluster_2]]]]
         )
 
         da <- miloR::testNhoods(
@@ -456,9 +456,9 @@ run_milo_da_cpp <- function(
         x_model <- stats::model.matrix(design_formula, dsub)
         contrast_cols <- stats::setNames(colnames(x_model), levels(dsub[[safe_split_by]]))
         contrast <- paste0(
-          contrast_cols[[condition_map[[cluster_2]]]],
+          contrast_cols[[condition_map[[cluster_1]]]],
           "-",
-          contrast_cols[[condition_map[[cluster_1]]]]
+          contrast_cols[[condition_map[[cluster_2]]]]
         )
 
         dge <- edgeR::DGEList(counts = counts_sub, lib.size = cell_sizes)

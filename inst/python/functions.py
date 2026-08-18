@@ -4953,6 +4953,8 @@ def _sccoda_parse_comparison(comparison):
 
 
 def _sccoda_formula(condition_key, reference):
+    # Treatment(reference) makes `reference` the baseline, so coefficients
+    # are the other condition versus this group.
     return f"C({condition_key}, Treatment({str(reference)!r}))"
 
 
@@ -5018,13 +5020,13 @@ def _sccoda_fallback_pair(
 
         m1 = np.nanmean(v1) if v1.size else np.nan
         m2 = np.nanmean(v2) if v2.size else np.nan
-        log2fd = float(np.log2((m2 + 1e-8) / (m1 + 1e-8)))
+        log2fd = float(np.log2((m1 + 1e-8) / (m2 + 1e-8)))
 
         pval = np.nan
         if scipy_stats is not None and v1.size >= 2 and v2.size >= 2:
             try:
                 pval = float(
-                    scipy_stats.ttest_ind(v2, v1, equal_var=False, nan_policy="omit").pvalue
+                    scipy_stats.ttest_ind(v1, v2, equal_var=False, nan_policy="omit").pvalue
                 )
             except Exception:
                 pval = np.nan
@@ -5163,7 +5165,8 @@ def ScCODA(
 
         model = comp_ana.CompositionalAnalysis(
             cdata,
-            formula=_sccoda_formula(condition_key, cluster_1),
+            # cluster_2 is the reference so log2FD is group1 versus group2.
+            formula=_sccoda_formula(condition_key, cluster_2),
             reference_cell_type=ref_cell,
         )
 

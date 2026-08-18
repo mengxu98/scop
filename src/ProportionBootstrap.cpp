@@ -121,7 +121,7 @@ NumericVector proportion_bootstrap_log2fd(
         R_IsNA(mean2) || R_IsNaN(mean2) || !std::isfinite(mean2)) {
       boot[b] = NA_REAL;
     } else {
-      boot[b] = std::log2((mean2 + pseudocount) / (mean1 + pseudocount));
+      boot[b] = std::log2((mean1 + pseudocount) / (mean2 + pseudocount));
     }
   }
   progress.set(n_bootstrap, true);

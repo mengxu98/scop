@@ -658,7 +658,7 @@ proportion_sig_label <- function(FDR_threshold, log2FD_threshold) {
 
 proportion_title <- function(df) {
   if (!is.null(df$group1) && !is.null(df$group2) && !all(is.na(df$group1)) && !all(is.na(df$group2))) {
-    paste0(df$group2[1], " vs ", df$group1[1])
+    paste0(df$group1[1], " vs ", df$group2[1])
   } else if (!is.null(df$comparison) && !all(is.na(df$comparison))) {
     as.character(df$comparison[1])
   } else {

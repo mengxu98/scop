@@ -1031,7 +1031,8 @@ static double log2_fraction_diff(
 ) {
   const double frac_1 = static_cast<double>(count_1) / static_cast<double>(total_1);
   const double frac_2 = static_cast<double>(count_2) / static_cast<double>(total_2);
-  return std::log((frac_2 + pseudocount) / (frac_1 + pseudocount)) / std::log(2.0);
+  // Positive log2FD means enrichment in group1 relative to group2.
+  return std::log((frac_1 + pseudocount) / (frac_2 + pseudocount)) / std::log(2.0);
 }
 
 // [[Rcpp::export]]

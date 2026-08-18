@@ -31,7 +31,11 @@ compare. For sample-level methods, if \code{split.by} is omitted and \code{sampl
 is provided, \code{sample.by} is treated as the condition column and virtual
 samples are created within each condition.}
 
-\item{comparison}{Optional: specify comparisons to perform.}
+\item{comparison}{Optional pairs of condition labels. Each pair is
+\code{c(group1, group2)}. \code{obs_log2FD} is \code{log2(group1 / group2)}, matching
+\link{RunDEtest} / Seurat \code{ident.1} vs \code{ident.2}: positive values mean the cell
+type is more abundant in \code{group1}. If \code{NULL}, all pairwise comparisons are
+generated in both directions.}
 
 \item{proportion_method}{Differential abundance method.
 One of \code{"permutation"}, \code{"milo"}, \code{"sccoda"}, or \code{"propeller"}.
