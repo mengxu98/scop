@@ -86,7 +86,7 @@ scenic_plot_network <- function(
   if (isTRUE(split_panels)) {
     panel_palcolor <- palette_colors(
       tf_candidates,
-      palette = scenic_network_palette(palette),
+      palette = if (identical(palette, "RdYlBu")) "Chinese" else palette,
       palcolor = palcolor
     )
   }
@@ -947,13 +947,6 @@ scenic_network_label_data <- function(
   label_data
 }
 
-scenic_network_palette <- function(palette) {
-  if (identical(palette, "RdYlBu")) {
-    return("Chinese")
-  }
-  palette
-}
-
 scenic_network_label_contrast <- function(color) {
   rgb <- grDevices::col2rgb(color)[, 1]
   if (sum(rgb) > 255 * 2) {
@@ -1009,19 +1002,6 @@ scenic_network_edge_source_tf <- function(edge_data) {
   )
 }
 
-scenic_network_gene_sources <- function(gene, edge_data, region_to_tf) {
-  direct <- unique(as.character(edge_data[["from"]][
-    edge_data[["to"]] == gene & edge_data[["edge_type"]] == "tf_gene"
-  ]))
-  if (length(direct) > 0L) {
-    return(direct)
-  }
-  regions <- unique(as.character(edge_data[["from"]][
-    edge_data[["to"]] == gene & edge_data[["edge_type"]] == "region_gene"
-  ]))
-  unique(na.omit(unname(region_to_tf[regions])))
-}
-
 scenic_network_style_data <- function(
   node_data,
   edge_plot,
@@ -1030,7 +1010,9 @@ scenic_network_style_data <- function(
   palcolor = NULL,
   network_blendmode = "average"
 ) {
-  palette <- scenic_network_palette(palette)
+  if (identical(palette, "RdYlBu")) {
+    palette <- "Chinese"
+  }
   tfs <- sort(unique(as.character(node_data[["name"]][
     as.character(node_data[["node_type"]]) == "TF"
   ])))
@@ -1126,16 +1108,6 @@ scenic_network_tf_groups <- function(rank_table, tfs) {
   df <- df[!duplicated(df[["tf_id"]]), , drop = FALSE]
   out[df[["tf_id"]]] <- as.character(df[["group"]])
   out
-}
-
-scenic_network_legend_labels <- function(tf_cols, tf_groups) {
-  tfs <- names(tf_cols)
-  groups <- unname(tf_groups[tfs])
-  ifelse(
-    is.na(groups) | !nzchar(groups),
-    tfs,
-    paste0(tfs, " (", groups, ")")
-  )
 }
 
 scenic_network_ggplot <- function(
@@ -1324,7 +1296,13 @@ scenic_network_ggplot <- function(
 
   if (length(tf_cols) > 1L) {
     tf_groups <- scenic_network_tf_groups(rank_table, names(tf_cols))
-    legend_labels <- scenic_network_legend_labels(tf_cols, tf_groups)
+    tfs <- names(tf_cols)
+    groups <- unname(tf_groups[tfs])
+    legend_labels <- ifelse(
+      is.na(groups) | !nzchar(groups),
+      tfs,
+      paste0(tfs, " (", groups, ")")
+    )
     legend_df <- data.frame(
       x = mean(node_data[["x"]]),
       y = mean(node_data[["y"]]),

@@ -1,178 +1,80 @@
-#' @title Plot SCENIC or SCENIC+ regulon activity and specificity
+#' @title Plot SCENIC or SCENIC+ regulon activity
 #'
 #' @description
-#' Visualize regulon specificity scores (RSS) and activity stored by
-#' [RunSCENIC()] or [RunSCENICPlus()]. Use [SCENICPlusPlot()] for SCENIC+
-#' defaults (`tool_name = "SCENICPlus"`, `assay = "scenicplus"`).
-#' `"heatmap_dotplot"` matches the official SCENIC+ signature figure (color =
-#' TF expression, size = RSS). `"eregulon_dim"` compares TF expression with
-#' gene-based AUC, and region-based AUC when it is stored. `"coverage"` draws
-#' accessibility and region–gene link tracks for one target locus.
-#' `"network"` draws per-TF regulon hubs after iRegulon/SCENIC+ concentrical
-#' figures (TF at the center, targets on a ring; SCENIC+ adds an inner region
-#' ring when triplets are stored). `"egrn"` is the SCENIC+ enhancer-driven GRN
-#' (Nature Methods 2023 Fig. 2e: TF, unlabeled region diamonds, and gene
-#' nodes). `"overlap"` is the eRegulon target-gene Jaccard heatmap.
+#' Plot RSS and regulon activity from [RunSCENIC()] or [RunSCENICPlus()].
+#' Use [SCENICPlusPlot()] for SCENIC+ defaults. Network `palette = "RdYlBu"`
+#' uses `"Chinese"`. Multi-TF `"egrn"` / `"network_graph"` legends show the
+#' top RSS cell type.
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @param srt A Seurat object containing SCENIC results from
-#' [RunSCENIC()] or SCENIC+ results from [RunSCENICPlus()].
-#' @param group.by Metadata column used as the cell group annotation.
-#' @param tool_name Name of the `srt@tools` entry storing SCENIC results.
-#' @param assay Assay used as a fallback source of regulon activity.
-#' @param layer Assay layer used as a fallback source of regulon activity.
-#' @param plot_type Plot type. `"rss_rank"` keeps the original regulon RSS rank
-#' plot. `"heatmap_dotplot"` colors dots by TF expression and sizes them by
-#' RSS. `"eregulon_dim"` compares TF expression and regulon AUC on embeddings.
-#' `"coverage"` shows ATAC accessibility with region–gene links for a target
-#' locus. `"network"` draws regulon hub networks. `"network_graph"` draws a
-#' global TF–target graph. `"egrn"` draws the SCENIC+ TF–region–gene GRN.
-#' `"overlap"` shows pairwise eRegulon target overlap. Other options summarize
-#' RSS, regulon activity, or regulon sizes.
-#' @param features Optional TF/regulon names used by activity, network, and
-#' target plots. Values can match either `"Sox9"` or `"Sox9(+)"`. Explicit
-#' values are resolved in input order; duplicated regulons are drawn once.
-#' @param reduction Dimensional reduction used when `plot_type =
-#' "activity_dim"`. If `NULL`, a UMAP/tSNE/PCA-like reduction is selected when
-#' available.
-#' @param dims Two reduction dimensions used when `plot_type =
-#' "activity_dim"`.
-#' @param cor.features Two metadata columns or gene names used when
-#' `plot_type = "activity_cor_dumbbell"`. SCENIC regulon activity is
-#' correlated with each feature across matched cells.
-#' @param cor.feature.labels Optional labels for `cor.features` in the plot
-#' legend. If `NULL`, `cor.features` are used.
-#' @param cor_method Correlation method used by
-#' `plot_type = "activity_cor_dumbbell"`.
-#' @param p_cutoff P-value cutoff used to mark significant correlations in
-#' `plot_type = "activity_cor_dumbbell"`.
-#' @param cor_sort.by Ordering used for the dumbbell rows. `"difference"`
-#' sorts by the absolute distance between the two correlations, `"max_abs"`
-#' sorts by the strongest absolute correlation, and `"input"` keeps the
-#' resolved regulon order.
-#' @param cor_cols Two colors used for the two correlation targets.
+#' @param srt A Seurat object with SCENIC or SCENIC+ results.
+#' @param group.by Metadata column for cell groups.
+#' @param tool_name `srt@tools` entry. Default `"SCENIC"`.
+#' @param assay Fallback assay for regulon activity.
+#' @param layer Assay layer for regulon activity.
+#' @param plot_type One of `"rss_rank"`, `"rss_heatmap"`, `"rss_dotplot"`,
+#' `"heatmap_dotplot"`, `"activity_heatmap"`, `"activity_violin"`,
+#' `"activity_dim"`, `"eregulon_dim"`, `"activity_cor_dumbbell"`,
+#' `"regulon_size"`, `"network"`, `"network_graph"`, `"egrn"`, `"overlap"`,
+#' `"target_bar"`, `"coverage"`.
+#' @param features TF or regulon names.
+#' @param reduction Reduction for `"activity_dim"` / `"eregulon_dim"`.
+#' @param dims Two reduction dimensions.
+#' @param cor.features Two metadata columns or genes for `"activity_cor_dumbbell"`.
+#' @param cor.feature.labels Optional legend labels for `cor.features`.
+#' @param cor_method Correlation method for `"activity_cor_dumbbell"`.
+#' @param p_cutoff Significance cutoff for `"activity_cor_dumbbell"`.
+#' @param cor_sort.by Row order: `"difference"`, `"max_abs"`, or `"input"`.
+#' @param cor_cols Two colors for the two correlation targets.
 #' @param cor_xlim Optional x-axis limits for the dumbbell plot.
-#' @param cor_label Whether to label dumbbell points with correlation
-#' coefficients.
-#' @param top_n Number of top regulons labeled for each group.
-#' @param activity_scale Whether to z-score each regulon across groups in
-#' `plot_type = "activity_heatmap"`. The default is `FALSE` so that the
-#' heatmap shows mean regulon activity and does not collapse constant regulons
-#' to zero.
-#' @param rss_scale Whether to z-score each regulon across groups in
-#' `plot_type = "rss_heatmap"`. Use `rss_scale = TRUE`,
-#' `activity_scale = TRUE`, and the same `heatmap_limits` value when RSS and
-#' activity heatmaps should use a comparable row-wise relative scale.
-#' @param heatmap_show_row_names,heatmap_show_column_names Whether to show row
-#' and column names in `plot_type = "rss_heatmap"` and `plot_type =
-#' "activity_heatmap"`.
-#' @param heatmap_cluster_rows,heatmap_cluster_columns Whether to cluster rows
-#' and columns in SCENIC heatmaps.
-#' @param heatmap_order Row ordering strategy for `plot_type = "rss_heatmap"`
-#' and `plot_type = "activity_heatmap"`. `"cluster"` keeps the existing
-#' dendrogram-based order, `"group"` groups regulons by the group where each
-#' regulon reaches its maximum heatmap value. For `activity_heatmap` without
-#' explicit `features`, `"group"` uses the RSS group that first selected each
-#' displayed regulon, so `top_n` controls both the displayed feature set and
-#' source-group row blocks. `"input"` keeps the resolved feature order.
-#' `"group"` and `"input"` disable row clustering so the chosen order is
-#' preserved.
-#' @param heatmap_row_names_side,heatmap_column_names_side Sides used for row
-#' and column names in SCENIC heatmaps.
-#' @param heatmap_row_names_rot,heatmap_column_names_rot Rotation angles for
-#' row and column names in SCENIC heatmaps.
-#' @param heatmap_border Whether to draw heatmap borders in SCENIC heatmaps.
-#' @param heatmap_palette,heatmap_palcolor Palette passed to [GroupHeatmap()]
-#' or [FeatureHeatmap()] for SCENIC heatmaps. If `heatmap_palette = NULL`, a
-#' sensible default is selected for each heatmap type.
-#' @param heatmap_group_palette,heatmap_group_palcolor Group annotation palette
-#' passed to [GroupHeatmap()] or [FeatureHeatmap()] for SCENIC heatmaps.
-#' @param heatmap_limits Optional two-length numeric vector used as the color
-#' scale limits for `plot_type = "rss_heatmap"` and `plot_type =
-#' "activity_heatmap"`. For example, `c(-2, 2)` fixes both z-score heatmaps to
-#' the same legend range.
-#' @param heatmap_args Additional arguments passed to [GroupHeatmap()] for
-#' `plot_type = "activity_heatmap"` or [FeatureHeatmap()] for `plot_type =
-#' "rss_heatmap"`.
-#' @param palette,palcolor Palette passed to `palette_colors()` for
-#' `"rss_dotplot"`, `"heatmap_dotplot"`, `"regulon_size"`, `"target_bar"`,
-#' and network TF/edge colors. Network plots follow published SCENIC+/iRegulon
-#' figures: TF-colored edges, light-gray gene nodes, unlabeled region diamonds,
-#' and concentric or Kamada–Kawai layouts. Multi-TF `"egrn"` and `"network_graph"`
-#' plots add a legend of TF colors labeled with the RSS top cell type
-#' (`Jun (Ductal)`). Single-TF hubs put that cell type in the panel title.
-#' When `palette = "RdYlBu"` (the `SCENICPlot()` default), networks use the
-#' scop `"Chinese"` discrete palette.
-#' @param compare_expression Whether `"activity_dim"` also plots TF gene
-#' expression beside regulon activity. `"eregulon_dim"` always compares
-#' expression with activity.
-#' @param expression_assay,expression_layer Assay and layer used for TF
-#' expression in `"heatmap_dotplot"`, `"activity_dim"`, and `"eregulon_dim"`.
-#' If `expression_assay` is `NULL`, `"RNA"` is used when present.
-#' @param expression_scale Whether `"heatmap_dotplot"` z-scores TF expression
-#' across groups.
-#' @param dim_args Additional arguments passed to [FeatureDimPlot()] and
-#' [CellDimPlot()] when `plot_type` is `"activity_dim"` or `"eregulon_dim"`.
-#' @param atac_assay Chromatin assay used by `plot_type = "coverage"`. If
-#' `NULL`, `"peaks"` or `"ATAC"` is used when present.
-#' @param extend.upstream,extend.downstream Bases added around the selected
-#' region–gene locus in `"coverage"` plots.
-#' @param coverage_args Additional arguments passed to [CoverageTrackPlot()]
-#' when fragment files are available for `"coverage"` plots.
-#' @param ... Additional arguments passed directly to the underlying
-#' [GroupHeatmap()] or [FeatureHeatmap()] call when `plot_type` is
-#' `"activity_heatmap"`, `"rss_heatmap"`, or `"overlap"`. For example, `width`
-#' and `height` can be supplied directly.
-#' @param max_targets Maximum number of target genes shown per TF/regulon in
-#' network-style plots.
-#' @param max_edges Maximum number of TF-target edges shown in global network
-#' plots. Edges are ranked by absolute weight when a weight column is present.
-#' @param network_layout Graph layout used by network plots. `"auto"` selects
-#' `"star"` for `"network"` (and single-TF `"egrn"`), `"kk"` for
-#' `"network_graph"` and multi-TF `"egrn"`. `"star"` is the SCENIC+
-#' concentrical / iRegulon hub (TF at the origin; inner ring = regions when
-#' triplets are present). `"hub"` places TFs on a circle with unique targets
-#' around each TF. `"tripartite"` is a column layout (TF | region | gene).
-#' `"fr"` and `"kk"` are force-directed layouts initialized from a circle.
-#' @param network_tf Optional TF names used when `plot_type` is `"network"` or
-#' `"egrn"`. If `NULL`, `features`, `highlight_tf`, or the top RSS regulons
-#' are used.
-#' @param network_include_regions Whether SCENIC+ `"network"` / `"network_graph"`
-#' plots use TF–region–gene triplets when they are stored. Default is `TRUE`.
-#' @param label_nodes Which nodes to label in network plots. `"auto"` labels
-#' TFs plus target genes in star/eGRN plots (region coordinates stay unlabeled)
-#' and high-degree TFs in dense global graphs.
-#' @param network_label_top_n Maximum number of high-degree TF nodes labeled in
-#' `plot_type = "network_graph"` when `label_nodes = "tfs"`.
-#' @param return_data Whether to return RSS matrices and ranking tables together
-#' with plots. If `FALSE`, only the plot object or plot list is returned.
-#' @param title Optional title added to the combined plot.
-#' @param point_color Color for all regulon rank points.
-#' @param top_color Color for top regulon rank points.
+#' @param cor_label Whether to label dumbbell points.
+#' @param top_n Top regulons per group.
+#' @param activity_scale Z-score regulons in `"activity_heatmap"`.
+#' @param rss_scale Z-score regulons in `"rss_heatmap"`.
+#' @param heatmap_show_row_names,heatmap_show_column_names Heatmap names.
+#' @param heatmap_cluster_rows,heatmap_cluster_columns Heatmap clustering.
+#' @param heatmap_order `"cluster"`, `"group"`, or `"input"`.
+#' @param heatmap_row_names_side,heatmap_column_names_side Name sides.
+#' @param heatmap_row_names_rot,heatmap_column_names_rot Name rotation.
+#' @param heatmap_border Heatmap borders.
+#' @param heatmap_palette,heatmap_palcolor Heatmap palette.
+#' @param heatmap_group_palette,heatmap_group_palcolor Group annotation palette.
+#' @param heatmap_limits Color-scale limits for RSS/activity heatmaps.
+#' @param heatmap_args Extra arguments for [GroupHeatmap()] / [FeatureHeatmap()].
+#' @param palette,palcolor Palette for RSS, size, target, and network colors.
+#' @param compare_expression Add TF expression next to `"activity_dim"`.
+#' @param expression_assay,expression_layer Assay and layer for TF expression.
+#' @param expression_scale Z-score TF expression in `"heatmap_dotplot"`.
+#' @param dim_args Extra arguments for [FeatureDimPlot()] / [CellDimPlot()].
+#' @param atac_assay Chromatin assay for `"coverage"`.
+#' @param extend.upstream,extend.downstream Flanks for `"coverage"`.
+#' @param coverage_args Extra arguments for [CoverageTrackPlot()].
+#' @param ... Extra heatmap arguments such as `width` and `height`.
+#' @param max_targets Max targets per TF in network plots.
+#' @param max_edges Max edges in `"network_graph"`.
+#' @param network_layout `"auto"`, `"star"`, `"kk"`, `"hub"`, `"tripartite"`, `"fr"`.
+#' @param network_tf TFs for `"network"` / `"egrn"`.
+#' @param network_include_regions Use SCENIC+ triplets when stored.
+#' @param label_nodes `"auto"`, `"tfs"`, `"all"`, or `"none"`.
+#' @param network_label_top_n Max TF labels in `"network_graph"`.
+#' @param return_data Return RSS tables with plots.
+#' @param title Optional combined-plot title.
+#' @param point_color Rank-plot point color.
+#' @param top_color Top-regulon point color.
 #' @param point_size Point size.
-#' @param point_alpha Alpha for all regulon rank points.
-#' @param highlight_tf Optional TF or regulon names to highlight in every group
-#' plot. Values can match either `TF` or `regulon`, for example `"Sox9"` or
-#' `"Sox9(+)"`.
-#' @param highlight_color Color for highlighted TF or regulon points and rank
-#' lines.
-#' @param highlight_point_size Point size for highlighted TFs or regulons.
-#' @param highlight_linewidth Line width for highlighted TF or regulon rank
-#' lines.
-#' @param label_size Text size for top regulon labels.
-#' @param label_max_overlaps Maximum number of overlapping labels allowed by
-#' [ggrepel::geom_text_repel()] before dropping a label. The default `Inf`
-#' keeps all requested top or highlighted TF labels.
-#' @param verbose Whether to print messages.
+#' @param point_alpha Rank-plot alpha.
+#' @param highlight_tf TFs or regulons to highlight.
+#' @param highlight_color Highlight color.
+#' @param highlight_point_size Highlight point size.
+#' @param highlight_linewidth Highlight line width.
+#' @param label_size Top-regulon label size.
+#' @param label_max_overlaps Max overlapping labels.
+#' @param verbose Print messages.
 #'
-#' @return A list containing `rss_matrix`, `rank_table`, `top_table`, `plots`,
-#' and `plot` when `return_data = TRUE`; heatmap plot types also include the
-#' full `heatmap` result returned by [FeatureHeatmap()] or [GroupHeatmap()].
-#' Otherwise, a plot object or list of plots.
+#' @return Plot, or a list with `rss_matrix`, `rank_table`, `top_table`, `plots`, and `plot` when `return_data = TRUE`.
 #'
-#' @seealso [RunSCENIC], [RunSCENICPlus], [SCENICPlusPlot], [CoverageTrackPlot],
-#' [GroupHeatmap], [FeatureHeatmap], [FeatureDimPlot], [FeatureStatPlot]
+#' @seealso [RunSCENIC], [RunSCENICPlus], [SCENICPlusPlot]
 #'
 #' @export
 #'
@@ -186,139 +88,13 @@
 #'   backend = "cpp",
 #'   work_dir = "test/scenic"
 #' )
-#'
-#' scenic_rss <- SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "rss_rank"
-#' )
-#' scenic_rss$plot
-#' example_regulons <- unique(scenic_rss$top_table$regulon)[1:3]
+#' scenic_rss <- SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_rank")
 #' example_tfs <- unique(scenic_rss$top_table$TF)[1:3]
-#'
-#' FeatureDimPlot(
-#'   pancreas_sub,
-#'   features = example_regulons,
-#'   assay = "scenic",
-#'   reduction = "StandardpcaUMAP2D"
-#' )
-#' FeatureStatPlot(
-#'   pancreas_sub,
-#'   stat.by = example_regulons,
-#'   group.by = "CellType",
-#'   assay = "scenic"
-#' )
-#'
-#' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_heatmap")
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "rss_heatmap",
-#'   width = 2,
-#'   height = 3
-#' )
-#' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_dotplot")
 #' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "heatmap_dotplot")
-#' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "activity_heatmap")
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "rss_heatmap",
-#'   heatmap_order = "group",
-#'   heatmap_cluster_columns = FALSE
-#' )
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "rss_heatmap",
-#'   rss_scale = TRUE,
-#'   heatmap_order = "group",
-#'   heatmap_limits = c(-2, 2)
-#' )
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "activity_heatmap",
-#'   activity_scale = TRUE,
-#'   heatmap_limits = c(-2, 2)
-#' )
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "activity_violin",
-#'   features = example_regulons
-#' )
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "activity_dim",
-#'   features = example_regulons,
-#'   compare_expression = TRUE
-#' )
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "eregulon_dim",
-#'   features = example_regulons
-#' )
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "activity_cor_dumbbell",
-#'   features = example_regulons,
-#'   cor.features = c("nFeature_RNA", "nCount_RNA")
-#' )
-#' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "regulon_size")
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "network_graph",
-#'   features = example_tfs,
-#'   max_targets = 12,
-#'   max_edges = 200,
-#'   label_nodes = "all"
-#' )
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "network",
-#'   features = example_tfs[[1]],
-#'   max_targets = 20
-#' )
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "target_bar",
-#'   features = example_regulons,
-#'   max_targets = 20
-#' )
-#' SCENICPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "overlap",
-#'   features = example_regulons
-#' )
-#' SCENICPlusPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "egrn",
-#'   features = example_tfs,
-#'   max_targets = 10
-#' )
-#' SCENICPlusPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "network_graph",
-#'   features = example_tfs,
-#'   max_targets = 8,
-#'   label_nodes = "all"
-#' )
-#' SCENICPlusPlot(
-#'   pancreas_sub,
-#'   group.by = "CellType",
-#'   plot_type = "coverage",
-#'   features = example_tfs
-#' )
+#' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network", features = example_tfs[[1]])
+#' SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "network_graph", features = example_tfs)
+#' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "egrn", features = example_tfs)
+#' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "coverage", features = example_tfs)
 #' }
 SCENICPlot <- function(
   srt,

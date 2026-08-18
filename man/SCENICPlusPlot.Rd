@@ -2,7 +2,7 @@
 % Please edit documentation in R/SCENICPlusPlot.R
 \name{SCENICPlusPlot}
 \alias{SCENICPlusPlot}
-\title{Plot SCENIC+ eRegulon activity and specificity}
+\title{Plot SCENIC+ eRegulon activity}
 \usage{
 SCENICPlusPlot(
   srt,
@@ -17,35 +17,24 @@ SCENICPlusPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing results from \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}.}
+\item{srt}{A Seurat object from \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}.}
 
-\item{group.by}{Metadata column used as the cell group annotation.}
+\item{group.by}{Metadata column for cell groups.}
 
-\item{tool_name}{Name of the \code{srt@tools} entry. Default \code{"SCENICPlus"}.}
+\item{tool_name}{Tools slot. Default \code{"SCENICPlus"}.}
 
-\item{assay}{Assay storing eRegulon AUC scores. Default \code{"scenicplus"}.}
+\item{assay}{eRegulon AUC assay. Default \code{"scenicplus"}.}
 
-\item{plot_type}{Plot type. Defaults to \code{"heatmap_dotplot"}. See
-\code{\link[=SCENICPlot]{SCENICPlot()}} for the full set of shared views.}
+\item{plot_type}{Plot type. Default \code{"heatmap_dotplot"}.}
 
-\item{...}{Additional arguments passed to \code{\link[=SCENICPlot]{SCENICPlot()}}, including
-\code{features}, \code{compare_expression}, heatmap options, and network options.}
+\item{...}{Passed to \code{\link[=SCENICPlot]{SCENICPlot()}}.}
 }
 \value{
-The same object returned by \code{\link[=SCENICPlot]{SCENICPlot()}}.
+Same as \code{\link[=SCENICPlot]{SCENICPlot()}}.
 }
 \description{
-A \code{\link[=SCENICPlot]{SCENICPlot()}} wrapper with SCENIC+ defaults (\code{tool_name = "SCENICPlus"},
-\code{assay = "scenicplus"}). The default \code{"heatmap_dotplot"} matches the
-official SCENIC+ signature figure: color is TF expression and size is
-regulon specificity score (RSS). \code{"eregulon_dim"} compares TF expression
-with gene-based AUC, and region-based AUC when it is stored in
-\code{srt@tools$SCENICPlus}. \code{"coverage"} draws accessibility and region–gene
-tracks for a target locus. \code{"network"} and \code{"egrn"} follow published
-SCENIC+ / iRegulon GRN figures (concentric regulon hubs and Kamada–Kawai
-TF–region–gene graphs with unlabeled region diamonds). Multi-TF \code{"egrn"}
-and \code{"network_graph"} plots legend TF colors with the RSS top cell type.
-\code{"overlap"} shows eRegulon target Jaccard overlap.
+\code{\link[=SCENICPlot]{SCENICPlot()}} with \code{tool_name = "SCENICPlus"} and \code{assay = "scenicplus"}.
+Default \code{"heatmap_dotplot"}: color = TF expression, size = RSS.
 }
 \examples{
 \dontrun{
@@ -56,74 +45,12 @@ pancreas_sub <- RunSCENICPlus(
   backend = "python",
   python_result_dir = "test/scenicplus"
 )
-
-scenicplus_dot <- SCENICPlusPlot(
-  pancreas_sub,
-  group.by = "CellType"
-)
-scenicplus_dot$plot
-example_regulons <- unique(scenicplus_dot$top_table$regulon)[1:3]
+scenicplus_dot <- SCENICPlusPlot(pancreas_sub, group.by = "CellType")
 example_tfs <- unique(scenicplus_dot$top_table$TF)[1:3]
-
-FeatureDimPlot(
-  pancreas_sub,
-  features = example_regulons,
-  assay = "scenicplus",
-  reduction = "StandardpcaUMAP2D"
-)
-FeatureStatPlot(
-  pancreas_sub,
-  stat.by = example_regulons,
-  group.by = "CellType",
-  assay = "scenicplus"
-)
-
-SCENICPlusPlot(
-  pancreas_sub,
-  group.by = "CellType",
-  plot_type = "rss_rank"
-)
-SCENICPlusPlot(
-  pancreas_sub,
-  group.by = "CellType",
-  plot_type = "eregulon_dim",
-  features = example_regulons
-)
-SCENICPlusPlot(
-  pancreas_sub,
-  group.by = "CellType",
-  plot_type = "network",
-  features = example_tfs[[1]],
-  max_targets = 20
-)
-SCENICPlusPlot(
-  pancreas_sub,
-  group.by = "CellType",
-  plot_type = "egrn",
-  features = example_tfs,
-  max_targets = 10
-)
-SCENICPlusPlot(
-  pancreas_sub,
-  group.by = "CellType",
-  plot_type = "network_graph",
-  features = example_tfs,
-  max_targets = 8,
-  label_nodes = "all"
-)
-SCENICPlusPlot(
-  pancreas_sub,
-  group.by = "CellType",
-  plot_type = "overlap"
-)
-SCENICPlusPlot(
-  pancreas_sub,
-  group.by = "CellType",
-  plot_type = "coverage",
-  features = example_regulons
-)
+SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "egrn", features = example_tfs)
+SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "network_graph", features = example_tfs)
 }
 }
 \seealso{
-\link{RunSCENICPlus}, \link{SCENICPlot}, \link{FeatureDimPlot}, \link{FeatureStatPlot}
+\link{RunSCENICPlus}, \link{SCENICPlot}
 }
