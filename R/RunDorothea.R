@@ -141,6 +141,7 @@
 #' pancreas_sub <- RunDorothea(
 #'   pancreas_sub,
 #'   regulons = grn_edges,
+#'   species = "Mus_musculus",
 #'   minsize = 1,
 #'   new_assay = FALSE,
 #'   add_meta = FALSE,
@@ -150,6 +151,14 @@
 #' # A real RunGRN result can be connected in the same way:
 #' # grn <- RunGRN(pancreas_sub, grn_method = "genie3")
 #' # pancreas_sub <- RunDorothea(pancreas_sub, regulons = grn)
+#' \dontrun{
+#' pancreas_sub <- RunDorothea(
+#'   pancreas_sub,
+#'   regulons = "collectri",
+#'   species = "Mus_musculus",
+#'   minsize = 5
+#' )
+#' }
 RunDorothea <- function(
   srt,
   assay = NULL,
