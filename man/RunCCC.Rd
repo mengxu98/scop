@@ -6,7 +6,7 @@
 \usage{
 RunCCC(
   srt,
-  group.by,
+  group.by = NULL,
   methods = c("CellChat", "CellphoneDB", "LIANA"),
   method_params = list(),
   backend = c("cpp", "r"),
@@ -23,7 +23,7 @@ RunCCC(
 
 \item{methods}{Supported cell-cell communication methods to run. The
 default core methods are \code{"CellChat"}, \code{"CellphoneDB"}, and \code{"LIANA"}.
-NicheNet, MultiNicheNet, SpatialCellChat, and MDIC3 can be selected when
+NicheNet, MultiNicheNet, SpatialCellChat, SpatialDM, and MDIC3 can be selected when
 their design-specific arguments are supplied through \code{method_params}.
 LIANA's default internal method set includes its CellPhoneDB scorer, so
 standalone CellphoneDB and LIANA consensus results are not statistically

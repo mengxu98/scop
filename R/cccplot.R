@@ -919,6 +919,10 @@ ccc_build_cellchat_long_table <- function(srt, thresh = 0.05) {
 
 ccc_bundle_long_table <- function(srt, method, bundle = NULL, thresh = 0.05) {
   method <- normalize_ccc_method(method)
+  spec <- ccc_method_spec(method)
+  if (isFALSE(spec$supports_unified_edges)) {
+    return(data.frame())
+  }
   if (identical(method, "CellChat")) {
     bundle <- bundle %||% srt@tools[[method]]
     stored <- bundle$primary_table %||% bundle$long_table
@@ -972,7 +976,10 @@ ccc_build_unified_bundle <- function(
   methods <- methods %||% ccc_available_methods(srt)
   methods <- unique(vapply(methods, normalize_ccc_method, character(1)))
   methods <- setdiff(methods, "CCC")
-  pieces <- lapply(methods, function(method) {
+  edge_methods <- methods[vapply(methods, function(method) {
+    isTRUE(ccc_method_spec(method)$supports_unified_edges)
+  }, logical(1))]
+  pieces <- lapply(edge_methods, function(method) {
     ccc_bundle_long_table(
       srt = srt,
       method = method,
@@ -987,7 +994,8 @@ ccc_build_unified_bundle <- function(
   liana_table <- ccc_long_to_liana(long_table, sample_col = liana_sample_col)
   list(
     method = "CCC",
-    methods = sort(unique(as.character(long_table$method %||% methods))),
+    methods = sort(unique(as.character(long_table$method %||% edge_methods))),
+    association_methods = setdiff(methods, edge_methods),
     long_table = long_table,
     pair_table = pair_table,
     liana_table = liana_table,
@@ -1009,6 +1017,9 @@ ccc_update_unified_bundle <- function(
 ) {
   backend <- match.arg(backend)
   method <- normalize_ccc_method(method)
+  if (isFALSE(ccc_method_spec(method)$supports_unified_edges)) {
+    return(srt)
+  }
   new_long <- ccc_bundle_long_table(
     srt = srt,
     method = method,

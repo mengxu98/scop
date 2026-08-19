@@ -4,7 +4,7 @@
 #' @inheritParams RunCellChat
 #' @param methods Supported cell-cell communication methods to run. The
 #' default core methods are `"CellChat"`, `"CellphoneDB"`, and `"LIANA"`.
-#' NicheNet, MultiNicheNet, SpatialCellChat, and MDIC3 can be selected when
+#' NicheNet, MultiNicheNet, SpatialCellChat, SpatialDM, and MDIC3 can be selected when
 #' their design-specific arguments are supplied through `method_params`.
 #' LIANA's default internal method set includes its CellPhoneDB scorer, so
 #' standalone CellphoneDB and LIANA consensus results are not statistically
@@ -27,7 +27,7 @@
 #' @export
 RunCCC <- function(
   srt,
-  group.by,
+  group.by = NULL,
   methods = c("CellChat", "CellphoneDB", "LIANA"),
   method_params = list(),
   backend = c("cpp", "r"),
@@ -43,14 +43,18 @@ RunCCC <- function(
       message_type = "error"
     )
   }
-  if (!is.character(group.by) || length(group.by) != 1L || !group.by %in% colnames(srt[[]])) {
+  methods <- unique(vapply(methods, normalize_ccc_method, character(1)))
+  requires_group <- any(vapply(methods, function(method) {
+    isTRUE(ccc_method_spec(method)$requires_group)
+  }, logical(1)))
+  if (isTRUE(requires_group) &&
+      (!is.character(group.by) || length(group.by) != 1L || !group.by %in% colnames(srt[[]]))) {
     log_message(
       "{.arg group.by} must be a valid metadata column in {.cls Seurat}",
       message_type = "error"
     )
   }
 
-  methods <- unique(vapply(methods, normalize_ccc_method, character(1)))
   invisible(lapply(methods, ccc_method_runner))
 
   method_params <- ccc_normalize_run_params(method_params)
@@ -232,7 +236,8 @@ ccc_run_method_args <- function(
     params[protected] <- NULL
   }
 
-  base <- list(group.by = group.by, verbose = verbose)
+  base <- list(verbose = verbose)
+  if (isTRUE(spec$requires_group)) base$group.by <- group.by
   base[[spec$object_arg]] <- srt
   if (isTRUE(spec$pass_backend) && !"backend" %in% names(params)) {
     base$backend <- backend
@@ -310,7 +315,7 @@ ccc_preflight_method <- function(method, srt, params = list()) {
     has_images <- length(srt@images) > 0L
     if (!has_coords && !has_images) {
       log_message(
-        "{.val SpatialCellChat} requires a spatial image or metadata coordinate columns supplied through {.arg method_params$SpatialCellChat$coord.cols}",
+        "{.val {method}} requires a spatial image or metadata coordinate columns supplied through {.arg coord.cols}",
         message_type = "error"
       )
     }
@@ -349,23 +354,23 @@ ccc_method_specs <- function() {
     CellChat = list(
       runner = "RunCellChat", aliases = "cellchat", required_params = character(),
       object_arg = "srt", pass_backend = TRUE, pass_thresh = TRUE,
-      requires_spatial = FALSE
+      requires_spatial = FALSE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     CellphoneDB = list(
       runner = "RunCellphoneDB",
       aliases = c("cellphonedb", "cellphone_db", "cellphone db"),
       required_params = character(), object_arg = "srt", pass_backend = TRUE,
-      pass_thresh = FALSE, requires_spatial = FALSE
+      pass_thresh = FALSE, requires_spatial = FALSE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     LIANA = list(
       runner = "RunLIANA", aliases = "liana", required_params = character(),
       object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
-      requires_spatial = FALSE
+      requires_spatial = FALSE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     Nichenetr = list(
       runner = "RunNichenetr", aliases = c("nichenet", "nichenetr"),
       required_params = "receiver", object_arg = "srt", pass_backend = TRUE,
-      pass_thresh = FALSE, requires_spatial = FALSE
+      pass_thresh = FALSE, requires_spatial = FALSE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     MultiNichenetr = list(
       runner = "RunMultiNichenetr",
@@ -375,28 +380,34 @@ ccc_method_specs <- function() {
         "condition_reference", "receiver_celltypes"
       ),
       object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
-      requires_spatial = FALSE
+      requires_spatial = FALSE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     SpatialCellChat = list(
       runner = "RunSpatialCellChat",
       aliases = c("spatialcellchat", "spatial_cellchat", "spatial cellchat"),
       required_params = character(), object_arg = "srt", pass_backend = TRUE,
-      pass_thresh = FALSE, requires_spatial = TRUE
+      pass_thresh = FALSE, requires_spatial = TRUE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     SpaTalk = list(
       runner = "RunSpaTalk", aliases = "spatalk", required_params = character(),
       object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
-      requires_spatial = TRUE
+      requires_spatial = TRUE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     COMMOT = list(
       runner = "RunCOMMOT", aliases = "commot", required_params = character(),
       object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
-      requires_spatial = TRUE
+      requires_spatial = TRUE, requires_group = TRUE, supports_unified_edges = TRUE
+    ),
+    SpatialDM = list(
+      runner = "RunSpatialDM", aliases = c("spatialdm", "spatial dm"),
+      required_params = character(), object_arg = "srt", pass_backend = FALSE,
+      pass_thresh = FALSE, requires_spatial = TRUE, requires_group = FALSE,
+      supports_unified_edges = FALSE
     ),
     MDIC3 = list(
       runner = "RunMDIC3", aliases = "mdic3", required_params = character(),
       object_arg = "object", pass_backend = FALSE, pass_thresh = FALSE,
-      requires_spatial = FALSE
+      requires_spatial = FALSE, requires_group = TRUE, supports_unified_edges = TRUE
     )
   )
 }
