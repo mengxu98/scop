@@ -56,37 +56,29 @@ CellStatPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{stat.by}{A character vector specifying the features to plot.}
+\item{stat.by}{Features to plot.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) to group cells by.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Metadata column to split the analysis or plot by.}
 
-\item{bg.by}{A character vector specifying the variable to use as the background color.
-Default is \code{NULL}.}
+\item{bg.by}{Metadata column used as background color.}
 
-\item{cells}{A character vector of cell names to use.
-Default is \code{NULL}.}
+\item{cells}{Cell names to include.}
 
-\item{flip}{A logical specifying whether to flip the plot vertically.
-Default is \code{FALSE}.}
+\item{flip}{Flip x and y.}
 
 \item{NA_color}{The color to use for missing values.}
 
-\item{NA_stat}{Whether to include missing values in the plot.
-Default is \code{TRUE}.}
+\item{NA_stat}{Whether to include missing values in the plot.}
 
-\item{keep_empty}{Whether to keep empty levels in the plot.
-Default is \code{FALSE}.}
+\item{keep_empty}{Keep empty factor levels.}
 
-\item{individual}{Whether to create individual plots for each group.
-Default is \code{FALSE}.}
+\item{individual}{One plot per group.}
 
-\item{stat_level}{The level(s) of the variable(s) specified in \code{stat.by} to include in the plot.
-Default is \code{NULL}.}
+\item{stat_level}{The level(s) of the variable(s) specified in \code{stat.by} to include in the plot.}
 
 \item{plot_type}{The type of plot to create.
 Can be one of \code{"bar"}, \code{"rose"}, \code{"ring"}, \code{"pie"}, \code{"trend"},
@@ -99,27 +91,15 @@ Can be one of \code{"percent"} or \code{"count"}.}
 \item{position}{The position adjustment for the plot.
 Can be one of \code{"stack"} or \code{"dodge"}.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
+\item{palette}{Color palette name. See \link[thisplot:show_palettes]{thisplot::show_palettes}.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{palcolor}{Custom colors used to build the palette.}
 
-\item{alpha}{The transparency of the plot.
-Default is \code{1}.}
+\item{alpha}{Plot transparency.}
 
-\item{bg_palette}{A string specifying the color palette to use for the background.
-Default is \code{"Chinese"}.}
+\item{bg_palette, bg_palcolor, bg_alpha}{Background palette and transparency.}
 
-\item{bg_palcolor}{A character vector specifying specific colors to use for the background.
-Default is \code{NULL}.}
-
-\item{bg_alpha}{The transparency of the background.
-Default is \code{0.2}.}
-
-\item{label}{Whether to add labels on the plot.
-Default is \code{FALSE}.}
+\item{label}{Whether to add labels on the plot.}
 
 \item{label.size}{The size of the labels.}
 
@@ -129,39 +109,15 @@ Default is \code{FALSE}.}
 
 \item{label.bg.r}{The radius of the rounded corners of the label background.}
 
-\item{aspect.ratio}{Aspect ratio of the panel.
-Default is \code{NULL}.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
-\item{title}{The text for the title.
-Default is \code{NULL}.}
+\item{ylab}{Y-axis label.}
 
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
-Default is \code{NULL}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{xlab}{The x-axis label of the plot.
-Default is \code{NULL}.}
+\item{x_text_angle}{Rotation angle for x-axis labels.}
 
-\item{ylab}{A string specifying the label of the y-axis.
-Default is \code{"Expression level"}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{x_text_angle}{Rotation angle for x-axis labels.
-Default is \code{45}.}
-
-\item{grid_major}{Whether to show major panel grid lines.
-Default is \code{TRUE}.}
+\item{grid_major}{Whether to show major panel grid lines.}
 
 \item{grid_major_colour}{Color of major panel grid lines.}
 
@@ -169,25 +125,14 @@ Default is \code{TRUE}.}
 
 \item{grid_major_linewidth}{Line width of major panel grid lines.}
 
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+returns a list of ggplots.}
 
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
+\item{force}{Draw even when a grouping has more than 100 levels.}
 
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
+\item{seed}{Random seed.}
 
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
-
-\item{force}{Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
-Default is \code{FALSE}.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
-
-\item{...}{Additional arguments passed to the other functions.}
+\item{...}{Additional arguments passed to the plotting helpers.}
 }
 \description{
 Statistical plot of cells

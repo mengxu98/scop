@@ -34,49 +34,41 @@ CellScoring(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{features}{A named list of feature lists for scoring.
 If \code{NULL}, \code{db} will be used to create features sets.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Metadata column to facet by.}
 
-\item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
+\item{IDtype}{Type of gene IDs in the \code{srt} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
-\item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
-Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
+\item{species}{\code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
-\item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
-Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"}.
-MSigDB subcollections can be requested as \code{"MSigDB_<collection>"}, such as
-\code{"MSigDB_H"} for human Hallmark and \code{"MSigDB_MH"} for mouse Hallmark.
-Note: \code{"CytoTRACE2"} is species-independent and downloads pre-trained model data
-required by \link{RunCytoTRACE}.}
+\item{db}{Annotation sources. One or more of \code{"GO"}, \code{"GO_BP"}, \code{"GO_CC"},
+\code{"GO_MF"}, \code{"KEGG"}, \code{"WikiPathway"}, \code{"Reactome"}, \code{"CORUM"}, \code{"MP"}, \code{"DO"},
+\code{"HPO"}, \code{"PFAM"}, \code{"CSPA"}, \code{"Surfaceome"}, \code{"SPRomeDB"}, \code{"VerSeDa"},
+\code{"TFLink"}, \code{"hTFtarget"}, \code{"TRRUST"}, \code{"JASPAR"}, \code{"ENCODE"}, \code{"MSigDB"},
+\code{"CellTalk"}, \code{"CellChat"}, \code{"Chromosome"}, \code{"GeneType"}, \code{"Enzyme"}, \code{"TF"},
+\code{"CytoTRACE2"}. MSigDB subcollections use \code{"MSigDB_<collection>"} (e.g.
+\code{"MSigDB_H"}). \code{"CytoTRACE2"} is species-independent and is required by
+\link{RunCytoTRACE}.}
 
 \item{termnames}{A vector of term names to be used from the database. Default is \code{NULL}, in which case all features from the database are used.}
 
-\item{db_update}{Whether the gene annotation databases should be forcefully updated.
-If set to FALSE, the function will attempt to load the cached databases instead.
-Default is \code{FALSE}.}
+\item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
-\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is \code{"latest"}.}
+\item{db_version}{Database version to retrieve.}
 
-\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is \code{TRUE}.}
+\item{convert_species}{Use a species-converted database when the annotation is
+missing for \code{species}.}
 
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
@@ -88,7 +80,7 @@ Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
 \code{"UCell"}, \code{"GSVA"}, \code{"ssGSEA"}, \code{"zscore"}, \code{"PLAGE"}, or \code{"VISION"}.
 Multiple methods can be supplied at once; in that case each method is run
 separately and stored with a method suffix such as \code{"GO_AUCell"} or
-\code{"GO_GSVA"}. Default is \code{"Seurat"}.}
+\code{"GO_GSVA"}.}
 
 \item{backend}{Scoring backend. \code{"cpp"} is the default for supported methods.
 \code{"r"} uses the original package implementation. \code{"cpp"} currently supports
@@ -98,11 +90,11 @@ separately and stored with a method suffix such as \code{"GO_AUCell"} or
 \code{backend} is not explicitly set. For \code{method = "GSVA"} with
 \code{kcdf = "Gaussian"}, \code{backend = "cpp"} uses the package C++ kernel.}
 
-\item{classification}{Whether to perform classification based on the scores. Default is \code{TRUE}.}
+\item{classification}{Whether to perform classification based on the scores.}
 
-\item{name}{The name of the assay to store the scores in. Only used if new_assay is TRUE. Default is \code{""}.}
+\item{name}{Assay to store the scores in. Only used if new_assay is TRUE. Default is \code{""}.}
 
-\item{new_assay}{Whether to create a new assay for storing the scores. Default is \code{FALSE}.}
+\item{new_assay}{Whether to create a new assay for storing the scores.}
 
 \item{store_metadata}{Whether to also store score columns in \code{meta.data}.
 When \code{NULL}, manual \code{features = list(...)} input is stored in \code{meta.data} by default,
@@ -119,10 +111,10 @@ Default is \code{1}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments to be passed to the scoring methods.}
+\item{...}{Passed to the scoring methods.}
 }
 \description{
-This function performs cell scoring on a Seurat object.
+Performs cell scoring on a Seurat object.
 It calculates scores for a given set of features and stores them in \code{meta.data}
 and/or a score assay, depending on \code{new_assay} and \code{store_metadata}.
 }

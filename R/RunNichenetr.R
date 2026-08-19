@@ -29,7 +29,7 @@
 #' @param cutoff_visualization Cutoff passed to
 #' `nichenetr::prepare_ligand_target_visualization()`.
 #' @param lfc_cutoff Log fold change cutoff for DE analysis in `"aggregate"` and
-#' `"aggregate_cluster_de"` modes. Default is `0.25`.
+#' `"aggregate_cluster_de"` modes.
 #' @param use_sender_agnostic_background Whether to use all sender cell types when
 #' `sender = "all"`.
 #' @param backend Backend used for post-processing aggregation. Upstream

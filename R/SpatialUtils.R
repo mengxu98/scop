@@ -74,7 +74,6 @@ spatial_empty_plot <- function(
 #'
 #' @md
 #' @param show_axes Whether to keep axis titles, text, ticks, and grid lines.
-#' Default is `FALSE`.
 #' @inheritParams theme_scop
 #' @inherit theme_scop return
 #' @seealso [theme_scop()]

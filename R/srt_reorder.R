@@ -7,9 +7,7 @@
 #' @inheritParams CellCorHeatmap
 #' @param reorder_by Reorder groups instead of idents.
 #' @param log Whether [log1p] transformation needs to be applied.
-#' Default is `TRUE`.
 #' @param distance_metric Metric to compute distance.
-#' Default is `"euclidean"`.
 #'
 #' @export
 #'

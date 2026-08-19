@@ -48,7 +48,7 @@ names are missing and the row count equals \code{ncol(srt)}, cells are matched i
 \item{metacell.by}{Metadata column(s) in \code{srt} used as metacell partitions
 when \code{cell_membership = NULL}.}
 
-\item{mode}{mcRigor task. \code{"detect"} calls \code{mcRigor_DETECT()} for one
+\item{mode}{McRigor task. \code{"detect"} calls \code{mcRigor_DETECT()} for one
 partition; \code{"optimize"} calls \code{mcRigor_OPTIMIZE()} across candidate
 partitions.}
 
@@ -85,8 +85,7 @@ intermediate-save parameters forwarded to mcRigor.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry used to store results.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A \code{Seurat} object with mcRigor metadata and a result list stored in

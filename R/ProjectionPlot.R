@@ -1,7 +1,7 @@
 #' @title Projection Plot
 #'
 #' @description
-#' This function generates a projection plot,
+#' Generates a projection plot,
 #' which can be used to compare two groups of cells in a dimensionality reduction space.
 #'
 #' @md
@@ -9,8 +9,8 @@
 #' @inheritParams CellDimPlot
 #' @param query_group The grouping variable for the query group cells.
 #' @param ref_group The grouping variable for the reference group cells.
-#' @param query_reduction The name of the reduction in the query group cells.
-#' @param ref_reduction The name of the reduction in the reference group cells.
+#' @param query_reduction Reduction in the query group cells.
+#' @param ref_reduction Reduction in the reference group cells.
 #' @param query_param A list of parameters for customizing the query group plot.
 #' Available parameters: palette (color palette for groups) and cells.highlight (whether to highlight cells).
 #' @param ref_param A list of parameters for customizing the reference group plot.

@@ -73,44 +73,33 @@ RunMDS(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object, an assay object, or a matrix-like object.}
 
-\item{...}{Additional arguments to be passed to \link[stats:cmdscale]{stats::cmdscale}, \link[MASS:isoMDS]{MASS::isoMDS} or \link[MASS:sammon]{MASS::sammon}.}
+\item{...}{Passed to \link[stats:cmdscale]{stats::cmdscale}, \link[MASS:isoMDS]{MASS::isoMDS} or \link[MASS:sammon]{MASS::sammon}.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{features}{A character vector of features to use. Default is \code{NULL}.}
+\item{features}{Features used instead of a reduction.}
 
-\item{nmds}{The number of dimensions to be computed.
-Default is \code{50}.}
+\item{nmds}{The number of dimensions to be computed.}
 
 \item{dist.method}{The distance metric to be used.
 Currently supported values are \code{"euclidean"}, \code{"chisquared"}, \code{"kullback"}, \code{"jeffreys"},
-\code{"jensen"}, \code{"manhattan"}, \code{"maximum"}, \code{"canberra"}, \code{"minkowski"}, and \code{"hamming"}.
-Default is \code{"euclidean"}.}
+\code{"jensen"}, \code{"manhattan"}, \code{"maximum"}, \code{"canberra"}, \code{"minkowski"}, and \code{"hamming"}.}
 
 \item{mds.method}{The MDS algorithm to be used.
-Currently supported values are \code{"cmdscale"}, \code{"isoMDS"}, and \code{"sammon"}.
-Default is \code{"cmdscale"}.}
+Currently supported values are \code{"cmdscale"}, \code{"isoMDS"}, and \code{"sammon"}.}
 
-\item{rev.mds}{Whether to perform reverse MDS (i.e., transpose the input matrix) before running the analysis.
-Default is \code{FALSE}.}
+\item{rev.mds}{Whether to perform reverse MDS (i.e., transpose the input matrix) before running the analysis.}
 
-\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
-Default is \code{"mds"}.}
+\item{reduction.name}{Reduction to be stored in the Seurat object.}
 
-\item{reduction.key}{The prefix for the column names of the basis vectors.
-Default is \code{"MDS_"}.}
+\item{reduction.key}{The prefix for the column names of the basis vectors.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed.use}{Random seed.}
 }
 \description{
 Run MDS (multi-dimensional scaling)

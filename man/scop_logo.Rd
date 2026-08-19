@@ -13,9 +13,9 @@ scop_logo(unicode = cli::is_utf8_output())
 \item{unicode}{Whether to use Unicode symbols on UTF-8 platforms.
 Default is \link[cli:is_utf8_output]{cli::is_utf8_output}.}
 
-\item{x}{Input infromation.}
+\item{x}{Input logo object.}
 
-\item{...}{Other parameters.}
+\item{...}{Additional arguments passed to [cat()].}
 }
 \description{
 The scop logo, using ASCII or Unicode characters

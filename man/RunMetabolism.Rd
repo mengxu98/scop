@@ -32,9 +32,9 @@ RunMetabolism(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{assay}{Assay to use as expression matrix. Default is \code{DefaultAssay(srt)}.}
+\item{assay}{Assay to use as expression matrix.}
 
 \item{group.by}{Name of metadata column to group cells by. If \code{NULL}, single-cell scoring.
 If provided, expression is averaged by group before scoring (cell-type level).}
@@ -48,33 +48,28 @@ When \code{use_preparedb = TRUE}, gene sets are built via \link{PrepareDB}.}
 \item{species}{Species of the input data. The scMetabolism gene sets contain human
 gene symbols. When \code{species} is not \code{"Homo_sapiens"} and \code{convert_species} is \code{TRUE},
 \link{GeneConvert} is used to map human genes to the target species via biomaRt homolog
-tables. Default is \code{"Homo_sapiens"}.}
+tables.}
 
-\item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
+\item{IDtype}{Type of gene IDs in the \code{srt} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
-\item{db_update}{Whether the gene annotation databases should be forcefully updated.
-If set to FALSE, the function will attempt to load the cached databases instead.
-Default is \code{FALSE}.}
+\item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
-\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is \code{"latest"}.}
+\item{db_version}{Database version to retrieve.}
 
 \item{convert_species}{Whether to convert human gene symbols from the scMetabolism
 gene sets to the target species using \link{GeneConvert}. When \code{TRUE} (default), genes
 are mapped via cross-species orthologs from Ensembl BioMart. When \code{FALSE}, only
 case-insensitive direct symbol matching is used.}
 
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
 \item{biomart}{BioMart database name passed to \link{GeneConvert}. Default \code{NULL} uses
 \code{"ensembl"}. Other options: \code{"protists_mart"}, \code{"fungi_mart"}, \code{"plants_mart"}.}
 
-\item{max_tries}{Maximum retry attempts for biomaRt connections in \link{GeneConvert}.
-Default is \code{5}.}
+\item{max_tries}{Maximum retry attempts for biomaRt connections in \link{GeneConvert}.}
 
 \item{use_preparedb}{When \code{TRUE}, gene sets are built via \link{PrepareDB} which
 provides species-aware gene mapping via BioMart and KEGG/Reactome databases.
@@ -99,16 +94,13 @@ intermediate memory; positive values set the chunk size manually.}
 
 \item{maxGSSize}{The maximum size of a gene set to be considered in the enrichment analysis.}
 
-\item{assay_name}{Name of the assay to store metabolism scores when \code{new_assay = TRUE}.
-Default is \code{"METABOLISM"}.}
+\item{assay_name}{Name of the assay to store metabolism scores when \code{new_assay = TRUE}.}
 
 \item{new_assay}{Whether to create a new assay for metabolism scores when \code{group.by = NULL}. Default is \code{TRUE}.}
 
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Random seed.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 Returns a \code{Seurat} object. When \code{group.by = NULL}, stores scores in assay \code{assay_name} and tools.

@@ -49,110 +49,72 @@ SpatialSpotPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata columns to color spots by.}
 
-\item{features}{Features to color spots by. When provided, expression values
-are read from \code{assay} and \code{layer}.}
+\item{features}{Features to color spots by (from \code{assay}/\code{layer}).}
 
-\item{assay}{Assay used for \code{features}. If \code{NULL}, the default assay is used.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Assay layer used for \code{features}.}
+\item{layer}{Assay layer to use.}
 
-\item{values}{Optional vector, matrix, or data.frame with spot-level values.
-Row names or vector names must match spatial spot names.}
+\item{values}{Spot-level values (named vector, matrix, or data.frame).}
 
-\item{plot_type}{Plot type. \code{"point"} keeps the default spot plot behavior.
-\code{"pie"} draws spot-level pies from numeric metadata columns supplied to
-\code{group.by} or from a numeric matrix/data.frame supplied to \code{values}. When
-\code{group.by} is a single \code{"<prefix>_dominant_type"} column, matching
-\code{"<prefix>_prop_*"} or \code{"<prefix>_frac_*"} numeric metadata columns are used
-automatically.}
+\item{plot_type}{\code{"point"} or \code{"pie"}. Pie uses numeric \code{group.by} columns,
+\code{values}, or \code{"<prefix>_prop_*"}/\code{"<prefix>_frac_*"} when \code{group.by} is
+\code{"<prefix>_dominant_type"}.}
 
-\item{plot.data}{Optional long-format data.frame for plotting repeated
-spatial points, such as cell-to-spot assignments.}
+\item{plot.data, spot.by, color.by}{Long-format data for repeated spatial points
+(e.g. cell-to-spot assignments).}
 
-\item{spot.by}{Column in \code{plot.data} containing spot names.}
+\item{geom}{\code{"point"} or \code{"jitter"} for \code{plot.data}.}
 
-\item{color.by}{Column in \code{plot.data} used to color repeated spatial points.}
+\item{image}{Spatial image name. Required when multiple images are present;
+a single image is selected automatically when \code{NULL}.}
 
-\item{geom}{Geometry used for \code{plot.data}: \code{"point"} or \code{"jitter"}.}
+\item{overlay_image, image.alpha}{Draw the spatial image beneath spots.}
 
-\item{image}{Name of the Seurat spatial image. Required when multiple images
-are present; a single image is selected automatically when \code{NULL}.}
-
-\item{overlay_image}{Whether to draw the spatial image beneath spots.}
-
-\item{image.alpha}{Transparency of the spatial image.}
-
-\item{crop}{Whether to crop the panel to plotted spots.}
+\item{crop}{Crop the panel to plotted spots.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
-\item{flip.y}{Whether to reverse the y axis for metadata coordinates.}
+\item{flip.y}{Reverse the y axis for metadata coordinates.}
 
-\item{show_axes}{Whether to keep axis text, ticks, and grid lines when
-\code{theme_use} is \code{"theme_spatial"}. Default is \code{FALSE}.}
+\item{show_axes}{Keep axis text, ticks, and grid when \code{theme_use} is
+\code{"theme_spatial"}.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Metadata column to facet by.}
 
-\item{cells}{A character vector of cell names to use.}
+\item{cells}{Cell names to include.}
 
-\item{show_na}{Whether to assign a color from the color palette to NA group.
-If \code{TRUE}, cell points with NA level will be colored by \code{bg_color}.
-If \code{FALSE}, cell points with NA level will be removed from the plot.}
+\item{show_na}{If \code{TRUE}, color \code{NA} groups with \code{bg_color}; if \code{FALSE}, drop them.}
 
-\item{pt.size}{Point size.}
+\item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
+with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
+radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
-\item{pie.radius, pie.radius.scale}{Radius controls for \code{plot_type = "pie"}.
-If \code{pie.radius} is \code{NULL}, the radius is estimated from spot spacing and
-multiplied by \code{pie.radius.scale}.}
-
-\item{pt.alpha}{Point alpha.}
+\item{pie.radius, pie.radius.scale}{Pie radius. \code{NULL} estimates from spot
+spacing, then multiplies by \code{pie.radius.scale}.}
 
 \item{stroke}{Point border width.}
 
-\item{jitter_width, jitter_height}{Jitter size used when \code{geom = "jitter"}.}
+\item{jitter_width, jitter_height}{Jitter when \code{geom = "jitter"}.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
-
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
 \item{bg_color}{Point border color.}
 
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
+\item{legend.position, legend.direction, legend.title}{Legend placement
+(\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title.
+\code{legend.title = NULL} uses the group name.}
 
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
+\item{theme_use}{Theme name or function.}
 
-\item{legend.title}{Title for the legend. Default is \code{NULL}, which uses the group name.}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+returns a list of ggplots.}
 
-\item{theme_use}{Theme function name. Default is \code{"theme_spatial"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
-
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

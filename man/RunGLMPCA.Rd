@@ -79,45 +79,33 @@ RunGLMPCA(object, ...)
 \item{object}{An object.
 Can be a Seurat object, an assay object, or a matrix-like object.}
 
-\item{...}{Additional arguments to be passed to the \link[glmpca:glmpca]{glmpca::glmpca} function.}
+\item{...}{Passed to the \link[glmpca:glmpca]{glmpca::glmpca} function.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{features}{A character vector of features to use. Default is \code{NULL}.}
+\item{features}{Features used instead of a reduction.}
 
-\item{L}{The number of components to be computed.
-Default is \code{5}.}
+\item{L}{The number of components to be computed.}
 
 \item{fam}{The family of the generalized linear model to be used.
-Currently supported values are \code{"poi"}, \code{"nb"}, \code{"nb2"}, \code{"binom"}, \code{"mult"}, and \code{"bern"}.
-Default is \code{"poi"}.}
+Currently supported values are \code{"poi"}, \code{"nb"}, \code{"nb2"}, \code{"binom"}, \code{"mult"}, and \code{"bern"}.}
 
-\item{rev.gmlpca}{Whether to perform reverse GLMPCA (i.e., transpose the input matrix) before running the analysis.
-Default is \code{FALSE}.}
+\item{rev.gmlpca}{Whether to perform reverse GLMPCA (i.e., transpose the input matrix) before running the analysis.}
 
-\item{ndims.print}{The dimensions (number of components) to print in the output.
-Default is \code{1:5}.}
+\item{ndims.print}{The dimensions (number of components) to print in the output.}
 
-\item{nfeatures.print}{The number of features to print in the output.
-Default is \code{30}.}
+\item{nfeatures.print}{The number of features to print in the output.}
 
-\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
-Default is \code{"glmpca"}.}
+\item{reduction.name}{Reduction to be stored in the Seurat object.}
 
-\item{reduction.key}{The prefix for the column names of the basis vectors.
-Default is \code{"GLMPC_"}.}
+\item{reduction.key}{The prefix for the column names of the basis vectors.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed.use}{Random seed.}
 }
 \description{
 Run generalized principal components analysis (GLMPCA)

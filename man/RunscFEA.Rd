@@ -26,7 +26,7 @@ RunscFEA(
 \item{assay}{Assay to use as expression matrix. Default is
 `DefaultAssay(srt)`.}
 
-\item{layer}{Assay layer to use. Default is `"data"`.}
+\item{layer}{Assay layer to use.}
 
 \item{species}{One of `"human"` or `"mouse"`, selecting the M168 scFEA files.}
 

@@ -15,25 +15,21 @@ Runscds(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{assay}{The name of the assay to be used for doublet-calling.
-Default is \code{"RNA"}.}
+\item{assay}{Assay used for doublet calling.}
 
-\item{db_rate}{The expected doublet rate.
-Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
+\item{db_rate}{Expected doublet rate.}
 
 \item{method}{The method to be used for doublet-calling.
 Options are \code{"hybrid"}, \code{"cxds"}, or \code{"bcds"}.}
 
-\item{data_type}{Optional precomputed result from \link{CheckDataType} for the
-input assay. Primarily used internally to avoid repeated scans of the same
-count matrix across nested QC calls.}
+\item{data_type}{Optional \link{CheckDataType} result, used internally to avoid
+rescanning the count matrix.}
 
 \item{...}{Additional arguments passed to the selected \code{scds} method.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
 Run doublet-calling with scds

@@ -3,10 +3,9 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams PrepareEnv
-#' @param packages A character vector of package names to check and install.
+#' @param packages Package names to check and install.
 #' Use `"<package>==<version>"` to request a specific version.
 #' @param force Whether to force package reinstallation.
-#' Default is `FALSE`.
 #' @param pip Whether to use `pip`/`uv` (`TRUE`) or the configured
 #' conda-compatible environment manager (`FALSE`) for installation.
 #' Default is `TRUE`. When `TRUE`, uv is used as the primary installer with pip as fallback.
@@ -565,11 +564,10 @@ installed_python_pkgs_pip <- function(envname, conda) {
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams PrepareEnv
-#' @param packages A character vector of package names to remove.
+#' @param packages Package names to remove.
 #' @param pip Whether to use pip for package removal.
 #' Default is `FALSE` (use conda).
 #' @param force Whether to force removal without confirmation.
-#' Default is `FALSE`.
 #'
 #' @return Invisibly returns.
 #'

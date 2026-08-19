@@ -8,111 +8,73 @@
 #' When `res` is provided, `srt` will be ignored.
 #' The data.frame must contain columns: `gene`, `group1` (factor or character),
 #' `avg_log2FC`, `p_val_adj`, and optionally `pct.1` and `pct.2` for calculating `diff_pct`.
-#' @param test.use A character string specifying the type of statistical test to use.
-#' Default is `"wilcox"`.
+#' @param test.use Type of statistical test to use.
 #' @param plot_type Type of plot to create. Options: `"volcano"`, `"manhattan"`, or `"ring"`.
-#' Default is `"volcano"`.
 #' @param group_use Groups to plot.
 #' Default is `NULL` (all groups).
-#' @param DE_threshold A character string specifying the threshold for differential expression (used to highlight significant genes in all plot types).
+#' @param DE_threshold Threshold for differential expression (used to highlight significant genes in all plot types).
 #' Default is `"p_val < 0.05"` for sample-level methods (`"edgeR"` and `"limma"`).
 #' For cell-level volcano plots, it is `"abs(avg_log2FC) > 0 & p_val_adj < 0.05"`
 #' when `only.pos = FALSE`, and `"avg_log2FC > 0 & p_val_adj < 0.05"` otherwise.
-#' @param x_metric A character string specifying the metric to use for the x-axis (only for volcano plot).
+#' @param x_metric Metric to use for the x-axis (only for volcano plot).
 #' Default is `NULL`, which uses `"avg_log2FC"` for sample-level methods (`"edgeR"` and `"limma"`)
 #' and `"diff_pct"` otherwise.
 #' @param threshold_method Volcano significance threshold method.
 #' Options are `"rectangular"` (legacy DE_threshold) or `"hyperbolic"` (`|log2FC * -log10(padj)| > c`).
-#' Default is `"rectangular"`.
 #' @param hyperbola_c Numeric cutoff `c` for hyperbolic volcano threshold.
-#' Default is `6`.
 #' @param annotate_enrichment Whether to annotate enrichment-hit genes on volcano plots.
 #' Enrichment results are read from existing results in `srt@tools` only.
-#' Default is `FALSE`.
 #' @param enrich_from Character vector specifying enrichment result source(s) to annotate.
 #' Options are `"Enrichment"`, `"GSEA"`, `"GSVA"`.
-#' Default is `c("Enrichment", "GSEA", "GSVA")`.
 #' @param enrich_db Optional database filter for enrichment annotation, e.g. `"GO_BP"` or `"KEGG"`.
-#' Default is `NULL`.
 #' @param enrich_terms Optional whitelist of enrichment term IDs or names for annotation.
-#' Default is `NULL`.
 #' @param enrich_top_terms Number of top enriched terms selected per source/group/database.
-#' Default is `3`.
 #' @param enrich_padj_cutoff Adjusted p-value cutoff for `"Enrichment"` and `"GSEA"` annotation.
-#' Default is `0.05`.
 #' @param enrich_gsva_score_cutoff Optional absolute GSVA score cutoff for `"GSVA"` annotation.
-#' Default is `NULL`.
 #' @param gsva_method Optional GSVA method filter (e.g. `"gsva"` or `"ssgsea"`) when multiple GSVA tool slots exist.
-#' Default is `NULL`.
 #' @param enrich_nlabel Maximum number of enrichment-derived labels added per group.
 #' Labels from `features_label` are always retained.
-#' Default is `15`.
-#' @param y_metric A character string specifying the metric to use for the y-axis.
+#' @param y_metric Metric to use for the y-axis.
 #' Options: `"p_val"` or `"p_val_adj"`.
 #' Default is `"p_val"` for sample-level methods (`"edgeR"` and `"limma"`) and `"p_val_adj"` otherwise.
-#' @param x_order A character string specifying how to order genes on x-axis (only for Manhattan plot, not used currently).
-#' Options: `"gene"` (alphabetical by gene name) or `"index"` (by data order). Default is `"gene"`.
+#' @param x_order How to order genes on x-axis (only for Manhattan plot, not used currently).
+#' Options: `"gene"` (alphabetical by gene name) or `"index"` (by data order).
 #' @param palette Color palette name.
 #' Available palettes can be found in [thisplot::show_palettes].
-#' Default is `"RdBu"`.
 #' @param group_palette Palette for cell types (groups) in Manhattan plot.
-#' Default is `"Chinese"`.
 #' @param group_palcolor Custom colors for cell types (groups) in Manhattan plot.
-#' Default is `NULL`.
 #' @param pt.size The size of the points.
-#' Default is `1`.
-#' @param cols.background A character string specifying the color for non-DE background points in volcano plots.
-#' Default is `"grey80"`.
-#' @param cols.highlight A character string specifying the color for highlighted points.
-#' Default is `"black"`.
+#' @param cols.background Color for non-DE background points in volcano plots.
+#' @param cols.highlight Color for highlighted points.
 #' @param sizes.highlight The size of the highlighted points.
-#' Default is `1`.
 #' @param alpha.highlight The transparency of the highlighted points.
-#' Default is `1`.
 #' @param stroke.highlight The stroke width for the highlighted points.
-#' Default is `0.5`.
 #' @param nlabel An integer value specifying the number of labeled points per group.
-#' Default is `5`.
-#' @param features_label A character vector specifying the feature labels to plot.
-#' Default is `NULL`.
+#' @param features_label Feature labels to plot.
 #' @param only.pos Whether to show only positive log2 fold-change results in
 #' differential expression visualizations.
-#' Default is `FALSE`.
 #' @param label.by Metric used to select automatic labels when `features_label = NULL`.
 #' Options are `"p_val_adj"`, `"p_val"`, `"diff_pct"`, and `"avg_log2FC"`.
 #' Smaller p-values are ranked first; `diff_pct` and `avg_log2FC` use the strongest
 #' positive and negative effects within each group.
-#' Default is `"p_val_adj"`.
-#' @param label.fg A character string specifying the color for the labels' foreground.
-#' Default is `"black"`.
-#' @param label.bg A character string specifying the color for the labels' background.
-#' Default is `"white"`.
+#' @param label.fg Color for the labels' foreground.
+#' @param label.bg Color for the labels' background.
 #' @param label.bg.r The radius of the rounding of the labels' background.
-#' Default is `0.1`.
 #' @param label.size The size of the labels.
-#' Default is `4`.
 #' @param aspect.ratio Aspect ratio of the panel.
-#' Default is `NULL`.
-#' @param xlab A character string specifying the x-axis label.
-#' @param ylab A character string specifying the y-axis label.
+#' @param xlab X-axis label.
+#' @param ylab Y-axis label.
 #' @param manhattan.bg Background color for Manhattan plot.
-#' Default is `"white"`.
 #' @param group_track_width Width of the centered cell-type track in Manhattan plot.
 #' Default is `NULL`, which uses the current automatic width.
 #' @param group_track_height Height of the centered cell-type track in Manhattan plot.
 #' Default is `NULL`, which uses the current automatic height.
 #' @param jitter_width Horizontal jitter range for points in Manhattan plot.
-#' Default is `0.5`.
 #' @param jitter_height Vertical jitter range for points in Manhattan plot.
-#' Default is `0`.
 #' @param tile_height Height of the cell-type track in ring plot.
-#' Default is `0.3`.
 #' @param tile_gap Gap between the track and nudged points in ring plot.
-#' Default is `0.1`.
 #' @param ring_segments Whether to draw segment lines between cell types in ring plot.
-#' Default is `TRUE`.
 #' @param seed Random seed for jitter in Manhattan and ring plots.
-#' Default is `11`.
 #'
 #' @seealso [RunDEtest], [VolcanoPlot], [DEtestManhattanPlot], [DEtestRingPlot]
 #'

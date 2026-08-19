@@ -1,37 +1,22 @@
 #' @title Cell density plot
 #'
 #' @description
-#' Plots the density of specified features in a single or multiple groups,
-#' grouped by specified variables.
+#' Feature density by group.
 #'
 #' @md
-#' @inheritParams RunStandardWorkflow
+#' @inheritParams scop-params
 #' @inheritParams CellDimPlot
 #' @inheritParams FeatureDimPlot
-#' @param features A character vector of features to use.
-#' @param flip Whether to flip the x-axis. Default is `FALSE`.
-#' @param reverse Whether to reverse the y-axis. Default is `FALSE`.
-#' @param x_order A character specifying how to order the x-axis.
-#' Can be `"value"` or `"rank"`.
-#' Default is `"value"`.
-#' @param decreasing Whether to order the groups in decreasing order.
-#' Default is `NULL`.
-#' @param palcolor Custom colors used to create a color palette.
-#' Default is `NULL`.
-#' @param cells A character vector of cell names to use.
-#' Default is `NULL`, which means all cells are included.
-#' @param keep_empty Whether to keep empty groups. Default is `FALSE`.
-#' @param y.nbreaks A number of breaks on the y-axis. Default is `4`.
-#' @param y.min A numeric specifying the minimum value on the y-axis.
-#' Default is `NULL`, which means the minimum value will be automatically determined.
-#' @param y.max A numeric specifying the maximum value on the y-axis.
-#' Default is `NULL`, which means the maximum value will be automatically determined.
-#' @param same.y.lims Whether to use the same y-axis limits for all plots.
-#' Default is `FALSE`.
-#' @param aspect.ratio Aspect ratio of the panel.
-#' Default is `NULL`.
-#' @param force Whether to continue plotting if there are more than 50 features.
-#' Default is `FALSE`.
+#' @param features Features to plot.
+#' @param flip,reverse Flip the x-axis or reverse the y-axis.
+#' @param x_order `"value"` or `"rank"`.
+#' @param decreasing Order groups decreasingly.
+#' @param cells Cell names to include. `NULL` uses all cells.
+#' @param keep_empty Keep empty groups.
+#' @param y.nbreaks,y.min,y.max Y-axis breaks and limits. `NULL` limits are automatic.
+#' @param same.y.lims Share y-axis limits across panels.
+#' @param aspect.ratio Panel aspect ratio.
+#' @param force Draw even when there are more than 50 features.
 #'
 #' @seealso
 #' [CellStatPlot]

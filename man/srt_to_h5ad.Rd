@@ -22,24 +22,20 @@ srt_to_h5ad(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{path}{Path to the output \code{.h5ad} file.}
 
 \item{features}{Optional vector of features to include in the anndata object.
 Default is all features in \code{assay_x}.}
 
-\item{assay_x}{Assay to convert as the main data matrix in the anndata object.
-Default is \code{"RNA"}.}
+\item{assay_x}{Assay to convert as the main data matrix in the anndata object.}
 
-\item{layer_x}{Layer name for assay_x in the Seurat object.
-Default is \code{"counts"}.}
+\item{layer_x}{Layer name for assay_x in the Seurat object.}
 
-\item{assay_y}{Assays to convert as layers in the anndata object.
-Default is \code{c("spliced", "unspliced")}.}
+\item{assay_y}{Assays to convert as layers in the anndata object.}
 
-\item{layer_y}{Layer names for the assay_y in the Seurat object.
-Default is \code{"counts"}.}
+\item{layer_y}{Layer names for the assay_y in the Seurat object.}
 
 \item{reductions}{Character vector specifying which Seurat reductions to
 convert into \code{obsm}. Default is \code{NULL}, which converts all available
@@ -52,14 +48,11 @@ reductions.}
 convert into \code{obsp}. Default is \code{NULL}, which converts all available neighbor
 objects.}
 
-\item{convert_tools}{Whether to convert the tool-specific data.
-Default is \code{FALSE}.}
+\item{convert_tools}{Whether to convert the tool-specific data.}
 
-\item{convert_misc}{Whether to convert the miscellaneous data.
-Default is \code{FALSE}.}
+\item{convert_misc}{Whether to convert the miscellaneous data.}
 
-\item{overwrite}{Whether to overwrite an existing file.
-Default is \code{FALSE}.}
+\item{overwrite}{Whether to overwrite an existing file.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

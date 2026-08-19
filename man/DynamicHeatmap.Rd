@@ -174,42 +174,34 @@ DynamicHeatmap(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{lineages}{A character vector specifying the lineage names for which dynamic features should be calculated.}
+\item{lineages}{Lineage names for which dynamic features should be calculated.}
 
-\item{features}{A character vector specifying the features to plot.
+\item{features}{Features to plot.
 By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters
 \code{min_expcells}, \code{r.sq}, \code{dev.expl}, \code{padjust} and \code{num_intersections}.}
 
-\item{use_fitted}{Whether to use fitted values. Default is \code{FALSE}.}
+\item{use_fitted}{Whether to use fitted values.}
 
-\item{border}{Whether to add borders to the heatmap body and annotations.
-Kept for backward compatibility. The more specific \code{heatmap_border},
-\code{cell_annotation_border}, and \code{feature_annotation_border} arguments inherit
-from this value when left as \code{NULL}.}
+\item{border}{Draw borders. Kept for compatibility; more specific
+\verb{*_border} arguments inherit this when \code{NULL}.}
 
-\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Whether to draw borders for the heatmap body, cell annotations, and feature
-annotations, respectively. Defaults inherit from \code{border}.}
+\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Borders for the heatmap body and annotations. \code{NULL} inherits \code{border}.}
 
-\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors for the heatmap body, cell annotations, and feature
-annotations when their matching border argument is \code{TRUE}.
-Default is \code{"black"}.}
+\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors when the matching border argument is \code{TRUE}.}
 
-\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths for the heatmap body, cell annotations, and feature
-annotations when their matching border argument is \code{TRUE}.
-Default is \code{1}.}
+\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths when the matching border argument is \code{TRUE}.}
 
-\item{flip}{Whether to flip the heatmap.
-Default is \code{FALSE}.}
+\item{flip}{Flip rows and columns.}
 
-\item{min_expcells}{The minimum number of expected cells. Default is \code{20}.}
+\item{min_expcells}{The minimum number of expected cells.}
 
-\item{r.sq}{The R-squared threshold. Default is \code{0.2}.}
+\item{r.sq}{The R-squared threshold.}
 
-\item{dev.expl}{The deviance explained threshold. Default is \code{0.2}.}
+\item{dev.expl}{The deviance explained threshold.}
 
-\item{padjust}{The p-value adjustment threshold. Default is \code{0.05}.}
+\item{padjust}{The p-value adjustment threshold.}
 
 \item{num_intersections}{This parameter is a numeric vector used to determine the number of intersections among lineages.
 It helps in selecting which dynamic features will be used.
@@ -219,407 +211,135 @@ all dynamic features that pass the specified threshold will be used for each lin
 \item{cell_density}{The cell density within each cell bin.
 By default, this parameter is set to \code{1}, which means that all cells will be included within each cell bin.}
 
-\item{cell_bins}{The number of cell bins.
-Default is \code{100}.}
+\item{cell_bins}{The number of cell bins.}
 
-\item{order_by}{The order of the heatmap.
-Default is \code{"peaktime"}.}
+\item{order_by}{The order of the heatmap.}
 
-\item{layer}{Which layer to use.
-Default is \code{"counts"}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{exp_method}{A character vector specifying the method for calculating expression values.
-Options are \code{"zscore"}, \code{"raw"}, \code{"fc"}, \code{"log2fc"}, or \code{"log1p"}.
-Default is \code{"zscore"}.}
+\item{exp_method}{Expression transform: \code{"zscore"}, \code{"raw"}, \code{"fc"}, \code{"log2fc"},
+or \code{"log1p"}.}
 
-\item{exp_legend_title}{A character vector specifying the title for the legend of expression value.
-Default is \code{NULL}.}
+\item{exp_legend_title}{Legend title for expression.}
 
-\item{limits}{A two-length numeric vector specifying the limits for the color scale.
-Default is \code{NULL}.}
+\item{limits}{Color-scale limits (length 2).}
 
-\item{lib_normalize}{Whether to normalize the data by library size.}
-
-\item{libsize}{A numeric vector specifying the library size for each cell.
-Default is \code{NULL}.}
+\item{lib_normalize, libsize}{Library-size normalization and per-cell library sizes.}
 
 \item{family}{A character or character vector specifying the family of distributions to use for the GAM.
 If family is set to NULL, the appropriate family will be automatically determined based on the data.
 If length(family) is 1, the same family will be used for all features.
 Otherwise, family must have the same length as features.}
 
-\item{suffix}{A character vector specifying the suffix to append to the output layer names for each lineage.
+\item{suffix}{Suffix to append to the output layer names for each lineage.
 Default is the lineage names.}
 
-\item{n_candidates}{A number of candidate features to select when features is \code{NULL}.
-Default is \code{1000}.}
+\item{n_candidates}{A number of candidate features to select when features is \code{NULL}.}
 
-\item{minfreq}{An integer specifying the minimum frequency threshold for candidate features.
-Features with a frequency less than minfreq will be excluded.
-Default is \code{5}.}
+\item{minfreq}{Minimum frequency threshold for candidate features.
+Features with a frequency less than minfreq will be excluded.}
 
 \item{fit_method}{The method used for fitting features.
-Either \code{"gam"} (generalized additive models) or \code{"pretsa"} (Pattern recognition in Temporal and Spatial Analyses).
-Default is \code{"gam"}.}
+Either \code{"gam"} (generalized additive models) or \code{"pretsa"} (Pattern recognition in Temporal and Spatial Analyses).}
 
-\item{knot}{For \code{fit_method = "pretsa"}: B-spline knots. \code{0} or \code{"auto"}.
-Default is \code{0}.}
+\item{knot}{For \code{fit_method = "pretsa"}: B-spline knots. \code{0} or \code{"auto"}.}
 
-\item{max_knot_allowed}{For \code{fit_method = "pretsa"} when \code{knot = "auto"}: max knots.
-Default is \code{10}.}
+\item{max_knot_allowed}{For \code{fit_method = "pretsa"} when \code{knot = "auto"}: max knots.}
 
-\item{padjust_method}{The method used for p-value adjustment.
-Default is \code{"fdr"}.}
+\item{padjust_method}{The method used for p-value adjustment.}
 
 \item{cluster_features_by}{Which lineage to use when clustering features.
 By default, this parameter is set to \code{NULL}, which means that all lineages will be used.}
 
-\item{cluster_rows}{Whether to cluster rows in the heatmap.
-Default is \code{FALSE}.}
+\item{cluster_rows, cluster_columns, cluster_row_slices, cluster_column_slices}{Heatmap clustering.}
 
-\item{cluster_row_slices}{Whether to cluster row slices in the heatmap.
-Default is \code{FALSE}.}
+\item{row_names_side, column_names_side, row_names_rot, column_names_rot}{Name placement.}
 
-\item{cluster_columns}{Whether to cluster columns in the heatmap.
-Default is \code{FALSE}.}
+\item{row_title, column_title, row_title_side, column_title_side, row_title_rot, column_title_rot}{Slice titles.}
 
-\item{cluster_column_slices}{Whether to cluster column slices in the heatmap.
-Default is \code{FALSE}.}
+\item{feature_split, feature_split_by, n_split, split_order, split_method, decreasing}{Feature splitting. \code{split_method} is \code{"kmeans"}, \code{"hclust"}, or \code{"mfuzz"}.}
 
-\item{show_row_names}{Whether to show row names in the heatmap.
-Default is \code{FALSE}.}
+\item{fuzzification}{Mfuzz fuzzification coefficient.}
 
-\item{show_column_names}{Whether to show column names in the heatmap.
-Default is \code{FALSE}.}
+\item{anno_terms, anno_keys, anno_features}{Enrichment annotations.}
 
-\item{row_names_side}{A character vector specifying the side to place row names.}
+\item{terms_width, terms_stat_width, terms_fontsize}{Term annotation size.}
 
-\item{column_names_side}{A character vector specifying the side to place column names.}
+\item{terms_stat}{Enrichment statistic for term bars: \code{"none"}, \code{"score"}
+(\code{-log10} of the active p-value), or an enrichment column such as \code{"p.adjust"}.}
 
-\item{row_names_rot}{The rotation angle for row names.
-Default is \code{0}.}
+\item{terms_stat_digits, terms_stat_label, terms_stat_axis}{Statistic labels
+(\code{"none"}, \code{"value"}, \code{"significance"}, \code{"both"}) and shared axis.}
 
-\item{column_names_rot}{The rotation angle for column names.
-Default is \code{90}.}
+\item{terms_stat_background_palcolor, terms_stat_border, terms_stat_border_palcolor, terms_stat_border_size, terms_stat_label_palcolor}{Statistic-panel appearance. \code{NULL} inherits the matching \verb{terms_*} setting.}
 
-\item{row_title}{A character vector specifying the title for rows.
-Default is \code{NULL}.}
+\item{terms_group_background, terms_background_palcolor, terms_background_alpha, terms_border, terms_border_palcolor, terms_border_size, terms_text_palcolor, terms_bar_palcolor}{Term-block appearance. \code{terms_text_palcolor = NULL} maps text to enrichment
+significance; \code{terms_bar_palcolor = NULL} matches bar color to term text.}
 
-\item{column_title}{A character vector specifying the title for columns.
-Default is \code{NULL}.}
+\item{keys_width, keys_fontsize, features_width, features_fontsize}{Key and feature annotations.}
 
-\item{row_title_side}{A character vector specifying the side to place row title.
-Default is \code{"left"}.}
+\item{IDtype, species, db_combine, mirror, db, TERM2GENE, TERM2NAME, minGSSize, maxGSSize}{Gene-set database (see \link{PrepareDB}).}
 
-\item{column_title_side}{A character vector specifying the side to place column title.
-Default is \code{"top"}.}
+\item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
-\item{row_title_rot}{The rotation angle for row title.
-Default is \code{0}.}
+\item{db_version}{Database version to retrieve.}
 
-\item{column_title_rot}{The rotation angle for column title.}
+\item{convert_species}{Use a species-converted database when the annotation is
+missing for \code{species}.}
 
-\item{feature_split}{A factor specifying how to split the features.
-Default is \code{NULL}.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
-\item{feature_split_by}{A character vector specifying which group.by to use when splitting features (into n_split feature clusters).
-Default is \code{NULL}.}
+\item{GO_simplify, GO_simplify_cutoff, simplify_method, simplify_similarityCutoff}{GO simplification.}
 
-\item{n_split}{A number of feature splits (feature clusters) to create.
-Default is \code{NULL}.}
+\item{pvalueCutoff, padjustCutoff, topTerm, show_termid, topWord, words_excluded}{Enrichment filters.}
 
-\item{split_order}{A numeric vector specifying the order of splits.
-Default is \code{NULL}.}
+\item{nlabel, features_label, label_size, label_color}{Feature labels.}
 
-\item{split_method}{A character vector specifying the method for splitting features.
-Options are \code{"kmeans"}, \code{"hclust"}, or \code{"mfuzz"}.
-Default is \code{"kmeans"}.}
+\item{pseudotime_label}{The pseudotime label.}
 
-\item{decreasing}{Whether to sort feature splits in decreasing order.
-Default is \code{FALSE}.}
+\item{pseudotime_label_color}{The pseudotime label color.}
 
-\item{fuzzification}{The fuzzification coefficient.
-Default is \code{NULL}.}
+\item{pseudotime_label_linetype}{The pseudotime label line type.}
 
-\item{anno_terms}{Whether to include term annotations.
-Default is \code{FALSE}.}
+\item{pseudotime_label_linewidth}{The pseudotime label line width.}
 
-\item{anno_keys}{Whether to include key annotations.
-Default is \code{FALSE}.}
+\item{pseudotime_palette}{The color palette to use for pseudotime.}
 
-\item{anno_features}{Whether to include feature annotations.
-Default is \code{FALSE}.}
+\item{pseudotime_palcolor}{The colors to use for the pseudotime in the heatmap.}
 
-\item{terms_width}{A unit specifying the width of term annotations.
-Default is \code{unit(4, "in")}.}
+\item{cell_annotation, cell_annotation_palette, cell_annotation_palcolor, cell_annotation_params}{Cell annotations. Palette length should match \code{cell_annotation}.}
 
-\item{terms_stat_width}{A unit specifying the width of the independent
-term-statistic bar-chart annotation.}
-
-\item{terms_fontsize}{A numeric vector specifying the font size(s) for term annotations.
-Default is \code{8}.}
-
-\item{terms_stat}{Which enrichment statistic controls the term bars.
-Use \code{"none"} to hide the bar background, \code{"score"} for \code{-log10} of the
-active p-value metric, or any column from the enrichment result such as
-\code{"p.adjust"}, \code{"pvalue"}, \code{"qvalue"},
-\code{"GeneRatio"}, \code{"RichFactor"}, \code{"FoldEnrichment"}, \code{"zScore"}, or \code{"Count"}.}
-
-\item{terms_stat_digits}{Number of significant digits for statistic labels
-and axis tick labels.}
-
-\item{terms_stat_label}{Label placed on or beside each statistic bar:
-\code{"none"}, \code{"value"}, \code{"significance"}, or \code{"both"}.}
-
-\item{terms_stat_axis}{Logical. Whether to draw a shared statistic axis
-outside and below the final enrichment block.}
-
-\item{terms_stat_background_palcolor}{Background color of the independent
-statistic panels. \code{NULL} inherits the corresponding term-panel background.}
-
-\item{terms_stat_border}{Logical. Whether to draw borders around statistic
-panels. \code{NULL} inherits \code{terms_border}.}
-
-\item{terms_stat_border_palcolor}{Border color of statistic panels. \code{NULL}
-inherits \code{terms_border_palcolor}.}
-
-\item{terms_stat_border_size}{Border line width of statistic panels. \code{NULL}
-inherits \code{terms_border_size}.}
-
-\item{terms_stat_label_palcolor}{Color of labels drawn on statistic bars.
-\code{NULL} automatically uses black or white according to bar luminance.}
-
-\item{terms_group_background}{Logical. Whether term blocks use translucent
-\code{feature_split} colors as their backgrounds.}
-
-\item{terms_background_palcolor}{Background color used when
-\code{terms_group_background = FALSE}.}
-
-\item{terms_background_alpha}{Alpha transparency of term-block backgrounds.}
-
-\item{terms_border}{Logical. Whether to draw borders around term blocks.}
-
-\item{terms_border_palcolor}{Border color of term blocks.}
-
-\item{terms_border_size}{Border line width of term blocks.}
-
-\item{terms_text_palcolor}{Fixed term text color. \code{NULL} retains colors mapped
-from enrichment significance.}
-
-\item{terms_bar_palcolor}{Fixed statistic-bar color. \code{NULL} makes each bar
-use the same color as its corresponding term text.}
-
-\item{keys_width}{A unit specifying the width of key annotations.
-Default is \code{unit(2, "in")}.}
-
-\item{keys_fontsize}{A two-length numeric vector specifying the minimum and maximum font size(s) for key annotations.
-Default is \code{c(6, 10)}.}
-
-\item{features_width}{A unit specifying the width of feature annotations.
-Default is \code{unit(2, "in")}.}
-
-\item{features_fontsize}{A two-length numeric vector specifying the minimum and maximum font size(s) for feature annotations.
-Default is \code{c(6, 10)}.}
-
-\item{IDtype}{A character vector specifying the type of IDs for features.
-Default is \code{"symbol"}.}
-
-\item{species}{A character vector specifying the species for features.
-Default is \code{"Homo_sapiens"}.}
-
-\item{db_update}{Whether the gene annotation databases should be forcefully updated.
-If set to FALSE, the function will attempt to load the cached databases instead.
-Default is \code{FALSE}.}
-
-\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is \code{"latest"}.}
-
-\item{db_combine}{Whether to use a combined database.
-Default is \code{FALSE}.}
-
-\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is \code{TRUE}.}
-
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
-
-\item{mirror}{A character vector specifying the mirror for the Ensembl database.
-Default is \code{NULL}.}
-
-\item{db}{A character vector specifying the database to use.
-Default is \code{"GO_BP"}.}
-
-\item{TERM2GENE}{A data.frame specifying the TERM2GENE mapping for the database.
-Default is \code{NULL}.}
-
-\item{TERM2NAME}{A data.frame specifying the TERM2NAME mapping for the database.
-Default is \code{NULL}.}
-
-\item{minGSSize}{An integer specifying the minimum gene set size for the database.
-Default is \code{10}.}
-
-\item{maxGSSize}{An integer specifying the maximum gene set size for the database.
-Default is \code{500}.}
-
-\item{GO_simplify}{Whether to simplify gene ontology terms.
-Default is \code{FALSE}.}
-
-\item{GO_simplify_cutoff}{A character vector specifying the cutoff for GO simplification.
-Default is \code{"p.adjust < 0.05"}.}
-
-\item{simplify_method}{A character vector specifying the method for GO simplification.
-Default is \code{"Wang"}.}
-
-\item{simplify_similarityCutoff}{The similarity cutoff for GO simplification.
-Default is \code{0.7}.}
-
-\item{pvalueCutoff}{A numeric vector specifying the p-value cutoff(s) for significance.
-Default is \code{NULL}.}
-
-\item{padjustCutoff}{The adjusted p-value cutoff for significance.
-Default is \code{0.05}.}
-
-\item{topTerm}{A number of top terms to include.
-Default is \code{5}.}
-
-\item{show_termid}{Whether to show term IDs.
-Default is \code{FALSE}.}
-
-\item{topWord}{A number of top words to include.
-Default is \code{20}.}
-
-\item{words_excluded}{A character vector specifying the words to exclude.
-Default is \code{NULL}.}
-
-\item{nlabel}{A number of labels to include.
-Default is \code{20}.}
-
-\item{features_label}{A character vector specifying the features to label.
-Default is \code{NULL}.}
-
-\item{label_size}{The size of labels.
-Default is \code{10}.}
-
-\item{label_color}{A character vector specifying the color of labels.
-Default is \code{"black"}.}
-
-\item{pseudotime_label}{The pseudotime label.
-Default is \code{NULL}.}
-
-\item{pseudotime_label_color}{The pseudotime label color.
-Default is \code{"black"}.}
-
-\item{pseudotime_label_linetype}{The pseudotime label line type.
-Default is \code{2}.}
-
-\item{pseudotime_label_linewidth}{The pseudotime label line width.
-Default is \code{3}.}
-
-\item{heatmap_palette}{A character vector specifying the palette to use for the heatmap.
-Default is \code{"RdBu"}.}
-
-\item{heatmap_palcolor}{A character vector specifying the heatmap color to use.
-Default is \code{NULL}.}
-
-\item{pseudotime_palette}{The color palette to use for pseudotime.
-Default is \code{"cividis"}.}
-
-\item{pseudotime_palcolor}{The colors to use for the pseudotime in the heatmap.
-Default is \code{NULL}.}
-
-\item{feature_split_palette}{A character vector specifying the palette to use for feature splits.
-Default is \code{"simspec"}.}
-
-\item{feature_split_palcolor}{A character vector specifying the feature split color to use.
-Default is \code{NULL}.}
-
-\item{cell_annotation}{A character vector specifying the cell annotation(s) to include.
-Default is \code{NULL}.}
-
-\item{cell_annotation_palette}{A character vector specifying the palette to use for cell annotations.
-The length of the vector should match the number of cell_annotation.
-Default is \code{"Chinese"}.}
-
-\item{cell_annotation_palcolor}{A list of character vector specifying the cell annotation color(s) to use.
-The length of the list should match the number of cell_annotation.
-Default is \code{NULL}.}
-
-\item{cell_annotation_params}{A list specifying additional parameters for cell annotations.
-Default is a list with \code{width = unit(1, "cm")} if flip is TRUE, else a list with \code{height = unit(1, "cm")}.}
-
-\item{feature_annotation}{A character vector specifying the feature annotation(s) to include.
-Default is \code{NULL}.}
-
-\item{feature_annotation_palette}{A character vector specifying the palette to use for feature annotations.
-The length of the vector should match the number of feature_annotation.
-Default is \code{"Dark2"}.}
-
-\item{feature_annotation_palcolor}{A list of character vector specifying the feature annotation color to use.
-The length of the list should match the number of feature_annotation.
-Default is \code{NULL}.}
-
-\item{feature_annotation_params}{A list specifying additional parameters for feature annotations.
-Default is \code{list()}.}
+\item{feature_annotation, feature_annotation_palette, feature_annotation_palcolor, feature_annotation_params}{Feature annotations. Palette length should match \code{feature_annotation}.}
 
 \item{separate_annotation}{Names of the annotations to be displayed in separate annotation blocks.
 Each name should match a column name in the metadata of the \code{Seurat} object.}
 
-\item{separate_annotation_palette}{The color palette to use for separate annotations.
-Default is \code{"Chinese"}.}
+\item{separate_annotation_palette}{The color palette to use for separate annotations.}
 
-\item{separate_annotation_palcolor}{The colors to use for each level of the separate annotations.
-Default is \code{NULL}.}
+\item{separate_annotation_palcolor}{The colors to use for each level of the separate annotations.}
 
 \item{separate_annotation_params}{Other parameters to \link[ComplexHeatmap:HeatmapAnnotation]{ComplexHeatmap::HeatmapAnnotation} when creating a separate annotation blocks.}
 
-\item{reverse_ht}{Whether to reverse the heatmap.
-Default is \code{NULL}.}
+\item{reverse_ht}{Whether to reverse the heatmap.}
 
-\item{use_raster}{Whether to use a raster device for plotting.
-Default is \code{NULL}.}
+\item{use_raster, raster_device, raster_by_magick}{Raster device (\code{NULL} chooses automatically).}
 
-\item{raster_device}{A character vector specifying the raster device to use.
-Default is \code{"png"}.}
+\item{width, height, units}{Heatmap size. \code{NULL} sizes from matrix dimensions.}
 
-\item{raster_by_magick}{Whether to use the 'magick' package for raster.
-Default is \code{FALSE}.}
+\item{cores}{Number of CPU cores.}
 
-\item{height}{The height of the heatmap in the specified units.
-If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.}
+\item{verbose}{Print progress messages.}
 
-\item{width}{The width of the heatmap in the specified units.
-If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.}
+\item{seed}{Random seed.}
 
-\item{units}{The units to use for the width and height of the heatmap.
-Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
+\item{legend.position}{Legend side (\code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}).
+Gap to the heatmap grows automatically when long row names are on the right.}
 
-\item{cores}{The number of worker processes to use for parallelization.
-Default is \code{1}.}
+\item{ht_params}{Extra arguments passed to \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap}, overriding defaults.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
-
-\item{seed}{Optional integer seed. When supplied, every input receives a
-deterministic independent L'Ecuyer-CMRG random-number stream, making results
-reproducible across worker counts and scheduling order. The caller's random
-number state is restored when the call finishes.}
-
-\item{legend.position}{A character vector specifying the side to place the legends.
-Options are \code{"right"}, \code{"left"}, \code{"top"}, or \code{"bottom"}.
-Default is \code{"right"}.
-When row names are long and shown on the right side, the gap between the heatmap and the legend is automatically increased to avoid overlap.}
-
-\item{ht_params}{Additional parameters to customize the appearance of the heatmap.
-This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
-Any conflicting parameters will override the defaults set by this function.
-Default is \code{list()}.}
-
-\item{...}{Additional arguments passed to the other functions.}
+\item{...}{Additional arguments passed to helper functions.}
 }
 \description{
 Heatmap plot for dynamic features along lineages

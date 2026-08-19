@@ -56,8 +56,7 @@ ScissorPlot(
 shows a \code{FeatureHeatmap}, and statistical views such as \code{"bar"} and
 \code{"upset"} are drawn with \link[thisplot:StatPlot]{thisplot::StatPlot}.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
 \item{prefix}{Prefix used by \link{RunScissor}.}
 
@@ -66,11 +65,9 @@ For \code{"heatmap"}, the default is the Scissor status column. For statistical
 plots, it is passed to \link[thisplot:StatPlot]{thisplot::StatPlot}, except that \code{"upset"} uses it
 to split Scissor status distributions by group.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Metadata column to facet by.}
 
-\item{features}{A character vector of features to use.
-Default is \code{NULL}.}
+\item{features}{Features to plot.}
 
 \item{nfeatures}{Number of features to show when \code{plot_type = "heatmap"} and
 \code{features = NULL}.}
@@ -91,88 +88,33 @@ background status in upset plots.}
 \item{upset_top_n}{Maximum number of \code{group.by} levels to show in
 \code{plot_type = "upset"}. The most frequent levels are kept. \code{NULL} keeps all.}
 
-\item{cells}{A character vector of cell names to use.}
+\item{cells}{Cell names to include.}
 
-\item{layer}{Which layer to use.
-Default is \code{"counts"}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{max_cells}{An integer, maximum number of cells to sample per group.
-Default is \code{100}.}
+\item{max_cells}{An integer, maximum number of cells to sample per group.}
 
-\item{cell_order}{A vector of cell names defining the order of cells.
-Default is \code{NULL}.}
+\item{cell_order}{A vector of cell names defining the order of cells.}
 
-\item{exp_method}{A character vector specifying the method for calculating expression values.
-Options are \code{"zscore"}, \code{"raw"}, \code{"fc"}, \code{"log2fc"}, or \code{"log1p"}.
-Default is \code{"zscore"}.}
-
-\item{stat_type}{Set stat types ("percent" or "count").}
+\item{exp_method}{Expression transform: \code{"zscore"}, \code{"raw"}, \code{"fc"}, \code{"log2fc"},
+or \code{"log1p"}.}
 
 \item{combine}{Whether to combine UMAP panels or StatPlot panels.}
 
 \item{nrow, ncol, byrow}{Layout parameters passed to \code{patchwork::wrap_plots()}
 or \link[thisplot:StatPlot]{thisplot::StatPlot}.}
 
-\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase \code{pt.size}
-proportionally when exporting to an unusually large canvas.}
+\item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
+with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
+radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
-\item{pt.alpha}{The transparency of the data points.
-Default is \code{1}.}
-
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
-
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
-
-\item{heatmap_palette}{A character vector specifying the palette to use for the heatmap.
-Default is \code{"RdBu"}.}
-
-\item{group_palette}{A character vector specifying the palette to use for groups.
-Default is \code{"Chinese"}.}
-
-\item{group_palcolor}{A character vector specifying the group color to use.
-Default is \code{NULL}.}
-
-\item{cell_annotation}{A character vector specifying the cell annotation(s) to include.
-Default is \code{NULL}.}
-
-\item{cell_annotation_palette}{A character vector specifying the palette to use for cell annotations.
-The length of the vector should match the number of cell_annotation.
-Default is \code{"Chinese"}.}
-
-\item{cell_annotation_palcolor}{A list of character vector specifying the cell annotation color(s) to use.
-The length of the list should match the number of cell_annotation.
-Default is \code{NULL}.}
-
-\item{show_row_names}{Whether to show row names in the heatmap.
-Default is \code{FALSE}.}
-
-\item{show_column_names}{Whether to show column names in the heatmap.
-Default is \code{FALSE}.}
-
-\item{cluster_rows}{Whether to cluster rows in the heatmap.
-Default is \code{FALSE}.}
-
-\item{cluster_columns}{Whether to cluster columns in the heatmap.
-Default is \code{FALSE}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
 \item{theme_use, theme_args}{Theme used by \link[thisplot:StatPlot]{thisplot::StatPlot}.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 
 \item{...}{Additional arguments passed to \link{CellDimPlot}, \link{FeatureDimPlot},
 \link{FeatureHeatmap}, or \link[thisplot:StatPlot]{thisplot::StatPlot}, depending on \code{plot_type}.}

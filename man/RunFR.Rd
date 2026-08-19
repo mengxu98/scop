@@ -39,50 +39,37 @@ RunFR(object, ...)
 )
 }
 \arguments{
-\item{object}{An object. This can be a Seurat object, a Neighbor object, or a Graph object.
-Default is \code{NULL}.}
+\item{object}{An object. This can be a Seurat object, a Neighbor object, or a Graph object.}
 
-\item{...}{Additional arguments to be passed to \link[igraph:layout_with_fr]{igraph::layout_with_fr}.}
+\item{...}{Passed to \link[igraph:layout_with_fr]{igraph::layout_with_fr}.}
 
-\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
+\item{reduction}{Linear reduction used as input.}
 
-\item{dims}{The dimensions to be used. Default is \code{NULL}.}
+\item{dims}{Dimensions to use. Supply only one of \code{dims}, \code{features},
+\code{neighbor}, or \code{graph}.}
 
-\item{features}{A character vector of features to use. Default is \code{NULL}.}
+\item{features}{Features used instead of a reduction.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{graph}{The name of the Graph object to be used. Default is \code{NULL}.}
+\item{neighbor}{Neighbor object to be used.}
 
-\item{neighbor}{The name of the Neighbor object to be used.
-Default is \code{NULL}.}
+\item{k.param}{The number of nearest neighbors to consider.}
 
-\item{k.param}{The number of nearest neighbors to consider.
-Default is \code{20}.}
+\item{ndim}{The number of dimensions for the force-directed layout.}
 
-\item{ndim}{The number of dimensions for the force-directed layout.
-Default is \code{2}.}
+\item{niter}{The number of iterations for the force-directed layout.}
 
-\item{niter}{The number of iterations for the force-directed layout.
-Default is \code{500}.}
+\item{reduction.name}{Reduction to be stored in the Seurat object.}
 
-\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
-Default is \code{"fr"}.}
-
-\item{reduction.key}{The prefix for the column names of the force-directed layout embeddings.
-Default is \code{"FR_"}.}
+\item{reduction.key}{The prefix for the column names of the force-directed layout embeddings.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed.use}{Random seed.}
 }
 \description{
 Run Force-Directed Layout (Fruchterman-Reingold algorithm)

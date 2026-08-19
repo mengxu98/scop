@@ -1,7 +1,7 @@
 #' @title Run KNN prediction
 #'
 #' @description
-#' This function performs KNN prediction to annotate cell types based on reference scRNA-seq or bulk RNA-seq data.
+#' Performs KNN prediction to annotate cell types based on reference scRNA-seq or bulk RNA-seq data.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -9,19 +9,19 @@
 #' @param srt_ref An object of class Seurat storing the reference cells.
 #' @param bulk_ref A cell atlas matrix, where cell types are represented by columns and genes are represented by rows.
 #' Either `srt_ref` or `bulk_ref` must be provided.
-#' @param query_group A character vector specifying the column name in the `srt_query` metadata that represents the cell grouping.
-#' @param ref_group A character vector specifying the column name in the `srt_ref` metadata that represents the cell grouping.
-#' @param query_assay A character vector specifying the assay to be used for the query data.
+#' @param query_group Column name in the `srt_query` metadata that represents the cell grouping.
+#' @param ref_group Column name in the `srt_ref` metadata that represents the cell grouping.
+#' @param query_assay Assay to be used for the query data.
 #' Default is the default assay of the `srt_query` object.
-#' @param ref_assay A character vector specifying the assay to be used for the reference data.
+#' @param ref_assay Assay to be used for the reference data.
 #' Default is the default assay of the `srt_ref` object.
-#' @param query_reduction A character vector specifying the dimensionality reduction method used for the query data.
+#' @param query_reduction Dimensionality reduction method used for the query data.
 #' If NULL, the function will use the default reduction method specified in the `srt_query` object.
-#' @param ref_reduction A character vector specifying the dimensionality reduction method used for the reference data.
+#' @param ref_reduction Dimensionality reduction method used for the reference data.
 #' If NULL, the function will use the default reduction method specified in the `srt_ref` object.
-#' @param query_dims A numeric vector specifying the dimensions to be used for the query data.
+#' @param query_dims Dimensions to be used for the query data.
 #' Default is the first `30` dimensions.
-#' @param ref_dims A numeric vector specifying the dimensions to be used for the reference data.
+#' @param ref_dims Dimensions to be used for the reference data.
 #' Default is the first `30` dimensions.
 #' @param query_collapsing A boolean value indicating whether the query data should be collapsed to group-level average expression values.
 #' If TRUE, the function will calculate the average expression values for each group in the query data and the annotation will be performed separately for each group. Otherwise it will use the raw expression values for each cell.
@@ -30,20 +30,17 @@
 #' Otherwise it will use the raw expression values for each cell.
 #' @param return_full_distance_matrix A boolean value indicating whether the full distance matrix should be returned.
 #' If TRUE, the function will return the distance matrix used for the KNN prediction, otherwise it will only return the annotated cell types.
-#' @param features A character vector specifying the features to be used for the KNN prediction.
+#' @param features Features to be used for the KNN prediction.
 #' If `NULL`, all the features in the query and reference data will be used.
-#' @param features_type A character vector specifying the type of features to be used for the KNN prediction.
-#' Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features). Default is `"HVF"`.
+#' @param features_type Type of features to be used for the KNN prediction.
+#' Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features).
 #' @param feature_source The source of the features to be used.
 #' Must be one of "both", "query", or "ref".
-#' Default is `"both"`.
-#' @param nfeatures An integer specifying the maximum number of features to be used for the KNN prediction.
-#' Default is `2000`.
+#' @param nfeatures Maximum number of features to be used for the KNN prediction.
 #' @param DEtest_param A list of parameters to be passed to the differential expression test function if `features_type` is set to "DE". Default is `list(max.cells.per.ident = 200, test.use = "wilcox")`.
 #' @param DE_threshold Threshold used to filter the DE features.
 #' If using "roc" test, `DE_threshold` should be needs to be reassigned. e.g. "power > 0.5".
-#' Default is `"p_val < 0.05"`.
-#' @param nn_method A character string specifying the nearest neighbor search method to use.
+#' @param nn_method Nearest neighbor search method to use.
 #' Options are "raw", "annoy", and "rann".
 #' If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
 #' If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
@@ -53,16 +50,13 @@
 #' uses a bounded-memory compiled top-k kernel unless the full distance
 #' matrix is requested. Other metrics and sparse inputs retain the existing
 #' proxyC path.
-#' @param distance_metric A character vector specifying the distance metric to be used for calculating similarity between cells.
+#' @param distance_metric Distance metric to be used for calculating similarity between cells.
 #' Must be one of "cosine", "euclidean", "manhattan", or "hamming".
-#' Default is `"cosine"`.
 #' @param k A number of nearest neighbors to be considered for the KNN prediction.
-#' Default is `30`.
-#' @param filter_lowfreq An integer specifying the threshold for filtering low-frequency cell types from the predicted results.
+#' @param filter_lowfreq Threshold for filtering low-frequency cell types from the predicted results.
 #' Cell types with a frequency lower than `filter_lowfreq` will be labelled as "unreliable".
 #' Default is `0`, which means no filtering will be performed.
-#' @param prefix A character vector specifying the prefix to be added to the resulting annotations.
-#' Default is `"KNNPredict"`.
+#' @param prefix Prefix to be added to the resulting annotations.
 #'
 #' @seealso
 #' [RunKNNMap], [RunSingleR], [CellCorHeatmap]

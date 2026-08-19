@@ -8,7 +8,6 @@
 #' @param color.by Metadata column in the metacell Seurat used to color
 #' centroids. If `NULL`, metacell centroids use one fixed color.
 #' @param palette_metacell Color palette for the metacell centroid layer.
-#' Default is "Chinese".
 #' @param palcolor_metacell Custom colors for the metacell centroid layer.
 #' @param cell.alpha Alpha value for the original single-cell background layer.
 #' @param cell.size Point size for the original single-cell background layer.

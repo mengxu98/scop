@@ -6,21 +6,14 @@
 #' @param object An object.
 #' Can be a Seurat object, an assay object, or a matrix-like object.
 #' @param L The number of components to be computed.
-#' Default is `5`.
 #' @param fam The family of the generalized linear model to be used.
 #' Currently supported values are `"poi"`, `"nb"`, `"nb2"`, `"binom"`, `"mult"`, and `"bern"`.
-#' Default is `"poi"`.
 #' @param rev.gmlpca Whether to perform reverse GLMPCA (i.e., transpose the input matrix) before running the analysis.
-#' Default is `FALSE`.
 #' @param ndims.print The dimensions (number of components) to print in the output.
-#' Default is `1:5`.
 #' @param nfeatures.print The number of features to print in the output.
-#' Default is `30`.
-#' @param reduction.name The name of the reduction to be stored in the Seurat object.
-#' Default is `"glmpca"`.
+#' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the basis vectors.
-#' Default is `"GLMPC_"`.
-#' @param ... Additional arguments to be passed to the [glmpca::glmpca] function.
+#' @param ... Passed to the [glmpca::glmpca] function.
 #'
 #' @rdname RunGLMPCA
 #' @export

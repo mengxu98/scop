@@ -28,29 +28,26 @@ Default is \code{NULL}, which automatically selects a PCA-like reduction via
 \item{reduction_method}{Optional reduction method name.
 When set to \code{"nmf"} or \code{"glmpca"}, all available dimensions will be retained.}
 
-\item{k}{Number of neighbors used by \link[intrinsicDimension:maxLikGlobalDimEst]{intrinsicDimension::maxLikGlobalDimEst}.
-Default is \code{30}.}
+\item{k}{Number of neighbors used by \link[intrinsicDimension:maxLikGlobalDimEst]{intrinsicDimension::maxLikGlobalDimEst}.}
 
 \item{method}{Dimension-selection method. \code{"scree"} uses PCA standard
 deviations with broken-stick, elbow, cumulative-variance, and marginal-gain
 criteria. \code{"intrinsic"} uses \link[intrinsicDimension:maxLikGlobalDimEst]{intrinsicDimension::maxLikGlobalDimEst}.
 \code{"ensemble"} keeps the larger recommendation from both methods when both are
-available. Default is \code{"scree"}.}
+available.}
 
-\item{min_dims}{Minimum number of dimensions kept when intrinsic-dimension estimation succeeds.
-Default is \code{5}.}
+\item{min_dims}{Minimum number of dimensions kept when intrinsic-dimension estimation succeeds.}
 
 \item{variance_threshold}{Cumulative variance threshold used by
-\code{method = "scree"}. Default is \code{0.8}.}
+\code{method = "scree"}.}
 
 \item{marginal_gain_threshold}{Stop point for marginal variance gain
-(percentage points) used by \code{method = "scree"}. Default is \code{0.5}.}
+(percentage points) used by \code{method = "scree"}.}
 
 \item{skip_first}{Whether to drop the first dimension from the returned result.
-Useful for \code{TFIDF/LSI} workflows. Default is \code{FALSE}.}
+Useful for \code{TFIDF/LSI} workflows.}
 
-\item{use_stored}{Whether to use \code{misc$dims_estimate} already stored in the reduction when available.
-Default is \code{TRUE}.}
+\item{use_stored}{Whether to use \code{misc$dims_estimate} already stored in the reduction when available.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

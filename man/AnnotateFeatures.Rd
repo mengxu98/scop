@@ -27,53 +27,44 @@ AnnotateFeatures(
 \arguments{
 \item{srt}{Seurat object to be annotated.}
 
-\item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
-Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
+\item{species}{\code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
 \item{IDtype}{Type of identifier to use for annotation.
-Options are \code{"symbol"}, \code{"ensembl_id"}, or \code{"entrez_id"}.
-Default is \code{"symbol"}.}
+Options are \code{"symbol"}, \code{"ensembl_id"}, or \code{"entrez_id"}.}
 
-\item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
-Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"}.
-MSigDB subcollections can be requested as \code{"MSigDB_<collection>"}, such as
-\code{"MSigDB_H"} for human Hallmark and \code{"MSigDB_MH"} for mouse Hallmark.
-Note: \code{"CytoTRACE2"} is species-independent and downloads pre-trained model data
-required by \link{RunCytoTRACE}.}
+\item{db}{Annotation sources. One or more of \code{"GO"}, \code{"GO_BP"}, \code{"GO_CC"},
+\code{"GO_MF"}, \code{"KEGG"}, \code{"WikiPathway"}, \code{"Reactome"}, \code{"CORUM"}, \code{"MP"}, \code{"DO"},
+\code{"HPO"}, \code{"PFAM"}, \code{"CSPA"}, \code{"Surfaceome"}, \code{"SPRomeDB"}, \code{"VerSeDa"},
+\code{"TFLink"}, \code{"hTFtarget"}, \code{"TRRUST"}, \code{"JASPAR"}, \code{"ENCODE"}, \code{"MSigDB"},
+\code{"CellTalk"}, \code{"CellChat"}, \code{"Chromosome"}, \code{"GeneType"}, \code{"Enzyme"}, \code{"TF"},
+\code{"CytoTRACE2"}. MSigDB subcollections use \code{"MSigDB_<collection>"} (e.g.
+\code{"MSigDB_H"}). \code{"CytoTRACE2"} is species-independent and is required by
+\link{RunCytoTRACE}.}
 
-\item{db_update}{Whether the gene annotation databases should be forcefully updated.
-If set to FALSE, the function will attempt to load the cached databases instead.
-Default is \code{FALSE}.}
+\item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
-\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is \code{"latest"}.}
+\item{db_version}{Database version to retrieve.}
 
-\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is \code{TRUE}.}
+\item{convert_species}{Use a species-converted database when the annotation is
+missing for \code{species}.}
 
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
-\item{mirror}{URL of the mirror to use for Ensembl database.
-Default is \code{NULL}.}
+\item{mirror}{URL of the mirror to use for Ensembl database.}
 
-\item{gtf}{Path to the GTF file to be used for annotation.
-Default is \code{NULL}.}
+\item{gtf}{Path to the GTF file to be used for annotation.}
 
-\item{merge_gtf_by}{Column name to merge the GTF file by.
-Default is \code{"gene_name"}.}
+\item{merge_gtf_by}{Column name to merge the GTF file by.}
 
 \item{columns}{Vector of column names to be used from the GTF file.
 Default is \code{"seqname"}, \code{"feature"}, \code{"start"}, \code{"end"},
 \code{"strand"}, \code{"gene_id"}, \code{"gene_name"}, \code{"gene_type"}.}
 
-\item{assays}{Character vector of assay names to be annotated.
-Default is \code{"RNA"}.}
+\item{assays}{Character vector of assay names to be annotated.}
 
-\item{overwrite}{Whether to overwrite existing metadata.
-Default is \code{FALSE}.}
+\item{overwrite}{Whether to overwrite existing metadata.}
 
-\item{...}{Passed to other functions.}
+\item{...}{Passed to helper functions.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

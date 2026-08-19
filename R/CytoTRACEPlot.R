@@ -3,7 +3,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
-#' @param ... Additional arguments to be passed to [CellDimPlot] and [FeatureDimPlot].
+#' @param ... Passed to [CellDimPlot] and [FeatureDimPlot].
 #'
 #' @return
 #' If `combine = TRUE`, returns a `patchwork` object combining all plots.

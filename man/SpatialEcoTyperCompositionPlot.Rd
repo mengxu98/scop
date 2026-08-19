@@ -34,7 +34,7 @@ counts.}
 
 \item{legend.position}{Legend position.}
 
-\item{theme_use}{Theme function name. Default is \code{"theme_scop"}.}
+\item{theme_use}{Theme function name.}
 
 \item{theme_args}{Additional arguments passed to the theme function.}
 

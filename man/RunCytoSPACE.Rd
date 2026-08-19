@@ -30,16 +30,13 @@ RunCytoSPACE(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{reference}{Reference \code{Seurat} object containing annotated single cells.}
 
 \item{reference_label}{Metadata column in \code{reference} with cell type labels.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{reference_assay}{Assay used in \code{reference}.}
 
@@ -75,8 +72,7 @@ duplicate sampling.}
 \item{store_results}{Whether to store detailed assignment results in
 \code{srt@tools}.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 
 \item{image}{Optional Seurat image used for spatial coordinates.}
 

@@ -32,7 +32,7 @@ RunAugur(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{celltype.by}{Metadata column or vector defining the cell types used by
 Augur.}
@@ -64,8 +64,7 @@ are used.}
 \item{add_meta}{Whether to write \code{prefix_auc} and \code{prefix_rank} metadata
 columns back to each cell by matching \code{celltype.by}.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 
 \item{...}{Additional arguments passed to \code{Augur::calculate_auc}.}
 }

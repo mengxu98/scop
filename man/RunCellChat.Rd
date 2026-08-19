@@ -22,35 +22,32 @@ RunCellChat(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) to group cells by.}
 
-\item{species}{The species of the data, either \code{"Homo_sapiens"}, \code{"Mus_musculus"}, or \code{"zebrafish"}.}
+\item{species}{\code{"Homo_sapiens"}, \code{"Mus_musculus"}, or \code{"zebrafish"}.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Metadata column to split the analysis or plot by.}
 
-\item{annotation_selected}{A vector of cell annotations of interest for running the \code{CellChat} analysis.
-If not provided, all cell types will be considered.}
+\item{annotation_selected}{Cell types to include. \code{NULL} uses all.}
 
-\item{group_column}{Name of the metadata column in the \code{Seurat} object that defines conditions or groups.}
+\item{group_column}{Metadata column defining conditions or groups.}
 
-\item{group_cmp}{A list of pairwise condition comparisons for differential \code{CellChat} analysis.}
+\item{group_cmp}{Pairwise condition comparisons for differential CellChat.}
 
-\item{thresh}{The threshold for computing centrality scores. Default is \code{0.05}.}
+\item{thresh}{Threshold for centrality scores.}
 
-\item{min.cells}{the minmum number of expressed cells required for the genes that are considered for cell-cell communication analysis. Default is \code{10}.}
+\item{min.cells}{Minimum expressed cells required for genes used in CCC.}
 
-\item{do.fast}{Whether to use CellChat's fast Wilcoxon implementation backed
-by \code{presto}. Set to \code{TRUE} only when \code{presto} is installed.}
+\item{do.fast}{Use CellChat's fast Wilcoxon via \code{presto} (must be installed).}
 
-\item{backend}{Backend used only for result post-processing and unified CCC table
-aggregation. Upstream CellChat inference is unchanged.}
+\item{backend}{Post-processing / unified CCC table backend. Does not change
+upstream CellChat inference.}
 
-\item{assay}{Which assay to use. If \code{NULL}, the default assay of the \code{Seurat} object will be used.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{The layer to use for the expression data. Default is \code{"data"}.}
+\item{layer}{Assay layer to use.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

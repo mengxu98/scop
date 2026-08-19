@@ -142,324 +142,95 @@ CellDimPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{label.by}{Name of a meta.data column used to place group labels. If
-\code{NULL}, labels use \code{group.by}.}
+\item{label.by}{Metadata column for labels. \code{NULL} uses \code{group.by}.}
 
-\item{mark.by}{Name of a meta.data column used to draw group marks. If
-\code{NULL}, marks use \code{legend.by} when a nested legend is requested, otherwise
-marks use \code{group.by}.}
+\item{mark.by}{Metadata column for marks. \code{NULL} uses \code{legend.by} (nested
+legend) or \code{group.by}.}
 
-\item{legend.by}{Name of a meta.data column used as the parent group in a
-nested legend. The \code{group.by} levels are shown under each \code{legend.by} level.
-If \code{NULL}, the standard legend is used.}
+\item{legend.by}{Parent group for a nested legend. \code{NULL} uses a standard legend.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
-\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
+\item{dims}{Length-2 vector of dimensions to plot.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Metadata column to facet by.}
 
-\item{cells}{A character vector of cell names to use.}
+\item{cells}{Cell names to include.}
 
-\item{show_na}{Whether to assign a color from the color palette to NA group.
-If \code{TRUE}, cell points with NA level will be colored by \code{bg_color}.
-If \code{FALSE}, cell points with NA level will be removed from the plot.}
+\item{show_na}{If \code{TRUE}, color \code{NA} groups with \code{bg_color}; if \code{FALSE}, drop them.}
 
-\item{show_stat}{Whether to show statistical information on the plot.}
+\item{show_stat}{Show cell-count statistics on the plot.}
 
-\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase \code{pt.size}
-proportionally when exporting to an unusually large canvas.}
+\item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
+with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
+radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
-\item{pt.alpha}{The transparency of the data points.
-Default is \code{1}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
+\item{bg_color}{Color for background / \code{NA} points.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{label, label_insitu, label.size, label.fg, label.bg, label.bg.r}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
 
-\item{bg_color}{Color value for background(NA) points.}
+\item{label_repel, label_repulsion, label_point_size, label_point_color, label_segment_color}{Repel labels away from cluster centers.}
 
-\item{label}{Whether to label the cell groups.}
+\item{cells.highlight, cols.highlight, sizes.highlight, alpha.highlight, stroke.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
 
-\item{label.size}{Size of labels.}
+\item{add_density, density_color, density_filled, density_filled_palette, density_filled_palcolor}{Density contours; \code{density_filled} draws filled bands.}
 
-\item{label.fg}{Foreground color of label.}
+\item{add_mark, mark_type, mark_expand, mark_alpha, mark_linetype, mark_linewidth, mark_border}{Marks around groups. \code{mark_type} is \code{"hull"}, \code{"ellipse"}, \code{"rect"}, or \code{"circle"}.
+\code{mark_border = NULL} uses group colors.}
 
-\item{label.bg}{Background color of label.}
+\item{mark_palette, mark_palcolor}{Palette for \code{mark.by} groups and nested-legend headers.}
 
-\item{label.bg.r}{Background ratio of label.}
+\item{add_grid, grid_n, grid_color, grid_size, grid_alpha}{Background point grid
+(useful for atlas-style blank axes).}
 
-\item{label_insitu}{Whether to place the raw labels (group names) in the center of the cells with the corresponding group.
-Default is \code{FALSE}, which using numbers instead of raw labels.}
+\item{lineages, lineages_trim, lineages_span, lineages_palette, lineages_palcolor, lineages_arrow, lineages_linewidth, lineages_line_bg, lineages_line_bg_stroke, lineages_whiskers, lineages_whiskers_linewidth, lineages_whiskers_alpha}{Pseudotime lineages as \link[stats:loess]{stats::loess} curves. See \link[grid:arrow]{grid::arrow} for \code{lineages_arrow}.}
 
-\item{label_repel}{Logical value indicating whether the label is repel away from the center points.}
+\item{stat.by, stat_type, stat_plot_type, stat_plot_size, stat_plot_palette, stat_palcolor, stat_plot_position, stat_plot_alpha, stat_plot_label, stat_plot_label_size}{Inset composition plot. \code{stat_type} is \code{"percent"} or \code{"count"}.}
 
-\item{label_repulsion}{Force of repulsion between overlapping text labels. Default is \code{20}.}
+\item{graph, edge_size, edge_alpha, edge_color}{Neighbor-graph edges.}
 
-\item{label_point_size}{Size of the center points.}
+\item{paga, paga_type, paga_node_size, paga_edge_threshold, paga_edge_size, paga_edge_color, paga_edge_alpha, paga_show_transition, paga_transition_threshold, paga_transition_size, paga_transition_color, paga_transition_alpha}{PAGA graph layer. \code{paga_type} is \code{"connectivities"} or \code{"connectivities_tree"}.}
 
-\item{label_point_color}{Color of the center points.}
+\item{velocity, velocity_plot_type, velocity_n_neighbors, velocity_density, velocity_smooth, velocity_scale, velocity_min_mass, velocity_cutoff_perc, velocity_arrow_color, velocity_arrow_angle}{RNA velocity layer.}
 
-\item{label_segment_color}{Color of the line segment for labels.}
+\item{streamline_L, streamline_minL, streamline_res, streamline_n, streamline_width, streamline_alpha, streamline_color, streamline_palette, streamline_palcolor, streamline_bg_color, streamline_bg_stroke}{Streamline appearance for velocity plots.}
 
-\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
-If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
-Default is \code{NULL}.}
+\item{hex, hex.count, hex.bins, hex.binwidth, hex.linewidth}{Hexagonal bins instead of points.}
 
-\item{cols.highlight}{Color used to highlight the cells.}
+\item{raster, raster.dpi}{Rasterize points. \code{raster = NULL} rasterizes when
+there are more than 100,000 cells.}
 
-\item{sizes.highlight}{Size of highlighted cell points.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
-\item{alpha.highlight}{Transparency of highlighted cell points.}
+\item{title, subtitle, xlab, ylab}{Plot labels.}
 
-\item{stroke.highlight}{Border width of highlighted cell points.}
+\item{legend.position, legend.direction, legend.title}{Legend placement
+(\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title.
+\code{legend.title = NULL} uses the group name.}
 
-\item{add_density}{Whether to add a density layer on the plot.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{density_color}{Color of the density contours lines.}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+returns a list of ggplots.}
 
-\item{density_filled}{Whether to add filled contour bands instead of contour lines.}
+\item{force}{Draw even when a grouping has more than 100 levels.}
 
-\item{density_filled_palette}{Color palette used to fill contour bands.}
+\item{seed}{Random seed.}
 
-\item{density_filled_palcolor}{Custom colors used to fill contour bands.}
-
-\item{add_mark}{Whether to add marks around cell groups. Default is \code{FALSE}.}
-
-\item{mark_type}{Type of mark to add around cell groups.
-One of "hull", "ellipse", "rect", or "circle". Default is \code{"hull"}.}
-
-\item{mark_expand}{Expansion of the mark around the cell group.
-Default is \code{grid::unit(3, "mm")}.}
-
-\item{mark_alpha}{Transparency of the mark.
-Default is \code{0.1}.}
-
-\item{mark_linetype}{Line type of the mark border.
-Default is \code{1} (solid line).}
-
-\item{mark_linewidth}{Line width of the mark border.}
-
-\item{mark_border}{Fixed border color for marks. If \code{NULL}, mark borders use
-the group colors.}
-
-\item{mark_palette}{Color palette name for \code{mark.by} groups and nested legend
-parent headers. Defaults to \code{palette}.}
-
-\item{mark_palcolor}{Custom colors for \code{mark.by} groups and nested legend
-parent headers.}
-
-\item{add_grid}{Whether to add a background point grid on the reduction panel.
-This is useful for atlas-style panels with blank axes.}
-
-\item{grid_n}{Number of grid points along each axis when \code{add_grid = TRUE}.}
-
-\item{grid_color, grid_size, grid_alpha}{Color, size, and alpha of the
-background grid points.}
-
-\item{lineages}{Lineages/pseudotime to add to the plot.
-If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
-
-\item{lineages_trim}{Trim the leading and the trailing data in the lineages.}
-
-\item{lineages_span}{The parameter α which controls the degree of smoothing in \link[stats:loess]{stats::loess} method.}
-
-\item{lineages_palette}{Color palette used for lineages.}
-
-\item{lineages_palcolor}{Custom colors used for lineages.}
-
-\item{lineages_arrow}{Set arrows of the lineages. See \link[grid:arrow]{grid::arrow}.}
-
-\item{lineages_linewidth}{Width of fitted curve lines for lineages.}
-
-\item{lineages_line_bg}{Background color of curve lines for lineages.}
-
-\item{lineages_line_bg_stroke}{Border width of curve lines background.}
-
-\item{lineages_whiskers}{Whether to add whiskers for lineages.}
-
-\item{lineages_whiskers_linewidth}{Width of whiskers for lineages.}
-
-\item{lineages_whiskers_alpha}{Transparency of whiskers for lineages.}
-
-\item{stat.by}{The name of a metadata column to stat.}
-
-\item{stat_type}{Set stat types ("percent" or "count").}
-
-\item{stat_plot_type}{Set the statistical plot type.}
-
-\item{stat_plot_position}{Position adjustment in statistical plot.}
-
-\item{stat_plot_size}{Set the statistical plot size. Default is \code{0.2}.}
-
-\item{stat_plot_palette}{Color palette used in statistical plot.}
-
-\item{stat_palcolor}{Custom colors used in statistical plot}
-
-\item{stat_plot_alpha}{Transparency of the statistical plot.}
-
-\item{stat_plot_label}{Whether to add labels in the statistical plot.}
-
-\item{stat_plot_label_size}{Label size in the statistical plot.}
-
-\item{graph}{Specify the graph name to add edges between cell neighbors to the plot.}
-
-\item{edge_size}{Size of edges.}
-
-\item{edge_alpha}{Transparency of edges.}
-
-\item{edge_color}{Color of edges.}
-
-\item{paga}{Specify the calculated paga results to add a PAGA graph layer to the plot.}
-
-\item{paga_type}{PAGA plot type. "connectivities" or "connectivities_tree".}
-
-\item{paga_node_size}{Size of the nodes in PAGA plot.}
-
-\item{paga_edge_threshold}{Threshold of edge connectivities in PAGA plot.}
-
-\item{paga_edge_size}{Size of edges in PAGA plot.}
-
-\item{paga_edge_color}{Color of edges in PAGA plot.}
-
-\item{paga_edge_alpha}{Transparency of edges in PAGA plot.}
-
-\item{paga_transition_threshold}{Threshold of transition edges in PAGA plot.}
-
-\item{paga_transition_size}{Size of transition edges in PAGA plot.}
-
-\item{paga_transition_color}{Color of transition edges in PAGA plot.}
-
-\item{paga_transition_alpha}{Transparency of transition edges in PAGA plot.}
-
-\item{paga_show_transition}{Whether to show transitions between edges.}
-
-\item{velocity}{Specify the calculated RNA velocity mode to add a velocity layer to the plot.}
-
-\item{velocity_plot_type}{Set the velocity plot type.}
-
-\item{velocity_n_neighbors}{Set the number of neighbors used in velocity plot.}
-
-\item{velocity_density}{Set the density value used in velocity plot.}
-
-\item{velocity_smooth}{Set the smooth value used in velocity plot.}
-
-\item{velocity_scale}{Set the scale value used in velocity plot.}
-
-\item{velocity_min_mass}{Set the min_mass value used in velocity plot.}
-
-\item{velocity_cutoff_perc}{Set the cutoff_perc value used in velocity plot.}
-
-\item{velocity_arrow_color}{Color of arrows in velocity plot.}
-
-\item{velocity_arrow_angle}{Angle of arrows in velocity plot.}
-
-\item{streamline_L}{Typical length of a streamline in x and y units}
-
-\item{streamline_minL}{Minimum length of segments to show.}
-
-\item{streamline_res}{Resolution parameter (higher numbers increases the resolution).}
-
-\item{streamline_n}{Number of points to draw.}
-
-\item{streamline_width}{Size of streamline.}
-
-\item{streamline_alpha}{Transparency of streamline.}
-
-\item{streamline_color}{Color of streamline.}
-
-\item{streamline_palette}{Color palette used for streamline.}
-
-\item{streamline_palcolor}{Custom colors used for streamline.}
-
-\item{streamline_bg_color}{Background color of streamline.}
-
-\item{streamline_bg_stroke}{Border width of streamline background.}
-
-\item{hex}{Whether to chane the plot type from point to the hexagonal bin.}
-
-\item{hex.linewidth}{Border width of hexagonal bins.}
-
-\item{hex.count}{Whether show cell counts in each hexagonal bin.}
-
-\item{hex.bins}{Number of hexagonal bins.}
-
-\item{hex.binwidth}{Hexagonal bin width.}
-
-\item{raster}{Convert points to raster format.
-Default is \code{NULL}, which automatically rasterizes if plotting more than 100,000 cells.}
-
-\item{raster.dpi}{Pixel resolution for rasterized plots.
-Default is \code{c(512, 512)}.}
-
-\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
-
-\item{title}{The text for the title.
-Default is \code{NULL}.}
-
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
-Default is \code{NULL}.}
-
-\item{xlab}{The x-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{ylab}{The y-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{legend.title}{Title for the legend. Default is \code{NULL}, which uses the group name.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
-
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
-
-\item{force}{Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
-Default is \code{FALSE}.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
+}
+\value{
+A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.
 }
 \description{
-Visualize cell groups on a 2-dimensional reduction plot.
-Plotting cell points on a reduced 2D plane and coloring according to the groups.
+Color cells on a dimensionality reduction by metadata groups, with optional
+labels, marks, density, lineages, PAGA, and RNA velocity layers.
 }
 \examples{
 data(pancreas_sub)

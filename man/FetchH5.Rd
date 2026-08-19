@@ -21,7 +21,7 @@ FetchH5(
 
 \item{meta_file}{The path to the hdf5 file containing the metadata.}
 
-\item{name}{The name of the dataset in the hdf5 file.
+\item{name}{Dataset in the hdf5 file.
 If not specified, the function will attempt to find the shared group name in both files.}
 
 \item{features}{The names of the genes or features to fetch.
@@ -30,12 +30,12 @@ If specified, only these features will be fetched.}
 \item{layer}{The layer for the counts in the hdf5 file.
 If not specified, the first layer will be used.}
 
-\item{assay}{The name of the assay to use.
+\item{assay}{Assay to use.
 If not specified, the default assay in the hdf5 file will be used.}
 
 \item{metanames}{The names of the metadata columns to fetch.}
 
-\item{reduction}{The name of the reduction to fetch.}
+\item{reduction}{Reduction to fetch.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

@@ -6,15 +6,12 @@
 #' @inheritParams RunUMAP2
 #' @inheritParams RunDM
 #' @param n_components The number of LargeVis components.
-#' Default is `2`.
 #' @param pca_method Method to carry out any PCA dimensionality reduction when the pca parameter is specified.
 #' Allowed values are: `"irlba"`, `"rsvd"`, `"bigstatsr"`, `"svd"`, `"auto"`.
 #' Uses `"irlba"`, unless more than 50 case `"svd"` is used.
-#' @param reduction.name The name of the reduction to be stored in the Seurat object.
-#' Default is `"largevis"`.
+#' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the LargeVis embeddings.
-#' Default is `"LargeVis_"`.
-#' @param ... Additional arguments to be passed to [uwot::lvish].
+#' @param ... Passed to [uwot::lvish].
 #'
 #' @rdname RunLargeVis
 #' @export

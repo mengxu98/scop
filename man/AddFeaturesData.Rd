@@ -22,10 +22,7 @@ AddFeaturesData(object, ...)
 
 \item{features}{Features data to add.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 }
 \value{
 A \code{Assay}, \code{Assay5} or \code{Seurat} object.

@@ -8,7 +8,7 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @param srt A Seurat object containing proportion-test results.
-#' @param comparison A character string specifying which comparison to plot.
+#' @param comparison Which comparison to plot.
 #' If `NULL`, plots all comparisons.
 #' @param proportion_method Optional method to select from
 #' `srt@tools[['ProportionTest']][['methods']]`.
@@ -48,9 +48,9 @@
 #' @param label.bg.r Label background radius.
 #' @param label.size Label text size.
 #' @param aspect.ratio Aspect ratio of the panel.
-#' @param xlab A character string specifying the x-axis label. For
+#' @param xlab X-axis label. For
 #' `plot_type = "umap"`, this is forwarded to the projection plot when set.
-#' @param ylab A character string specifying the y-axis label. For
+#' @param ylab Y-axis label. For
 #' `plot_type = "umap"`, this is forwarded to the projection plot when set.
 #' @param legend.position The position of legends,
 #' one of `"none"`, `"left"`, `"right"`, `"bottom"`, `"top"`.

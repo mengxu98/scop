@@ -27,18 +27,16 @@ RunCellTypist(
 )
 }
 \arguments{
-\item{srt}{A Seurat object. Default is \code{NULL}.
+\item{srt}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
 \item{adata}{Optional AnnData object used as input.}
 
-\item{assay}{Which assay to use.
-Default is \code{"RNA"}.}
+\item{assay}{Which assay to use.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{model}{Model name or path. Default is \code{"Immune_All_Low.pkl"}.
+\item{model}{Model name or path.
 Supports three formats:
 \enumerate{
 \item Model name (e.g., \code{"Immune_All_Low.pkl"}): automatically searched in \verb{~/.celltypist/data/models/}
@@ -47,14 +45,11 @@ Supports three formats:
 \item A summary list returned by \code{\link[=TrainCellTypist]{TrainCellTypist()}}: use its \code{model_path}
 }}
 
-\item{mode}{Prediction mode: \code{"best match"} or \code{"prob match"}.
-Default is \code{"best match"}.}
+\item{mode}{Prediction mode: \code{"best match"} or \code{"prob match"}.}
 
-\item{p_thres}{Probability threshold for \code{"prob match"} mode.
-Default is \code{0.5}.}
+\item{p_thres}{Probability threshold for \code{"prob match"} mode.}
 
-\item{majority_voting}{Whether to use majority voting.
-Default is \code{FALSE}.}
+\item{majority_voting}{Whether to use majority voting.}
 
 \item{over_clustering}{Over-clustering result. Can be:
 \itemize{
@@ -63,32 +58,23 @@ Default is \code{FALSE}.}
 \item \code{NULL}: use heuristic over-clustering
 }}
 
-\item{min_prop}{Minimum proportion for majority voting.
-Default is \code{0}.}
+\item{min_prop}{Minimum proportion for majority voting.}
 
-\item{use_GPU}{Whether to use GPU for over-clustering.
-Default is \code{FALSE}.}
+\item{use_GPU}{Whether to use GPU for over-clustering.}
 
-\item{insert_labels}{Whether to insert predicted labels.
-Default is \code{TRUE}.}
+\item{insert_labels}{Whether to insert predicted labels.}
 
-\item{insert_conf}{Whether to insert confidence scores.
-Default is \code{TRUE}.}
+\item{insert_conf}{Whether to insert confidence scores.}
 
-\item{insert_conf_by}{Which prediction type to base confidence on.
-Default is \code{"predicted_labels"}.}
+\item{insert_conf_by}{Which prediction type to base confidence on.}
 
-\item{insert_prob}{Whether to insert probability matrix.
-Default is \code{FALSE}.}
+\item{insert_prob}{Whether to insert probability matrix.}
 
-\item{insert_decision}{Whether to insert decision matrix.
-Default is \code{FALSE}.}
+\item{insert_decision}{Whether to insert decision matrix.}
 
-\item{prefix}{Prefix for inserted columns.
-Default is \code{"celltypist_"}.}
+\item{prefix}{Prefix for inserted columns.}
 
-\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
-Default is \code{TRUE}.}
+\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

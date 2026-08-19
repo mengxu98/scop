@@ -36,15 +36,12 @@ RunscTenifoldKnk(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{gKO}{Gene symbol or symbols to knock out. All genes must be present
 after optional feature and QC filtering.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{layer}{Assay layer used as the count matrix.}
 
@@ -84,8 +81,7 @@ handling and result storage inside \code{scop}.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A \code{Seurat} object with scTenifoldKnk results stored in

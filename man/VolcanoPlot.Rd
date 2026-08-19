@@ -57,10 +57,9 @@ VolcanoPlot(
 \item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
 results of differential expression analysis.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{test.use}{A character string specifying the type of statistical test to use.
-Default is \code{"wilcox"}.}
+\item{test.use}{Type of statistical test to use.}
 
 \item{res}{A \code{data.frame} or \code{data.table} with differential expression results.
 When \code{res} is provided, \code{srt} will be ignored.
@@ -70,136 +69,90 @@ The data.frame must contain columns: \code{gene}, \code{group1} (factor or chara
 \item{group_use}{Groups to plot.
 Default is \code{NULL} (all groups).}
 
-\item{DE_threshold}{A character string specifying the threshold for differential expression (used to highlight significant genes in all plot types).
+\item{DE_threshold}{Threshold for differential expression (used to highlight significant genes in all plot types).
 Default is \code{"p_val < 0.05"} for sample-level methods (\code{"edgeR"} and \code{"limma"}).
 For cell-level volcano plots, it is \code{"abs(avg_log2FC) > 0 & p_val_adj < 0.05"}
 when \code{only.pos = FALSE}, and \code{"avg_log2FC > 0 & p_val_adj < 0.05"} otherwise.}
 
-\item{x_metric}{A character string specifying the metric to use for the x-axis (only for volcano plot).
+\item{x_metric}{Metric to use for the x-axis (only for volcano plot).
 Default is \code{NULL}, which uses \code{"avg_log2FC"} for sample-level methods (\code{"edgeR"} and \code{"limma"})
 and \code{"diff_pct"} otherwise.}
 
-\item{y_metric}{A character string specifying the metric to use for the y-axis.
+\item{y_metric}{Metric to use for the y-axis.
 Options: \code{"p_val"} or \code{"p_val_adj"}.
 Default is \code{"p_val"} for sample-level methods (\code{"edgeR"} and \code{"limma"}) and \code{"p_val_adj"} otherwise.}
 
 \item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"RdBu"}.}
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{pt.size}{The size of the points.}
 
-\item{pt.size}{The size of the points.
-Default is \code{1}.}
+\item{cols.background}{Color for non-DE background points in volcano plots.}
 
-\item{pt.alpha}{The transparency of the data points.
-Default is \code{1}.}
+\item{cols.highlight}{Color for highlighted points.}
 
-\item{cols.background}{A character string specifying the color for non-DE background points in volcano plots.
-Default is \code{"grey80"}.}
+\item{sizes.highlight}{The size of the highlighted points.}
 
-\item{cols.highlight}{A character string specifying the color for highlighted points.
-Default is \code{"black"}.}
+\item{alpha.highlight}{The transparency of the highlighted points.}
 
-\item{sizes.highlight}{The size of the highlighted points.
-Default is \code{1}.}
+\item{stroke.highlight}{The stroke width for the highlighted points.}
 
-\item{alpha.highlight}{The transparency of the highlighted points.
-Default is \code{1}.}
+\item{nlabel}{An integer value specifying the number of labeled points per group.}
 
-\item{stroke.highlight}{The stroke width for the highlighted points.
-Default is \code{0.5}.}
-
-\item{nlabel}{An integer value specifying the number of labeled points per group.
-Default is \code{5}.}
-
-\item{features_label}{A character vector specifying the feature labels to plot.
-Default is \code{NULL}.}
+\item{features_label}{Feature labels to plot.}
 
 \item{only.pos}{Whether to show only positive log2 fold-change results in
-differential expression visualizations.
-Default is \code{FALSE}.}
+differential expression visualizations.}
 
 \item{label.by}{Metric used to select automatic labels when \code{features_label = NULL}.
 Options are \code{"p_val_adj"}, \code{"p_val"}, \code{"diff_pct"}, and \code{"avg_log2FC"}.
 Smaller p-values are ranked first; \code{diff_pct} and \code{avg_log2FC} use the strongest
-positive and negative effects within each group.
-Default is \code{"p_val_adj"}.}
+positive and negative effects within each group.}
 
-\item{label.fg}{A character string specifying the color for the labels' foreground.
-Default is \code{"black"}.}
+\item{label.fg}{Color for the labels' foreground.}
 
-\item{label.bg}{A character string specifying the color for the labels' background.
-Default is \code{"white"}.}
+\item{label.bg}{Color for the labels' background.}
 
-\item{label.bg.r}{The radius of the rounding of the labels' background.
-Default is \code{0.1}.}
+\item{label.bg.r}{The radius of the rounding of the labels' background.}
 
-\item{label.size}{The size of the labels.
-Default is \code{4}.}
+\item{label.size}{The size of the labels.}
 
-\item{aspect.ratio}{Aspect ratio of the panel.
-Default is \code{NULL}.}
+\item{aspect.ratio}{Aspect ratio of the panel.}
 
-\item{xlab}{A character string specifying the x-axis label.}
+\item{xlab}{X-axis label.}
 
-\item{ylab}{A character string specifying the y-axis label.}
+\item{ylab}{Y-axis label.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
-
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+returns a list of ggplots.}
 
 \item{threshold_method}{Volcano significance threshold method.
-Options are \code{"rectangular"} (legacy DE_threshold) or \code{"hyperbolic"} (\verb{|log2FC * -log10(padj)| > c}).
-Default is \code{"rectangular"}.}
+Options are \code{"rectangular"} (legacy DE_threshold) or \code{"hyperbolic"} (\verb{|log2FC * -log10(padj)| > c}).}
 
-\item{hyperbola_c}{Numeric cutoff \code{c} for hyperbolic volcano threshold.
-Default is \code{6}.}
+\item{hyperbola_c}{Numeric cutoff \code{c} for hyperbolic volcano threshold.}
 
 \item{annotate_enrichment}{Whether to annotate enrichment-hit genes on volcano plots.
-Enrichment results are read from existing results in \code{srt@tools} only.
-Default is \code{FALSE}.}
+Enrichment results are read from existing results in \code{srt@tools} only.}
 
 \item{enrich_from}{Character vector specifying enrichment result source(s) to annotate.
-Options are \code{"Enrichment"}, \code{"GSEA"}, \code{"GSVA"}.
-Default is \code{c("Enrichment", "GSEA", "GSVA")}.}
+Options are \code{"Enrichment"}, \code{"GSEA"}, \code{"GSVA"}.}
 
-\item{enrich_db}{Optional database filter for enrichment annotation, e.g. \code{"GO_BP"} or \code{"KEGG"}.
-Default is \code{NULL}.}
+\item{enrich_db}{Optional database filter for enrichment annotation, e.g. \code{"GO_BP"} or \code{"KEGG"}.}
 
-\item{enrich_terms}{Optional whitelist of enrichment term IDs or names for annotation.
-Default is \code{NULL}.}
+\item{enrich_terms}{Optional whitelist of enrichment term IDs or names for annotation.}
 
-\item{enrich_top_terms}{Number of top enriched terms selected per source/group/database.
-Default is \code{3}.}
+\item{enrich_top_terms}{Number of top enriched terms selected per source/group/database.}
 
-\item{enrich_padj_cutoff}{Adjusted p-value cutoff for \code{"Enrichment"} and \code{"GSEA"} annotation.
-Default is \code{0.05}.}
+\item{enrich_padj_cutoff}{Adjusted p-value cutoff for \code{"Enrichment"} and \code{"GSEA"} annotation.}
 
-\item{enrich_gsva_score_cutoff}{Optional absolute GSVA score cutoff for \code{"GSVA"} annotation.
-Default is \code{NULL}.}
+\item{enrich_gsva_score_cutoff}{Optional absolute GSVA score cutoff for \code{"GSVA"} annotation.}
 
-\item{gsva_method}{Optional GSVA method filter (e.g. \code{"gsva"} or \code{"ssgsea"}) when multiple GSVA tool slots exist.
-Default is \code{NULL}.}
+\item{gsva_method}{Optional GSVA method filter (e.g. \code{"gsva"} or \code{"ssgsea"}) when multiple GSVA tool slots exist.}
 
 \item{enrich_nlabel}{Maximum number of enrichment-derived labels added per group.
-Labels from \code{features_label} are always retained.
-Default is \code{15}.}
+Labels from \code{features_label} are always retained.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

@@ -7,13 +7,9 @@
 #' @param name Name of the dataset.
 #' If not provided, the name will default to the Seurat object's project name.
 #' @param assays The assays to include in the data file.
-#' Default is `"RNA"`.
 #' @param layers The layers to include in the data file.
-#' Default is `"data"`.
 #' @param compression_level Compression level for the HDF5 dataset.
-#' Default is `6`.
 #' @param overwrite Whether to overwrite existing data in the data file.
-#' Default is `TRUE`.
 #'
 #' @seealso
 #' [CreateMetaFile], [PrepareSCExplorer], [FetchH5], [RunSCExplorer]
@@ -179,15 +175,10 @@ CreateDataFile <- function(
 #' @param name Name of the dataset.
 #' If not provided, the name will default to the Seurat object's project name.
 #' @param write_tools Whether to write the tools information to the meta file.
-#' Default is `FALSE`.
 #' @param write_misc Whether to write the miscellaneous information to the meta file.
-#' Default is `FALSE`.
 #' @param ignore_nlevel The number of levels above which a metadata field will be ignored.
-#' Default is `100`.
 #' @param compression_level The level of compression for the meta file.
-#' Default is `6`.
 #' @param overwrite Whether to overwrite existing metadata and reductions in the meta file.
-#' Default is `TRUE`.
 #'
 #' @seealso
 #' [CreateDataFile], [FetchH5], [PrepareSCExplorer], [RunSCExplorer]
@@ -452,7 +443,7 @@ CreateMetaFile <- function(
 #' @title Prepare Seurat objects for the SCExplorer
 #'
 #' @description
-#' This function prepares one or multiple `Seurat` objects for the SCExplorer app.
+#' Prepares one or multiple `Seurat` objects for the SCExplorer app.
 #' It takes a `Seurat` object or a list of `Seurat` objects as input and outputs two hdf5 files:
 #' one for the data and one for the metadata.
 #'
@@ -461,7 +452,6 @@ CreateMetaFile <- function(
 #' @inheritParams CreateMetaFile
 #' @param object A `Seurat` object or a list of `Seurat` objects.
 #' @param base_dir The base directory where the SCExplorer hdf5 files will be written.
-#' Default is `"SCExplorer"`.
 #'
 #' @seealso
 #' [CreateDataFile], [CreateMetaFile], [FetchH5], [RunSCExplorer]
@@ -577,16 +567,16 @@ PrepareSCExplorer <- function(
 #' @inheritParams thisutils::log_message
 #' @param data_file The path to the hdf5 file containing the data.
 #' @param meta_file The path to the hdf5 file containing the metadata.
-#' @param assay The name of the assay to use.
+#' @param assay Assay to use.
 #' If not specified, the default assay in the hdf5 file will be used.
 #' @param layer The layer for the counts in the hdf5 file.
 #' If not specified, the first layer will be used.
-#' @param name The name of the dataset in the hdf5 file.
+#' @param name Dataset in the hdf5 file.
 #' If not specified, the function will attempt to find the shared group name in both files.
 #' @param features The names of the genes or features to fetch.
 #' If specified, only these features will be fetched.
 #' @param metanames The names of the metadata columns to fetch.
-#' @param reduction The name of the reduction to fetch.
+#' @param reduction Reduction to fetch.
 #'
 #' @return A Seurat object with the fetched data.
 #'
@@ -886,48 +876,27 @@ CreateSeuratObject2 <- function(
 #' @md
 #' @inheritParams CreateDataFile
 #' @param base_dir The base directory of the SCExplorer app.
-#' Default is `"SCExplorer"`.
-#' @param data_file The name of the HDF5 file that stores data matrices for each dataset.
-#' Default is `"data.hdf5"`.
-#' @param meta_file The name of the HDF5 file that stores metadata for each dataset.
-#' Default is `"meta.hdf5"`.
+#' @param data_file HDF5 file that stores data matrices for each dataset.
+#' @param meta_file HDF5 file that stores metadata for each dataset.
 #' @param title The title of the SCExplorer app.
-#' Default is `"SCExplorer"`.
 #' @param initial_dataset The initial dataset to be loaded into the app.
-#' Default is `NULL`.
 #' @param initial_reduction The initial dimensional reduction method to be loaded into the app.
-#' Default is `NULL`.
 #' @param initial_group The initial variable to group cells in the app.
-#' Default is `NULL`.
 #' @param initial_feature The initial feature to be loaded into the app.
-#' Default is `NULL`.
 #' @param initial_assay The initial assay to be loaded into the app.
-#' Default is `NULL`.
 #' @param initial_slot The initial layer to be loaded into the app.
-#' Default is `NULL`.
 #' @param initial_label Whether to add labels in the initial plot.
-#' Default is `FALSE`.
 #' @param initial_cell_palette The initial color palette for cells.
-#' Default is `"Chinese"`.
 #' @param initial_feature_palette The initial color palette for features.
-#' Default is `"Spectral"`.
 #' @param initial_theme The initial theme for plots.
-#' Default is `"theme_scop"`.
 #' @param initial_size The initial size of plots.
-#' Default is `4`.
 #' @param initial_ncol The initial number of columns for arranging plots.
-#' Default is `3`.
 #' @param initial_arrange Whether to use "Row" as the initial arrangement.
-#' Default is `TRUE`.
 #' @param initial_raster Whether to perform rasterization in the initial plot.
 #' By default, it is set to automatic, meaning it will be `TRUE` if the number of cells in the initial datasets exceeds 100,000.
-#' Default is `NULL`.
 #' @param create_script Whether to create the SCExplorer app script.
-#' Default is `TRUE`.
 #' @param style_script Whether to style the SCExplorer app script.
-#' Default is `TRUE`.
 #' @param return_app Whether to return the SCExplorer app.
-#' Default is `TRUE`.
 #'
 #' @seealso
 #' [CreateDataFile], [CreateMetaFile], [PrepareSCExplorer], [FetchH5]

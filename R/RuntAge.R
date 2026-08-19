@@ -12,7 +12,7 @@
 #' `mengxu98/datasets` for the C++ backend or Zenodo for the Python backend.
 #' @param backend Model prediction backend. `"cpp"` uses converted Elastic Net
 #' models and C++ prediction. `"python"` uses `tAge::predict_tAge()`.
-#' @param clock tAge clock family used when `model_paths = NULL`.
+#' @param clock TAge clock family used when `model_paths = NULL`.
 #' @param model_species Model species scope used when `model_paths = NULL`.
 #' `"auto"` chooses `"Mouse"` for `species = "mouse"`, `"Rodents"` for
 #' `species = "rat"`, and `"Multispecies"` otherwise.
@@ -38,7 +38,7 @@
 #' @param assay,layer Assay and layer used as raw counts for `Seurat` input.
 #' @param species Species passed to tAge. Supported values are `"mouse"`,
 #' `"human"`, `"rat"`, and `"monkey"`.
-#' @param mode tAge model mode: `"EN"` for Elastic Net or `"BR"` for Bayesian
+#' @param mode TAge model mode: `"EN"` for Elastic Net or `"BR"` for Bayesian
 #' Ridge.
 #' @param gene_mapping_type Gene identifier type passed to tAge preprocessing:
 #' `"Gene.Symbol"` or `"Ensembl"`.

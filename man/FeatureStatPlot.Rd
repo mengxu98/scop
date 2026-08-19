@@ -2,7 +2,7 @@
 % Please edit documentation in R/FeatureStatPlot.R
 \name{FeatureStatPlot}
 \alias{FeatureStatPlot}
-\title{Statistical plot of features}
+\title{Feature statistical plots}
 \usage{
 FeatureStatPlot(
   srt,
@@ -94,283 +94,106 @@ FeatureStatPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{stat.by}{A character vector specifying the features to plot.}
+\item{stat.by}{Features to plot.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) to group cells by.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Metadata column to split the analysis or plot by.}
 
-\item{bg.by}{A character vector specifying the variable to use as the background color.
-Default is \code{NULL}.}
+\item{bg.by}{Metadata column used as background color.}
 
-\item{plot.by}{A character vector specifying how to plot the data, by group or feature.
-Possible values are \code{"group"} or \code{"feature"}.
-Default is \code{"group"}.}
+\item{plot.by}{\code{"group"} or \code{"feature"}.}
 
-\item{fill.by}{A string specifying what to fill the plot by.
-Possible values are \code{"group"}, \code{"feature"}, or \code{"expression"}.
-Default is \code{"group"}.}
+\item{fill.by}{\code{"group"}, \code{"feature"}, or \code{"expression"}.}
 
-\item{cells}{A character vector of cell names to use.
-Default is \code{NULL}.}
+\item{cells}{Cell names to include.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{keep_empty}{Whether to keep empty levels in the plot.
-Default is \code{FALSE}.}
+\item{keep_empty}{Keep empty factor levels.}
 
-\item{individual}{Whether to create individual plots for each group.
-Default is \code{FALSE}.}
+\item{individual}{One plot per group.}
 
-\item{plot_type}{A string specifying the type of plot to create.
-Possible values are \code{"violin"}, \code{"box"}, \code{"bar"}, \code{"dot"}, or \code{"col"}.
-Default is \code{"violin"}.}
+\item{plot_type}{\code{"violin"}, \code{"box"}, \code{"bar"}, \code{"dot"}, or \code{"col"}.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
+\item{palette}{Color palette name. See \link[thisplot:show_palettes]{thisplot::show_palettes}.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{palcolor}{Custom colors used to build the palette.}
 
-\item{alpha}{The transparency of the plot.
-Default is \code{1}.}
+\item{alpha}{Plot transparency.}
 
-\item{bg_palette}{A string specifying the color palette to use for the background.
-Default is \code{"Chinese"}.}
+\item{bg_palette, bg_palcolor, bg_alpha}{Background palette and transparency.}
 
-\item{bg_palcolor}{A character vector specifying specific colors to use for the background.
-Default is \code{NULL}.}
+\item{add_box, box_color, box_width, box_ptsize}{Overlay boxplot.}
 
-\item{bg_alpha}{The transparency of the background.
-Default is \code{0.2}.}
+\item{add_point, pt.color, jitter.width, jitter.height}{Overlay jittered points.}
 
-\item{add_box}{Whether to add a box plot to the plot.
-Default is \code{FALSE}.}
+\item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
+with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
+radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
-\item{box_color}{A string specifying the color of the box plot.
-Default is \code{"black"}.}
+\item{add_trend, trend_color, trend_linewidth, trend_ptsize}{Overlay trend line.}
 
-\item{box_width}{The width of the box plot.
-Default is \code{0.1}.}
+\item{add_stat, stat_color, stat_size, stat_stroke, stat_shape}{Summary statistic (\code{"none"}, \code{"mean"}, or \code{"median"}).}
 
-\item{box_ptsize}{The size of the points of the box plot.
-Default is \code{2}.}
+\item{add_line, line_color, line_size, line_type}{Horizontal line at this y-intercept.}
 
-\item{add_point}{Whether to add individual data points to the plot.
-Default is \code{FALSE}.}
+\item{cols.highlight, sizes.highlight, alpha.highlight}{Highlighted cells.}
 
-\item{pt.color}{A string specifying the color of the data points.
-Default is \code{"grey30"}.}
+\item{calculate_coexp}{Plot the geometric mean of \code{stat.by}.}
 
-\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase \code{pt.size}
-proportionally when exporting to an unusually large canvas.}
+\item{same.y.lims}{Share y-axis limits across panels.}
 
-\item{pt.alpha}{The transparency of the data points.
-Default is \code{1}.}
+\item{y.min, y.max}{Y-axis limits. Character values like \code{"q5"} use that quantile.}
 
-\item{jitter.width}{The width of the jitter.
-Default is \code{0.5}.}
+\item{y.trans, y.nbreaks}{Y-axis transform (\code{"identity"} or \code{"log2"}) and breaks.}
 
-\item{jitter.height}{The height of the jitter.
-Default is \code{0.1}.}
+\item{sort}{Sort groups on the x-axis: \code{FALSE}, \code{TRUE}/\code{"increasing"}, or \code{"decreasing"}.}
 
-\item{add_trend}{Whether to add a trend line to the plot.
-Default is \code{FALSE}.}
+\item{stack}{Stack plots vertically.}
 
-\item{trend_color}{A string specifying the color of the trend line.
-Default is \code{"black"}.}
+\item{flip}{Flip x and y.}
 
-\item{trend_linewidth}{The width of the trend line.
-Default is \code{1}.}
+\item{comparisons, ref_group}{Pairwise comparisons (length-2 name or index vectors).}
 
-\item{trend_ptsize}{The size of the points of the trend line.
-Default is \code{2}.}
+\item{auto_comparison}{Compare the highest-median group (or \code{ref_group}) against
+the others. Requires \code{split.by = NULL}.}
 
-\item{add_stat}{A string specifying which statistical summary to add to the plot.
-Possible values are \code{"none"}, \code{"mean"}, or \code{"median"}.
-Default is \code{"none"}.}
+\item{pairwise_method, multiplegroup_comparisons, multiple_method}{Comparison tests.}
 
-\item{stat_color}{A string specifying the color of the statistical summary.
-Default is \code{"black"}.}
+\item{sig_label, sig_labelsize}{Significance labels (\code{"p.signif"} or \code{"p.format"}).}
 
-\item{stat_size}{The size of the statistical summary.
-Default is \code{1}.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
-\item{stat_stroke}{The stroke width of the statistical summary.
-Default is \code{1}.}
+\item{ylab}{Y-axis label.}
 
-\item{stat_shape}{The shape of the statistical summary.
-Default is \code{25}.}
+\item{legend.position, legend.direction, legend.title}{Legend placement
+(\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title.
+\code{legend.title = NULL} uses the group name.}
 
-\item{add_line}{The y-intercept for adding a horizontal line.
-Default is \code{NULL}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{line_color}{A string specifying the color of the horizontal line.
-Default is \code{"red"}.}
+\item{grid_major, grid_major_colour, grid_major_linetype, grid_major_linewidth}{Major panel grid lines.}
 
-\item{line_size}{The width of the horizontal line.
-Default is \code{1}.}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+returns a list of ggplots.}
 
-\item{line_type}{The type of the horizontal line.
-Default is \code{1}.}
+\item{force}{Draw even when a grouping has more than 100 levels.}
 
-\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
-If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
-Default is \code{NULL}.}
+\item{seed}{Random seed.}
 
-\item{cols.highlight}{A string specifying the color of the highlighted cells.
-Default is \code{"red"}.}
+\item{...}{Additional arguments passed to the plotting helpers.}
 
-\item{sizes.highlight}{The size of the highlighted cells.
-Default is \code{1}.}
+\item{x_text_angle}{Rotation of x-axis labels.}
 
-\item{alpha.highlight}{The transparency of the highlighted cells.
-Default is \code{1}.}
-
-\item{calculate_coexp}{Whether to calculate co-expression values.
-Default is \code{FALSE}.}
-
-\item{same.y.lims}{Whether to use the same y-axis limits for all plots.
-Default is \code{FALSE}.}
-
-\item{y.min}{A numeric or character value specifying the minimum y-axis limit.
-If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
-Default is \code{NULL}.}
-
-\item{y.max}{A numeric or character value specifying the maximum y-axis limit.
-If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
-Default is \code{NULL}.}
-
-\item{y.trans}{A string specifying the transformation to apply to the y-axis.
-Possible values are \code{"identity"} or \code{"log2"}.
-Default is \code{"identity"}.}
-
-\item{y.nbreaks}{A number of breaks to use for the y-axis.
-Default is \code{5}.}
-
-\item{sort}{A logical or character value specifying whether to sort the groups on the x-axis.
-If \code{TRUE}, groups are sorted in increasing order. If FALSE, groups are not sorted.
-If \code{"increasing"}, groups are sorted in increasing order.
-If \code{"decreasing"}, groups are sorted in decreasing order.
-Default is \code{FALSE}.}
-
-\item{stack}{A logical specifying whether to stack the plots on top of each other.
-Default is \code{FALSE}.}
-
-\item{flip}{A logical specifying whether to flip the plot vertically.
-Default is \code{FALSE}.}
-
-\item{comparisons}{A list of length-2 vectors.
-The entries in the vector are either the names of 2 values on the x-axis or the 2 integers that correspond to the index of the groups of interest, to be compared.}
-
-\item{ref_group}{A string specifying the reference group for pairwise comparisons.
-Default is \code{NULL}.}
-
-\item{auto_comparison}{Whether to automatically compare the group with the
-highest median \code{stat.by} value against the other groups. If \code{ref_group} is
-provided, that group is used as the reference instead. Only supported when
-\code{split.by} is \code{NULL}.
-Default is \code{FALSE}.}
-
-\item{pairwise_method}{Method to use for pairwise comparisons.
-Default is \code{"wilcox.test"}.}
-
-\item{multiplegroup_comparisons}{Whether to add multiple group comparisons to the plot.
-Default is \code{FALSE}.}
-
-\item{multiple_method}{Method to use for multiple group comparisons.
-Default is \code{"kruskal.test"}.}
-
-\item{sig_label}{A string specifying the label to use for significant comparisons.
-Possible values are \code{"p.signif"} or \code{"p.format"}.
-Default is \code{"p.format"}.}
-
-\item{sig_labelsize}{The size of the significant comparison labels.
-Default is \code{3.5}.}
-
-\item{aspect.ratio}{Aspect ratio of the panel.
-Default is \code{NULL}.}
-
-\item{title}{The text for the title.
-Default is \code{NULL}.}
-
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
-Default is \code{NULL}.}
-
-\item{xlab}{The x-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{ylab}{A string specifying the label of the y-axis.
-Default is \code{"Expression level"}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{legend.title}{Title for the legend. Default is \code{NULL}, which uses the group name.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{grid_major}{Whether to show major panel grid lines.
-Default is \code{TRUE}.}
-
-\item{grid_major_colour}{Color of major panel grid lines.}
-
-\item{grid_major_linetype}{Linetype of major panel grid lines.}
-
-\item{grid_major_linewidth}{Line width of major panel grid lines.}
-
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
-
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
-
-\item{force}{Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
-Default is \code{FALSE}.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
-
-\item{...}{Additional arguments passed to the other functions.}
-
-\item{x_text_angle}{Rotation angle for x-axis labels.
-Default is \code{45}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
-Statistical plot of features
+Feature statistical plots
 }
 \examples{
 data(pancreas_sub)

@@ -4,7 +4,7 @@
 \alias{RunPHATE}
 \alias{RunPHATE.Seurat}
 \alias{RunPHATE.default}
-\title{Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)}
+\title{Run PHATE}
 \usage{
 RunPHATE(object, ...)
 
@@ -64,63 +64,48 @@ RunPHATE(object, ...)
 )
 }
 \arguments{
-\item{object}{An object.
-This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.}
+\item{object}{A \code{Seurat} object, matrix-like object, \code{Neighbor}, or \code{Graph}.}
 
-\item{...}{Additional arguments to be passed to phate.PHATE.}
+\item{...}{Passed to phate.PHATE.}
 
-\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
+\item{reduction}{Linear reduction used as input.}
 
-\item{dims}{The dimensions to be used. Default is \code{NULL}.}
+\item{dims}{Dimensions to use. Supply only one of \code{dims}, \code{features},
+\code{neighbor}, or \code{graph}.}
 
-\item{features}{A character vector of features to use. Default is \code{NULL}.}
+\item{features}{Features used instead of a reduction.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{n_components}{The number of PHATE components.
-Default is \code{2}.}
+\item{n_components}{The number of PHATE components.}
 
-\item{knn}{A number of nearest neighbors on which to build kernel.
-Default is \code{5}.}
+\item{knn}{A number of nearest neighbors on which to build kernel.}
 
-\item{decay}{The sets decay rate of kernel tails.
-Default is \code{40}.}
+\item{decay}{The sets decay rate of kernel tails.}
 
-\item{n_landmark}{A number of landmarks to use in fast PHATE.
-Default is \code{2000}.}
+\item{n_landmark}{A number of landmarks to use in fast PHATE.}
 
 \item{t}{The power to which the diffusion operator is powered.
 This sets the level of diffusion.
-If \code{"auto"}, \code{t} is selected according to the knee point in the Von Neumann Entropy of the diffusion operator.
-Default is \code{"auto"}.}
+If \code{"auto"}, \code{t} is selected according to the knee point in the Von Neumann Entropy of the diffusion operator.}
 
 \item{gamma}{The informational distance constant between \code{-1} and \code{1}.
-\code{gamma=1} gives the PHATE log potential, \code{gamma=0} gives a square root potential.
-Default is \code{1}.}
+\code{gamma=1} gives the PHATE log potential, \code{gamma=0} gives a square root potential.}
 
 \item{n_pca}{A number of principal components to use for calculating neighborhoods.
-For extremely large datasets, using \code{n_pca < 20} allows neighborhoods to be calculated in roughly \code{log(n_samples)} time.
-Default is \code{100}.}
+For extremely large datasets, using \code{n_pca < 20} allows neighborhoods to be calculated in roughly \code{log(n_samples)} time.}
 
 \item{knn_dist}{The distance metric for k-nearest neighbors.
-Recommended values: \code{"euclidean"}, \code{"cosine"}, \code{"precomputed"}.
-Default is \code{"euclidean"}.}
+Recommended values: \code{"euclidean"}, \code{"cosine"}, \code{"precomputed"}.}
 
 \item{knn_max}{The maximum number of neighbors for which alpha decaying kernel is computed for each point.
-For very large datasets, setting \code{knn_max} to a small multiple of \code{knn} can speed up computation significantly.
-Default is \code{NULL}.}
+For very large datasets, setting \code{knn_max} to a small multiple of \code{knn} can speed up computation significantly.}
 
-\item{t_max}{The maximum \code{t} to test.
-Default is \code{100}.}
+\item{t_max}{The maximum \code{t} to test.}
 
-\item{do_cluster}{Whether to perform clustering on the PHATE embeddings.
-Default is \code{FALSE}.}
+\item{do_cluster}{Whether to perform clustering on the PHATE embeddings.}
 
 \item{backend}{PHATE backend. \code{"python"} calls the upstream \code{phate} Python
 package and \code{"cpp"} uses the native C++ helper path.}
@@ -130,26 +115,21 @@ implements the \code{"classic"} path.}
 
 \item{mds_solver}{Metric MDS solver passed to the Python backend.}
 
-\item{n_clusters}{A number of clusters to be identified.
-Default is \code{"auto"}.}
+\item{n_clusters}{A number of clusters to be identified.}
 
-\item{max_clusters}{The maximum number of clusters to test.
-Default is \code{100}.}
+\item{max_clusters}{The maximum number of clusters to test.}
 
-\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
-Default is \code{"phate"}.}
+\item{reduction.name}{Reduction to be stored in the Seurat object.}
 
-\item{reduction.key}{The prefix for the column names of the PHATE embeddings.
-Default is \code{"PHATE_"}.}
+\item{reduction.key}{The prefix for the column names of the PHATE embeddings.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed.use}{Random seed.}
 }
 \description{
-Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)
+Run PHATE
 }
 \examples{
 \dontrun{

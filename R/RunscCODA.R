@@ -8,7 +8,7 @@
 #' @param n_mcmc_samples Number of MCMC samples requested in scCODA.
 #' @param reuse_reverse_comparisons Reuse each fitted pair for the reverse
 #' direction by negating effect estimates and swapping interval bounds. This
-#' avoids fitting the same two-group model twice. Default is `TRUE`.
+#' avoids fitting the same two-group model twice.
 #' @param envname Name of the conda-compatible environment used by scCODA.
 #' Defaults to `"sccoda_env"` to keep the TensorFlow/scCODA stack isolated
 #' from the default Python environment.

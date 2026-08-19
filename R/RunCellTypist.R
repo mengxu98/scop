@@ -11,39 +11,27 @@
 #' @inheritParams FeatureDimPlot
 #' @param adata Optional AnnData object used as input.
 #' @param assay Which assay to use.
-#' Default is `"RNA"`.
-#' @param model Model name or path. Default is `"Immune_All_Low.pkl"`.
+#' @param model Model name or path.
 #' Supports three formats:
 #' 1. Model name (e.g., `"Immune_All_Low.pkl"`): automatically searched in `~/.celltypist/data/models/`
 #' 2. Full path (contains `/`): use the provided path directly
 #' 3. `NULL`: use default model
 #' 4. A summary list returned by [TrainCellTypist()]: use its `model_path`
 #' @param mode Prediction mode: `"best match"` or `"prob match"`.
-#' Default is `"best match"`.
 #' @param p_thres Probability threshold for `"prob match"` mode.
-#' Default is `0.5`.
 #' @param majority_voting Whether to use majority voting.
-#' Default is `FALSE`.
 #' @param over_clustering Over-clustering result. Can be:
 #' - String: column name in Seurat metadata or AnnData obs
 #' - Vector: over-clustering labels
 #' - `NULL`: use heuristic over-clustering
 #' @param min_prop Minimum proportion for majority voting.
-#' Default is `0`.
 #' @param use_GPU Whether to use GPU for over-clustering.
-#' Default is `FALSE`.
 #' @param insert_labels Whether to insert predicted labels.
-#' Default is `TRUE`.
 #' @param insert_conf Whether to insert confidence scores.
-#' Default is `TRUE`.
 #' @param insert_conf_by Which prediction type to base confidence on.
-#' Default is `"predicted_labels"`.
 #' @param insert_prob Whether to insert probability matrix.
-#' Default is `FALSE`.
 #' @param insert_decision Whether to insert decision matrix.
-#' Default is `FALSE`.
 #' @param prefix Prefix for inserted columns.
-#' Default is `"celltypist_"`.
 #'
 #' @return
 #' An AnnData object or a Seurat object depending on the `return_seurat` argument.
@@ -281,7 +269,6 @@ RunCellTypist <- function(
 #' @param date,details,url,source,version Free-text metadata stored in the model.
 #' @param model_path Optional output path for the trained model.
 #' @param return Return mode. One of `"summary"`, `"path"`, or `"model"`.
-#' Default is `"summary"`.
 #'
 #' @return
 #' Depends on `return`: a summary list, the model path, or a Python model object.

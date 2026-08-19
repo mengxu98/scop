@@ -5,20 +5,13 @@
 #' @param dims The dimensions to use for the Slingshot algorithm.
 #' Default is `NULL`, which uses first two dimensions.
 #' @param start The starting group for the Slingshot algorithm.
-#' Default is `NULL`.
 #' @param end The ending group for the Slingshot algorithm.
-#' Default is `NULL`.
 #' @param prefix The prefix to add to the column names of the resulting pseudotime variable.
-#' Default is `NULL`.
-#' @param reverse Logical value indicating whether to reverse the pseudotime variable.
-#' Default is `FALSE`.
-#' @param align_start Logical value indicating whether to align the starting pseudotime values at the maximum pseudotime.
-#' Default is `FALSE`.
-#' @param show_plot Logical value indicating whether to show the dimensionality plot.
-#' Default is `TRUE`.
+#' @param reverse Whether to reverse the pseudotime variable.
+#' @param align_start Whether to align the starting pseudotime values at the maximum pseudotime.
+#' @param show_plot Whether to show the dimensionality plot.
 #' @param lineage_palette The color palette to use for the lineages in the plot.
-#' Default is `"Dark2"`.
-#' @param ... Additional arguments to be passed to the [slingshot::slingshot] function.
+#' @param ... Passed to the [slingshot::slingshot] function.
 #'
 #' @seealso [CellDimPlot], [RunDynamicFeatures], [RunDynamicEnrichment]
 #'

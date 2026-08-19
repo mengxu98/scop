@@ -22,9 +22,9 @@
 #' @param adjust_terminal_cells Whether to adjust the terminal cells to the cells with the maximum pseudotime value for each terminal group.
 #' @param max_iterations Maximum number of iterations for pseudotime convergence.
 #' @param point_size The point size for plotting.
-#' @param plot_format Format for saved plots: `"pdf"`, `"png"`, or `"svg"`. Default is `"pdf"`.
-#' @param plot_prefix Prefix for saved plot filenames. Default is `"palantir"`.
-#' @param dirpath The directory to save the plots. Default is `"./"`.
+#' @param plot_format Format for saved plots: `"pdf"`, `"png"`, or `"svg"`.
+#' @param plot_prefix Prefix for saved plot filenames.
+#' @param dirpath The directory to save the plots.
 #'
 #' @export
 #'

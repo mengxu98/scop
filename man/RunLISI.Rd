@@ -43,15 +43,14 @@ If \code{NULL}, the reduction names are used.}
 Default is \code{"LISI"} when multiple reductions are provided, otherwise
 \code{paste0(prefix, "_LISI")}.}
 
-\item{perplexity}{Effective neighborhood size. Default is \code{30}.}
+\item{perplexity}{Effective neighborhood size.}
 
-\item{tol}{Tolerance used in the binary search for the target perplexity.
-Default is \code{1e-5}.}
+\item{tol}{Tolerance used in the binary search for the target perplexity.}
 
-\item{max_iter}{Maximum number of binary-search iterations. Default is \code{50}.}
+\item{max_iter}{Maximum number of binary-search iterations.}
 
 \item{knn_algorithm}{Exact nearest-neighbor strategy passed to
-\code{\link[thisutils:compute_lisi]{thisutils::compute_lisi()}}. Default is \code{"auto"}.}
+\code{\link[thisutils:compute_lisi]{thisutils::compute_lisi()}}.}
 
 \item{cores}{Number of LISI C++ worker threads. \code{NULL} (the default) lets
 \code{\link[thisutils:compute_lisi]{thisutils::compute_lisi()}} select the available hardware threads.}
@@ -59,7 +58,7 @@ Default is \code{1e-5}.}
 \item{max_dense_bytes}{Maximum estimated bytes allowed for LISI's dense
 input and C++ copy. Default is \code{Inf}, which preserves unrestricted behavior.}
 
-\item{overwrite}{Whether to overwrite existing metadata columns. Default is \code{TRUE}.}
+\item{overwrite}{Whether to overwrite existing metadata columns.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

@@ -26,14 +26,11 @@ RunCoEmbedding(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{reference}{RNA reference \code{Seurat} object used for label transfer.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{reference_assay}{Assay used in the reference object.}
 
@@ -65,8 +62,7 @@ If \code{NULL}, reference variable features are used.}
 
 \item{k.weight}{Number of neighbors used when weighting transfer anchors.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 
 \item{seed}{Random seed used for UMAP.}
 }

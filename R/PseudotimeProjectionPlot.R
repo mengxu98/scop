@@ -1,7 +1,7 @@
 #' @title Pseudotime Projection Plot
 #'
 #' @description
-#' This function creates a projection plot similar to [VelocityPlot],
+#' Creates a projection plot similar to [VelocityPlot],
 #' but uses pseudotime data instead of RNA velocity analysis results.
 #'
 #' @md
@@ -9,9 +9,8 @@
 #' @inheritParams VelocityPlot
 #' @param time_key Name of the column in the Seurat object metadata containing pseudotime values.
 #' @param method Method to compute velocity vectors from pseudotime.
-#' Can be `"gradient"` or `"knn"`. Default is `"knn"`.
+#' Can be `"gradient"` or `"knn"`.
 #' @param k Number of nearest neighbors to use when `method = "knn"`.
-#' Default is `30`.
 #' @param graph_name Name of the KNN graph in the Seurat object to use.
 #' If `NULL`, a new graph will be computed. Default is `NULL`.
 #' @param density Scale for the streamline grid (number of points per axis is \code{ceiling(50 * density)}).

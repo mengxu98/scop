@@ -17,13 +17,9 @@ CheckDataType(object, ...)
 
 \item{...}{The message to print.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -34,7 +30,7 @@ Possible values are:
 \code{"raw_counts"}, \code{"log_normalized_counts"}, \code{"raw_normalized_counts"}, or \code{"unknown"}.
 }
 \description{
-This function checks and returns a string indicating the type of data.
+Checks and returns a string indicating the type of data.
 It checks for the presence of infinite values, negative values,
 and whether the values are floats or integers.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunIntegration.R
 \name{RunIntegration}
 \alias{RunIntegration}
-\title{The integration workflow}
+\title{Integration workflow}
 \usage{
 RunIntegration(
   srt_merge = NULL,
@@ -67,196 +67,74 @@ RunIntegration(
 \arguments{
 \item{srt_merge}{A merged `Seurat` object that includes the batch information.}
 
-\item{batch}{A character string specifying the batch variable name.}
+\item{batch}{Batch variable name.}
 
-\item{append}{Whether the integrated data will be appended to the original Seurat object (\code{srt_merge}).
-Default is \code{TRUE}.}
+\item{append}{Append integrated results to \code{srt_merge}.}
 
 \item{srt_list}{A list of \code{Seurat} objects to be checked and preprocessed.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{integration_methods}{A character vector specifying the integration method(s) to use.
-Supported methods are: \code{"Uncorrected"}, \code{"Seurat"}, \code{"CCA"}, \code{"RPCA"}, \code{"scVI"},
-\code{"PeakVI"}, \code{"PoissonVI"}, \code{"WNN"}, \code{"MultiMAP"}, \code{"GLUE"}, \code{"scVI5"}, \code{"MNN"},
-\code{"fastMNN"}, \code{"fastMNN5"}, \code{"Harmony"}, \code{"Harmony5"},
-\code{"Scanorama"}, \code{"BBKNN"}, \code{"CSS"}, \code{"Coralysis"}, \code{"LIGER"}, \code{"Conos"}, \code{"ComBat"}.
-When multiple methods are supplied, they are run sequentially and their
-outputs are appended to one object; this requires \code{append = TRUE}.
-Default is \code{"Uncorrected"}. For \code{ChromatinAssay}, prefer \code{"Uncorrected"} or
-\code{"Harmony5"}; the latter is automatically switched to \code{"Harmony"}.}
+\item{integration_methods}{Method(s) to run. Multiple methods require
+\code{append = TRUE} and are applied sequentially. For \code{ChromatinAssay}, prefer
+\code{"Uncorrected"} or \code{"Harmony5"}.}
 
-\item{compute_lisi}{Whether to compute LISI scores on the integrated result.
-Default is \code{FALSE}.}
+\item{compute_lisi, lisi_label_colnames, lisi_reduction, lisi_dims, lisi_prefix, lisi_tool_name, lisi_perplexity, lisi_tol, lisi_max_iter, lisi_knn_algorithm, lisi_cores, lisi_max_dense_bytes}{LISI scores. \code{lisi_label_colnames = NULL} uses \code{batch} when it is a single
+metadata column; \code{lisi_reduction = NULL} uses \code{\link[=DefaultReduction]{DefaultReduction()}}.}
 
-\item{lisi_label_colnames}{Character vector of metadata columns used to compute
-LISI. If \code{NULL} and \code{compute_lisi = TRUE}, \code{batch} will be used when it is a
-single metadata column name.}
+\item{compute_metrics, metrics_batch_col, metrics_celltype_col, metrics_reduction, metrics_cluster_col, metrics_tool_name, metrics_k_graph}{Integration summary metrics on the selected reduction.}
 
-\item{lisi_reduction}{Dimensional reduction used for LISI computation.
-Default is \code{NULL}, which uses \code{\link[=DefaultReduction]{DefaultReduction()}} from the integrated object.}
-
-\item{lisi_dims}{Dimensions used from \code{lisi_reduction}. Default is \code{NULL},
-which uses all available dimensions.}
-
-\item{lisi_prefix}{Prefix used when storing LISI metadata columns.
-Default is \code{NULL}, which uses \code{lisi_reduction}.}
-
-\item{lisi_tool_name}{Name of the tool entry used to store LISI results.
-Default is \code{NULL}, which uses \code{paste0(lisi_prefix, "_LISI")}.}
-
-\item{lisi_perplexity}{Effective neighborhood size used by LISI.
-Default is \code{30}.}
-
-\item{lisi_tol}{Tolerance used in the LISI binary search. Default is \code{1e-5}.}
-
-\item{lisi_max_iter}{Maximum iterations used in the LISI binary search.
-Default is \code{50}.}
-
-\item{lisi_knn_algorithm}{Exact nearest-neighbor strategy used by LISI.
-Default is \code{"auto"}.}
-
-\item{lisi_cores}{Number of LISI C++ worker threads. Default is \code{NULL},
-which lets \code{\link[thisutils:compute_lisi]{thisutils::compute_lisi()}} select the available hardware threads.}
-
-\item{lisi_max_dense_bytes}{Maximum estimated bytes allowed for LISI's dense
-input and C++ copy. Default is \code{Inf}.}
-
-\item{compute_metrics}{Whether to compute integration summary metrics on the
-selected reduction. Default is \code{FALSE}.}
-
-\item{metrics_batch_col}{Metadata column used for batch-mixing metrics.
-Default is \code{NULL}, which uses \code{batch} when it is a single metadata column name.}
-
-\item{metrics_celltype_col}{Metadata column used for biological conservation
-metrics. Default is \code{NULL}.}
-
-\item{metrics_reduction}{Reduction used for integration metric computation.
-Default is \code{NULL}, which uses \code{\link[=DefaultReduction]{DefaultReduction()}} from the integrated object.}
-
-\item{metrics_cluster_col}{Metadata column used as cluster labels for
-\code{celltype_NMI}, \code{celltype_ARI}, and \code{celltype_purity}. Default is \code{NULL},
-which resolves the integrated cluster column automatically when possible.}
-
-\item{metrics_tool_name}{Name of the tool entry used to store integration
-metrics. Default is \code{NULL}, which uses the active method followed by \code{"_metrics"}.}
-
-\item{metrics_k_graph}{Number of neighbors used for graph-connectivity
-computation. Default is \code{15}.}
-
-\item{do_normalization}{Whether data normalization should be performed.
-Default is \code{TRUE}.}
+\item{do_normalization}{Whether data normalization should be performed.}
 
 \item{normalization_method}{The normalization method to be used.
-Possible values are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, and \code{"scran"}.
-Default is \code{"LogNormalize"}.}
+Possible values are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, and \code{"scran"}.}
 
-\item{do_HVF_finding}{Whether to perform high variable feature finding.
-If \code{TRUE}, the function will force to find the highly variable features (HVF) using the specified HVF method.}
+\item{do_HVF_finding, HVF_method, nHVF, HVF}{Highly variable features.
+\code{HVF_method} is \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.}
 
 \item{HVF_source}{The source of highly variable features.
-Possible values are \code{"global"} and \code{"separate"}.
-Default is \code{"separate"}.}
+Possible values are \code{"global"} and \code{"separate"}.}
 
-\item{HVF_method}{The method to use for finding highly variable features.
-Options are \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.
-Default is \code{"vst"}.}
+\item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.}
 
-\item{nHVF}{The number of highly variable features to select.
-If NULL, all highly variable features will be used.
-Default is \code{2000}.}
+\item{do_scaling}{Force scaling via ScaleData.}
 
-\item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
-Default is \code{1}.}
+\item{vars_to_regress}{A vector of variable names to include as additional regression variables.}
 
-\item{HVF}{A vector of feature names to use as highly variable features.
-If NULL, the function will use the highly variable features identified by the HVF method.}
+\item{regression_model}{\code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.}
 
-\item{do_scaling}{Whether to perform scaling.
-If \code{TRUE}, the function will force scaling with the package ScaleData path.}
+\item{scale_within_batch}{Scale within each batch. Only used by
+\code{"Uncorrected"}, \code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
 
-\item{vars_to_regress}{A vector of variable names to include as additional regression variables.
-Default is \code{NULL}.}
+\item{linear_reduction, linear_reduction_dims, linear_reduction_dims_use, linear_reduction_params, force_linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}).
+\code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
 
-\item{regression_model}{The regression model to use for scaling.
-Options are \code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.
-Default is \code{"linear"}.}
+\item{nonlinear_reduction, nonlinear_reduction_dims, nonlinear_reduction_params, force_nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"},
+\code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
 
-\item{scale_within_batch}{Whether to scale data within each batch.
-Only valid when the active method in \code{integration_methods} is one of \code{"Uncorrected"},
-\code{"Seurat"}, \code{"MNN"}, \code{"Harmony"}, \code{"BBKNN"}, \code{"CSS"}, \code{"ComBat"}.}
+\item{neighbor_metric, neighbor_k}{Neighbor graph (\code{"euclidean"}, \code{"cosine"},
+\code{"manhattan"}, \code{"hamming"}).}
 
-\item{linear_reduction}{The linear dimensionality reduction method to use.
-Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
-Default is \code{"pca"}.}
+\item{cluster_algorithm, cluster_resolution}{Clustering (\code{"louvain"}, \code{"slm"},
+\code{"leiden"}). Larger \code{cluster_resolution} yields fewer clusters.}
 
-\item{linear_reduction_dims}{The number of dimensions to keep after linear dimensionality reduction.
-Default is \code{50}.}
-
-\item{linear_reduction_dims_use}{The dimensions to use for downstream analysis.
-If \code{NULL}, estimated dimensions stored in the linear reduction will be used when available;
-otherwise, the first up to \code{50} dimensions will be used as a fallback.}
-
-\item{linear_reduction_params}{A list of parameters to pass to the linear dimensionality reduction method.}
-
-\item{force_linear_reduction}{Whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
-
-\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
-Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
-\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
-Default is \code{"umap"}.}
-
-\item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction.
-If a vector is provided, different numbers of dimensions can be specified for each method.
-Default is \code{2}.}
-
-\item{nonlinear_reduction_params}{A list of parameters to pass to the nonlinear dimensionality reduction method.}
-
-\item{force_nonlinear_reduction}{Whether to force nonlinear dimensionality reduction even if the specified reduction is already present in the Seurat object.
-Default is \code{TRUE}.}
-
-\item{neighbor_metric}{The distance metric to use for finding neighbors.
-Options are \code{"euclidean"}, \code{"cosine"}, \code{"manhattan"}, or \code{"hamming"}.
-Default is \code{"euclidean"}.}
-
-\item{neighbor_k}{The number of nearest neighbors to use for finding neighbors.
-Default is \code{20}.}
-
-\item{cluster_algorithm}{The clustering algorithm to use.
-Options are \code{"louvain"}, \code{"slm"}, or \code{"leiden"}.
-Default is \code{"louvain"}.}
-
-\item{cluster_resolution}{The resolution parameter to use for clustering.
-Larger values result in fewer clusters.
-Default is \code{0.6}.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{integration_method}{Deprecated compatibility alias for
-\code{integration_methods}. It will be removed in scop 1.0.0.}
+\item{integration_method}{Deprecated alias of \code{integration_methods}.}
 
-\item{...}{Additional arguments to be passed to the integration method functions.}
+\item{...}{Passed to the integration method functions.}
 }
 \value{
-A \code{Seurat} object.
-
-For \code{ChromatinAssay}, integrated outputs are additionally normalized to the
-ATAC naming convention used in \code{scop}, including \verb{*lsi}, \verb{*UMAP2D}, cluster
-aliases, and \verb{ATAC_default_*} metadata when available.
+A \code{Seurat} object. For \code{ChromatinAssay}, names follow the ATAC
+convention (\verb{*lsi}, \verb{*UMAP2D}, cluster aliases, \verb{ATAC_default_*}).
 }
 \description{
-Integrate single-cell RNA-seq data using various integration methods.
-For \code{ChromatinAssay}, the current workflow uses \code{TFIDF + SVD/LSI} preprocessing.
-In this setting, \code{Uncorrected} is supported directly and \code{Harmony5} will be
-automatically redirected to the legacy \code{Harmony} workflow. \code{Seurat} and \code{RPCA}
-are currently not supported for \code{ChromatinAssay}.
+Integrate single-cell data with one or more methods. For \code{ChromatinAssay},
+the workflow uses TFIDF + SVD/LSI; \code{Uncorrected} is supported directly,
+\code{Harmony5} is redirected to \code{Harmony}, and \code{Seurat}/\code{RPCA} are not supported.
 }
 \examples{
 data(panc8_sub)

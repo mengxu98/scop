@@ -45,52 +45,35 @@ RunPAGA(
 )
 }
 \arguments{
-\item{srt}{A Seurat object. Default is \code{NULL}.
+\item{srt}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
-\item{adata}{An anndata object. Default is \code{NULL}.}
+\item{adata}{An anndata object.}
 
-\item{assay_x}{Assay to convert as the main data matrix in the anndata object.
-Default is \code{"RNA"}.}
+\item{assay_x}{Assay to convert as the main data matrix in the anndata object.}
 
-\item{layer_x}{Layer name for assay_x in the Seurat object.
-Default is \code{"counts"}.}
+\item{layer_x}{Layer name for assay_x in the Seurat object.}
 
-\item{assay_y}{Assays to convert as layers in the anndata object.
-Default is \code{c("spliced", "unspliced")}.}
+\item{assay_y}{Assays to convert as layers in the anndata object.}
 
-\item{layer_y}{Layer names for the assay_y in the Seurat object.
-Default is \code{"counts"}.}
+\item{layer_y}{Layer names for the assay_y in the Seurat object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
-
-\item{linear_reduction}{The linear dimensionality reduction method to use.
-Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
-Default is \code{"pca"}.}
-
-\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
-Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
-\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
-Default is \code{"umap"}.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{basis}{The basis to use for reduction, e.g., \code{"UMAP"}.}
 
-\item{n_pcs}{Number of principal components to use for linear reduction.
-Default is \code{30}.}
+\item{n_pcs}{Number of principal components to use for linear reduction.}
 
-\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.
-Default is \code{30}.}
+\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.}
 
-\item{use_rna_velocity}{Whether to use RNA velocity for PAGA analysis.
-Default is \code{FALSE}.}
+\item{use_rna_velocity}{Whether to use RNA velocity for PAGA analysis.}
 
-\item{vkey}{The name of the RNA velocity data to use if \code{use_rna_velocity} is \code{TRUE}.
+\item{vkey}{RNA velocity data to use if \code{use_rna_velocity} is \code{TRUE}.
 Default is \code{"stochastic"}. If the corresponding velocity embedding is not
 found, falls back to the scVelo convention (e.g. \code{velocity_umap}), which is
 what an object converted from an AnnData (via \link{adata_to_srt}) contains.}
 
-\item{embedded_with_PAGA}{Whether to embed data using PAGA layout.
-Default is \code{FALSE}.}
+\item{embedded_with_PAGA}{Whether to embed data using PAGA layout.}
 
 \item{paga_layout}{The layout for plotting PAGA graph.
 See \href{https://scanpy.readthedocs.io/en/stable/tutorials/plotting/advanced.html#paga}{layout} param in \code{scanpy.pl.paga} function.}
@@ -100,7 +83,11 @@ Edges for weights below this threshold will not be drawn.}
 
 \item{point_size}{The point size for plotting.}
 
-\item{infer_pseudotime}{Whether to infer pseudotime.}
+\item{infer_pseudotime}{Whether to infer pseudotime.
+When \code{backend = "python"}, scanpy DPT stores per-cell values in
+\code{meta.data$dpt_pseudotime}. When \code{backend = "cpp"}, group-level pseudotime
+is stored in \code{srt@tools[["PAGA"]]$pseudotime} and per-cell values are also
+written to \code{meta.data$dpt_pseudotime}.}
 
 \item{root_group}{The group to use as the root for pseudotime inference.}
 
@@ -112,45 +99,37 @@ Edges for weights below this threshold will not be drawn.}
 
 \item{min_group_size}{The minimum size of a group (as a fraction of the total number of cells) to consider it as a potential branching point.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
-
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
 \item{legend.position}{Position of legend in plots.
-Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Default is \code{"on data"}.}
+Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc.}
 
 \item{cores}{The number of cores to use for \code{cellrank}.}
 
-\item{show_plot}{Whether to show the plot.
-Default is \code{FALSE}.}
+\item{show_plot}{Whether to show the plot.}
 
-\item{save_plot}{Whether to save plots to files. Default is \code{FALSE}.}
+\item{save_plot}{Whether to save plots to files.}
 
 \item{plot_format}{Format for saved plots: \code{"png"} (default), \code{"pdf"}, or \code{"svg"}.}
 
-\item{plot_dpi}{Resolution (DPI) for saved plots. Default is \code{300}.}
+\item{plot_dpi}{Resolution (DPI) for saved plots.}
 
-\item{plot_prefix}{Prefix for saved plot filenames. Default is "cellrank".}
+\item{plot_prefix}{Prefix for saved plot filenames.}
 
-\item{dirpath}{The directory to save the plots. Default is \code{"./cellrank"}.}
+\item{dirpath}{The directory to save the plots.}
 
 \item{backend}{Backend used to compute PAGA. \code{"python"} keeps the original
 scanpy workflow and remains the default. \code{"cpp"} uses the package C++
 implementation for the standard connectivity graph and tree, plus an
 approximate R igraph layout stored in \code{paga$pos}.}
 
-\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
-Default is \code{TRUE}.}
+\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{
-PAGA is a graph-based method used to infer cellular trajectories.
-This function runs the PAGA analysis on a Seurat object.
+Graph-based inference of cellular trajectories.
 }
 \examples{
 data(pancreas_sub)

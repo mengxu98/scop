@@ -15,7 +15,6 @@
 #' `data.frame` containing at least `metric` and `value`, and optionally
 #' `method`, `workflow`, and `direction`.
 #' @param features Metadata columns containing per-cell benchmark scores.
-#' Default is `NULL`.
 #' @param metrics One or more summary metric names to visualize. Default is
 #' `NULL`, which uses all available summary metrics.
 #' @param tool_name Tool entries created by benchmark-related workflows.
@@ -38,9 +37,8 @@
 #' @param resource_scale Resource-axis transformation. `"auto"` independently
 #' uses log10 for runtime or memory when positive values span at least tenfold.
 #' @param plot_boxplot Whether to add the summary boxplot when per-cell metrics
-#' are shown. Default is `TRUE`.
+#' are shown.
 #' @param boxplot_jitter Whether to overlay jittered points on the boxplot.
-#' Default is `FALSE`.
 #'
 #' @return
 #' A ggplot, patchwork plot, or `funkyheatmap` object depending on the selected

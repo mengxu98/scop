@@ -31,75 +31,52 @@ RunSCExplorer(
 )
 }
 \arguments{
-\item{base_dir}{The base directory of the SCExplorer app.
-Default is \code{"SCExplorer"}.}
+\item{base_dir}{The base directory of the SCExplorer app.}
 
-\item{data_file}{The name of the HDF5 file that stores data matrices for each dataset.
-Default is \code{"data.hdf5"}.}
+\item{data_file}{HDF5 file that stores data matrices for each dataset.}
 
-\item{meta_file}{The name of the HDF5 file that stores metadata for each dataset.
-Default is \code{"meta.hdf5"}.}
+\item{meta_file}{HDF5 file that stores metadata for each dataset.}
 
-\item{title}{The title of the SCExplorer app.
-Default is \code{"SCExplorer"}.}
+\item{title}{The title of the SCExplorer app.}
 
-\item{initial_dataset}{The initial dataset to be loaded into the app.
-Default is \code{NULL}.}
+\item{initial_dataset}{The initial dataset to be loaded into the app.}
 
-\item{initial_reduction}{The initial dimensional reduction method to be loaded into the app.
-Default is \code{NULL}.}
+\item{initial_reduction}{The initial dimensional reduction method to be loaded into the app.}
 
-\item{initial_group}{The initial variable to group cells in the app.
-Default is \code{NULL}.}
+\item{initial_group}{The initial variable to group cells in the app.}
 
-\item{initial_feature}{The initial feature to be loaded into the app.
-Default is \code{NULL}.}
+\item{initial_feature}{The initial feature to be loaded into the app.}
 
-\item{initial_assay}{The initial assay to be loaded into the app.
-Default is \code{NULL}.}
+\item{initial_assay}{The initial assay to be loaded into the app.}
 
-\item{initial_slot}{The initial layer to be loaded into the app.
-Default is \code{NULL}.}
+\item{initial_slot}{The initial layer to be loaded into the app.}
 
-\item{initial_label}{Whether to add labels in the initial plot.
-Default is \code{FALSE}.}
+\item{initial_label}{Whether to add labels in the initial plot.}
 
-\item{initial_cell_palette}{The initial color palette for cells.
-Default is \code{"Chinese"}.}
+\item{initial_cell_palette}{The initial color palette for cells.}
 
-\item{initial_feature_palette}{The initial color palette for features.
-Default is \code{"Spectral"}.}
+\item{initial_feature_palette}{The initial color palette for features.}
 
-\item{initial_theme}{The initial theme for plots.
-Default is \code{"theme_scop"}.}
+\item{initial_theme}{The initial theme for plots.}
 
-\item{initial_size}{The initial size of plots.
-Default is \code{4}.}
+\item{initial_size}{The initial size of plots.}
 
-\item{initial_ncol}{The initial number of columns for arranging plots.
-Default is \code{3}.}
+\item{initial_ncol}{The initial number of columns for arranging plots.}
 
-\item{initial_arrange}{Whether to use "Row" as the initial arrangement.
-Default is \code{TRUE}.}
+\item{initial_arrange}{Whether to use "Row" as the initial arrangement.}
 
 \item{initial_raster}{Whether to perform rasterization in the initial plot.
-By default, it is set to automatic, meaning it will be \code{TRUE} if the number of cells in the initial datasets exceeds 100,000.
-Default is \code{NULL}.}
+By default, it is set to automatic, meaning it will be \code{TRUE} if the number of cells in the initial datasets exceeds 100,000.}
 
-\item{create_script}{Whether to create the SCExplorer app script.
-Default is \code{TRUE}.}
+\item{create_script}{Whether to create the SCExplorer app script.}
 
-\item{style_script}{Whether to style the SCExplorer app script.
-Default is \code{TRUE}.}
+\item{style_script}{Whether to style the SCExplorer app script.}
 
-\item{overwrite}{Whether to overwrite existing data in the data file.
-Default is \code{TRUE}.}
+\item{overwrite}{Whether to overwrite existing data in the data file.}
 
-\item{return_app}{Whether to return the SCExplorer app.
-Default is \code{TRUE}.}
+\item{return_app}{Whether to return the SCExplorer app.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
 Run SCExplorer

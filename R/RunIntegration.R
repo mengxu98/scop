@@ -1,79 +1,32 @@
-#' @title The integration workflow
+#' @title Integration workflow
 #'
 #' @description
-#' Integrate single-cell RNA-seq data using various integration methods.
-#' For `ChromatinAssay`, the current workflow uses `TFIDF + SVD/LSI` preprocessing.
-#' In this setting, `Uncorrected` is supported directly and `Harmony5` will be
-#' automatically redirected to the legacy `Harmony` workflow. `Seurat` and `RPCA`
-#' are currently not supported for `ChromatinAssay`.
+#' Integrate single-cell data with one or more methods. For `ChromatinAssay`,
+#' the workflow uses TFIDF + SVD/LSI; `Uncorrected` is supported directly,
+#' `Harmony5` is redirected to `Harmony`, and `Seurat`/`RPCA` are not supported.
 #'
 #' @md
 #' @inheritParams CheckDataList
 #' @inheritParams CheckDataMerge
+#' @inheritParams scop-params
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
-#' @param scale_within_batch Whether to scale data within each batch.
-#' Only valid when the active method in `integration_methods` is one of `"Uncorrected"`,
-#' `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
-#' @param integration_methods A character vector specifying the integration method(s) to use.
-#' Supported methods are: `"Uncorrected"`, `"Seurat"`, `"CCA"`, `"RPCA"`, `"scVI"`,
-#' `"PeakVI"`, `"PoissonVI"`, `"WNN"`, `"MultiMAP"`, `"GLUE"`, `"scVI5"`, `"MNN"`,
-#' `"fastMNN"`, `"fastMNN5"`, `"Harmony"`, `"Harmony5"`,
-#' `"Scanorama"`, `"BBKNN"`, `"CSS"`, `"Coralysis"`, `"LIGER"`, `"Conos"`, `"ComBat"`.
-#' When multiple methods are supplied, they are run sequentially and their
-#' outputs are appended to one object; this requires `append = TRUE`.
-#' Default is `"Uncorrected"`. For `ChromatinAssay`, prefer `"Uncorrected"` or
-#' `"Harmony5"`; the latter is automatically switched to `"Harmony"`.
-#' @param integration_method Deprecated compatibility alias for
-#' `integration_methods`. It will be removed in scop 1.0.0.
-#' @param compute_lisi Whether to compute LISI scores on the integrated result.
-#' Default is `FALSE`.
-#' @param lisi_label_colnames Character vector of metadata columns used to compute
-#' LISI. If `NULL` and `compute_lisi = TRUE`, `batch` will be used when it is a
-#' single metadata column name.
-#' @param lisi_reduction Dimensional reduction used for LISI computation.
-#' Default is `NULL`, which uses [DefaultReduction()] from the integrated object.
-#' @param lisi_dims Dimensions used from `lisi_reduction`. Default is `NULL`,
-#' which uses all available dimensions.
-#' @param lisi_prefix Prefix used when storing LISI metadata columns.
-#' Default is `NULL`, which uses `lisi_reduction`.
-#' @param lisi_tool_name Name of the tool entry used to store LISI results.
-#' Default is `NULL`, which uses `paste0(lisi_prefix, "_LISI")`.
-#' @param lisi_perplexity Effective neighborhood size used by LISI.
-#' Default is `30`.
-#' @param lisi_tol Tolerance used in the LISI binary search. Default is `1e-5`.
-#' @param lisi_max_iter Maximum iterations used in the LISI binary search.
-#' Default is `50`.
-#' @param lisi_knn_algorithm Exact nearest-neighbor strategy used by LISI.
-#' Default is `"auto"`.
-#' @param lisi_cores Number of LISI C++ worker threads. Default is `NULL`,
-#' which lets [thisutils::compute_lisi()] select the available hardware threads.
-#' @param lisi_max_dense_bytes Maximum estimated bytes allowed for LISI's dense
-#' input and C++ copy. Default is `Inf`.
-#' @param compute_metrics Whether to compute integration summary metrics on the
-#' selected reduction. Default is `FALSE`.
-#' @param metrics_batch_col Metadata column used for batch-mixing metrics.
-#' Default is `NULL`, which uses `batch` when it is a single metadata column name.
-#' @param metrics_celltype_col Metadata column used for biological conservation
-#' metrics. Default is `NULL`.
-#' @param metrics_reduction Reduction used for integration metric computation.
-#' Default is `NULL`, which uses [DefaultReduction()] from the integrated object.
-#' @param metrics_cluster_col Metadata column used as cluster labels for
-#' `celltype_NMI`, `celltype_ARI`, and `celltype_purity`. Default is `NULL`,
-#' which resolves the integrated cluster column automatically when possible.
-#' @param metrics_tool_name Name of the tool entry used to store integration
-#' metrics. Default is `NULL`, which uses the active method followed by `"_metrics"`.
-#' @param metrics_k_graph Number of neighbors used for graph-connectivity
-#' computation. Default is `15`.
-#' @param append Whether the integrated data will be appended to the original Seurat object (`srt_merge`).
-#' Default is `TRUE`.
-#' @param ... Additional arguments to be passed to the integration method functions.
+#' @param scale_within_batch Scale within each batch. Only used by
+#' `"Uncorrected"`, `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
+#' @param integration_methods Method(s) to run. Multiple methods require
+#' `append = TRUE` and are applied sequentially. For `ChromatinAssay`, prefer
+#' `"Uncorrected"` or `"Harmony5"`.
+#' @param integration_method Deprecated alias of `integration_methods`.
+#' @param compute_lisi,lisi_label_colnames,lisi_reduction,lisi_dims,lisi_prefix,lisi_tool_name,lisi_perplexity,lisi_tol,lisi_max_iter,lisi_knn_algorithm,lisi_cores,lisi_max_dense_bytes
+#' LISI scores. `lisi_label_colnames = NULL` uses `batch` when it is a single
+#' metadata column; `lisi_reduction = NULL` uses [DefaultReduction()].
+#' @param compute_metrics,metrics_batch_col,metrics_celltype_col,metrics_reduction,metrics_cluster_col,metrics_tool_name,metrics_k_graph
+#' Integration summary metrics on the selected reduction.
+#' @param append Append integrated results to `srt_merge`.
+#' @param ... Passed to the integration method functions.
 #'
-#' @return A `Seurat` object.
-#'
-#' For `ChromatinAssay`, integrated outputs are additionally normalized to the
-#' ATAC naming convention used in `scop`, including `*lsi`, `*UMAP2D`, cluster
-#' aliases, and `ATAC_default_*` metadata when available.
+#' @return A `Seurat` object. For `ChromatinAssay`, names follow the ATAC
+#' convention (`*lsi`, `*UMAP2D`, cluster aliases, `ATAC_default_*`).
 #'
 #' @seealso
 #' [Seurat_integrate],

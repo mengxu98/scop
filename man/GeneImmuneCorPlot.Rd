@@ -43,7 +43,7 @@ immune cell types or signatures in columns.}
 
 \item{layer}{Assay layer used for \code{Seurat} expression.}
 
-\item{cor_method}{Correlation method. Default is \code{"spearman"}.}
+\item{cor_method}{Correlation method.}
 
 \item{p_cutoff}{P-value cutoff used for positive/negative link categories.}
 

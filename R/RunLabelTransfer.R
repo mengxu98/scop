@@ -9,7 +9,7 @@
 #' @inheritParams RunStandardWorkflow
 #' @param reference RNA reference `Seurat` object used for label transfer.
 #' @param method Label-transfer backend. One of `"Seurat"` or `"scOMM"`.
-#' @param prefix Prefix used to resolve ATAC reductions. Default is `"ATAC"`.
+#' @param prefix Prefix used to resolve ATAC reductions.
 #' @param reference_assay Assay used in the reference object.
 #' @param reference_reduction Reduction used in the reference object.
 #' @param reference_dims Dimensions used from the reference reduction.

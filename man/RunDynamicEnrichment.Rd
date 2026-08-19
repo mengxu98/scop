@@ -40,55 +40,48 @@ results of differential expression analysis (\code{\link[=RunDEtest]{RunDEtest()
 If specified, the genes and groups will be extracted from the object automatically.
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
 
-\item{lineages}{A character vector specifying the lineage names for which dynamic features should be calculated.}
+\item{lineages}{Lineage names for which dynamic features should be calculated.}
 
 \item{score_method}{The method to use for scoring.
 Can be \code{"Seurat"}, \code{"AUCell"}, \code{"UCell"}, \code{"GSVA"}, \code{"ssGSEA"},
 \code{"zscore"}, \code{"PLAGE"}, or \code{"VISION"}.
 Multiple methods can be supplied at once; each method will be written to a
-method-suffixed assay before dynamic-feature fitting. Default is \code{"AUCell"}.}
+method-suffixed assay before dynamic-feature fitting.}
 
-\item{layer}{Which layer to use.
-Default is \code{"counts"}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{min_expcells}{The minimum number of expected cells. Default is \code{20}.}
+\item{min_expcells}{The minimum number of expected cells.}
 
-\item{r.sq}{The R-squared threshold. Default is \code{0.2}.}
+\item{r.sq}{The R-squared threshold.}
 
-\item{dev.expl}{The deviance explained threshold. Default is \code{0.2}.}
+\item{dev.expl}{The deviance explained threshold.}
 
-\item{padjust}{The p-value adjustment threshold. Default is \code{0.05}.}
+\item{padjust}{The p-value adjustment threshold.}
 
-\item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
+\item{IDtype}{Type of gene IDs in the \code{srt} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
-\item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
-Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
+\item{species}{\code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
-\item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
-Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"}.
-MSigDB subcollections can be requested as \code{"MSigDB_<collection>"}, such as
-\code{"MSigDB_H"} for human Hallmark and \code{"MSigDB_MH"} for mouse Hallmark.
-Note: \code{"CytoTRACE2"} is species-independent and downloads pre-trained model data
-required by \link{RunCytoTRACE}.}
+\item{db}{Annotation sources. One or more of \code{"GO"}, \code{"GO_BP"}, \code{"GO_CC"},
+\code{"GO_MF"}, \code{"KEGG"}, \code{"WikiPathway"}, \code{"Reactome"}, \code{"CORUM"}, \code{"MP"}, \code{"DO"},
+\code{"HPO"}, \code{"PFAM"}, \code{"CSPA"}, \code{"Surfaceome"}, \code{"SPRomeDB"}, \code{"VerSeDa"},
+\code{"TFLink"}, \code{"hTFtarget"}, \code{"TRRUST"}, \code{"JASPAR"}, \code{"ENCODE"}, \code{"MSigDB"},
+\code{"CellTalk"}, \code{"CellChat"}, \code{"Chromosome"}, \code{"GeneType"}, \code{"Enzyme"}, \code{"TF"},
+\code{"CytoTRACE2"}. MSigDB subcollections use \code{"MSigDB_<collection>"} (e.g.
+\code{"MSigDB_H"}). \code{"CytoTRACE2"} is species-independent and is required by
+\link{RunCytoTRACE}.}
 
-\item{db_update}{Whether the gene annotation databases should be forcefully updated.
-If set to FALSE, the function will attempt to load the cached databases instead.
-Default is \code{FALSE}.}
+\item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
-\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is \code{"latest"}.}
+\item{db_version}{Database version to retrieve.}
 
-\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is \code{TRUE}.}
+\item{convert_species}{Use a species-converted database when the annotation is
+missing for \code{species}.}
 
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
@@ -116,15 +109,12 @@ Default is \code{1}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Optional integer seed. When supplied, every input receives a
-deterministic independent L'Ecuyer-CMRG random-number stream, making results
-reproducible across worker counts and scheduling order. The caller's random
-number state is restored when the call finishes.}
+\item{seed}{Random seed.}
 
-\item{...}{Passed to other functions.}
+\item{...}{Passed to helper functions.}
 }
 \description{
-This function calculates gene-set scores from the specified database (\code{db}) for each lineage using the specified scoring method (\code{score_method}).
+Calculates gene-set scores from the specified database (\code{db}) for each lineage using the specified scoring method (\code{score_method}).
 It then treats these scores as expression values and uses them as input to the RunDynamicFeatures function to identify dynamically enriched terms along the lineage.
 }
 \examples{

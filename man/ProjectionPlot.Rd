@@ -31,9 +31,9 @@ If not provided, the similarities will be calculated within the query object.}
 
 \item{ref_group}{The grouping variable for the reference group cells.}
 
-\item{query_reduction}{The name of the reduction in the query group cells.}
+\item{query_reduction}{Reduction in the query group cells.}
 
-\item{ref_reduction}{The name of the reduction in the reference group cells.}
+\item{ref_reduction}{Reduction in the reference group cells.}
 
 \item{query_param}{A list of parameters for customizing the query group plot.
 Available parameters: palette (color palette for groups) and cells.highlight (whether to highlight cells).}
@@ -47,22 +47,13 @@ If not provided, the limits will be calculated based on the data.}
 \item{ylim}{The y-axis limits for the plot.
 If not provided, the limits will be calculated based on the data.}
 
-\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase \code{pt.size}
-proportionally when exporting to an unusually large canvas.}
-
 \item{stroke.highlight}{The size of the stroke highlight for cells.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{
-This function generates a projection plot,
+Generates a projection plot,
 which can be used to compare two groups of cells in a dimensionality reduction space.
 }
 \examples{

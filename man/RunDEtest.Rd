@@ -121,8 +121,7 @@ This parameter is only used when cells1 is provided.}
 \item{features}{A vector of feature names specifying the features to consider for the differential test.
 If not provided, all features in the dataset are considered.}
 
-\item{feature_type}{Feature type used for differential testing.
-Default is \code{"gene"}.}
+\item{feature_type}{Feature type used for differential testing.}
 
 \item{markers_type}{A character value specifying the type of markers to find.
 Possible values are "all", "paired", "conserved", and "disturbed".
@@ -140,46 +139,10 @@ Possible values are "maximump", "minimump", "wilkinsonp", "meanp", "sump", and "
 pseudobulk differential testing on \code{Seurat} input and bulk DE on
 \code{SummarizedExperiment} input.}
 
-\item{only.pos}{Only return positive markers (FALSE by default)}
-
-\item{fc.threshold}{A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
-Default is \code{1.5}.}
+\item{fc.threshold}{A numeric value used to filter genes for testing based on their average fold change between/among the two groups.}
 
 \item{logfc.threshold}{Seurat-style log fold-change threshold. When provided,
 it is converted to \code{fc.threshold = base^logfc.threshold}.}
-
-\item{base}{The base with respect to which logarithms are computed.}
-
-\item{pseudocount.use}{Pseudocount to add to averaged expression values when
-calculating logFC. 1 by default.}
-
-\item{mean.fxn}{Function to use for fold change or average difference calculation.
-The default depends on the the value of \code{fc.slot}:
-\itemize{
- \item{"counts"} : difference in the log of the mean counts, with pseudocount.
- \item{"data"} : difference in the log of the average exponentiated data, with pseudocount.
- This adjusts for differences in sequencing depth between cells, and assumes that "data"
- has been log-normalized.
- \item{"scale.data"} : difference in the means of scale.data.
-}}
-
-\item{min.pct}{only test genes that are detected in a minimum fraction of
-min.pct cells in either of the two populations. Meant to speed up the function
-by not testing genes that are very infrequently expressed. Default is 0.01}
-
-\item{min.diff.pct}{only test genes that show a minimum difference in the
-fraction of detection between the two groups. Set to -Inf by default}
-
-\item{max.cells.per.ident}{Down sample each identity class to a max number.
-Default is no downsampling. Not activated by default (set to Inf)}
-
-\item{latent.vars}{Variables to test, used only when \code{test.use} is one of
-'LR', 'negbinom', 'poisson', or 'MAST'}
-
-\item{min.cells.feature}{Minimum number of cells expressing the feature in at least one
-of the two groups, currently only used for poisson and negative binomial tests}
-
-\item{min.cells.group}{Minimum number of cells in one of the groups}
 
 \item{norm.method}{Normalization method for fold change calculation when layer is 'data'.
 For a raw \code{ChromatinAssay}, \code{RunDEtest()} first applies
@@ -195,13 +158,11 @@ required for \code{SummarizedExperiment} input.}
 \item{bulk_assay}{Assay name used as the bulk counts matrix for
 \code{SummarizedExperiment} input.}
 
-\item{p.adjust.method}{A character value specifying the method to use for adjusting p-values.
-Default is \code{"bonferroni"}.}
+\item{p.adjust.method}{A character value specifying the method to use for adjusting p-values.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Assay to use in differential expression testing}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{seed}{Optional integer seed. When supplied, every input receives a
 deterministic independent L'Ecuyer-CMRG random-number stream, making results

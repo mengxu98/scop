@@ -17,24 +17,22 @@ GetSimilarFeatures(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{features}{A character vector of feature names.}
+\item{features}{Feature names.}
 
 \item{n}{An integer; number of results to return.}
 
-\item{features_use}{A character vector of features eligible to be returned.}
+\item{features_use}{Features eligible to be returned.}
 
-\item{anticorr}{Whether to allow negatively correlated features.
-Default is \code{FALSE}.}
+\item{anticorr}{Whether to allow negatively correlated features.}
 
 \item{aggregator}{How to combine correlations when finding similar features.
 Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"max"}, or \code{"mean"}.}
 
 \item{assay}{Which assay to use. Default is \code{"RNA"}.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

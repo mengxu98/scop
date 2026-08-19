@@ -1913,7 +1913,6 @@ RunDEtest_pseudobulk <- function(
 #' @param features A vector of feature names specifying the features to consider for the differential test.
 #' If not provided, all features in the dataset are considered.
 #' @param feature_type Feature type used for differential testing.
-#' Default is `"gene"`.
 #' @param markers_type A character value specifying the type of markers to find.
 #' Possible values are "all", "paired", "conserved", and "disturbed".
 #' Sample-level methods (`"edgeR"`, `"limma"`, `"DESeq2"`, and `"dream"`)
@@ -1921,7 +1920,6 @@ RunDEtest_pseudobulk <- function(
 #' @param grouping.var A character value specifying the grouping variable for finding conserved or disturbed markers.
 #' This parameter is only used when markers_type is "conserved" or "disturbed".
 #' @param fc.threshold A numeric value used to filter genes for testing based on their average fold change between/among the two groups.
-#' Default is `1.5`.
 #' @param logfc.threshold Seurat-style log fold-change threshold. When provided,
 #' it is converted to `fc.threshold = base^logfc.threshold`.
 #' @param meta.method A character value specifying the method to use for combining p-values in the conserved markers test.
@@ -1937,7 +1935,6 @@ RunDEtest_pseudobulk <- function(
 #' @param bulk_assay Assay name used as the bulk counts matrix for
 #' `SummarizedExperiment` input.
 #' @param p.adjust.method A character value specifying the method to use for adjusting p-values.
-#' Default is `"bonferroni"`.
 #' @param test.use Differential testing method.
 #' `"edgeR"`, `"limma"`, `"DESeq2"`, and `"dream"` run sample-level
 #' pseudobulk differential testing on `Seurat` input and bulk DE on

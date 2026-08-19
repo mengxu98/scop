@@ -3,9 +3,8 @@
 #' @md
 #' @inheritParams GSVAPlot
 #' @param srt A Seurat object containing the results of RunMetabolism.
-#' @param group.by A character vector specifying the grouping variable used in RunMetabolism.
-#' @param assay_name The name of the assay or tools slot containing metabolism results.
-#' Default is `"METABOLISM"`.
+#' @param group.by Grouping variable used in RunMetabolism.
+#' @param assay_name Assay or tools slot containing metabolism results.
 #' @param ... Additional arguments passed to [GSVAPlot].
 #'
 #' @seealso

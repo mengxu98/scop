@@ -41,26 +41,26 @@ RunKNNPredict(
 \item{bulk_ref}{A cell atlas matrix, where cell types are represented by columns and genes are represented by rows.
 Either \code{srt_ref} or \code{bulk_ref} must be provided.}
 
-\item{query_group}{A character vector specifying the column name in the \code{srt_query} metadata that represents the cell grouping.}
+\item{query_group}{Column name in the \code{srt_query} metadata that represents the cell grouping.}
 
-\item{ref_group}{A character vector specifying the column name in the \code{srt_ref} metadata that represents the cell grouping.}
+\item{ref_group}{Column name in the \code{srt_ref} metadata that represents the cell grouping.}
 
-\item{query_assay}{A character vector specifying the assay to be used for the query data.
+\item{query_assay}{Assay to be used for the query data.
 Default is the default assay of the \code{srt_query} object.}
 
-\item{ref_assay}{A character vector specifying the assay to be used for the reference data.
+\item{ref_assay}{Assay to be used for the reference data.
 Default is the default assay of the \code{srt_ref} object.}
 
-\item{query_reduction}{A character vector specifying the dimensionality reduction method used for the query data.
+\item{query_reduction}{Dimensionality reduction method used for the query data.
 If NULL, the function will use the default reduction method specified in the \code{srt_query} object.}
 
-\item{ref_reduction}{A character vector specifying the dimensionality reduction method used for the reference data.
+\item{ref_reduction}{Dimensionality reduction method used for the reference data.
 If NULL, the function will use the default reduction method specified in the \code{srt_ref} object.}
 
-\item{query_dims}{A numeric vector specifying the dimensions to be used for the query data.
+\item{query_dims}{Dimensions to be used for the query data.
 Default is the first \code{30} dimensions.}
 
-\item{ref_dims}{A numeric vector specifying the dimensions to be used for the reference data.
+\item{ref_dims}{Dimensions to be used for the reference data.
 Default is the first \code{30} dimensions.}
 
 \item{query_collapsing}{A boolean value indicating whether the query data should be collapsed to group-level average expression values.
@@ -73,26 +73,23 @@ Otherwise it will use the raw expression values for each cell.}
 \item{return_full_distance_matrix}{A boolean value indicating whether the full distance matrix should be returned.
 If TRUE, the function will return the distance matrix used for the KNN prediction, otherwise it will only return the annotated cell types.}
 
-\item{features}{A character vector specifying the features to be used for the KNN prediction.
+\item{features}{Features to be used for the KNN prediction.
 If \code{NULL}, all the features in the query and reference data will be used.}
 
-\item{features_type}{A character vector specifying the type of features to be used for the KNN prediction.
-Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features). Default is \code{"HVF"}.}
+\item{features_type}{Type of features to be used for the KNN prediction.
+Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features).}
 
 \item{feature_source}{The source of the features to be used.
-Must be one of "both", "query", or "ref".
-Default is \code{"both"}.}
+Must be one of "both", "query", or "ref".}
 
-\item{nfeatures}{An integer specifying the maximum number of features to be used for the KNN prediction.
-Default is \code{2000}.}
+\item{nfeatures}{Maximum number of features to be used for the KNN prediction.}
 
 \item{DEtest_param}{A list of parameters to be passed to the differential expression test function if \code{features_type} is set to "DE". Default is \code{list(max.cells.per.ident = 200, test.use = "wilcox")}.}
 
 \item{DE_threshold}{Threshold used to filter the DE features.
-If using "roc" test, \code{DE_threshold} should be needs to be reassigned. e.g. "power > 0.5".
-Default is \code{"p_val < 0.05"}.}
+If using "roc" test, \code{DE_threshold} should be needs to be reassigned. e.g. "power > 0.5".}
 
-\item{nn_method}{A character string specifying the nearest neighbor search method to use.
+\item{nn_method}{Nearest neighbor search method to use.
 Options are "raw", "annoy", and "rann".
 If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
 If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
@@ -103,25 +100,22 @@ uses a bounded-memory compiled top-k kernel unless the full distance
 matrix is requested. Other metrics and sparse inputs retain the existing
 proxyC path.}
 
-\item{distance_metric}{A character vector specifying the distance metric to be used for calculating similarity between cells.
-Must be one of "cosine", "euclidean", "manhattan", or "hamming".
-Default is \code{"cosine"}.}
+\item{distance_metric}{Distance metric to be used for calculating similarity between cells.
+Must be one of "cosine", "euclidean", "manhattan", or "hamming".}
 
-\item{k}{A number of nearest neighbors to be considered for the KNN prediction.
-Default is \code{30}.}
+\item{k}{A number of nearest neighbors to be considered for the KNN prediction.}
 
-\item{filter_lowfreq}{An integer specifying the threshold for filtering low-frequency cell types from the predicted results.
+\item{filter_lowfreq}{Threshold for filtering low-frequency cell types from the predicted results.
 Cell types with a frequency lower than \code{filter_lowfreq} will be labelled as "unreliable".
 Default is \code{0}, which means no filtering will be performed.}
 
-\item{prefix}{A character vector specifying the prefix to be added to the resulting annotations.
-Default is \code{"KNNPredict"}.}
+\item{prefix}{Prefix to be added to the resulting annotations.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{
-This function performs KNN prediction to annotate cell types based on reference scRNA-seq or bulk RNA-seq data.
+Performs KNN prediction to annotate cell types based on reference scRNA-seq or bulk RNA-seq data.
 }
 \examples{
 # Annotate cells using bulk RNA-seq data
