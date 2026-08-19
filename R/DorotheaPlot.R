@@ -1,7 +1,7 @@
-#' @title Plot DoRothEA transcription factor activity
+#' @title Plot transcription factor activity
 #'
 #' @description
-#' Visualize DoRothEA TF activity stored by [RunDorothea()]. Comparison plots
+#' Visualize TF activity stored by [RunDorothea()]. Comparison plots
 #' (`"bar"`, `"lollipop"`, `"volcano"`) test two groups and show the mean
 #' activity difference `group1 - group2`. `"heatmap"` uses [GroupHeatmap()]
 #' to summarize activity across all groups in `group.by`. `"dim"` compares TF
@@ -215,7 +215,7 @@ DorotheaPlot <- function(
     !tool_name %in% names(srt@tools) || is.null(srt@tools[[tool_name]]$scores)
   ) {
     log_message(
-      "No DoRothEA scores found in {.code srt@tools[[{tool_name}]]$scores}",
+      "No TF activity scores found in {.code srt@tools[[{tool_name}]]$scores}",
       message_type = "error"
     )
   }
@@ -268,6 +268,15 @@ DorotheaPlot <- function(
   nlabel <- as.integer(nlabel)
 
   scores <- as.matrix(srt@tools[[tool_name]]$scores)
+  network_info <- srt@tools[[tool_name]]$network_info
+  if (is.null(network_info)) {
+    network_info <- list(
+      source = "dorothea",
+      label = "DoRothEA",
+      signed = TRUE
+    )
+  }
+  network_label <- network_info$label %||% "DoRothEA"
   assay_name <- assay_name %||%
     srt@tools[[tool_name]]$parameters$assay_name %||%
     "dorothea"
@@ -288,6 +297,7 @@ DorotheaPlot <- function(
       group_palcolor = group_palcolor,
       heatmap_args = heatmap_args,
       title = title,
+      network_label = network_label,
       verbose = verbose
     )
     if (isTRUE(return_data)) {
@@ -321,6 +331,7 @@ DorotheaPlot <- function(
       legend.direction = legend.direction,
       dim_args = dim_args,
       title = title,
+      network_label = network_label,
       verbose = verbose
     )
     if (isTRUE(return_data)) {
@@ -348,6 +359,7 @@ DorotheaPlot <- function(
       title = title,
       ylab = ylab,
       stat_args = stat_args,
+      network_label = network_label,
       verbose = verbose
     )
     if (isTRUE(return_data)) {
@@ -383,6 +395,7 @@ DorotheaPlot <- function(
       aspect.ratio = aspect.ratio,
       legend.position = legend.position,
       legend.direction = legend.direction,
+      network_info = network_info,
       verbose = verbose
     )
     if (isTRUE(return_data)) {
@@ -404,6 +417,7 @@ DorotheaPlot <- function(
     rank.by = rank.by,
     sort.by = sort.by,
     p_floor = p_floor,
+    network_label = network_label,
     verbose = verbose
   )
   if (isTRUE(flip) && plot_type %in% c("bar", "lollipop")) {
@@ -492,7 +506,8 @@ dorothea_compare_activity <- function(
   rank.by,
   sort.by,
   p_floor,
-  verbose
+  verbose,
+  network_label = "DoRothEA"
 ) {
   if (
     length(group1) != 1L ||
@@ -510,7 +525,7 @@ dorothea_compare_activity <- function(
   cells <- cells[groups[cells] %in% c(group1, group2)]
   if (length(cells) == 0L) {
     log_message(
-      "No cells from {.val {group1}} or {.val {group2}} are shared between DoRothEA scores and metadata",
+      "No cells from {.val {group1}} or {.val {group2}} are shared between {.val {network_label}} scores and metadata",
       message_type = "error"
     )
   }
@@ -531,7 +546,7 @@ dorothea_compare_activity <- function(
     missing_features <- setdiff(features, rownames(scores))
     if (length(missing_features) > 0L) {
       log_message(
-        "Dropping TFs not found in DoRothEA scores: {.val {missing_features}}",
+        "Dropping TFs not found in {.val {network_label}} scores: {.val {missing_features}}",
         message_type = "warning",
         verbose = verbose
       )
@@ -546,7 +561,7 @@ dorothea_compare_activity <- function(
   }
 
   log_message(
-    "Compare DoRothEA TF activity: {.val {group1}} vs {.val {group2}}",
+    "Compare {.val {network_label}} TF activity: {.val {group1}} vs {.val {group2}}",
     verbose = verbose
   )
   mat1 <- scores[features, cells1, drop = FALSE]
@@ -863,7 +878,8 @@ dorothea_plot_heatmap <- function(
   group_palcolor,
   heatmap_args,
   title,
-  verbose
+  verbose,
+  network_label = "DoRothEA"
 ) {
   features <- dorothea_resolve_features(
     scores = scores,
@@ -881,7 +897,7 @@ dorothea_plot_heatmap <- function(
   }
 
   log_message(
-    "Draw DoRothEA TF activity heatmap for {.val {length(features)}} TFs",
+    "Draw {.val {network_label}} TF activity heatmap for {.val {length(features)}} TFs",
     verbose = verbose
   )
   args <- list(
@@ -902,7 +918,7 @@ dorothea_plot_heatmap <- function(
     show_column_names = TRUE,
     cluster_rows = TRUE,
     cluster_columns = FALSE,
-    column_title = title %||% "DoRothEA TF activity",
+    column_title = title %||% paste(network_label, "TF activity"),
     heatmap_palette = heatmap_palette,
     heatmap_palcolor = heatmap_palcolor,
     group_palette = group_palette,
@@ -1005,7 +1021,8 @@ dorothea_plot_dim <- function(
   legend.direction,
   dim_args,
   title,
-  verbose
+  verbose,
+  network_label = "DoRothEA"
 ) {
   expr_names <- tryCatch(
     rownames(srt[[expression_assay]]),
@@ -1033,7 +1050,7 @@ dorothea_plot_dim <- function(
   srt <- dorothea_ensure_assay(srt, scores, assay_name)
 
   log_message(
-    "Draw DoRothEA embedding plots for {.val {length(features)}} TFs",
+    "Draw {.val {network_label}} embedding plots for {.val {length(features)}} TFs",
     verbose = verbose
   )
 
@@ -1145,7 +1162,8 @@ dorothea_plot_stat <- function(
   title,
   ylab,
   stat_args,
-  verbose
+  verbose,
+  network_label = "DoRothEA"
 ) {
   features <- dorothea_resolve_features(
     scores = scores,
@@ -1155,7 +1173,7 @@ dorothea_plot_stat <- function(
   )
   srt <- dorothea_ensure_assay(srt, scores, assay_name)
   log_message(
-    "Draw DoRothEA activity distributions for {.val {length(features)}} TFs",
+    "Draw {.val {network_label}} activity distributions for {.val {length(features)}} TFs",
     verbose = verbose
   )
   args <- list(
@@ -1207,12 +1225,15 @@ dorothea_plot_targets <- function(
   aspect.ratio,
   legend.position,
   legend.direction,
+  network_info,
   verbose
 ) {
   regulons <- srt@tools[[tool_name]]$regulons
+  network_label <- network_info$label %||% "DoRothEA"
+  signed_network <- !identical(network_info$signed, FALSE)
   if (is.null(regulons) || !"tf" %in% colnames(regulons)) {
     log_message(
-      "No DoRothEA regulons found in {.code srt@tools[[{tool_name}]]$regulons}. Re-run {.fn RunDorothea}.",
+      "No regulon network found in {.code srt@tools[[{tool_name}]]$regulons}. Re-run {.fn RunDorothea}.",
       message_type = "error"
     )
   }
@@ -1230,6 +1251,7 @@ dorothea_plot_targets <- function(
       rank.by = "abs_logFC",
       sort.by = "abs_logFC",
       p_floor = p_floor,
+      network_label = network_label,
       verbose = FALSE
     )
     features <- as.character(stat_df$TF[[1L]])
@@ -1244,7 +1266,7 @@ dorothea_plot_targets <- function(
   tf_use <- dorothea_match_feature(tf, unique(as.character(regulons$tf)))
   if (is.na(tf_use)) {
     log_message(
-      "TF {.val {tf}} is not present in the stored DoRothEA regulons",
+      "TF {.val {tf}} is not present in the stored {.val {network_label}} regulons",
       message_type = "error"
     )
   }
@@ -1285,7 +1307,7 @@ dorothea_plot_targets <- function(
   net$target_expr <- unname(target_map[keep])
   target_mat <- expr[unique(net$target_expr), , drop = FALSE]
   log_message(
-    "Draw DoRothEA regulon-target volcano for {.val {tf_use}} ({.val {nrow(net)}} targets)",
+    "Draw {.val {network_label}} regulon-target volcano for {.val {tf_use}} ({.val {nrow(net)}} targets)",
     verbose = verbose
   )
   target_stat <- dorothea_compare_activity(
@@ -1301,6 +1323,7 @@ dorothea_plot_targets <- function(
     rank.by = "abs_logFC",
     sort.by = "abs_logFC",
     p_floor = p_floor,
+    network_label = network_label,
     verbose = FALSE
   )
   plot_df <- merge(
@@ -1312,28 +1335,40 @@ dorothea_plot_targets <- function(
     sort = FALSE
   )
   plot_df$mor <- as.numeric(plot_df$mor)
-  plot_df$support <- ifelse(
-    is.finite(plot_df$logFC) & is.finite(plot_df$mor) & plot_df$mor != 0,
-    ifelse(sign(plot_df$mor) * sign(plot_df$logFC) > 0, "Support", "Oppose"),
-    "NS"
-  )
+  if (signed_network) {
+    plot_df$support <- ifelse(
+      is.finite(plot_df$logFC) & is.finite(plot_df$mor) & plot_df$mor != 0,
+      ifelse(sign(plot_df$mor) * sign(plot_df$logFC) > 0, "Support", "Oppose"),
+      "NS"
+    )
+    support_levels <- c("Oppose", "NS", "Support")
+    size_title <- "|MoR|"
+  } else {
+    plot_df$support <- ifelse(
+      is.finite(plot_df$logFC),
+      ifelse(plot_df$logFC > 0, "Higher group1", "Higher group2"),
+      "NS"
+    )
+    support_levels <- c("Higher group2", "NS", "Higher group1")
+    size_title <- "Importance"
+  }
   cutoff <- padjustCutoff %||% 0.05
   plot_df$support[
     !is.finite(plot_df$p_val_adj) | plot_df$p_val_adj > cutoff
   ] <- "NS"
   cols <- palette_colors(
-    c("Oppose", "NS", "Support"),
+    support_levels,
     palette = palette,
     palcolor = palcolor
   )
-  if (is.null(names(cols)) || !all(c("Oppose", "NS", "Support") %in% names(cols))) {
+  if (is.null(names(cols)) || !all(support_levels %in% names(cols))) {
     cols <- unname(cols)[seq_len(min(3L, length(cols)))]
     if (length(cols) < 3L) {
       cols <- rep(cols, length.out = 3L)
     }
-    names(cols) <- c("Oppose", "NS", "Support")
+    names(cols) <- support_levels
   } else {
-    cols <- cols[c("Oppose", "NS", "Support")]
+    cols <- cols[support_levels]
   }
   theme_use <- apply_plot_theme(theme_use, theme_args)
   label_n <- min(nlabel, nrow(plot_df))
@@ -1361,9 +1396,9 @@ dorothea_plot_targets <- function(
     ) +
     ggplot2::geom_point(alpha = 0.85) +
     ggplot2::scale_color_manual(values = cols, drop = FALSE, name = NULL) +
-    ggplot2::scale_size_continuous(name = "|MoR|", range = c(1.6, max(point_size, 1.6) + 2)) +
+    ggplot2::scale_size_continuous(name = size_title, range = c(1.6, max(point_size, 1.6) + 2)) +
     ggplot2::labs(
-      title = title %||% paste0(tf_use, " targets (", group1, " vs. ", group2, ")"),
+      title = title %||% paste0(network_label, ": ", tf_use, " targets (", group1, " vs. ", group2, ")"),
       x = xlab %||% paste0(group1, " - ", group2),
       y = ylab %||% "-log10(adjusted p-value)"
     ) +

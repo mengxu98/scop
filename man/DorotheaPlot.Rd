@@ -2,7 +2,7 @@
 % Please edit documentation in R/DorotheaPlot.R
 \name{DorotheaPlot}
 \alias{DorotheaPlot}
-\title{Plot DoRothEA transcription factor activity}
+\title{Plot transcription factor activity}
 \usage{
 DorotheaPlot(
   srt,
@@ -162,7 +162,7 @@ For \code{"bar"}, \code{"lollipop"}, \code{"volcano"}, \code{"dim"}, \code{"stat
 \code{\link[=GroupHeatmap]{GroupHeatmap()}}.
 }
 \description{
-Visualize DoRothEA TF activity stored by \code{\link[=RunDorothea]{RunDorothea()}}. Comparison plots
+Visualize TF activity stored by \code{\link[=RunDorothea]{RunDorothea()}}. Comparison plots
 (\code{"bar"}, \code{"lollipop"}, \code{"volcano"}) test two groups and show the mean
 activity difference \code{group1 - group2}. \code{"heatmap"} uses \code{\link[=GroupHeatmap]{GroupHeatmap()}}
 to summarize activity across all groups in \code{group.by}. \code{"dim"} compares TF
