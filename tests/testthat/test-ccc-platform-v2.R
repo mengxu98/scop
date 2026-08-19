@@ -6,7 +6,7 @@ test_that("CCC dispatch resolves integrated producers directly", {
   runner <- getFromNamespace("ccc_method_runner", "scop")
   methods <- c(
     "CellChat", "CellphoneDB", "LIANA", "Nichenetr",
-    "MultiNichenetr", "SpatialCellChat", "MDIC3"
+    "MultiNichenetr", "SpatialCellChat", "SpatialDM", "MDIC3"
   )
   for (method in methods) {
     expect_identical(
@@ -25,13 +25,14 @@ test_that("private CCC method specs centralize dispatch metadata", {
     names(specs),
     c(
       "CellChat", "CellphoneDB", "LIANA", "Nichenetr",
-      "MultiNichenetr", "SpatialCellChat", "SpaTalk", "COMMOT", "MDIC3"
+      "MultiNichenetr", "SpatialCellChat", "SpaTalk", "COMMOT", "SpatialDM", "MDIC3"
     )
   )
   expect_true(all(vapply(specs, function(x) {
     all(c(
       "runner", "aliases", "required_params", "object_arg",
-      "pass_backend", "pass_thresh", "requires_spatial"
+      "pass_backend", "pass_thresh", "requires_spatial",
+      "requires_group", "supports_unified_edges"
     ) %in% names(x))
   }, logical(1))))
   expect_identical(

@@ -476,6 +476,7 @@ supported_env_modules <- function() {
     "cell2location",
     "cell2fate",
     "commot",
+    "spatialdm",
     "magic",
     "scfea",
     "scrublet",
@@ -509,6 +510,7 @@ default_env_modules <- function() {
     "cell2location",
     "cell2fate",
     "commot",
+    "spatialdm",
     "sccoda",
     "scomm",
     "scenic",
@@ -551,7 +553,8 @@ env_module_dependencies <- function() {
     scanorama = "scanpy",
     bbknn = "scanpy",
     multimap = "scanpy",
-    scmalignantfinder = "scanpy"
+    scmalignantfinder = "scanpy",
+    spatialdm = character()
   )
 }
 
@@ -646,6 +649,12 @@ env_module_requirements <- function() {
       "commot" = paste0(
         "git+https://github.com/zcang/COMMOT.git@",
         "d117445bc07eaa19109c7609e97d9e35b26e99ca"
+      )
+    )),
+    spatialdm = env_python_spec(c(
+      "SpatialDM" = paste0(
+        "git+https://github.com/StatBiomed/SpatialDM.git@",
+        "9b0f559dfd152c361fdd311b129cda84692349f3"
       )
     )),
     magic = env_python_spec(c("magic-impute" = "magic-impute==3.0.0")),
@@ -776,6 +785,12 @@ normalize_env_modules <- function(modules = NULL, include_optional = FALSE) {
   if ("commot" %in% modules && length(setdiff(modules, "commot")) > 0) {
     log_message(
       "{.arg modules = 'commot'} must be used as a standalone environment module.",
+      message_type = "error"
+    )
+  }
+  if ("spatialdm" %in% modules && length(setdiff(modules, "spatialdm")) > 0) {
+    log_message(
+      "{.arg modules = 'spatialdm'} must be used as a standalone environment module.",
       message_type = "error"
     )
   }
@@ -1762,6 +1777,15 @@ env_requirements <- function(
     }
     version <- "3.9-1"
   }
+  if ("spatialdm" %in% modules) {
+    if (length(setdiff(modules, "spatialdm")) > 0) {
+      log_message(
+        "{.arg modules = 'spatialdm'} must be prepared as a standalone environment module.",
+        message_type = "error"
+      )
+    }
+    version <- "3.10-1"
+  }
   if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_allowed <- c(
       "scmalignantfinder", "scanpy", "secact", "scpagwas", "choir"
@@ -1784,6 +1808,8 @@ env_requirements <- function(
 
   base_requirements <- if ("commot" %in% modules) {
     commot_core_python_requirements()
+  } else if ("spatialdm" %in% modules) {
+    spatialdm_core_python_requirements()
   } else if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_core_python_requirements()
   } else if (any(c("scenic", "cell2fate") %in% modules)) {
@@ -1953,6 +1979,26 @@ commot_core_python_requirements <- function() {
     packages = packages,
     install_methods = stats::setNames(rep("pip", length(packages)), names(packages)),
     package_aliases = list("python-igraph" = "igraph", "POT" = "ot")
+  )
+}
+
+spatialdm_core_python_requirements <- function() {
+  packages <- c(
+    "setuptools" = "setuptools<81",
+    "numpy" = "numpy==1.26.4",
+    "pandas" = "pandas==2.2.3",
+    "scipy" = "scipy==1.11.4",
+    "scikit-learn" = "scikit-learn==1.5.2",
+    "anndata" = "anndata==0.10.8",
+    "scanpy" = "scanpy==1.10.4",
+    "statsmodels" = "statsmodels==0.14.4",
+    "h5py" = "h5py==3.12.1",
+    "SparseAEH" = "SparseAEH"
+  )
+  list(
+    packages = packages,
+    install_methods = stats::setNames(rep("pip", length(packages)), names(packages)),
+    package_aliases = list()
   )
 }
 
