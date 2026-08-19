@@ -62,16 +62,31 @@
 #'
 #' @export
 #'
+#' @seealso [RunStandardWorkflow], [FeatureDimPlot], [CellDimPlot]
+#'
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunCell2fate(
 #'   pancreas_sub,
 #'   result_dir = "pancreas_cell2fate",
 #'   cluster.by = "SubCellType",
 #'   n_modules = 10
 #' )
-#' FeatureDimPlot(pancreas_sub, "Cell2fate_time")
+#' FeatureDimPlot(
+#'   pancreas_sub,
+#'   c("Cell2fate_time", "Cell2fate_time_uncertainty")
+#' )
+#' FeatureDimPlot(
+#'   pancreas_sub,
+#'   grep(
+#'     "^Cell2fate_module_.*_activation$",
+#'     colnames(pancreas_sub@meta.data),
+#'     value = TRUE
+#'   )
+#' )
+#' CellDimPlot(pancreas_sub, group.by = "Cell2fate_module_0_state")
 #' }
 RunCell2fate <- function(
   srt,
