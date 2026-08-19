@@ -90,7 +90,7 @@ srt@tools[[tool_name]] result bundle."></head><body>
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A Seurat object.</p></dd>
+<dd><p>A <code>Seurat</code> object.</p></dd>
 
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
@@ -110,12 +110,11 @@ metadata on spatial coordinates, <code>"bar"</code> summarizes calls by group, a
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Name of one or more meta.data columns to group (color) cells by.</p></dd>
+<dd><p>Metadata column(s) used to color cells.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>Which dimensionality reduction to use.
-If not specified, will use the reduction returned by <a href="DefaultReduction.html">DefaultReduction</a>.</p></dd>
+<dd><p>Reduction to plot. <code>NULL</code> uses <a href="DefaultReduction.html">DefaultReduction</a>.</p></dd>
 
 
 <dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
@@ -141,14 +140,8 @@ annotations.</p></dd>
 <dd><p>Plot title and subtitle for ggplot-based views.</p></dd>
 
 
-<dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>Theme used. Can be a character string or a theme function.
-Default is <code>"theme_scop"</code>.</p></dd>
-
-
-<dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>Other arguments passed to the <code>theme_use</code>.
-Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
+<dt id="arg-theme-use-theme-args">theme_use, theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-use-theme-args"></a></dt>
+<dd><p>Theme name or function, plus extra theme arguments.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

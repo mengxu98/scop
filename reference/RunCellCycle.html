@@ -83,7 +83,7 @@ or <a href="https://bioconductor.org/packages/tricycle" class="external-link">tr
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A Seurat object.</p></dd>
+<dd><p>A <code>Seurat</code> object.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
@@ -92,14 +92,11 @@ or <code>"tricycle"</code>.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.
-When the object also contains <code>ChromatinAssay</code>, the default assay and
-additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
+<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Data layer used by <code>cyclone</code> and <code>tricycle</code>. Default is <code>"counts"</code>.</p></dd>
+<dd><p>Data layer used by <code>cyclone</code> and <code>tricycle</code>.</p></dd>
 
 
 <dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
@@ -107,8 +104,7 @@ additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></d
 
 
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p>Prefix for metadata columns and tricycle reduction names.
-Default is <code>"CellCycle"</code>.</p></dd>
+<dd><p>Prefix for metadata columns and tricycle reduction names.</p></dd>
 
 
 <dt id="arg-phase-col">phase_col<a class="anchor" aria-label="anchor" href="#arg-phase-col"></a></dt>
@@ -118,12 +114,11 @@ phase column.</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
-<dd><p>Whether to overwrite existing output columns. Default is <code>FALSE</code>.</p></dd>
+<dd><p>Whether to overwrite existing output columns.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print the message.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Print progress messages.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -147,10 +142,10 @@ a tricycle embedding reduction.</p>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
 <span class="r-in"><span>  name <span class="op">=</span> <span class="st">"Cyclone"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 11:08:05] Start cell cycle scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:37:25] Start cell cycle scoring</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'select()' returned 1:many mapping between keys and columns</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 11:08:06] Map input feature names to ENSEMBL IDs with <span style="color: #0000BB;">org.Mm.eg.db</span> for <span style="color: #0000BB;">scran::cyclone</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 11:08:14] Cell cycle scoring completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:37:25] Map input feature names to ENSEMBL IDs with <span style="color: #0000BB;">org.Mm.eg.db</span> for <span style="color: #0000BB;">scran::cyclone</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:37:34] Cell cycle scoring completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">srt</span> <span class="op">&lt;-</span> <span class="fu">RunCellCycle</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">srt</span>,</span></span>
@@ -158,7 +153,7 @@ a tricycle embedding reduction.</p>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
 <span class="r-in"><span>  name <span class="op">=</span> <span class="st">"Tricycle"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 11:08:14] Start cell cycle scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:37:34] Start cell cycle scoring</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘data’ is empty</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer ‘scale.data’ is empty</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'librarySizeFactors' is deprecated.</span>
@@ -169,7 +164,7 @@ a tricycle embedding reduction.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> See help("Deprecated")</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No custom reference projection matrix provided. The ref learned from mouse Neuroshpere data will be used.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of projection genes found in the new data is 485.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 11:08:15] Cell cycle scoring completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:37:34] Cell cycle scoring completed</span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="st">"Cyclone_cyclone_Phase"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">srt</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">srt</span>,</span></span>

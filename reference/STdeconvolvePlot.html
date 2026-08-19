@@ -86,7 +86,7 @@ space above the automatic layout.</p>
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A Seurat object.</p></dd>
+<dd><p>A <code>Seurat</code> object.</p></dd>
 
 
 <dt id="arg-tool-name">tool_name<a class="anchor" aria-label="anchor" href="#arg-tool-name"></a></dt>
@@ -105,12 +105,9 @@ prefix is read from the stored result.</p></dd>
 
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
-<dd><p>Plot type. <code>"point"</code> keeps the default spot plot behavior.
-<code>"pie"</code> draws spot-level pies from numeric metadata columns supplied to
-<code>group.by</code> or from a numeric matrix/data.frame supplied to <code>values</code>. When
-<code>group.by</code> is a single <code>"&lt;prefix&gt;_dominant_type"</code> column, matching
-<code>"&lt;prefix&gt;_prop_*"</code> or <code>"&lt;prefix&gt;_frac_*"</code> numeric metadata columns are used
-automatically.</p></dd>
+<dd><p><code>"point"</code> or <code>"pie"</code>. Pie uses numeric <code>group.by</code> columns,
+<code>values</code>, or <code>"&lt;prefix&gt;_prop_*"</code>/<code>"&lt;prefix&gt;_frac_*"</code> when <code>group.by</code> is
+<code>"&lt;prefix&gt;_dominant_type"</code>.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
@@ -155,9 +152,9 @@ plots is returned.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 68 overdispersed genes ... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  Using top 1000 overdispersed genes.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  number of top overdispersed genes available: 68</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Time to fit LDA models was 0.07 mins</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Time to fit LDA models was 0.08 mins</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing perplexity for each fitted model...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Time to compute perplexities was 0.03 mins</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Time to compute perplexities was 0.04 mins</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting predicted cell-types at low proportions...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Time to compute cell-types at low proportions was 0 mins</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Plotting...</span>

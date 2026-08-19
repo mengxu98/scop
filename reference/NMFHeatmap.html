@@ -178,7 +178,7 @@ embeddings. <code>"features"</code> plots feature similarity from NMF loadings.<
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>Name of the NMF reduction. Default is <code>"nmf"</code>.</p></dd>
+<dd><p>Name of the NMF reduction.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
@@ -211,39 +211,24 @@ annotations in feature mode.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.
-When the object also contains <code>ChromatinAssay</code>, the default assay and
-additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
+<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
 
 
 <dt id="arg-border">border<a class="anchor" aria-label="anchor" href="#arg-border"></a></dt>
-<dd><p>Whether to add borders to the heatmap body and annotations.
-Kept for backward compatibility. The more specific <code>heatmap_border</code>,
-<code>cell_annotation_border</code>, and <code>feature_annotation_border</code> arguments inherit
-from this value when left as <code>NULL</code>.</p></dd>
+<dd><p>Draw borders. Kept for compatibility; more specific
+<code>*_border</code> arguments inherit this when <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-heatmap-border-cell-annotation-border-feature-annotation-border">heatmap_border, cell_annotation_border, feature_annotation_border<a class="anchor" aria-label="anchor" href="#arg-heatmap-border-cell-annotation-border-feature-annotation-border"></a></dt>
-<dd><p>Whether to draw borders for the heatmap body, cell annotations, and feature
-annotations, respectively. Defaults inherit from <code>border</code>.</p></dd>
+<dd><p>Borders for the heatmap body and annotations. <code>NULL</code> inherits <code>border</code>.</p></dd>
 
 
 <dt id="arg-heatmap-border-palcolor-cell-annotation-border-palcolor-feature-annotation-border-palcolor">heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor<a class="anchor" aria-label="anchor" href="#arg-heatmap-border-palcolor-cell-annotation-border-palcolor-feature-annotation-border-palcolor"></a></dt>
-<dd><p>Border colors for the heatmap body, cell annotations, and feature
-annotations when their matching border argument is <code>TRUE</code>.
-Default is <code>"black"</code>.</p></dd>
+<dd><p>Border colors when the matching border argument is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-heatmap-border-size-cell-annotation-border-size-feature-annotation-border-size">heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size<a class="anchor" aria-label="anchor" href="#arg-heatmap-border-size-cell-annotation-border-size-feature-annotation-border-size"></a></dt>
-<dd><p>Border line widths for the heatmap body, cell annotations, and feature
-annotations when their matching border argument is <code>TRUE</code>.
-Default is <code>1</code>.</p></dd>
-
-
-<dt id="arg-show-row-names">show_row_names<a class="anchor" aria-label="anchor" href="#arg-show-row-names"></a></dt>
-<dd><p>Whether to show row names in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Border line widths when the matching border argument is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-row-names-wrap">row_names_wrap<a class="anchor" aria-label="anchor" href="#arg-row-names-wrap"></a></dt>
@@ -253,297 +238,68 @@ labels are wrapped without changing the underlying item identifiers.
 <code>NULL</code> disables wrapping.</p></dd>
 
 
-<dt id="arg-show-column-names">show_column_names<a class="anchor" aria-label="anchor" href="#arg-show-column-names"></a></dt>
-<dd><p>Whether to show column names in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
+<dt id="arg-row-names-side-column-names-side-row-names-rot-column-names-rot">row_names_side, column_names_side, row_names_rot, column_names_rot<a class="anchor" aria-label="anchor" href="#arg-row-names-side-column-names-side-row-names-rot-column-names-rot"></a></dt>
+<dd><p>Name placement.</p></dd>
 
 
-<dt id="arg-row-names-side">row_names_side<a class="anchor" aria-label="anchor" href="#arg-row-names-side"></a></dt>
-<dd><p>A character vector specifying the side to place row names.</p></dd>
+<dt id="arg-anno-terms-anno-keys-anno-features">anno_terms, anno_keys, anno_features<a class="anchor" aria-label="anchor" href="#arg-anno-terms-anno-keys-anno-features"></a></dt>
+<dd><p>Enrichment annotations.</p></dd>
 
 
-<dt id="arg-column-names-side">column_names_side<a class="anchor" aria-label="anchor" href="#arg-column-names-side"></a></dt>
-<dd><p>A character vector specifying the side to place column names.</p></dd>
-
-
-<dt id="arg-row-names-rot">row_names_rot<a class="anchor" aria-label="anchor" href="#arg-row-names-rot"></a></dt>
-<dd><p>The rotation angle for row names.
-Default is <code>0</code>.</p></dd>
-
-
-<dt id="arg-column-names-rot">column_names_rot<a class="anchor" aria-label="anchor" href="#arg-column-names-rot"></a></dt>
-<dd><p>The rotation angle for column names.
-Default is <code>90</code>.</p></dd>
-
-
-<dt id="arg-row-title">row_title<a class="anchor" aria-label="anchor" href="#arg-row-title"></a></dt>
-<dd><p>A character vector specifying the title for rows.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-column-title">column_title<a class="anchor" aria-label="anchor" href="#arg-column-title"></a></dt>
-<dd><p>A character vector specifying the title for columns.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-anno-terms">anno_terms<a class="anchor" aria-label="anchor" href="#arg-anno-terms"></a></dt>
-<dd><p>Whether to include term annotations.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-anno-keys">anno_keys<a class="anchor" aria-label="anchor" href="#arg-anno-keys"></a></dt>
-<dd><p>Whether to include key annotations.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-anno-features">anno_features<a class="anchor" aria-label="anchor" href="#arg-anno-features"></a></dt>
-<dd><p>Whether to include feature annotations.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-terms-width">terms_width<a class="anchor" aria-label="anchor" href="#arg-terms-width"></a></dt>
-<dd><p>A unit specifying the width of term annotations.
-Default is <code>unit(4, "in")</code>.</p></dd>
-
-
-<dt id="arg-terms-stat-width">terms_stat_width<a class="anchor" aria-label="anchor" href="#arg-terms-stat-width"></a></dt>
-<dd><p>A unit specifying the width of the independent
-term-statistic bar-chart annotation.</p></dd>
-
-
-<dt id="arg-terms-fontsize">terms_fontsize<a class="anchor" aria-label="anchor" href="#arg-terms-fontsize"></a></dt>
-<dd><p>A numeric vector specifying the font size(s) for term annotations.
-Default is <code>8</code>.</p></dd>
+<dt id="arg-terms-width-terms-stat-width-terms-fontsize">terms_width, terms_stat_width, terms_fontsize<a class="anchor" aria-label="anchor" href="#arg-terms-width-terms-stat-width-terms-fontsize"></a></dt>
+<dd><p>Term annotation size.</p></dd>
 
 
 <dt id="arg-terms-stat">terms_stat<a class="anchor" aria-label="anchor" href="#arg-terms-stat"></a></dt>
-<dd><p>Which enrichment statistic controls the term bars.
-Use <code>"none"</code> to hide the bar background, <code>"score"</code> for <code>-log10</code> of the
-active p-value metric, or any column from the enrichment result such as
-<code>"p.adjust"</code>, <code>"pvalue"</code>, <code>"qvalue"</code>,
-<code>"GeneRatio"</code>, <code>"RichFactor"</code>, <code>"FoldEnrichment"</code>, <code>"zScore"</code>, or <code>"Count"</code>.</p></dd>
+<dd><p>Enrichment statistic for term bars: <code>"none"</code>, <code>"score"</code>
+(<code>-log10</code> of the active p-value), or an enrichment column such as <code>"p.adjust"</code>.</p></dd>
 
 
-<dt id="arg-terms-stat-digits">terms_stat_digits<a class="anchor" aria-label="anchor" href="#arg-terms-stat-digits"></a></dt>
-<dd><p>Number of significant digits for statistic labels
-and axis tick labels.</p></dd>
+<dt id="arg-terms-stat-digits-terms-stat-label-terms-stat-axis">terms_stat_digits, terms_stat_label, terms_stat_axis<a class="anchor" aria-label="anchor" href="#arg-terms-stat-digits-terms-stat-label-terms-stat-axis"></a></dt>
+<dd><p>Statistic labels
+(<code>"none"</code>, <code>"value"</code>, <code>"significance"</code>, <code>"both"</code>) and shared axis.</p></dd>
 
 
-<dt id="arg-terms-stat-label">terms_stat_label<a class="anchor" aria-label="anchor" href="#arg-terms-stat-label"></a></dt>
-<dd><p>Label placed on or beside each statistic bar:
-<code>"none"</code>, <code>"value"</code>, <code>"significance"</code>, or <code>"both"</code>.</p></dd>
+<dt id="arg-terms-stat-background-palcolor-terms-stat-border-terms-stat-border-palcolor-terms-stat-border-size-terms-stat-label-palcolor">terms_stat_background_palcolor, terms_stat_border, terms_stat_border_palcolor, terms_stat_border_size, terms_stat_label_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-stat-background-palcolor-terms-stat-border-terms-stat-border-palcolor-terms-stat-border-size-terms-stat-label-palcolor"></a></dt>
+<dd><p>Statistic-panel appearance. <code>NULL</code> inherits the matching <code>terms_*</code> setting.</p></dd>
 
 
-<dt id="arg-terms-stat-axis">terms_stat_axis<a class="anchor" aria-label="anchor" href="#arg-terms-stat-axis"></a></dt>
-<dd><p>Logical. Whether to draw a shared statistic axis
-outside and below the final enrichment block.</p></dd>
+<dt id="arg-terms-group-background-terms-background-palcolor-terms-background-alpha-terms-border-terms-border-palcolor-terms-border-size-terms-text-palcolor-terms-bar-palcolor">terms_group_background, terms_background_palcolor, terms_background_alpha, terms_border, terms_border_palcolor, terms_border_size, terms_text_palcolor, terms_bar_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-group-background-terms-background-palcolor-terms-background-alpha-terms-border-terms-border-palcolor-terms-border-size-terms-text-palcolor-terms-bar-palcolor"></a></dt>
+<dd><p>Term-block appearance. <code>terms_text_palcolor = NULL</code> maps text to enrichment
+significance; <code>terms_bar_palcolor = NULL</code> matches bar color to term text.</p></dd>
 
 
-<dt id="arg-terms-stat-background-palcolor">terms_stat_background_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-stat-background-palcolor"></a></dt>
-<dd><p>Background color of the independent
-statistic panels. <code>NULL</code> inherits the corresponding term-panel background.</p></dd>
+<dt id="arg-keys-width-keys-fontsize-features-width-features-fontsize">keys_width, keys_fontsize, features_width, features_fontsize<a class="anchor" aria-label="anchor" href="#arg-keys-width-keys-fontsize-features-width-features-fontsize"></a></dt>
+<dd><p>Key and feature annotations.</p></dd>
 
 
-<dt id="arg-terms-stat-border">terms_stat_border<a class="anchor" aria-label="anchor" href="#arg-terms-stat-border"></a></dt>
-<dd><p>Logical. Whether to draw borders around statistic
-panels. <code>NULL</code> inherits <code>terms_border</code>.</p></dd>
-
-
-<dt id="arg-terms-stat-border-palcolor">terms_stat_border_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-stat-border-palcolor"></a></dt>
-<dd><p>Border color of statistic panels. <code>NULL</code>
-inherits <code>terms_border_palcolor</code>.</p></dd>
-
-
-<dt id="arg-terms-stat-border-size">terms_stat_border_size<a class="anchor" aria-label="anchor" href="#arg-terms-stat-border-size"></a></dt>
-<dd><p>Border line width of statistic panels. <code>NULL</code>
-inherits <code>terms_border_size</code>.</p></dd>
-
-
-<dt id="arg-terms-stat-label-palcolor">terms_stat_label_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-stat-label-palcolor"></a></dt>
-<dd><p>Color of labels drawn on statistic bars.
-<code>NULL</code> automatically uses black or white according to bar luminance.</p></dd>
-
-
-<dt id="arg-terms-group-background">terms_group_background<a class="anchor" aria-label="anchor" href="#arg-terms-group-background"></a></dt>
-<dd><p>Logical. Whether term blocks use translucent
-<code>feature_split</code> colors as their backgrounds.</p></dd>
-
-
-<dt id="arg-terms-background-palcolor">terms_background_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-background-palcolor"></a></dt>
-<dd><p>Background color used when
-<code>terms_group_background = FALSE</code>.</p></dd>
-
-
-<dt id="arg-terms-background-alpha">terms_background_alpha<a class="anchor" aria-label="anchor" href="#arg-terms-background-alpha"></a></dt>
-<dd><p>Alpha transparency of term-block backgrounds.</p></dd>
-
-
-<dt id="arg-terms-border">terms_border<a class="anchor" aria-label="anchor" href="#arg-terms-border"></a></dt>
-<dd><p>Logical. Whether to draw borders around term blocks.</p></dd>
-
-
-<dt id="arg-terms-border-palcolor">terms_border_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-border-palcolor"></a></dt>
-<dd><p>Border color of term blocks.</p></dd>
-
-
-<dt id="arg-terms-border-size">terms_border_size<a class="anchor" aria-label="anchor" href="#arg-terms-border-size"></a></dt>
-<dd><p>Border line width of term blocks.</p></dd>
-
-
-<dt id="arg-terms-text-palcolor">terms_text_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-text-palcolor"></a></dt>
-<dd><p>Fixed term text color. <code>NULL</code> retains colors mapped
-from enrichment significance.</p></dd>
-
-
-<dt id="arg-terms-bar-palcolor">terms_bar_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-bar-palcolor"></a></dt>
-<dd><p>Fixed statistic-bar color. <code>NULL</code> makes each bar
-use the same color as its corresponding term text.</p></dd>
-
-
-<dt id="arg-keys-width">keys_width<a class="anchor" aria-label="anchor" href="#arg-keys-width"></a></dt>
-<dd><p>A unit specifying the width of key annotations.
-Default is <code>unit(2, "in")</code>.</p></dd>
-
-
-<dt id="arg-keys-fontsize">keys_fontsize<a class="anchor" aria-label="anchor" href="#arg-keys-fontsize"></a></dt>
-<dd><p>A two-length numeric vector specifying the minimum and maximum font size(s) for key annotations.
-Default is <code>c(6, 10)</code>.</p></dd>
-
-
-<dt id="arg-features-width">features_width<a class="anchor" aria-label="anchor" href="#arg-features-width"></a></dt>
-<dd><p>A unit specifying the width of feature annotations.
-Default is <code>unit(2, "in")</code>.</p></dd>
-
-
-<dt id="arg-features-fontsize">features_fontsize<a class="anchor" aria-label="anchor" href="#arg-features-fontsize"></a></dt>
-<dd><p>A two-length numeric vector specifying the minimum and maximum font size(s) for feature annotations.
-Default is <code>c(6, 10)</code>.</p></dd>
-
-
-<dt id="arg-idtype">IDtype<a class="anchor" aria-label="anchor" href="#arg-idtype"></a></dt>
-<dd><p>A character vector specifying the type of IDs for features.
-Default is <code>"symbol"</code>.</p></dd>
-
-
-<dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
-<dd><p>A character vector specifying the species for features.
-Default is <code>"Homo_sapiens"</code>.</p></dd>
+<dt id="arg-idtype-species-db-combine-mirror-db-term-gene-term-name-mingssize-maxgssize">IDtype, species, db_combine, mirror, db, TERM2GENE, TERM2NAME, minGSSize, maxGSSize<a class="anchor" aria-label="anchor" href="#arg-idtype-species-db-combine-mirror-db-term-gene-term-name-mingssize-maxgssize"></a></dt>
+<dd><p>Gene-set database (see <a href="PrepareDB.html">PrepareDB</a>).</p></dd>
 
 
 <dt id="arg-db-update">db_update<a class="anchor" aria-label="anchor" href="#arg-db-update"></a></dt>
-<dd><p>Whether the gene annotation databases should be forcefully updated.
-If set to FALSE, the function will attempt to load the cached databases instead.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Force a refresh. <code>FALSE</code> loads the cache when available.</p></dd>
 
 
 <dt id="arg-db-version">db_version<a class="anchor" aria-label="anchor" href="#arg-db-version"></a></dt>
-<dd><p>A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is <code>"latest"</code>.</p></dd>
-
-
-<dt id="arg-db-combine">db_combine<a class="anchor" aria-label="anchor" href="#arg-db-combine"></a></dt>
-<dd><p>Whether to use a combined database.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Database version to retrieve.</p></dd>
 
 
 <dt id="arg-convert-species">convert_species<a class="anchor" aria-label="anchor" href="#arg-convert-species"></a></dt>
-<dd><p>Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Use a species-converted database when the annotation is
+missing for <code>species</code>.</p></dd>
 
 
 <dt id="arg-ensembl-version">Ensembl_version<a class="anchor" aria-label="anchor" href="#arg-ensembl-version"></a></dt>
-<dd><p>An integer specifying the Ensembl version.
-Default is <code>NULL</code>. If <code>NULL</code>, the latest version will be used.</p></dd>
+<dd><p>Ensembl version. <code>NULL</code> uses the latest.</p></dd>
 
 
-<dt id="arg-mirror">mirror<a class="anchor" aria-label="anchor" href="#arg-mirror"></a></dt>
-<dd><p>A character vector specifying the mirror for the Ensembl database.
-Default is <code>NULL</code>.</p></dd>
+<dt id="arg-go-simplify-go-simplify-cutoff-simplify-method-simplify-similaritycutoff">GO_simplify, GO_simplify_cutoff, simplify_method, simplify_similarityCutoff<a class="anchor" aria-label="anchor" href="#arg-go-simplify-go-simplify-cutoff-simplify-method-simplify-similaritycutoff"></a></dt>
+<dd><p>GO simplification.</p></dd>
 
 
-<dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
-<dd><p>A character vector specifying the database to use.
-Default is <code>"GO_BP"</code>.</p></dd>
-
-
-<dt id="arg-term-gene">TERM2GENE<a class="anchor" aria-label="anchor" href="#arg-term-gene"></a></dt>
-<dd><p>A data.frame specifying the TERM2GENE mapping for the database.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-term-name">TERM2NAME<a class="anchor" aria-label="anchor" href="#arg-term-name"></a></dt>
-<dd><p>A data.frame specifying the TERM2NAME mapping for the database.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-mingssize">minGSSize<a class="anchor" aria-label="anchor" href="#arg-mingssize"></a></dt>
-<dd><p>An integer specifying the minimum gene set size for the database.
-Default is <code>10</code>.</p></dd>
-
-
-<dt id="arg-maxgssize">maxGSSize<a class="anchor" aria-label="anchor" href="#arg-maxgssize"></a></dt>
-<dd><p>An integer specifying the maximum gene set size for the database.
-Default is <code>500</code>.</p></dd>
-
-
-<dt id="arg-go-simplify">GO_simplify<a class="anchor" aria-label="anchor" href="#arg-go-simplify"></a></dt>
-<dd><p>Whether to simplify gene ontology terms.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-go-simplify-cutoff">GO_simplify_cutoff<a class="anchor" aria-label="anchor" href="#arg-go-simplify-cutoff"></a></dt>
-<dd><p>A character vector specifying the cutoff for GO simplification.
-Default is <code>"p.adjust &lt; 0.05"</code>.</p></dd>
-
-
-<dt id="arg-simplify-method">simplify_method<a class="anchor" aria-label="anchor" href="#arg-simplify-method"></a></dt>
-<dd><p>A character vector specifying the method for GO simplification.
-Default is <code>"Wang"</code>.</p></dd>
-
-
-<dt id="arg-simplify-similaritycutoff">simplify_similarityCutoff<a class="anchor" aria-label="anchor" href="#arg-simplify-similaritycutoff"></a></dt>
-<dd><p>The similarity cutoff for GO simplification.
-Default is <code>0.7</code>.</p></dd>
-
-
-<dt id="arg-pvaluecutoff">pvalueCutoff<a class="anchor" aria-label="anchor" href="#arg-pvaluecutoff"></a></dt>
-<dd><p>A numeric vector specifying the p-value cutoff(s) for significance.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-padjustcutoff">padjustCutoff<a class="anchor" aria-label="anchor" href="#arg-padjustcutoff"></a></dt>
-<dd><p>The adjusted p-value cutoff for significance.
-Default is <code>0.05</code>.</p></dd>
-
-
-<dt id="arg-topterm">topTerm<a class="anchor" aria-label="anchor" href="#arg-topterm"></a></dt>
-<dd><p>A number of top terms to include.
-Default is <code>5</code>.</p></dd>
-
-
-<dt id="arg-show-termid">show_termid<a class="anchor" aria-label="anchor" href="#arg-show-termid"></a></dt>
-<dd><p>Whether to show term IDs.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-topword">topWord<a class="anchor" aria-label="anchor" href="#arg-topword"></a></dt>
-<dd><p>A number of top words to include.
-Default is <code>20</code>.</p></dd>
-
-
-<dt id="arg-words-excluded">words_excluded<a class="anchor" aria-label="anchor" href="#arg-words-excluded"></a></dt>
-<dd><p>A character vector specifying the words to exclude.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-heatmap-palette">heatmap_palette<a class="anchor" aria-label="anchor" href="#arg-heatmap-palette"></a></dt>
-<dd><p>A character vector specifying the palette to use for the heatmap.
-Default is <code>"RdBu"</code>.</p></dd>
-
-
-<dt id="arg-heatmap-palcolor">heatmap_palcolor<a class="anchor" aria-label="anchor" href="#arg-heatmap-palcolor"></a></dt>
-<dd><p>A character vector specifying the heatmap color to use.
-Default is <code>NULL</code>.</p></dd>
+<dt id="arg-pvaluecutoff-padjustcutoff-topterm-show-termid-topword-words-excluded">pvalueCutoff, padjustCutoff, topTerm, show_termid, topWord, words_excluded<a class="anchor" aria-label="anchor" href="#arg-pvaluecutoff-padjustcutoff-topterm-show-termid-topword-words-excluded"></a></dt>
+<dd><p>Enrichment filters.</p></dd>
 
 
 <dt id="arg-heatmap-limits">heatmap_limits<a class="anchor" aria-label="anchor" href="#arg-heatmap-limits"></a></dt>
@@ -560,89 +316,33 @@ defaults to <code>c(0, 0.35, 0.75, 1)</code>.</p></dd>
 annotations.</p></dd>
 
 
-<dt id="arg-cell-annotation-palette">cell_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-cell-annotation-palette"></a></dt>
-<dd><p>A character vector specifying the palette to use for cell annotations.
-The length of the vector should match the number of cell_annotation.
-Default is <code>"Chinese"</code>.</p></dd>
+<dt id="arg-use-raster-raster-device-raster-by-magick">use_raster, raster_device, raster_by_magick<a class="anchor" aria-label="anchor" href="#arg-use-raster-raster-device-raster-by-magick"></a></dt>
+<dd><p>Raster device (<code>NULL</code> chooses automatically).</p></dd>
 
 
-<dt id="arg-cell-annotation-palcolor">cell_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-cell-annotation-palcolor"></a></dt>
-<dd><p>A list of character vector specifying the cell annotation color(s) to use.
-The length of the list should match the number of cell_annotation.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-feature-annotation-palette">feature_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-feature-annotation-palette"></a></dt>
-<dd><p>A character vector specifying the palette to use for feature annotations.
-The length of the vector should match the number of feature_annotation.
-Default is <code>"Dark2"</code>.</p></dd>
-
-
-<dt id="arg-feature-annotation-palcolor">feature_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-feature-annotation-palcolor"></a></dt>
-<dd><p>A list of character vector specifying the feature annotation color to use.
-The length of the list should match the number of feature_annotation.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-use-raster">use_raster<a class="anchor" aria-label="anchor" href="#arg-use-raster"></a></dt>
-<dd><p>Whether to use a raster device for plotting.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-raster-device">raster_device<a class="anchor" aria-label="anchor" href="#arg-raster-device"></a></dt>
-<dd><p>A character vector specifying the raster device to use.
-Default is <code>"png"</code>.</p></dd>
-
-
-<dt id="arg-raster-by-magick">raster_by_magick<a class="anchor" aria-label="anchor" href="#arg-raster-by-magick"></a></dt>
-<dd><p>Whether to use the 'magick' package for raster.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-height">height<a class="anchor" aria-label="anchor" href="#arg-height"></a></dt>
-<dd><p>The height of the heatmap in the specified units.
-If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.</p></dd>
-
-
-<dt id="arg-width">width<a class="anchor" aria-label="anchor" href="#arg-width"></a></dt>
-<dd><p>The width of the heatmap in the specified units.
-If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.</p></dd>
-
-
-<dt id="arg-units">units<a class="anchor" aria-label="anchor" href="#arg-units"></a></dt>
-<dd><p>The units to use for the width and height of the heatmap.
-Default is <code>"inch"</code>, Options are <code>"mm"</code>, <code>"cm"</code>, or <code>"inch"</code>.</p></dd>
+<dt id="arg-width-height-units">width, height, units<a class="anchor" aria-label="anchor" href="#arg-width-height-units"></a></dt>
+<dd><p>Heatmap size. <code>NULL</code> sizes from matrix dimensions.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>The number of worker processes to use for parallelization.
-Default is <code>1</code>.</p></dd>
+<dd><p>Number of CPU cores.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Optional integer seed. When supplied, every input receives a
-deterministic independent L'Ecuyer-CMRG random-number stream, making results
-reproducible across worker counts and scheduling order. The caller's random
-number state is restored when the call finishes.</p></dd>
+<dd><p>Random seed.</p></dd>
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
-<dd><p>A character vector specifying the side to place the legends.
-Options are <code>"right"</code>, <code>"left"</code>, <code>"top"</code>, or <code>"bottom"</code>.
-Default is <code>"right"</code>.
-When row names are long and shown on the right side, the gap between the heatmap and the legend is automatically increased to avoid overlap.</p></dd>
+<dd><p>Legend side (<code>"right"</code>, <code>"left"</code>, <code>"top"</code>, <code>"bottom"</code>).
+Gap to the heatmap grows automatically when long row names are on the right.</p></dd>
 
 
 <dt id="arg-ht-params">ht_params<a class="anchor" aria-label="anchor" href="#arg-ht-params"></a></dt>
-<dd><p>Additional parameters to customize the appearance of the heatmap.
-This should be a list with named elements, where the names correspond to parameter names in the <a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html" class="external-link">ComplexHeatmap::Heatmap</a> function.
-Any conflicting parameters will override the defaults set by this function.
-Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
+<dd><p>Extra arguments passed to <a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html" class="external-link">ComplexHeatmap::Heatmap</a>, overriding defaults.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print the message.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Print progress messages.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -675,7 +375,7 @@ otherwise <code>NULL</code>.</p></li>
 <span class="r-in"><span>  nbes <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  maxit <span class="op">=</span> <span class="fl">50</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:50:26] Running <span style="color: #0000BB;">NMF</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:20:25] Running <span style="color: #0000BB;">NMF</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Spp1, Clu, Ttr, Krt18, Ptma, Rpl12, Sparc, Dbi, Gapdh, Mt1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Cd24a, Mgst1, H19, Pebp1, Myl12a, Cldn3, Clps, Atp1b1, Sox4, Gnas </span>
@@ -711,18 +411,18 @@ otherwise <code>NULL</code>.</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Lrrc6, Ccl28, 1810034E14Rik, Tmem100, Fam71b, Sycp3, Kiss1r, Gng4, Prodh2, Lingo1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Mpzl1, Angptl4, Slc16a10, Gm8113, C2cd4c, Dpysl3, Entpd3, Col1a1, Rem2, Acvr1c </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Bcl2, Kctd8, Adora2b, C530044C16Rik, Gm28875, C1qa, Serpinb6b, Camk2n1, Pax6os1, Nrsn1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:56:14] <span style="color: #0000BB;">NMF</span> compute completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:25:49] <span style="color: #0000BB;">NMF</span> compute completed</span>
 <span class="r-in"><span><span class="va">ht_cells</span> <span class="op">&lt;-</span> <span class="fu">NMFHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"cells"</span>,</span></span>
 <span class="r-in"><span>  cell_annotation <span class="op">=</span> <span class="st">"CellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:14] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> cells x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:14] Ordering `NMFHeatmap()` rows and columns ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:14] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:14] Calculating `NMFHeatmap()` render size ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:14] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:15] Assembling `NMFHeatmap()` plot object ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:49] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> cells x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:49] Ordering `NMFHeatmap()` rows and columns ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:49] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:49] Calculating `NMFHeatmap()` render size ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:49] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:50] Assembling `NMFHeatmap()` plot object ...</span>
 <span class="r-in"><span><span class="va">ht_cells</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="NMFHeatmap-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -730,12 +430,12 @@ otherwise <code>NULL</code>.</p></li>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"features"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:16] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> features x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:16] Ordering `NMFHeatmap()` rows and columns ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:16] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:16] Calculating `NMFHeatmap()` render size ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:16] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:56:17] Assembling `NMFHeatmap()` plot object ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:51] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> features x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:51] Ordering `NMFHeatmap()` rows and columns ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:51] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:51] Calculating `NMFHeatmap()` render size ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:51] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:52] Assembling `NMFHeatmap()` plot object ...</span>
 <span class="r-in"><span><span class="va">ht_features</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="NMFHeatmap-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>

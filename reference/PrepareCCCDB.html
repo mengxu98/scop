@@ -71,7 +71,7 @@ cell-cell communication wrappers: the CellTalkDB ligand-receptor pairs
 (<code>"CellTalk"</code>) and the CellChat curated ligand-receptor database
 (<code>"CellChat"</code>). Each database is returned as a <code>TERM2GENE</code>/<code>TERM2NAME</code>
 mapping (with a <code>"ligand_*"</code>/<code>"receptor_*"</code> term convention) and cached with
-<a href="https://rdrr.io/pkg/R.cache/man/R.cache-package.html" class="external-link">R.cache</a> so that <a href="ListDB.html">ListDB</a> can list it like any other annotation database.</p>
+R.cache so that <a href="ListDB.html">ListDB</a> can list it like any other annotation database.</p>
     </div>
 
     <div class="section level2">
@@ -93,36 +93,32 @@ mapping (with a <code>"ligand_*"</code>/<code>"receptor_*"</code> term conventio
 
 
 <dl><dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
-<dd><p>A character vector specifying the species for which the gene annotation databases should be prepared.
-Can be <code>"Homo_sapiens"</code> or <code>"Mus_musculus"</code>.</p></dd>
+<dd><p><code>"Homo_sapiens"</code> or <code>"Mus_musculus"</code>.</p></dd>
 
 
 <dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
-<dd><p>A character vector specifying the cell-cell communication
+<dd><p>Cell-cell communication
 databases to prepare. Can be <code>"CellTalk"</code> and/or <code>"CellChat"</code>.</p></dd>
 
 
 <dt id="arg-convert-species">convert_species<a class="anchor" aria-label="anchor" href="#arg-convert-species"></a></dt>
-<dd><p>Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Use a species-converted database when the annotation is
+missing for <code>species</code>.</p></dd>
 
 
 <dt id="arg-data-dir">data_dir<a class="anchor" aria-label="anchor" href="#arg-data-dir"></a></dt>
-<dd><p>A local directory or named list of local paths containing
-manually downloaded database source files. If a directory is provided,
-<a href="PrepareDB.html">PrepareDB</a> first searches <code>data_dir/&lt;db&gt;/</code>, then <code>data_dir</code>. Named lists can
-override a database path, e.g. <code>list(MSigDB = "~/db/msigdb")</code>.</p></dd>
+<dd><p>Directory or named list of local source files. Searches
+<code>data_dir/&lt;db&gt;/</code> then <code>data_dir</code>. Named lists override a path, e.g.
+<code>list(MSigDB = "~/db/msigdb")</code>.</p></dd>
 
 
 <dt id="arg-db-version">db_version<a class="anchor" aria-label="anchor" href="#arg-db-version"></a></dt>
-<dd><p>A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is <code>"latest"</code>.</p></dd>
+<dd><p>Database version to retrieve.</p></dd>
 
 
 <dt id="arg-db-update">db_update<a class="anchor" aria-label="anchor" href="#arg-db-update"></a></dt>
 <dd><p>Whether the databases should be forcefully updated.
-If <code>FALSE</code>, cached databases are reused when available.
-Default is <code>FALSE</code>.</p></dd>
+If <code>FALSE</code>, cached databases are reused when available.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -131,7 +127,7 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Passed to other functions.</p></dd>
+<dd><p>Passed to helper functions.</p></dd>
 
 </dl></div>
     <div class="section level2">

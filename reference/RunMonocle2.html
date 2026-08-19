@@ -94,72 +94,60 @@
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A Seurat object.</p></dd>
+<dd><p>A <code>Seurat</code> object.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.
-When the object also contains <code>ChromatinAssay</code>, the default assay and
-additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
+<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Which layer to use.
-Default is <code>"counts"</code>.</p></dd>
+<dd><p>Assay layer to use.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Name of one or more meta.data columns to group (color) cells by.</p></dd>
+<dd><p>Metadata column(s) to group cells by.</p></dd>
 
 
 <dt id="arg-expressionfamily">expressionFamily<a class="anchor" aria-label="anchor" href="#arg-expressionfamily"></a></dt>
-<dd><p>The distribution family to use for modeling gene expression.
-Default is <code>"negbinomial.size"</code>.</p></dd>
+<dd><p>The distribution family to use for modeling gene expression.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector of features to use.
+<dd><p>Features to use.
 Defaults to NULL, in which case features were determined by <code>feature_type</code>.</p></dd>
 
 
 <dt id="arg-feature-type">feature_type<a class="anchor" aria-label="anchor" href="#arg-feature-type"></a></dt>
 <dd><p>The type of features to use in the analysis.
-Possible values are "HVF" for highly variable features or "Disp" for features selected based on dispersion.
-Default is <code>"HVF"</code>.</p></dd>
+Possible values are "HVF" for highly variable features or "Disp" for features selected based on dispersion.</p></dd>
 
 
 <dt id="arg-disp-filter">disp_filter<a class="anchor" aria-label="anchor" href="#arg-disp-filter"></a></dt>
-<dd><p>A string specifying the filter to use when <code>feature_type</code> is "Disp".
-Default is <code>"mean_expression &gt;= 0.1 &amp; dispersion_empirical &gt;= 1 * dispersion_fit"</code>.</p></dd>
+<dd><p>Filter to use when <code>feature_type</code> is "Disp".</p></dd>
 
 
 <dt id="arg-max-components">max_components<a class="anchor" aria-label="anchor" href="#arg-max-components"></a></dt>
-<dd><p>The maximum number of dimensions to use for dimensionality reduction.
-Default is <code>2</code>.</p></dd>
+<dd><p>The maximum number of dimensions to use for dimensionality reduction.</p></dd>
 
 
 <dt id="arg-reduction-method">reduction_method<a class="anchor" aria-label="anchor" href="#arg-reduction-method"></a></dt>
 <dd><p>The dimensionality reduction method to use.
 Possible values are <code>"DDRTree"</code>, <code>"ICA"</code>, <code>"tSNE"</code>,
-<code>"SimplePPT"</code>, <code>"L1-graph"</code>, <code>"SGL-tree"</code>.
-Default is <code>"DDRTree"</code>.</p></dd>
+<code>"SimplePPT"</code>, <code>"L1-graph"</code>, <code>"SGL-tree"</code>.</p></dd>
 
 
 <dt id="arg-norm-method">norm_method<a class="anchor" aria-label="anchor" href="#arg-norm-method"></a></dt>
 <dd><p>The normalization method to use.
-Possible values are <code>"log"</code> and <code>"none"</code>.
-Default is <code>"log"</code>.</p></dd>
+Possible values are <code>"log"</code> and <code>"none"</code>.</p></dd>
 
 
 <dt id="arg-residualmodelformulastr">residualModelFormulaStr<a class="anchor" aria-label="anchor" href="#arg-residualmodelformulastr"></a></dt>
-<dd><p>A model formula specifying the effects to subtract.
-Default is NULL.</p></dd>
+<dd><p>A model formula specifying the effects to subtract.</p></dd>
 
 
 <dt id="arg-pseudo-expr">pseudo_expr<a class="anchor" aria-label="anchor" href="#arg-pseudo-expr"></a></dt>
-<dd><p>Amount to increase expression values before dimensionality reduction.
-Default is 1.</p></dd>
+<dd><p>Amount to increase expression values before dimensionality reduction.</p></dd>
 
 
 <dt id="arg-root-state">root_state<a class="anchor" aria-label="anchor" href="#arg-root-state"></a></dt>
@@ -201,23 +189,11 @@ trajectory topology and is intended for advanced exploratory use.</p></dd>
 
 
 <dt id="arg-show-plot">show_plot<a class="anchor" aria-label="anchor" href="#arg-show-plot"></a></dt>
-<dd><p>Whether to print diagnostic plots during the run.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
-<dd><p>The x-axis label of the plot.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
-<dd><p>The y-axis label of the plot.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>Whether to print diagnostic plots during the run.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Random seed for reproducibility.
-Default is <code>11</code>.</p></dd>
+<dd><p>Random seed.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

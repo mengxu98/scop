@@ -236,66 +236,58 @@
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A Seurat object.</p></dd>
+<dd><p>A <code>Seurat</code> object.</p></dd>
 
 
 <dt id="arg-lineages">lineages<a class="anchor" aria-label="anchor" href="#arg-lineages"></a></dt>
-<dd><p>A character vector specifying the lineage names for which dynamic features should be calculated.</p></dd>
+<dd><p>Lineage names for which dynamic features should be calculated.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector specifying the features to plot.
+<dd><p>Features to plot.
 By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters
 <code>min_expcells</code>, <code>r.sq</code>, <code>dev.expl</code>, <code>padjust</code> and <code>num_intersections</code>.</p></dd>
 
 
 <dt id="arg-use-fitted">use_fitted<a class="anchor" aria-label="anchor" href="#arg-use-fitted"></a></dt>
-<dd><p>Whether to use fitted values. Default is <code>FALSE</code>.</p></dd>
+<dd><p>Whether to use fitted values.</p></dd>
 
 
 <dt id="arg-border">border<a class="anchor" aria-label="anchor" href="#arg-border"></a></dt>
-<dd><p>Whether to add borders to the heatmap body and annotations.
-Kept for backward compatibility. The more specific <code>heatmap_border</code>,
-<code>cell_annotation_border</code>, and <code>feature_annotation_border</code> arguments inherit
-from this value when left as <code>NULL</code>.</p></dd>
+<dd><p>Draw borders. Kept for compatibility; more specific
+<code>*_border</code> arguments inherit this when <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-heatmap-border-cell-annotation-border-feature-annotation-border">heatmap_border, cell_annotation_border, feature_annotation_border<a class="anchor" aria-label="anchor" href="#arg-heatmap-border-cell-annotation-border-feature-annotation-border"></a></dt>
-<dd><p>Whether to draw borders for the heatmap body, cell annotations, and feature
-annotations, respectively. Defaults inherit from <code>border</code>.</p></dd>
+<dd><p>Borders for the heatmap body and annotations. <code>NULL</code> inherits <code>border</code>.</p></dd>
 
 
 <dt id="arg-heatmap-border-palcolor-cell-annotation-border-palcolor-feature-annotation-border-palcolor">heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor<a class="anchor" aria-label="anchor" href="#arg-heatmap-border-palcolor-cell-annotation-border-palcolor-feature-annotation-border-palcolor"></a></dt>
-<dd><p>Border colors for the heatmap body, cell annotations, and feature
-annotations when their matching border argument is <code>TRUE</code>.
-Default is <code>"black"</code>.</p></dd>
+<dd><p>Border colors when the matching border argument is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-heatmap-border-size-cell-annotation-border-size-feature-annotation-border-size">heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size<a class="anchor" aria-label="anchor" href="#arg-heatmap-border-size-cell-annotation-border-size-feature-annotation-border-size"></a></dt>
-<dd><p>Border line widths for the heatmap body, cell annotations, and feature
-annotations when their matching border argument is <code>TRUE</code>.
-Default is <code>1</code>.</p></dd>
+<dd><p>Border line widths when the matching border argument is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-flip">flip<a class="anchor" aria-label="anchor" href="#arg-flip"></a></dt>
-<dd><p>Whether to flip the heatmap.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Flip rows and columns.</p></dd>
 
 
 <dt id="arg-min-expcells">min_expcells<a class="anchor" aria-label="anchor" href="#arg-min-expcells"></a></dt>
-<dd><p>The minimum number of expected cells. Default is <code>20</code>.</p></dd>
+<dd><p>The minimum number of expected cells.</p></dd>
 
 
 <dt id="arg-r-sq">r.sq<a class="anchor" aria-label="anchor" href="#arg-r-sq"></a></dt>
-<dd><p>The R-squared threshold. Default is <code>0.2</code>.</p></dd>
+<dd><p>The R-squared threshold.</p></dd>
 
 
 <dt id="arg-dev-expl">dev.expl<a class="anchor" aria-label="anchor" href="#arg-dev-expl"></a></dt>
-<dd><p>The deviance explained threshold. Default is <code>0.2</code>.</p></dd>
+<dd><p>The deviance explained threshold.</p></dd>
 
 
 <dt id="arg-padjust">padjust<a class="anchor" aria-label="anchor" href="#arg-padjust"></a></dt>
-<dd><p>The p-value adjustment threshold. Default is <code>0.05</code>.</p></dd>
+<dd><p>The p-value adjustment threshold.</p></dd>
 
 
 <dt id="arg-num-intersections">num_intersections<a class="anchor" aria-label="anchor" href="#arg-num-intersections"></a></dt>
@@ -311,50 +303,36 @@ By default, this parameter is set to <code>1</code>, which means that all cells 
 
 
 <dt id="arg-cell-bins">cell_bins<a class="anchor" aria-label="anchor" href="#arg-cell-bins"></a></dt>
-<dd><p>The number of cell bins.
-Default is <code>100</code>.</p></dd>
+<dd><p>The number of cell bins.</p></dd>
 
 
 <dt id="arg-order-by">order_by<a class="anchor" aria-label="anchor" href="#arg-order-by"></a></dt>
-<dd><p>The order of the heatmap.
-Default is <code>"peaktime"</code>.</p></dd>
+<dd><p>The order of the heatmap.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Which layer to use.
-Default is <code>"counts"</code>.</p></dd>
+<dd><p>Assay layer to use.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.
-When the object also contains <code>ChromatinAssay</code>, the default assay and
-additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
+<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
 
 
 <dt id="arg-exp-method">exp_method<a class="anchor" aria-label="anchor" href="#arg-exp-method"></a></dt>
-<dd><p>A character vector specifying the method for calculating expression values.
-Options are <code>"zscore"</code>, <code>"raw"</code>, <code>"fc"</code>, <code>"log2fc"</code>, or <code>"log1p"</code>.
-Default is <code>"zscore"</code>.</p></dd>
+<dd><p>Expression transform: <code>"zscore"</code>, <code>"raw"</code>, <code>"fc"</code>, <code>"log2fc"</code>,
+or <code>"log1p"</code>.</p></dd>
 
 
 <dt id="arg-exp-legend-title">exp_legend_title<a class="anchor" aria-label="anchor" href="#arg-exp-legend-title"></a></dt>
-<dd><p>A character vector specifying the title for the legend of expression value.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>Legend title for expression.</p></dd>
 
 
 <dt id="arg-limits">limits<a class="anchor" aria-label="anchor" href="#arg-limits"></a></dt>
-<dd><p>A two-length numeric vector specifying the limits for the color scale.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>Color-scale limits (length 2).</p></dd>
 
 
-<dt id="arg-lib-normalize">lib_normalize<a class="anchor" aria-label="anchor" href="#arg-lib-normalize"></a></dt>
-<dd><p>Whether to normalize the data by library size.</p></dd>
-
-
-<dt id="arg-libsize">libsize<a class="anchor" aria-label="anchor" href="#arg-libsize"></a></dt>
-<dd><p>A numeric vector specifying the library size for each cell.
-Default is <code>NULL</code>.</p></dd>
+<dt id="arg-lib-normalize-libsize">lib_normalize, libsize<a class="anchor" aria-label="anchor" href="#arg-lib-normalize-libsize"></a></dt>
+<dd><p>Library-size normalization and per-cell library sizes.</p></dd>
 
 
 <dt id="arg-family">family<a class="anchor" aria-label="anchor" href="#arg-family"></a></dt>
@@ -365,40 +343,34 @@ Otherwise, family must have the same length as features.</p></dd>
 
 
 <dt id="arg-suffix">suffix<a class="anchor" aria-label="anchor" href="#arg-suffix"></a></dt>
-<dd><p>A character vector specifying the suffix to append to the output layer names for each lineage.
+<dd><p>Suffix to append to the output layer names for each lineage.
 Default is the lineage names.</p></dd>
 
 
 <dt id="arg-n-candidates">n_candidates<a class="anchor" aria-label="anchor" href="#arg-n-candidates"></a></dt>
-<dd><p>A number of candidate features to select when features is <code>NULL</code>.
-Default is <code>1000</code>.</p></dd>
+<dd><p>A number of candidate features to select when features is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-minfreq">minfreq<a class="anchor" aria-label="anchor" href="#arg-minfreq"></a></dt>
-<dd><p>An integer specifying the minimum frequency threshold for candidate features.
-Features with a frequency less than minfreq will be excluded.
-Default is <code>5</code>.</p></dd>
+<dd><p>Minimum frequency threshold for candidate features.
+Features with a frequency less than minfreq will be excluded.</p></dd>
 
 
 <dt id="arg-fit-method">fit_method<a class="anchor" aria-label="anchor" href="#arg-fit-method"></a></dt>
 <dd><p>The method used for fitting features.
-Either <code>"gam"</code> (generalized additive models) or <code>"pretsa"</code> (Pattern recognition in Temporal and Spatial Analyses).
-Default is <code>"gam"</code>.</p></dd>
+Either <code>"gam"</code> (generalized additive models) or <code>"pretsa"</code> (Pattern recognition in Temporal and Spatial Analyses).</p></dd>
 
 
 <dt id="arg-knot">knot<a class="anchor" aria-label="anchor" href="#arg-knot"></a></dt>
-<dd><p>For <code>fit_method = "pretsa"</code>: B-spline knots. <code>0</code> or <code>"auto"</code>.
-Default is <code>0</code>.</p></dd>
+<dd><p>For <code>fit_method = "pretsa"</code>: B-spline knots. <code>0</code> or <code>"auto"</code>.</p></dd>
 
 
 <dt id="arg-max-knot-allowed">max_knot_allowed<a class="anchor" aria-label="anchor" href="#arg-max-knot-allowed"></a></dt>
-<dd><p>For <code>fit_method = "pretsa"</code> when <code>knot = "auto"</code>: max knots.
-Default is <code>10</code>.</p></dd>
+<dd><p>For <code>fit_method = "pretsa"</code> when <code>knot = "auto"</code>: max knots.</p></dd>
 
 
 <dt id="arg-padjust-method">padjust_method<a class="anchor" aria-label="anchor" href="#arg-padjust-method"></a></dt>
-<dd><p>The method used for p-value adjustment.
-Default is <code>"fdr"</code>.</p></dd>
+<dd><p>The method used for p-value adjustment.</p></dd>
 
 
 <dt id="arg-cluster-features-by">cluster_features_by<a class="anchor" aria-label="anchor" href="#arg-cluster-features-by"></a></dt>
@@ -406,481 +378,120 @@ Default is <code>"fdr"</code>.</p></dd>
 By default, this parameter is set to <code>NULL</code>, which means that all lineages will be used.</p></dd>
 
 
-<dt id="arg-cluster-rows">cluster_rows<a class="anchor" aria-label="anchor" href="#arg-cluster-rows"></a></dt>
-<dd><p>Whether to cluster rows in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
+<dt id="arg-cluster-rows-cluster-columns-cluster-row-slices-cluster-column-slices">cluster_rows, cluster_columns, cluster_row_slices, cluster_column_slices<a class="anchor" aria-label="anchor" href="#arg-cluster-rows-cluster-columns-cluster-row-slices-cluster-column-slices"></a></dt>
+<dd><p>Heatmap clustering.</p></dd>
 
 
-<dt id="arg-cluster-row-slices">cluster_row_slices<a class="anchor" aria-label="anchor" href="#arg-cluster-row-slices"></a></dt>
-<dd><p>Whether to cluster row slices in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
+<dt id="arg-row-names-side-column-names-side-row-names-rot-column-names-rot">row_names_side, column_names_side, row_names_rot, column_names_rot<a class="anchor" aria-label="anchor" href="#arg-row-names-side-column-names-side-row-names-rot-column-names-rot"></a></dt>
+<dd><p>Name placement.</p></dd>
 
 
-<dt id="arg-cluster-columns">cluster_columns<a class="anchor" aria-label="anchor" href="#arg-cluster-columns"></a></dt>
-<dd><p>Whether to cluster columns in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
+<dt id="arg-row-title-column-title-row-title-side-column-title-side-row-title-rot-column-title-rot">row_title, column_title, row_title_side, column_title_side, row_title_rot, column_title_rot<a class="anchor" aria-label="anchor" href="#arg-row-title-column-title-row-title-side-column-title-side-row-title-rot-column-title-rot"></a></dt>
+<dd><p>Slice titles.</p></dd>
 
 
-<dt id="arg-cluster-column-slices">cluster_column_slices<a class="anchor" aria-label="anchor" href="#arg-cluster-column-slices"></a></dt>
-<dd><p>Whether to cluster column slices in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-show-row-names">show_row_names<a class="anchor" aria-label="anchor" href="#arg-show-row-names"></a></dt>
-<dd><p>Whether to show row names in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-show-column-names">show_column_names<a class="anchor" aria-label="anchor" href="#arg-show-column-names"></a></dt>
-<dd><p>Whether to show column names in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-row-names-side">row_names_side<a class="anchor" aria-label="anchor" href="#arg-row-names-side"></a></dt>
-<dd><p>A character vector specifying the side to place row names.</p></dd>
-
-
-<dt id="arg-column-names-side">column_names_side<a class="anchor" aria-label="anchor" href="#arg-column-names-side"></a></dt>
-<dd><p>A character vector specifying the side to place column names.</p></dd>
-
-
-<dt id="arg-row-names-rot">row_names_rot<a class="anchor" aria-label="anchor" href="#arg-row-names-rot"></a></dt>
-<dd><p>The rotation angle for row names.
-Default is <code>0</code>.</p></dd>
-
-
-<dt id="arg-column-names-rot">column_names_rot<a class="anchor" aria-label="anchor" href="#arg-column-names-rot"></a></dt>
-<dd><p>The rotation angle for column names.
-Default is <code>90</code>.</p></dd>
-
-
-<dt id="arg-row-title">row_title<a class="anchor" aria-label="anchor" href="#arg-row-title"></a></dt>
-<dd><p>A character vector specifying the title for rows.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-column-title">column_title<a class="anchor" aria-label="anchor" href="#arg-column-title"></a></dt>
-<dd><p>A character vector specifying the title for columns.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-row-title-side">row_title_side<a class="anchor" aria-label="anchor" href="#arg-row-title-side"></a></dt>
-<dd><p>A character vector specifying the side to place row title.
-Default is <code>"left"</code>.</p></dd>
-
-
-<dt id="arg-column-title-side">column_title_side<a class="anchor" aria-label="anchor" href="#arg-column-title-side"></a></dt>
-<dd><p>A character vector specifying the side to place column title.
-Default is <code>"top"</code>.</p></dd>
-
-
-<dt id="arg-row-title-rot">row_title_rot<a class="anchor" aria-label="anchor" href="#arg-row-title-rot"></a></dt>
-<dd><p>The rotation angle for row title.
-Default is <code>0</code>.</p></dd>
-
-
-<dt id="arg-column-title-rot">column_title_rot<a class="anchor" aria-label="anchor" href="#arg-column-title-rot"></a></dt>
-<dd><p>The rotation angle for column title.</p></dd>
-
-
-<dt id="arg-feature-split">feature_split<a class="anchor" aria-label="anchor" href="#arg-feature-split"></a></dt>
-<dd><p>A factor specifying how to split the features.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-feature-split-by">feature_split_by<a class="anchor" aria-label="anchor" href="#arg-feature-split-by"></a></dt>
-<dd><p>A character vector specifying which group.by to use when splitting features (into n_split feature clusters).
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-n-split">n_split<a class="anchor" aria-label="anchor" href="#arg-n-split"></a></dt>
-<dd><p>A number of feature splits (feature clusters) to create.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-split-order">split_order<a class="anchor" aria-label="anchor" href="#arg-split-order"></a></dt>
-<dd><p>A numeric vector specifying the order of splits.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-split-method">split_method<a class="anchor" aria-label="anchor" href="#arg-split-method"></a></dt>
-<dd><p>A character vector specifying the method for splitting features.
-Options are <code>"kmeans"</code>, <code>"hclust"</code>, or <code>"mfuzz"</code>.
-Default is <code>"kmeans"</code>.</p></dd>
-
-
-<dt id="arg-decreasing">decreasing<a class="anchor" aria-label="anchor" href="#arg-decreasing"></a></dt>
-<dd><p>Whether to sort feature splits in decreasing order.
-Default is <code>FALSE</code>.</p></dd>
+<dt id="arg-feature-split-feature-split-by-n-split-split-order-split-method-decreasing">feature_split, feature_split_by, n_split, split_order, split_method, decreasing<a class="anchor" aria-label="anchor" href="#arg-feature-split-feature-split-by-n-split-split-order-split-method-decreasing"></a></dt>
+<dd><p>Feature splitting. <code>split_method</code> is <code>"kmeans"</code>, <code>"hclust"</code>, or <code>"mfuzz"</code>.</p></dd>
 
 
 <dt id="arg-fuzzification">fuzzification<a class="anchor" aria-label="anchor" href="#arg-fuzzification"></a></dt>
-<dd><p>The fuzzification coefficient.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>Mfuzz fuzzification coefficient.</p></dd>
 
 
-<dt id="arg-anno-terms">anno_terms<a class="anchor" aria-label="anchor" href="#arg-anno-terms"></a></dt>
-<dd><p>Whether to include term annotations.
-Default is <code>FALSE</code>.</p></dd>
+<dt id="arg-anno-terms-anno-keys-anno-features">anno_terms, anno_keys, anno_features<a class="anchor" aria-label="anchor" href="#arg-anno-terms-anno-keys-anno-features"></a></dt>
+<dd><p>Enrichment annotations.</p></dd>
 
 
-<dt id="arg-anno-keys">anno_keys<a class="anchor" aria-label="anchor" href="#arg-anno-keys"></a></dt>
-<dd><p>Whether to include key annotations.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-anno-features">anno_features<a class="anchor" aria-label="anchor" href="#arg-anno-features"></a></dt>
-<dd><p>Whether to include feature annotations.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-terms-width">terms_width<a class="anchor" aria-label="anchor" href="#arg-terms-width"></a></dt>
-<dd><p>A unit specifying the width of term annotations.
-Default is <code>unit(4, "in")</code>.</p></dd>
-
-
-<dt id="arg-terms-stat-width">terms_stat_width<a class="anchor" aria-label="anchor" href="#arg-terms-stat-width"></a></dt>
-<dd><p>A unit specifying the width of the independent
-term-statistic bar-chart annotation.</p></dd>
-
-
-<dt id="arg-terms-fontsize">terms_fontsize<a class="anchor" aria-label="anchor" href="#arg-terms-fontsize"></a></dt>
-<dd><p>A numeric vector specifying the font size(s) for term annotations.
-Default is <code>8</code>.</p></dd>
+<dt id="arg-terms-width-terms-stat-width-terms-fontsize">terms_width, terms_stat_width, terms_fontsize<a class="anchor" aria-label="anchor" href="#arg-terms-width-terms-stat-width-terms-fontsize"></a></dt>
+<dd><p>Term annotation size.</p></dd>
 
 
 <dt id="arg-terms-stat">terms_stat<a class="anchor" aria-label="anchor" href="#arg-terms-stat"></a></dt>
-<dd><p>Which enrichment statistic controls the term bars.
-Use <code>"none"</code> to hide the bar background, <code>"score"</code> for <code>-log10</code> of the
-active p-value metric, or any column from the enrichment result such as
-<code>"p.adjust"</code>, <code>"pvalue"</code>, <code>"qvalue"</code>,
-<code>"GeneRatio"</code>, <code>"RichFactor"</code>, <code>"FoldEnrichment"</code>, <code>"zScore"</code>, or <code>"Count"</code>.</p></dd>
+<dd><p>Enrichment statistic for term bars: <code>"none"</code>, <code>"score"</code>
+(<code>-log10</code> of the active p-value), or an enrichment column such as <code>"p.adjust"</code>.</p></dd>
 
 
-<dt id="arg-terms-stat-digits">terms_stat_digits<a class="anchor" aria-label="anchor" href="#arg-terms-stat-digits"></a></dt>
-<dd><p>Number of significant digits for statistic labels
-and axis tick labels.</p></dd>
+<dt id="arg-terms-stat-digits-terms-stat-label-terms-stat-axis">terms_stat_digits, terms_stat_label, terms_stat_axis<a class="anchor" aria-label="anchor" href="#arg-terms-stat-digits-terms-stat-label-terms-stat-axis"></a></dt>
+<dd><p>Statistic labels
+(<code>"none"</code>, <code>"value"</code>, <code>"significance"</code>, <code>"both"</code>) and shared axis.</p></dd>
 
 
-<dt id="arg-terms-stat-label">terms_stat_label<a class="anchor" aria-label="anchor" href="#arg-terms-stat-label"></a></dt>
-<dd><p>Label placed on or beside each statistic bar:
-<code>"none"</code>, <code>"value"</code>, <code>"significance"</code>, or <code>"both"</code>.</p></dd>
+<dt id="arg-terms-stat-background-palcolor-terms-stat-border-terms-stat-border-palcolor-terms-stat-border-size-terms-stat-label-palcolor">terms_stat_background_palcolor, terms_stat_border, terms_stat_border_palcolor, terms_stat_border_size, terms_stat_label_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-stat-background-palcolor-terms-stat-border-terms-stat-border-palcolor-terms-stat-border-size-terms-stat-label-palcolor"></a></dt>
+<dd><p>Statistic-panel appearance. <code>NULL</code> inherits the matching <code>terms_*</code> setting.</p></dd>
 
 
-<dt id="arg-terms-stat-axis">terms_stat_axis<a class="anchor" aria-label="anchor" href="#arg-terms-stat-axis"></a></dt>
-<dd><p>Logical. Whether to draw a shared statistic axis
-outside and below the final enrichment block.</p></dd>
+<dt id="arg-terms-group-background-terms-background-palcolor-terms-background-alpha-terms-border-terms-border-palcolor-terms-border-size-terms-text-palcolor-terms-bar-palcolor">terms_group_background, terms_background_palcolor, terms_background_alpha, terms_border, terms_border_palcolor, terms_border_size, terms_text_palcolor, terms_bar_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-group-background-terms-background-palcolor-terms-background-alpha-terms-border-terms-border-palcolor-terms-border-size-terms-text-palcolor-terms-bar-palcolor"></a></dt>
+<dd><p>Term-block appearance. <code>terms_text_palcolor = NULL</code> maps text to enrichment
+significance; <code>terms_bar_palcolor = NULL</code> matches bar color to term text.</p></dd>
 
 
-<dt id="arg-terms-stat-background-palcolor">terms_stat_background_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-stat-background-palcolor"></a></dt>
-<dd><p>Background color of the independent
-statistic panels. <code>NULL</code> inherits the corresponding term-panel background.</p></dd>
+<dt id="arg-keys-width-keys-fontsize-features-width-features-fontsize">keys_width, keys_fontsize, features_width, features_fontsize<a class="anchor" aria-label="anchor" href="#arg-keys-width-keys-fontsize-features-width-features-fontsize"></a></dt>
+<dd><p>Key and feature annotations.</p></dd>
 
 
-<dt id="arg-terms-stat-border">terms_stat_border<a class="anchor" aria-label="anchor" href="#arg-terms-stat-border"></a></dt>
-<dd><p>Logical. Whether to draw borders around statistic
-panels. <code>NULL</code> inherits <code>terms_border</code>.</p></dd>
-
-
-<dt id="arg-terms-stat-border-palcolor">terms_stat_border_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-stat-border-palcolor"></a></dt>
-<dd><p>Border color of statistic panels. <code>NULL</code>
-inherits <code>terms_border_palcolor</code>.</p></dd>
-
-
-<dt id="arg-terms-stat-border-size">terms_stat_border_size<a class="anchor" aria-label="anchor" href="#arg-terms-stat-border-size"></a></dt>
-<dd><p>Border line width of statistic panels. <code>NULL</code>
-inherits <code>terms_border_size</code>.</p></dd>
-
-
-<dt id="arg-terms-stat-label-palcolor">terms_stat_label_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-stat-label-palcolor"></a></dt>
-<dd><p>Color of labels drawn on statistic bars.
-<code>NULL</code> automatically uses black or white according to bar luminance.</p></dd>
-
-
-<dt id="arg-terms-group-background">terms_group_background<a class="anchor" aria-label="anchor" href="#arg-terms-group-background"></a></dt>
-<dd><p>Logical. Whether term blocks use translucent
-<code>feature_split</code> colors as their backgrounds.</p></dd>
-
-
-<dt id="arg-terms-background-palcolor">terms_background_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-background-palcolor"></a></dt>
-<dd><p>Background color used when
-<code>terms_group_background = FALSE</code>.</p></dd>
-
-
-<dt id="arg-terms-background-alpha">terms_background_alpha<a class="anchor" aria-label="anchor" href="#arg-terms-background-alpha"></a></dt>
-<dd><p>Alpha transparency of term-block backgrounds.</p></dd>
-
-
-<dt id="arg-terms-border">terms_border<a class="anchor" aria-label="anchor" href="#arg-terms-border"></a></dt>
-<dd><p>Logical. Whether to draw borders around term blocks.</p></dd>
-
-
-<dt id="arg-terms-border-palcolor">terms_border_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-border-palcolor"></a></dt>
-<dd><p>Border color of term blocks.</p></dd>
-
-
-<dt id="arg-terms-border-size">terms_border_size<a class="anchor" aria-label="anchor" href="#arg-terms-border-size"></a></dt>
-<dd><p>Border line width of term blocks.</p></dd>
-
-
-<dt id="arg-terms-text-palcolor">terms_text_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-text-palcolor"></a></dt>
-<dd><p>Fixed term text color. <code>NULL</code> retains colors mapped
-from enrichment significance.</p></dd>
-
-
-<dt id="arg-terms-bar-palcolor">terms_bar_palcolor<a class="anchor" aria-label="anchor" href="#arg-terms-bar-palcolor"></a></dt>
-<dd><p>Fixed statistic-bar color. <code>NULL</code> makes each bar
-use the same color as its corresponding term text.</p></dd>
-
-
-<dt id="arg-keys-width">keys_width<a class="anchor" aria-label="anchor" href="#arg-keys-width"></a></dt>
-<dd><p>A unit specifying the width of key annotations.
-Default is <code>unit(2, "in")</code>.</p></dd>
-
-
-<dt id="arg-keys-fontsize">keys_fontsize<a class="anchor" aria-label="anchor" href="#arg-keys-fontsize"></a></dt>
-<dd><p>A two-length numeric vector specifying the minimum and maximum font size(s) for key annotations.
-Default is <code>c(6, 10)</code>.</p></dd>
-
-
-<dt id="arg-features-width">features_width<a class="anchor" aria-label="anchor" href="#arg-features-width"></a></dt>
-<dd><p>A unit specifying the width of feature annotations.
-Default is <code>unit(2, "in")</code>.</p></dd>
-
-
-<dt id="arg-features-fontsize">features_fontsize<a class="anchor" aria-label="anchor" href="#arg-features-fontsize"></a></dt>
-<dd><p>A two-length numeric vector specifying the minimum and maximum font size(s) for feature annotations.
-Default is <code>c(6, 10)</code>.</p></dd>
-
-
-<dt id="arg-idtype">IDtype<a class="anchor" aria-label="anchor" href="#arg-idtype"></a></dt>
-<dd><p>A character vector specifying the type of IDs for features.
-Default is <code>"symbol"</code>.</p></dd>
-
-
-<dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
-<dd><p>A character vector specifying the species for features.
-Default is <code>"Homo_sapiens"</code>.</p></dd>
+<dt id="arg-idtype-species-db-combine-mirror-db-term-gene-term-name-mingssize-maxgssize">IDtype, species, db_combine, mirror, db, TERM2GENE, TERM2NAME, minGSSize, maxGSSize<a class="anchor" aria-label="anchor" href="#arg-idtype-species-db-combine-mirror-db-term-gene-term-name-mingssize-maxgssize"></a></dt>
+<dd><p>Gene-set database (see <a href="PrepareDB.html">PrepareDB</a>).</p></dd>
 
 
 <dt id="arg-db-update">db_update<a class="anchor" aria-label="anchor" href="#arg-db-update"></a></dt>
-<dd><p>Whether the gene annotation databases should be forcefully updated.
-If set to FALSE, the function will attempt to load the cached databases instead.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Force a refresh. <code>FALSE</code> loads the cache when available.</p></dd>
 
 
 <dt id="arg-db-version">db_version<a class="anchor" aria-label="anchor" href="#arg-db-version"></a></dt>
-<dd><p>A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is <code>"latest"</code>.</p></dd>
-
-
-<dt id="arg-db-combine">db_combine<a class="anchor" aria-label="anchor" href="#arg-db-combine"></a></dt>
-<dd><p>Whether to use a combined database.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Database version to retrieve.</p></dd>
 
 
 <dt id="arg-convert-species">convert_species<a class="anchor" aria-label="anchor" href="#arg-convert-species"></a></dt>
-<dd><p>Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Use a species-converted database when the annotation is
+missing for <code>species</code>.</p></dd>
 
 
 <dt id="arg-ensembl-version">Ensembl_version<a class="anchor" aria-label="anchor" href="#arg-ensembl-version"></a></dt>
-<dd><p>An integer specifying the Ensembl version.
-Default is <code>NULL</code>. If <code>NULL</code>, the latest version will be used.</p></dd>
+<dd><p>Ensembl version. <code>NULL</code> uses the latest.</p></dd>
 
 
-<dt id="arg-mirror">mirror<a class="anchor" aria-label="anchor" href="#arg-mirror"></a></dt>
-<dd><p>A character vector specifying the mirror for the Ensembl database.
-Default is <code>NULL</code>.</p></dd>
+<dt id="arg-go-simplify-go-simplify-cutoff-simplify-method-simplify-similaritycutoff">GO_simplify, GO_simplify_cutoff, simplify_method, simplify_similarityCutoff<a class="anchor" aria-label="anchor" href="#arg-go-simplify-go-simplify-cutoff-simplify-method-simplify-similaritycutoff"></a></dt>
+<dd><p>GO simplification.</p></dd>
 
 
-<dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
-<dd><p>A character vector specifying the database to use.
-Default is <code>"GO_BP"</code>.</p></dd>
+<dt id="arg-pvaluecutoff-padjustcutoff-topterm-show-termid-topword-words-excluded">pvalueCutoff, padjustCutoff, topTerm, show_termid, topWord, words_excluded<a class="anchor" aria-label="anchor" href="#arg-pvaluecutoff-padjustcutoff-topterm-show-termid-topword-words-excluded"></a></dt>
+<dd><p>Enrichment filters.</p></dd>
 
 
-<dt id="arg-term-gene">TERM2GENE<a class="anchor" aria-label="anchor" href="#arg-term-gene"></a></dt>
-<dd><p>A data.frame specifying the TERM2GENE mapping for the database.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-term-name">TERM2NAME<a class="anchor" aria-label="anchor" href="#arg-term-name"></a></dt>
-<dd><p>A data.frame specifying the TERM2NAME mapping for the database.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-mingssize">minGSSize<a class="anchor" aria-label="anchor" href="#arg-mingssize"></a></dt>
-<dd><p>An integer specifying the minimum gene set size for the database.
-Default is <code>10</code>.</p></dd>
-
-
-<dt id="arg-maxgssize">maxGSSize<a class="anchor" aria-label="anchor" href="#arg-maxgssize"></a></dt>
-<dd><p>An integer specifying the maximum gene set size for the database.
-Default is <code>500</code>.</p></dd>
-
-
-<dt id="arg-go-simplify">GO_simplify<a class="anchor" aria-label="anchor" href="#arg-go-simplify"></a></dt>
-<dd><p>Whether to simplify gene ontology terms.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-go-simplify-cutoff">GO_simplify_cutoff<a class="anchor" aria-label="anchor" href="#arg-go-simplify-cutoff"></a></dt>
-<dd><p>A character vector specifying the cutoff for GO simplification.
-Default is <code>"p.adjust &lt; 0.05"</code>.</p></dd>
-
-
-<dt id="arg-simplify-method">simplify_method<a class="anchor" aria-label="anchor" href="#arg-simplify-method"></a></dt>
-<dd><p>A character vector specifying the method for GO simplification.
-Default is <code>"Wang"</code>.</p></dd>
-
-
-<dt id="arg-simplify-similaritycutoff">simplify_similarityCutoff<a class="anchor" aria-label="anchor" href="#arg-simplify-similaritycutoff"></a></dt>
-<dd><p>The similarity cutoff for GO simplification.
-Default is <code>0.7</code>.</p></dd>
-
-
-<dt id="arg-pvaluecutoff">pvalueCutoff<a class="anchor" aria-label="anchor" href="#arg-pvaluecutoff"></a></dt>
-<dd><p>A numeric vector specifying the p-value cutoff(s) for significance.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-padjustcutoff">padjustCutoff<a class="anchor" aria-label="anchor" href="#arg-padjustcutoff"></a></dt>
-<dd><p>The adjusted p-value cutoff for significance.
-Default is <code>0.05</code>.</p></dd>
-
-
-<dt id="arg-topterm">topTerm<a class="anchor" aria-label="anchor" href="#arg-topterm"></a></dt>
-<dd><p>A number of top terms to include.
-Default is <code>5</code>.</p></dd>
-
-
-<dt id="arg-show-termid">show_termid<a class="anchor" aria-label="anchor" href="#arg-show-termid"></a></dt>
-<dd><p>Whether to show term IDs.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-topword">topWord<a class="anchor" aria-label="anchor" href="#arg-topword"></a></dt>
-<dd><p>A number of top words to include.
-Default is <code>20</code>.</p></dd>
-
-
-<dt id="arg-words-excluded">words_excluded<a class="anchor" aria-label="anchor" href="#arg-words-excluded"></a></dt>
-<dd><p>A character vector specifying the words to exclude.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-nlabel">nlabel<a class="anchor" aria-label="anchor" href="#arg-nlabel"></a></dt>
-<dd><p>A number of labels to include.
-Default is <code>20</code>.</p></dd>
-
-
-<dt id="arg-features-label">features_label<a class="anchor" aria-label="anchor" href="#arg-features-label"></a></dt>
-<dd><p>A character vector specifying the features to label.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-label-size">label_size<a class="anchor" aria-label="anchor" href="#arg-label-size"></a></dt>
-<dd><p>The size of labels.
-Default is <code>10</code>.</p></dd>
-
-
-<dt id="arg-label-color">label_color<a class="anchor" aria-label="anchor" href="#arg-label-color"></a></dt>
-<dd><p>A character vector specifying the color of labels.
-Default is <code>"black"</code>.</p></dd>
+<dt id="arg-nlabel-features-label-label-size-label-color">nlabel, features_label, label_size, label_color<a class="anchor" aria-label="anchor" href="#arg-nlabel-features-label-label-size-label-color"></a></dt>
+<dd><p>Feature labels.</p></dd>
 
 
 <dt id="arg-pseudotime-label">pseudotime_label<a class="anchor" aria-label="anchor" href="#arg-pseudotime-label"></a></dt>
-<dd><p>The pseudotime label.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>The pseudotime label.</p></dd>
 
 
 <dt id="arg-pseudotime-label-color">pseudotime_label_color<a class="anchor" aria-label="anchor" href="#arg-pseudotime-label-color"></a></dt>
-<dd><p>The pseudotime label color.
-Default is <code>"black"</code>.</p></dd>
+<dd><p>The pseudotime label color.</p></dd>
 
 
 <dt id="arg-pseudotime-label-linetype">pseudotime_label_linetype<a class="anchor" aria-label="anchor" href="#arg-pseudotime-label-linetype"></a></dt>
-<dd><p>The pseudotime label line type.
-Default is <code>2</code>.</p></dd>
+<dd><p>The pseudotime label line type.</p></dd>
 
 
 <dt id="arg-pseudotime-label-linewidth">pseudotime_label_linewidth<a class="anchor" aria-label="anchor" href="#arg-pseudotime-label-linewidth"></a></dt>
-<dd><p>The pseudotime label line width.
-Default is <code>3</code>.</p></dd>
-
-
-<dt id="arg-heatmap-palette">heatmap_palette<a class="anchor" aria-label="anchor" href="#arg-heatmap-palette"></a></dt>
-<dd><p>A character vector specifying the palette to use for the heatmap.
-Default is <code>"RdBu"</code>.</p></dd>
-
-
-<dt id="arg-heatmap-palcolor">heatmap_palcolor<a class="anchor" aria-label="anchor" href="#arg-heatmap-palcolor"></a></dt>
-<dd><p>A character vector specifying the heatmap color to use.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>The pseudotime label line width.</p></dd>
 
 
 <dt id="arg-pseudotime-palette">pseudotime_palette<a class="anchor" aria-label="anchor" href="#arg-pseudotime-palette"></a></dt>
-<dd><p>The color palette to use for pseudotime.
-Default is <code>"cividis"</code>.</p></dd>
+<dd><p>The color palette to use for pseudotime.</p></dd>
 
 
 <dt id="arg-pseudotime-palcolor">pseudotime_palcolor<a class="anchor" aria-label="anchor" href="#arg-pseudotime-palcolor"></a></dt>
-<dd><p>The colors to use for the pseudotime in the heatmap.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>The colors to use for the pseudotime in the heatmap.</p></dd>
 
 
-<dt id="arg-feature-split-palette">feature_split_palette<a class="anchor" aria-label="anchor" href="#arg-feature-split-palette"></a></dt>
-<dd><p>A character vector specifying the palette to use for feature splits.
-Default is <code>"simspec"</code>.</p></dd>
+<dt id="arg-cell-annotation-cell-annotation-palette-cell-annotation-palcolor-cell-annotation-params">cell_annotation, cell_annotation_palette, cell_annotation_palcolor, cell_annotation_params<a class="anchor" aria-label="anchor" href="#arg-cell-annotation-cell-annotation-palette-cell-annotation-palcolor-cell-annotation-params"></a></dt>
+<dd><p>Cell annotations. Palette length should match <code>cell_annotation</code>.</p></dd>
 
 
-<dt id="arg-feature-split-palcolor">feature_split_palcolor<a class="anchor" aria-label="anchor" href="#arg-feature-split-palcolor"></a></dt>
-<dd><p>A character vector specifying the feature split color to use.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-cell-annotation">cell_annotation<a class="anchor" aria-label="anchor" href="#arg-cell-annotation"></a></dt>
-<dd><p>A character vector specifying the cell annotation(s) to include.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-cell-annotation-palette">cell_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-cell-annotation-palette"></a></dt>
-<dd><p>A character vector specifying the palette to use for cell annotations.
-The length of the vector should match the number of cell_annotation.
-Default is <code>"Chinese"</code>.</p></dd>
-
-
-<dt id="arg-cell-annotation-palcolor">cell_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-cell-annotation-palcolor"></a></dt>
-<dd><p>A list of character vector specifying the cell annotation color(s) to use.
-The length of the list should match the number of cell_annotation.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-cell-annotation-params">cell_annotation_params<a class="anchor" aria-label="anchor" href="#arg-cell-annotation-params"></a></dt>
-<dd><p>A list specifying additional parameters for cell annotations.
-Default is a list with <code>width = unit(1, "cm")</code> if flip is TRUE, else a list with <code>height = unit(1, "cm")</code>.</p></dd>
-
-
-<dt id="arg-feature-annotation">feature_annotation<a class="anchor" aria-label="anchor" href="#arg-feature-annotation"></a></dt>
-<dd><p>A character vector specifying the feature annotation(s) to include.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-feature-annotation-palette">feature_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-feature-annotation-palette"></a></dt>
-<dd><p>A character vector specifying the palette to use for feature annotations.
-The length of the vector should match the number of feature_annotation.
-Default is <code>"Dark2"</code>.</p></dd>
-
-
-<dt id="arg-feature-annotation-palcolor">feature_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-feature-annotation-palcolor"></a></dt>
-<dd><p>A list of character vector specifying the feature annotation color to use.
-The length of the list should match the number of feature_annotation.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-feature-annotation-params">feature_annotation_params<a class="anchor" aria-label="anchor" href="#arg-feature-annotation-params"></a></dt>
-<dd><p>A list specifying additional parameters for feature annotations.
-Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
+<dt id="arg-feature-annotation-feature-annotation-palette-feature-annotation-palcolor-feature-annotation-params">feature_annotation, feature_annotation_palette, feature_annotation_palcolor, feature_annotation_params<a class="anchor" aria-label="anchor" href="#arg-feature-annotation-feature-annotation-palette-feature-annotation-palcolor-feature-annotation-params"></a></dt>
+<dd><p>Feature annotations. Palette length should match <code>feature_annotation</code>.</p></dd>
 
 
 <dt id="arg-separate-annotation">separate_annotation<a class="anchor" aria-label="anchor" href="#arg-separate-annotation"></a></dt>
@@ -889,13 +500,11 @@ Each name should match a column name in the metadata of the <code>Seurat</code> 
 
 
 <dt id="arg-separate-annotation-palette">separate_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-separate-annotation-palette"></a></dt>
-<dd><p>The color palette to use for separate annotations.
-Default is <code>"Chinese"</code>.</p></dd>
+<dd><p>The color palette to use for separate annotations.</p></dd>
 
 
 <dt id="arg-separate-annotation-palcolor">separate_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-separate-annotation-palcolor"></a></dt>
-<dd><p>The colors to use for each level of the separate annotations.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>The colors to use for each level of the separate annotations.</p></dd>
 
 
 <dt id="arg-separate-annotation-params">separate_annotation_params<a class="anchor" aria-label="anchor" href="#arg-separate-annotation-params"></a></dt>
@@ -903,73 +512,40 @@ Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-reverse-ht">reverse_ht<a class="anchor" aria-label="anchor" href="#arg-reverse-ht"></a></dt>
-<dd><p>Whether to reverse the heatmap.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>Whether to reverse the heatmap.</p></dd>
 
 
-<dt id="arg-use-raster">use_raster<a class="anchor" aria-label="anchor" href="#arg-use-raster"></a></dt>
-<dd><p>Whether to use a raster device for plotting.
-Default is <code>NULL</code>.</p></dd>
+<dt id="arg-use-raster-raster-device-raster-by-magick">use_raster, raster_device, raster_by_magick<a class="anchor" aria-label="anchor" href="#arg-use-raster-raster-device-raster-by-magick"></a></dt>
+<dd><p>Raster device (<code>NULL</code> chooses automatically).</p></dd>
 
 
-<dt id="arg-raster-device">raster_device<a class="anchor" aria-label="anchor" href="#arg-raster-device"></a></dt>
-<dd><p>A character vector specifying the raster device to use.
-Default is <code>"png"</code>.</p></dd>
-
-
-<dt id="arg-raster-by-magick">raster_by_magick<a class="anchor" aria-label="anchor" href="#arg-raster-by-magick"></a></dt>
-<dd><p>Whether to use the 'magick' package for raster.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-height">height<a class="anchor" aria-label="anchor" href="#arg-height"></a></dt>
-<dd><p>The height of the heatmap in the specified units.
-If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.</p></dd>
-
-
-<dt id="arg-width">width<a class="anchor" aria-label="anchor" href="#arg-width"></a></dt>
-<dd><p>The width of the heatmap in the specified units.
-If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.</p></dd>
-
-
-<dt id="arg-units">units<a class="anchor" aria-label="anchor" href="#arg-units"></a></dt>
-<dd><p>The units to use for the width and height of the heatmap.
-Default is <code>"inch"</code>, Options are <code>"mm"</code>, <code>"cm"</code>, or <code>"inch"</code>.</p></dd>
+<dt id="arg-width-height-units">width, height, units<a class="anchor" aria-label="anchor" href="#arg-width-height-units"></a></dt>
+<dd><p>Heatmap size. <code>NULL</code> sizes from matrix dimensions.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>The number of worker processes to use for parallelization.
-Default is <code>1</code>.</p></dd>
+<dd><p>Number of CPU cores.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print the message.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Print progress messages.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Optional integer seed. When supplied, every input receives a
-deterministic independent L'Ecuyer-CMRG random-number stream, making results
-reproducible across worker counts and scheduling order. The caller's random
-number state is restored when the call finishes.</p></dd>
+<dd><p>Random seed.</p></dd>
 
 
 <dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
-<dd><p>A character vector specifying the side to place the legends.
-Options are <code>"right"</code>, <code>"left"</code>, <code>"top"</code>, or <code>"bottom"</code>.
-Default is <code>"right"</code>.
-When row names are long and shown on the right side, the gap between the heatmap and the legend is automatically increased to avoid overlap.</p></dd>
+<dd><p>Legend side (<code>"right"</code>, <code>"left"</code>, <code>"top"</code>, <code>"bottom"</code>).
+Gap to the heatmap grows automatically when long row names are on the right.</p></dd>
 
 
 <dt id="arg-ht-params">ht_params<a class="anchor" aria-label="anchor" href="#arg-ht-params"></a></dt>
-<dd><p>Additional parameters to customize the appearance of the heatmap.
-This should be a list with named elements, where the names correspond to parameter names in the <a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html" class="external-link">ComplexHeatmap::Heatmap</a> function.
-Any conflicting parameters will override the defaults set by this function.
-Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
+<dd><p>Extra arguments passed to <a href="https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html" class="external-link">ComplexHeatmap::Heatmap</a>, overriding defaults.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to the other functions.</p></dd>
+<dd><p>Additional arguments passed to helper functions.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -981,23 +557,23 @@ Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:43] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:43] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-18 10:35:43] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:53] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:53] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-19 12:05:53] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 1/1 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:43] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:44] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:44] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:44] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:44] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:44] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:44] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:45] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:45] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:45] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:35:51] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:53] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:53] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:53] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:53] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:53] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:53] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:53] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:53] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:54] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:54] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:54] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:05:54] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:06:00] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSlingshot.html">RunSlingshot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -1015,13 +591,13 @@ Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link
 <span class="r-in"><span>  fit_method <span class="op">=</span> <span class="st">"pretsa"</span>,</span></span>
 <span class="r-in"><span>  n_candidates <span class="op">=</span> <span class="fl">200</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:53] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:54] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:55] Number of candidate features (union): <span style="color: #0000BB;">225</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:55] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:55] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:55] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:35:55] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:02] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:03] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:04] Number of candidate features (union): <span style="color: #0000BB;">225</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:04] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:04] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:04] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:06:04] Find dynamic features done</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht1</span> <span class="op">&lt;-</span> <span class="fu">DynamicHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -1033,7 +609,7 @@ Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">3</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:55] [1] 150 features from Lineage1 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:05] [1] 150 features from Lineage1 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Ins1,Ins2,Nnat,Iapp,Pyy,Lrpprc,Chgb,Cck,Slc38a5,Npy...</span>
 <span class="r-in"><span><span class="va">ht1</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="DynamicHeatmap-2.png" alt="" width="700" height="433"></span>
@@ -1056,22 +632,22 @@ Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  cell_annotation <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:59] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:35:59] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:00] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:00] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-18 10:36:00] Negative values detected</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:08] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:08] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:09] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:09] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-19 12:06:09] Negative values detected</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Negative values detected</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-18 10:36:00] Negative values detected</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-19 12:06:09] Negative values detected</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Negative values detected</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:00] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:00] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-18 10:36:00] Running for <span style="color: #0000BB;">S_score </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:36:00] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">121ms</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:09] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:09] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-19 12:06:09] Running for <span style="color: #0000BB;">S_score </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:06:09] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">122ms</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:00] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:36:00] Find dynamic features done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:00] Some features were missing in at least one lineage: </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:09] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:06:09] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:09] Some features were missing in at least one lineage: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Isl1,Neurod2,Pyy,Rbp4,Sox9...</span>
 <span class="r-in"><span><span class="va">ht2</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="DynamicHeatmap-4.png" alt="" width="700" height="433"></span>
@@ -1088,7 +664,7 @@ Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:01] [1] 164 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:10] [1] 164 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Ins1,Ins2,Nnat,Iapp,Pyy,Lrpprc,Chgb,Cck,Slc38a5,Npy...</span>
 <span class="r-in"><span><span class="va">ht3</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="DynamicHeatmap-5.png" alt="" width="700" height="433"></span>
@@ -1108,19 +684,18 @@ Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:05] [1] 164 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:14] [1] 164 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Ins1,Ins2,Nnat,Iapp,Pyy,Lrpprc,Chgb,Cck,Slc38a5,Npy...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:06] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:06] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:06] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-08-18 10:26:23</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:08] Permform enrichment...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:09] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-18 10:36:09] Running for <span style="color: #0000BB;">1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">3</span>] <span style="color: #00BB00;">■■■</span>         33% | ETA: <span style="color: #0000BB;"> 4s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-08-18 10:36:09] Running for <span style="color: #0000BB;">2 </span>[<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">3</span>] <span style="color: #00BB00;">■■■■■■</span>      67% | ETA: <span style="color: #0000BB;"> 2s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:36:09] Completed <span style="color: #0000BB;">3</span> tasks in <span style="color: #0000BB;">5.7s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:15] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:15] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:15] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-08-19 11:56:24</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:17] Permform enrichment...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:18] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-19 12:06:18] Running for <span style="color: #0000BB;">1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">3</span>] <span style="color: #00BB00;">■■■</span>         33% | ETA: <span style="color: #0000BB;"> 4s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:06:18] Completed <span style="color: #0000BB;">3</span> tasks in <span style="color: #0000BB;">5.7s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:09] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:36:15] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:18] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:06:23] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht5</span> <span class="op">&lt;-</span> <span class="fu">DynamicHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -1145,27 +720,27 @@ Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link
 <span class="r-in"><span>  features_width <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="st">"in"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  features_fontsize <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">6</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:17] [1] 150 features from Lineage1 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:26] [1] 150 features from Lineage1 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Ins1,Ins2,Nnat,Iapp,Pyy,Lrpprc,Chgb,Cck,Slc38a5,Npy...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:18] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:18] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:18] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-08-18 10:26:23</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:19] Permform enrichment...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:20] Using <span style="color: #0000BB;">2</span> cores</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-18 10:36:20] Running for <span style="color: #0000BB;">1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;">28s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:36:20] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">28.5s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:27] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:27] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:27] Loading cached: <span style="color: #0000BB;">GO_BP</span> version: <span style="color: #0000BB;">3.23.0 nterm:14957</span> created: <span style="color: #0000BB;">2026-08-19 11:56:24</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:28] Permform enrichment...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:29] Using <span style="color: #0000BB;">2</span> cores</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-19 12:06:29] Running for <span style="color: #0000BB;">2 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;">28s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:06:29] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">28.4s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:36:20] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:36:49] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:06:29] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:06:58] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="AnnotateFeatures.html">AnnotateFeatures</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CSPA"</span>, <span class="st">"TF"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:08] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:08] Loading cached: <span style="color: #0000BB;">TF</span> version: <span style="color: #0000BB;">AnimalTFDB4 nterm:2</span> created: <span style="color: #0000BB;">2026-08-18 10:10:33</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:09] Preparing database: CSPA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:17] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:17] Loading cached: <span style="color: #0000BB;">TF</span> version: <span style="color: #0000BB;">AnimalTFDB4 nterm:2</span> created: <span style="color: #0000BB;">2026-08-19 11:40:47</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:18] Preparing database: CSPA</span>
 <span class="r-in"><span><span class="va">ht6</span> <span class="op">&lt;-</span> <span class="fu">DynamicHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  exp_legend_title <span class="op">=</span> <span class="st">"Z-score"</span>,</span></span>
@@ -1201,30 +776,30 @@ Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:10] [1] 164 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:19] [1] 164 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Ins1,Ins2,Nnat,Iapp,Pyy,Lrpprc,Chgb,Cck,Slc38a5,Npy...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:11] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:11] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:12] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:12] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:12] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:12] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-18 10:37:12] Running for <span style="color: #0000BB;">Arxes1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:37:12] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">152ms</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:20] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:20] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:21] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:21] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:21] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:21] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-19 12:07:21] Running for <span style="color: #0000BB;">Arxes1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:07:21] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">153ms</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:12] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:37:12] Find dynamic features done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:13] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:13] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:14] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:14] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:14] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:14] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-18 10:37:14] Running for <span style="color: #0000BB;">Arxes1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:37:14] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">149ms</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:21] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:07:21] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:22] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:22] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:22] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:23] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:23] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:23] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-19 12:07:23] Running for <span style="color: #0000BB;">Arxes1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:07:23] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">237ms</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:14] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:37:14] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:23] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:07:23] Find dynamic features done</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 15.8</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 21.8</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 15.8</span>
@@ -1263,27 +838,27 @@ Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link
 <span class="r-in"><span>  width <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  height <span class="op">=</span> <span class="fl">1</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:19] [1] 164 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:28] [1] 164 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Ins1,Ins2,Nnat,Iapp,Pyy,Lrpprc,Chgb,Cck,Slc38a5,Npy...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:19] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:20] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:20] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:20] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:20] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:20] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-18 10:37:20] Running for <span style="color: #0000BB;">Arxes1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:37:20] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">145ms</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:28] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:29] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:29] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:30] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:30] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:30] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-08-19 12:07:30] Running for <span style="color: #0000BB;">Arxes1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:07:30] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">146ms</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:20] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:37:21] Find dynamic features done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:21] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:21] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:22] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:22] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:22] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:22] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:37:22] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:37:22] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:30] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:07:30] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:30] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:30] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:31] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:31] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:31] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:31] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:07:31] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:07:31] Find dynamic features done</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 15.8</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 21.8</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 15.8</span>

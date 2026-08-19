@@ -94,49 +94,44 @@
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A Seurat object. Default is <code>NULL</code>.
+<dd><p>A Seurat object.
 If provided, <code>adata</code> will be ignored.</p></dd>
 
 
 <dt id="arg-assay-x">assay_x<a class="anchor" aria-label="anchor" href="#arg-assay-x"></a></dt>
-<dd><p>Assay to convert as the main data matrix in the anndata object.
-Default is <code>"RNA"</code>.</p></dd>
+<dd><p>Assay to convert as the main data matrix in the anndata object.</p></dd>
 
 
 <dt id="arg-layer-x">layer_x<a class="anchor" aria-label="anchor" href="#arg-layer-x"></a></dt>
-<dd><p>Layer name for assay_x in the Seurat object.
-Default is <code>"counts"</code>.</p></dd>
+<dd><p>Layer name for assay_x in the Seurat object.</p></dd>
 
 
 <dt id="arg-assay-y">assay_y<a class="anchor" aria-label="anchor" href="#arg-assay-y"></a></dt>
-<dd><p>Assays to convert as layers in the anndata object.
-Default is <code>c("spliced", "unspliced")</code>.</p></dd>
+<dd><p>Assays to convert as layers in the anndata object.</p></dd>
 
 
 <dt id="arg-layer-y">layer_y<a class="anchor" aria-label="anchor" href="#arg-layer-y"></a></dt>
-<dd><p>Layer names for the assay_y in the Seurat object.
-Default is <code>"counts"</code>.</p></dd>
+<dd><p>Layer names for the assay_y in the Seurat object.</p></dd>
 
 
 <dt id="arg-adata">adata<a class="anchor" aria-label="anchor" href="#arg-adata"></a></dt>
-<dd><p>An anndata object. Default is <code>NULL</code>.</p></dd>
+<dd><p>An anndata object.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Name of one or more meta.data columns to group (color) cells by.</p></dd>
+<dd><p>Metadata column(s) used to color cells.</p></dd>
 
 
 <dt id="arg-time-field">time_field<a class="anchor" aria-label="anchor" href="#arg-time-field"></a></dt>
-<dd><p>A character string specifying the column name in <code>adata.obs</code> or <code>srt@meta.data</code> that contains the time information.</p></dd>
+<dd><p>Column name in <code>adata.obs</code> or <code>srt@meta.data</code> that contains the time information.</p></dd>
 
 
 <dt id="arg-growth-iters">growth_iters<a class="anchor" aria-label="anchor" href="#arg-growth-iters"></a></dt>
-<dd><p>A number of growth iterations to perform during the OT Model computation.
-Default is <code>3</code>.</p></dd>
+<dd><p>A number of growth iterations to perform during the OT Model computation.</p></dd>
 
 
 <dt id="arg-tmap-out">tmap_out<a class="anchor" aria-label="anchor" href="#arg-tmap-out"></a></dt>
-<dd><p>A character string specifying the path to store the computed transport maps.</p></dd>
+<dd><p>Path to store the computed transport maps.</p></dd>
 
 
 <dt id="arg-time-from">time_from<a class="anchor" aria-label="anchor" href="#arg-time-from"></a></dt>
@@ -149,33 +144,23 @@ If not provided, only trajectory and fate analysis for the specified <code>time_
 
 
 <dt id="arg-get-coupling">get_coupling<a class="anchor" aria-label="anchor" href="#arg-get-coupling"></a></dt>
-<dd><p>Whether to compute and store the coupling matrix between the specified <code>time_from</code> and <code>time_to</code>.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Whether to compute and store the coupling matrix between the specified <code>time_from</code> and <code>time_to</code>.</p></dd>
 
 
 <dt id="arg-recalculate">recalculate<a class="anchor" aria-label="anchor" href="#arg-recalculate"></a></dt>
-<dd><p>Whether to recalculate the transport maps even if they already exist at the specified <code>tmap_out</code> location.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Whether to recalculate the transport maps even if they already exist at the specified <code>tmap_out</code> location.</p></dd>
 
 
-<dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>Color palette name.
-Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.
-Default is <code>"Chinese"</code>.</p></dd>
-
-
-<dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
-<dd><p>Custom colors used to create a color palette.
-Default is <code>NULL</code>.</p></dd>
+<dt id="arg-palette-palcolor">palette, palcolor<a class="anchor" aria-label="anchor" href="#arg-palette-palcolor"></a></dt>
+<dd><p>Palette name (<a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>) or custom colors.</p></dd>
 
 
 <dt id="arg-show-plot">show_plot<a class="anchor" aria-label="anchor" href="#arg-show-plot"></a></dt>
-<dd><p>Whether to show the plot.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Whether to show the plot.</p></dd>
 
 
 <dt id="arg-save-plot">save_plot<a class="anchor" aria-label="anchor" href="#arg-save-plot"></a></dt>
-<dd><p>Whether to save plots to files. Default is <code>FALSE</code>.</p></dd>
+<dd><p>Whether to save plots to files.</p></dd>
 
 
 <dt id="arg-plot-format">plot_format<a class="anchor" aria-label="anchor" href="#arg-plot-format"></a></dt>
@@ -183,20 +168,19 @@ Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-plot-dpi">plot_dpi<a class="anchor" aria-label="anchor" href="#arg-plot-dpi"></a></dt>
-<dd><p>Resolution (DPI) for saved plots. Default is <code>300</code>.</p></dd>
+<dd><p>Resolution (DPI) for saved plots.</p></dd>
 
 
 <dt id="arg-plot-prefix">plot_prefix<a class="anchor" aria-label="anchor" href="#arg-plot-prefix"></a></dt>
-<dd><p>Prefix for saved plot filenames. Default is "cellrank".</p></dd>
+<dd><p>Prefix for saved plot filenames.</p></dd>
 
 
 <dt id="arg-dirpath">dirpath<a class="anchor" aria-label="anchor" href="#arg-dirpath"></a></dt>
-<dd><p>The directory to save the plots. Default is <code>"./cellrank"</code>.</p></dd>
+<dd><p>The directory to save the plots.</p></dd>
 
 
 <dt id="arg-return-seurat">return_seurat<a class="anchor" aria-label="anchor" href="#arg-return-seurat"></a></dt>
-<dd><p>Whether to return a Seurat object instead of an anndata object.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Whether to return a Seurat object instead of an anndata object.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

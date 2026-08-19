@@ -118,10 +118,7 @@ the second sorted level is used.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.
-When the object also contains <code>ChromatinAssay</code>, the default assay and
-additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
+<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
 
 
 <dt id="arg-bulk-assay">bulk_assay<a class="anchor" aria-label="anchor" href="#arg-bulk-assay"></a></dt>
@@ -194,8 +191,7 @@ built.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print the message.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Print progress messages.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -219,7 +215,7 @@ Biotechnology</em> (2021). <a href="https://doi.org/10.1038/s41587-021-01091-3" 
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">islet_bulk</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">panc8_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 12:02:27] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 13:30:26] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu">RunScissor</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
 <span class="r-in"><span>  bulk_dataset <span class="op">=</span> <span class="va">islet_bulk</span>,</span></span>
@@ -235,8 +231,8 @@ Biotechnology</em> (2021). <a href="https://doi.org/10.1038/s41587-021-01091-3" 
 <span class="r-in"><span>  alpha <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>  cutoff <span class="op">=</span> <span class="fl">0.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 12:03:53] Scissor alpha <span style="color: #0000BB;">0.2</span> selected <span style="color: #0000BB;">1</span> positive and <span style="color: #0000BB;">491</span> negative cells (<span style="color: #0000BB;">30.75</span>%)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 12:03:53] <span style="color: #0000BB;">Scissor</span> stored <span style="color: #0000BB;">1</span> Scissor+ and <span style="color: #0000BB;">491</span> Scissor- cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 13:31:53] Scissor alpha <span style="color: #0000BB;">0.2</span> selected <span style="color: #0000BB;">1</span> positive and <span style="color: #0000BB;">491</span> negative cells (<span style="color: #0000BB;">30.75</span>%)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 13:31:53] <span style="color: #0000BB;">Scissor</span> stored <span style="color: #0000BB;">1</span> Scissor+ and <span style="color: #0000BB;">491</span> Scissor- cells</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ScissorPlot.html">ScissorPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
