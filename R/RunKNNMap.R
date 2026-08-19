@@ -1,7 +1,7 @@
 #' @title Single-cell reference mapping with KNN method
 #'
 #' @description
-#' This function performs single-cell reference mapping using the K-nearest neighbor (KNN) method.
+#' Performs single-cell reference mapping using the K-nearest neighbor (KNN) method.
 #' It takes two single-cell datasets as input: srt_query and srt_ref.
 #' The function maps cells from the srt_query dataset to the srt_ref dataset based on their similarity or distance.
 #'
@@ -9,13 +9,13 @@
 #' @inheritParams CellCorHeatmap
 #' @inheritParams RunKNNPredict
 #' @inheritParams thisutils::log_message
-#' @param ref_umap A character string specifying the name of the UMAP reduction in the reference object.
+#' @param ref_umap Name of the UMAP reduction in the reference object.
 #' If not provided, the first UMAP reduction found in the reference object will be used.
-#' @param query_reduction A character string specifying the name of a dimensionality reduction in the query object to use for calculating the distance metric.
-#' @param ref_reduction A character string specifying the name of a dimensionality reduction in the reference object to use for calculating the distance metric.
-#' @param query_dims A numeric vector specifying the dimension indices from the query reduction to be used for calculating the distance metric.
-#' @param ref_dims A numeric vector specifying the dimension indices from the reference reduction to be used for calculating the distance metric.
-#' @param projection_method A character string specifying the projection method to use.
+#' @param query_reduction Name of a dimensionality reduction in the query object to use for calculating the distance metric.
+#' @param ref_reduction Name of a dimensionality reduction in the reference object to use for calculating the distance metric.
+#' @param query_dims Dimension indices from the query reduction to be used for calculating the distance metric.
+#' @param ref_dims Dimension indices from the reference reduction to be used for calculating the distance metric.
+#' @param projection_method Projection method to use.
 #' Options are "model" and "knn". If "model" is selected, the function will try to use a pre-trained UMAP model in the reference object for projection.
 #' If "knn" is selected, the function will directly find the nearest neighbors using the distance metric.
 #' @param k A number of nearest neighbors to find for each cell in the query object.
@@ -23,7 +23,7 @@
 #' Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "ejaccard",
 #' "dice", "edice", "hamman", "simple matching", and "faith".
 #' Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.
-#' @param vote_fun A character string specifying the function to be used for aggregating the nearest neighbors in the reference object.
+#' @param vote_fun Function to be used for aggregating the nearest neighbors in the reference object.
 #' Options are "mean", "median", "sum", "min", "max", "sd", "var", etc.
 #' If not provided, the default is "mean".
 #'

@@ -8,16 +8,16 @@
 #' results of differential expression analysis ([RunDEtest()]).
 #' If specified, the genes and groups will be extracted from the object automatically.
 #' If not specified, the `geneID` and `geneID_groups` arguments must be provided.
-#' @param test.use A character vector specifying the test to be used in differential expression analysis.
+#' @param test.use Test to be used in differential expression analysis.
 #' This argument is only used if `srt` is specified.
-#' @param DE_threshold A character vector specifying the filter condition for differential expression analysis.
+#' @param DE_threshold Filter condition for differential expression analysis.
 #' This argument is only used if `srt` is specified.
-#' @param geneID A character vector specifying the gene IDs.
+#' @param geneID Gene IDs.
 #' @param geneID_groups A factor vector specifying the group labels for each gene.
-#' @param geneID_exclude A character vector specifying the gene IDs to be excluded from the analysis.
-#' @param IDtype A character vector specifying the type of gene IDs in the `srt` object or `geneID` argument.
+#' @param geneID_exclude Gene IDs to be excluded from the analysis.
+#' @param IDtype Type of gene IDs in the `srt` object or `geneID` argument.
 #' This argument is used to convert the gene IDs to a different type if `IDtype` is different from `result_IDtype`.
-#' @param result_IDtype A character vector specifying the desired type of gene ID to be used in the output.
+#' @param result_IDtype Desired type of gene ID to be used in the output.
 #' This argument is used to convert the gene IDs from `IDtype` to `result_IDtype`.
 #' @param backend Enrichment backend. `"cpp"` is the default and uses a fast native
 #' hypergeometric ORA implementation and returns the enrichment table without
@@ -33,12 +33,12 @@
 #' The first column should contain the term IDs, and the second column should contain the corresponding term names.
 #' @param minGSSize The minimum size of a gene set to be considered in the enrichment analysis.
 #' @param maxGSSize The maximum size of a gene set to be considered in the enrichment analysis.
-#' @param unlimited_db A character vector specifying the names of databases that do not have size restrictions.
+#' @param unlimited_db Names of databases that do not have size restrictions.
 #' @param GO_simplify Whether to simplify the GO terms.
 #' If `TRUE`, additional results with simplified GO terms will be returned.
-#' @param GO_simplify_cutoff A character vector specifying the filter condition for simplification of GO terms.
+#' @param GO_simplify_cutoff Filter condition for simplification of GO terms.
 #' This argument is only used if `GO_simplify` is `TRUE`.
-#' @param simplify_method A character vector specifying the method to be used for simplification of GO terms.
+#' @param simplify_method Method to be used for simplification of GO terms.
 #' This argument is only used if `GO_simplify` is `TRUE`.
 #' @param simplify_similarityCutoff The similarity cutoff for simplification of GO terms.
 #' This argument is only used if `GO_simplify` is `TRUE`.

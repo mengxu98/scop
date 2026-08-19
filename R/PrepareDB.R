@@ -1,50 +1,33 @@
-#' @title Prepare the gene annotation databases
+#' @title Prepare gene annotation databases
 #'
 #' @description
-#' This function prepares the gene annotation databases for a given species and set of annotation sources.
-#' It retrieves the necessary information from various annotation packages or external resources and organizes it into a list.
-#' The list contains the annotation data for each specified annotation source.
+#' Build TERM2GENE / TERM2NAME (and GO semantic-similarity) databases for a
+#' species from annotation packages, cached downloads, or local files.
 #'
 #' @md
 #' @inheritParams GeneConvert
 #' @inheritParams thisutils::log_message
-#' @param species A character vector specifying the species for which the gene annotation databases should be prepared.
-#' Can be `"Homo_sapiens"` or `"Mus_musculus"`.
-#' @param db A character vector specifying the annotation sources to be included in the gene annotation databases.
-#' Can be one or more of `"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome",
-#' "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa",
-#' "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB",
-#' "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"`.
-#' MSigDB subcollections can be requested as `"MSigDB_<collection>"`, such as
-#' `"MSigDB_H"` for human Hallmark and `"MSigDB_MH"` for mouse Hallmark.
-#' Note: `"CytoTRACE2"` is species-independent and downloads pre-trained model data
-#' required by [RunCytoTRACE].
-#' @param db_IDtypes A character vector specifying the desired ID types to be used for gene identifiers in the gene annotation databases.
-#' Default is `c("symbol", "entrez_id", "ensembl_id")`.
-#' @param db_version A character vector specifying the version of the gene annotation databases to be retrieved.
-#' Default is `"latest"`.
-#' @param db_update Whether the gene annotation databases should be forcefully updated.
-#' If set to FALSE, the function will attempt to load the cached databases instead.
-#' Default is `FALSE`.
-#' @param data_dir A local directory or named list of local paths containing
-#' manually downloaded database source files. If a directory is provided,
-#' [PrepareDB] first searches `data_dir/<db>/`, then `data_dir`. Named lists can
-#' override a database path, e.g. `list(MSigDB = "~/db/msigdb")`.
-#' @param convert_species Whether to use a species-converted database when the annotation is missing for the specified species.
-#' Default is `TRUE`.
-#' @param Ensembl_version An integer specifying the Ensembl version.
-#' Default is `NULL`. If `NULL`, the latest version will be used.
-#' @param custom_TERM2GENE A data frame containing a custom TERM2GENE mapping for the specified species and annotation source.
-#' Default is `NULL`.
-#' @param custom_TERM2NAME A data frame containing a custom TERM2NAME mapping for the specified species and annotation source.
-#' Default is `NULL`.
-#' @param custom_species A character vector specifying the species name to be used in a custom database.
-#' Default is `NULL`.
-#' @param custom_IDtype A character vector specifying the ID type to be used in a custom database.
-#' Default is `NULL`.
-#' @param custom_version A character vector specifying the version to be used in a custom database.
-#' Default is `NULL`.
-#' @param ... Passed to other functions.
+#' @param species `"Homo_sapiens"` or `"Mus_musculus"`.
+#' @param db Annotation sources. One or more of `"GO"`, `"GO_BP"`, `"GO_CC"`,
+#' `"GO_MF"`, `"KEGG"`, `"WikiPathway"`, `"Reactome"`, `"CORUM"`, `"MP"`, `"DO"`,
+#' `"HPO"`, `"PFAM"`, `"CSPA"`, `"Surfaceome"`, `"SPRomeDB"`, `"VerSeDa"`,
+#' `"TFLink"`, `"hTFtarget"`, `"TRRUST"`, `"JASPAR"`, `"ENCODE"`, `"MSigDB"`,
+#' `"CellTalk"`, `"CellChat"`, `"Chromosome"`, `"GeneType"`, `"Enzyme"`, `"TF"`,
+#' `"CytoTRACE2"`. MSigDB subcollections use `"MSigDB_<collection>"` (e.g.
+#' `"MSigDB_H"`). `"CytoTRACE2"` is species-independent and is required by
+#' [RunCytoTRACE].
+#' @param db_IDtypes Gene ID types to include.
+#' @param db_version Database version to retrieve.
+#' @param db_update Force a refresh. `FALSE` loads the cache when available.
+#' @param data_dir Directory or named list of local source files. Searches
+#' `data_dir/<db>/` then `data_dir`. Named lists override a path, e.g.
+#' `list(MSigDB = "~/db/msigdb")`.
+#' @param convert_species Use a species-converted database when the annotation is
+#' missing for `species`.
+#' @param Ensembl_version Ensembl version. `NULL` uses the latest.
+#' @param custom_TERM2GENE,custom_TERM2NAME Custom mappings for `custom_species`.
+#' @param custom_species,custom_IDtype,custom_version Metadata for a custom database.
+#' @param ... Passed to helper functions.
 #'
 #' @return A list containing the prepared gene annotation databases:
 #' \itemize{

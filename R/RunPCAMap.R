@@ -2,7 +2,7 @@
 #'
 #' @inheritParams RunKNNMap
 #' @inheritParams thisutils::log_message
-#' @param ref_pca  A character string specifying the name of a PCA reduction in the reference object to use for calculating the distance metric. If NULL (default), it will be automatically detected as the first PCA reduction.
+#' @param ref_pca Name of a PCA reduction in the reference object to use for calculating the distance metric. If NULL (default), it will be automatically detected as the first PCA reduction.
 #'
 #' @export
 #'

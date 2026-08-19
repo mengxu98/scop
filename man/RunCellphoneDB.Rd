@@ -39,9 +39,9 @@ RunCellphoneDB(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{species}{Species of the input data. CellphoneDB is human-centric; when a
 non-human species is supplied and \code{convert_to_human = TRUE}, gene symbols will

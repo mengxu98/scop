@@ -5,36 +5,25 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams GroupHeatmap
 #' @inheritParams RunDynamicFeatures
-#' @param features A character vector of features to use.
-#' @param lineages A character vector specifying the lineages to plot.
-#' @param group_use A character vector specifying groups from `group.by` to
+#' @param features Features to use.
+#' @param lineages Lineages to plot.
+#' @param group_use Groups from `group.by` to
 #' keep. If both `group_use` and `cells` are provided, their intersection will
-#' be used. Default is `NULL`.
-#' @param cells A character vector of cell names to use. Default is `NULL`.
-#' @param family A character specifying the model used to calculate the dynamic features if needed.
-#' By default, this parameter is set to `NULL`, and the appropriate family will be automatically determined.
-#' @param exp_method A character specifying the method to transform the expression values.
-#' Default is `"log1p"` with options "log1p", "raw", "zscore", "fc", "log2fc".
-#' @param lib_normalize A boolean specifying whether to normalize the expression values using library size.
-#' Default the `layer` is counts, this parameter is set to `TRUE`.
-#' Otherwise, it is set to `FALSE`.
-#' @param libsize A numeric vector specifying the library size for each cell. Default is `NULL`.
-#' @param compare_lineages A boolean specifying whether to compare the lineages in the plot. Default is `TRUE`.
-#' @param compare_features A boolean specifying whether to compare the features in the plot. Default is `FALSE`.
-#' @param add_line A boolean specifying whether to add lines to the plot. Default is `TRUE`.
-#' @param add_interval A boolean specifying whether to add confidence intervals to the plot. Default is `TRUE`.
-#' @param line.size A numeric specifying the size of the lines. Default is `1`.
-#' @param line_palette A character string specifying the name of the palette to use for the line colors. Default is `"Dark2"`.
-#' @param line_palcolor A vector specifying the colors to use for the line palette. Default is `NULL`.
-#' @param add_point A boolean specifying whether to add points to the plot. Default is `TRUE`.
-#' @param pt.size A numeric specifying the size of the points. Default is `1`.
-#' @param point_palette A character string specifying the name of the palette to use for the point colors. Default is `"Chinese"`.
-#' @param point_palcolor A vector specifying the colors to use for the point palette. Default is `NULL`.
-#' @param add_rug A boolean specifying whether to add rugs to the plot. Default is `TRUE`.
-#' @param flip A boolean specifying whether to flip the x-axis. Default is `FALSE`.
-#' @param reverse A boolean specifying whether to reverse the x-axis. Default is `FALSE`.
-#' @param x_order A character specifying the order of the x-axis values. Default is `c("value", "rank")`.
-#' @param aspect.ratio Aspect ratio of the panel. Default is `NULL`.
+#' be used.
+#' @param cells Cell names to use.
+#' @param family GLM family. `NULL` chooses automatically.
+#' @param exp_method Expression transform: `"log1p"`, `"raw"`, `"zscore"`, `"fc"`,
+#' or `"log2fc"`.
+#' @param lib_normalize Library-size normalize. Defaults to `TRUE` when `layer`
+#' is counts.
+#' @param libsize Library size for each cell.
+#' @param compare_lineages,compare_features Compare lineages or features on one plot.
+#' @param add_line,add_interval,line.size,line_palette,line_palcolor Fitted line and CI.
+#' @param add_point,pt.size,point_palette,point_palcolor Overlay points.
+#' @param add_rug Draw rugs.
+#' @param flip,reverse Flip or reverse the x-axis.
+#' @param x_order Order of x-axis values.
+#' @param aspect.ratio Panel aspect ratio.
 #'
 #' @seealso [RunDynamicFeatures]
 #'

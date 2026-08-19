@@ -2,7 +2,7 @@
 % Please edit documentation in R/CellCorHeatmap.R
 \name{CellCorHeatmap}
 \alias{CellCorHeatmap}
-\title{The Cell Correlation Heatmap}
+\title{Cell Correlation Heatmap}
 \usage{
 CellCorHeatmap(
   srt_query,
@@ -139,15 +139,13 @@ If set to TRUE, the similarities will be calculated between query groups rather 
 \item{features}{A vector of feature names to include in the heatmap.
 If not provided, highly variable features (HVF) will be used.}
 
-\item{features_type}{A character vector specifying the type of features to be used for the KNN prediction.
-Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features). Default is \code{"HVF"}.}
+\item{features_type}{Type of features to be used for the KNN prediction.
+Must be one of "HVF" (highly variable features) or "DE" (differentially expressed features).}
 
 \item{feature_source}{The source of the features to be used.
-Must be one of "both", "query", or "ref".
-Default is \code{"both"}.}
+Must be one of "both", "query", or "ref".}
 
-\item{nfeatures}{The maximum number of features to include in the heatmap.
-Default is \code{2000}.}
+\item{nfeatures}{The maximum number of features to include in the heatmap.}
 
 \item{DEtest_param}{The parameters to use for differential expression testing.
 This should be a list with two elements:
@@ -163,59 +161,50 @@ Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "eja
 "dice", "edice", "hamman", "simple matching", and "faith".
 Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.}
 
-\item{k}{The number of nearest neighbors to use for calculating similarities.
-Default is \code{30}.}
+\item{k}{The number of nearest neighbors to use for calculating similarities.}
 
 \item{filter_lowfreq}{The minimum frequency threshold for selecting query dataset features.
-Features with a frequency below this threshold will be excluded from the heatmap.
-Default is \code{0}.}
+Features with a frequency below this threshold will be excluded from the heatmap.}
 
 \item{prefix}{The prefix to use for the KNNPredict tool layer in the query object.
-This can be used to avoid conflicts with other tools in the Seurat object.
-Default is \code{"KNNPredict"}.}
+This can be used to avoid conflicts with other tools in the Seurat object.}
 
 \item{exp_legend_title}{The title for the color legend in the heatmap.
 If not provided, a default title based on the similarity metric will be used.}
 
 \item{border}{Whether to add a border around each heatmap cell.
-The default is \code{TRUE}.}
+The}
 
-\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Whether to draw borders for the heatmap body, cell annotations, and feature
-annotations, respectively. Defaults inherit from \code{border}.}
+\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Borders for the heatmap body and annotations. \code{NULL} inherits \code{border}.}
 
-\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors for the heatmap body, cell annotations, and feature
-annotations when their matching border argument is \code{TRUE}.
-Default is \code{"black"}.}
+\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors when the matching border argument is \code{TRUE}.}
 
-\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths for the heatmap body, cell annotations, and feature
-annotations when their matching border argument is \code{TRUE}.
-Default is \code{1}.}
+\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths when the matching border argument is \code{TRUE}.}
 
 \item{flip}{Whether to flip the orientation of the heatmap.
 If set to TRUE, the rows and columns of the heatmap will be swapped.
 This can be useful for visualizing large datasets in a more compact form.
-The default is \code{FALSE}.}
+The}
 
 \item{limits}{The limits for the color scale in the heatmap.
 If not provided, the default is to use the range of similarity values.}
 
 \item{cluster_rows}{Whether to cluster the rows of the heatmap.
 If set to TRUE, the rows will be rearranged based on hierarchical clustering.
-The default is \code{FALSE}.}
+The}
 
 \item{cluster_columns}{Whether to cluster the columns of the heatmap.
 If set to TRUE, the columns will be rearranged based on hierarchical clustering.
-The default is \code{FALSE}.}
+The}
 
 \item{show_row_names}{Whether to show the row names in the heatmap.
-The default is \code{FALSE}.}
+The}
 
 \item{show_column_names}{Whether to show the column names in the heatmap.
-The default is \code{FALSE}.}
+The}
 
 \item{row_names_side}{The side of the heatmap to show the row names.
-Options are \code{"left"} or \code{"right"}.
-Default is \code{"left"}.}
+Options are \code{"left"} or \code{"right"}.}
 
 \item{column_names_side}{The side of the heatmap to show the column names.
 Options are \code{"top"} or \code{"bottom"}.
@@ -234,12 +223,10 @@ If not provided, the default is to use the query grouping variable.}
 Default is to use the reference grouping variable.}
 
 \item{row_title_side}{The side of the heatmap to show the row title.
-Options are \code{"top"} or \code{"bottom"}.
-Default is \code{"left"}.}
+Options are \code{"top"} or \code{"bottom"}.}
 
 \item{column_title_side}{The side of the heatmap to show the column title.
-Options are \code{"left"} or \code{"right"}.
-Default is \code{"top"}.}
+Options are \code{"left"} or \code{"right"}.}
 
 \item{row_title_rot}{The rotation angle of the row title.
 Default is \code{90} degrees.}
@@ -249,43 +236,33 @@ Default is \code{0} degrees.}
 
 \item{nlabel}{The maximum number of labels to show on each side of the heatmap.
 If set to 0, no labels will be shown.
-This can be useful for reducing clutter in large heatmaps.
-Default is \code{0}.}
+This can be useful for reducing clutter in large heatmaps.}
 
 \item{label_cutoff}{The similarity cutoff for showing labels.
-Only cells with similarity values above this cutoff will have labels.
-Default is \code{0}.}
+Only cells with similarity values above this cutoff will have labels.}
 
 \item{label_by}{The dimension to use for labeling cells.
-Options are \code{"row"} to label cells by row, \code{"column"} to label cells by column, or \code{"both"} to label cells by both row and column.
-Default is \code{"row"}.}
+Options are \code{"row"} to label cells by row, \code{"column"} to label cells by column, or \code{"both"} to label cells by both row and column.}
 
-\item{label_size}{The size of the labels.
-Default is \code{10}.}
+\item{label_size}{The size of the labels.}
 
 \item{heatmap_palette}{The color palette to use for the heatmap.
-This can be any of the palettes available in the circlize package.
-Default is \code{"RdBu"}.}
+This can be any of the palettes available in the circlize package.}
 
 \item{heatmap_palcolor}{The specific colors to use for the heatmap palette.
-This should be a vector of color names or RGB values.
-Default is \code{NULL}.}
+This should be a vector of color names or RGB values.}
 
 \item{query_group_palette}{The color palette to use for the query group legend.
-This can be any of the palettes available in the circlize package.
-Default is \code{"Chinese"}.}
+This can be any of the palettes available in the circlize package.}
 
 \item{query_group_palcolor}{The specific colors to use for the query group palette.
-This should be a vector of color names or RGB values.
-Default is \code{NULL}.}
+This should be a vector of color names or RGB values.}
 
 \item{ref_group_palette}{The color palette to use for the reference group legend.
-This can be any of the palettes available in the circlize package.
-Default is \code{"simspec"}.}
+This can be any of the palettes available in the circlize package.}
 
 \item{ref_group_palcolor}{The specific colors to use for the reference group palette.
-This should be a vector of color names or RGB values.
-Default is \code{NULL}.}
+This should be a vector of color names or RGB values.}
 
 \item{query_annotation}{A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
 Each element of the vector will create a separate cell annotation track in the heatmap.
@@ -294,13 +271,11 @@ If not provided, no cell annotations will be shown.}
 \item{query_annotation_palette}{The color palette to use for the query cell annotation tracks.
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
-If multiple color palettes are provided, each track will be assigned a separate palette.
-Default is \code{"Chinese"}.}
+If multiple color palettes are provided, each track will be assigned a separate palette.}
 
 \item{query_annotation_palcolor}{The specific colors to use for the query cell annotation palettes.
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
-If a single color vector is provided, it will be used for all cell annotation tracks.
-Default is \code{NULL}.}
+If a single color vector is provided, it will be used for all cell annotation tracks.}
 
 \item{query_cell_annotation_params}{Additional parameters to customize the appearance of the query cell annotation tracks.
 This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
@@ -313,14 +288,12 @@ If not provided, no cell annotations will be shown.}
 \item{ref_annotation_palette}{The color palette to use for the reference cell annotation tracks.
 This can be any of the palettes available in the circlize package.
 If a single color palette is provided, it will be used for all cell annotation tracks.
-If multiple color palettes are provided, each track will be assigned a separate palette.
-Default is \code{"Chinese"}.}
+If multiple color palettes are provided, each track will be assigned a separate palette.}
 
 \item{ref_annotation_palcolor}{The specific colors to use for the reference cell annotation palettes.
 This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 If a single color vector is provided, it will be used for all cell annotation tracks.
-If multiple color vectors are provided, each track will be assigned a separate color vector.
-Default is \code{NULL}.}
+If multiple color vectors are provided, each track will be assigned a separate color vector.}
 
 \item{ref_cell_annotation_params}{Detail description of the \code{query_cell_annotation_params} argument.}
 
@@ -329,38 +302,23 @@ If set to \code{TRUE}, the heatmap will be rendered as a raster image using the 
 Default is determined based on the number of rows and columns in the heatmap.}
 
 \item{raster_device}{The raster device to use for rendering the heatmap.
-This should be a character string specifying the device name, such as \code{"png"}, \code{"jpeg"}, or \code{"pdf"}.
-Default is \code{"png"}.}
+This should be a character string specifying the device name, such as \code{"png"}, \code{"jpeg"}, or \code{"pdf"}.}
 
 \item{raster_by_magick}{Whether to use the \code{magick} package for rendering rasters.
 If set to \code{TRUE}, the \code{magick} package will be used instead of the raster package.
 This can be useful for rendering large heatmaps more efficiently.
 The \code{magick} package will automatically be installed if it is not installed.}
 
-\item{height}{The height of the heatmap in the specified units.
-If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.}
+\item{width, height, units}{Heatmap size. \code{NULL} sizes from matrix dimensions.}
 
-\item{width}{The width of the heatmap in the specified units.
-If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.}
+\item{seed}{Random seed.}
 
-\item{units}{The units to use for the width and height of the heatmap.
-Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
+\item{legend.position}{Legend side (\code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}).
+Gap to the heatmap grows automatically when long row names are on the right.}
 
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{ht_params}{Extra arguments passed to \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap}, overriding defaults.}
 
-\item{legend.position}{A character vector specifying the side to place the legends.
-Options are \code{"right"}, \code{"left"}, \code{"top"}, or \code{"bottom"}.
-Default is \code{"right"}.
-When row names are long and shown on the right side, the gap between the heatmap and the legend is automatically increased to avoid overlap.}
-
-\item{ht_params}{Additional parameters to customize the appearance of the heatmap.
-This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
-Any conflicting parameters will override the defaults set by this function.
-Default is \code{list()}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A list with the following elements:
@@ -373,7 +331,7 @@ A list with the following elements:
 }
 }
 \description{
-This function generates a heatmap to visualize the similarity between different cell types or conditions.
+Generates a heatmap to visualize the similarity between different cell types or conditions.
 It takes in Seurat objects or expression matrices as input and calculates pairwise similarities or distance.
 }
 \examples{

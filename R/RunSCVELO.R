@@ -2,7 +2,7 @@
 #'
 #' @description
 #' scVelo is a scalable toolkit for RNA velocity analysis in single cells.
-#' This function runs an enhanced scVelo workflow on a Seurat object with improved error handling,
+#' Runs an enhanced scVelo workflow on a Seurat object with improved error handling,
 #' version compatibility, and modular design.
 #'
 #' @md

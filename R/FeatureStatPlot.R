@@ -1,140 +1,44 @@
-#' @title Statistical plot of features
+#' @title Feature statistical plots
 #'
 #' @md
-#' @inheritParams RunStandardWorkflow
+#' @inheritParams scop-params
 #' @inheritParams CellDimPlot
 #' @inheritParams FeatureDimPlot
-#' @param stat.by A character vector specifying the features to plot.
-#' @param plot.by A character vector specifying how to plot the data, by group or feature.
-#' Possible values are `"group"` or `"feature"`.
-#' Default is `"group"`.
-#' @param bg.by A character vector specifying the variable to use as the background color.
-#' Default is `NULL`.
-#' @param fill.by A string specifying what to fill the plot by.
-#' Possible values are `"group"`, `"feature"`, or `"expression"`.
-#' Default is `"group"`.
-#' @param cells A character vector of cell names to use.
-#' Default is `NULL`.
-#' @param keep_empty Whether to keep empty levels in the plot.
-#' Default is `FALSE`.
-#' @param individual Whether to create individual plots for each group.
-#' Default is `FALSE`.
-#' @param plot_type A string specifying the type of plot to create.
-#' Possible values are `"violin"`, `"box"`, `"bar"`, `"dot"`, or `"col"`.
-#' Default is `"violin"`.
-#' @param alpha The transparency of the plot.
-#' Default is `1`.
-#' @param bg_palette A string specifying the color palette to use for the background.
-#' Default is `"Chinese"`.
-#' @param bg_palcolor A character vector specifying specific colors to use for the background.
-#' Default is `NULL`.
-#' @param bg_alpha The transparency of the background.
-#' Default is `0.2`.
-#' @param add_box Whether to add a box plot to the plot.
-#' Default is `FALSE`.
-#' @param box_color A string specifying the color of the box plot.
-#' Default is `"black"`.
-#' @param box_width The width of the box plot.
-#' Default is `0.1`.
-#' @param box_ptsize The size of the points of the box plot.
-#' Default is `2`.
-#' @param add_point Whether to add individual data points to the plot.
-#' Default is `FALSE`.
-#' @param pt.color A string specifying the color of the data points.
-#' Default is `"grey30"`.
-#' @param jitter.width The width of the jitter.
-#' Default is `0.5`.
-#' @param jitter.height The height of the jitter.
-#' Default is `0.1`.
-#' @param add_trend Whether to add a trend line to the plot.
-#' Default is `FALSE`.
-#' @param trend_color A string specifying the color of the trend line.
-#' Default is `"black"`.
-#' @param trend_linewidth The width of the trend line.
-#' Default is `1`.
-#' @param trend_ptsize The size of the points of the trend line.
-#' Default is `2`.
-#' @param add_stat A string specifying which statistical summary to add to the plot.
-#' Possible values are `"none"`, `"mean"`, or `"median"`.
-#' Default is `"none"`.
-#' @param stat_color A string specifying the color of the statistical summary.
-#' Default is `"black"`.
-#' @param stat_size The size of the statistical summary.
-#' Default is `1`.
-#' @param stat_stroke The stroke width of the statistical summary.
-#' Default is `1`.
-#' @param stat_shape The shape of the statistical summary.
-#' Default is `25`.
-#' @param add_line The y-intercept for adding a horizontal line.
-#' Default is `NULL`.
-#' @param line_color A string specifying the color of the horizontal line.
-#' Default is `"red"`.
-#' @param line_size The width of the horizontal line.
-#' Default is `1`.
-#' @param line_type The type of the horizontal line.
-#' Default is `1`.
-#' @param cols.highlight A string specifying the color of the highlighted cells.
-#' Default is `"red"`.
-#' @param sizes.highlight The size of the highlighted cells.
-#' Default is `1`.
-#' @param alpha.highlight The transparency of the highlighted cells.
-#' Default is `1`.
-#' @param calculate_coexp Whether to calculate co-expression values.
-#' Default is `FALSE`.
-#' @param same.y.lims Whether to use the same y-axis limits for all plots.
-#' Default is `FALSE`.
-#' @param y.min A numeric or character value specifying the minimum y-axis limit.
-#' If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
-#' Default is `NULL`.
-#' @param y.max A numeric or character value specifying the maximum y-axis limit.
-#' If a character value is provided, it must be of the form "qN" where N is a number between 0 and 100 (inclusive) representing the quantile to use for the limit.
-#' Default is `NULL`.
-#' @param y.trans A string specifying the transformation to apply to the y-axis.
-#' Possible values are `"identity"` or `"log2"`.
-#' Default is `"identity"`.
-#' @param y.nbreaks A number of breaks to use for the y-axis.
-#' Default is `5`.
-#' @param sort A logical or character value specifying whether to sort the groups on the x-axis.
-#' If `TRUE`, groups are sorted in increasing order. If FALSE, groups are not sorted.
-#' If `"increasing"`, groups are sorted in increasing order.
-#' If `"decreasing"`, groups are sorted in decreasing order.
-#' Default is `FALSE`.
-#' @param stack A logical specifying whether to stack the plots on top of each other.
-#' Default is `FALSE`.
-#' @param flip A logical specifying whether to flip the plot vertically.
-#' Default is `FALSE`.
-#' @param comparisons A list of length-2 vectors.
-#' The entries in the vector are either the names of 2 values on the x-axis or the 2 integers that correspond to the index of the groups of interest, to be compared.
-#' @param ref_group A string specifying the reference group for pairwise comparisons.
-#' Default is `NULL`.
-#' @param auto_comparison Whether to automatically compare the group with the
-#' highest median `stat.by` value against the other groups. If `ref_group` is
-#' provided, that group is used as the reference instead. Only supported when
-#' `split.by` is `NULL`.
-#' Default is `FALSE`.
-#' @param pairwise_method Method to use for pairwise comparisons.
-#' Default is `"wilcox.test"`.
-#' @param multiplegroup_comparisons Whether to add multiple group comparisons to the plot.
-#' Default is `FALSE`.
-#' @param multiple_method Method to use for multiple group comparisons.
-#' Default is `"kruskal.test"`.
-#' @param sig_label A string specifying the label to use for significant comparisons.
-#' Possible values are `"p.signif"` or `"p.format"`.
-#' Default is `"p.format"`.
-#' @param sig_labelsize The size of the significant comparison labels.
-#' Default is `3.5`.
-#' @param aspect.ratio Aspect ratio of the panel.
-#' Default is `NULL`.
-#' @param x_text_angle Rotation angle for x-axis labels.
-#' Default is `45`.
-#' @param ylab A string specifying the label of the y-axis.
-#' Default is `"Expression level"`.
-#' @param grid_major Whether to show major panel grid lines.
-#' Default is `TRUE`.
-#' @param grid_major_colour Color of major panel grid lines.
-#' @param grid_major_linetype Linetype of major panel grid lines.
-#' @param grid_major_linewidth Line width of major panel grid lines.
-#' @param ... Additional arguments passed to the other functions.
+#' @param stat.by Features to plot.
+#' @param plot.by `"group"` or `"feature"`.
+#' @param bg.by Metadata column used as background color.
+#' @param fill.by `"group"`, `"feature"`, or `"expression"`.
+#' @param cells Cell names to include.
+#' @param keep_empty Keep empty factor levels.
+#' @param individual One plot per group.
+#' @param plot_type `"violin"`, `"box"`, `"bar"`, `"dot"`, or `"col"`.
+#' @param alpha Plot transparency.
+#' @param bg_palette,bg_palcolor,bg_alpha Background palette and transparency.
+#' @param add_box,box_color,box_width,box_ptsize Overlay boxplot.
+#' @param add_point,pt.color,jitter.width,jitter.height Overlay jittered points.
+#' @param add_trend,trend_color,trend_linewidth,trend_ptsize Overlay trend line.
+#' @param add_stat,stat_color,stat_size,stat_stroke,stat_shape
+#' Summary statistic (`"none"`, `"mean"`, or `"median"`).
+#' @param add_line,line_color,line_size,line_type Horizontal line at this y-intercept.
+#' @param cols.highlight,sizes.highlight,alpha.highlight Highlighted cells.
+#' @param calculate_coexp Plot the geometric mean of `stat.by`.
+#' @param same.y.lims Share y-axis limits across panels.
+#' @param y.min,y.max Y-axis limits. Character values like `"q5"` use that quantile.
+#' @param y.trans,y.nbreaks Y-axis transform (`"identity"` or `"log2"`) and breaks.
+#' @param sort Sort groups on the x-axis: `FALSE`, `TRUE`/`"increasing"`, or `"decreasing"`.
+#' @param stack Stack plots vertically.
+#' @param flip Flip x and y.
+#' @param comparisons,ref_group Pairwise comparisons (length-2 name or index vectors).
+#' @param auto_comparison Compare the highest-median group (or `ref_group`) against
+#' the others. Requires `split.by = NULL`.
+#' @param pairwise_method,multiplegroup_comparisons,multiple_method Comparison tests.
+#' @param sig_label,sig_labelsize Significance labels (`"p.signif"` or `"p.format"`).
+#' @param aspect.ratio Panel aspect ratio.
+#' @param x_text_angle Rotation of x-axis labels.
+#' @param ylab Y-axis label.
+#' @param grid_major,grid_major_colour,grid_major_linetype,grid_major_linewidth
+#' Major panel grid lines.
+#' @param ... Additional arguments passed to the plotting helpers.
 #'
 #' @seealso
 #' [CellStatPlot]

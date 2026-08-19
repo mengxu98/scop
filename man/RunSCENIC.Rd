@@ -42,10 +42,7 @@ RunSCENIC(
 \arguments{
 \item{srt}{A Seurat object.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{layer}{Assay layer used as the count matrix.}
 
@@ -132,8 +129,7 @@ automatically reduced to one core.}
 
 \item{conda}{The path or command name of a conda-compatible executable.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A Seurat object with SCENIC results, or a result list when

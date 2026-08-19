@@ -32,48 +32,36 @@ RunMonocle2(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{"counts"}.}
+\item{layer}{Assay layer to use.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) to group cells by.}
 
-\item{expressionFamily}{The distribution family to use for modeling gene expression.
-Default is \code{"negbinomial.size"}.}
+\item{expressionFamily}{The distribution family to use for modeling gene expression.}
 
-\item{features}{A character vector of features to use.
+\item{features}{Features to use.
 Defaults to NULL, in which case features were determined by \code{feature_type}.}
 
 \item{feature_type}{The type of features to use in the analysis.
-Possible values are "HVF" for highly variable features or "Disp" for features selected based on dispersion.
-Default is \code{"HVF"}.}
+Possible values are "HVF" for highly variable features or "Disp" for features selected based on dispersion.}
 
-\item{disp_filter}{A string specifying the filter to use when \code{feature_type} is "Disp".
-Default is \code{"mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit"}.}
+\item{disp_filter}{Filter to use when \code{feature_type} is "Disp".}
 
-\item{max_components}{The maximum number of dimensions to use for dimensionality reduction.
-Default is \code{2}.}
+\item{max_components}{The maximum number of dimensions to use for dimensionality reduction.}
 
 \item{reduction_method}{The dimensionality reduction method to use.
 Possible values are \code{"DDRTree"}, \code{"ICA"}, \code{"tSNE"},
-\code{"SimplePPT"}, \code{"L1-graph"}, \code{"SGL-tree"}.
-Default is \code{"DDRTree"}.}
+\code{"SimplePPT"}, \code{"L1-graph"}, \code{"SGL-tree"}.}
 
 \item{norm_method}{The normalization method to use.
-Possible values are \code{"log"} and \code{"none"}.
-Default is \code{"log"}.}
+Possible values are \code{"log"} and \code{"none"}.}
 
-\item{residualModelFormulaStr}{A model formula specifying the effects to subtract.
-Default is NULL.}
+\item{residualModelFormulaStr}{A model formula specifying the effects to subtract.}
 
-\item{pseudo_expr}{Amount to increase expression values before dimensionality reduction.
-Default is 1.}
+\item{pseudo_expr}{Amount to increase expression values before dimensionality reduction.}
 
 \item{root_state}{The state to use as the root of the trajectory.
 If NULL, the R backend prompts for user input, and the C++ backend prompts
@@ -101,17 +89,9 @@ trajectory topology and is intended for advanced exploratory use.}
 
 \item{ddrtree_tol}{Optional convergence tolerance passed to \code{DDRTree::DDRTree()}.}
 
-\item{show_plot}{Whether to print diagnostic plots during the run.
-Default is \code{FALSE}.}
+\item{show_plot}{Whether to print diagnostic plots during the run.}
 
-\item{xlab}{The x-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{ylab}{The y-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

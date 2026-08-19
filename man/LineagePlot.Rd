@@ -36,33 +36,28 @@ LineagePlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{lineages}{A character vector that specifies the lineages to be included. Typically, use the pseudotime of cells.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
-\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
+\item{dims}{Length-2 vector of dimensions to plot.}
 
-\item{cells}{A character vector of cell names to use.}
+\item{cells}{Cell names to include.}
 
 \item{trim}{A numeric vector of length 2 specifying the quantile range of lineages to include in the plot.}
 
 \item{span}{The span of the loess smoother.}
 
 \item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Dark2"}.}
-
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.}
 
 \item{lineages_arrow}{An arrow object specifying the arrow for lineages.}
 
 \item{linewidth}{The linewidth for the lineages.}
 
-\item{line_bg}{A character string specifying the color for the background lines.}
+\item{line_bg}{Color for the background lines.}
 
 \item{line_bg_stroke}{The stroke width for the background lines.}
 
@@ -72,41 +67,15 @@ Default is \code{NULL}.}
 
 \item{whiskers_alpha}{The transparency for the whiskers.}
 
-\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
-\item{title}{The text for the title.
-Default is \code{NULL}.}
+\item{title, subtitle, xlab, ylab}{Plot labels.}
 
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
-Default is \code{NULL}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{xlab}{The x-axis label of the plot.
-Default is \code{NULL}.}
+\item{seed}{Random seed.}
 
-\item{ylab}{The y-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{return_layer}{Whether to return the plot layers as a list.
-Defaults is \code{FALSE}.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
 Generate a lineage plot based on the pseudotime.

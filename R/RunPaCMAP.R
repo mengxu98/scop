@@ -1,38 +1,28 @@
-#' @title Run PaCMAP (Pairwise Controlled Manifold Approximation)
+#' @title Run PaCMAP
 #'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunUMAP2
 #' @inheritParams RunDM
 #' @param n_components The number of PaCMAP components.
-#' Default is `2`.
 #' @param n.neighbors A number of neighbors considered in the k-Nearest Neighbor graph.
 #' Default is `10` for dataset whose sample size is smaller than 10000.
 #' For large dataset whose sample size (n) is larger than 10000, the default value is: `10 + 15 * (log10(n) - 4)`.
 #' @param MN_ratio The ratio of the ratio of the number of mid-near pairs to the number of neighbors.
-#' Default is `0.5`.
 #' @param FP_ratio The ratio of the ratio of the number of further pairs to the number of neighbors.
-#' Default is `2`.
 #' @param distance_method The distance metric to be used.
-#' Default is `"euclidean"`.
 #' @param lr The learning rate of the Adam optimizer.
-#' Default is `1`.
 #' @param num_iters The number of iterations for PaCMAP optimization.
-#' Default is `450`.
 #' @param apply_pca Whether pacmap should apply PCA to the data before constructing the k-Nearest Neighbor graph.
 #' Using PCA to preprocess the data can largely accelerate the DR process without losing too much accuracy.
 #' Notice that this option does not affect the initialization of the optimization process.
-#' Default is `TRUE`.
 #' @param init The initialization of the lower dimensional embedding.
 #' One of `"pca"` or `"random"`.
-#' Default is `"random"`.
-#' @param reduction.name The name of the reduction to be stored in the Seurat object.
-#' Default is `"pacmap"`.
+#' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the PaCMAP embeddings.
-#' Default is `"PaCMAP_"`.
 #' @param backend PaCMAP backend. `"cpp"` uses a compiled pair sampler and
 #' Adam optimizer; `"python"` retains the official pacmap package.
-#' @param ... Additional arguments to be passed to pacmap.PaCMAP.
+#' @param ... Passed to pacmap.PaCMAP.
 #'
 #' @rdname RunPaCMAP
 #' @export

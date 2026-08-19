@@ -23,54 +23,27 @@ CytoTRACEPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+returns a list of ggplots.}
 
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
+\item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
+with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
+radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
-
-\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase \code{pt.size}
-proportionally when exporting to an unusually large canvas.}
-
-\item{pt.alpha}{The transparency of the data points.
-Default is \code{1}.}
-
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
-
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Additional arguments to be passed to \link{CellDimPlot} and \link{FeatureDimPlot}.}
+\item{...}{Passed to \link{CellDimPlot} and \link{FeatureDimPlot}.}
 }
 \value{
 If \code{combine = TRUE}, returns a \code{patchwork} object combining all plots.

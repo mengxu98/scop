@@ -29,7 +29,7 @@
 #' @param show_row_names,show_column_names Whether to show row or column names in
 #' `"heatmap"` mode.
 #' @param grid_major Whether to show major grid lines for `"bar"` and `"box"`
-#' plots. Default is `FALSE`.
+#' plots.
 #' @param ... Reserved for future use.
 #'
 #' @return A `ggplot` object.

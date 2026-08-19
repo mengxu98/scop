@@ -2,7 +2,7 @@
 % Please edit documentation in R/StandardWorkflow.R
 \name{RunStandardWorkflow}
 \alias{RunStandardWorkflow}
-\title{Standard workflow for scop}
+\title{Standard single-cell and spatial workflow}
 \usage{
 RunStandardWorkflow(
   srt,
@@ -54,171 +54,80 @@ RunStandardWorkflow(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{prefix}{A prefix to add to the names of intermediate objects created by the function.
-Default is \code{"Standard"}.}
+\item{prefix}{Prefix for intermediate object names.}
 
-\item{workflow}{Workflow to run. \code{"single_cell"} keeps the original standard
-workflow. \code{"spatial"} is a basic, single-image Visium-style spot workflow
-that wraps the original workflow with spot QC, spatial variable features,
-optional spatial clustering, and optional deconvolution. It is not a
-multi-slice integration orchestrator.}
+\item{workflow}{\code{"single_cell"} or \code{"spatial"} (basic single-image Visium-style).}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{image}{Name of the Seurat spatial image used by the spatial workflow.
-Required when multiple images are present; a single image is selected
-automatically when \code{NULL}.}
+\item{image}{Spatial image name. Required when multiple images are present;
+a single image is selected automatically when \code{NULL}.}
 
-\item{coord.cols}{Metadata coordinate columns used by the spatial workflow
-when no image is available.}
+\item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
-\item{do_spot_qc}{Whether to run \code{\link[=RunSpotQC]{RunSpotQC()}} in the spatial workflow.}
+\item{do_spot_qc, spot_qc_params}{Run \code{\link[=RunSpotQC]{RunSpotQC()}} and extra arguments.}
 
-\item{spot_qc_params}{Named list of additional arguments passed to
-\code{\link[=RunSpotQC]{RunSpotQC()}}.}
+\item{do_spatial_variable_features, spatial_variable_features_params}{Run \code{\link[=RunSpatialVariableFeatures]{RunSpatialVariableFeatures()}}. The workflow defaults
+\code{set_variable_features = FALSE} so expression HVFs are kept.}
 
-\item{do_spatial_variable_features}{Whether to run
-\code{\link[=RunSpatialVariableFeatures]{RunSpatialVariableFeatures()}} in the spatial workflow.}
+\item{do_spatial_cluster, spatial_cluster_method, spatial_q, bayesspace_params}{Spatial clustering. Only \code{"BayesSpace"} is supported. \code{spatial_q = NULL}
+uses the number of ordinary spot clusters.}
 
-\item{spatial_variable_features_params}{Named list of additional arguments
-passed to \code{\link[=RunSpatialVariableFeatures]{RunSpatialVariableFeatures()}}. The spatial workflow defaults
-\code{set_variable_features} to \code{FALSE} so expression-based highly variable
-features are preserved; pass it explicitly to override this workflow default.}
+\item{reference, reference_label, reference_assay}{Optional single-cell reference
+for deconvolution.}
 
-\item{do_spatial_cluster}{Whether to run spatial-aware clustering in the
-spatial workflow.}
+\item{do_deconvolution, deconvolution_method, deconvolution_params}{Deconvolution (\code{"RCTD"}, \code{"SPOTlight"}, or \code{"Cell2location"}). \code{NULL} runs
+when \code{reference} or cell2location signatures are provided.}
 
-\item{spatial_cluster_method}{Spatial clustering method. Only
-\code{"BayesSpace"} is supported in this workflow.}
+\item{do_normalization, normalization_method}{Normalize if the assay has no
+scaled data (\code{NULL}). One of \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, \code{"scran"}.
+\code{"SCT"} switches downstream steps to the \code{"SCT"} assay.}
 
-\item{spatial_q}{Number of spatial clusters for \code{\link[=RunBayesSpace]{RunBayesSpace()}}. If
-\code{NULL}, the number of ordinary spot clusters is used.}
+\item{do_HVF_finding, HVF_method, nHVF, HVF}{Highly variable features.
+\code{HVF_method} is \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.}
 
-\item{bayesspace_params}{Named list of additional arguments passed to
-\code{\link[=RunBayesSpace]{RunBayesSpace()}}.}
+\item{do_scaling}{Force scaling via ScaleData.}
 
-\item{reference}{Optional single-cell reference used for spatial
-deconvolution.}
+\item{vars_to_regress}{Regressors used in scaling. \code{NULL} uses none.}
 
-\item{reference_label}{Metadata column in \code{reference} containing cell type
-labels.}
+\item{regression_model}{\code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.}
 
-\item{reference_assay}{Assay used in \code{reference} for deconvolution.}
+\item{linear_reduction, linear_reduction_dims, linear_reduction_dims_use, linear_reduction_params, force_linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}).
+\code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
 
-\item{do_deconvolution}{Whether to run deconvolution in the spatial workflow.
-If \code{NULL}, deconvolution is run when \code{reference} or cell2location
-\code{reference_signatures} are provided.}
+\item{nonlinear_reduction, nonlinear_reduction_dims, nonlinear_reduction_params, force_nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"},
+\code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
 
-\item{deconvolution_method}{Deconvolution method. One of \code{"RCTD"},
-\code{"SPOTlight"}, or \code{"Cell2location"}.}
+\item{neighbor_metric, neighbor_k}{Neighbor graph (\code{"euclidean"}, \code{"cosine"},
+\code{"manhattan"}, \code{"hamming"}).}
 
-\item{deconvolution_params}{Named list of additional arguments passed to
-\code{\link[=RunRCTD]{RunRCTD()}}, \code{\link[=RunSPOTlight]{RunSPOTlight()}}, or \code{\link[=RunCell2location]{RunCell2location()}}.}
+\item{cluster_algorithm, cluster_resolution}{Clustering (\code{"louvain"}, \code{"slm"},
+\code{"leiden"}). Larger \code{cluster_resolution} yields fewer clusters.}
 
-\item{do_normalization}{Whether to perform normalization.
-If \code{NULL}, normalization will be performed if the specified assay does not have scaled data.}
+\item{cores}{Number of CPU cores.}
 
-\item{normalization_method}{The method to use for normalization.
-Options are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, or \code{"scran"}.
-When \code{"SCT"} is used on an RNA assay, downstream reductions and clustering
-are run on the generated \code{"SCT"} assay.
-Default is \code{"LogNormalize"}.}
+\item{verbose}{Print progress messages.}
 
-\item{do_HVF_finding}{Whether to perform high variable feature finding.
-If \code{TRUE}, the function will force to find the highly variable features (HVF) using the specified HVF method.}
+\item{seed}{Random seed.}
 
-\item{HVF_method}{The method to use for finding highly variable features.
-Options are \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.
-Default is \code{"vst"}.}
-
-\item{nHVF}{The number of highly variable features to select.
-If NULL, all highly variable features will be used.
-Default is \code{2000}.}
-
-\item{HVF}{A vector of feature names to use as highly variable features.
-If NULL, the function will use the highly variable features identified by the HVF method.}
-
-\item{do_scaling}{Whether to perform scaling.
-If \code{TRUE}, the function will force scaling with the package ScaleData path.}
-
-\item{vars_to_regress}{A vector of feature names to use as regressors in the scaling step.
-If NULL, no regressors will be used.}
-
-\item{regression_model}{The regression model to use for scaling.
-Options are \code{"linear"}, \code{"poisson"}, or \code{"negativebinomial"}.
-Default is \code{"linear"}.}
-
-\item{linear_reduction}{The linear dimensionality reduction method to use.
-Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
-Default is \code{"pca"}.}
-
-\item{linear_reduction_dims}{The number of dimensions to keep after linear dimensionality reduction.
-Default is \code{50}.}
-
-\item{linear_reduction_dims_use}{The dimensions to use for downstream analysis.
-If \code{NULL}, estimated dimensions stored in the linear reduction will be used when available;
-otherwise, the first up to \code{50} dimensions will be used as a fallback.}
-
-\item{linear_reduction_params}{A list of parameters to pass to the linear dimensionality reduction method.}
-
-\item{force_linear_reduction}{Whether to force linear dimensionality reduction even if the specified reduction is already present in the Seurat object.}
-
-\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
-Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
-\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
-Default is \code{"umap"}.}
-
-\item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction.
-If a vector is provided, different numbers of dimensions can be specified for each method.
-Default is \code{2}.}
-
-\item{nonlinear_reduction_params}{A list of parameters to pass to the nonlinear dimensionality reduction method.}
-
-\item{force_nonlinear_reduction}{Whether to force nonlinear dimensionality reduction even if the specified reduction is already present in the Seurat object.
-Default is \code{TRUE}.}
-
-\item{neighbor_metric}{The distance metric to use for finding neighbors.
-Options are \code{"euclidean"}, \code{"cosine"}, \code{"manhattan"}, or \code{"hamming"}.
-Default is \code{"euclidean"}.}
-
-\item{neighbor_k}{The number of nearest neighbors to use for finding neighbors.
-Default is \code{20}.}
-
-\item{cluster_algorithm}{The clustering algorithm to use.
-Options are \code{"louvain"}, \code{"slm"}, or \code{"leiden"}.
-Default is \code{"louvain"}.}
-
-\item{cluster_resolution}{The resolution parameter to use for clustering.
-Larger values result in fewer clusters.
-Default is \code{0.6}.}
-
-\item{cores}{Number of CPU cores used by supported preprocessing steps.
-Default is \code{1}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
-
-\item{...}{Additional parameters to pass to the dimensionality reduction methods.}
+\item{...}{Additional arguments passed to reduction methods.}
 }
 \value{
-A \code{Seurat} object. Completed or partial spatial workflows store the
-per-stage state in \code{srt@tools[["run_standard_spatial_workflow"]]}. The spatial
-variable-feature stage records its effective \code{set_variable_features} value
-and the before/after feature counts. If a stage fails,
-the signaled error carries the same table in its \code{standard_spatial_stages}
-attribute with that stage marked \code{"failed"}.
+A \code{Seurat} object. Spatial workflows store per-stage state in
+\code{srt@tools[["run_standard_spatial_workflow"]]}, including the effective
+\code{set_variable_features} value. A failed stage signals an error with the same
+table in attribute \code{standard_spatial_stages}.
 }
 \description{
-This function performs a standard single-cell or spot-level spatial analysis
-workflow.
+Normalize, find variable features, scale, reduce dimensions, and cluster a
+\code{Seurat} object. \code{workflow = "spatial"} adds spot QC, spatial variable
+features, optional BayesSpace clustering, and optional deconvolution. It is
+not a multi-slice integration orchestrator.
+
+Objects that also contain a \code{ChromatinAssay} are preprocessed sequentially
+(default assay, then chromatin).
 }
 \examples{
 library(Matrix)

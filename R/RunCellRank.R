@@ -8,49 +8,38 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams srt_to_adata
 #' @inheritParams RunStandardWorkflow
-#' @param srt A Seurat object. Default is `NULL`.
+#' @param srt A Seurat object.
 #' If provided, `adata` will be ignored.
-#' @param adata An anndata object. Default is `NULL`.
+#' @param adata An anndata object.
 #' @param basis The basis to use for reduction, e.g., `"UMAP"`.
 #' @param n_pcs Number of principal components to use for linear reduction.
-#' Default is `30`.
 #' @param n_neighbors Number of neighbors to use for constructing the KNN graph.
-#' Default is `30`.
 #' @param cores The number of cores to use for `cellrank`.
 #' @param legend.position Position of legend in plots.
-#' Can be `"on data"`, `"right margin"`, `"bottom right"`, etc. Default is `"on data"`.
+#' Can be `"on data"`, `"right margin"`, `"bottom right"`, etc.
 #' @param show_plot Whether to show the plot.
-#' Default is `FALSE`.
-#' @param save_plot Whether to save plots to files. Default is `FALSE`.
+#' @param save_plot Whether to save plots to files.
 #' @param plot_format Format for saved plots: `"png"` (default), `"pdf"`, or `"svg"`.
-#' @param plot_dpi Resolution (DPI) for saved plots. Default is `300`.
-#' @param plot_prefix Prefix for saved plot filenames. Default is "cellrank".
-#' @param dirpath The directory to save the plots. Default is `"./cellrank"`.
+#' @param plot_dpi Resolution (DPI) for saved plots.
+#' @param plot_prefix Prefix for saved plot filenames.
+#' @param dirpath The directory to save the plots.
 #' @param return_seurat Whether to return a Seurat object instead of an anndata object.
-#' Default is `TRUE`.
 #' @param mode Velocity estimation models to use.
 #' Can be `"deterministic"`, `"stochastic"`, or `"dynamical"`.
 #' If the corresponding velocity reduction (e.g. `stochastic_umap`) is not
 #' found, falls back to the scVelo convention (e.g. `velocity_umap`), which is
 #' what an object converted from an AnnData (via [adata_to_srt]) contains.
 #' @param fitting_by Method used to fit gene velocities for dynamical modeling.
-#' Default is `"stochastic"`.
 #' @param magic_impute Flag indicating whether to perform magic imputation.
-#' Default is `FALSE`.
 #' @param knn The number of nearest neighbors for `magic.MAGIC`.
-#' Default is `5`.
 #' @param t Power to which the diffusion operator is powered for `magic.MAGIC`.
-#' Default is `2`.
 #' @param min_shared_counts Minimum number of counts (both unspliced and spliced) required for a gene.
-#' Default is `30`.
 #' @param stream_smooth Multiplication factor for scale in Gaussian kernel around grid point.
 #' @param stream_density Controls the closeness of streamlines.
 #' When density = 2 (default), the domain is divided into a 60x60 grid,
 #' whereas density linearly scales this grid.
 #' Each cell in the grid can have, at most, one traversing streamline.
-#' Default is `2`.
 #' @param arrow_size Size of arrows.
-#' Default is `5`.
 #' @param arrow_length Length of arrows.
 #' @param arrow_density Amount of velocities to show.
 #' @param calculate_velocity_genes Boolean flag indicating whether to calculate velocity genes.
@@ -62,30 +51,23 @@
 #' or `"wot"` (uses Waddington-OT transport maps through CellRank's RealTimeKernel).
 #' @param time_key Key in metadata for pseudotime. Used when `kernel_type = "pseudotime"`.
 #' If the key doesn't exist, DPT pseudotime will be computed automatically.
-#' Default is `"dpt_pseudotime"`.
 #' @param time_field Key in metadata for experimental time. Used when `kernel_type = "wot"`.
 #' @param growth_iters Number of growth iterations passed to `wot.ot.OTModel`.
-#' Default is `3`.
 #' @param tmap_out Directory used to store or read Waddington-OT transport maps.
 #' @param recalculate Whether to recompute Waddington-OT transport maps even when
-#' `tmap_out` already exists. Default is `FALSE`.
+#' `tmap_out` already exists.
 #' @param estimator_type Type of estimator to use: `"GPCCA"` (default) or `"CFLARE"`.
 #' GPCCA provides coarse-grained analysis and Schur decomposition.
 #' @param use_connectivity_kernel Whether to combine the main kernel with ConnectivityKernel.
-#' Default is `TRUE`.
 #' @param velocity_weight Weight for the VelocityKernel when combining with ConnectivityKernel.
-#' Default is `0.8`.
 #' @param connectivity_weight Weight for the ConnectivityKernel when combining with VelocityKernel.
-#' Default is `0.2`.
 #' Weights are automatically normalized to sum to `1.0`.
 #' @param softmax_scale Scaling parameter for softmax transformation of velocity kernel.
-#' Default is `4`.
 #' @param n_macrostates Number of macrostates to compute.
 #' If `NULL` (default), automatically determined based on eigenvalue spectrum.
 #' @param schur_method Method for Schur decomposition: `"krylov"` or `"brandts"`.
 #' Only used for GPCCA estimator.
 #' @param n_cells_terminal Minimum number of cells required for a state to be considered terminal.
-#' Default is `10`.
 #'
 #' @return
 #' Returns a Seurat object if `return_seurat = TRUE` or an anndata object with CellRank results stored in `obsm`, `obs`, and `varm` slots.
@@ -139,7 +121,7 @@
 #'   group.by = "SubCellType"
 #' )
 #' }
-#' @param backward Whether to compute backward transitions. Default is `FALSE`.
+#' @param backward Whether to compute backward transitions.
 #' @param backend Backend for computation: `"python"` (default) or `"cpp"`.
 #' The C++ path is an explicitly opted-in approximation and does not reproduce
 #' the complete CellRank estimator.

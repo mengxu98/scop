@@ -7,10 +7,10 @@
 ListDB(species = c("Homo_sapiens", "Mus_musculus"), db = NULL)
 }
 \arguments{
-\item{species}{A character vector specifying the species.
+\item{species}{Species.
 Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
-\item{db}{A character vector of database names (for example \code{"GO_BP"},
+\item{db}{Database names (for example \code{"GO_BP"},
 \code{"KEGG"}, \code{"CellChat"}), or a regular expression. If \code{NULL}, all databases
 are listed.}
 }

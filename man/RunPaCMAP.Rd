@@ -4,7 +4,7 @@
 \alias{RunPaCMAP}
 \alias{RunPaCMAP.Seurat}
 \alias{RunPaCMAP.default}
-\title{Run PaCMAP (Pairwise Controlled Manifold Approximation)}
+\title{Run PaCMAP}
 \usage{
 RunPaCMAP(object, ...)
 
@@ -52,73 +52,58 @@ RunPaCMAP(object, ...)
 )
 }
 \arguments{
-\item{object}{An object.
-This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.}
+\item{object}{A \code{Seurat} object, matrix-like object, \code{Neighbor}, or \code{Graph}.}
 
-\item{...}{Additional arguments to be passed to pacmap.PaCMAP.}
+\item{...}{Passed to pacmap.PaCMAP.}
 
-\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
+\item{reduction}{Linear reduction used as input.}
 
-\item{dims}{The dimensions to be used. Default is \code{NULL}.}
+\item{dims}{Dimensions to use. Supply only one of \code{dims}, \code{features},
+\code{neighbor}, or \code{graph}.}
 
-\item{features}{A character vector of features to use. Default is \code{NULL}.}
+\item{features}{Features used instead of a reduction.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{n_components}{The number of PaCMAP components.
-Default is \code{2}.}
+\item{n_components}{The number of PaCMAP components.}
 
 \item{n.neighbors}{A number of neighbors considered in the k-Nearest Neighbor graph.
 Default is \code{10} for dataset whose sample size is smaller than 10000.
 For large dataset whose sample size (n) is larger than 10000, the default value is: \code{10 + 15 * (log10(n) - 4)}.}
 
-\item{MN_ratio}{The ratio of the ratio of the number of mid-near pairs to the number of neighbors.
-Default is \code{0.5}.}
+\item{MN_ratio}{The ratio of the ratio of the number of mid-near pairs to the number of neighbors.}
 
-\item{FP_ratio}{The ratio of the ratio of the number of further pairs to the number of neighbors.
-Default is \code{2}.}
+\item{FP_ratio}{The ratio of the ratio of the number of further pairs to the number of neighbors.}
 
-\item{distance_method}{The distance metric to be used.
-Default is \code{"euclidean"}.}
+\item{distance_method}{The distance metric to be used.}
 
-\item{lr}{The learning rate of the Adam optimizer.
-Default is \code{1}.}
+\item{lr}{The learning rate of the Adam optimizer.}
 
-\item{num_iters}{The number of iterations for PaCMAP optimization.
-Default is \code{450}.}
+\item{num_iters}{The number of iterations for PaCMAP optimization.}
 
 \item{apply_pca}{Whether pacmap should apply PCA to the data before constructing the k-Nearest Neighbor graph.
 Using PCA to preprocess the data can largely accelerate the DR process without losing too much accuracy.
-Notice that this option does not affect the initialization of the optimization process.
-Default is \code{TRUE}.}
+Notice that this option does not affect the initialization of the optimization process.}
 
 \item{init}{The initialization of the lower dimensional embedding.
-One of \code{"pca"} or \code{"random"}.
-Default is \code{"random"}.}
+One of \code{"pca"} or \code{"random"}.}
 
-\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
-Default is \code{"pacmap"}.}
+\item{reduction.name}{Reduction to be stored in the Seurat object.}
 
-\item{reduction.key}{The prefix for the column names of the PaCMAP embeddings.
-Default is \code{"PaCMAP_"}.}
+\item{reduction.key}{The prefix for the column names of the PaCMAP embeddings.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed.use}{Random seed.}
 
 \item{backend}{PaCMAP backend. \code{"cpp"} uses a compiled pair sampler and
 Adam optimizer; \code{"python"} retains the official pacmap package.}
 }
 \description{
-Run PaCMAP (Pairwise Controlled Manifold Approximation)
+Run PaCMAP
 }
 \examples{
 \dontrun{

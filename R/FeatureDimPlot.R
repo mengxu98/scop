@@ -1,31 +1,32 @@
-#' @title Visualize feature values on a 2-dimensional reduction plot
+#' @title Feature values on a 2D reduction
 #'
 #' @description
-#' Plotting cell points on a reduced 2D plane and coloring according to the values of the features.
+#' Color cells on a dimensionality reduction by feature values (assay genes or
+#' numeric metadata).
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @inheritParams RunStandardWorkflow
-#' @param features A character vector or a named list of features to plot.
-#' Features can be gene names in Assay or names of numeric columns in meta.data.
-#' @param layer Which layer to use.
-#' Default is `data`.
-#' @param keep_scale How to handle the color scale across multiple plots. Options are:
+#' @inheritParams scop-params
+#' @param features Features to plot: a character vector or a named list of
+#' assay gene names or numeric metadata columns.
+#' @param layer Assay layer to use.
+#' @param keep_scale Color scale across panels:
 #' \itemize{
-#'   \item `NULL` (no scaling): Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.
-#'   \item `"feature"` (default; by row/feature scaling): The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.
-#'   \item `"all"` (universal scaling): The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.
+#'   \item `NULL`: each panel is scaled independently (not comparable).
+#'   \item `"feature"`: scale each feature across `split.by` panels.
+#'   \item `"all"`: one scale for every feature and panel.
 #' }
-#' @param calculate_coexp Whether to calculate the co-expression value (geometric mean) of the features.
-#' @param compare_features Whether to show the values of multiple features on a single plot.
-#' @param color_blend_mode Blend mode to use when `compare_features = TRUE`
-#' @param bg_cutoff Background cutoff. Points with feature values lower than the cutoff will be considered as background and will be colored with `bg_color`.
-#' @param lower_quantile,upper_quantile,lower_cutoff,upper_cutoff Vector of minimum and maximum cutoff values or quantile values for each feature.
-#' @param label Whether the feature name is labeled in the center of the location of cells with high expression.
-#' @param label_insitu Whether the labels is feature names instead of numbers. Valid only when `compare_features = TRUE`.
+#' @param calculate_coexp Plot the geometric mean of the features.
+#' @param compare_features Show multiple features on one plot.
+#' @param color_blend_mode Blend mode when `compare_features = TRUE`.
+#' @param bg_cutoff Values below this cutoff are colored with `bg_color`.
+#' @param lower_quantile,upper_quantile,lower_cutoff,upper_cutoff Per-feature
+#' quantile or absolute cutoffs for the color scale.
+#' @param label Label high-expressing cells.
+#' @param label_insitu Use feature names instead of numbers when
+#' `compare_features = TRUE`.
 #' @param hex.color Border color of hexagonal bins.
-#' @param force Whether to force drawing regardless of the number of features greater than 100.
-#' Default is `FALSE`.
+#' @param force Draw even when more than 100 features are requested.
 #'
 #' @seealso [CellDimPlot]
 #'
@@ -1629,12 +1630,12 @@ FeatureDimPlot <- function(
   )
 }
 
-#' @title 3D-Dimensional reduction plot for gene expression visualization.
+#' @title Feature values on a 3D reduction
 #'
 #' @md
 #' @inheritParams FeatureDimPlot
 #' @inheritParams CellDimPlot3D
-#' @inheritParams RunStandardWorkflow
+#' @inheritParams scop-params
 #'
 #' @seealso [FeatureDimPlot], [CellDimPlot3D]
 #'

@@ -36,7 +36,7 @@ output of \code{\link[=RunGRNBoost2]{RunGRNBoost2()}}, \code{\link[=RunGENIE3]{R
 values are \code{"Homo_sapiens"}, \code{"Mus_musculus"}, and
 \code{"Drosophila_melanogaster"}.}
 
-\item{backend}{cisTarget runtime backend.
+\item{backend}{CisTarget runtime backend.
 \describe{
 \item{\code{"python"}}{Uses the pySCENIC/ctxcore Python pipeline. This is the
 most tested backend and produces results identical to official SCENIC.}

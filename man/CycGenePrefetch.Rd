@@ -16,15 +16,13 @@ CycGenePrefetch(
 \arguments{
 \item{species}{Latin names for animals, i.e., \code{"Homo_sapiens"}, \code{"Mus_musculus"}}
 
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
 \item{max_tries}{The maximum number of attempts to connect with the BioMart service.}
 
-\item{use_cached_gene}{Whether to use previously cached cell cycle gene conversion results for the species.
-Default is \code{TRUE}.}
+\item{use_cached_gene}{Whether to use previously cached cell cycle gene conversion results for the species.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

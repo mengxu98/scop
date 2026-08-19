@@ -45,45 +45,37 @@ This can be a Seurat object or a matrix-like object (genes as rows, cells as col
 \item{...}{Additional arguments passed to the official
 \code{CytoTRACE2::cytotrace2()} call when \code{backend = "r"}.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{"counts"}.}
+\item{layer}{Assay layer to use.}
 
 \item{species}{The species of the input data.
-Currently supported values are \code{"Homo_sapiens"} and \code{"Mus_musculus"}.
-Default is \code{"Homo_sapiens"}.}
+Currently supported values are \code{"Homo_sapiens"} and \code{"Mus_musculus"}.}
 
 \item{batch_size}{The number of cells to process at once.
 For datasets with more cells than this value, cells are randomly split
 into batches and processed independently.
-No batching if \code{NULL}.
-Default is \code{10000}.}
+No batching if \code{NULL}.}
 
 \item{smooth_batch_size}{The number of cells per subsample for the
 diffusion smoothing step.
-No diffusion subsampling if \code{NULL}.
-Default is \code{1000}.}
+No diffusion subsampling if \code{NULL}.}
 
 \item{compute_knn_smoothing}{Whether to run the final PCA-based adaptive
 kNN smoothing step. Set to \code{FALSE} for a faster score using the pre-kNN
 binned CytoTRACE2 output.}
 
-\item{cores}{Number of cores for parallel processing.
-Default is \code{1}.}
+\item{cores}{Number of cores for parallel processing.}
 
 \item{backend}{Backend used to run CytoTRACE2. \code{"r"} calls the official
 \code{CytoTRACE2::cytotrace2()} implementation and is the default. \code{"cpp"} uses
 the package R/C++ implementation.}
 
-\item{seed}{Random seed for reproducibility. Default is \code{14}.}
+\item{seed}{Random seed for reproducibility.}
 
 \item{data_dir}{Path to the directory containing CytoTRACE2 model data files.
 Used only by \code{backend = "cpp"}. If \code{NULL}, uses model data prepared by
-\code{PrepareDB(db = "CytoTRACE2")}. Default is \code{NULL}.}
+\code{PrepareDB(db = "CytoTRACE2")}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

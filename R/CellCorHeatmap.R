@@ -1,7 +1,7 @@
-#' @title The Cell Correlation Heatmap
+#' @title Cell Correlation Heatmap
 #'
 #' @description
-#' This function generates a heatmap to visualize the similarity between different cell types or conditions.
+#' Generates a heatmap to visualize the similarity between different cell types or conditions.
 #' It takes in Seurat objects or expression matrices as input and calculates pairwise similarities or distance.
 #'
 #' @md
@@ -38,7 +38,6 @@
 #' @param features A vector of feature names to include in the heatmap.
 #' If not provided, highly variable features (HVF) will be used.
 #' @param nfeatures The maximum number of features to include in the heatmap.
-#' Default is `2000`.
 #' @param DEtest_param The parameters to use for differential expression testing.
 #' This should be a list with two elements:
 #' `"max.cells.per.ident"` specifying the maximum number of cells per group for differential expression testing,
@@ -47,36 +46,32 @@
 #' @param DE_threshold The threshold for differential expression.
 #' Only features with adjusted p-values below this threshold will be considered differentially expressed.
 #' @param k The number of nearest neighbors to use for calculating similarities.
-#' Default is `30`.
 #' @param filter_lowfreq The minimum frequency threshold for selecting query dataset features.
 #' Features with a frequency below this threshold will be excluded from the heatmap.
-#' Default is `0`.
 #' @param prefix The prefix to use for the KNNPredict tool layer in the query object.
 #' This can be used to avoid conflicts with other tools in the Seurat object.
-#' Default is `"KNNPredict"`.
 #' @param exp_legend_title The title for the color legend in the heatmap.
 #' If not provided, a default title based on the similarity metric will be used.
 #' @param border Whether to add a border around each heatmap cell.
-#' The default is `TRUE`.
+#' The
 #' @param flip Whether to flip the orientation of the heatmap.
 #' If set to TRUE, the rows and columns of the heatmap will be swapped.
 #' This can be useful for visualizing large datasets in a more compact form.
-#' The default is `FALSE`.
+#' The
 #' @param limits The limits for the color scale in the heatmap.
 #' If not provided, the default is to use the range of similarity values.
 #' @param cluster_rows Whether to cluster the rows of the heatmap.
 #' If set to TRUE, the rows will be rearranged based on hierarchical clustering.
-#' The default is `FALSE`.
+#' The
 #' @param cluster_columns Whether to cluster the columns of the heatmap.
 #' If set to TRUE, the columns will be rearranged based on hierarchical clustering.
-#' The default is `FALSE`.
+#' The
 #' @param show_row_names Whether to show the row names in the heatmap.
-#' The default is `FALSE`.
+#' The
 #' @param show_column_names Whether to show the column names in the heatmap.
-#' The default is `FALSE`.
+#' The
 #' @param row_names_side The side of the heatmap to show the row names.
 #' Options are `"left"` or `"right"`.
-#' Default is `"left"`.
 #' @param column_names_side The side of the heatmap to show the column names.
 #' Options are `"top"` or `"bottom"`.
 #' If not provided, Default is `"top"`.
@@ -90,10 +85,8 @@
 #' Default is to use the reference grouping variable.
 #' @param row_title_side The side of the heatmap to show the row title.
 #' Options are `"top"` or `"bottom"`.
-#' Default is `"left"`.
 #' @param column_title_side The side of the heatmap to show the column title.
 #' Options are `"left"` or `"right"`.
-#' Default is `"top"`.
 #' @param row_title_rot The rotation angle of the row title.
 #' Default is `90` degrees.
 #' @param column_title_rot The rotation angle of the column title.
@@ -101,33 +94,23 @@
 #' @param nlabel The maximum number of labels to show on each side of the heatmap.
 #' If set to 0, no labels will be shown.
 #' This can be useful for reducing clutter in large heatmaps.
-#' Default is `0`.
 #' @param label_cutoff The similarity cutoff for showing labels.
 #' Only cells with similarity values above this cutoff will have labels.
-#' Default is `0`.
 #' @param label_by The dimension to use for labeling cells.
 #' Options are `"row"` to label cells by row, `"column"` to label cells by column, or `"both"` to label cells by both row and column.
-#' Default is `"row"`.
 #' @param label_size The size of the labels.
-#' Default is `10`.
 #' @param heatmap_palette The color palette to use for the heatmap.
 #' This can be any of the palettes available in the circlize package.
-#' Default is `"RdBu"`.
 #' @param heatmap_palcolor The specific colors to use for the heatmap palette.
 #' This should be a vector of color names or RGB values.
-#' Default is `NULL`.
 #' @param query_group_palette The color palette to use for the query group legend.
 #' This can be any of the palettes available in the circlize package.
-#' Default is `"Chinese"`.
 #' @param query_group_palcolor The specific colors to use for the query group palette.
 #' This should be a vector of color names or RGB values.
-#' Default is `NULL`.
 #' @param ref_group_palette The color palette to use for the reference group legend.
 #' This can be any of the palettes available in the circlize package.
-#' Default is `"simspec"`.
 #' @param ref_group_palcolor The specific colors to use for the reference group palette.
 #' This should be a vector of color names or RGB values.
-#' Default is `NULL`.
 #' @param query_annotation A vector of cell metadata column names or assay feature names to use for highlighting specific cells in the heatmap.
 #' Each element of the vector will create a separate cell annotation track in the heatmap.
 #' If not provided, no cell annotations will be shown.
@@ -135,11 +118,9 @@
 #' This can be any of the palettes available in the circlize package.
 #' If a single color palette is provided, it will be used for all cell annotation tracks.
 #' If multiple color palettes are provided, each track will be assigned a separate palette.
-#' Default is `"Chinese"`.
 #' @param query_annotation_palcolor The specific colors to use for the query cell annotation palettes.
 #' This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 #' If a single color vector is provided, it will be used for all cell annotation tracks.
-#' Default is `NULL`.
 #' @param query_cell_annotation_params Additional parameters to customize the appearance of the query cell annotation tracks.
 #' This should be a list with named elements, where the names correspond to parameter names in the [ComplexHeatmap::Heatmap] function.
 #' Any conflicting parameters will override the defaults set by this function.
@@ -151,18 +132,15 @@
 #' This can be any of the palettes available in the circlize package.
 #' If a single color palette is provided, it will be used for all cell annotation tracks.
 #' If multiple color palettes are provided, each track will be assigned a separate palette.
-#' Default is `"Chinese"`.
 #' @param ref_annotation_palcolor The specific colors to use for the reference cell annotation palettes.
 #' This should be a list of vectors, where each vector contains the colors for a specific cell annotation track.
 #' If a single color vector is provided, it will be used for all cell annotation tracks.
 #' If multiple color vectors are provided, each track will be assigned a separate color vector.
-#' Default is `NULL`.
 #' @param use_raster Whether to use raster images for rendering the heatmap.
 #' If set to `TRUE`, the heatmap will be rendered as a raster image using the raster_device argument.
 #' Default is determined based on the number of rows and columns in the heatmap.
 #' @param raster_device The raster device to use for rendering the heatmap.
 #' This should be a character string specifying the device name, such as `"png"`, `"jpeg"`, or `"pdf"`.
-#' Default is `"png"`.
 #' @param raster_by_magick Whether to use the `magick` package for rendering rasters.
 #' If set to `TRUE`, the `magick` package will be used instead of the raster package.
 #' This can be useful for rendering large heatmaps more efficiently.

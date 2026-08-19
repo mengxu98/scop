@@ -29,28 +29,24 @@
 #' This can be a Seurat object or a matrix-like object (genes as rows, cells as columns).
 #' @param species The species of the input data.
 #' Currently supported values are `"Homo_sapiens"` and `"Mus_musculus"`.
-#' Default is `"Homo_sapiens"`.
 #' @param batch_size The number of cells to process at once.
 #' For datasets with more cells than this value, cells are randomly split
 #' into batches and processed independently.
 #' No batching if `NULL`.
-#' Default is `10000`.
 #' @param smooth_batch_size The number of cells per subsample for the
 #' diffusion smoothing step.
 #' No diffusion subsampling if `NULL`.
-#' Default is `1000`.
 #' @param compute_knn_smoothing Whether to run the final PCA-based adaptive
 #' kNN smoothing step. Set to `FALSE` for a faster score using the pre-kNN
 #' binned CytoTRACE2 output.
 #' @param cores Number of cores for parallel processing.
-#' Default is `1`.
 #' @param backend Backend used to run CytoTRACE2. `"r"` calls the official
 #' `CytoTRACE2::cytotrace2()` implementation and is the default. `"cpp"` uses
 #' the package R/C++ implementation.
-#' @param seed Random seed for reproducibility. Default is `14`.
+#' @param seed Random seed for reproducibility.
 #' @param data_dir Path to the directory containing CytoTRACE2 model data files.
 #' Used only by `backend = "cpp"`. If `NULL`, uses model data prepared by
-#' `PrepareDB(db = "CytoTRACE2")`. Default is `NULL`.
+#' `PrepareDB(db = "CytoTRACE2")`.
 #' @param ... Additional arguments passed to the official
 #' `CytoTRACE2::cytotrace2()` call when `backend = "r"`.
 #'

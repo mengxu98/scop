@@ -1,7 +1,7 @@
 #' @title PAGA plot
 #'
 #' @description
-#' This function generates a PAGA plot based on the given Seurat object and PAGA result.
+#' Generates a PAGA plot based on the given Seurat object and PAGA result.
 #'
 #' @md
 #' @inheritParams CellDimPlot
@@ -12,9 +12,7 @@
 #' @param type The type of plot to generate.
 #' Possible values are `"connectivities"` (default) and `"connectivities_tree"`.
 #' @param show_transition Whether to display transitions between different cell states.
-#' Default is `FALSE`.
 #' @param title The text for the title.
-#' Default is `"PAGA"`.
 #'
 #' @seealso
 #' [RunPAGA], [CellDimPlot], [thisplot::GraphPlot]

@@ -68,7 +68,7 @@ PAGAPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{paga}{The PAGA result from the Seurat object.
 Default is \code{srt@tools[["PAGA"]]}, falling back to \code{srt@misc[["paga"]]}
@@ -77,136 +77,28 @@ Default is \code{srt@tools[["PAGA"]]}, falling back to \code{srt@misc[["paga"]]}
 \item{type}{The type of plot to generate.
 Possible values are \code{"connectivities"} (default) and \code{"connectivities_tree"}.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
-\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
+\item{dims}{Length-2 vector of dimensions to plot.}
 
-\item{cells}{A character vector of cell names to use.}
+\item{cells}{Cell names to include.}
 
-\item{show_transition}{Whether to display transitions between different cell states.
-Default is \code{FALSE}.}
+\item{show_transition}{Whether to display transitions between different cell states.}
 
-\item{node_palette}{A character vector specifying the name of the color palette for node groups.}
+\item{label, label_insitu, label.size, label.fg, label.bg, label.bg.r}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
 
-\item{node_palcolor}{A character vector specifying the names of the colors for each node group.}
+\item{label_repel, label_repulsion, label_point_size, label_point_color, label_segment_color}{Repel labels away from cluster centers.}
 
-\item{node_size}{A numeric value or column name of \code{node} specifying the size of the nodes.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
-\item{node_alpha}{A numeric value or column name of \code{node} specifying the transparency of the nodes.}
+\item{title}{The text for the title.}
 
-\item{node_highlight}{A character vector specifying the names of nodes to highlight.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{node_highlight_color}{A character vector specifying the color for highlighting nodes.}
-
-\item{label}{Whether to label the cell groups.}
-
-\item{label.size}{Size of labels.}
-
-\item{label.fg}{Foreground color of label.}
-
-\item{label.bg}{Background color of label.}
-
-\item{label.bg.r}{Background ratio of label.}
-
-\item{label_insitu}{Whether to place the raw labels (group names) in the center of the cells with the corresponding group.
-Default is \code{FALSE}, which using numbers instead of raw labels.}
-
-\item{label_repel}{Logical value indicating whether the label is repel away from the center points.}
-
-\item{label_repulsion}{Force of repulsion between overlapping text labels. Default is \code{20}.}
-
-\item{label_point_size}{Size of the center points.}
-
-\item{label_point_color}{Color of the center points.}
-
-\item{label_segment_color}{Color of the line segment for labels.}
-
-\item{edge_threshold}{The threshold for removing edges.}
-
-\item{edge_line}{A character vector specifying the type of line for edges (straight, curved).}
-
-\item{edge_line_curvature}{The curvature of curved edges.}
-
-\item{edge_line_angle}{The angle of curved edges.}
-
-\item{edge_size}{Size of edges.}
-
-\item{edge_color}{Color of edges.}
-
-\item{edge_alpha}{Transparency of edges.}
-
-\item{edge_shorten}{The length of the edge shorten.}
-
-\item{edge_offset}{The length of the edge offset.}
-
-\item{edge_highlight}{A character vector specifying the names of edges to highlight.}
-
-\item{edge_highlight_color}{A character vector specifying the color for highlighting edges.}
-
-\item{transition_threshold}{The threshold for removing transitions.}
-
-\item{transition_line}{A character vector specifying the type of line for transitions (straight, curved).}
-
-\item{transition_line_curvature}{The curvature of curved transitions.}
-
-\item{transition_line_angle}{The angle of curved transitions.}
-
-\item{transition_size}{A numeric vector specifying the range of transition sizes.}
-
-\item{transition_color}{A character vector specifying the color of the transitions.}
-
-\item{transition_alpha}{The transparency of the transitions.}
-
-\item{transition_arrow_type}{A character vector specifying the type of arrow for transitions (closed, open).}
-
-\item{transition_arrow_angle}{The angle of the transition arrow.}
-
-\item{transition_arrow_length}{The length of the transition arrow.}
-
-\item{transition_shorten}{The length of the transition shorten.}
-
-\item{transition_offset}{The length of the transition offset.}
-
-\item{transition_highlight}{A character vector specifying the names of transitions to highlight.}
-
-\item{transition_highlight_color}{A character vector specifying the color for highlighting transitions.}
-
-\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
-
-\item{title}{The text for the title.
-Default is \code{"PAGA"}.}
-
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
-Default is \code{NULL}.}
-
-\item{xlab}{The x-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{ylab}{The y-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{return_layer}{Whether to return the plot layers as a list.
-Defaults is \code{FALSE}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
-This function generates a PAGA plot based on the given Seurat object and PAGA result.
+Generates a PAGA plot based on the given Seurat object and PAGA result.
 }
 \examples{
 data(pancreas_sub)

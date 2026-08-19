@@ -13,7 +13,7 @@ DefaultReduction(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{pattern}{Character string containing a regular expression to search for.}
 
@@ -21,8 +21,7 @@ DefaultReduction(
 
 \item{max_distance}{Maximum distance allowed for a match.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 Default reduction name.

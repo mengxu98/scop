@@ -29,10 +29,8 @@ or pie plots.}
 
 \item{tool_name}{Name of the \code{srt@tools} result entry.}
 
-\item{image}{Name of the Seurat spatial image. Required when multiple images
-are present; a single image is selected automatically when \code{NULL}.}
-
-\item{overlay_image}{Whether to draw the spatial image beneath spots.}
+\item{image}{Spatial image name. Required when multiple images are present;
+a single image is selected automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 

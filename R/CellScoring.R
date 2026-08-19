@@ -1,7 +1,7 @@
 #' @title Cell scoring
 #'
 #' @description
-#' This function performs cell scoring on a Seurat object.
+#' Performs cell scoring on a Seurat object.
 #' It calculates scores for a given set of features and stores them in `meta.data`
 #' and/or a score assay, depending on `new_assay` and `store_metadata`.
 #'
@@ -19,7 +19,7 @@
 #' `"UCell"`, `"GSVA"`, `"ssGSEA"`, `"zscore"`, `"PLAGE"`, or `"VISION"`.
 #' Multiple methods can be supplied at once; in that case each method is run
 #' separately and stored with a method suffix such as `"GO_AUCell"` or
-#' `"GO_GSVA"`. Default is `"Seurat"`.
+#' `"GO_GSVA"`.
 #' @param backend Scoring backend. `"cpp"` is the default for supported methods.
 #' `"r"` uses the original package implementation. `"cpp"` currently supports
 #' `method = "Seurat"`, `method = "AUCell"`, `method = "GSVA"`,
@@ -27,13 +27,13 @@
 #' `method = "PLAGE"`. `method = "VISION"` falls back to `"r"` when
 #' `backend` is not explicitly set. For `method = "GSVA"` with
 #' `kcdf = "Gaussian"`, `backend = "cpp"` uses the package C++ kernel.
-#' @param classification Whether to perform classification based on the scores. Default is `TRUE`.
-#' @param name The name of the assay to store the scores in. Only used if new_assay is TRUE. Default is `""`.
-#' @param new_assay Whether to create a new assay for storing the scores. Default is `FALSE`.
+#' @param classification Whether to perform classification based on the scores.
+#' @param name Assay to store the scores in. Only used if new_assay is TRUE. Default is `""`.
+#' @param new_assay Whether to create a new assay for storing the scores.
 #' @param store_metadata Whether to also store score columns in `meta.data`.
 #' When `NULL`, manual `features = list(...)` input is stored in `meta.data` by default,
 #' while database-derived results stay assay-only when `new_assay = TRUE`.
-#' @param ... Additional arguments to be passed to the scoring methods.
+#' @param ... Passed to the scoring methods.
 #'
 #' @export
 #'

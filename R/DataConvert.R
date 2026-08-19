@@ -4,13 +4,9 @@
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunStandardWorkflow
 #' @param assay_x Assay to convert as the main data matrix in the anndata object.
-#' Default is `"RNA"`.
 #' @param layer_x Layer name for assay_x in the Seurat object.
-#' Default is `"counts"`.
 #' @param assay_y Assays to convert as layers in the anndata object.
-#' Default is `c("spliced", "unspliced")`.
 #' @param layer_y Layer names for the assay_y in the Seurat object.
-#' Default is `"counts"`.
 #' @param reductions Character vector specifying which Seurat reductions to
 #' convert into `obsm`. Default is `NULL`, which converts all available
 #' reductions.
@@ -20,9 +16,7 @@
 #' convert into `obsp`. Default is `NULL`, which converts all available neighbor
 #' objects.
 #' @param convert_tools Whether to convert the tool-specific data.
-#' Default is `FALSE`.
 #' @param convert_misc Whether to convert the miscellaneous data.
-#' Default is `FALSE`.
 #' @param features Optional vector of features to include in the anndata object.
 #' Default is all features in `assay_x`.
 #'
@@ -339,7 +333,6 @@ get_adata_sparse_assay_layer <- function(
 #' @inheritParams srt_to_adata
 #' @param path Path to the output `.h5ad` file.
 #' @param overwrite Whether to overwrite an existing file.
-#'   Default is `FALSE`.
 #'
 #' @return Invisibly returns the normalized `path` of the written file.
 #'

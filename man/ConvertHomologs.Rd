@@ -123,10 +123,9 @@ original names.}
 \item{collapse_fun}{Function used to collapse duplicated target homologs.
 Currently only \code{"sum"} is supported.}
 
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
-\item{biomart}{The name of the BioMart database that you want to connect to.
+\item{biomart}{BioMart database that you want to connect to.
 Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_mart"}, and \code{"plants_mart"}.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}

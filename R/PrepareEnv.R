@@ -5,9 +5,8 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param envname The name of the conda-compatible Python environment.
+#' @param envname Conda-compatible Python environment.
 #' If `NULL`, the environment name will be set to `"scop_env"`.
-#' Default is `NULL`.
 #' @param conda The path or command name of a conda-compatible executable
 #' (`conda`, `mamba`, or `micromamba`). Use `"auto"` to allow automatically
 #' finding an appropriate environment manager. If `"micromamba"` is requested
@@ -17,7 +16,6 @@
 #' Default is \url{https://repo.anaconda.com/miniconda}.
 #' @param force Whether to force recreation of the environment.
 #' If `TRUE`, the existing environment will be removed and recreated.
-#' Default is `FALSE`.
 #' @param version The Python version.
 #' Default is `"3.10-1"` on macOS and Unix and `"3.11-1"` on Windows.
 #' @param modules Optional Python dependency modules to install in addition to
@@ -3153,7 +3151,6 @@ conda_python <- function(
 #' @md
 #' @inheritParams PrepareEnv
 #' @param force Whether to force removal without confirmation.
-#' Default is `FALSE`.
 #'
 #' @return Invisibly returns `TRUE` if successful, `FALSE` otherwise.
 #'

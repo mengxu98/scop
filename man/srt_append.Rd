@@ -18,7 +18,7 @@ srt_append(
 
 \item{srt_append}{New Seurat object to append.}
 
-\item{slots}{slots names.}
+\item{slots}{Slots names.}
 
 \item{pattern}{A character string containing a regular expression.
 All data with matching names will be considered for appending.}

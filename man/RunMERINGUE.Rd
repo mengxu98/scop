@@ -33,21 +33,16 @@ RunMERINGUE(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{layer}{Assay layer used for expression values.}
 
-\item{image}{Name of the Seurat spatial image used by the spatial workflow.
-Required when multiple images are present; a single image is selected
-automatically when \code{NULL}.}
+\item{image}{Spatial image name. Required when multiple images are present;
+a single image is selected automatically when \code{NULL}.}
 
-\item{coord.cols}{Metadata coordinate columns used by the spatial workflow
-when no image is available.}
+\item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
 \item{features}{Features to score. If \code{NULL}, current variable features are
 used; if no variable features are present, all assay features are used.}
@@ -83,8 +78,7 @@ variable features for \code{assay}.}
 
 \item{store_results}{Whether to store the full result in \code{srt@tools}.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 
 \item{seed}{Random seed used for permutation tests.}
 

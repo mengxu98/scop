@@ -151,38 +151,17 @@ the right side unreadable.}
 
 \item{subtitle}{Plot subtitle.}
 
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
 \item{font.size}{Base font size.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{grid_major}{Whether to show major panel grid lines for applicable statistical panels.
-Default is \code{TRUE}.}
+\item{grid_major}{Whether to show major panel grid lines for applicable statistical panels.}
 
 \item{grid_major_colour}{Color of major panel grid lines.}
 
 \item{grid_major_linetype}{Linetype of major panel grid lines.}
 
 \item{grid_major_linewidth}{Line width of major panel grid lines.}
-
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
-
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
 
 \item{verbose}{Whether to print messages.}
 

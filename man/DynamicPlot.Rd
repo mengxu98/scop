@@ -47,105 +47,61 @@ DynamicPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{lineages}{A character vector specifying the lineages to plot.}
+\item{lineages}{Lineages to plot.}
 
-\item{features}{A character vector of features to use.}
+\item{features}{Features to use.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{group_use}{A character vector specifying groups from \code{group.by} to
+\item{group_use}{Groups from \code{group.by} to
 keep. If both \code{group_use} and \code{cells} are provided, their intersection will
-be used. Default is \code{NULL}.}
+be used.}
 
-\item{cells}{A character vector of cell names to use. Default is \code{NULL}.}
+\item{cells}{Cell names to use.}
 
-\item{layer}{Which layer to use.
-Default is \code{"counts"}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{family}{A character specifying the model used to calculate the dynamic features if needed.
-By default, this parameter is set to \code{NULL}, and the appropriate family will be automatically determined.}
+\item{family}{GLM family. \code{NULL} chooses automatically.}
 
-\item{exp_method}{A character specifying the method to transform the expression values.
-Default is \code{"log1p"} with options "log1p", "raw", "zscore", "fc", "log2fc".}
+\item{exp_method}{Expression transform: \code{"log1p"}, \code{"raw"}, \code{"zscore"}, \code{"fc"},
+or \code{"log2fc"}.}
 
-\item{lib_normalize}{A boolean specifying whether to normalize the expression values using library size.
-Default the \code{layer} is counts, this parameter is set to \code{TRUE}.
-Otherwise, it is set to \code{FALSE}.}
+\item{lib_normalize}{Library-size normalize. Defaults to \code{TRUE} when \code{layer}
+is counts.}
 
-\item{libsize}{A numeric vector specifying the library size for each cell. Default is \code{NULL}.}
+\item{libsize}{Library size for each cell.}
 
-\item{compare_lineages}{A boolean specifying whether to compare the lineages in the plot. Default is \code{TRUE}.}
+\item{compare_lineages, compare_features}{Compare lineages or features on one plot.}
 
-\item{compare_features}{A boolean specifying whether to compare the features in the plot. Default is \code{FALSE}.}
+\item{add_line, add_interval, line.size, line_palette, line_palcolor}{Fitted line and CI.}
 
-\item{add_line}{A boolean specifying whether to add lines to the plot. Default is \code{TRUE}.}
+\item{add_point, pt.size, point_palette, point_palcolor}{Overlay points.}
 
-\item{add_interval}{A boolean specifying whether to add confidence intervals to the plot. Default is \code{TRUE}.}
+\item{add_rug}{Draw rugs.}
 
-\item{line.size}{A numeric specifying the size of the lines. Default is \code{1}.}
+\item{flip, reverse}{Flip or reverse the x-axis.}
 
-\item{line_palette}{A character string specifying the name of the palette to use for the line colors. Default is \code{"Dark2"}.}
+\item{x_order}{Order of x-axis values.}
 
-\item{line_palcolor}{A vector specifying the colors to use for the line palette. Default is \code{NULL}.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
-\item{add_point}{A boolean specifying whether to add points to the plot. Default is \code{TRUE}.}
+\item{legend.position}{Legend side (\code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}).
+Gap to the heatmap grows automatically when long row names are on the right.}
 
-\item{pt.size}{A numeric specifying the size of the points. Default is \code{1}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{point_palette}{A character string specifying the name of the palette to use for the point colors. Default is \code{"Chinese"}.}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+returns a list of ggplots.}
 
-\item{point_palcolor}{A vector specifying the colors to use for the point palette. Default is \code{NULL}.}
+\item{cores}{Number of CPU cores.}
 
-\item{add_rug}{A boolean specifying whether to add rugs to the plot. Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 
-\item{flip}{A boolean specifying whether to flip the x-axis. Default is \code{FALSE}.}
-
-\item{reverse}{A boolean specifying whether to reverse the x-axis. Default is \code{FALSE}.}
-
-\item{x_order}{A character specifying the order of the x-axis values. Default is \code{c("value", "rank")}.}
-
-\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{NULL}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
-
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
-
-\item{cores}{Number of CPU cores used by supported preprocessing steps.
-Default is \code{1}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Random seed.}
 }
 \description{
 Plot dynamic features across pseudotime

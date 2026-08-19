@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunCellQC.R
 \name{RunDecontX}
 \alias{RunDecontX}
-\title{Run ambient RNA decontamination with decontX}
+\title{Ambient RNA decontamination with decontX}
 \usage{
 RunDecontX(
   srt,
@@ -22,59 +22,39 @@ RunDecontX(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{assay}{The name of the assay to be used for decontamination.
-Default is \code{"RNA"}.}
+\item{assay}{Assay to decontaminate.}
 
-\item{group.by}{Cell cluster labels passed to \code{\link[decontX:decontX]{decontX::decontX()}}.
-Can be \code{NULL}, a meta.data column name, or a vector aligned to cells.
-Default is \code{NULL}.}
+\item{group.by, batch}{Cell cluster and batch labels passed to \code{\link[decontX:decontX]{decontX::decontX()}}.
+Column name, cell-aligned vector, or \code{NULL}.}
 
-\item{batch}{Batch labels passed to \code{\link[decontX:decontX]{decontX::decontX()}}.
-Can be \code{NULL}, a meta.data column name, or a vector aligned to cells.
-Default is \code{NULL}.}
+\item{background}{Background / empty-droplet input: a \code{Seurat} object,
+\code{SingleCellExperiment}, or count matrix.}
 
-\item{background}{Optional background / empty-droplet input passed to \code{\link[decontX:decontX]{decontX::decontX()}}.
-Can be a \code{Seurat} object, \code{SingleCellExperiment}, or count matrix.
-Default is \code{NULL}.}
+\item{background_assay}{Assay used when \code{background} is a \code{Seurat} or
+\code{SingleCellExperiment}. \code{NULL} uses \code{assay} (Seurat) or \code{"counts"} (SCE).}
 
-\item{background_assay}{Assay name used when \code{background} is a \code{Seurat} object
-or \code{SingleCellExperiment}.
-Default is \code{NULL}, which falls back to \code{assay} for \code{Seurat} background
-and \code{"counts"} for \code{SingleCellExperiment} background.}
+\item{bg_batch}{Batch labels for \code{background}.}
 
-\item{bg_batch}{Batch labels for \code{background} passed to \code{\link[decontX:decontX]{decontX::decontX()}}.
-Can be \code{NULL}, a metadata column name, or a vector aligned to the background droplets.
-Default is \code{NULL}.}
+\item{assay_name, store_assay, round_counts}{Store rounded decontaminated counts
+as a new assay.}
 
-\item{assay_name}{Name of the assay used to store decontaminated counts.
-Default is \code{"decontXcounts"}.}
+\item{data_type}{Optional \code{\link[=CheckDataType]{CheckDataType()}} result, used internally to avoid
+rescanning the count matrix.}
 
-\item{store_assay}{Whether to store decontaminated counts as a new assay.
-Default is \code{TRUE}.}
+\item{seed}{Random seed.}
 
-\item{round_counts}{Whether to round decontaminated counts before creating the assay.
-Default is \code{FALSE}.}
+\item{...}{Passed to \code{\link[decontX:decontX]{decontX::decontX()}}.}
 
-\item{data_type}{Optional precomputed result from \code{\link[=CheckDataType]{CheckDataType()}} for the
-input assay. Primarily used internally to avoid repeated scans of the same
-count matrix across nested QC calls.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
-
-\item{...}{Additional arguments passed to \code{\link[decontX:decontX]{decontX::decontX()}}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
-Returns a Seurat object with decontX contamination estimates stored in the meta.data,
-and optional decontaminated counts stored in a new assay.
+A \code{Seurat} object with decontX contamination in \code{meta.data} and
+optional decontaminated counts in a new assay.
 }
 \description{
-Run ambient RNA decontamination with decontX
+Ambient RNA decontamination with decontX
 }
 \examples{
 data(pancreas_sub)

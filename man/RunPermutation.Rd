@@ -15,9 +15,9 @@ RunPermutation(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{split.by}{Metadata column that identifies the condition groups to
 compare. For sample-level methods, if \code{split.by} is omitted and \code{sample.by}

@@ -17,9 +17,9 @@ RunCCC(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) to group cells by.}
 
 \item{methods}{Supported cell-cell communication methods to run. The
 default core methods are \code{"CellChat"}, \code{"CellphoneDB"}, and \code{"LIANA"}.

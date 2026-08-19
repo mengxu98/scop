@@ -14,18 +14,17 @@ RenameClusters(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{group.by}{The old group used to rename cells.}
 
 \item{nameslist}{A named list of new cluster value.}
 
-\item{name}{The name of the new cluster stored in the Seurat object.}
+\item{name}{New cluster stored in the Seurat object.}
 
 \item{keep_levels}{If the old group is a factor, keep the order of the levels.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
 Rename clusters for the Seurat object

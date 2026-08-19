@@ -63,33 +63,20 @@ RunSCVELO(
 )
 }
 \arguments{
-\item{srt}{A Seurat object. Default is \code{NULL}.
+\item{srt}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
-\item{adata}{An anndata object. Default is \code{NULL}.}
+\item{adata}{An anndata object.}
 
-\item{assay_x}{Assay to convert as the main data matrix in the anndata object.
-Default is \code{"RNA"}.}
+\item{assay_x}{Assay to convert as the main data matrix in the anndata object.}
 
-\item{layer_x}{Layer name for assay_x in the Seurat object.
-Default is \code{"counts"}.}
+\item{layer_x}{Layer name for assay_x in the Seurat object.}
 
-\item{assay_y}{Assays to convert as layers in the anndata object.
-Default is \code{c("spliced", "unspliced")}.}
+\item{assay_y}{Assays to convert as layers in the anndata object.}
 
-\item{layer_y}{Layer names for the assay_y in the Seurat object.
-Default is \code{"counts"}.}
+\item{layer_y}{Layer names for the assay_y in the Seurat object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
-
-\item{linear_reduction}{The linear dimensionality reduction method to use.
-Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
-Default is \code{"pca"}.}
-
-\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
-Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
-\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
-Default is \code{"umap"}.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{basis}{The basis to use for reduction, e.g., \code{"UMAP"}.}
 
@@ -99,26 +86,19 @@ If the corresponding velocity reduction (e.g. \code{stochastic_umap}) is not
 found, falls back to the scVelo convention (e.g. \code{velocity_umap}), which is
 what an object converted from an AnnData (via \link{adata_to_srt}) contains.}
 
-\item{fitting_by}{Method used to fit gene velocities for dynamical modeling.
-Default is \code{"stochastic"}.}
+\item{fitting_by}{Method used to fit gene velocities for dynamical modeling.}
 
-\item{magic_impute}{Flag indicating whether to perform magic imputation.
-Default is \code{FALSE}.}
+\item{magic_impute}{Flag indicating whether to perform magic imputation.}
 
-\item{knn}{The number of nearest neighbors for \code{magic.MAGIC}.
-Default is \code{5}.}
+\item{knn}{The number of nearest neighbors for \code{magic.MAGIC}.}
 
-\item{t}{Power to which the diffusion operator is powered for \code{magic.MAGIC}.
-Default is \code{2}.}
+\item{t}{Power to which the diffusion operator is powered for \code{magic.MAGIC}.}
 
-\item{min_shared_counts}{Minimum number of counts (both unspliced and spliced) required for a gene.
-Default is \code{30}.}
+\item{min_shared_counts}{Minimum number of counts (both unspliced and spliced) required for a gene.}
 
-\item{n_pcs}{Number of principal components to use for linear reduction.
-Default is \code{30}.}
+\item{n_pcs}{Number of principal components to use for linear reduction.}
 
-\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.
-Default is \code{30}.}
+\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.}
 
 \item{filter_genes}{Whether to filter genes based on minimum counts.}
 
@@ -139,13 +119,11 @@ Default is \code{30}.}
 \item{stream_density}{Controls the closeness of streamlines.
 When density = 2 (default), the domain is divided into a 60x60 grid,
 whereas density linearly scales this grid.
-Each cell in the grid can have, at most, one traversing streamline.
-Default is \code{2}.}
+Each cell in the grid can have, at most, one traversing streamline.}
 
 \item{arrow_length}{Length of arrows.}
 
-\item{arrow_size}{Size of arrows.
-Default is \code{5}.}
+\item{arrow_size}{Size of arrows.}
 
 \item{arrow_density}{Amount of velocities to show.}
 
@@ -177,28 +155,22 @@ The velocity embedding itself is always graph-projected, matching
 
 \item{cores}{The number of cores to use for \code{cellrank}.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
-
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
 \item{legend.position}{Position of legend in plots.
-Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Default is \code{"on data"}.}
+Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc.}
 
-\item{show_plot}{Whether to show the plot.
-Default is \code{FALSE}.}
+\item{show_plot}{Whether to show the plot.}
 
-\item{save_plot}{Whether to save plots to files. Default is \code{FALSE}.}
+\item{save_plot}{Whether to save plots to files.}
 
 \item{plot_format}{Format for saved plots: \code{"png"} (default), \code{"pdf"}, or \code{"svg"}.}
 
-\item{plot_dpi}{Resolution (DPI) for saved plots. Default is \code{300}.}
+\item{plot_dpi}{Resolution (DPI) for saved plots.}
 
-\item{plot_prefix}{Prefix for saved plot filenames. Default is "cellrank".}
+\item{plot_prefix}{Prefix for saved plot filenames.}
 
-\item{dirpath}{The directory to save the plots. Default is \code{"./cellrank"}.}
+\item{dirpath}{The directory to save the plots.}
 
 \item{backend}{Backend used to compute RNA velocity. \code{"python"} keeps the
 original scVelo workflow. \code{"cpp"} uses the package C++ implementation for a
@@ -207,15 +179,14 @@ stochastic velocity embedding that is compatible with \link{VelocityPlot}.}
 \item{max_dense_gib}{Maximum estimated GiB allowed for the dense expression
 working matrices used by the C++ path.}
 
-\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
-Default is \code{TRUE}.}
+\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{
 scVelo is a scalable toolkit for RNA velocity analysis in single cells.
-This function runs an enhanced scVelo workflow on a Seurat object with improved error handling,
+Runs an enhanced scVelo workflow on a Seurat object with improved error handling,
 version compatibility, and modular design.
 }
 \examples{

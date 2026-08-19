@@ -2,7 +2,7 @@
 % Please edit documentation in R/FeatureDimPlot.R
 \name{FeatureDimPlot3D}
 \alias{FeatureDimPlot3D}
-\title{3D-Dimensional reduction plot for gene expression visualization.}
+\title{Feature values on a 3D reduction}
 \usage{
 FeatureDimPlot3D(
   srt,
@@ -27,50 +27,27 @@ FeatureDimPlot3D(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{features}{A character vector or a named list of features to plot.
-Features can be gene names in Assay or names of numeric columns in meta.data.}
+\item{features}{Features to plot: a character vector or a named list of
+assay gene names or numeric metadata columns.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
-\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
+\item{dims}{Length-2 vector of dimensions to plot.}
 
-\item{axis_labs}{A character vector of length 3 indicating the labels for the axes.}
+\item{axis_labs}{Length-3 axis labels.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Metadata column to facet by.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{calculate_coexp}{Whether to calculate the co-expression value (geometric mean) of the features.}
-
-\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase \code{pt.size}
-proportionally when exporting to an unusually large canvas.}
-
-\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
-If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
-Default is \code{NULL}.}
-
-\item{cols.highlight}{Color used to highlight the cells.}
+\item{calculate_coexp}{Plot the geometric mean of the features.}
 
 \item{shape.highlight}{Shape of the cell to highlight.
 See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}}
-
-\item{sizes.highlight}{Size of highlighted cell points.}
 
 \item{width}{Width in pixels, defaults to automatic sizing.}
 
@@ -78,14 +55,12 @@ See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{sca
 
 \item{save}{The name of the file to save the plot to. Must end in ".html".}
 
-\item{force}{Whether to force drawing regardless of the number of features greater than 100.
-Default is \code{FALSE}.}
+\item{force}{Draw even when more than 100 features are requested.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
-3D-Dimensional reduction plot for gene expression visualization.
+Feature values on a 3D reduction
 }
 \examples{
 data(pancreas_sub)

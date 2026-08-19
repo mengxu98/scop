@@ -20,21 +20,16 @@ RunSpaNorm(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{layer}{Assay layer used for expression values.}
 
-\item{image}{Name of the Seurat spatial image used by the spatial workflow.
-Required when multiple images are present; a single image is selected
-automatically when \code{NULL}.}
+\item{image}{Spatial image name. Required when multiple images are present;
+a single image is selected automatically when \code{NULL}.}
 
-\item{coord.cols}{Metadata coordinate columns used by the spatial workflow
-when no image is available.}
+\item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
 \item{new_assay}{Name of the assay used to store SpaNorm-normalized data.}
 
@@ -45,8 +40,7 @@ when no image is available.}
 \item{store_spe}{Whether to store the backend \code{SpatialExperiment} returned
 by \code{SpaNorm}.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 
 \item{coordinate_space}{Coordinate system supplied to SpaNorm. The default
 is raw acquisition coordinates; use \code{"legacy_display"} explicitly to

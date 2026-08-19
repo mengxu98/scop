@@ -45,12 +45,12 @@ results of differential expression analysis (\code{\link[=RunDEtest]{RunDEtest()
 If specified, the genes and groups will be extracted from the object automatically.
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{test.use}{A character vector specifying the test to be used in differential expression analysis.
+\item{test.use}{Test to be used in differential expression analysis.
 This argument is only used if \code{srt} is specified.}
 
-\item{DE_threshold}{A character vector specifying the filter condition for differential expression analysis.
+\item{DE_threshold}{Filter condition for differential expression analysis.
 This argument is only used if \code{srt} is specified.}
 
 \item{scoreType}{This parameter defines the GSEA score type.
@@ -59,46 +59,43 @@ By default ("std") the enrichment score is computed as in the original GSEA.
 The "pos" and "neg" score types are intended to be used for one-tailed tests
 (i.e. when one is interested only in positive ("pos") or negateive ("neg") enrichment).}
 
-\item{geneID}{A character vector specifying the gene IDs.}
+\item{geneID}{Gene IDs.}
 
 \item{geneScore}{A numeric vector that specifies the gene scores,
 for example, the log2(fold change) values of gene expression.}
 
 \item{geneID_groups}{A factor vector specifying the group labels for each gene.}
 
-\item{geneID_exclude}{A character vector specifying the gene IDs to be excluded from the analysis.}
+\item{geneID_exclude}{Gene IDs to be excluded from the analysis.}
 
-\item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
+\item{IDtype}{Type of gene IDs in the \code{srt} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
-\item{result_IDtype}{A character vector specifying the desired type of gene ID to be used in the output.
+\item{result_IDtype}{Desired type of gene ID to be used in the output.
 This argument is used to convert the gene IDs from \code{IDtype} to \code{result_IDtype}.}
 
-\item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
-Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
+\item{species}{\code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
-\item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
-Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"}.
-MSigDB subcollections can be requested as \code{"MSigDB_<collection>"}, such as
-\code{"MSigDB_H"} for human Hallmark and \code{"MSigDB_MH"} for mouse Hallmark.
-Note: \code{"CytoTRACE2"} is species-independent and downloads pre-trained model data
-required by \link{RunCytoTRACE}.}
+\item{db}{Annotation sources. One or more of \code{"GO"}, \code{"GO_BP"}, \code{"GO_CC"},
+\code{"GO_MF"}, \code{"KEGG"}, \code{"WikiPathway"}, \code{"Reactome"}, \code{"CORUM"}, \code{"MP"}, \code{"DO"},
+\code{"HPO"}, \code{"PFAM"}, \code{"CSPA"}, \code{"Surfaceome"}, \code{"SPRomeDB"}, \code{"VerSeDa"},
+\code{"TFLink"}, \code{"hTFtarget"}, \code{"TRRUST"}, \code{"JASPAR"}, \code{"ENCODE"}, \code{"MSigDB"},
+\code{"CellTalk"}, \code{"CellChat"}, \code{"Chromosome"}, \code{"GeneType"}, \code{"Enzyme"}, \code{"TF"},
+\code{"CytoTRACE2"}. MSigDB subcollections use \code{"MSigDB_<collection>"} (e.g.
+\code{"MSigDB_H"}). \code{"CytoTRACE2"} is species-independent and is required by
+\link{RunCytoTRACE}.}
 
-\item{db_update}{Whether the gene annotation databases should be forcefully updated.
-If set to FALSE, the function will attempt to load the cached databases instead.
-Default is \code{FALSE}.}
+\item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
-\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is \code{"latest"}.}
+\item{db_version}{Database version to retrieve.}
 
 \item{db_combine}{Whether to combine multiple databases into one.
 If \code{TRUE}, all database specified by \code{db} will be combined as one named "Combined".}
 
-\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is \code{TRUE}.}
+\item{convert_species}{Use a species-converted database when the annotation is
+missing for \code{species}.}
 
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
@@ -115,15 +112,15 @@ The first column should contain the term IDs, and the second column should conta
 
 \item{maxGSSize}{The maximum size of a gene set to be considered in the enrichment analysis.}
 
-\item{unlimited_db}{A character vector specifying the names of databases that do not have size restrictions.}
+\item{unlimited_db}{Names of databases that do not have size restrictions.}
 
 \item{GO_simplify}{Whether to simplify the GO terms.
 If \code{TRUE}, additional results with simplified GO terms will be returned.}
 
-\item{GO_simplify_cutoff}{A character vector specifying the filter condition for simplification of GO terms.
+\item{GO_simplify_cutoff}{Filter condition for simplification of GO terms.
 This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 
-\item{simplify_method}{A character vector specifying the method to be used for simplification of GO terms.
+\item{simplify_method}{Method to be used for simplification of GO terms.
 This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 
 \item{simplify_similarityCutoff}{The similarity cutoff for simplification of GO terms.
@@ -135,7 +132,7 @@ Default is \code{1}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Passed to other functions.}
+\item{...}{Passed to helper functions.}
 }
 \value{
 If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.

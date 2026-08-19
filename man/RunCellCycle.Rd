@@ -18,31 +18,26 @@ RunCellCycle(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{method}{Cell cycle estimation method. One of \code{"Seurat"}, \code{"cyclone"},
 or \code{"tricycle"}.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Data layer used by \code{cyclone} and \code{tricycle}. Default is \code{"counts"}.}
+\item{layer}{Data layer used by \code{cyclone} and \code{tricycle}.}
 
 \item{species}{Latin names for animals, i.e., \code{"Homo_sapiens"}, \code{"Mus_musculus"}}
 
-\item{name}{Prefix for metadata columns and tricycle reduction names.
-Default is \code{"CellCycle"}.}
+\item{name}{Prefix for metadata columns and tricycle reduction names.}
 
 \item{phase_col}{Optional metadata column used to store the final phase call,
 for example \code{"Phase"}. Default is \code{NULL}, which avoids writing a compatibility
 phase column.}
 
-\item{overwrite}{Whether to overwrite existing output columns. Default is \code{FALSE}.}
+\item{overwrite}{Whether to overwrite existing output columns.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 
 \item{...}{Additional arguments passed to the selected method.}
 }

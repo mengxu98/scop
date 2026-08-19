@@ -2,7 +2,7 @@
 #'
 #' @inheritParams RunKNNMap
 #' @inheritParams thisutils::log_message
-#' @param ref_css The name of the CSS reduction in the reference object to use for calculating the distance metric.
+#' @param ref_css CSS reduction in the reference object to use for calculating the distance metric.
 #'
 #' @seealso
 #' [RunKNNMap]

@@ -101,7 +101,7 @@ comparison plots.}
 in \code{"volcano"} plots and non-supporting targets in \code{"targets"} plots.}
 
 \item{palette, palcolor}{Palette passed to \code{palette_colors()} for comparison
-plots. Default is \code{"RdBu"}.}
+plots.}
 
 \item{heatmap_palette, heatmap_palcolor}{Palette passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}}
 when \code{plot_type = "heatmap"}.}
@@ -121,7 +121,7 @@ when \code{plot_type = "heatmap"}.}
 \code{plot_type = "stat"}.}
 
 \item{compare_expression}{Whether \code{"dim"} also plots TF gene expression
-beside TF activity. Default is \code{TRUE}.}
+beside TF activity.}
 
 \item{expression_assay, expression_layer}{Assay and layer used for TF
 expression in \code{"dim"} and for target genes in \code{"targets"}.}
@@ -139,28 +139,16 @@ reduction of \code{srt} is used.}
 \item{point_size}{Point size in \code{"lollipop"}, \code{"volcano"}, and
 \code{"targets"} plots.}
 
-\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
 \item{title, xlab, ylab, fill.title}{Axis, plot, and legend titles.}
 
-\item{flip}{Whether to draw comparison bar/lollipop plots horizontally.
-Default is \code{TRUE}.}
+\item{flip}{Whether to draw comparison bar/lollipop plots horizontally.}
 
 \item{cols}{Optional three-color vector used instead of \code{palette} for
 diverging comparison scales. Kept for backward compatibility.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{return_data}{Whether to return a list with the plot and statistics.}
 

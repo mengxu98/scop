@@ -43,7 +43,7 @@
 #' @param padjustCutoff Adjusted p-value cutoff used to mark significant TFs
 #' in `"volcano"` plots and non-supporting targets in `"targets"` plots.
 #' @param palette,palcolor Palette passed to `palette_colors()` for comparison
-#' plots. Default is `"RdBu"`.
+#' plots.
 #' @param heatmap_palette,heatmap_palcolor Palette passed to [GroupHeatmap()]
 #' when `plot_type = "heatmap"`.
 #' @param group_palette,group_palcolor Group annotation palette passed to
@@ -56,7 +56,7 @@
 #' @param stat_args Additional arguments passed to [FeatureStatPlot()] when
 #' `plot_type = "stat"`.
 #' @param compare_expression Whether `"dim"` also plots TF gene expression
-#' beside TF activity. Default is `TRUE`.
+#' beside TF activity.
 #' @param expression_assay,expression_layer Assay and layer used for TF
 #' expression in `"dim"` and for target genes in `"targets"`.
 #' @param stat_plot_type Distribution plot type passed to [FeatureStatPlot()]
@@ -69,7 +69,6 @@
 #' `"targets"` plots.
 #' @param title,xlab,ylab,fill.title Axis, plot, and legend titles.
 #' @param flip Whether to draw comparison bar/lollipop plots horizontally.
-#' Default is `TRUE`.
 #' @param cols Optional three-color vector used instead of `palette` for
 #' diverging comparison scales. Kept for backward compatibility.
 #' @param return_data Whether to return a list with the plot and statistics.

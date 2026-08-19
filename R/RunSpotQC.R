@@ -8,8 +8,8 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
-#' @param return_filtered Logical indicating whether to return a spot-filtered
-#' Seurat object. Default is `FALSE`.
+#' @param return_filtered Whether to return a spot-filtered
+#' Seurat object.
 #' @param qc_metrics QC metrics to apply. Available metrics are `"outlier"`,
 #' `"umi"`, `"gene"`, and `"mito"`.
 #' @param outlier_threshold Character vector specifying outlier thresholds as

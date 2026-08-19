@@ -25,52 +25,31 @@ CheckDataList(
 \arguments{
 \item{srt_list}{A list of \code{Seurat} objects to be checked and preprocessed.}
 
-\item{batch}{A character string specifying the batch variable name.}
+\item{batch}{Batch variable name.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{do_normalization}{Whether data normalization should be performed.
-Default is \code{TRUE}.}
+\item{do_normalization}{Whether data normalization should be performed.}
 
 \item{normalization_method}{The normalization method to be used.
-Possible values are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, and \code{"scran"}.
-Default is \code{"LogNormalize"}.}
+Possible values are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, and \code{"scran"}.}
 
-\item{do_HVF_finding}{Whether to perform high variable feature finding.
-If \code{TRUE}, the function will force to find the highly variable features (HVF) using the specified HVF method.}
+\item{do_HVF_finding, HVF_method, nHVF, HVF}{Highly variable features.
+\code{HVF_method} is \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.}
 
 \item{HVF_source}{The source of highly variable features.
-Possible values are \code{"global"} and \code{"separate"}.
-Default is \code{"separate"}.}
+Possible values are \code{"global"} and \code{"separate"}.}
 
-\item{HVF_method}{The method to use for finding highly variable features.
-Options are \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.
-Default is \code{"vst"}.}
+\item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.}
 
-\item{nHVF}{The number of highly variable features to select.
-If NULL, all highly variable features will be used.
-Default is \code{2000}.}
+\item{vars_to_regress}{A vector of variable names to include as additional regression variables.}
 
-\item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
-Default is \code{1}.}
-
-\item{HVF}{A vector of feature names to use as highly variable features.
-If NULL, the function will use the highly variable features identified by the HVF method.}
-
-\item{vars_to_regress}{A vector of variable names to include as additional regression variables.
-Default is \code{NULL}.}
-
-\item{cores}{Number of CPU cores used by supported preprocessing steps.
-Default is \code{1}.}
+\item{cores}{Number of CPU cores.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Random seed.}
 }
 \value{
 A list containing the preprocessed \code{Seurat} objects,
@@ -78,7 +57,7 @@ the highly variable features, the assay name,
 and the type of assay.
 }
 \description{
-This function checks and preprocesses a list of \code{Seurat} objects.
+Checks and preprocesses a list of \code{Seurat} objects.
 It performs various checks on the input, including verification of input types,
 assay type consistency, feature name consistency, and batch column consistency.
 It also performs data normalization and variable feature finding based on the specified parameters.

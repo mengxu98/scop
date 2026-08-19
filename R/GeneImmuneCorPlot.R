@@ -16,7 +16,7 @@
 #' @param immune.cols Metadata columns to extract from a `Seurat` object.
 #' @param assay Assay used for `Seurat` or `SummarizedExperiment` expression.
 #' @param layer Assay layer used for `Seurat` expression.
-#' @param cor_method Correlation method. Default is `"spearman"`.
+#' @param cor_method Correlation method.
 #' @param p_cutoff P-value cutoff used for positive/negative link categories.
 #' @param abs_cor_breaks Two numeric breakpoints for link width categories.
 #' Default `c(0.2, 0.4)` creates `< 0.2`, `0.2 - 0.4`, and `>= 0.4`.

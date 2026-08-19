@@ -1,8 +1,7 @@
 #' @title Run PAGA analysis
 #'
 #' @description
-#' PAGA is a graph-based method used to infer cellular trajectories.
-#' This function runs the PAGA analysis on a Seurat object.
+#' Graph-based inference of cellular trajectories.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -12,13 +11,11 @@
 #' implementation for the standard connectivity graph and tree, plus an
 #' approximate R igraph layout stored in `paga$pos`.
 #' @param use_rna_velocity Whether to use RNA velocity for PAGA analysis.
-#' Default is `FALSE`.
-#' @param vkey The name of the RNA velocity data to use if `use_rna_velocity` is `TRUE`.
+#' @param vkey RNA velocity data to use if `use_rna_velocity` is `TRUE`.
 #' Default is `"stochastic"`. If the corresponding velocity embedding is not
 #' found, falls back to the scVelo convention (e.g. `velocity_umap`), which is
 #' what an object converted from an AnnData (via [adata_to_srt]) contains.
 #' @param embedded_with_PAGA Whether to embed data using PAGA layout.
-#' Default is `FALSE`.
 #' @param paga_layout The layout for plotting PAGA graph.
 #' See \href{https://scanpy.readthedocs.io/en/stable/tutorials/plotting/advanced.html#paga}{layout} param in `scanpy.pl.paga` function.
 #' @param threshold The threshold for plotting PAGA graph.

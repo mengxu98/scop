@@ -72,21 +72,10 @@ columns for grouped comparison.}
 \item{show_row_names, show_column_names}{Whether to show row or column names in
 \code{"heatmap"} mode.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{grid_major}{Whether to show major grid lines for \code{"bar"} and \code{"box"}
-plots. Default is \code{FALSE}.}
+plots.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

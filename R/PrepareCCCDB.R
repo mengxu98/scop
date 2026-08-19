@@ -10,11 +10,10 @@
 #'
 #' @md
 #' @inheritParams PrepareDB
-#' @param db A character vector specifying the cell-cell communication
+#' @param db Cell-cell communication
 #' databases to prepare. Can be `"CellTalk"` and/or `"CellChat"`.
 #' @param db_update Whether the databases should be forcefully updated.
 #' If `FALSE`, cached databases are reused when available.
-#' Default is `FALSE`.
 #'
 #' @return A list with the same structure as [PrepareDB]: for each species a
 #' named list of databases, each with `TERM2GENE`, `TERM2NAME`, and `version`

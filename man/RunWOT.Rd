@@ -32,65 +32,51 @@ RunWOT(
 )
 }
 \arguments{
-\item{srt}{A Seurat object. Default is \code{NULL}.
+\item{srt}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
-\item{assay_x}{Assay to convert as the main data matrix in the anndata object.
-Default is \code{"RNA"}.}
+\item{assay_x}{Assay to convert as the main data matrix in the anndata object.}
 
-\item{layer_x}{Layer name for assay_x in the Seurat object.
-Default is \code{"counts"}.}
+\item{layer_x}{Layer name for assay_x in the Seurat object.}
 
-\item{assay_y}{Assays to convert as layers in the anndata object.
-Default is \code{c("spliced", "unspliced")}.}
+\item{assay_y}{Assays to convert as layers in the anndata object.}
 
-\item{layer_y}{Layer names for the assay_y in the Seurat object.
-Default is \code{"counts"}.}
+\item{layer_y}{Layer names for the assay_y in the Seurat object.}
 
-\item{adata}{An anndata object. Default is \code{NULL}.}
+\item{adata}{An anndata object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{time_field}{A character string specifying the column name in \code{adata.obs} or \code{srt@meta.data} that contains the time information.}
+\item{time_field}{Column name in \code{adata.obs} or \code{srt@meta.data} that contains the time information.}
 
-\item{growth_iters}{A number of growth iterations to perform during the OT Model computation.
-Default is \code{3}.}
+\item{growth_iters}{A number of growth iterations to perform during the OT Model computation.}
 
-\item{tmap_out}{A character string specifying the path to store the computed transport maps.}
+\item{tmap_out}{Path to store the computed transport maps.}
 
 \item{time_from}{The starting time point for trajectory and fate analysis.}
 
 \item{time_to}{The ending time point for trajectory and fate analysis.
 If not provided, only trajectory and fate analysis for the specified \code{time_from} will be performed.}
 
-\item{get_coupling}{Whether to compute and store the coupling matrix between the specified \code{time_from} and \code{time_to}.
-Default is \code{FALSE}.}
+\item{get_coupling}{Whether to compute and store the coupling matrix between the specified \code{time_from} and \code{time_to}.}
 
-\item{recalculate}{Whether to recalculate the transport maps even if they already exist at the specified \code{tmap_out} location.
-Default is \code{FALSE}.}
+\item{recalculate}{Whether to recalculate the transport maps even if they already exist at the specified \code{tmap_out} location.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{show_plot}{Whether to show the plot.}
 
-\item{show_plot}{Whether to show the plot.
-Default is \code{FALSE}.}
-
-\item{save_plot}{Whether to save plots to files. Default is \code{FALSE}.}
+\item{save_plot}{Whether to save plots to files.}
 
 \item{plot_format}{Format for saved plots: \code{"png"} (default), \code{"pdf"}, or \code{"svg"}.}
 
-\item{plot_dpi}{Resolution (DPI) for saved plots. Default is \code{300}.}
+\item{plot_dpi}{Resolution (DPI) for saved plots.}
 
-\item{plot_prefix}{Prefix for saved plot filenames. Default is "cellrank".}
+\item{plot_prefix}{Prefix for saved plot filenames.}
 
-\item{dirpath}{The directory to save the plots. Default is \code{"./cellrank"}.}
+\item{dirpath}{The directory to save the plots.}
 
-\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
-Default is \code{TRUE}.}
+\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

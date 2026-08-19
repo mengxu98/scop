@@ -14,14 +14,13 @@ FetchDataZero(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{features}{A character vector of feature names.}
+\item{features}{Feature names.}
 
 \item{assay}{Which assay to use. Default is \code{"RNA"}.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

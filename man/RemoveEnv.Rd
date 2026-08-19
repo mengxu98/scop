@@ -7,9 +7,8 @@
 RemoveEnv(envname = NULL, conda = "auto", force = FALSE, verbose = TRUE)
 }
 \arguments{
-\item{envname}{The name of the conda-compatible Python environment.
-If \code{NULL}, the environment name will be set to \code{"scop_env"}.
-Default is \code{NULL}.}
+\item{envname}{Conda-compatible Python environment.
+If \code{NULL}, the environment name will be set to \code{"scop_env"}.}
 
 \item{conda}{The path or command name of a conda-compatible executable
 (\code{conda}, \code{mamba}, or \code{micromamba}). Use \code{"auto"} to allow automatically
@@ -17,8 +16,7 @@ finding an appropriate environment manager. If \code{"micromamba"} is requested
 and micromamba is not available on \code{PATH}, a package-managed micromamba is
 downloaded automatically.}
 
-\item{force}{Whether to force removal without confirmation.
-Default is \code{FALSE}.}
+\item{force}{Whether to force removal without confirmation.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

@@ -20,7 +20,7 @@ RunMetaCell(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{method}{Metacell construction method. One of \code{"supercell"},
 \code{"seacells"}, or \code{"metacell"}.}
@@ -47,8 +47,7 @@ metacells from crossing group boundaries.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 
 \item{...}{Additional arguments passed to the underlying metacell method.}
 }

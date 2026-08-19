@@ -5,7 +5,7 @@
 #' @param srt A Seurat object containing an NMF dimensional reduction.
 #' @param plot_type Plot type. `"cells"` plots cell/spot similarity from NMF
 #' embeddings. `"features"` plots feature similarity from NMF loadings.
-#' @param reduction Name of the NMF reduction. Default is `"nmf"`.
+#' @param reduction Name of the NMF reduction.
 #' @param dims Dimensions/components from the NMF reduction to use. If `NULL`,
 #' all available dimensions are used.
 #' @param cells Cells/spots to include when `plot_type = "cells"`.

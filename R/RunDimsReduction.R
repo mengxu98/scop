@@ -13,7 +13,7 @@
 #' @param reduction_dims Which dimensions to use as input for `nonlinear_reduction`, used only if `features` is `NULL`.
 #' @param neighbor_use Name of neighbor to use for the `nonlinear_reduction`.
 #' @param graph_use Name of graph to use for the `nonlinear_reduction`.
-#' @param nonlinear_reduction_params  Other parameters passed to the `nonlinear_reduction` method.
+#' @param nonlinear_reduction_params Other parameters passed to the `nonlinear_reduction` method.
 #' @param force_nonlinear_reduction Whether force to do nonlinear dimension reduction.
 #'
 #' @seealso

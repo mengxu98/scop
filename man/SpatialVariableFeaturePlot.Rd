@@ -32,7 +32,7 @@ SpatialVariableFeaturePlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{plot_type}{Plot type: \code{"summary"}, \code{"surface"}, or \code{"combined"}.}
 
@@ -43,54 +43,31 @@ spatial variable feature result are used.}
 
 \item{score_col}{Result column used for the summary x-axis.}
 
-\item{assay}{Assay used for \code{features}. If \code{NULL}, the default assay is used.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Assay layer used for \code{features}.}
+\item{layer}{Assay layer to use.}
 
-\item{image}{Name of the Seurat spatial image. Required when multiple images
-are present; a single image is selected automatically when \code{NULL}.}
+\item{image}{Spatial image name. Required when multiple images are present;
+a single image is selected automatically when \code{NULL}.}
 
-\item{overlay_image}{Whether to draw the spatial image beneath spots.}
-
-\item{image.alpha}{Transparency of the spatial image.}
+\item{overlay_image, image.alpha}{Draw the spatial image beneath spots.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
-\item{flip.y}{Whether to reverse the y axis for metadata coordinates.}
+\item{flip.y}{Reverse the y axis for metadata coordinates.}
 
-\item{pt.size}{Point size.}
-
-\item{pt.alpha}{Point alpha.}
+\item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
+with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
+radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{stroke}{Point border width.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{theme_use}{Theme name or function.}
 
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{theme_use}{Theme function name. Default is \code{"theme_spatial"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
-
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+returns a list of ggplots.}
 }
 \value{
 A \code{ggplot} or \code{patchwork} object.

@@ -13,9 +13,8 @@ finding an appropriate environment manager. If \code{"micromamba"} is requested
 and micromamba is not available on \code{PATH}, a package-managed micromamba is
 downloaded automatically.}
 
-\item{envname}{The name of the conda-compatible Python environment.
-If \code{NULL}, the environment name will be set to \code{"scop_env"}.
-Default is \code{NULL}.}
+\item{envname}{Conda-compatible Python environment.
+If \code{NULL}, the environment name will be set to \code{"scop_env"}.}
 
 \item{verbose}{Whether to print environment information.}
 }

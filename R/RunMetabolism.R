@@ -4,7 +4,7 @@
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams PrepareDB
 #' @inheritParams RunEnrichment
-#' @param assay Assay to use as expression matrix. Default is `DefaultAssay(srt)`.
+#' @param assay Assay to use as expression matrix.
 #' @param layer Data layer to use, usually `"counts"` for count matrix.
 #' @param db Databases to use for metabolism pathways. One or both of `"KEGG"`, `"REACTOME"`.
 #' `"Reactome"` is also accepted and treated identically to `"REACTOME"`.
@@ -27,12 +27,11 @@
 #' @param group.by Name of metadata column to group cells by. If `NULL`, single-cell scoring.
 #' If provided, expression is averaged by group before scoring (cell-type level).
 #' @param assay_name Name of the assay to store metabolism scores when `new_assay = TRUE`.
-#' Default is `"METABOLISM"`.
 #' @param new_assay Whether to create a new assay for metabolism scores when `group.by = NULL`. Default is `TRUE`.
 #' @param species Species of the input data. The scMetabolism gene sets contain human
 #' gene symbols. When `species` is not `"Homo_sapiens"` and `convert_species` is `TRUE`,
 #' [GeneConvert] is used to map human genes to the target species via biomaRt homolog
-#' tables. Default is `"Homo_sapiens"`.
+#' tables.
 #' @param convert_species Whether to convert human gene symbols from the scMetabolism
 #' gene sets to the target species using [GeneConvert]. When `TRUE` (default), genes
 #' are mapped via cross-species orthologs from Ensembl BioMart. When `FALSE`, only
@@ -40,7 +39,6 @@
 #' @param biomart BioMart database name passed to [GeneConvert]. Default `NULL` uses
 #' `"ensembl"`. Other options: `"protists_mart"`, `"fungi_mart"`, `"plants_mart"`.
 #' @param max_tries Maximum retry attempts for biomaRt connections in [GeneConvert].
-#' Default is `5`.
 #'
 #' @return
 #' Returns a `Seurat` object. When `group.by = NULL`, stores scores in assay `assay_name` and tools.

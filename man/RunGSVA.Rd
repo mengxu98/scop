@@ -47,20 +47,15 @@ results of differential expression analysis (\code{\link[=RunDEtest]{RunDEtest()
 If specified, the genes and groups will be extracted from the object automatically.
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{group.by}{Name of metadata column to group cells by for averaging expression.
 If provided, expression will be averaged within each group before GSVA analysis (cell-type level).
 If \code{NULL}, GSVA is performed on each cell individually (single-cell level).}
 
-\item{layer}{Data layer to use when \code{group.by = NULL}. Usually \code{"data"} for normalized or \code{"counts"} for count matrix.
-Default is \code{"data"}.}
+\item{layer}{Data layer to use when \code{group.by = NULL}. Usually \code{"data"} for normalized or \code{"counts"} for count matrix.}
 
-\item{assay_name}{Name of the assay to store GSVA scores when \code{group.by = NULL} and \code{new_assay = TRUE}.
-Default is \code{"GSVA"}.}
+\item{assay_name}{Name of the assay to store GSVA scores when \code{group.by = NULL} and \code{new_assay = TRUE}.}
 
 \item{new_assay}{Whether to create a new assay for GSVA scores when \code{group.by = NULL}. Default is \code{TRUE}.}
 
@@ -68,34 +63,31 @@ Default is \code{"GSVA"}.}
 When \code{NULL}, custom \code{features} or \code{TERM2GENE} input is stored in \code{meta.data}
 by default, while database-derived results stay assay-only when \code{new_assay = TRUE}.}
 
-\item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
-Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"}.
-MSigDB subcollections can be requested as \code{"MSigDB_<collection>"}, such as
-\code{"MSigDB_H"} for human Hallmark and \code{"MSigDB_MH"} for mouse Hallmark.
-Note: \code{"CytoTRACE2"} is species-independent and downloads pre-trained model data
-required by \link{RunCytoTRACE}.}
+\item{db}{Annotation sources. One or more of \code{"GO"}, \code{"GO_BP"}, \code{"GO_CC"},
+\code{"GO_MF"}, \code{"KEGG"}, \code{"WikiPathway"}, \code{"Reactome"}, \code{"CORUM"}, \code{"MP"}, \code{"DO"},
+\code{"HPO"}, \code{"PFAM"}, \code{"CSPA"}, \code{"Surfaceome"}, \code{"SPRomeDB"}, \code{"VerSeDa"},
+\code{"TFLink"}, \code{"hTFtarget"}, \code{"TRRUST"}, \code{"JASPAR"}, \code{"ENCODE"}, \code{"MSigDB"},
+\code{"CellTalk"}, \code{"CellChat"}, \code{"Chromosome"}, \code{"GeneType"}, \code{"Enzyme"}, \code{"TF"},
+\code{"CytoTRACE2"}. MSigDB subcollections use \code{"MSigDB_<collection>"} (e.g.
+\code{"MSigDB_H"}). \code{"CytoTRACE2"} is species-independent and is required by
+\link{RunCytoTRACE}.}
 
-\item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
-Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
+\item{species}{\code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
-\item{IDtype}{A character vector specifying the type of gene IDs in the \code{srt} object or \code{geneID} argument.
+\item{IDtype}{Type of gene IDs in the \code{srt} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
-\item{db_update}{Whether the gene annotation databases should be forcefully updated.
-If set to FALSE, the function will attempt to load the cached databases instead.
-Default is \code{FALSE}.}
+\item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
-\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is \code{"latest"}.}
+\item{db_version}{Database version to retrieve.}
 
 \item{db_combine}{Whether to combine multiple databases into one.
 If \code{TRUE}, all database specified by \code{db} will be combined as one named "Combined".}
 
-\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is \code{TRUE}.}
+\item{convert_species}{Use a species-converted database when the annotation is
+missing for \code{species}.}
 
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
@@ -112,13 +104,12 @@ The first column should contain the term IDs, and the second column should conta
 
 \item{maxGSSize}{The maximum size of a gene set to be considered in the enrichment analysis.}
 
-\item{unlimited_db}{A character vector specifying the names of databases that do not have size restrictions.}
+\item{unlimited_db}{Names of databases that do not have size restrictions.}
 
 \item{method}{The method to use for GSVA.
 Options are \code{"gsva"}, \code{"ssgsea"}, \code{"zscore"}, or \code{"plage"}.
 Multiple methods can be supplied at once; in single-cell mode they will be
-stored in method-suffixed assays such as \code{"GSVA_gsva"} and \code{"GSVA_ssgsea"}.
-Default is \code{"gsva"}.}
+stored in method-suffixed assays such as \code{"GSVA_gsva"} and \code{"GSVA_ssgsea"}.}
 
 \item{backend}{Scoring backend. \code{"cpp"} is the default and supports all
 current \code{method} values. \code{"r"} uses the original \code{\link[GSVA:gsva]{GSVA::gsva()}}
@@ -140,27 +131,22 @@ When omitted, \code{backend = "cpp"} with \code{method = "gsva"} uses \code{"non
 faster single-cell scoring; explicit \code{"Gaussian"} or \code{"Poisson"} values are
 still honored. Other backends and methods default to \code{"Gaussian"}.}
 
-\item{abs.ranking}{Logical indicating whether to use absolute ranking for GSVA.
-Default is \code{FALSE}.}
+\item{abs.ranking}{Whether to use absolute ranking for GSVA.}
 
-\item{min.sz}{Minimum size of gene sets to be included in the analysis.
-Default is \code{10}.}
+\item{min.sz}{Minimum size of gene sets to be included in the analysis.}
 
-\item{max.sz}{Maximum size of gene sets to be included in the analysis.
-Default is \code{Inf}.}
+\item{max.sz}{Maximum size of gene sets to be included in the analysis.}
 
-\item{mx.diff}{Logical indicating whether to use the maximum difference method.
-Default is \code{TRUE}.}
+\item{mx.diff}{Whether to use the maximum difference method.}
 
-\item{tau}{Exponent for the GSVA method. Default is \code{1}.}
+\item{tau}{Exponent for the GSVA method.}
 
-\item{ssgsea.norm}{Logical indicating whether to normalize SSGSEA scores.
-Default is \code{TRUE}.}
+\item{ssgsea.norm}{Whether to normalize SSGSEA scores.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Passed to other functions.}
+\item{...}{Passed to helper functions.}
 }
 \value{
 Returns the modified \code{Seurat} object. When \code{group.by} is provided, GSVA scores are stored in the \code{tools} slot.

@@ -175,12 +175,6 @@ SCENICPlot(
 
 \item{network_label_top_n}{Max TF labels in \code{"network_graph"}.}
 
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
 \item{return_data}{Return RSS tables with plots.}
 
 \item{title}{Optional combined-plot title. Ignored by \code{"network"}, \code{"network_graph"}, and \code{"egrn"}.}
