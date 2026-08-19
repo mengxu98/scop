@@ -63,7 +63,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RunCCC</span><span class="op">(</span></span>
 <span>  <span class="va">srt</span>,</span>
-<span>  <span class="va">group.by</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellChat"</span>, <span class="st">"CellphoneDB"</span>, <span class="st">"LIANA"</span><span class="op">)</span>,</span>
 <span>  method_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
@@ -79,17 +79,17 @@
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A Seurat object.</p></dd>
+<dd><p>A <code>Seurat</code> object.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Name of one or more meta.data columns to group (color) cells by.</p></dd>
+<dd><p>Metadata column(s) to group cells by.</p></dd>
 
 
 <dt id="arg-methods">methods<a class="anchor" aria-label="anchor" href="#arg-methods"></a></dt>
 <dd><p>Supported cell-cell communication methods to run. The
 default core methods are <code>"CellChat"</code>, <code>"CellphoneDB"</code>, and <code>"LIANA"</code>.
-NicheNet, MultiNicheNet, SpatialCellChat, and MDIC3 can be selected when
+NicheNet, MultiNicheNet, SpatialCellChat, SpatialDM, and MDIC3 can be selected when
 their design-specific arguments are supplied through <code>method_params</code>.
 LIANA's default internal method set includes its CellPhoneDB scorer, so
 standalone CellphoneDB and LIANA consensus results are not statistically

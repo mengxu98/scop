@@ -122,8 +122,7 @@ shows a <code>FeatureHeatmap</code>, and statistical views such as <code>"bar"</
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>Which dimensionality reduction to use.
-If not specified, will use the reduction returned by <a href="DefaultReduction.html">DefaultReduction</a>.</p></dd>
+<dd><p>Reduction to plot. <code>NULL</code> uses <a href="DefaultReduction.html">DefaultReduction</a>.</p></dd>
 
 
 <dt id="arg-prefix">prefix<a class="anchor" aria-label="anchor" href="#arg-prefix"></a></dt>
@@ -138,13 +137,11 @@ to split Scissor status distributions by group.</p></dd>
 
 
 <dt id="arg-split-by">split.by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>
-<dd><p>Name of a column in meta.data column to split plot by.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>Metadata column to facet by.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector of features to use.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>Features to plot.</p></dd>
 
 
 <dt id="arg-nfeatures">nfeatures<a class="anchor" aria-label="anchor" href="#arg-nfeatures"></a></dt>
@@ -179,39 +176,28 @@ background status in upset plots.</p></dd>
 
 
 <dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
-<dd><p>A character vector of cell names to use.</p></dd>
+<dd><p>Cell names to include.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Which layer to use.
-Default is <code>"counts"</code>.</p></dd>
+<dd><p>Assay layer to use.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.
-When the object also contains <code>ChromatinAssay</code>, the default assay and
-additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
+<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
 
 
 <dt id="arg-max-cells">max_cells<a class="anchor" aria-label="anchor" href="#arg-max-cells"></a></dt>
-<dd><p>An integer, maximum number of cells to sample per group.
-Default is <code>100</code>.</p></dd>
+<dd><p>An integer, maximum number of cells to sample per group.</p></dd>
 
 
 <dt id="arg-cell-order">cell_order<a class="anchor" aria-label="anchor" href="#arg-cell-order"></a></dt>
-<dd><p>A vector of cell names defining the order of cells.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>A vector of cell names defining the order of cells.</p></dd>
 
 
 <dt id="arg-exp-method">exp_method<a class="anchor" aria-label="anchor" href="#arg-exp-method"></a></dt>
-<dd><p>A character vector specifying the method for calculating expression values.
-Options are <code>"zscore"</code>, <code>"raw"</code>, <code>"fc"</code>, <code>"log2fc"</code>, or <code>"log1p"</code>.
-Default is <code>"zscore"</code>.</p></dd>
-
-
-<dt id="arg-stat-type">stat_type<a class="anchor" aria-label="anchor" href="#arg-stat-type"></a></dt>
-<dd><p>Set stat types ("percent" or "count").</p></dd>
+<dd><p>Expression transform: <code>"zscore"</code>, <code>"raw"</code>, <code>"fc"</code>, <code>"log2fc"</code>,
+or <code>"log1p"</code>.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
@@ -223,83 +209,14 @@ Default is <code>"zscore"</code>.</p></dd>
 or <a href="https://mengxu98.github.io/thisplot/reference/StatPlot.html" class="external-link">thisplot::StatPlot</a>.</p></dd>
 
 
-<dt id="arg-pt-size">pt.size<a class="anchor" aria-label="anchor" href="#arg-pt-size"></a></dt>
-<dd><p>The size of the points in the plot. Default is <code>NULL</code>, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of <code>0.3</code>. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-<code>raster.dpi = c(512, 512)</code>. Point sizes are scaled with <code>raster.dpi</code>, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase <code>pt.size</code>
-proportionally when exporting to an unusually large canvas.</p></dd>
+<dt id="arg-pt-size-pt-alpha">pt.size, pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-size-pt-alpha"></a></dt>
+<dd><p>Point size and transparency. <code>pt.size = NULL</code> scales
+with <code>sqrt(n)</code> (minimum <code>0.3</code>). Rasterized points keep at least a two-pixel
+radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi</code>.</p></dd>
 
 
-<dt id="arg-pt-alpha">pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-alpha"></a></dt>
-<dd><p>The transparency of the data points.
-Default is <code>1</code>.</p></dd>
-
-
-<dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>Color palette name.
-Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.
-Default is <code>"Chinese"</code>.</p></dd>
-
-
-<dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
-<dd><p>Custom colors used to create a color palette.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-heatmap-palette">heatmap_palette<a class="anchor" aria-label="anchor" href="#arg-heatmap-palette"></a></dt>
-<dd><p>A character vector specifying the palette to use for the heatmap.
-Default is <code>"RdBu"</code>.</p></dd>
-
-
-<dt id="arg-group-palette">group_palette<a class="anchor" aria-label="anchor" href="#arg-group-palette"></a></dt>
-<dd><p>A character vector specifying the palette to use for groups.
-Default is <code>"Chinese"</code>.</p></dd>
-
-
-<dt id="arg-group-palcolor">group_palcolor<a class="anchor" aria-label="anchor" href="#arg-group-palcolor"></a></dt>
-<dd><p>A character vector specifying the group color to use.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-cell-annotation">cell_annotation<a class="anchor" aria-label="anchor" href="#arg-cell-annotation"></a></dt>
-<dd><p>A character vector specifying the cell annotation(s) to include.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-cell-annotation-palette">cell_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-cell-annotation-palette"></a></dt>
-<dd><p>A character vector specifying the palette to use for cell annotations.
-The length of the vector should match the number of cell_annotation.
-Default is <code>"Chinese"</code>.</p></dd>
-
-
-<dt id="arg-cell-annotation-palcolor">cell_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-cell-annotation-palcolor"></a></dt>
-<dd><p>A list of character vector specifying the cell annotation color(s) to use.
-The length of the list should match the number of cell_annotation.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-show-row-names">show_row_names<a class="anchor" aria-label="anchor" href="#arg-show-row-names"></a></dt>
-<dd><p>Whether to show row names in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-show-column-names">show_column_names<a class="anchor" aria-label="anchor" href="#arg-show-column-names"></a></dt>
-<dd><p>Whether to show column names in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-cluster-rows">cluster_rows<a class="anchor" aria-label="anchor" href="#arg-cluster-rows"></a></dt>
-<dd><p>Whether to cluster rows in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-cluster-columns">cluster_columns<a class="anchor" aria-label="anchor" href="#arg-cluster-columns"></a></dt>
-<dd><p>Whether to cluster columns in the heatmap.
-Default is <code>FALSE</code>.</p></dd>
+<dt id="arg-palette-palcolor">palette, palcolor<a class="anchor" aria-label="anchor" href="#arg-palette-palcolor"></a></dt>
+<dd><p>Palette name (<a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>) or custom colors.</p></dd>
 
 
 <dt id="arg-theme-use-theme-args">theme_use, theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-use-theme-args"></a></dt>
@@ -307,8 +224,7 @@ Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print the message.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Print progress messages.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -343,11 +259,11 @@ list returned by <a href="FeatureHeatmap.html">FeatureHeatmap</a> for <code>plot
 <span class="r-in"><span>  alpha <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>  cutoff <span class="op">=</span> <span class="fl">0.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 12:25:29] Build a temporary Scissor-style SNN graph</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 12:26:37] Scissor alpha <span style="color: #0000BB;">0.2</span> selected <span style="color: #0000BB;">1</span> positive and <span style="color: #0000BB;">501</span> negative cells (<span style="color: #0000BB;">31.375</span>%)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 12:26:37] <span style="color: #0000BB;">Scissor</span> stored <span style="color: #0000BB;">1</span> Scissor+ and <span style="color: #0000BB;">501</span> Scissor- cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 13:54:18] Build a temporary Scissor-style SNN graph</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 13:55:27] Scissor alpha <span style="color: #0000BB;">0.2</span> selected <span style="color: #0000BB;">1</span> positive and <span style="color: #0000BB;">501</span> negative cells (<span style="color: #0000BB;">31.375</span>%)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 13:55:27] <span style="color: #0000BB;">Scissor</span> stored <span style="color: #0000BB;">1</span> Scissor+ and <span style="color: #0000BB;">501</span> Scissor- cells</span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">panc8_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 12:26:39] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 13:55:29] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">ScissorPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>

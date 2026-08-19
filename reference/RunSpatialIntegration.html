@@ -105,10 +105,7 @@ object. For list input, list names are copied into this column.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.
-When the object also contains <code>ChromatinAssay</code>, the default assay and
-additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
+<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
@@ -116,8 +113,7 @@ additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></d
 
 
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
-<dd><p>Metadata coordinate columns used by the spatial workflow
-when no image is available.</p></dd>
+<dd><p>Metadata coordinate columns used when no image is available.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
@@ -126,9 +122,8 @@ used; if no variable features are present, all assay features are used.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
-<dd><p>Name of the Seurat spatial image used by the spatial workflow.
-Required when multiple images are present; a single image is selected
-automatically when <code>NULL</code>.</p></dd>
+<dd><p>Spatial image name. Required when multiple images are present;
+a single image is selected automatically when <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-reduction-name">reduction.name<a class="anchor" aria-label="anchor" href="#arg-reduction-name"></a></dt>
@@ -150,8 +145,7 @@ a method-specific name is used.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print the message.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Print progress messages.</p></dd>
 
 
 <dt id="arg-coordinate-space">coordinate_space<a class="anchor" aria-label="anchor" href="#arg-coordinate-space"></a></dt>
@@ -274,9 +268,9 @@ metadata, reductions, and <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-18 12:11:13.997208 : ***** Filtering step for raw count data finished!, 0.004 mins elapsed.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-19 13:39:09.520293 : ***** Filtering step for raw count data finished!, 0.004 mins elapsed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Select the variable genes for each data batch...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-18 12:11:14.000847 : ***** Gene selection finished!, 0 mins elapsed.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-19 13:39:09.523829 : ***** Gene selection finished!, 0 mins elapsed.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
@@ -316,7 +310,7 @@ metadata, reductions, and <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Normalizing layer: counts</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Normalizing layer: counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-18 12:11:18.183117 : ***** Filtering step for count data with variable genes finished!, 0.067 mins elapsed.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-19 13:39:13.407867 : ***** Filtering step for count data with variable genes finished!, 0.062 mins elapsed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Neighbors were identified for 0 out of 991 spots.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Neighbors were identified for 0 out of 995 spots.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> -----Intergrative data info.: 2 samples, 300 genes X 1986 spots------</span>

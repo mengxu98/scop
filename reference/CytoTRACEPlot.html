@@ -85,73 +85,34 @@
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A Seurat object.</p></dd>
+<dd><p>A <code>Seurat</code> object.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>Which dimensionality reduction to use.
-If not specified, will use the reduction returned by <a href="DefaultReduction.html">DefaultReduction</a>.</p></dd>
+<dd><p>Reduction to plot. <code>NULL</code> uses <a href="DefaultReduction.html">DefaultReduction</a>.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
-<dd><p>Name of one or more meta.data columns to group (color) cells by.</p></dd>
+<dd><p>Metadata column(s) used to color cells.</p></dd>
 
 
-<dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Combine plots into a single <code>patchwork</code> object.
-If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
+<dt id="arg-combine-nrow-ncol-byrow">combine, nrow, ncol, byrow<a class="anchor" aria-label="anchor" href="#arg-combine-nrow-ncol-byrow"></a></dt>
+<dd><p>Combine plots with patchwork. <code>combine = FALSE</code>
+returns a list of ggplots.</p></dd>
 
 
-<dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
-<dd><p>Number of rows in the combined plot.
-Default is <code>NULL</code>, which means determined automatically based on the number of plots.</p></dd>
+<dt id="arg-pt-size-pt-alpha">pt.size, pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-size-pt-alpha"></a></dt>
+<dd><p>Point size and transparency. <code>pt.size = NULL</code> scales
+with <code>sqrt(n)</code> (minimum <code>0.3</code>). Rasterized points keep at least a two-pixel
+radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi</code>.</p></dd>
 
 
-<dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
-<dd><p>Number of columns in the combined plot.
-Default is <code>NULL</code>, which means determined automatically based on the number of plots.</p></dd>
+<dt id="arg-palette-palcolor">palette, palcolor<a class="anchor" aria-label="anchor" href="#arg-palette-palcolor"></a></dt>
+<dd><p>Palette name (<a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>) or custom colors.</p></dd>
 
 
-<dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
-<dd><p>Whether to arrange the plots by row in the combined plot.
-Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-pt-size">pt.size<a class="anchor" aria-label="anchor" href="#arg-pt-size"></a></dt>
-<dd><p>The size of the points in the plot. Default is <code>NULL</code>, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of <code>0.3</code>. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-<code>raster.dpi = c(512, 512)</code>. Point sizes are scaled with <code>raster.dpi</code>, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase <code>pt.size</code>
-proportionally when exporting to an unusually large canvas.</p></dd>
-
-
-<dt id="arg-pt-alpha">pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-alpha"></a></dt>
-<dd><p>The transparency of the data points.
-Default is <code>1</code>.</p></dd>
-
-
-<dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>Color palette name.
-Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.
-Default is <code>"Chinese"</code>.</p></dd>
-
-
-<dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
-<dd><p>Custom colors used to create a color palette.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>Theme used. Can be a character string or a theme function.
-Default is <code>"theme_scop"</code>.</p></dd>
-
-
-<dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>Other arguments passed to the <code>theme_use</code>.
-Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
+<dt id="arg-theme-use-theme-args">theme_use, theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-use-theme-args"></a></dt>
+<dd><p>Theme name or function, plus extra theme arguments.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -160,7 +121,7 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments to be passed to <a href="CellDimPlot.html">CellDimPlot</a> and <a href="FeatureDimPlot.html">FeatureDimPlot</a>.</p></dd>
+<dd><p>Passed to <a href="CellDimPlot.html">CellDimPlot</a> and <a href="FeatureDimPlot.html">FeatureDimPlot</a>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -181,48 +142,48 @@ If <code>combine = FALSE</code>, returns a named list of ggplot objects:</p><ul>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:19] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:19] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-18 10:20:19] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:25] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:25] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-19 11:50:25] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 1/1 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:19] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:20] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:20] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:20] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:20] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:20] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:20] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:21] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:21] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:21] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:21] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:20:27] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:25] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:25] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:25] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:25] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:25] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:25] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:25] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:26] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:26] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:26] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 11:50:32] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunCytoTRACE.html">RunCytoTRACE</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span></span>
 <span class="r-in"><span>  backend <span class="op">=</span> <span class="st">"cpp"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-08-18 10:20:27] Running <span style="color: #0000BB;">CytoTRACE2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:27] Extracting expression matrix from `assay = RNA, layer = counts`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-08-18 10:20:27] Running <span style="color: #0000BB;">CytoTRACE2</span> with `backend = cpp`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:29] Preparing <span style="color: #0000BB;">CytoTRACE2</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:29] Downloading CytoTRACE2 model data from datasets GitHub repository...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:29]   Downloading <span style="color: #0000BB;">model_parameters.rds</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:29]   Downloading <span style="color: #0000BB;">features_model_training_17.csv</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:29]   Downloading <span style="color: #0000BB;">mt_dict_human_to_mouse.csv</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:30]   Downloading <span style="color: #0000BB;">mt_human_alias.csv</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:30]   Downloading <span style="color: #0000BB;">mt_mouse_alias.csv</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:20:30] CytoTRACE2 data cached at <span style="color: #0000BB;">/home/runner/.local/share/R/scop/CytoTRACE2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:30] Species: <span style="color: #0000BB;">"Homo_sapiens"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:30] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:30] Loading model from <span style="color: #0000BB;">/home/runner/.local/share/R/scop/CytoTRACE2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:33] Dataset contains <span style="color: #0000BB;">15998</span> genes and <span style="color: #0000BB;">1000</span> cells.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:33] Running on <span style="color: #0000BB;">1</span> subsample</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:33] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:33] <span style="color: #0000BB;">12486</span> input genes mapped to model genes.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-18 10:20:33] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-18 10:21:07] <span style="color: #0000BB;">CytoTRACE2</span> computed successfully</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-08-19 11:50:32] Running <span style="color: #0000BB;">CytoTRACE2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:32] Extracting expression matrix from `assay = RNA, layer = counts`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-08-19 11:50:32] Running <span style="color: #0000BB;">CytoTRACE2</span> with `backend = cpp`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:33] Preparing <span style="color: #0000BB;">CytoTRACE2</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:33] Downloading CytoTRACE2 model data from datasets GitHub repository...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:33]   Downloading <span style="color: #0000BB;">model_parameters.rds</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:34]   Downloading <span style="color: #0000BB;">features_model_training_17.csv</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:34]   Downloading <span style="color: #0000BB;">mt_dict_human_to_mouse.csv</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:34]   Downloading <span style="color: #0000BB;">mt_human_alias.csv</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:34]   Downloading <span style="color: #0000BB;">mt_mouse_alias.csv</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 11:50:34] CytoTRACE2 data cached at <span style="color: #0000BB;">/home/runner/.local/share/R/scop/CytoTRACE2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:34] Species: <span style="color: #0000BB;">"Homo_sapiens"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:34] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:34] Loading model from <span style="color: #0000BB;">/home/runner/.local/share/R/scop/CytoTRACE2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:38] Dataset contains <span style="color: #0000BB;">15998</span> genes and <span style="color: #0000BB;">1000</span> cells.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:38] Running on <span style="color: #0000BB;">1</span> subsample</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:38] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:38] <span style="color: #0000BB;">12486</span> input genes mapped to model genes.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 11:50:38] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 11:51:12] <span style="color: #0000BB;">CytoTRACE2</span> computed successfully</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">CytoTRACEPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

@@ -111,7 +111,7 @@
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A Seurat object.</p></dd>
+<dd><p>A <code>Seurat</code> object.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
@@ -119,64 +119,47 @@
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>Features to color spots by. When provided, expression values
-are read from <code>assay</code> and <code>layer</code>.</p></dd>
+<dd><p>Features to color spots by (from <code>assay</code>/<code>layer</code>).</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Assay used for <code>features</code>. If <code>NULL</code>, the default assay is used.</p></dd>
+<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Assay layer used for <code>features</code>.</p></dd>
+<dd><p>Assay layer to use.</p></dd>
 
 
 <dt id="arg-values">values<a class="anchor" aria-label="anchor" href="#arg-values"></a></dt>
-<dd><p>Optional vector, matrix, or data.frame with spot-level values.
-Row names or vector names must match spatial spot names.</p></dd>
+<dd><p>Spot-level values (named vector, matrix, or data.frame).</p></dd>
 
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
-<dd><p>Plot type. <code>"point"</code> keeps the default spot plot behavior.
-<code>"pie"</code> draws spot-level pies from numeric metadata columns supplied to
-<code>group.by</code> or from a numeric matrix/data.frame supplied to <code>values</code>. When
-<code>group.by</code> is a single <code>"&lt;prefix&gt;_dominant_type"</code> column, matching
-<code>"&lt;prefix&gt;_prop_*"</code> or <code>"&lt;prefix&gt;_frac_*"</code> numeric metadata columns are used
-automatically.</p></dd>
+<dd><p><code>"point"</code> or <code>"pie"</code>. Pie uses numeric <code>group.by</code> columns,
+<code>values</code>, or <code>"&lt;prefix&gt;_prop_*"</code>/<code>"&lt;prefix&gt;_frac_*"</code> when <code>group.by</code> is
+<code>"&lt;prefix&gt;_dominant_type"</code>.</p></dd>
 
 
-<dt id="arg-plot-data">plot.data<a class="anchor" aria-label="anchor" href="#arg-plot-data"></a></dt>
-<dd><p>Optional long-format data.frame for plotting repeated
-spatial points, such as cell-to-spot assignments.</p></dd>
-
-
-<dt id="arg-spot-by">spot.by<a class="anchor" aria-label="anchor" href="#arg-spot-by"></a></dt>
-<dd><p>Column in <code>plot.data</code> containing spot names.</p></dd>
-
-
-<dt id="arg-color-by">color.by<a class="anchor" aria-label="anchor" href="#arg-color-by"></a></dt>
-<dd><p>Column in <code>plot.data</code> used to color repeated spatial points.</p></dd>
+<dt id="arg-plot-data-spot-by-color-by">plot.data, spot.by, color.by<a class="anchor" aria-label="anchor" href="#arg-plot-data-spot-by-color-by"></a></dt>
+<dd><p>Long-format data for repeated spatial points
+(e.g. cell-to-spot assignments).</p></dd>
 
 
 <dt id="arg-geom">geom<a class="anchor" aria-label="anchor" href="#arg-geom"></a></dt>
-<dd><p>Geometry used for <code>plot.data</code>: <code>"point"</code> or <code>"jitter"</code>.</p></dd>
+<dd><p><code>"point"</code> or <code>"jitter"</code> for <code>plot.data</code>.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
-<dd><p>Name of the Seurat spatial image. Required when multiple images
-are present; a single image is selected automatically when <code>NULL</code>.</p></dd>
+<dd><p>Spatial image name. Required when multiple images are present;
+a single image is selected automatically when <code>NULL</code>.</p></dd>
 
 
-<dt id="arg-overlay-image">overlay_image<a class="anchor" aria-label="anchor" href="#arg-overlay-image"></a></dt>
-<dd><p>Whether to draw the spatial image beneath spots.</p></dd>
-
-
-<dt id="arg-image-alpha">image.alpha<a class="anchor" aria-label="anchor" href="#arg-image-alpha"></a></dt>
-<dd><p>Transparency of the spatial image.</p></dd>
+<dt id="arg-overlay-image-image-alpha">overlay_image, image.alpha<a class="anchor" aria-label="anchor" href="#arg-overlay-image-image-alpha"></a></dt>
+<dd><p>Draw the spatial image beneath spots.</p></dd>
 
 
 <dt id="arg-crop">crop<a class="anchor" aria-label="anchor" href="#arg-crop"></a></dt>
-<dd><p>Whether to crop the panel to plotted spots.</p></dd>
+<dd><p>Crop the panel to plotted spots.</p></dd>
 
 
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
@@ -184,41 +167,35 @@ are present; a single image is selected automatically when <code>NULL</code>.</p
 
 
 <dt id="arg-flip-y">flip.y<a class="anchor" aria-label="anchor" href="#arg-flip-y"></a></dt>
-<dd><p>Whether to reverse the y axis for metadata coordinates.</p></dd>
+<dd><p>Reverse the y axis for metadata coordinates.</p></dd>
 
 
 <dt id="arg-show-axes">show_axes<a class="anchor" aria-label="anchor" href="#arg-show-axes"></a></dt>
-<dd><p>Whether to keep axis text, ticks, and grid lines when
-<code>theme_use</code> is <code>"theme_spatial"</code>. Default is <code>FALSE</code>.</p></dd>
+<dd><p>Keep axis text, ticks, and grid when <code>theme_use</code> is
+<code>"theme_spatial"</code>.</p></dd>
 
 
 <dt id="arg-split-by">split.by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>
-<dd><p>Name of a column in meta.data column to split plot by.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>Metadata column to facet by.</p></dd>
 
 
 <dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
-<dd><p>A character vector of cell names to use.</p></dd>
+<dd><p>Cell names to include.</p></dd>
 
 
 <dt id="arg-show-na">show_na<a class="anchor" aria-label="anchor" href="#arg-show-na"></a></dt>
-<dd><p>Whether to assign a color from the color palette to NA group.
-If <code>TRUE</code>, cell points with NA level will be colored by <code>bg_color</code>.
-If <code>FALSE</code>, cell points with NA level will be removed from the plot.</p></dd>
+<dd><p>If <code>TRUE</code>, color <code>NA</code> groups with <code>bg_color</code>; if <code>FALSE</code>, drop them.</p></dd>
 
 
-<dt id="arg-pt-size">pt.size<a class="anchor" aria-label="anchor" href="#arg-pt-size"></a></dt>
-<dd><p>Point size.</p></dd>
+<dt id="arg-pt-size-pt-alpha">pt.size, pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-size-pt-alpha"></a></dt>
+<dd><p>Point size and transparency. <code>pt.size = NULL</code> scales
+with <code>sqrt(n)</code> (minimum <code>0.3</code>). Rasterized points keep at least a two-pixel
+radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi</code>.</p></dd>
 
 
 <dt id="arg-pie-radius-pie-radius-scale">pie.radius, pie.radius.scale<a class="anchor" aria-label="anchor" href="#arg-pie-radius-pie-radius-scale"></a></dt>
-<dd><p>Radius controls for <code>plot_type = "pie"</code>.
-If <code>pie.radius</code> is <code>NULL</code>, the radius is estimated from spot spacing and
-multiplied by <code>pie.radius.scale</code>.</p></dd>
-
-
-<dt id="arg-pt-alpha">pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-alpha"></a></dt>
-<dd><p>Point alpha.</p></dd>
+<dd><p>Pie radius. <code>NULL</code> estimates from spot
+spacing, then multiplies by <code>pie.radius.scale</code>.</p></dd>
 
 
 <dt id="arg-stroke">stroke<a class="anchor" aria-label="anchor" href="#arg-stroke"></a></dt>
@@ -226,71 +203,34 @@ multiplied by <code>pie.radius.scale</code>.</p></dd>
 
 
 <dt id="arg-jitter-width-jitter-height">jitter_width, jitter_height<a class="anchor" aria-label="anchor" href="#arg-jitter-width-jitter-height"></a></dt>
-<dd><p>Jitter size used when <code>geom = "jitter"</code>.</p></dd>
+<dd><p>Jitter when <code>geom = "jitter"</code>.</p></dd>
 
 
-<dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>Color palette name.
-Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.
-Default is <code>"Chinese"</code>.</p></dd>
-
-
-<dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
-<dd><p>Custom colors used to create a color palette.
-Default is <code>NULL</code>.</p></dd>
+<dt id="arg-palette-palcolor">palette, palcolor<a class="anchor" aria-label="anchor" href="#arg-palette-palcolor"></a></dt>
+<dd><p>Palette name (<a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>) or custom colors.</p></dd>
 
 
 <dt id="arg-bg-color">bg_color<a class="anchor" aria-label="anchor" href="#arg-bg-color"></a></dt>
 <dd><p>Point border color.</p></dd>
 
 
-<dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
-<dd><p>The position of legends,
-one of <code>"none"</code>, <code>"left"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"top"</code>.
-Default is <code>"right"</code>.</p></dd>
-
-
-<dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
-<dd><p>The direction of the legend in the plot.
-Can be one of <code>"vertical"</code> or <code>"horizontal"</code>.</p></dd>
-
-
-<dt id="arg-legend-title">legend.title<a class="anchor" aria-label="anchor" href="#arg-legend-title"></a></dt>
-<dd><p>Title for the legend. Default is <code>NULL</code>, which uses the group name.</p></dd>
+<dt id="arg-legend-position-legend-direction-legend-title">legend.position, legend.direction, legend.title<a class="anchor" aria-label="anchor" href="#arg-legend-position-legend-direction-legend-title"></a></dt>
+<dd><p>Legend placement
+(<code>"none"</code>, <code>"left"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"top"</code>), direction, and title.
+<code>legend.title = NULL</code> uses the group name.</p></dd>
 
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>Theme function name. Default is <code>"theme_spatial"</code>.</p></dd>
+<dd><p>Theme name or function.</p></dd>
 
 
-<dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>Other arguments passed to the <code>theme_use</code>.
-Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
-
-
-<dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Combine plots into a single <code>patchwork</code> object.
-If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
-
-
-<dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
-<dd><p>Number of rows in the combined plot.
-Default is <code>NULL</code>, which means determined automatically based on the number of plots.</p></dd>
-
-
-<dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
-<dd><p>Number of columns in the combined plot.
-Default is <code>NULL</code>, which means determined automatically based on the number of plots.</p></dd>
-
-
-<dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
-<dd><p>Whether to arrange the plots by row in the combined plot.
-Default is <code>TRUE</code>.</p></dd>
+<dt id="arg-combine-nrow-ncol-byrow">combine, nrow, ncol, byrow<a class="anchor" aria-label="anchor" href="#arg-combine-nrow-ncol-byrow"></a></dt>
+<dd><p>Combine plots with patchwork. <code>combine = FALSE</code>
+returns a list of ggplots.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print the message.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Print progress messages.</p></dd>
 
 </dl></div>
     <div class="section level2">

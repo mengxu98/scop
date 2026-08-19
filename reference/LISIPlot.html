@@ -104,7 +104,7 @@ metadata columns ending with <code>"_LISI"</code> when <code>tool_name</code> is
 
 
 <dt id="arg-tool-name">tool_name<a class="anchor" aria-label="anchor" href="#arg-tool-name"></a></dt>
-<dd><p>Tool entry created by <code><a href="RunLISI.html">RunLISI()</a></code>. Default is <code>NULL</code>.</p></dd>
+<dd><p>Tool entry created by <code><a href="RunLISI.html">RunLISI()</a></code>.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
@@ -114,69 +114,30 @@ otherwise <code><a href="DefaultReduction.html">DefaultReduction()</a></code> is
 
 
 <dt id="arg-plot-boxplot">plot_boxplot<a class="anchor" aria-label="anchor" href="#arg-plot-boxplot"></a></dt>
-<dd><p>Whether to add boxplots. Default is <code>TRUE</code>.</p></dd>
+<dd><p>Whether to add boxplots.</p></dd>
 
 
 <dt id="arg-boxplot-jitter">boxplot_jitter<a class="anchor" aria-label="anchor" href="#arg-boxplot-jitter"></a></dt>
-<dd><p>Whether to overlay jittered points on boxplots.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Whether to overlay jittered points on boxplots.</p></dd>
 
 
-<dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Combine plots into a single <code>patchwork</code> object.
-If <code>FALSE</code>, return a list of ggplot objects.</p></dd>
+<dt id="arg-combine-nrow-ncol-byrow">combine, nrow, ncol, byrow<a class="anchor" aria-label="anchor" href="#arg-combine-nrow-ncol-byrow"></a></dt>
+<dd><p>Combine plots with patchwork. <code>combine = FALSE</code>
+returns a list of ggplots.</p></dd>
 
 
-<dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
-<dd><p>Number of rows in the combined plot.
-Default is <code>NULL</code>, which means determined automatically based on the number of plots.</p></dd>
+<dt id="arg-pt-size-pt-alpha">pt.size, pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-size-pt-alpha"></a></dt>
+<dd><p>Point size and transparency. <code>pt.size = NULL</code> scales
+with <code>sqrt(n)</code> (minimum <code>0.3</code>). Rasterized points keep at least a two-pixel
+radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi</code>.</p></dd>
 
 
-<dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
-<dd><p>Number of columns in the combined plot.
-Default is <code>NULL</code>, which means determined automatically based on the number of plots.</p></dd>
+<dt id="arg-palette-palcolor">palette, palcolor<a class="anchor" aria-label="anchor" href="#arg-palette-palcolor"></a></dt>
+<dd><p>Palette name (<a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>) or custom colors.</p></dd>
 
 
-<dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
-<dd><p>Whether to arrange the plots by row in the combined plot.
-Default is <code>TRUE</code>.</p></dd>
-
-
-<dt id="arg-pt-size">pt.size<a class="anchor" aria-label="anchor" href="#arg-pt-size"></a></dt>
-<dd><p>The size of the points in the plot. Default is <code>NULL</code>, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of <code>0.3</code>. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-<code>raster.dpi = c(512, 512)</code>. Point sizes are scaled with <code>raster.dpi</code>, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase <code>pt.size</code>
-proportionally when exporting to an unusually large canvas.</p></dd>
-
-
-<dt id="arg-pt-alpha">pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-alpha"></a></dt>
-<dd><p>The transparency of the data points.
-Default is <code>1</code>.</p></dd>
-
-
-<dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>Color palette name.
-Available palettes can be found in <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.
-Default is <code>"Chinese"</code>.</p></dd>
-
-
-<dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
-<dd><p>Custom colors used to create a color palette.
-Default is <code>NULL</code>.</p></dd>
-
-
-<dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
-<dd><p>Theme used. Can be a character string or a theme function.
-Default is <code>"theme_scop"</code>.</p></dd>
-
-
-<dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
-<dd><p>Other arguments passed to the <code>theme_use</code>.
-Default is <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
+<dt id="arg-theme-use-theme-args">theme_use, theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-use-theme-args"></a></dt>
+<dd><p>Theme name or function, plus extra theme arguments.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

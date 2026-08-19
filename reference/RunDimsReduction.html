@@ -89,7 +89,7 @@
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A Seurat object.</p></dd>
+<dd><p>A <code>Seurat</code> object.</p></dd>
 
 
 <dt id="arg-prefix">prefix<a class="anchor" aria-label="anchor" href="#arg-prefix"></a></dt>
@@ -97,26 +97,15 @@
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>A character vector of features to use.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>Features to plot.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.
-When the object also contains <code>ChromatinAssay</code>, the default assay and
-additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
+<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Which layer to use.
-Default is <code>"counts"</code>.</p></dd>
-
-
-<dt id="arg-linear-reduction">linear_reduction<a class="anchor" aria-label="anchor" href="#arg-linear-reduction"></a></dt>
-<dd><p>The linear dimensionality reduction method to use.
-Options are <code>"pca"</code>, <code>"svd"</code>, <code>"ica"</code>, <code>"nmf"</code>, <code>"mds"</code>, or <code>"glmpca"</code>.
-Default is <code>"pca"</code>.</p></dd>
+<dd><p>Assay layer to use.</p></dd>
 
 
 <dt id="arg-linear-reduction-dims">linear_reduction_dims<a class="anchor" aria-label="anchor" href="#arg-linear-reduction-dims"></a></dt>
@@ -129,13 +118,6 @@ Default is <code>"pca"</code>.</p></dd>
 
 <dt id="arg-force-linear-reduction">force_linear_reduction<a class="anchor" aria-label="anchor" href="#arg-force-linear-reduction"></a></dt>
 <dd><p>Whether force to do linear dimension reduction.</p></dd>
-
-
-<dt id="arg-nonlinear-reduction">nonlinear_reduction<a class="anchor" aria-label="anchor" href="#arg-nonlinear-reduction"></a></dt>
-<dd><p>The nonlinear dimensionality reduction method to use.
-Options are <code>"umap"</code>, <code>"umap-naive"</code>, <code>"tsne"</code>, <code>"dm"</code>,
-<code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"largevis"</code>, or <code>"fr"</code>.
-Default is <code>"umap"</code>.</p></dd>
 
 
 <dt id="arg-nonlinear-reduction-dims">nonlinear_reduction_dims<a class="anchor" aria-label="anchor" href="#arg-nonlinear-reduction-dims"></a></dt>
@@ -172,10 +154,7 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Optional integer seed. When supplied, every input receives a
-deterministic independent L'Ecuyer-CMRG random-number stream, making results
-reproducible across worker counts and scheduling order. The caller's random
-number state is restored when the call finishes.</p></dd>
+<dd><p>Random seed.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -100,10 +100,7 @@ and store the results in a consistent SCOP result bundle.</p>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Which assay to use.
-If <code>NULL</code>, the default assay of the Seurat object will be used.
-When the object also contains <code>ChromatinAssay</code>, the default assay and
-additional <code>ChromatinAssay</code> will be preprocessed sequentially.</p></dd>
+<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
@@ -166,8 +163,7 @@ is forwarded to <code>numbat::run_numbat()</code> as <code>lambdas_ref</code>.</
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Whether to print the message.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Print progress messages.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

@@ -95,7 +95,7 @@ on a Seurat object or AnnData object.</p>
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A Seurat object. Default is <code>NULL</code>.
+<dd><p>A Seurat object.
 If provided, <code>adata</code> will be ignored.</p></dd>
 
 
@@ -104,17 +104,15 @@ If provided, <code>adata</code> will be ignored.</p></dd>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Which assay to use.
-Default is <code>"RNA"</code>.</p></dd>
+<dd><p>Which assay to use.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Which layer to use.
-Default is <code>data</code>.</p></dd>
+<dd><p>Assay layer to use.</p></dd>
 
 
 <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
-<dd><p>Model name or path. Default is <code>"Immune_All_Low.pkl"</code>.
+<dd><p>Model name or path.
 Supports three formats:</p><ol><li><p>Model name (e.g., <code>"Immune_All_Low.pkl"</code>): automatically searched in <code>~/.celltypist/data/models/</code></p></li>
 <li><p>Full path (contains <code>/</code>): use the provided path directly</p></li>
 <li><p><code>NULL</code>: use default model</p></li>
@@ -123,18 +121,15 @@ Supports three formats:</p><ol><li><p>Model name (e.g., <code>"Immune_All_Low.pk
 
 
 <dt id="arg-mode">mode<a class="anchor" aria-label="anchor" href="#arg-mode"></a></dt>
-<dd><p>Prediction mode: <code>"best match"</code> or <code>"prob match"</code>.
-Default is <code>"best match"</code>.</p></dd>
+<dd><p>Prediction mode: <code>"best match"</code> or <code>"prob match"</code>.</p></dd>
 
 
 <dt id="arg-p-thres">p_thres<a class="anchor" aria-label="anchor" href="#arg-p-thres"></a></dt>
-<dd><p>Probability threshold for <code>"prob match"</code> mode.
-Default is <code>0.5</code>.</p></dd>
+<dd><p>Probability threshold for <code>"prob match"</code> mode.</p></dd>
 
 
 <dt id="arg-majority-voting">majority_voting<a class="anchor" aria-label="anchor" href="#arg-majority-voting"></a></dt>
-<dd><p>Whether to use majority voting.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Whether to use majority voting.</p></dd>
 
 
 <dt id="arg-over-clustering">over_clustering<a class="anchor" aria-label="anchor" href="#arg-over-clustering"></a></dt>
@@ -145,48 +140,39 @@ Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-min-prop">min_prop<a class="anchor" aria-label="anchor" href="#arg-min-prop"></a></dt>
-<dd><p>Minimum proportion for majority voting.
-Default is <code>0</code>.</p></dd>
+<dd><p>Minimum proportion for majority voting.</p></dd>
 
 
 <dt id="arg-use-gpu">use_GPU<a class="anchor" aria-label="anchor" href="#arg-use-gpu"></a></dt>
-<dd><p>Whether to use GPU for over-clustering.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Whether to use GPU for over-clustering.</p></dd>
 
 
 <dt id="arg-insert-labels">insert_labels<a class="anchor" aria-label="anchor" href="#arg-insert-labels"></a></dt>
-<dd><p>Whether to insert predicted labels.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Whether to insert predicted labels.</p></dd>
 
 
 <dt id="arg-insert-conf">insert_conf<a class="anchor" aria-label="anchor" href="#arg-insert-conf"></a></dt>
-<dd><p>Whether to insert confidence scores.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Whether to insert confidence scores.</p></dd>
 
 
 <dt id="arg-insert-conf-by">insert_conf_by<a class="anchor" aria-label="anchor" href="#arg-insert-conf-by"></a></dt>
-<dd><p>Which prediction type to base confidence on.
-Default is <code>"predicted_labels"</code>.</p></dd>
+<dd><p>Which prediction type to base confidence on.</p></dd>
 
 
 <dt id="arg-insert-prob">insert_prob<a class="anchor" aria-label="anchor" href="#arg-insert-prob"></a></dt>
-<dd><p>Whether to insert probability matrix.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Whether to insert probability matrix.</p></dd>
 
 
 <dt id="arg-insert-decision">insert_decision<a class="anchor" aria-label="anchor" href="#arg-insert-decision"></a></dt>
-<dd><p>Whether to insert decision matrix.
-Default is <code>FALSE</code>.</p></dd>
+<dd><p>Whether to insert decision matrix.</p></dd>
 
 
 <dt id="arg-prefix">prefix<a class="anchor" aria-label="anchor" href="#arg-prefix"></a></dt>
-<dd><p>Prefix for inserted columns.
-Default is <code>"celltypist_"</code>.</p></dd>
+<dd><p>Prefix for inserted columns.</p></dd>
 
 
 <dt id="arg-return-seurat">return_seurat<a class="anchor" aria-label="anchor" href="#arg-return-seurat"></a></dt>
-<dd><p>Whether to return a Seurat object instead of an anndata object.
-Default is <code>TRUE</code>.</p></dd>
+<dd><p>Whether to return a Seurat object instead of an anndata object.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
