@@ -28,7 +28,11 @@ Python.
 }
 \examples{
 \dontrun{
-adata <- loom_to_adata("path/to/data.loom")
+data(pancreas_sub)
+adata <- srt_to_adata(pancreas_sub)
+loom_path <- tempfile(fileext = ".loom")
+adata$write_loom(loom_path, write_obsm_varm = TRUE)
+adata <- loom_to_adata(loom_path)
 adata
 }
 }

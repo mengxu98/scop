@@ -33,13 +33,10 @@
 #' adata
 #'
 #' # Or save as a h5ad/loom file
-#' adata$write_h5ad(
-#'   "pancreas_sub.h5ad"
-#' )
-#' adata$write_loom(
-#'   "pancreas_sub.loom",
-#'   write_obsm_varm = TRUE
-#' )
+#' h5ad_path <- tempfile(fileext = ".h5ad")
+#' loom_path <- tempfile(fileext = ".loom")
+#' adata$write_h5ad(h5ad_path)
+#' adata$write_loom(loom_path, write_obsm_varm = TRUE)
 #' }
 srt_to_adata <- function(
   srt,
@@ -343,7 +340,8 @@ get_adata_sparse_assay_layer <- function(
 #' @examples
 #' \dontrun{
 #' data(pancreas_sub)
-#' srt_to_h5ad(pancreas_sub, "pancreas_sub.h5ad")
+#' h5ad_path <- tempfile(fileext = ".h5ad")
+#' srt_to_h5ad(pancreas_sub, h5ad_path)
 #' }
 srt_to_h5ad <- function(
   srt,
@@ -437,8 +435,10 @@ srt_to_h5ad <- function(
 #' srt
 #'
 #' # Or convert a h5ad file to Seurat object
+#' h5ad_path <- tempfile(fileext = ".h5ad")
+#' srt_to_h5ad(pancreas_sub, h5ad_path)
 #' sc <- reticulate::import("scanpy")
-#' adata <- sc$read_h5ad("pancreas.h5ad")
+#' adata <- sc$read_h5ad(h5ad_path)
 #' srt <- adata_to_srt(adata)
 #' srt
 #' }
@@ -713,7 +713,10 @@ adata_to_srt <- function(
 #'
 #' @examples
 #' \dontrun{
-#' srt <- h5ad_to_srt("path/to/data.h5ad")
+#' data(pancreas_sub)
+#' h5ad_path <- tempfile(fileext = ".h5ad")
+#' srt_to_h5ad(pancreas_sub, h5ad_path)
+#' srt <- h5ad_to_srt(h5ad_path)
 #' srt
 #' }
 h5ad_to_srt <- function(
@@ -810,7 +813,11 @@ __main__.adata = adata
 #'
 #' @examples
 #' \dontrun{
-#' adata <- loom_to_adata("path/to/data.loom")
+#' data(pancreas_sub)
+#' adata <- srt_to_adata(pancreas_sub)
+#' loom_path <- tempfile(fileext = ".loom")
+#' adata$write_loom(loom_path, write_obsm_varm = TRUE)
+#' adata <- loom_to_adata(loom_path)
 #' adata
 #' }
 loom_to_adata <- function(
@@ -880,7 +887,11 @@ loom_to_adata <- function(
 #'
 #' @examples
 #' \dontrun{
-#' srt <- loom_to_srt("path/to/data.loom")
+#' data(pancreas_sub)
+#' adata <- srt_to_adata(pancreas_sub)
+#' loom_path <- tempfile(fileext = ".loom")
+#' adata$write_loom(loom_path, write_obsm_varm = TRUE)
+#' srt <- loom_to_srt(loom_path)
 #' srt
 #' }
 loom_to_srt <- function(

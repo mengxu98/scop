@@ -93,9 +93,11 @@ object does not already contain spatial coordinates.
 }
 \examples{
 \dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
-srt <- RunscMalignantRegion(
-  srt,
-  signature_gmt = "path/to/sc_malignant_deg.gmt",
+data(visium_human_pancreas_sub)
+# Requires scMalignantFinder resource file signature_gmt (see ?RunscMalignantRegion).
+spatial <- RunscMalignantRegion(
+  visium_human_pancreas_sub,
+  signature_gmt = signature_gmt,
   spatial.cols = c("x", "y")
 )
 \dontshow{\}) # examplesIf}

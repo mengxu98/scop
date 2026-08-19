@@ -220,7 +220,7 @@ pancreas_sub <- RunSCENIC(
   pancreas_sub,
   species = "Mus_musculus",
   backend = "cpp",
-  work_dir = "test/scenic"
+  work_dir = tempfile("scenic")
 )
 scenic_rss <- SCENICPlot(pancreas_sub, group.by = "CellType", plot_type = "rss_rank")
 example_tfs <- unique(scenic_rss$top_table$TF)[1:3]

@@ -25,7 +25,10 @@ Read an \code{.h5ad} file and convert to a \code{Seurat}
 }
 \examples{
 \dontrun{
-srt <- h5ad_to_srt("path/to/data.h5ad")
+data(pancreas_sub)
+h5ad_path <- tempfile(fileext = ".h5ad")
+srt_to_h5ad(pancreas_sub, h5ad_path)
+srt <- h5ad_to_srt(h5ad_path)
 srt
 }
 }

@@ -54,6 +54,9 @@ ListExternalDatasets <- function(
 #'
 #' @examples
 #' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' SpatialSpotPlot(visium_human_pancreas_sub, group.by = "coda_label")
+#' # Optional remote datasets from mengxu98/datasets:
 #' xenium <- LoadExternalDataset("xenium_human_pancreas_sub", collection = "Xenium")
 #' SpatialSpotPlot(xenium, group.by = "nCount_Xenium")
 #' }

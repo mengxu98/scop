@@ -122,24 +122,28 @@ model implemented by this function.
 
 \examples{
 \dontrun{
-# Official cell2location Human Lymph Node tutorial data:
-# https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_tutorial.html
-reference <- h5ad_to_srt("reference_subset.h5ad")
-spatial <- h5ad_to_srt("spatial_subset.h5ad")
+data(visium_human_pancreas_sub)
+data(panc8_sub)
+spatial <- visium_human_pancreas_sub[, seq_len(120)]
+reference <- panc8_sub[, panc8_sub$celltype %in% c("ductal", "alpha", "beta")]
 spatial <- RunCell2location(
   srt = spatial,
-  result_dir = "human_lymph_node_cell2location",
+  result_dir = tempfile("cell2location"),
   reference = reference,
-  reference_label = "Subset",
-  reference_batch = "Sample",
-  spatial_batch = "sample",
+  reference_label = "celltype",
+  assay = "Spatial",
+  reference_assay = "RNA",
+  layer = "counts",
+  reference_layer = "counts",
   N_cells_per_location = 30,
-  detection_alpha = 20
+  detection_alpha = 20,
+  reference_train_params = list(max_epochs = 2),
+  spatial_train_params = list(max_epochs = 2)
 )
 Cell2locationPlot(
   spatial,
   plot_type = "proportion",
-  cell_types = c("B_naive", "T_CD4+_naive", "FDC"),
+  cell_types = c("ductal", "alpha", "beta"),
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )

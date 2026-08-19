@@ -79,11 +79,12 @@ files are not bundled with \code{scop}; provide a directory containing
 \examples{
 \dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
 data(pancreas_sub)
+# Requires scMalignantFinder pretrained model files (see ?RunscMalignantFinder).
 pancreas_sub <- RunscMalignantFinder(
   pancreas_sub,
   assay = "RNA",
   layer = "counts",
-  pretrain_dir = "path/to/pretrained_model"
+  pretrain_dir = pretrain_dir
 )
 CellDimPlot(pancreas_sub, group.by = "malignancy_probability")
 \dontshow{\}) # examplesIf}

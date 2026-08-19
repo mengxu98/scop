@@ -64,9 +64,11 @@ and append the resulting activity scores to Seurat metadata.
 }
 \examples{
 \dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
-srt <- RunscMalignantStates(
-  srt,
-  gene_sets = "path/to/Malignant_MPs.Gavish_2023.gmt"
+data(pancreas_sub)
+# Requires scMalignantFinder resource gene-set GMT (see ?RunscMalignantStates).
+pancreas_sub <- RunscMalignantStates(
+  pancreas_sub,
+  gene_sets = gene_sets
 )
 \dontshow{\}) # examplesIf}
 }

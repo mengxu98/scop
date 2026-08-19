@@ -31,8 +31,10 @@ srt <- adata_to_srt(adata)
 srt
 
 # Or convert a h5ad file to Seurat object
+h5ad_path <- tempfile(fileext = ".h5ad")
+srt_to_h5ad(pancreas_sub, h5ad_path)
 sc <- reticulate::import("scanpy")
-adata <- sc$read_h5ad("pancreas.h5ad")
+adata <- sc$read_h5ad(h5ad_path)
 srt <- adata_to_srt(adata)
 srt
 }

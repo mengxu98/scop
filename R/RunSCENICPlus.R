@@ -121,7 +121,7 @@
 #' pancreas_sub <- RunSCENICPlus(
 #'   pancreas_sub,
 #'   backend = "python",
-#'   python_result_dir = "test/scenicplus"
+#'   python_result_dir = tempfile("scenicplus")
 #' )
 #' scenicplus_dot <- SCENICPlusPlot(
 #'   pancreas_sub,

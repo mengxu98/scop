@@ -64,13 +64,10 @@ adata <- srt_to_adata(pancreas_sub)
 adata
 
 # Or save as a h5ad/loom file
-adata$write_h5ad(
-  "pancreas_sub.h5ad"
-)
-adata$write_loom(
-  "pancreas_sub.loom",
-  write_obsm_varm = TRUE
-)
+h5ad_path <- tempfile(fileext = ".h5ad")
+loom_path <- tempfile(fileext = ".loom")
+adata$write_h5ad(h5ad_path)
+adata$write_loom(loom_path, write_obsm_varm = TRUE)
 }
 }
 \seealso{

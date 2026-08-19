@@ -39,7 +39,11 @@ as additional assays, which is useful for velocity-style loom files with
 }
 \examples{
 \dontrun{
-srt <- loom_to_srt("path/to/data.loom")
+data(pancreas_sub)
+adata <- srt_to_adata(pancreas_sub)
+loom_path <- tempfile(fileext = ".loom")
+adata$write_loom(loom_path, write_obsm_varm = TRUE)
+srt <- loom_to_srt(loom_path)
 srt
 }
 }

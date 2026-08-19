@@ -43,7 +43,7 @@ pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunSCENICPlus(
   pancreas_sub,
   backend = "python",
-  python_result_dir = "test/scenicplus"
+  python_result_dir = tempfile("scenicplus")
 )
 scenicplus_dot <- SCENICPlusPlot(pancreas_sub, group.by = "CellType")
 example_tfs <- unique(scenicplus_dot$top_table$TF)[1:3]

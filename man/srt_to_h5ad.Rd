@@ -66,7 +66,8 @@ Convert a Seurat object to an \code{.h5ad} file
 \examples{
 \dontrun{
 data(pancreas_sub)
-srt_to_h5ad(pancreas_sub, "pancreas_sub.h5ad")
+h5ad_path <- tempfile(fileext = ".h5ad")
+srt_to_h5ad(pancreas_sub, h5ad_path)
 }
 }
 \seealso{

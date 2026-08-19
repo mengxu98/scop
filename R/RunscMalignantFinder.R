@@ -47,11 +47,12 @@
 #'
 #' @examplesIf FALSE
 #' data(pancreas_sub)
+#' # Requires scMalignantFinder pretrained model files (see ?RunscMalignantFinder).
 #' pancreas_sub <- RunscMalignantFinder(
 #'   pancreas_sub,
 #'   assay = "RNA",
 #'   layer = "counts",
-#'   pretrain_dir = "path/to/pretrained_model"
+#'   pretrain_dir = pretrain_dir
 #' )
 #' CellDimPlot(pancreas_sub, group.by = "malignancy_probability")
 RunscMalignantFinder <- function(
@@ -216,9 +217,11 @@ RunscMalignantFinder <- function(
 #' @export
 #'
 #' @examplesIf FALSE
-#' srt <- RunscMalignantRegion(
-#'   srt,
-#'   signature_gmt = "path/to/sc_malignant_deg.gmt",
+#' data(visium_human_pancreas_sub)
+#' # Requires scMalignantFinder resource file signature_gmt (see ?RunscMalignantRegion).
+#' spatial <- RunscMalignantRegion(
+#'   visium_human_pancreas_sub,
+#'   signature_gmt = signature_gmt,
 #'   spatial.cols = c("x", "y")
 #' )
 RunscMalignantRegion <- function(
@@ -420,9 +423,11 @@ RunscMalignantRegion <- function(
 #' @export
 #'
 #' @examplesIf FALSE
-#' srt <- RunscMalignantStates(
-#'   srt,
-#'   gene_sets = "path/to/Malignant_MPs.Gavish_2023.gmt"
+#' data(pancreas_sub)
+#' # Requires scMalignantFinder resource gene-set GMT (see ?RunscMalignantStates).
+#' pancreas_sub <- RunscMalignantStates(
+#'   pancreas_sub,
+#'   gene_sets = gene_sets
 #' )
 RunscMalignantStates <- function(
   srt = NULL,
