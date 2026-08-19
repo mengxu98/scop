@@ -11,7 +11,7 @@
 #' @param adj A data frame with columns `TF`, `target`, and optionally
 #' `importance`, or a path to a TSV adjacency file. This is typically the
 #' output of [RunGRNBoost2()], [RunGENIE3()], or [RunSCENIC()] step 1.
-#' @param backend cisTarget runtime backend.
+#' @param backend CisTarget runtime backend.
 #' \describe{
 #'   \item{`"python"`}{Uses the pySCENIC/ctxcore Python pipeline. This is the
 #'     most tested backend and produces results identical to official SCENIC.}

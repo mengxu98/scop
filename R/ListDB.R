@@ -7,9 +7,9 @@
 #' creation date.
 #'
 #' @md
-#' @param species A character vector specifying the species.
+#' @param species Species.
 #' Can be `"Homo_sapiens"` or `"Mus_musculus"`.
-#' @param db A character vector of database names (for example `"GO_BP"`,
+#' @param db Database names (for example `"GO_BP"`,
 #' `"KEGG"`, `"CellChat"`), or a regular expression. If `NULL`, all databases
 #' are listed.
 #'

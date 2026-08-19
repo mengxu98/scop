@@ -57,7 +57,7 @@ and \code{"yugene_diff"}. If \code{NULL}, model files are downloaded from
 \item{backend}{Model prediction backend. \code{"cpp"} uses converted Elastic Net
 models and C++ prediction. \code{"python"} uses \code{tAge::predict_tAge()}.}
 
-\item{clock}{tAge clock family used when \code{model_paths = NULL}.}
+\item{clock}{TAge clock family used when \code{model_paths = NULL}.}
 
 \item{model_species}{Model species scope used when \code{model_paths = NULL}.
 \code{"auto"} chooses \code{"Mouse"} for \code{species = "mouse"}, \code{"Rodents"} for
@@ -96,7 +96,7 @@ separately by group, such as tissue.}
 \item{species}{Species passed to tAge. Supported values are \code{"mouse"},
 \code{"human"}, \code{"rat"}, and \code{"monkey"}.}
 
-\item{mode}{tAge model mode: \code{"EN"} for Elastic Net or \code{"BR"} for Bayesian
+\item{mode}{TAge model mode: \code{"EN"} for Elastic Net or \code{"BR"} for Bayesian
 Ridge.}
 
 \item{gene_mapping_type}{Gene identifier type passed to tAge preprocessing:
@@ -134,8 +134,7 @@ import \code{joblib}, \code{pandas}, and \code{sklearn} before tAge prediction.}
 \code{ExpressionSet} and processed tAge \code{ExpressionSet} list in the returned
 Seurat tool entry or list result.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A \code{Seurat} object with tAge results stored in \code{object@tools}, or a

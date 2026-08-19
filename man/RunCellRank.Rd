@@ -64,35 +64,22 @@ RunCellRank(
 )
 }
 \arguments{
-\item{srt}{A Seurat object. Default is \code{NULL}.
+\item{srt}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
-\item{assay_x}{Assay to convert as the main data matrix in the anndata object.
-Default is \code{"RNA"}.}
+\item{assay_x}{Assay to convert as the main data matrix in the anndata object.}
 
-\item{layer_x}{Layer name for assay_x in the Seurat object.
-Default is \code{"counts"}.}
+\item{layer_x}{Layer name for assay_x in the Seurat object.}
 
-\item{assay_y}{Assays to convert as layers in the anndata object.
-Default is \code{c("spliced", "unspliced")}.}
+\item{assay_y}{Assays to convert as layers in the anndata object.}
 
-\item{layer_y}{Layer names for the assay_y in the Seurat object.
-Default is \code{"counts"}.}
+\item{layer_y}{Layer names for the assay_y in the Seurat object.}
 
-\item{adata}{An anndata object. Default is \code{NULL}.}
+\item{adata}{An anndata object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{cores}{The number of cores to use for \code{cellrank}.}
-
-\item{linear_reduction}{The linear dimensionality reduction method to use.
-Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
-Default is \code{"pca"}.}
-
-\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
-Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
-\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
-Default is \code{"umap"}.}
 
 \item{basis}{The basis to use for reduction, e.g., \code{"UMAP"}.}
 
@@ -102,37 +89,28 @@ If the corresponding velocity reduction (e.g. \code{stochastic_umap}) is not
 found, falls back to the scVelo convention (e.g. \code{velocity_umap}), which is
 what an object converted from an AnnData (via \link{adata_to_srt}) contains.}
 
-\item{fitting_by}{Method used to fit gene velocities for dynamical modeling.
-Default is \code{"stochastic"}.}
+\item{fitting_by}{Method used to fit gene velocities for dynamical modeling.}
 
-\item{magic_impute}{Flag indicating whether to perform magic imputation.
-Default is \code{FALSE}.}
+\item{magic_impute}{Flag indicating whether to perform magic imputation.}
 
-\item{knn}{The number of nearest neighbors for \code{magic.MAGIC}.
-Default is \code{5}.}
+\item{knn}{The number of nearest neighbors for \code{magic.MAGIC}.}
 
-\item{t}{Power to which the diffusion operator is powered for \code{magic.MAGIC}.
-Default is \code{2}.}
+\item{t}{Power to which the diffusion operator is powered for \code{magic.MAGIC}.}
 
-\item{min_shared_counts}{Minimum number of counts (both unspliced and spliced) required for a gene.
-Default is \code{30}.}
+\item{min_shared_counts}{Minimum number of counts (both unspliced and spliced) required for a gene.}
 
-\item{n_pcs}{Number of principal components to use for linear reduction.
-Default is \code{30}.}
+\item{n_pcs}{Number of principal components to use for linear reduction.}
 
-\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.
-Default is \code{30}.}
+\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.}
 
 \item{stream_smooth}{Multiplication factor for scale in Gaussian kernel around grid point.}
 
 \item{stream_density}{Controls the closeness of streamlines.
 When density = 2 (default), the domain is divided into a 60x60 grid,
 whereas density linearly scales this grid.
-Each cell in the grid can have, at most, one traversing streamline.
-Default is \code{2}.}
+Each cell in the grid can have, at most, one traversing streamline.}
 
-\item{arrow_size}{Size of arrows.
-Default is \code{5}.}
+\item{arrow_size}{Size of arrows.}
 
 \item{arrow_length}{Length of arrows.}
 
@@ -150,34 +128,28 @@ Default is \code{5}.}
 or \code{"wot"} (uses Waddington-OT transport maps through CellRank's RealTimeKernel).}
 
 \item{time_key}{Key in metadata for pseudotime. Used when \code{kernel_type = "pseudotime"}.
-If the key doesn't exist, DPT pseudotime will be computed automatically.
-Default is \code{"dpt_pseudotime"}.}
+If the key doesn't exist, DPT pseudotime will be computed automatically.}
 
 \item{time_field}{Key in metadata for experimental time. Used when \code{kernel_type = "wot"}.}
 
-\item{growth_iters}{Number of growth iterations passed to \code{wot.ot.OTModel}.
-Default is \code{3}.}
+\item{growth_iters}{Number of growth iterations passed to \code{wot.ot.OTModel}.}
 
 \item{tmap_out}{Directory used to store or read Waddington-OT transport maps.}
 
 \item{recalculate}{Whether to recompute Waddington-OT transport maps even when
-\code{tmap_out} already exists. Default is \code{FALSE}.}
+\code{tmap_out} already exists.}
 
 \item{estimator_type}{Type of estimator to use: \code{"GPCCA"} (default) or \code{"CFLARE"}.
 GPCCA provides coarse-grained analysis and Schur decomposition.}
 
-\item{use_connectivity_kernel}{Whether to combine the main kernel with ConnectivityKernel.
-Default is \code{TRUE}.}
+\item{use_connectivity_kernel}{Whether to combine the main kernel with ConnectivityKernel.}
 
-\item{velocity_weight}{Weight for the VelocityKernel when combining with ConnectivityKernel.
-Default is \code{0.8}.}
+\item{velocity_weight}{Weight for the VelocityKernel when combining with ConnectivityKernel.}
 
 \item{connectivity_weight}{Weight for the ConnectivityKernel when combining with VelocityKernel.
-Default is \code{0.2}.
 Weights are automatically normalized to sum to \code{1.0}.}
 
-\item{softmax_scale}{Scaling parameter for softmax transformation of velocity kernel.
-Default is \code{4}.}
+\item{softmax_scale}{Scaling parameter for softmax transformation of velocity kernel.}
 
 \item{n_macrostates}{Number of macrostates to compute.
 If \code{NULL} (default), automatically determined based on eigenvalue spectrum.}
@@ -185,10 +157,9 @@ If \code{NULL} (default), automatically determined based on eigenvalue spectrum.
 \item{schur_method}{Method for Schur decomposition: \code{"krylov"} or \code{"brandts"}.
 Only used for GPCCA estimator.}
 
-\item{n_cells_terminal}{Minimum number of cells required for a state to be considered terminal.
-Default is \code{10}.}
+\item{n_cells_terminal}{Minimum number of cells required for a state to be considered terminal.}
 
-\item{backward}{Whether to compute backward transitions. Default is \code{FALSE}.}
+\item{backward}{Whether to compute backward transitions.}
 
 \item{backend}{Backend for computation: \code{"python"} (default) or \code{"cpp"}.
 The C++ path is an explicitly opted-in approximation and does not reproduce
@@ -200,31 +171,24 @@ be \code{TRUE} when \code{backend = "cpp"}.}
 \item{max_dense_gib}{Maximum estimated GiB allowed for the dense
 cell-by-cell working matrices used by the C++ path.}
 
-\item{show_plot}{Whether to show the plot.
-Default is \code{FALSE}.}
+\item{show_plot}{Whether to show the plot.}
 
-\item{save_plot}{Whether to save plots to files. Default is \code{FALSE}.}
+\item{save_plot}{Whether to save plots to files.}
 
 \item{plot_format}{Format for saved plots: \code{"png"} (default), \code{"pdf"}, or \code{"svg"}.}
 
-\item{plot_dpi}{Resolution (DPI) for saved plots. Default is \code{300}.}
+\item{plot_dpi}{Resolution (DPI) for saved plots.}
 
-\item{plot_prefix}{Prefix for saved plot filenames. Default is "cellrank".}
+\item{plot_prefix}{Prefix for saved plot filenames.}
 
 \item{legend.position}{Position of legend in plots.
-Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc. Default is \code{"on data"}.}
+Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{dirpath}{The directory to save the plots.}
 
-\item{dirpath}{The directory to save the plots. Default is \code{"./cellrank"}.}
-
-\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.
-Default is \code{TRUE}.}
+\item{return_seurat}{Whether to return a Seurat object instead of an anndata object.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

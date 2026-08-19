@@ -43,16 +43,13 @@ RunReferenceMapping(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{reference}{RNA reference \code{Seurat} object used for mapping.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{prefix}{Prefix used to resolve ATAC reductions. Default is \code{"ATAC"}.}
+\item{prefix}{Prefix used to resolve ATAC reductions.}
 
 \item{reference_assay}{Assay used in the reference object.}
 
@@ -101,8 +98,7 @@ otherwise.}
 
 \item{scomm_hidden_nodes, scomm_epochs, scomm_batch_size, scomm_threshold, scomm_seed}{Parameters passed to the optional \code{scOMM} backend.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A query \code{Seurat} object mapped into the RNA reference space.

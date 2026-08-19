@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunScmap.R
 \name{RunScmap}
 \alias{RunScmap}
-\title{Annotate single cells using scmap.}
+\title{Annotate single cells using scmap}
 \usage{
 RunScmap(
   srt_query,
@@ -22,33 +22,29 @@ RunScmap(
 
 \item{srt_ref}{An object of class Seurat storing the reference cells.}
 
-\item{ref_group}{A character vector specifying the column name in the \code{srt_ref} metadata that represents the cell grouping.}
+\item{ref_group}{Column name in the \code{srt_ref} metadata that represents the cell grouping.}
 
-\item{query_assay}{A character vector specifying the assay to be used for the query data.
+\item{query_assay}{Assay to be used for the query data.
 Default is the default assay of the \code{srt_query} object.}
 
-\item{ref_assay}{A character vector specifying the assay to be used for the reference data.
+\item{ref_assay}{Assay to be used for the reference data.
 Default is the default assay of the \code{srt_ref} object.}
 
 \item{method}{The method to be used for scmap analysis.
-Can be any of \code{"scmapCluster"} or \code{"scmapCell"}.
-Default is \code{"scmapCluster"}.}
+Can be any of \code{"scmapCluster"} or \code{"scmapCell"}.}
 
-\item{nfeatures}{The number of top features to be selected.
-Default is \code{500}.}
+\item{nfeatures}{The number of top features to be selected.}
 
 \item{threshold}{The threshold value on similarity to determine if a cell is assigned to a cluster.
-This should be a value between \code{0} and \code{1}.
-Default is \code{0.5}.}
+This should be a value between \code{0} and \code{1}.}
 
-\item{k}{Number of clusters per group for k-means clustering when \code{method} is \code{"scmapCell"}.
-Default is \code{10}.}
+\item{k}{Number of clusters per group for k-means clustering when \code{method} is \code{"scmapCell"}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 }
 \description{
-Annotate single cells using scmap.
+Annotate single cells using scmap
 }
 \examples{
 data(panc8_sub)

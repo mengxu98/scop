@@ -1,20 +1,16 @@
-#' @title Run doublet-calling for single cell RNA-seq data.
+#' @title Doublet calling
 #'
 #' @md
-#' @inheritParams RunStandardWorkflow
-#' @param assay The name of the assay to be used for doublet-calling.
-#' Default is `"RNA"`.
-#' @param db_method Method used for doublet-calling.
-#' Can be one of `"scDblFinder"`, `"Scrublet"`, `"DoubletDetection"`,
-#' `"scds_cxds"`, `"scds_bcds"`, `"scds_hybrid"`.
-#' @param db_rate The expected doublet rate.
-#' Default is calculated as `ncol(srt) / 1000 * 0.01`.
-#' @param data_type Optional precomputed result from [CheckDataType] for the
-#' input assay. Primarily used internally to avoid repeated scans of the same
-#' count matrix across nested QC calls.
-#' @param ... Additional arguments to be passed to the corresponding doublet-calling method.
+#' @inheritParams scop-params
+#' @param assay Assay used for doublet calling.
+#' @param db_method `"scDblFinder"`, `"Scrublet"`, `"DoubletDetection"`,
+#' `"scds_cxds"`, `"scds_bcds"`, or `"scds_hybrid"`.
+#' @param db_rate Expected doublet rate.
+#' @param data_type Optional [CheckDataType] result, used internally to avoid
+#' rescanning the count matrix.
+#' @param ... Passed to the selected doublet method.
 #'
-#' @return Returns a Seurat object with the doublet prediction results and prediction scores stored in the meta.data.
+#' @return A `Seurat` object with doublet class and score columns in `meta.data`.
 #'
 #' @export
 #'
@@ -514,7 +510,6 @@ RunScrublet <- function(
 #' @md
 #' @inheritParams RunDoubletCalling
 #' @param cores The number of CPU cores to use for `doubletdetection`.
-#' Default is `1`.
 #' @param ... Additional arguments to be passed to [doubletdetection.BoostClassifier](https://github.com/JonathanShor/DoubletDetection).
 #'
 #' @export
@@ -645,41 +640,26 @@ RunDoubletDetection <- function(
   return(srt)
 }
 
-#' @title Run ambient RNA decontamination with decontX
+#' @title Ambient RNA decontamination with decontX
 #'
 #' @md
-#' @inheritParams RunStandardWorkflow
-#' @param assay The name of the assay to be used for decontamination.
-#' Default is `"RNA"`.
-#' @param group.by Cell cluster labels passed to [decontX::decontX()].
-#' Can be `NULL`, a meta.data column name, or a vector aligned to cells.
-#' Default is `NULL`.
-#' @param batch Batch labels passed to [decontX::decontX()].
-#' Can be `NULL`, a meta.data column name, or a vector aligned to cells.
-#' Default is `NULL`.
-#' @param background Optional background / empty-droplet input passed to [decontX::decontX()].
-#' Can be a `Seurat` object, `SingleCellExperiment`, or count matrix.
-#' Default is `NULL`.
-#' @param background_assay Assay name used when `background` is a `Seurat` object
-#' or `SingleCellExperiment`.
-#' Default is `NULL`, which falls back to `assay` for `Seurat` background
-#' and `"counts"` for `SingleCellExperiment` background.
-#' @param bg_batch Batch labels for `background` passed to [decontX::decontX()].
-#' Can be `NULL`, a metadata column name, or a vector aligned to the background droplets.
-#' Default is `NULL`.
-#' @param assay_name Name of the assay used to store decontaminated counts.
-#' Default is `"decontXcounts"`.
-#' @param store_assay Whether to store decontaminated counts as a new assay.
-#' Default is `TRUE`.
-#' @param round_counts Whether to round decontaminated counts before creating the assay.
-#' Default is `FALSE`.
-#' @param data_type Optional precomputed result from [CheckDataType()] for the
-#' input assay. Primarily used internally to avoid repeated scans of the same
-#' count matrix across nested QC calls.
-#' @param ... Additional arguments passed to [decontX::decontX()].
+#' @inheritParams scop-params
+#' @param assay Assay to decontaminate.
+#' @param group.by,batch Cell cluster and batch labels passed to [decontX::decontX()].
+#' Column name, cell-aligned vector, or `NULL`.
+#' @param background Background / empty-droplet input: a `Seurat` object,
+#' `SingleCellExperiment`, or count matrix.
+#' @param background_assay Assay used when `background` is a `Seurat` or
+#' `SingleCellExperiment`. `NULL` uses `assay` (Seurat) or `"counts"` (SCE).
+#' @param bg_batch Batch labels for `background`.
+#' @param assay_name,store_assay,round_counts Store rounded decontaminated counts
+#' as a new assay.
+#' @param data_type Optional [CheckDataType()] result, used internally to avoid
+#' rescanning the count matrix.
+#' @param ... Passed to [decontX::decontX()].
 #'
-#' @return Returns a Seurat object with decontX contamination estimates stored in the meta.data,
-#' and optional decontaminated counts stored in a new assay.
+#' @return A `Seurat` object with decontX contamination in `meta.data` and
+#' optional decontaminated counts in a new assay.
 #'
 #' @export
 #'
@@ -924,114 +904,50 @@ RunDecontX <- function(
   return(srt)
 }
 
-#' @title Run cell-level quality control
+#' @title Cell-level quality control
 #'
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams RunDoubletCalling
-#' @inheritParams RunStandardWorkflow
-#' @param split.by Name of a meta.data column used to split the object before QC.
-#' Default is `NULL`. When specified, QC and doublet-calling are performed
-#' separately within each split object and merged back afterward.
-#' @param return_filtered Logical indicating whether to return a cell-filtered Seurat object.
-#' Default is `FALSE`.
-#' @param qc_metrics A character vector specifying the quality control metrics to be applied.
-#' Available metrics are `"doublets"`, `"decontX"`, `"atac"`, `"outlier"`, `"umi"`, `"gene"`,
-#' `"mito"`, `"ribo"`, `"hb"`, `"ribo_mito_ratio"`, `"species"`, and any
-#' rule name supplied in `qc_features`.
-#' Default is `c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species")`.
-#' For `ChromatinAssay`, if `.arg qc_metrics` is not supplied, the default is `"atac"`.
-#' @param db_method Method used for doublet-calling.
-#' Can be one of `"scDblFinder"`, `"Scrublet"`, `"DoubletDetection"`,
-#' `"scds_cxds"`, `"scds_bcds"`, `"scds_hybrid"`.
-#' The resulting doublet labels are aggregated afterward into `db_qc` and do not
-#' affect the thresholds used by the other QC metrics.
-#' @param outlier_threshold A character vector specifying the outlier threshold.
-#' Default is `c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5")`.
-#' @param db_coefficient The coefficient used to calculate the doublet rate.
-#' Default is `0.01`. Doublet rate is calculated as `ncol(srt) / 1000 * db_coefficient`.
-#' @param decontX_threshold Optional contamination threshold used to filter cells
-#' after running [RunDecontX()]. Cells with `decontX_contamination` greater than
-#' this value are marked as failed in `decontX_qc`. Default is `NULL`, which
-#' computes decontX results without filtering cells by contamination.
-#' @param group.by Group labels passed to [RunDecontX()] when `"decontX"`
-#' is included in `qc_metrics`. Can be `NULL`, a meta.data column name, or a vector
-#' aligned to cells. Default is `NULL`.
-#' @param decontX_batch Batch labels passed to [RunDecontX()] when `"decontX"`
-#' is included in `qc_metrics`. Default is `NULL`.
-#' @param decontX_background Optional background / empty-droplet input passed to
-#' [RunDecontX()] when `"decontX"` is included in `qc_metrics`.
-#' Default is `NULL`.
-#' @param decontX_background_assay Assay name used when `decontX_background` is a
-#' `Seurat` object or `SingleCellExperiment`. Default is `NULL`.
-#' @param decontX_bg_batch Batch labels for `decontX_background` passed to
-#' [RunDecontX()]. Default is `NULL`.
-#' @param decontX_assay_name Name of the assay used to store decontaminated counts
-#' from [RunDecontX()]. Default is `"decontXcounts"`.
-#' @param decontX_store_assay Whether to store decontaminated counts as a new assay
-#' when running [RunDecontX()]. Default is `FALSE`.
-#' @param decontX_round_counts Whether to round decontaminated counts before creating
-#' the assay in [RunDecontX()]. Default is `TRUE`.
-#' @param decontX_args A named list of additional advanced arguments passed to
-#' [RunDecontX()] when `"decontX"` is included in `qc_metrics`.
-#' Explicit `decontX_*` parameters are preferred for common options and take
-#' precedence when both are supplied.
-#' Default is `list()`.
-#' @param atac_args A named list of additional arguments passed to [RunATACQC()]
-#' when `"atac"` is included in `qc_metrics`. Threshold arguments from
-#' [RunATACQC()] are used to label failed cells in `atac_qc`, but filtering is
-#' deferred to [RunCellQC()]. Default is `list()`.
-#' @param outlier_n Minimum number of outlier metrics that meet the conditions for determining outlier cells.
-#' Default is `1`.
-#' @param UMI_threshold UMI number threshold.
-#' Cells that exceed this threshold will be considered as kept.
-#' Default is `3000`.
-#' @param gene_threshold Gene number threshold.
-#' Cells that exceed this threshold will be considered as kept.
-#' Default is `1000`.
-#' @param mito_threshold Percentage of UMI counts of mitochondrial genes.
-#' Cells that exceed this threshold will be considered as discarded.
-#' Default is `20`.
-#' @param mito_pattern Regex patterns to match the mitochondrial genes.
-#' Default is `c("MT-", "Mt-", "mt-")`.
-#' @param mito_gene A defined mitochondrial genes.
-#' If features provided, will ignore the `mito_pattern` matching.
-#' Default is `NULL`.
-#' @param ribo_threshold Percentage of UMI counts of ribosomal genes.
-#' Cells that exceed this threshold will be considered as discarded.
-#' Default is `50`.
-#' @param ribo_pattern Regex patterns to match the ribosomal genes.
-#' Default is `c("RP[SL]\\d+\\w{0,1}\\d*$", "Rp[sl]\\d+\\w{0,1}\\d*$", "rp[sl]\\d+\\w{0,1}\\d*$")`.
-#' @param ribo_gene A defined ribosomal genes. If features provided, will ignore the `ribo_pattern` matching.
-#' Default is `NULL`.
-#' @param ribo_mito_ratio_range A numeric vector specifying the range of ribosomal/mitochondrial gene expression ratios for ribo_mito_ratio outlier cells.
-#' Default is `c(1, Inf)`.
-#' @param species Species used as the suffix of the QC metrics.
-#' The first is the species of interest.
-#' Default is `NULL`.
-#' @param species_gene_prefix Species gene prefix used to calculate QC metrics for each species.
-#' Default is `NULL`.
-#' @param species_percent Percentage of UMI counts of the first species.
-#' Cells that exceed this threshold will be considered as kept.
-#' Default is `95`.
-#' @param hb_range A numeric vector specifying the accepted percentage range for
-#' hemoglobin features. Values outside the range fail `hb_qc` when `"hb"` is
-#' included in `qc_metrics`. Default is `c(0, 5)`.
-#' @param hb_pattern Regex patterns used to match hemoglobin features. The
-#' defaults match common human, mouse, and lower-case symbols while excluding
-#' `HBP`/`hbp` genes. Default is `c("HB[^P]", "Hb[^p]", "hb[^p]")`.
-#' @param hb_gene A defined set of hemoglobin features. When supplied, these
-#' features are used instead of `hb_pattern`. Default is `NULL`.
-#' @param qc_features A named list defining additional feature-percentage QC
-#' rules. Each rule must contain exactly one of `features` (a character vector)
-#' or `pattern` (one or more regex patterns), plus a numeric `range` of length
-#' two. Providing a rule computes `percent.<name>`; the rule filters cells and
-#' creates `<name>_qc` only when `<name>` is included in `qc_metrics`.
-#' Patterns are matched directly against assay feature names and do not receive
-#' species prefixes. Rule names cannot collide with built-in QC columns.
-#' Default is `list()`.
+#' @inheritParams scop-params
+#' @param split.by Metadata column used to run QC separately per split, then merge.
+#' @param return_filtered Return only cells that pass QC.
+#' @param qc_metrics Metrics to apply: `"doublets"`, `"decontX"`, `"atac"`,
+#' `"outlier"`, `"umi"`, `"gene"`, `"mito"`, `"ribo"`, `"hb"`, `"ribo_mito_ratio"`,
+#' `"species"`, and any name in `qc_features`. Default for RNA is
+#' `c("doublets", "decontX", "outlier", "umi", "gene", "mito", "ribo",
+#' "ribo_mito_ratio", "species")`; for `ChromatinAssay`, `"atac"`.
+#' @param db_method Doublet method: `"scDblFinder"`, `"Scrublet"`,
+#' `"DoubletDetection"`, `"scds_cxds"`, `"scds_bcds"`, or `"scds_hybrid"`.
+#' Labels are aggregated into `db_qc` and do not change other thresholds.
+#' @param outlier_threshold Outlier rules as `"metric:tail:nmads"`.
+#' @param db_coefficient Doublet rate is `ncol(srt) / 1000 * db_coefficient`.
+#' @param decontX_threshold Filter cells with `decontX_contamination` above this
+#' value. `NULL` computes decontX without filtering.
+#' @param group.by,decontX_batch,decontX_background,decontX_background_assay,decontX_bg_batch
+#' Passed to [RunDecontX()] when `"decontX"` is in `qc_metrics`.
+#' @param decontX_assay_name,decontX_store_assay,decontX_round_counts
+#' Store decontaminated counts from [RunDecontX()].
+#' @param decontX_args Extra [RunDecontX()] arguments. Explicit `decontX_*`
+#' parameters take precedence.
+#' @param atac_args Extra [RunATACQC()] arguments. Thresholds label `atac_qc`;
+#' filtering is done by [RunCellQC()].
+#' @param outlier_n Minimum number of outlier rules a cell must fail.
+#' @param UMI_threshold,gene_threshold Keep cells with UMI/gene counts above these.
+#' @param mito_threshold,mito_pattern,mito_gene Discard cells above this mitochondrial
+#' percentage. `mito_gene` overrides `mito_pattern`.
+#' @param ribo_threshold,ribo_pattern,ribo_gene Discard cells above this ribosomal
+#' percentage. `ribo_gene` overrides `ribo_pattern`.
+#' @param ribo_mito_ratio_range Accepted ribosomal/mitochondrial ratio range.
+#' @param species,species_gene_prefix,species_percent Species suffix for QC metrics
+#' (first is the species of interest) and minimum UMI percentage of that species.
+#' @param hb_range,hb_pattern,hb_gene Hemoglobin percentage range and feature matching.
+#' `hb_gene` overrides `hb_pattern`.
+#' @param qc_features Named list of extra feature-percentage rules. Each rule needs
+#' exactly one of `features` or `pattern`, plus a length-2 `range`. Computes
+#' `percent.<name>`; filtering/`<name>_qc` only when `<name>` is in `qc_metrics`.
 #'
-#' @return Returns Seurat object with the QC results stored in the meta.data layer.
+#' @return A `Seurat` object with QC results in `meta.data`.
 #'
 #' @export
 #'

@@ -53,7 +53,7 @@ RunSpatialGradientFeatures(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{reference}{Spatial reference type: \code{"trajectory"} for STS or
 \code{"annotation"} for SAS.}
@@ -64,10 +64,7 @@ uses SPATA2 directly for full upstream SAS/STS behavior.}
 \item{result_name}{Name used to store this result. If \code{NULL}, a name is
 generated from \code{reference}.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{layer}{Assay layer used for expression values.}
 
@@ -77,9 +74,8 @@ features, then all assay features.}
 
 \item{sample_name, platform, img_scale_fct, assay_modality}{Arguments forwarded}
 
-\item{image}{Name of the Seurat spatial image used by the spatial workflow.
-Required when multiple images are present; a single image is selected
-automatically when \code{NULL}.}
+\item{image}{Spatial image name. Required when multiple images are present;
+a single image is selected automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used by the \code{"cpp"}
 backend when no image coordinates are available.}
@@ -118,8 +114,7 @@ variable features.}
 
 \item{store_results}{Whether to store the normalized result in \code{srt@tools}.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 
 \item{coordinate_space}{Coordinate system used by the C++ distance
 calculations. The default is raw acquisition coordinates, so \code{start},

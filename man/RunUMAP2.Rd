@@ -4,7 +4,7 @@
 \alias{RunUMAP2}
 \alias{RunUMAP2.Seurat}
 \alias{RunUMAP2.default}
-\title{Run UMAP (Uniform Manifold Approximation and Projection)}
+\title{Run UMAP}
 \usage{
 RunUMAP2(object, ...)
 
@@ -68,100 +68,57 @@ RunUMAP2(object, ...)
 )
 }
 \arguments{
-\item{object}{An object.
-This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.}
+\item{object}{A \code{Seurat} object, matrix-like object, \code{Neighbor}, or \code{Graph}.}
 
-\item{...}{Additional arguments to be passed to UMAP.}
+\item{...}{Passed to the UMAP implementation.}
 
-\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
+\item{reduction}{Linear reduction used as input.}
 
-\item{dims}{The dimensions to be used. Default is \code{NULL}.}
+\item{dims}{Dimensions to use. Supply only one of \code{dims}, \code{features},
+\code{neighbor}, or \code{graph}.}
 
-\item{features}{A character vector of features to use. Default is \code{NULL}.}
+\item{features}{Features used instead of a reduction.}
 
-\item{neighbor}{The name of the Neighbor object to be used. Default is \code{NULL}.}
+\item{neighbor, graph}{Existing \code{Neighbor} or \code{Graph} object name.}
 
-\item{graph}{The name of the Graph object to be used. Default is \code{NULL}.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{layer}{Assay layer to use.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{umap.method}{\code{"uwot"} or \code{"naive"}.}
 
-\item{umap.method}{The UMAP method to be used.
-Options are \code{"naive"} and \code{"uwot"}.
-Default is \code{"uwot"}.}
+\item{reduction.model}{Pre-trained UMAP \code{DimReduc} used to embed new data.}
 
-\item{reduction.model}{A DimReduc object containing a pre-trained UMAP model.
-Default is \code{NULL}.}
+\item{n_threads}{Number of threads.}
 
-\item{n_threads}{Num of threads used.}
+\item{return.model}{Store the UMAP model.}
 
-\item{return.model}{Whether to return the UMAP model. Default is \code{FALSE}.}
+\item{n.neighbors, n.components, metric, n.epochs}{UMAP layout parameters.
+String \code{metric} values include \code{"euclidean"}, \code{"manhattan"}, \code{"cosine"},
+\code{"pearson"}, and \code{"pearson2"}.}
 
-\item{n.neighbors}{A number of nearest neighbors to be used. Default is \code{30}.}
+\item{cores}{Number of CPU cores.}
 
-\item{n.components}{A number of UMAP components. Default is \code{2}.}
+\item{min.dist}{Minimum embedding distance (how tightly points pack).}
 
-\item{metric}{The metric or a function to be used for distance calculations.
-When using a string, available metrics are: \code{euclidean}, \code{manhattan}.
-Other available generalized metrics are: cosine, pearson, pearson2.
-Note the triangle inequality may not be satisfied by some generalized metrics, hence knn search may not be optimal.
-When using metric.function as a function,
-the signature must be function(matrix, origin, target) and should compute a distance between the origin column and the target columns.
-Default is \code{"cosine"}.}
+\item{set.op.mix.ratio}{Mix of fuzzy union (\code{1}) and intersection (\code{0}).}
 
-\item{n.epochs}{A number of iterations performed during layout optimization for UMAP.
-Default is \code{200}.}
+\item{local.connectivity, negative.sample.rate}{Fuzzy simplicial set and
+optimization sampling.}
 
-\item{cores}{The spread parameter for UMAP, used during automatic estimation of a/b parameters.
-Default is \code{1}.}
+\item{a, b}{UMAP curve parameters. \code{NULL} estimates them automatically.}
 
-\item{min.dist}{The minimum distance between UMAP embeddings, determines how close points appear in the final layout.
-Default is \code{0.3}.}
+\item{learning.rate, repulsion.strength}{Layout optimization rates.}
 
-\item{set.op.mix.ratio}{Interpolate between (fuzzy) union and intersection as the set operation used to combine local fuzzy simplicial sets to obtain a global fuzzy simplicial sets.
-Both fuzzy set operations use the product t-norm.
-The value of this parameter should be between \code{0.0} and \code{1.0};
-a value of \code{1.0} will use a pure fuzzy union, while \code{0.0} will use a pure fuzzy intersection.}
-
-\item{local.connectivity}{The local connectivity, used during construction of fuzzy simplicial set.
-Default is \code{1}.}
-
-\item{negative.sample.rate}{The negative sample rate for UMAP optimization.
-Determines how many non-neighbor points are used per point and per iteration during layout optimization.
-Default is \code{5}.}
-
-\item{a}{The parameter a for UMAP optimization.
-Contributes to gradient calculations during layout optimization.
-When left at NA, a suitable value will be estimated automatically.
-Default is \code{NULL}.}
-
-\item{b}{The parameter b for UMAP optimization. Details see parameter \code{a}.}
-
-\item{learning.rate}{The initial value of "learning rate" of layout optimization.
-Default is \code{1}.}
-
-\item{repulsion.strength}{A numeric value determines, together with alpha, the learning rate of layout optimization.
-Default is \code{1}.}
-
-\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
-Default is \code{"umap"}.}
-
-\item{reduction.key}{The prefix for the column names of the UMAP embeddings.
-Default is \code{"UMAP_"}.}
+\item{reduction.name, reduction.key}{Stored reduction name and embedding prefix.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed.use}{Random seed.}
 }
 \description{
-Run UMAP (Uniform Manifold Approximation and Projection)
+Run UMAP
 }
 \examples{
 data(pancreas_sub)

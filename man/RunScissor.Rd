@@ -46,10 +46,7 @@ when \code{phenotype = NULL}.}
 \item{positive}{Positive phenotype level for binomial Scissor. If \code{NULL},
 the second sorted level is used.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{bulk_assay}{Assay name used when \code{bulk_dataset} is a
 \code{SummarizedExperiment}.}
@@ -90,8 +87,7 @@ built.}
 \item{store_inputs}{Whether to store Scissor regression inputs in
 \code{srt@tools}. Default is \code{FALSE} to avoid large objects.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A \code{Seurat} object with Scissor status and coefficient columns in

@@ -1,4 +1,4 @@
-#' @title The GLUE integration function
+#' @title GLUE integration function
 #'
 #' @description
 #' Integrate paired RNA and ATAC data using `scglue`.
@@ -10,7 +10,6 @@
 #' @inheritParams RunIntegration
 #' @param gene_annotation_by How RNA feature names are matched to gene
 #' annotation. One of `"auto"`, `"gene_name"`, or `"gene_id"`.
-#' Default is `"auto"`.
 #' @param GLUE_params A list of parameters passed to
 #' `scglue.models.fit_SCGLUE()`.
 #' Reserved keys are `"adatas"` and `"graph"`.

@@ -4,7 +4,6 @@
 #' For each of two query features, 100 features with similar expression patterns are selected and ranked by their Pearson correlation with the query.
 #' In a process akin to compensation, the intersection of the feature lists is removed from each list.
 #' The log normalized expression of the resulting features are then averaged within each cell, and the resulting quantities are plotted.
-#' This function is based on a simple scheme: choose features similar to the ones specified and average them to reduce the noise.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -15,7 +14,6 @@
 #' If your dataset is perturbed in a way that would substantially alter feature-feature correlations,
 #' for example if different time points are present or certain cell types are mostly depleted,
 #' you can feed in a reference srt, and TACS will choose axes based on the reference data.
-#' Default is `NULL`.
 #' @param assay Which assay to use. Default is `"RNA"`.
 #' @param feature1 Horizontal axis on plot mimics this feature.
 #' Character, usually length 1 but possibly longer.
@@ -29,17 +27,17 @@
 #' @param cutoffs If given, divide plot into four quadrants and annotate with percentages.
 #' Can be a numeric vector of length 1 or 2, or a list of two numeric vectors for x and y axes respectively.
 #' @param density If `TRUE`, plot contours instead of points.
-#' @param bins Number of bins for density plot. Default is `20`.
-#' @param h Bandwidth for density plot. Default is `NULL`.
+#' @param bins Number of bins for density plot.
+#' @param h Bandwidth for density plot.
 #' @param remove_outliers If `TRUE`, remove outliers from the plot. Default is `FALSE`.
-#' @param suffix The suffix of the axis labels. Default is `" expression level"`.
+#' @param suffix The suffix of the axis labels.
 #' @param include_all If `TRUE`, include a panel with all cells. Default is `FALSE`.
-#' @param all_color The color of the all cells panel. Default is `"grey20"`.
-#' @param quadrants_line_color The color of the quadrants lines. Default is `"grey30"`.
-#' @param quadrants_line_type The type of the quadrants lines. Default is `"solid"`.
-#' @param quadrants_line_width The width of the quadrants lines. Default is `0.3`.
-#' @param quadrants_label_size The size of the quadrants labels. Default is `3`.
-#' @param density_alpha The alpha of the density plot. Default is `NULL`.
+#' @param all_color The color of the all cells panel.
+#' @param quadrants_line_color The color of the quadrants lines.
+#' @param quadrants_line_type The type of the quadrants lines.
+#' @param quadrants_line_width The width of the quadrants lines.
+#' @param quadrants_label_size The size of the quadrants labels.
+#' @param density_alpha The alpha of the density plot.
 #' @param ... Additional parameters passed to [ggplot2::stat_density2d].
 #'
 #' @export
@@ -326,9 +324,8 @@ TACSPlot <- function(
 #' @inheritParams TACSPlot
 #' @inheritParams FetchDataZero
 #' @param n An integer; number of results to return.
-#' @param features_use A character vector of features eligible to be returned.
+#' @param features_use Features eligible to be returned.
 #' @param anticorr Whether to allow negatively correlated features.
-#' Default is `FALSE`.
 #'
 #' @return character vector.
 #' @export
@@ -396,7 +393,7 @@ GetSimilarFeatures <- function(
 #'
 #' @md
 #' @inheritParams TACSPlot
-#' @param features A character vector of feature names.
+#' @param features Feature names.
 #' @param ... Other arguments to pass to [Seurat::FetchData].
 #'
 #' @export

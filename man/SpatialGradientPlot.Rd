@@ -34,7 +34,7 @@ SpatialGradientPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{result_name}{Stored spatial gradient result name. If \code{NULL}, the latest
 stored result is used.}
@@ -47,37 +47,28 @@ result are used.}
 
 \item{nfeatures}{Number of top variables used when \code{features = NULL}.}
 
-\item{assay}{Assay used for \code{features}. If \code{NULL}, the default assay is used.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Assay layer used for \code{features}.}
+\item{layer}{Assay layer to use.}
 
-\item{image}{Name of the Seurat spatial image. Required when multiple images
-are present; a single image is selected automatically when \code{NULL}.}
+\item{image}{Spatial image name. Required when multiple images are present;
+a single image is selected automatically when \code{NULL}.}
 
-\item{overlay_image}{Whether to draw the spatial image beneath spots.}
-
-\item{image.alpha}{Transparency of the spatial image.}
+\item{overlay_image, image.alpha}{Draw the spatial image beneath spots.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
-\item{flip.y}{Whether to reverse the y axis for metadata coordinates.}
+\item{flip.y}{Reverse the y axis for metadata coordinates.}
 
-\item{pt.size}{Point size.}
-
-\item{pt.alpha}{Point alpha.}
+\item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
+with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
+radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{stroke}{Point border width.}
 
 \item{palette, palcolor}{Color palette passed to SCOP plotting helpers.}
 
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{theme_use}{Theme function name. Default is \code{"theme_spatial"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{theme_use}{Theme name or function.}
 
 \item{line_size}{Size of fitted gradient lines.}
 
@@ -87,15 +78,6 @@ Default is \code{list()}.}
 \code{screening$estimate} values produced by the selected backend. \code{"lm"} draws a
 fresh linear fit from \code{screening$value}, which is useful for showing a simple
 monotonic trend even when the backend stores a smoothed curve.}
-
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
 }
 \value{
 A \code{ggplot} or \code{patchwork} object.

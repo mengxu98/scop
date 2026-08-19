@@ -1,51 +1,36 @@
-#' @title Run PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding)
+#' @title Run PHATE
 #'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunUMAP2
 #' @inheritParams RunDM
 #' @param n_components The number of PHATE components.
-#' Default is `2`.
 #' @param knn A number of nearest neighbors on which to build kernel.
-#' Default is `5`.
 #' @param decay The sets decay rate of kernel tails.
-#' Default is `40`.
 #' @param n_landmark A number of landmarks to use in fast PHATE.
-#' Default is `2000`.
 #' @param t The power to which the diffusion operator is powered.
 #' This sets the level of diffusion.
 #' If `"auto"`, `t` is selected according to the knee point in the Von Neumann Entropy of the diffusion operator.
-#' Default is `"auto"`.
 #' @param gamma The informational distance constant between `-1` and `1`.
 #' `gamma=1` gives the PHATE log potential, `gamma=0` gives a square root potential.
-#' Default is `1`.
 #' @param n_pca A number of principal components to use for calculating neighborhoods.
 #' For extremely large datasets, using `n_pca < 20` allows neighborhoods to be calculated in roughly `log(n_samples)` time.
-#' Default is `100`.
 #' @param knn_dist The distance metric for k-nearest neighbors.
 #' Recommended values: `"euclidean"`, `"cosine"`, `"precomputed"`.
-#' Default is `"euclidean"`.
 #' @param knn_max The maximum number of neighbors for which alpha decaying kernel is computed for each point.
 #' For very large datasets, setting `knn_max` to a small multiple of `knn` can speed up computation significantly.
-#' Default is `NULL`.
 #' @param t_max The maximum `t` to test.
-#' Default is `100`.
 #' @param do_cluster Whether to perform clustering on the PHATE embeddings.
-#' Default is `FALSE`.
 #' @param backend PHATE backend. `"python"` calls the upstream `phate` Python
 #' package and `"cpp"` uses the native C++ helper path.
 #' @param mds MDS algorithm passed to PHATE. The native C++ backend currently
 #' implements the `"classic"` path.
 #' @param mds_solver Metric MDS solver passed to the Python backend.
 #' @param n_clusters A number of clusters to be identified.
-#' Default is `"auto"`.
 #' @param max_clusters The maximum number of clusters to test.
-#' Default is `100`.
-#' @param reduction.name The name of the reduction to be stored in the Seurat object.
-#' Default is `"phate"`.
+#' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the PHATE embeddings.
-#' Default is `"PHATE_"`.
-#' @param ... Additional arguments to be passed to phate.PHATE.
+#' @param ... Passed to phate.PHATE.
 #'
 #' @rdname RunPHATE
 #' @export

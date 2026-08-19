@@ -1,189 +1,66 @@
 #' @title Cell Dimensional Plot
 #'
 #' @description
-#' Visualize cell groups on a 2-dimensional reduction plot.
-#' Plotting cell points on a reduced 2D plane and coloring according to the groups.
+#' Color cells on a dimensionality reduction by metadata groups, with optional
+#' labels, marks, density, lineages, PAGA, and RNA velocity layers.
 #'
 #' @md
-#' @inheritParams RunStandardWorkflow
-#' @param group.by Name of one or more meta.data columns to group (color) cells by.
-#' @param label.by Name of a meta.data column used to place group labels. If
-#' `NULL`, labels use `group.by`.
-#' @param mark.by Name of a meta.data column used to draw group marks. If
-#' `NULL`, marks use `legend.by` when a nested legend is requested, otherwise
-#' marks use `group.by`.
-#' @param legend.by Name of a meta.data column used as the parent group in a
-#' nested legend. The `group.by` levels are shown under each `legend.by` level.
-#' If `NULL`, the standard legend is used.
-#' @param reduction Which dimensionality reduction to use.
-#' If not specified, will use the reduction returned by [DefaultReduction].
-#' @param split.by Name of a column in meta.data column to split plot by.
-#' Default is `NULL`.
-#' @param palette Color palette name.
-#' Available palettes can be found in [thisplot::show_palettes].
-#' Default is `"Chinese"`.
-#' @param palcolor Custom colors used to create a color palette.
-#' Default is `NULL`.
-#' @param bg_color Color value for background(NA) points.
-#' @param pt.size The size of the points in the plot. Default is `NULL`, which
-#' automatically scales point diameter with the square root of the number of
-#' plotted cells while keeping a readable minimum size of `0.3`. Automatically
-#' sized raster plots use at least a two-pixel radius at the reference
-#' `raster.dpi = c(512, 512)`. Point sizes are scaled with `raster.dpi`, so their
-#' relative appearance remains stable when the raster resolution changes.
-#' Non-raster point sizes use fixed physical units; increase `pt.size`
-#' proportionally when exporting to an unusually large canvas.
-#' @param pt.alpha The transparency of the data points.
-#' Default is `1`.
-#' @param cells.highlight A logical or character vector specifying the cells to highlight in the plot.
-#' If `TRUE`, all cells are highlighted. If `FALSE`, no cells are highlighted.
-#' Default is `NULL`.
-#' @param cols.highlight Color used to highlight the cells.
-#' @param sizes.highlight Size of highlighted cell points.
-#' @param alpha.highlight Transparency of highlighted cell points.
-#' @param stroke.highlight Border width of highlighted cell points.
-#' @param legend.position The position of legends,
-#' one of `"none"`, `"left"`, `"right"`, `"bottom"`, `"top"`.
-#' Default is `"right"`.
-#' @param legend.direction The direction of the legend in the plot.
-#' Can be one of `"vertical"` or `"horizontal"`.
-#' @param legend.title Title for the legend. Default is `NULL`, which uses the group name.
-#' @param combine Combine plots into a single `patchwork` object.
-#' If `FALSE`, return a list of ggplot objects.
-#' @param nrow Number of rows in the combined plot.
-#' Default is `NULL`, which means determined automatically based on the number of plots.
-#' @param ncol Number of columns in the combined plot.
-#' Default is `NULL`, which means determined automatically based on the number of plots.
-#' @param byrow Whether to arrange the plots by row in the combined plot.
-#' Default is `TRUE`.
-#' @param dims Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions
-#' @param show_na Whether to assign a color from the color palette to NA group.
-#' If `TRUE`, cell points with NA level will be colored by `bg_color`.
-#' If `FALSE`, cell points with NA level will be removed from the plot.
-#' @param show_stat Whether to show statistical information on the plot.
-#' @param label Whether to label the cell groups.
-#' @param label_insitu Whether to place the raw labels (group names) in the center of the cells with the corresponding group.
-#' Default is `FALSE`, which using numbers instead of raw labels.
-#' @param label.size Size of labels.
-#' @param label.fg Foreground color of label.
-#' @param label.bg Background color of label.
-#' @param label.bg.r Background ratio of label.
-#' @param label_repel Logical value indicating whether the label is repel away from the center points.
-#' @param label_repulsion Force of repulsion between overlapping text labels. Default is `20`.
-#' @param label_point_size Size of the center points.
-#' @param label_point_color Color of the center points.
-#' @param label_segment_color Color of the line segment for labels.
-#' @param add_density Whether to add a density layer on the plot.
-#' @param density_color Color of the density contours lines.
-#' @param density_filled Whether to add filled contour bands instead of contour lines.
-#' @param density_filled_palette Color palette used to fill contour bands.
-#' @param density_filled_palcolor Custom colors used to fill contour bands.
-#' @param add_mark Whether to add marks around cell groups. Default is `FALSE`.
-#' @param mark_type Type of mark to add around cell groups.
-#' One of "hull", "ellipse", "rect", or "circle". Default is `"hull"`.
-#' @param mark_expand Expansion of the mark around the cell group.
-#' Default is `grid::unit(3, "mm")`.
-#' @param mark_alpha Transparency of the mark.
-#' Default is `0.1`.
-#' @param mark_linetype Line type of the mark border.
-#' Default is `1` (solid line).
-#' @param mark_linewidth Line width of the mark border.
-#' @param mark_border Fixed border color for marks. If `NULL`, mark borders use
-#' the group colors.
-#' @param mark_palette Color palette name for `mark.by` groups and nested legend
-#' parent headers. Defaults to `palette`.
-#' @param mark_palcolor Custom colors for `mark.by` groups and nested legend
-#' parent headers.
-#' @param add_grid Whether to add a background point grid on the reduction panel.
-#' This is useful for atlas-style panels with blank axes.
-#' @param grid_n Number of grid points along each axis when `add_grid = TRUE`.
-#' @param grid_color,grid_size,grid_alpha Color, size, and alpha of the
-#' background grid points.
-#' @param lineages Lineages/pseudotime to add to the plot.
-#' If specified, curves will be fitted using [stats::loess] method.
-#' @param lineages_trim Trim the leading and the trailing data in the lineages.
-#' @param lineages_span The parameter α which controls the degree of smoothing in [stats::loess] method.
-#' @param lineages_palette Color palette used for lineages.
-#' @param lineages_palcolor Custom colors used for lineages.
-#' @param lineages_arrow Set arrows of the lineages. See [grid::arrow].
-#' @param lineages_linewidth Width of fitted curve lines for lineages.
-#' @param lineages_line_bg Background color of curve lines for lineages.
-#' @param lineages_line_bg_stroke Border width of curve lines background.
-#' @param lineages_whiskers Whether to add whiskers for lineages.
-#' @param lineages_whiskers_linewidth Width of whiskers for lineages.
-#' @param lineages_whiskers_alpha Transparency of whiskers for lineages.
-#' @param stat.by The name of a metadata column to stat.
-#' @param stat_type Set stat types ("percent" or "count").
-#' @param stat_plot_type Set the statistical plot type.
-#' @param stat_plot_size Set the statistical plot size. Default is `0.2`.
-#' @param stat_plot_palette Color palette used in statistical plot.
-#' @param stat_palcolor Custom colors used in statistical plot
-#' @param stat_plot_position Position adjustment in statistical plot.
-#' @param stat_plot_alpha Transparency of the statistical plot.
-#' @param stat_plot_label Whether to add labels in the statistical plot.
-#' @param stat_plot_label_size Label size in the statistical plot.
-#' @param graph Specify the graph name to add edges between cell neighbors to the plot.
-#' @param edge_size Size of edges.
-#' @param edge_alpha Transparency of edges.
-#' @param edge_color Color of edges.
-#' @param paga Specify the calculated paga results to add a PAGA graph layer to the plot.
-#' @param paga_type PAGA plot type. "connectivities" or "connectivities_tree".
-#' @param paga_node_size Size of the nodes in PAGA plot.
-#' @param paga_edge_threshold Threshold of edge connectivities in PAGA plot.
-#' @param paga_edge_size Size of edges in PAGA plot.
-#' @param paga_edge_color Color of edges in PAGA plot.
-#' @param paga_edge_alpha Transparency of edges in PAGA plot.
-#' @param paga_show_transition Whether to show transitions between edges.
-#' @param paga_transition_threshold Threshold of transition edges in PAGA plot.
-#' @param paga_transition_size Size of transition edges in PAGA plot.
-#' @param paga_transition_color Color of transition edges in PAGA plot.
-#' @param paga_transition_alpha Transparency of transition edges in PAGA plot.
-#' @param velocity Specify the calculated RNA velocity mode to add a velocity layer to the plot.
-#' @param velocity_plot_type Set the velocity plot type.
-#' @param velocity_n_neighbors Set the number of neighbors used in velocity plot.
-#' @param velocity_density Set the density value used in velocity plot.
-#' @param velocity_smooth Set the smooth value used in velocity plot.
-#' @param velocity_scale Set the scale value used in velocity plot.
-#' @param velocity_min_mass Set the min_mass value used in velocity plot.
-#' @param velocity_cutoff_perc Set the cutoff_perc value used in velocity plot.
-#' @param velocity_arrow_color Color of arrows in velocity plot.
-#' @param velocity_arrow_angle Angle of arrows in velocity plot.
-#' @param streamline_L Typical length of a streamline in x and y units
-#' @param streamline_minL Minimum length of segments to show.
-#' @param streamline_res Resolution parameter (higher numbers increases the resolution).
-#' @param streamline_n Number of points to draw.
-#' @param streamline_width Size of streamline.
-#' @param streamline_alpha Transparency of streamline.
-#' @param streamline_color Color of streamline.
-#' @param streamline_palette Color palette used for streamline.
-#' @param streamline_palcolor Custom colors used for streamline.
-#' @param streamline_bg_color Background color of streamline.
-#' @param streamline_bg_stroke Border width of streamline background.
-#' @param hex Whether to chane the plot type from point to the hexagonal bin.
-#' @param hex.count Whether show cell counts in each hexagonal bin.
-#' @param hex.bins Number of hexagonal bins.
-#' @param hex.binwidth Hexagonal bin width.
-#' @param hex.linewidth Border width of hexagonal bins.
-#' @param raster Convert points to raster format.
-#' Default is `NULL`, which automatically rasterizes if plotting more than 100,000 cells.
-#' @param raster.dpi Pixel resolution for rasterized plots.
-#' Default is `c(512, 512)`.
-#' @param theme_use Theme used. Can be a character string or a theme function.
-#' Default is `"theme_scop"`.
-#' @param aspect.ratio Aspect ratio of the panel. Default is `1`.
-#' @param title The text for the title.
-#' Default is `NULL`.
-#' @param subtitle The text for the subtitle for the plot which will be displayed below the title.
-#' Default is `NULL`.
-#' @param xlab The x-axis label of the plot.
-#' Default is `NULL`.
-#' @param ylab The y-axis label of the plot.
-#' Default is `NULL`.
-#' @param force Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
-#' Default is `FALSE`.
-#' @param cells A character vector of cell names to use.
-#' @param theme_args Other arguments passed to the `theme_use`.
-#' Default is `list()`.
+#' @inheritParams scop-params
+#' @param group.by Metadata column(s) used to color cells.
+#' @param label.by Metadata column for labels. `NULL` uses `group.by`.
+#' @param mark.by Metadata column for marks. `NULL` uses `legend.by` (nested
+#' legend) or `group.by`.
+#' @param legend.by Parent group for a nested legend. `NULL` uses a standard legend.
+#' @param reduction Reduction to plot. `NULL` uses [DefaultReduction].
+#' @param split.by Metadata column to facet by.
+#' @param palette,palcolor Palette name ([thisplot::show_palettes]) or custom colors.
+#' @param bg_color Color for background / `NA` points.
+#' @param pt.size,pt.alpha Point size and transparency. `pt.size = NULL` scales
+#' with `sqrt(n)` (minimum `0.3`). Rasterized points keep at least a two-pixel
+#' radius at `raster.dpi = c(512, 512)` and scale with `raster.dpi`.
+#' @param cells.highlight,cols.highlight,sizes.highlight,alpha.highlight,stroke.highlight
+#' Cells to highlight and their appearance. `TRUE` highlights all cells.
+#' @param legend.position,legend.direction,legend.title Legend placement
+#' (`"none"`, `"left"`, `"right"`, `"bottom"`, `"top"`), direction, and title.
+#' `legend.title = NULL` uses the group name.
+#' @param combine,nrow,ncol,byrow Combine plots with [patchwork]. `combine = FALSE`
+#' returns a list of ggplots.
+#' @param dims Length-2 vector of dimensions to plot.
+#' @param show_na If `TRUE`, color `NA` groups with `bg_color`; if `FALSE`, drop them.
+#' @param show_stat Show cell-count statistics on the plot.
+#' @param label,label_insitu,label.size,label.fg,label.bg,label.bg.r
+#' Group labels. `label_insitu = FALSE` uses numbers instead of group names.
+#' @param label_repel,label_repulsion,label_point_size,label_point_color,label_segment_color
+#' Repel labels away from cluster centers.
+#' @param add_density,density_color,density_filled,density_filled_palette,density_filled_palcolor
+#' Density contours; `density_filled` draws filled bands.
+#' @param add_mark,mark_type,mark_expand,mark_alpha,mark_linetype,mark_linewidth,mark_border
+#' Marks around groups. `mark_type` is `"hull"`, `"ellipse"`, `"rect"`, or `"circle"`.
+#' `mark_border = NULL` uses group colors.
+#' @param mark_palette,mark_palcolor Palette for `mark.by` groups and nested-legend headers.
+#' @param add_grid,grid_n,grid_color,grid_size,grid_alpha Background point grid
+#' (useful for atlas-style blank axes).
+#' @param lineages,lineages_trim,lineages_span,lineages_palette,lineages_palcolor,lineages_arrow,lineages_linewidth,lineages_line_bg,lineages_line_bg_stroke,lineages_whiskers,lineages_whiskers_linewidth,lineages_whiskers_alpha
+#' Pseudotime lineages as [stats::loess] curves. See [grid::arrow] for `lineages_arrow`.
+#' @param stat.by,stat_type,stat_plot_type,stat_plot_size,stat_plot_palette,stat_palcolor,stat_plot_position,stat_plot_alpha,stat_plot_label,stat_plot_label_size
+#' Inset composition plot. `stat_type` is `"percent"` or `"count"`.
+#' @param graph,edge_size,edge_alpha,edge_color Neighbor-graph edges.
+#' @param paga,paga_type,paga_node_size,paga_edge_threshold,paga_edge_size,paga_edge_color,paga_edge_alpha,paga_show_transition,paga_transition_threshold,paga_transition_size,paga_transition_color,paga_transition_alpha
+#' PAGA graph layer. `paga_type` is `"connectivities"` or `"connectivities_tree"`.
+#' @param velocity,velocity_plot_type,velocity_n_neighbors,velocity_density,velocity_smooth,velocity_scale,velocity_min_mass,velocity_cutoff_perc,velocity_arrow_color,velocity_arrow_angle
+#' RNA velocity layer.
+#' @param streamline_L,streamline_minL,streamline_res,streamline_n,streamline_width,streamline_alpha,streamline_color,streamline_palette,streamline_palcolor,streamline_bg_color,streamline_bg_stroke
+#' Streamline appearance for velocity plots.
+#' @param hex,hex.count,hex.bins,hex.binwidth,hex.linewidth Hexagonal bins instead of points.
+#' @param raster,raster.dpi Rasterize points. `raster = NULL` rasterizes when
+#' there are more than 100,000 cells.
+#' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
+#' @param aspect.ratio Panel aspect ratio.
+#' @param title,subtitle,xlab,ylab Plot labels.
+#' @param force Draw even when a grouping has more than 100 levels.
+#' @param cells Cell names to include.
+#'
+#' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #'
 #' @seealso
 #' [CellDimPlot3D], [FeatureDimPlot], [FeatureDimPlot3D]
@@ -1969,18 +1846,15 @@ cell_dim_nested_legend_data <- function(
 #' @title 3D-Dimensional reduction plot for cell classification visualization.
 #'
 #' @description
-#' Plotting cell points on a reduced 3D space and coloring according to the groups of the cells.
+#' Color cells in 3D reduction space, or draw an interactive density surface.
 #'
 #' @md
 #' @inheritParams CellDimPlot
-#' @param plot_type Plot type. `"scatter"` keeps the original 3D cell scatter,
-#'   while `"density_surface"` draws an interactive 3D kernel-density surface
-#'   from the first two requested dimensions.
-#' @param dims Dimensions to plot. For `plot_type = "scatter"`, this must be a
-#'   three-length numeric vector specifying x-, y- and z-dimensions. For
-#'   `plot_type = "density_surface"`, the first two dimensions are used as x
-#'   and y, and density is drawn on the z-axis.
-#' @param axis_labs A character vector of length 3 indicating the labels for the axes.
+#' @param plot_type `"scatter"` (3D points) or `"density_surface"` (kernel
+#' density of the first two dimensions).
+#' @param dims For `"scatter"`, a length-3 vector of x/y/z dimensions. For
+#' `"density_surface"`, the first two dimensions are x/y and density is z.
+#' @param axis_labs Length-3 axis labels.
 #' @param density_n Grid size used by `MASS::kde2d()` for
 #'   `plot_type = "density_surface"`.
 #' @param density_bandwidth Bandwidth passed to `MASS::kde2d()`. A single value

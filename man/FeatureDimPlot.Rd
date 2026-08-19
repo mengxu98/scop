@@ -2,7 +2,7 @@
 % Please edit documentation in R/FeatureDimPlot.R
 \name{FeatureDimPlot}
 \alias{FeatureDimPlot}
-\title{Visualize feature values on a 2-dimensional reduction plot}
+\title{Feature values on a 2D reduction}
 \usage{
 FeatureDimPlot(
   srt,
@@ -92,214 +92,93 @@ FeatureDimPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{features}{A character vector or a named list of features to plot.
-Features can be gene names in Assay or names of numeric columns in meta.data.}
+\item{features}{Features to plot: a character vector or a named list of
+assay gene names or numeric metadata columns.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
-\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
+\item{dims}{Length-2 vector of dimensions to plot.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Metadata column to facet by.}
 
-\item{cells}{A character vector of cell names to use.}
+\item{cells}{Cell names to include.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{show_stat}{Whether to show statistical information on the plot.}
+\item{show_stat}{Show cell-count statistics on the plot.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
+with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
+radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
-\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase \code{pt.size}
-proportionally when exporting to an unusually large canvas.}
+\item{bg_cutoff}{Values below this cutoff are colored with \code{bg_color}.}
 
-\item{pt.alpha}{The transparency of the data points.
-Default is \code{1}.}
+\item{bg_color}{Color for background / \code{NA} points.}
 
-\item{bg_cutoff}{Background cutoff. Points with feature values lower than the cutoff will be considered as background and will be colored with \code{bg_color}.}
-
-\item{bg_color}{Color value for background(NA) points.}
-
-\item{keep_scale}{How to handle the color scale across multiple plots. Options are:
+\item{keep_scale}{Color scale across panels:
 \itemize{
-\item \code{NULL} (no scaling): Each individual plot is scaled to the maximum expression value of the feature in the condition provided to 'split.by'. Be aware setting NULL will result in color scales that are not comparable between plots.
-\item \code{"feature"} (default; by row/feature scaling): The plots for each individual feature are scaled to the maximum expression of the feature across the conditions provided to 'split.by'.
-\item \code{"all"} (universal scaling): The plots for all features and conditions are scaled to the maximum expression value for the feature with the highest overall expression.
+\item \code{NULL}: each panel is scaled independently (not comparable).
+\item \code{"feature"}: scale each feature across \code{split.by} panels.
+\item \code{"all"}: one scale for every feature and panel.
 }}
 
-\item{lower_quantile, upper_quantile, lower_cutoff, upper_cutoff}{Vector of minimum and maximum cutoff values or quantile values for each feature.}
+\item{lower_quantile, upper_quantile, lower_cutoff, upper_cutoff}{Per-feature
+quantile or absolute cutoffs for the color scale.}
 
-\item{add_density}{Whether to add a density layer on the plot.}
+\item{add_density, density_color, density_filled, density_filled_palette, density_filled_palcolor}{Density contours; \code{density_filled} draws filled bands.}
 
-\item{density_color}{Color of the density contours lines.}
+\item{cells.highlight, cols.highlight, sizes.highlight, alpha.highlight, stroke.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
 
-\item{density_filled}{Whether to add filled contour bands instead of contour lines.}
+\item{calculate_coexp}{Plot the geometric mean of the features.}
 
-\item{density_filled_palette}{Color palette used to fill contour bands.}
+\item{compare_features}{Show multiple features on one plot.}
 
-\item{density_filled_palcolor}{Custom colors used to fill contour bands.}
+\item{color_blend_mode}{Blend mode when \code{compare_features = TRUE}.}
 
-\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
-If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
-Default is \code{NULL}.}
+\item{label}{Label high-expressing cells.}
 
-\item{cols.highlight}{Color used to highlight the cells.}
+\item{label_insitu}{Use feature names instead of numbers when
+\code{compare_features = TRUE}.}
 
-\item{sizes.highlight}{Size of highlighted cell points.}
+\item{label_repel, label_repulsion, label_point_size, label_point_color, label_segment_color}{Repel labels away from cluster centers.}
 
-\item{alpha.highlight}{Transparency of highlighted cell points.}
+\item{lineages, lineages_trim, lineages_span, lineages_palette, lineages_palcolor, lineages_arrow, lineages_linewidth, lineages_line_bg, lineages_line_bg_stroke, lineages_whiskers, lineages_whiskers_linewidth, lineages_whiskers_alpha}{Pseudotime lineages as \link[stats:loess]{stats::loess} curves. See \link[grid:arrow]{grid::arrow} for \code{lineages_arrow}.}
 
-\item{stroke.highlight}{Border width of highlighted cell points.}
-
-\item{calculate_coexp}{Whether to calculate the co-expression value (geometric mean) of the features.}
-
-\item{compare_features}{Whether to show the values of multiple features on a single plot.}
-
-\item{color_blend_mode}{Blend mode to use when \code{compare_features = TRUE}}
-
-\item{label}{Whether the feature name is labeled in the center of the location of cells with high expression.}
-
-\item{label.size}{Size of labels.}
-
-\item{label.fg}{Foreground color of label.}
-
-\item{label.bg}{Background color of label.}
-
-\item{label.bg.r}{Background ratio of label.}
-
-\item{label_insitu}{Whether the labels is feature names instead of numbers. Valid only when \code{compare_features = TRUE}.}
-
-\item{label_repel}{Logical value indicating whether the label is repel away from the center points.}
-
-\item{label_repulsion}{Force of repulsion between overlapping text labels. Default is \code{20}.}
-
-\item{label_point_size}{Size of the center points.}
-
-\item{label_point_color}{Color of the center points.}
-
-\item{label_segment_color}{Color of the line segment for labels.}
-
-\item{lineages}{Lineages/pseudotime to add to the plot.
-If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
-
-\item{lineages_trim}{Trim the leading and the trailing data in the lineages.}
-
-\item{lineages_span}{The parameter α which controls the degree of smoothing in \link[stats:loess]{stats::loess} method.}
-
-\item{lineages_palette}{Color palette used for lineages.}
-
-\item{lineages_palcolor}{Custom colors used for lineages.}
-
-\item{lineages_arrow}{Set arrows of the lineages. See \link[grid:arrow]{grid::arrow}.}
-
-\item{lineages_linewidth}{Width of fitted curve lines for lineages.}
-
-\item{lineages_line_bg}{Background color of curve lines for lineages.}
-
-\item{lineages_line_bg_stroke}{Border width of curve lines background.}
-
-\item{lineages_whiskers}{Whether to add whiskers for lineages.}
-
-\item{lineages_whiskers_linewidth}{Width of whiskers for lineages.}
-
-\item{lineages_whiskers_alpha}{Transparency of whiskers for lineages.}
-
-\item{graph}{Specify the graph name to add edges between cell neighbors to the plot.}
-
-\item{edge_size}{Size of edges.}
-
-\item{edge_alpha}{Transparency of edges.}
-
-\item{edge_color}{Color of edges.}
-
-\item{hex}{Whether to chane the plot type from point to the hexagonal bin.}
-
-\item{hex.linewidth}{Border width of hexagonal bins.}
+\item{graph, edge_size, edge_alpha, edge_color}{Neighbor-graph edges.}
 
 \item{hex.color}{Border color of hexagonal bins.}
 
-\item{hex.bins}{Number of hexagonal bins.}
+\item{raster, raster.dpi}{Rasterize points. \code{raster = NULL} rasterizes when
+there are more than 100,000 cells.}
 
-\item{hex.binwidth}{Hexagonal bin width.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
-\item{raster}{Convert points to raster format.
-Default is \code{NULL}, which automatically rasterizes if plotting more than 100,000 cells.}
+\item{title, subtitle, xlab, ylab}{Plot labels.}
 
-\item{raster.dpi}{Pixel resolution for rasterized plots.
-Default is \code{c(512, 512)}.}
+\item{legend.position, legend.direction, legend.title}{Legend placement
+(\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title.
+\code{legend.title = NULL} uses the group name.}
 
-\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{title}{The text for the title.
-Default is \code{NULL}.}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+returns a list of ggplots.}
 
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
-Default is \code{NULL}.}
+\item{force}{Draw even when more than 100 features are requested.}
 
-\item{xlab}{The x-axis label of the plot.
-Default is \code{NULL}.}
+\item{seed}{Random seed.}
 
-\item{ylab}{The y-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{legend.title}{Title for the legend. Default is \code{NULL}, which uses the group name.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
-
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
-
-\item{force}{Whether to force drawing regardless of the number of features greater than 100.
-Default is \code{FALSE}.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
-Plotting cell points on a reduced 2D plane and coloring according to the values of the features.
+Color cells on a dimensionality reduction by feature values (assay genes or
+numeric metadata).
 }
 \examples{
 data(pancreas_sub)

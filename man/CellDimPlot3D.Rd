@@ -45,57 +45,26 @@ CellDimPlot3D(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{plot_type}{Plot type. \code{"scatter"} keeps the original 3D cell scatter,
-while \code{"density_surface"} draws an interactive 3D kernel-density surface
-from the first two requested dimensions.}
+\item{plot_type}{\code{"scatter"} (3D points) or \code{"density_surface"} (kernel
+density of the first two dimensions).}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
-\item{dims}{Dimensions to plot. For \code{plot_type = "scatter"}, this must be a
-three-length numeric vector specifying x-, y- and z-dimensions. For
-\code{plot_type = "density_surface"}, the first two dimensions are used as x
-and y, and density is drawn on the z-axis.}
+\item{dims}{For \code{"scatter"}, a length-3 vector of x/y/z dimensions. For
+\code{"density_surface"}, the first two dimensions are x/y and density is z.}
 
-\item{axis_labs}{A character vector of length 3 indicating the labels for the axes.}
+\item{axis_labs}{Length-3 axis labels.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
-
-\item{bg_color}{Color value for background(NA) points.}
-
-\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase \code{pt.size}
-proportionally when exporting to an unusually large canvas.}
-
-\item{cells.highlight}{A logical or character vector specifying the cells to highlight in the plot.
-If \code{TRUE}, all cells are highlighted. If \code{FALSE}, no cells are highlighted.
-Default is \code{NULL}.}
-
-\item{cols.highlight}{Color used to highlight the cells.}
+\item{bg_color}{Color for background / \code{NA} points.}
 
 \item{shape.highlight}{Shape of the cell to highlight.
 See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}}
-
-\item{sizes.highlight}{Size of highlighted cell points.}
-
-\item{lineages}{Lineages/pseudotime to add to the plot.
-If specified, curves will be fitted using \link[stats:loess]{stats::loess} method.}
-
-\item{lineages_palette}{Color palette used for lineages.}
 
 \item{density_n}{Grid size used by \code{MASS::kde2d()} for
 \code{plot_type = "density_surface"}.}
@@ -140,14 +109,12 @@ show axes, colorbar, and title for \code{plot_type = "density_surface"}.}
 
 \item{save}{The name of the file to save the plot to. Must end in ".html".}
 
-\item{force}{Whether to force drawing regardless of maximum levels in any cell group is greater than 100.
-Default is \code{FALSE}.}
+\item{force}{Draw even when a grouping has more than 100 levels.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
-Plotting cell points on a reduced 3D space and coloring according to the groups of the cells.
+Color cells in 3D reduction space, or draw an interactive density surface.
 }
 \examples{
 data(pancreas_sub)

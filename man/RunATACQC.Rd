@@ -18,12 +18,9 @@ RunATACQC(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{tss.positions}{TSS positions passed to \code{Signac::TSSEnrichment}.}
 
@@ -33,8 +30,7 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 
 \item{min_pct_reads_in_peaks, min_TSS_enrichment, max_nucleosome_signal, max_blacklist_ratio}{Optional thresholds used for filtering cells.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A \code{Seurat} object with QC metadata added.

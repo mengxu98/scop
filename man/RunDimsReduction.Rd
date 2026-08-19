@@ -27,35 +27,21 @@ RunDimsReduction(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{prefix}{The prefix used to name the result.}
 
-\item{features}{A character vector of features to use.
-Default is \code{NULL}.}
+\item{features}{Features to plot.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{"counts"}.}
-
-\item{linear_reduction}{The linear dimensionality reduction method to use.
-Options are \code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, or \code{"glmpca"}.
-Default is \code{"pca"}.}
+\item{layer}{Assay layer to use.}
 
 \item{linear_reduction_dims}{Total number of dimensions to compute and store for \code{linear_reduction}.}
 
 \item{linear_reduction_params}{Other parameters passed to the \code{linear_reduction} method.}
 
 \item{force_linear_reduction}{Whether force to do linear dimension reduction.}
-
-\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
-Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
-\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
-Default is \code{"umap"}.}
 
 \item{nonlinear_reduction_dims}{Total number of dimensions to compute and store for \code{nonlinear_reduction}.}
 
@@ -74,10 +60,7 @@ Default is \code{"umap"}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Optional integer seed. When supplied, every input receives a
-deterministic independent L'Ecuyer-CMRG random-number stream, making results
-reproducible across worker counts and scheduling order. The caller's random
-number state is restored when the call finishes.}
+\item{seed}{Random seed.}
 }
 \description{
 Run dimension reduction

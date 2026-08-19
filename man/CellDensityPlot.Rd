@@ -39,100 +39,49 @@ CellDensityPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{features}{A character vector of features to use.}
+\item{features}{Features to plot.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) to group cells by.}
 
-\item{split.by}{Name of a column in meta.data column to split plot by.
-Default is \code{NULL}.}
+\item{split.by}{Metadata column to split the analysis or plot by.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{flip}{Whether to flip the x-axis. Default is \code{FALSE}.}
+\item{flip, reverse}{Flip the x-axis or reverse the y-axis.}
 
-\item{reverse}{Whether to reverse the y-axis. Default is \code{FALSE}.}
+\item{x_order}{\code{"value"} or \code{"rank"}.}
 
-\item{x_order}{A character specifying how to order the x-axis.
-Can be \code{"value"} or \code{"rank"}.
-Default is \code{"value"}.}
+\item{decreasing}{Order groups decreasingly.}
 
-\item{decreasing}{Whether to order the groups in decreasing order.
-Default is \code{NULL}.}
+\item{palette}{Color palette name. See \link[thisplot:show_palettes]{thisplot::show_palettes}.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
+\item{palcolor}{Custom colors used to build the palette.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{cells}{Cell names to include. \code{NULL} uses all cells.}
 
-\item{cells}{A character vector of cell names to use.
-Default is \code{NULL}, which means all cells are included.}
+\item{keep_empty}{Keep empty groups.}
 
-\item{keep_empty}{Whether to keep empty groups. Default is \code{FALSE}.}
+\item{y.nbreaks, y.min, y.max}{Y-axis breaks and limits. \code{NULL} limits are automatic.}
 
-\item{y.nbreaks}{A number of breaks on the y-axis. Default is \code{4}.}
+\item{same.y.lims}{Share y-axis limits across panels.}
 
-\item{y.min}{A numeric specifying the minimum value on the y-axis.
-Default is \code{NULL}, which means the minimum value will be automatically determined.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
-\item{y.max}{A numeric specifying the maximum value on the y-axis.
-Default is \code{NULL}, which means the maximum value will be automatically determined.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{same.y.lims}{Whether to use the same y-axis limits for all plots.
-Default is \code{FALSE}.}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+returns a list of ggplots.}
 
-\item{aspect.ratio}{Aspect ratio of the panel.
-Default is \code{NULL}.}
+\item{force}{Draw even when there are more than 50 features.}
 
-\item{title}{The text for the title.
-Default is \code{NULL}.}
-
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
-Default is \code{NULL}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
-
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
-
-\item{force}{Whether to continue plotting if there are more than 50 features.
-Default is \code{FALSE}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
-Plots the density of specified features in a single or multiple groups,
-grouped by specified variables.
+Feature density by group.
 }
 \examples{
 data(pancreas_sub)

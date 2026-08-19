@@ -11,10 +11,9 @@
 #' @param span The span of the loess smoother.
 #' @param palette Color palette name.
 #' Available palettes can be found in [thisplot::show_palettes].
-#' Default is `"Dark2"`.
 #' @param lineages_arrow An arrow object specifying the arrow for lineages.
 #' @param linewidth The linewidth for the lineages.
-#' @param line_bg A character string specifying the color for the background lines.
+#' @param line_bg Color for the background lines.
 #' @param line_bg_stroke The stroke width for the background lines.
 #' @param whiskers Whether to include whiskers in the plot.
 #' @param whiskers_linewidth The linewidth for the whiskers.

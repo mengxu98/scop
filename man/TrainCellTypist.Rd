@@ -40,18 +40,16 @@ TrainCellTypist(
 )
 }
 \arguments{
-\item{srt}{A Seurat object. Default is \code{NULL}.
+\item{srt}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
 \item{adata}{Optional AnnData object used as input.}
 
 \item{h5ad}{Optional path to an input \code{.h5ad} file.}
 
-\item{assay}{Which assay to use.
-Default is \code{"RNA"}.}
+\item{assay}{Which assay to use.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
 \item{labels}{Cell labels used for training. Can be a metadata column name when
 \code{srt}/\code{adata} is supplied, or a vector aligned with cells.}
@@ -76,8 +74,7 @@ Default is \code{data}.}
 
 \item{alpha}{Regularization strength for SGD training.}
 
-\item{use_GPU}{Whether to use GPU for over-clustering.
-Default is \code{FALSE}.}
+\item{use_GPU}{Whether to use GPU for over-clustering.}
 
 \item{mini_batch}{Whether to enable mini-batch training.}
 
@@ -97,8 +94,7 @@ Default is \code{FALSE}.}
 
 \item{model_path}{Optional output path for the trained model.}
 
-\item{return}{Return mode. One of \code{"summary"}, \code{"path"}, or \code{"model"}.
-Default is \code{"summary"}.}
+\item{return}{Return mode. One of \code{"summary"}, \code{"path"}, or \code{"model"}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

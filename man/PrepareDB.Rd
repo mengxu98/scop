@@ -2,7 +2,7 @@
 % Please edit documentation in R/PrepareDB.R
 \name{PrepareDB}
 \alias{PrepareDB}
-\title{Prepare the gene annotation databases}
+\title{Prepare gene annotation databases}
 \usage{
 PrepareDB(
   species = c("Homo_sapiens", "Mus_musculus"),
@@ -29,63 +29,47 @@ PrepareDB(
 )
 }
 \arguments{
-\item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
-Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
+\item{species}{\code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
-\item{db}{A character vector specifying the annotation sources to be included in the gene annotation databases.
-Can be one or more of \verb{"GO", "GO_BP", "GO_CC", "GO_MF", "KEGG", "WikiPathway", "Reactome", "CORUM", "MP", "DO", "HPO", "PFAM", "CSPA", "Surfaceome", "SPRomeDB", "VerSeDa", "TFLink", "hTFtarget", "TRRUST", "JASPAR", "ENCODE", "MSigDB", "CellTalk", "CellChat", "Chromosome", "GeneType", "Enzyme", "TF", "CytoTRACE2"}.
-MSigDB subcollections can be requested as \code{"MSigDB_<collection>"}, such as
-\code{"MSigDB_H"} for human Hallmark and \code{"MSigDB_MH"} for mouse Hallmark.
-Note: \code{"CytoTRACE2"} is species-independent and downloads pre-trained model data
-required by \link{RunCytoTRACE}.}
+\item{db}{Annotation sources. One or more of \code{"GO"}, \code{"GO_BP"}, \code{"GO_CC"},
+\code{"GO_MF"}, \code{"KEGG"}, \code{"WikiPathway"}, \code{"Reactome"}, \code{"CORUM"}, \code{"MP"}, \code{"DO"},
+\code{"HPO"}, \code{"PFAM"}, \code{"CSPA"}, \code{"Surfaceome"}, \code{"SPRomeDB"}, \code{"VerSeDa"},
+\code{"TFLink"}, \code{"hTFtarget"}, \code{"TRRUST"}, \code{"JASPAR"}, \code{"ENCODE"}, \code{"MSigDB"},
+\code{"CellTalk"}, \code{"CellChat"}, \code{"Chromosome"}, \code{"GeneType"}, \code{"Enzyme"}, \code{"TF"},
+\code{"CytoTRACE2"}. MSigDB subcollections use \code{"MSigDB_<collection>"} (e.g.
+\code{"MSigDB_H"}). \code{"CytoTRACE2"} is species-independent and is required by
+\link{RunCytoTRACE}.}
 
-\item{db_IDtypes}{A character vector specifying the desired ID types to be used for gene identifiers in the gene annotation databases.
-Default is \code{c("symbol", "entrez_id", "ensembl_id")}.}
+\item{db_IDtypes}{Gene ID types to include.}
 
-\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is \code{"latest"}.}
+\item{db_version}{Database version to retrieve.}
 
-\item{db_update}{Whether the gene annotation databases should be forcefully updated.
-If set to FALSE, the function will attempt to load the cached databases instead.
-Default is \code{FALSE}.}
+\item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
-\item{data_dir}{A local directory or named list of local paths containing
-manually downloaded database source files. If a directory is provided,
-\link{PrepareDB} first searches \verb{data_dir/<db>/}, then \code{data_dir}. Named lists can
-override a database path, e.g. \code{list(MSigDB = "~/db/msigdb")}.}
+\item{data_dir}{Directory or named list of local source files. Searches
+\verb{data_dir/<db>/} then \code{data_dir}. Named lists override a path, e.g.
+\code{list(MSigDB = "~/db/msigdb")}.}
 
-\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is \code{TRUE}.}
+\item{convert_species}{Use a species-converted database when the annotation is
+missing for \code{species}.}
 
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
 
-\item{biomart}{The name of the BioMart database that you want to connect to.
+\item{biomart}{BioMart database that you want to connect to.
 Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_mart"}, and \code{"plants_mart"}.}
 
 \item{max_tries}{The maximum number of attempts to connect with the BioMart service.}
 
-\item{custom_TERM2GENE}{A data frame containing a custom TERM2GENE mapping for the specified species and annotation source.
-Default is \code{NULL}.}
+\item{custom_TERM2GENE, custom_TERM2NAME}{Custom mappings for \code{custom_species}.}
 
-\item{custom_TERM2NAME}{A data frame containing a custom TERM2NAME mapping for the specified species and annotation source.
-Default is \code{NULL}.}
-
-\item{custom_species}{A character vector specifying the species name to be used in a custom database.
-Default is \code{NULL}.}
-
-\item{custom_IDtype}{A character vector specifying the ID type to be used in a custom database.
-Default is \code{NULL}.}
-
-\item{custom_version}{A character vector specifying the version to be used in a custom database.
-Default is \code{NULL}.}
+\item{custom_species, custom_IDtype, custom_version}{Metadata for a custom database.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Passed to other functions.}
+\item{...}{Passed to helper functions.}
 }
 \value{
 A list containing the prepared gene annotation databases:
@@ -96,9 +80,8 @@ A list containing the prepared gene annotation databases:
 }
 }
 \description{
-This function prepares the gene annotation databases for a given species and set of annotation sources.
-It retrieves the necessary information from various annotation packages or external resources and organizes it into a list.
-The list contains the annotation data for each specified annotation source.
+Build TERM2GENE / TERM2NAME (and GO semantic-similarity) databases for a
+species from annotation packages, cached downloads, or local files.
 }
 \examples{
 db_list <- PrepareDB(

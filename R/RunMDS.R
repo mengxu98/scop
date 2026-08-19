@@ -5,21 +5,15 @@
 #' @inheritParams RunUMAP2
 #' @param object An object. This can be a Seurat object, an assay object, or a matrix-like object.
 #' @param nmds The number of dimensions to be computed.
-#' Default is `50`.
 #' @param dist.method The distance metric to be used.
 #' Currently supported values are `"euclidean"`, `"chisquared"`, `"kullback"`, `"jeffreys"`,
 #' `"jensen"`, `"manhattan"`, `"maximum"`, `"canberra"`, `"minkowski"`, and `"hamming"`.
-#' Default is `"euclidean"`.
 #' @param mds.method The MDS algorithm to be used.
 #' Currently supported values are `"cmdscale"`, `"isoMDS"`, and `"sammon"`.
-#' Default is `"cmdscale"`.
 #' @param rev.mds Whether to perform reverse MDS (i.e., transpose the input matrix) before running the analysis.
-#' Default is `FALSE`.
-#' @param reduction.name The name of the reduction to be stored in the Seurat object.
-#' Default is `"mds"`.
+#' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the basis vectors.
-#' Default is `"MDS_"`.
-#' @param ... Additional arguments to be passed to [stats::cmdscale], [MASS::isoMDS] or [MASS::sammon].
+#' @param ... Passed to [stats::cmdscale], [MASS::isoMDS] or [MASS::sammon].
 #'
 #' @rdname RunMDS
 #' @export

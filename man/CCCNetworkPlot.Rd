@@ -195,22 +195,11 @@ this may also be a length-2 vector for negative/positive changes.}
 
 \item{subtitle}{Plot subtitle.}
 
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
 \item{legend.title}{Legend title.}
 
 \item{font.size}{Base font size.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{verbose}{Whether to print messages.}
 

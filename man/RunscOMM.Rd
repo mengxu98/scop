@@ -26,7 +26,7 @@ RunscOMM(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{reference}{Reference \code{Seurat} object used for supervision.}
 
@@ -59,8 +59,7 @@ otherwise.}
 
 \item{scomm_hidden_nodes, scomm_epochs, scomm_batch_size, scomm_threshold, scomm_seed}{Parameters passed to the \code{scOMM} backend.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A \code{Seurat} object with \code{scOMM} predictions stored in metadata and \code{tools}.

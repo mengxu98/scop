@@ -4,7 +4,7 @@
 #' @inheritParams thisutils::log_message
 #' @param srt_raw A Seurat object to be appended.
 #' @param srt_append New Seurat object to append.
-#' @param slots slots names.
+#' @param slots Slots names.
 #' @param pattern A character string containing a regular expression.
 #' All data with matching names will be considered for appending.
 #' @param overwrite Whether to overwrite.

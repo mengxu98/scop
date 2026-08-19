@@ -98,7 +98,7 @@ RenameFeatures <- function(
 #' @inheritParams RunStandardWorkflow
 #' @param group.by The old group used to rename cells.
 #' @param nameslist A named list of new cluster value.
-#' @param name The name of the new cluster stored in the Seurat object.
+#' @param name New cluster stored in the Seurat object.
 #' @param keep_levels If the old group is a factor, keep the order of the levels.
 #'
 #' @export

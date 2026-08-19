@@ -402,7 +402,7 @@ SpatialEcoTyperSpatialPlot <- function(
 #' counts.
 #' @param palette,palcolor Palette passed to `palette_colors()`.
 #' @param legend.position Legend position.
-#' @param theme_use Theme function name. Default is `"theme_scop"`.
+#' @param theme_use Theme function name.
 #' @param theme_args Additional arguments passed to the theme function.
 #'
 #' @return A `ggplot` object.

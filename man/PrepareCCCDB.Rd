@@ -16,31 +16,27 @@ PrepareCCCDB(
 )
 }
 \arguments{
-\item{species}{A character vector specifying the species for which the gene annotation databases should be prepared.
-Can be \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
+\item{species}{\code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
-\item{db}{A character vector specifying the cell-cell communication
+\item{db}{Cell-cell communication
 databases to prepare. Can be \code{"CellTalk"} and/or \code{"CellChat"}.}
 
-\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is \code{TRUE}.}
+\item{convert_species}{Use a species-converted database when the annotation is
+missing for \code{species}.}
 
-\item{data_dir}{A local directory or named list of local paths containing
-manually downloaded database source files. If a directory is provided,
-\link{PrepareDB} first searches \verb{data_dir/<db>/}, then \code{data_dir}. Named lists can
-override a database path, e.g. \code{list(MSigDB = "~/db/msigdb")}.}
+\item{data_dir}{Directory or named list of local source files. Searches
+\verb{data_dir/<db>/} then \code{data_dir}. Named lists override a path, e.g.
+\code{list(MSigDB = "~/db/msigdb")}.}
 
-\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is \code{"latest"}.}
+\item{db_version}{Database version to retrieve.}
 
 \item{db_update}{Whether the databases should be forcefully updated.
-If \code{FALSE}, cached databases are reused when available.
-Default is \code{FALSE}.}
+If \code{FALSE}, cached databases are reused when available.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{...}{Passed to other functions.}
+\item{...}{Passed to helper functions.}
 }
 \value{
 A list with the same structure as \link{PrepareDB}: for each species a
@@ -53,7 +49,7 @@ cell-cell communication wrappers: the CellTalkDB ligand-receptor pairs
 (\code{"CellTalk"}) and the CellChat curated ligand-receptor database
 (\code{"CellChat"}). Each database is returned as a \code{TERM2GENE}/\code{TERM2NAME}
 mapping (with a \code{"ligand_*"}/\code{"receptor_*"} term convention) and cached with
-\link[R.cache:R.cache]{R.cache} so that \link{ListDB} can list it like any other annotation database.
+\link{R.cache} so that \link{ListDB} can list it like any other annotation database.
 }
 \examples{
 \dontrun{

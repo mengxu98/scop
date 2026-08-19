@@ -10,13 +10,12 @@
 #' @inheritParams thisutils::log_message
 #' @param method Cell cycle estimation method. One of `"Seurat"`, `"cyclone"`,
 #' or `"tricycle"`.
-#' @param layer Data layer used by `cyclone` and `tricycle`. Default is `"counts"`.
+#' @param layer Data layer used by `cyclone` and `tricycle`.
 #' @param name Prefix for metadata columns and tricycle reduction names.
-#' Default is `"CellCycle"`.
 #' @param phase_col Optional metadata column used to store the final phase call,
 #' for example `"Phase"`. Default is `NULL`, which avoids writing a compatibility
 #' phase column.
-#' @param overwrite Whether to overwrite existing output columns. Default is `FALSE`.
+#' @param overwrite Whether to overwrite existing output columns.
 #' @param ... Additional arguments passed to the selected method.
 #'
 #' @return A `Seurat` object with cell cycle metadata and, for `tricycle`,

@@ -4,20 +4,13 @@
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunUMAP2
 #' @param object An object. This can be a Seurat object, a Neighbor object, or a Graph object.
-#' Default is `NULL`.
-#' @param neighbor The name of the Neighbor object to be used.
-#' Default is `NULL`.
+#' @param neighbor Neighbor object to be used.
 #' @param k.param The number of nearest neighbors to consider.
-#' Default is `20`.
 #' @param ndim The number of dimensions for the force-directed layout.
-#' Default is `2`.
 #' @param niter The number of iterations for the force-directed layout.
-#' Default is `500`.
-#' @param reduction.name The name of the reduction to be stored in the Seurat object.
-#' Default is `"fr"`.
+#' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the force-directed layout embeddings.
-#' Default is `"FR_"`.
-#' @param ... Additional arguments to be passed to [igraph::layout_with_fr].
+#' @param ... Passed to [igraph::layout_with_fr].
 #'
 #' @export
 #'

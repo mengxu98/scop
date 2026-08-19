@@ -29,12 +29,9 @@ RunRareQ(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{reduction}{Reduction used to build nearest neighbors when the required
 \verb{\{assay\}.nn} neighbor slot is absent or \code{force_recalc = TRUE}. If \code{NULL},
@@ -78,8 +75,7 @@ names for RareQ clusters, Q values, cluster sizes, and rare-cluster flags.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A \code{Seurat} object with RareQ results in metadata and

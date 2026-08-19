@@ -53,7 +53,7 @@ ProportionTestPlot(
 \arguments{
 \item{srt}{A Seurat object containing proportion-test results.}
 
-\item{comparison}{A character string specifying which comparison to plot.
+\item{comparison}{Which comparison to plot.
 If \code{NULL}, plots all comparisons.}
 
 \item{proportion_method}{Optional method to select from
@@ -122,43 +122,25 @@ or \code{"classic"} for legacy significant/non-significant coloring.}
 
 \item{aspect.ratio}{Aspect ratio of the panel.}
 
-\item{xlab}{A character string specifying the x-axis label. For
+\item{xlab}{X-axis label. For
 \code{plot_type = "umap"}, this is forwarded to the projection plot when set.}
 
-\item{ylab}{A character string specifying the y-axis label. For
+\item{ylab}{Y-axis label. For
 \code{plot_type = "umap"}, this is forwarded to the projection plot when set.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{legend.position}{The position of legends,
 one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.}
 
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
 \item{legend.title}{Title of the legend.}
 
-\item{combine}{Combine plots into a single \code{patchwork} object.
-If \code{FALSE}, return a list of ggplot objects.}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+returns a list of ggplots.}
 
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
+\item{seed}{Random seed.}
 
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{byrow}{Whether to arrange the plots by row in the combined plot.
-Default is \code{TRUE}.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
 Generate differential-abundance plots based on results from \link{RunProportionTest}.

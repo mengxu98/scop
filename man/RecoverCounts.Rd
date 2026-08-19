@@ -15,12 +15,9 @@ RecoverCounts(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{trans}{The transformation function to applied when data is presumed to be log-normalized.}
 
@@ -29,8 +26,7 @@ additional \code{ChromatinAssay} will be preprocessed sequentially.}
 \item{tolerance}{When recovering the raw counts, the nCount of each cell is theoretically calculated as an integer.
 However, due to decimal point preservation during normalization,
 the calculated nCount is usually a floating point number close to the integer.
-The tolerance is its difference from the integer.
-Default is \code{0.1}}
+The tolerance is its difference from the integer.}
 
 \item{sf}{Set the scaling factor manually.}
 

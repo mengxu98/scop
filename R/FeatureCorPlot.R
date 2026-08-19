@@ -1,39 +1,27 @@
 #' @title Features correlation plot
 #'
 #' @description
-#' This function creates a correlation plot to visualize the pairwise correlations between selected features in a Seurat object.
+#' Pairwise feature correlations in a `Seurat` object.
 #'
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams FeatureDimPlot
 #' @inheritParams RunStandardWorkflow
-#' @param features A character vector specifying the features to compare.
+#' @param features Features to compare.
 #' Should be present in both the assay data and the metadata of the Seurat object.
-#' @param cor_method A character string specifying the correlation method to use.
-#' Can be `"pearson"` or `"spearman"`.
-#' Default is `"pearson"`.
+#' @param cor_method `"pearson"` or `"spearman"`.
 #' @param adjust The adjustment factor for the width of the violin plots.
-#' Default is `1`.
-#' @param margin The margin size for the plot. Default is `1`.
+#' @param margin The margin size for the plot.
 #' @param reverse Whether to reverse the order of the features in the plot.
-#' Default is `FALSE`.
 #' @param add_equation Whether to add the equation of the linear regression line to each scatter plot.
-#' Default is `FALSE`.
 #' @param add_r2 Whether to add the R-squared value of the linear regression line to each scatter plot.
-#' Default is `TRUE`.
 #' @param add_pvalue Whether to add the p-value of the linear regression line to each scatter plot.
-#' Default is `TRUE`.
 #' @param add_smooth Whether to add a smoothed line to each scatter plot.
-#' Default is `TRUE`.
-#' @param cor_palette A character string specifying the name of the color palette to use for the correlation.
-#' Default is `"RdBu"`.
-#' @param cor_palcolor A character string specifying the color for the correlation.
-#' Default is `"RdBu"`.
+#' @param cor_palette Name of the color palette to use for the correlation.
+#' @param cor_palcolor Color for the correlation.
 #' @param cor_range A two-length numeric vector specifying the range for the correlation.
 #' @param calculate_coexp Whether to calculate the co-expression of selected features.
-#' Default is `FALSE`.
 #' @param force Whether to force the creation of the plot, even if it contains more than 50 subplots.
-#' Default is `FALSE`.
 #'
 #' @seealso
 #' [FeatureStatPlot]

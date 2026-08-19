@@ -5,22 +5,17 @@
 #' @inheritParams RunUMAP2
 #' @param object An object. This can be a Seurat object or a matrix-like object.
 #' @param ndcs A number of diffusion components (dimensions) to be computed.
-#' Default is `2`.
 #' @param sigma The diffusion scale parameter of the Gaussian kernel.
 #' Currently supported values are `"local"` (default) and `"global"`.
 #' @param k A number of nearest neighbors to be used for the construction of the graph.
-#' Default is `30`.
 #' @param dist.method The distance metric to be used for the construction of the knn graph.
 #' Currently supported values are `"euclidean"` and `"cosine"`.
-#' Default is `"euclidean"`.
 #' @param npcs Number of principal components to use for dimensionality reduction before computing diffusion map.
 #' This can speed up computation when using many features.
 #' Default is `NULL` (auto-determined based on the number of features).
-#' @param reduction.name The name of the reduction to be stored in the Seurat object.
-#' Default is `"dm"`.
+#' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the basis vectors.
-#' Default is `"DM_"`.
-#' @param ... Additional arguments to be passed to `destiny::DiffusionMap`.
+#' @param ... Passed to `destiny::DiffusionMap`.
 #'
 #' @rdname RunDM
 #' @export

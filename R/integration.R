@@ -1,4 +1,4 @@
-#' @title The Uncorrected integration function
+#' @title Uncorrected integration function
 #'
 #' @inheritParams RunIntegration
 #'
@@ -233,7 +233,7 @@ Uncorrected_integrate <- function(
   }
 }
 
-#' @title The WNN integration function
+#' @title WNN integration function
 #'
 #' @inheritParams RunIntegration
 #'
@@ -464,15 +464,14 @@ WNN_integrate <- function(
   srt_merge
 }
 
-#' @title The MultiMAP integration function
+#' @title MultiMAP integration function
 #'
 #' @inheritParams RunIntegration
 #' @param gene_activity_assay Name of the gene activity assay used to provide
-#' a shared feature space for RNA-ATAC integration. Default is `"ACTIVITY"`.
+#' a shared feature space for RNA-ATAC integration.
 #' @param MultiMAP_params A list of parameters passed to `MultiMAP::Integration`.
 #' The following keys are managed internally and should not be supplied:
 #' `"adatas"`, `"use_reps"`, `"embedding"`, and `"seed"`.
-#' Default is `list()`.
 #'
 #' @export
 #' @examples
@@ -1054,15 +1053,12 @@ run_wnn_reduction <- function(
   srt
 }
 
-#' @title The Seurat integration function
+#' @title Seurat integration function
 #'
 #' @inheritParams RunIntegration
 #' @param FindIntegrationAnchors_params A list of parameters for the Seurat::FindIntegrationAnchors function.
-#' Default is `list()`.
 #' @param IntegrateData_params A list of parameters for the Seurat::IntegrateData function.
-#' Default is `list()`.
 #' @param IntegrateEmbeddings_params A list of parameters for the Seurat::IntegrateEmbeddings function.
-#' Default is `list()`.
 #' @export
 Seurat_integrate <- function(
   srt_merge = NULL,
@@ -1475,24 +1471,18 @@ Seurat_integrate <- function(
   }
 }
 
-#' @title The scVI integration function
+#' @title ScVI integration function
 #'
 #' @inheritParams RunIntegration
-#' @param scVI_dims_use A vector specifying the dimensions returned by scVI that will be utilized for downstream cell cluster finding and nonlinear reduction.
+#' @param scVI_dims_use Dimensions returned by scVI that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param model A string indicating the scVI model to be used.
 #' Options are "SCVI", "PEAKVI", and "POISSONVI".
-#' Default is `"SCVI"`.
 #' @param SCVI_params A list of parameters for the SCVI model.
-#' Default is `list()`.
 #' @param PEAKVI_params A list of parameters for the PEAKVI model.
-#' Default is `list()`.
 #' @param POISSONVI_params A list of parameters for the POISSONVI model.
-#' Default is `list()`.
 #' @param train_params A list of parameters passed to the model `train()` method.
-#' Default is `list()`.
 #' @param cores An integer setting the number of threads for `scVI`.
-#' Default is `1`.
 #' @export
 #' @examples
 #' \dontrun{
@@ -1757,7 +1747,7 @@ scVI_integrate <- function(
   }
 }
 
-#' @title The MNN integration function
+#' @title MNN integration function
 #'
 #' @inheritParams RunIntegration
 #' @param mnnCorrect_params A list of parameters for the batchelor::mnnCorrect function,
@@ -2052,10 +2042,10 @@ MNN_integrate <- function(
   }
 }
 
-#' @title The fastMNN integration function
+#' @title FastMNN integration function
 #'
 #' @inheritParams RunIntegration
-#' @param fastMNN_dims_use A vector specifying the dimensions returned by fastMNN that will be utilized for downstream cell cluster finding and nonlinear reduction.
+#' @param fastMNN_dims_use Dimensions returned by fastMNN that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param fastMNN_params A list of parameters for the batchelor::fastMNN function, default is an empty list.
 #'
@@ -2288,10 +2278,10 @@ fastMNN_integrate <- function(
   }
 }
 
-#' @title The Harmony integration function
+#' @title Harmony integration function
 #'
 #' @inheritParams RunIntegration
-#' @param harmony_dims_use A vector specifying the dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and nonlinear reduction.
+#' @param harmony_dims_use Dimensions returned by RunHarmony that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param RunHarmony_params A list of parameters for [harmony::RunHarmony], default is an empty list.
 #'
@@ -2564,15 +2554,13 @@ Harmony_integrate <- function(
   }
 }
 
-#' @title The Scanorama integration function
+#' @title Scanorama integration function
 #'
 #' @inheritParams RunIntegration
-#' @param Scanorama_dims_use  A vector specifying the dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and nonlinear reduction.
+#' @param Scanorama_dims_use Dimensions returned by Scanorama that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
-#' @param return_corrected Logical indicating whether to return the corrected data.
-#' Default is `FALSE`.
+#' @param return_corrected Whether to return the corrected data.
 #' @param Scanorama_params A list of parameters for the scanorama.correct function.
-#' Default is `list()`.
 #'
 #' @export
 Scanorama_integrate <- function(
@@ -2804,7 +2792,7 @@ Scanorama_integrate <- function(
   }
 }
 
-#' @title The BBKNN integration function
+#' @title BBKNN integration function
 #'
 #' @inheritParams RunIntegration
 #' @param bbknn_params A list of parameters for the bbknn.matrix.bbknn function, default is an empty list.
@@ -3343,13 +3331,12 @@ bbknn_native_matrix <- function(embedding, batches, params = list()) {
   )
 }
 
-#' @title The CSS integration function
+#' @title CSS integration function
 #'
 #' @inheritParams RunIntegration
-#' @param CSS_dims_use A vector specifying the dimensions returned by CSS that will be utilized for downstream cell cluster finding and nonlinear reduction.
+#' @param CSS_dims_use Dimensions returned by CSS that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param CSS_params A list of parameters for the [simspec::cluster_sim_spectrum](https://github.com/quadbio/simspec) function.
-#' Default is `list()`.
 #'
 #' @export
 CSS_integrate <- function(
@@ -3615,16 +3602,14 @@ CSS_integrate <- function(
   }
 }
 
-#' @title The LIGER integration function
+#' @title LIGER integration function
 #'
 #' @md
 #' @inheritParams RunIntegration
-#' @param liger_dims_use A vector specifying the dimensions returned by LIGER that will be utilized for downstream cell cluster finding and nonlinear reduction.
+#' @param liger_dims_use Dimensions returned by LIGER that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If set to NULL, all the returned dimensions will be used by default.
 #' @param optimizeALS_params A list of parameters for the [rliger::runIntegration] function.
-#' Default is `list()`.
 #' @param quantilenorm_params A list of parameters for the [rliger::quantileNorm] function.
-#' Default is `list()`.
 #'
 #' @export
 #'
@@ -3885,13 +3870,11 @@ LIGER_integrate <- function(
   }
 }
 
-#' @title The Conos integration function
+#' @title Conos integration function
 #'
 #' @inheritParams RunIntegration
 #' @param buildGraph_params A list of parameters for the buildGraph function.
-#' Default is `list()`.
-#' @param cores  An integer setting the number of threads for `Conos`.
-#' Default is `2`.
+#' @param cores An integer setting the number of threads for `Conos`.
 #'
 #' @export
 Conos_integrate <- function(
@@ -4209,11 +4192,10 @@ Conos_integrate <- function(
   }
 }
 
-#' @title The ComBat integration function
+#' @title ComBat integration function
 #'
 #' @inheritParams RunIntegration
 #' @param ComBat_params A list of parameters for the sva::ComBat function.
-#' Default is `list()`.
 #'
 #' @export
 ComBat_integrate <- function(
@@ -4459,20 +4441,18 @@ ComBat_integrate <- function(
   }
 }
 
-#' @title The Coralysis integration function
+#' @title Coralysis integration function
 #'
 #' @inheritParams RunIntegration
 #' @inheritParams CCA_integrate
-#' @param coralysis_dims_use A vector specifying the dimensions returned by Coralysis PCA
+#' @param coralysis_dims_use Dimensions returned by Coralysis PCA
 #' that will be utilized for downstream cell cluster finding and nonlinear reduction.
 #' If `NULL`, all available Coralysis PCA dimensions will be used by default.
 #' @param cores Number of threads passed to [Coralysis::RunParallelDivisiveICP].
 #' @param PrepareData_params A list of parameters for [Coralysis::PrepareData].
-#' Default is `list()`.
 #' @param RunParallelDivisiveICP_params A list of parameters for
-#' [Coralysis::RunParallelDivisiveICP]. Default is `list()`.
+#' [Coralysis::RunParallelDivisiveICP].
 #' @param RunPCA_params A list of parameters for [Coralysis::RunPCA].
-#' Default is `list()`.
 #'
 #' @export
 Coralysis_integrate <- function(

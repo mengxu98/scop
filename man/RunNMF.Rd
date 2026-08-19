@@ -6,7 +6,7 @@
 \alias{RunNMF.Assay}
 \alias{RunNMF.Assay5}
 \alias{RunNMF.default}
-\title{Run NMF (non-negative matrix factorization)}
+\title{Run NMF}
 \usage{
 RunNMF(object, ...)
 
@@ -91,57 +91,42 @@ RunNMF(object, ...)
 
 \item{...}{Additional arguments passed to \link[RcppML:nmf]{RcppML::nmf} or \link[NMF:nmf]{NMF::nmf}.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{features}{A character vector of features to use. Default is \code{NULL}.}
+\item{features}{Features used instead of a reduction.}
 
-\item{nbes}{The number of basis vectors (components) to be computed.
-Default is \code{50}.}
+\item{nbes}{The number of basis vectors (components) to be computed.}
 
 \item{nmf.method}{The NMF algorithm to be used.
-Currently supported values are \code{"RcppML"} and \code{"NMF"}.
-Default is \code{"RcppML"}.}
+Currently supported values are \code{"RcppML"} and \code{"NMF"}.}
 
-\item{tol}{The tolerance for convergence (only applicable when nmf.method is \code{"RcppML"}).
-Default is \code{1e-5}.}
+\item{tol}{The tolerance for convergence (only applicable when nmf.method is \code{"RcppML"}).}
 
-\item{maxit}{The maximum number of iterations for convergence (only applicable when nmf.method is \code{"RcppML"}).
-Default is \code{100}.}
+\item{maxit}{The maximum number of iterations for convergence (only applicable when nmf.method is \code{"RcppML"}).}
 
-\item{rev.nmf}{Whether to perform reverse NMF (i.e., transpose the input matrix) before running the analysis.
-Default is \code{FALSE}.}
+\item{rev.nmf}{Whether to perform reverse NMF (i.e., transpose the input matrix) before running the analysis.}
 
-\item{ndims.print}{The dimensions (number of basis vectors) to print in the output.
-Default is \code{1:5}.}
+\item{ndims.print}{The dimensions (number of basis vectors) to print in the output.}
 
-\item{nfeatures.print}{The number of features to print in the output.
-Default is \code{30}.}
+\item{nfeatures.print}{The number of features to print in the output.}
 
-\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
-Default is \code{"nmf"}.}
+\item{reduction.name}{Reduction to be stored in the Seurat object.}
 
-\item{reduction.key}{The prefix for the column names of the basis vectors.
-Default is \code{"BE_"}.}
+\item{reduction.key}{The prefix for the column names of the basis vectors.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed.use}{Random seed.}
 
 \item{cores}{The number of threads to be used in older \code{RcppML} releases
 that expose a global OpenMP thread setter. Newer releases manage their
-thread count internally.
-Default is \code{0}.}
+thread count internally.}
 }
 \description{
-Run NMF (non-negative matrix factorization)
+Run NMF
 }
 \examples{
 library(Matrix)

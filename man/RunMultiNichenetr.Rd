@@ -30,7 +30,7 @@ RunMultiNichenetr(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column defining cell types.}
 

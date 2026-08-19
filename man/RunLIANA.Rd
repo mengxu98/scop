@@ -21,7 +21,7 @@ RunLIANA(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column defining cell groups. Passed to
 \code{liana::liana_wrap()} as \code{idents_col}.}

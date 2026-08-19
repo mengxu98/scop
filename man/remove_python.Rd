@@ -14,11 +14,10 @@ remove_python(
 )
 }
 \arguments{
-\item{packages}{A character vector of package names to remove.}
+\item{packages}{Package names to remove.}
 
-\item{envname}{The name of the conda-compatible Python environment.
-If \code{NULL}, the environment name will be set to \code{"scop_env"}.
-Default is \code{NULL}.}
+\item{envname}{Conda-compatible Python environment.
+If \code{NULL}, the environment name will be set to \code{"scop_env"}.}
 
 \item{conda}{The path or command name of a conda-compatible executable
 (\code{conda}, \code{mamba}, or \code{micromamba}). Use \code{"auto"} to allow automatically
@@ -29,8 +28,7 @@ downloaded automatically.}
 \item{pip}{Whether to use pip for package removal.
 Default is \code{FALSE} (use conda).}
 
-\item{force}{Whether to force removal without confirmation.
-Default is \code{FALSE}.}
+\item{force}{Whether to force removal without confirmation.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

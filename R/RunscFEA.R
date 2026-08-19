@@ -3,7 +3,7 @@
 #' @param srt A Seurat object.
 #' @param assay Assay to use as expression matrix. Default is
 #' `DefaultAssay(srt)`.
-#' @param layer Assay layer to use. Default is `"data"`.
+#' @param layer Assay layer to use.
 #' @param species One of `"human"` or `"mouse"`, selecting the M168 scFEA files.
 #' @param n_epoch Number of scFEA training epochs.
 #' @param sc_imputation Whether to run MAGIC imputation inside the scFEA

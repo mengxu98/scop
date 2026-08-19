@@ -18,7 +18,7 @@ STdeconvolvePlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{tool_name}{Result key written to \code{srt@tools} by
 \code{RunSTdeconvolve()}.}
@@ -29,12 +29,9 @@ STdeconvolvePlot(
 \item{prefix}{Metadata prefix used by \code{RunSTdeconvolve()}. If \code{NULL}, the
 prefix is read from the stored result.}
 
-\item{plot_type}{Plot type. \code{"point"} keeps the default spot plot behavior.
-\code{"pie"} draws spot-level pies from numeric metadata columns supplied to
-\code{group.by} or from a numeric matrix/data.frame supplied to \code{values}. When
-\code{group.by} is a single \code{"<prefix>_dominant_type"} column, matching
-\code{"<prefix>_prop_*"} or \code{"<prefix>_frac_*"} numeric metadata columns are used
-automatically.}
+\item{plot_type}{\code{"point"} or \code{"pie"}. Pie uses numeric \code{group.by} columns,
+\code{values}, or \code{"<prefix>_prop_*"}/\code{"<prefix>_frac_*"} when \code{group.by} is
+\code{"<prefix>_dominant_type"}.}
 
 \item{combine}{Whether to combine point plots. If \code{FALSE}, a named list of
 plots is returned.}

@@ -22,8 +22,7 @@ PrepareSCExplorer(
 \arguments{
 \item{object}{A \code{Seurat} object or a list of \code{Seurat} objects.}
 
-\item{base_dir}{The base directory where the SCExplorer hdf5 files will be written.
-Default is \code{"SCExplorer"}.}
+\item{base_dir}{The base directory where the SCExplorer hdf5 files will be written.}
 
 \item{data_file}{Path to the output data file.
 If not provided, the file will be named \code{"data.hdf5"} in the current directory.}
@@ -31,32 +30,24 @@ If not provided, the file will be named \code{"data.hdf5"} in the current direct
 \item{meta_file}{Path to the output meta file.
 If not provided, the file will be named \code{"meta.hdf5"} in the current directory.}
 
-\item{assays}{The assays to include in the data file.
-Default is \code{"RNA"}.}
+\item{assays}{The assays to include in the data file.}
 
-\item{layers}{The layers to include in the data file.
-Default is \code{"data"}.}
+\item{layers}{The layers to include in the data file.}
 
-\item{ignore_nlevel}{The number of levels above which a metadata field will be ignored.
-Default is \code{100}.}
+\item{ignore_nlevel}{The number of levels above which a metadata field will be ignored.}
 
-\item{write_tools}{Whether to write the tools information to the meta file.
-Default is \code{FALSE}.}
+\item{write_tools}{Whether to write the tools information to the meta file.}
 
-\item{write_misc}{Whether to write the miscellaneous information to the meta file.
-Default is \code{FALSE}.}
+\item{write_misc}{Whether to write the miscellaneous information to the meta file.}
 
-\item{compression_level}{Compression level for the HDF5 dataset.
-Default is \code{6}.}
+\item{compression_level}{Compression level for the HDF5 dataset.}
 
-\item{overwrite}{Whether to overwrite existing data in the data file.
-Default is \code{TRUE}.}
+\item{overwrite}{Whether to overwrite existing data in the data file.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
-This function prepares one or multiple \code{Seurat} objects for the SCExplorer app.
+Prepares one or multiple \code{Seurat} objects for the SCExplorer app.
 It takes a \code{Seurat} object or a list of \code{Seurat} objects as input and outputs two hdf5 files:
 one for the data and one for the metadata.
 }

@@ -4,36 +4,29 @@
 #' @inheritParams thisutils::parallelize_fun
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams GroupHeatmap
-#' @param lineages A character vector specifying the lineage names for which dynamic features should be calculated.
-#' @param features A character vector of features to use.
+#' @param lineages Lineage names for which dynamic features should be calculated.
+#' @param features Features to use.
 #' If `NULL`, n_candidates must be provided.
-#' @param suffix A character vector specifying the suffix to append to the output layer names for each lineage.
+#' @param suffix Suffix to append to the output layer names for each lineage.
 #' Default is the lineage names.
 #' @param n_candidates A number of candidate features to select when features is `NULL`.
-#' Default is `1000`.
-#' @param minfreq An integer specifying the minimum frequency threshold for candidate features.
+#' @param minfreq Minimum frequency threshold for candidate features.
 #' Features with a frequency less than minfreq will be excluded.
-#' Default is `5`.
 #' @param libsize A numeric or numeric vector specifying the library size correction factors for each cell.
 #' If NULL, the library size correction factors will be calculated based on the expression matrix.
 #' If length(libsize) is 1, the same value will be used for all cells.
 #' Otherwise, libsize must have the same length as the number of cells in srt.
-#' Default is `NULL`.
 #' @param fit_method The method used for fitting features.
 #' Either `"gam"` (generalized additive models) or `"pretsa"` (Pattern recognition in Temporal and Spatial Analyses).
-#' Default is `"gam"`.
 #' @param family A character or character vector specifying the family of distributions to use for the GAM.
 #' If family is set to NULL, the appropriate family will be automatically determined based on the data.
 #' If length(family) is 1, the same family will be used for all features.
 #' Otherwise, family must have the same length as features.
 #' @param knot For `fit_method = "pretsa"`: B-spline knots. `0` or `"auto"`.
-#' Default is `0`.
 #' @param max_knot_allowed For `fit_method = "pretsa"` when `knot = "auto"`: max knots.
-#' Default is `10`.
 #' @param pretsa_backend PreTSA fitting backend. `"cpp"` batches model selection
 #' and fitting; `"r"` retains the reference implementation.
 #' @param padjust_method The method used for p-value adjustment.
-#' Default is `"fdr"`.
 #'
 #' @return
 #' Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.

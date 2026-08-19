@@ -42,10 +42,9 @@ DEtestRingPlot(
 \item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
 results of differential expression analysis.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{test.use}{A character string specifying the type of statistical test to use.
-Default is \code{"wilcox"}.}
+\item{test.use}{Type of statistical test to use.}
 
 \item{res}{A \code{data.frame} or \code{data.table} with differential expression results.
 When \code{res} is provided, \code{srt} will be ignored.
@@ -55,90 +54,59 @@ The data.frame must contain columns: \code{gene}, \code{group1} (factor or chara
 \item{group_use}{Groups to plot.
 Default is \code{NULL} (all groups).}
 
-\item{DE_threshold}{A character string specifying the threshold for differential expression (used to highlight significant genes in all plot types).
+\item{DE_threshold}{Threshold for differential expression (used to highlight significant genes in all plot types).
 Default is \code{"p_val < 0.05"} for sample-level methods (\code{"edgeR"} and \code{"limma"}).
 For cell-level volcano plots, it is \code{"abs(avg_log2FC) > 0 & p_val_adj < 0.05"}
 when \code{only.pos = FALSE}, and \code{"avg_log2FC > 0 & p_val_adj < 0.05"} otherwise.}
 
-\item{group_palette}{Palette for cell types (groups) in Manhattan plot.
-Default is \code{"Chinese"}.}
+\item{group_palette}{Palette for cell types (groups) in Manhattan plot.}
 
-\item{group_palcolor}{Custom colors for cell types (groups) in Manhattan plot.
-Default is \code{NULL}.}
+\item{group_palcolor}{Custom colors for cell types (groups) in Manhattan plot.}
 
-\item{pt.size}{The size of the points.
-Default is \code{1}.}
+\item{pt.size}{The size of the points.}
 
-\item{pt.alpha}{The transparency of the data points.
-Default is \code{1}.}
+\item{cols.highlight}{Color for highlighted points.}
 
-\item{cols.highlight}{A character string specifying the color for highlighted points.
-Default is \code{"black"}.}
+\item{sizes.highlight}{The size of the highlighted points.}
 
-\item{sizes.highlight}{The size of the highlighted points.
-Default is \code{1}.}
+\item{alpha.highlight}{The transparency of the highlighted points.}
 
-\item{alpha.highlight}{The transparency of the highlighted points.
-Default is \code{1}.}
+\item{stroke.highlight}{The stroke width for the highlighted points.}
 
-\item{stroke.highlight}{The stroke width for the highlighted points.
-Default is \code{0.5}.}
+\item{nlabel}{An integer value specifying the number of labeled points per group.}
 
-\item{nlabel}{An integer value specifying the number of labeled points per group.
-Default is \code{5}.}
-
-\item{features_label}{A character vector specifying the feature labels to plot.
-Default is \code{NULL}.}
+\item{features_label}{Feature labels to plot.}
 
 \item{only.pos}{Whether to show only positive log2 fold-change results in
-differential expression visualizations.
-Default is \code{FALSE}.}
+differential expression visualizations.}
 
 \item{label.by}{Metric used to select automatic labels when \code{features_label = NULL}.
 Options are \code{"p_val_adj"}, \code{"p_val"}, \code{"diff_pct"}, and \code{"avg_log2FC"}.
 Smaller p-values are ranked first; \code{diff_pct} and \code{avg_log2FC} use the strongest
-positive and negative effects within each group.
-Default is \code{"p_val_adj"}.}
+positive and negative effects within each group.}
 
-\item{label.fg}{A character string specifying the color for the labels' foreground.
-Default is \code{"black"}.}
+\item{label.fg}{Color for the labels' foreground.}
 
-\item{label.bg}{A character string specifying the color for the labels' background.
-Default is \code{"white"}.}
+\item{label.bg}{Color for the labels' background.}
 
-\item{label.bg.r}{The radius of the rounding of the labels' background.
-Default is \code{0.1}.}
+\item{label.bg.r}{The radius of the rounding of the labels' background.}
 
-\item{label.size}{The size of the labels.
-Default is \code{4}.}
+\item{label.size}{The size of the labels.}
 
 \item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"RdBu"}.}
+Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
+\item{tile_height}{Height of the cell-type track in ring plot.}
 
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{tile_gap}{Gap between the track and nudged points in ring plot.}
 
-\item{tile_height}{Height of the cell-type track in ring plot.
-Default is \code{0.3}.}
+\item{jitter_width}{Horizontal jitter range for points in Manhattan plot.}
 
-\item{tile_gap}{Gap between the track and nudged points in ring plot.
-Default is \code{0.1}.}
+\item{ring_segments}{Whether to draw segment lines between cell types in ring plot.}
 
-\item{jitter_width}{Horizontal jitter range for points in Manhattan plot.
-Default is \code{0.5}.}
-
-\item{ring_segments}{Whether to draw segment lines between cell types in ring plot.
-Default is \code{TRUE}.}
-
-\item{seed}{Random seed for jitter in Manhattan and ring plots.
-Default is \code{11}.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 }
 \description{
 Draw a circular (ring) plot of differential expression results by cell type.

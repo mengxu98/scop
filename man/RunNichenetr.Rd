@@ -33,7 +33,7 @@ RunNichenetr(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column defining cell types.}
 
@@ -81,7 +81,7 @@ RunNichenetr(
 \code{nichenetr::prepare_ligand_target_visualization()}.}
 
 \item{lfc_cutoff}{Log fold change cutoff for DE analysis in \code{"aggregate"} and
-\code{"aggregate_cluster_de"} modes. Default is \code{0.25}.}
+\code{"aggregate_cluster_de"} modes.}
 
 \item{use_sender_agnostic_background}{Whether to use all sender cell types when
 \code{sender = "all"}.}

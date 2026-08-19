@@ -25,7 +25,7 @@ CNVPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{plot_type}{Plot type. \code{"heatmap"} draws a chromosome-ordered CNV
 heatmap, \code{"dim"} shows CNV metadata on a reduction, \code{"spatial"} shows CNV
@@ -37,10 +37,9 @@ metadata on spatial coordinates, \code{"bar"} summarizes calls by group, and
 \item{method}{Method stored under \code{srt@tools[[tool_name]]$methods}. If
 \code{NULL}, the active method is used.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
 \item{value}{Metadata value used by \code{"dim"} and \code{"spatial"} plots. If
 \code{NULL}, \code{CNV_prediction} is preferred when available, otherwise \code{CNV_score}.}
@@ -55,11 +54,7 @@ annotations.}
 
 \item{title, subtitle}{Plot title and subtitle for ggplot-based views.}
 
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{...}{Additional parameters forwarded to the underlying plotting
 function.}
