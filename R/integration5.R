@@ -170,7 +170,7 @@ RPCA_integrate <- function(
 #'
 #' @inheritParams RunIntegration
 #' @inheritParams CCA_integrate
-#' @param fastMNN_dims_use A vector specifying the integrated dimensions used for downstream clustering and nonlinear reduction.
+#' @param fastMNN_dims_use Integrated dimensions used for downstream clustering and nonlinear reduction.
 #'
 #' @export
 fastMNN5_integrate <- function(
@@ -250,7 +250,7 @@ fastMNN5_integrate <- function(
 #'
 #' @inheritParams RunIntegration
 #' @inheritParams CCA_integrate
-#' @param harmony_dims_use A vector specifying the integrated dimensions used for downstream clustering and nonlinear reduction.
+#' @param harmony_dims_use Integrated dimensions used for downstream clustering and nonlinear reduction.
 #'
 #' @export
 Harmony5_integrate <- function(
@@ -338,7 +338,7 @@ Harmony5_integrate <- function(
 #' @md
 #' @inheritParams RunIntegration
 #' @inheritParams CCA_integrate
-#' @param scVI_dims_use A vector specifying the integrated dimensions used for downstream clustering and nonlinear reduction.
+#' @param scVI_dims_use Integrated dimensions used for downstream clustering and nonlinear reduction.
 #' @param cores Number of DataLoader worker processes for `scVI` training.
 #' `NULL` (default) uses the PyTorch default (0, single-process).
 #' Increase to speed up data loading on multi-core machines.

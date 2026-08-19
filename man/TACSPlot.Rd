@@ -45,20 +45,18 @@ TACSPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{ref_srt}{A Seurat object.
 If your dataset is perturbed in a way that would substantially alter feature-feature correlations,
 for example if different time points are present or certain cell types are mostly depleted,
-you can feed in a reference srt, and TACS will choose axes based on the reference data.
-Default is \code{NULL}.}
+you can feed in a reference srt, and TACS will choose axes based on the reference data.}
 
 \item{assay}{Which assay to use. Default is \code{"RNA"}.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{feature1}{Horizontal axis on plot mimics this feature.
 Character, usually length 1 but possibly longer.}
@@ -69,10 +67,6 @@ Character, usually length 1 but possibly longer.}
 Can be a numeric vector of length 1 or 2, or a list of two numeric vectors for x and y axes respectively.}
 
 \item{density}{If \code{TRUE}, plot contours instead of points.}
-
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
 
 \item{num_features_add}{Each axis shows a simple sum of similar features. This is how many (before removing overlap).}
 
@@ -85,58 +79,31 @@ Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"ma
 
 \item{remove_outliers}{If \code{TRUE}, remove outliers from the plot. Default is \code{FALSE}.}
 
-\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
-\item{title}{The text for the title.
-Default is \code{NULL}.}
+\item{title, subtitle, xlab, ylab}{Plot labels.}
 
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
-Default is \code{NULL}.}
+\item{suffix}{The suffix of the axis labels.}
 
-\item{xlab}{The x-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{ylab}{The y-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{suffix}{The suffix of the axis labels. Default is \code{" expression level"}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{include_all}{If \code{TRUE}, include a panel with all cells. Default is \code{FALSE}.}
 
-\item{all_color}{The color of the all cells panel. Default is \code{"grey20"}.}
+\item{all_color}{The color of the all cells panel.}
 
-\item{quadrants_line_color}{The color of the quadrants lines. Default is \code{"grey30"}.}
+\item{quadrants_line_color}{The color of the quadrants lines.}
 
-\item{quadrants_line_type}{The type of the quadrants lines. Default is \code{"solid"}.}
+\item{quadrants_line_type}{The type of the quadrants lines.}
 
-\item{quadrants_line_width}{The width of the quadrants lines. Default is \code{0.3}.}
+\item{quadrants_line_width}{The width of the quadrants lines.}
 
-\item{quadrants_label_size}{The size of the quadrants labels. Default is \code{3}.}
+\item{quadrants_label_size}{The size of the quadrants labels.}
 
-\item{density_alpha}{The alpha of the density plot. Default is \code{NULL}.}
+\item{density_alpha}{The alpha of the density plot.}
 
-\item{bins}{Number of bins for density plot. Default is \code{20}.}
+\item{bins}{Number of bins for density plot.}
 
-\item{h}{Bandwidth for density plot. Default is \code{NULL}.}
-
-\item{nrow}{Number of rows in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
-
-\item{ncol}{Number of columns in the combined plot.
-Default is \code{NULL}, which means determined automatically based on the number of plots.}
+\item{h}{Bandwidth for density plot.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -148,7 +115,6 @@ TACS is a method for plotting a FACS-like plot for two features based on sc-RNA-
 For each of two query features, 100 features with similar expression patterns are selected and ranked by their Pearson correlation with the query.
 In a process akin to compensation, the intersection of the feature lists is removed from each list.
 The log normalized expression of the resulting features are then averaged within each cell, and the resulting quantities are plotted.
-This function is based on a simple scheme: choose features similar to the ones specified and average them to reduce the noise.
 }
 \examples{
 data(pancreas_sub)

@@ -1,36 +1,25 @@
-#' @title Run TriMap (Large-scale Dimensionality Reduction Using Triplets)
+#' @title Run TriMap
 #'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunUMAP2
 #' @inheritParams RunDM
 #' @param n_components A number of TriMap components.
-#' Default is `2`.
 #' @param n_inliers A number of nearest neighbors for forming the nearest neighbor triplets.
-#' Default is `12`.
 #' @param n_outliers A number of outliers for forming the nearest neighbor triplets.
-#' Default is `4`.
 #' @param n_random A number of random triplets per point.
-#' Default is `3`.
-#' @param distance_method A character string specifying the distance metric for TriMap.
+#' @param distance_method Distance metric for TriMap.
 #' Options are: `"euclidean"`, `"manhattan"`, `"angular"`, `"cosine"`, `"hamming"`.
-#' Default is `"euclidean"`.
 #' @param lr The learning rate for TriMap.
-#' Default is `0.1`.
 #' @param n_iters A number of iterations for TriMap.
-#' Default is `400`.
 #' @param apply_pca Whether to apply PCA before the nearest-neighbor calculation.
-#' Default is `TRUE`.
-#' @param opt_method A character string specifying the optimization method for TriMap.
+#' @param opt_method Optimization method for TriMap.
 #' Options are: `"dbd"`, `"sd"`, `"momentum"`.
-#' Default is `"dbd"`.
-#' @param reduction.name A character string specifying the name of the reduction to be stored in the Seurat object.
-#' Default is `"trimap"`.
-#' @param reduction.key A character string specifying the prefix for the column names of the TriMap embeddings.
-#' Default is `"TriMap_"`.
+#' @param reduction.name Name of the reduction to be stored in the Seurat object.
+#' @param reduction.key Prefix for the column names of the TriMap embeddings.
 #' @param backend TriMap backend. `"cpp"` uses a compiled triplet sampler
 #' and optimizer; `"python"` retains the official trimap package.
-#' @param ... Additional arguments to be passed to the trimap.TRIMAP function.
+#' @param ... Passed to the trimap.TRIMAP function.
 #'
 #' @rdname RunTriMap
 #' @export

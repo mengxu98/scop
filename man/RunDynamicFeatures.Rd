@@ -26,57 +26,46 @@ RunDynamicFeatures(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{lineages}{A character vector specifying the lineage names for which dynamic features should be calculated.}
+\item{lineages}{Lineage names for which dynamic features should be calculated.}
 
-\item{features}{A character vector of features to use.
+\item{features}{Features to use.
 If \code{NULL}, n_candidates must be provided.}
 
-\item{suffix}{A character vector specifying the suffix to append to the output layer names for each lineage.
+\item{suffix}{Suffix to append to the output layer names for each lineage.
 Default is the lineage names.}
 
-\item{n_candidates}{A number of candidate features to select when features is \code{NULL}.
-Default is \code{1000}.}
+\item{n_candidates}{A number of candidate features to select when features is \code{NULL}.}
 
-\item{minfreq}{An integer specifying the minimum frequency threshold for candidate features.
-Features with a frequency less than minfreq will be excluded.
-Default is \code{5}.}
+\item{minfreq}{Minimum frequency threshold for candidate features.
+Features with a frequency less than minfreq will be excluded.}
 
 \item{family}{A character or character vector specifying the family of distributions to use for the GAM.
 If family is set to NULL, the appropriate family will be automatically determined based on the data.
 If length(family) is 1, the same family will be used for all features.
 Otherwise, family must have the same length as features.}
 
-\item{layer}{Which layer to use.
-Default is \code{"counts"}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{libsize}{A numeric or numeric vector specifying the library size correction factors for each cell.
 If NULL, the library size correction factors will be calculated based on the expression matrix.
 If length(libsize) is 1, the same value will be used for all cells.
-Otherwise, libsize must have the same length as the number of cells in srt.
-Default is \code{NULL}.}
+Otherwise, libsize must have the same length as the number of cells in srt.}
 
 \item{fit_method}{The method used for fitting features.
-Either \code{"gam"} (generalized additive models) or \code{"pretsa"} (Pattern recognition in Temporal and Spatial Analyses).
-Default is \code{"gam"}.}
+Either \code{"gam"} (generalized additive models) or \code{"pretsa"} (Pattern recognition in Temporal and Spatial Analyses).}
 
-\item{knot}{For \code{fit_method = "pretsa"}: B-spline knots. \code{0} or \code{"auto"}.
-Default is \code{0}.}
+\item{knot}{For \code{fit_method = "pretsa"}: B-spline knots. \code{0} or \code{"auto"}.}
 
-\item{max_knot_allowed}{For \code{fit_method = "pretsa"} when \code{knot = "auto"}: max knots.
-Default is \code{10}.}
+\item{max_knot_allowed}{For \code{fit_method = "pretsa"} when \code{knot = "auto"}: max knots.}
 
 \item{pretsa_backend}{PreTSA fitting backend. \code{"cpp"} batches model selection
 and fitting; \code{"r"} retains the reference implementation.}
 
-\item{padjust_method}{The method used for p-value adjustment.
-Default is \code{"fdr"}.}
+\item{padjust_method}{The method used for p-value adjustment.}
 
 \item{cores}{The number of worker processes to use for parallelization.
 Default is \code{1}.}

@@ -1,7 +1,7 @@
 #' @title Gene ID conversion function using biomart
 #'
 #' @description
-#' This function can convert different gene ID types within one species or between two species using the biomart service.
+#' Convert different gene ID types within one species or between two species using the biomart service.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -11,7 +11,7 @@
 #' @param geneID_to_IDtype Gene ID type(s) to convert to. e.g. `"symbol"`, `"ensembl_id"`, `"entrez_id"`.
 #' @param species_from Latin names for animals of the input geneID. e.g. `"Homo_sapiens"`, `"Mus_musculus"`.
 #' @param species_to Latin names for animals of the output geneID. e.g. `"Homo_sapiens"`, `"Mus_musculus"`.
-#' @param biomart The name of the BioMart database that you want to connect to.
+#' @param biomart BioMart database that you want to connect to.
 #' Possible options include `"ensembl"`, `"protists_mart"`, `"fungi_mart"`, and `"plants_mart"`.
 #' @param max_tries The maximum number of attempts to connect with the BioMart service.
 #' @param mirror Specify an Ensembl mirror to connect to. The valid options here are `"www"`, `"uswest"`, `"useast"`, `"asia"`.

@@ -4,9 +4,7 @@
 #' @inheritParams FeatureStatPlot
 #' @param NA_color The color to use for missing values.
 #' @param NA_stat Whether to include missing values in the plot.
-#' Default is `TRUE`.
 #' @param stat_level The level(s) of the variable(s) specified in `stat.by` to include in the plot.
-#' Default is `NULL`.
 #' @param stat_type The type of statistic to compute for the plot.
 #' Can be one of `"percent"` or `"count"`.
 #' @param plot_type The type of plot to create.
@@ -14,17 +12,14 @@
 #' `"trend_alluvial"`, `"area"`, `"dot"`, `"sankey"`, `"chord"`,
 #' `"venn"`, or `"upset"`.
 #' @param x_text_angle Rotation angle for x-axis labels.
-#' Default is `45`.
 #' @param position The position adjustment for the plot.
 #' Can be one of `"stack"` or `"dodge"`.
 #' @param label Whether to add labels on the plot.
-#' Default is `FALSE`.
 #' @param label.size The size of the labels.
 #' @param label.fg The foreground color of the labels.
 #' @param label.bg The background color of the labels.
 #' @param label.bg.r The radius of the rounded corners of the label background.
 #' @param grid_major Whether to show major panel grid lines.
-#' Default is `TRUE`.
 #' @param grid_major_colour Color of major panel grid lines.
 #' @param grid_major_linetype Linetype of major panel grid lines.
 #' @param grid_major_linewidth Line width of major panel grid lines.

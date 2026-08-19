@@ -1,7 +1,7 @@
 #' @title RunDynamicEnrichment
 #'
 #' @description
-#' This function calculates gene-set scores from the specified database (`db`) for each lineage using the specified scoring method (`score_method`).
+#' Calculates gene-set scores from the specified database (`db`) for each lineage using the specified scoring method (`score_method`).
 #' It then treats these scores as expression values and uses them as input to the RunDynamicFeatures function to identify dynamically enriched terms along the lineage.
 #'
 #' @md
@@ -12,7 +12,7 @@
 #' Can be `"Seurat"`, `"AUCell"`, `"UCell"`, `"GSVA"`, `"ssGSEA"`,
 #' `"zscore"`, `"PLAGE"`, or `"VISION"`.
 #' Multiple methods can be supplied at once; each method will be written to a
-#' method-suffixed assay before dynamic-feature fitting. Default is `"AUCell"`.
+#' method-suffixed assay before dynamic-feature fitting.
 #'
 #' @seealso
 #' [RunDynamicFeatures], [DynamicHeatmap]

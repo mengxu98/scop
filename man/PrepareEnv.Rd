@@ -19,9 +19,8 @@ PrepareEnv(
 )
 }
 \arguments{
-\item{envname}{The name of the conda-compatible Python environment.
-If \code{NULL}, the environment name will be set to \code{"scop_env"}.
-Default is \code{NULL}.}
+\item{envname}{Conda-compatible Python environment.
+If \code{NULL}, the environment name will be set to \code{"scop_env"}.}
 
 \item{conda}{The path or command name of a conda-compatible executable
 (\code{conda}, \code{mamba}, or \code{micromamba}). Use \code{"auto"} to allow automatically
@@ -36,8 +35,7 @@ Default is \url{https://repo.anaconda.com/miniconda}.}
 Default is \code{"3.10-1"} on macOS and Unix and \code{"3.11-1"} on Windows.}
 
 \item{force}{Whether to force recreation of the environment.
-If \code{TRUE}, the existing environment will be removed and recreated.
-Default is \code{FALSE}.}
+If \code{TRUE}, the existing environment will be removed and recreated.}
 
 \item{modules}{Optional Python dependency modules to install in addition to
 the default scientific stack.

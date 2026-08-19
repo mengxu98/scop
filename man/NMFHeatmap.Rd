@@ -112,7 +112,7 @@ NMFHeatmap(
 \item{plot_type}{Plot type. \code{"cells"} plots cell/spot similarity from NMF
 embeddings. \code{"features"} plots feature similarity from NMF loadings.}
 
-\item{reduction}{Name of the NMF reduction. Default is \code{"nmf"}.}
+\item{reduction}{Name of the NMF reduction.}
 
 \item{dims}{Dimensions/components from the NMF reduction to use. If \code{NULL},
 all available dimensions are used.}
@@ -131,209 +131,55 @@ cell mode.}
 \item{feature_annotation}{Feature metadata columns to show as column
 annotations in feature mode.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{border}{Whether to add borders to the heatmap body and annotations.
-Kept for backward compatibility. The more specific \code{heatmap_border},
-\code{cell_annotation_border}, and \code{feature_annotation_border} arguments inherit
-from this value when left as \code{NULL}.}
+\item{border}{Draw borders. Kept for compatibility; more specific
+\verb{*_border} arguments inherit this when \code{NULL}.}
 
-\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Whether to draw borders for the heatmap body, cell annotations, and feature
-annotations, respectively. Defaults inherit from \code{border}.}
+\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Borders for the heatmap body and annotations. \code{NULL} inherits \code{border}.}
 
-\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors for the heatmap body, cell annotations, and feature
-annotations when their matching border argument is \code{TRUE}.
-Default is \code{"black"}.}
+\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors when the matching border argument is \code{TRUE}.}
 
-\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths for the heatmap body, cell annotations, and feature
-annotations when their matching border argument is \code{TRUE}.
-Default is \code{1}.}
-
-\item{show_row_names}{Whether to show row names in the heatmap.
-Default is \code{FALSE}.}
+\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths when the matching border argument is \code{TRUE}.}
 
 \item{row_names_wrap}{Maximum number of characters per displayed row-name
 line. When set to a positive number, underscores are displayed as spaces and
 labels are wrapped without changing the underlying item identifiers.
 \code{NULL} disables wrapping.}
 
-\item{show_column_names}{Whether to show column names in the heatmap.
-Default is \code{FALSE}.}
+\item{row_names_side, column_names_side, row_names_rot, column_names_rot}{Name placement.}
 
-\item{row_names_side}{A character vector specifying the side to place row names.}
+\item{anno_terms, anno_keys, anno_features}{Enrichment annotations.}
 
-\item{column_names_side}{A character vector specifying the side to place column names.}
+\item{terms_width, terms_stat_width, terms_fontsize}{Term annotation size.}
 
-\item{row_names_rot}{The rotation angle for row names.
-Default is \code{0}.}
+\item{terms_stat}{Enrichment statistic for term bars: \code{"none"}, \code{"score"}
+(\code{-log10} of the active p-value), or an enrichment column such as \code{"p.adjust"}.}
 
-\item{column_names_rot}{The rotation angle for column names.
-Default is \code{90}.}
+\item{terms_stat_digits, terms_stat_label, terms_stat_axis}{Statistic labels
+(\code{"none"}, \code{"value"}, \code{"significance"}, \code{"both"}) and shared axis.}
 
-\item{row_title}{A character vector specifying the title for rows.
-Default is \code{NULL}.}
+\item{terms_stat_background_palcolor, terms_stat_border, terms_stat_border_palcolor, terms_stat_border_size, terms_stat_label_palcolor}{Statistic-panel appearance. \code{NULL} inherits the matching \verb{terms_*} setting.}
 
-\item{column_title}{A character vector specifying the title for columns.
-Default is \code{NULL}.}
+\item{terms_group_background, terms_background_palcolor, terms_background_alpha, terms_border, terms_border_palcolor, terms_border_size, terms_text_palcolor, terms_bar_palcolor}{Term-block appearance. \code{terms_text_palcolor = NULL} maps text to enrichment
+significance; \code{terms_bar_palcolor = NULL} matches bar color to term text.}
 
-\item{anno_terms}{Whether to include term annotations.
-Default is \code{FALSE}.}
+\item{keys_width, keys_fontsize, features_width, features_fontsize}{Key and feature annotations.}
 
-\item{anno_keys}{Whether to include key annotations.
-Default is \code{FALSE}.}
+\item{IDtype, species, db_combine, mirror, db, TERM2GENE, TERM2NAME, minGSSize, maxGSSize}{Gene-set database (see \link{PrepareDB}).}
 
-\item{anno_features}{Whether to include feature annotations.
-Default is \code{FALSE}.}
+\item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
-\item{terms_width}{A unit specifying the width of term annotations.
-Default is \code{unit(4, "in")}.}
+\item{db_version}{Database version to retrieve.}
 
-\item{terms_stat_width}{A unit specifying the width of the independent
-term-statistic bar-chart annotation.}
+\item{convert_species}{Use a species-converted database when the annotation is
+missing for \code{species}.}
 
-\item{terms_fontsize}{A numeric vector specifying the font size(s) for term annotations.
-Default is \code{8}.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
-\item{terms_stat}{Which enrichment statistic controls the term bars.
-Use \code{"none"} to hide the bar background, \code{"score"} for \code{-log10} of the
-active p-value metric, or any column from the enrichment result such as
-\code{"p.adjust"}, \code{"pvalue"}, \code{"qvalue"},
-\code{"GeneRatio"}, \code{"RichFactor"}, \code{"FoldEnrichment"}, \code{"zScore"}, or \code{"Count"}.}
+\item{GO_simplify, GO_simplify_cutoff, simplify_method, simplify_similarityCutoff}{GO simplification.}
 
-\item{terms_stat_digits}{Number of significant digits for statistic labels
-and axis tick labels.}
-
-\item{terms_stat_label}{Label placed on or beside each statistic bar:
-\code{"none"}, \code{"value"}, \code{"significance"}, or \code{"both"}.}
-
-\item{terms_stat_axis}{Logical. Whether to draw a shared statistic axis
-outside and below the final enrichment block.}
-
-\item{terms_stat_background_palcolor}{Background color of the independent
-statistic panels. \code{NULL} inherits the corresponding term-panel background.}
-
-\item{terms_stat_border}{Logical. Whether to draw borders around statistic
-panels. \code{NULL} inherits \code{terms_border}.}
-
-\item{terms_stat_border_palcolor}{Border color of statistic panels. \code{NULL}
-inherits \code{terms_border_palcolor}.}
-
-\item{terms_stat_border_size}{Border line width of statistic panels. \code{NULL}
-inherits \code{terms_border_size}.}
-
-\item{terms_stat_label_palcolor}{Color of labels drawn on statistic bars.
-\code{NULL} automatically uses black or white according to bar luminance.}
-
-\item{terms_group_background}{Logical. Whether term blocks use translucent
-\code{feature_split} colors as their backgrounds.}
-
-\item{terms_background_palcolor}{Background color used when
-\code{terms_group_background = FALSE}.}
-
-\item{terms_background_alpha}{Alpha transparency of term-block backgrounds.}
-
-\item{terms_border}{Logical. Whether to draw borders around term blocks.}
-
-\item{terms_border_palcolor}{Border color of term blocks.}
-
-\item{terms_border_size}{Border line width of term blocks.}
-
-\item{terms_text_palcolor}{Fixed term text color. \code{NULL} retains colors mapped
-from enrichment significance.}
-
-\item{terms_bar_palcolor}{Fixed statistic-bar color. \code{NULL} makes each bar
-use the same color as its corresponding term text.}
-
-\item{keys_width}{A unit specifying the width of key annotations.
-Default is \code{unit(2, "in")}.}
-
-\item{keys_fontsize}{A two-length numeric vector specifying the minimum and maximum font size(s) for key annotations.
-Default is \code{c(6, 10)}.}
-
-\item{features_width}{A unit specifying the width of feature annotations.
-Default is \code{unit(2, "in")}.}
-
-\item{features_fontsize}{A two-length numeric vector specifying the minimum and maximum font size(s) for feature annotations.
-Default is \code{c(6, 10)}.}
-
-\item{IDtype}{A character vector specifying the type of IDs for features.
-Default is \code{"symbol"}.}
-
-\item{species}{A character vector specifying the species for features.
-Default is \code{"Homo_sapiens"}.}
-
-\item{db_update}{Whether the gene annotation databases should be forcefully updated.
-If set to FALSE, the function will attempt to load the cached databases instead.
-Default is \code{FALSE}.}
-
-\item{db_version}{A character vector specifying the version of the gene annotation databases to be retrieved.
-Default is \code{"latest"}.}
-
-\item{db_combine}{Whether to use a combined database.
-Default is \code{FALSE}.}
-
-\item{convert_species}{Whether to use a species-converted database when the annotation is missing for the specified species.
-Default is \code{TRUE}.}
-
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
-
-\item{mirror}{A character vector specifying the mirror for the Ensembl database.
-Default is \code{NULL}.}
-
-\item{db}{A character vector specifying the database to use.
-Default is \code{"GO_BP"}.}
-
-\item{TERM2GENE}{A data.frame specifying the TERM2GENE mapping for the database.
-Default is \code{NULL}.}
-
-\item{TERM2NAME}{A data.frame specifying the TERM2NAME mapping for the database.
-Default is \code{NULL}.}
-
-\item{minGSSize}{An integer specifying the minimum gene set size for the database.
-Default is \code{10}.}
-
-\item{maxGSSize}{An integer specifying the maximum gene set size for the database.
-Default is \code{500}.}
-
-\item{GO_simplify}{Whether to simplify gene ontology terms.
-Default is \code{FALSE}.}
-
-\item{GO_simplify_cutoff}{A character vector specifying the cutoff for GO simplification.
-Default is \code{"p.adjust < 0.05"}.}
-
-\item{simplify_method}{A character vector specifying the method for GO simplification.
-Default is \code{"Wang"}.}
-
-\item{simplify_similarityCutoff}{The similarity cutoff for GO simplification.
-Default is \code{0.7}.}
-
-\item{pvalueCutoff}{A numeric vector specifying the p-value cutoff(s) for significance.
-Default is \code{NULL}.}
-
-\item{padjustCutoff}{The adjusted p-value cutoff for significance.
-Default is \code{0.05}.}
-
-\item{topTerm}{A number of top terms to include.
-Default is \code{5}.}
-
-\item{show_termid}{Whether to show term IDs.
-Default is \code{FALSE}.}
-
-\item{topWord}{A number of top words to include.
-Default is \code{20}.}
-
-\item{words_excluded}{A character vector specifying the words to exclude.
-Default is \code{NULL}.}
-
-\item{heatmap_palette}{A character vector specifying the palette to use for the heatmap.
-Default is \code{"RdBu"}.}
-
-\item{heatmap_palcolor}{A character vector specifying the heatmap color to use.
-Default is \code{NULL}.}
+\item{pvalueCutoff, padjustCutoff, topTerm, show_termid, topWord, words_excluded}{Enrichment filters.}
 
 \item{heatmap_limits}{Numeric breaks for the heatmap color scale. If \code{NULL},
 defaults to \code{c(0, 0.35, 0.75, 1)}.}
@@ -343,60 +189,20 @@ defaults to \code{c(0, 0.35, 0.75, 1)}.}
 \item{cluster_palcolor}{Optional custom colors for NMF cluster/program
 annotations.}
 
-\item{cell_annotation_palette}{A character vector specifying the palette to use for cell annotations.
-The length of the vector should match the number of cell_annotation.
-Default is \code{"Chinese"}.}
+\item{use_raster, raster_device, raster_by_magick}{Raster device (\code{NULL} chooses automatically).}
 
-\item{cell_annotation_palcolor}{A list of character vector specifying the cell annotation color(s) to use.
-The length of the list should match the number of cell_annotation.
-Default is \code{NULL}.}
+\item{width, height, units}{Heatmap size. \code{NULL} sizes from matrix dimensions.}
 
-\item{feature_annotation_palette}{A character vector specifying the palette to use for feature annotations.
-The length of the vector should match the number of feature_annotation.
-Default is \code{"Dark2"}.}
+\item{cores}{Number of CPU cores.}
 
-\item{feature_annotation_palcolor}{A list of character vector specifying the feature annotation color to use.
-The length of the list should match the number of feature_annotation.
-Default is \code{NULL}.}
+\item{seed}{Random seed.}
 
-\item{use_raster}{Whether to use a raster device for plotting.
-Default is \code{NULL}.}
+\item{legend.position}{Legend side (\code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}).
+Gap to the heatmap grows automatically when long row names are on the right.}
 
-\item{raster_device}{A character vector specifying the raster device to use.
-Default is \code{"png"}.}
+\item{ht_params}{Extra arguments passed to \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap}, overriding defaults.}
 
-\item{raster_by_magick}{Whether to use the 'magick' package for raster.
-Default is \code{FALSE}.}
-
-\item{height}{The height of the heatmap in the specified units.
-If not provided, the height will be automatically determined based on the number of rows in the heatmap and the default unit.}
-
-\item{width}{The width of the heatmap in the specified units.
-If not provided, the width will be automatically determined based on the number of columns in the heatmap and the default unit.}
-
-\item{units}{The units to use for the width and height of the heatmap.
-Default is \code{"inch"}, Options are \code{"mm"}, \code{"cm"}, or \code{"inch"}.}
-
-\item{cores}{The number of worker processes to use for parallelization.
-Default is \code{1}.}
-
-\item{seed}{Optional integer seed. When supplied, every input receives a
-deterministic independent L'Ecuyer-CMRG random-number stream, making results
-reproducible across worker counts and scheduling order. The caller's random
-number state is restored when the call finishes.}
-
-\item{legend.position}{A character vector specifying the side to place the legends.
-Options are \code{"right"}, \code{"left"}, \code{"top"}, or \code{"bottom"}.
-Default is \code{"right"}.
-When row names are long and shown on the right side, the gap between the heatmap and the legend is automatically increased to avoid overlap.}
-
-\item{ht_params}{Additional parameters to customize the appearance of the heatmap.
-This should be a list with named elements, where the names correspond to parameter names in the \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap} function.
-Any conflicting parameters will override the defaults set by this function.
-Default is \code{list()}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
 A list with the following elements:

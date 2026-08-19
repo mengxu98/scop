@@ -61,22 +61,20 @@ PseudotimeProjectionPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
 \item{time_key}{Name of the column in the Seurat object metadata containing pseudotime values.}
 
-\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
+\item{dims}{Length-2 vector of dimensions to plot.}
 
-\item{cells}{A character vector of cell names to use.}
+\item{cells}{Cell names to include.}
 
 \item{method}{Method to compute velocity vectors from pseudotime.
-Can be \code{"gradient"} or \code{"knn"}. Default is \code{"knn"}.}
+Can be \code{"gradient"} or \code{"knn"}.}
 
-\item{k}{Number of nearest neighbors to use when \code{method = "knn"}.
-Default is \code{30}.}
+\item{k}{Number of nearest neighbors to use when \code{method = "knn"}.}
 
 \item{graph_name}{Name of the KNN graph in the Seurat object to use.
 If \code{NULL}, a new graph will be computed. Default is \code{NULL}.}
@@ -84,7 +82,7 @@ If \code{NULL}, a new graph will be computed. Default is \code{NULL}.}
 \item{plot_type}{Type of plot to create.
 Can be \code{"raw"}, \code{"grid"}, or \code{"stream"}.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{group_palette}{Name of the palette to use for coloring the groups.
 Defaults is \code{"Chinese"}.}
@@ -116,57 +114,14 @@ Defaults is \code{20}.}
 \item{arrow_color}{Color of the arrowheads.
 Defaults is \code{"black"}.}
 
-\item{streamline_L}{Typical length of a streamline in x and y units}
+\item{streamline_L, streamline_minL, streamline_res, streamline_n, streamline_width, streamline_alpha, streamline_color, streamline_palette, streamline_palcolor, streamline_bg_color, streamline_bg_stroke}{Streamline appearance for velocity plots.}
 
-\item{streamline_minL}{Minimum length of segments to show.}
-
-\item{streamline_res}{Resolution parameter (higher numbers increases the resolution).}
-
-\item{streamline_n}{Number of points to draw.}
-
-\item{streamline_width}{Size of streamline.}
-
-\item{streamline_alpha}{Transparency of streamline.}
-
-\item{streamline_color}{Color of streamline.}
-
-\item{streamline_palette}{Color palette used for streamline.}
-
-\item{streamline_palcolor}{Custom colors used for streamline.}
-
-\item{streamline_bg_color}{Background color of streamline.}
-
-\item{streamline_bg_stroke}{Border width of streamline background.}
-
-\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
 \item{title}{The text for the title.
 Defaults is \code{"Pseudotime projection"}.}
 
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
-Default is \code{NULL}.}
-
-\item{xlab}{The x-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{ylab}{The y-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{return_layer}{Whether to return the plot layers as a list.
-Defaults is \code{FALSE}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{palette}{Deprecated alias of \code{group_palette}.}
 
@@ -184,24 +139,18 @@ Default is \code{0.3} (CellRank/scvelo-style).}
 \item{label}{Whether to label the cell groups.
 Defaults is \code{TRUE} when \code{group.by} is specified.}
 
-\item{label.size}{Size of labels.}
-
 \item{label.fg}{Foreground color of labels.
 Defaults is \code{"black"}.}
 
 \item{label.bg}{Background color of labels.
 Defaults is \code{"white"}.}
 
-\item{label.bg.r}{Background ratio of label.}
+\item{seed}{Random seed.}
 
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
-This function creates a projection plot similar to \link{VelocityPlot},
+Creates a projection plot similar to \link{VelocityPlot},
 but uses pseudotime data instead of RNA velocity analysis results.
 }
 \examples{

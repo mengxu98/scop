@@ -7,15 +7,14 @@
 RenameFeatures(srt, newnames = NULL, assays = NULL, verbose = TRUE)
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{newnames}{A vector with the same length of features in Seurat object,
 or characters named with old features.}
 
 \item{assays}{Assays to rename.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
 Rename features for the Seurat object

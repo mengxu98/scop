@@ -9,22 +9,19 @@
 #' @param reduction_method Optional reduction method name.
 #' When set to `"nmf"` or `"glmpca"`, all available dimensions will be retained.
 #' @param k Number of neighbors used by [intrinsicDimension::maxLikGlobalDimEst].
-#' Default is `30`.
 #' @param method Dimension-selection method. `"scree"` uses PCA standard
 #' deviations with broken-stick, elbow, cumulative-variance, and marginal-gain
 #' criteria. `"intrinsic"` uses [intrinsicDimension::maxLikGlobalDimEst].
 #' `"ensemble"` keeps the larger recommendation from both methods when both are
-#' available. Default is `"scree"`.
+#' available.
 #' @param min_dims Minimum number of dimensions kept when intrinsic-dimension estimation succeeds.
-#' Default is `5`.
 #' @param variance_threshold Cumulative variance threshold used by
-#' `method = "scree"`. Default is `0.8`.
+#' `method = "scree"`.
 #' @param marginal_gain_threshold Stop point for marginal variance gain
-#' (percentage points) used by `method = "scree"`. Default is `0.5`.
+#' (percentage points) used by `method = "scree"`.
 #' @param skip_first Whether to drop the first dimension from the returned result.
-#' Useful for `TFIDF/LSI` workflows. Default is `FALSE`.
+#' Useful for `TFIDF/LSI` workflows.
 #' @param use_stored Whether to use `misc$dims_estimate` already stored in the reduction when available.
-#' Default is `TRUE`.
 #'
 #' @return An integer vector of dimensions to use.
 #'
@@ -484,24 +481,22 @@ pc_selection_stats <- function(
 #' @md
 #' @inheritParams thisutils::log_message
 #' @param srt A `Seurat` object with a PCA-like reduction computed.
-#' @param max_pcs Maximum number of PCs to visualize. Default is `50`.
+#' @param max_pcs Maximum number of PCs to visualize.
 #' @param variance_thresholds Numeric vector of variance thresholds to mark.
-#' Default is `c(0.60, 0.70, 0.80, 0.90)`.
 #' @param reduction Reduction name to inspect. Default is `NULL`, which
 #' automatically selects a PCA-like reduction via [DefaultReduction()] with
 #' `pattern = "pca"`.
 #' @param palcolor Colors for the selected-PC line, curves, and bars,
-#' respectively. Default is `c("#D70440", "#0AA344", "#1772B4")`.
-#' @param aspect.ratio Aspect ratio of the plot. Default is `NULL`.
+#' respectively.
+#' @param aspect.ratio Aspect ratio of the plot.
 #' @param title Plot title. When `NULL` (default),
 #' reports the selected number of PCs.
 #' @param subtitle Plot subtitle. Default is
 #' `NULL`.
-#' @param xlab X-axis label. Default is `"Principal component"`.
+#' @param xlab X-axis label.
 #' @param theme_use Theme function used to style the plot.
-#' Default is `"theme_scop"`.
 #' @param theme_args Other arguments passed to the `theme_use`.
-#' @param seed Random seed. Default is `11`.
+#' @param seed Random seed.
 #'
 #' @return A `ggplot` object showing per-PC explained variance (bars, left
 #' axis) and cumulative explained variance (line, right axis).

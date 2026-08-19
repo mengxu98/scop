@@ -23,7 +23,7 @@ SCENICPlusPlot(
 
 \item{tool_name}{Tools slot. Default \code{"SCENICPlus"}.}
 
-\item{assay}{eRegulon AUC assay. Default \code{"scenicplus"}.}
+\item{assay}{ERegulon AUC assay. Default \code{"scenicplus"}.}
 
 \item{plot_type}{Plot type. Default \code{"heatmap_dotplot"}.}
 

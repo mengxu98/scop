@@ -45,50 +45,41 @@ RunDM(object, ...)
 \arguments{
 \item{object}{An object. This can be a Seurat object or a matrix-like object.}
 
-\item{...}{Additional arguments to be passed to \code{destiny::DiffusionMap}.}
+\item{...}{Passed to \code{destiny::DiffusionMap}.}
 
-\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
+\item{reduction}{Linear reduction used as input.}
 
-\item{dims}{The dimensions to be used. Default is \code{NULL}.}
+\item{dims}{Dimensions to use. Supply only one of \code{dims}, \code{features},
+\code{neighbor}, or \code{graph}.}
 
-\item{features}{A character vector of features to use. Default is \code{NULL}.}
+\item{features}{Features used instead of a reduction.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{ndcs}{A number of diffusion components (dimensions) to be computed.
-Default is \code{2}.}
+\item{ndcs}{A number of diffusion components (dimensions) to be computed.}
 
 \item{sigma}{The diffusion scale parameter of the Gaussian kernel.
 Currently supported values are \code{"local"} (default) and \code{"global"}.}
 
-\item{k}{A number of nearest neighbors to be used for the construction of the graph.
-Default is \code{30}.}
+\item{k}{A number of nearest neighbors to be used for the construction of the graph.}
 
 \item{dist.method}{The distance metric to be used for the construction of the knn graph.
-Currently supported values are \code{"euclidean"} and \code{"cosine"}.
-Default is \code{"euclidean"}.}
+Currently supported values are \code{"euclidean"} and \code{"cosine"}.}
 
 \item{npcs}{Number of principal components to use for dimensionality reduction before computing diffusion map.
 This can speed up computation when using many features.
 Default is \code{NULL} (auto-determined based on the number of features).}
 
-\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
-Default is \code{"dm"}.}
+\item{reduction.name}{Reduction to be stored in the Seurat object.}
 
-\item{reduction.key}{The prefix for the column names of the basis vectors.
-Default is \code{"DM_"}.}
+\item{reduction.key}{The prefix for the column names of the basis vectors.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed.use}{Random seed.}
 }
 \description{
 Run diffusion map (DM)

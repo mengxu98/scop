@@ -1,7 +1,7 @@
 #' @title Check and report the type of data in `Seurat` object
 #'
 #' @description
-#' This function checks and returns a string indicating the type of data.
+#' Checks and returns a string indicating the type of data.
 #' It checks for the presence of infinite values, negative values,
 #' and whether the values are floats or integers.
 #'
@@ -116,7 +116,7 @@ CheckDataType.default <- function(
 #' @title Check and preprocess a list of `Seurat` objects
 #'
 #' @description
-#' This function checks and preprocesses a list of `Seurat` objects.
+#' Checks and preprocesses a list of `Seurat` objects.
 #' It performs various checks on the input, including verification of input types,
 #' assay type consistency, feature name consistency, and batch column consistency.
 #' It also performs data normalization and variable feature finding based on the specified parameters.
@@ -126,19 +126,14 @@ CheckDataType.default <- function(
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunStandardWorkflow
 #' @param srt_list A list of `Seurat` objects to be checked and preprocessed.
-#' @param batch A character string specifying the batch variable name.
+#' @param batch Batch variable name.
 #' @param do_normalization Whether data normalization should be performed.
-#' Default is `TRUE`.
 #' @param normalization_method The normalization method to be used.
 #' Possible values are `"LogNormalize"`, `"SCT"`, `"TFIDF"`, and `"scran"`.
-#' Default is `"LogNormalize"`.
 #' @param HVF_source The source of highly variable features.
 #' Possible values are `"global"` and `"separate"`.
-#' Default is `"separate"`.
 #' @param HVF_min_intersection The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
-#' Default is `1`.
 #' @param vars_to_regress A vector of variable names to include as additional regression variables.
-#' Default is `NULL`.
 #'
 #' @return
 #' A list containing the preprocessed `Seurat` objects,
@@ -779,7 +774,7 @@ find_hvf_scran_seurat <- function(
 #' @title Check and preprocess a merged seurat object
 #'
 #' @description
-#' This function checks and preprocesses a merged seurat object.
+#' Checks and preprocesses a merged seurat object.
 #'
 #' @inheritParams CheckDataList
 #' @inheritParams RunIntegration

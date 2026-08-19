@@ -1,32 +1,22 @@
-#' @title Run NMF (non-negative matrix factorization)
+#' @title Run NMF
 #'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunUMAP2
 #' @param object An object. This can be a Seurat object, an Assay object, or a matrix-like object.
 #' @param nbes The number of basis vectors (components) to be computed.
-#' Default is `50`.
 #' @param nmf.method The NMF algorithm to be used.
 #' Currently supported values are `"RcppML"` and `"NMF"`.
-#' Default is `"RcppML"`.
 #' @param tol The tolerance for convergence (only applicable when nmf.method is `"RcppML"`).
-#' Default is `1e-5`.
 #' @param maxit The maximum number of iterations for convergence (only applicable when nmf.method is `"RcppML"`).
-#' Default is `100`.
 #' @param rev.nmf Whether to perform reverse NMF (i.e., transpose the input matrix) before running the analysis.
-#' Default is `FALSE`.
 #' @param ndims.print The dimensions (number of basis vectors) to print in the output.
-#' Default is `1:5`.
 #' @param nfeatures.print The number of features to print in the output.
-#' Default is `30`.
-#' @param reduction.name The name of the reduction to be stored in the Seurat object.
-#' Default is `"nmf"`.
+#' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.key The prefix for the column names of the basis vectors.
-#' Default is `"BE_"`.
 #' @param cores The number of threads to be used in older `RcppML` releases
 #' that expose a global OpenMP thread setter. Newer releases manage their
 #' thread count internally.
-#' Default is `0`.
 #' @param ... Additional arguments passed to [RcppML::nmf] or [NMF::nmf].
 #'
 #' @rdname RunNMF

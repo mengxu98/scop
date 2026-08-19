@@ -16,26 +16,20 @@ srt_reorder(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{features}{A character vector or a named list of features to plot.
-Features can be gene names in Assay or names of numeric columns in meta.data.}
+\item{features}{Features to plot: a character vector or a named list of
+assay gene names or numeric metadata columns.}
 
 \item{reorder_by}{Reorder groups instead of idents.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{log}{Whether \link{log1p} transformation needs to be applied.
-Default is \code{TRUE}.}
+\item{log}{Whether \link{log1p} transformation needs to be applied.}
 
-\item{distance_metric}{Metric to compute distance.
-Default is \code{"euclidean"}.}
+\item{distance_metric}{Metric to compute distance.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

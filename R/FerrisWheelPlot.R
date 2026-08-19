@@ -12,11 +12,8 @@
 #' `data.frame`. When provided, `FerrisWheelPlot()` summarizes enriched terms
 #' into up/down counts internally.
 #' @param label_col Column name for category labels.
-#' Default is `"pathway"`.
 #' @param up_col Column name for up-regulated counts.
-#' Default is `"up"`.
 #' @param down_col Column name for down-regulated counts.
-#' Default is `"down"`.
 #' @param total_up,total_down Total counts shown in the center donut. When
 #' `NULL`, the corresponding column sum is used. For enrichment input, these
 #' can be inferred from `de_results`.
@@ -29,7 +26,6 @@
 #' @param padj_cutoff Adjusted p-value cutoff used to select enriched terms
 #' from `res`.
 #' @param top_n Number of enriched terms to show when `res` is provided.
-#' Default is `10`.
 #' @param up_label,down_label Legend labels and center text labels.
 #' Defaults are `"Up-regulated Genes"` and `"Down-regulated Genes"`.
 #' @param up_color,down_color Optional colors for up/down counts. When `NULL`,
@@ -37,15 +33,10 @@
 #' @param palette,palcolor Palette passed to [thisplot::palette_colors()] when
 #' `up_color` or `down_color` is not provided.
 #' @param center_label Text shown inside the center donut.
-#' Default is `"Significant Genes"`.
 #' @param center_radius Radius of the center donut.
-#' Default is `1.25`.
 #' @param center_width Width of the center donut band.
-#' Default is `0.28`.
 #' @param outer_distance Distance from plot center to outer donut centers.
-#' Default is `2.55`.
 #' @param outer_width Width of outer donut bands.
-#' Default is `0.12`.
 #' @param min_outer_radius,max_outer_radius Minimum and maximum outer donut
 #' radii after scaling by category count.
 #' @param label_wrap Maximum characters per category label line. Set `NULL` to
@@ -62,9 +53,7 @@
 #' @param direction Drawing direction for the outer donuts. `1` is clockwise and
 #' `-1` is counterclockwise.
 #' @param start Start angle in radians for the first category.
-#' Default is `pi / 2`.
 #' @param theme_use Theme function name.
-#' Default is `"theme_scop"`.
 #' @param theme_args Additional arguments passed to `theme_use`.
 #'
 #' @return A `ggplot` object.

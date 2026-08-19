@@ -29,14 +29,14 @@ RunSciBet(
 
 \item{srt_ref}{An object of class Seurat storing the reference cells.}
 
-\item{ref_group}{A character vector specifying the column name in the \code{srt_ref} metadata that represents the cell grouping.}
+\item{ref_group}{Column name in the \code{srt_ref} metadata that represents the cell grouping.}
 
-\item{query_group}{A character vector specifying the column name in the \code{srt_query} metadata that represents the cell grouping.}
+\item{query_group}{Column name in the \code{srt_query} metadata that represents the cell grouping.}
 
-\item{query_assay}{A character vector specifying the assay to be used for the query data.
+\item{query_assay}{Assay to be used for the query data.
 Default is the default assay of the \code{srt_query} object.}
 
-\item{ref_assay}{A character vector specifying the assay to be used for the reference data.
+\item{ref_assay}{Assay to be used for the reference data.
 Default is the default assay of the \code{srt_ref} object.}
 
 \item{query_layer, ref_layer}{Assay layers used for query and reference.}

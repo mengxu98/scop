@@ -22,15 +22,12 @@ RunSpotQC(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{return_filtered}{Logical indicating whether to return a spot-filtered
-Seurat object. Default is \code{FALSE}.}
+\item{return_filtered}{Whether to return a spot-filtered
+Seurat object.}
 
 \item{qc_metrics}{QC metrics to apply. Available metrics are \code{"outlier"},
 \code{"umi"}, \code{"gene"}, and \code{"mito"}.}
@@ -54,8 +51,7 @@ QC.}
 \item{mito_gene}{Optional explicit mitochondrial gene vector. When provided,
 \code{mito_pattern} is ignored.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 
 \item{seed}{Random seed for reproducibility.}
 }

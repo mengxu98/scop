@@ -2,42 +2,27 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param group.by Metadata columns to color spots by.
-#' @param features Features to color spots by. When provided, expression values
-#' are read from `assay` and `layer`.
-#' @param assay Assay used for `features`. If `NULL`, the default assay is used.
-#' @param layer Assay layer used for `features`.
-#' @param values Optional vector, matrix, or data.frame with spot-level values.
-#' Row names or vector names must match spatial spot names.
-#' @param plot_type Plot type. `"point"` keeps the default spot plot behavior.
-#' `"pie"` draws spot-level pies from numeric metadata columns supplied to
-#' `group.by` or from a numeric matrix/data.frame supplied to `values`. When
-#' `group.by` is a single `"<prefix>_dominant_type"` column, matching
-#' `"<prefix>_prop_*"` or `"<prefix>_frac_*"` numeric metadata columns are used
-#' automatically.
-#' @param plot.data Optional long-format data.frame for plotting repeated
-#' spatial points, such as cell-to-spot assignments.
-#' @param spot.by Column in `plot.data` containing spot names.
-#' @param color.by Column in `plot.data` used to color repeated spatial points.
-#' @param geom Geometry used for `plot.data`: `"point"` or `"jitter"`.
-#' @param image Name of the Seurat spatial image. Required when multiple images
-#' are present; a single image is selected automatically when `NULL`.
-#' @param overlay_image Whether to draw the spatial image beneath spots.
-#' @param image.alpha Transparency of the spatial image.
-#' @param crop Whether to crop the panel to plotted spots.
-#' @param coord.cols Metadata coordinate columns used when no image is available.
-#' @param flip.y Whether to reverse the y axis for metadata coordinates.
-#' @param show_axes Whether to keep axis text, ticks, and grid lines when
-#' `theme_use` is `"theme_spatial"`. Default is `FALSE`.
-#' @param theme_use Theme function name. Default is `"theme_spatial"`.
-#' @param pt.size Point size.
-#' @param pie.radius,pie.radius.scale Radius controls for `plot_type = "pie"`.
-#' If `pie.radius` is `NULL`, the radius is estimated from spot spacing and
-#' multiplied by `pie.radius.scale`.
-#' @param pt.alpha Point alpha.
+#' @param features Features to color spots by (from `assay`/`layer`).
+#' @param values Spot-level values (named vector, matrix, or data.frame).
+#' @param plot_type `"point"` or `"pie"`. Pie uses numeric `group.by` columns,
+#' `values`, or `"<prefix>_prop_*"`/`"<prefix>_frac_*"` when `group.by` is
+#' `"<prefix>_dominant_type"`.
+#' @param plot.data,spot.by,color.by Long-format data for repeated spatial points
+#' (e.g. cell-to-spot assignments).
+#' @param geom `"point"` or `"jitter"` for `plot.data`.
+#' @param overlay_image,image.alpha Draw the spatial image beneath spots.
+#' @param crop Crop the panel to plotted spots.
+#' @param flip.y Reverse the y axis for metadata coordinates.
+#' @param show_axes Keep axis text, ticks, and grid when `theme_use` is
+#' `"theme_spatial"`.
+#' @param theme_use Theme name or function.
+#' @param pie.radius,pie.radius.scale Pie radius. `NULL` estimates from spot
+#' spacing, then multiplies by `pie.radius.scale`.
 #' @param stroke Point border width.
 #' @param bg_color Point border color.
-#' @param jitter_width,jitter_height Jitter size used when `geom = "jitter"`.
+#' @param jitter_width,jitter_height Jitter when `geom = "jitter"`.
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #' @export

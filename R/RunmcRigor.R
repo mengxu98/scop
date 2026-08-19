@@ -10,7 +10,7 @@
 #' `colnames(srt)` order.
 #' @param metacell.by Metadata column(s) in `srt` used as metacell partitions
 #' when `cell_membership = NULL`.
-#' @param mode mcRigor task. `"detect"` calls `mcRigor_DETECT()` for one
+#' @param mode McRigor task. `"detect"` calls `mcRigor_DETECT()` for one
 #' partition; `"optimize"` calls `mcRigor_OPTIMIZE()` across candidate
 #' partitions.
 #' @param tgamma Target partition/gamma for `"detect"`. Can be a membership

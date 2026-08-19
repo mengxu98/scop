@@ -8,9 +8,7 @@
 #' If provided, expression will be averaged within each group before GSVA analysis (cell-type level).
 #' If `NULL`, GSVA is performed on each cell individually (single-cell level).
 #' @param layer Data layer to use when `group.by = NULL`. Usually `"data"` for normalized or `"counts"` for count matrix.
-#' Default is `"data"`.
 #' @param assay_name Name of the assay to store GSVA scores when `group.by = NULL` and `new_assay = TRUE`.
-#' Default is `"GSVA"`.
 #' @param new_assay Whether to create a new assay for GSVA scores when `group.by = NULL`. Default is `TRUE`.
 #' @param store_metadata Whether to also store single-cell GSVA scores in `meta.data`.
 #' When `NULL`, custom `features` or `TERM2GENE` input is stored in `meta.data`
@@ -19,7 +17,6 @@
 #' Options are `"gsva"`, `"ssgsea"`, `"zscore"`, or `"plage"`.
 #' Multiple methods can be supplied at once; in single-cell mode they will be
 #' stored in method-suffixed assays such as `"GSVA_gsva"` and `"GSVA_ssgsea"`.
-#' Default is `"gsva"`.
 #' @param backend Scoring backend. `"cpp"` is the default and supports all
 #' current `method` values. `"r"` uses the original [GSVA::gsva()]
 #' implementation. `"cpp"` supports `method = "ssgsea"`,
@@ -37,17 +34,12 @@
 #' When omitted, `backend = "cpp"` with `method = "gsva"` uses `"none"` for
 #' faster single-cell scoring; explicit `"Gaussian"` or `"Poisson"` values are
 #' still honored. Other backends and methods default to `"Gaussian"`.
-#' @param abs.ranking Logical indicating whether to use absolute ranking for GSVA.
-#' Default is `FALSE`.
+#' @param abs.ranking Whether to use absolute ranking for GSVA.
 #' @param min.sz Minimum size of gene sets to be included in the analysis.
-#' Default is `10`.
 #' @param max.sz Maximum size of gene sets to be included in the analysis.
-#' Default is `Inf`.
-#' @param mx.diff Logical indicating whether to use the maximum difference method.
-#' Default is `TRUE`.
-#' @param tau Exponent for the GSVA method. Default is `1`.
-#' @param ssgsea.norm Logical indicating whether to normalize SSGSEA scores.
-#' Default is `TRUE`.
+#' @param mx.diff Whether to use the maximum difference method.
+#' @param tau Exponent for the GSVA method.
+#' @param ssgsea.norm Whether to normalize SSGSEA scores.
 #'
 #' @return
 #' Returns the modified `Seurat` object. When `group.by` is provided, GSVA scores are stored in the `tools` slot.

@@ -19,23 +19,21 @@ SpatialEcoTyperSpatialPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column containing SpatialEcoTyper labels.}
 
 \item{x.by, y.by}{Metadata coordinate columns used when no image coordinates
 are available.}
 
-\item{image}{Name of the Seurat spatial image. Required when multiple images
-are present; a single image is selected automatically when \code{NULL}.}
-
-\item{overlay_image}{Whether to draw the spatial image beneath spots.}
+\item{image}{Spatial image name. Required when multiple images are present;
+a single image is selected automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
 \item{palette, palcolor}{Palette passed to \code{palette_colors()}.}
 
-\item{theme_use}{Theme function name. Default is \code{"theme_spatial"}.}
+\item{theme_use}{Theme name or function.}
 
 \item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.}
 }

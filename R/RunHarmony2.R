@@ -9,16 +9,12 @@
 #' @param object A Seurat object.
 #' @param group.by.vars The batch variable name.
 #' @param dims.use The dimensions to be used.
-#' Default is `1:30`.
-#' @param reduction.name The name of the reduction to be stored in the Seurat object.
-#' Default is `"Harmony"`.
+#' @param reduction.name Reduction to be stored in the Seurat object.
 #' @param reduction.save Deprecated alias for `reduction.name`, retained for
 #' compatibility with `harmony::RunHarmony.Seurat`.
 #' @param reduction.key The prefix for the column names of the Harmony embeddings.
-#' Default is `"Harmony_"`.
 #' @param project.dim Whether to project dimension reduction loadings.
-#' Default is `TRUE`.
-#' @param ... Additional arguments to be passed to [harmony::RunHarmony].
+#' @param ... Passed to [harmony::RunHarmony].
 #'
 #' @rdname RunHarmony2
 #' @export

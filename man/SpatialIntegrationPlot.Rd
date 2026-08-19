@@ -54,17 +54,9 @@ available.}
 \item{combine}{Whether to combine plots when delegated plotting returns a
 list.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
-
-\item{theme_use}{Theme function name. Default is \code{"theme_spatial"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{theme_use}{Theme name or function.}
 
 \item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} or
 \code{\link[=CellDimPlot]{CellDimPlot()}}.}

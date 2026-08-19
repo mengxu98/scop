@@ -62,7 +62,7 @@ take precedence when set.}
 \item{box_alpha}{Boxplot fill alpha.}
 
 \item{flip}{Whether to flip coordinates so group labels run along the y
-axis. Default is \code{TRUE}.}
+axis.}
 
 \item{title, subtitle, xlab, ylab}{Plot labels.}
 
@@ -72,8 +72,7 @@ maps to \code{thisplot::theme_this()}, matching the style used by
 
 \item{theme_args}{Additional arguments passed to \code{theme_use}.}
 
-\item{legend.position, legend.direction}{Legend position and direction.
-Default is \code{"none"}.}
+\item{legend.position, legend.direction}{Legend position and direction.}
 
 \item{grid_major}{Whether to show major panel grid lines.}
 

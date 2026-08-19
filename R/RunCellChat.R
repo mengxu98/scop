@@ -2,21 +2,17 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams RunStandardWorkflow
+#' @inheritParams scop-params
 #' @inheritParams CellDimPlot
-#' @param species The species of the data, either `"Homo_sapiens"`, `"Mus_musculus"`, or `"zebrafish"`.
-#' @param annotation_selected A vector of cell annotations of interest for running the `CellChat` analysis.
-#' If not provided, all cell types will be considered.
-#' @param group_column Name of the metadata column in the `Seurat` object that defines conditions or groups.
-#' @param group_cmp A list of pairwise condition comparisons for differential `CellChat` analysis.
-#' @param thresh The threshold for computing centrality scores. Default is `0.05`.
-#' @param min.cells the minmum number of expressed cells required for the genes that are considered for cell-cell communication analysis. Default is `10`.
-#' @param do.fast Whether to use CellChat's fast Wilcoxon implementation backed
-#' by `presto`. Set to `TRUE` only when `presto` is installed.
-#' @param backend Backend used only for result post-processing and unified CCC table
-#' aggregation. Upstream CellChat inference is unchanged.
-#' @param assay Which assay to use. If `NULL`, the default assay of the `Seurat` object will be used.
-#' @param layer The layer to use for the expression data. Default is `"data"`.
+#' @param species `"Homo_sapiens"`, `"Mus_musculus"`, or `"zebrafish"`.
+#' @param annotation_selected Cell types to include. `NULL` uses all.
+#' @param group_column Metadata column defining conditions or groups.
+#' @param group_cmp Pairwise condition comparisons for differential CellChat.
+#' @param thresh Threshold for centrality scores.
+#' @param min.cells Minimum expressed cells required for genes used in CCC.
+#' @param do.fast Use CellChat's fast Wilcoxon via `presto` (must be installed).
+#' @param backend Post-processing / unified CCC table backend. Does not change
+#' upstream CellChat inference.
 #' @return A `Seurat` object with `CellChat` results stored in `srt@tools[["CellChat"]]`.
 #'
 #' @export

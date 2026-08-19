@@ -59,14 +59,11 @@ count columns. If \code{NULL}, the table is built from \code{res}.}
 \code{data.frame}. When provided, \code{FerrisWheelPlot()} summarizes enriched terms
 into up/down counts internally.}
 
-\item{label_col}{Column name for category labels.
-Default is \code{"pathway"}.}
+\item{label_col}{Column name for category labels.}
 
-\item{up_col}{Column name for up-regulated counts.
-Default is \code{"up"}.}
+\item{up_col}{Column name for up-regulated counts.}
 
-\item{down_col}{Column name for down-regulated counts.
-Default is \code{"down"}.}
+\item{down_col}{Column name for down-regulated counts.}
 
 \item{total_up, total_down}{Total counts shown in the center donut. When
 \code{NULL}, the corresponding column sum is used. For enrichment input, these
@@ -84,8 +81,7 @@ matches examples that use \code{"Up"} and \code{"Down"} as \code{geneID_groups}.
 \item{padj_cutoff}{Adjusted p-value cutoff used to select enriched terms
 from \code{res}.}
 
-\item{top_n}{Number of enriched terms to show when \code{res} is provided.
-Default is \code{10}.}
+\item{top_n}{Number of enriched terms to show when \code{res} is provided.}
 
 \item{up_label, down_label}{Legend labels and center text labels.
 Defaults are \code{"Up-regulated Genes"} and \code{"Down-regulated Genes"}.}
@@ -96,20 +92,15 @@ colors are selected from the \code{"Chinese"} palette used by \code{scop}.}
 \item{palette, palcolor}{Palette passed to \code{\link[thisplot:palette_colors]{thisplot::palette_colors()}} when
 \code{up_color} or \code{down_color} is not provided.}
 
-\item{center_label}{Text shown inside the center donut.
-Default is \code{"Significant Genes"}.}
+\item{center_label}{Text shown inside the center donut.}
 
-\item{center_radius}{Radius of the center donut.
-Default is \code{1.25}.}
+\item{center_radius}{Radius of the center donut.}
 
-\item{center_width}{Width of the center donut band.
-Default is \code{0.28}.}
+\item{center_width}{Width of the center donut band.}
 
-\item{outer_distance}{Distance from plot center to outer donut centers.
-Default is \code{2.55}.}
+\item{outer_distance}{Distance from plot center to outer donut centers.}
 
-\item{outer_width}{Width of outer donut bands.
-Default is \code{0.12}.}
+\item{outer_width}{Width of outer donut bands.}
 
 \item{min_outer_radius, max_outer_radius}{Minimum and maximum outer donut
 radii after scaling by category count.}
@@ -135,11 +126,9 @@ by default; \code{"none"} keeps labels unchanged.}
 \item{direction}{Drawing direction for the outer donuts. \code{1} is clockwise and
 \code{-1} is counterclockwise.}
 
-\item{start}{Start angle in radians for the first category.
-Default is \code{pi / 2}.}
+\item{start}{Start angle in radians for the first category.}
 
-\item{theme_use}{Theme function name.
-Default is \code{"theme_scop"}.}
+\item{theme_use}{Theme function name.}
 
 \item{theme_args}{Additional arguments passed to \code{theme_use}.}
 }

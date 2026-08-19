@@ -17,14 +17,13 @@
 #' @param point_size,point_alpha Jittered point size and alpha.
 #' @param box_alpha Boxplot fill alpha.
 #' @param flip Whether to flip coordinates so group labels run along the y
-#' axis. Default is `TRUE`.
+#' axis.
 #' @param title,subtitle,xlab,ylab Plot labels.
 #' @param theme_use Theme function name. Default is `"theme_scop"`, which
 #' maps to `thisplot::theme_this()`, matching the style used by
 #' `thisplot::StatPlot()`.
 #' @param theme_args Additional arguments passed to `theme_use`.
 #' @param legend.position,legend.direction Legend position and direction.
-#' Default is `"none"`.
 #' @param grid_major Whether to show major panel grid lines.
 #' @param grid_major_colour,grid_major_linetype,grid_major_linewidth
 #' Appearance of major panel grid lines.

@@ -47,14 +47,13 @@ PalantirTrajectoryPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
-\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
+\item{dims}{Length-2 vector of dimensions to plot.}
 
-\item{cells}{A character vector of cell names to use.}
+\item{cells}{Cell names to include.}
 
 \item{pseudotime_key}{Name of the metadata column containing Palantir
 pseudotime.}
@@ -98,12 +97,7 @@ pseudotime, \code{"branch_selection"} for the branch with highest probability,
 
 \item{pt.alpha}{Point alpha for cells.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
-
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
 \item{trajectory_palette}{Color palette for trajectories.}
 
@@ -117,41 +111,18 @@ Default is \code{NULL}.}
 
 \item{trajectory_arrow}{Arrow used for trajectories. See \link[grid:arrow]{grid::arrow}.}
 
-\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
-\item{title}{The text for the title.
-Default is \code{NULL}.}
+\item{title, subtitle, xlab, ylab}{Plot labels.}
 
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
-Default is \code{NULL}.}
-
-\item{xlab}{The x-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{ylab}{The y-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{return_layer}{Logical. If \code{TRUE}, returns ggplot2 layers instead of a
 complete plot.}
 
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Random seed.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
 Plot branch-aware Palantir trajectories on a two-dimensional embedding.

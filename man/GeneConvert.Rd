@@ -28,10 +28,9 @@ GeneConvert(
 
 \item{species_to}{Latin names for animals of the output geneID. e.g. \code{"Homo_sapiens"}, \code{"Mus_musculus"}.}
 
-\item{Ensembl_version}{An integer specifying the Ensembl version.
-Default is \code{NULL}. If \code{NULL}, the latest version will be used.}
+\item{Ensembl_version}{Ensembl version. \code{NULL} uses the latest.}
 
-\item{biomart}{The name of the BioMart database that you want to connect to.
+\item{biomart}{BioMart database that you want to connect to.
 Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_mart"}, and \code{"plants_mart"}.}
 
 \item{mirror}{Specify an Ensembl mirror to connect to. The valid options here are \code{"www"}, \code{"uswest"}, \code{"useast"}, \code{"asia"}.}
@@ -54,7 +53,7 @@ A list with the following elements:
 }
 }
 \description{
-This function can convert different gene ID types within one species or between two species using the biomart service.
+Convert different gene ID types within one species or between two species using the biomart service.
 }
 \examples{
 res <- GeneConvert(

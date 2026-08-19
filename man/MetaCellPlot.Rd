@@ -36,44 +36,27 @@ MetaCellPlot(
 \arguments{
 \item{srt}{A \code{Seurat} object with metacell results from \code{RunMetaCell()}.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
 \item{show_cells}{Logical. If \code{TRUE}, the original single-cell points are
 drawn as a semi-transparent background layer behind the metacell centroids.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{color.by}{Metadata column in the metacell Seurat used to color
 centroids. If \code{NULL}, metacell centroids use one fixed color.}
 
-\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
+\item{dims}{Length-2 vector of dimensions to plot.}
 
-\item{label}{Whether to label the cell groups.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
-\item{palette}{Color palette name.
-Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.
-Default is \code{"Chinese"}.}
-
-\item{palcolor}{Custom colors used to create a color palette.
-Default is \code{NULL}.}
-
-\item{palette_metacell}{Color palette for the metacell centroid layer.
-Default is "Chinese".}
+\item{palette_metacell}{Color palette for the metacell centroid layer.}
 
 \item{palcolor_metacell}{Custom colors for the metacell centroid layer.}
 
-\item{pt.size}{The size of the points in the plot. Default is \code{NULL}, which
-automatically scales point diameter with the square root of the number of
-plotted cells while keeping a readable minimum size of \code{0.3}. Automatically
-sized raster plots use at least a two-pixel radius at the reference
-\code{raster.dpi = c(512, 512)}. Point sizes are scaled with \code{raster.dpi}, so their
-relative appearance remains stable when the raster resolution changes.
-Non-raster point sizes use fixed physical units; increase \code{pt.size}
-proportionally when exporting to an unusually large canvas.}
-
-\item{pt.alpha}{The transparency of the data points.
-Default is \code{1}.}
+\item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
+with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
+radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{cell.alpha}{Alpha value for the original single-cell background layer.}
 
@@ -92,24 +75,13 @@ for the original single-cell background layer.}
 \item{metacell_param}{A named list of extra arguments passed to \code{\link[=CellDimPlot]{CellDimPlot()}}
 for the metacell centroid/query layer.}
 
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{return_layer}{Logical. If \code{TRUE}, returns a named list of ggplot2
 layers/scales (\code{cells}, \code{fill_scale}, \code{centroids}, \code{scale_fill},
 \code{scale_size}, \code{labels}) instead of a complete plot.}
 
-\item{...}{Additional arguments passed to \code{\link[ggplot2:geom_point]{geom_point()}} for metacell
+\item{...}{Additional arguments passed to \code{\link[=geom_point]{geom_point()}} for metacell
 centroids.}
 }
 \value{

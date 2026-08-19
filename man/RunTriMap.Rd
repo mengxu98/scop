@@ -4,7 +4,7 @@
 \alias{RunTriMap}
 \alias{RunTriMap.Seurat}
 \alias{RunTriMap.default}
-\title{Run TriMap (Large-scale Dimensionality Reduction Using Triplets)}
+\title{Run TriMap}
 \usage{
 RunTriMap(object, ...)
 
@@ -52,71 +52,55 @@ RunTriMap(object, ...)
 )
 }
 \arguments{
-\item{object}{An object.
-This can be a Seurat object, a matrix-like object, a Neighbor object, or a Graph object.}
+\item{object}{A \code{Seurat} object, matrix-like object, \code{Neighbor}, or \code{Graph}.}
 
-\item{...}{Additional arguments to be passed to the trimap.TRIMAP function.}
+\item{...}{Passed to the trimap.TRIMAP function.}
 
-\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
+\item{reduction}{Linear reduction used as input.}
 
-\item{dims}{The dimensions to be used. Default is \code{NULL}.}
+\item{dims}{Dimensions to use. Supply only one of \code{dims}, \code{features},
+\code{neighbor}, or \code{graph}.}
 
-\item{features}{A character vector of features to use. Default is \code{NULL}.}
+\item{features}{Features used instead of a reduction.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Which layer to use.
-Default is \code{data}.}
+\item{layer}{Assay layer to use.}
 
-\item{n_components}{A number of TriMap components.
-Default is \code{2}.}
+\item{n_components}{A number of TriMap components.}
 
-\item{n_inliers}{A number of nearest neighbors for forming the nearest neighbor triplets.
-Default is \code{12}.}
+\item{n_inliers}{A number of nearest neighbors for forming the nearest neighbor triplets.}
 
-\item{n_outliers}{A number of outliers for forming the nearest neighbor triplets.
-Default is \code{4}.}
+\item{n_outliers}{A number of outliers for forming the nearest neighbor triplets.}
 
-\item{n_random}{A number of random triplets per point.
-Default is \code{3}.}
+\item{n_random}{A number of random triplets per point.}
 
-\item{distance_method}{A character string specifying the distance metric for TriMap.
-Options are: \code{"euclidean"}, \code{"manhattan"}, \code{"angular"}, \code{"cosine"}, \code{"hamming"}.
-Default is \code{"euclidean"}.}
+\item{distance_method}{Distance metric for TriMap.
+Options are: \code{"euclidean"}, \code{"manhattan"}, \code{"angular"}, \code{"cosine"}, \code{"hamming"}.}
 
-\item{lr}{The learning rate for TriMap.
-Default is \code{0.1}.}
+\item{lr}{The learning rate for TriMap.}
 
-\item{n_iters}{A number of iterations for TriMap.
-Default is \code{400}.}
+\item{n_iters}{A number of iterations for TriMap.}
 
-\item{apply_pca}{Whether to apply PCA before the nearest-neighbor calculation.
-Default is \code{TRUE}.}
+\item{apply_pca}{Whether to apply PCA before the nearest-neighbor calculation.}
 
-\item{opt_method}{A character string specifying the optimization method for TriMap.
-Options are: \code{"dbd"}, \code{"sd"}, \code{"momentum"}.
-Default is \code{"dbd"}.}
+\item{opt_method}{Optimization method for TriMap.
+Options are: \code{"dbd"}, \code{"sd"}, \code{"momentum"}.}
 
-\item{reduction.name}{A character string specifying the name of the reduction to be stored in the Seurat object.
-Default is \code{"trimap"}.}
+\item{reduction.name}{Name of the reduction to be stored in the Seurat object.}
 
-\item{reduction.key}{A character string specifying the prefix for the column names of the TriMap embeddings.
-Default is \code{"TriMap_"}.}
+\item{reduction.key}{Prefix for the column names of the TriMap embeddings.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed.use}{Random seed.}
 
 \item{backend}{TriMap backend. \code{"cpp"} uses a compiled triplet sampler
 and optimizer; \code{"python"} retains the official trimap package.}
 }
 \description{
-Run TriMap (Large-scale Dimensionality Reduction Using Triplets)
+Run TriMap
 }
 \examples{
 \dontrun{

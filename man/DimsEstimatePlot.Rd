@@ -23,19 +23,18 @@ DimsEstimatePlot(
 \arguments{
 \item{srt}{A \code{Seurat} object with a PCA-like reduction computed.}
 
-\item{max_pcs}{Maximum number of PCs to visualize. Default is \code{50}.}
+\item{max_pcs}{Maximum number of PCs to visualize.}
 
-\item{variance_thresholds}{Numeric vector of variance thresholds to mark.
-Default is \code{c(0.60, 0.70, 0.80, 0.90)}.}
+\item{variance_thresholds}{Numeric vector of variance thresholds to mark.}
 
 \item{reduction}{Reduction name to inspect. Default is \code{NULL}, which
 automatically selects a PCA-like reduction via \code{\link[=DefaultReduction]{DefaultReduction()}} with
 \code{pattern = "pca"}.}
 
 \item{palcolor}{Colors for the selected-PC line, curves, and bars,
-respectively. Default is \code{c("#D70440", "#0AA344", "#1772B4")}.}
+respectively.}
 
-\item{aspect.ratio}{Aspect ratio of the plot. Default is \code{NULL}.}
+\item{aspect.ratio}{Aspect ratio of the plot.}
 
 \item{title}{Plot title. When \code{NULL} (default),
 reports the selected number of PCs.}
@@ -43,14 +42,13 @@ reports the selected number of PCs.}
 \item{subtitle}{Plot subtitle. Default is
 \code{NULL}.}
 
-\item{xlab}{X-axis label. Default is \code{"Principal component"}.}
+\item{xlab}{X-axis label.}
 
-\item{theme_use}{Theme function used to style the plot.
-Default is \code{"theme_scop"}.}
+\item{theme_use}{Theme function used to style the plot.}
 
 \item{theme_args}{Other arguments passed to the \code{theme_use}.}
 
-\item{seed}{Random seed. Default is \code{11}.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

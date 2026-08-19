@@ -25,37 +25,29 @@ RunHarmony2(object, ...)
 \arguments{
 \item{object}{A Seurat object.}
 
-\item{...}{Additional arguments to be passed to \link[harmony:RunHarmony]{harmony::RunHarmony}.}
+\item{...}{Passed to \link[harmony:RunHarmony]{harmony::RunHarmony}.}
 
 \item{group.by.vars}{The batch variable name.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{reduction}{Which dimensionality reduction to use. Default is \code{"pca"}.}
+\item{reduction}{Linear reduction used as input.}
 
-\item{dims.use}{The dimensions to be used.
-Default is \code{1:30}.}
+\item{dims.use}{The dimensions to be used.}
 
-\item{project.dim}{Whether to project dimension reduction loadings.
-Default is \code{TRUE}.}
+\item{project.dim}{Whether to project dimension reduction loadings.}
 
-\item{reduction.name}{The name of the reduction to be stored in the Seurat object.
-Default is \code{"Harmony"}.}
+\item{reduction.name}{Reduction to be stored in the Seurat object.}
 
 \item{reduction.save}{Deprecated alias for \code{reduction.name}, retained for
 compatibility with \code{harmony::RunHarmony.Seurat}.}
 
-\item{reduction.key}{The prefix for the column names of the Harmony embeddings.
-Default is \code{"Harmony_"}.}
+\item{reduction.key}{The prefix for the column names of the Harmony embeddings.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed.use}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed.use}{Random seed.}
 }
 \description{
 This is a modified version of \link[harmony:RunHarmony]{harmony::RunHarmony} specifically designed for compatibility with \link{RunSymphonyMap}.

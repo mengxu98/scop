@@ -3,17 +3,14 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
-#' @param time_field A character string specifying the column name in `adata.obs` or `srt@meta.data` that contains the time information.
+#' @param time_field Column name in `adata.obs` or `srt@meta.data` that contains the time information.
 #' @param growth_iters A number of growth iterations to perform during the OT Model computation.
-#' Default is `3`.
-#' @param tmap_out A character string specifying the path to store the computed transport maps.
+#' @param tmap_out Path to store the computed transport maps.
 #' @param time_from The starting time point for trajectory and fate analysis.
 #' @param time_to The ending time point for trajectory and fate analysis.
 #' If not provided, only trajectory and fate analysis for the specified `time_from` will be performed.
 #' @param get_coupling Whether to compute and store the coupling matrix between the specified `time_from` and `time_to`.
-#' Default is `FALSE`.
 #' @param recalculate Whether to recalculate the transport maps even if they already exist at the specified `tmap_out` location.
-#' Default is `FALSE`.
 #'
 #' @export
 #'

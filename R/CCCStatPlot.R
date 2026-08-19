@@ -57,7 +57,6 @@
 #' @param subtitle Plot subtitle.
 #' @param font.size Base font size.
 #' @param grid_major Whether to show major panel grid lines for applicable statistical panels.
-#' Default is `TRUE`.
 #' @param grid_major_colour Color of major panel grid lines.
 #' @param grid_major_linetype Linetype of major panel grid lines.
 #' @param grid_major_linewidth Line width of major panel grid lines.

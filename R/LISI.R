@@ -21,17 +21,16 @@
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' Default is `"LISI"` when multiple reductions are provided, otherwise
 #' `paste0(prefix, "_LISI")`.
-#' @param perplexity Effective neighborhood size. Default is `30`.
+#' @param perplexity Effective neighborhood size.
 #' @param tol Tolerance used in the binary search for the target perplexity.
-#' Default is `1e-5`.
-#' @param max_iter Maximum number of binary-search iterations. Default is `50`.
+#' @param max_iter Maximum number of binary-search iterations.
 #' @param knn_algorithm Exact nearest-neighbor strategy passed to
-#' [thisutils::compute_lisi()]. Default is `"auto"`.
+#' [thisutils::compute_lisi()].
 #' @param cores Number of LISI C++ worker threads. `NULL` (the default) lets
 #' [thisutils::compute_lisi()] select the available hardware threads.
 #' @param max_dense_bytes Maximum estimated bytes allowed for LISI's dense
 #' input and C++ copy. Default is `Inf`, which preserves unrestricted behavior.
-#' @param overwrite Whether to overwrite existing metadata columns. Default is `TRUE`.
+#' @param overwrite Whether to overwrite existing metadata columns.
 #'
 #' @return A modified `Seurat` object.
 #' @export
@@ -269,13 +268,12 @@ RunLISI <- function(
 #' @param features Metadata columns containing LISI scores.
 #' Default is `NULL`, which will use columns stored in `tool_name`, or all
 #' metadata columns ending with `"_LISI"` when `tool_name` is `NULL`.
-#' @param tool_name Tool entry created by [RunLISI()]. Default is `NULL`.
+#' @param tool_name Tool entry created by [RunLISI()].
 #' @param reduction Dimensional reduction used for feature plots.
 #' If `NULL`, the reduction recorded in `tool_name` is used when available;
 #' otherwise [DefaultReduction()] is used.
-#' @param plot_boxplot Whether to add boxplots. Default is `TRUE`.
+#' @param plot_boxplot Whether to add boxplots.
 #' @param boxplot_jitter Whether to overlay jittered points on boxplots.
-#' Default is `FALSE`.
 #'
 #' @return
 #' If `combine = TRUE`, returns a combined `patchwork` plot.

@@ -8,7 +8,7 @@
 #' @inheritParams SCENICPlot
 #' @param srt A Seurat object from [RunSCENICPlus()].
 #' @param tool_name Tools slot. Default `"SCENICPlus"`.
-#' @param assay eRegulon AUC assay. Default `"scenicplus"`.
+#' @param assay ERegulon AUC assay. Default `"scenicplus"`.
 #' @param plot_type Plot type. Default `"heatmap_dotplot"`.
 #' @param ... Passed to [SCENICPlot()].
 #'

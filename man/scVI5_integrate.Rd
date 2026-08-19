@@ -36,76 +36,37 @@ scVI5_integrate(
 \arguments{
 \item{srt_merge}{A merged `Seurat` object that includes the batch information.}
 
-\item{batch}{A character string specifying the batch variable name.}
+\item{batch}{Batch variable name.}
 
-\item{append}{Whether the integrated data will be appended to the original Seurat object (\code{srt_merge}).
-Default is \code{TRUE}.}
+\item{append}{Append integrated results to \code{srt_merge}.}
 
 \item{srt_list}{A list of \code{Seurat} objects to be checked and preprocessed.}
 
-\item{assay}{Which assay to use.
-If \code{NULL}, the default assay of the Seurat object will be used.
-When the object also contains \code{ChromatinAssay}, the default assay and
-additional \code{ChromatinAssay} will be preprocessed sequentially.}
+\item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{do_normalization}{Whether data normalization should be performed.
-Default is \code{TRUE}.}
+\item{do_normalization}{Whether data normalization should be performed.}
 
 \item{normalization_method}{The normalization method to be used.
-Possible values are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, and \code{"scran"}.
-Default is \code{"LogNormalize"}.}
+Possible values are \code{"LogNormalize"}, \code{"SCT"}, \code{"TFIDF"}, and \code{"scran"}.}
 
-\item{do_HVF_finding}{Whether to perform high variable feature finding.
-If \code{TRUE}, the function will force to find the highly variable features (HVF) using the specified HVF method.}
+\item{do_HVF_finding, HVF_method, nHVF, HVF}{Highly variable features.
+\code{HVF_method} is \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.}
 
 \item{HVF_source}{The source of highly variable features.
-Possible values are \code{"global"} and \code{"separate"}.
-Default is \code{"separate"}.}
+Possible values are \code{"global"} and \code{"separate"}.}
 
-\item{HVF_method}{The method to use for finding highly variable features.
-Options are \code{"vst"}, \code{"mvp"}, \code{"disp"}, or \code{"scran"}.
-Default is \code{"vst"}.}
+\item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.}
 
-\item{nHVF}{The number of highly variable features to select.
-If NULL, all highly variable features will be used.
-Default is \code{2000}.}
+\item{scVI_dims_use}{Integrated dimensions used for downstream clustering and nonlinear reduction.}
 
-\item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.
-Default is \code{1}.}
+\item{nonlinear_reduction, nonlinear_reduction_dims, nonlinear_reduction_params, force_nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"},
+\code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
 
-\item{HVF}{A vector of feature names to use as highly variable features.
-If NULL, the function will use the highly variable features identified by the HVF method.}
+\item{neighbor_metric, neighbor_k}{Neighbor graph (\code{"euclidean"}, \code{"cosine"},
+\code{"manhattan"}, \code{"hamming"}).}
 
-\item{scVI_dims_use}{A vector specifying the integrated dimensions used for downstream clustering and nonlinear reduction.}
-
-\item{nonlinear_reduction}{The nonlinear dimensionality reduction method to use.
-Options are \code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"},
-\code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, or \code{"fr"}.
-Default is \code{"umap"}.}
-
-\item{nonlinear_reduction_dims}{The number of dimensions to keep after nonlinear dimensionality reduction.
-If a vector is provided, different numbers of dimensions can be specified for each method.
-Default is \code{2}.}
-
-\item{nonlinear_reduction_params}{A list of parameters to pass to the nonlinear dimensionality reduction method.}
-
-\item{force_nonlinear_reduction}{Whether to force nonlinear dimensionality reduction even if the specified reduction is already present in the Seurat object.
-Default is \code{TRUE}.}
-
-\item{neighbor_metric}{The distance metric to use for finding neighbors.
-Options are \code{"euclidean"}, \code{"cosine"}, \code{"manhattan"}, or \code{"hamming"}.
-Default is \code{"euclidean"}.}
-
-\item{neighbor_k}{The number of nearest neighbors to use for finding neighbors.
-Default is \code{20}.}
-
-\item{cluster_algorithm}{The clustering algorithm to use.
-Options are \code{"louvain"}, \code{"slm"}, or \code{"leiden"}.
-Default is \code{"louvain"}.}
-
-\item{cluster_resolution}{The resolution parameter to use for clustering.
-Larger values result in fewer clusters.
-Default is \code{0.6}.}
+\item{cluster_algorithm, cluster_resolution}{Clustering (\code{"louvain"}, \code{"slm"},
+\code{"leiden"}). Larger \code{cluster_resolution} yields fewer clusters.}
 
 \item{cores}{Number of DataLoader worker processes for \code{scVI} training.
 \code{NULL} (default) uses the PyTorch default (0, single-process).
@@ -116,8 +77,7 @@ Increase to speed up data loading on multi-core machines.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Random seed.}
 }
 \description{
 Seurat v5 scVI integration

@@ -48,14 +48,13 @@ VelocityPlot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
-\item{dims}{Dimensions to plot, must be a two-length numeric vector specifying x- and y-dimensions}
+\item{dims}{Length-2 vector of dimensions to plot.}
 
-\item{cells}{A character vector of cell names to use.}
+\item{cells}{Cell names to include.}
 
 \item{velocity}{Name of the velocity to use for plotting.
 Default is \code{"stochastic"}. If the corresponding velocity embedding
@@ -66,7 +65,7 @@ an AnnData (via \link{adata_to_srt}) contains.}
 \item{plot_type}{Type of plot to create.
 Can be \code{"raw"}, \code{"grid"}, or \code{"stream"}.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{group_palette}{Name of the palette to use for coloring the groups.
 Defaults is \code{"Chinese"}.}
@@ -131,44 +130,19 @@ Defaults is \code{"white"}.}
 \item{streamline_bg_stroke}{Stroke width of the streamlines background.
 Defaults is \code{0.5}.}
 
-\item{aspect.ratio}{Aspect ratio of the panel. Default is \code{1}.}
+\item{aspect.ratio}{Panel aspect ratio.}
 
 \item{title}{The text for the title.
 Defaults is \code{"Cell velocity"}.}
 
-\item{subtitle}{The text for the subtitle for the plot which will be displayed below the title.
-Default is \code{NULL}.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{xlab}{The x-axis label of the plot.
-Default is \code{NULL}.}
+\item{seed}{Random seed.}
 
-\item{ylab}{The y-axis label of the plot.
-Default is \code{NULL}.}
-
-\item{legend.position}{The position of legends,
-one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.
-Default is \code{"right"}.}
-
-\item{legend.direction}{The direction of the legend in the plot.
-Can be one of \code{"vertical"} or \code{"horizontal"}.}
-
-\item{theme_use}{Theme used. Can be a character string or a theme function.
-Default is \code{"theme_scop"}.}
-
-\item{theme_args}{Other arguments passed to the \code{theme_use}.
-Default is \code{list()}.}
-
-\item{return_layer}{Whether to return the plot layers as a list.
-Defaults is \code{FALSE}.}
-
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
-
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
-This function creates a velocity plot for a given Seurat object.
+Creates a velocity plot for a given Seurat object.
 The plot shows the velocity vectors of the cells in a specified reduction space.
 }
 \examples{

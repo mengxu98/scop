@@ -9,7 +9,6 @@
 #' @inheritParams thisutils::log_message
 #' @param species Latin names for animals, i.e., `"Homo_sapiens"`, `"Mus_musculus"`
 #' @param use_cached_gene Whether to use previously cached cell cycle gene conversion results for the species.
-#' Default is `TRUE`.
 #'
 #' @return A list of S-phase and G2M-phase genes.
 #'

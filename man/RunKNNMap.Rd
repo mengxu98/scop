@@ -38,7 +38,7 @@ If not provided, the default assay of the query object will be used.}
 \item{ref_assay}{The assay to use for the reference object.
 If not provided, the default assay of the reference object will be used.}
 
-\item{ref_umap}{A character string specifying the name of the UMAP reduction in the reference object.
+\item{ref_umap}{Name of the UMAP reduction in the reference object.
 If not provided, the first UMAP reduction found in the reference object will be used.}
 
 \item{ref_group}{The grouping variable in the reference object.
@@ -48,22 +48,21 @@ If not provided, all cells will be treated as one group.}
 \item{features}{A vector of feature names to include in the heatmap.
 If not provided, highly variable features (HVF) will be used.}
 
-\item{nfeatures}{The maximum number of features to include in the heatmap.
-Default is \code{2000}.}
+\item{nfeatures}{The maximum number of features to include in the heatmap.}
 
-\item{query_reduction}{A character string specifying the name of a dimensionality reduction in the query object to use for calculating the distance metric.}
+\item{query_reduction}{Name of a dimensionality reduction in the query object to use for calculating the distance metric.}
 
-\item{ref_reduction}{A character string specifying the name of a dimensionality reduction in the reference object to use for calculating the distance metric.}
+\item{ref_reduction}{Name of a dimensionality reduction in the reference object to use for calculating the distance metric.}
 
-\item{query_dims}{A numeric vector specifying the dimension indices from the query reduction to be used for calculating the distance metric.}
+\item{query_dims}{Dimension indices from the query reduction to be used for calculating the distance metric.}
 
-\item{ref_dims}{A numeric vector specifying the dimension indices from the reference reduction to be used for calculating the distance metric.}
+\item{ref_dims}{Dimension indices from the reference reduction to be used for calculating the distance metric.}
 
-\item{projection_method}{A character string specifying the projection method to use.
+\item{projection_method}{Projection method to use.
 Options are "model" and "knn". If "model" is selected, the function will try to use a pre-trained UMAP model in the reference object for projection.
 If "knn" is selected, the function will directly find the nearest neighbors using the distance metric.}
 
-\item{nn_method}{A character string specifying the nearest neighbor search method to use.
+\item{nn_method}{Nearest neighbor search method to use.
 Options are "raw", "annoy", and "rann".
 If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
 If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
@@ -81,7 +80,7 @@ Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "eja
 "dice", "edice", "hamman", "simple matching", and "faith".
 Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.}
 
-\item{vote_fun}{A character string specifying the function to be used for aggregating the nearest neighbors in the reference object.
+\item{vote_fun}{Function to be used for aggregating the nearest neighbors in the reference object.
 Options are "mean", "median", "sum", "min", "max", "sd", "var", etc.
 If not provided, the default is "mean".}
 
@@ -93,7 +92,7 @@ A Seurat object with the projection results stored in the "ref.embeddings" reduc
 If \code{ref_group} is provided, the function will also add a new metadata column called "predicted_ref_group" to the query object.
 }
 \description{
-This function performs single-cell reference mapping using the K-nearest neighbor (KNN) method.
+Performs single-cell reference mapping using the K-nearest neighbor (KNN) method.
 It takes two single-cell datasets as input: srt_query and srt_ref.
 The function maps cells from the srt_query dataset to the srt_ref dataset based on their similarity or distance.
 }

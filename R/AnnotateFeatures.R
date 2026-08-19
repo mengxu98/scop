@@ -8,20 +8,14 @@
 #' @param srt Seurat object to be annotated.
 #' @param IDtype Type of identifier to use for annotation.
 #' Options are `"symbol"`, `"ensembl_id"`, or `"entrez_id"`.
-#' Default is `"symbol"`.
 #' @param mirror URL of the mirror to use for Ensembl database.
-#' Default is `NULL`.
 #' @param gtf Path to the GTF file to be used for annotation.
-#' Default is `NULL`.
 #' @param merge_gtf_by Column name to merge the GTF file by.
-#' Default is `"gene_name"`.
 #' @param columns Vector of column names to be used from the GTF file.
 #' Default is `"seqname"`, `"feature"`, `"start"`, `"end"`,
 #' `"strand"`, `"gene_id"`, `"gene_name"`, `"gene_type"`.
 #' @param assays Character vector of assay names to be annotated.
-#' Default is `"RNA"`.
 #' @param overwrite Whether to overwrite existing metadata.
-#' Default is `FALSE`.
 #'
 #' @seealso
 #' [PrepareDB], [ListDB]

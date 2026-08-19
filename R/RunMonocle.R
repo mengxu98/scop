@@ -6,27 +6,19 @@
 #' @inheritParams GroupHeatmap
 #' @inheritParams CellDimPlot
 #' @param expressionFamily The distribution family to use for modeling gene expression.
-#' Default is `"negbinomial.size"`.
-#' @param features A character vector of features to use.
+#' @param features Features to use.
 #' Defaults to NULL, in which case features were determined by `feature_type`.
 #' @param feature_type The type of features to use in the analysis.
 #' Possible values are "HVF" for highly variable features or "Disp" for features selected based on dispersion.
-#' Default is `"HVF"`.
-#' @param disp_filter A string specifying the filter to use when `feature_type` is "Disp".
-#' Default is `"mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit"`.
+#' @param disp_filter Filter to use when `feature_type` is "Disp".
 #' @param max_components The maximum number of dimensions to use for dimensionality reduction.
-#' Default is `2`.
 #' @param reduction_method The dimensionality reduction method to use.
 #' Possible values are `"DDRTree"`, `"ICA"`, `"tSNE"`,
 #' `"SimplePPT"`, `"L1-graph"`, `"SGL-tree"`.
-#' Default is `"DDRTree"`.
 #' @param norm_method The normalization method to use.
 #' Possible values are `"log"` and `"none"`.
-#' Default is `"log"`.
 #' @param residualModelFormulaStr A model formula specifying the effects to subtract.
-#' Default is NULL.
 #' @param pseudo_expr Amount to increase expression values before dimensionality reduction.
-#' Default is 1.
 #' @param root_state The state to use as the root of the trajectory.
 #' If NULL, the R backend prompts for user input, and the C++ backend prompts
 #' in interactive sessions after initial ordering. In non-interactive C++ runs,
@@ -48,7 +40,6 @@
 #' trajectory topology and is intended for advanced exploratory use.
 #' @param ddrtree_tol Optional convergence tolerance passed to `DDRTree::DDRTree()`.
 #' @param show_plot Whether to print diagnostic plots during the run.
-#' Default is `FALSE`.
 #'
 #' @export
 #' @seealso
@@ -880,7 +871,7 @@ monocle2_cpp_resolve_root_state <- function(srt, root_state = NULL, group.by = N
 #' @inheritParams CellDimPlot
 #' @param clusters The cluster variable in the Seurat object to use for analysis.
 #' Defaults to NULL, in which case use Monocle clusters is used.
-#' @param graph The name of the graph slot in the Seurat object to use for analysis.
+#' @param graph Graph slot in the Seurat object to use for analysis.
 #' Defaults to NULL, in which case Monocle graph is used.
 #' @param partition_qval The q-value threshold for partitioning cells.
 #' Defaults to 0.05.
@@ -904,7 +895,6 @@ monocle2_cpp_resolve_root_state <- function(srt, root_state = NULL, group.by = N
 #' If not specified, user will be prompted for input.
 #' Defaults to NULL.
 #' @param show_plot Whether to print diagnostic plots during the run.
-#' Default is `FALSE`.
 #'
 #' @export
 #'

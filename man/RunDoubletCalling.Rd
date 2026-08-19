@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunCellQC.R
 \name{RunDoubletCalling}
 \alias{RunDoubletCalling}
-\title{Run doublet-calling for single cell RNA-seq data.}
+\title{Doublet calling}
 \usage{
 RunDoubletCalling(
   srt,
@@ -15,32 +15,27 @@ RunDoubletCalling(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{assay}{The name of the assay to be used for doublet-calling.
-Default is \code{"RNA"}.}
+\item{assay}{Assay used for doublet calling.}
 
-\item{db_rate}{The expected doublet rate.
-Default is calculated as \code{ncol(srt) / 1000 * 0.01}.}
+\item{db_rate}{Expected doublet rate.}
 
-\item{db_method}{Method used for doublet-calling.
-Can be one of \code{"scDblFinder"}, \code{"Scrublet"}, \code{"DoubletDetection"},
-\code{"scds_cxds"}, \code{"scds_bcds"}, \code{"scds_hybrid"}.}
+\item{db_method}{\code{"scDblFinder"}, \code{"Scrublet"}, \code{"DoubletDetection"},
+\code{"scds_cxds"}, \code{"scds_bcds"}, or \code{"scds_hybrid"}.}
 
-\item{data_type}{Optional precomputed result from \link{CheckDataType} for the
-input assay. Primarily used internally to avoid repeated scans of the same
-count matrix across nested QC calls.}
+\item{data_type}{Optional \link{CheckDataType} result, used internally to avoid
+rescanning the count matrix.}
 
-\item{...}{Additional arguments to be passed to the corresponding doublet-calling method.}
+\item{...}{Passed to the selected doublet method.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \value{
-Returns a Seurat object with the doublet prediction results and prediction scores stored in the meta.data.
+A \code{Seurat} object with doublet class and score columns in \code{meta.data}.
 }
 \description{
-Run doublet-calling for single cell RNA-seq data.
+Doublet calling
 }
 \examples{
 data(pancreas_sub)

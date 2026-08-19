@@ -37,43 +37,37 @@ If not provided, the similarities will be calculated within the query object.}
 \item{query_assay}{The assay to use for the query object.
 If not provided, the default assay of the query object will be used.}
 
-\item{ref_pca}{A character string specifying the name of the PCA reduction in the reference object to use for calculating the distance metric.}
+\item{ref_pca}{Name of the PCA reduction in the reference object to use for calculating the distance metric.}
 
 \item{ref_assay}{The assay to use for the reference object.
 If not provided, the default assay of the reference object will be used.}
 
-\item{ref_dims}{A numeric vector specifying the dimension indices from the reference reduction to be used for calculating the distance metric.}
+\item{ref_dims}{Dimension indices from the reference reduction to be used for calculating the distance metric.}
 
-\item{ref_umap}{A character string specifying the name of the UMAP reduction in the reference object.
+\item{ref_umap}{Name of the UMAP reduction in the reference object.
 If not provided, the first UMAP reduction found in the reference object will be used.}
 
 \item{ref_group}{The grouping variable in the reference object.
 This variable will be used to group cells in the heatmap columns.
 If not provided, all cells will be treated as one group.}
 
-\item{normalization.method}{The normalization method to use.
-Default is `"LogNormalize"`.}
+\item{normalization.method}{The normalization method to use.}
 
-\item{reduction_project_method}{Dimensional reduction to perform when finding anchors.
-Default is `"pcaproject"`.}
+\item{reduction_project_method}{Dimensional reduction to perform when finding anchors.}
 
-\item{k.anchor}{How many neighbors (k) to use when finding anchors.
-Default is `5`.}
+\item{k.anchor}{How many neighbors (k) to use when finding anchors.}
 
-\item{k.filter}{How many neighbors (k) to use when filtering anchors. Set to NA to turn off filtering.
-Default is `200`.}
+\item{k.filter}{How many neighbors (k) to use when filtering anchors. Set to NA to turn off filtering.}
 
-\item{k.score}{How many neighbors (k) to use when scoring anchors.
-Default is `30`.}
+\item{k.score}{How many neighbors (k) to use when scoring anchors.}
 
-\item{k.weight}{Number of neighbors to consider when weighting anchors.
-Default is `100`.}
+\item{k.weight}{Number of neighbors to consider when weighting anchors.}
 
-\item{projection_method}{A character string specifying the projection method to use.
+\item{projection_method}{Projection method to use.
 Options are "model" and "knn". If "model" is selected, the function will try to use a pre-trained UMAP model in the reference object for projection.
 If "knn" is selected, the function will directly find the nearest neighbors using the distance metric.}
 
-\item{nn_method}{A character string specifying the nearest neighbor search method to use.
+\item{nn_method}{Nearest neighbor search method to use.
 Options are "raw", "annoy", and "rann".
 If "raw" is selected, the function will use the brute-force method to find the nearest neighbors.
 If "annoy" is selected, the function will use the Annoy library for approximate nearest neighbor search.
@@ -91,7 +85,7 @@ Options include: "pearson", "spearman", "cosine", "correlation", "jaccard", "eja
 "dice", "edice", "hamman", "simple matching", and "faith".
 Additional distance metrics can also be used, such as "euclidean", "manhattan", "hamming", etc.}
 
-\item{vote_fun}{A character string specifying the function to be used for aggregating the nearest neighbors in the reference object.
+\item{vote_fun}{Function to be used for aggregating the nearest neighbors in the reference object.
 Options are "mean", "median", "sum", "min", "max", "sd", "var", etc.
 If not provided, the default is "mean".}
 

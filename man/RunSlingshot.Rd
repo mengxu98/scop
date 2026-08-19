@@ -22,44 +22,34 @@ RunSlingshot(
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{srt}{A \code{Seurat} object.}
 
-\item{group.by}{Name of one or more meta.data columns to group (color) cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{reduction}{Which dimensionality reduction to use.
-If not specified, will use the reduction returned by \link{DefaultReduction}.}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
 \item{dims}{The dimensions to use for the Slingshot algorithm.
 Default is \code{NULL}, which uses first two dimensions.}
 
-\item{start}{The starting group for the Slingshot algorithm.
-Default is \code{NULL}.}
+\item{start}{The starting group for the Slingshot algorithm.}
 
-\item{end}{The ending group for the Slingshot algorithm.
-Default is \code{NULL}.}
+\item{end}{The ending group for the Slingshot algorithm.}
 
-\item{prefix}{The prefix to add to the column names of the resulting pseudotime variable.
-Default is \code{NULL}.}
+\item{prefix}{The prefix to add to the column names of the resulting pseudotime variable.}
 
-\item{reverse}{Logical value indicating whether to reverse the pseudotime variable.
-Default is \code{FALSE}.}
+\item{reverse}{Whether to reverse the pseudotime variable.}
 
-\item{align_start}{Logical value indicating whether to align the starting pseudotime values at the maximum pseudotime.
-Default is \code{FALSE}.}
+\item{align_start}{Whether to align the starting pseudotime values at the maximum pseudotime.}
 
-\item{show_plot}{Logical value indicating whether to show the dimensionality plot.
-Default is \code{TRUE}.}
+\item{show_plot}{Whether to show the dimensionality plot.}
 
-\item{lineage_palette}{The color palette to use for the lineages in the plot.
-Default is \code{"Dark2"}.}
+\item{lineage_palette}{The color palette to use for the lineages in the plot.}
 
-\item{seed}{Random seed for reproducibility.
-Default is \code{11}.}
+\item{seed}{Random seed.}
 
-\item{...}{Additional arguments to be passed to the \link[slingshot:slingshot]{slingshot::slingshot} function.}
+\item{...}{Passed to the \link[slingshot:slingshot]{slingshot::slingshot} function.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{verbose}{Print progress messages.}
 }
 \description{
 RunSlingshot
