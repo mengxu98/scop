@@ -356,6 +356,39 @@ signaling is therefore rejected in spot mode. P-values from spatial
 permutation and non-spatial CellChat analyses also have different null models
 and should not be compared as if they were interchangeable.
 
+SpatialDM addresses a different question: which ligand-receptor pairs are
+spatially associated, and which spots contain local interaction evidence. It
+does not infer sender-receiver cell-type edges, so its Moran's R must not be
+reported as communication probability or transport mass. The official
+workflow is global selection followed by local spot selection. Use normalized
+or log-transformed expression for `layer`, raw counts for `counts.layer`, and
+set `l` or `eff_dist` in the raw coordinate unit of the selected image.
+
+```{r spatialdm, eval=FALSE}
+spatial <- RunSpatialDM(
+  spatial,
+  species = "human",
+  image = "slice1",
+  layer = "data",
+  counts.layer = "counts",
+  l = 1.2,
+  cutoff = 0.2,
+  global.threshold = 0.1,
+  local.threshold = 0.1
+)
+
+SpatialDMPlot(spatial, plot_type = "weights", spot = "spot_001")
+SpatialDMPlot(spatial, plot_type = "global", highlight = "SPP1_CD44")
+SpatialDMPlot(spatial, plot_type = "local", pair = "SPP1_CD44")
+GetSpatialDMResult(spatial, type = "global")
+```
+
+`SpatialDMPlot()` follows the information content of the official melanoma
+tutorial while returning SCOP `ggplot`/`patchwork` objects and using SCOP
+themes and palettes. The `weights` view should be checked before interpreting
+global or local results because `l`, `cutoff`, and coordinate scale determine
+the effective interaction range.
+
 ## What to Report
 
 A compact first-pass spatial report should include:

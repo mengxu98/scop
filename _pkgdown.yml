@@ -379,6 +379,7 @@ reference:
 - subtitle: "Cell-Cell Communication Analysis"
 - contents:
   - RunCCC
+  - GetSpatialDMResult
   - RunSecAct
   - RunSecActCCC
   - RunSecActSignalingPattern
@@ -390,6 +391,7 @@ reference:
   - RunLIANA
   - RunSpaTalk
   - RunCOMMOT
+  - RunSpatialDM
   - ListCCCDB
   - PrepareCCCDB
   - RunMDIC3
@@ -411,6 +413,7 @@ reference:
   - CCCStatPlot
   - SpaTalkPlot
   - COMMOTPlot
+  - SpatialDMPlot
 
 - subtitle: "Gene Regulatory Network Inference"
 - contents:
