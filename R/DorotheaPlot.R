@@ -111,6 +111,15 @@
 #'   top_n = 20
 #' )
 #'
+#' DorotheaPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   group1 = "Endocrine",
+#'   group2 = "Ductal",
+#'   plot_type = "volcano",
+#'   top_n = 20
+#' )
+#'
 #' ht <- DorotheaPlot(
 #'   pancreas_sub,
 #'   group.by = "CellType",
