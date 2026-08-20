@@ -26,12 +26,14 @@
 #' @param tool_name Name of the `srt@tools` entry created by [RunDorothea()].
 #' @param assay_name Assay used for `"heatmap"`, `"dim"`, and `"stat"`. If
 #' `NULL`, the assay stored by [RunDorothea()] is used, or `"dorothea"`.
-#' @param features TFs to plot. If `NULL`, comparison plots use the top
-#' `top_n` TFs, heatmaps and `"stat"` use the `top_n` most variable TFs,
-#' `"dim"` uses TFs present in both activity and expression assays, and
-#' `"targets"` uses the TF with the largest absolute activity difference.
-#' @param top_n Number of TFs to show when `features = NULL`. Set `NULL` to
-#' show all tested TFs.
+#' @param features TFs to plot. If `NULL`, `"bar"`/`"lollipop"` use the top
+#' `top_n` TFs, `"volcano"` shows all tested TFs, heatmaps and `"stat"` use
+#' the `top_n` most variable TFs, `"dim"` uses TFs present in both activity
+#' and expression assays, and `"targets"` uses the TF with the largest
+#' absolute activity difference.
+#' @param top_n Number of TFs to show when `features = NULL`. Ignored for
+#' `"volcano"`, which always plots every tested TF. Set `NULL` to show all
+#' tested TFs in other comparison plots.
 #' @param test.use Statistical test used for each TF or target gene in
 #' comparison plots.
 #' @param p.adjust.method Method passed to [stats::p.adjust].
@@ -61,7 +63,8 @@
 #' expression in `"dim"` and for target genes in `"targets"`.
 #' @param stat_plot_type Distribution plot type passed to [FeatureStatPlot()]
 #' when `plot_type = "stat"`.
-#' @param nlabel Number of target genes labeled in `"targets"` plots.
+#' @param nlabel Number of significant TFs labeled in `"volcano"` plots, or
+#' significant target genes labeled in `"targets"` plots.
 #' @param reduction Reduction used by `"dim"` plots. If `NULL`, the default
 #' reduction of `srt` is used.
 #' @param bar_width Width of bars in `"bar"` plots.
@@ -116,8 +119,7 @@
 #'   group.by = "CellType",
 #'   group1 = "Endocrine",
 #'   group2 = "Ductal",
-#'   plot_type = "volcano",
-#'   top_n = 20
+#'   plot_type = "volcano"
 #' )
 #'
 #' ht <- DorotheaPlot(
@@ -420,7 +422,7 @@ DorotheaPlot <- function(
     group1 = group1,
     group2 = group2,
     features = features,
-    top_n = top_n,
+    top_n = if (identical(plot_type, "volcano")) NULL else top_n,
     test.use = test.use,
     p.adjust.method = p.adjust.method,
     rank.by = rank.by,
@@ -486,6 +488,7 @@ DorotheaPlot <- function(
       palette = palette,
       palcolor = palcolor,
       point_size = point_size,
+      nlabel = nlabel,
       title = title,
       xlab = xlab,
       ylab = ylab,
@@ -808,12 +811,76 @@ dorothea_plot_lollipop <- function(
   p
 }
 
+dorothea_volcano_y <- function(stat_df) {
+  y <- as.numeric(stat_df$neglog10_p_val_adj)
+  y[!is.finite(y)] <- 0
+  finite <- y[is.finite(stat_df$p_val_adj) & stat_df$p_val_adj > 0]
+  if (length(finite) == 0L) {
+    cap <- max(y, na.rm = TRUE)
+    if (!is.finite(cap) || cap <= 0) {
+      cap <- 10
+    }
+    return(pmin(y, cap))
+  }
+  cap <- 10 * ceiling(max(finite) / 10)
+  if (!is.finite(cap) || cap <= 0) {
+    cap <- max(finite)
+  }
+  pmin(y, cap)
+}
+
+dorothea_volcano_direction <- function(stat_df, cutoff) {
+  direction <- rep("NS", nrow(stat_df))
+  sig <- is.finite(stat_df$p_val_adj) & stat_df$p_val_adj <= cutoff
+  direction[sig & is.finite(stat_df$logFC) & stat_df$logFC > 0] <- "Up"
+  direction[sig & is.finite(stat_df$logFC) & stat_df$logFC < 0] <- "Down"
+  factor(direction, levels = c("Down", "NS", "Up"))
+}
+
+dorothea_volcano_colors <- function(palette, palcolor) {
+  div <- unname(dorothea_diverging_colors(palette, palcolor))
+  if (length(div) < 2L) {
+    div <- c("#2166AC", "#B2182B")
+  }
+  c(Down = div[[1L]], NS = "grey75", Up = div[[length(div)]])
+}
+
+dorothea_volcano_label_df <- function(df, nlabel, y_col, sig) {
+  n_sig <- sum(sig, na.rm = TRUE)
+  nlabel <- min(as.integer(nlabel), n_sig, nrow(df))
+  if (!is.finite(nlabel) || nlabel <= 0L) {
+    return(df[integer(), , drop = FALSE])
+  }
+  rank_score <- abs(df$logFC) * df[[y_col]]
+  rank_score[!is.finite(rank_score) | !sig] <- -Inf
+  df[order(-rank_score), , drop = FALSE][seq_len(nlabel), , drop = FALSE]
+}
+
+dorothea_volcano_repel <- function(label_df, label_col) {
+  ggrepel::geom_text_repel(
+    data = label_df,
+    ggplot2::aes(
+      x = .data[["logFC"]],
+      y = .data[["y_plot"]],
+      label = .data[[label_col]]
+    ),
+    inherit.aes = FALSE,
+    min.segment.length = 0.2,
+    max.overlaps = Inf,
+    segment.colour = "grey40",
+    size = 3.2,
+    seed = 42,
+    show.legend = FALSE
+  )
+}
+
 dorothea_plot_volcano <- function(
   stat_df,
   padjustCutoff,
   palette,
   palcolor,
   point_size,
+  nlabel,
   title,
   xlab,
   ylab,
@@ -823,31 +890,22 @@ dorothea_plot_volcano <- function(
   legend.direction
 ) {
   cutoff <- padjustCutoff %||% 0.05
-  stat_df$significant <- ifelse(
-    is.finite(stat_df$p_val_adj) & stat_df$p_val_adj <= cutoff,
-    "FDR",
-    "NS"
+  stat_df$y_plot <- dorothea_volcano_y(stat_df)
+  stat_df$direction <- dorothea_volcano_direction(stat_df, cutoff)
+  cols <- dorothea_volcano_colors(palette, palcolor)
+  pt_size <- if (nrow(stat_df) >= 50L) min(point_size, 1.8) else point_size
+  label_df <- dorothea_volcano_label_df(
+    df = stat_df,
+    nlabel = nlabel,
+    y_col = "y_plot",
+    sig = stat_df$direction != "NS"
   )
-  cols <- palette_colors(
-    c("NS", "FDR"),
-    palette = palette,
-    palcolor = palcolor
-  )
-  if (is.null(names(cols)) || !all(c("NS", "FDR") %in% names(cols))) {
-    cols <- unname(cols)[seq_len(min(2L, length(cols)))]
-    if (length(cols) < 2L) {
-      cols <- rep(cols, length.out = 2L)
-    }
-    names(cols) <- c("NS", "FDR")
-  } else {
-    cols <- cols[c("NS", "FDR")]
-  }
-  ggplot2::ggplot(
+  p <- ggplot2::ggplot(
     stat_df,
     ggplot2::aes(
       x = .data[["logFC"]],
-      y = .data[["neglog10_p_val_adj"]],
-      color = .data[["significant"]]
+      y = .data[["y_plot"]],
+      color = .data[["direction"]]
     )
   ) +
     ggplot2::geom_vline(xintercept = 0, color = "grey75", linewidth = 0.35) +
@@ -857,8 +915,12 @@ dorothea_plot_volcano <- function(
       linewidth = 0.35,
       linetype = 2
     ) +
-    ggplot2::geom_point(size = point_size, alpha = 0.85) +
-    ggplot2::scale_color_manual(values = cols, drop = FALSE) +
+    ggplot2::geom_point(size = pt_size, alpha = 0.8) +
+    ggplot2::scale_color_manual(
+      values = cols,
+      breaks = names(cols),
+      drop = FALSE
+    ) +
     ggplot2::labs(
       title = title,
       x = xlab %||% paste0(unique(stat_df$group1), " - ", unique(stat_df$group2)),
@@ -871,6 +933,10 @@ dorothea_plot_volcano <- function(
       legend.position = legend.position,
       legend.direction = legend.direction
     )
+  if (nrow(label_df) > 0L) {
+    p <- p + dorothea_volcano_repel(label_df, "TF")
+  }
+  p
 }
 
 dorothea_plot_heatmap <- function(
@@ -1380,18 +1446,18 @@ dorothea_plot_targets <- function(
     cols <- cols[support_levels]
   }
   theme_use <- apply_plot_theme(theme_use, theme_args)
-  label_n <- min(nlabel, nrow(plot_df))
-  label_df <- plot_df[integer(), , drop = FALSE]
-  if (label_n > 0L) {
-    rank_score <- abs(plot_df$logFC) * plot_df$neglog10_p_val_adj
-    rank_score[!is.finite(rank_score)] <- 0
-    label_df <- plot_df[order(-rank_score), , drop = FALSE][seq_len(label_n), , drop = FALSE]
-  }
+  plot_df$y_plot <- dorothea_volcano_y(plot_df)
+  label_df <- dorothea_volcano_label_df(
+    df = plot_df,
+    nlabel = nlabel,
+    y_col = "y_plot",
+    sig = plot_df$support != "NS"
+  )
   p <- ggplot2::ggplot(
     plot_df,
     ggplot2::aes(
       x = .data[["logFC"]],
-      y = .data[["neglog10_p_val_adj"]],
+      y = .data[["y_plot"]],
       color = .data[["support"]],
       size = abs(.data[["mor"]])
     )
@@ -1422,16 +1488,7 @@ dorothea_plot_targets <- function(
       legend.direction = legend.direction
     )
   if (nrow(label_df) > 0L) {
-    p <- p +
-      ggrepel::geom_text_repel(
-        data = label_df,
-        ggplot2::aes(label = .data[["target_expr"]]),
-        min.segment.length = 0,
-        max.overlaps = 100,
-        segment.colour = "grey40",
-        size = 3.2,
-        show.legend = FALSE
-      )
+    p <- p + dorothea_volcano_repel(label_df, "target_expr")
   }
   list(plot = p, data = plot_df)
 }

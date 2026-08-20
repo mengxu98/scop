@@ -387,6 +387,41 @@ local({
     expect_s3_class(p_volcano, "ggplot")
   })
 
+  test_that("DorotheaPlot volcano plots all TFs and caps underflow p-values", {
+    srt <- make_dorothea_srt()
+    out <- DorotheaPlot(
+      srt,
+      group.by = "CellType",
+      group1 = "A",
+      group2 = "B",
+      plot_type = "volcano",
+      top_n = 1,
+      nlabel = 0,
+      return_data = TRUE,
+      verbose = FALSE
+    )
+    expect_equal(sort(as.character(out$data$TF)), c("TF1", "TF2"))
+    expect_equal(nrow(ggplot2::layer_data(out$plot, 3)), 2L)
+    capped <- dorothea_volcano_y(data.frame(
+      p_val_adj = c(0, 1e-42, 0.2),
+      neglog10_p_val_adj = c(307, 42, 0.7)
+    ))
+    expect_equal(capped, c(50, 42, 0.7))
+    labeled <- DorotheaPlot(
+      srt,
+      group.by = "CellType",
+      group1 = "A",
+      group2 = "B",
+      plot_type = "volcano",
+      padjustCutoff = 1,
+      nlabel = 1,
+      verbose = FALSE
+    )
+    geoms <- vapply(labeled$layers, function(layer) class(layer$geom)[[1L]], character(1))
+    expect_true("GeomTextRepel" %in% geoms)
+    expect_equal(nrow(labeled$layers[[match("GeomTextRepel", geoms)]]$data), 1L)
+  })
+
   test_that("DorotheaPlot heatmap uses GroupHeatmap on the dorothea assay", {
     srt <- make_dorothea_srt()
     ht <- DorotheaPlot(
@@ -431,6 +466,12 @@ local({
     expect_true(inherits(p_dim, "ggplot") || inherits(p_dim, "patchwork"))
     expect_true(inherits(p_stat, "ggplot") || inherits(p_stat, "patchwork"))
     expect_s3_class(p_targets, "ggplot")
+    geoms <- vapply(p_targets$layers, function(layer) class(layer$geom)[[1L]], character(1))
+    if ("GeomTextRepel" %in% geoms) {
+      expect_true(all(
+        p_targets$layers[[match("GeomTextRepel", geoms)]]$data$support != "NS"
+      ))
+    }
   })
 
   test_that("DorotheaPlot targets uses unsigned labels for unsigned networks", {
