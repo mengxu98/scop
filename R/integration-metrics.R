@@ -255,7 +255,34 @@ integration_summary_wide <- function(metrics_df, overall_df, runs_df = NULL) {
     out[[metric]] <- vapply(out$method, pick, numeric(1), metric = metric)
   }
   if (!is.null(runs_df) && nrow(runs_df) > 0L) {
-    out <- merge(out, runs_df, by = "method", all.x = TRUE, sort = FALSE)
+    run_keep <- intersect(
+      c("method", "status", "runtime_s", "latent", "umap"),
+      colnames(runs_df)
+    )
+    out <- merge(
+      out,
+      runs_df[, run_keep, drop = FALSE],
+      by = "method",
+      all.x = TRUE,
+      sort = FALSE
+    )
   }
-  out[match(methods, out$method), , drop = FALSE]
+  preferred <- c(
+    "method",
+    "status",
+    "overall",
+    "bio",
+    "batch",
+    "iLISI",
+    "cLISI",
+    "celltype_ASW",
+    "batch_ASW_mixing",
+    "celltype_graph_connectivity",
+    "celltype_ARI",
+    "celltype_NMI",
+    "runtime_s"
+  )
+  keep <- intersect(preferred, colnames(out))
+  extra <- setdiff(colnames(out), keep)
+  out[match(methods, out$method), c(keep, extra), drop = FALSE]
 }
