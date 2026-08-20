@@ -2,7 +2,7 @@
 % Please edit documentation in R/RunDorothea.R
 \name{RunDorothea}
 \alias{RunDorothea}
-\title{Run DoRothEA transcription factor activity inference}
+\title{Run transcription factor activity inference}
 \usage{
 RunDorothea(
   srt,
@@ -31,10 +31,10 @@ RunDorothea(
 
 \item{layer}{Assay layer used as the expression matrix.}
 
-\item{species}{Species used to select bundled DoRothEA regulons. DoRothEA
-only provides human and mouse regulons. For other input species, set
-\code{input_species} and project expression values to this regulon species through
-homologous gene conversion before activity inference.}
+\item{species}{Species used to select the regulatory network. The bundled
+DoRothEA and CollecTRI networks support human and mouse. For other input
+species, set \code{input_species} and project expression values to this network
+species through homologous gene conversion before activity inference.}
 
 \item{input_species}{Species of the input expression features. If \code{NULL},
 the input is assumed to use the same gene namespace as \code{species}. When this
@@ -49,11 +49,16 @@ regulons, \code{geneID_to_IDtype} should normally remain \code{"symbol"}.}
 when \code{input_species} differs from \code{species}, such as \code{Ensembl_version},
 \code{biomart}, \code{mirror}, \code{max_tries}, \code{multi_mapping}, and \code{collapse_fun}.}
 
-\item{confidence}{DoRothEA confidence levels to keep.}
+\item{confidence}{DoRothEA confidence levels to keep when a \code{confidence}
+column is present.}
 
-\item{regulons}{Optional regulon table with \code{tf}, \code{target}, \code{mor}, and
-\code{confidence} columns. If \code{NULL}, bundled \code{dorothea_hs} or \code{dorothea_mm}
-data are loaded from the \code{dorothea} package.}
+\item{regulons}{Regulon source. \code{NULL} or \code{"dorothea"} loads the bundled
+DoRothEA network, \code{"collectri"} loads CollecTRI, and a data-frame-like
+object supplies a custom network. Custom networks may use \code{tf}, \code{TF},
+\code{source}, or \code{regulator} for the regulator column, \code{target} for targets,
+and \code{mor}, \code{importance}, or \code{weight} for edge weights. \code{mor} is treated as
+signed regulation; \code{importance} and \code{weight} are treated as non-negative
+unsigned weights.}
 
 \item{method}{Activity inference backend from \code{decoupleR}.}
 
@@ -72,14 +77,23 @@ with the \code{assay_name} prefix for direct plotting with \code{\link[=FeatureD
 \item{verbose}{Print progress messages.}
 }
 \value{
-A \code{Seurat} object with DoRothEA results stored in
+A \code{Seurat} object with TF activity results stored in
 \code{srt@tools[["Dorothea"]]}, optionally TF activity scores stored in
 \code{srt@meta.data}, and optionally a TF activity assay when
-\code{new_assay = TRUE}. For cross-species runs, the homolog projection summary
+\code{new_assay = TRUE}. The normalized network is stored in
+\code{srt@tools[["Dorothea"]]$regulons}, with the source and signedness recorded
+in \code{network_info}. For cross-species runs, the homolog projection summary
 is stored in \code{srt@tools[["Dorothea"]]$homolog_conversion}.
 }
 \description{
-Run DoRothEA transcription factor activity inference
+Run transcription factor activity inference
+}
+\details{
+\code{RunGRN()} returns a \code{TF}, \code{target}, and \code{importance} table that can be
+supplied directly through \code{regulons}. Such a network is unsigned: its
+scores describe target-program activity and do not distinguish activation
+from repression. For signed TF activity, supply a network with a \code{mor}
+column instead.
 }
 \examples{
 data(pancreas_sub)
@@ -147,6 +161,35 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "targets"
 )
+
+# A RunGRN-compatible unsigned network can be passed directly.
+grn_targets <- head(rownames(pancreas_sub), 5)
+grn_edges <- data.frame(
+  TF = rep("ExampleTF", length(grn_targets)),
+  target = grn_targets,
+  importance = seq_along(grn_targets) / length(grn_targets)
+)
+pancreas_sub <- RunDorothea(
+  pancreas_sub,
+  regulons = grn_edges,
+  species = "Mus_musculus",
+  minsize = 1,
+  new_assay = FALSE,
+  add_meta = FALSE,
+  verbose = FALSE
+)
+pancreas_sub@tools$Dorothea$network_info
+# A real RunGRN result can be connected in the same way:
+# grn <- RunGRN(pancreas_sub, grn_method = "genie3")
+# pancreas_sub <- RunDorothea(pancreas_sub, regulons = grn)
+\dontrun{
+pancreas_sub <- RunDorothea(
+  pancreas_sub,
+  regulons = "collectri",
+  species = "Mus_musculus",
+  minsize = 5
+)
+}
 }
 \references{
 Garcia-Alonso, L., Holland, C.H., Ibrahim, M.M., Turei, D.,

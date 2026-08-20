@@ -2,7 +2,7 @@
 % Please edit documentation in R/DorotheaPlot.R
 \name{DorotheaPlot}
 \alias{DorotheaPlot}
-\title{Plot DoRothEA transcription factor activity}
+\title{Plot transcription factor activity}
 \usage{
 DorotheaPlot(
   srt,
@@ -75,13 +75,15 @@ distributions, and \code{"targets"} shows a regulon-target volcano.}
 \item{assay_name}{Assay used for \code{"heatmap"}, \code{"dim"}, and \code{"stat"}. If
 \code{NULL}, the assay stored by \code{\link[=RunDorothea]{RunDorothea()}} is used, or \code{"dorothea"}.}
 
-\item{features}{TFs to plot. If \code{NULL}, comparison plots use the top
-\code{top_n} TFs, heatmaps and \code{"stat"} use the \code{top_n} most variable TFs,
-\code{"dim"} uses TFs present in both activity and expression assays, and
-\code{"targets"} uses the TF with the largest absolute activity difference.}
+\item{features}{TFs to plot. If \code{NULL}, \code{"bar"}/\code{"lollipop"} use the top
+\code{top_n} TFs, \code{"volcano"} shows all tested TFs, heatmaps and \code{"stat"} use
+the \code{top_n} most variable TFs, \code{"dim"} uses TFs present in both activity
+and expression assays, and \code{"targets"} uses the TF with the largest
+absolute activity difference.}
 
-\item{top_n}{Number of TFs to show when \code{features = NULL}. Set \code{NULL} to
-show all tested TFs.}
+\item{top_n}{Number of TFs to show when \code{features = NULL}. Ignored for
+\code{"volcano"}, which always plots every tested TF. Set \code{NULL} to show all
+tested TFs in other comparison plots.}
 
 \item{test.use}{Statistical test used for each TF or target gene in
 comparison plots.}
@@ -129,7 +131,8 @@ expression in \code{"dim"} and for target genes in \code{"targets"}.}
 \item{stat_plot_type}{Distribution plot type passed to \code{\link[=FeatureStatPlot]{FeatureStatPlot()}}
 when \code{plot_type = "stat"}.}
 
-\item{nlabel}{Number of target genes labeled in \code{"targets"} plots.}
+\item{nlabel}{Number of significant TFs labeled in \code{"volcano"} plots, or
+significant target genes labeled in \code{"targets"} plots.}
 
 \item{reduction}{Reduction used by \code{"dim"} plots. If \code{NULL}, the default
 reduction of \code{srt} is used.}
@@ -162,7 +165,7 @@ For \code{"bar"}, \code{"lollipop"}, \code{"volcano"}, \code{"dim"}, \code{"stat
 \code{\link[=GroupHeatmap]{GroupHeatmap()}}.
 }
 \description{
-Visualize DoRothEA TF activity stored by \code{\link[=RunDorothea]{RunDorothea()}}. Comparison plots
+Visualize TF activity stored by \code{\link[=RunDorothea]{RunDorothea()}}. Comparison plots
 (\code{"bar"}, \code{"lollipop"}, \code{"volcano"}) test two groups and show the mean
 activity difference \code{group1 - group2}. \code{"heatmap"} uses \code{\link[=GroupHeatmap]{GroupHeatmap()}}
 to summarize activity across all groups in \code{group.by}. \code{"dim"} compares TF
@@ -197,6 +200,14 @@ DorotheaPlot(
   group2 = "Ductal",
   plot_type = "lollipop",
   top_n = 20
+)
+
+DorotheaPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  group1 = "Endocrine",
+  group2 = "Ductal",
+  plot_type = "volcano"
 )
 
 ht <- DorotheaPlot(
