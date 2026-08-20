@@ -264,5 +264,7 @@ for (nr in nonlinear_reductions) {
 \link{Coralysis_integrate},
 \link{LIGER_integrate},
 \link{Conos_integrate},
-\link{ComBat_integrate}
+\link{ComBat_integrate},
+\link{RunIntegrationBenchmark},
+\link{IntegrationBenchmarkPlot}
 }

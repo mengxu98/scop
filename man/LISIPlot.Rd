@@ -42,7 +42,7 @@ otherwise \code{\link[=DefaultReduction]{DefaultReduction()}} is used.}
 
 \item{boxplot_jitter}{Whether to overlay jittered points on boxplots.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
@@ -68,5 +68,5 @@ Visualize LISI scores on a dimensional reduction and compare methods with a
 summary boxplot.
 }
 \seealso{
-\link{RunLISI}, \link{FeatureDimPlot}
+\link{RunLISI}, \link{FeatureDimPlot}, \link{IntegrationBenchmarkPlot}
 }

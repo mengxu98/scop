@@ -98,5 +98,5 @@ LISIPlot(
 )
 }
 \seealso{
-\link[thisutils:compute_lisi]{thisutils::compute_lisi}, \link{LISIPlot}
+\link[thisutils:compute_lisi]{thisutils::compute_lisi}, \link{LISIPlot}, \link{RunIntegrationBenchmark}
 }
