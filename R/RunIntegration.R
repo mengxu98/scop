@@ -42,7 +42,9 @@
 #' [Coralysis_integrate],
 #' [LIGER_integrate],
 #' [Conos_integrate],
-#' [ComBat_integrate]
+#' [ComBat_integrate],
+#' [RunIntegrationBenchmark],
+#' [IntegrationBenchmarkPlot]
 #'
 #' @export
 #' @examples
@@ -874,10 +876,13 @@ collect_integration_metrics <- function(
       labels = srt[[celltype_col, drop = TRUE]],
       maximize = TRUE
     )
-    summary_list[["celltype_graph_connectivity"]] <- metric_graph_connectivity(
-      embeddings = emb,
-      labels = srt[[celltype_col, drop = TRUE]],
-      k = k_graph
+    summary_list[["celltype_graph_connectivity"]] <- tryCatch(
+      metric_graph_connectivity(
+        embeddings = emb,
+        labels = srt[[celltype_col, drop = TRUE]],
+        k = k_graph
+      ),
+      error = function(e) NA_real_
     )
   }
   if (
@@ -918,11 +923,25 @@ collect_integration_metrics <- function(
       }
     }
   }
-  data.frame(
-    metric = names(summary_list),
-    value = unlist(summary_list),
-    stringsAsFactors = FALSE,
-    row.names = NULL
+  if (length(summary_list) == 0L) {
+    raw_df <- data.frame(
+      metric = character(),
+      value = numeric(),
+      stringsAsFactors = FALSE
+    )
+  } else {
+    raw_df <- data.frame(
+      metric = names(summary_list),
+      value = unlist(summary_list, use.names = FALSE),
+      stringsAsFactors = FALSE,
+      row.names = NULL
+    )
+  }
+  format_integration_metrics(
+    raw_df = raw_df,
+    srt = srt,
+    batch_col = batch_col,
+    celltype_col = celltype_col
   )
 }
 
@@ -1220,16 +1239,26 @@ graph_conn_edges_from_index <- function(
 }
 
 graph_conn_edges_r <- function(embeddings, k) {
-  check_r("BiocNeighbors", verbose = FALSE)
-
-  knn <- BiocNeighbors::findKNN(
-    embeddings,
-    k = k,
-    BNPARAM = BiocNeighbors::KmknnParam(distance = "Euclidean"),
-    num.threads = 1L
-  )
+  if (requireNamespace("BiocNeighbors", quietly = TRUE)) {
+    knn <- BiocNeighbors::findKNN(
+      embeddings,
+      k = k,
+      BNPARAM = BiocNeighbors::KmknnParam(distance = "Euclidean"),
+      num.threads = 1L
+    )
+    return(graph_conn_edges_from_index(
+      index = knn$index,
+      k = k,
+      remove_self = FALSE
+    ))
+  }
+  d <- as.matrix(stats::dist(embeddings))
+  diag(d) <- Inf
+  index <- t(apply(d, 1L, function(row) {
+    as.integer(order(row)[seq_len(k)])
+  }))
   graph_conn_edges_from_index(
-    index = knn$index,
+    index = index,
     k = k,
     remove_self = FALSE
   )
@@ -1252,7 +1281,13 @@ graph_conn_score <- function(edges, labels) {
   })
   mean(unlist(per_label), na.rm = TRUE)
 }
-metric_silhouette <- function(embeddings, labels, maximize = TRUE) {
+metric_silhouette <- function(
+  embeddings,
+  labels,
+  maximize = TRUE,
+  n_max = 800L,
+  seed = 11
+) {
   check_r("cluster", verbose = FALSE)
   labels <- as.factor(labels)
   keep <- !is.na(labels)
@@ -1260,6 +1295,24 @@ metric_silhouette <- function(embeddings, labels, maximize = TRUE) {
   labels <- droplevels(labels[keep])
   if (nrow(embeddings) < 3 || nlevels(labels) < 2) {
     return(NA_real_)
+  }
+  n_max <- as.integer(n_max)
+  if (is.finite(n_max) && n_max >= 10L && nrow(embeddings) > n_max) {
+    set.seed(seed)
+    grouped <- split(seq_len(nrow(embeddings)), labels)
+    idx <- unlist(lapply(grouped, function(cells) {
+      take <- max(2L, as.integer(round(n_max * length(cells) / nrow(embeddings))))
+      take <- min(length(cells), take)
+      sample(cells, take)
+    }), use.names = FALSE)
+    if (length(idx) > n_max) {
+      idx <- sample(idx, n_max)
+    }
+    embeddings <- embeddings[idx, , drop = FALSE]
+    labels <- droplevels(labels[idx])
+    if (nrow(embeddings) < 3 || nlevels(labels) < 2) {
+      return(NA_real_)
+    }
   }
   sil <- cluster::silhouette(
     x = as.integer(labels),

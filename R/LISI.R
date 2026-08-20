@@ -36,7 +36,7 @@
 #' @export
 #'
 #' @seealso
-#' [thisutils::compute_lisi], [LISIPlot]
+#' [thisutils::compute_lisi], [LISIPlot], [RunIntegrationBenchmark]
 #'
 #' @examples
 #' data(panc8_sub)
@@ -282,7 +282,7 @@ RunLISI <- function(
 #' @export
 #'
 #' @seealso
-#' [RunLISI], [FeatureDimPlot]
+#' [RunLISI], [FeatureDimPlot], [IntegrationBenchmarkPlot]
 LISIPlot <- function(
   srt,
   features = NULL,
