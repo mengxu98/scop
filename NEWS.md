@@ -26,6 +26,7 @@
 * **removed**:
   * The `CaSpER` branch of `RunCNV()` is removed: `runCaSpER()` segfaults deterministically on R >= 4.5 (HMM `manualSegment`, even on 50 cells), upstream is unmaintained since 2019, and its Bioconductor dependency set is archived. `RunCNV()` now supports `copykat`, `fastCNV`, `scevan`, `infercnv`, and `numbat`.
 * **changed**:
+  * `RunCell2fate()` examples call `RunStandardWorkflow()` and plot time, uncertainty, module activation, and module state. `env_requirements()` also shows the standalone Cell2fate Python 3.9 stack.
   * `ListLIANAResources()` is replaced by `ListCCCDB()`, which enumerates ligand-receptor databases and prior models across all CCC backends with a unified `db`/`species`/`status` schema.
   * New `PrepareCCCDB()` prepares the CellTalk and CellChat databases (`TERM2GENE`/`TERM2NAME`, `R.cache`-backed); the CellTalk/CellChat branches were removed from `PrepareDB()`.
   * Database listing outputs are unified (`ListDB()` and `ListCCCDB()` return plain data frames; colored console rendering is available via `thisplot::print_colored_table()`).
