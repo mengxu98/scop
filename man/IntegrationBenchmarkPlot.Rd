@@ -5,8 +5,9 @@
 \title{Plot integration benchmark results}
 \usage{
 IntegrationBenchmarkPlot(
-  result,
-  plot_type = c("auto", "overview", "heatmap", "scatter", "umap", "lisi"),
+  srt,
+  plot_type = c("auto", "box", "heatmap", "scatter", "umap"),
+  tool_name = "IntegrationBenchmark",
   metrics = NULL,
   palette = "Chinese",
   palcolor = NULL,
@@ -14,6 +15,7 @@ IntegrationBenchmarkPlot(
   theme_args = list(),
   pt.size = NULL,
   pt.alpha = 1,
+  boxplot_jitter = FALSE,
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
@@ -22,10 +24,12 @@ IntegrationBenchmarkPlot(
 )
 }
 \arguments{
-\item{result}{An \code{integration_benchmark_result} from
-\code{\link[=RunIntegrationBenchmark]{RunIntegrationBenchmark()}}.}
+\item{srt}{A \code{Seurat} object from \code{\link[=RunIntegrationBenchmark]{RunIntegrationBenchmark()}}. \code{"box"} can
+also plot any metadata columns ending in \code{"_LISI"}.}
 
 \item{plot_type}{Plot type, or \code{"auto"} for a named list of all views.}
+
+\item{tool_name}{\code{srt@tools} entry created by \code{\link[=RunIntegrationBenchmark]{RunIntegrationBenchmark()}}.}
 
 \item{metrics}{Optional metric names used in the heatmap.}
 
@@ -37,6 +41,8 @@ IntegrationBenchmarkPlot(
 with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
 radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
+\item{boxplot_jitter}{Whether to overlay jittered points on the LISI boxes.}
+
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
@@ -47,49 +53,60 @@ A ggplot, patchwork, or a named list of plots when
 \code{plot_type = "auto"}.
 }
 \description{
-Visualize an \code{\link[=RunIntegrationBenchmark]{RunIntegrationBenchmark()}} result. \code{"overview"} shows scIB-style
-bio / batch / overall scores, \code{"heatmap"} shows scaled metrics, \code{"scatter"}
-plots the bio-vs-batch trade-off, \code{"umap"} draws batch and cell-type
-embeddings, and \code{"lisi"} maps iLISI/cLISI on UMAP. \code{"auto"} returns all of
-these plots.
+Visualize a \code{Seurat} object returned by \code{\link[=RunIntegrationBenchmark]{RunIntegrationBenchmark()}}.
+\code{"box"} compares per-cell LISI scores across methods, \code{"heatmap"} shows
+scaled summary metrics, \code{"scatter"} plots the bio-vs-batch trade-off, and
+\code{"umap"} draws batch and cell-type embeddings. \code{"auto"} returns all of these
+plots.
 }
 \examples{
-metrics <- data.frame(
-  method = rep(c("Uncorrected", "Harmony"), each = 2),
-  metric = rep(c("iLISI", "cLISI"), 2),
-  category = rep(c("batch", "bio"), 2),
-  value = c(1.2, 1.1, 2.4, 1.2),
-  scaled = c(0.1, 0.9, 0.7, 0.85),
-  direction = "higher",
-  stringsAsFactors = FALSE
+srt <- SeuratObject::CreateSeuratObject(
+  counts = Matrix::Matrix(
+    matrix(1:20, nrow = 2, dimnames = list(c("g1", "g2"), paste0("c", 1:10))),
+    sparse = TRUE
+  )
 )
-fake <- structure(
-  list(
-    summary = data.frame(
-      method = c("Uncorrected", "Harmony"),
-      bio = c(0.80, 0.82),
-      batch = c(0.20, 0.70),
-      overall = c(0.56, 0.77),
-      status = "success",
-      stringsAsFactors = FALSE
-    ),
-    metrics = metrics,
-    runs = data.frame(
-      method = c("Uncorrected", "Harmony"),
-      status = "success",
-      umap = NA_character_,
-      stringsAsFactors = FALSE
-    ),
-    srt = NULL,
-    batch = "tech",
-    celltype = "celltype"
+set.seed(1)
+srt$Uncorrected_tech_LISI <- stats::runif(10, 1.0, 1.4)
+srt$Harmony_tech_LISI <- stats::runif(10, 2.0, 2.8)
+srt$Uncorrected_celltype_LISI <- stats::runif(10, 1.0, 1.2)
+srt$Harmony_celltype_LISI <- stats::runif(10, 1.0, 1.3)
+srt@tools$IntegrationBenchmark <- list(
+  summary = data.frame(
+    method = c("Uncorrected", "Harmony"),
+    bio = c(0.80, 0.82),
+    batch = c(0.20, 0.70),
+    overall = c(0.56, 0.77),
+    status = "success",
+    stringsAsFactors = FALSE
   ),
-  class = c("integration_benchmark_result", "list")
+  metrics = data.frame(
+    method = rep(c("Uncorrected", "Harmony"), each = 2),
+    metric = rep(c("iLISI", "cLISI"), 2),
+    category = rep(c("batch", "bio"), 2),
+    value = c(1.2, 1.1, 2.4, 1.2),
+    scaled = c(0.1, 0.9, 0.7, 0.85),
+    direction = "higher",
+    stringsAsFactors = FALSE
+  ),
+  runs = data.frame(
+    method = c("Uncorrected", "Harmony"),
+    status = "success",
+    umap = NA_character_,
+    stringsAsFactors = FALSE
+  ),
+  batch = "tech",
+  celltype = "celltype"
 )
-IntegrationBenchmarkPlot(fake, plot_type = "overview")
-IntegrationBenchmarkPlot(fake, plot_type = "heatmap")
-IntegrationBenchmarkPlot(fake, plot_type = "scatter")
+thisplot::print_colored_table(
+  srt@tools$IntegrationBenchmark$summary,
+  by = "row",
+  palette = "Chinese"
+)
+IntegrationBenchmarkPlot(srt, plot_type = "box")
+IntegrationBenchmarkPlot(srt, plot_type = "heatmap")
+IntegrationBenchmarkPlot(srt, plot_type = "scatter")
 }
 \seealso{
-\link{RunIntegrationBenchmark}, \link{LISIPlot}, \link{BenchmarkPlot}
+\link{RunIntegrationBenchmark}, \link{RunLISI}
 }

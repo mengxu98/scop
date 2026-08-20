@@ -36,7 +36,7 @@
 #' @export
 #'
 #' @seealso
-#' [thisutils::compute_lisi], [LISIPlot], [RunIntegrationBenchmark]
+#' [thisutils::compute_lisi], [IntegrationBenchmarkPlot], [RunIntegrationBenchmark]
 #'
 #' @examples
 #' data(panc8_sub)
@@ -59,10 +59,7 @@
 #'   label_colnames = "tech",
 #'   perplexity = 10
 #' )
-#' LISIPlot(
-#'   panc8_sub,
-#'   combine = TRUE
-#' )
+#' IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 RunLISI <- function(
   srt,
   reductions = NULL,
@@ -253,75 +250,4 @@ RunLISI <- function(
     verbose = verbose
   )
   srt
-}
-#' @title Plot LISI scores
-#'
-#' @description
-#' Backward-compatible wrapper around [BenchmarkPlot()] for LISI scores.
-#' Visualize LISI scores on a dimensional reduction and compare methods with a
-#' summary boxplot.
-#'
-#' @md
-#' @inheritParams thisutils::log_message
-#' @inheritParams CellDimPlot
-#' @param srt A `Seurat` object.
-#' @param features Metadata columns containing LISI scores.
-#' Default is `NULL`, which will use columns stored in `tool_name`, or all
-#' metadata columns ending with `"_LISI"` when `tool_name` is `NULL`.
-#' @param tool_name Tool entry created by [RunLISI()].
-#' @param reduction Dimensional reduction used for feature plots.
-#' If `NULL`, the reduction recorded in `tool_name` is used when available;
-#' otherwise [DefaultReduction()] is used.
-#' @param plot_boxplot Whether to add boxplots.
-#' @param boxplot_jitter Whether to overlay jittered points on boxplots.
-#'
-#' @return
-#' If `combine = TRUE`, returns a combined `patchwork` plot.
-#' If `combine = FALSE`, returns a named list of ggplot objects.
-#'
-#' @export
-#'
-#' @seealso
-#' [RunLISI], [FeatureDimPlot], [IntegrationBenchmarkPlot]
-LISIPlot <- function(
-  srt,
-  features = NULL,
-  tool_name = NULL,
-  reduction = NULL,
-  plot_boxplot = TRUE,
-  boxplot_jitter = FALSE,
-  combine = TRUE,
-  nrow = NULL,
-  ncol = NULL,
-  byrow = TRUE,
-  pt.size = NULL,
-  pt.alpha = 1,
-  palette = "Chinese",
-  palcolor = NULL,
-  theme_use = "theme_scop",
-  theme_args = list(),
-  verbose = TRUE,
-  ...
-) {
-  BenchmarkPlot(
-    srt = srt,
-    features = features,
-    tool_name = tool_name,
-    reduction = reduction,
-    plot_type = "auto",
-    plot_boxplot = plot_boxplot,
-    boxplot_jitter = boxplot_jitter,
-    combine = combine,
-    nrow = nrow,
-    ncol = ncol,
-    byrow = byrow,
-    pt.size = pt.size,
-    pt.alpha = pt.alpha,
-    palette = palette,
-    palcolor = palcolor,
-    theme_use = theme_use,
-    theme_args = theme_args,
-    verbose = verbose,
-    ...
-  )
 }

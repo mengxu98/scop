@@ -67,7 +67,7 @@
 #'   reduction = "HarmonyUMAP2D"
 #' )
 #'
-#' LISIPlot(panc8_sub)
+#' IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 #'
 #' panc8_sub <- RunIntegration(
 #'   panc8_sub,
@@ -81,10 +81,7 @@
 #'   compute_lisi = TRUE,
 #'   lisi_label_colnames = "tech"
 #' )
-#' LISIPlot(
-#'   panc8_sub,
-#'   features = c("HarmonypcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
-#' )
+#' IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 #'
 #' data("pbmcmultiome_sub", package = "scop")
 #' pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
