@@ -1,7 +1,7 @@
-#' @title Plot DoRothEA transcription factor activity
+#' @title Plot transcription factor activity
 #'
 #' @description
-#' Visualize DoRothEA TF activity stored by [RunDorothea()]. Comparison plots
+#' Visualize TF activity stored by [RunDorothea()]. Comparison plots
 #' (`"bar"`, `"lollipop"`, `"volcano"`) test two groups and show the mean
 #' activity difference `group1 - group2`. `"heatmap"` uses [GroupHeatmap()]
 #' to summarize activity across all groups in `group.by`. `"dim"` compares TF
@@ -26,12 +26,14 @@
 #' @param tool_name Name of the `srt@tools` entry created by [RunDorothea()].
 #' @param assay_name Assay used for `"heatmap"`, `"dim"`, and `"stat"`. If
 #' `NULL`, the assay stored by [RunDorothea()] is used, or `"dorothea"`.
-#' @param features TFs to plot. If `NULL`, comparison plots use the top
-#' `top_n` TFs, heatmaps and `"stat"` use the `top_n` most variable TFs,
-#' `"dim"` uses TFs present in both activity and expression assays, and
-#' `"targets"` uses the TF with the largest absolute activity difference.
-#' @param top_n Number of TFs to show when `features = NULL`. Set `NULL` to
-#' show all tested TFs.
+#' @param features TFs to plot. If `NULL`, `"bar"`/`"lollipop"` use the top
+#' `top_n` TFs, `"volcano"` shows all tested TFs, heatmaps and `"stat"` use
+#' the `top_n` most variable TFs, `"dim"` uses TFs present in both activity
+#' and expression assays, and `"targets"` uses the TF with the largest
+#' absolute activity difference.
+#' @param top_n Number of TFs to show when `features = NULL`. Ignored for
+#' `"volcano"`, which always plots every tested TF. Set `NULL` to show all
+#' tested TFs in other comparison plots.
 #' @param test.use Statistical test used for each TF or target gene in
 #' comparison plots.
 #' @param p.adjust.method Method passed to [stats::p.adjust].
@@ -61,7 +63,8 @@
 #' expression in `"dim"` and for target genes in `"targets"`.
 #' @param stat_plot_type Distribution plot type passed to [FeatureStatPlot()]
 #' when `plot_type = "stat"`.
-#' @param nlabel Number of target genes labeled in `"targets"` plots.
+#' @param nlabel Number of significant TFs labeled in `"volcano"` plots, or
+#' significant target genes labeled in `"targets"` plots.
 #' @param reduction Reduction used by `"dim"` plots. If `NULL`, the default
 #' reduction of `srt` is used.
 #' @param bar_width Width of bars in `"bar"` plots.
@@ -109,6 +112,14 @@
 #'   group2 = "Ductal",
 #'   plot_type = "lollipop",
 #'   top_n = 20
+#' )
+#'
+#' DorotheaPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType",
+#'   group1 = "Endocrine",
+#'   group2 = "Ductal",
+#'   plot_type = "volcano"
 #' )
 #'
 #' ht <- DorotheaPlot(
@@ -215,7 +226,7 @@ DorotheaPlot <- function(
     !tool_name %in% names(srt@tools) || is.null(srt@tools[[tool_name]]$scores)
   ) {
     log_message(
-      "No DoRothEA scores found in {.code srt@tools[[{tool_name}]]$scores}",
+      "No TF activity scores found in {.code srt@tools[[{tool_name}]]$scores}",
       message_type = "error"
     )
   }
@@ -268,6 +279,15 @@ DorotheaPlot <- function(
   nlabel <- as.integer(nlabel)
 
   scores <- as.matrix(srt@tools[[tool_name]]$scores)
+  network_info <- srt@tools[[tool_name]]$network_info
+  if (is.null(network_info)) {
+    network_info <- list(
+      source = "dorothea",
+      label = "DoRothEA",
+      signed = TRUE
+    )
+  }
+  network_label <- network_info$label %||% "DoRothEA"
   assay_name <- assay_name %||%
     srt@tools[[tool_name]]$parameters$assay_name %||%
     "dorothea"
@@ -288,6 +308,7 @@ DorotheaPlot <- function(
       group_palcolor = group_palcolor,
       heatmap_args = heatmap_args,
       title = title,
+      network_label = network_label,
       verbose = verbose
     )
     if (isTRUE(return_data)) {
@@ -321,6 +342,7 @@ DorotheaPlot <- function(
       legend.direction = legend.direction,
       dim_args = dim_args,
       title = title,
+      network_label = network_label,
       verbose = verbose
     )
     if (isTRUE(return_data)) {
@@ -348,6 +370,7 @@ DorotheaPlot <- function(
       title = title,
       ylab = ylab,
       stat_args = stat_args,
+      network_label = network_label,
       verbose = verbose
     )
     if (isTRUE(return_data)) {
@@ -383,6 +406,7 @@ DorotheaPlot <- function(
       aspect.ratio = aspect.ratio,
       legend.position = legend.position,
       legend.direction = legend.direction,
+      network_info = network_info,
       verbose = verbose
     )
     if (isTRUE(return_data)) {
@@ -398,12 +422,13 @@ DorotheaPlot <- function(
     group1 = group1,
     group2 = group2,
     features = features,
-    top_n = top_n,
+    top_n = if (identical(plot_type, "volcano")) NULL else top_n,
     test.use = test.use,
     p.adjust.method = p.adjust.method,
     rank.by = rank.by,
     sort.by = sort.by,
     p_floor = p_floor,
+    network_label = network_label,
     verbose = verbose
   )
   if (isTRUE(flip) && plot_type %in% c("bar", "lollipop")) {
@@ -463,6 +488,7 @@ DorotheaPlot <- function(
       palette = palette,
       palcolor = palcolor,
       point_size = point_size,
+      nlabel = nlabel,
       title = title,
       xlab = xlab,
       ylab = ylab,
@@ -492,7 +518,8 @@ dorothea_compare_activity <- function(
   rank.by,
   sort.by,
   p_floor,
-  verbose
+  verbose,
+  network_label = "DoRothEA"
 ) {
   if (
     length(group1) != 1L ||
@@ -510,7 +537,7 @@ dorothea_compare_activity <- function(
   cells <- cells[groups[cells] %in% c(group1, group2)]
   if (length(cells) == 0L) {
     log_message(
-      "No cells from {.val {group1}} or {.val {group2}} are shared between DoRothEA scores and metadata",
+      "No cells from {.val {group1}} or {.val {group2}} are shared between {.val {network_label}} scores and metadata",
       message_type = "error"
     )
   }
@@ -531,7 +558,7 @@ dorothea_compare_activity <- function(
     missing_features <- setdiff(features, rownames(scores))
     if (length(missing_features) > 0L) {
       log_message(
-        "Dropping TFs not found in DoRothEA scores: {.val {missing_features}}",
+        "Dropping TFs not found in {.val {network_label}} scores: {.val {missing_features}}",
         message_type = "warning",
         verbose = verbose
       )
@@ -546,7 +573,7 @@ dorothea_compare_activity <- function(
   }
 
   log_message(
-    "Compare DoRothEA TF activity: {.val {group1}} vs {.val {group2}}",
+    "Compare {.val {network_label}} TF activity: {.val {group1}} vs {.val {group2}}",
     verbose = verbose
   )
   mat1 <- scores[features, cells1, drop = FALSE]
@@ -784,12 +811,76 @@ dorothea_plot_lollipop <- function(
   p
 }
 
+dorothea_volcano_y <- function(stat_df) {
+  y <- as.numeric(stat_df$neglog10_p_val_adj)
+  y[!is.finite(y)] <- 0
+  finite <- y[is.finite(stat_df$p_val_adj) & stat_df$p_val_adj > 0]
+  if (length(finite) == 0L) {
+    cap <- max(y, na.rm = TRUE)
+    if (!is.finite(cap) || cap <= 0) {
+      cap <- 10
+    }
+    return(pmin(y, cap))
+  }
+  cap <- 10 * ceiling(max(finite) / 10)
+  if (!is.finite(cap) || cap <= 0) {
+    cap <- max(finite)
+  }
+  pmin(y, cap)
+}
+
+dorothea_volcano_direction <- function(stat_df, cutoff) {
+  direction <- rep("NS", nrow(stat_df))
+  sig <- is.finite(stat_df$p_val_adj) & stat_df$p_val_adj <= cutoff
+  direction[sig & is.finite(stat_df$logFC) & stat_df$logFC > 0] <- "Up"
+  direction[sig & is.finite(stat_df$logFC) & stat_df$logFC < 0] <- "Down"
+  factor(direction, levels = c("Down", "NS", "Up"))
+}
+
+dorothea_volcano_colors <- function(palette, palcolor) {
+  div <- unname(dorothea_diverging_colors(palette, palcolor))
+  if (length(div) < 2L) {
+    div <- c("#2166AC", "#B2182B")
+  }
+  c(Down = div[[1L]], NS = "grey75", Up = div[[length(div)]])
+}
+
+dorothea_volcano_label_df <- function(df, nlabel, y_col, sig) {
+  n_sig <- sum(sig, na.rm = TRUE)
+  nlabel <- min(as.integer(nlabel), n_sig, nrow(df))
+  if (!is.finite(nlabel) || nlabel <= 0L) {
+    return(df[integer(), , drop = FALSE])
+  }
+  rank_score <- abs(df$logFC) * df[[y_col]]
+  rank_score[!is.finite(rank_score) | !sig] <- -Inf
+  df[order(-rank_score), , drop = FALSE][seq_len(nlabel), , drop = FALSE]
+}
+
+dorothea_volcano_repel <- function(label_df, label_col) {
+  ggrepel::geom_text_repel(
+    data = label_df,
+    ggplot2::aes(
+      x = .data[["logFC"]],
+      y = .data[["y_plot"]],
+      label = .data[[label_col]]
+    ),
+    inherit.aes = FALSE,
+    min.segment.length = 0.2,
+    max.overlaps = Inf,
+    segment.colour = "grey40",
+    size = 3.2,
+    seed = 42,
+    show.legend = FALSE
+  )
+}
+
 dorothea_plot_volcano <- function(
   stat_df,
   padjustCutoff,
   palette,
   palcolor,
   point_size,
+  nlabel,
   title,
   xlab,
   ylab,
@@ -799,31 +890,22 @@ dorothea_plot_volcano <- function(
   legend.direction
 ) {
   cutoff <- padjustCutoff %||% 0.05
-  stat_df$significant <- ifelse(
-    is.finite(stat_df$p_val_adj) & stat_df$p_val_adj <= cutoff,
-    "FDR",
-    "NS"
+  stat_df$y_plot <- dorothea_volcano_y(stat_df)
+  stat_df$direction <- dorothea_volcano_direction(stat_df, cutoff)
+  cols <- dorothea_volcano_colors(palette, palcolor)
+  pt_size <- if (nrow(stat_df) >= 50L) min(point_size, 1.8) else point_size
+  label_df <- dorothea_volcano_label_df(
+    df = stat_df,
+    nlabel = nlabel,
+    y_col = "y_plot",
+    sig = stat_df$direction != "NS"
   )
-  cols <- palette_colors(
-    c("NS", "FDR"),
-    palette = palette,
-    palcolor = palcolor
-  )
-  if (is.null(names(cols)) || !all(c("NS", "FDR") %in% names(cols))) {
-    cols <- unname(cols)[seq_len(min(2L, length(cols)))]
-    if (length(cols) < 2L) {
-      cols <- rep(cols, length.out = 2L)
-    }
-    names(cols) <- c("NS", "FDR")
-  } else {
-    cols <- cols[c("NS", "FDR")]
-  }
-  ggplot2::ggplot(
+  p <- ggplot2::ggplot(
     stat_df,
     ggplot2::aes(
       x = .data[["logFC"]],
-      y = .data[["neglog10_p_val_adj"]],
-      color = .data[["significant"]]
+      y = .data[["y_plot"]],
+      color = .data[["direction"]]
     )
   ) +
     ggplot2::geom_vline(xintercept = 0, color = "grey75", linewidth = 0.35) +
@@ -833,8 +915,12 @@ dorothea_plot_volcano <- function(
       linewidth = 0.35,
       linetype = 2
     ) +
-    ggplot2::geom_point(size = point_size, alpha = 0.85) +
-    ggplot2::scale_color_manual(values = cols, drop = FALSE) +
+    ggplot2::geom_point(size = pt_size, alpha = 0.8) +
+    ggplot2::scale_color_manual(
+      values = cols,
+      breaks = names(cols),
+      drop = FALSE
+    ) +
     ggplot2::labs(
       title = title,
       x = xlab %||% paste0(unique(stat_df$group1), " - ", unique(stat_df$group2)),
@@ -847,6 +933,10 @@ dorothea_plot_volcano <- function(
       legend.position = legend.position,
       legend.direction = legend.direction
     )
+  if (nrow(label_df) > 0L) {
+    p <- p + dorothea_volcano_repel(label_df, "TF")
+  }
+  p
 }
 
 dorothea_plot_heatmap <- function(
@@ -863,7 +953,8 @@ dorothea_plot_heatmap <- function(
   group_palcolor,
   heatmap_args,
   title,
-  verbose
+  verbose,
+  network_label = "DoRothEA"
 ) {
   features <- dorothea_resolve_features(
     scores = scores,
@@ -881,7 +972,7 @@ dorothea_plot_heatmap <- function(
   }
 
   log_message(
-    "Draw DoRothEA TF activity heatmap for {.val {length(features)}} TFs",
+    "Draw {.val {network_label}} TF activity heatmap for {.val {length(features)}} TFs",
     verbose = verbose
   )
   args <- list(
@@ -902,7 +993,7 @@ dorothea_plot_heatmap <- function(
     show_column_names = TRUE,
     cluster_rows = TRUE,
     cluster_columns = FALSE,
-    column_title = title %||% "DoRothEA TF activity",
+    column_title = title %||% paste(network_label, "TF activity"),
     heatmap_palette = heatmap_palette,
     heatmap_palcolor = heatmap_palcolor,
     group_palette = group_palette,
@@ -1005,7 +1096,8 @@ dorothea_plot_dim <- function(
   legend.direction,
   dim_args,
   title,
-  verbose
+  verbose,
+  network_label = "DoRothEA"
 ) {
   expr_names <- tryCatch(
     rownames(srt[[expression_assay]]),
@@ -1033,7 +1125,7 @@ dorothea_plot_dim <- function(
   srt <- dorothea_ensure_assay(srt, scores, assay_name)
 
   log_message(
-    "Draw DoRothEA embedding plots for {.val {length(features)}} TFs",
+    "Draw {.val {network_label}} embedding plots for {.val {length(features)}} TFs",
     verbose = verbose
   )
 
@@ -1145,7 +1237,8 @@ dorothea_plot_stat <- function(
   title,
   ylab,
   stat_args,
-  verbose
+  verbose,
+  network_label = "DoRothEA"
 ) {
   features <- dorothea_resolve_features(
     scores = scores,
@@ -1155,7 +1248,7 @@ dorothea_plot_stat <- function(
   )
   srt <- dorothea_ensure_assay(srt, scores, assay_name)
   log_message(
-    "Draw DoRothEA activity distributions for {.val {length(features)}} TFs",
+    "Draw {.val {network_label}} activity distributions for {.val {length(features)}} TFs",
     verbose = verbose
   )
   args <- list(
@@ -1207,12 +1300,15 @@ dorothea_plot_targets <- function(
   aspect.ratio,
   legend.position,
   legend.direction,
+  network_info,
   verbose
 ) {
   regulons <- srt@tools[[tool_name]]$regulons
+  network_label <- network_info$label %||% "DoRothEA"
+  signed_network <- !identical(network_info$signed, FALSE)
   if (is.null(regulons) || !"tf" %in% colnames(regulons)) {
     log_message(
-      "No DoRothEA regulons found in {.code srt@tools[[{tool_name}]]$regulons}. Re-run {.fn RunDorothea}.",
+      "No regulon network found in {.code srt@tools[[{tool_name}]]$regulons}. Re-run {.fn RunDorothea}.",
       message_type = "error"
     )
   }
@@ -1230,6 +1326,7 @@ dorothea_plot_targets <- function(
       rank.by = "abs_logFC",
       sort.by = "abs_logFC",
       p_floor = p_floor,
+      network_label = network_label,
       verbose = FALSE
     )
     features <- as.character(stat_df$TF[[1L]])
@@ -1244,7 +1341,7 @@ dorothea_plot_targets <- function(
   tf_use <- dorothea_match_feature(tf, unique(as.character(regulons$tf)))
   if (is.na(tf_use)) {
     log_message(
-      "TF {.val {tf}} is not present in the stored DoRothEA regulons",
+      "TF {.val {tf}} is not present in the stored {.val {network_label}} regulons",
       message_type = "error"
     )
   }
@@ -1285,7 +1382,7 @@ dorothea_plot_targets <- function(
   net$target_expr <- unname(target_map[keep])
   target_mat <- expr[unique(net$target_expr), , drop = FALSE]
   log_message(
-    "Draw DoRothEA regulon-target volcano for {.val {tf_use}} ({.val {nrow(net)}} targets)",
+    "Draw {.val {network_label}} regulon-target volcano for {.val {tf_use}} ({.val {nrow(net)}} targets)",
     verbose = verbose
   )
   target_stat <- dorothea_compare_activity(
@@ -1301,6 +1398,7 @@ dorothea_plot_targets <- function(
     rank.by = "abs_logFC",
     sort.by = "abs_logFC",
     p_floor = p_floor,
+    network_label = network_label,
     verbose = FALSE
   )
   plot_df <- merge(
@@ -1312,42 +1410,54 @@ dorothea_plot_targets <- function(
     sort = FALSE
   )
   plot_df$mor <- as.numeric(plot_df$mor)
-  plot_df$support <- ifelse(
-    is.finite(plot_df$logFC) & is.finite(plot_df$mor) & plot_df$mor != 0,
-    ifelse(sign(plot_df$mor) * sign(plot_df$logFC) > 0, "Support", "Oppose"),
-    "NS"
-  )
+  if (signed_network) {
+    plot_df$support <- ifelse(
+      is.finite(plot_df$logFC) & is.finite(plot_df$mor) & plot_df$mor != 0,
+      ifelse(sign(plot_df$mor) * sign(plot_df$logFC) > 0, "Support", "Oppose"),
+      "NS"
+    )
+    support_levels <- c("Oppose", "NS", "Support")
+    size_title <- "|MoR|"
+  } else {
+    plot_df$support <- ifelse(
+      is.finite(plot_df$logFC),
+      ifelse(plot_df$logFC > 0, "Higher group1", "Higher group2"),
+      "NS"
+    )
+    support_levels <- c("Higher group2", "NS", "Higher group1")
+    size_title <- "Importance"
+  }
   cutoff <- padjustCutoff %||% 0.05
   plot_df$support[
     !is.finite(plot_df$p_val_adj) | plot_df$p_val_adj > cutoff
   ] <- "NS"
   cols <- palette_colors(
-    c("Oppose", "NS", "Support"),
+    support_levels,
     palette = palette,
     palcolor = palcolor
   )
-  if (is.null(names(cols)) || !all(c("Oppose", "NS", "Support") %in% names(cols))) {
+  if (is.null(names(cols)) || !all(support_levels %in% names(cols))) {
     cols <- unname(cols)[seq_len(min(3L, length(cols)))]
     if (length(cols) < 3L) {
       cols <- rep(cols, length.out = 3L)
     }
-    names(cols) <- c("Oppose", "NS", "Support")
+    names(cols) <- support_levels
   } else {
-    cols <- cols[c("Oppose", "NS", "Support")]
+    cols <- cols[support_levels]
   }
   theme_use <- apply_plot_theme(theme_use, theme_args)
-  label_n <- min(nlabel, nrow(plot_df))
-  label_df <- plot_df[integer(), , drop = FALSE]
-  if (label_n > 0L) {
-    rank_score <- abs(plot_df$logFC) * plot_df$neglog10_p_val_adj
-    rank_score[!is.finite(rank_score)] <- 0
-    label_df <- plot_df[order(-rank_score), , drop = FALSE][seq_len(label_n), , drop = FALSE]
-  }
+  plot_df$y_plot <- dorothea_volcano_y(plot_df)
+  label_df <- dorothea_volcano_label_df(
+    df = plot_df,
+    nlabel = nlabel,
+    y_col = "y_plot",
+    sig = plot_df$support != "NS"
+  )
   p <- ggplot2::ggplot(
     plot_df,
     ggplot2::aes(
       x = .data[["logFC"]],
-      y = .data[["neglog10_p_val_adj"]],
+      y = .data[["y_plot"]],
       color = .data[["support"]],
       size = abs(.data[["mor"]])
     )
@@ -1361,9 +1471,9 @@ dorothea_plot_targets <- function(
     ) +
     ggplot2::geom_point(alpha = 0.85) +
     ggplot2::scale_color_manual(values = cols, drop = FALSE, name = NULL) +
-    ggplot2::scale_size_continuous(name = "|MoR|", range = c(1.6, max(point_size, 1.6) + 2)) +
+    ggplot2::scale_size_continuous(name = size_title, range = c(1.6, max(point_size, 1.6) + 2)) +
     ggplot2::labs(
-      title = title %||% paste0(tf_use, " targets (", group1, " vs. ", group2, ")"),
+      title = title %||% paste0(network_label, ": ", tf_use, " targets (", group1, " vs. ", group2, ")"),
       x = xlab %||% paste0(group1, " - ", group2),
       y = ylab %||% "-log10(adjusted p-value)"
     ) +
@@ -1378,16 +1488,7 @@ dorothea_plot_targets <- function(
       legend.direction = legend.direction
     )
   if (nrow(label_df) > 0L) {
-    p <- p +
-      ggrepel::geom_text_repel(
-        data = label_df,
-        ggplot2::aes(label = .data[["target_expr"]]),
-        min.segment.length = 0,
-        max.overlaps = 100,
-        segment.colour = "grey40",
-        size = 3.2,
-        show.legend = FALSE
-      )
+    p <- p + dorothea_volcano_repel(label_df, "target_expr")
   }
   list(plot = p, data = plot_df)
 }
