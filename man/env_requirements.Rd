@@ -49,4 +49,5 @@ All packages will be installed using uv as the primary tool.
 }
 \examples{
 env_requirements("3.10-1")
+env_requirements(version = "3.9-1", modules = "cell2fate")
 }
