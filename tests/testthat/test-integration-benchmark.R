@@ -82,7 +82,7 @@ fake_integration_benchmark_srt <- function() {
 
 test_that("IntegrationBenchmarkPlot draws box heatmap and scatter from Seurat", {
   srt <- fake_integration_benchmark_srt()
-  expect_s3_class(srt, "Seurat")
+  expect_s4_class(srt, "Seurat")
   expect_s3_class(IntegrationBenchmarkPlot(srt, plot_type = "box"), "ggplot")
   expect_s3_class(IntegrationBenchmarkPlot(srt, plot_type = "heatmap"), "ggplot")
   expect_s3_class(IntegrationBenchmarkPlot(srt, plot_type = "scatter"), "ggplot")
