@@ -2,10 +2,11 @@
 #'
 #' @description
 #' Run one or more [RunIntegration()] methods on the same input, score each
-#' embedding with scIB-style batch-correction and bio-conservation metrics
-#' (scaled iLISI/cLISI, ASW, graph connectivity, ARI/NMI), and return a
-#' compact result for [IntegrationBenchmarkPlot()]. Spatial-domain clustering
-#' benchmarks stay in [RunBenchmark()].
+#' latent embedding with scIB-style batch-correction and bio-conservation
+#' metrics (scaled iLISI/cLISI, ASW, graph connectivity, ARI/NMI), and store
+#' the tables in `srt@tools$IntegrationBenchmark`. The object itself is
+#' returned so later plotting can reuse the embeddings and per-cell LISI
+#' scores.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -19,22 +20,20 @@
 #' @param bio_weight,batch_weight Weights used for the overall score.
 #'   Defaults follow scIB (`0.6` bio conservation, `0.4` batch correction).
 #' @param skip_failed Whether a failed method is recorded and skipped.
-#' @param keep_objects Whether to keep a per-method `Seurat` object in the
-#'   result. The combined object used for plotting is always stored in `$srt`.
-#' @param print_table Whether to print the metric tables with
-#'   [thisplot::print_colored_table()] when the result is printed.
+#' @param tool_name Name of the `srt@tools` entry used to store the tables.
 #'
-#' @return An `integration_benchmark_result` list with `summary`, `metrics`,
-#' `runs`, and `srt`. Printing uses [thisplot::print_colored_table()].
+#' @return The input `Seurat` object with integration reductions, per-cell
+#' LISI columns, and `srt@tools[[tool_name]]` containing `summary`, `metrics`,
+#' and `runs`. Print the tables with [thisplot::print_colored_table()].
 #'
-#' @seealso [IntegrationBenchmarkPlot], [RunIntegration], [RunLISI], [LISIPlot]
+#' @seealso [IntegrationBenchmarkPlot], [RunIntegration], [RunLISI]
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' data(panc8_sub)
-#' bench <- RunIntegrationBenchmark(
+#' panc8_sub <- RunIntegrationBenchmark(
 #'   panc8_sub,
 #'   batch = "tech",
 #'   celltype = "celltype",
@@ -44,8 +43,18 @@
 #'   linear_reduction_dims_use = 1:10,
 #'   perplexity = 10
 #' )
-#' bench
-#' IntegrationBenchmarkPlot(bench)
+#' thisplot::print_colored_table(
+#'   panc8_sub@tools$IntegrationBenchmark$summary,
+#'   by = "row",
+#'   palette = "Chinese"
+#' )
+#' thisplot::print_colored_table(
+#'   panc8_sub@tools$IntegrationBenchmark$metrics,
+#'   by = "col",
+#'   palette = "Paired"
+#' )
+#' IntegrationBenchmarkPlot(panc8_sub)
+#' IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 #' }
 RunIntegrationBenchmark <- function(
   srt,
@@ -62,8 +71,7 @@ RunIntegrationBenchmark <- function(
   bio_weight = 0.6,
   batch_weight = 0.4,
   skip_failed = TRUE,
-  keep_objects = FALSE,
-  print_table = TRUE,
+  tool_name = "IntegrationBenchmark",
   verbose = TRUE,
   ...
 ) {
@@ -95,7 +103,6 @@ RunIntegrationBenchmark <- function(
   }
   extra <- list(...)
   srt_work <- srt
-  objects <- list()
   metrics_list <- list()
   runs <- list()
   lisi_labels <- unique(c(batch, celltype))
@@ -198,15 +205,8 @@ RunIntegrationBenchmark <- function(
       lisi_prefix = method,
       k_graph = k_graph
     )
-    if (!"method" %in% colnames(raw)) {
-      raw$method <- method
-    } else {
-      raw$method <- method
-    }
+    raw$method <- method
     metrics_list[[method]] <- raw
-    if (isTRUE(keep_objects)) {
-      objects[[method]] <- srt_work
-    }
     runs[[method]] <- data.frame(
       method = method,
       status = "success",
@@ -234,85 +234,21 @@ RunIntegrationBenchmark <- function(
   runs_df <- do.call(rbind, runs)
   rownames(runs_df) <- NULL
   summary_df <- integration_summary_wide(metrics_df, overall_df, runs_df)
-  result <- structure(
-    list(
-      summary = summary_df,
-      metrics = metrics_df,
-      runs = runs_df,
-      srt = srt_work,
-      objects = objects,
-      batch = batch,
-      celltype = celltype,
-      parameters = list(
-        methods = methods,
-        linear_reduction = linear_reduction,
-        nHVF = nHVF,
-        perplexity = perplexity,
-        k_graph = k_graph,
-        bio_weight = bio_weight,
-        batch_weight = batch_weight
-      )
-    ),
-    class = c("integration_benchmark_result", "list")
-  )
-  attr(result, "print_table") <- isTRUE(print_table)
-  result
-}
-
-#' @export
-#' @method print integration_benchmark_result
-print.integration_benchmark_result <- function(x, ...) {
-  n_ok <- sum(x$runs$status == "success")
-  n_all <- nrow(x$runs)
-  cat(
-    "Integration benchmark: ",
-    n_ok,
-    "/",
-    n_all,
-    " methods succeeded\n",
-    sep = ""
-  )
-  if (!isFALSE(attr(x, "print_table"))) {
-    cat("\nSummary (scaled 0-1; higher is better)\n")
-    print_df <- x$summary
-    keep <- intersect(
-      c(
-        "method",
-        "status",
-        "overall",
-        "bio",
-        "batch",
-        "iLISI",
-        "cLISI",
-        "celltype_ASW",
-        "batch_ASW_mixing",
-        "celltype_graph_connectivity",
-        "celltype_ARI",
-        "celltype_NMI",
-        "runtime_s"
-      ),
-      colnames(print_df)
+  srt_work@tools[[tool_name]] <- list(
+    summary = summary_df,
+    metrics = metrics_df,
+    runs = runs_df,
+    batch = batch,
+    celltype = celltype,
+    parameters = list(
+      methods = methods,
+      linear_reduction = linear_reduction,
+      nHVF = nHVF,
+      perplexity = perplexity,
+      k_graph = k_graph,
+      bio_weight = bio_weight,
+      batch_weight = batch_weight
     )
-    print_df <- print_df[, keep, drop = FALSE]
-    num_cols <- vapply(print_df, is.numeric, logical(1))
-    print_df[num_cols] <- lapply(print_df[num_cols], function(v) {
-      round(v, 3)
-    })
-    thisplot::print_colored_table(print_df, by = "row", palette = "Chinese")
-    cat("\nAll metrics\n")
-    metrics_print <- x$metrics
-    metrics_print <- metrics_print[
-      !grepl("_LISI_mean$", metrics_print$metric),
-      ,
-      drop = FALSE
-    ]
-    if ("value" %in% colnames(metrics_print)) {
-      metrics_print$value <- round(metrics_print$value, 4)
-    }
-    if ("scaled" %in% colnames(metrics_print)) {
-      metrics_print$scaled <- round(metrics_print$scaled, 3)
-    }
-    thisplot::print_colored_table(metrics_print, by = "col", palette = "Paired")
-  }
-  invisible(x)
+  )
+  srt_work
 }

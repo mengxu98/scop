@@ -92,11 +92,8 @@ panc8_sub <- RunLISI(
   label_colnames = "tech",
   perplexity = 10
 )
-LISIPlot(
-  panc8_sub,
-  combine = TRUE
-)
+IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 }
 \seealso{
-\link[thisutils:compute_lisi]{thisutils::compute_lisi}, \link{LISIPlot}, \link{RunIntegrationBenchmark}
+\link[thisutils:compute_lisi]{thisutils::compute_lisi}, \link{IntegrationBenchmarkPlot}, \link{RunIntegrationBenchmark}
 }

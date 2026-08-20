@@ -38,71 +38,72 @@ test_that("format_integration_metrics adds iLISI and cLISI", {
   expect_equal(out$scaled[out$metric == "cLISI"], scale_clisi(1.1, 2))
 })
 
-test_that("IntegrationBenchmarkPlot draws overview heatmap and scatter", {
-  metrics <- data.frame(
-    method = rep(c("Uncorrected", "Harmony"), each = 2),
-    metric = rep(c("iLISI", "cLISI"), 2),
-    category = rep(c("batch", "bio"), 2),
-    value = c(1.2, 1.1, 2.4, 1.2),
-    scaled = c(0.1, 0.9, 0.7, 0.85),
-    direction = "higher",
-    stringsAsFactors = FALSE
+fake_integration_benchmark_srt <- function() {
+  srt <- SeuratObject::CreateSeuratObject(
+    counts = Matrix::Matrix(
+      matrix(1:20, nrow = 2, dimnames = list(c("g1", "g2"), paste0("c", 1:10))),
+      sparse = TRUE
+    )
   )
-  fake <- structure(
-    list(
-      summary = data.frame(
-        method = c("Uncorrected", "Harmony"),
-        bio = c(0.80, 0.82),
-        batch = c(0.20, 0.70),
-        overall = c(0.56, 0.77),
-        status = "success",
-        stringsAsFactors = FALSE
-      ),
-      metrics = metrics,
-      runs = data.frame(
-        method = c("Uncorrected", "Harmony"),
-        status = "success",
-        umap = NA_character_,
-        stringsAsFactors = FALSE
-      ),
-      srt = NULL,
-      batch = "tech",
-      celltype = "celltype"
+  set.seed(1)
+  srt$Uncorrected_tech_LISI <- stats::runif(10, 1.0, 1.4)
+  srt$Harmony_tech_LISI <- stats::runif(10, 2.0, 2.8)
+  srt$Uncorrected_celltype_LISI <- stats::runif(10, 1.0, 1.2)
+  srt$Harmony_celltype_LISI <- stats::runif(10, 1.0, 1.3)
+  srt@tools$IntegrationBenchmark <- list(
+    summary = data.frame(
+      method = c("Uncorrected", "Harmony"),
+      bio = c(0.80, 0.82),
+      batch = c(0.20, 0.70),
+      overall = c(0.56, 0.77),
+      status = "success",
+      stringsAsFactors = FALSE
     ),
-    class = c("integration_benchmark_result", "list")
+    metrics = data.frame(
+      method = rep(c("Uncorrected", "Harmony"), each = 2),
+      metric = rep(c("iLISI", "cLISI"), 2),
+      category = rep(c("batch", "bio"), 2),
+      value = c(1.2, 1.1, 2.4, 1.2),
+      scaled = c(0.1, 0.9, 0.7, 0.85),
+      direction = "higher",
+      stringsAsFactors = FALSE
+    ),
+    runs = data.frame(
+      method = c("Uncorrected", "Harmony"),
+      status = "success",
+      umap = NA_character_,
+      stringsAsFactors = FALSE
+    ),
+    batch = "tech",
+    celltype = "celltype"
   )
-  expect_s3_class(IntegrationBenchmarkPlot(fake, plot_type = "overview"), "ggplot")
-  expect_s3_class(IntegrationBenchmarkPlot(fake, plot_type = "heatmap"), "ggplot")
-  expect_s3_class(IntegrationBenchmarkPlot(fake, plot_type = "scatter"), "ggplot")
-  scores <- integration_overall_scores(metrics)
+  srt
+}
+
+test_that("IntegrationBenchmarkPlot draws box heatmap and scatter from Seurat", {
+  srt <- fake_integration_benchmark_srt()
+  expect_s3_class(srt, "Seurat")
+  expect_s3_class(IntegrationBenchmarkPlot(srt, plot_type = "box"), "ggplot")
+  expect_s3_class(IntegrationBenchmarkPlot(srt, plot_type = "heatmap"), "ggplot")
+  expect_s3_class(IntegrationBenchmarkPlot(srt, plot_type = "scatter"), "ggplot")
+  plots <- IntegrationBenchmarkPlot(srt, plot_type = "auto")
+  expect_true(all(c("box", "heatmap", "scatter") %in% names(plots)))
+  expect_false("umap" %in% names(plots))
+  scores <- integration_overall_scores(srt@tools$IntegrationBenchmark$metrics)
   expect_equal(nrow(scores), 2)
   expect_true(all(c("bio", "batch", "overall") %in% colnames(scores)))
 })
 
-test_that("print.integration_benchmark_result returns the object", {
-  fake <- structure(
-    list(
-      summary = data.frame(
-        method = "Uncorrected",
-        bio = 0.5,
-        batch = 0.4,
-        overall = 0.46,
-        status = "success",
-        stringsAsFactors = FALSE
-      ),
-      metrics = data.frame(
-        method = "Uncorrected",
-        metric = "iLISI",
-        category = "batch",
-        value = 1.4,
-        scaled = 0.4,
-        direction = "higher",
-        stringsAsFactors = FALSE
-      ),
-      runs = data.frame(method = "Uncorrected", status = "success", stringsAsFactors = FALSE),
-      srt = NULL
-    ),
-    class = c("integration_benchmark_result", "list")
-  )
-  expect_identical(print(fake), fake)
+test_that("IntegrationBenchmarkPlot box works from LISI columns alone", {
+  srt <- fake_integration_benchmark_srt()
+  srt@tools$IntegrationBenchmark <- NULL
+  expect_s3_class(IntegrationBenchmarkPlot(srt, plot_type = "box"), "ggplot")
+})
+
+test_that("parse_lisi_feature splits method and label", {
+  expect_equal(parse_lisi_feature("Harmony_tech_LISI")$method, "Harmony")
+  expect_equal(parse_lisi_feature("Harmony_tech_LISI")$label, "tech")
+  expect_equal(parse_lisi_feature("Uncorrected_celltype_LISI")$method, "Uncorrected")
+  expect_equal(parse_lisi_feature("Uncorrected_celltype_LISI")$label, "celltype")
+  expect_null(parse_lisi_feature("not_lisi"))
 })
