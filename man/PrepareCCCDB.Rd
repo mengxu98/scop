@@ -49,7 +49,7 @@ cell-cell communication wrappers: the CellTalkDB ligand-receptor pairs
 (\code{"CellTalk"}) and the CellChat curated ligand-receptor database
 (\code{"CellChat"}). Each database is returned as a \code{TERM2GENE}/\code{TERM2NAME}
 mapping (with a \code{"ligand_*"}/\code{"receptor_*"} term convention) and cached with
-\link{R.cache} so that \link{ListDB} can list it like any other annotation database.
+\link[R.cache:R.cache]{R.cache} so that \link{ListDB} can list it like any other annotation database.
 }
 \examples{
 \dontrun{

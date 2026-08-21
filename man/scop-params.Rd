@@ -50,4 +50,7 @@ the default; \code{"legacy_display"} remains available for compatibility.}
 
 \item{...}{Additional arguments passed to the underlying method.}
 }
+\description{
+Shared parameters
+}
 \keyword{internal}

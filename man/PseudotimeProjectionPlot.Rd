@@ -121,7 +121,20 @@ Defaults is \code{"black"}.}
 \item{title}{The text for the title.
 Defaults is \code{"Pseudotime projection"}.}
 
+\item{subtitle}{Plot subtitle.}
+
+\item{xlab}{Label for the x axis.}
+
+\item{ylab}{Label for the y axis.}
+
+\item{legend.position}{Legend position passed to \code{theme()}.}
+
+\item{legend.direction}{Legend direction passed to \code{theme()}.}
+
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
+
+\item{return_layer}{Whether to return the plot layers as a list.
+Defaults is \code{FALSE}.}
 
 \item{palette}{Deprecated alias of \code{group_palette}.}
 

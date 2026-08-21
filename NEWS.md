@@ -32,7 +32,7 @@
   * Database listing outputs are unified (`ListDB()` and `ListCCCDB()` return plain data frames; colored console rendering is available via `thisplot::print_colored_table()`).
   * Python-converted object interop: `PAGAPlot()`, `VelocityPlot()`/`CellDimPlot(velocity=)`, `RunPAGA(use_rna_velocity)`, `RunCellRank()`, DE consumers (`VolcanoPlot()`, `DEtestPlot()`, `RunEnrichment()`, `RunGSEA()`, ...), and `RunScissor()` now fall back to scanpy/scVelo result slots (`paga`, `rank_genes_groups`, `velocity_umap`, `dpt_pseudotime`, `connectivities`) stored by `adata_to_srt()`.
 
-# scop 0.9.0 (2026-08-02)
+# scop 0.9.0
 
 * **feat**:
   * New optional-backend wrappers: `RunCHOIR()` for significance-based hierarchical clustering and `RunCell2fate()` for RNA-velocity modeling, both with pinned backend provenance, strict result validation, metadata writeback, and resumable artifacts.

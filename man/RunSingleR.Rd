@@ -40,6 +40,33 @@ Default is the default assay of the \code{srt_query} object.}
 \item{ref_assay}{Assay to be used for the reference data.
 Default is the default assay of the \code{srt_ref} object.}
 
+\item{genes}{A string containing \code{"de"}, indicating that markers should be calculated from \code{ref}.
+For back compatibility, other string values are allowed but will be ignored with a deprecation warning.
+
+Alternatively, if \code{ref} is \emph{not} a list, \code{genes} can be either:
+\itemize{
+\item A list of lists of character vectors containing DE genes between pairs of labels.
+\item A list of character vectors containing marker genes for each label.
+}
+
+If \code{ref} \emph{is} a list, \code{genes} can be a list of length equal to \code{ref}.
+Each element of the list should be one of the two above choices described for non-list \code{ref},
+containing markers for labels in the corresponding entry of \code{ref}.}
+
+\item{de.method}{String specifying how DE genes should be detected between pairs of labels.
+Defaults to \code{"classic"}, which sorts genes by the log-fold changes and takes the top \code{de.n}.
+Other options are \code{"wilcox"} and \code{"t"}, see Details.
+Ignored if \code{genes} is a list of markers/DE genes.}
+
+\item{sd.thresh}{Deprecated and ignored.}
+
+\item{de.n}{An integer scalar specifying the number of DE genes to use when \code{genes="de"}.
+If \code{de.method="classic"}, defaults to \code{500 * (2/3) ^ log2(N)} where \code{N} is the number of unique labels.
+Otherwise, defaults to 10.
+Ignored if \code{genes} is a list of markers/DE genes.}
+
+\item{aggr.ref, aggr.args}{Arguments controlling the aggregation of the references prior to annotation, see \code{\link[SingleR]{trainSingleR}}.}
+
 \item{quantile}{"quantile" parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}
 
 \item{fine.tune}{\code{"fine.tune"} parameter in \link[SingleR:SingleR]{SingleR::SingleR} function.}

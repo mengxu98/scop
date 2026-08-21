@@ -106,7 +106,7 @@ there are more than 100,000 cells.}
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{force}{Whether to force the creation of the plot, even if it contains more than 50 subplots.}
