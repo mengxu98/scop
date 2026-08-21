@@ -34,8 +34,8 @@ test_that("spatial graph core handles sparse edge cases", {
   empty <- spatial_graph_compute(collinear, method = "radius", radius = 0.1)
   expect_equal(nrow(empty$nodes), 5L)
   expect_equal(nrow(empty$edges), 0L)
-  expect_error(spatial_graph_compute(collinear[1, ], k = 1), "At least two")
-  expect_error(spatial_graph_compute(collinear, k = 5), "number of nodes minus one")
+  expect_error(spatial_graph_compute(collinear[1, ], k = 1), "At least\\s+two")
+  expect_error(spatial_graph_compute(collinear, k = 5), "number\\s+of\\s+nodes\\s+minus\\s+one")
 })
 
 test_that("spatial graph weights preserve raw distance", {
@@ -71,7 +71,7 @@ test_that("RunSpatialNetwork uses deterministic slots and collision protection",
   out <- RunSpatialNetwork(srt, k = 2, verbose = FALSE)
   expect_identical(out@tools$SpatialNetwork$active_graph, "knn_k2")
   expect_identical(out@tools$SpatialNetwork$graphs$knn_k2$source$coordinate_space, "raw")
-  expect_error(RunSpatialNetwork(out, k = 2, verbose = FALSE), "already exists")
+  expect_error(RunSpatialNetwork(out, k = 2, verbose = FALSE), "already\\s+exists")
   out <- RunSpatialNetwork(out, k = 2, overwrite = TRUE, verbose = FALSE)
   out <- RunSpatialNetwork(out, method = "radius", radius = 1.5, verbose = FALSE)
   expect_identical(out@tools$SpatialNetwork$active_graph, "radius_r1p5")
@@ -242,10 +242,11 @@ test_that("SpatialCoordinates makes multi-image selection explicit", {
 })
 
 test_that("analysis and plotting never silently select the first spatial image", {
-  data("visium_mouse_brain_slices_sub", package = "scop")
-  srt <- visium_mouse_brain_slices_sub
+  data("visium_human_pancreas_sub", package = "scop")
+  srt <- visium_human_pancreas_sub
+  suppressWarnings(srt[["slice2"]] <- srt[["slice1"]])
   expect_identical(length(SeuratObject::Images(srt)), 2L)
-  expect_equal(ncol(srt), 2000L)
+  expect_equal(ncol(srt), 1986L)
 
   expect_error(spatial_analysis_coords(srt), "Multiple spatial images")
   expect_error(
@@ -253,9 +254,9 @@ test_that("analysis and plotting never silently select the first spatial image",
     "Multiple spatial images"
   )
 
-  selected <- spatial_analysis_coords(srt, image = "anterior2")
-  expect_identical(nrow(selected$data), 1000L)
-  expect_identical(selected$source$image, "anterior2")
+  selected <- spatial_analysis_coords(srt, image = "slice2")
+  expect_identical(nrow(selected$data), 1986L)
+  expect_identical(selected$source$image, "slice2")
   expect_identical(selected$source$coordinate_space, "legacy_display")
   expect_identical(selected$source$coord.cols, c("x", "y"))
   expect_true(all(c("scale", "y_flip", "raw_x_col", "raw_y_col") %in%
@@ -264,10 +265,10 @@ test_that("analysis and plotting never silently select the first spatial image",
   plotted <- SpatialSpotPlot(
     srt,
     group.by = "orig.ident",
-    image = "anterior2"
+    image = "slice2"
   )
   expect_s3_class(plotted, "ggplot")
-  expect_identical(nrow(plotted$data), 1000L)
+  expect_identical(nrow(plotted$data), 1986L)
 })
 
 test_that("spatial results are stored as plain tools keys and read directly", {

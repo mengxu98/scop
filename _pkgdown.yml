@@ -457,11 +457,6 @@ reference:
   - srt_to_spe
   - spe_to_srt
 
-- subtitle: "External Datasets"
-- contents:
-  - ListExternalDatasets
-  - LoadExternalDataset
-
 - subtitle: "Data Processing"
 - contents:
   - CheckDataType
@@ -491,5 +486,4 @@ reference:
   - pbmcmultiome_sub
   - ref_scMCA
   - visium_human_pancreas_sub
-  - visium_mouse_brain_slices_sub
   - words_excluded

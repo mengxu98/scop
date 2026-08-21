@@ -904,30 +904,29 @@ spatialcellchat_run_one <- function(
 #' @examples
 #' # SpatialCellChat is a runtime-optional backend and a full run can be slow.
 #' # The following example uses constructed domain labels only to demonstrate
-#' # the multi-slice interface.
+#' # the SpatialCellChat interface.
 #' \dontrun{
 #' if (all(unlist(
 #'   thisutils::check_r("jinworks/SpatialCellChat", verbose = FALSE),
 #'   use.names = FALSE
 #' ))) {
-#'   data(visium_mouse_brain_slices_sub)
-#'   spatial <- visium_mouse_brain_slices_sub
+#'   data(visium_human_pancreas_sub)
+#'   spatial <- visium_human_pancreas_sub
 #'   spatial$spatial_domain <- ifelse(
 #'     spatial$x <= stats::median(spatial$x), "left", "right"
 #'   )
 #'   spatial <- RunSpatialCellChat(
 #'     spatial,
 #'     group.by = "spatial_domain",
-#'     sample.by = "sample",
 #'     assay = "Spatial",
-#'     image = c(anterior1 = "anterior1", anterior2 = "anterior2"),
+#'     image = "slice1",
 #'     technology = "visium",
 #'     analysis.level = "spot",
 #'     coordinate.unit = "pixel",
-#'     species = "Mus_musculus",
+#'     species = "Homo_sapiens",
 #'     store.object = "minimal"
 #'   )
-#'   SpatialCellChatPlot(spatial, sample = "anterior1", plot_type = "incoming")
+#'   SpatialCellChatPlot(spatial, sample = "slice1", plot_type = "incoming")
 #' }
 #' }
 #'
