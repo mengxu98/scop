@@ -125,7 +125,7 @@ Can be one of \code{"stack"} or \code{"dodge"}.}
 
 \item{grid_major_linewidth}{Line width of major panel grid lines.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{force}{Draw even when a grouping has more than 100 levels.}

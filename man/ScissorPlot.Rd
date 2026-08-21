@@ -101,6 +101,10 @@ background status in upset plots.}
 \item{exp_method}{Expression transform: \code{"zscore"}, \code{"raw"}, \code{"fc"}, \code{"log2fc"},
 or \code{"log1p"}.}
 
+\item{stat_type}{The type of statistic to compute for the plot.
+Can be one of \code{"percent"}, \code{"count"}, or \code{"value"}. Continuous value mode
+supports \code{plot_type = "bar"} and \code{plot_type = "dot"}.}
+
 \item{combine}{Whether to combine UMAP panels or StatPlot panels.}
 
 \item{nrow, ncol, byrow}{Layout parameters passed to \code{patchwork::wrap_plots()}

@@ -135,7 +135,7 @@ one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top
 
 \item{legend.title}{Title of the legend.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{seed}{Random seed.}
