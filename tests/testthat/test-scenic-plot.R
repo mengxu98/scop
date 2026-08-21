@@ -275,6 +275,55 @@ test_that("SCENICPlot rss rank keeps requested labels by default", {
   )
 })
 
+test_that("SCENIC regulon labels preserve signed duplicates in auto mode", {
+  rank_table <- data.frame(
+    group = c("A", "B", "A"),
+    regulon = c("TF1(+)", "TF1(-)", "TF2(+)"),
+    TF = c("TF1", "TF1", "TF2"),
+    stringsAsFactors = FALSE
+  )
+
+  expect_equal(
+    scenic_regulon_display_labels(rank_table, mode = "auto"),
+    c("TF1(+)", "TF1(-)", "TF2")
+  )
+  expect_equal(
+    scenic_regulon_display_labels(rank_table, mode = "regulon"),
+    rank_table$regulon
+  )
+  expect_equal(
+    scenic_regulon_display_labels(rank_table, mode = "tf"),
+    rank_table$TF
+  )
+})
+
+test_that("SCENICPlot signed RSS rank uses signed labels and a shared y-axis", {
+  dat <- make_scenic_plot_mock(seed = 31)
+  rownames(dat$auc)[1:2] <- c("TF1(+)", "TF1(-)")
+  dat$srt@tools$SCENIC$scores_cells_by_regulon <- t(dat$auc)
+
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "rss_rank",
+    top_n = 3,
+    verbose = FALSE
+  )
+
+  tf1_labels <- unique(out$rank_table$display_label[out$rank_table$TF == "TF1"])
+  expect_setequal(tf1_labels, c("TF1(+)", "TF1(-)"))
+  expected_ylim <- range(out$rss_matrix, finite = TRUE)
+  score_span <- diff(expected_ylim)
+  expected_ylim <- expected_ylim + c(-0.04, 0.12) * score_span
+  expected_ylim[[1]] <- max(0, expected_ylim[[1]])
+  expect_true(all(vapply(out$plots, function(p) {
+    isTRUE(all.equal(p$coordinates$limits$y, expected_ylim))
+  }, logical(1))))
+  expect_equal(out$plots[[1]]$labels$y, "Regulon specificity score (RSS)")
+  expect_s3_class(out$plots[[1]]$theme$panel.border, "element_rect")
+  expect_false(inherits(out$plots[[1]]$theme$panel.border, "element_blank"))
+})
+
 test_that("SCENICPlot activity correlation dumbbell returns plot and statistics", {
   dat <- make_scenic_plot_mock(seed = 5)
   dat$auc[1, ] <- seq_len(ncol(dat$auc))
@@ -475,6 +524,58 @@ test_that("network TF groups use the highest RSS cell type", {
   expect_equal(unname(groups[["TF2"]]), "A")
 })
 
+test_that("network TF annotations identify the winning signed regulon", {
+  rank_table <- data.frame(
+    group = c("Alpha", "Ductal", "Beta"),
+    regulon = c("TF1(+)", "TF1(-)", "TF2(+)"),
+    TF = c("TF1", "TF1", "TF2"),
+    specificity_score = c(0.3, 0.4, 0.5),
+    rank = c(2, 1, 1),
+    stringsAsFactors = FALSE
+  )
+  annotations <- scenic_network_tf_annotations(
+    rank_table,
+    c("TF1", "TF2"),
+    regulon_label = "auto"
+  )
+
+  expect_equal(
+    colnames(annotations),
+    c(
+      "TF", "regulon", "group", "specificity_score",
+      "regulons_per_tf", "show_regulon", "legend_label"
+    )
+  )
+  expect_equal(annotations$regulon, c("TF1(-)", "TF2(+)"))
+  expect_equal(annotations$group, c("Ductal", "Beta"))
+  expect_equal(annotations$regulons_per_tf, c(2L, 1L))
+  expect_equal(
+    annotations$legend_label,
+    c("TF1(-)", "TF2")
+  )
+})
+
+test_that("SCENICPlot network returns signed regulon annotations", {
+  dat <- make_scenic_plot_mock(seed = 32)
+  rownames(dat$auc)[1:2] <- c("TF1(+)", "TF1(-)")
+  dat$auc[1, dat$srt$CellType == "A"] <- 0.2
+  dat$auc[2, dat$srt$CellType == "B"] <- 1
+  dat$srt@tools$SCENIC$scores_cells_by_regulon <- t(dat$auc)
+
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "network",
+    features = "TF1",
+    verbose = FALSE
+  )
+
+  expect_equal(nrow(out$plot_data$annotations), 1L)
+  expect_equal(out$plot_data$annotations$TF, "TF1")
+  expect_equal(out$plot_data$annotations$regulons_per_tf, 2L)
+  expect_match(out$plot_data$annotations$legend_label, "TF1\\([+-]\\)")
+})
+
 test_that("SCENICPlusPlot network uses TF-region-gene hubs from triplets", {
   dat <- make_scenicplus_plot_mock()
   out <- SCENICPlusPlot(
@@ -609,7 +710,7 @@ test_that("SCENICPlot overlap returns pairwise Jaccard values", {
   expect_true(all(out$plot_data$jaccard[diag] == 1))
 })
 
-test_that("SCENIC network_graph legend labels include RSS cell types", {
+test_that("SCENIC network_graph legend omits RSS cell types", {
   dat <- make_scenic_plot_mock()
   out <- SCENICPlot(
     dat$srt,
@@ -629,7 +730,8 @@ test_that("SCENIC network_graph legend labels include RSS cell types", {
     }
     sc$get_breaks()
   }))
-  expect_true(any(grepl("\\([ABC]\\)", labels)))
+  expect_false(any(grepl("\\([ABC]\\)", labels)))
+  expect_true(any(labels %in% paste0("TF", seq_len(6))))
 })
 
 test_that("SCENIC network_graph hub layout keeps TFs off a single line", {
