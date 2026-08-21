@@ -375,7 +375,7 @@ otherwise <code>NULL</code>.</p></li>
 <span class="r-in"><span>  nbes <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  maxit <span class="op">=</span> <span class="fl">50</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:20:25] Running <span style="color: #0000BB;">NMF</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:08:00] Running <span style="color: #0000BB;">NMF</span>...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> BE_ 1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Positive:  Spp1, Clu, Ttr, Krt18, Ptma, Rpl12, Sparc, Dbi, Gapdh, Mt1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Cd24a, Mgst1, H19, Pebp1, Myl12a, Cldn3, Clps, Atp1b1, Sox4, Gnas </span>
@@ -411,18 +411,18 @@ otherwise <code>NULL</code>.</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Negative:  Lrrc6, Ccl28, 1810034E14Rik, Tmem100, Fam71b, Sycp3, Kiss1r, Gng4, Prodh2, Lingo1 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Mpzl1, Angptl4, Slc16a10, Gm8113, C2cd4c, Dpysl3, Entpd3, Col1a1, Rem2, Acvr1c </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> 	   Bcl2, Kctd8, Adora2b, C530044C16Rik, Gm28875, C1qa, Serpinb6b, Camk2n1, Pax6os1, Nrsn1 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:25:49] <span style="color: #0000BB;">NMF</span> compute completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-21 16:12:53] <span style="color: #0000BB;">NMF</span> compute completed</span>
 <span class="r-in"><span><span class="va">ht_cells</span> <span class="op">&lt;-</span> <span class="fu">NMFHeatmap</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"cells"</span>,</span></span>
 <span class="r-in"><span>  cell_annotation <span class="op">=</span> <span class="st">"CellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:49] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> cells x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:49] Ordering `NMFHeatmap()` rows and columns ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:49] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:49] Calculating `NMFHeatmap()` render size ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:49] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:50] Assembling `NMFHeatmap()` plot object ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:53] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> cells x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:53] Ordering `NMFHeatmap()` rows and columns ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:53] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:53] Calculating `NMFHeatmap()` render size ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:53] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:54] Assembling `NMFHeatmap()` plot object ...</span>
 <span class="r-in"><span><span class="va">ht_cells</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="NMFHeatmap-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -430,12 +430,12 @@ otherwise <code>NULL</code>.</p></li>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"features"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:51] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> features x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:51] Ordering `NMFHeatmap()` rows and columns ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:51] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:51] Calculating `NMFHeatmap()` render size ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:51] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:25:52] Assembling `NMFHeatmap()` plot object ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:55] `NMFHeatmap()` input: <span style="color: #0000BB;">1000</span> features x <span style="color: #0000BB;">5</span> NMF dimensions. Computing a <span style="color: #0000BB;">1000</span> x <span style="color: #0000BB;">1000</span> similarity matrix (~0.01 GiB dense numeric matrix).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:55] Ordering `NMFHeatmap()` rows and columns ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:55] Building <span style="color: #0000BB;">ComplexHeatmap</span> object for `NMFHeatmap()` ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:55] Calculating `NMFHeatmap()` render size ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:55] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:12:57] Assembling `NMFHeatmap()` plot object ...</span>
 <span class="r-in"><span><span class="va">ht_features</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="NMFHeatmap-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>

@@ -200,6 +200,12 @@ background status in upset plots.</p></dd>
 or <code>"log1p"</code>.</p></dd>
 
 
+<dt id="arg-stat-type">stat_type<a class="anchor" aria-label="anchor" href="#arg-stat-type"></a></dt>
+<dd><p>The type of statistic to compute for the plot.
+Can be one of <code>"percent"</code>, <code>"count"</code>, or <code>"value"</code>. Continuous value mode
+supports <code>plot_type = "bar"</code> and <code>plot_type = "dot"</code>.</p></dd>
+
+
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
 <dd><p>Whether to combine UMAP panels or StatPlot panels.</p></dd>
 
@@ -259,11 +265,11 @@ list returned by <a href="FeatureHeatmap.html">FeatureHeatmap</a> for <code>plot
 <span class="r-in"><span>  alpha <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>  cutoff <span class="op">=</span> <span class="fl">0.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 13:54:18] Build a temporary Scissor-style SNN graph</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 13:55:27] Scissor alpha <span style="color: #0000BB;">0.2</span> selected <span style="color: #0000BB;">1</span> positive and <span style="color: #0000BB;">501</span> negative cells (<span style="color: #0000BB;">31.375</span>%)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 13:55:27] <span style="color: #0000BB;">Scissor</span> stored <span style="color: #0000BB;">1</span> Scissor+ and <span style="color: #0000BB;">501</span> Scissor- cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 17:40:42] Build a temporary Scissor-style SNN graph</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 17:41:50] Scissor alpha <span style="color: #0000BB;">0.2</span> selected <span style="color: #0000BB;">1</span> positive and <span style="color: #0000BB;">501</span> negative cells (<span style="color: #0000BB;">31.375</span>%)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-21 17:41:50] <span style="color: #0000BB;">Scissor</span> stored <span style="color: #0000BB;">1</span> Scissor+ and <span style="color: #0000BB;">501</span> Scissor- cells</span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">panc8_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 13:55:29] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 17:41:52] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">ScissorPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>
