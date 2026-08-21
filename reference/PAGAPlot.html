@@ -160,12 +160,136 @@ Possible values are <code>"connectivities"</code> (default) and <code>"connectiv
 <dd><p>Whether to display transitions between different cell states.</p></dd>
 
 
+<dt id="arg-node-palette">node_palette<a class="anchor" aria-label="anchor" href="#arg-node-palette"></a></dt>
+<dd><p>A character vector specifying the name of the color palette for node groups.</p></dd>
+
+
+<dt id="arg-node-palcolor">node_palcolor<a class="anchor" aria-label="anchor" href="#arg-node-palcolor"></a></dt>
+<dd><p>A character vector specifying the names of the colors for each node group.</p></dd>
+
+
+<dt id="arg-node-size">node_size<a class="anchor" aria-label="anchor" href="#arg-node-size"></a></dt>
+<dd><p>A numeric value or column name of <code>node</code> specifying the size of the nodes.</p></dd>
+
+
+<dt id="arg-node-alpha">node_alpha<a class="anchor" aria-label="anchor" href="#arg-node-alpha"></a></dt>
+<dd><p>A numeric value or column name of <code>node</code> specifying the transparency of the nodes.</p></dd>
+
+
+<dt id="arg-node-highlight">node_highlight<a class="anchor" aria-label="anchor" href="#arg-node-highlight"></a></dt>
+<dd><p>A character vector specifying the names of nodes to highlight.</p></dd>
+
+
+<dt id="arg-node-highlight-color">node_highlight_color<a class="anchor" aria-label="anchor" href="#arg-node-highlight-color"></a></dt>
+<dd><p>A character vector specifying the color for highlighting nodes.</p></dd>
+
+
 <dt id="arg-label-label-insitu-label-size-label-fg-label-bg-label-bg-r">label, label_insitu, label.size, label.fg, label.bg, label.bg.r<a class="anchor" aria-label="anchor" href="#arg-label-label-insitu-label-size-label-fg-label-bg-label-bg-r"></a></dt>
 <dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
 
 
 <dt id="arg-label-repel-label-repulsion-label-point-size-label-point-color-label-segment-color">label_repel, label_repulsion, label_point_size, label_point_color, label_segment_color<a class="anchor" aria-label="anchor" href="#arg-label-repel-label-repulsion-label-point-size-label-point-color-label-segment-color"></a></dt>
 <dd><p>Repel labels away from cluster centers.</p></dd>
+
+
+<dt id="arg-edge-threshold">edge_threshold<a class="anchor" aria-label="anchor" href="#arg-edge-threshold"></a></dt>
+<dd><p>The threshold for removing edges.</p></dd>
+
+
+<dt id="arg-edge-line">edge_line<a class="anchor" aria-label="anchor" href="#arg-edge-line"></a></dt>
+<dd><p>A character vector specifying the type of line for edges (straight, curved).</p></dd>
+
+
+<dt id="arg-edge-line-curvature">edge_line_curvature<a class="anchor" aria-label="anchor" href="#arg-edge-line-curvature"></a></dt>
+<dd><p>The curvature of curved edges.</p></dd>
+
+
+<dt id="arg-edge-line-angle">edge_line_angle<a class="anchor" aria-label="anchor" href="#arg-edge-line-angle"></a></dt>
+<dd><p>The angle of curved edges.</p></dd>
+
+
+<dt id="arg-edge-size">edge_size<a class="anchor" aria-label="anchor" href="#arg-edge-size"></a></dt>
+<dd><p>A numeric vector specifying the range of edge sizes.</p></dd>
+
+
+<dt id="arg-edge-color">edge_color<a class="anchor" aria-label="anchor" href="#arg-edge-color"></a></dt>
+<dd><p>A character vector specifying the color of the edges.</p></dd>
+
+
+<dt id="arg-edge-alpha">edge_alpha<a class="anchor" aria-label="anchor" href="#arg-edge-alpha"></a></dt>
+<dd><p>The transparency of the edges.</p></dd>
+
+
+<dt id="arg-edge-shorten">edge_shorten<a class="anchor" aria-label="anchor" href="#arg-edge-shorten"></a></dt>
+<dd><p>The length of the edge shorten.</p></dd>
+
+
+<dt id="arg-edge-offset">edge_offset<a class="anchor" aria-label="anchor" href="#arg-edge-offset"></a></dt>
+<dd><p>The length of the edge offset.</p></dd>
+
+
+<dt id="arg-edge-highlight">edge_highlight<a class="anchor" aria-label="anchor" href="#arg-edge-highlight"></a></dt>
+<dd><p>A character vector specifying the names of edges to highlight.</p></dd>
+
+
+<dt id="arg-edge-highlight-color">edge_highlight_color<a class="anchor" aria-label="anchor" href="#arg-edge-highlight-color"></a></dt>
+<dd><p>A character vector specifying the color for highlighting edges.</p></dd>
+
+
+<dt id="arg-transition-threshold">transition_threshold<a class="anchor" aria-label="anchor" href="#arg-transition-threshold"></a></dt>
+<dd><p>The threshold for removing transitions.</p></dd>
+
+
+<dt id="arg-transition-line">transition_line<a class="anchor" aria-label="anchor" href="#arg-transition-line"></a></dt>
+<dd><p>A character vector specifying the type of line for transitions (straight, curved).</p></dd>
+
+
+<dt id="arg-transition-line-curvature">transition_line_curvature<a class="anchor" aria-label="anchor" href="#arg-transition-line-curvature"></a></dt>
+<dd><p>The curvature of curved transitions.</p></dd>
+
+
+<dt id="arg-transition-line-angle">transition_line_angle<a class="anchor" aria-label="anchor" href="#arg-transition-line-angle"></a></dt>
+<dd><p>The angle of curved transitions.</p></dd>
+
+
+<dt id="arg-transition-size">transition_size<a class="anchor" aria-label="anchor" href="#arg-transition-size"></a></dt>
+<dd><p>A numeric vector specifying the range of transition sizes.</p></dd>
+
+
+<dt id="arg-transition-color">transition_color<a class="anchor" aria-label="anchor" href="#arg-transition-color"></a></dt>
+<dd><p>A character vector specifying the color of the transitions.</p></dd>
+
+
+<dt id="arg-transition-alpha">transition_alpha<a class="anchor" aria-label="anchor" href="#arg-transition-alpha"></a></dt>
+<dd><p>The transparency of the transitions.</p></dd>
+
+
+<dt id="arg-transition-arrow-type">transition_arrow_type<a class="anchor" aria-label="anchor" href="#arg-transition-arrow-type"></a></dt>
+<dd><p>A character vector specifying the type of arrow for transitions (closed, open).</p></dd>
+
+
+<dt id="arg-transition-arrow-angle">transition_arrow_angle<a class="anchor" aria-label="anchor" href="#arg-transition-arrow-angle"></a></dt>
+<dd><p>The angle of the transition arrow.</p></dd>
+
+
+<dt id="arg-transition-arrow-length">transition_arrow_length<a class="anchor" aria-label="anchor" href="#arg-transition-arrow-length"></a></dt>
+<dd><p>The length of the transition arrow.</p></dd>
+
+
+<dt id="arg-transition-shorten">transition_shorten<a class="anchor" aria-label="anchor" href="#arg-transition-shorten"></a></dt>
+<dd><p>The length of the transition shorten.</p></dd>
+
+
+<dt id="arg-transition-offset">transition_offset<a class="anchor" aria-label="anchor" href="#arg-transition-offset"></a></dt>
+<dd><p>The length of the transition offset.</p></dd>
+
+
+<dt id="arg-transition-highlight">transition_highlight<a class="anchor" aria-label="anchor" href="#arg-transition-highlight"></a></dt>
+<dd><p>A character vector specifying the names of transitions to highlight.</p></dd>
+
+
+<dt id="arg-transition-highlight-color">transition_highlight_color<a class="anchor" aria-label="anchor" href="#arg-transition-highlight-color"></a></dt>
+<dd><p>A character vector specifying the color for highlighting transitions.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect.ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
@@ -176,8 +300,33 @@ Possible values are <code>"connectivities"</code> (default) and <code>"connectiv
 <dd><p>The text for the title.</p></dd>
 
 
+<dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
+<dd><p>Plot subtitle.</p></dd>
+
+
+<dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
+<dd><p>Label for the x axis.</p></dd>
+
+
+<dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
+<dd><p>Label for the y axis.</p></dd>
+
+
+<dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
+<dd><p>Legend position passed to <code>theme()</code>.</p></dd>
+
+
+<dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
+<dd><p>Legend direction passed to <code>theme()</code>.</p></dd>
+
+
 <dt id="arg-theme-use-theme-args">theme_use, theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-use-theme-args"></a></dt>
 <dd><p>Theme name or function, plus extra theme arguments.</p></dd>
+
+
+<dt id="arg-return-layer">return_layer<a class="anchor" aria-label="anchor" href="#arg-return-layer"></a></dt>
+<dd><p>Whether to return the plot layers as a list.
+Defaults is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -193,23 +342,23 @@ Possible values are <code>"connectivities"</code> (default) and <code>"connectiv
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:00] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:00] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-19 12:26:00] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:03] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:03] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-21 16:13:03] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 1/1 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:00] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:00] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:00] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:00] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:00] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:00] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:00] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:00] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:01] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:01] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:01] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:01] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:26:08] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:03] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:03] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:03] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:03] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:03] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:04] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:04] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:04] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:04] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:05] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-21 16:13:11] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunPAGA.html">RunPAGA</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
@@ -218,8 +367,8 @@ Possible values are <code>"connectivities"</code> (default) and <code>"connectiv
 <span class="r-in"><span>  backend <span class="op">=</span> <span class="st">"cpp"</span>,</span></span>
 <span class="r-in"><span>  return_seurat <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-19 12:26:08] Running <span style="color: #0000BB;">PAGA</span> with <span style="color: #0000BB;">BiocNeighbors</span> using <span style="color: #0000BB;">29</span> neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-19 12:26:08] <span style="color: #0000BB;">PAGA</span> cpp backend completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-21 16:13:11] Running <span style="color: #0000BB;">PAGA</span> with <span style="color: #0000BB;">BiocNeighbors</span> using <span style="color: #0000BB;">29</span> neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-21 16:13:11] <span style="color: #0000BB;">PAGA</span> cpp backend completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">PAGAPlot</span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="PAGAPlot-1.png" alt="" width="700" height="433"></span>

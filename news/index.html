@@ -55,7 +55,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.9.0" id="scop-090-2026-08-02">scop 0.9.0 (2026-08-02)<a class="anchor" aria-label="anchor" href="#scop-090-2026-08-02"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.9.0" id="scop-090">scop 0.9.0<a class="anchor" aria-label="anchor" href="#scop-090"></a></h2>
 <ul><li>
 <strong>feat</strong>:
 <ul><li>New optional-backend wrappers: <code><a href="../reference/RunCHOIR.html">RunCHOIR()</a></code> for significance-based hierarchical clustering and <code><a href="../reference/RunCell2fate.html">RunCell2fate()</a></code> for RNA-velocity modeling, both with pinned backend provenance, strict result validation, metadata writeback, and resumable artifacts.</li>
@@ -159,7 +159,7 @@
 <li>
 <code><a href="../reference/CheckDataList.html">CheckDataList()</a></code> / <code><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow()</a></code>: Removed an unnecessary all-feature <code><a href="../reference/ScaleData.html">ScaleData()</a></code> call immediately after <code>LogNormalize</code>. Downstream workflows still scale the selected HVFs before PCA, but large raw-count inputs no longer create a dense all-gene <code>scale.data</code> intermediate during checking.</li>
 <li>
-<code><a href="../reference/srt_reorder.html">srt_reorder()</a></code>: Replaced per-cluster repeated sparse subsetting and <code><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans()</a></code> with a single sparse group-membership matrix multiplication, speeding the cluster-reordering step used by <code><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow()</a></code> while preserving average expression values.</li>
+<code><a href="../reference/srt_reorder.html">srt_reorder()</a></code>: Replaced per-cluster repeated sparse subsetting and <code><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowMeans()</a></code> with a single sparse group-membership matrix multiplication, speeding the cluster-reordering step used by <code><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow()</a></code> while preserving average expression values.</li>
 <li>
 <code><a href="../reference/FindExpressedMarkers.html">FindExpressedMarkers()</a></code>: Added a sparse fold-change and detection-rate prefilter path for common sparse RNA inputs, avoiding dense all-feature expression materialization before marker filtering while preserving default results. Supplied features are now intersected with the active layer before dense fallback scoring, which also keeps <code>scale.data</code> and partial-feature layers from passing absent rows into fold-change calculation.</li>
 <li>C++-accelerated backends are now the default where available: <code><a href="../reference/RunMetabolism.html">RunMetabolism()</a></code>, <code><a href="../reference/RunGSVA.html">RunGSVA()</a></code>, <code><a href="../reference/CellScoring.html">CellScoring()</a></code>, <code><a href="../reference/RunDynamicEnrichment.html">RunDynamicEnrichment()</a></code>, and <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code> now prefer <code>backend = "cpp"</code> while retaining <code>backend = "r"</code> for exact legacy/package behavior. <code><a href="../reference/RunPermutation.html">RunPermutation()</a></code> now uses its validated C++ implementation directly.</li>
