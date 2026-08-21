@@ -26,6 +26,8 @@ SCENICPlot(
   cor_xlim = NULL,
   cor_label = TRUE,
   top_n = 12,
+  regulon_label = c("auto", "regulon", "tf"),
+  rss_rank_yscale = c("shared", "free"),
   activity_scale = FALSE,
   rss_scale = FALSE,
   heatmap_show_row_names = FALSE,
@@ -66,10 +68,10 @@ SCENICPlot(
   ncol = 3,
   return_data = TRUE,
   title = NULL,
-  point_color = "#1F77B4",
-  top_color = "#DC050C",
-  point_size = 2,
-  point_alpha = 0.5,
+  point_color = "#B8C2CC",
+  top_color = "#B64342",
+  point_size = 1.8,
+  point_alpha = 0.85,
   highlight_tf = NULL,
   highlight_color = "#7A0177",
   highlight_point_size = 2,
@@ -120,6 +122,14 @@ SCENICPlot(
 \item{cor_label}{Whether to label dumbbell points.}
 
 \item{top_n}{Top regulons per group.}
+
+\item{regulon_label}{Label source for RSS rank plots and network legends.
+\code{"auto"} keeps TF-only labels when a TF has one regulon and shows the
+regulon name when multiple regulons share a TF; \code{"regulon"} always shows
+regulon names; \code{"tf"} always shows TF names.}
+
+\item{rss_rank_yscale}{Use a \code{"shared"} y-axis across RSS rank panels for
+direct score comparison, or \code{"free"} for the legacy per-panel scale.}
 
 \item{activity_scale}{Z-score regulons in \code{"activity_heatmap"}.}
 
@@ -210,7 +220,9 @@ Plot, or a list with \code{rss_matrix}, \code{rank_table}, \code{top_table}, \co
 Plot RSS and regulon activity from \code{\link[=RunSCENIC]{RunSCENIC()}} or \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}.
 Use \code{\link[=SCENICPlusPlot]{SCENICPlusPlot()}} for SCENIC+ defaults. Network \code{palette = "RdYlBu"}
 uses \code{"Chinese"}. \code{"network"} draws one hub per TF. Network plots have no
-title. Multi-TF legends show the top RSS cell type.
+title. When one TF has multiple regulons, network legends show the regulon
+with the highest RSS; the corresponding cell type and score remain available
+in the returned annotation table.
 }
 \examples{
 \dontrun{

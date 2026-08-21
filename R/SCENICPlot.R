@@ -4,7 +4,9 @@
 #' Plot RSS and regulon activity from [RunSCENIC()] or [RunSCENICPlus()].
 #' Use [SCENICPlusPlot()] for SCENIC+ defaults. Network `palette = "RdYlBu"`
 #' uses `"Chinese"`. `"network"` draws one hub per TF. Network plots have no
-#' title. Multi-TF legends show the top RSS cell type.
+#' title. When one TF has multiple regulons, network legends show the regulon
+#' with the highest RSS; the corresponding cell type and score remain available
+#' in the returned annotation table.
 #'
 #' @md
 #' @inheritParams CellDimPlot
@@ -30,6 +32,12 @@
 #' @param cor_xlim Optional x-axis limits for the dumbbell plot.
 #' @param cor_label Whether to label dumbbell points.
 #' @param top_n Top regulons per group.
+#' @param regulon_label Label source for RSS rank plots and network legends.
+#'   `"auto"` keeps TF-only labels when a TF has one regulon and shows the
+#'   regulon name when multiple regulons share a TF; `"regulon"` always shows
+#'   regulon names; `"tf"` always shows TF names.
+#' @param rss_rank_yscale Use a `"shared"` y-axis across RSS rank panels for
+#'   direct score comparison, or `"free"` for the legacy per-panel scale.
 #' @param activity_scale Z-score regulons in `"activity_heatmap"`.
 #' @param rss_scale Z-score regulons in `"rss_heatmap"`.
 #' @param heatmap_show_row_names,heatmap_show_column_names Heatmap names.
@@ -132,6 +140,8 @@ SCENICPlot <- function(
   cor_xlim = NULL,
   cor_label = TRUE,
   top_n = 12,
+  regulon_label = c("auto", "regulon", "tf"),
+  rss_rank_yscale = c("shared", "free"),
   activity_scale = FALSE,
   rss_scale = FALSE,
   heatmap_show_row_names = FALSE,
@@ -179,10 +189,10 @@ SCENICPlot <- function(
   ncol = 3,
   return_data = TRUE,
   title = NULL,
-  point_color = "#1F77B4",
-  top_color = "#DC050C",
-  point_size = 2,
-  point_alpha = 0.5,
+  point_color = "#B8C2CC",
+  top_color = "#B64342",
+  point_size = 1.8,
+  point_alpha = 0.85,
   highlight_tf = NULL,
   highlight_color = "#7A0177",
   highlight_point_size = 2,
@@ -195,6 +205,8 @@ SCENICPlot <- function(
   plot_type <- match.arg(plot_type)
   network_layout <- match.arg(network_layout)
   label_nodes <- match.arg(label_nodes)
+  regulon_label <- match.arg(regulon_label)
+  rss_rank_yscale <- match.arg(rss_rank_yscale)
   heatmap_order <- match.arg(heatmap_order)
   cor_method <- match.arg(cor_method)
   cor_sort.by <- match.arg(cor_sort.by)
@@ -383,6 +395,10 @@ SCENICPlot <- function(
       highlight_tf |
       rank_table[["TF"]] %in% highlight_tf
   }
+  rank_table[["display_label"]] <- scenic_regulon_display_labels(
+    rank_table,
+    mode = regulon_label
+  )
   top_table <- rank_table[rank_table[["is_top"]], , drop = FALSE]
 
   plot_result <- switch(plot_type,
@@ -402,7 +418,8 @@ SCENICPlot <- function(
       highlight_point_size = highlight_point_size,
       highlight_linewidth = highlight_linewidth,
       label_size = label_size,
-      label_max_overlaps = label_max_overlaps
+      label_max_overlaps = label_max_overlaps,
+      yscale = rss_rank_yscale
     ),
     rss_heatmap = scenic_plot_rss_heatmap(
       rss_matrix = rss_matrix,
@@ -590,7 +607,8 @@ SCENICPlot <- function(
       network_include_regions = network_include_regions,
       palette = palette,
       palcolor = palcolor,
-      rank_table = rank_table
+      rank_table = rank_table,
+      regulon_label = regulon_label
     ),
     network = scenic_plot_network(
       srt = srt,
@@ -605,7 +623,8 @@ SCENICPlot <- function(
       network_include_regions = network_include_regions,
       palette = palette,
       palcolor = palcolor,
-      rank_table = rank_table
+      rank_table = rank_table,
+      regulon_label = regulon_label
     ),
     egrn = scenic_plot_egrn(
       srt = srt,
@@ -619,7 +638,8 @@ SCENICPlot <- function(
       label_nodes = label_nodes,
       palette = palette,
       palcolor = palcolor,
-      rank_table = rank_table
+      rank_table = rank_table,
+      regulon_label = regulon_label
     ),
     overlap = scenic_plot_overlap(
       srt = srt,
@@ -693,16 +713,34 @@ scenic_plot_rss_rank <- function(
   combine = TRUE,
   ncol = 3,
   title = NULL,
-  point_color = "#1F77B4",
-  top_color = "#DC050C",
-  point_size = 2,
-  point_alpha = 0.5,
+  point_color = "#B8C2CC",
+  top_color = "#B64342",
+  point_size = 1.8,
+  point_alpha = 0.85,
   highlight_color = "#7A0177",
   highlight_point_size = 2,
   highlight_linewidth = 0.5,
   label_size = 3,
-  label_max_overlaps = Inf
+  label_max_overlaps = Inf,
+  yscale = c("shared", "free")
 ) {
+  yscale <- match.arg(yscale)
+  shared_ylim <- NULL
+  if (identical(yscale, "shared")) {
+    shared_ylim <- range(rss_matrix, finite = TRUE)
+    score_span <- diff(shared_ylim)
+    if (!is.finite(score_span) || score_span <= 0) {
+      score_span <- max(abs(shared_ylim), 1) * 0.1
+    }
+    shared_ylim <- shared_ylim + c(-0.04, 0.12) * score_span
+    if (all(rss_matrix >= 0, na.rm = TRUE)) {
+      shared_ylim[[1]] <- max(0, shared_ylim[[1]])
+    }
+  }
+  rank_breaks <- 1L
+  if (nrow(rss_matrix) >= 5L) {
+    rank_breaks <- unique(c(rank_breaks, seq.int(5L, nrow(rss_matrix), by = 5L)))
+  }
   plots <- lapply(colnames(rss_matrix), function(one_group) {
     data_rank_plot <- rank_table[
       rank_table[["group"]] == one_group, ,
@@ -718,7 +756,7 @@ scenic_plot_rss_rank <- function(
     plot_title <- one_group
     if (!is.null(highlight_tf)) {
       highlight_title <- if (nrow(highlight_df) > 0) {
-        paste0(highlight_df[["TF"]], " rank = ", highlight_df[["rank"]])
+        paste0(highlight_df[["display_label"]], " rank = ", highlight_df[["rank"]])
       } else {
         paste0(highlight_tf, " not found")
       }
@@ -733,6 +771,11 @@ scenic_plot_rss_rank <- function(
       data_rank_plot,
       ggplot2::aes(x = .data[["rank"]], y = .data[["specificity_score"]])
     ) +
+      ggplot2::geom_line(
+        color = "#D9DEE4",
+        linewidth = 0.45,
+        lineend = "round"
+      ) +
       ggplot2::geom_point(
         size = point_size,
         shape = 16,
@@ -741,23 +784,45 @@ scenic_plot_rss_rank <- function(
       ) +
       ggplot2::geom_point(
         data = top_df,
-        size = point_size,
+        size = point_size * 1.2,
         color = top_color
       ) +
-      theme_scop() +
+      ggplot2::scale_x_continuous(
+        breaks = rank_breaks,
+        expand = ggplot2::expansion(mult = c(0.025, 0.055))
+      ) +
+      ggplot2::theme_classic(base_size = 10, base_family = "Arial") +
       ggplot2::theme(
-        axis.title = ggplot2::element_text(colour = "black", size = 12),
-        axis.text = ggplot2::element_text(colour = "black", size = 10),
-        plot.title = ggplot2::element_text(face = "bold"),
+        axis.line = ggplot2::element_blank(),
+        axis.ticks = ggplot2::element_line(colour = "#30343B", linewidth = 0.4),
+        axis.ticks.length = grid::unit(1.8, "mm"),
+        axis.title = ggplot2::element_text(colour = "#202328", size = 11),
+        axis.text = ggplot2::element_text(colour = "#4F5661", size = 9),
+        plot.title = ggplot2::element_text(
+          colour = "#202328",
+          face = "bold",
+          size = 12,
+          hjust = 0,
+          margin = ggplot2::margin(b = 4)
+        ),
+        panel.border = ggplot2::element_rect(
+          colour = "#30343B",
+          fill = NA,
+          linewidth = 0.45
+        ),
+        panel.grid = ggplot2::element_blank(),
         panel.grid.minor = ggplot2::element_blank(),
-        axis.text.x = ggplot2::element_blank(),
-        axis.ticks.x = ggplot2::element_blank()
+        plot.margin = ggplot2::margin(6, 8, 6, 6)
       ) +
       ggplot2::labs(
         x = "Regulon rank",
-        y = "Specificity Score",
+        y = "Regulon specificity score (RSS)",
         title = plot_title
       )
+
+    if (!is.null(shared_ylim)) {
+      p <- p + ggplot2::coord_cartesian(ylim = shared_ylim)
+    }
 
     if (nrow(highlight_df) > 0) {
       p <- p +
@@ -778,23 +843,40 @@ scenic_plot_rss_rank <- function(
     p +
       ggrepel::geom_text_repel(
         data = label_df,
-        ggplot2::aes(label = .data[["TF"]]),
-        color = "black",
+        ggplot2::aes(label = .data[["display_label"]]),
+        color = "#25282D",
         size = label_size,
         fontface = "italic",
-        arrow = grid::arrow(ends = "first", length = grid::unit(0.01, "npc")),
-        box.padding = 0.2,
-        point.padding = 0.3,
-        segment.color = "black",
-        segment.size = 0.3,
-        force = 1,
+        box.padding = 0.28,
+        point.padding = 0.22,
+        segment.color = "#737B86",
+        segment.size = 0.22,
+        min.segment.length = 0.1,
+        force = 1.2,
         max.iter = 3000,
-        max.overlaps = label_max_overlaps
+        max.overlaps = label_max_overlaps,
+        seed = 1
       )
   })
   names(plots) <- colnames(rss_matrix)
 
-  plot <- scenic_combine_plots(plots, combine = combine, ncol = ncol, title = title)
+  plot <- plots
+  if (isTRUE(combine)) {
+    check_r("patchwork", verbose = FALSE)
+    plot <- if (length(plots) == 1L) {
+      plots[[1]]
+    } else {
+      patchwork::wrap_plots(
+        plotlist = plots,
+        ncol = ncol,
+        axes = "collect",
+        axis_titles = "collect"
+      )
+    }
+    if (!is.null(title)) {
+      plot <- plot + patchwork::plot_annotation(title = title)
+    }
+  }
   list(plot = plot, plots = plots, data = rank_table)
 }
 
@@ -2006,6 +2088,40 @@ scenic_tf_from_regulon <- function(regulon) {
   out <- sub("_direct_.*$", "", out)
   out <- sub("_[+-]_[+-]$", "", out)
   out <- sub("_[+-]$", "", out)
+  out
+}
+
+scenic_regulon_display_labels <- function(rank_table, mode = c("auto", "regulon", "tf")) {
+  mode <- match.arg(mode)
+  if (is.null(rank_table) || nrow(rank_table) == 0L) {
+    return(character())
+  }
+  tf <- if ("TF" %in% colnames(rank_table)) {
+    as.character(rank_table[["TF"]])
+  } else if ("regulon" %in% colnames(rank_table)) {
+    scenic_tf_from_regulon(rank_table[["regulon"]])
+  } else {
+    rep(NA_character_, nrow(rank_table))
+  }
+  regulon <- if ("regulon" %in% colnames(rank_table)) {
+    as.character(rank_table[["regulon"]])
+  } else {
+    tf
+  }
+  if (identical(mode, "tf")) {
+    return(tf)
+  }
+  if (identical(mode, "regulon")) {
+    return(regulon)
+  }
+  regulons_per_tf <- vapply(
+    split(regulon, tf),
+    function(x) length(unique(x[!is.na(x) & nzchar(x)])),
+    integer(1)
+  )
+  use_regulon <- !is.na(tf) & regulons_per_tf[tf] > 1L
+  out <- tf
+  out[use_regulon] <- regulon[use_regulon]
   out
 }
 
