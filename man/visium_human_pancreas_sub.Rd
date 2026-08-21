@@ -29,9 +29,75 @@ reference, the object retains the top 5000 genes shared with \code{panc8_sub},
 ranked by total spatial counts.
 }
 \examples{
-data(visium_human_pancreas_sub)
-SeuratObject::Images(visium_human_pancreas_sub)
-head(visium_human_pancreas_sub@meta.data[, c("x", "y")])
-SpatialSpotPlot(visium_human_pancreas_sub, group.by = "coda_label")
+if (interactive()) {
+  download.file(
+    "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8058nnn/GSM8058244/suppl/GSM8058244_PanIN-LG2.tar.gz",
+    destfile = "GSM8058244_PanIN-LG2.tar.gz",
+    mode = "wb"
+  )
+  untar("GSM8058244_PanIN-LG2.tar.gz", exdir = ".")
+  download.file(
+    "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE254nnn/GSE254829/suppl/GSE254829_codatable_may202024.csv.gz",
+    destfile = "GSE254829_codatable_may202024.csv.gz",
+    mode = "wb"
+  )
+
+  spatial <- Seurat::Load10X_Spatial(
+    data.dir = "GSM8058244_PanIN-LG2",
+    filename = "filtered_feature_bc_matrix"
+  )
+  tissue_pos <- utils::read.csv(
+    file.path("GSM8058244_PanIN-LG2", "spatial", "tissue_positions_list.csv"),
+    header = FALSE,
+    row.names = 1
+  )
+  spatial <- subset(
+    spatial,
+    cells = intersect(colnames(spatial), rownames(tissue_pos)[tissue_pos$V2 == 1])
+  )
+  coords <- SeuratObject::GetTissueCoordinates(spatial)
+  spatial$x <- coords[colnames(spatial), "x"]
+  spatial$y <- coords[colnames(spatial), "y"]
+  spatial$sample_id <- "GSM8058244"
+  spatial$geo_accession <- "GSE254829"
+  spatial$patient_sample <- "PanIN-LG2"
+
+  coda <- utils::read.csv("GSE254829_codatable_may202024.csv.gz", check.names = FALSE)
+  coda$barcode <- sub("_[0-9]+$", "", coda[[1]])
+  coda <- coda[coda$sample == "PanIN-LG2" & coda$barcode \%in\% colnames(spatial), ]
+  rownames(coda) <- coda$barcode
+  coda <- coda[colnames(spatial), ]
+  comp_cols <- c("islets", "normal epithelium", "smooth muscle", "fat", "acini", "collagen", "panin")
+  coda$coda_label <- names(coda[comp_cols])[
+    max.col(as.matrix(coda[comp_cols]), ties.method = "first")
+  ]
+  coda$coda_score <- do.call(pmax, coda[comp_cols])
+  spatial$coda_label <- coda$coda_label
+  spatial$coda_score <- coda$coda_score
+  spatial$panin_grade <- coda$paningrade
+  for (cc in comp_cols) {
+    spatial[[paste0("coda_", gsub(" ", ".", cc))]] <- coda[[cc]]
+  }
+  spatial@tools$GSE254829_coda_table <- coda[
+    ,
+    c(comp_cols, "nontissue", "paningrade", "coda_label", "coda_score")
+  ]
+
+  data(panc8_sub)
+  shared <- intersect(rownames(spatial), rownames(panc8_sub))
+  gene_counts <- GetAssayData5(spatial, assay = "Spatial", layer = "counts")
+  genes_keep <- names(
+    sort(Matrix::rowSums(gene_counts[shared, , drop = FALSE]), decreasing = TRUE)
+  )[seq_len(5000)]
+  spatial <- spatial[genes_keep, ]
+  spatial$feature_selection <- "top_5000_shared_with_panc8_by_spatial_counts"
+
+  use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+  use_data(
+    spatial,
+    compress = "xz",
+    overwrite = TRUE
+  )
+}
 
 }
