@@ -22,9 +22,11 @@ directly in bulk DE and deconvolution examples together with the
 bundled \code{panc8_sub} reference.
 }
 \examples{
-data(islet_bulk)
-SummarizedExperiment::assayNames(islet_bulk)
-head(rownames(islet_bulk))
-table(SummarizedExperiment::colData(islet_bulk)$condition)
+if (interactive()) {
+  data(islet_bulk)
+  SummarizedExperiment::assayNames(islet_bulk)
+  head(rownames(islet_bulk))
+  table(SummarizedExperiment::colData(islet_bulk)$condition)
+}
 
 }
