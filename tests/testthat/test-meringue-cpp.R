@@ -6,8 +6,8 @@
 # session's `sample.kind` RNG stream).
 
 meringue_real_input <- function(n = 120, seed = 42) {
-  data(visium_mouse_brain_slices_sub)
-  srt <- visium_mouse_brain_slices_sub
+  data(visium_human_pancreas_sub)
+  srt <- visium_human_pancreas_sub
   srt <- Seurat::NormalizeData(srt, verbose = FALSE)
   srt@images <- list()
   set.seed(seed)
