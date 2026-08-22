@@ -42,6 +42,11 @@ articles:
   - cell-annotation-workflow
   - trajectory-dynamic-workflow
   - differential-enrichment-workflow
+- title: Benchmark workflows
+  navbar: Benchmark workflows
+  contents:
+  - integration-benchmark-workflow
+  - spatial-benchmark-workflow
 - title: Spatial Analysis
   navbar: Spatial Analysis
   contents:
@@ -139,13 +144,18 @@ reference:
   - Coralysis_integrate
   - WNN_integrate
 
+- subtitle: "Benchmark"
+- contents:
+  - RunIntegrationBenchmark
+  - IntegrationBenchmarkPlot
+  - RunSpatialBenchmark
+  - SpatialBenchmarkPlot
+
 - subtitle: "Integration Mapping"
 - contents:
   - RunCSSMap
   - RunHarmony2
   - RunLISI
-  - RunIntegrationBenchmark
-  - IntegrationBenchmarkPlot
   - RunPCAMap
   - RunSeuratMap
   - RunSymphonyMap
@@ -221,7 +231,6 @@ reference:
   - RunBANKSY
   - RunCytoSPACE
   - RunSmoothClust
-  - RunSpatialBenchmark
   - RunMERINGUE
   - RunSpatialVariableFeatures
   - RunSpatialGradientFeatures
@@ -251,7 +260,6 @@ reference:
   - SpatialSpotPlot
   - SpatialDeconvolutionPlot
   - SpatialVariableFeaturePlot
-  - SpatialBenchmarkPlot
   - STdeconvolvePlot
 
 - subtitle: "Cell Type Annotation"
