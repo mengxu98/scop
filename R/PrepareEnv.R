@@ -1735,6 +1735,7 @@ env_info <- function(conda, envname, verbose = TRUE) {
 #' @export
 #' @examples
 #' env_requirements("3.10-1")
+#' env_requirements(version = "3.9-1", modules = "cell2fate")
 env_requirements <- function(
   version = "3.10-1",
   include_optional = FALSE,

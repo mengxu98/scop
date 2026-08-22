@@ -121,12 +121,12 @@ test_that("Visium scale evidence and multi-image selection are strict", {
 })
 
 test_that("standard Seurat Visium scale factors provide the full-resolution diameter", {
-  data(visium_mouse_brain_slices_sub)
+  data(visium_human_pancreas_sub)
   diameter <- spatialcellchat_visium_spot_diameter(
-    visium_mouse_brain_slices_sub,
-    "anterior1"
+    visium_human_pancreas_sub,
+    "slice1"
   )
-  expect_equal(diameter, 89.4779, tolerance = 1e-6)
+  expect_equal(diameter, 35.69412, tolerance = 1e-6)
 })
 
 test_that("composition validation aligns and normalizes spots", {

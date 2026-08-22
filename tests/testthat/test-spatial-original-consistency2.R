@@ -1,11 +1,11 @@
 # End-to-end consistency between scop spatial wrappers and the original
-# backend methods, run with real datasets (visium_mouse_brain_slices_sub,
-# visium_human_pancreas_sub, pancreas_sub, panc8_sub). No simulated data and
+# backend methods, run with real datasets (visium_human_pancreas_sub,
+# pancreas_sub, panc8_sub). No simulated data and
 # no mocked backends.
 
 real_visium_subset2 <- function(n = 150, seed = 42, assay = NULL) {
-  data(visium_mouse_brain_slices_sub)
-  srt <- visium_mouse_brain_slices_sub
+  data(visium_human_pancreas_sub)
+  srt <- visium_human_pancreas_sub
   srt <- Seurat::NormalizeData(srt, verbose = FALSE)
   srt@images <- list()
   set.seed(seed)
@@ -36,15 +36,15 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
   skip_if_not_installed("spacexr")
 
   srt <- real_visium_subset2(n = 120)
-  reference <- real_pancreas_reference2()
-  tb <- table(reference$CellType)
-  reference <- reference[, reference$CellType %in% names(tb)[tb >= 30]]
-  reference$CellType <- factor(reference$CellType)
+  reference <- real_panc8_reference2()
+  tb <- table(reference$celltype)
+  reference <- reference[, reference$celltype %in% names(tb)[tb >= 30]]
+  reference$celltype <- factor(reference$celltype)
 
   wrapped <- RunRCTD(
     srt,
     reference = reference,
-    reference_label = "CellType",
+    reference_label = "celltype",
     min_cells = 25,
     rctd_mode = "multi",
     max_cores = 1,
@@ -54,7 +54,7 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
 
   # original pipeline with the same inputs; spacexr exposes two generations of
   # API (Bioc 1.4.0: createRctd/runRctd, GitHub 2.x: SpatialRNA/create.RCTD)
-  labels <- scop:::resolve_reference_labels(reference, "CellType")
+  labels <- scop:::resolve_reference_labels(reference, "celltype")
   names(labels) <- colnames(reference)
   labels <- labels[!is.na(labels) & nzchar(as.character(labels))]
   labels <- scop:::rctd_filter_labels_by_min_cells(labels, min_cells = 25, verbose = FALSE)
@@ -191,10 +191,10 @@ test_that("RunCARD(CARDspa) proportions match the original CARDspa pipeline", {
   skip_if_not_installed("CARDspa")
 
   srt <- real_visium_subset2(n = 120, seed = 3)
-  reference <- real_pancreas_reference2()
-  tb <- table(reference$CellType)
-  reference <- reference[, reference$CellType %in% names(tb)[tb >= 30]]
-  reference$CellType <- factor(reference$CellType)
+  reference <- real_panc8_reference2()
+  tb <- table(reference$celltype)
+  reference <- reference[, reference$celltype %in% names(tb)[tb >= 30]]
+  reference$celltype <- factor(reference$celltype)
   genes_use <- intersect(rownames(srt), rownames(reference))
   srt <- srt[genes_use, ]
 
@@ -204,7 +204,7 @@ test_that("RunCARD(CARDspa) proportions match the original CARDspa pipeline", {
   wrapped <- RunCARD(
     srt,
     reference = reference,
-    reference_label = "CellType",
+    reference_label = "celltype",
     minCountGene = 0,
     minCountSpot = 0,
     verbose = FALSE
@@ -217,7 +217,7 @@ test_that("RunCARD(CARDspa) proportions match the original CARDspa pipeline", {
   coords <- getFromNamespace("spatial_analysis_coords", "scop")(
     srt = srt, image = NULL, coord.cols = c("x", "y"), coordinate_space = "raw"
   )$data
-  labels <- as.character(reference$CellType)
+  labels <- as.character(reference$celltype)
   names(labels) <- colnames(reference)
   ref_meta <- data.frame(
     .scop_cell_type = labels,
@@ -343,13 +343,14 @@ test_that("RunSpatialIntegration PRECAST domains match the original PRECAST pipe
   skip_on_cran()
   skip_if_not_installed("PRECAST")
 
-  data(visium_mouse_brain_slices_sub)
-  srt <- visium_mouse_brain_slices_sub
+  data(visium_human_pancreas_sub)
+  srt <- visium_human_pancreas_sub
   srt <- Seurat::NormalizeData(srt, verbose = FALSE)
   srt@images <- list()
+  srt$sample <- ifelse(srt$y > stats::median(srt$y), "slice_a", "slice_b")
   set.seed(1)
-  cells1 <- sample(which(srt$sample == "anterior1"), 100)
-  cells2 <- sample(which(srt$sample == "anterior2"), 100)
+  cells1 <- sample(which(srt$sample == "slice_a"), 100)
+  cells2 <- sample(which(srt$sample == "slice_b"), 100)
   s1 <- srt[, cells1]
   s2 <- srt[, cells2]
 

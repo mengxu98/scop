@@ -16,7 +16,14 @@ GetAssayData5(object, ...)
 \method{GetAssayData5}{Assay}(object, layer = "counts", ...)
 }
 \arguments{
+\item{object}{An object}
+
 \item{...}{Additional arguments passed to \link[SeuratObject:GetAssayData]{SeuratObject::GetAssayData}.}
+
+\item{layer}{Name of layer to get or set}
+
+\item{assay}{Specific assay to get data from or set data for;
+defaults to the \link[SeuratObject:DefaultAssay]{default assay}}
 }
 \value{
 A matrix or data frame containing the assay data.

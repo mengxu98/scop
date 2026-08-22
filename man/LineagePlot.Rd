@@ -71,7 +71,14 @@ Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_
 
 \item{title, subtitle, xlab, ylab}{Plot labels.}
 
+\item{legend.position}{Legend position passed to \code{theme()}.}
+
+\item{legend.direction}{Legend direction passed to \code{theme()}.}
+
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
+
+\item{return_layer}{Whether to return the plot layers as a list.
+Defaults is \code{FALSE}.}
 
 \item{seed}{Random seed.}
 

@@ -8,6 +8,15 @@ theme_spatial(show_axes = FALSE, aspect.ratio = 1, base_size = 12, ...)
 }
 \arguments{
 \item{show_axes}{Whether to keep axis titles, text, ticks, and grid lines.}
+
+\item{aspect.ratio}{Aspect ratio of the panel.}
+
+\item{base_size}{Base font size}
+
+\item{...}{Arguments passed to the \link[ggplot2:theme]{ggplot2::theme}.}
+}
+\value{
+A ggplot2 theme object (class \code{theme}, \code{gg}).
 }
 \description{
 Built on \code{\link[=theme_scop]{theme_scop()}} with axes, ticks, and panel grid hidden by default.

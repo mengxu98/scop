@@ -11,7 +11,8 @@ scenic_plot_network_graph <- function(
   network_include_regions = TRUE,
   palette = "RdYlBu",
   palcolor = NULL,
-  rank_table = NULL
+  rank_table = NULL,
+  regulon_label = "auto"
 ) {
   layout_use <- scenic_network_resolve_layout(network_layout, default = "kk")
   scenic_plot_one_network(
@@ -29,6 +30,7 @@ scenic_plot_network_graph <- function(
     palcolor = palcolor,
     curvature = if (layout_use %in% c("star", "hub", "kk", "fr")) 0.08 else 0.12,
     rank_table = rank_table,
+    regulon_label = regulon_label,
     label_top_n = network_label_top_n
   )
 }
@@ -46,7 +48,8 @@ scenic_plot_network <- function(
   network_include_regions = TRUE,
   palette = "RdYlBu",
   palcolor = NULL,
-  rank_table = NULL
+  rank_table = NULL,
+  regulon_label = "auto"
 ) {
   tf_candidates <- scenic_network_tf_candidates(
     network_tf %||% features %||% highlight_tf %||% unique(top_table[["TF"]])
@@ -76,7 +79,8 @@ scenic_plot_network <- function(
     palette = palette,
     palcolor = palcolor,
     curvature = if (layout_use %in% c("star", "hub")) 0 else 0.16,
-    rank_table = rank_table %||% top_table
+    rank_table = rank_table %||% top_table,
+    regulon_label = regulon_label
   )
 }
 
@@ -92,7 +96,8 @@ scenic_plot_egrn <- function(
   label_nodes = "auto",
   palette = "RdYlBu",
   palcolor = NULL,
-  rank_table = NULL
+  rank_table = NULL,
+  regulon_label = "auto"
 ) {
   tf_candidates <- scenic_network_tf_candidates(
     network_tf %||% features %||% highlight_tf %||% unique(top_table[["TF"]])
@@ -123,7 +128,8 @@ scenic_plot_egrn <- function(
     palette = palette,
     palcolor = palcolor,
     curvature = if (identical(layout_use, "star")) 0 else 0.08,
-    rank_table = rank_table %||% top_table
+    rank_table = rank_table %||% top_table,
+    regulon_label = regulon_label
   )
 }
 
@@ -191,6 +197,7 @@ scenic_plot_one_network <- function(
   palcolor,
   curvature,
   rank_table = NULL,
+  regulon_label = "auto",
   label_top_n = Inf
 ) {
   edge_data <- scenic_network_edges(
@@ -218,6 +225,14 @@ scenic_plot_one_network <- function(
     top_n = label_top_n,
     default = default_labels
   )
+  tf_annotations <- scenic_network_tf_annotations(
+    rank_table = rank_table,
+    tfs = network_data[["nodes"]][
+      as.character(network_data[["nodes"]][["node_type"]]) == "TF",
+      "name"
+    ],
+    regulon_label = regulon_label
+  )
   plot <- scenic_network_ggplot(
     node_data = network_data[["nodes"]],
     edge_plot = network_data[["edge_plot"]],
@@ -228,12 +243,18 @@ scenic_plot_one_network <- function(
     palette = palette,
     palcolor = palcolor,
     curvature = curvature,
-    rank_table = rank_table
+    rank_table = rank_table,
+    regulon_label = regulon_label,
+    tf_annotations = tf_annotations
   )
   list(
     plot = plot,
     plots = list(plot),
-    data = list(edges = network_data[["edges"]], nodes = network_data[["nodes"]])
+    data = list(
+      edges = network_data[["edges"]],
+      nodes = network_data[["nodes"]],
+      annotations = tf_annotations
+    )
   )
 }
 
@@ -909,14 +930,28 @@ scenic_is_region_coordinate <- function(name) {
   grepl("^(chr|CHR)[^[:space:]]*[:_-][0-9]", as.character(name))
 }
 
-scenic_network_tf_groups <- function(rank_table, tfs) {
+scenic_network_tf_annotations <- function(
+  rank_table,
+  tfs,
+  regulon_label = c("auto", "regulon", "tf")
+) {
+  regulon_label <- match.arg(regulon_label)
   tfs <- unique(as.character(tfs))
   tfs <- tfs[!is.na(tfs) & nzchar(tfs)]
-  out <- stats::setNames(rep(NA_character_, length(tfs)), tfs)
+  out <- data.frame(
+    TF = tfs,
+    regulon = rep(NA_character_, length(tfs)),
+    group = rep(NA_character_, length(tfs)),
+    specificity_score = rep(NA_real_, length(tfs)),
+    regulons_per_tf = rep(0L, length(tfs)),
+    show_regulon = rep(FALSE, length(tfs)),
+    legend_label = tfs,
+    stringsAsFactors = FALSE
+  )
   if (length(tfs) == 0L || is.null(rank_table) || nrow(rank_table) == 0L) {
     return(out)
   }
-  df <- rank_table
+  df <- as.data.frame(rank_table, stringsAsFactors = FALSE)
   tf_id <- if ("TF" %in% colnames(df)) {
     as.character(df[["TF"]])
   } else if ("regulon" %in% colnames(df)) {
@@ -924,26 +959,69 @@ scenic_network_tf_groups <- function(rank_table, tfs) {
   } else {
     return(out)
   }
-  df <- df[tf_id %in% tfs, , drop = FALSE]
-  tf_id <- tf_id[tf_id %in% tfs]
-  if (nrow(df) == 0L || !"group" %in% colnames(df)) {
+  keep <- !is.na(tf_id) & tf_id %in% tfs
+  df <- df[keep, , drop = FALSE]
+  tf_id <- tf_id[keep]
+  if (nrow(df) == 0L) {
     return(out)
   }
   df[["tf_id"]] <- tf_id
-  ord <- seq_len(nrow(df))
+  df[["regulon_id"]] <- if ("regulon" %in% colnames(df)) {
+    as.character(df[["regulon"]])
+  } else {
+    tf_id
+  }
+  regulon_counts <- vapply(
+    split(df[["regulon_id"]], df[["tf_id"]]),
+    function(x) length(unique(x[!is.na(x) & nzchar(x)])),
+    integer(1)
+  )
+
+  score <- rep(NA_real_, nrow(df))
   if ("specificity_score" %in% colnames(df)) {
     score <- as.numeric(df[["specificity_score"]])
-    score[!is.finite(score)] <- -Inf
-    ord <- order(df[["tf_id"]], -score, df[["tf_id"]])
+    score_order <- score
+    score_order[!is.finite(score_order)] <- -Inf
+    ord <- order(df[["tf_id"]], -score_order, seq_len(nrow(df)))
   } else if ("rank" %in% colnames(df)) {
-    rank <- as.numeric(df[["rank"]])
-    rank[!is.finite(rank)] <- Inf
-    ord <- order(df[["tf_id"]], rank)
+    rank_order <- as.numeric(df[["rank"]])
+    rank_order[!is.finite(rank_order)] <- Inf
+    ord <- order(df[["tf_id"]], rank_order, seq_len(nrow(df)))
+  } else {
+    ord <- order(df[["tf_id"]], seq_len(nrow(df)))
   }
   df <- df[ord, , drop = FALSE]
+  score <- score[ord]
+  df[["specificity_score_value"]] <- score
   df <- df[!duplicated(df[["tf_id"]]), , drop = FALSE]
-  out[df[["tf_id"]]] <- as.character(df[["group"]])
+  row_idx <- match(df[["tf_id"]], out[["TF"]])
+  out[["regulon"]][row_idx] <- df[["regulon_id"]]
+  if ("group" %in% colnames(df)) {
+    out[["group"]][row_idx] <- as.character(df[["group"]])
+  }
+  out[["specificity_score"]][row_idx] <- df[["specificity_score_value"]]
+  count_idx <- match(out[["TF"]], names(regulon_counts))
+  has_count <- !is.na(count_idx)
+  out[["regulons_per_tf"]][has_count] <- unname(regulon_counts[count_idx[has_count]])
+  out[["show_regulon"]] <- switch(
+    regulon_label,
+    tf = rep(FALSE, nrow(out)),
+    regulon = !is.na(out[["regulon"]]) & nzchar(out[["regulon"]]),
+    auto = out[["regulons_per_tf"]] > 1L
+  )
+  base_label <- out[["TF"]]
+  base_label[out[["show_regulon"]]] <- out[["regulon"]][out[["show_regulon"]]]
+  out[["legend_label"]] <- base_label
   out
+}
+
+scenic_network_tf_groups <- function(rank_table, tfs) {
+  annotations <- scenic_network_tf_annotations(
+    rank_table = rank_table,
+    tfs = tfs,
+    regulon_label = "tf"
+  )
+  stats::setNames(annotations[["group"]], annotations[["TF"]])
 }
 
 scenic_network_ggplot <- function(
@@ -957,7 +1035,9 @@ scenic_network_ggplot <- function(
   palcolor = NULL,
   curvature = 0,
   edge_width_range = c(0.32, 1.05),
-  rank_table = NULL
+  rank_table = NULL,
+  regulon_label = "auto",
+  tf_annotations = NULL
 ) {
   styled <- scenic_network_style_data(
     node_data = node_data,
@@ -977,6 +1057,10 @@ scenic_network_ggplot <- function(
   }
 
   tf_nodes <- node_data[as.character(node_data[["node_type"]]) == "TF", , drop = FALSE]
+  tf_nodes[["tf_label_size"]] <- pmax(
+    1.5,
+    2.6 * 4 / pmax(4, nchar(as.character(tf_nodes[["label"]])))
+  )
   region_nodes <- node_data[as.character(node_data[["node_type"]]) == "region", , drop = FALSE]
   gene_nodes <- node_data[as.character(node_data[["node_type"]]) == "gene", , drop = FALSE]
   use_radial <- identical(layout, "star") && nrow(tf_nodes) == 1L
@@ -1075,10 +1159,10 @@ scenic_network_ggplot <- function(
         x = .data[["x"]],
         y = .data[["y"]],
         label = .data[["label"]],
-        color = .data[["label_color"]]
+        color = .data[["label_color"]],
+        size = .data[["tf_label_size"]]
       ),
       fontface = "bold",
-      size = 2.6,
       show.legend = FALSE
     )
   }
@@ -1127,23 +1211,32 @@ scenic_network_ggplot <- function(
     }
   }
 
-  if (length(tf_cols) > 1L) {
-    tf_groups <- scenic_network_tf_groups(rank_table, names(tf_cols))
-    tfs <- names(tf_cols)
-    groups <- unname(tf_groups[tfs])
-    legend_labels <- ifelse(
-      is.na(groups) | !nzchar(groups),
-      tfs,
-      paste0(tfs, " (", groups, ")")
+  if (is.null(tf_annotations)) {
+    tf_annotations <- scenic_network_tf_annotations(
+      rank_table = rank_table,
+      tfs = names(tf_cols),
+      regulon_label = regulon_label
     )
+  }
+  tf_annotations <- tf_annotations[
+    match(names(tf_cols), tf_annotations[["TF"]]),
+    ,
+    drop = FALSE
+  ]
+  has_annotation <- nrow(tf_annotations) > 0L && any(
+    tf_annotations[["show_regulon"]]
+  )
+
+  if (length(tf_cols) > 1L || has_annotation) {
+    legend_labels <- tf_annotations[["legend_label"]]
     legend_df <- data.frame(
       x = mean(node_data[["x"]]),
       y = mean(node_data[["y"]]),
       label = legend_labels,
       stringsAsFactors = FALSE
     )
-    legend_name <- if (any(!is.na(unname(tf_groups)) & nzchar(unname(tf_groups)))) {
-      "TF (top cell type)"
+    legend_name <- if (any(tf_annotations[["show_regulon"]])) {
+      "Top regulon"
     } else {
       "TF"
     }
@@ -1246,4 +1339,3 @@ scenic_regulon_jaccard <- function(regulon_list) {
   }
   mat
 }
-

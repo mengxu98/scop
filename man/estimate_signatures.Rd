@@ -25,8 +25,10 @@ stromal, immune, combined ESTIMATE, and tumor-purity scores without requiring
 the external \code{estimate} package.
 }
 \examples{
-data(estimate_signatures)
-names(estimate_signatures)
-lengths(estimate_signatures[c("stromal_signature", "immune_signature", "common_genes")])
+if (interactive()) {
+  data(estimate_signatures)
+  names(estimate_signatures)
+  lengths(estimate_signatures[c("stromal_signature", "immune_signature", "common_genes")])
+}
 
 }

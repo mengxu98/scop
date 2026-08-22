@@ -111,7 +111,7 @@ spacing, then multiplies by \code{pie.radius.scale}.}
 
 \item{theme_use}{Theme name or function.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{verbose}{Print progress messages.}
