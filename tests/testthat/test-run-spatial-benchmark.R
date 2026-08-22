@@ -116,14 +116,14 @@ test_that("all-unavailable dry runs do not require subprocess dependencies", {
     benchmark_require_runtime = function() stop("runtime must not be checked"),
     benchmark_package_context = function() stop("package context must not be resolved")
   )
-  result <- RunBenchmark(object, "gold", verbose = FALSE)
+  result <- RunSpatialBenchmark(object, "gold", verbose = FALSE)
   expect_identical(result$summary$status, rep("unavailable", 3))
   expect_true(all(is.na(result$summary$ARI)))
   expect_true(all(is.na(result$summary$runtime_s)))
   expect_equal(nrow(result$predictions), 0L)
   expect_equal(length(result$objects), 0L)
-  expect_s3_class(BenchmarkPlot(data = result), "patchwork")
-  expect_no_error(patchwork::patchworkGrob(BenchmarkPlot(data = result)))
+  expect_s3_class(SpatialBenchmarkPlot(data = result), "patchwork")
+  expect_no_error(patchwork::patchworkGrob(SpatialBenchmarkPlot(data = result)))
   expect_true(is.data.frame(result$summary))
 })
 
@@ -133,7 +133,7 @@ test_that("availability diagnostic errors remain method-local and truthful", {
     benchmark_method_availability = function(method) stop("availability diagnostic broke"),
     benchmark_require_runtime = function() stop("runtime must not be checked")
   )
-  result <- RunBenchmark(object, "gold", methods = c("BayesSpace", "BANKSY"), verbose = FALSE)
+  result <- RunSpatialBenchmark(object, "gold", methods = c("BayesSpace", "BANKSY"), verbose = FALSE)
   expect_identical(result$summary$status, c("unavailable", "unavailable"))
   expect_true(all(grepl("availability check failed", result$summary$error)))
 })
@@ -167,7 +167,7 @@ test_that("install_missing enters the producer path instead of pretending unavai
       )
     }
   )
-  result <- RunBenchmark(
+  result <- RunSpatialBenchmark(
     object, "gold",
     methods = c("BayesSpace", "BANKSY"),
     install_missing = TRUE, verbose = FALSE
@@ -203,7 +203,7 @@ test_that("malformed predictions fail one method without aborting the batch", {
       )
     }
   )
-  result <- RunBenchmark(
+  result <- RunSpatialBenchmark(
     object, "gold",
     methods = c("BayesSpace", "BANKSY"), verbose = FALSE
   )
@@ -251,16 +251,16 @@ test_that("metric computation handles permutation partial labels and unequal cla
 
 test_that("numeric controls reject overflow and non-finite values", {
   object <- make_benchmark_seurat()
-  expect_error(RunBenchmark(object, "gold", seed = .Machine$integer.max + 1), "invalid value")
-  expect_error(RunBenchmark(object, "gold", n_clusters = Inf), "invalid value")
-  expect_error(RunBenchmark(object, "gold", timeout = -1), "invalid value")
-  expect_error(RunBenchmark(object, "gold", poll_interval = 0), "invalid value")
+  expect_error(RunSpatialBenchmark(object, "gold", seed = .Machine$integer.max + 1), "invalid value")
+  expect_error(RunSpatialBenchmark(object, "gold", n_clusters = Inf), "invalid value")
+  expect_error(RunSpatialBenchmark(object, "gold", timeout = -1), "invalid value")
+  expect_error(RunSpatialBenchmark(object, "gold", poll_interval = 0), "invalid value")
 })
 
-test_that("RunBenchmark aligns spots and retains metrics and resource measurements", {
+test_that("RunSpatialBenchmark aligns spots and retains metrics and resource measurements", {
   object <- make_benchmark_seurat()
   mock_benchmark_runs({
-    result <- RunBenchmark(
+    result <- RunSpatialBenchmark(
       object,
       gold_standard = "gold",
       methods = c("BayesSpace", "BANKSY"),
@@ -269,6 +269,7 @@ test_that("RunBenchmark aligns spots and retains metrics and resource measuremen
     )
   })
 
+  expect_s3_class(result, "spatial_benchmark_result")
   expect_s3_class(result, "benchmark_result")
   expect_identical(result$summary$method, c("BayesSpace", "BANKSY"))
   expect_equal(result$summary$ARI[[1]], 1)
@@ -289,7 +290,7 @@ test_that("benchmark execution never mutates the caller's Seurat object", {
   object <- make_benchmark_seurat()
   original <- object
   mock_benchmark_runs({
-    invisible(RunBenchmark(
+    invisible(RunSpatialBenchmark(
       object, "gold",
       methods = c("BayesSpace", "BANKSY"), verbose = FALSE
     ))
@@ -300,7 +301,7 @@ test_that("benchmark execution never mutates the caller's Seurat object", {
 test_that("custom producer result keys are recorded truthfully", {
   object <- make_benchmark_seurat()
   mock_benchmark_runs({
-    result <- RunBenchmark(
+    result <- RunSpatialBenchmark(
       object, "gold",
       methods = "BANKSY",
       method_params = list(BANKSY = list(
@@ -368,7 +369,7 @@ test_that("failed and unavailable methods do not receive pseudo metrics", {
       )
     }
   )
-  result <- RunBenchmark(
+  result <- RunSpatialBenchmark(
     object, "gold",
     methods = c("BayesSpace", "BANKSY"), verbose = FALSE
   )
@@ -407,7 +408,7 @@ test_that("timeout status remains method-local in a mixed batch", {
       )
     }
   )
-  result <- RunBenchmark(
+  result <- RunSpatialBenchmark(
     object, "gold",
     methods = c("BayesSpace", "BANKSY"), verbose = FALSE
   )
