@@ -76,7 +76,7 @@ are shown.}
 
 \item{boxplot_jitter}{Whether to overlay jittered points on the boxplot.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales

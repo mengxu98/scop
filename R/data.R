@@ -11,50 +11,50 @@
 #' \href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
 #'
 #' @examples
-#' \dontrun{
-#' PrepareEnv()
-#' check_python("scvelo")
-#' scv <- import("scvelo")
-#' adata <- scv$datasets$pancreas()
-#' pancreas <- adata_to_srt(adata)
-#' set.seed(98)
-#' cells <- sample(colnames(pancreas), size = 1000)
-#' pancreas_sub <- pancreas[, cells]
-#' pancreas_sub <- pancreas_sub[Matrix::rowSums(
-#'   GetAssayData5(
-#'     pancreas_sub,
-#'     layer = "counts"
+#' if (interactive()) {
+#'   PrepareEnv()
+#'   check_python("scvelo")
+#'   scv <- import("scvelo")
+#'   adata <- scv$datasets$pancreas()
+#'   pancreas <- adata_to_srt(adata)
+#'   set.seed(98)
+#'   cells <- sample(colnames(pancreas), size = 1000)
+#'   pancreas_sub <- pancreas[, cells]
+#'   pancreas_sub <- pancreas_sub[Matrix::rowSums(
+#'     GetAssayData5(
+#'       pancreas_sub,
+#'       layer = "counts"
+#'     )
+#'   ) > 0, ]
+#'   pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
+#'   pancreas_sub[["SubCellType"]] <- pancreas_sub[["clusters"]]
+#'   pancreas_sub[["clusters_coarse"]] <- pancreas_sub[["clusters"]] <- NULL
+#'   pancreas_sub[["Phase"]] <- ifelse(
+#'     pancreas_sub$S_score > pancreas_sub$G2M_score,
+#'     "S",
+#'     "G2M"
 #'   )
-#' ) > 0, ]
-#' pancreas_sub[["CellType"]] <- pancreas_sub[["clusters_coarse"]]
-#' pancreas_sub[["SubCellType"]] <- pancreas_sub[["clusters"]]
-#' pancreas_sub[["clusters_coarse"]] <- pancreas_sub[["clusters"]] <- NULL
-#' pancreas_sub[["Phase"]] <- ifelse(
-#'   pancreas_sub$S_score > pancreas_sub$G2M_score,
-#'   "S",
-#'   "G2M"
-#' )
-#' pancreas_sub[["Phase"]][apply(
-#'   pancreas_sub[[]][, c("S_score", "G2M_score")],
-#'   1,
-#'   max
-#' ) < 0, ] <- "G1"
-#' pancreas_sub[["Phase", drop = TRUE]] <- factor(
-#'   pancreas_sub[["Phase", drop = TRUE]],
-#'   levels = c("G1", "S", "G2M")
-#' )
-#' pancreas_sub$CellType <- gsub("_", "-", pancreas_sub$CellType)
-#' pancreas_sub$CellType <- gsub(" ", "-", pancreas_sub$CellType)
-#' pancreas_sub$SubCellType <- gsub("_", "-", pancreas_sub$SubCellType)
-#' pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
-#' pancreas_sub@reductions$X_pca <- NULL
-#' pancreas_sub@reductions$X_umap <- NULL
-#' use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#' use_data(
-#'   pancreas_sub,
-#'   compress = "xz",
-#'   overwrite = TRUE
-#' )
+#'   pancreas_sub[["Phase"]][apply(
+#'     pancreas_sub[[]][, c("S_score", "G2M_score")],
+#'     1,
+#'     max
+#'   ) < 0, ] <- "G1"
+#'   pancreas_sub[["Phase", drop = TRUE]] <- factor(
+#'     pancreas_sub[["Phase", drop = TRUE]],
+#'     levels = c("G1", "S", "G2M")
+#'   )
+#'   pancreas_sub$CellType <- gsub("_", "-", pancreas_sub$CellType)
+#'   pancreas_sub$CellType <- gsub(" ", "-", pancreas_sub$CellType)
+#'   pancreas_sub$SubCellType <- gsub("_", "-", pancreas_sub$SubCellType)
+#'   pancreas_sub$SubCellType <- gsub(" ", "-", pancreas_sub$SubCellType)
+#'   pancreas_sub@reductions$X_pca <- NULL
+#'   pancreas_sub@reductions$X_umap <- NULL
+#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+#'   use_data(
+#'     pancreas_sub,
+#'     compress = "xz",
+#'     overwrite = TRUE
+#'   )
 #' }
 #' @name pancreas_sub
 NULL
@@ -76,43 +76,45 @@ NULL
 #' \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE86469}{GSE86469}
 #'
 #' @examples
-#' data(pancreas_sub)
-#' thisutils::check_r("satijalab/seurat-data")
+#' if (interactive()) {
+#'   data(pancreas_sub)
+#'   thisutils::check_r("satijalab/seurat-data")
 #'
-#' InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
-#' InstallData("panc8")
-#' data(panc8)
-#' panc8 <- UpdateSeuratObject(panc8)
-#' set.seed(98)
-#' cells_sub <- unlist(
-#'   lapply(
-#'     split(colnames(panc8), panc8$dataset),
-#'     function(x) sample(x, size = 200)
+#'   InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
+#'   InstallData("panc8")
+#'   data(panc8)
+#'   panc8 <- UpdateSeuratObject(panc8)
+#'   set.seed(98)
+#'   cells_sub <- unlist(
+#'     lapply(
+#'       split(colnames(panc8), panc8$dataset),
+#'       function(x) sample(x, size = 200)
+#'     )
 #'   )
-#' )
-#' panc8_sub <- subset(panc8, cells = cells_sub)
-#' counts <- GetAssayData5(
-#'   panc8_sub,
-#'   layer = "counts"
-#' )
-#' panc8_sub <- CreateSeuratObject(
-#'   counts = counts,
-#'   meta.data = panc8_sub@meta.data
-#' )
-#' panc8_sub <- panc8_sub[Matrix::rowSums(counts) > 0, ]
-#' panc8_sub <- panc8_sub[toupper(
-#'   rownames(panc8_sub)
-#' ) %in% toupper(
-#'   rownames(pancreas_sub)
-#' ), ]
-#' panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
-#' panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
-#' use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#' use_data(
-#'   panc8_sub,
-#'   compress = "xz",
-#'   overwrite = TRUE
-#' )
+#'   panc8_sub <- subset(panc8, cells = cells_sub)
+#'   counts <- GetAssayData5(
+#'     panc8_sub,
+#'     layer = "counts"
+#'   )
+#'   panc8_sub <- CreateSeuratObject(
+#'     counts = counts,
+#'     meta.data = panc8_sub@meta.data
+#'   )
+#'   panc8_sub <- panc8_sub[Matrix::rowSums(counts) > 0, ]
+#'   panc8_sub <- panc8_sub[toupper(
+#'     rownames(panc8_sub)
+#'   ) %in% toupper(
+#'     rownames(pancreas_sub)
+#'   ), ]
+#'   panc8_sub$celltype <- gsub("_", "-", panc8_sub$celltype)
+#'   panc8_sub$celltype <- gsub(" ", "-", panc8_sub$celltype)
+#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+#'   use_data(
+#'     panc8_sub,
+#'     compress = "xz",
+#'     overwrite = TRUE
+#'   )
+#' }
 #' @name panc8_sub
 NULL
 
@@ -121,29 +123,52 @@ NULL
 #' @description
 #' A near-balanced 500-cell subset of the PBMC multiome dataset from SeuratData,
 #' containing paired `RNA` and `peaks` assays for package examples and tests.
-#' The dataset keeps approximately equal numbers of cells for each major PBMC cell type and retains the
-#' top 12000 accessible peaks by total counts within the selected cells.
+#' The dataset keeps approximately equal numbers of cells for each major PBMC cell type, retains the
+#' top 12000 accessible peaks by total counts within the selected cells, and keeps
+#' RNA genes with at least 10 total counts in the subset (12405 genes).
 #' When available, the `peaks` assay stores a compact hg38 gene annotation
 #' derived from `EnsDb.Hsapiens.v86` and collapsed to the longest transcript
 #' per gene.
 #'
 #' @md
-#' @format A `Seurat` object.
+#' @format A `Seurat` object with 12405 RNA genes, 12000 peaks, and 500 cells.
 #' @source
 #' Derived from the PBMC multiome reference data distributed through
 #' \href{https://github.com/satijalab/seurat-data}{SeuratData} /
-#' `pbmcMultiome.SeuratData`, using the helper object
-#' `test/data/pbmc_multiome_1k.rds` in this repository.
+#' `pbmcMultiome.SeuratData`.
 #'
 #' @examples
-#' source("test/data/create_pbmcmultiome_sub.R")
-#' pbmcmultiome_sub <- create_pbmcmultiome_sub()
-#' use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#' use_data(
-#'   pbmcmultiome_sub,
-#'   compress = "xz",
-#'   overwrite = TRUE
-#' )
+#' if (interactive()) {
+#'   thisutils::check_r("satijalab/seurat-data")
+#'   InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
+#'   InstallData("pbmcMultiome")
+#'   data(pbmcMultiome)
+#'   pbmcMultiome <- UpdateSeuratObject(pbmcMultiome)
+#'
+#'   set.seed(98)
+#'   n_per_type <- ceiling(500 / length(unique(pbmcMultiome$cell_type)))
+#'   cells_sub <- unlist(
+#'     lapply(
+#'       split(colnames(pbmcMultiome), pbmcMultiome$cell_type),
+#'       function(x) sample(x, size = min(n_per_type, length(x)))
+#'     ),
+#'     use.names = FALSE
+#'   )
+#'   pbmcmultiome_sub <- subset(pbmcMultiome, cells = cells_sub)
+#'
+#'   peak_counts <- GetAssayData5(pbmcmultiome_sub, assay = "peaks", layer = "counts")
+#'   peaks_keep <- names(sort(Matrix::rowSums(peak_counts), decreasing = TRUE))[seq_len(12000)]
+#'   rna_counts <- GetAssayData5(pbmcmultiome_sub, assay = "RNA", layer = "counts")
+#'   genes_keep <- names(Matrix::rowSums(rna_counts))[Matrix::rowSums(rna_counts) >= 10]
+#'   pbmcmultiome_sub <- subset(pbmcmultiome_sub, features = c(genes_keep, peaks_keep))
+#'
+#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+#'   use_data(
+#'     pbmcmultiome_sub,
+#'     compress = "xz",
+#'     overwrite = TRUE
+#'   )
+#' }
 #' @name pbmcmultiome_sub
 NULL
 
@@ -174,54 +199,78 @@ NULL
 #' `GSE254829_codatable_may202024.csv.gz`.
 #'
 #' @examples
-#' data(visium_human_pancreas_sub)
-#' SeuratObject::Images(visium_human_pancreas_sub)
-#' head(visium_human_pancreas_sub@meta.data[, c("x", "y")])
-#' SpatialSpotPlot(visium_human_pancreas_sub, group.by = "coda_label")
+#' if (interactive()) {
+#'   download.file(
+#'     "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8058nnn/GSM8058244/suppl/GSM8058244_PanIN-LG2.tar.gz",
+#'     destfile = "GSM8058244_PanIN-LG2.tar.gz",
+#'     mode = "wb"
+#'   )
+#'   untar("GSM8058244_PanIN-LG2.tar.gz", exdir = ".")
+#'   download.file(
+#'     "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE254nnn/GSE254829/suppl/GSE254829_codatable_may202024.csv.gz",
+#'     destfile = "GSE254829_codatable_may202024.csv.gz",
+#'     mode = "wb"
+#'   )
+#'
+#'   spatial <- Seurat::Load10X_Spatial(
+#'     data.dir = "GSM8058244_PanIN-LG2",
+#'     filename = "filtered_feature_bc_matrix"
+#'   )
+#'   tissue_pos <- utils::read.csv(
+#'     file.path("GSM8058244_PanIN-LG2", "spatial", "tissue_positions_list.csv"),
+#'     header = FALSE,
+#'     row.names = 1
+#'   )
+#'   spatial <- subset(
+#'     spatial,
+#'     cells = intersect(colnames(spatial), rownames(tissue_pos)[tissue_pos$V2 == 1])
+#'   )
+#'   coords <- SeuratObject::GetTissueCoordinates(spatial)
+#'   spatial$x <- coords[colnames(spatial), "x"]
+#'   spatial$y <- coords[colnames(spatial), "y"]
+#'   spatial$sample_id <- "GSM8058244"
+#'   spatial$geo_accession <- "GSE254829"
+#'   spatial$patient_sample <- "PanIN-LG2"
+#'
+#'   coda <- utils::read.csv("GSE254829_codatable_may202024.csv.gz", check.names = FALSE)
+#'   coda$barcode <- sub("_[0-9]+$", "", coda[[1]])
+#'   coda <- coda[coda$sample == "PanIN-LG2" & coda$barcode %in% colnames(spatial), ]
+#'   rownames(coda) <- coda$barcode
+#'   coda <- coda[colnames(spatial), ]
+#'   comp_cols <- c("islets", "normal epithelium", "smooth muscle", "fat", "acini", "collagen", "panin")
+#'   coda$coda_label <- names(coda[comp_cols])[
+#'     max.col(as.matrix(coda[comp_cols]), ties.method = "first")
+#'   ]
+#'   coda$coda_score <- do.call(pmax, coda[comp_cols])
+#'   spatial$coda_label <- coda$coda_label
+#'   spatial$coda_score <- coda$coda_score
+#'   spatial$panin_grade <- coda$paningrade
+#'   for (cc in comp_cols) {
+#'     spatial[[paste0("coda_", gsub(" ", ".", cc))]] <- coda[[cc]]
+#'   }
+#'   spatial@tools$GSE254829_coda_table <- coda[
+#'     ,
+#'     c(comp_cols, "nontissue", "paningrade", "coda_label", "coda_score")
+#'   ]
+#'
+#'   data(panc8_sub)
+#'   shared <- intersect(rownames(spatial), rownames(panc8_sub))
+#'   gene_counts <- GetAssayData5(spatial, assay = "Spatial", layer = "counts")
+#'   genes_keep <- names(
+#'     sort(Matrix::rowSums(gene_counts[shared, , drop = FALSE]), decreasing = TRUE)
+#'   )[seq_len(5000)]
+#'   spatial <- spatial[genes_keep, ]
+#'   spatial$feature_selection <- "top_5000_shared_with_panc8_by_spatial_counts"
+#'
+#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+#'   use_data(
+#'     spatial,
+#'     compress = "xz",
+#'     overwrite = TRUE
+#'   )
+#' }
 #'
 #' @name visium_human_pancreas_sub
-NULL
-
-#' @title A mouse brain Visium two-slice spatial example dataset
-#'
-#' @description
-#' A compact two-slice subset of the 10x Genomics mouse brain serial sagittal
-#' Visium dataset distributed as `stxBrain.SeuratData`. The object contains
-#' 1000 tissue spots from each of the anterior serial sections `anterior1` and
-#' `anterior2`, with a `Spatial` assay, two centroid-based Visium images, and
-#' tissue coordinates in metadata columns `x` and `y`. Metadata column `sample`
-#' stores the original slice label and is intended for multi-slice spatial
-#' integration examples that require a real `sample.by` column. To keep the
-#' package data small, the object retains the top 4000 genes ranked by total
-#' counts across the two selected slices. The images are rebuilt as generic
-#' centroid FOVs so that the object can be subset with current `SeuratObject`
-#' releases.
-#'
-#' @md
-#' @format A `Seurat` object with 4000 genes, 2000 spots, and two Visium images
-#' named `anterior1` and `anterior2`.
-#' @source
-#' Derived from the 10x Genomics mouse brain serial section 1 sagittal anterior
-#' Visium dataset distributed through
-#' \href{https://github.com/satijalab/seurat-data}{SeuratData} as
-#' `stxBrain.SeuratData` version 0.1.2 under the CC BY 4.0 license. The Seurat
-#' spatial vignette describes loading these slices with
-#' `SeuratData::LoadData("stxBrain", type = "anterior1")`.
-#'
-#' @examples
-#' data(visium_mouse_brain_slices_sub)
-#' table(visium_mouse_brain_slices_sub$sample)
-#' SeuratObject::Images(visium_mouse_brain_slices_sub)
-#' head(visium_mouse_brain_slices_sub@meta.data[, c("sample", "x", "y")])
-#' SpatialSpotPlot(
-#'   visium_mouse_brain_slices_sub,
-#'   group.by = "sample",
-#'   split.by = "sample",
-#'   image = "anterior1",
-#'   overlay_image = FALSE
-#' )
-#'
-#' @name visium_mouse_brain_slices_sub
 NULL
 
 #' @title Human pancreatic islet bulk RNA-seq example dataset
@@ -244,10 +293,12 @@ NULL
 #' are rounded to the nearest integer for count-based example workflows.
 #'
 #' @examples
-#' data(islet_bulk)
-#' SummarizedExperiment::assayNames(islet_bulk)
-#' head(rownames(islet_bulk))
-#' table(SummarizedExperiment::colData(islet_bulk)$condition)
+#' if (interactive()) {
+#'   data(islet_bulk)
+#'   SummarizedExperiment::assayNames(islet_bulk)
+#'   head(rownames(islet_bulk))
+#'   table(SummarizedExperiment::colData(islet_bulk)$condition)
+#' }
 #'
 #' @name islet_bulk
 NULL
@@ -275,9 +326,11 @@ NULL
 #' \href{https://doi.org/10.1038/nature08460}{Barbie et al. (2009)}.
 #'
 #' @examples
-#' data(estimate_signatures)
-#' names(estimate_signatures)
-#' lengths(estimate_signatures[c("stromal_signature", "immune_signature", "common_genes")])
+#' if (interactive()) {
+#'   data(estimate_signatures)
+#'   names(estimate_signatures)
+#'   lengths(estimate_signatures[c("stromal_signature", "immune_signature", "common_genes")])
+#' }
 #'
 #' @name estimate_signatures
 NULL
@@ -290,19 +343,21 @@ NULL
 #' These mainly include words that are excessively redundant or of little value.
 #'
 #' @examples
-#' words_excluded <- c(
-#'   "the", "is", "and", "or", "a",
-#'   "in", "on", "under", "between", "of",
-#'   "through", "via", "along", "that",
-#'   "for", "with", "within", "without",
-#'   "cell", "cellular", "dna", "rna",
-#'   "protein", "peptide", "amino", "acid",
-#'   "development", "involved", "organization", "system",
-#'   "regulation", "regulated", "positive", "negative",
-#'   "response", "process", "processing", "small", "large", "change"
-#' )
-#' use_data <- thisutils::get_namespace_fun("usethis", "use_data")
-#' use_data(words_excluded, compress = "xz")
+#' if (interactive()) {
+#'   words_excluded <- c(
+#'     "the", "is", "and", "or", "a",
+#'     "in", "on", "under", "between", "of",
+#'     "through", "via", "along", "that",
+#'     "for", "with", "within", "without",
+#'     "cell", "cellular", "dna", "rna",
+#'     "protein", "peptide", "amino", "acid",
+#'     "development", "involved", "organization", "system",
+#'     "regulation", "regulated", "positive", "negative",
+#'     "response", "process", "processing", "small", "large", "change"
+#'   )
+#'   use_data <- thisutils::get_namespace_fun("usethis", "use_data")
+#'   use_data(words_excluded, compress = "xz")
+#' }
 #' @name words_excluded
 NULL
 
@@ -311,10 +366,12 @@ NULL
 #' @source
 #' \href{https://github.com/ggjlab/scMCA}{scMCA}
 #' @examples
-#' thisutils::check_r(c("ggjlab/scMCA"))
-#' ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
-#' Encoding(colnames(ref_scMCA)) <- "latin1"
-#' colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
-#' # thisutils::get_namespace_fun("usethis", "use_data")(ref_scMCA, compress = "xz")
+#' if (interactive()) {
+#'   thisutils::check_r(c("ggjlab/scMCA"))
+#'   ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
+#'   Encoding(colnames(ref_scMCA)) <- "latin1"
+#'   colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
+#'   # thisutils::get_namespace_fun("usethis", "use_data")(ref_scMCA, compress = "xz")
+#' }
 #' @name ref_scMCA
 NULL

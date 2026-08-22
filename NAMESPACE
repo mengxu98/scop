@@ -168,8 +168,6 @@ export(LineagePlot)
 export(ListCCCDB)
 export(ListDB)
 export(ListEnv)
-export(ListExternalDatasets)
-export(LoadExternalDataset)
 export(MNN_integrate)
 export(MetaCellPlot)
 export(MetabolismPlot)
@@ -401,23 +399,31 @@ importFrom(ComplexHeatmap,"%v%")
 importFrom(Rcpp,evalCpp)
 importFrom(RcppParallel,RcppParallelLibs)
 importFrom(Signac,RunSVD)
-importFrom(dplyr,"%>%")
-importFrom(dplyr,.data)
-importFrom(ggforce,geom_mark_circle)
-importFrom(ggforce,geom_mark_ellipse)
-importFrom(ggforce,geom_mark_hull)
-importFrom(ggforce,geom_mark_rect)
+importFrom(dplyr,
+  "%>%",
+  .data
+)
+importFrom(ggforce,
+  geom_mark_circle,
+  geom_mark_ellipse,
+  geom_mark_hull,
+  geom_mark_rect
+)
 importFrom(ggrepel,GeomTextRepel)
 importFrom(grDevices,as.raster)
 importFrom(methods,slot)
 importFrom(rlang,"%||%")
-importFrom(stats,approx)
-importFrom(stats,density)
-importFrom(stats,median)
-importFrom(stats,model.matrix)
-importFrom(stats,p.adjust)
-importFrom(stats,setNames)
-importFrom(utils,getFromNamespace)
-importFrom(utils,head)
-importFrom(utils,read.csv)
+importFrom(stats,
+  approx,
+  density,
+  median,
+  model.matrix,
+  p.adjust,
+  setNames
+)
+importFrom(utils,
+  getFromNamespace,
+  head,
+  read.csv
+)
 useDynLib(scop, .registration = TRUE)

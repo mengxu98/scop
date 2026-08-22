@@ -85,15 +85,90 @@ Possible values are \code{"connectivities"} (default) and \code{"connectivities_
 
 \item{show_transition}{Whether to display transitions between different cell states.}
 
+\item{node_palette}{A character vector specifying the name of the color palette for node groups.}
+
+\item{node_palcolor}{A character vector specifying the names of the colors for each node group.}
+
+\item{node_size}{A numeric value or column name of \code{node} specifying the size of the nodes.}
+
+\item{node_alpha}{A numeric value or column name of \code{node} specifying the transparency of the nodes.}
+
+\item{node_highlight}{A character vector specifying the names of nodes to highlight.}
+
+\item{node_highlight_color}{A character vector specifying the color for highlighting nodes.}
+
 \item{label, label_insitu, label.size, label.fg, label.bg, label.bg.r}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
 
 \item{label_repel, label_repulsion, label_point_size, label_point_color, label_segment_color}{Repel labels away from cluster centers.}
+
+\item{edge_threshold}{The threshold for removing edges.}
+
+\item{edge_line}{A character vector specifying the type of line for edges (straight, curved).}
+
+\item{edge_line_curvature}{The curvature of curved edges.}
+
+\item{edge_line_angle}{The angle of curved edges.}
+
+\item{edge_size}{A numeric vector specifying the range of edge sizes.}
+
+\item{edge_color}{A character vector specifying the color of the edges.}
+
+\item{edge_alpha}{The transparency of the edges.}
+
+\item{edge_shorten}{The length of the edge shorten.}
+
+\item{edge_offset}{The length of the edge offset.}
+
+\item{edge_highlight}{A character vector specifying the names of edges to highlight.}
+
+\item{edge_highlight_color}{A character vector specifying the color for highlighting edges.}
+
+\item{transition_threshold}{The threshold for removing transitions.}
+
+\item{transition_line}{A character vector specifying the type of line for transitions (straight, curved).}
+
+\item{transition_line_curvature}{The curvature of curved transitions.}
+
+\item{transition_line_angle}{The angle of curved transitions.}
+
+\item{transition_size}{A numeric vector specifying the range of transition sizes.}
+
+\item{transition_color}{A character vector specifying the color of the transitions.}
+
+\item{transition_alpha}{The transparency of the transitions.}
+
+\item{transition_arrow_type}{A character vector specifying the type of arrow for transitions (closed, open).}
+
+\item{transition_arrow_angle}{The angle of the transition arrow.}
+
+\item{transition_arrow_length}{The length of the transition arrow.}
+
+\item{transition_shorten}{The length of the transition shorten.}
+
+\item{transition_offset}{The length of the transition offset.}
+
+\item{transition_highlight}{A character vector specifying the names of transitions to highlight.}
+
+\item{transition_highlight_color}{A character vector specifying the color for highlighting transitions.}
 
 \item{aspect.ratio}{Panel aspect ratio.}
 
 \item{title}{The text for the title.}
 
+\item{subtitle}{Plot subtitle.}
+
+\item{xlab}{Label for the x axis.}
+
+\item{ylab}{Label for the y axis.}
+
+\item{legend.position}{Legend position passed to \code{theme()}.}
+
+\item{legend.direction}{Legend direction passed to \code{theme()}.}
+
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
+
+\item{return_layer}{Whether to return the plot layers as a list.
+Defaults is \code{FALSE}.}
 
 \item{verbose}{Print progress messages.}
 }
