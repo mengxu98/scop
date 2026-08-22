@@ -156,7 +156,7 @@ CellDimPlot(
   reduction = "HarmonyUMAP2D"
 )
 
-LISIPlot(panc8_sub)
+IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 
 panc8_sub <- RunIntegration(
   panc8_sub,
@@ -170,10 +170,7 @@ panc8_sub <- RunIntegration(
   compute_lisi = TRUE,
   lisi_label_colnames = "tech"
 )
-LISIPlot(
-  panc8_sub,
-  features = c("HarmonypcaUMAP2D_tech_LISI", "HarmonyUMAP2D_tech_LISI")
-)
+IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 
 data("pbmcmultiome_sub", package = "scop")
 pbmcmultiome_sub$batch <- rep(c("batch1", "batch2"), length.out = ncol(pbmcmultiome_sub))
@@ -264,5 +261,7 @@ for (nr in nonlinear_reductions) {
 \link{Coralysis_integrate},
 \link{LIGER_integrate},
 \link{Conos_integrate},
-\link{ComBat_integrate}
+\link{ComBat_integrate},
+\link{RunIntegrationBenchmark},
+\link{IntegrationBenchmarkPlot}
 }
