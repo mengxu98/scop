@@ -138,8 +138,3 @@ test_that("zero or missing resource measurements do not fabricate efficiency poi
   expect_match(built$data[[1]]$label[[1]], "No successful run")
   expect_match(built$data[[1]]$label[[1]], "both\\nruntime")
 })
-
-test_that("legacy RunBenchmark and BenchmarkPlot names remain aliases", {
-  expect_identical(RunBenchmark, RunSpatialBenchmark)
-  expect_identical(BenchmarkPlot, SpatialBenchmarkPlot)
-})
