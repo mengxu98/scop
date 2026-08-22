@@ -221,6 +221,7 @@ reference:
   - RunBANKSY
   - RunCytoSPACE
   - RunSmoothClust
+  - RunSpatialBenchmark
   - RunMERINGUE
   - RunSpatialVariableFeatures
   - RunSpatialGradientFeatures
@@ -250,6 +251,7 @@ reference:
   - SpatialSpotPlot
   - SpatialDeconvolutionPlot
   - SpatialVariableFeaturePlot
+  - SpatialBenchmarkPlot
   - STdeconvolvePlot
 
 - subtitle: "Cell Type Annotation"
@@ -433,8 +435,6 @@ reference:
 
 - subtitle: "Other"
 - contents:
-  - RunBenchmark
-  - BenchmarkPlot
   - CoverageTrackPlot
   - tAgePlot
   - RuntAge
