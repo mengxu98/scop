@@ -1,19 +1,19 @@
-#' @title Plot benchmark metrics
+#' @title Plot spatial domain clustering benchmarks
 #'
 #' @description
-#' Visualize benchmark results stored in a `Seurat` object, a summary
-#' `data.frame`, or a `benchmark_result` object created by [RunBenchmark()].
-#' Spatial benchmark results default to a publication-oriented overview that
-#' pairs clustering quality with runtime and peak-memory efficiency. Per-cell
-#' metrics such as LISI remain available as feature plots and boxplots.
+#' Visualize a `spatial_benchmark_result` from [RunSpatialBenchmark()], or a
+#' summary `data.frame`. Spatial results default to a publication-oriented
+#' overview that pairs clustering quality with runtime and peak-memory
+#' efficiency. For scRNA integration metrics such as LISI, use
+#' [IntegrationBenchmarkPlot()].
 #'
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
 #' @param srt A `Seurat` object.
-#' @param data Optional `benchmark_result` object or summary benchmark
-#' `data.frame` containing at least `metric` and `value`, and optionally
-#' `method`, `workflow`, and `direction`.
+#' @param data Optional `spatial_benchmark_result` / `benchmark_result` object
+#' or summary `data.frame` containing at least `metric` and `value`, and
+#' optionally `method`, `workflow`, and `direction`.
 #' @param features Metadata columns containing per-cell benchmark scores.
 #' @param metrics One or more summary metric names to visualize. Default is
 #' `NULL`, which uses all available summary metrics.
@@ -25,7 +25,7 @@
 #' Default is `NULL`, which uses the reduction stored in `tool_name` when
 #' available, otherwise [DefaultReduction()].
 #' @param plot_type Plot type. `"overview"`, `"quality"`, `"efficiency"`, and
-#' `"heatmap"` consume `benchmark_result` results. Existing `"feature"`,
+#' `"heatmap"` consume spatial benchmark results. Existing `"feature"`,
 #' `"boxplot"`, `"bar"`, and `"funkyheatmap"` modes remain supported.
 #' @param sort_by Method ordering for spatial benchmark plots. `"quality"`
 #' sorts by the mean selected quality metric; other choices sort by method,
@@ -51,7 +51,7 @@
 #'   metric = c("batch_ASW_mixing", "celltype_ASW", "batch_ASW_mixing", "celltype_ASW"),
 #'   value = c(0.42, 0.71, 0.68, 0.66)
 #' )
-#' BenchmarkPlot(
+#' SpatialBenchmarkPlot(
 #'   data = metrics_df,
 #'   plot_type = "bar"
 #' )
@@ -61,14 +61,15 @@
 #'   seq_len(ncol(pbmcmultiome_sub)) / ncol(pbmcmultiome_sub)
 #' pbmcmultiome_sub[["MethodB_batch_LISI"]] <-
 #'   rev(pbmcmultiome_sub[["MethodA_batch_LISI", drop = TRUE]])
-#' BenchmarkPlot(
+#' SpatialBenchmarkPlot(
 #'   pbmcmultiome_sub,
 #'   features = c("MethodA_batch_LISI", "MethodB_batch_LISI"),
 #'   plot_type = "boxplot"
 #' )
 #'
+#' @seealso [RunSpatialBenchmark], [IntegrationBenchmarkPlot]
 #' @export
-BenchmarkPlot <- function(
+SpatialBenchmarkPlot <- function(
   srt = NULL,
   data = NULL,
   features = NULL,
@@ -104,7 +105,14 @@ BenchmarkPlot <- function(
   benchmark_assert_flag(show_values, "show_values")
   benchmark_assert_flag(show_status, "show_status")
 
-  benchmark_result <- if (inherits(data, "benchmark_result")) data else NULL
+  benchmark_result <- if (
+    inherits(data, "spatial_benchmark_result") ||
+      inherits(data, "benchmark_result")
+  ) {
+    data
+  } else {
+    NULL
+  }
   if (!is.null(benchmark_result)) {
     if (identical(plot_type, "auto")) plot_type <- "overview"
     if (plot_type %in% c("overview", "quality", "efficiency", "heatmap")) {
@@ -124,14 +132,14 @@ BenchmarkPlot <- function(
     }
     if (plot_type %in% c("feature", "boxplot")) {
       log_message(
-        "{.arg plot_type = '{plot_type}'} requires per-cell metadata, not a {.cls benchmark_result}",
+        "{.arg plot_type} {.val {plot_type}} requires per-cell metadata, not a spatial benchmark result",
         message_type = "error"
       )
     }
     data <- benchmark_result$metrics
   } else if (plot_type %in% c("overview", "quality", "efficiency", "heatmap")) {
     log_message(
-      "{.arg plot_type = '{plot_type}'} requires a {.cls benchmark_result} object",
+      "{.arg plot_type} {.val {plot_type}} requires a {.cls spatial_benchmark_result} from {.fn RunSpatialBenchmark}",
       message_type = "error"
     )
   }

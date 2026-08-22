@@ -35,9 +35,12 @@
 #' process start and result serialization. `Inf` disables the timeout.
 #' @param poll_interval Seconds between process-tree memory samples.
 #'
-#' @return A `benchmark_result` object. Use `result$summary` for the quality
-#' table, [BenchmarkPlot()] for visualization, and `$predictions` for the
+#' @return A `spatial_benchmark_result` object (also inherits
+#' `benchmark_result`). Use `result$summary` for the quality table,
+#' [SpatialBenchmarkPlot()] for visualization, and `$predictions` for the
 #' aligned labels.
+#'
+#' @seealso [SpatialBenchmarkPlot], [RunIntegrationBenchmark]
 #' @export
 #'
 #' @examples
@@ -46,7 +49,7 @@
 #' visium_human_pancreas_sub$gold_domain <- factor(
 #'   paste0("domain_", (seq_len(ncol(visium_human_pancreas_sub)) - 1) %% 3 + 1)
 #' )
-#' bench <- RunBenchmark(
+#' bench <- RunSpatialBenchmark(
 #'   visium_human_pancreas_sub,
 #'   gold_standard = "gold_domain",
 #'   method_params = list(
@@ -56,9 +59,9 @@
 #'   )
 #' )
 #' bench
-#' BenchmarkPlot(data = bench)
+#' SpatialBenchmarkPlot(data = bench)
 #' }
-RunBenchmark <- function(
+RunSpatialBenchmark <- function(
   srt,
   gold_standard,
   methods = NULL,
@@ -1043,7 +1046,7 @@ benchmark_build_result <- function(
         n_cells = ncol(srt)
       ),
       provenance = list(
-        producer = "RunBenchmark",
+        producer = "RunSpatialBenchmark",
         backend_id = paste(tolower(methods), collapse = ";"),
         scop_version = as.character(utils::packageVersion("scop"))
       ),
@@ -1058,7 +1061,7 @@ benchmark_build_result <- function(
         poll_interval = poll_interval
       )
     ),
-    class = c("benchmark_result", "list")
+    class = c("spatial_benchmark_result", "benchmark_result", "list")
   )
 }
 
