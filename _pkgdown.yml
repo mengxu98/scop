@@ -144,6 +144,8 @@ reference:
   - RunCSSMap
   - RunHarmony2
   - RunLISI
+  - RunIntegrationBenchmark
+  - IntegrationBenchmarkPlot
   - RunPCAMap
   - RunSeuratMap
   - RunSymphonyMap
@@ -434,7 +436,6 @@ reference:
   - RunBenchmark
   - BenchmarkPlot
   - CoverageTrackPlot
-  - LISIPlot
   - tAgePlot
   - RuntAge
 
