@@ -35,17 +35,17 @@ make_benchmark_plot_result <- function(status = c("success", "success", "failed"
       objects = list(),
       parameters = list(metrics = c("ARI", "NMI"))
     ),
-    class = c("benchmark_result", "list")
+    class = c("spatial_benchmark_result", "benchmark_result", "list")
   )
 }
 
-test_that("BenchmarkPlot selects publication benchmark views", {
+test_that("SpatialBenchmarkPlot selects publication benchmark views", {
   result <- make_benchmark_plot_result()
-  expect_s3_class(BenchmarkPlot(data = result, plot_type = "quality"), "ggplot")
-  expect_s3_class(BenchmarkPlot(data = result, plot_type = "efficiency"), "ggplot")
-  expect_s3_class(BenchmarkPlot(data = result, plot_type = "heatmap"), "ggplot")
-  expect_s3_class(BenchmarkPlot(data = result), "patchwork")
-  expect_s3_class(BenchmarkPlot(data = result, plot_type = "overview"), "patchwork")
+  expect_s3_class(SpatialBenchmarkPlot(data = result, plot_type = "quality"), "ggplot")
+  expect_s3_class(SpatialBenchmarkPlot(data = result, plot_type = "efficiency"), "ggplot")
+  expect_s3_class(SpatialBenchmarkPlot(data = result, plot_type = "heatmap"), "ggplot")
+  expect_s3_class(SpatialBenchmarkPlot(data = result), "patchwork")
+  expect_s3_class(SpatialBenchmarkPlot(data = result, plot_type = "overview"), "patchwork")
 })
 
 test_that("quality ordering and automatic log scales are explicit", {
@@ -54,7 +54,7 @@ test_that("quality ordering and automatic log scales are explicit", {
     benchmark_plot_method_levels(result, c("ARI", "NMI"), "quality")[[1]],
     "BayesSpace"
   )
-  efficiency <- BenchmarkPlot(data = result, plot_type = "efficiency")
+  efficiency <- SpatialBenchmarkPlot(data = result, plot_type = "efficiency")
   expect_true(inherits(efficiency$scales$get_scales("x")$trans, "transform"))
   expect_identical(efficiency$labels$x, "Runtime (s, log10)")
   expect_match(efficiency$labels$y, "log10")
@@ -63,7 +63,7 @@ test_that("quality ordering and automatic log scales are explicit", {
 })
 
 test_that("quality view uses score tracks and explicit direction", {
-  quality <- BenchmarkPlot(
+  quality <- SpatialBenchmarkPlot(
     data = make_benchmark_plot_result(),
     plot_type = "quality"
   )
@@ -78,7 +78,7 @@ test_that("heatmap normalization respects metric direction", {
   expect_equal(benchmark_normalize_metric(c(1, 3), "lower"), c(1, 0))
   expect_equal(benchmark_normalize_metric(c(2, 2), "higher"), c(0.5, 0.5))
 
-  heatmap <- BenchmarkPlot(
+  heatmap <- SpatialBenchmarkPlot(
     data = make_benchmark_plot_result(),
     plot_type = "heatmap"
   )
@@ -90,8 +90,8 @@ test_that("heatmap normalization respects metric direction", {
 test_that("status strip appears only for incomplete runs", {
   incomplete <- make_benchmark_plot_result()
   complete <- make_benchmark_plot_result(rep("success", 3))
-  incomplete_plot <- BenchmarkPlot(data = incomplete)
-  complete_plot <- BenchmarkPlot(data = complete)
+  incomplete_plot <- SpatialBenchmarkPlot(data = incomplete)
+  complete_plot <- SpatialBenchmarkPlot(data = complete)
   expect_identical(incomplete_plot[[2]]$labels$title, "Incomplete runs")
   expect_identical(complete_plot[[2]]$labels$title, "Computational efficiency")
 })
@@ -100,7 +100,7 @@ test_that("legacy benchmark bar mode remains available", {
   data <- data.frame(
     method = c("A", "B"), metric = c("ARI", "ARI"), value = c(0.8, 0.6)
   )
-  expect_s3_class(BenchmarkPlot(data = data, plot_type = "bar"), "ggplot")
+  expect_s3_class(SpatialBenchmarkPlot(data = data, plot_type = "bar"), "ggplot")
 })
 
 test_that("all-unavailable benchmark results render truthful empty panels", {
@@ -113,10 +113,10 @@ test_that("all-unavailable benchmark results render truthful empty panels", {
   result$summary$n_clusters <- NA_integer_
   result$summary$error <- "optional backend is unavailable"
 
-  quality <- BenchmarkPlot(data = result, plot_type = "quality")
-  efficiency <- BenchmarkPlot(data = result, plot_type = "efficiency")
-  heatmap <- BenchmarkPlot(data = result, plot_type = "heatmap")
-  overview <- BenchmarkPlot(data = result)
+  quality <- SpatialBenchmarkPlot(data = result, plot_type = "quality")
+  efficiency <- SpatialBenchmarkPlot(data = result, plot_type = "efficiency")
+  heatmap <- SpatialBenchmarkPlot(data = result, plot_type = "heatmap")
+  overview <- SpatialBenchmarkPlot(data = result)
 
   expect_s3_class(quality, "ggplot")
   expect_s3_class(efficiency, "ggplot")
@@ -132,7 +132,7 @@ test_that("zero or missing resource measurements do not fabricate efficiency poi
   result <- make_benchmark_plot_result(rep("success", 3))
   result$summary$runtime_s <- c(0, NA, Inf)
   result$summary$peak_memory_mb <- c(100, NA, 200)
-  plot <- BenchmarkPlot(data = result, plot_type = "efficiency")
+  plot <- SpatialBenchmarkPlot(data = result, plot_type = "efficiency")
   built <- ggplot2::ggplot_build(plot)
   expect_s3_class(plot, "ggplot")
   expect_match(built$data[[1]]$label[[1]], "No successful run")

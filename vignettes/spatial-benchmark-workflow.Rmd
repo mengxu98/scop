@@ -1,0 +1,104 @@
+---
+title: "Spatial domain benchmark workflow"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  fig.align = "center",
+  dpi = 144,
+  out.width = "92%"
+)
+```
+
+This article compares spatial domain clustering methods with
+[RunSpatialBenchmark()]. Each method runs in an isolated R process; results
+include ARI, NMI, purity, runtime, and peak memory against a gold-standard
+label column. Visualize the result with [SpatialBenchmarkPlot()].
+
+Supported producers include `BayesSpace`, `BANKSY`, and `SmoothClust`. This
+workflow is separate from scRNA batch integration benchmarking
+([RunIntegrationBenchmark()]).
+
+## Load data and define a gold standard
+
+The bundled Visium pancreas subset is used here. For demonstration, a simple
+cyclic domain label is assigned as the gold standard. Replace this with manual
+annotations or reference domains for real analyses.
+
+```{r load-data}
+library(scop)
+
+data(visium_human_pancreas_sub)
+spatial <- visium_human_pancreas_sub
+
+spatial$gold_domain <- factor(
+  paste0("domain_", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
+)
+table(spatial$gold_domain)
+```
+
+## Run the benchmark
+
+Methods share the same spot set. Tune per-method arguments through
+`method_params` when backends need different PCA counts or layers.
+
+```{r run-benchmark}
+bench <- RunSpatialBenchmark(
+  spatial,
+  gold_standard = "gold_domain",
+  method_params = list(
+    BayesSpace = list(n.PCs = 5, n.HVGs = 200),
+    BANKSY = list(layer = "counts"),
+    SmoothClust = list(layer = "counts", min_spots = 1)
+  ),
+  verbose = FALSE
+)
+
+bench$summary
+```
+
+## Inspect the result object
+
+`RunSpatialBenchmark()` returns a `spatial_benchmark_result` list:
+
+- `$summary`: quality and resource metrics per method;
+- `$predictions`: aligned domain labels per spot;
+- `$metrics`: long metric table for custom plots.
+
+```{r inspect-result}
+str(bench$summary, max.level = 1)
+head(bench$predictions)
+```
+
+## Plot benchmark views
+
+`SpatialBenchmarkPlot()` defaults to a publication-oriented overview that
+combines clustering agreement with runtime and peak-memory efficiency.
+
+```{r plot-overview, fig.height=6}
+SpatialBenchmarkPlot(data = bench, plot_type = "overview")
+```
+
+Other views:
+
+```r
+SpatialBenchmarkPlot(data = bench, plot_type = "quality")
+SpatialBenchmarkPlot(data = bench, plot_type = "efficiency")
+SpatialBenchmarkPlot(data = bench, plot_type = "heatmap")
+```
+
+## What to report
+
+A spatial benchmark report should include:
+
+- the gold-standard column and number of domains;
+- methods compared and any `method_params` overrides;
+- `$summary` with ARI, NMI, purity, runtime, and peak memory;
+- the overview or quality plot;
+- failed or unavailable methods (status column) when backends are missing.
+
+Agreement metrics are higher when better; runtime and peak memory are lower
+when better.
