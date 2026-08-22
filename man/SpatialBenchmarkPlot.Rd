@@ -2,39 +2,9 @@
 % Please edit documentation in R/SpatialBenchmarkPlot.R
 \name{SpatialBenchmarkPlot}
 \alias{SpatialBenchmarkPlot}
-\alias{BenchmarkPlot}
 \title{Plot spatial domain clustering benchmarks}
 \usage{
 SpatialBenchmarkPlot(
-  srt = NULL,
-  data = NULL,
-  features = NULL,
-  metrics = NULL,
-  tool_name = NULL,
-  reduction = NULL,
-  plot_type = c("auto", "overview", "quality", "efficiency", "heatmap", "feature",
-    "boxplot", "bar", "funkyheatmap"),
-  sort_by = c("quality", "method", "runtime", "memory"),
-  show_values = TRUE,
-  show_status = TRUE,
-  resource_scale = c("auto", "linear", "log10"),
-  plot_boxplot = TRUE,
-  boxplot_jitter = FALSE,
-  combine = TRUE,
-  nrow = NULL,
-  ncol = NULL,
-  byrow = TRUE,
-  pt.size = NULL,
-  pt.alpha = 1,
-  palette = "Chinese",
-  palcolor = NULL,
-  theme_use = "theme_scop",
-  theme_args = list(),
-  verbose = TRUE,
-  ...
-)
-
-BenchmarkPlot(
   srt = NULL,
   data = NULL,
   features = NULL,

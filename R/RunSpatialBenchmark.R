@@ -199,10 +199,6 @@ RunSpatialBenchmark <- function(
   )
 }
 
-#' @rdname RunSpatialBenchmark
-#' @export
-RunBenchmark <- RunSpatialBenchmark
-
 benchmark_method_aliases <- c(
   "bayesspace" = "BayesSpace",
   "runbayesspace" = "BayesSpace",

@@ -214,10 +214,6 @@ SpatialBenchmarkPlot <- function(
   )
 }
 
-#' @rdname SpatialBenchmarkPlot
-#' @export
-BenchmarkPlot <- SpatialBenchmarkPlot
-
 benchmark_result_plot <- function(
   result,
   plot_type,

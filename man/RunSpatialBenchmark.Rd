@@ -2,25 +2,9 @@
 % Please edit documentation in R/RunSpatialBenchmark.R
 \name{RunSpatialBenchmark}
 \alias{RunSpatialBenchmark}
-\alias{RunBenchmark}
 \title{Benchmark spatial domain clustering methods}
 \usage{
 RunSpatialBenchmark(
-  srt,
-  gold_standard,
-  methods = NULL,
-  method_params = list(),
-  n_clusters = NULL,
-  metrics = c("ARI", "NMI"),
-  keep_objects = FALSE,
-  install_missing = FALSE,
-  seed = 1,
-  timeout = Inf,
-  poll_interval = 0.1,
-  verbose = TRUE
-)
-
-RunBenchmark(
   srt,
   gold_standard,
   methods = NULL,
