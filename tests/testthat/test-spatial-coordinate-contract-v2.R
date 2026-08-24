@@ -173,6 +173,10 @@ test_that("invalid selected scale fails without mutating the object", {
     network@tools$SpatialNetwork$graphs[[1L]]$source$coordinate_space,
     "raw"
   )
+  expect_s3_class(
+    SpatialNetworkPlot(res = network@tools$SpatialNetwork),
+    "ggplot"
+  )
   expect_identical(serialize(fixture$object, NULL), before)
 })
 

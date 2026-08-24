@@ -326,8 +326,14 @@ SpatialNetworkPlot <- function(
   image_info <- NULL
   plot_space <- "raw"
   if (is.null(object) && !is.null(graph$source$transform)) {
-    nodes <- spatial_coords_to_display(nodes, graph$source$transform)
-    plot_space <- "display"
+    stored_scale <- graph$source$transform$scale %||% NA_real_
+    if (
+      length(stored_scale) == 1L && is.finite(stored_scale) &&
+        stored_scale > 0
+    ) {
+      nodes <- spatial_coords_to_display(nodes, graph$source$transform)
+      plot_space <- "display"
+    }
   }
   if (!is.null(object)) {
     keep <- nodes$cell_id %in% colnames(object)
