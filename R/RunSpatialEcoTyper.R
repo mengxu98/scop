@@ -378,12 +378,6 @@ SpatialEcoTyperSpatialPlot <- function(
   ...
 ) {
   image.scale <- match.arg(image.scale)
-  if (!is.null(srt@tools[["SpatialEcoTyper"]])) {
-    spatial_require_coordinate_contract(
-      srt@tools[["SpatialEcoTyper"]],
-      "RunSpatialEcoTyper()"
-    )
-  }
   SpatialSpotPlot(
     srt = srt,
     group.by = group.by,

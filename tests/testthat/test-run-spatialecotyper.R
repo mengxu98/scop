@@ -329,6 +329,7 @@ test_that("RunSpatialEcoTyper returns deconvolution matrix for matrix input", {
 test_that("SpatialEcoTyper plotting helpers return ggplot objects", {
   srt <- make_spatialecotyper_seurat()
   srt$SpatialEcoTyper_SE <- c("SE1", "SE1", "SE2", "SE2")
+  srt@tools$SpatialEcoTyper <- list(parameters = list())
   p1 <- SpatialEcoTyperSpatialPlot(
     srt,
     group.by = "SpatialEcoTyper_SE",
