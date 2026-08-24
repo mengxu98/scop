@@ -456,6 +456,10 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
-          clean: ${{ steps.scope.outputs.full_build == 'true' }}
+          # Never clean: the articles workflow deploys its own `articles/`
+          # directory to the same branch, and a clean build here would
+          # delete it. Stale pages are purged by the weekly full-site
+          # workflow (full-site.yaml), which rebuilds the entire site.
+          clean: false
           branch: gh-pages
           folder: docs
