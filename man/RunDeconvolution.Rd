@@ -54,7 +54,8 @@ the \code{r} backend of \code{BayesPrism}. If \code{NULL}, \code{group.by} is re
 package implementation. \code{"cpp"} selects package C++ implementations
 when available.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A \code{SummarizedExperiment} object with results stored in

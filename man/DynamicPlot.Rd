@@ -92,6 +92,8 @@ is counts.}
 \item{legend.position}{Legend side (\code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}).
 Gap to the heatmap grows automatically when long row names are on the right.}
 
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
@@ -99,7 +101,8 @@ returns a list of ggplots.}
 
 \item{cores}{Number of CPU cores.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{seed}{Random seed.}
 }

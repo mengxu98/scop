@@ -3,6 +3,7 @@
 #' @md
 #' @inheritParams GroupHeatmap
 #' @inheritParams RunDynamicFeatures
+#' @inheritParams scop-params
 #' @param features Features to plot.
 #' By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters
 #' `min_expcells`, `r.sq`, `dev.expl`, `padjust` and `num_intersections`.

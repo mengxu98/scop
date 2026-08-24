@@ -14,7 +14,7 @@ scenic_plot_network_graph <- function(
   rank_table = NULL,
   regulon_label = "auto"
 ) {
-  layout_use <- scenic_network_resolve_layout(network_layout, default = "kk")
+  layout_use <- if (is.null(network_layout) || identical(network_layout, "auto")) {"kk"} else network_layout
   scenic_plot_one_network(
     srt = srt,
     tool_name = tool_name,
@@ -511,12 +511,6 @@ scenic_network_node_labels <- function(names, node_type) {
   )
 }
 
-scenic_network_resolve_layout <- function(layout, default = "star") {
-  if (is.null(layout) || identical(layout, "auto")) {
-    return(default)
-  }
-  layout
-}
 
 scenic_network_layout <- function(graph, layout = "kk", node_type = NULL) {
   names <- igraph::V(graph)$name
@@ -808,6 +802,7 @@ scenic_network_label_data <- function(
   label_data
 }
 
+
 scenic_network_label_contrast <- function(color) {
   rgb <- grDevices::col2rgb(color)[, 1]
   if (sum(rgb) > 255 * 2) {
@@ -926,9 +921,6 @@ scenic_network_style_data <- function(
   )
 }
 
-scenic_is_region_coordinate <- function(name) {
-  grepl("^(chr|CHR)[^[:space:]]*[:_-][0-9]", as.character(name))
-}
 
 scenic_network_tf_annotations <- function(
   rank_table,
@@ -1173,7 +1165,9 @@ scenic_network_ggplot <- function(
   }
   region_labels <- region_nodes
   if (identical(label_nodes, "all")) {
-    region_labels <- region_nodes[!scenic_is_region_coordinate(region_nodes[["name"]]), , drop = FALSE]
+    region_labels <- region_nodes[!{ .inline0 <- region_nodes[["name"]]; 
+  grepl("^(chr|CHR)[^[:space:]]*[:_-][0-9]", as.character(.inline0))
+ }, , drop = FALSE]
   } else {
     region_labels <- region_nodes[FALSE, , drop = FALSE]
   }

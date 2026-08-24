@@ -10,8 +10,6 @@
 
 \item{layer}{Assay layer to use.}
 
-\item{verbose}{Print progress messages.}
-
 \item{seed}{Random seed.}
 
 \item{cores}{Number of CPU cores.}
@@ -25,10 +23,6 @@
 \item{features}{Features to use (assay names or numeric metadata columns).}
 
 \item{cells}{Cell names to include.}
-
-\item{palette}{Color palette name. See \link[thisplot:show_palettes]{thisplot::show_palettes}.}
-
-\item{palcolor}{Custom colors used to build the palette.}
 
 \item{species}{Species name, e.g. \code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
@@ -46,9 +40,157 @@ the default; \code{"legacy_display"} remains available for compatibility.}
 
 \item{tool_name}{Name of the \code{srt@tools} slot used to store results.}
 
-\item{overwrite}{Overwrite existing results.}
-
 \item{...}{Additional arguments passed to the underlying method.}
+
+\item{byrow}{Whether to fill matrices/plots by row.}
+
+\item{cell_annotation}{Cell annotations. Palette length should match \code{cell_annotation}.}
+
+\item{cell_annotation_palcolor}{Custom colors for cell-type annotations.}
+
+\item{cell_annotation_palette}{Color palette for cell-type annotations.}
+
+\item{cells.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
+
+\item{cluster_columns}{Whether to cluster heatmap rows/columns. Defaults are both \code{FALSE}.}
+
+\item{cluster_row_slices}{Whether to cluster row slices.}
+
+\item{cluster_rows}{Whether to cluster heatmap rows/columns. Defaults are both \code{FALSE}.}
+
+\item{cols.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
+
+\item{column_title}{The title for the column names in the heatmap. Default is to use the reference grouping variable.}
+
+\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{complex.mean}{Whether to use a modified mean test statistic in complex heatmaps.}
+
+\item{coordinate.unit}{Unit of the raw input coordinates. Automatic unit selection uses technology-specific rules.}
+
+\item{cutoff}{Maximum selected-cell fraction used by Scissor's alpha search.}
+
+\item{decreasing}{Order groups decreasingly.}
+
+\item{envname}{Conda-compatible Python environment. If \code{NULL}, the environment name will be set to \code{"scop_env"}.}
+
+\item{feature_annotation_palcolor}{Custom colors for feature annotations.}
+
+\item{feature_annotation_palette}{Color palette for feature annotations.}
+
+\item{feature_split}{Feature splitting. \code{split_method} is \code{"kmeans"}, \code{"hclust"}, or \code{"mfuzz"}.}
+
+\item{feature_split_palcolor}{Custom colors for feature-split annotation labels.}
+
+\item{feature_split_palette}{Split colors.}
+
+\item{global.fdr}{Global FDR threshold.}
+
+\item{global.threshold}{Global threshold.}
+
+\item{graph}{Neighbor-graph edges.}
+
+\item{group_palcolor}{Custom colors for cell types (groups) in Manhattan plot.}
+
+\item{group_palette}{Palette for cell types (groups) in Manhattan plot.}
+
+\item{heatmap_palcolor}{Palette used for CNV heatmap values.}
+
+\item{heatmap_palette}{Palette used for CNV heatmap values.}
+
+\item{hex}{Whether to use hexagonal binning for 2D assignments.}
+
+\item{hex.bins}{Number of hexagonal bins.}
+
+\item{hex.binwidth}{Width of hexagonal bins.}
+
+\item{hex.linewidth}{Line width of six-point hexagons.}
+
+\item{label}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
+\item{label.bg}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
+\item{label.bg.r}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
+\item{label.fg}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
+\item{label.size}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{lineages}{Pseudotime columns to use. If \code{NULL}, lineage-like pseudotime columns such as \code{Lineage1}, \code{Lineage2}, \code{prefix_Lineage1}, or \code{pseudotime} are detected and merged into one global pseudotime for a single panel. Use \code{"all"} to plot each detected lineage in separate panels.}
+
+\item{lineages_palette}{Color palette used for lineage groups.}
+
+\item{linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}). \code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
+
+\item{local.fdr}{Local FDR threshold.}
+
+\item{local.threshold}{Local threshold.}
+
+\item{min_cell}{Minimum number of cells required.}
+
+\item{n_neighbor_layers}{Number of neighbor layers to use.}
+
+\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.}
+
+\item{n_perm}{Number of permutations.}
+
+\item{n_split}{Number of splits for feature dependencies.}
+
+\item{ncol}{Number of columns of the combined plot.}
+
+\item{nlabel}{The maximum number of labels to show on each side of the heatmap. If set to 0, no labels will be shown. This can be useful for reducing clutter in large heatmaps.}
+
+\item{nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
+
+\item{nproc}{Number of parallel processes.}
+
+\item{nrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{overlay_image}{Draw the spatial image beneath spots.}
+
+\item{overwrite}{Whether to overwrite existing metadata.}
+
+\item{palcolor}{Custom colors used to create a color palette.}
+
+\item{palette}{Color palette name.}
+
+\item{pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
+
+\item{pt.size}{Point size and transparency. \code{pt.size = NULL} scales with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
+
+\item{result.name}{Stored result name.}
+
+\item{row_title}{The title for the row names in the heatmap. If not provided, the default is to use the query grouping variable.}
+
+\item{run.local}{Whether to run locally.}
+
+\item{show_column_names}{Whether to draw row/column names for the heatmap body.}
+
+\item{show_row_names}{Whether to draw row/column names for the heatmap body.}
+
+\item{single_cell}{Whether the input is a single-cell (rather than spatial) dataset.}
+
+\item{sizes.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
+
+\item{split_method}{Method for splitting features into groups.}
+
+\item{split_order}{Order of feature split groups (e.g. \code{c("A", "B")}).}
+
+\item{subtitle}{Plot subtitle.}
+
+\item{theme_args}{Theme name or function, plus extra theme arguments.}
+
+\item{title}{Plot title. \code{NULL} hides the title for merged/single panels. When multiple lineages are plotted and \code{title} is \code{NULL}, each panel is titled with its lineage column.}
+
+\item{verbose}{Whether to print messages.}
+
+\item{xlab}{Plot labels.}
+
+\item{ylab}{Plot labels.}
 }
 \description{
 Shared parameters

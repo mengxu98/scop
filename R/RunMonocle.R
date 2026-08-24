@@ -5,6 +5,7 @@
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams GroupHeatmap
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param expressionFamily The distribution family to use for modeling gene expression.
 #' @param features Features to use.
 #' Defaults to NULL, in which case features were determined by `feature_type`.
@@ -860,6 +861,7 @@ monocle2_cpp_resolve_root_state <- function(srt, root_state = NULL, group.by = N
   }
   root_state
 }
+
 
 #' @title Run Monocle3 analysis
 #'

@@ -198,7 +198,27 @@ Default is \code{NULL}, which means that the built-in words (\link{words_exclude
 
 \item{lineheight}{The line height for y-axis labels.}
 
+\item{feature_split}{Feature splitting. \code{split_method} is \code{"kmeans"}, \code{"hclust"}, or \code{"mfuzz"}.}
+
+\item{n_split}{Number of splits for feature dependencies.}
+
+\item{split_order}{Order of feature split groups (e.g. \code{c("A", "B")}).}
+
+\item{split_method}{Method for splitting features into groups.}
+
+\item{decreasing}{Order groups decreasingly.}
+
 \item{fuzzification}{Mfuzz fuzzification coefficient.}
+
+\item{cluster_rows}{Whether to cluster heatmap rows/columns. Defaults are both \code{FALSE}.}
+
+\item{cluster_columns}{Whether to cluster heatmap rows/columns. Defaults are both \code{FALSE}.}
+
+\item{cluster_row_slices}{Whether to cluster row slices.}
+
+\item{show_row_names}{Whether to draw row/column names for the heatmap body.}
+
+\item{show_column_names}{Whether to draw row/column names for the heatmap body.}
 
 \item{row_names_side, column_names_side, row_names_rot, column_names_rot}{Name placement.}
 
@@ -221,6 +241,8 @@ Default is \code{NULL}, which means that the built-in words (\link{words_exclude
 \item{legend.position}{Legend side (\code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}).
 Gap to the heatmap grows automatically when long row names are on the right.}
 
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
@@ -232,9 +254,11 @@ a plot.}
 \item{border}{Draw borders. Kept for compatibility; more specific
 \verb{*_border} arguments inherit this when \code{NULL}.}
 
+\item{nlabel}{The maximum number of labels to show on each side of the heatmap. If set to 0, no labels will be shown. This can be useful for reducing clutter in large heatmaps.}
+
 \item{seed}{Random seed.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Plots for GSVA (Gene Set Variation Analysis)

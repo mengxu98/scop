@@ -47,6 +47,8 @@ If not provided, the limits will be calculated based on the data.}
 \item{ylim}{The y-axis limits for the plot.
 If not provided, the limits will be calculated based on the data.}
 
+\item{pt.size}{Point size and transparency. \code{pt.size = NULL} scales with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
+
 \item{stroke.highlight}{The size of the stroke highlight for cells.}
 
 \item{verbose}{Whether to print the message.

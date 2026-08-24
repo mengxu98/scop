@@ -129,7 +129,12 @@ RunSpotSweeper <- function(
     message_type = "running",
     verbose = verbose
   )
-  validate_seurat_object(srt)
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(
@@ -138,12 +143,12 @@ RunSpotSweeper <- function(
     )
   }
   shape <- match.arg(shape)
-  spot_sweeper_assert_string(prefix, "prefix")
-  spot_sweeper_assert_string(tool_name, "tool_name")
-  spot_sweeper_assert_flag(log, "log")
-  spot_sweeper_assert_flag(run_artifact, "run_artifact")
-  spot_sweeper_assert_flag(return_filtered, "return_filtered")
-  spot_sweeper_assert_flag(store_results, "store_results")
+  validate_scalar_string(prefix, "prefix")
+  validate_scalar_string(tool_name, "tool_name")
+  validate_scalar_flag(log, "log")
+  validate_scalar_flag(run_artifact, "run_artifact")
+  validate_scalar_flag(return_filtered, "return_filtered")
+  validate_scalar_flag(store_results, "store_results")
   n_neighbors <- spot_sweeper_assert_positive_integer(n_neighbors, "n_neighbors")
   n_order <- spot_sweeper_assert_positive_integer(n_order, "n_order")
   cores <- spot_sweeper_assert_positive_integer(cores, "cores")
@@ -377,7 +382,7 @@ spot_sweeper_metric_data <- function(
     mito_gene = mito_gene
   )
   if (!is.null(mito_sum)) {
-    spot_sweeper_assert_string(mito_sum, "mito_sum")
+    validate_scalar_string(mito_sum, "mito_sum")
     if (!mito_sum %in% colnames(coldata)) {
       log_message(
         "{.arg mito_sum} {.val {mito_sum}} is not present in metadata",
@@ -396,7 +401,7 @@ spot_sweeper_metric_data <- function(
   }
 
   if (!is.null(mito_percent)) {
-    spot_sweeper_assert_string(mito_percent, "mito_percent")
+    validate_scalar_string(mito_percent, "mito_percent")
     if (!mito_percent %in% colnames(coldata)) {
       log_message(
         "{.arg mito_percent} {.val {mito_percent}} is not present in metadata",
@@ -745,7 +750,7 @@ spot_sweeper_resolve_sample_col <- function(coldata, sample.by = NULL) {
   if (is.null(sample.by)) {
     return(".SpotSweeper_sample")
   }
-  spot_sweeper_assert_string(sample.by, "sample.by")
+  validate_scalar_string(sample.by, "sample.by")
   if (!sample.by %in% colnames(coldata)) {
     log_message(
       "{.arg sample.by} {.val {sample.by}} is not present in metadata",
@@ -812,13 +817,7 @@ spot_sweeper_pass_fail <- function(fail) {
   factor(ifelse(fail, "Fail", "Pass"), levels = c("Pass", "Fail"))
 }
 
-spot_sweeper_assert_string <- function(x, arg) {
-  validate_scalar_string(x, arg)
-}
 
-spot_sweeper_assert_flag <- function(x, arg) {
-  validate_scalar_flag(x, arg)
-}
 
 spot_sweeper_assert_positive_integer <- function(x, arg) {
   if (!is.numeric(x) || length(x) != 1L || is.na(x) || x < 1 || x != round(x)) {

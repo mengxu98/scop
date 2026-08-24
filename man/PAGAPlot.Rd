@@ -170,7 +170,7 @@ Possible values are \code{"connectivities"} (default) and \code{"connectivities_
 \item{return_layer}{Whether to return the plot layers as a list.
 Defaults is \code{FALSE}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Generates a PAGA plot based on the given Seurat object and PAGA result.

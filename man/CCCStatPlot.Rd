@@ -151,6 +151,10 @@ the right side unreadable.}
 
 \item{subtitle}{Plot subtitle.}
 
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
 \item{font.size}{Base font size.}
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
@@ -162,6 +166,12 @@ the right side unreadable.}
 \item{grid_major_linetype}{Linetype of major panel grid lines.}
 
 \item{grid_major_linewidth}{Line width of major panel grid lines.}
+
+\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{nrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{ncol}{Number of columns of the combined plot.}
 
 \item{verbose}{Whether to print messages.}
 

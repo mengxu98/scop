@@ -115,6 +115,10 @@ pseudotime, \code{"branch_selection"} for the branch with highest probability,
 
 \item{title, subtitle, xlab, ylab}{Plot labels.}
 
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{return_layer}{Logical. If \code{TRUE}, returns ggplot2 layers instead of a
@@ -122,7 +126,7 @@ complete plot.}
 
 \item{seed}{Random seed.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Plot branch-aware Palantir trajectories on a two-dimensional embedding.

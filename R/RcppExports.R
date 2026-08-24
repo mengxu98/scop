@@ -373,20 +373,8 @@ scanpy_normalize_cpp <- function(spliced, unspliced, initial_spliced_totals, ini
     .Call(`_scop_scanpy_normalize_cpp`, spliced, unspliced, initial_spliced_totals, initial_unspliced_totals)
 }
 
-scanpy_pca_cpp <- function(X, n_pcs = 30L) {
-    .Call(`_scop_scanpy_pca_cpp`, X, n_pcs)
-}
-
 scanpy_knn_cpp <- function(coords, n_neighbors = 10L, exclude_self = TRUE) {
     .Call(`_scop_scanpy_knn_cpp`, coords, n_neighbors, exclude_self)
-}
-
-scanpy_filter_genes_shared_cpp <- function(spliced, unspliced, min_shared_counts = 30L) {
-    .Call(`_scop_scanpy_filter_genes_shared_cpp`, spliced, unspliced, min_shared_counts)
-}
-
-scanpy_preprocess_cpp <- function(spliced, unspliced, n_pcs = 30L, n_neighbors = 10L, min_counts = 3L, min_counts_u = 3L) {
-    .Call(`_scop_scanpy_preprocess_cpp`, spliced, unspliced, n_pcs, n_neighbors, min_counts, min_counts_u)
 }
 
 proportion_bootstrap_log2fd <- function(v1, v2, n_bootstrap = 1000L, pseudocount = 1e-5, verbose = FALSE) {
@@ -517,14 +505,6 @@ scanpy_velocity_confidence_cpp <- function(Ms, residual, knn_idx) {
     .Call(`_scop_scanpy_velocity_confidence_cpp`, Ms, residual, knn_idx)
 }
 
-scanpy_velocity_transition_cpp <- function(Ms, residual, knn_idx, n_neighbors_velo = -1L, softmax_scale = 10.0) {
-    .Call(`_scop_scanpy_velocity_transition_cpp`, Ms, residual, knn_idx, n_neighbors_velo, softmax_scale)
-}
-
-scanpy_terminal_states_transition_cpp <- function(transition_matrix, knn_idx) {
-    .Call(`_scop_scanpy_terminal_states_transition_cpp`, transition_matrix, knn_idx)
-}
-
 scanpy_terminal_states_cpp <- function(velocity_embedding, embedding, knn_idx, n_neighbors_velo = 10L, seed = 0L) {
     .Call(`_scop_scanpy_terminal_states_cpp`, velocity_embedding, embedding, knn_idx, n_neighbors_velo, seed)
 }
@@ -533,20 +513,12 @@ scanpy_terminal_states_graph_cpp <- function(graph_rows, graph_cols, graph_vals,
     .Call(`_scop_scanpy_terminal_states_graph_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, eps)
 }
 
-scanpy_pseudotime_transition_cpp <- function(transition_matrix, root_cells, end_points) {
-    .Call(`_scop_scanpy_pseudotime_transition_cpp`, transition_matrix, root_cells, end_points)
-}
-
 scanpy_pseudotime_cpp <- function(velocity_embedding, embedding, knn_idx, root_cells, end_points, n_neighbors_velo = 10L) {
     .Call(`_scop_scanpy_pseudotime_cpp`, velocity_embedding, embedding, knn_idx, root_cells, end_points, n_neighbors_velo)
 }
 
 scanpy_pseudotime_graph_cpp <- function(graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs = 10L) {
     .Call(`_scop_scanpy_pseudotime_graph_cpp`, graph_rows, graph_cols, graph_vals, graph_neg_rows, graph_neg_cols, graph_neg_vals, knn_idx, root_cells, end_points, n_dcs)
-}
-
-scanpy_velocity_genes_cpp <- function(Ms, velocity) {
-    .Call(`_scop_scanpy_velocity_genes_cpp`, Ms, velocity)
 }
 
 scanpy_stochastic_embedding_cpp <- function(spliced, unspliced, knn_idx, embedding) {

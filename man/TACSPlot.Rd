@@ -68,6 +68,8 @@ Can be a numeric vector of length 1 or 2, or a list of two numeric vectors for x
 
 \item{density}{If \code{TRUE}, plot contours instead of points.}
 
+\item{palette}{Color palette name.}
+
 \item{num_features_add}{Each axis shows a simple sum of similar features. This is how many (before removing overlap).}
 
 \item{features_predetermined}{If \code{FALSE}, plot the sum of many features similar to feature1 instead of feature1 alone (same for feature2).
@@ -84,6 +86,10 @@ Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"ma
 \item{title, subtitle, xlab, ylab}{Plot labels.}
 
 \item{suffix}{The suffix of the axis labels.}
+
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
@@ -104,6 +110,10 @@ Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"ma
 \item{bins}{Number of bins for density plot.}
 
 \item{h}{Bandwidth for density plot.}
+
+\item{nrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{ncol}{Number of columns of the combined plot.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

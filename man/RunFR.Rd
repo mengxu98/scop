@@ -54,6 +54,8 @@ RunFR(object, ...)
 
 \item{layer}{Assay layer to use.}
 
+\item{graph}{Neighbor-graph edges.}
+
 \item{neighbor}{Neighbor object to be used.}
 
 \item{k.param}{The number of nearest neighbors to consider.}

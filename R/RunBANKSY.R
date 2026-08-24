@@ -103,11 +103,11 @@ RunBANKSY <- function(
       message_type = "error"
     )
   }
-  banksy_assert_scalar_string(cluster_colname, "cluster_colname")
-  banksy_assert_scalar_string(tool_name, "tool_name")
-  banksy_validate_param_list(compute_banksy_params, "compute_banksy_params")
-  banksy_validate_param_list(run_pca_params, "run_pca_params")
-  banksy_validate_param_list(cluster_banksy_params, "cluster_banksy_params")
+  validate_scalar_string(cluster_colname, "cluster_colname", require_character = FALSE)
+  validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
+  validate_named_param_list(compute_banksy_params, "compute_banksy_params", require_list = TRUE)
+  validate_named_param_list(run_pca_params, "run_pca_params", require_list = TRUE)
+  validate_named_param_list(cluster_banksy_params, "cluster_banksy_params", require_list = TRUE)
   coordinate_space <- match.arg(coordinate_space)
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -134,7 +134,7 @@ RunBANKSY <- function(
       message_type = "error"
     )
   }
-  coords <- rctd_get_spatial_coords(
+  coords <- resolve_spatial_spot_coords(
     srt = srt,
     spot_ids = colnames(expr),
     image = image,
@@ -387,10 +387,3 @@ banksy_do_call <- function(fun, se, args) {
   do.call(fun, c(list(se), args))
 }
 
-banksy_validate_param_list <- function(x, arg_name) {
-  validate_named_param_list(x, arg_name, require_list = TRUE)
-}
-
-banksy_assert_scalar_string <- function(x, arg) {
-  validate_scalar_string(x, arg, require_character = FALSE)
-}

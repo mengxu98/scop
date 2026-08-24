@@ -361,7 +361,7 @@ test_that("LIANA export aggregation keeps resources separate", {
   expect_equal(sort(out$resource), c("CellChatDB", "Consensus"))
 })
 
-test_that("LIANA primary export fills interaction identifiers without inventing aggregate rank", {
+test_that("LIANA primary export fills interaction identifiers without fake rank", {
   df <- data.frame(
     sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
     interaction_name = NA_character_, score = 0.9, pvalue = 0.2,
@@ -749,7 +749,7 @@ test_that("CCC discovery and access adapt v1 long tables without rewriting objec
   expect_identical(srt@tools$CellphoneDB$long_table, before)
 })
 
-test_that("stored CellChat primary tables enter unified results without native re-extraction", {
+test_that("stored CellChat primary tables enter unified results without re-extraction", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
 

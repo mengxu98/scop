@@ -14,7 +14,8 @@ or characters named with old features.}
 
 \item{assays}{Assays to rename.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Rename features for the Seurat object

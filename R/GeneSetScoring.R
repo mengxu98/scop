@@ -769,17 +769,6 @@ run_plage_scores <- function(
   gene_set_scoring_drop_invalid_score_sets(scores)
 }
 
-gene_set_scoring_plage_dense_standardize <- function() {
-  # GSVA 2.6 began standardizing structural dgCMatrix zeros in PLAGE. When
-  # GSVA is not installed, prefer the current full-row definition.
-  check_r("GSVA", verbose = FALSE)
-  utils::packageVersion("GSVA") >= "2.6.0"
-}
-
-gene_set_scoring_zscore_sparse_standardize_full <- function() {
-  check_r("GSVA", verbose = FALSE)
-  utils::packageVersion("GSVA") >= "2.6.0"
-}
 
 orient_plage_scores <- function(scores, expr, gene_sets) {
   if (is.null(scores) || length(gene_sets) == 0L) {
@@ -885,4 +874,7 @@ run_vision_scores <- function(
   as_matrix(vis@SigScores)
 }
 
-run_metabolism_gene_set_indices <- gene_set_scoring_indices
+gsva_standardize <- function() {
+  check_r("GSVA", verbose = FALSE)
+  utils::packageVersion("GSVA") >= "2.6.0"
+}

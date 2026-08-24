@@ -60,7 +60,12 @@ CNVPlot <- function(
   theme_args = list(),
   ...
 ) {
-  validate_seurat_object(srt)
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
   plot_type <- match.arg(plot_type)
   cluster_tree_by <- match.arg(cluster_tree_by)
   bundle <- cnv_get_method_bundle(srt, tool_name = tool_name, method = method)

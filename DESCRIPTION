@@ -141,6 +141,8 @@ Suggests:
     yardstick,
     Banksy,
     CARDspa,
+    infercnv,
+    numbat,
     nnSVG,
     PRECAST,
     smoothclust,
@@ -149,7 +151,6 @@ Suggests:
     SpaNorm,
     withr
 Remotes:
-    mengxu98/thisutils,
     mengxu98/thisplot,
     jinworks/SpatialCellChat,
     linxihui/NNLM,

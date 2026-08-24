@@ -5,6 +5,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param pseudotime_key Name of the metadata column containing Palantir
 #' pseudotime.
 #' @param branch_cols Metadata columns containing Palantir branch probabilities.

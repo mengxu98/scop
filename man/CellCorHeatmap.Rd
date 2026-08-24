@@ -318,7 +318,8 @@ Gap to the heatmap grows automatically when long row names are on the right.}
 
 \item{ht_params}{Extra arguments passed to \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap}, overriding defaults.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A list with the following elements:

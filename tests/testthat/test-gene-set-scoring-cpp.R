@@ -246,7 +246,7 @@ test_that("PLAGE sparse standardization matches GSVA", {
   cpp <- t(run_plage_scores(
     expr, gene_sets,
     min_gs_size = 1L, max_gs_size = 50L,
-    dense_standardize = gene_set_scoring_plage_dense_standardize()
+    dense_standardize = gsva_standardize()
   ))
   reference <- GSVA::gsva(
     GSVA::plageParam(
@@ -309,8 +309,8 @@ test_that("z-score sparse standardization matches the RunGSVA GSVA contract", {
     gene_sets,
     min_gs_size = 1L,
     max_gs_size = 50L,
-    sparse_standardize = !gene_set_scoring_zscore_sparse_standardize_full(),
-    sparse_standardize_full = gene_set_scoring_zscore_sparse_standardize_full()
+    sparse_standardize = !gsva_standardize(),
+    sparse_standardize_full = gsva_standardize()
   ))
   reference <- GSVA::gsva(
     GSVA::zscoreParam(

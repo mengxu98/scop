@@ -60,7 +60,7 @@ mock_meringue_get_fun <- function(fun) {
   )
 }
 
-test_that("RunMERINGUE stores normalized autocorrelation, cross-correlation, and module tables", {
+test_that("RunMERINGUE stores autocorrelation, cross-correlation, and module tables", {
   testthat::local_mocked_bindings(
     check_r = function(packages, ...) {
       expect_identical(packages, "JEFworks-Lab/MERINGUE")
@@ -70,7 +70,7 @@ test_that("RunMERINGUE stores normalized autocorrelation, cross-correlation, and
       expect_identical(package, "MERINGUE")
       mock_meringue_get_fun(fun)
     },
-    meringue_package_version = function(pkg) "mock"
+    pkg_version_safe = function(pkg) "mock"
   )
 
   out <- RunMERINGUE(
@@ -116,7 +116,7 @@ test_that("MERINGUE retains permutation p values when permutations are requested
   testthat::local_mocked_bindings(
     check_r = function(packages, ...) invisible(TRUE),
     get_namespace_fun = function(package, fun) mock_meringue_get_fun(fun),
-    meringue_package_version = function(pkg) "mock"
+    pkg_version_safe = function(pkg) "mock"
   )
 
   out <- RunMERINGUE(
@@ -147,11 +147,11 @@ test_that("MERINGUE module output with groups is normalized", {
   expect_equal(modules$module_size, c(1L, 1L))
 })
 
-test_that("pairwise_features controls cross-correlation scope without implicit O(n^2) expansion", {
+test_that("pairwise_features bounds cross-correlation scope without O(n^2) expansion", {
   testthat::local_mocked_bindings(
     check_r = function(packages, ...) invisible(TRUE),
     get_namespace_fun = function(package, fun) mock_meringue_get_fun(fun),
-    meringue_package_version = function(pkg) "mock"
+    pkg_version_safe = function(pkg) "mock"
   )
 
   out <- RunMERINGUE(
@@ -177,7 +177,7 @@ test_that("RunMERINGUE can compute optional cross-correlation p values", {
   testthat::local_mocked_bindings(
     check_r = function(packages, ...) invisible(TRUE),
     get_namespace_fun = function(package, fun) mock_meringue_get_fun(fun),
-    meringue_package_version = function(pkg) "mock"
+    pkg_version_safe = function(pkg) "mock"
   )
 
   out <- RunMERINGUE(
@@ -199,7 +199,7 @@ test_that("RunMERINGUE top features are directly plottable with SpatialSpotPlot"
   testthat::local_mocked_bindings(
     check_r = function(packages, ...) invisible(TRUE),
     get_namespace_fun = function(package, fun) mock_meringue_get_fun(fun),
-    meringue_package_version = function(pkg) "mock"
+    pkg_version_safe = function(pkg) "mock"
   )
 
   out <- RunMERINGUE(

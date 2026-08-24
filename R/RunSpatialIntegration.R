@@ -8,6 +8,7 @@
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
 #' @inheritParams SpatialSpotPlot
+#' @inheritParams scop-params
 #' @param object A merged spatial `Seurat` object or a list of spatial `Seurat`
 #' objects.
 #' @param method Spatial integration backend.
@@ -106,12 +107,12 @@ RunSpatialIntegration <- function(
 ) {
   method <- match.arg(method)
   coordinate_space <- match.arg(coordinate_space)
-  spatial_integration_assert_scalar_string(tool_name, "tool_name")
+  validate_scalar_string(tool_name, "tool_name")
   sample.by <- spatial_integration_resolve_sample_by(object, sample.by)
   reduction.name <- reduction.name %||% paste0("SpatialIntegration_", method)
   cluster_colname <- cluster_colname %||% paste0("SpatialIntegration_", method, "_domain")
-  spatial_integration_assert_scalar_string(reduction.name, "reduction.name")
-  spatial_integration_assert_scalar_string(cluster_colname, "cluster_colname")
+  validate_scalar_string(reduction.name, "reduction.name")
+  validate_scalar_string(cluster_colname, "cluster_colname")
 
   input <- spatial_integration_prepare_input(
     object = object,
@@ -161,6 +162,7 @@ RunSpatialIntegration <- function(
   )
   srt
 }
+
 
 #' @title Plot spatial integration results
 #'
@@ -455,10 +457,11 @@ spatial_integration_prepare_input <- function(
   split_cells <- split(cells, srt@meta.data[cells, sample.by, drop = TRUE])
   list(
     srt = srt,
-    srt_list = spatial_integration_split_merged(
-      srt = srt,
-      cells_by_sample = split_cells
-    ),
+    srt_list = { .inline0 <- srt; .inline1 <- split_cells; 
+  lapply(.inline1, function(cells) {
+    .inline0[, cells]
+  })
+ },
     expr = expr,
     expr_list = lapply(split_cells, function(x) expr[, x, drop = FALSE]),
     coords = coords,
@@ -529,11 +532,6 @@ spatial_integration_merge_list <- function(srt_list, sample.by) {
   )
 }
 
-spatial_integration_split_merged <- function(srt, cells_by_sample) {
-  lapply(cells_by_sample, function(cells) {
-    srt[, cells]
-  })
-}
 
 spatial_integration_features <- function(features, expr, srt_list, assay) {
   common <- Reduce(
@@ -1030,7 +1028,7 @@ spatial_integration_call <- function(fun, args) {
 
 spatial_integration_resolve_sample_by <- function(object, sample.by) {
   if (!is.null(sample.by)) {
-    spatial_integration_assert_scalar_string(sample.by, "sample.by")
+    validate_scalar_string(sample.by, "sample.by")
     return(sample.by)
   }
   if (inherits(object, "Seurat")) {
@@ -1050,6 +1048,3 @@ spatial_integration_reduction_key <- function(reduction.name) {
   paste0(key, "_")
 }
 
-spatial_integration_assert_scalar_string <- function(x, arg) {
-  validate_scalar_string(x, arg)
-}

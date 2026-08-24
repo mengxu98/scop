@@ -37,7 +37,8 @@ phase column.}
 
 \item{overwrite}{Whether to overwrite existing output columns.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to the selected method.}
 }

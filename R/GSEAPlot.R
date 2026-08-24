@@ -5,6 +5,7 @@
 #'
 #' @md
 #' @inheritParams EnrichmentPlot
+#' @inheritParams scop-params
 #' @param srt A `Seurat` object containing the results of RunDEtest and RunGSEA.
 #' If specified, GSEA results will be extracted from the Seurat object automatically.
 #' If not specified, the `res` arguments must be provided.

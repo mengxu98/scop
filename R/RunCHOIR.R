@@ -108,7 +108,12 @@ RunCHOIR <- function(
   overwrite = FALSE,
   ...
 ) {
-  validate_seurat_object(srt)
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
   validate_scalar_string(key, "key")
   validate_scalar_string(cluster_colname, "cluster_colname")
   validate_scalar_string(tool_name, "tool_name")

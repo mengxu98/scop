@@ -97,11 +97,11 @@ FeatureDimPlot(
 \item{features}{Features to plot: a character vector or a named list of
 assay gene names or numeric metadata columns.}
 
-\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
+\item{reduction}{Dimensionality reduction to use. \code{NULL} uses \link{DefaultReduction}.}
 
 \item{dims}{Length-2 vector of dimensions to plot.}
 
-\item{split.by}{Metadata column to facet by.}
+\item{split.by}{Metadata column to split the analysis or plot by.}
 
 \item{cells}{Cell names to include.}
 
@@ -111,11 +111,13 @@ assay gene names or numeric metadata columns.}
 
 \item{show_stat}{Show cell-count statistics on the plot.}
 
-\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
+\item{palette}{Color palette name.}
 
-\item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
-with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
-radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
+\item{palcolor}{Custom colors used to create a color palette.}
+
+\item{pt.size}{Point size and transparency. \code{pt.size = NULL} scales with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
+
+\item{pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{bg_cutoff}{Values below this cutoff are colored with \code{bg_color}.}
 
@@ -133,7 +135,11 @@ quantile or absolute cutoffs for the color scale.}
 
 \item{add_density, density_color, density_filled, density_filled_palette, density_filled_palcolor}{Density contours; \code{density_filled} draws filled bands.}
 
-\item{cells.highlight, cols.highlight, sizes.highlight, alpha.highlight, stroke.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
+\item{cells.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
+
+\item{cols.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
+
+\item{sizes.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
 
 \item{calculate_coexp}{Plot the geometric mean of the features.}
 
@@ -143,38 +149,67 @@ quantile or absolute cutoffs for the color scale.}
 
 \item{label}{Label high-expressing cells.}
 
+\item{label.size}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
+\item{label.fg}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
+\item{label.bg}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
+\item{label.bg.r}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
 \item{label_insitu}{Use feature names instead of numbers when
 \code{compare_features = TRUE}.}
 
 \item{label_repel, label_repulsion, label_point_size, label_point_color, label_segment_color}{Repel labels away from cluster centers.}
 
-\item{lineages, lineages_trim, lineages_span, lineages_palette, lineages_palcolor, lineages_arrow, lineages_linewidth, lineages_line_bg, lineages_line_bg_stroke, lineages_whiskers, lineages_whiskers_linewidth, lineages_whiskers_alpha}{Pseudotime lineages as \link[stats:loess]{stats::loess} curves. See \link[grid:arrow]{grid::arrow} for \code{lineages_arrow}.}
+\item{lineages}{Pseudotime columns to use. If \code{NULL}, lineage-like pseudotime columns such as \code{Lineage1}, \code{Lineage2}, \code{prefix_Lineage1}, or \code{pseudotime} are detected and merged into one global pseudotime for a single panel. Use \code{"all"} to plot each detected lineage in separate panels.}
 
-\item{graph, edge_size, edge_alpha, edge_color}{Neighbor-graph edges.}
+\item{lineages_palette}{Color palette used for lineage groups.}
+
+\item{graph}{Neighbor-graph edges.}
+
+\item{hex}{Whether to use hexagonal binning for 2D assignments.}
+
+\item{hex.linewidth}{Line width of six-point hexagons.}
 
 \item{hex.color}{Border color of hexagonal bins.}
+
+\item{hex.bins}{Number of hexagonal bins.}
+
+\item{hex.binwidth}{Width of hexagonal bins.}
 
 \item{raster, raster.dpi}{Rasterize points. \code{raster = NULL} rasterizes when
 there are more than 100,000 cells.}
 
 \item{aspect.ratio}{Panel aspect ratio.}
 
-\item{title, subtitle, xlab, ylab}{Plot labels.}
+\item{title}{Plot title. \code{NULL} hides the title for merged/single panels. When multiple lineages are plotted and \code{title} is \code{NULL}, each panel is titled with its lineage column.}
 
-\item{legend.position, legend.direction, legend.title}{Legend placement
-(\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title.
-\code{legend.title = NULL} uses the group name.}
+\item{subtitle}{Plot subtitle.}
 
-\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
+\item{xlab}{Plot labels.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
-returns a list of ggplots.}
+\item{ylab}{Plot labels.}
+
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
+\item{theme_args}{Theme name or function, plus extra theme arguments.}
+
+\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{nrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{ncol}{Number of columns of the combined plot.}
+
+\item{byrow}{Whether to fill matrices/plots by row.}
 
 \item{force}{Draw even when more than 100 features are requested.}
 
 \item{seed}{Random seed.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Color cells on a dimensionality reduction by feature values (assay genes or

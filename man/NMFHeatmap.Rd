@@ -142,12 +142,20 @@ annotations in feature mode.}
 
 \item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths when the matching border argument is \code{TRUE}.}
 
+\item{show_row_names}{Whether to draw row/column names for the heatmap body.}
+
 \item{row_names_wrap}{Maximum number of characters per displayed row-name
 line. When set to a positive number, underscores are displayed as spaces and
 labels are wrapped without changing the underlying item identifiers.
 \code{NULL} disables wrapping.}
 
+\item{show_column_names}{Whether to draw row/column names for the heatmap body.}
+
 \item{row_names_side, column_names_side, row_names_rot, column_names_rot}{Name placement.}
+
+\item{row_title}{The title for the row names in the heatmap. If not provided, the default is to use the query grouping variable.}
+
+\item{column_title}{The title for the column names in the heatmap. Default is to use the reference grouping variable.}
 
 \item{anno_terms, anno_keys, anno_features}{Enrichment annotations.}
 
@@ -181,6 +189,10 @@ missing for \code{species}.}
 
 \item{pvalueCutoff, padjustCutoff, topTerm, show_termid, topWord, words_excluded}{Enrichment filters.}
 
+\item{heatmap_palette}{Palette used for CNV heatmap values.}
+
+\item{heatmap_palcolor}{Palette used for CNV heatmap values.}
+
 \item{heatmap_limits}{Numeric breaks for the heatmap color scale. If \code{NULL},
 defaults to \code{c(0, 0.35, 0.75, 1)}.}
 
@@ -189,20 +201,33 @@ defaults to \code{c(0, 0.35, 0.75, 1)}.}
 \item{cluster_palcolor}{Optional custom colors for NMF cluster/program
 annotations.}
 
+\item{cell_annotation_palette}{Color palette for cell-type annotations.}
+
+\item{cell_annotation_palcolor}{Custom colors for cell-type annotations.}
+
+\item{feature_annotation_palette}{Color palette for feature annotations.}
+
+\item{feature_annotation_palcolor}{Custom colors for feature annotations.}
+
 \item{use_raster, raster_device, raster_by_magick}{Raster device (\code{NULL} chooses automatically).}
 
 \item{width, height, units}{Heatmap size. \code{NULL} sizes from matrix dimensions.}
 
-\item{cores}{Number of CPU cores.}
+\item{cores}{The number of worker processes to use for parallelization.
+Default is \code{1}.}
 
-\item{seed}{Random seed.}
+\item{seed}{Optional integer seed. When supplied, every input receives a
+deterministic independent L'Ecuyer-CMRG random-number stream, making results
+reproducible across worker counts and scheduling order. The caller's random
+number state is restored when the call finishes.}
 
 \item{legend.position}{Legend side (\code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}).
 Gap to the heatmap grows automatically when long row names are on the right.}
 
 \item{ht_params}{Extra arguments passed to \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap}, overriding defaults.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A list with the following elements:

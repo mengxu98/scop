@@ -6,6 +6,7 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams RunStandardWorkflow
+#' @inheritParams scop-params
 #' @param srt A Seurat object containing the results of RunDEtest and RunEnrichment.
 #' If specified, enrichment results will be extracted from the `Seurat` object automatically.
 #' If not specified, the `res` arguments must be provided.

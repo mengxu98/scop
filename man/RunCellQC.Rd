@@ -103,7 +103,7 @@ percentage. \code{ribo_gene} overrides \code{ribo_pattern}.}
 
 \item{seed}{Random seed.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 
 \item{hb_range, hb_pattern, hb_gene}{Hemoglobin percentage range and feature matching.
 \code{hb_gene} overrides \code{hb_pattern}.}

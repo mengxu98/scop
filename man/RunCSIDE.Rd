@@ -135,7 +135,8 @@ SpatialSpotPlot(
 )
 
 data(panc8_sub)
-spatial <- spatial[, seq_len(120)]
+set.seed(1234)
+spatial <- spatial[, sample(seq_len(ncol(spatial)), 120)]
 reference <- panc8_sub[, panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
 features_use <- intersect(

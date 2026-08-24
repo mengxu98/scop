@@ -206,7 +206,7 @@ RunCytoSPACE <- function(
     seed = seed
   )
 
-  coords <- cytospace_get_spatial_coords(
+  coords <- resolve_spatial_spot_coords(
     srt,
     spot_ids,
     image = image,
@@ -624,21 +624,6 @@ cytospace_sample_reference_cells <- function(
   )
 }
 
-cytospace_get_spatial_coords <- function(
-  srt,
-  spot_ids,
-  image = NULL,
-  coord.cols = c("col", "row"),
-  coordinate_space = c("raw", "legacy_display")
-) {
-  resolve_spatial_spot_coords(
-    srt = srt,
-    spot_ids = spot_ids,
-    image = image,
-    coord.cols = coord.cols,
-    coordinate_space = coordinate_space
-  )
-}
 
 cytospace_build_assignment_table <- function(
   result,

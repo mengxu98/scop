@@ -334,7 +334,13 @@ RunCellCycleTricycle <- function(
   }
   embeddings <- SingleCellExperiment::reducedDim(sce, "tricycleEmbedding")
   rownames(embeddings) <- colnames(srt)
-  reduction_key <- cellcycle_reduction_key(name)
+  reduction_key <- {
+    key <- gsub("[^A-Za-z0-9]", "", name)
+    if (key == "") {
+      key <- "CellCycle"
+    }
+    paste0(key, "TC_")
+  }
   colnames(embeddings) <- paste0(reduction_key, seq_len(ncol(embeddings)))
   srt[[reduction_name]] <- SeuratObject::CreateDimReducObject(
     embeddings = embeddings,
@@ -485,10 +491,3 @@ cellcycle_score_or_na <- function(scores, phase) {
   stats::setNames(rep(NA_real_, nrow(scores)), rownames(scores))
 }
 
-cellcycle_reduction_key <- function(name) {
-  key <- gsub("[^A-Za-z0-9]", "", name)
-  if (key == "") {
-    key <- "CellCycle"
-  }
-  paste0(key, "TC_")
-}

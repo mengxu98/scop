@@ -96,11 +96,16 @@ RunCNV <- function(
   verbose = TRUE,
   ...
 ) {
-  validate_seurat_object(srt)
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
   method <- cnv_match_method(method)
   genome <- match.arg(genome)
-  cnv_assert_scalar_string(prefix, "prefix")
-  cnv_assert_scalar_string(tool_name, "tool_name")
+  validate_scalar_string(prefix, "prefix", require_character = FALSE)
+  validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% names(srt@assays)) {
@@ -1100,7 +1105,7 @@ cnv_match_method <- function(method) {
     method <- "copykat"
   }
   method <- method[[1L]]
-  cnv_assert_scalar_string(method, "method")
+  validate_scalar_string(method, "method", require_character = FALSE)
   method_map <- c(
     copykat = "copykat",
     fastcnv = "fastCNV",
@@ -1118,9 +1123,6 @@ cnv_match_method <- function(method) {
   unname(method_map[[method_key]])
 }
 
-cnv_assert_scalar_string <- function(x, arg) {
-  validate_scalar_string(x, arg, require_character = FALSE)
-}
 
 cnv_validate_metadata <- function(srt, column, arg) {
   if (!is.null(column) && !column %in% colnames(srt@meta.data)) {

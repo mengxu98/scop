@@ -62,7 +62,8 @@ If \code{NULL}, reference variable features are used.}
 
 \item{k.weight}{Number of neighbors used when weighting transfer anchors.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{seed}{Random seed used for UMAP.}
 }

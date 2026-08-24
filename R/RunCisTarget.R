@@ -267,8 +267,8 @@ cisTarget_cpp <- function(
   )
   regulons <- do.call(cistarget2, args)
   regulons <- regulons[lengths(regulons) >= min_regulon_size]
-  write_regulons_to_gmt(regulons, gmt_output)
-  write_regulons_to_txt(regulons, txt_output)
+  write_regulons_file(regulons, gmt_output, sep = "\t")
+  write_regulons_file(regulons, txt_output, sep = ",")
 
   ctx <- if (length(regulons) == 0L) {
     data.frame(
@@ -509,8 +509,8 @@ cisTarget_r <- function(
   }
 
   # Write GMT
-  write_regulons_to_gmt(regulons, gmt_output)
-  write_regulons_to_txt(regulons, txt_output)
+  write_regulons_file(regulons, gmt_output, sep = "\t")
+  write_regulons_file(regulons, txt_output, sep = ",")
 
   log_message(
     "{.fn RunCisTarget} (r) produced {.val {length(regulons)}} regulons",
@@ -547,28 +547,15 @@ read_regulons_from_gmt <- function(gmt_file, min_regulon_size = 10) {
   regulons
 }
 
-write_regulons_to_gmt <- function(regulons, gmt_file) {
-  lines <- character(length(regulons))
-  for (i in seq_along(regulons)) {
-    tf <- names(regulons)[i]
-    genes <- regulons[[i]]
-    lines[i] <- paste0(
-      tf, "(", length(genes), "g)", "\tna\t",
-      paste(genes, collapse = "\t")
-    )
-  }
-  writeLines(lines, gmt_file)
-}
 
-write_regulons_to_txt <- function(regulons, txt_file) {
+
+write_regulons_file <- function(regulons, file, sep = "\t") {
   lines <- character(length(regulons))
   for (i in seq_along(regulons)) {
     tf <- names(regulons)[i]
     genes <- regulons[[i]]
-    lines[i] <- paste0(
-      tf, "(", length(genes), "g)", "\tna\t",
-      paste(genes, collapse = ",")
-    )
+    lines[i] <- paste0(tf, "(", length(genes), "g)", "\tna\t",
+      paste(genes, collapse = sep))
   }
-  writeLines(lines, txt_file)
+  writeLines(lines, file)
 }

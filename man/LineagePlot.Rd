@@ -53,6 +53,8 @@ LineagePlot(
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.}
 
+\item{palcolor}{Custom colors used to create a color palette.}
+
 \item{lineages_arrow}{An arrow object specifying the arrow for lineages.}
 
 \item{linewidth}{The linewidth for the lineages.}
@@ -82,7 +84,7 @@ Defaults is \code{FALSE}.}
 
 \item{seed}{Random seed.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Generate a lineage plot based on the pseudotime.

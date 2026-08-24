@@ -9,6 +9,7 @@
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
 #' @inheritParams SpatialSpotPlot
+#' @inheritParams scop-params
 #' @param reference Spatial reference type: `"trajectory"` for STS or
 #' `"annotation"` for SAS.
 #' @param backend Computation backend. `"cpp"` uses a compiled fast spatial
@@ -264,6 +265,7 @@ RunSpatialGradientFeatures <- function(
   srt
 }
 
+
 #' @title Plot spatial gradient screening results
 #'
 #' @description
@@ -490,8 +492,6 @@ SpatialGradientPlot <- function(
 }
 
 
-
-
 sgf_resolve_variables <- function(srt, assay, layer, variables = NULL) {
   if (is.null(variables)) {
     variables <- srt@tools[["SpatialVariableFeatures"]]$summary$top_features
@@ -628,7 +628,7 @@ sgf_run_cpp_gradient <- function(
     significance = significance,
     model_fits = model_fits,
     top_variables = top_variables,
-    parameters = sgf_parameters_df(parameters),
+    parameters = parameters_summary_df(parameters, version_pkgs = c(spata2_version = "SPATA2")),
     source = coordinate_source
   )
 }
@@ -763,7 +763,6 @@ sgf_cpp_trajectory <- function(reference, start, end, traj_df) {
 }
 
 
-
 sgf_format_annotation_threshold <- function(threshold) {
   if (length(threshold) != 1L || is.na(threshold)) {
     log_message(
@@ -797,44 +796,36 @@ sgf_format_annotation_threshold <- function(threshold) {
 }
 
 
-
-
-
-
-
-
-
-
 sgf_standardize_significance <- function(df) {
   df <- sgf_as_df(df)
-  df <- sgf_rename_first(df, "variable", c("variable", "variables", "gene", "genes", "feature", "features"))
-  df <- sgf_rename_first(df, "p_value", c("p_value", "p.val", "pval", "p.value"))
-  df <- sgf_rename_first(df, "fdr", c("fdr", "q_value", "q.value", "padj", "adjustedPval"))
+  df <- rename_first_column(df, "variable", c("variable", "variables", "gene", "genes", "feature", "features"))
+  df <- rename_first_column(df, "p_value", c("p_value", "p.val", "pval", "p.value"))
+  df <- rename_first_column(df, "fdr", c("fdr", "q_value", "q.value", "padj", "adjustedPval"))
   if (!"variable" %in% colnames(df)) {
     df$variable <- character(nrow(df))
   }
-  sgf_reorder_cols(df, c("variable", "tot_var", "p_value", "fdr"))
+  reorder_first_columns(df, c("variable", "tot_var", "p_value", "fdr"))
 }
 
 sgf_standardize_model_fits <- function(df) {
   df <- sgf_as_df(df)
-  df <- sgf_rename_first(df, "variable", c("variable", "variables", "gene", "genes", "feature", "features"))
-  df <- sgf_rename_first(df, "model", c("model", "models"))
+  df <- rename_first_column(df, "variable", c("variable", "variables", "gene", "genes", "feature", "features"))
+  df <- rename_first_column(df, "model", c("model", "models"))
   if (!"variable" %in% colnames(df)) {
     df$variable <- character(nrow(df))
   }
   if (!"model" %in% colnames(df)) {
     df$model <- character(nrow(df))
   }
-  sgf_reorder_cols(df, c("variable", "model", "mae", "rmse", "r2", "R2"))
+  reorder_first_columns(df, c("variable", "model", "mae", "rmse", "r2", "R2"))
 }
 
 sgf_standardize_screening_df <- function(df, reference) {
   df <- sgf_as_df(df)
-  df <- sgf_rename_first(df, "variable", c("variable", "variables", "gene", "genes", "feature", "features"))
-  df <- sgf_rename_first(df, "distance", c("distance", "dist", "x", "x_orig", "x_original", "bin"))
-  df <- sgf_rename_first(df, "value", c("value", "values", "expr", "expression", "y"))
-  df <- sgf_rename_first(df, "estimate", c("estimate", "estimates", "fit", "fitted", "smooth", "smoothed"))
+  df <- rename_first_column(df, "variable", c("variable", "variables", "gene", "genes", "feature", "features"))
+  df <- rename_first_column(df, "distance", c("distance", "dist", "x", "x_orig", "x_original", "bin"))
+  df <- rename_first_column(df, "value", c("value", "values", "expr", "expression", "y"))
+  df <- rename_first_column(df, "estimate", c("estimate", "estimates", "fit", "fitted", "smooth", "smoothed"))
   for (col in c("variable", "distance", "value", "estimate")) {
     if (!col %in% colnames(df)) {
       df[[col]] <- NA
@@ -842,7 +833,7 @@ sgf_standardize_screening_df <- function(df, reference) {
   }
   df$reference <- if ("reference" %in% colnames(df)) df$reference else reference
   df$mode <- if ("mode" %in% colnames(df)) df$mode else reference
-  sgf_reorder_cols(df, c("variable", "distance", "value", "estimate", "reference", "mode"))
+  reorder_first_columns(df, c("variable", "distance", "value", "estimate", "reference", "mode"))
 }
 
 sgf_top_variables <- function(
@@ -874,7 +865,7 @@ sgf_top_variables <- function(
   top <- merge(top, best, by = "variable", all.x = TRUE, sort = FALSE)
   top <- top[order(top$rank), , drop = FALSE]
   rownames(top) <- NULL
-  sgf_reorder_cols(top, c("variable", "rank", "fdr", "p_value", "best_model", "mae", "rmse"))
+  reorder_first_columns(top, c("variable", "rank", "fdr", "p_value", "best_model", "mae", "rmse"))
 }
 
 
@@ -1215,7 +1206,9 @@ sgf_model_plot <- function(
       size = 3,
       color = "grey15"
     ) +
-    ggplot2::scale_fill_gradientn(colors = rev(sgf_gradient_colors(palette, palcolor)), na.value = "grey85") +
+    ggplot2::scale_fill_gradientn(colors = rev({ .inline0 <- palette; .inline1 <- palcolor; 
+  palette_colors(palette = .inline0, palcolor = .inline1, n = 9)
+ }), na.value = "grey85") +
     ggplot2::labs(x = "Model", y = NULL, fill = "RMSE") +
     apply_plot_theme(theme_use = theme_use, theme_args = theme_args, fallback = ggplot2::theme_minimal) +
     ggplot2::theme(
@@ -1230,27 +1223,6 @@ sgf_feature_colors <- function(features, palette = "Spectral", palcolor = NULL) 
   stats::setNames(cols[seq_along(features)], features)
 }
 
-sgf_gradient_colors <- function(palette = "Spectral", palcolor = NULL) {
-  palette_colors(palette = palette, palcolor = palcolor, n = 9)
-}
-
-sgf_parameters_df <- function(parameters) {
-  parameters$scop_version <- sgf_package_version("scop")
-  parameters$spata2_version <- sgf_package_version("SPATA2")
-  data.frame(
-    key = names(parameters),
-    value = vapply(parameters, collapse_parameter_value, character(1)),
-    stringsAsFactors = FALSE
-  )
-}
-
-sgf_package_version <- function(pkg) {
-  tryCatch(as.character(utils::packageVersion(pkg)), error = function(e) NA_character_)
-}
-
-sgf_drop_nulls <- function(x) {
-  x[!vapply(x, is.null, logical(1))]
-}
 
 sgf_as_df <- function(df) {
   if (!is.data.frame(df)) {
@@ -1259,16 +1231,3 @@ sgf_as_df <- function(df) {
   as.data.frame(df, stringsAsFactors = FALSE, check.names = FALSE)
 }
 
-sgf_rename_first <- function(df, target, candidates) {
-  hit <- intersect(candidates, colnames(df))
-  hit <- setdiff(hit, target)
-  if (length(hit) > 0L && !target %in% colnames(df)) {
-    colnames(df)[match(hit[1L], colnames(df))] <- target
-  }
-  df
-}
-
-sgf_reorder_cols <- function(df, first_cols) {
-  first_cols <- intersect(first_cols, colnames(df))
-  df[, c(first_cols, setdiff(colnames(df), first_cols)), drop = FALSE]
-}

@@ -342,7 +342,6 @@ ccc_run_status_df <- function(status) {
 }
 
 
-
 ccc_method_runner <- function(method) {
   spec <- ccc_method_spec(method)
   get(spec$runner, mode = "function", inherits = TRUE)
@@ -416,7 +415,12 @@ ccc_method_spec <- function(method, error = TRUE) {
   method <- normalize_ccc_method(method)
   spec <- ccc_method_specs()[[method]]
   if (is.null(spec) && isTRUE(error)) {
-    ccc_unsupported_method(method)
+    { .inline0 <- method; 
+  log_message(
+    "Unsupported CCC method {.val {method}}",
+    message_type = "error"
+  )
+ }
   }
   spec
 }
@@ -448,10 +452,3 @@ normalize_ccc_method <- function(method) {
   method_chr
 }
 
-
-ccc_unsupported_method <- function(method) {
-  log_message(
-    "Unsupported CCC method {.val {method}}",
-    message_type = "error"
-  )
-}

@@ -102,8 +102,8 @@ SpatialBenchmarkPlot <- function(
   plot_type <- match.arg(plot_type)
   sort_by <- match.arg(sort_by)
   resource_scale <- match.arg(resource_scale)
-  benchmark_assert_flag(show_values, "show_values")
-  benchmark_assert_flag(show_status, "show_status")
+  validate_scalar_flag(show_values, "show_values")
+  validate_scalar_flag(show_status, "show_status")
 
   benchmark_result <- if (
     inherits(data, "spatial_benchmark_result") ||
@@ -712,7 +712,10 @@ benchmark_status_plot <- function(data) {
   data$method <- factor(data$method, levels = rev(data$method))
   data$label <- paste0(
     data$method, "  |  ", data$status,
-    ifelse(nzchar(data$error), paste0("  -  ", benchmark_trim_text(data$error, 72L)), "")
+    ifelse(nzchar(data$error), paste0("  -  ", { .inline0 <- data$error; .inline1 <- 72L; 
+  .inline0 <- gsub("[\r\n]+", " ", .inline0)
+  ifelse(nchar(.inline0) > .inline1, paste0(substr(.inline0, 1L, .inline1 - 3L), "..."), .inline0)
+ }), "")
   )
   ggplot2::ggplot(data, ggplot2::aes(
     x = 1, y = .data[["method"]], fill = .data[["status"]]
@@ -736,10 +739,6 @@ benchmark_status_plot <- function(data) {
     )
 }
 
-benchmark_trim_text <- function(x, width) {
-  x <- gsub("[\r\n]+", " ", x)
-  ifelse(nchar(x) > width, paste0(substr(x, 1L, width - 3L), "..."), x)
-}
 
 benchmark_empty_panel <- function(title, subtitle) {
   ggplot2::ggplot() +

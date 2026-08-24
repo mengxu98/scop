@@ -133,6 +133,8 @@ or \code{"classic"} for legacy significant/non-significant coloring.}
 \item{legend.position}{The position of legends,
 one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.}
 
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
 \item{legend.title}{Title of the legend.}
 
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
@@ -140,7 +142,7 @@ returns a list of ggplots.}
 
 \item{seed}{Random seed.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Generate differential-abundance plots based on results from \link{RunProportionTest}.

@@ -8,6 +8,7 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
+#' @inheritParams scop-params
 #' @param srt A `Seurat` object. For `mode = "deconvolute"`, a numeric
 #' expression matrix can also be supplied.
 #' @param mode SpatialEcoTyper workflow. `"single"` runs single-sample de novo
@@ -190,8 +191,8 @@ RunSpatialEcoTyper <- function(
       message_type = "error"
     )
   }
-  spatialecotyper_assert_scalar_string(prefix, "prefix")
-  spatialecotyper_assert_scalar_string(tool_name, "tool_name")
+  validate_scalar_string(prefix, "prefix", require_character = FALSE)
+  validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
 
   assay <- if (has_seurat) assay %||% SeuratObject::DefaultAssay(srt) else assay
   normdata <- spatialecotyper_get_data(
@@ -323,6 +324,7 @@ RunSpatialEcoTyper <- function(
   )
 }
 
+
 #' @title SpatialEcoTyper spatial plot
 #'
 #' @description
@@ -385,6 +387,7 @@ SpatialEcoTyperSpatialPlot <- function(
     ...
   )
 }
+
 
 #' @title SpatialEcoTyper composition plot
 #'
@@ -693,9 +696,9 @@ spatialecotyper_run_multi <- function(
   verbose,
   ...
 ) {
-  spatialecotyper_assert_scalar_string(sample.by, "sample.by")
+  validate_scalar_string(sample.by, "sample.by", require_character = FALSE)
   if (!is.null(Region)) {
-    spatialecotyper_assert_scalar_string(Region, "Region")
+    validate_scalar_string(Region, "Region", require_character = FALSE)
   }
   meta <- srt[[]]
   spatialecotyper_check_meta_columns(
@@ -727,7 +730,12 @@ spatialecotyper_run_multi <- function(
       metadata_list[[sample_name]][[Region]] <- meta[sample_cells, Region, drop = TRUE]
     }
   }
-  outdir <- outdir %||% spatialecotyper_temp_outdir(prefix)
+  outdir <- outdir %||% { .inline0 <- prefix; 
+  file.path(
+    tempdir(),
+    paste0(.inline0, "_", format(Sys.time(), "%Y%m%d%H%M%S"))
+  )
+ }
   if (!dir.exists(outdir)) {
     dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
   }
@@ -847,7 +855,7 @@ spatialecotyper_run_recover <- function(
   ...
 ) {
   if (is.null(celltypes)) {
-    spatialecotyper_assert_scalar_string(celltype.by, "celltype.by")
+    validate_scalar_string(celltype.by, "celltype.by", require_character = FALSE)
     meta <- srt[[]]
     spatialecotyper_check_meta_columns(meta = meta, cols = celltype.by)
     celltypes <- meta[colnames(normdata), celltype.by, drop = TRUE]
@@ -1038,9 +1046,9 @@ spatialecotyper_seurat_metadata <- function(
   x.by,
   y.by
 ) {
-  spatialecotyper_assert_scalar_string(celltype.by, "celltype.by")
-  spatialecotyper_assert_scalar_string(x.by, "x.by")
-  spatialecotyper_assert_scalar_string(y.by, "y.by")
+  validate_scalar_string(celltype.by, "celltype.by", require_character = FALSE)
+  validate_scalar_string(x.by, "x.by", require_character = FALSE)
+  validate_scalar_string(y.by, "y.by", require_character = FALSE)
   meta <- srt[[]]
   spatialecotyper_check_meta_columns(meta = meta, cols = c(celltype.by, x.by, y.by))
   missing_cells <- setdiff(cells, rownames(meta))
@@ -1058,9 +1066,6 @@ spatialecotyper_seurat_metadata <- function(
   )
 }
 
-spatialecotyper_assert_scalar_string <- function(x, arg) {
-  validate_scalar_string(x, arg, require_character = FALSE)
-}
 
 spatialecotyper_check_meta_columns <- function(meta, cols) {
   missing_cols <- setdiff(cols, colnames(meta))
@@ -1324,9 +1329,3 @@ spatialecotyper_store_tool <- function(
   srt
 }
 
-spatialecotyper_temp_outdir <- function(prefix) {
-  file.path(
-    tempdir(),
-    paste0(prefix, "_", format(Sys.time(), "%Y%m%d%H%M%S"))
-  )
-}

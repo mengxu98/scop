@@ -57,9 +57,9 @@ RunSpatialDWLS <- function(
   if (!inherits(reference, "Seurat")) {
     log_message("{.arg reference} must be a {.cls Seurat} object", message_type = "error")
   }
-  spatial_dwls_assert_string(reference_label, "reference_label")
-  spatial_dwls_assert_string(prefix, "prefix")
-  spatial_dwls_assert_string(tool_name, "tool_name")
+  validate_scalar_string(reference_label, "reference_label")
+  validate_scalar_string(prefix, "prefix")
+  validate_scalar_string(tool_name, "tool_name")
   if (!reference_label %in% colnames(reference@meta.data)) {
     log_message(
       "{.arg reference_label} {.val {reference_label}} is not in reference meta.data",
@@ -222,6 +222,3 @@ spatial_dwls_fit_weights <- function(signatures, spatial_expr) {
   weights
 }
 
-spatial_dwls_assert_string <- function(x, arg) {
-  validate_scalar_string(x, arg)
-}

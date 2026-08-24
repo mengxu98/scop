@@ -49,7 +49,7 @@ Default is \code{NULL}, which uses first two dimensions.}
 
 \item{...}{Passed to the \link[slingshot:slingshot]{slingshot::slingshot} function.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 RunSlingshot

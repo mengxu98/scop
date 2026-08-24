@@ -65,10 +65,11 @@ test_that("raw is the real public default on an image-backed Visium object", {
   expect_identical(sum(raw_distance > 0 & raw_distance <= 50), 0L)
   expect_gt(sum(legacy_distance > 0 & legacy_distance <= 50), 0L)
 
-  cytospace_coords <- cytospace_get_spatial_coords(
+  cytospace_coords <- resolve_spatial_spot_coords(
     srt,
     spot_ids = cells,
-    image = image
+    image = image,
+    coord.cols = c("col", "row")
   )
   expect_identical(
     attr(cytospace_coords, "spatial_source")$coordinate_space,

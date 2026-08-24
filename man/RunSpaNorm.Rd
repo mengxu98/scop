@@ -40,7 +40,8 @@ a single image is selected automatically when \code{NULL}.}
 \item{store_spe}{Whether to store the backend \code{SpatialExperiment} returned
 by \code{SpaNorm}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{coordinate_space}{Coordinate system supplied to SpaNorm. The default
 is raw acquisition coordinates; use \code{"legacy_display"} explicitly to

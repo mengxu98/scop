@@ -3,9 +3,6 @@
 .spatialdm_backend_commit <- "9b0f559dfd152c361fdd311b129cda84692349f3"
 .spatialdm_repository <- "StatBiomed/SpatialDM"
 
-spatialdm_matrix_values <- function(x) {
-  if (methods::is(x, "sparseMatrix")) methods::slot(x, "x") else as.numeric(x)
-}
 
 spatialdm_validate_matrix <- function(x, label, nonnegative = TRUE) {
   if ((!is.matrix(x) && !methods::is(x, "sparseMatrix")) ||
@@ -15,7 +12,7 @@ spatialdm_validate_matrix <- function(x, label, nonnegative = TRUE) {
       anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
     log_message("{.val {label}} must be a named matrix with unique feature and spot IDs", message_type = "error")
   }
-  values <- spatialdm_matrix_values(x)
+  values <- matrix_values(x)
   if (any(!is.finite(values)) || (isTRUE(nonnegative) && any(values < 0))) {
     log_message("{.val {label}} must contain finite non-negative values", message_type = "error")
   }
@@ -59,11 +56,6 @@ spatialdm_input <- function(
   )
 }
 
-spatialdm_write_tsv <- function(x, path) {
-  utils::write.table(x, file = path, sep = "\t", quote = FALSE,
-    row.names = FALSE, col.names = TRUE, na = "")
-  invisible(path)
-}
 
 spatialdm_write_inputs <- function(input, workdir, lr.database = NULL) {
   expression.path <- file.path(workdir, "expression.mtx")
@@ -73,9 +65,9 @@ spatialdm_write_inputs <- function(input, workdir, lr.database = NULL) {
   coordinates.path <- file.path(workdir, "coordinates.tsv")
   Matrix::writeMM(input$expression, expression.path)
   Matrix::writeMM(input$counts %||% input$expression, counts.path)
-  spatialdm_write_tsv(data.frame(feature_id = rownames(input$expression)), features.path)
-  spatialdm_write_tsv(data.frame(cell_id = input$cells), cells.path)
-  spatialdm_write_tsv(data.frame(
+  write_tsv(data.frame(feature_id = rownames(input$expression)), features.path)
+  write_tsv(data.frame(cell_id = input$cells), cells.path)
+  write_tsv(data.frame(
     cell_id = input$cells,
     x = as.numeric(input$coordinates$x), y = as.numeric(input$coordinates$y)
   ), coordinates.path)
@@ -92,7 +84,7 @@ spatialdm_write_inputs <- function(input, workdir, lr.database = NULL) {
       }, character(1))
     }
     lr.path <- file.path(workdir, "custom_lr.tsv")
-    spatialdm_write_tsv(lr, lr.path)
+    write_tsv(lr, lr.path)
   }
   list(
     expression_path = normalizePath(expression.path, winslash = "/", mustWork = TRUE),
@@ -267,6 +259,7 @@ spatialdm_bundle <- function(input, executed, parameters, result.name) {
 
 #' @title Run official SpatialDM spatial ligand-receptor association analysis
 #' @md
+#' @inheritParams scop-params
 #' @param srt A `Seurat` spatial object.
 #' @param species Built-in SpatialDM species (`"human"` or `"mouse"`).
 #' @param lr.database Optional custom LR table with `ligand`, `receptor`, and
@@ -360,6 +353,7 @@ spatialdm_get_result <- function(object, result.name = NULL) {
   result
 }
 
+
 #' @title Access stored SpatialDM results
 #' @param object A Seurat object with SpatialDM results.
 #' @param result.name Stored result name.
@@ -376,6 +370,7 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
   if (!pair %in% rownames(result$local$local_p)) log_message("Unknown SpatialDM {.arg pair}: {.val {pair}}", message_type = "error")
   lapply(result$local, function(x) if (is.matrix(x)) x[pair, , drop = TRUE] else x)
 }
+
 
 #' @title Plot stored SpatialDM results
 #' @param object A Seurat object with SpatialDM results.
