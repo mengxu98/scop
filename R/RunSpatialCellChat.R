@@ -1167,7 +1167,7 @@ RunSpatialCellChat <- function(
         )
       }
     }
-    sample_results[[sample_name]] <- list(
+    sample_results[[sample_name]] <- spatial_tag_coordinate_contract(list(
       interactions = table,
       pathways = spatialcellchat_extract_pathways(table),
       network = spatialcellchat_extract_network(table),
@@ -1185,7 +1185,7 @@ RunSpatialCellChat <- function(
         result_level = unique(as.character(table$result_level))
       ),
       source = metric$source
-    )
+    ))
     long_tables[[sample_name]] <- table
     source_by_sample[[sample_name]] <- metric$source
   }
@@ -1274,7 +1274,6 @@ GetCCCObject <- function(
   }
   bundle <- object@tools[["SpatialCellChat"]]
   if (is.null(bundle)) log_message("SpatialCellChat results are absent", message_type = "error")
-  spatial_require_coordinate_contract(bundle, "RunSpatialCellChat()")
   result.name <- result.name %||% bundle$active_result
   result <- bundle$results[[result.name]]
   if (is.null(result)) log_message("Unknown SpatialCellChat result {.val {result.name}}", message_type = "error")
@@ -1286,6 +1285,7 @@ GetCCCObject <- function(
     sample <- samples[[1L]]
   }
   if (!sample %in% samples) log_message("Unknown SpatialCellChat sample {.val {sample}}", message_type = "error")
+  spatial_require_coordinate_contract(result[[sample]], "RunSpatialCellChat()")
   native <- result[[sample]]$native_object
   if (is.null(native)) {
     log_message(
@@ -1301,7 +1301,6 @@ spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample
   if (is.null(bundle)) {
     log_message("SpatialCellChat results are absent", message_type = "error")
   }
-  spatial_require_coordinate_contract(bundle, "RunSpatialCellChat()")
   result.name <- result.name %||% bundle$active_result
   result <- bundle$results[[result.name]]
   if (is.null(result)) log_message("Unknown SpatialCellChat result {.val {result.name}}", message_type = "error")
@@ -1313,6 +1312,7 @@ spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample
     sample <- samples[[1L]]
   }
   if (!sample %in% samples) log_message("Unknown sample {.val {sample}}", message_type = "error")
+  spatial_require_coordinate_contract(result[[sample]], "RunSpatialCellChat()")
   list(result = result[[sample]], sample = sample, result.name = result.name)
 }
 

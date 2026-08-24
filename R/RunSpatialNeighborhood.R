@@ -290,7 +290,6 @@ SpatialNeighborhoodPlot <- function(
   cols.ns = "grey75",
   pair = NULL,
   image = NULL,
-  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
   split.by = NULL,
@@ -307,6 +306,7 @@ SpatialNeighborhoodPlot <- function(
   byrow = TRUE,
   seed = 11,
   verbose = TRUE,
+  image.scale = c("lowres", "hires"),
   ...
 ) {
   if (!inherits(srt, "Seurat")) {

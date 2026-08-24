@@ -173,8 +173,22 @@ spatial_coords_raw <- function(
     if (is.null(cells) || anyNA(cells) || any(!nzchar(cells)) || anyDuplicated(cells)) {
       log_message("Spatial image coordinates must have unique, non-missing cell or spot identifiers", message_type = "error")
     }
-    x_col <- spatial_dim_pick_col(raw, c("x", "pxl_col_in_fullres", "imagecol"))
-    y_col <- spatial_dim_pick_col(raw, c("y", "pxl_row_in_fullres", "imagerow"))
+    raw_names <- tolower(colnames(raw))
+    has_explicit_pixels <- any(c("pxl_col_in_fullres", "imagecol") %in% raw_names) &&
+      any(c("pxl_row_in_fullres", "imagerow") %in% raw_names)
+    if (isTRUE(has_explicit_pixels)) {
+      x_col <- spatial_dim_pick_col(raw, c("pxl_col_in_fullres", "imagecol"))
+      y_col <- spatial_dim_pick_col(raw, c("pxl_row_in_fullres", "imagerow"))
+    } else if (all(c("x", "y") %in% raw_names)) {
+      # Seurat spatial plotting treats the first coordinate column as image
+      # row and the second as image column, including VisiumV2/FOV tables
+      # named x/y. Normalize them to horizontal x and vertical y here.
+      x_col <- spatial_dim_pick_col(raw, "y")
+      y_col <- spatial_dim_pick_col(raw, "x")
+    } else {
+      x_col <- spatial_dim_pick_col(raw, c("x", "pxl_col_in_fullres", "imagecol"))
+      y_col <- spatial_dim_pick_col(raw, c("y", "pxl_row_in_fullres", "imagerow"))
+    }
     source_coord_cols <- c(x_col, y_col)
     coords <- data.frame(
       x = suppressWarnings(as.numeric(raw[[x_col]])),
@@ -341,7 +355,10 @@ spatial_analysis_coords <- function(
 #'
 #' @description
 #' Return raw analysis coordinates or display coordinates together with their
-#' source and reversible transform. This function does not modify the object.
+#' source and reversible transform. Image-backed coordinates are normalized to
+#' horizontal `x` (image column) and vertical `y` (image row), including
+#' VisiumV2/FOV tables whose Seurat `x`/`y` names retain row/column ordering.
+#' This function does not modify the object.
 #'
 #' @param object A `Seurat` object.
 #' @param image Optional Seurat image name.

@@ -10,12 +10,12 @@ SpatialEcoTyperSpatialPlot(
   x.by = "X",
   y.by = "Y",
   image = NULL,
-  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   coord.cols = c(x.by, y.by),
   palette = "Paired",
   palcolor = NULL,
   theme_use = "theme_scop",
+  image.scale = c("lowres", "hires"),
   ...
 )
 }
@@ -30,10 +30,6 @@ are available.}
 \item{image}{Spatial image name. Required when multiple images are present;
 a single image is selected automatically when \code{NULL}.}
 
-\item{image.scale}{Image scale factor matching the raster stored in the
-selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
-scale-factor slots.}
-
 \item{overlay_image}{Whether to draw the selected spatial image.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
@@ -41,6 +37,10 @@ scale-factor slots.}
 \item{palette, palcolor}{Palette passed to \code{palette_colors()}.}
 
 \item{theme_use}{Theme name or function.}
+
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
 
 \item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.}
 }

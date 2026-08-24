@@ -55,7 +55,6 @@ SpatialSpotPlot <- function(
   color.by = NULL,
   geom = c("point", "jitter"),
   image = NULL,
-  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image.alpha = 1,
   crop = TRUE,
@@ -84,7 +83,8 @@ SpatialSpotPlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  image.scale = c("lowres", "hires")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(

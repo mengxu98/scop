@@ -369,12 +369,12 @@ SpatialEcoTyperSpatialPlot <- function(
   x.by = "X",
   y.by = "Y",
   image = NULL,
-  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   coord.cols = c(x.by, y.by),
   palette = "Paired",
   palcolor = NULL,
   theme_use = "theme_scop",
+  image.scale = c("lowres", "hires"),
   ...
 ) {
   image.scale <- match.arg(image.scale)

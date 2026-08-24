@@ -381,13 +381,18 @@ test_that("SpaTalkPlot requires an explicit result when several are stored", {
     srt, group.by = "celltype", coord.cols = c("col", "row"),
     result.name = "first", backend = "r", verbose = FALSE
   )
+  out@tools$SpaTalk$results$first$coordinate_contract_version <- NULL
   out <- RunSpaTalk(
     out, group.by = "celltype", coord.cols = c("col", "row"),
     result.name = "second", backend = "r", verbose = FALSE
   )
   expect_error(SpaTalkPlot(out), "select.*result.name")
-  expect_s3_class(
+  expect_error(
     SpaTalkPlot(out, result.name = "first", plot_type = "tf"),
+    "rerun\\s+RunSpaTalk"
+  )
+  expect_s3_class(
+    SpaTalkPlot(out, result.name = "second", plot_type = "tf"),
     "ggplot"
   )
 })

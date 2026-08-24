@@ -359,7 +359,6 @@ SpatialGradientPlot <- function(
   assay = NULL,
   layer = "data",
   image = NULL,
-  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image.alpha = 1,
   coord.cols = c("col", "row"),
@@ -377,7 +376,8 @@ SpatialGradientPlot <- function(
   line_fit = c("stored", "lm"),
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE
+  byrow = TRUE,
+  image.scale = c("lowres", "hires")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
@@ -943,8 +943,6 @@ sgf_store_result <- function(
     backend = backend,
     coordinate_contract_version = .spatial_coordinate_contract_version
   )
-  srt@tools[["SpatialGradientFeatures"]]$coordinate_contract_version <-
-    .spatial_coordinate_contract_version
   srt@tools[["SpatialGradientFeatures"]]$summary <- list(
     active_result = result_name,
     top_features = vars,

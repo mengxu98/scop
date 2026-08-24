@@ -280,7 +280,6 @@ SpatialNetworkPlot <- function(
   res = NULL,
   graph.name = NULL,
   group.by = NULL,
-  image.scale = c("lowres", "hires"),
   edge.color = "grey80",
   edge.linewidth = 0.2,
   pt.size = NULL,
@@ -290,7 +289,8 @@ SpatialNetworkPlot <- function(
   raster = FALSE,
   raster.dpi = 300,
   theme_use = "theme_spatial",
-  theme_args = list()
+  theme_args = list(),
+  image.scale = c("lowres", "hires")
 ) {
   image.scale <- match.arg(image.scale)
   if (!is.null(object) && !inherits(object, "Seurat")) {

@@ -9,7 +9,6 @@ SpatialNetworkPlot(
   res = NULL,
   graph.name = NULL,
   group.by = NULL,
-  image.scale = c("lowres", "hires"),
   edge.color = "grey80",
   edge.linewidth = 0.2,
   pt.size = NULL,
@@ -19,7 +18,8 @@ SpatialNetworkPlot(
   raster = FALSE,
   raster.dpi = 300,
   theme_use = "theme_spatial",
-  theme_args = list()
+  theme_args = list(),
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{
@@ -30,8 +30,6 @@ SpatialNetworkPlot(
 \item{graph.name}{Stored graph name. The active graph is used when `NULL`.}
 
 \item{group.by}{Node column or Seurat metadata column used for coloring.}
-
-\item{image.scale}{Image scale factor matching the raster in `object`.}
 
 \item{edge.color, edge.linewidth}{Edge appearance.}
 
@@ -45,6 +43,8 @@ SpatialNetworkPlot(
 
 \item{theme_use, theme_args}{Theme used to style the plot. Default is
 `"theme_spatial"`.}
+
+\item{image.scale}{Image scale factor matching the raster in `object`.}
 }
 \value{
 A `ggplot` object.

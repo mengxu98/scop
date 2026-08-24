@@ -390,9 +390,9 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 SpatialDMPlot <- function(
   object, result.name = NULL, plot_type = c("weights", "global", "local"),
   pair = NULL, spot = NULL, signaling = c("secreted", "contact"),
-  image.scale = c("lowres", "hires"),
   highlight = NULL, palette = "RdBu", palcolor = NULL,
-  theme_use = "theme_scop", theme_args = list(), ...
+  theme_use = "theme_scop", theme_args = list(),
+  image.scale = c("lowres", "hires"), ...
 ) {
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)

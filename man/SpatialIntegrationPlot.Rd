@@ -13,7 +13,6 @@ SpatialIntegrationPlot(
   reduction = NULL,
   cluster_colname = NULL,
   coord.cols = c("col", "row"),
-  image.scale = c("lowres", "hires"),
   use_aligned = FALSE,
   tool_name = "SpatialIntegration",
   combine = TRUE,
@@ -21,6 +20,7 @@ SpatialIntegrationPlot(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
+  image.scale = c("lowres", "hires"),
   ...
 )
 }
@@ -46,10 +46,6 @@ integration reduction.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
-\item{image.scale}{Image scale factor matching the raster stored in the
-selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
-scale-factor slots.}
-
 \item{use_aligned}{Whether spatial plots should use aligned coordinates when
 available.}
 
@@ -64,6 +60,10 @@ list.}
 \item{theme_use}{Theme name or function.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
+
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
 
 \item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} or
 \code{\link[=CellDimPlot]{CellDimPlot()}}.}

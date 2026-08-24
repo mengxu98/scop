@@ -260,7 +260,7 @@ test_that("analysis and plotting never silently select the first spatial image",
   expect_identical(nrow(selected$data), 1986L)
   expect_identical(selected$source$image, "slice2")
   expect_identical(selected$source$coordinate_space, "legacy_display")
-  expect_identical(selected$source$coord.cols, c("x", "y"))
+  expect_identical(selected$source$coord.cols, c("y", "x"))
   expect_true(all(c("scale", "y_flip", "raw_x_col", "raw_y_col") %in%
     names(selected$transform)))
 

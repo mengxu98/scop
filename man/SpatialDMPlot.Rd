@@ -11,12 +11,12 @@ SpatialDMPlot(
   pair = NULL,
   spot = NULL,
   signaling = c("secreted", "contact"),
-  image.scale = c("lowres", "hires"),
   highlight = NULL,
   palette = "RdBu",
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
+  image.scale = c("lowres", "hires"),
   ...
 )
 }
@@ -33,11 +33,11 @@ SpatialDMPlot(
 
 \item{signaling}{Which stored weight matrix to use.}
 
-\item{image.scale}{Image scale factor matching the selected raster.}
-
 \item{highlight}{LR interactions to label in the global plot.}
 
 \item{palette, palcolor, theme_use, theme_args}{SCOP plotting controls.}
+
+\item{image.scale}{Image scale factor matching the selected raster.}
 
 \item{...}{Additional arguments passed to SCOP spatial plotting functions.}
 }

@@ -11,9 +11,9 @@ Cell2locationPlot(
   prefix = "Cell2location",
   tool_name = "Cell2location",
   image = NULL,
-  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
+  image.scale = c("lowres", "hires"),
   ...
 )
 }
@@ -33,13 +33,13 @@ or pie plots.}
 \item{image}{Spatial image name. Required when multiple images are present;
 a single image is selected automatically when \code{NULL}.}
 
-\item{image.scale}{Image scale factor matching the raster stored in the
-selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
-scale-factor slots.}
-
 \item{overlay_image}{Whether to draw the selected spatial image.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
+
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
 
 \item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.}
 }
