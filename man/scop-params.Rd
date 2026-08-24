@@ -10,6 +10,8 @@
 
 \item{layer}{Assay layer to use.}
 
+\item{seed}{Random seed.}
+
 \item{cores}{Number of CPU cores.}
 
 \item{group.by}{Metadata column(s) to group cells by.}
@@ -165,8 +167,6 @@ the default; \code{"legacy_display"} remains available for compatibility.}
 \item{row_title}{The title for the row names in the heatmap. If not provided, the default is to use the query grouping variable.}
 
 \item{run.local}{Whether to run locally.}
-
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 
 \item{show_column_names}{Whether to draw row/column names for the heatmap body.}
 

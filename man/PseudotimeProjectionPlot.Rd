@@ -162,7 +162,7 @@ Defaults is \code{"white"}.}
 
 \item{label.bg.r}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
 }

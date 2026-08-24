@@ -98,7 +98,7 @@ intermediate memory; positive values set the chunk size manually.}
 
 \item{new_assay}{Whether to create a new assay for metabolism scores when \code{group.by = NULL}. Default is \code{TRUE}.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

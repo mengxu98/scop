@@ -119,7 +119,7 @@ returns a list of ggplots.}
 
 \item{force}{Whether to force the creation of the plot, even if it contains more than 50 subplots.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
 }

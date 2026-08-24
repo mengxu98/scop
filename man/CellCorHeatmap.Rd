@@ -311,7 +311,7 @@ The \code{magick} package will automatically be installed if it is not installed
 
 \item{width, height, units}{Heatmap size. \code{NULL} sizes from matrix dimensions.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{legend.position}{Legend side (\code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}).
 Gap to the heatmap grows automatically when long row names are on the right.}

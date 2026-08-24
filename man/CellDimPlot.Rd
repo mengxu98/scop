@@ -221,7 +221,7 @@ returns a list of ggplots.}
 
 \item{force}{Draw even when a grouping has more than 100 levels.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
 }

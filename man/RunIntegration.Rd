@@ -118,7 +118,7 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \item{cluster_algorithm, cluster_resolution}{Clustering (\code{"louvain"}, \code{"slm"},
 \code{"leiden"}). Larger \code{cluster_resolution} yields fewer clusters.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
