@@ -78,7 +78,8 @@ stored result when \code{object} is a \code{Seurat} object.}
 \item{tool_name}{Name of the \code{object@tools} entry when \code{object} is a \code{Seurat}
 object.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A scTenifoldNet result list for matrix input, or a \code{Seurat} object

@@ -48,6 +48,8 @@ centroids. If \code{NULL}, metacell centroids use one fixed color.}
 
 \item{dims}{Length-2 vector of dimensions to plot.}
 
+\item{label}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
 \item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
 \item{palette_metacell}{Color palette for the metacell centroid layer.}
@@ -74,6 +76,10 @@ for the original single-cell background layer.}
 
 \item{metacell_param}{A named list of extra arguments passed to \code{\link[=CellDimPlot]{CellDimPlot()}}
 for the metacell centroid/query layer.}
+
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 

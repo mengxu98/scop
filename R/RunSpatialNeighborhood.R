@@ -6,6 +6,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams scop-params
 #' @param srt A `Seurat` object.
 #' @param group.by Metadata column containing spatial cell or spot labels.
 #' @param method Neighborhood calculation. `NULL` preserves compatibility by
@@ -107,8 +108,8 @@ RunSpatialNeighborhood <- function(
       message_type = "error"
     )
   }
-  spatial_neighborhood_assert_string(group.by, "group.by")
-  spatial_neighborhood_assert_string(tool_name, "tool_name")
+  validate_scalar_string(group.by, "group.by", message = "must be a non-empty character string")
+  validate_scalar_string(tool_name, "tool_name", message = "must be a non-empty character string")
 
   input <- spatial_neighborhood_input(
     srt = srt,
@@ -220,6 +221,7 @@ RunSpatialNeighborhood <- function(
   )
   srt
 }
+
 
 #' @title Spatial neighborhood plot
 #'
@@ -800,7 +802,9 @@ spatial_neighborhood_heatmap_plot <- function(
 ) {
   cols <- palette_colors(type = "continuous", palette = palette, palcolor = palcolor)
   ggplot2::ggplot(df, ggplot2::aes(x = .data$to, y = .data$from, fill = .data[[value]])) +
-    do.call(ggplot2::geom_tile, c(list(color = "white"), spatial_neighborhood_linewidth_arg(0.2))) +
+    do.call(ggplot2::geom_tile, c(list(color = "white"), { .inline0 <- 0.2; 
+  stats::setNames(list(.inline0), spatial_neighborhood_linewidth_name())
+ })) +
     ggplot2::scale_fill_gradientn(colors = cols, na.value = "grey90") +
     ggplot2::labs(x = "To", y = "From", fill = legend.title %||% value) +
     apply_plot_theme(theme_use, theme_args, allow_null = TRUE) +
@@ -1165,14 +1169,3 @@ spatial_neighborhood_linewidth_name <- function() {
   }
 }
 
-spatial_neighborhood_linewidth_arg <- function(value) {
-  stats::setNames(list(value), spatial_neighborhood_linewidth_name())
-}
-
-spatial_neighborhood_assert_string <- function(x, arg) {
-  validate_scalar_string(
-    x,
-    arg,
-    message = "must be a non-empty character string"
-  )
-}

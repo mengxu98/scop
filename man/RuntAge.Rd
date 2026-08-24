@@ -134,7 +134,8 @@ import \code{joblib}, \code{pandas}, and \code{sklearn} before tAge prediction.}
 \code{ExpressionSet} and processed tAge \code{ExpressionSet} list in the returned
 Seurat tool entry or list result.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with tAge results stored in \code{object@tools}, or a

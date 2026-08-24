@@ -104,6 +104,14 @@ there are more than 100,000 cells.}
 
 \item{aspect.ratio}{Panel aspect ratio.}
 
+\item{title}{Plot title. \code{NULL} hides the title for merged/single panels. When multiple lineages are plotted and \code{title} is \code{NULL}, each panel is titled with its lineage column.}
+
+\item{subtitle}{Plot subtitle.}
+
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
@@ -111,9 +119,9 @@ returns a list of ggplots.}
 
 \item{force}{Whether to force the creation of the plot, even if it contains more than 50 subplots.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Pairwise feature correlations in a \code{Seurat} object.

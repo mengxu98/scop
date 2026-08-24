@@ -94,7 +94,7 @@ If set to NULL, all the returned dimensions will be used by default.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 }
 \description{
 Harmony integration function

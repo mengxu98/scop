@@ -70,6 +70,8 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{theme_use}{Theme name or function.}
 
+\item{theme_args}{Theme name or function, plus extra theme arguments.}
+
 \item{line_size}{Size of fitted gradient lines.}
 
 \item{line_alpha}{Alpha for raw value points.}

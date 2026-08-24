@@ -8,6 +8,7 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
+#' @inheritParams scop-params
 #' @param layer Assay layer used for expression values.
 #' @param features Features to score. If `NULL`, current variable features are
 #' used; if no variable features are present, all assay features are used.
@@ -440,7 +441,7 @@ spatial_variable_finalize_result <- function(result, expr, expressed_spots, meth
   result <- result[order(-score_order, p_order, q_order), , drop = FALSE]
   result$rank <- seq_len(nrow(result))
   rownames(result) <- NULL
-  spatial_variable_reorder_cols(
+  reorder_first_columns(
     result,
     c("feature", "rank", "method", "statistic", "score", "p_value", "q_value", "mean", "variance", "n_spots")
   )
@@ -473,10 +474,6 @@ spatial_variable_result_features <- function(df, fallback) {
   utils::head(fallback, nrow(df))
 }
 
-spatial_variable_reorder_cols <- function(df, first_cols) {
-  first_cols <- intersect(first_cols, colnames(df))
-  df[, c(first_cols, setdiff(colnames(df), first_cols)), drop = FALSE]
-}
 
 
 #' @title Plot spatial variable feature results

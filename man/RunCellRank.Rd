@@ -81,6 +81,10 @@ If provided, \code{adata} will be ignored.}
 
 \item{cores}{The number of cores to use for \code{cellrank}.}
 
+\item{linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}). \code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
+
+\item{nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
+
 \item{basis}{The basis to use for reduction, e.g., \code{"UMAP"}.}
 
 \item{mode}{Velocity estimation models to use.

@@ -3,6 +3,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunUMAP2
+#' @inheritParams scop-params
 #' @param object An object. This can be a Seurat object, a Neighbor object, or a Graph object.
 #' @param neighbor Neighbor object to be used.
 #' @param k.param The number of nearest neighbors to consider.
@@ -36,6 +37,7 @@ RunFR <- function(object, ...) {
 #' @rdname RunFR
 #' @method RunFR Seurat
 #' @export
+#' @inheritParams scop-params
 RunFR.Seurat <- function(
   object,
   reduction = NULL,
@@ -147,6 +149,7 @@ RunFR.Seurat <- function(
 #' @rdname RunFR
 #' @method RunFR default
 #' @export
+#' @inheritParams scop-params
 RunFR.default <- function(
   object,
   assay = NULL,

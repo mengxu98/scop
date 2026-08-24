@@ -51,7 +51,8 @@ QC.}
 \item{mito_gene}{Optional explicit mitochondrial gene vector. When provided,
 \code{mito_pattern} is ignored.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{seed}{Random seed for reproducibility.}
 }

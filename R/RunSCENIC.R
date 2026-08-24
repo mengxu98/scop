@@ -225,7 +225,7 @@ RunSCENIC <- function(
     required = FALSE
   )[["genes"]]
   progress_state <- scenic_progress_init(verbose = verbose)
-  on.exit(scenic_progress_close(progress_state), add = TRUE)
+  on.exit(if (!is.null(progress_state)) close(progress_state$pb), add = TRUE)
   scenic_progress_step(
     progress_state,
     value = 5,
@@ -2358,12 +2358,6 @@ scenic_progress_step <- function(progress_state, value, label, verbose = TRUE) {
   invisible(progress_state)
 }
 
-scenic_progress_close <- function(progress_state) {
-  if (!is.null(progress_state)) {
-    close(progress_state$pb)
-  }
-  invisible(NULL)
-}
 
 scenic_prepare_grn_matrix <- function(
   counts,

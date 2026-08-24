@@ -45,11 +45,11 @@ Default is \code{NULL}, which uses first two dimensions.}
 
 \item{lineage_palette}{The color palette to use for the lineages in the plot.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 
 \item{...}{Passed to the \link[slingshot:slingshot]{slingshot::slingshot} function.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 RunSlingshot

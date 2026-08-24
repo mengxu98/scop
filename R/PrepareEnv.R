@@ -947,10 +947,6 @@ build_env_cache_spec <- function(
   )
 }
 
-clear_env_cache <- function() {
-  options(scop_env_cache = NULL)
-  invisible(NULL)
-}
 
 remember_python_environment <- function(envname, conda) {
   opts <- list(scop_envname = envname)
@@ -1118,9 +1114,6 @@ find_conda_cuda_libraries <- function(env_path) {
   unname(libraries[!is.na(libraries) & nzchar(libraries)])
 }
 
-load_shared_library <- function(lib) {
-  dyn.load(lib, local = FALSE, now = TRUE)
-}
 
 preload_shared_libraries <- function(libraries, max_passes = 3L) {
   libraries <- unique(libraries[file.exists(libraries)])
@@ -1137,7 +1130,9 @@ preload_shared_libraries <- function(libraries, max_passes = 3L) {
       function(lib) {
         tryCatch(
           {
-            load_shared_library(lib)
+            { .inline0 <- lib; 
+  dyn.load(.inline0, local = FALSE, now = TRUE)
+ }
             TRUE
           },
           error = function(...) FALSE
@@ -1517,19 +1512,6 @@ managed_micromamba_dir <- function() {
   )
 }
 
-managed_micromamba_root <- function() {
-  file.path(
-    tools::R_user_dir("scop", which = "cache"),
-    "micromamba-root"
-  )
-}
-
-legacy_managed_micromamba_roots <- function() {
-  file.path(
-    tools::R_user_dir("scop", which = "data"),
-    "micromamba-root"
-  )
-}
 
 find_managed_micromamba <- function() {
   install_dir <- managed_micromamba_dir()
@@ -1548,10 +1530,20 @@ find_managed_micromamba <- function() {
 }
 
 configure_managed_micromamba_root <- function() {
-  root <- managed_micromamba_root()
+  root <- { ; 
+  file.path(
+    tools::R_user_dir("scop", which = "cache"),
+    "micromamba-root"
+  )
+ }
   current <- Sys.getenv("MAMBA_ROOT_PREFIX", unset = "")
   current_norm <- normalize_conda_paths(current)
-  managed_roots <- normalize_conda_paths(c(root, legacy_managed_micromamba_roots()))
+  managed_roots <- normalize_conda_paths(c(root, { ; 
+  file.path(
+    tools::R_user_dir("scop", which = "data"),
+    "micromamba-root"
+  )
+ }))
 
   if (
     !nzchar(current) ||
@@ -1814,7 +1806,17 @@ env_requirements <- function(
   } else if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_core_python_requirements()
   } else if (any(c("scenic", "cell2fate") %in% modules)) {
-    scenic_core_python_requirements()
+    { ; 
+  list(
+    packages = c(
+      "setuptools" = "setuptools<81"
+    ),
+    install_methods = c(
+      "setuptools" = "pip"
+    ),
+    package_aliases = list()
+  )
+ }
   } else {
     core_python_requirements()
   }
@@ -1918,17 +1920,6 @@ core_python_requirements <- function() {
   )
 }
 
-scenic_core_python_requirements <- function() {
-  list(
-    packages = c(
-      "setuptools" = "setuptools<81"
-    ),
-    install_methods = c(
-      "setuptools" = "pip"
-    ),
-    package_aliases = list()
-  )
-}
 
 scmalignantfinder_core_python_requirements <- function() {
   list(
@@ -3010,10 +3001,6 @@ run_uv_command <- function(uv, python, args) {
   system2t(uv, shQuote(args))
 }
 
-run_pip_command <- function(python, args) {
-  system2t <- get_namespace_fun("reticulate", "system2t")
-  system2t(python, shQuote(c("-m", "pip", args)))
-}
 
 install_python_packages <- function(
   packages,
@@ -3371,7 +3358,10 @@ RemoveEnv <- function(
   }
 
   if (result) {
-    clear_env_cache()
+    { ; 
+  options(scop_env_cache = NULL)
+  invisible(NULL)
+ }
     Sys.unsetenv("RETICULATE_PYTHON")
     log_message(
       "{.file {envname}} environment removed successfully",

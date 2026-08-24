@@ -129,7 +129,8 @@ automatically reduced to one core.}
 
 \item{conda}{The path or command name of a conda-compatible executable.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A Seurat object with SCENIC results, or a result list when

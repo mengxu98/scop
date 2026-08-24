@@ -29,7 +29,7 @@ rescanning the count matrix.}
 
 \item{...}{Passed to the selected doublet method.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \value{
 A \code{Seurat} object with doublet class and score columns in \code{meta.data}.

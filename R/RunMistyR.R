@@ -96,14 +96,19 @@ RunMistyR <- function(
     message_type = "running",
     verbose = verbose
   )
-  validate_seurat_object(srt)
-  mistyr_assert_string(tool_name, "tool_name")
-  mistyr_assert_flag(view_cached, "view_cached")
-  mistyr_assert_flag(bypass_intra, "bypass_intra")
-  mistyr_assert_flag(model_cached, "model_cached")
-  mistyr_assert_flag(append, "append")
-  mistyr_assert_flag(store_results, "store_results")
-  mistyr_assert_flag(store_views, "store_views")
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
+  validate_scalar_string(tool_name, "tool_name")
+  validate_scalar_flag(view_cached, "view_cached")
+  validate_scalar_flag(bypass_intra, "bypass_intra")
+  validate_scalar_flag(model_cached, "model_cached")
+  validate_scalar_flag(append, "append")
+  validate_scalar_flag(store_results, "store_results")
+  validate_scalar_flag(store_views, "store_views")
   para_family <- match.arg(para_family)
   views <- mistyr_validate_views(views)
   para_l <- mistyr_assert_positive_number(para_l, "para_l")
@@ -406,13 +411,6 @@ mistyr_validate_views <- function(views) {
   views
 }
 
-mistyr_assert_string <- function(x, arg) {
-  validate_scalar_string(x, arg)
-}
-
-mistyr_assert_flag <- function(x, arg) {
-  validate_scalar_flag(x, arg)
-}
 
 mistyr_assert_positive_number <- function(x, arg) {
   if (length(x) != 1L || is.na(x) || !is.finite(x) || x <= 0) {

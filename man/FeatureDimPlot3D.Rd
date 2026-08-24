@@ -32,13 +32,13 @@ FeatureDimPlot3D(
 \item{features}{Features to plot: a character vector or a named list of
 assay gene names or numeric metadata columns.}
 
-\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
+\item{reduction}{Dimensionality reduction to use. \code{NULL} uses \link{DefaultReduction}.}
 
 \item{dims}{Length-2 vector of dimensions to plot.}
 
 \item{axis_labs}{Length-3 axis labels.}
 
-\item{split.by}{Metadata column to facet by.}
+\item{split.by}{Metadata column to split the analysis or plot by.}
 
 \item{layer}{Assay layer to use.}
 
@@ -46,8 +46,16 @@ assay gene names or numeric metadata columns.}
 
 \item{calculate_coexp}{Plot the geometric mean of the features.}
 
+\item{pt.size}{Point size and transparency. \code{pt.size = NULL} scales with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
+
+\item{cells.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
+
+\item{cols.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
+
 \item{shape.highlight}{Shape of the cell to highlight.
 See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}}
+
+\item{sizes.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
 
 \item{width}{Width in pixels, defaults to automatic sizing.}
 
@@ -57,7 +65,7 @@ See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{sca
 
 \item{force}{Draw even when more than 100 features are requested.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Feature values on a 3D reduction

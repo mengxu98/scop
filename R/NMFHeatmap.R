@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams GroupHeatmap
+#' @inheritParams scop-params
 #' @param srt A Seurat object containing an NMF dimensional reduction.
 #' @param plot_type Plot type. `"cells"` plots cell/spot similarity from NMF
 #' embeddings. `"features"` plots feature similarity from NMF loadings.

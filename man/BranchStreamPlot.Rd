@@ -128,6 +128,10 @@ text with a white outline.}
 When multiple lineages are plotted and \code{title} is \code{NULL}, each panel is
 titled with its lineage column.}
 
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}

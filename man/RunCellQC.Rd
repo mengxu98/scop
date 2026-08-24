@@ -101,9 +101,9 @@ percentage. \code{ribo_gene} overrides \code{ribo_pattern}.}
 \item{species, species_gene_prefix, species_percent}{Species suffix for QC metrics
 (first is the species of interest) and minimum UMI percentage of that species.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 
 \item{hb_range, hb_pattern, hb_gene}{Hemoglobin percentage range and feature matching.
 \code{hb_gene} overrides \code{hb_pattern}.}

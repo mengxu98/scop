@@ -8,6 +8,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
+#' @inheritParams scop-params
 #' @param srt Spatial `Seurat` object containing raw counts.
 #' @param result_dir Directory used to persist inputs, models, posterior results,
 #' tables, logs, and the run manifest.
@@ -133,16 +134,16 @@ RunCell2location <- function(
   store_results = TRUE,
   verbose = TRUE
 ) {
-  cell2location_assert_flag(resume, "resume")
-  cell2location_assert_flag(overwrite, "overwrite")
-  cell2location_assert_flag(store_results, "store_results")
-  cell2location_assert_string(prefix, "prefix")
-  cell2location_assert_string(tool_name, "tool_name")
-  cell2location_validate_param_list(gene_filter_params, "gene_filter_params")
-  cell2location_validate_param_list(reference_train_params, "reference_train_params")
-  cell2location_validate_param_list(spatial_train_params, "spatial_train_params")
-  cell2location_validate_param_list(reference_posterior_params, "reference_posterior_params")
-  cell2location_validate_param_list(spatial_posterior_params, "spatial_posterior_params")
+  validate_scalar_flag(resume, "resume")
+  validate_scalar_flag(overwrite, "overwrite")
+  validate_scalar_flag(store_results, "store_results")
+  validate_scalar_string(prefix, "prefix", message = "must be one non-empty string")
+  validate_scalar_string(tool_name, "tool_name", message = "must be one non-empty string")
+  validate_named_list(gene_filter_params, "gene_filter_params")
+  validate_named_list(reference_train_params, "reference_train_params")
+  validate_named_list(spatial_train_params, "spatial_train_params")
+  validate_named_list(reference_posterior_params, "reference_posterior_params")
+  validate_named_list(spatial_posterior_params, "spatial_posterior_params")
   min_cells <- cell2location_positive_integer(min_cells, "min_cells")
   cell2location_positive_number(N_cells_per_location, "N_cells_per_location")
   cell2location_positive_number(detection_alpha, "detection_alpha")
@@ -404,6 +405,7 @@ RunCell2location <- function(
   )
   srt_out
 }
+
 
 #' @title Plot cell2location spatial results
 #'
@@ -732,23 +734,6 @@ cell2location_validate_unique_names <- function(srt, arg) {
   }
 }
 
-cell2location_validate_param_list <- function(x, arg) {
-  validate_named_param_list(
-    x,
-    arg,
-    require_list = TRUE,
-    type_message = "must be a named list",
-    names_message = "must be a named list"
-  )
-}
-
-cell2location_assert_flag <- function(x, arg) {
-  validate_scalar_flag(x, arg)
-}
-
-cell2location_assert_string <- function(x, arg) {
-  validate_scalar_string(x, arg, message = "must be one non-empty string")
-}
 
 cell2location_positive_integer <- function(x, arg) {
   cell2location_positive_number(x, arg)

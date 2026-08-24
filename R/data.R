@@ -1,14 +1,17 @@
 #' @title A subsetted version of mouse 'pancreas' datasets
 #'
 #' @description
-#' Mouse pancreatic endocrinogenesis dataset from \href{https://doi.org/10.1242/dev.173849}{Bastidas-Ponce et al. (2019)}.
+#' Mouse pancreatic endocrinogenesis dataset from
+#'   \href{https://doi.org/10.1242/dev.173849}{Bastidas-Ponce et al. (2019)}.
 #' A total of 1000 cells were downsampled to form the `pancreas_sub` dataset.
 #'
 #' @md
 #' @format A `Seurat` object.
 #' @source
-#' \href{https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html}{scvelo.datasets.pancreas},
-#' \href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
+#' 
+#'   \href{https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html}{scvelo.datasets.pancreas},
+#' 
+#'   \href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
 #'
 #' @examples
 #' if (interactive()) {
@@ -201,13 +204,15 @@ NULL
 #' @examples
 #' if (interactive()) {
 #'   download.file(
-#'     "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8058nnn/GSM8058244/suppl/GSM8058244_PanIN-LG2.tar.gz",
+#' 
+#'   "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8058nnn/GSM8058244/suppl/GSM8058244_PanIN-LG2.tar.gz",
 #'     destfile = "GSM8058244_PanIN-LG2.tar.gz",
 #'     mode = "wb"
 #'   )
 #'   untar("GSM8058244_PanIN-LG2.tar.gz", exdir = ".")
 #'   download.file(
-#'     "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE254nnn/GSE254829/suppl/GSE254829_codatable_may202024.csv.gz",
+#' 
+#'   "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE254nnn/GSE254829/suppl/GSE254829_codatable_may202024.csv.gz",
 #'     destfile = "GSE254829_codatable_may202024.csv.gz",
 #'     mode = "wb"
 #'   )
@@ -237,7 +242,8 @@ NULL
 #'   coda <- coda[coda$sample == "PanIN-LG2" & coda$barcode %in% colnames(spatial), ]
 #'   rownames(coda) <- coda$barcode
 #'   coda <- coda[colnames(spatial), ]
-#'   comp_cols <- c("islets", "normal epithelium", "smooth muscle", "fat", "acini", "collagen", "panin")
+#' comp_cols <- c("islets", "normal epithelium", "smooth muscle", "fat", "acini", "collagen",
+#'   "panin")
 #'   coda$coda_label <- names(coda[comp_cols])[
 #'     max.col(as.matrix(coda[comp_cols]), ties.method = "first")
 #'   ]
@@ -339,7 +345,8 @@ NULL
 #'
 #' @md
 #' @description
-#' The variable `words_excluded` represents the words that are excluded during keyword enrichment analysis or keyword extraction process.
+#' The variable `words_excluded` represents the words that are excluded during keyword enrichment
+#'   analysis or keyword extraction process.
 #' These mainly include words that are excessively redundant or of little value.
 #'
 #' @examples

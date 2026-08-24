@@ -43,11 +43,11 @@ as a new assay.}
 \item{data_type}{Optional \code{\link[=CheckDataType]{CheckDataType()}} result, used internally to avoid
 rescanning the count matrix.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 
 \item{...}{Passed to \code{\link[decontX:decontX]{decontX::decontX()}}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \value{
 A \code{Seurat} object with decontX contamination in \code{meta.data} and

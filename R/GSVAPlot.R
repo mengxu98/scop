@@ -4,6 +4,7 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams GroupHeatmap
 #' @inheritParams EnrichmentPlot
+#' @inheritParams scop-params
 #' @param srt A Seurat object containing the results of RunGSVA.
 #' If specified, GSVA results will be extracted from the `Seurat` object automatically.
 #' If not specified, the `res` argument must be provided.

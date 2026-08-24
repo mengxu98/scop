@@ -5,6 +5,7 @@
 #' @inheritParams FeatureHeatmap
 #' @inheritParams thisplot::StatPlot
 #' @inheritParams thisutils::log_message
+#' @inheritParams scop-params
 #' @param srt A `Seurat` object after [RunScissor].
 #' @param plot_type Plot type. `"umap"` shows embedding panels, `"heatmap"`
 #' shows a `FeatureHeatmap`, and statistical views such as `"bar"` and

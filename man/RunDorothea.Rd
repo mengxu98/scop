@@ -74,7 +74,8 @@ function.}
 \item{add_meta}{Whether to also write TF activity scores to \code{srt@meta.data}
 with the \code{assay_name} prefix for direct plotting with \code{\link[=FeatureDimPlot]{FeatureDimPlot()}}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with TF activity results stored in

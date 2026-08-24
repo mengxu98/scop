@@ -8,7 +8,7 @@
 #' @importFrom methods slot
 #' @importFrom Rcpp evalCpp
 #' @importFrom RcppParallel RcppParallelLibs
-#' @importFrom stats approx density median model.matrix p.adjust setNames
+#' @importFrom stats approx ave density median model.matrix p.adjust setNames
 #' @importFrom utils getFromNamespace head
 #' @export
 dplyr::`%>%`

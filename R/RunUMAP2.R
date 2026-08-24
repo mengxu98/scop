@@ -2,8 +2,8 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams scop-params
 #' @inheritParams FeatureDimPlot
+#' @inheritParams scop-params
 #' @param object A `Seurat` object, matrix-like object, `Neighbor`, or `Graph`.
 #' @param reduction Linear reduction used as input.
 #' @param dims Dimensions to use. Supply only one of `dims`, `features`,

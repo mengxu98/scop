@@ -122,8 +122,8 @@ RunSPOTlight <- function(
       message_type = "error"
     )
   }
-  spotlight_assert_scalar_string(prefix, "prefix")
-  spotlight_assert_scalar_string(tool_name, "tool_name")
+  validate_scalar_string(prefix, "prefix", require_character = FALSE)
+  validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
@@ -508,6 +508,3 @@ spotlight_extract_weights <- function(result, spot_ids) {
   weights
 }
 
-spotlight_assert_scalar_string <- function(x, arg) {
-  validate_scalar_string(x, arg, require_character = FALSE)
-}

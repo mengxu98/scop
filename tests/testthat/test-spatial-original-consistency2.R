@@ -73,7 +73,7 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
   keep_spots <- is.finite(st_numi) & st_numi > 0
   st <- st[, keep_spots, drop = FALSE]
   st_numi <- st_numi[keep_spots]
-  coords <- scop:::rctd_get_spatial_coords(srt, colnames(st), NULL, c("x", "y"), "raw")
+  coords <- scop:::resolve_spatial_spot_coords(srt, colnames(st), NULL, c("x", "y"), "raw")
   ref_numi <- cq$ref_numi
   names(ref_numi) <- colnames(rf)
 

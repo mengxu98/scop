@@ -377,9 +377,10 @@ RunGSEA <- function(
         result <- enrich_res@result
         result[["Groups"]] <- group
         result[["Database"]] <- term
-        result[["Version"]] <- as.character(db_list[[species]][[term]][[
-          "version"
-        ]])
+        result[["Version"]] <- paste0(
+          as.character(db_list[[species]][[term]][["version"]]),
+          collapse = ";"
+        )
         IDlist <- strsplit(result$core_enrichment, "/")
         result$core_enrichment <- unlist(lapply(IDlist, function(x) {
           x_result <- NULL
@@ -440,9 +441,10 @@ RunGSEA <- function(
             result_sim <- sim_res@result
             result_sim[["Groups"]] <- group
             result_sim[["Database"]] <- paste0(term, "_sim")
-            result_sim[["Version"]] <- as.character(db_list[[species]][[term]][[
-              "version"
-            ]])
+            result_sim[["Version"]] <- paste0(
+              as.character(db_list[[species]][[term]][["version"]]),
+              collapse = ";"
+            )
             result_sim[["ONTOLOGY"]] <- NULL
             sim_res@result <- result_sim
             enrich_res <- list(enrich_res, sim_res)

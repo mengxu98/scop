@@ -2212,8 +2212,14 @@ fastMNN_integrate <- function(
 
   srt_integrated <- srt_merge
   srt_merge <- NULL
+  # batchelor::fastMNN returns a LowRankMatrix which `as.sparse()` cannot
+  # convert; materialize it before storing the corrected assay.
+  corrected_matrix <- Matrix::Matrix(
+    as.matrix(out@assays@data$reconstructed),
+    sparse = TRUE
+  )
   srt_integrated[["fastMNNcorrected"]] <- CreateAssayObject(
-    counts = out@assays@data$reconstructed
+    counts = corrected_matrix
   )
   SeuratObject::DefaultAssay(srt_integrated) <- "fastMNNcorrected"
   SeuratObject::VariableFeatures(srt_integrated[["fastMNNcorrected"]]) <- HVF

@@ -645,12 +645,7 @@ PrepareDB <- function(
             ))),
             split = "\n"
           )[[1]]
-          version <- gsub(
-            ".*(?=Release)",
-            replacement = "",
-            x = kegg_info[grepl("Release", x = kegg_info)],
-            perl = TRUE
-          )
+          version <- kegg_release_version(kegg_info)
           db_list[[db_species["KEGG"]]][["KEGG"]][["TERM2GENE"]] <- TERM2GENE
           db_list[[db_species["KEGG"]]][["KEGG"]][["TERM2NAME"]] <- TERM2NAME
           db_list[[db_species["KEGG"]]][["KEGG"]][["version"]] <- version
@@ -1185,7 +1180,7 @@ PrepareDB <- function(
             destfile = temp
           )
           release <- readLines(temp, warn = FALSE)
-          version <- regmatches(
+          release_tag <- regmatches(
             release,
             m = regexpr(
               "(?<=tag_name\\\":\\\")\\S+(?=\\\",\\\"target_commitish)",
@@ -1193,6 +1188,11 @@ PrepareDB <- function(
               perl = T
             )
           )
+          version <- if (length(release_tag) > 0) {
+            release_tag
+          } else {
+            paste0("Retrieved ", Sys.Date())
+          }
 
           download(
             url = "http://purl.obolibrary.org/obo/hp/hpoa/phenotype_to_genes.txt",
@@ -3097,4 +3097,31 @@ kegg_get <- function(url) {
     )
   )
   content
+}
+
+kegg_release_version <- function(info_lines) {
+  kegg_release_from_info(info_lines) %||%
+    kegg_release_from_relnote() %||%
+    paste0("Retrieved ", Sys.Date())
+}
+
+kegg_release_from_info <- function(info_lines) {
+  release_line <- info_lines[grepl("Release", x = info_lines)]
+  if (length(release_line) == 0) {
+    return(NULL)
+  }
+  gsub(".*(?=Release)", replacement = "", x = release_line, perl = TRUE)
+}
+
+kegg_release_from_relnote <- function(url = "https://www.kegg.jp/kegg/docs/relnote.html") {
+  page <- tryCatch(
+    httr::content(httr::GET(url, httr::timeout(10))),
+    error = function(e) NULL
+  )
+  if (is.null(page)) {
+    return(NULL)
+  }
+  page <- paste0(page, collapse = "")
+  release <- regmatches(page, regexpr("Release [0-9]+\\.[0-9]+", page))
+  if (length(release) == 0) NULL else release
 }

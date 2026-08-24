@@ -303,7 +303,10 @@ RunEnrichment <- function(
       TERM2NAME_tmp[["Term"]] %in% TERM2GENE_tmp[["Term"]], ,
       drop = FALSE
     ]
-    term_version <- as.character(db_list[[species]][[term]][["version"]])
+    term_version <- paste0(
+      as.character(db_list[[species]][[term]][["version"]]),
+      collapse = ";"
+    )
     group_levels <- levels(geneID_groups)
     genes_by_group <- split(input[[IDtype]], input$geneID_groups, drop = TRUE)
     result_list <- lapply(group_levels, function(group) {
@@ -386,7 +389,10 @@ RunEnrichment <- function(
         TERM2NAME = TERM2NAME_tmp,
         minGSSize = ifelse(term %in% unlimited_db, 1, minGSSize),
         maxGSSize = ifelse(term %in% unlimited_db, Inf, maxGSSize),
-        version = as.character(db_list[[species]][[term]][["version"]])
+        version = paste0(
+          as.character(db_list[[species]][[term]][["version"]]),
+          collapse = ";"
+        )
       )
     }),
     db
@@ -504,9 +510,10 @@ RunEnrichment <- function(
             result_sim <- sim_res@result
             result_sim[["Groups"]] <- group
             result_sim[["Database"]] <- paste0(term, "_sim")
-            result_sim[["Version"]] <- as.character(db_list[[species]][[term]][[
-              "version"
-            ]])
+            result_sim[["Version"]] <- paste0(
+              as.character(db_list[[species]][[term]][["version"]]),
+              collapse = ";"
+            )
             result_sim[["ONTOLOGY"]] <- NULL
             sim_res@result <- result_sim
             enrich_res <- list(enrich_res, sim_res)

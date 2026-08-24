@@ -85,7 +85,8 @@ intermediate-save parameters forwarded to mcRigor.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry used to store results.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with mcRigor metadata and a result list stored in

@@ -59,7 +59,8 @@ otherwise.}
 
 \item{scomm_hidden_nodes, scomm_epochs, scomm_batch_size, scomm_threshold, scomm_seed}{Parameters passed to the \code{scOMM} backend.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with \code{scOMM} predictions stored in metadata and \code{tools}.
@@ -70,6 +71,7 @@ write predicted labels and class scores into query metadata, and optionally
 evaluate predictions against a truth label.
 }
 \examples{
+\dontrun{
 \dontrun{
 data("pbmcmultiome_sub", package = "scop")
 pbmcmultiome_sub <- RunStandardWorkflow(pbmcmultiome_sub, assay = "RNA")
@@ -104,5 +106,6 @@ FeatureDimPlot(
   xlab = "UMAP_1",
   ylab = "UMAP_2"
 )
+}
 }
 }

@@ -10,6 +10,7 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams FeatureDimPlot
+#' @inheritParams scop-params
 #' @param ref_srt A Seurat object.
 #' If your dataset is perturbed in a way that would substantially alter feature-feature correlations,
 #' for example if different time points are present or certain cell types are mostly depleted,
@@ -318,6 +319,7 @@ TACSPlot <- function(
   return(p)
 }
 
+
 #' @title Find features with expression patterns similar to provided features
 #'
 #' @md
@@ -388,6 +390,7 @@ GetSimilarFeatures <- function(
   }
   return(similar_genes)
 }
+
 
 #' @title FetchData but with zeroes for unavailable genes
 #'

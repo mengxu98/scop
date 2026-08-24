@@ -7,6 +7,7 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams FeatureDimPlot
 #' @inheritParams RunStandardWorkflow
+#' @inheritParams scop-params
 #' @param features Features to compare.
 #' Should be present in both the assay data and the metadata of the Seurat object.
 #' @param cor_method `"pearson"` or `"spearman"`.

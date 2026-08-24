@@ -234,7 +234,7 @@ RunMERINGUE <- function(
     SeuratObject::VariableFeatures(srt, assay = assay) <- top_features
   }
 
-  parameters <- meringue_parameters_df(list(
+  parameters <- parameters_summary_df(list(
     assay = assay,
     layer = layer,
     image = image,
@@ -252,7 +252,7 @@ RunMERINGUE <- function(
     store_results = store_results,
     seed = seed,
     backend = backend
-  ))
+  ), version_pkgs = c(MERINGUE_version = "MERINGUE"))
   if (isTRUE(store_results)) {
     srt@tools[["MERINGUE"]] <- list(
       autocorrelation = autocorrelation,
@@ -432,7 +432,7 @@ meringue_run_autocorrelation <- function(
     result <- result[order(-score_order, p_order, q_order), , drop = FALSE]
     result$rank <- seq_len(nrow(result))
     rownames(result) <- NULL
-    result <- meringue_reorder_cols(
+    result <- reorder_first_columns(
       result,
       c(
         "feature", "rank", "statistic", "expected", "sd", "p_value",
@@ -505,7 +505,7 @@ meringue_run_autocorrelation <- function(
   result <- result[order(-score_order, p_order, q_order), , drop = FALSE]
   result$rank <- seq_len(nrow(result))
   rownames(result) <- NULL
-  meringue_reorder_cols(
+  reorder_first_columns(
     result,
     c(
       "feature", "rank", "statistic", "expected", "sd", "p_value",
@@ -660,7 +660,7 @@ meringue_cross_matrix_to_df <- function(scc) {
   result <- result[order(-score_order), , drop = FALSE]
   result$rank <- seq_len(nrow(result))
   rownames(result) <- NULL
-  meringue_reorder_cols(result, c("feature1", "feature2", "rank", "correlation"))
+  reorder_first_columns(result, c("feature1", "feature2", "rank", "correlation"))
 }
 
 meringue_run_cross_correlation_tests <- function(
@@ -742,8 +742,8 @@ meringue_run_modules <- function(
 meringue_normalize_modules <- function(out, features) {
   if (is.data.frame(out)) {
     df <- as.data.frame(out, stringsAsFactors = FALSE, check.names = FALSE)
-    df <- meringue_rename_first(df, "feature", c("feature", "features", "gene", "genes"))
-    df <- meringue_rename_first(df, "module", c("module", "cluster", "clusters", "pattern", "group"))
+    df <- rename_first_column(df, "feature", c("feature", "features", "gene", "genes"))
+    df <- rename_first_column(df, "module", c("module", "cluster", "clusters", "pattern", "group"))
   } else if (is.list(out) && any(c("groups", "clusters", "cluster", "modules", "module") %in% names(out))) {
     nm <- intersect(c("groups", "clusters", "cluster", "modules", "module"), names(out))[[1L]]
     df <- meringue_module_vector_to_df(out[[nm]], features = features)
@@ -763,7 +763,7 @@ meringue_normalize_modules <- function(out, features) {
   df$module_size <- as.integer(module_size[df$module])
   df$rank <- seq_len(nrow(df))
   rownames(df) <- NULL
-  meringue_reorder_cols(df, c("feature", "module", "module_size", "rank"))
+  reorder_first_columns(df, c("feature", "module", "module_size", "rank"))
 }
 
 meringue_module_vector_to_df <- function(x, features) {
@@ -820,33 +820,6 @@ meringue_empty_modules <- function() {
   )
 }
 
-meringue_parameters_df <- function(parameters) {
-  parameters$scop_version <- meringue_package_version("scop")
-  parameters$MERINGUE_version <- meringue_package_version("MERINGUE")
-  data.frame(
-    key = names(parameters),
-    value = vapply(parameters, collapse_parameter_value, character(1)),
-    stringsAsFactors = FALSE
-  )
-}
-
-meringue_package_version <- function(pkg) {
-  tryCatch(as.character(utils::packageVersion(pkg)), error = function(e) NA_character_)
-}
-
-meringue_rename_first <- function(df, target, candidates) {
-  hit <- intersect(candidates, colnames(df))
-  hit <- setdiff(hit, target)
-  if (length(hit) > 0L && !target %in% colnames(df)) {
-    colnames(df)[match(hit[[1L]], colnames(df))] <- target
-  }
-  df
-}
-
-meringue_reorder_cols <- function(df, first_cols) {
-  first_cols <- intersect(first_cols, colnames(df))
-  df[, c(first_cols, setdiff(colnames(df), first_cols)), drop = FALSE]
-}
 
 meringue_check_positive_integer <- function(x, arg_name) {
   if (!is.numeric(x) || length(x) != 1L || is.na(x) || x < 1) {

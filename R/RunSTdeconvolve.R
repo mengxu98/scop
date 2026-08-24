@@ -98,12 +98,12 @@ RunSTdeconvolve <- function(
       message_type = "error"
     )
   }
-  stdeconvolve_assert_scalar_string(prefix, "prefix")
-  stdeconvolve_assert_scalar_string(tool_name, "tool_name")
-  stdeconvolve_validate_param_list(clean_counts_params, "clean_counts_params")
-  stdeconvolve_validate_param_list(restrict_corpus_params, "restrict_corpus_params")
-  stdeconvolve_validate_param_list(fit_lda_params, "fit_lda_params")
-  stdeconvolve_validate_param_list(get_beta_theta_params, "get_beta_theta_params")
+  validate_scalar_string(prefix, "prefix", require_character = FALSE)
+  validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
+  validate_named_param_list(clean_counts_params, "clean_counts_params", require_list = TRUE)
+  validate_named_param_list(restrict_corpus_params, "restrict_corpus_params", require_list = TRUE)
+  validate_named_param_list(fit_lda_params, "fit_lda_params", require_list = TRUE)
+  validate_named_param_list(get_beta_theta_params, "get_beta_theta_params", require_list = TRUE)
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   features_use <- features %||% rownames(srt[[assay]])
@@ -134,7 +134,7 @@ RunSTdeconvolve <- function(
 
   extra_fit_params <- list(...)
   if (length(extra_fit_params) > 0L) {
-    stdeconvolve_validate_param_list(extra_fit_params, "...")
+    validate_named_param_list(extra_fit_params, "...", require_list = TRUE)
     fit_lda_params <- c(fit_lda_params, extra_fit_params)
   }
   topic_k <- stdeconvolve_resolve_k(k = k, k_candidates = k_candidates)
@@ -265,7 +265,7 @@ STdeconvolvePlot <- function(
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
-  stdeconvolve_assert_scalar_string(tool_name, "tool_name")
+  validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
   plot_type <- match.arg(plot_type)
   stored <- srt@tools[[tool_name]]
   if (!is.list(stored)) {
@@ -275,7 +275,7 @@ STdeconvolvePlot <- function(
     )
   }
   prefix <- prefix %||% stored$parameters$prefix
-  stdeconvolve_assert_scalar_string(prefix, "prefix")
+  validate_scalar_string(prefix, "prefix", require_character = FALSE)
   theta <- stdeconvolve_plot_theta(
     theta = stored$theta,
     spot_ids = colnames(srt),
@@ -313,11 +313,11 @@ STdeconvolvePlot <- function(
   legend_title <- list(...)$legend.title %||% "Proportion"
   plots <- Map(
     function(plot, topic) {
-      plot <- stdeconvolve_set_point_scale(
+      plot <- set_continuous_color_scale(
         plot = plot,
         limits = c(0, common_limit),
         title = legend_title
-      )
+      , context = "topic-proportion")
       plot +
         ggplot2::labs(title = topic) +
         ggplot2::theme(plot.title = ggplot2::element_text(margin = ggplot2::margin(b = 4)))
@@ -340,23 +340,6 @@ STdeconvolvePlot <- function(
     )
 }
 
-stdeconvolve_set_point_scale <- function(plot, limits, title) {
-  scale_index <- which(vapply(
-    plot$scales$scales,
-    function(scale) any(scale$aesthetics %in% c("colour", "color")),
-    logical(1)
-  ))
-  if (length(scale_index) != 1L) {
-    log_message(
-      "Unable to identify the continuous topic-proportion color scale",
-      message_type = "error"
-    )
-  }
-  plot$scales$scales[[scale_index]]$limits <- limits
-  plot$scales$scales[[scale_index]]$name <- title
-  plot$labels$colour <- title
-  plot
-}
 
 stdeconvolve_plot_theta <- function(theta, spot_ids, tool_name) {
   if (is.null(theta) || (!is.matrix(theta) && !inherits(theta, "Matrix"))) {
@@ -564,10 +547,3 @@ stdeconvolve_resolve_k <- function(k = NULL, k_candidates = 2:9) {
   unique(as.integer(k_use))
 }
 
-stdeconvolve_validate_param_list <- function(x, arg_name) {
-  validate_named_param_list(x, arg_name, require_list = TRUE)
-}
-
-stdeconvolve_assert_scalar_string <- function(x, arg) {
-  validate_scalar_string(x, arg, require_character = FALSE)
-}

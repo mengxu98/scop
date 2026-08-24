@@ -96,7 +96,7 @@ Reserved keys are \code{"adatas"} and \code{"graph"}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 }
 \value{
 A \code{Seurat} object.

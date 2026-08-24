@@ -25,7 +25,7 @@ rescanning the count matrix.}
 
 \item{...}{Additional arguments to be passed to \code{\link[scDblFinder:scDblFinder]{scDblFinder::scDblFinder()}}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Run doublet-calling with scDblFinder

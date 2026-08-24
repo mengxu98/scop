@@ -261,9 +261,9 @@ RunSecActCCC <- function(
       conditionCase <- NULL
       conditionControl <- NULL
     } else {
-      secact_assert_scalar_string(condition_meta, "condition_meta")
-      secact_assert_scalar_string(conditionCase, "conditionCase")
-      secact_assert_scalar_string(conditionControl, "conditionControl")
+      validate_scalar_string(condition_meta, "condition_meta", require_character = FALSE)
+      validate_scalar_string(conditionCase, "conditionCase", require_character = FALSE)
+      validate_scalar_string(conditionControl, "conditionControl", require_character = FALSE)
     }
     fun <- get_namespace_fun("SecAct", "SecAct.CCC.scRNAseq")
     log_message("Running {.pkg SecAct} scRNA-seq CCC...", verbose = verbose)
@@ -446,7 +446,7 @@ RunSecActVelocity <- function(
   if (identical(mode, "spotST")) {
     signalMode <- match.arg(signalMode, c("receiving", "sending"))
     radius <- radius %||% 200
-    secact_assert_scalar_string(gene, "gene")
+    validate_scalar_string(gene, "gene", require_character = FALSE)
     fun <- get_namespace_fun("SecAct", "SecAct.signaling.velocity.spotST")
     return(fun(
       SpaCET_obj = SpaCET_obj,
@@ -460,10 +460,10 @@ RunSecActVelocity <- function(
     ))
   }
 
-  secact_assert_scalar_string(sender, "sender")
-  secact_assert_scalar_string(secretedProtein, "secretedProtein")
-  secact_assert_scalar_string(receiver, "receiver")
-  secact_assert_scalar_string(cellType_meta, "cellType_meta")
+  validate_scalar_string(sender, "sender", require_character = FALSE)
+  validate_scalar_string(secretedProtein, "secretedProtein", require_character = FALSE)
+  validate_scalar_string(receiver, "receiver", require_character = FALSE)
+  validate_scalar_string(cellType_meta, "cellType_meta", require_character = FALSE)
   radius <- radius %||% 20
   colors <- colors %||% c("#1f78b4", "#e31a1c", "#33a02c", "#ff7f00")
   fun <- get_namespace_fun("SecAct", "SecAct.signaling.velocity.scST")
@@ -529,7 +529,7 @@ secact_run_scrnaseq <- function(
   secact_require_rna_assay(assay)
   DefaultAssay(obj) <- assay
   if (!isTRUE(is.singleCellLevel)) {
-    secact_assert_scalar_string(cellType_meta, "cellType_meta")
+    validate_scalar_string(cellType_meta, "cellType_meta", require_character = FALSE)
     secact_check_meta_columns(obj, cellType_meta)
   }
 
@@ -837,9 +837,6 @@ secact_assert_spacet <- function(x) {
   invisible(TRUE)
 }
 
-secact_assert_scalar_string <- function(x, arg) {
-  validate_scalar_string(x, arg, require_character = FALSE)
-}
 
 secact_check_assay <- function(srt, assay) {
   if (!assay %in% names(srt@assays)) {

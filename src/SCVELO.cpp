@@ -11,8 +11,7 @@ using namespace Rcpp;
 // Gene filtering is implemented once in Preprocessing.cpp as
 // scanpy_filter_genes_cpp (matching scv.pp.filter_genes exactly, OpenMP).
 // The scVelo C++ pipeline performs the same threshold check in R
-// (run_scanpy_cpp) and via scanpy_preprocess_cpp, so no separate
-// cpp-side filter is needed here.
+// (run_scanpy_cpp), so no separate cpp-side filter is needed here.
 
 // ── 2. Normalize per cell + log1p ─────────────────────────────────────────────
 
@@ -946,90 +945,6 @@ List scanpy_velocity_confidence_cpp(
 
 // ── 8. Terminal states (root_cells, end_points via Markov eigenvectors) ───────
 
-// [[Rcpp::export]]
-NumericMatrix scanpy_velocity_transition_cpp(
-    NumericMatrix Ms,
-    NumericMatrix residual,
-    IntegerMatrix knn_idx,
-    int n_neighbors_velo = -1,
-    double softmax_scale = 10.0)
-{
-  const int n_genes = Ms.nrow();
-  const int n_cells = Ms.ncol();
-  const int n_neighbors = knn_idx.ncol();
-  if (residual.nrow() != n_genes || residual.ncol() != n_cells)
-    thisutils::log_message("Ms and residual must have identical dimensions", "error");
-  if (knn_idx.nrow() != n_cells)
-    thisutils::log_message("knn_idx rows must match number of cells", "error");
-  if (n_neighbors_velo <= 0) n_neighbors_velo = n_neighbors;
-
-  NumericMatrix T(n_cells, n_cells);
-  for (int cell = 0; cell < n_cells; ++cell) {
-    double vn = 0.0;
-    for (int g = 0; g < n_genes; ++g)
-      vn += residual(g, cell) * residual(g, cell);
-    vn = std::sqrt(vn);
-    if (vn < 1e-10) {
-      T(cell, cell) = 1.0;
-      continue;
-    }
-
-    double row_sum = 0.0;
-    for (int col = 0; col < n_neighbors_velo && col < n_neighbors; ++col) {
-      int nb = knn_idx(cell, col);
-      if (nb == NA_INTEGER) continue;
-      nb -= 1;
-      if (nb < 0 || nb >= n_cells || nb == cell) continue;
-
-      double dot = 0.0, dn = 0.0;
-      for (int g = 0; g < n_genes; ++g) {
-        double delta = Ms(g, nb) - Ms(g, cell);
-        dot += residual(g, cell) * delta;
-        dn += delta * delta;
-      }
-      dn = std::sqrt(dn);
-      if (dn < 1e-10) continue;
-
-      double cosine = dot / (vn * dn);
-      if (std::isfinite(cosine)) {
-        double value = 0.0;
-        if (cosine > 0.0) {
-          value = softmax_scale > 0.0 ? std::expm1(cosine * softmax_scale) : cosine;
-        } else if (cosine < 0.0) {
-          value = softmax_scale > 0.0 ? std::exp(cosine * softmax_scale) : 0.0;
-        }
-        if (value <= 0.0) continue;
-        T(cell, nb) = value;
-        row_sum += value;
-      }
-    }
-    if (row_sum > 1e-12) {
-      for (int j = 0; j < n_cells; ++j) T(cell, j) /= row_sum;
-    } else {
-      T(cell, cell) = 1.0;
-    }
-  }
-  return T;
-}
-
-static NumericMatrix scanpy_backward_transition(const NumericMatrix& T_forward) {
-  const int n_cells = T_forward.nrow();
-  NumericMatrix T_backward(n_cells, n_cells);
-  for (int i = 0; i < n_cells; ++i) {
-    double row_sum = 0.0;
-    for (int j = 0; j < n_cells; ++j) {
-      double value = T_forward(j, i);
-      T_backward(i, j) = value;
-      row_sum += value;
-    }
-    if (row_sum > 1e-12) {
-      for (int j = 0; j < n_cells; ++j) T_backward(i, j) /= row_sum;
-    } else {
-      T_backward(i, i) = 1.0;
-    }
-  }
-  return T_backward;
-}
 
 static NumericVector scanpy_smooth_connectivities(
     NumericVector score,
@@ -1084,48 +999,6 @@ static NumericVector scanpy_clip_scale(NumericVector x) {
   return out;
 }
 
-// [[Rcpp::export]]
-List scanpy_terminal_states_transition_cpp(
-    NumericMatrix transition_matrix,
-    IntegerMatrix knn_idx)
-{
-  const int n_cells = transition_matrix.nrow();
-  if (transition_matrix.ncol() != n_cells)
-    thisutils::log_message("transition_matrix must be square", "error");
-  if (knn_idx.nrow() != n_cells)
-    thisutils::log_message("knn_idx rows must match transition_matrix", "error");
-
-  NumericMatrix T_forward(clone(transition_matrix));
-  for (int i = 0; i < n_cells; ++i) {
-    double row_sum = 0.0;
-    for (int j = 0; j < n_cells; ++j) row_sum += T_forward(i, j);
-    if (row_sum > 1e-12) {
-      for (int j = 0; j < n_cells; ++j) T_forward(i, j) /= row_sum;
-    } else {
-      T_forward(i, i) = 1.0;
-    }
-  }
-
-  NumericMatrix T_backward = scanpy_backward_transition(T_forward);
-  NumericVector roots_raw = scop_util::stationary_distribution(T_backward, 1000, 1e-10);
-  NumericVector ends_raw = scop_util::stationary_distribution(T_forward, 1000, 1e-10);
-
-  NumericVector root_cells = scanpy_clip_scale(scanpy_smooth_connectivities(roots_raw, knn_idx));
-  NumericVector end_points = scanpy_clip_scale(scanpy_smooth_connectivities(ends_raw, knn_idx));
-
-  int n_root = 0, n_end = 0;
-  for (int i = 0; i < n_cells; ++i) {
-    if (root_cells[i] >= 0.95) ++n_root;
-    if (end_points[i] >= 0.95) ++n_end;
-  }
-
-  return List::create(
-    _["root_cells"] = root_cells,
-    _["end_points"] = end_points,
-    _["n_root_regions"] = n_root,
-    _["n_end_regions"] = n_end
-  );
-}
 
 // [[Rcpp::export]]
 List scanpy_terminal_states_cpp(
@@ -1331,114 +1204,6 @@ List scanpy_terminal_states_graph_cpp(
   );
 }
 
-
-// ── 9. Velocity pseudotime from transition matrix (DPT via eigendecomposition) ─
-
-// [[Rcpp::export]]
-List scanpy_pseudotime_transition_cpp(
-    NumericMatrix transition_matrix,
-    NumericVector root_cells,
-    NumericVector end_points)
-{
-  const int n_cells = transition_matrix.nrow();
-  if (transition_matrix.ncol() != n_cells)
-    thisutils::log_message("transition_matrix must be square", "error");
-  if (root_cells.size() != n_cells)
-    thisutils::log_message("root_cells length must match n_cells", "error");
-  if (end_points.size() != n_cells)
-    thisutils::log_message("end_points length must match n_cells", "error");
-
-  NumericMatrix T(clone(transition_matrix));
-  for (int i = 0; i < n_cells; ++i) {
-    double row_sum = 0.0;
-    for (int j = 0; j < n_cells; ++j) row_sum += T(i, j);
-    if (row_sum > 1e-12) {
-      for (int j = 0; j < n_cells; ++j) T(i, j) /= row_sum;
-    } else {
-      T(i, i) = 1.0;
-    }
-  }
-
-  int root = 0;
-  double rv = root_cells[0];
-  for (int i = 1; i < n_cells; ++i)
-    if (root_cells[i] > rv) { rv = root_cells[i]; root = i; }
-  int end = 0;
-  double ev = end_points[0];
-  for (int i = 1; i < n_cells; ++i)
-    if (end_points[i] > ev) { ev = end_points[i]; end = i; }
-
-  NumericMatrix D(n_cells, n_cells);
-  for (int i = 0; i < n_cells; ++i) {
-    for (int j = 0; j < n_cells; ++j) {
-      D(i, j) = (T(i, j) + T(j, i)) / 2.0;
-    }
-  }
-
-  Environment base("package:base");
-  Function eigen_fun = base["eigen"];
-  List eig = eigen_fun(D, Named("symmetric", true));
-  NumericVector evals_c = eig["values"];
-  NumericMatrix evecs_c = eig["vectors"];
-
-  std::vector<std::pair<double, int>> pairs;
-  for (int i = 0; i < n_cells; ++i)
-    pairs.push_back({evals_c[i], i});
-  std::sort(pairs.begin(), pairs.end(), std::greater<std::pair<double,int>>());
-
-  int k = std::min(10, n_cells);
-  NumericMatrix dc(n_cells, k);
-  for (int comp = 0; comp < k; ++comp) {
-    int idx = pairs[comp].second;
-    for (int i = 0; i < n_cells; ++i)
-      dc(i, comp) = evecs_c(i, idx);
-  }
-
-  auto dpt_from = [&](int source) {
-    NumericVector pt(n_cells);
-    for (int i = 0; i < n_cells; ++i) {
-      double dist = 0.0;
-      for (int d = 0; d < k; ++d)
-        dist += (dc(i, d) - dc(source, d)) * (dc(i, d) - dc(source, d));
-      pt[i] = std::sqrt(dist);
-    }
-    double pmin = pt[0], pmax = pt[0];
-    for (int i = 1; i < n_cells; ++i) {
-      if (pt[i] < pmin) pmin = pt[i];
-      if (pt[i] > pmax) pmax = pt[i];
-    }
-    double range = pmax - pmin;
-    if (range > 0)
-      for (int i = 0; i < n_cells; ++i) pt[i] = (pt[i] - pmin) / range;
-    return pt;
-  };
-
-  NumericVector pseudotime_root = dpt_from(root);
-  NumericVector pseudotime_end_inverse = dpt_from(end);
-  for (int i = 0; i < n_cells; ++i) pseudotime_end_inverse[i] = 1.0 - pseudotime_end_inverse[i];
-
-  NumericVector pseudotime(n_cells);
-  for (int i = 0; i < n_cells; ++i)
-    pseudotime[i] = 0.5 * (pseudotime_root[i] + pseudotime_end_inverse[i]);
-
-  double pmin = pseudotime[0], pmax = pseudotime[0];
-  for (int i = 1; i < n_cells; ++i) {
-    if (pseudotime[i] < pmin) pmin = pseudotime[i];
-    if (pseudotime[i] > pmax) pmax = pseudotime[i];
-  }
-  double prange = pmax - pmin;
-  if (prange > 0)
-    for (int i = 0; i < n_cells; ++i) pseudotime[i] = (pseudotime[i] - pmin) / prange;
-
-  return List::create(
-    _["pseudotime"] = pseudotime,
-    _["pseudotime_root"] = pseudotime_root,
-    _["pseudotime_end_inverse"] = pseudotime_end_inverse,
-    _["root_cell"] = root + 1,
-    _["end_cell"] = end + 1,
-    _["diffusion_components"] = dc
-  );
-}
 
 // [[Rcpp::export]]
 List scanpy_pseudotime_cpp(
@@ -1719,40 +1484,7 @@ List scanpy_pseudotime_graph_cpp(
 }
 
 
-// ── 10. Rank velocity genes (Spearman-like correlation) ──────────────────────
-
-// [[Rcpp::export]]
-NumericVector scanpy_velocity_genes_cpp(
-    NumericMatrix Ms,
-    NumericMatrix velocity)
-{
-  const int n_genes = Ms.nrow();
-  const int n_cells = Ms.ncol();
-  if (velocity.nrow() != n_genes || velocity.ncol() != n_cells)
-    thisutils::log_message("Ms and velocity must have identical dimensions", "error");
-
-  // For each gene, compute absolute correlation between velocity and Ms
-  NumericVector scores(n_genes);
-  for (int g = 0; g < n_genes; ++g) {
-    double sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0;
-    int nv = 0;
-    for (int c = 0; c < n_cells; ++c) {
-      double x = Ms(g, c);
-      double y = velocity(g, c);
-      if (!std::isfinite(x) || !std::isfinite(y)) continue;
-      sx += x; sy += y; sxx += x*x; syy += y*y; sxy += x*y;
-      ++nv;
-    }
-    if (nv < 3) { scores[g] = 0.0; continue; }
-    double den = std::sqrt((nv*sxx - sx*sx) * (nv*syy - sy*sy));
-    double corr = den > 1e-12 ? (nv*sxy - sx*sy) / den : 0.0;
-    scores[g] = std::abs(corr);
-  }
-  return scores;
-}
-
-
-// ── 11. Keep backward-compatible wrapper (same API as before) ─────────────────
+// ── 9. Keep backward-compatible wrapper (same API as before) ─────────────────
 
 // [[Rcpp::export]]
 List scanpy_stochastic_embedding_cpp(

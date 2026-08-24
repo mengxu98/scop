@@ -173,6 +173,7 @@ RunNMF.Assay <- function(
     nfeatures.print = nfeatures.print,
     reduction.key = reduction.key,
     seed.use = seed.use,
+    cores = cores,
     ...
   )
   return(reduction_data)
@@ -181,51 +182,7 @@ RunNMF.Assay <- function(
 #' @rdname RunNMF
 #' @method RunNMF Assay5
 #' @export
-RunNMF.Assay5 <- function(
-  object,
-  assay = NULL,
-  layer = "data",
-  features = NULL,
-  nbes = 50,
-  nmf.method = "RcppML",
-  tol = 1e-5,
-  maxit = 100,
-  rev.nmf = FALSE,
-  ndims.print = 1:5,
-  nfeatures.print = 30,
-  reduction.key = "BE_",
-  verbose = TRUE,
-  seed.use = 11,
-  cores = 0,
-  ...
-) {
-  features <- features %||% SeuratObject::VariableFeatures(object = object)
-  data_use <- GetAssayData5(
-    object = object,
-    layer = layer
-  )
-  features_var <- nmf_feature_variances(data_use[features, , drop = FALSE])
-  features_keep <- features[features_var > 0]
-  data_use <- data_use[features_keep, ]
-  reduction_data <- RunNMF(
-    object = data_use,
-    assay = assay,
-    layer = layer,
-    nbes = nbes,
-    nmf.method = nmf.method,
-    tol = tol,
-    maxit = maxit,
-    rev.nmf = rev.nmf,
-    verbose = verbose,
-    ndims.print = ndims.print,
-    nfeatures.print = nfeatures.print,
-    reduction.key = reduction.key,
-    seed.use = seed.use,
-    cores = cores,
-    ...
-  )
-  return(reduction_data)
-}
+RunNMF.Assay5 <- RunNMF.Assay
 
 #' @rdname RunNMF
 #' @method RunNMF default

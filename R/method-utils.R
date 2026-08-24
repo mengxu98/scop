@@ -82,16 +82,6 @@ validate_scalar_flag <- function(x, arg) {
   invisible(TRUE)
 }
 
-validate_seurat_object <- function(srt) {
-  if (!inherits(srt, "Seurat")) {
-    log_message(
-      "{.arg srt} must be a {.cls Seurat} object",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
 validate_scalar_integer <- function(
   x,
   arg,
@@ -565,3 +555,110 @@ tool_bundle_get_result <- function(object, tool, result.name = NULL) {
   list(bundle = bundle, result = result, result.name = result.name)
 }
 
+reorder_first_columns <- function(df, first_cols) {
+  first_cols <- intersect(first_cols, colnames(df))
+  df[, c(first_cols, setdiff(colnames(df), first_cols)), drop = FALSE]
+}
+
+matrix_values <- function(x) {
+  if (methods::is(x, "sparseMatrix")) {
+    methods::slot(x, "x")
+  } else {
+    as.numeric(x)
+  }
+}
+
+write_tsv <- function(x, path) {
+  utils::write.table(x, file = path, sep = "\t", quote = FALSE,
+    row.names = FALSE, col.names = TRUE, na = "")
+  invisible(path)
+}
+
+pkg_version_safe <- function(pkg) {
+  tryCatch(as.character(utils::packageVersion(pkg)), error = function(e) NA_character_)
+}
+
+rename_first_column <- function(df, target, candidates) {
+  hit <- intersect(candidates, colnames(df))
+  hit <- setdiff(hit, target)
+  if (length(hit) > 0L && !target %in% colnames(df)) {
+    colnames(df)[match(hit[1L], colnames(df))] <- target
+  }
+  df
+}
+
+set_continuous_color_scale <- function(plot, limits, title, context = "proportion") {
+  scale_index <- which(vapply(plot$scales$scales, function(scale) any(scale$aesthetics %in%
+    c("colour", "color")), logical(1)))
+  if (length(scale_index) != 1L) {
+    log_message(
+      paste0("Unable to identify the continuous ", context, " color scale"),
+      message_type = "error"
+    )
+  }
+  plot$scales$scales[[scale_index]]$limits <- limits
+  plot$scales$scales[[scale_index]]$name <- title
+  plot$labels$colour <- title
+  plot
+}
+
+parameters_summary_df <- function(parameters, version_pkgs = character(0)) {
+  parameters$scop_version <- pkg_version_safe("scop")
+  for (nm in names(version_pkgs)) {
+    parameters[[nm]] <- pkg_version_safe(version_pkgs[[nm]])
+  }
+  data.frame(
+    key = names(parameters),
+    value = vapply(parameters, collapse_parameter_value, character(1)),
+    stringsAsFactors = FALSE
+  )
+}
+
+validate_result_bundle <- function(bundle, label = "CCC", empty_message = NULL) {
+  required <- c(
+    "method", "results", "active_result", "long_table", "primary_table",
+    "cells", "coordinates", "parameters", "summary", "provenance"
+  )
+  if (!is.list(bundle) || !all(required %in% names(bundle))) {
+    log_message(
+      paste0(label, " result bundle is incomplete"),
+      message_type = "error"
+    )
+  }
+  if (!is.data.frame(bundle$long_table) || nrow(bundle$long_table) == 0L) {
+    log_message(
+      empty_message %||% paste0(label, " result bundle is incomplete"),
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+numeric_matrix_result <- function(x, row_label = "matrix", col_prefix = "score_",
+                                  check_null = FALSE) {
+  if (isTRUE(check_null) && is.null(x)) {
+    log_message(
+      "{.arg {row_label}} is empty.",
+      message_type = "error"
+    )
+  }
+  mat <- as.matrix(x)
+  dim_names <- dimnames(mat)
+  mat <- suppressWarnings(matrix(
+    as.numeric(mat),
+    nrow = nrow(mat),
+    ncol = ncol(mat),
+    dimnames = dim_names
+  ))
+  if (is.null(rownames(mat))) {
+    log_message(
+      "{.arg {row_label}} must have rownames for sample alignment.",
+      message_type = "error"
+    )
+  }
+  if (is.null(colnames(mat))) {
+    colnames(mat) <- paste0(col_prefix, seq_len(ncol(mat)))
+  }
+  mat[!is.finite(mat)] <- NA_real_
+  mat
+}

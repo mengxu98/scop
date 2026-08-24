@@ -87,6 +87,7 @@ S3method(ScaleData,default)
 S3method(print,scop_logo)
 export("%>%")
 export("%||%")
+export(AUCellPlot)
 export(AddFeaturesData)
 export(AnnotateFeatures)
 export(BBKNN_integrate)
@@ -415,6 +416,7 @@ importFrom(methods,slot)
 importFrom(rlang,"%||%")
 importFrom(stats,
   approx,
+  ave,
   density,
   median,
   model.matrix,
