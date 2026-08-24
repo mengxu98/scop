@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param srt A `Seurat` object or `SummarizedExperiment` object containing the
 #' results of differential expression analysis.
 #' @param res A `data.frame` or `data.table` with differential expression results.
@@ -529,13 +530,6 @@ filter_de_positive_results <- function(de_df) {
   de_df
 }
 
-normalize_de_label_count <- function(nlabel) {
-  nlabel <- suppressWarnings(as.integer(nlabel[1]))
-  if (is.na(nlabel) || nlabel < 0L) {
-    return(0L)
-  }
-  nlabel
-}
 
 rank_de_label_subset <- function(tmp, label.by, decreasing, nlabel) {
   if (nrow(tmp) == 0 || nlabel == 0L) {
@@ -585,7 +579,10 @@ get_top_markers_for_label <- function(
   } else {
     label.by
   }
-  nlabel <- normalize_de_label_count(nlabel)
+  nlabel <- {
+    n <- suppressWarnings(as.integer(nlabel[1L]))
+    if (is.na(n) || n < 0L) 0L else n
+  }
   top_marker_list <- lapply(cluster_levels, function(x) {
     tmp <- de_df_marker[de_df_marker[["group1"]] == x, , drop = FALSE]
     if (nrow(tmp) == 0) {
@@ -1011,6 +1008,7 @@ collect_volcano_enrichment_annotations <- function(
   gene_map
 }
 
+
 #' @title DEtest Manhattan Plot
 #'
 #' @description
@@ -1278,6 +1276,7 @@ DEtestManhattanPlot <- function(
     )
 }
 
+
 #' @title DEtest Ring Plot
 #'
 #' @description
@@ -1495,6 +1494,7 @@ DEtestRingPlot <- function(
   }
   p_ring
 }
+
 
 #' @title Volcano Plot
 #'

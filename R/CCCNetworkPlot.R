@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams CCCStatPlot
+#' @inheritParams scop-params
 #' @param plot_type Plot type. One of `"circle"`, `"chord"`, `"pathway"`,
 #'   `"individual_lr"`, `"arrow"`, `"sigmoid"`, `"bipartite"`,
 #'   `"embedding_network"`, or `"diff_network"`.

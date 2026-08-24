@@ -122,10 +122,11 @@ SpatialDeconvolutionPlot <- function(
   legend_title <- list(...)$legend.title %||% "Proportion"
   plots <- Map(
     function(plot, cell_type) {
-      spatial_deconvolution_set_point_scale(
+      set_continuous_color_scale(
         plot = plot,
         limits = c(0, 1),
-        title = legend_title
+        title = legend_title,
+        context = "proportion"
       ) + ggplot2::labs(title = cell_type)
     },
     plots,
@@ -200,20 +201,3 @@ spatial_deconvolution_dominant <- function(proportions) {
   factor(out, levels = colnames(proportions))
 }
 
-spatial_deconvolution_set_point_scale <- function(plot, limits, title) {
-  scale_index <- which(vapply(
-    plot$scales$scales,
-    function(scale) any(scale$aesthetics %in% c("colour", "color")),
-    logical(1)
-  ))
-  if (length(scale_index) != 1L) {
-    log_message(
-      "Unable to identify the continuous proportion color scale",
-      message_type = "error"
-    )
-  }
-  plot$scales$scales[[scale_index]]$limits <- limits
-  plot$scales$scales[[scale_index]]$name <- title
-  plot$labels$colour <- title
-  plot
-}

@@ -170,6 +170,10 @@ square. When both are \code{NULL}, a square-cell size is computed automatically.
 
 \item{subtitle}{Plot subtitle.}
 
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
 \item{font.size}{Base font size.}
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}

@@ -88,7 +88,8 @@
 #' )
 #'
 #' data(panc8_sub)
-#' spatial <- spatial[, seq_len(120)]
+#' set.seed(1234)
+#' spatial <- spatial[, sample(seq_len(ncol(spatial)), 120)]
 #' reference <- panc8_sub[, panc8_sub$celltype %in% c("ductal", "alpha", "beta")]
 #' reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
 #' features_use <- intersect(
@@ -140,8 +141,8 @@ RunCSIDE <- function(
       message_type = "error"
     )
   }
-  cside_assert_scalar_string(prefix, "prefix")
-  cside_assert_scalar_string(tool_name, "tool_name")
+  validate_scalar_string(prefix, "prefix", require_character = FALSE)
+  validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
   cside_assert_null_or_scalar_string(group.by, "group.by")
   cside_assert_null_or_scalar_string(condition.by, "condition.by")
   mode <- match.arg(mode)
@@ -160,7 +161,7 @@ RunCSIDE <- function(
     rctd_result = rctd_result
   )
   extra_args <- list(...)
-  cside_validate_named_param_list(extra_args, "...")
+  validate_named_param_list(extra_args, "...")
   extra_args <- cside_apply_rctd_mode_defaults(
     extra_args = extra_args,
     stored_rctd_mode = stored_rctd_mode
@@ -856,17 +857,10 @@ cside_validate_barcodes <- function(barcodes, cells) {
   barcodes
 }
 
-cside_validate_named_param_list <- function(x, arg_name) {
-  validate_named_param_list(x, arg_name)
-}
-
-cside_assert_scalar_string <- function(x, arg) {
-  validate_scalar_string(x, arg, require_character = FALSE)
-}
 
 cside_assert_null_or_scalar_string <- function(x, arg) {
   if (is.null(x)) {
     return(invisible(TRUE))
   }
-  cside_assert_scalar_string(x, arg)
+  validate_scalar_string(x, arg, require_character = FALSE)
 }

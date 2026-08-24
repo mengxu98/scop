@@ -92,14 +92,19 @@ RunStatialKontextual <- function(
     message_type = "running",
     verbose = verbose
   )
-  validate_seurat_object(srt)
-  statial_assert_string(group.by, "group.by")
-  statial_assert_string(tool_name, "tool_name")
-  statial_assert_flag(inhom, "inhom")
-  statial_assert_flag(edge_correct, "edge_correct")
-  statial_assert_flag(include_original, "include_original")
-  statial_assert_flag(store_results, "store_results")
-  statial_assert_flag(store_input, "store_input")
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
+  validate_scalar_string(group.by, "group.by")
+  validate_scalar_string(tool_name, "tool_name")
+  validate_scalar_flag(inhom, "inhom")
+  validate_scalar_flag(edge_correct, "edge_correct")
+  validate_scalar_flag(include_original, "include_original")
+  validate_scalar_flag(store_results, "store_results")
+  validate_scalar_flag(store_input, "store_input")
   window <- match.arg(window)
   r <- statial_validate_radius(r)
   cores <- validate_positive_integer(cores, "cores")
@@ -208,7 +213,7 @@ statial_prepare_cells <- function(
     )
   }
   if (!is.null(sample.by)) {
-    statial_assert_string(sample.by, "sample.by")
+    validate_scalar_string(sample.by, "sample.by")
     if (!sample.by %in% colnames(srt@meta.data)) {
       log_message(
         "{.arg sample.by} {.val {sample.by}} is not present in metadata",
@@ -387,10 +392,3 @@ statial_validate_radius <- function(r) {
   unique(r)
 }
 
-statial_assert_string <- function(x, arg) {
-  validate_scalar_string(x, arg)
-}
-
-statial_assert_flag <- function(x, arg) {
-  validate_scalar_flag(x, arg)
-}

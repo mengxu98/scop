@@ -415,6 +415,7 @@ importFrom(methods,slot)
 importFrom(rlang,"%||%")
 importFrom(stats,
   approx,
+  ave,
   density,
   median,
   model.matrix,

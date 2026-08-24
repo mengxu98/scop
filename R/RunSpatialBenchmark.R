@@ -76,8 +76,8 @@ RunSpatialBenchmark <- function(
   verbose = TRUE
 ) {
   benchmark_validate_input(srt)
-  benchmark_assert_flag(keep_objects, "keep_objects")
-  benchmark_assert_flag(install_missing, "install_missing")
+  validate_scalar_flag(keep_objects, "keep_objects")
+  validate_scalar_flag(install_missing, "install_missing")
   benchmark_assert_number(
     seed, "seed",
     lower = 0, upper = .Machine$integer.max, integer = TRUE
@@ -392,9 +392,6 @@ benchmark_resolve_metrics <- function(metrics) {
   unique(unname(allowed[keys]))
 }
 
-benchmark_assert_flag <- function(x, arg) {
-  validate_scalar_flag(x, arg)
-}
 
 benchmark_assert_number <- function(
   x,

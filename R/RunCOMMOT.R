@@ -9,9 +9,6 @@ commot_validate_param_list <- function(x, name) {
   invisible(TRUE)
 }
 
-commot_matrix_values <- function(x) {
-  if (methods::is(x, "sparseMatrix")) methods::slot(x, "x") else as.numeric(x)
-}
 
 commot_validate_matrix <- function(x) {
   if ((!is.matrix(x) && !methods::is(x, "Matrix")) ||
@@ -21,7 +18,7 @@ commot_validate_matrix <- function(x) {
       anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
     log_message("COMMOT expression must be a named matrix with unique feature and cell IDs", message_type = "error")
   }
-  values <- commot_matrix_values(x)
+  values <- matrix_values(x)
   if (any(!is.finite(values)) || any(values < 0)) {
     log_message("COMMOT expression must contain finite non-negative values", message_type = "error")
   }
@@ -78,13 +75,6 @@ commot_runtime <- function(envname, verbose) {
   normalizePath(python, winslash = "/", mustWork = TRUE)
 }
 
-commot_write_tsv <- function(x, path) {
-  utils::write.table(
-    x, file = path, sep = "\t", quote = FALSE,
-    row.names = FALSE, col.names = TRUE, na = ""
-  )
-  invisible(path)
-}
 
 commot_write_inputs <- function(input, workdir) {
   matrix_path <- file.path(workdir, "expression.mtx")
@@ -92,9 +82,9 @@ commot_write_inputs <- function(input, workdir) {
   metadata_path <- file.path(workdir, "metadata.tsv")
   coordinates_path <- file.path(workdir, "coordinates.tsv")
   Matrix::writeMM(input$expression, matrix_path)
-  commot_write_tsv(data.frame(feature_id = rownames(input$expression)), features_path)
-  commot_write_tsv(data.frame(cell_id = input$cells, group = input$groups), metadata_path)
-  commot_write_tsv(data.frame(
+  write_tsv(data.frame(feature_id = rownames(input$expression)), features_path)
+  write_tsv(data.frame(cell_id = input$cells, group = input$groups), metadata_path)
+  write_tsv(data.frame(
     cell_id = input$cells,
     x = as.numeric(input$coordinates$x),
     y = as.numeric(input$coordinates$y)
@@ -267,17 +257,6 @@ commot_execute <- function(
   )
 }
 
-commot_validate_bundle <- function(bundle) {
-  required <- c(
-    "method", "results", "active_result", "long_table", "primary_table",
-    "cells", "coordinates", "parameters", "summary", "provenance"
-  )
-  if (!is.list(bundle) || !all(required %in% names(bundle)) ||
-      !is.data.frame(bundle$long_table) || nrow(bundle$long_table) == 0L) {
-    log_message("COMMOT result bundle is incomplete", message_type = "error")
-  }
-  invisible(TRUE)
-}
 
 #' @title Run official COMMOT spatial communication analysis
 #'
@@ -415,7 +394,7 @@ RunCOMMOT <- function(
       manifest = executed$manifest
     )
   )
-  commot_validate_bundle(bundle)
+  validate_result_bundle(bundle, label = "COMMOT")
   srt@tools[["COMMOT"]] <- bundle
   srt <- ccc_update_unified_bundle(srt, method = "COMMOT", bundle = bundle, backend = backend)
   log_message("COMMOT analysis completed", message_type = "success", verbose = verbose)

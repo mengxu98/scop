@@ -18,14 +18,6 @@ sct_model_formula <- function(model_str) {
   stats::as.formula(sub("^\\s*y\\s*~", "~", model_str))
 }
 
-sct_clip_matrix_values <- function(x, range) {
-  if (!length(x)) {
-    return(x)
-  }
-  x[x < range[1]] <- range[1]
-  x[x > range[2]] <- range[2]
-  x
-}
 
 sct_get_model_pars <- function(
   genes_step1,
@@ -409,7 +401,16 @@ sct_vst <- function(
     cell_attr = cell_attr
   )
   rm(res)
-  rv$y <- sct_clip_matrix_values(rv$y, res_clip_range)
+  rv$y <- {
+    rv <- rv$y
+    if (length(rv) == 0L) {
+      rv
+    } else {
+      rv[rv < res_clip_range[1L]] <- res_clip_range[1L]
+      rv[rv > res_clip_range[2L]] <- res_clip_range[2L]
+      rv
+    }
+  }
   if (!return_cell_attr) {
     rv[["cell_attr"]] <- NULL
   }

@@ -4,9 +4,9 @@
 #' Feature density by group.
 #'
 #' @md
-#' @inheritParams scop-params
 #' @inheritParams CellDimPlot
 #' @inheritParams FeatureDimPlot
+#' @inheritParams scop-params
 #' @param features Features to plot.
 #' @param flip,reverse Flip the x-axis or reverse the y-axis.
 #' @param x_order `"value"` or `"rank"`.

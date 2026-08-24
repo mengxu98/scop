@@ -48,7 +48,8 @@ backward-compatible alias when \code{cores = NULL}.}
 
 \item{seed}{Random seed used by the C++ permutation backend.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional parameters forwarded to the internal deconvolution
 backend.}

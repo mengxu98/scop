@@ -53,7 +53,8 @@ a method-specific name is used.}
 
 \item{store_results}{Whether to store the full result in \code{srt@tools}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{coordinate_space}{Coordinate system used for integration distances
 and aligned-coordinate input. The default is raw acquisition coordinates;

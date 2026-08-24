@@ -30,7 +30,8 @@ RunATACQC(
 
 \item{min_pct_reads_in_peaks, min_TSS_enrichment, max_nucleosome_signal, max_blacklist_ratio}{Optional thresholds used for filtering cells.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with QC metadata added.

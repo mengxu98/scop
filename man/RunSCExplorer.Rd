@@ -76,7 +76,8 @@ By default, it is set to automatic, meaning it will be \code{TRUE} if the number
 
 \item{return_app}{Whether to return the SCExplorer app.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Run SCExplorer

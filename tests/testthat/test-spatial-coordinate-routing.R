@@ -34,7 +34,7 @@ test_that("legacy metadata paths do not bypass strict multi-image selection", {
     "Multiple spatial images"
   )
   expect_error(
-    rctd_get_spatial_coords(
+    resolve_spatial_spot_coords(
       srt,
       spot_ids = colnames(srt),
       image = NULL,
@@ -49,7 +49,7 @@ test_that("shared coordinate routing rejects partial image spot sets", {
   srt <- make_coordinate_routing_object()
 
   expect_error(
-    rctd_get_spatial_coords(
+    resolve_spatial_spot_coords(
       srt,
       spot_ids = colnames(srt),
       image = "slice1",

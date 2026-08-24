@@ -152,15 +152,19 @@ Default is \code{0.3} (CellRank/scvelo-style).}
 \item{label}{Whether to label the cell groups.
 Defaults is \code{TRUE} when \code{group.by} is specified.}
 
+\item{label.size}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
 \item{label.fg}{Foreground color of labels.
 Defaults is \code{"black"}.}
 
 \item{label.bg}{Background color of labels.
 Defaults is \code{"white"}.}
 
+\item{label.bg.r}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
 \item{seed}{Random seed.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Creates a projection plot similar to \link{VelocityPlot},

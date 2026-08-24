@@ -206,7 +206,8 @@ standardization. Used only for \code{backend = "python"}.}
 
 \item{conda}{Conda-compatible executable used when \code{backend = "python"}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A Seurat object with SCENICPlus-style results.

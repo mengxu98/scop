@@ -70,6 +70,8 @@ when \code{only.pos = FALSE}, and \code{"avg_log2FC > 0 & p_val_adj < 0.05"} oth
 
 \item{pt.size}{The size of the points.}
 
+\item{pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
+
 \item{cols.highlight}{Color for highlighted points.}
 
 \item{sizes.highlight}{The size of the highlighted points.}
@@ -100,6 +102,8 @@ positive and negative effects within each group.}
 
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.}
+
+\item{palcolor}{Custom colors used to create a color palette.}
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 

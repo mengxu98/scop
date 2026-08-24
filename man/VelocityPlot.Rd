@@ -152,7 +152,7 @@ Defaults is \code{FALSE}.}
 
 \item{seed}{Random seed.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Creates a velocity plot for a given Seurat object.

@@ -25,7 +25,7 @@ If provided, 'srt' and 'group.by' are ignored.}
 
 \item{...}{Additional arguments passed to \link{GSVAPlot}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Plots for metabolism pathway scoring

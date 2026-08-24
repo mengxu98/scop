@@ -39,14 +39,13 @@ ccc_pair_table <- function(
 }
 
 test_that("DoCellChat preserves an existing C0 identity when remapping zero", {
-  counts <- methods::as(Matrix::Matrix(
-    matrix(
-      c(1, 0, 0, 1),
-      nrow = 2L,
-      dimnames = list(c("gene1", "gene2"), c("cell1", "cell2"))
-    ),
-    sparse = TRUE
-  ), "dgCMatrix")
+  counts <- Matrix::sparseMatrix(
+    i = c(1L, 2L),
+    j = c(1L, 2L),
+    x = c(1, 1),
+    dims = c(2L, 2L),
+    dimnames = list(c("gene1", "gene2"), c("cell1", "cell2"))
+  )
   srt <- SeuratObject::CreateSeuratObject(counts = counts)
   SeuratObject::Idents(srt) <- factor(c("0", "C0"), levels = c("0", "C0"))
   captured <- NULL
@@ -168,7 +167,7 @@ test_that("aggregate_ccc_long cpp backend handles empty data frame", {
   expect_equal(nrow(cpp_out), 0)
 })
 
-test_that("chord pair reduction keeps selected edges when top cell groups have no internal edge", {
+test_that("chord edge selection when top cell groups have no internal edge", {
   pair_plot <- data.frame(
     sender = c("S1", "S2"),
     receiver = c("R1", "R2"),
@@ -247,7 +246,7 @@ test_that("aggregate_ccc_long cpp backend is faster than R backend on larger dat
   expect_true(cpp_time <= r_time + 0.5)
 })
 
-test_that("LIANA C++ aggregation preserves a custom sample key and first non-empty classification", {
+test_that("LIANA C++ aggregation preserves custom sample key and non-empty fallback", {
   df <- data.frame(
     source = c("A", "A", "A", "B"),
     target = c("X", "X", "X", "Y"),
@@ -591,7 +590,7 @@ test_that("RunNichenetr aggregate_cluster_de maps receivers to upstream argument
   expect_equal(out@tools$Nichenetr$parameters$backend, "cpp")
 })
 
-test_that("RunNichenetr aggregate_cluster_de passes distinct receiver_affected and receiver_reference", {
+test_that("RunNichenetr aggregate_cluster_de keeps distinct receiver fields", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
 
@@ -866,7 +865,7 @@ test_that("RunMultiNichenetr rejects missing sample identifiers", {
   )
 })
 
-test_that("CellChat method-specific CCC data honors condition instead of cached unified table", {
+test_that("CellChat CCC data honors condition over cached unified table", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
 

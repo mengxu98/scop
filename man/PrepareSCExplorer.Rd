@@ -44,7 +44,8 @@ If not provided, the file will be named \code{"meta.hdf5"} in the current direct
 
 \item{overwrite}{Whether to overwrite existing data in the data file.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Prepares one or multiple \code{Seurat} objects for the SCExplorer app.

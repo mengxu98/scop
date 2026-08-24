@@ -255,6 +255,10 @@ By default, this parameter is set to \code{NULL}, which means that all lineages 
 
 \item{cluster_rows, cluster_columns, cluster_row_slices, cluster_column_slices}{Heatmap clustering.}
 
+\item{show_row_names}{Whether to draw row/column names for the heatmap body.}
+
+\item{show_column_names}{Whether to draw row/column names for the heatmap body.}
+
 \item{row_names_side, column_names_side, row_names_rot, column_names_rot}{Name placement.}
 
 \item{row_title, column_title, row_title_side, column_title_side, row_title_rot, column_title_rot}{Slice titles.}
@@ -305,9 +309,17 @@ missing for \code{species}.}
 
 \item{pseudotime_label_linewidth}{The pseudotime label line width.}
 
+\item{heatmap_palette}{Palette used for CNV heatmap values.}
+
+\item{heatmap_palcolor}{Palette used for CNV heatmap values.}
+
 \item{pseudotime_palette}{The color palette to use for pseudotime.}
 
 \item{pseudotime_palcolor}{The colors to use for the pseudotime in the heatmap.}
+
+\item{feature_split_palette}{Split colors.}
+
+\item{feature_split_palcolor}{Custom colors for feature-split annotation labels.}
 
 \item{cell_annotation, cell_annotation_palette, cell_annotation_palcolor, cell_annotation_params}{Cell annotations. Palette length should match \code{cell_annotation}.}
 
@@ -328,11 +340,16 @@ Each name should match a column name in the metadata of the \code{Seurat} object
 
 \item{width, height, units}{Heatmap size. \code{NULL} sizes from matrix dimensions.}
 
-\item{cores}{Number of CPU cores.}
+\item{cores}{The number of worker processes to use for parallelization.
+Default is \code{1}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
-\item{seed}{Random seed.}
+\item{seed}{Optional integer seed. When supplied, every input receives a
+deterministic independent L'Ecuyer-CMRG random-number stream, making results
+reproducible across worker counts and scheduling order. The caller's random
+number state is restored when the call finishes.}
 
 \item{legend.position}{Legend side (\code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}).
 Gap to the heatmap grows automatically when long row names are on the right.}

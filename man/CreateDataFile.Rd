@@ -32,7 +32,8 @@ If not provided, the name will default to the Seurat object's project name.}
 
 \item{overwrite}{Whether to overwrite existing data in the data file.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Create HDF5 data file from Seurat object

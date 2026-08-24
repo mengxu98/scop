@@ -114,7 +114,8 @@ variable features.}
 
 \item{store_results}{Whether to store the normalized result in \code{srt@tools}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{coordinate_space}{Coordinate system used by the C++ distance
 calculations. The default is raw acquisition coordinates, so \code{start},

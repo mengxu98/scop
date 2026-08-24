@@ -1042,19 +1042,3 @@ spatial_dim_pick_col <- function(x, candidates) {
   }
   nm[match(tolower(hit), tolower(nm))]
 }
-
-spatial_dim_drop_coord <- function(x) {
-  if (!is.list(x) || inherits(x, "theme")) {
-    return(x)
-  }
-  if (
-    all(vapply(
-      x,
-      function(item) is.list(item) && length(item) == 1L,
-      logical(1)
-    ))
-  ) {
-    x <- unlist(x, recursive = FALSE)
-  }
-  Filter(function(item) !inherits(item, "Coord"), x)
-}

@@ -68,16 +68,30 @@ Edges below this threshold are still available when \code{return_data = TRUE}.}
 
 \item{label}{Label high-expressing cells.}
 
-\item{title, subtitle, xlab, ylab}{Plot labels.}
+\item{label.size}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
+\item{label.fg}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+
+\item{title}{Plot title. \code{NULL} hides the title for merged/single panels. When multiple lineages are plotted and \code{title} is \code{NULL}, each panel is titled with its lineage column.}
+
+\item{subtitle}{Plot subtitle.}
+
+\item{xlab}{Plot labels.}
+
+\item{ylab}{Plot labels.}
 
 \item{legend.position}{The position of the legend. The default is
 \code{"bottom"} to keep the multiple cluster-tree guides compact.}
 
-\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
+\item{theme_args}{Theme name or function, plus extra theme arguments.}
+
+\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{ncol}{Number of columns of the combined plot.}
 
 \item{return_data}{Whether to return plot data along with the plot.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, list of \code{ggplot} objects, or a list with

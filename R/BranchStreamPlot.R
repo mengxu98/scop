@@ -7,6 +7,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param object A `Seurat` object or a `data.frame` containing cell metadata.
 #' @param group.by Column containing cell-state or branch labels.
 #' @param lineages Pseudotime columns to use. If `NULL`, lineage-like
@@ -254,7 +255,7 @@ branch_stream_single_plot <- function(
   )
   groups <- obs[[group.by]]
   if (is.null(labels)) {
-    labels <- branch_stream_group_order(groups)
+    labels <- if (is.factor(groups)) as.character(levels(groups)) else unique(as.character(groups))
   }
   labels <- as.character(labels)
 
@@ -715,12 +716,6 @@ branch_stream_resolve_branch_steepness <- function(branch_steepness, x) {
   branch_steepness / x_span
 }
 
-branch_stream_group_order <- function(groups) {
-  if (is.factor(groups)) {
-    return(as.character(levels(groups)))
-  }
-  unique(as.character(groups))
-}
 
 branch_stream_sigmoid <- function(x, center, steepness) {
   1 / (1 + exp(-(x - center) * steepness))

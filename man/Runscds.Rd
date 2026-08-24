@@ -29,7 +29,7 @@ rescanning the count matrix.}
 
 \item{...}{Additional arguments passed to the selected \code{scds} method.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Run doublet-calling with scds

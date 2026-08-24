@@ -66,7 +66,8 @@ is forwarded to \code{numbat::run_numbat()} as \code{lambdas_ref}.}
 \item{store_matrix}{Whether to store the normalized CNV matrix in
 \code{srt@tools[[tool_name]]}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional parameters forwarded to the selected backend.}
 }

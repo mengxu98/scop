@@ -75,11 +75,16 @@ RunSpaNorm <- function(
     message_type = "running",
     verbose = verbose
   )
-  validate_seurat_object(srt)
-  spanorm_assert_string(new_assay, "new_assay")
-  spanorm_assert_string(tool_name, "tool_name")
-  spanorm_assert_flag(store_results, "store_results")
-  spanorm_assert_flag(store_spe, "store_spe")
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
+  validate_scalar_string(new_assay, "new_assay", require_character = FALSE)
+  validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
+  validate_scalar_flag(store_results, "store_results")
+  validate_scalar_flag(store_spe, "store_spe")
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
@@ -266,13 +271,6 @@ spanorm_extract_logcounts <- function(result, features, cells) {
   mat[features, cells, drop = FALSE]
 }
 
-spanorm_assert_string <- function(x, arg) {
-  validate_scalar_string(x, arg, require_character = FALSE)
-}
-
-spanorm_assert_flag <- function(x, arg) {
-  validate_scalar_flag(x, arg)
-}
 
 spanorm_validate_named_args <- function(x) {
   if (length(x) == 0L) {

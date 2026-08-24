@@ -143,15 +143,17 @@ test_that("CytoSPACE resolves coordinates before assignment work", {
   data("visium_human_pancreas_sub", package = "scop")
   srt <- visium_human_pancreas_sub
   spot_ids <- colnames(srt)
-  legacy <- cytospace_get_spatial_coords(
+  legacy <- resolve_spatial_spot_coords(
     srt,
     spot_ids,
-    coordinate_space = "legacy_display"
+    coordinate_space = "legacy_display",
+    coord.cols = c("col", "row")
   )
-  raw <- cytospace_get_spatial_coords(
+  raw <- resolve_spatial_spot_coords(
     srt,
     spot_ids,
-    coordinate_space = "raw"
+    coordinate_space = "raw",
+    coord.cols = c("col", "row")
   )
   expect_identical(rownames(legacy), spot_ids)
   expect_identical(rownames(raw), spot_ids)
@@ -165,7 +167,7 @@ test_that("CytoSPACE resolves coordinates before assignment work", {
   bad$col <- c(0, 1, NA_real_, 3)
   bad$row <- c(0, 1, 2, 3)
   expect_error(
-    cytospace_get_spatial_coords(bad, colnames(bad)),
+    resolve_spatial_spot_coords(bad, colnames(bad), coord.cols = c("col", "row")),
     "non-finite"
   )
 })

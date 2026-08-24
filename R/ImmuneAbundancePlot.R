@@ -6,6 +6,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param object Optional `SummarizedExperiment`, `Seurat`, deconvolution bundle,
 #' or matrix-like object.
 #' @param immune.data Optional abundance matrix with samples/spots/cells in rows
@@ -370,10 +371,10 @@ resolve_immune_abundance <- function(
   immune.cols = NULL
 ) {
   if (!is.null(immune.data)) {
-    return(immune_numeric_matrix(immune.data, row_label = "immune.data"))
+    return(numeric_matrix_result(immune.data, row_label = "immune.data", check_null = TRUE, col_prefix = "cell_type_"))
   }
   if (inherits(object, c("matrix", "data.frame", "Matrix"))) {
-    return(immune_numeric_matrix(object, row_label = "object"))
+    return(numeric_matrix_result(object, row_label = "object", check_null = TRUE, col_prefix = "cell_type_"))
   }
   if (is.list(object)) {
     mat <- object$details$proportion_matrix %||% NULL
@@ -381,7 +382,7 @@ resolve_immune_abundance <- function(
       mat <- deconv_mat(object$results)
     }
     if (!is.null(mat)) {
-      return(immune_numeric_matrix(mat, row_label = "object"))
+      return(numeric_matrix_result(mat, row_label = "object", check_null = TRUE, col_prefix = "cell_type_"))
     }
   }
   if (methods::is(object, "SummarizedExperiment")) {
@@ -393,7 +394,7 @@ resolve_immune_abundance <- function(
       )
     }
     mat <- bundle$details$proportion_matrix %||% deconv_mat(bundle$results)
-    return(immune_numeric_matrix(mat, row_label = "Deconvolution"))
+    return(numeric_matrix_result(mat, row_label = "Deconvolution", check_null = TRUE, col_prefix = "cell_type_"))
   }
   if (inherits(object, "Seurat")) {
     meta <- object@meta.data
@@ -423,7 +424,7 @@ resolve_immune_abundance <- function(
     mat <- as.matrix(meta[, immune.cols, drop = FALSE])
     colnames(mat) <- sub("^.*?_prop_", "", colnames(mat))
     colnames(mat) <- sub("^.*?_frac_", "", colnames(mat))
-    return(immune_numeric_matrix(mat, row_label = "metadata"))
+    return(numeric_matrix_result(mat, row_label = "metadata", check_null = TRUE, col_prefix = "cell_type_"))
   }
   log_message(
     "Provide {.arg immune.data}, a deconvolution result, a {.cls SummarizedExperiment}, or a {.cls Seurat} object.",
@@ -431,33 +432,6 @@ resolve_immune_abundance <- function(
   )
 }
 
-immune_numeric_matrix <- function(x, row_label = "matrix") {
-  if (is.null(x)) {
-    log_message(
-      "{.arg {row_label}} is empty.",
-      message_type = "error"
-    )
-  }
-  mat <- as.matrix(x)
-  dim_names <- dimnames(mat)
-  mat <- suppressWarnings(matrix(
-    as.numeric(mat),
-    nrow = nrow(mat),
-    ncol = ncol(mat),
-    dimnames = dim_names
-  ))
-  if (is.null(rownames(mat))) {
-    log_message(
-      "{.arg {row_label}} must have rownames for sample alignment.",
-      message_type = "error"
-    )
-  }
-  if (is.null(colnames(mat))) {
-    colnames(mat) <- paste0("cell_type_", seq_len(ncol(mat)))
-  }
-  mat[!is.finite(mat)] <- NA_real_
-  mat
-}
 
 immune_scale_matrix <- function(mat, scale = "none") {
   if (identical(scale, "none")) {

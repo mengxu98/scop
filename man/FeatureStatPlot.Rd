@@ -98,9 +98,9 @@ FeatureStatPlot(
 
 \item{stat.by}{Features to plot.}
 
-\item{group.by}{Metadata column(s) to group cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{split.by}{Metadata column to split the analysis or plot by.}
+\item{split.by}{Metadata column to facet by.}
 
 \item{bg.by}{Metadata column used as background color.}
 
@@ -120,9 +120,7 @@ FeatureStatPlot(
 
 \item{plot_type}{\code{"violin"}, \code{"box"}, \code{"bar"}, \code{"dot"}, or \code{"col"}.}
 
-\item{palette}{Color palette name. See \link[thisplot:show_palettes]{thisplot::show_palettes}.}
-
-\item{palcolor}{Custom colors used to build the palette.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
 \item{alpha}{Plot transparency.}
 
@@ -141,6 +139,8 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 \item{add_stat, stat_color, stat_size, stat_stroke, stat_shape}{Summary statistic (\code{"none"}, \code{"mean"}, or \code{"median"}).}
 
 \item{add_line, line_color, line_size, line_type}{Horizontal line at this y-intercept.}
+
+\item{cells.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
 
 \item{cols.highlight, sizes.highlight, alpha.highlight}{Highlighted cells.}
 
@@ -169,6 +169,12 @@ the others. Requires \code{split.by = NULL}.}
 
 \item{aspect.ratio}{Panel aspect ratio.}
 
+\item{title}{Plot title. \code{NULL} hides the title for merged/single panels. When multiple lineages are plotted and \code{title} is \code{NULL}, each panel is titled with its lineage column.}
+
+\item{subtitle}{Plot subtitle.}
+
+\item{xlab}{Plot labels.}
+
 \item{ylab}{Y-axis label.}
 
 \item{legend.position, legend.direction, legend.title}{Legend placement
@@ -190,7 +196,7 @@ returns a list of ggplots.}
 
 \item{x_text_angle}{Rotation of x-axis labels.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Feature statistical plots

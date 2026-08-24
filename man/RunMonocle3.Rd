@@ -31,13 +31,13 @@ RunMonocle3(
 \arguments{
 \item{srt}{A \code{Seurat} object.}
 
-\item{group.by}{Metadata column(s) to group cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{layer}{Assay layer to use.}
 
-\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
+\item{reduction}{Dimensionality reduction to use. \code{NULL} uses \link{DefaultReduction}.}
 
 \item{clusters}{The cluster variable in the Seurat object to use for analysis.
 Defaults to NULL, in which case use Monocle clusters is used.}
@@ -76,6 +76,10 @@ If not specified, user will be prompted for input.
 Defaults to NULL.}
 
 \item{show_plot}{Whether to print diagnostic plots during the run.}
+
+\item{xlab}{Plot labels.}
+
+\item{ylab}{Plot labels.}
 
 \item{seed}{Random seed.}
 

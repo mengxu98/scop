@@ -685,56 +685,6 @@ regdiffusion_python <- function(
   utils::read.delim(output_file, stringsAsFactors = FALSE, check.names = FALSE)
 }
 
-genie3 <- function(
-  grn_matrix,
-  regulators,
-  targets = NULL,
-  max_edges_per_target = 50,
-  output_file = NULL,
-  cores = 1,
-  force = FALSE,
-  verbose = TRUE,
-  ...
-) {
-  if (!is.null(output_file) && file.exists(output_file) && isFALSE(force)) {
-    log_message("Reusing existing GENIE3 output", verbose = verbose)
-    return(utils::read.delim(
-      output_file,
-      stringsAsFactors = FALSE,
-      check.names = FALSE
-    ))
-  }
-  check_r("GENIE3", verbose = FALSE)
-  inputs <- normalize_grn_inputs(
-    grn_matrix,
-    regulators = regulators,
-    targets = targets
-  )
-  expr <- Matrix::t(grn_matrix)
-  weight_matrix <- GENIE3::GENIE3(
-    exprMatrix = as.matrix(expr),
-    regulators = inputs[["regulators"]],
-    targets = inputs[["targets"]],
-    nCores = as.integer(max(1L, cores)),
-    ...
-  )
-  adjacency <- GENIE3::getLinkList(weightMatrix = weight_matrix)
-  colnames(adjacency)[1:3] <- c("TF", "target", "importance")
-  adjacency <- adjacency[, c("TF", "target", "importance"), drop = FALSE]
-  adjacency <- cap_grn_edges_per_target(
-    adjacency,
-    max_edges_per_target = max_edges_per_target
-  )
-  if (nrow(adjacency) == 0L) {
-    log_message("GENIE3 returned no edges", message_type = "error")
-  }
-  write_grn_adjacency(
-    adjacency,
-    output_file = output_file,
-    force = force
-  )
-}
-
 #' @title Infer gene regulatory networks with a selected backend method
 #'
 #' @description

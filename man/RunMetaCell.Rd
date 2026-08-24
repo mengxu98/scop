@@ -47,7 +47,8 @@ metacells from crossing group boundaries.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to the underlying metacell method.}
 }

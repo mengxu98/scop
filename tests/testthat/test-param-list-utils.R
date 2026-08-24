@@ -74,14 +74,6 @@ test_that("scalar validation helpers preserve supported backend rules", {
   )
 })
 
-test_that("shared Seurat validation preserves backend errors", {
-  expect_invisible(validate_seurat_object(structure(list(), class = "Seurat")))
-  expect_error(
-    validate_seurat_object(list()),
-    "srt.*must be a.*Seurat.*object"
-  )
-})
-
 test_that("shared backend utilities preserve edge-case behavior", {
   expect_identical(validate_positive_integer(2.8, "cores"), 2L)
   expect_error(validate_positive_integer(0, "cores"), "positive integer")

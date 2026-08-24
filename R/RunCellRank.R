@@ -8,6 +8,7 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams srt_to_adata
 #' @inheritParams RunStandardWorkflow
+#' @inheritParams scop-params
 #' @param srt A Seurat object.
 #' If provided, `adata` will be ignored.
 #' @param adata An anndata object.

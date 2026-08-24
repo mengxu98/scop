@@ -87,7 +87,8 @@ built.}
 \item{store_inputs}{Whether to store Scissor regression inputs in
 \code{srt@tools}. Default is \code{FALSE} to avoid large objects.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with Scissor status and coefficient columns in

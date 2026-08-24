@@ -43,9 +43,9 @@ CellDensityPlot(
 
 \item{features}{Features to plot.}
 
-\item{group.by}{Metadata column(s) to group cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{split.by}{Metadata column to split the analysis or plot by.}
+\item{split.by}{Metadata column to facet by.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -57,9 +57,7 @@ CellDensityPlot(
 
 \item{decreasing}{Order groups decreasingly.}
 
-\item{palette}{Color palette name. See \link[thisplot:show_palettes]{thisplot::show_palettes}.}
-
-\item{palcolor}{Custom colors used to build the palette.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
 \item{cells}{Cell names to include. \code{NULL} uses all cells.}
 
@@ -71,6 +69,14 @@ CellDensityPlot(
 
 \item{aspect.ratio}{Panel aspect ratio.}
 
+\item{title}{Plot title. \code{NULL} hides the title for merged/single panels. When multiple lineages are plotted and \code{title} is \code{NULL}, each panel is titled with its lineage column.}
+
+\item{subtitle}{Plot subtitle.}
+
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
@@ -78,7 +84,7 @@ returns a list of ggplots.}
 
 \item{force}{Draw even when there are more than 50 features.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Feature density by group.

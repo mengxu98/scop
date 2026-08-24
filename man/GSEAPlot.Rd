@@ -170,7 +170,13 @@ Options are \code{"ellipse"} and \code{"hull"}.}
 \item{palette}{Color palette name.
 Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_palettes}.}
 
+\item{palcolor}{Custom colors used to create a color palette.}
+
 \item{aspect.ratio}{Panel aspect ratio.}
+
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
@@ -179,7 +185,7 @@ returns a list of ggplots.}
 
 \item{seed}{Random seed.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Generates various types of plots for Gene Set Enrichment Analysis (GSEA) results.

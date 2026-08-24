@@ -564,7 +564,7 @@ scenic_plot_one_coverage_locus <- function(
       color = "black",
       linewidth = 0.2
     ) +
-    scenic_fill_scale(fill_colors, "Score") +
+    scenic_gradient_scale(fill_colors, "Score", fill = TRUE) +
     ggplot2::scale_x_continuous(limits = x_limits, expand = c(0.01, 0)) +
     ggplot2::scale_y_continuous(limits = c(0, 1), breaks = NULL) +
     scenic_coverage_theme() +
@@ -583,7 +583,7 @@ scenic_plot_one_coverage_locus <- function(
       curvature = -0.45,
       ncp = 20
     ) +
-    scenic_color_scale(fill_colors, "Score") +
+    scenic_gradient_scale(fill_colors, "Score", fill = FALSE) +
     ggplot2::scale_linewidth(range = c(0.3, 1.4), guide = "none") +
     ggplot2::scale_x_continuous(limits = x_limits, expand = c(0.01, 0)) +
     ggplot2::scale_y_continuous(limits = c(0, 1), breaks = NULL) +

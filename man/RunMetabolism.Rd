@@ -100,7 +100,8 @@ intermediate memory; positive values set the chunk size manually.}
 
 \item{seed}{Random seed.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 Returns a \code{Seurat} object. When \code{group.by = NULL}, stores scores in assay \code{assay_name} and tools.

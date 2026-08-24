@@ -152,7 +152,7 @@ of the two groups, currently only used for poisson and negative binomial tests}
 
 \item{seed}{Random seed.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 
 \item{...}{Additional arguments passed to reduction methods.}
 }

@@ -157,9 +157,9 @@ FeatureHeatmap(
 
 \item{cells}{Cell names to include.}
 
-\item{group.by}{Metadata column(s) to group cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{split.by}{Metadata column to split the analysis or plot by.}
+\item{split.by}{Metadata column to facet by.}
 
 \item{within_groups}{Separate color scales per group.}
 
@@ -252,16 +252,21 @@ missing for \code{species}.}
 
 \item{width, height, units}{Heatmap size. \code{NULL} sizes from matrix dimensions.}
 
-\item{cores}{Number of CPU cores.}
+\item{cores}{The number of worker processes to use for parallelization.
+Default is \code{1}.}
 
-\item{seed}{Random seed.}
+\item{seed}{Optional integer seed. When supplied, every input receives a
+deterministic independent L'Ecuyer-CMRG random-number stream, making results
+reproducible across worker counts and scheduling order. The caller's random
+number state is restored when the call finishes.}
 
 \item{legend.position}{Legend side (\code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}).
 Gap to the heatmap grows automatically when long row names are on the right.}
 
 \item{ht_params}{Extra arguments passed to \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap}, overriding defaults.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to helper functions.}
 }

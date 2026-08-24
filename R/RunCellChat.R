@@ -2,8 +2,8 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @inheritParams scop-params
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param species `"Homo_sapiens"`, `"Mus_musculus"`, or `"zebrafish"`.
 #' @param annotation_selected Cell types to include. `NULL` uses all.
 #' @param group_column Metadata column defining conditions or groups.

@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param srt A `Seurat` object.
 #' @param method Communication result type to use.
 #' @param combine_methods Behavior when `method = "CCC"`. `"separate"` returns
