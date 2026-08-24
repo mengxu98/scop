@@ -246,7 +246,8 @@ spatialdm_bundle <- function(input, executed, parameters, result.name) {
       manifest = executed$manifest
     )
   )
-  list(
+  result <- spatial_tag_coordinate_contract(result)
+  spatial_tag_coordinate_contract(list(
     method = "SpatialDM", result_type = result$result_type,
     results = stats::setNames(list(result), result.name),
     active_result = result.name, result = result, global = global, local = local,
@@ -254,7 +255,7 @@ spatialdm_bundle <- function(input, executed, parameters, result.name) {
     coordinates = executed$coordinates, weights = executed$weights,
     lr_database = result$lr_database,
     parameters = parameters, summary = result$summary, provenance = result$provenance
-  )
+  ))
 }
 
 #' @title Run official SpatialDM spatial ligand-receptor association analysis
@@ -350,6 +351,7 @@ spatialdm_get_result <- function(object, result.name = NULL) {
   result.name <- result.name %||% bundle$active_result
   result <- bundle$results[[result.name]]
   if (is.null(result)) log_message("Unknown SpatialDM result {.val {result.name}}", message_type = "error")
+  spatial_require_coordinate_contract(result, "RunSpatialDM()")
   result
 }
 
@@ -379,6 +381,7 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 #' @param pair LR interaction name for local plotting.
 #' @param spot Spot identifier for weight plotting.
 #' @param signaling Which stored weight matrix to use.
+#' @param image.scale Image scale factor matching the selected raster.
 #' @param highlight LR interactions to label in the global plot.
 #' @param palette,palcolor,theme_use,theme_args SCOP plotting controls.
 #' @param ... Additional arguments passed to SCOP spatial plotting functions.
@@ -387,17 +390,21 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 SpatialDMPlot <- function(
   object, result.name = NULL, plot_type = c("weights", "global", "local"),
   pair = NULL, spot = NULL, signaling = c("secreted", "contact"),
+  image.scale = c("lowres", "hires"),
   highlight = NULL, palette = "RdBu", palcolor = NULL,
   theme_use = "theme_scop", theme_args = list(), ...
 ) {
   plot_type <- match.arg(plot_type)
+  image.scale <- match.arg(image.scale)
   signaling <- match.arg(signaling)
   result <- spatialdm_get_result(object, result.name)
+  spatial_require_coordinate_contract(result, "RunSpatialDM()")
   if (identical(plot_type, "weights")) {
     if (is.null(spot) || length(spot) != 1L || !spot %in% as.character(result$coordinates$cell_id)) log_message("{.arg spot} must identify one stored SpatialDM spot", message_type = "error")
     values <- as.numeric(result$weights[[signaling]][spot, , drop = TRUE])
     names(values) <- colnames(result$weights[[signaling]])
     return(SpatialSpotPlot(object, values = values, image = result$parameters$image,
+      image.scale = image.scale,
       coord.cols = result$parameters$coord.cols, palette = palette, palcolor = palcolor,
       theme_use = theme_use, theme_args = theme_args, legend.title = "Spatial weight", ...))
   }
@@ -424,10 +431,12 @@ SpatialDMPlot <- function(
   receptors <- receptors[!is.na(receptors) & nzchar(receptors)]
   local_label <- if (isTRUE(result$parameters$local.fdr)) "1 - local FDR" else "1 - local p"
   plots <- list(SpatialSpotPlot(object, values = 1 - pvalue, image = result$parameters$image,
+    image.scale = image.scale,
     coord.cols = result$parameters$coord.cols, palette = "Reds", theme_use = theme_use,
     theme_args = theme_args, legend.title = local_label, ...))
   for (gene in c(ligands, receptors)) if (gene %in% rownames(object)) plots[[length(plots) + 1L]] <- SpatialSpotPlot(object, features = gene,
     assay = result$parameters$assay, layer = result$parameters$layer, image = result$parameters$image,
+    image.scale = image.scale,
     coord.cols = result$parameters$coord.cols, palette = palette, palcolor = palcolor,
     theme_use = theme_use, theme_args = theme_args, legend.title = gene, ...)
   patchwork::wrap_plots(plots, ncol = length(plots)) + patchwork::plot_annotation(title = pair)

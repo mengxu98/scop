@@ -270,6 +270,9 @@ RunSpatialVariableFeatures <- function(
         set_variable_features = set_variable_features
       )
     )
+    srt@tools[["SpatialVariableFeatures"]] <- spatial_tag_coordinate_contract(
+      srt@tools[["SpatialVariableFeatures"]]
+    )
   }
   log_message(
     "Stored {.val {length(top_features)}} spatial variable features",
@@ -492,6 +495,7 @@ spatial_variable_result_features <- function(df, fallback) {
 #' spatial variable feature result are used.
 #' @param nfeatures Number of top features used when `features = NULL`.
 #' @param score_col Result column used for the summary x-axis.
+#' @param legend.position Legend position for surface plots.
 #'
 #' @return A `ggplot` or `patchwork` object.
 #' @export
@@ -519,6 +523,7 @@ SpatialVariableFeaturePlot <- function(
   assay = NULL,
   layer = NULL,
   image = NULL,
+  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image.alpha = 1,
   coord.cols = c("col", "row"),
@@ -540,7 +545,9 @@ SpatialVariableFeaturePlot <- function(
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   plot_type <- match.arg(plot_type)
+  image.scale <- match.arg(image.scale)
   stored <- spatial_variable_get_stored_result(srt)
+  spatial_require_coordinate_contract(stored, "RunSpatialVariableFeatures()")
   result <- stored$result
   features <- spatial_variable_plot_features(result, features = features, nfeatures = nfeatures)
   if (identical(plot_type, "summary")) {
@@ -565,6 +572,7 @@ SpatialVariableFeaturePlot <- function(
       assay = assay,
       layer = layer,
       image = image,
+      image.scale = image.scale,
       overlay_image = overlay_image,
       image.alpha = image.alpha,
       coord.cols = coord.cols,
@@ -600,6 +608,7 @@ SpatialVariableFeaturePlot <- function(
     assay = assay,
     layer = layer,
     image = image,
+    image.scale = image.scale,
     overlay_image = overlay_image,
     image.alpha = image.alpha,
     coord.cols = coord.cols,
@@ -720,6 +729,7 @@ spatial_variable_surface_plot <- function(
   assay,
   layer,
   image,
+  image.scale,
   overlay_image,
   image.alpha,
   coord.cols,
@@ -746,6 +756,7 @@ spatial_variable_surface_plot <- function(
     assay = assay,
     layer = layer,
     image = image,
+    image.scale = image.scale,
     overlay_image = overlay_image,
     image.alpha = image.alpha,
     coord.cols = coord.cols,

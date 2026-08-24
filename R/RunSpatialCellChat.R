@@ -1236,6 +1236,7 @@ RunSpatialCellChat <- function(
       store_object = store.object
     )
   )
+  bundle <- spatial_tag_coordinate_contract(bundle)
   srt@tools[["SpatialCellChat"]] <- bundle
   srt <- ccc_update_unified_bundle(
     srt = srt,
@@ -1273,6 +1274,7 @@ GetCCCObject <- function(
   }
   bundle <- object@tools[["SpatialCellChat"]]
   if (is.null(bundle)) log_message("SpatialCellChat results are absent", message_type = "error")
+  spatial_require_coordinate_contract(bundle, "RunSpatialCellChat()")
   result.name <- result.name %||% bundle$active_result
   result <- bundle$results[[result.name]]
   if (is.null(result)) log_message("Unknown SpatialCellChat result {.val {result.name}}", message_type = "error")
@@ -1299,6 +1301,7 @@ spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample
   if (is.null(bundle)) {
     log_message("SpatialCellChat results are absent", message_type = "error")
   }
+  spatial_require_coordinate_contract(bundle, "RunSpatialCellChat()")
   result.name <- result.name %||% bundle$active_result
   result <- bundle$results[[result.name]]
   if (is.null(result)) log_message("Unknown SpatialCellChat result {.val {result.name}}", message_type = "error")

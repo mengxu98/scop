@@ -13,6 +13,7 @@ SpatialVariableFeaturePlot(
   assay = NULL,
   layer = NULL,
   image = NULL,
+  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image.alpha = 1,
   coord.cols = c("col", "row"),
@@ -43,6 +44,8 @@ spatial variable feature result are used.}
 
 \item{score_col}{Result column used for the summary x-axis.}
 
+\item{legend.position}{Legend position for surface plots.}
+
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{layer}{Assay layer to use.}
@@ -50,6 +53,9 @@ spatial variable feature result are used.}
 \item{image}{Spatial image name. Required when multiple images are present;
 a single image is selected automatically when \code{NULL}.}
 
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
 \item{overlay_image, image.alpha}{Draw the spatial image beneath spots.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}

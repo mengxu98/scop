@@ -185,7 +185,7 @@ RunStatialKontextual <- function(
     if (isTRUE(store_input)) {
       bundle$input <- cells
     }
-    srt@tools[[tool_name]] <- bundle
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(bundle)
   }
 
   log_message(
@@ -338,6 +338,7 @@ StatialKontextualPlot <- function(object = NULL, res = NULL, tests = NULL, image
     }
     res <- object@tools[["StatialKontextual"]]
   }
+  spatial_require_coordinate_contract(res, "RunStatialKontextual()")
   tab <- res$table %||% NULL
   if (!is.data.frame(tab) || !all(c("imageID", "test", "r", "kontextual") %in% colnames(tab))) {
     log_message("{.arg res} is not a plottable StatialKontextual result", message_type = "error")
@@ -391,4 +392,3 @@ statial_validate_radius <- function(r) {
   }
   unique(r)
 }
-

@@ -223,6 +223,7 @@ RunBANKSY <- function(
         tool_name = tool_name
       )
     )
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
 
   log_message(
@@ -386,4 +387,3 @@ banksy_do_call <- function(fun, se, args) {
   }
   do.call(fun, c(list(se), args))
 }
-

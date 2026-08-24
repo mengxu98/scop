@@ -198,6 +198,7 @@ RunSpatialNeighborhood <- function(
       to = to
     )
   )
+  method_bundle <- spatial_tag_coordinate_contract(method_bundle)
 
   if (isTRUE(store_results)) {
     old <- srt@tools[[tool_name]] %||% list()
@@ -212,6 +213,7 @@ RunSpatialNeighborhood <- function(
       summary = method_bundle$summary,
       parameters = method_bundle$parameters
     )
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
 
   log_message(
@@ -245,6 +247,8 @@ RunSpatialNeighborhood <- function(
 #' @param cols.enriched,cols.depleted,cols.ns Colors for direction categories.
 #' @param pair Pair to visualize for `plot_type = "spatial"`, either
 #' `"from|to"` or a length-2 character vector.
+#' @param overlay_image Whether to draw the selected spatial image for
+#' `plot_type = "spatial"`.
 #' @param seed Random seed used by layouts and jittered plot layers.
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
@@ -286,6 +290,7 @@ SpatialNeighborhoodPlot <- function(
   cols.ns = "grey75",
   pair = NULL,
   image = NULL,
+  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
   split.by = NULL,
@@ -311,9 +316,11 @@ SpatialNeighborhoodPlot <- function(
     )
   }
   plot_type <- match.arg(plot_type)
+  image.scale <- match.arg(image.scale)
   value <- match.arg(value)
   layout <- match.arg(layout)
   bundle <- spatial_neighborhood_get_bundle(srt = srt, method = method)
+  spatial_require_coordinate_contract(bundle, "RunSpatialNeighborhood()")
 
   if (identical(plot_type, "spatial")) {
     return(spatial_neighborhood_spatial_plot(
@@ -321,6 +328,7 @@ SpatialNeighborhoodPlot <- function(
       bundle = bundle,
       pair = pair,
       image = image,
+      image.scale = image.scale,
       overlay_image = overlay_image,
       coord.cols = coord.cols,
       split.by = split.by,
@@ -997,6 +1005,7 @@ spatial_neighborhood_spatial_plot <- function(
   bundle,
   pair = NULL,
   image = NULL,
+  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
   split.by = NULL,
@@ -1014,6 +1023,7 @@ spatial_neighborhood_spatial_plot <- function(
   verbose = TRUE,
   ...
 ) {
+  image.scale <- match.arg(image.scale)
   edges <- bundle$edge_table
   if (is.null(edges) || nrow(edges) == 0L) {
     log_message(
@@ -1030,6 +1040,7 @@ spatial_neighborhood_spatial_plot <- function(
     srt = srt,
     values = score,
     image = image,
+    image.scale = image.scale,
     overlay_image = overlay_image,
     coord.cols = coord.cols,
     split.by = split.by,
@@ -1168,4 +1179,3 @@ spatial_neighborhood_linewidth_name <- function() {
     "size"
   }
 }
-

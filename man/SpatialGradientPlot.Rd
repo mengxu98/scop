@@ -13,6 +13,7 @@ SpatialGradientPlot(
   assay = NULL,
   layer = "data",
   image = NULL,
+  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image.alpha = 1,
   coord.cols = c("col", "row"),
@@ -54,6 +55,10 @@ result are used.}
 \item{image}{Spatial image name. Required when multiple images are present;
 a single image is selected automatically when \code{NULL}.}
 
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
+
 \item{overlay_image, image.alpha}{Draw the spatial image beneath spots.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
@@ -67,6 +72,10 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 \item{stroke}{Point border width.}
 
 \item{palette, palcolor}{Color palette passed to SCOP plotting helpers.}
+
+\item{legend.position}{Legend position for surface, line, and model plots.}
+
+\item{nrow, ncol, byrow}{Layout controls for multi-feature plots.}
 
 \item{theme_use}{Theme name or function.}
 
@@ -127,6 +136,7 @@ gradient_result <- list(
     value = c("RNA", "data", "ductal_axis")
   )
 )
+attr(gradient_result, "coordinate_contract_version") <- 2L
 srt@tools[["SpatialGradientFeatures"]] <- list(
   ductal_axis = gradient_result,
   summary = list(active_result = "ductal_axis")

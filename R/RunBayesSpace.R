@@ -223,7 +223,7 @@ RunBayesSpace <- function(
   if (isTRUE(store_sce)) {
     tool$sce <- sce
   }
-  srt@tools[["BayesSpace"]] <- tool
+  srt@tools[["BayesSpace"]] <- spatial_tag_coordinate_contract(tool)
 
   log_message(
     "{.pkg BayesSpace} clusters stored in metadata column {.val {cluster_colname}}",
@@ -401,17 +401,13 @@ bayesspace_get_seurat_coords <- function(srt, image = NULL) {
   if (is.null(image)) {
     return(NULL)
   }
-  coords <- tryCatch(
-    {
-      as.data.frame(SeuratObject::GetTissueCoordinates(srt[[image]]))
-    },
-    error = function(e) {
-      tryCatch(
-        as.data.frame(slot(srt@images[[image]], "coordinates")),
-        error = function(e2) NULL
-      )
-    }
+  raw <- spatial_coords_raw(
+    srt = srt,
+    image = image,
+    image_policy = "strict"
   )
+  coords <- raw$data[, c("y", "x"), drop = FALSE]
+  colnames(coords) <- c("imagerow", "imagecol")
   coords
 }
 

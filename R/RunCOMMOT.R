@@ -394,6 +394,7 @@ RunCOMMOT <- function(
       manifest = executed$manifest
     )
   )
+  bundle <- spatial_tag_coordinate_contract(bundle)
   validate_result_bundle(bundle, label = "COMMOT")
   srt@tools[["COMMOT"]] <- bundle
   srt <- ccc_update_unified_bundle(srt, method = "COMMOT", bundle = bundle, backend = backend)
@@ -404,10 +405,11 @@ RunCOMMOT <- function(
 
 commot_plot_object <- function(object, stored) {
   bundle <- stored$bundle
+  spatial_require_coordinate_contract(bundle, "RunCOMMOT()")
   bundle$active_result <- stored$result.name
   bundle$long_table <- stored$result$long_table
   bundle$primary_table <- stored$result$long_table
-  object@tools[["COMMOT"]] <- bundle
+  object@tools[["COMMOT"]] <- spatial_tag_coordinate_contract(bundle)
   ccc_update_unified_bundle(object, method = "COMMOT", bundle = bundle, backend = "r")
 }
 

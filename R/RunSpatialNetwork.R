@@ -98,6 +98,8 @@ RunSpatialNetwork <- function(
   edges$from <- graph$nodes$cell_id[edges$from]
   edges$to <- graph$nodes$cell_id[edges$to]
   parameters <- graph$parameters
+  parameters$coordinate_space <- "raw"
+  parameters$coordinate_contract_version <- .spatial_coordinate_contract_version
 
   sanitize_name <- function(x) {
     x <- gsub("[^A-Za-z0-9]+", "_", x)
@@ -137,6 +139,7 @@ RunSpatialNetwork <- function(
   )
   store$active_graph <- graph.name
   store$parameters <- parameters
+  store$coordinate_contract_version <- .spatial_coordinate_contract_version
   store$summary <- list(
     active_graph = graph.name,
     n_graphs = length(store$graphs),
@@ -213,6 +216,7 @@ GetSpatialGraph <- function(
     log_message("Spatial graph {.val {graph.name}} was not found", message_type = "error")
   }
   graph <- res$graphs[[graph.name]]
+  spatial_require_coordinate_contract(graph, "RunSpatialNetwork()")
   spatial_graph_validate(graph)
   if (identical(format, "list")) {
     return(graph)
@@ -259,6 +263,7 @@ GetSpatialGraph <- function(
 #' @param res Optional plain result list from `object@tools$SpatialNetwork`.
 #' @param graph.name Stored graph name. The active graph is used when `NULL`.
 #' @param group.by Node column or Seurat metadata column used for coloring.
+#' @param image.scale Image scale factor matching the raster in `object`.
 #' @param edge.color,edge.linewidth Edge appearance.
 #' @param pt.size,pt.alpha Node appearance.
 #' @param palette,palcolor Palette name or explicit colors.
@@ -275,6 +280,7 @@ SpatialNetworkPlot <- function(
   res = NULL,
   graph.name = NULL,
   group.by = NULL,
+  image.scale = c("lowres", "hires"),
   edge.color = "grey80",
   edge.linewidth = 0.2,
   pt.size = NULL,
@@ -286,6 +292,7 @@ SpatialNetworkPlot <- function(
   theme_use = "theme_spatial",
   theme_args = list()
 ) {
+  image.scale <- match.arg(image.scale)
   if (!is.null(object) && !inherits(object, "Seurat")) {
     log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
   }
@@ -309,6 +316,7 @@ SpatialNetworkPlot <- function(
     log_message("Spatial graph {.val {graph.name}} was not found", message_type = "error")
   }
   graph <- res$graphs[[graph.name]]
+  spatial_require_coordinate_contract(graph, "RunSpatialNetwork()")
   nodes <- as.data.frame(graph$nodes, stringsAsFactors = FALSE)
   edges <- as.data.frame(graph$edges, stringsAsFactors = FALSE)
   if (!all(c("cell_id", "x", "y") %in% colnames(nodes))) {
@@ -333,7 +341,12 @@ SpatialNetworkPlot <- function(
     source_image <- graph$source$image %||% NULL
     object_images <- tryCatch(SeuratObject::Images(object), error = function(e) character())
     if (!is.null(source_image) && source_image %in% object_images) {
-      display <- spatial_dim_coords(object, image = source_image, overlay_image = TRUE)
+      display <- spatial_dim_coords(
+        object,
+        image = source_image,
+        image.scale = image.scale,
+        overlay_image = TRUE
+      )
       matched <- match(nodes$cell_id, rownames(display$data))
       valid <- !is.na(matched)
       nodes <- nodes[valid, , drop = FALSE]

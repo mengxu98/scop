@@ -383,6 +383,7 @@ RunRCTD <- function(
       ),
       object = backend$object
     )
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
 
   log_message(

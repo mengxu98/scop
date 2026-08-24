@@ -224,7 +224,7 @@ RunMistyR <- function(
     if (isTRUE(store_views)) {
       bundle$views <- misty_views
     }
-    srt@tools[[tool_name]] <- bundle
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(bundle)
   }
 
   log_message(
@@ -349,6 +349,7 @@ MistyRPlot <- function(
     }
     res <- object@tools[["MistyR"]]
   }
+  spatial_require_coordinate_contract(res, "RunMistyR()")
   tab <- res$results[[type]] %||% NULL
   if (!is.data.frame(tab) || nrow(tab) == 0L) {
     log_message("MistyR result {.val {type}} is empty", message_type = "error")

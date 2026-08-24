@@ -11,6 +11,7 @@ SpatialDMPlot(
   pair = NULL,
   spot = NULL,
   signaling = c("secreted", "contact"),
+  image.scale = c("lowres", "hires"),
   highlight = NULL,
   palette = "RdBu",
   palcolor = NULL,
@@ -31,6 +32,8 @@ SpatialDMPlot(
 \item{spot}{Spot identifier for weight plotting.}
 
 \item{signaling}{Which stored weight matrix to use.}
+
+\item{image.scale}{Image scale factor matching the selected raster.}
 
 \item{highlight}{LR interactions to label in the global plot.}
 

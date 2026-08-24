@@ -19,6 +19,7 @@
 #' @param combine Whether to combine point maps. If `FALSE`, return a named list.
 #' @param nrow,ncol,byrow Point-map layout controls. When both dimensions are
 #' `NULL`, a near-square layout with at most three columns is used.
+#' @param image.scale Image scale factor matching the selected raster.
 #' @param ... Additional arguments passed to [SpatialSpotPlot()].
 #'
 #' @return A `ggplot`, `patchwork`, or named list of `ggplot` objects.
@@ -60,12 +61,14 @@ SpatialDeconvolutionPlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
+  image.scale = c("lowres", "hires"),
   ...
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   plot_type <- match.arg(plot_type)
+  image.scale <- match.arg(image.scale)
   if (
     is.null(tool_name) || !is.character(tool_name) || length(tool_name) != 1L ||
       is.na(tool_name) || !nzchar(tool_name)
@@ -81,6 +84,12 @@ SpatialDeconvolutionPlot <- function(
       "Stored result {.val {tool_name}} is not a spatial deconvolution result",
       message_type = "error"
     )
+  }
+  if (
+    !is.null(stored$parameters$coordinate_space) ||
+      !is.null(stored$coords) || !is.null(stored$coordinates)
+  ) {
+    spatial_require_coordinate_contract(stored, paste0(tool_name, " producer"))
   }
   proportions <- spatial_deconvolution_proportions(
     stored$proportions %||% stored$weights,
@@ -101,7 +110,13 @@ SpatialDeconvolutionPlot <- function(
     proportions <- proportions[, cell_types, drop = FALSE]
   }
   if (identical(plot_type, "pie")) {
-    return(SpatialSpotPlot(srt, values = proportions, plot_type = "pie", ...))
+    return(SpatialSpotPlot(
+      srt,
+      values = proportions,
+      plot_type = "pie",
+      image.scale = image.scale,
+      ...
+    ))
   }
   if (identical(plot_type, "dominant")) {
     dominant <- spatial_deconvolution_dominant(proportions)
@@ -109,6 +124,7 @@ SpatialDeconvolutionPlot <- function(
       srt,
       values = stats::setNames(dominant, rownames(proportions)),
       plot_type = "point",
+      image.scale = image.scale,
       ...
     ))
   }
@@ -116,6 +132,7 @@ SpatialDeconvolutionPlot <- function(
     srt,
     values = proportions,
     plot_type = "point",
+    image.scale = image.scale,
     combine = FALSE,
     ...
   )
@@ -200,4 +217,3 @@ spatial_deconvolution_dominant <- function(proportions) {
   }
   factor(out, levels = colnames(proportions))
 }
-
