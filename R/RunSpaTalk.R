@@ -473,6 +473,7 @@ RunSpaTalk <- function(
     long_table = long_table,
     native_object = if (identical(store.object, "full")) native else NULL
   )
+  result <- spatial_tag_coordinate_contract(result)
   results <- existing$results %||% list()
   results[[result.name]] <- result
   parameters <- list(
@@ -517,7 +518,7 @@ RunSpaTalk <- function(
 spatalk_plot_object <- function(object, stored) {
   long_table <- stored$result$long_table %||% spatalk_long_table(stored$result$lr_table)
   bundle <- stored$bundle
-  spatial_require_coordinate_contract(bundle, "RunSpaTalk()")
+  spatial_require_coordinate_contract(stored$result, "RunSpaTalk()")
   bundle$active_result <- stored$result.name
   bundle$long_table <- long_table
   bundle$primary_table <- long_table
@@ -546,6 +547,7 @@ SpaTalkPlot <- function(
 ) {
   plot_type <- match.arg(plot_type)
   stored <- tool_bundle_get_result(object, "SpaTalk", result.name)
+  spatial_require_coordinate_contract(stored$result, "RunSpaTalk()")
   if (identical(plot_type, "network")) {
     plot_object <- spatalk_plot_object(object, stored)
     return(do.call(CCCNetworkPlot, c(list(srt = plot_object, method = "SpaTalk", plot_type = "circle"), list(...))))

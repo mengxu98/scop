@@ -17,7 +17,6 @@ SpatialSpotPlot(
   color.by = NULL,
   geom = c("point", "jitter"),
   image = NULL,
-  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image.alpha = 1,
   crop = TRUE,
@@ -46,7 +45,8 @@ SpatialSpotPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{
@@ -73,10 +73,6 @@ SpatialSpotPlot(
 
 \item{image}{Spatial image name. Required when multiple images are present;
 a single image is selected automatically when \code{NULL}.}
-
-\item{image.scale}{Image scale factor matching the raster stored in the
-selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
-scale-factor slots.}
 
 \item{overlay_image, image.alpha}{Draw the spatial image beneath spots.}
 
@@ -122,6 +118,10 @@ spacing, then multiplies by \code{pie.radius.scale}.}
 returns a list of ggplots.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

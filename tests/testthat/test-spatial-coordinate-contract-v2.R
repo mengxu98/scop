@@ -32,7 +32,11 @@ make_coordinate_contract_object <- function(image_class = c("VisiumV1", "VisiumV
     )
   } else {
     fov <- SeuratObject::CreateFOV(
-      raw,
+      data.frame(
+        x = raw$y,
+        y = raw$x,
+        row.names = rownames(raw)
+      ),
       type = "centroids",
       assay = "RNA",
       key = "v2_"
@@ -97,11 +101,29 @@ test_that("display coordinates scale and flip exactly once", {
   expect_identical(high$source$scale_name, "hires")
 })
 
+test_that("VisiumV2 x/y names follow Seurat row-column display semantics", {
+  fixture <- make_coordinate_contract_object("VisiumV2")
+  image <- fixture$object[["slice"]]
+  seurat_coords <- SeuratObject::GetTissueCoordinates(
+    image,
+    scale = "lowres",
+    full = FALSE
+  )
+  display <- SpatialCoordinates(
+    fixture$object,
+    image = "slice",
+    space = "display",
+    image.scale = "lowres"
+  )$data
+  expect_equal(display$x, seurat_coords$y)
+  expect_equal(display$y, dim(image@image)[1L] - seurat_coords$x)
+})
+
 test_that("FOV and metadata coordinates use identity transforms", {
   counts <- matrix(1:12, nrow = 3, dimnames = list(paste0("g", 1:3), paste0("c", 1:4)))
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
   srt[["fov"]] <- SeuratObject::CreateFOV(
-    data.frame(x = 1:4, y = 5:8, row.names = colnames(srt)),
+    data.frame(x = 5:8, y = 1:4, row.names = colnames(srt)),
     type = "centroids",
     assay = "RNA",
     key = "fov_"
@@ -240,6 +262,10 @@ test_that("public HE overlay wrappers expose image.scale", {
   )
   expect_true(all(vapply(wrappers, function(name) {
     "image.scale" %in% names(formals(getExportedValue("scop", name)))
+  }, logical(1))))
+  expect_true(all(vapply(wrappers, function(name) {
+    args <- setdiff(names(formals(getExportedValue("scop", name))), "...")
+    identical(utils::tail(args, 1L), "image.scale")
   }, logical(1))))
 })
 

@@ -44,7 +44,6 @@
 #' @param overwrite Permit replacement of incompatible existing artifacts.
 #' @param prefix Prefix used for abundance/proportion metadata columns.
 #' @param tool_name Name of the `srt@tools` result entry.
-#' @param overlay_image Whether to draw the selected spatial image.
 #' @param store_results Whether to store detailed result matrices and paths in
 #' `srt@tools`.
 #'
@@ -422,6 +421,7 @@ RunCell2location <- function(
 #' or pie plots.
 #' @param prefix Metadata prefix used by [RunCell2location()].
 #' @param tool_name Name of the `srt@tools` result entry.
+#' @param overlay_image Whether to draw the selected spatial image.
 #' @param ... Additional arguments passed to [SpatialSpotPlot()].
 #'
 #' @return A `ggplot`, `patchwork`, or list of plots.
@@ -457,9 +457,9 @@ Cell2locationPlot <- function(
   prefix = "Cell2location",
   tool_name = "Cell2location",
   image = NULL,
-  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
+  image.scale = c("lowres", "hires"),
   ...
 ) {
   if (!inherits(srt, "Seurat")) {

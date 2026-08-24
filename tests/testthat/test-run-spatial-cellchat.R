@@ -527,3 +527,38 @@ test_that("full storage exposes native objects and protects result names", {
     "already exists"
   )
 })
+
+test_that("appended SpatialCellChat results retain per-result coordinate contracts", {
+  local_mock_spatialcellchat_backend()
+  srt <- make_spatialcellchat_test_object()
+  common <- list(
+    group.by = "celltype",
+    technology = "generic",
+    analysis.level = "cell",
+    coordinate.unit = "micron",
+    tol = 5,
+    min.cells = 2,
+    min.links = 1,
+    nboot = 2,
+    database = "custom",
+    custom.db = list(mock = TRUE),
+    backend = "r",
+    verbose = FALSE
+  )
+  out <- do.call(RunSpatialCellChat, c(list(srt = srt), common, list(
+    result.name = "first"
+  )))
+  out@tools$SpatialCellChat$results$first$ALL$source$coordinate_contract_version <- NULL
+  out <- do.call(RunSpatialCellChat, c(list(srt = out), common, list(
+    result.name = "second"
+  )))
+  expect_setequal(names(out@tools$SpatialCellChat$results), c("first", "second"))
+  expect_error(
+    SpatialCellChatPlot(out, result.name = "first", plot_type = "outgoing"),
+    "rerun\\s+RunSpatialCellChat"
+  )
+  expect_s3_class(
+    SpatialCellChatPlot(out, result.name = "second", plot_type = "outgoing"),
+    "ggplot"
+  )
+})

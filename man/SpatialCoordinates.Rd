@@ -22,17 +22,20 @@ SpatialCoordinates(
 
 \item{space}{Coordinate space to return.}
 
+\item{image_policy}{Multi-image selection policy. The default requires an
+explicit image when more than one image is available.}
+
 \item{image.scale}{Image scale factor used only when `space = "display"`.
 Choose `"hires"` when the image slot contains a hires raster. Raw
 coordinates are always returned in full-resolution units.}
-
-\item{image_policy}{Multi-image selection policy. The default requires an
-explicit image when more than one image is available.}
 }
 \value{
 A plain list with `data`, `source`, and `transform` entries.
 }
 \description{
 Return raw analysis coordinates or display coordinates together with their
-source and reversible transform. This function does not modify the object.
+source and reversible transform. Image-backed coordinates are normalized to
+horizontal `x` (image column) and vertical `y` (image row), including
+VisiumV2/FOV tables whose Seurat `x`/`y` names retain row/column ordering.
+This function does not modify the object.
 }

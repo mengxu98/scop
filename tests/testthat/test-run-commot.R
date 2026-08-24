@@ -264,17 +264,28 @@ test_that("COMMOTPlot requires an explicit result when several are stored", {
   mock_commot_execute()
   out <- RunCOMMOT(
     srt, group.by = "celltype", coord.cols = c("col", "row"),
-    result.name = "first", backend = "r", verbose = FALSE
+    result.name = "first", direction = TRUE,
+    backend = "r", verbose = FALSE
   )
+  out@tools$COMMOT$results$first$coordinate_contract_version <- NULL
   out <- RunCOMMOT(
     out, group.by = "celltype", coord.cols = c("col", "row"),
-    result.name = "second", backend = "r", verbose = FALSE
+    result.name = "second", direction = TRUE,
+    backend = "r", verbose = FALSE
   )
   expect_error(COMMOTPlot(out), "select.*result.name")
+  expect_error(
+    COMMOTPlot(out, result.name = "first", plot_type = "direction"),
+    "rerun\\s+RunCOMMOT"
+  )
   expect_true(inherits(
-    COMMOTPlot(out, result.name = "first"),
+    COMMOTPlot(out, result.name = "second"),
     c("ggplot", "recordedplot")
   ))
+  expect_s3_class(
+    COMMOTPlot(out, result.name = "second", plot_type = "direction"),
+    "ggplot"
+  )
 })
 
 test_that("COMMOT H5AD publication is external and overwrite-aware", {

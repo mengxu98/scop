@@ -401,6 +401,24 @@ bayesspace_get_seurat_coords <- function(srt, image = NULL) {
   if (is.null(image)) {
     return(NULL)
   }
+  spatial_image <- srt[[image]]
+  if ("coordinates" %in% methods::slotNames(spatial_image)) {
+    coords <- as.data.frame(
+      methods::slot(spatial_image, "coordinates"),
+      stringsAsFactors = FALSE
+    )
+    ids <- rownames(coords)
+    if (
+      is.null(ids) || anyNA(ids) || any(!nzchar(ids)) ||
+        anyDuplicated(ids)
+    ) {
+      log_message(
+        "BayesSpace image coordinate metadata must have unique spot identifiers",
+        message_type = "error"
+      )
+    }
+    return(coords)
+  }
   raw <- spatial_coords_raw(
     srt = srt,
     image = image,

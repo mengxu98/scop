@@ -523,7 +523,6 @@ SpatialVariableFeaturePlot <- function(
   assay = NULL,
   layer = NULL,
   image = NULL,
-  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image.alpha = 1,
   coord.cols = c("col", "row"),
@@ -539,7 +538,8 @@ SpatialVariableFeaturePlot <- function(
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE
+  byrow = TRUE,
+  image.scale = c("lowres", "hires")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")

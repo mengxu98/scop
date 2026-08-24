@@ -258,7 +258,6 @@ SpatialIntegrationPlot <- function(
   reduction = NULL,
   cluster_colname = NULL,
   coord.cols = c("col", "row"),
-  image.scale = c("lowres", "hires"),
   use_aligned = FALSE,
   tool_name = "SpatialIntegration",
   combine = TRUE,
@@ -266,6 +265,7 @@ SpatialIntegrationPlot <- function(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
+  image.scale = c("lowres", "hires"),
   ...
 ) {
   if (!inherits(srt, "Seurat")) {
