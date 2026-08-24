@@ -249,6 +249,7 @@ test_that("analysis code cannot bypass the shared raw extractor", {
     pattern = "[.]R$",
     full.names = TRUE
   )
+  skip_if(length(files) == 0L, "package source R files are not available")
   allowed <- c("SpatialCore.R", "SpatialCellPlot.R", "data.R")
   bypass <- vapply(files, function(file) {
     any(grepl("GetTissueCoordinates\\s*\\(", readLines(file, warn = FALSE)))
