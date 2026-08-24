@@ -123,7 +123,7 @@ test_that("FOV and metadata coordinates use identity transforms", {
   counts <- matrix(1:12, nrow = 3, dimnames = list(paste0("g", 1:3), paste0("c", 1:4)))
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
   srt[["fov"]] <- SeuratObject::CreateFOV(
-    data.frame(x = 5:8, y = 1:4, row.names = colnames(srt)),
+    data.frame(x = 1:4, y = 5:8, row.names = colnames(srt)),
     type = "centroids",
     assay = "RNA",
     key = "fov_"
@@ -142,12 +142,36 @@ test_that("FOV and metadata coordinates use identity transforms", {
 })
 
 test_that("invalid selected scale fails without mutating the object", {
+  skip_if_not_installed("BiocNeighbors")
   fixture <- make_coordinate_contract_object("VisiumV1")
   fixture$object[["slice"]]@scale.factors$lowres <- NA_real_
   before <- serialize(fixture$object, NULL)
+  raw <- SpatialCoordinates(
+    fixture$object,
+    image = "slice",
+    space = "raw",
+    image.scale = "lowres"
+  )
+  expect_equal(raw$data$x, fixture$raw$x)
+  expect_equal(raw$data$y, fixture$raw$y)
   expect_error(
-    SpatialCoordinates(fixture$object, image = "slice", image.scale = "lowres"),
+    SpatialCoordinates(
+      fixture$object,
+      image = "slice",
+      space = "display",
+      image.scale = "lowres"
+    ),
     "lowres.*missing or invalid"
+  )
+  network <- RunSpatialNetwork(
+    fixture$object,
+    image = "slice",
+    k = 1,
+    verbose = FALSE
+  )
+  expect_identical(
+    network@tools$SpatialNetwork$graphs[[1L]]$source$coordinate_space,
+    "raw"
   )
   expect_identical(serialize(fixture$object, NULL), before)
 })

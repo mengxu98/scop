@@ -36,6 +36,6 @@ A plain list with `data`, `source`, and `transform` entries.
 Return raw analysis coordinates or display coordinates together with their
 source and reversible transform. Image-backed coordinates are normalized to
 horizontal `x` (image column) and vertical `y` (image row), including
-VisiumV2/FOV tables whose Seurat `x`/`y` names retain row/column ordering.
+VisiumV2 tables whose Seurat `x`/`y` names retain row/column ordering.
 This function does not modify the object.
 }

@@ -166,7 +166,10 @@ test_that("RunSpaTalk reuses stored RCTD weights with SpaTalk method 2", {
     ncol = 2, byrow = TRUE,
     dimnames = list(rev(colnames(spatial)), c("A", "B"))
   )
-  spatial@tools$RCTD <- list(weights = weights)
+  spatial@tools$RCTD <- list(
+    weights = weights,
+    parameters = list(coordinate_contract_version = 2L)
+  )
   seen <- new.env(parent = emptyenv())
   seen$value <- FALSE
   mock_spatalk_bindings(dec_seen = seen)
@@ -248,6 +251,18 @@ test_that("RunSpaTalk validates spot inputs before backend execution", {
     dimnames = list(colnames(spatial)[1:3], c("A", "B"))
   )
   spatial@tools$RCTD <- list(weights = invalid)
+  expect_error(
+    RunSpaTalk(
+      spatial, group.by = "celltype", mode = "spot",
+      reference = reference, reference.group.by = "ref_type",
+      deconvolution = "RCTD", coord.cols = c("col", "row"), verbose = FALSE
+    ),
+    "rerun\\s+RunRCTD"
+  )
+  spatial@tools$RCTD <- list(
+    weights = invalid,
+    parameters = list(coordinate_contract_version = 2L)
+  )
   expect_error(
     RunSpaTalk(
       spatial, group.by = "celltype", mode = "spot",
