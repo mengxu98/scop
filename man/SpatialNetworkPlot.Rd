@@ -9,6 +9,7 @@ SpatialNetworkPlot(
   res = NULL,
   graph.name = NULL,
   group.by = NULL,
+  image.scale = c("lowres", "hires"),
   edge.color = "grey80",
   edge.linewidth = 0.2,
   pt.size = NULL,
@@ -29,6 +30,8 @@ SpatialNetworkPlot(
 \item{graph.name}{Stored graph name. The active graph is used when `NULL`.}
 
 \item{group.by}{Node column or Seurat metadata column used for coloring.}
+
+\item{image.scale}{Image scale factor matching the raster in `object`.}
 
 \item{edge.color, edge.linewidth}{Edge appearance.}
 

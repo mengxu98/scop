@@ -96,12 +96,12 @@ spatial_framework_subset_image <- function(srt, image = NULL) {
   if (is.null(image)) {
     return(srt)
   }
-  coords <- as.data.frame(SeuratObject::GetTissueCoordinates(srt[[image]]))
-  image_cells <- if ("cell" %in% colnames(coords)) {
-    as.character(coords$cell)
-  } else {
-    rownames(coords)
-  }
+  coords <- spatial_coords_raw(
+    srt = srt,
+    image = image,
+    image_policy = "strict"
+  )$data
+  image_cells <- as.character(coords$cell_id)
   image_cells <- intersect(image_cells, colnames(srt))
   if (length(image_cells) == 0L) {
     log_message("The selected image does not contain cells present in {.arg srt}", message_type = "error")

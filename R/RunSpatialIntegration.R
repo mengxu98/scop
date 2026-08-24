@@ -50,6 +50,7 @@
 #' spatial$SpatialIntegration_PRECAST_aligned_y <- spatial$y
 #' integration_parameters <- list(
 #'   method = "PRECAST",
+#'   coordinate_contract_version = 2L,
 #'   sample.by = "sample",
 #'   assay = "Spatial",
 #'   layer = "counts",
@@ -63,7 +64,10 @@
 #' )
 #' spatial@tools$SpatialIntegration <- list(
 #'   active_method = "PRECAST",
-#'   methods = list(PRECAST = list(parameters = integration_parameters)),
+#'   methods = list(PRECAST = list(
+#'     coordinate_contract_version = 2L,
+#'     parameters = integration_parameters
+#'   )),
 #'   parameters = integration_parameters,
 #'   samples = unique(spatial$sample),
 #'   cells = colnames(spatial)
@@ -254,6 +258,7 @@ SpatialIntegrationPlot <- function(
   reduction = NULL,
   cluster_colname = NULL,
   coord.cols = c("col", "row"),
+  image.scale = c("lowres", "hires"),
   use_aligned = FALSE,
   tool_name = "SpatialIntegration",
   combine = TRUE,
@@ -270,9 +275,11 @@ SpatialIntegrationPlot <- function(
     )
   }
   plot_type <- match.arg(plot_type)
+  image.scale <- match.arg(image.scale)
   bundle <- spatial_integration_get_bundle(srt, tool_name = tool_name)
   method <- method %||% bundle$active_method
   method_bundle <- spatial_integration_get_method_bundle(bundle, method)
+  spatial_require_coordinate_contract(method_bundle, "RunSpatialIntegration()")
   parameters <- method_bundle$parameters %||% bundle$parameters %||% list()
   group.by <- group.by %||% cluster_colname %||% parameters$cluster_colname
   sample.by <- sample.by %||% parameters$sample.by
@@ -300,6 +307,7 @@ SpatialIntegrationPlot <- function(
       group.by = group.by,
       split.by = sample.by,
       coord.cols = coord_use,
+      image.scale = image.scale,
       combine = combine,
       palette = palette,
       palcolor = palcolor,
@@ -879,6 +887,7 @@ spatial_integration_apply_result <- function(
     ),
     parameters = parameters
   )
+  method_bundle <- spatial_tag_coordinate_contract(method_bundle)
   if (isTRUE(store_results)) {
     old <- srt@tools[[tool_name]] %||% list()
     methods_store <- old$methods %||% list()
@@ -892,6 +901,7 @@ spatial_integration_apply_result <- function(
       samples = unique(as.character(srt@meta.data[[sample.by]])),
       cells = all_cells
     )
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
   srt
 }
@@ -1047,4 +1057,3 @@ spatial_integration_reduction_key <- function(reduction.name) {
   }
   paste0(key, "_")
 }
-

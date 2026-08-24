@@ -93,6 +93,7 @@ spatial$SpatialIntegration_PRECAST_aligned_x <- spatial$x +
 spatial$SpatialIntegration_PRECAST_aligned_y <- spatial$y
 integration_parameters <- list(
   method = "PRECAST",
+  coordinate_contract_version = 2L,
   sample.by = "sample",
   assay = "Spatial",
   layer = "counts",
@@ -106,7 +107,10 @@ integration_parameters <- list(
 )
 spatial@tools$SpatialIntegration <- list(
   active_method = "PRECAST",
-  methods = list(PRECAST = list(parameters = integration_parameters)),
+  methods = list(PRECAST = list(
+    coordinate_contract_version = 2L,
+    parameters = integration_parameters
+  )),
   parameters = integration_parameters,
   samples = unique(spatial$sample),
   cells = colnames(spatial)

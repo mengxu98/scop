@@ -283,6 +283,9 @@ RunCytoSPACE <- function(
         prefix = prefix
       )
     )
+    srt@tools[["CytoSPACE"]] <- spatial_tag_coordinate_contract(
+      srt@tools[["CytoSPACE"]]
+    )
   }
 
   log_message(

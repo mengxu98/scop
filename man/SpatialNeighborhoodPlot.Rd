@@ -20,6 +20,7 @@ SpatialNeighborhoodPlot(
   cols.ns = "grey75",
   pair = NULL,
   image = NULL,
+  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
   split.by = NULL,
@@ -67,6 +68,13 @@ method is used.}
 
 \item{image}{Name of the Seurat spatial image. Required when multiple images
 are present; a single image is selected automatically when \code{NULL}.}
+
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
+
+\item{overlay_image}{Whether to draw the selected spatial image for
+\code{plot_type = "spatial"}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no Seurat image
 coordinates are available.}

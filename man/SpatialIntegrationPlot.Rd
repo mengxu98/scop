@@ -13,6 +13,7 @@ SpatialIntegrationPlot(
   reduction = NULL,
   cluster_colname = NULL,
   coord.cols = c("col", "row"),
+  image.scale = c("lowres", "hires"),
   use_aligned = FALSE,
   tool_name = "SpatialIntegration",
   combine = TRUE,
@@ -44,6 +45,10 @@ integration reduction.}
 \item{cluster_colname}{Backward-compatible alias for \code{group.by}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
+
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
 
 \item{use_aligned}{Whether spatial plots should use aligned coordinates when
 available.}

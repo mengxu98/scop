@@ -9,7 +9,8 @@ SpatialCoordinates(
   image = NULL,
   coord.cols = c("col", "row"),
   space = c("raw", "display"),
-  image_policy = "strict"
+  image_policy = "strict",
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{
@@ -20,6 +21,10 @@ SpatialCoordinates(
 \item{coord.cols}{Metadata columns used when no image is available.}
 
 \item{space}{Coordinate space to return.}
+
+\item{image.scale}{Image scale factor used only when `space = "display"`.
+Choose `"hires"` when the image slot contains a hires raster. Raw
+coordinates are always returned in full-resolution units.}
 
 \item{image_policy}{Multi-image selection policy. The default requires an
 explicit image when more than one image is available.}

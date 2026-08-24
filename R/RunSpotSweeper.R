@@ -268,6 +268,7 @@ RunSpotSweeper <- function(
         artifacts = if (is.null(artifact_out)) NULL else artifact_out$result
       )
     )
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
 
   failed <- sum(srt[[paste0(prefix, "_QC"), drop = TRUE]] == "Fail", na.rm = TRUE)

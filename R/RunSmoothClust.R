@@ -332,6 +332,7 @@ RunSmoothClust <- function(
         seed = seed
       )
     )
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
     if (isTRUE(store_smoothed)) {
       srt@tools[[tool_name]][["smoothed"]] <- smoothed
     }

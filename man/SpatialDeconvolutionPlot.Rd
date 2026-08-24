@@ -13,6 +13,7 @@ SpatialDeconvolutionPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
+  image.scale = c("lowres", "hires"),
   ...
 )
 }
@@ -32,6 +33,8 @@ map derived from the stored proportions, or one spot-level pie map.}
 
 \item{nrow, ncol, byrow}{Point-map layout controls. When both dimensions are
 \code{NULL}, a near-square layout with at most three columns is used.}
+
+\item{image.scale}{Image scale factor matching the selected raster.}
 
 \item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.}
 }

@@ -44,6 +44,7 @@
 #' @param overwrite Permit replacement of incompatible existing artifacts.
 #' @param prefix Prefix used for abundance/proportion metadata columns.
 #' @param tool_name Name of the `srt@tools` result entry.
+#' @param overlay_image Whether to draw the selected spatial image.
 #' @param store_results Whether to store detailed result matrices and paths in
 #' `srt@tools`.
 #'
@@ -396,6 +397,9 @@ RunCell2location <- function(
       parameters = result_parameters,
       summary = spatial_weight_summary(proportions)
     )
+    srt_out@tools[[tool_name]] <- spatial_tag_coordinate_contract(
+      srt_out@tools[[tool_name]]
+    )
   }
 
   log_message(
@@ -453,6 +457,7 @@ Cell2locationPlot <- function(
   prefix = "Cell2location",
   tool_name = "Cell2location",
   image = NULL,
+  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
   ...
@@ -461,9 +466,11 @@ Cell2locationPlot <- function(
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   plot_type <- match.arg(plot_type)
+  image.scale <- match.arg(image.scale)
   coords <- spatial_dim_coords(
     srt = srt,
     image = image,
+    image.scale = image.scale,
     coord.cols = coord.cols,
     overlay_image = overlay_image
   )$data
@@ -492,6 +499,7 @@ Cell2locationPlot <- function(
   defaults <- list(
     srt = srt,
     image = image,
+    image.scale = image.scale,
     overlay_image = overlay_image,
     coord.cols = coord.cols
   )

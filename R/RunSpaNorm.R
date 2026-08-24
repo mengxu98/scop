@@ -144,7 +144,7 @@ RunSpaNorm <- function(
     if (isTRUE(store_spe)) {
       tool$spe <- result
     }
-    srt@tools[[tool_name]] <- tool
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(tool)
   }
 
   log_message(
