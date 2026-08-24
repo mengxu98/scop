@@ -104,7 +104,7 @@ returns a list of ggplots.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 }
 \description{
 Plot dynamic features across pseudotime

@@ -150,7 +150,7 @@ of the two groups, currently only used for poisson and negative binomial tests}
 \item{norm.method}{Normalization method for fold change calculation when
 \code{slot} is \dQuote{\code{data}}}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
 

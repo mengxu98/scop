@@ -92,7 +92,6 @@
 #' @param result.name Stored result name.
 #' @param row_title The title for the row names in the heatmap. If not provided, the default is to use the query grouping variable.
 #' @param run.local Whether to run locally.
-#' @param seed Random seed for jitter in Manhattan and ring plots.
 #' @param show_column_names Whether to draw row/column names for the heatmap body.
 #' @param show_row_names Whether to draw row/column names for the heatmap body.
 #' @param single_cell Whether the input is a single-cell (rather than spatial) dataset.

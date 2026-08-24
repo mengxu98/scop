@@ -86,7 +86,7 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{backend}{BBKNN graph backend. `"cpp"` uses the compiled cross-batch
 KNN graph implementation; `"python"` retains the official bbknn package.}

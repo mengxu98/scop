@@ -95,7 +95,7 @@ trajectory topology and is intended for advanced exploratory use.}
 
 \item{ylab}{Plot labels.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

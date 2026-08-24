@@ -183,7 +183,7 @@ Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
 }

@@ -101,7 +101,7 @@ percentage. \code{ribo_gene} overrides \code{ribo_pattern}.}
 \item{species, species_gene_prefix, species_percent}{Species suffix for QC metrics
 (first is the species of interest) and minimum UMI percentage of that species.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
 

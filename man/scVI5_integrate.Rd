@@ -77,7 +77,7 @@ Increase to speed up data loading on multi-core machines.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 }
 \description{
 Seurat v5 scVI integration

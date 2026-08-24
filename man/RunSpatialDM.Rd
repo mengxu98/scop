@@ -73,7 +73,7 @@ RunSpatialDM(
 
 \item{nproc}{Number of parallel processes.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{global.fdr}{Global FDR threshold.}
 

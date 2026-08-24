@@ -207,7 +207,7 @@ there are more than 100,000 cells.}
 
 \item{force}{Draw even when more than 100 features are requested.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
 }

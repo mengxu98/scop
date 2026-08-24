@@ -111,7 +111,7 @@ scaled data (\code{NULL}). One of \code{"LogNormalize"}, \code{"SCT"}, \code{"TF
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{...}{Additional arguments passed to reduction methods.}
 }

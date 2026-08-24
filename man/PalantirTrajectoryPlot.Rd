@@ -124,7 +124,7 @@ pseudotime, \code{"branch_selection"} for the branch with highest probability,
 \item{return_layer}{Logical. If \code{TRUE}, returns ggplot2 layers instead of a
 complete plot.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
 }

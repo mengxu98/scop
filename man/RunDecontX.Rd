@@ -43,7 +43,7 @@ as a new assay.}
 \item{data_type}{Optional \code{\link[=CheckDataType]{CheckDataType()}} result, used internally to avoid
 rescanning the count matrix.}
 
-\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+\item{seed}{Random seed.}
 
 \item{...}{Passed to \code{\link[decontX:decontX]{decontX::decontX()}}.}
 
