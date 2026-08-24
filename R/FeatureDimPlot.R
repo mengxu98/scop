@@ -5,6 +5,7 @@
 #' numeric metadata).
 #'
 #' @md
+#' @inheritParams scop-params
 #' @inheritParams CellDimPlot
 #' @inheritParams scop-params
 #' @param features Features to plot: a character vector or a named list of
@@ -1635,7 +1636,6 @@ FeatureDimPlot <- function(
 #' @md
 #' @inheritParams FeatureDimPlot
 #' @inheritParams CellDimPlot3D
-#' @inheritParams scop-params
 #'
 #' @seealso [FeatureDimPlot], [CellDimPlot3D]
 #'

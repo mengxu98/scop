@@ -12,6 +12,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param srt A `Seurat` object containing results from [RunDorothea()].
 #' @param group.by Metadata column used to define groups.
 #' @param group1,group2 Two group labels to compare. Required for `"bar"`,
@@ -668,19 +669,6 @@ dorothea_diverging_colors <- function(palette, palcolor, cols = NULL) {
 
 dorothea_fill_scale <- function(fill_colors, name) {
   ggplot2::scale_fill_gradientn(
-    colours = fill_colors,
-    name = name,
-    na.value = "grey80",
-    guide = ggplot2::guide_colorbar(
-      frame.colour = "black",
-      ticks.colour = "black",
-      title.hjust = 0
-    )
-  )
-}
-
-dorothea_color_scale <- function(fill_colors, name) {
-  ggplot2::scale_color_gradientn(
     colours = fill_colors,
     name = name,
     na.value = "grey80",

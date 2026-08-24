@@ -4,9 +4,6 @@
 .spatalk_package <- "SpaTalk"
 .spatalk_nnlm_repository <- "linxihui/NNLM"
 
-spatalk_required_symbols <- function() {
-  c("createSpaTalk", "dec_celltype", "find_lr_path", "dec_cci_all")
-}
 
 spatalk_check_r <- function() {
   package_status <- check_r(
@@ -32,7 +29,9 @@ spatalk_check_r <- function() {
 }
 
 spatalk_get_fun <- function(fun) {
-  if (!fun %in% spatalk_required_symbols()) {
+  if (!fun %in% { ; 
+  c("createSpaTalk", "dec_celltype", "find_lr_path", "dec_cci_all")
+ }) {
     log_message("Unsupported {.pkg SpaTalk} function {.fn {fun}}", message_type = "error")
   }
   get_namespace_fun(.spatalk_package, fun)
@@ -83,12 +82,6 @@ spatalk_call <- function(fun, args, extra = list()) {
   do.call(fun, c(args, extra))
 }
 
-spatalk_matrix_values <- function(x) {
-  if (methods::is(x, "sparseMatrix")) {
-    return(methods::slot(x, "x"))
-  }
-  as.numeric(x)
-}
 
 spatalk_validate_matrix <- function(x, name) {
   if (!is.matrix(x) && !methods::is(x, "Matrix")) {
@@ -100,7 +93,7 @@ spatalk_validate_matrix <- function(x, name) {
       anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
     log_message("{.arg {name}} must have unique, non-missing row and column names", message_type = "error")
   }
-  values <- spatalk_matrix_values(x)
+  values <- if (methods::is(x, "sparseMatrix")) methods::slot(x, "x") else as.numeric(x)
   if (any(!is.finite(values)) || any(values < 0)) {
     log_message("{.arg {name}} must contain finite non-negative expression values", message_type = "error")
   }
@@ -318,19 +311,6 @@ spatalk_pathway_table <- function(object, lr_table) {
   unique(pathways[keep, , drop = FALSE])
 }
 
-spatalk_validate_bundle <- function(bundle) {
-  required <- c(
-    "method", "results", "active_result", "long_table", "primary_table",
-    "cells", "coordinates", "parameters", "summary", "provenance"
-  )
-  if (!is.list(bundle) || !all(required %in% names(bundle))) {
-    log_message("SpaTalk result bundle is incomplete", message_type = "error")
-  }
-  if (!is.data.frame(bundle$long_table) || nrow(bundle$long_table) == 0L) {
-    log_message("SpaTalk result bundle has no communication rows", message_type = "error")
-  }
-  invisible(TRUE)
-}
 
 #' @title Run official SpaTalk spatial communication analysis
 #'
@@ -524,7 +504,8 @@ RunSpaTalk <- function(
       repository = .spatalk_repository
     )
   )
-  spatalk_validate_bundle(bundle)
+  validate_result_bundle(bundle, label = "SpaTalk",
+    empty_message = "SpaTalk result bundle has no communication rows")
   srt@tools[["SpaTalk"]] <- bundle
   srt <- ccc_update_unified_bundle(srt, method = "SpaTalk", bundle = bundle, backend = backend)
   log_message("SpaTalk analysis completed", message_type = "success", verbose = verbose)

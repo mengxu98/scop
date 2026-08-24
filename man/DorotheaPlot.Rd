@@ -144,6 +144,10 @@ reduction of \code{srt} is used.}
 
 \item{aspect.ratio}{Panel aspect ratio.}
 
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
 \item{title, xlab, ylab, fill.title}{Axis, plot, and legend titles.}
 
 \item{flip}{Whether to draw comparison bar/lollipop plots horizontally.}

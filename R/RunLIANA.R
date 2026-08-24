@@ -154,7 +154,10 @@ RunLIANA <- function(
     provenance = list(
       producer = "RunLIANA",
       backend = "liana",
-      backend_version = liana_package_version()
+      backend_version = { ; 
+  version_fun <- liana_get_fun("packageVersion", package = "utils")
+  as.character(version_fun("liana"))
+ }
     ),
     parameters = list(
       group.by = group.by,
@@ -363,10 +366,6 @@ liana_get_fun <- function(fun, package = "liana") {
   get_namespace_fun(package, fun)
 }
 
-liana_package_version <- function() {
-  version_fun <- liana_get_fun("packageVersion", package = "utils")
-  as.character(version_fun("liana"))
-}
 
 liana_resource_description <- function(resource) {
   switch(resource,

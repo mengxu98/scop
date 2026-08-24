@@ -62,7 +62,8 @@ coordinates are inferred from the spatial grid.}
 \item{store_sce}{Whether to store the BayesSpace \code{SingleCellExperiment}
 in \code{srt@tools}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{coord.cols}{Two metadata columns containing raw x/y coordinates when
 no spatial image is available.}

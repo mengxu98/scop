@@ -185,6 +185,10 @@ direct score comparison, or \code{"free"} for the legacy per-panel scale.}
 
 \item{network_label_top_n}{Max TF labels in \code{"network_graph"}.}
 
+\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{ncol}{Number of columns of the combined plot.}
+
 \item{return_data}{Return RSS tables with plots.}
 
 \item{title}{Optional combined-plot title. Ignored by \code{"network"}, \code{"network_graph"}, and \code{"egrn"}.}

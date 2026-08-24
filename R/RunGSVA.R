@@ -500,7 +500,7 @@ RunGSVA <- function(
       } else if (identical(method, "zscore")) {
         sparse_expr <- inherits(expr_filtered, "dgCMatrix")
         sparse_standardize_full <- sparse_expr &&
-          gene_set_scoring_zscore_sparse_standardize_full()
+          gsva_standardize()
         gsva_scores <- t(run_zscore_scores(
           expr_counts = expr_filtered,
           gene_sets = gene_sets_filtered,
@@ -515,7 +515,7 @@ RunGSVA <- function(
           gene_sets = gene_sets_filtered,
           min_gs_size = min_size,
           max_gs_size = max_size,
-          dense_standardize = gene_set_scoring_plage_dense_standardize()
+          dense_standardize = gsva_standardize()
         ))
       }
       if (!is.matrix(gsva_scores)) {

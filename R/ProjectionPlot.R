@@ -7,6 +7,7 @@
 #' @md
 #' @inheritParams RunKNNMap
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param query_group The grouping variable for the query group cells.
 #' @param ref_group The grouping variable for the reference group cells.
 #' @param query_reduction Reduction in the query group cells.

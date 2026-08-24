@@ -21,7 +21,8 @@ DefaultReduction(
 
 \item{max_distance}{Maximum distance allowed for a match.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 Default reduction name.

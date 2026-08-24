@@ -890,7 +890,12 @@ remove_single_python_package <- function(
     "Removing {.pkg {pkg}} via {.pkg pip}...",
     verbose = verbose
   )
-  status <- run_pip_command(python, c("uninstall", "-y", pkg))
+  status <- {
+    .pip_cmd <- python
+    .pip_args <- c("uninstall", "-y", pkg)
+    .system2t <- get_namespace_fun("reticulate", "system2t")
+    .system2t(.pip_cmd, shQuote(c("-m", "pip", .pip_args)))
+  }
 
   if (status == 0L) {
     log_message(

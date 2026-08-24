@@ -72,7 +72,8 @@ duplicate sampling.}
 \item{store_results}{Whether to store detailed assignment results in
 \code{srt@tools}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{image}{Optional Seurat image used for spatial coordinates.}
 

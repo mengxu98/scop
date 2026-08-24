@@ -98,9 +98,10 @@ intermediate memory; positive values set the chunk size manually.}
 
 \item{new_assay}{Whether to create a new assay for metabolism scores when \code{group.by = NULL}. Default is \code{TRUE}.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 Returns a \code{Seurat} object. When \code{group.by = NULL}, stores scores in assay \code{assay_name} and tools.

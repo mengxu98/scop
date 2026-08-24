@@ -28,7 +28,7 @@ rescanning the count matrix.}
 
 \item{...}{Additional arguments to be passed to \href{https://github.com/JonathanShor/DoubletDetection}{doubletdetection.BoostClassifier}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Run doublet-calling with DoubletDetection

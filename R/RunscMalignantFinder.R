@@ -103,7 +103,12 @@ RunscMalignantFinder <- function(
   }
 
   if (!is.null(srt)) {
-    validate_seurat_object(srt)
+    if (!inherits(srt, "Seurat")) {
+      log_message(
+        "{.arg srt} must be a {.cls Seurat} object",
+        message_type = "error"
+      )
+    }
     cells <- scmf_cells(srt, cells)
     srt_input <- if (length(cells) == ncol(srt)) {
       srt
@@ -152,7 +157,12 @@ RunscMalignantFinder <- function(
   }
 
   source_cols <- c("scMalignantFinder_prediction", "malignancy_probability")
-  output_cols <- scmf_prediction_output_names(source_cols, prefix = prefix)
+  output_cols <- { .inline0 <- source_cols; .inline1 <- prefix; 
+  stats::setNames(
+    if (nzchar(.inline1)) paste0(.inline1, .inline0) else .inline0,
+    .inline0
+  )
+ }
   srt <- scmf_append_obs_to_srt(
     srt = srt,
     obs = obs,
@@ -281,7 +291,12 @@ RunscMalignantRegion <- function(
     }
   }
   if (!is.null(srt) && !is.null(spatial.cols)) {
-    validate_seurat_object(srt)
+    if (!inherits(srt, "Seurat")) {
+      log_message(
+        "{.arg srt} must be a {.cls Seurat} object",
+        message_type = "error"
+      )
+    }
     precheck_cells <- scmf_cells(srt, cells)
     precheck_srt <- if (length(precheck_cells) == ncol(srt)) {
       srt
@@ -293,7 +308,12 @@ RunscMalignantRegion <- function(
 
   spatial_coordinates <- NULL
   if (!is.null(srt)) {
-    validate_seurat_object(srt)
+    if (!inherits(srt, "Seurat")) {
+      log_message(
+        "{.arg srt} must be a {.cls Seurat} object",
+        message_type = "error"
+      )
+    }
     cells <- scmf_cells(srt, cells)
     srt_input <- if (length(cells) == ncol(srt)) {
       srt
@@ -473,7 +493,12 @@ RunscMalignantStates <- function(
     verbose = verbose
   )
   if (!is.null(srt)) {
-    validate_seurat_object(srt)
+    if (!inherits(srt, "Seurat")) {
+      log_message(
+        "{.arg srt} must be a {.cls Seurat} object",
+        message_type = "error"
+      )
+    }
     cells <- scmf_cells(srt, cells)
   }
 
@@ -851,12 +876,6 @@ scmf_cells <- function(srt, cells = NULL) {
   cells
 }
 
-scmf_prediction_output_names <- function(source_cols, prefix = "") {
-  stats::setNames(
-    if (nzchar(prefix)) paste0(prefix, source_cols) else source_cols,
-    source_cols
-  )
-}
 
 scmf_region_output_names <- function(source_cols, prefix = "scMalignantFinder_") {
   base_names <- source_cols

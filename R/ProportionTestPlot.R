@@ -7,6 +7,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param srt A Seurat object containing proportion-test results.
 #' @param comparison Which comparison to plot.
 #' If `NULL`, plots all comparisons.

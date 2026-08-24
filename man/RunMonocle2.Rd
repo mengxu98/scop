@@ -38,7 +38,7 @@ RunMonocle2(
 
 \item{layer}{Assay layer to use.}
 
-\item{group.by}{Metadata column(s) to group cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{expressionFamily}{The distribution family to use for modeling gene expression.}
 
@@ -91,7 +91,11 @@ trajectory topology and is intended for advanced exploratory use.}
 
 \item{show_plot}{Whether to print diagnostic plots during the run.}
 
-\item{seed}{Random seed.}
+\item{xlab}{Plot labels.}
+
+\item{ylab}{Plot labels.}
+
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

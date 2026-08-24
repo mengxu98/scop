@@ -5,6 +5,7 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams GroupHeatmap
 #' @inheritParams RunDynamicFeatures
+#' @inheritParams scop-params
 #' @param features Features to use.
 #' @param lineages Lineages to plot.
 #' @param group_use Groups from `group.by` to

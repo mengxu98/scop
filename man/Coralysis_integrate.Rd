@@ -84,7 +84,7 @@ If `NULL`, all available Coralysis PCA dimensions will be used by default.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 }
 \description{
 Coralysis integration function

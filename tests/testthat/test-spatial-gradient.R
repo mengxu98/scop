@@ -290,7 +290,7 @@ test_that("SpatialGradientPlot handles stored results and missing tables clearly
   )
 })
 
-test_that("SpatialGradientPlot combined returns a patchwork object when patchwork is available", {
+test_that("SpatialGradientPlot combined returns patchwork when available", {
   testthat::skip_if_not_installed("patchwork")
   srt <- make_spatial_gradient_seurat()
   result <- make_spatial_gradient_result()

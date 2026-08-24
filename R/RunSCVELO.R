@@ -8,6 +8,7 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunCellRank
+#' @inheritParams scop-params
 #' @param backend Backend used to compute RNA velocity. `"python"` keeps the
 #' original scVelo workflow. `"cpp"` uses the package C++ implementation for a
 #' stochastic velocity embedding that is compatible with [VelocityPlot].

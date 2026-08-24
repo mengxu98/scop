@@ -37,11 +37,15 @@ RunDimsReduction(
 
 \item{layer}{Assay layer to use.}
 
+\item{linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}). \code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
+
 \item{linear_reduction_dims}{Total number of dimensions to compute and store for \code{linear_reduction}.}
 
 \item{linear_reduction_params}{Other parameters passed to the \code{linear_reduction} method.}
 
 \item{force_linear_reduction}{Whether force to do linear dimension reduction.}
+
+\item{nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
 
 \item{nonlinear_reduction_dims}{Total number of dimensions to compute and store for \code{nonlinear_reduction}.}
 
@@ -60,7 +64,10 @@ RunDimsReduction(
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Random seed.}
+\item{seed}{Optional integer seed. When supplied, every input receives a
+deterministic independent L'Ecuyer-CMRG random-number stream, making results
+reproducible across worker counts and scheduling order. The caller's random
+number state is restored when the call finishes.}
 }
 \description{
 Run dimension reduction

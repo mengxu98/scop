@@ -150,9 +150,9 @@ Defaults is \code{"Cell velocity"}.}
 \item{return_layer}{Whether to return the plot layers as a list.
 Defaults is \code{FALSE}.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Creates a velocity plot for a given Seurat object.

@@ -91,7 +91,8 @@ available.}
 \item{store_results}{Whether to store detailed BANKSY results in
 \code{srt@tools}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{coordinate_space}{Coordinate space used for BANKSY spatial input.
 The default is raw acquisition coordinates, so geometry and distance

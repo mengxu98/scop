@@ -10,6 +10,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param srt A Seurat object with SCENIC or SCENIC+ results.
 #' @param group.by Metadata column for cell groups.
 #' @param tool_name `srt@tools` entry. Default `"SCENIC"`.
@@ -1001,7 +1002,7 @@ scenic_plot_rss_dotplot <- function(
     )
   ) +
     ggplot2::geom_point(alpha = 0.9) +
-    scenic_color_scale(fill_colors, "RSS") +
+    scenic_gradient_scale(fill_colors, "RSS", fill = FALSE) +
     ggplot2::scale_size(range = c(1, 6)) +
     theme_scop() +
     ggplot2::theme(
@@ -1098,7 +1099,7 @@ scenic_plot_heatmap_dotplot <- function(
     )
   ) +
     ggplot2::geom_point(alpha = 0.9) +
-    scenic_color_scale(fill_colors, color_name) +
+    scenic_gradient_scale(fill_colors, color_name, fill = FALSE) +
     ggplot2::scale_size(range = c(1, 8), name = "RSS") +
     theme_scop() +
     ggplot2::theme(
@@ -1839,7 +1840,7 @@ scenic_plot_regulon_size <- function(
     ggplot2::aes(x = .data[["target_count"]], y = .data[["regulon"]], fill = .data[["target_count"]])
   ) +
     ggplot2::geom_col(width = 0.75) +
-    scenic_fill_scale(fill_colors, "Targets") +
+    scenic_gradient_scale(fill_colors, "Targets", fill = TRUE) +
     theme_scop() +
     ggplot2::theme(
       axis.title = ggplot2::element_text(colour = "black", size = 12),
@@ -1904,10 +1905,10 @@ scenic_plot_target_bar <- function(
       ggplot2::aes(x = .data[[value_col]], y = .data[["target"]], fill = .data[[value_col]])
     ) +
       ggplot2::geom_col(width = 0.75) +
-      scenic_fill_scale(
+      scenic_gradient_scale(
         fill_colors,
         if (identical(value_col, "importance")) "Importance" else "Rank"
-      ) +
+      , fill = TRUE) +
       theme_scop() +
       ggplot2::theme(
         axis.title = ggplot2::element_text(colour = "black", size = 12),
@@ -2454,7 +2455,10 @@ scenic_calc_rss_matrix <- function(
     vapply(
       seq_len(nrow(norm_auc)),
       function(regulon_idx) {
-        scenic_calc_one_rss(norm_auc[regulon_idx, ], p_cell_type)
+        { .inline0 <- norm_auc[regulon_idx, ]; .inline1 <- p_cell_type; 
+  jsd <- scenic_calc_jsd(.inline0, .inline1)
+  1 - sqrt(pmax(jsd, 0))
+ }
       },
       numeric(1)
     )
@@ -2465,10 +2469,6 @@ scenic_calc_rss_matrix <- function(
   rss
 }
 
-scenic_calc_one_rss <- function(p_regulon, p_cell_type) {
-  jsd <- scenic_calc_jsd(p_regulon, p_cell_type)
-  1 - sqrt(pmax(jsd, 0))
-}
 
 scenic_calc_jsd <- function(p_regulon, p_cell_type) {
   scenic_entropy((p_regulon + p_cell_type) / 2) -
@@ -2480,31 +2480,6 @@ scenic_entropy <- function(p_vector) {
   -sum(p_vector * log2(p_vector))
 }
 
-scenic_color_scale <- function(colors, name) {
-  ggplot2::scale_color_gradientn(
-    colours = colors,
-    name = name,
-    na.value = "grey80",
-    guide = ggplot2::guide_colorbar(
-      frame.colour = "black",
-      ticks.colour = "black",
-      title.hjust = 0
-    )
-  )
-}
-
-scenic_fill_scale <- function(colors, name) {
-  ggplot2::scale_fill_gradientn(
-    colours = colors,
-    name = name,
-    na.value = "grey80",
-    guide = ggplot2::guide_colorbar(
-      frame.colour = "black",
-      ticks.colour = "black",
-      title.hjust = 0
-    )
-  )
-}
 
 scenic_expression_assay <- function(
   srt,
@@ -2672,4 +2647,31 @@ scenic_get_region_auc_matrix <- function(srt, tool_name) {
     return(t(mat))
   }
   NULL
+}
+
+
+scenic_gradient_scale <- function(colors, name, fill = FALSE) {
+  if (isTRUE(fill)) {
+    ggplot2::scale_fill_gradientn(
+      colours = colors,
+      name = name,
+      na.value = "grey80",
+      guide = ggplot2::guide_colorbar(
+        frame.colour = "black",
+        ticks.colour = "black",
+        title.hjust = 0
+      )
+    )
+  } else {
+    ggplot2::scale_color_gradientn(
+      colours = colors,
+      name = name,
+      na.value = "grey80",
+      guide = ggplot2::guide_colorbar(
+        frame.colour = "black",
+        ticks.colour = "black",
+        title.hjust = 0
+      )
+    )
+  }
 }

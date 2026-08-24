@@ -49,7 +49,7 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 }
 \description{
 Checks and preprocesses a merged seurat object.

@@ -10,8 +10,8 @@
 #' (default assay, then chromatin).
 #'
 #' @md
-#' @inheritParams scop-params
 #' @inheritParams thisutils::log_message
+#' @inheritParams scop-params
 #' @param prefix Prefix for intermediate object names.
 #' @param workflow `"single_cell"` or `"spatial"` (basic single-image Visium-style).
 #' @param do_spot_qc,spot_qc_params Run [RunSpotQC()] and extra arguments.

@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams FeatureStatPlot
+#' @inheritParams scop-params
 #' @param NA_color The color to use for missing values.
 #' @param NA_stat Whether to include missing values in the plot.
 #' @param stat_level The level(s) of the variable(s) specified in `stat.by` to include in the plot.
@@ -240,7 +241,6 @@
 #'   plot_type = "chord"
 #' )
 #'
-#' if (requireNamespace("ggVennDiagram", quietly = TRUE)) {
 #'   CellStatPlot(
 #'     pancreas_sub,
 #'     stat.by = c("CellType", "Phase"),
@@ -250,7 +250,6 @@
 #'       Phase = "S"
 #'     )
 #'   )
-#' }
 #'
 #' pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
 #' pancreas_sub$G2M <- pancreas_sub$Phase == "G2M"
@@ -362,6 +361,9 @@ CellStatPlot <- function(
   }
   check_r("geomtextpath", verbose = FALSE)
 
+  if (identical(plot_type, "trend_alluvial")) {
+    check_r("ggalluvial", verbose = FALSE)
+  }
   if (identical(plot_type, "venn")) {
     check_r("ggVennDiagram", verbose = FALSE)
   }

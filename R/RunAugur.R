@@ -304,11 +304,6 @@ RunAugur <- function(
   return(srt)
 }
 
-augur_row_sds <- function(mat) {
-  sds <- MatrixGenerics::rowSds(mat)
-  sds[is.na(sds)] <- 0
-  sds
-}
 
 augur_select_random <- function(mat, feature_perc = 0.5) {
   if (feature_perc < 1) {
@@ -324,7 +319,11 @@ augur_select_variance <- function(
   var_quantile = 0.5,
   filter_negative_residuals = FALSE
 ) {
-  sds <- augur_row_sds(mat)
+  sds <- { .inline0 <- mat; 
+  sds <- MatrixGenerics::rowSds(.inline0)
+  sds[is.na(sds)] <- 0
+  sds
+ }
   sds[is.na(sds)] <- 0
   mat <- mat[sds > 0, , drop = FALSE]
   if (nrow(mat) == 0L) {

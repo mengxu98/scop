@@ -116,9 +116,29 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
+\item{heatmap_palette}{Palette used for CNV heatmap values.}
+
+\item{group_palette}{Palette for cell types (groups) in Manhattan plot.}
+
+\item{group_palcolor}{Custom colors for cell types (groups) in Manhattan plot.}
+
+\item{cell_annotation}{Cell annotations. Palette length should match \code{cell_annotation}.}
+
+\item{cell_annotation_palette}{Color palette for cell-type annotations.}
+
+\item{cell_annotation_palcolor}{Custom colors for cell-type annotations.}
+
+\item{show_row_names}{Whether to draw row/column names for the heatmap body.}
+
+\item{show_column_names}{Whether to draw row/column names for the heatmap body.}
+
+\item{cluster_rows}{Whether to cluster heatmap rows/columns. Defaults are both \code{FALSE}.}
+
+\item{cluster_columns}{Whether to cluster heatmap rows/columns. Defaults are both \code{FALSE}.}
+
 \item{theme_use, theme_args}{Theme used by \link[thisplot:StatPlot]{thisplot::StatPlot}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 
 \item{...}{Additional arguments passed to \link{CellDimPlot}, \link{FeatureDimPlot},
 \link{FeatureHeatmap}, or \link[thisplot:StatPlot]{thisplot::StatPlot}, depending on \code{plot_type}.}

@@ -160,7 +160,8 @@ from the returned \code{SpatialEcoTyper} metadata.}
 returned \code{SpatialEcoTyper} metadata. Default is \code{FALSE} to avoid silent
 partial annotations.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to the selected SpatialEcoTyper
 function.}

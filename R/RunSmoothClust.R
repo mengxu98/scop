@@ -120,10 +120,15 @@ RunSmoothClust <- function(
     message_type = "running",
     verbose = verbose
   )
-  validate_seurat_object(srt)
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "{.arg srt} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
   smooth_method <- match.arg(smooth_method)
-  smoothclust_assert_string(cluster_colname, "cluster_colname")
-  smoothclust_assert_string(tool_name, "tool_name")
+  validate_scalar_string(cluster_colname, "cluster_colname", message = "must be a non-empty character string")
+  validate_scalar_string(tool_name, "tool_name", message = "must be a non-empty character string")
   nfeatures <- smoothclust_assert_positive_integer(nfeatures, "nfeatures")
   min_spots <- smoothclust_assert_positive_integer(min_spots, "min_spots")
   k <- smoothclust_assert_positive_integer(k, "k")
@@ -146,10 +151,10 @@ RunSmoothClust <- function(
   n_pcs <- smoothclust_assert_positive_integer(n_pcs, "n_pcs")
   nstart <- smoothclust_assert_positive_integer(nstart, "nstart")
   iter.max <- smoothclust_assert_positive_integer(iter.max, "iter.max")
-  smoothclust_assert_flag(center, "center")
-  smoothclust_assert_flag(scale, "scale")
-  smoothclust_assert_flag(store_results, "store_results")
-  smoothclust_assert_flag(store_smoothed, "store_smoothed")
+  validate_scalar_flag(center, "center")
+  validate_scalar_flag(scale, "scale")
+  validate_scalar_flag(store_results, "store_results")
+  validate_scalar_flag(store_smoothed, "store_smoothed")
   smoothclust_assert_positive_number(bandwidth, "bandwidth")
   smoothclust_assert_positive_number(truncate, "truncate")
   if (truncate >= 1) {
@@ -511,17 +516,6 @@ smoothclust_filter_backend_args <- function(fun, args) {
   args[names(args) %in% formals_use]
 }
 
-smoothclust_assert_string <- function(x, arg) {
-  validate_scalar_string(
-    x,
-    arg,
-    message = "must be a non-empty character string"
-  )
-}
-
-smoothclust_assert_flag <- function(x, arg) {
-  validate_scalar_flag(x, arg)
-}
 
 smoothclust_assert_positive_integer <- function(
   x,

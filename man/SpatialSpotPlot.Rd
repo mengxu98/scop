@@ -111,10 +111,12 @@ spacing, then multiplies by \code{pie.radius.scale}.}
 
 \item{theme_use}{Theme name or function.}
 
+\item{theme_args}{Theme name or function, plus extra theme arguments.}
+
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

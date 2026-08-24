@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #' @param srt A `Seurat` object with metacell results from `RunMetaCell()`.
 #' @param show_cells Logical. If `TRUE`, the original single-cell points are
 #' drawn as a semi-transparent background layer behind the metacell centroids.

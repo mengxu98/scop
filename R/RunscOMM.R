@@ -32,6 +32,7 @@
 #' @export
 #' @examples
 #' \dontrun{
+#' \dontrun{
 #' data("pbmcmultiome_sub", package = "scop")
 #' pbmcmultiome_sub <- RunStandardWorkflow(pbmcmultiome_sub, assay = "RNA")
 #' ref_cells <- colnames(pbmcmultiome_sub)[1:250]
@@ -65,6 +66,7 @@
 #'   xlab = "UMAP_1",
 #'   ylab = "UMAP_2"
 #' )
+#' }
 #' }
 RunscOMM <- function(
   srt,

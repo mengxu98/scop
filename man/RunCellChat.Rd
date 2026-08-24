@@ -24,11 +24,11 @@ RunCellChat(
 \arguments{
 \item{srt}{A \code{Seurat} object.}
 
-\item{group.by}{Metadata column(s) to group cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
 \item{species}{\code{"Homo_sapiens"}, \code{"Mus_musculus"}, or \code{"zebrafish"}.}
 
-\item{split.by}{Metadata column to split the analysis or plot by.}
+\item{split.by}{Metadata column to facet by.}
 
 \item{annotation_selected}{Cell types to include. \code{NULL} uses all.}
 

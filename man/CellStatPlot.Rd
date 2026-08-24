@@ -60,9 +60,9 @@ CellStatPlot(
 
 \item{stat.by}{Features to plot.}
 
-\item{group.by}{Metadata column(s) to group cells by.}
+\item{group.by}{Metadata column(s) used to color cells.}
 
-\item{split.by}{Metadata column to split the analysis or plot by.}
+\item{split.by}{Metadata column to facet by.}
 
 \item{bg.by}{Metadata column used as background color.}
 
@@ -91,9 +91,7 @@ Can be one of \code{"percent"} or \code{"count"}.}
 \item{position}{The position adjustment for the plot.
 Can be one of \code{"stack"} or \code{"dodge"}.}
 
-\item{palette}{Color palette name. See \link[thisplot:show_palettes]{thisplot::show_palettes}.}
-
-\item{palcolor}{Custom colors used to build the palette.}
+\item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
 \item{alpha}{Plot transparency.}
 
@@ -111,7 +109,17 @@ Can be one of \code{"stack"} or \code{"dodge"}.}
 
 \item{aspect.ratio}{Panel aspect ratio.}
 
+\item{title}{Plot title. \code{NULL} hides the title for merged/single panels. When multiple lineages are plotted and \code{title} is \code{NULL}, each panel is titled with its lineage column.}
+
+\item{subtitle}{Plot subtitle.}
+
+\item{xlab}{Plot labels.}
+
 \item{ylab}{Y-axis label.}
+
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
 
 \item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
@@ -130,7 +138,7 @@ returns a list of ggplots.}
 
 \item{force}{Draw even when a grouping has more than 100 levels.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 
 \item{...}{Additional arguments passed to the plotting helpers.}
 }
@@ -349,7 +357,6 @@ CellStatPlot(
   plot_type = "chord"
 )
 
-if (requireNamespace("ggVennDiagram", quietly = TRUE)) {
   CellStatPlot(
     pancreas_sub,
     stat.by = c("CellType", "Phase"),
@@ -359,7 +366,6 @@ if (requireNamespace("ggVennDiagram", quietly = TRUE)) {
       Phase = "S"
     )
   )
-}
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType \%in\% c("Ngn3-low-EP", "Ngn3-high-EP")
 pancreas_sub$G2M <- pancreas_sub$Phase == "G2M"

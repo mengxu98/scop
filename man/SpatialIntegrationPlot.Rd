@@ -58,6 +58,8 @@ list.}
 
 \item{theme_use}{Theme name or function.}
 
+\item{theme_args}{Theme name or function, plus extra theme arguments.}
+
 \item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} or
 \code{\link[=CellDimPlot]{CellDimPlot()}}.}
 }

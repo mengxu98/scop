@@ -195,6 +195,10 @@ this may also be a length-2 vector for negative/positive changes.}
 
 \item{subtitle}{Plot subtitle.}
 
+\item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
+
+\item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
 \item{legend.title}{Legend title.}
 
 \item{font.size}{Base font size.}

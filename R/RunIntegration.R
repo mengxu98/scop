@@ -8,9 +8,9 @@
 #' @md
 #' @inheritParams CheckDataList
 #' @inheritParams CheckDataMerge
-#' @inheritParams scop-params
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
+#' @inheritParams scop-params
 #' @param scale_within_batch Scale within each batch. Only used by
 #' `"Uncorrected"`, `"Seurat"`, `"MNN"`, `"Harmony"`, `"BBKNN"`, `"CSS"`, `"ComBat"`.
 #' @param integration_methods Method(s) to run. Multiple methods require
@@ -95,8 +95,8 @@
 #'
 #' integration_methods <- c(
 #'   "Uncorrected", "Seurat", "CCA", "RPCA",
-#'   "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
-#'   "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
+#'   "MNN", "fastMNN", "Harmony", "Harmony5",
+#'   "Coralysis", "LIGER", "Conos", "ComBat"
 #' )
 #' p_list <- list()
 #' for (method in integration_methods) {
@@ -120,6 +120,8 @@
 #'
 #' # Python-backed methods prepare a scVI/scvi-tools environment and run model
 #' # training, so keep them separate from ordinary example checks.
+#' \dontrun{
+#' if (reticulate::py_module_available("scvi")) {
 #' panc8_sub <- RunIntegration(
 #'   panc8_sub,
 #'   batch = "tech",
@@ -134,6 +136,8 @@
 #'   IntegrateLayers_params = list(max_epochs = 2L),
 #'   nonlinear_reduction = "umap"
 #' )
+#' }
+#' }
 #'
 #' nonlinear_reductions <- c(
 #'   "umap", "tsne", "dm", "phate",

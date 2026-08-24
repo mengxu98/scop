@@ -420,7 +420,7 @@ resolve_estimate_scores <- function(object = NULL, score.data = NULL) {
       message_type = "error"
     )
   }
-  mat <- estimate_numeric_matrix(mat, row_label = "ESTIMATE scores")
+  mat <- numeric_matrix_result(mat, row_label = "ESTIMATE scores")
   list(matrix = mat, bundle = bundle)
 }
 
@@ -432,24 +432,6 @@ estimate_select_scores <- function(mat, scores) {
   mat[, scores, drop = FALSE]
 }
 
-estimate_numeric_matrix <- function(x, row_label = "matrix") {
-  mat <- as.matrix(x)
-  dim_names <- dimnames(mat)
-  mat <- suppressWarnings(matrix(
-    as.numeric(mat),
-    nrow = nrow(mat),
-    ncol = ncol(mat),
-    dimnames = dim_names
-  ))
-  if (is.null(rownames(mat))) {
-    log_message("{.arg {row_label}} must have rownames for sample alignment.", message_type = "error")
-  }
-  if (is.null(colnames(mat))) {
-    colnames(mat) <- paste0("score_", seq_len(ncol(mat)))
-  }
-  mat[!is.finite(mat)] <- NA_real_
-  mat
-}
 
 resolve_estimate_groups <- function(
   object,

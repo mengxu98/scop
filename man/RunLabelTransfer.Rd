@@ -89,7 +89,8 @@ otherwise.}
 
 \item{scomm_hidden_nodes, scomm_epochs, scomm_batch_size, scomm_threshold, scomm_seed}{Parameters passed to the optional \code{scOMM} backend.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with prediction metadata added.

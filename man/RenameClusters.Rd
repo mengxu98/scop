@@ -24,7 +24,8 @@ RenameClusters(
 
 \item{keep_levels}{If the old group is a factor, keep the order of the levels.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \description{
 Rename clusters for the Seurat object

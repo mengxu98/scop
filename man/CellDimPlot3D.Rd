@@ -111,7 +111,7 @@ show axes, colorbar, and title for \code{plot_type = "density_surface"}.}
 
 \item{force}{Draw even when a grouping has more than 100 levels.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print messages.}
 }
 \description{
 Color cells in 3D reduction space, or draw an interactive density surface.

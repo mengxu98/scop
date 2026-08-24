@@ -103,10 +103,10 @@ RunCARD <- function(
       message_type = "error"
     )
   }
-  card_assert_scalar_string(prefix, "prefix")
-  card_assert_scalar_string(tool_name, "tool_name")
-  card_validate_param_list(create_card_params, "create_card_params")
-  card_validate_param_list(card_deconvolution_params, "card_deconvolution_params")
+  validate_scalar_string(prefix, "prefix", require_character = FALSE)
+  validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
+  validate_named_param_list(create_card_params, "create_card_params", require_list = TRUE)
+  validate_named_param_list(card_deconvolution_params, "card_deconvolution_params", require_list = TRUE)
   coordinate_space <- match.arg(coordinate_space)
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -192,7 +192,7 @@ RunCARD <- function(
     )
   }
 
-  coords <- rctd_get_spatial_coords(
+  coords <- resolve_spatial_spot_coords(
     srt = srt,
     spot_ids = colnames(st_counts),
     image = image,
@@ -208,7 +208,7 @@ RunCARD <- function(
 
   extra_params <- list(...)
   if (length(extra_params) > 0L) {
-    card_validate_param_list(extra_params, "...")
+    validate_named_param_list(extra_params, "...", require_list = TRUE)
     card_deconvolution_params <- c(card_deconvolution_params, extra_params)
   }
 
@@ -527,10 +527,3 @@ card_match_formals <- function(fun, args) {
   args[names(args) %in% fmls]
 }
 
-card_validate_param_list <- function(x, arg_name) {
-  validate_named_param_list(x, arg_name, require_list = TRUE)
-}
-
-card_assert_scalar_string <- function(x, arg) {
-  validate_scalar_string(x, arg, require_character = FALSE)
-}

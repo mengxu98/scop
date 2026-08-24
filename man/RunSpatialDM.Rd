@@ -49,9 +49,47 @@ RunSpatialDM(
 
 \item{image, coord.cols}{Spatial image or metadata coordinate columns.}
 
+\item{coordinate.unit}{Unit of the raw input coordinates. Automatic unit selection uses technology-specific rules.}
+
 \item{method}{Official global/local test mode.}
 
+\item{run.local}{Whether to run locally.}
+
 \item{l, eff_dist}{SpatialDM RBF scale; one must be supplied.}
+
+\item{cutoff}{Maximum selected-cell fraction used by Scissor's alpha search.}
+
+\item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.}
+
+\item{n_neighbor_layers}{Number of neighbor layers to use.}
+
+\item{single_cell}{Whether the input is a single-cell (rather than spatial) dataset.}
+
+\item{complex.mean}{Whether to use a modified mean test statistic in complex heatmaps.}
+
+\item{min_cell}{Minimum number of cells required.}
+
+\item{n_perm}{Number of permutations.}
+
+\item{nproc}{Number of parallel processes.}
+
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
+
+\item{global.fdr}{Global FDR threshold.}
+
+\item{global.threshold}{Global threshold.}
+
+\item{local.fdr}{Local FDR threshold.}
+
+\item{local.threshold}{Local threshold.}
+
+\item{result.name}{Stored result name.}
+
+\item{envname}{Conda-compatible Python environment. If \code{NULL}, the environment name will be set to \code{"scop_env"}.}
+
+\item{overwrite}{Whether to overwrite existing metadata.}
+
+\item{verbose}{Whether to print messages.}
 }
 \value{
 A Seurat object with a schema-v1 \code{SpatialDM} result bundle.

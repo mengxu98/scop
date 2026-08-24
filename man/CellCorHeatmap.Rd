@@ -311,14 +311,15 @@ The \code{magick} package will automatically be installed if it is not installed
 
 \item{width, height, units}{Heatmap size. \code{NULL} sizes from matrix dimensions.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 
 \item{legend.position}{Legend side (\code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}).
 Gap to the heatmap grows automatically when long row names are on the right.}
 
 \item{ht_params}{Extra arguments passed to \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap}, overriding defaults.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 }
 \value{
 A list with the following elements:

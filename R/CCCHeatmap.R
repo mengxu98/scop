@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams CCCStatPlot
+#' @inheritParams scop-params
 #' @param plot_type Plot type. One of `"heatmap"` or `"dot"`.
 #' `"bubble"` is a CellChat-specific interaction bubble matrix.
 #' `"ligand_target"` is a special heatmap path available only with

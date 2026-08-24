@@ -1,9 +1,9 @@
 #' @title Feature statistical plots
 #'
 #' @md
-#' @inheritParams scop-params
 #' @inheritParams CellDimPlot
 #' @inheritParams FeatureDimPlot
+#' @inheritParams scop-params
 #' @param stat.by Features to plot.
 #' @param plot.by `"group"` or `"feature"`.
 #' @param bg.by Metadata column used as background color.

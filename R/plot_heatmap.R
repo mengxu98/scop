@@ -922,17 +922,13 @@ heatmap_enrichment_terms_n_lines <- function(data, max_width) {
   max_width_in <- grid::convertWidth(max_width, "in", valueOnly = TRUE)
   vapply(seq_len(nrow(data)), function(i) {
     term <- data[["term"]][[i]]
-    wrap_width <- heatmap_enrichment_terms_wrap_chars(
-      width_in = max_width_in,
-      fontsize = data[["fontsize"]][[i]]
-    )
+    wrap_width <- { .inline0 <- max_width_in; .inline1 <- data[["fontsize"]][[i]]; 
+  pmax(20L, floor(.inline0 * 72 * 0.95 / (.inline1 * 0.35)))
+ }
     max(length(strwrap(term, width = wrap_width)), 1L)
   }, integer(1))
 }
 
-heatmap_enrichment_terms_wrap_chars <- function(width_in, fontsize) {
-  pmax(20L, floor(width_in * 72 * 0.95 / (fontsize * 0.35)))
-}
 
 heatmap_enrichment_draw_terms_box <- function(
   data,

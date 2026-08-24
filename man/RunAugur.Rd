@@ -64,7 +64,8 @@ are used.}
 \item{add_meta}{Whether to write \code{prefix_auc} and \code{prefix_rank} metadata
 columns back to each cell by matching \code{celltype.by}.}
 
-\item{verbose}{Print progress messages.}
+\item{verbose}{Whether to print the message.
+Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to \code{Augur::calculate_auc}.}
 }

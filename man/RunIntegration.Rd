@@ -118,7 +118,7 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \item{cluster_algorithm, cluster_resolution}{Clustering (\code{"louvain"}, \code{"slm"},
 \code{"leiden"}). Larger \code{cluster_resolution} yields fewer clusters.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for jitter in Manhattan and ring plots.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -184,8 +184,8 @@ pbmcmultiome_sub <- RunIntegration(
 
 integration_methods <- c(
   "Uncorrected", "Seurat", "CCA", "RPCA",
-  "MNN", "fastMNN", "fastMNN5", "Harmony", "Harmony5",
-  "Scanorama", "BBKNN", "CSS", "Coralysis", "LIGER", "Conos", "ComBat"
+  "MNN", "fastMNN", "Harmony", "Harmony5",
+  "Coralysis", "LIGER", "Conos", "ComBat"
 )
 p_list <- list()
 for (method in integration_methods) {
@@ -209,6 +209,8 @@ for (method in integration_methods) {
 
 # Python-backed methods prepare a scVI/scvi-tools environment and run model
 # training, so keep them separate from ordinary example checks.
+\dontrun{
+if (reticulate::py_module_available("scvi")) {
 panc8_sub <- RunIntegration(
   panc8_sub,
   batch = "tech",
@@ -223,6 +225,8 @@ panc8_sub <- RunIntegration(
   IntegrateLayers_params = list(max_epochs = 2L),
   nonlinear_reduction = "umap"
 )
+}
+}
 
 nonlinear_reductions <- c(
   "umap", "tsne", "dm", "phate",

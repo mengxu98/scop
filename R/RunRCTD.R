@@ -160,11 +160,11 @@ RunRCTD <- function(
       message_type = "error"
     )
   }
-  rctd_validate_named_param_list(create_rctd_params, "create_rctd_params")
-  rctd_validate_named_param_list(run_rctd_params, "run_rctd_params")
+  validate_named_param_list(create_rctd_params, "create_rctd_params")
+  validate_named_param_list(run_rctd_params, "run_rctd_params")
   rctd_mode <- match.arg(rctd_mode)
   coordinate_space <- match.arg(coordinate_space)
-  rctd_assert_scalar_string(tool_name, "tool_name")
+  validate_scalar_string(tool_name, "tool_name")
   max_cores <- rctd_check_single_positive(max_cores, "max_cores")
   min_cells <- rctd_check_single_positive(min_cells, "min_cells")
   validate_scalar_flag(round_counts, "round_counts")
@@ -302,7 +302,7 @@ RunRCTD <- function(
       message_type = "error"
     )
   }
-  coords <- rctd_get_spatial_coords(
+  coords <- resolve_spatial_spot_coords(
     srt = srt,
     spot_ids = colnames(st_counts),
     image = image,
@@ -312,7 +312,7 @@ RunRCTD <- function(
 
   extra_run_params <- list(...)
   if (length(extra_run_params) > 0L) {
-    rctd_validate_named_param_list(extra_run_params, "...")
+    validate_named_param_list(extra_run_params, "...")
     run_rctd_params <- c(run_rctd_params, extra_run_params)
   }
 
@@ -392,9 +392,6 @@ RunRCTD <- function(
   srt
 }
 
-rctd_assert_scalar_string <- function(x, arg_name) {
-  validate_scalar_string(x, arg_name)
-}
 
 rctd_check_single_positive <- function(x, arg_name) {
   if (
@@ -411,9 +408,6 @@ rctd_check_single_positive <- function(x, arg_name) {
   as.integer(x)
 }
 
-rctd_validate_named_param_list <- function(x, arg_name) {
-  validate_named_param_list(x, arg_name)
-}
 
 rctd_filter_labels_by_min_cells <- function(labels, min_cells, verbose = TRUE) {
   label_counts <- table(labels)
@@ -506,21 +500,6 @@ rctd_get_count_matrix <- function(
   mat
 }
 
-rctd_get_spatial_coords <- function(
-  srt,
-  spot_ids,
-  image = NULL,
-  coord.cols = c("x", "y"),
-  coordinate_space = c("raw", "legacy_display")
-) {
-  resolve_spatial_spot_coords(
-    srt = srt,
-    spot_ids = spot_ids,
-    image = image,
-    coord.cols = coord.cols,
-    coordinate_space = coordinate_space
-  )
-}
 
 rctd_spacexr_exports <- function() {
   getNamespaceExports("spacexr")
