@@ -752,6 +752,7 @@ spatial_dim_coords <- function(
     image = image,
     coord.cols = coord.cols,
     image.scale = image.scale,
+    require_scale = TRUE,
     image_policy = image_policy
   )
   selected_image <- raw$source$image

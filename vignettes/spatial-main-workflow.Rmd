@@ -53,7 +53,7 @@ Seurat scale factor exactly once for display. The default is the low-resolution
 raster. If the image slot contains `tissue_hires_image.png`, pass
 `image.scale = "hires"`; do not rewrite `@scale.factors`.
 SCOP also normalizes Seurat's spatial row/column ordering to horizontal x and
-vertical y; this is important for VisiumV2/FOV tables whose columns are named
+vertical y; this is important for VisiumV2 tables whose columns are named
 `x`/`y` but are plotted by Seurat as the second column versus the first.
 
 ```{r inspect-spatial}

@@ -245,6 +245,7 @@ spatalk_deconvolution_spec <- function(
         message_type = "error"
       )
     }
+    spatial_require_coordinate_contract(stored, "RunRCTD()")
   }
   if (is.null(dec_result)) {
     log_message(

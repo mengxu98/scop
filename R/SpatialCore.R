@@ -58,7 +58,8 @@ spatial_tag_coordinate_contract <- function(result) {
 
 spatial_image_scale_info <- function(
   image,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  required = TRUE
 ) {
   image.scale <- match.arg(image.scale)
   if (!"scale.factors" %in% methods::slotNames(image)) {
@@ -71,6 +72,13 @@ spatial_image_scale_info <- function(
   scale_factors <- methods::slot(image, "scale.factors")
   scale <- tryCatch(scale_factors[[image.scale]], error = function(e) NULL)
   if (is.null(scale) || length(scale) != 1L || !is.finite(scale) || scale <= 0) {
+    if (!isTRUE(required)) {
+      return(list(
+        scale = NA_real_,
+        scale_name = image.scale,
+        has_scale_factors = TRUE
+      ))
+    }
     log_message(
       "Spatial image scale factor {.val {image.scale}} is missing or invalid",
       message_type = "error"
@@ -125,6 +133,7 @@ spatial_coords_raw <- function(
   image = NULL,
   coord.cols = c("col", "row"),
   image.scale = c("lowres", "hires"),
+  require_scale = FALSE,
   image_policy = "strict"
 ) {
   image.scale <- match.arg(image.scale)
@@ -179,10 +188,13 @@ spatial_coords_raw <- function(
     if (isTRUE(has_explicit_pixels)) {
       x_col <- spatial_dim_pick_col(raw, c("pxl_col_in_fullres", "imagecol"))
       y_col <- spatial_dim_pick_col(raw, c("pxl_row_in_fullres", "imagerow"))
-    } else if (all(c("x", "y") %in% raw_names)) {
+    } else if (
+      inherits(spatial_image, "VisiumV2") &&
+        all(c("x", "y") %in% raw_names)
+    ) {
       # Seurat spatial plotting treats the first coordinate column as image
-      # row and the second as image column, including VisiumV2/FOV tables
-      # named x/y. Normalize them to horizontal x and vertical y here.
+      # row and the second as image column for VisiumV2 tables named x/y.
+      # Normalize them to horizontal x and vertical y here.
       x_col <- spatial_dim_pick_col(raw, "y")
       y_col <- spatial_dim_pick_col(raw, "x")
     } else {
@@ -196,7 +208,11 @@ spatial_coords_raw <- function(
       row.names = cells,
       stringsAsFactors = FALSE
     )
-    scale_info <- spatial_image_scale_info(spatial_image, image.scale = image.scale)
+    scale_info <- spatial_image_scale_info(
+      spatial_image,
+      image.scale = image.scale,
+      required = require_scale
+    )
     image_array <- tryCatch(methods::slot(spatial_image, "image"), error = function(e) NULL)
     image_dims <- if (is.null(image_array)) NULL else dim(image_array)
     transform <- list(
@@ -269,6 +285,12 @@ spatial_coords_to_display <- function(raw, transform) {
     log_message("{.arg raw} must contain x and y columns", message_type = "error")
   }
   scale <- transform$scale %||% 1
+  if (length(scale) != 1L || !is.finite(scale) || scale <= 0) {
+    log_message(
+      "Display conversion requires a positive finite image scale factor",
+      message_type = "error"
+    )
+  }
   out$x <- as.numeric(out$x) * scale
   out$y <- as.numeric(out$y) * scale
   if (isTRUE(transform$y_flip)) {
@@ -357,7 +379,7 @@ spatial_analysis_coords <- function(
 #' Return raw analysis coordinates or display coordinates together with their
 #' source and reversible transform. Image-backed coordinates are normalized to
 #' horizontal `x` (image column) and vertical `y` (image row), including
-#' VisiumV2/FOV tables whose Seurat `x`/`y` names retain row/column ordering.
+#' VisiumV2 tables whose Seurat `x`/`y` names retain row/column ordering.
 #' This function does not modify the object.
 #'
 #' @param object A `Seurat` object.
@@ -388,6 +410,7 @@ SpatialCoordinates <- function(
     image = image,
     coord.cols = coord.cols,
     image.scale = image.scale,
+    require_scale = identical(space, "display"),
     image_policy = image_policy
   )
   if (identical(space, "display")) {
