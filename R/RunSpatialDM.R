@@ -392,7 +392,7 @@ SpatialDMPlot <- function(
   pair = NULL, spot = NULL, signaling = c("secreted", "contact"),
   highlight = NULL, palette = "RdBu", palcolor = NULL,
   theme_use = "theme_scop", theme_args = list(),
-  image.scale = c("lowres", "hires"), ...
+  ..., image.scale = c("lowres", "hires")
 ) {
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)

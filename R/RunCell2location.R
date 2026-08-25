@@ -396,9 +396,6 @@ RunCell2location <- function(
       parameters = result_parameters,
       summary = spatial_weight_summary(proportions)
     )
-    srt_out@tools[[tool_name]] <- spatial_tag_coordinate_contract(
-      srt_out@tools[[tool_name]]
-    )
   }
 
   log_message(
@@ -459,8 +456,8 @@ Cell2locationPlot <- function(
   image = NULL,
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
-  image.scale = c("lowres", "hires"),
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")

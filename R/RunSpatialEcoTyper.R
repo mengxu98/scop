@@ -374,8 +374,8 @@ SpatialEcoTyperSpatialPlot <- function(
   palette = "Paired",
   palcolor = NULL,
   theme_use = "theme_scop",
-  image.scale = c("lowres", "hires"),
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 ) {
   image.scale <- match.arg(image.scale)
   SpatialSpotPlot(
@@ -1329,7 +1329,6 @@ spatialecotyper_store_tool <- function(
       metadata = metadata,
       parameters = parameters
     )
-    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
   srt
 }

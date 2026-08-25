@@ -13,8 +13,8 @@ SpatialDeconvolutionPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  image.scale = c("lowres", "hires"),
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{

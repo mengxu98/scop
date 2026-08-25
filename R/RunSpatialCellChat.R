@@ -262,24 +262,20 @@ spatialcellchat_metric_coordinates <- function(
     space = "raw",
     image_policy = "strict"
   )
-  display <- SpatialCoordinates(
-    object = srt,
-    image = image,
-    coord.cols = coord.cols,
-    space = "display",
-    image_policy = "strict"
-  )
   coords <- raw$data[raw$data$cell_id %in% cells, , drop = FALSE]
   coords <- coords[match(cells, coords$cell_id), , drop = FALSE]
   if (nrow(coords) != length(cells) || anyNA(coords$cell_id) || !identical(as.character(coords$cell_id), cells)) {
     log_message("Spatial coordinates do not align one-to-one with selected cells or spots", message_type = "error")
   }
-  display_coords <- display$data[match(cells, display$data$cell_id), , drop = FALSE]
+  display_coords <- coords
+  plot_coordinate_space <- "raw"
+  stored_scale <- raw$transform$scale %||% NA_real_
   if (
-    nrow(display_coords) != length(cells) || anyNA(display_coords$cell_id) ||
-      !identical(as.character(display_coords$cell_id), cells)
+    length(stored_scale) == 1L && is.finite(stored_scale) &&
+      stored_scale > 0
   ) {
-    log_message("Display coordinates do not align one-to-one with selected cells or spots", message_type = "error")
+    display_coords <- spatial_coords_to_display(coords, raw$transform)
+    plot_coordinate_space <- "display"
   }
   coordinate.unit <- match.arg(coordinate.unit, c("auto", "pixel", "micron"))
   if (identical(coordinate.unit, "auto")) {
@@ -341,6 +337,7 @@ spatialcellchat_metric_coordinates <- function(
     unit_source = unit_source,
     scale_to_micron = as.numeric(ratio),
     analysis_unit = "micron",
+    plot_coordinate_space = plot_coordinate_space,
     tol_um = as.numeric(tol)
   ))
   list(data = coords, source = source, spatial.factors = list(ratio = 1, tol = as.numeric(tol)))

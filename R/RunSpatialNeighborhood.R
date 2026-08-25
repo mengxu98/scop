@@ -306,8 +306,8 @@ SpatialNeighborhoodPlot <- function(
   byrow = TRUE,
   seed = 11,
   verbose = TRUE,
-  image.scale = c("lowres", "hires"),
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
