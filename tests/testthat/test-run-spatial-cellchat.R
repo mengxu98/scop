@@ -663,4 +663,15 @@ test_that("unified CCC plots reject old SpatialCellChat coordinate results", {
     CCCStatPlot(out, method = "SpatialCellChat", plot_type = "bar"),
     "rerun\\s+RunSpatialCellChat"
   )
+
+  without_cache <- out
+  without_cache@tools$CCC <- NULL
+  expect_error(
+    CCCNetworkPlot(
+      without_cache,
+      method = "SpatialCellChat",
+      plot_type = "circle"
+    ),
+    "rerun\\s+RunSpatialCellChat"
+  )
 })
