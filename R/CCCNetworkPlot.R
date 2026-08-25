@@ -5,7 +5,9 @@
 #' @inheritParams scop-params
 #' @param plot_type Plot type. One of `"circle"`, `"chord"`, `"pathway"`,
 #'   `"individual_lr"`, `"arrow"`, `"sigmoid"`, `"bipartite"`,
-#'   `"embedding_network"`, or `"diff_network"`.
+#'   `"embedding_network"`, `"diff_network"`, or `"spatial"`. The spatial
+#'   view overlays stored communication on the selected slice coordinates and
+#'   supports `SpatialCellChat`, `SpaTalk`, and `COMMOT` results.
 #' @param ligand For `plot_type = "bipartite"`: the ligand name to focus on.
 #'   If `NULL`, the ligand with the highest total score is used.
 #' @param receptor For `plot_type = "bipartite"`: optional receptor names to
@@ -43,6 +45,11 @@
 #' @param arrow_length Arrow length passed to `grid::arrow()`.
 #' @param node_size Base node size.
 #' @param node_alpha Node alpha.
+#' @param spot_size,spot_alpha Size and alpha of ordinary spatial observations.
+#' @param composition_display How composition-mode observations are rendered:
+#'   proportional pies, dominant cell type, or neutral points.
+#' @param composition_radius Radius of composition pies in display-coordinate
+#'   units. `NULL` derives a density-aware default.
 #' @param legend.title Legend title.
 #' @param ... Additional plot-specific options. For chord plots, `reduce`,
 #'   `max.groups`, `small.gap`, `big.gap`, and `lab.cex` can be used to adjust
@@ -198,6 +205,7 @@ CCCNetworkPlot <- function(
     "bipartite",
     "embedding_network",
     "diff_network",
+    "spatial",
     "diffusion"
   ),
   display_by = c("aggregation", "interaction"),
@@ -266,6 +274,10 @@ CCCNetworkPlot <- function(
   combine_methods = c("separate", "support", "rank", "legacy"),
   resource = NULL,
   sample = NULL,
+  spot_size = 1.2,
+  spot_alpha = 0.35,
+  composition_display = c("pie", "dominant", "none"),
+  composition_radius = NULL,
   ...
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -281,6 +293,7 @@ CCCNetworkPlot <- function(
   layout <- match.arg(layout)
   edge_value <- match.arg(edge_value)
   edge_line <- match.arg(edge_line)
+  composition_display <- match.arg(composition_display)
   plot_type_requested <- plot_type
   if (identical(plot_type, "circle") && identical(layout, "chord")) {
     plot_type <- "chord"
@@ -293,6 +306,7 @@ CCCNetworkPlot <- function(
     force(expr)
   }
   label.enable <- isTRUE(dots[["label"]])
+  label.spatial <- if (is.null(dots[["label"]])) TRUE else isTRUE(dots[["label"]])
   label.size <- dots[["label.size"]] %||% 4
   label.fg <- dots[["label.fg"]] %||% "white"
   label.bg <- dots[["label.bg"]] %||% "black"
@@ -450,6 +464,69 @@ CCCNetworkPlot <- function(
   )
 
   method <- detect_method(srt = srt, method = method)
+  if (identical(plot_type, "spatial")) {
+    stored <- ccc_spatial_stored(
+      object = srt,
+      method = method,
+      condition = condition,
+      sample = sample
+    )
+    pair_df_spatial <- ccc_spatial_network_data(
+      stored = stored,
+      sender.use = sender.use,
+      receiver.use = receiver.use,
+      ligand.use = ligand.use,
+      receptor.use = receptor.use,
+      interaction.use = interaction.use,
+      signaling = signaling,
+      pairLR.use = pairLR.use,
+      thresh = thresh,
+      value = value,
+      edge_value = edge_value,
+      edge_threshold = edge_threshold,
+      top_n = top_n
+    )
+    label_spatial <- label.spatial
+    directed_spatial <- if (isTRUE(missing(directed))) TRUE else isTRUE(directed)
+    return(finish_plot(ccc_spatial_network_plot(
+      stored = stored,
+      pair_df = pair_df_spatial,
+      cell_palette = palette_cfg$cell_palette,
+      cell_palcolor = palette_cfg$cell_palcolor,
+      link_palette = palette_cfg$link_palette,
+      link_palcolor = palette_cfg$link_palcolor,
+      edge_size = edge_size,
+      edge_color = edge_color,
+      edge_alpha = edge_alpha,
+      edge_line = edge_line,
+      edge_curvature = edge_curvature,
+      directed = directed_spatial,
+      arrow_type = arrow_type,
+      arrow_angle = arrow_angle,
+      arrow_length = arrow_length,
+      node_size = node_size,
+      node_alpha = node_alpha,
+      spot_size = spot_size,
+      spot_alpha = spot_alpha,
+      composition_display = composition_display,
+      composition_radius = composition_radius,
+      label = label_spatial,
+      label.size = label.size,
+      title = title,
+      subtitle = subtitle %||% paste(
+        stored$method,
+        stored$result.name,
+        stored$sample %||% "",
+        sep = " | "
+      ),
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      legend.title = legend.title,
+      font.size = font.size,
+      theme_use = theme_use,
+      theme_args = theme_args
+    )))
+  }
   combine_methods <- match.arg(combine_methods)
   srt <- ccc_prepare_filtered_object(
     srt = srt,
