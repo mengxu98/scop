@@ -1257,7 +1257,12 @@ def CellRank(
     softmax_scale=4,
     n_macrostates=None,
     schur_method="krylov",
+    schur_n_components=None,
     n_cells_terminal=10,
+    terminal_states=None,
+    terminal_state_agg="top_n",
+    driver_lineages=None,
+    compute_lineage_drivers=True,
     save_plot=False,
     plot_format="png",
     plot_dpi=600,
@@ -1266,6 +1271,11 @@ def CellRank(
 ):
     import os
     import platform
+
+    if isinstance(terminal_states, (str, bytes)):
+        terminal_states = [terminal_states]
+    if isinstance(driver_lineages, (str, bytes)):
+        driver_lineages = [driver_lineages]
 
     os.environ["OMP_NUM_THREADS"] = "1"
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
@@ -1612,11 +1622,11 @@ def CellRank(
                 )
             except Exception as e:
                 log_message(
-                    "{.pkg PseudotimeKernel} failed: {.val {e}}. Falling back to ConnectivityKernel.",
-                    message_type="warning",
+                    "{.pkg PseudotimeKernel} failed: {.val {e}}",
+                    message_type="error",
                     verbose=verbose,
                 )
-                use_pseudotime = False
+                raise
 
         elif use_cytotrace:
             log_message(
@@ -2124,6 +2134,9 @@ def CellRank(
 
         gpcca_failed = False
 
+        if terminal_states is not None and estimator_type != "GPCCA":
+            raise ValueError("terminal_states is supported only with estimator_type='GPCCA'")
+
         if estimator_type == "GPCCA":
             try:
                 estimator = cr.estimators.GPCCA(final_kernel)
@@ -2135,7 +2148,14 @@ def CellRank(
                 )
                 estimator.compute_eigendecomposition()
 
-                if n_macrostates is None:
+                if schur_n_components is not None:
+                    n_states_schur = int(schur_n_components)
+                    log_message(
+                        "Using explicit n_states={.val {n_states_schur}} for Schur",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+                elif n_macrostates is None:
                     n_cells = adata.n_obs
                     if n_cells < 100:
                         n_states_schur = 5
@@ -2164,36 +2184,7 @@ def CellRank(
                     message_type="info",
                     verbose=verbose,
                 )
-                try:
-                    estimator.compute_schur(n_states_schur, method=schur_method)
-                except (ValueError, RuntimeError) as schur_error:
-                    if "subspace_angles" in str(
-                        schur_error
-                    ) or "invariant subspace" in str(schur_error):
-                        if schur_method == "brandts":
-                            log_message(
-                                "Schur decomposition with {.val {schur_method}} method failed: {.val {schur_error}}",
-                                message_type="warning",
-                                verbose=verbose,
-                            )
-                            log_message(
-                                "Trying with {.val krylov} method instead...",
-                                message_type="info",
-                                verbose=verbose,
-                            )
-                            try:
-                                estimator.compute_schur(n_states_schur, method="krylov")
-                            except Exception as krylov_error:
-                                log_message(
-                                    "Schur decomposition with {.val krylov} method also failed: {.val {krylov_error}}",
-                                    message_type="warning",
-                                    verbose=verbose,
-                                )
-                                raise schur_error
-                        else:
-                            raise
-                    else:
-                        raise
+                estimator.compute_schur(n_states_schur, method=schur_method)
 
                 if n_macrostates is None:
                     n_macro = max(2, n_states_schur - 2)
@@ -2207,7 +2198,8 @@ def CellRank(
                 )
                 try:
                     estimator.compute_macrostates(
-                        n_states=n_macro, n_cells=n_cells_terminal
+                        n_states=n_macro, n_cells=n_cells_terminal,
+                        cluster_key=group_by
                     )
                 except ValueError as macro_error:
                     if "Discretizing leads to a cluster" in str(
@@ -2226,7 +2218,8 @@ def CellRank(
                         n_macro_reduced = max(2, n_macro - 2)
                         try:
                             estimator.compute_macrostates(
-                                n_states=n_macro_reduced, n_cells=n_cells_terminal
+                                n_states=n_macro_reduced, n_cells=n_cells_terminal,
+                                cluster_key=group_by
                             )
                             log_message(
                                 "Macrostates computed successfully with n_states={.val {n_macro_reduced}}",
@@ -2239,23 +2232,33 @@ def CellRank(
                                 message_type="warning",
                                 verbose=verbose,
                             )
-                            log_message(
-                                "Automatically switching to {.pkg CFLARE} estimator (more robust for problematic matrices)...",
-                                message_type="warning",
-                                verbose=verbose,
-                            )
-                            gpcca_failed = True
-                            estimator_type = "CFLARE"
+                            raise
                     else:
                         raise
 
                 if not gpcca_failed:
-                    log_message(
-                        "Setting terminal states (n_cells={.val {n_cells_terminal}})...",
-                        message_type="info",
-                        verbose=verbose,
-                    )
-                    estimator.set_terminal_states(n_cells=n_cells_terminal)
+                    if terminal_states is not None:
+                        available_states = [str(x) for x in estimator.macrostates.cat.categories]
+                        requested_states = [str(x) for x in terminal_states]
+                        missing_states = [x for x in requested_states if x not in available_states]
+                        if missing_states:
+                            raise ValueError(
+                                "Requested terminal states are not present in computed macrostates: "
+                                + ", ".join(missing_states)
+                            )
+                        estimator.set_terminal_states(
+                            states=requested_states,
+                            n_cells=n_cells_terminal,
+                            agg=terminal_state_agg,
+                            cluster_key=group_by,
+                        )
+                    else:
+                        log_message(
+                            "Setting terminal states (n_cells={.val {n_cells_terminal}})...",
+                            message_type="info",
+                            verbose=verbose,
+                        )
+                        estimator.set_terminal_states(n_cells=n_cells_terminal)
 
                 if not gpcca_failed:
                     log_message(
@@ -2280,13 +2283,7 @@ def CellRank(
                             message_type="warning",
                             verbose=verbose,
                         )
-                        log_message(
-                            "Automatically switching to {.pkg CFLARE} estimator (more robust for problematic matrices)...",
-                            message_type="warning",
-                            verbose=verbose,
-                        )
-                        gpcca_failed = True
-                        estimator_type = "CFLARE"
+                        raise
                     else:
                         # Already tried to switch, just raise
                         raise
@@ -2357,14 +2354,18 @@ def CellRank(
                 )
                 estimator.compute_fate_probabilities(solver="direct")
 
-        if fate_probabilities_available:
+        if fate_probabilities_available and compute_lineage_drivers:
             log_message(
                 "Computing lineage drivers for {.arg cluster_key}={.val {group_by}}...",
                 message_type="info",
                 verbose=verbose,
             )
             try:
-                estimator.compute_lineage_drivers(cluster_key=group_by, use_raw=False)
+                estimator.compute_lineage_drivers(
+                    lineages=driver_lineages,
+                    cluster_key=group_by,
+                    use_raw=False,
+                )
             except RuntimeError as e:
                 if "Compute `.fate_probabilities`" in str(e):
                     log_message(
@@ -2374,6 +2375,12 @@ def CellRank(
                     )
                 else:
                     raise
+        elif fate_probabilities_available:
+            log_message(
+                "Skipping lineage drivers by request",
+                message_type="info",
+                verbose=verbose,
+            )
         else:
             log_message(
                 "Skipping lineage drivers computation because fate probabilities are not available",
@@ -2953,12 +2960,83 @@ def CellRank(
     except:
         pass
 
+    def _cellrank_array(value):
+        if value is None:
+            return None
+        if hasattr(value, "X"):
+            value = value.X
+        if hasattr(value, "toarray"):
+            value = value.toarray()
+        if hasattr(value, "to_numpy"):
+            value = value.to_numpy()
+        return np.asarray(value)
+
+    def _cellrank_frame(value, columns=None):
+        if value is None:
+            return None
+        index = [str(x) for x in getattr(value, "index", [])]
+        out_columns = [str(x) for x in getattr(value, "columns", [])]
+        if columns is not None and len(out_columns) == 0:
+            out_columns = [str(x) for x in columns]
+        return {
+            "values": _cellrank_array(value),
+            "index": index,
+            "columns": out_columns,
+        }
+
+    fate = getattr(estimator, "fate_probabilities", None)
+    if fate is not None:
+        fate_array = _cellrank_array(fate)
+        if fate_array is not None and fate_array.ndim == 2:
+            adata.obsm["to_terminal_states"] = fate_array
+            fate_columns = [str(x) for x in getattr(fate, "names", [])]
+            if not fate_columns:
+                fate_columns = [str(x) for x in getattr(fate, "columns", [])]
+            if fate_columns:
+                adata.uns["scop_cellrank_fate_columns"] = fate_columns
+
+    try:
+        adata.obsp["cellrank_transition"] = final_kernel.transition_matrix
+    except Exception:
+        pass
+
+    fate_names_for_payload = getattr(fate, "names", None)
+    if fate_names_for_payload is None or len(fate_names_for_payload) == 0:
+        fate_names_for_payload = getattr(fate, "columns", None)
+    macro_obj = getattr(estimator, "macrostates", None)
+    terminal_obj = getattr(estimator, "terminal_states", None)
+    payload = {
+        "fate_probabilities": _cellrank_frame(
+            fate,
+            fate_names_for_payload,
+        ),
+        "lineage_drivers": _cellrank_frame(
+            getattr(estimator, "lineage_drivers", None)
+        ),
+        "macrostates": [str(x) for x in getattr(macro_obj, "to_list", lambda: [])()],
+        "terminal_states": [str(x) for x in getattr(terminal_obj, "to_list", lambda: [])()],
+        "initial_states": [
+            str(x)
+            for x in getattr(
+                getattr(estimator, "initial_states", None), "to_list", lambda: []
+            )()
+        ],
+        "transition_key": "cellrank_transition",
+        "versions": {},
+    }
+    for package_name in ("cellrank", "scanpy", "palantir", "pandas"):
+        try:
+            from importlib.metadata import version as package_version
+            payload["versions"][package_name] = package_version(package_name)
+        except Exception:
+            pass
+
     log_message(
-        "Returning adata, estimator, and kernel objects",
+        "Returning adata, estimator, kernel, and normalized CellRank payload",
         message_type="info",
         verbose=verbose,
     )
-    return adata, estimator, final_kernel
+    return adata, estimator, final_kernel, payload
 
 
 def PAGA(
@@ -3425,6 +3503,8 @@ def Palantir(
     adjust_early_cell=False,
     adjust_terminal_cells=False,
     max_iterations=25,
+    magic_impute=False,
+    magic_layer="MAGIC_imputed_data",
     n_jobs=1,
     point_size=20,
     show_plot=True,
@@ -3641,6 +3721,10 @@ def Palantir(
             alpha=dm_alpha,
         )
         ms_data = palantir.utils.determine_multiscale_space(dm_res, n_eigs=dm_n_eigs)
+        if magic_impute:
+            adata.layers[magic_layer] = palantir.utils.run_magic_imputation(
+                adata, dm_res
+            )
         log_message("Running palantir", message_type="info", verbose=verbose)
         pr_res = palantir.core.run_palantir(
             data=ms_data,
@@ -5919,3 +6003,90 @@ def RunSEACells(
     membership = [int(m) + 1 for m in membership]  # 1-based
 
     return {"membership": membership, "n_metacells": int(sa.shape[1])}
+
+
+def CellRankTrends(
+    adata,
+    fate_probabilities,
+    fate_columns,
+    genes,
+    lineage,
+    time_key="palantir_pseudotime",
+    n_points=200,
+    norm=True,
+    resolution=0.7,
+    max_iter=1000,
+    spline_order=3,
+    n_knots=8,
+    n_jobs=1,
+    random_state=0,
+    show_plot=False,
+    save=None,
+):
+    """Fit and cluster CellRank GAM trends and return plain R-friendly arrays."""
+    import numpy as np
+    import pandas as pd
+    import cellrank as cr
+
+    if lineage not in list(fate_columns):
+        raise ValueError(f"Lineage {lineage!r} is not present in fate probabilities")
+    genes = [str(g) for g in genes]
+    missing = [g for g in genes if g not in list(adata.var_names)]
+    if missing:
+        raise ValueError("Trend genes are absent from AnnData: " + ", ".join(missing[:10]))
+    if time_key not in adata.obs:
+        raise ValueError(f"Missing pseudotime column {time_key!r}")
+
+    fate = np.asarray(fate_probabilities, dtype=float)
+    if fate.ndim != 2 or fate.shape[0] != adata.n_obs:
+        raise ValueError("Fate probabilities must be cells x lineages and match AnnData")
+    adata.obsm["to_terminal_states"] = pd.DataFrame(
+        fate, index=adata.obs_names, columns=[str(x) for x in fate_columns]
+    )
+
+    model = cr.models.GAM(
+        adata,
+        max_iter=int(max_iter),
+        spline_order=int(spline_order),
+        n_knots=int(n_knots),
+    )
+    key = f"lineage_{lineage}_trend"
+    cr.pl.cluster_trends(
+        adata,
+        model=model,
+        genes=genes,
+        lineage=lineage,
+        time_key=time_key,
+        n_points=int(n_points),
+        norm=bool(norm),
+        recompute=True,
+        random_state=int(random_state),
+        n_jobs=int(n_jobs),
+        backend="threading",
+        clustering_kwargs={"resolution": float(resolution), "random_state": int(random_state)},
+        show_progress_bar=False,
+        show=bool(show_plot),
+        save=save,
+    )
+    if key not in adata.uns:
+        raise RuntimeError(f"CellRank did not create trend result {key!r}")
+    trend_adata = adata.uns[key]
+    trend_matrix = trend_adata.X.toarray() if hasattr(trend_adata.X, "toarray") else np.asarray(trend_adata.X)
+    clusters = np.asarray(trend_adata.obs["clusters"].astype(str)).tolist()
+    return {
+        "trend_matrix": trend_matrix,
+        "genes": [str(x) for x in trend_adata.obs_names],
+        "time": [float(x) for x in trend_adata.var_names],
+        "clusters": clusters,
+        "lineage": str(lineage),
+        "parameters": {
+            "time_key": time_key,
+            "n_points": int(n_points),
+            "norm": bool(norm),
+            "resolution": float(resolution),
+            "max_iter": int(max_iter),
+            "spline_order": int(spline_order),
+            "n_knots": int(n_knots),
+            "random_state": int(random_state),
+        },
+    }

@@ -1,0 +1,100 @@
+---
+title: "CellRank and Palantir fate workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\\VignetteIndexEntry{CellRank and Palantir fate workflow}
+  %\\VignetteEngine{knitr::rmarkdown}
+---
+
+This workflow keeps the Palantir pseudotime direction and the CellRank fate
+model as separate, inspectable result layers. Pseudotime is a relative ordering
+and fate probabilities are model-based transition probabilities; neither is a
+direct experimental time course.
+
+```{r setup, eval=FALSE}
+library(scop)
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+```
+
+## Palantir direction and MAGIC layer
+
+The Python reference backend uses the dedicated Python 3.12 trajectory
+environment. MAGIC is optional and should be used for visualization or trend
+fitting, never as a replacement for raw counts in differential testing.
+
+```{r palantir, eval=FALSE}
+pancreas_sub <- RunPalantir(
+  pancreas_sub,
+  group.by = "SubCellType",
+  linear_reduction = "PCA",
+  nonlinear_reduction = "UMAP",
+  early_group = "Ductal",
+  terminal_groups = c("Alpha", "Beta", "Delta", "Epsilon"),
+  magic_impute = TRUE,
+  backend = "python"
+)
+FeatureDimPlot(
+  pancreas_sub,
+  features = c("palantir_pseudotime", "palantir_diff_potential")
+)
+PalantirTrajectoryPlot(pancreas_sub, reduction = "UMAP")
+```
+
+## CellRank fate mapping
+
+Use the stored Palantir pseudotime to construct a directed `PseudotimeKernel`.
+The explicit Schur size and terminal-state names make the run reproducible;
+unknown terminal states stop before the Seurat object is mutated.
+
+```{r cellrank, eval=FALSE}
+pancreas_sub <- RunCellRank(
+  pancreas_sub,
+  group.by = "SubCellType",
+  kernel_type = "pseudotime",
+  time_key = "palantir_pseudotime",
+  schur_method = "krylov",
+  schur_n_components = 20L,
+  n_macrostates = 11L,
+  n_cells_terminal = 30L,
+  terminal_states = c("Alpha", "Beta", "Delta", "Epsilon"),
+  backend = "python"
+)
+names(pancreas_sub@tools$CellRank)
+CellRankPlot(pancreas_sub, plot_type = "fate", reduction = "UMAP")
+CellRankPlot(pancreas_sub, plot_type = "circular")
+```
+
+## Drivers, trends and enrichment
+
+Drivers are statistical associations with fate probabilities. Trend modules are
+similar expression-shape clusters, not causal regulatory modules.
+
+```{r trends, eval=FALSE}
+pancreas_sub <- RunCellRankTrends(
+  pancreas_sub,
+  lineage = "Alpha",
+  assay = "MAGIC_imputed_data",
+  layer = "counts",
+  top_n = 500L,
+  heatmap_n = 50L,
+  n_points = 200L,
+  output_dir = "cellrank_objects"
+)
+CellRankPlot(pancreas_sub, plot_type = "drivers", lineage = "Alpha")
+CellRankPlot(pancreas_sub, plot_type = "trends", lineage = "Alpha")
+CellRankPlot(pancreas_sub, plot_type = "clusters", lineage = "Alpha")
+
+pancreas_sub <- RunCellRankEnrichment(
+  pancreas_sub,
+  lineage = "Alpha",
+  species = "Mus_musculus",
+  output_dir = "cellrank_objects"
+)
+pancreas_sub@tools$CellRank$enrichment$Alpha$manifest
+```
+
+The complete payload is stored in `srt@tools$Palantir` and
+`srt@tools$CellRank`, including the actual backend, versions, cell/lineage
+names, transition matrix, fate probabilities, drivers, trend curves, modules,
+enrichment tables and run parameters.
