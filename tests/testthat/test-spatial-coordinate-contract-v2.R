@@ -163,6 +163,14 @@ test_that("invalid selected scale fails without mutating the object", {
     ),
     "lowres.*missing or invalid"
   )
+  legacy <- spatial_analysis_coords(
+    fixture$object,
+    image = "slice",
+    coordinate_space = "legacy_display"
+  )
+  expect_equal(legacy$data$x, fixture$raw$x * 0.5)
+  expect_equal(legacy$data$y, 20 - fixture$raw$y * 0.5)
+  expect_identical(legacy$source$scale_name, "hires")
   network <- RunSpatialNetwork(
     fixture$object,
     image = "slice",

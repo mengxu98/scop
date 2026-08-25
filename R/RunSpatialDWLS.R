@@ -160,13 +160,13 @@ RunSpatialDWLS <- function(
         image = image,
         coord.cols = coord.cols,
         coordinate_space = coordinate_space,
+        coordinate_dependent = FALSE,
         min_cells = min_cells,
         prefix = prefix,
         tool_name = tool_name,
         normalize = normalize
       )
     )
-    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
 
   log_message(

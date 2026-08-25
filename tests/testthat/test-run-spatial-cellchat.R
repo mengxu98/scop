@@ -630,3 +630,37 @@ test_that("appended SpatialCellChat results retain per-result coordinate contrac
     "ggplot"
   )
 })
+
+test_that("unified CCC plots reject old SpatialCellChat coordinate results", {
+  local_mock_spatialcellchat_backend()
+  srt <- make_spatialcellchat_test_object()
+  out <- RunSpatialCellChat(
+    srt,
+    group.by = "celltype",
+    technology = "generic",
+    analysis.level = "cell",
+    coordinate.unit = "micron",
+    tol = 5,
+    min.cells = 2,
+    min.links = 1,
+    nboot = 2,
+    database = "custom",
+    custom.db = list(mock = TRUE),
+    backend = "r",
+    verbose = FALSE
+  )
+  out@tools$SpatialCellChat$parameters$coordinate_contract_version <- NULL
+
+  expect_error(
+    CCCNetworkPlot(out, method = "SpatialCellChat", plot_type = "circle"),
+    "rerun\\s+RunSpatialCellChat"
+  )
+  expect_error(
+    CCCHeatmap(out, method = "SpatialCellChat", plot_type = "bubble"),
+    "rerun\\s+RunSpatialCellChat"
+  )
+  expect_error(
+    CCCStatPlot(out, method = "SpatialCellChat", plot_type = "bar"),
+    "rerun\\s+RunSpatialCellChat"
+  )
+})

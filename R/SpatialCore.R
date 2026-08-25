@@ -314,6 +314,33 @@ spatial_analysis_coords <- function(
   coordinate_space <- match.arg(coordinate_space)
   image.scale <- match.arg(image.scale)
   if (identical(coordinate_space, "legacy_display")) {
+    # Preserve the historical lowres-to-hires fallback only for the explicit
+    # compatibility mode. Current display APIs remain strict about image.scale.
+    if (identical(image.scale, "lowres")) {
+      resolved_image <- spatial_image_resolve(
+        srt = srt,
+        image = image,
+        image_policy = image_policy
+      )$image
+      if (!is.null(resolved_image)) {
+        spatial_image <- srt[[resolved_image]]
+        lowres <- spatial_image_scale_info(
+          spatial_image,
+          image.scale = "lowres",
+          required = FALSE
+        )$scale
+        if (length(lowres) != 1L || !is.finite(lowres) || lowres <= 0) {
+          hires <- spatial_image_scale_info(
+            spatial_image,
+            image.scale = "hires",
+            required = FALSE
+          )$scale
+          if (length(hires) == 1L && is.finite(hires) && hires > 0) {
+            image.scale <- "hires"
+          }
+        }
+      }
+    }
     display <- spatial_dim_coords(
       srt = srt,
       image = image,

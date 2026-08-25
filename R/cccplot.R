@@ -820,6 +820,27 @@ ccc_has_unified_method <- function(srt, method = NULL) {
   identical(method, "CCC") || method %in% ccc_unified_methods(srt)
 }
 
+ccc_require_coordinate_contracts <- function(srt, methods) {
+  producers <- c(
+    SpatialCellChat = "RunSpatialCellChat()",
+    COMMOT = "RunCOMMOT()",
+    SpaTalk = "RunSpaTalk()"
+  )
+  methods <- unique(vapply(
+    methods %||% character(0),
+    normalize_ccc_method,
+    character(1)
+  ))
+  methods <- intersect(methods, names(producers))
+  for (method in methods) {
+    spatial_require_coordinate_contract(
+      srt@tools[[method]],
+      producers[[method]]
+    )
+  }
+  invisible(methods)
+}
+
 ccc_long_table_for_method <- function(
   srt,
   method,
@@ -976,6 +997,7 @@ ccc_build_unified_bundle <- function(
   methods <- methods %||% ccc_available_methods(srt)
   methods <- unique(vapply(methods, normalize_ccc_method, character(1)))
   methods <- setdiff(methods, "CCC")
+  ccc_require_coordinate_contracts(srt, methods)
   edge_methods <- methods[vapply(methods, function(method) {
     isTRUE(ccc_method_spec(method)$supports_unified_edges)
   }, logical(1))]
@@ -1070,6 +1092,15 @@ ccc_update_unified_bundle <- function(
 ccc_get_unified_long_table <- function(srt, method = NULL, thresh = 0.05) {
   method <- if (is.null(method)) NULL else normalize_ccc_method(method)
   bundle <- srt@tools[["CCC"]]
+  contract_methods <- if (is.null(method) || identical(method, "CCC")) {
+    unique(c(
+      ccc_unified_methods(srt),
+      if (is.null(bundle)) ccc_available_methods(srt) else character(0)
+    ))
+  } else {
+    method
+  }
+  ccc_require_coordinate_contracts(srt, contract_methods)
   if (is.null(bundle)) {
     bundle <- ccc_build_unified_bundle(srt = srt, thresh = thresh)
   }
