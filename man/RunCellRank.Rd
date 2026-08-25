@@ -45,7 +45,12 @@ RunCellRank(
   softmax_scale = 4,
   n_macrostates = NULL,
   schur_method = c("krylov", "brandts"),
+  schur_n_components = NULL,
   n_cells_terminal = 10,
+  terminal_states = NULL,
+  terminal_state_agg = c("top_n", "union"),
+  driver_lineages = NULL,
+  compute_lineage_drivers = TRUE,
   backward = FALSE,
   backend = c("python", "cpp"),
   allow_approximate = FALSE,
@@ -161,7 +166,19 @@ If \code{NULL} (default), automatically determined based on eigenvalue spectrum.
 \item{schur_method}{Method for Schur decomposition: \code{"krylov"} or \code{"brandts"}.
 Only used for GPCCA estimator.}
 
+\item{schur_n_components}{Number of Schur components. If \code{NULL}, retain the
+existing size heuristic.}
+
 \item{n_cells_terminal}{Minimum number of cells required for a state to be considered terminal.}
+
+\item{terminal_states}{Optional macrostate names to set as terminal states.
+Names are validated against the computed macrostates before fate estimation.}
+
+\item{terminal_state_agg}{Aggregation policy for combined terminal states.}
+
+\item{driver_lineages}{Optional lineage names for driver-gene computation.}
+
+\item{compute_lineage_drivers}{Whether to compute and store lineage drivers.}
 
 \item{backward}{Whether to compute backward transitions.}
 

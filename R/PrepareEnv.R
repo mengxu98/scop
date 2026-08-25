@@ -17,7 +17,8 @@
 #' @param force Whether to force recreation of the environment.
 #' If `TRUE`, the existing environment will be removed and recreated.
 #' @param version The Python version.
-#' Default is `"3.10-1"` on macOS and Unix and `"3.11-1"` on Windows.
+#' Default is `"3.10-1"` on macOS and Unix and `"3.11-1"` on Windows. The
+#' CellRank/Palantir reference stack upgrades this to Python `3.12-1`.
 #' @param modules Optional Python dependency modules to install in addition to
 #' the default scientific stack.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
@@ -678,9 +679,9 @@ env_module_requirements <- function() {
       "doubletdetection" = "doubletdetection==4.3.0.post1",
       "louvain" = "louvain==0.8.2"
     )),
-    palantir = env_python_spec(c("palantir" = "palantir==1.4.1")),
+    palantir = env_python_spec(c("palantir" = "palantir==1.4.4")),
     scvelo = env_python_spec(c("scvelo" = "scvelo==0.3.3")),
-    cellrank = env_python_spec(c("cellrank" = "cellrank==2.0.7")),
+    cellrank = env_python_spec(c("cellrank" = "cellrank==2.3.2")),
     wot = env_python_spec(c("wot" = "wot==1.0.8.post2")),
     phate = env_python_spec(c("phate" = "phate==1.0.11")),
     pacmap = env_python_spec(c("pacmap" = "pacmap==0.8.0")),
@@ -1736,7 +1737,7 @@ env_requirements <- function(
 ) {
   version <- match.arg(
     version,
-    choices = c("3.9-1", "3.10-1", "3.11-1")
+    choices = c("3.9-1", "3.10-1", "3.11-1", "3.12-1")
   )
   modules <- normalize_env_modules(
     modules = modules,
@@ -1751,6 +1752,10 @@ env_requirements <- function(
       )
     }
     version <- "3.10-1"
+  }
+  if (any(c("palantir", "cellrank") %in% modules) &&
+      version %in% c("3.10-1", "3.11-1")) {
+    version <- "3.12-1"
   }
   if ("cell2fate" %in% modules) {
     if (length(setdiff(modules, "cell2fate")) > 0) {
@@ -1837,6 +1842,16 @@ env_requirements <- function(
     package_install_methods <- c(package_install_methods, req_i$install_methods)
     package_versions <- c(package_versions, req_i$packages)
     package_aliases <- c(package_aliases, req_i$package_aliases)
+  }
+
+  # Keep the reference CellRank + Palantir pins local to these modules so
+  # unrelated workflows retain their existing dependency stack.
+  if (any(c("palantir", "cellrank") %in% modules)) {
+    package_versions[["scanpy"]] <- "scanpy==1.12.2"
+    package_versions[["palantir"]] <- "palantir==1.4.4"
+    package_versions[["cellrank"]] <- "cellrank==2.3.2"
+    package_versions[["pandas"]] <- "pandas==2.3.3"
+    package_install_methods[c("scanpy", "palantir", "cellrank", "pandas")] <- "pip"
   }
 
   if (all(c("scvi", "scomm") %in% modules) && "ml_dtypes" %in% names(package_versions)) {

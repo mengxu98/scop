@@ -69,6 +69,13 @@
 #' @param schur_method Method for Schur decomposition: `"krylov"` or `"brandts"`.
 #' Only used for GPCCA estimator.
 #' @param n_cells_terminal Minimum number of cells required for a state to be considered terminal.
+#' @param schur_n_components Number of Schur components. If `NULL`, retain the
+#' existing size heuristic.
+#' @param terminal_states Optional macrostate names to set as terminal states.
+#' Names are validated against the computed macrostates before fate estimation.
+#' @param terminal_state_agg Aggregation policy for combined terminal states.
+#' @param driver_lineages Optional lineage names for driver-gene computation.
+#' @param compute_lineage_drivers Whether to compute and store lineage drivers.
 #'
 #' @return
 #' Returns a Seurat object if `return_seurat = TRUE` or an anndata object with CellRank results stored in `obsm`, `obs`, and `varm` slots.
@@ -76,7 +83,8 @@
 #'
 #' @export
 #' @seealso
-#' [RunSCVELO], [RunPAGA], [VelocityPlot], [CellDimPlot], [DynamicPlot]
+#' [RunSCVELO], [RunPAGA], [VelocityPlot], [CellDimPlot], [DynamicPlot],
+#' [RunCellRankTrends], [RunCellRankEnrichment], [CellRankPlot]
 #'
 #' @examples
 #' \dontrun{
@@ -171,7 +179,12 @@ RunCellRank <- function(
   softmax_scale = 4,
   n_macrostates = NULL,
   schur_method = c("krylov", "brandts"),
+  schur_n_components = NULL,
   n_cells_terminal = 10,
+  terminal_states = NULL,
+  terminal_state_agg = c("top_n", "union"),
+  driver_lineages = NULL,
+  compute_lineage_drivers = TRUE,
   backward = FALSE,
   backend = c("python", "cpp"),
   allow_approximate = FALSE,
@@ -191,6 +204,7 @@ RunCellRank <- function(
   kernel_type <- match.arg(kernel_type)
   backend <- match.arg(backend)
   estimator_type_upper <- toupper(match.arg(estimator_type))
+  terminal_state_agg <- match.arg(terminal_state_agg)
 
   if (identical(backend, "cpp")) {
     assert_cpp_approximation_opt_in(
@@ -203,6 +217,21 @@ RunCellRank <- function(
     }
     if (isTRUE(save_plot)) {
       unsupported_cpp <- c(unsupported_cpp, "save_plot")
+    }
+    if (!is.null(schur_n_components)) {
+      unsupported_cpp <- c(unsupported_cpp, "schur_n_components")
+    }
+    if (!is.null(terminal_states)) {
+      unsupported_cpp <- c(unsupported_cpp, "terminal_states")
+    }
+    if (!identical(terminal_state_agg, "top_n")) {
+      unsupported_cpp <- c(unsupported_cpp, "terminal_state_agg")
+    }
+    if (!is.null(driver_lineages)) {
+      unsupported_cpp <- c(unsupported_cpp, "driver_lineages")
+    }
+    if (!isTRUE(compute_lineage_drivers)) {
+      unsupported_cpp <- c(unsupported_cpp, "compute_lineage_drivers")
     }
     reject_unsupported_cpp_arguments(
       unsupported_cpp,
@@ -408,6 +437,21 @@ RunCellRank <- function(
   adata <- result[[1]]
   estimator <- result[[2]]
   kernel <- result[[3]]
+  payload <- if (length(result) >= 4L) result[[4]] else list()
+
+  payload_frame <- function(x) {
+    if (is.null(x) || is.null(x$values)) return(NULL)
+    values <- as.matrix(x$values)
+    if (!is.null(x$index) && length(x$index) == nrow(values)) {
+      rownames(values) <- as.character(x$index)
+    }
+    if (!is.null(x$columns) && length(x$columns) == ncol(values)) {
+      colnames(values) <- as.character(x$columns)
+    }
+    values
+  }
+  payload_fate <- payload_frame(payload$fate_probabilities)
+  payload_drivers <- payload_frame(payload$lineage_drivers)
 
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata)
@@ -471,9 +515,40 @@ RunCellRank <- function(
     }
     if (!is.null(ap_key)) {
       ap_raw <- py_to_r2(adata$obsm[[ap_key]])
-      if (inherits(ap_raw, c("matrix", "Matrix", "dgCMatrix"))) {
+      if (inherits(ap_raw, c("matrix", "Matrix", "dgCMatrix", "data.frame"))) {
         ap <- as.matrix(ap_raw)
         rownames(ap) <- colnames(srt_out)
+      }
+    }
+    if (is.null(ap) && !is.null(payload_fate)) {
+      ap <- as.matrix(payload_fate)
+      if (nrow(ap) == ncol(srt_out)) rownames(ap) <- colnames(srt_out)
+    }
+    if (!is.null(ap) && nrow(ap) == ncol(srt_out)) {
+      ap <- ap[colnames(srt_out), , drop = FALSE]
+      fate_names <- colnames(ap) %||% paste0("lineage_", seq_len(ncol(ap)))
+      fate_meta_names <- paste0(
+        "cellrank_fate_",
+        make.names(fate_names, unique = TRUE)
+      )
+      for (i in seq_along(fate_meta_names)) {
+        srt_out@meta.data[[fate_meta_names[[i]]]] <- as.numeric(ap[, i])
+      }
+      colnames(ap) <- fate_names
+      if (ncol(ap) >= 2L && !"cellrank_circular" %in% names(srt_out@reductions)) {
+        angles <- seq(0, 2 * pi, length.out = ncol(ap) + 1L)[-(ncol(ap) + 1L)]
+        ap_norm <- ap / pmax(rowSums(ap), .Machine$double.eps)
+        circular_embedding <- cbind(
+          x = as.numeric(ap_norm %*% cos(angles)),
+          y = as.numeric(ap_norm %*% sin(angles))
+        )
+        rownames(circular_embedding) <- rownames(ap_norm)
+        colnames(circular_embedding) <- c("CRFATE_1", "CRFATE_2")
+        srt_out[["cellrank_circular"]] <- SeuratObject::CreateDimReducObject(
+          embeddings = circular_embedding,
+          assay = SeuratObject::DefaultAssay(srt_out),
+          key = "CRFATE_"
+        )
       }
     }
     if ("term_states_fwd_probs" %in% colnames(srt_out@meta.data)) {
@@ -499,6 +574,11 @@ RunCellRank <- function(
     }
 
     # ── Store standard tools$CellRank slot ──
+    transition <- if ("cellrank_transition" %in% names(srt_out@graphs)) {
+      srt_out@graphs[["cellrank_transition"]]
+    } else {
+      NULL
+    }
     srt_out@tools[["CellRank"]] <- list(
       backend = "python",
       estimator = estimator_type,
@@ -509,6 +589,16 @@ RunCellRank <- function(
         0L
       },
       absorption_probabilities = ap,
+      fate_probabilities = ap,
+      lineage_drivers = payload_drivers,
+      transition_matrix = transition,
+      transition_key = payload$transition_key %||% "cellrank_transition",
+      versions = payload$versions %||% list(),
+      states = list(
+        macrostates = payload$macrostates %||% character(),
+        terminal_states = payload$terminal_states %||% character(),
+        initial_states = payload$initial_states %||% character()
+      ),
       parameters = list(
         kernel_type = kernel_type,
         estimator_type = estimator_type,
