@@ -39,6 +39,32 @@ make_bayesspace_multi_image_object <- function() {
   srt
 }
 
+make_bayesspace_visium_v1_object <- function() {
+  srt <- make_bayesspace_object()
+  scale_factors <- structure(
+    list(spot = 1, fiducial = 1, hires = 0.5, lowres = 0.25),
+    class = "scalefactors"
+  )
+  coordinates <- data.frame(
+    tissue = 1L,
+    row = c(10L, 10L, 11L, 11L),
+    col = c(4L, 6L, 5L, 7L),
+    imagerow = c(101.3, 99.8, 213.7, 210.2),
+    imagecol = c(52.1, 180.4, 61.9, 191.6),
+    row.names = colnames(srt)
+  )
+  srt[["slice"]] <- methods::new(
+    "VisiumV1",
+    image = array(1, dim = c(120, 140, 3)),
+    scale.factors = scale_factors,
+    coordinates = coordinates,
+    spot.radius = 0.1,
+    assay = SeuratObject::DefaultAssay(srt),
+    key = "bsv1_"
+  )
+  list(object = srt, coordinates = coordinates)
+}
+
 with_mock_bayesspace <- function(cluster_fun, code) {
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
@@ -84,6 +110,24 @@ test_that("RunBayesSpace stores raw coordinate provenance and aligned cells", {
   expect_identical(rownames(result$colData), colnames(out))
   expect_false("sce" %in% names(result))
   expect_false(anyNA(out$BayesSpace_cluster))
+})
+
+test_that("BayesSpace preserves exact Visium array indices separately from raw pixels", {
+  skip_if_not_installed("SingleCellExperiment")
+  fixture <- make_bayesspace_visium_v1_object()
+  sce <- Seurat::as.SingleCellExperiment(fixture$object)
+  input <- bayesspace_add_spatial_coords(
+    srt = fixture$object,
+    sce = sce,
+    image = "slice",
+    platform = "Visium"
+  )
+  cdata <- as.data.frame(SummarizedExperiment::colData(input$sce))
+  expect_identical(cdata$array_row, fixture$coordinates$row)
+  expect_identical(cdata$array_col, fixture$coordinates$col)
+  expect_equal(input$coords$x, fixture$coordinates$imagecol)
+  expect_equal(input$coords$y, fixture$coordinates$imagerow)
+  expect_identical(input$source$backend_coordinate_space, "array_index")
 })
 
 test_that("RunBayesSpace rejects ambiguous or partial image selection atomically", {

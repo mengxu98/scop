@@ -393,8 +393,14 @@ scenic_set_signac_links <- function(srt, atac_assay, locus_links, gene_coords) {
   if (is.null(atac_assay) || !inherits(srt[[atac_assay]], "ChromatinAssay")) {
     return(invisible(NULL))
   }
-  if (!requireNamespace("GenomicRanges", quietly = TRUE) ||
-    !requireNamespace("IRanges", quietly = TRUE)) {
+  ranges_available <- tryCatch(
+    {
+      check_r(c("GenomicRanges", "IRanges"), verbose = FALSE)
+      TRUE
+    },
+    error = function(e) FALSE
+  )
+  if (!isTRUE(ranges_available)) {
     return(invisible(NULL))
   }
   gene_pos <- stats::setNames(
@@ -407,9 +413,11 @@ scenic_set_signac_links <- function(srt, atac_assay, locus_links, gene_coords) {
   }
   df <- locus_links[keep, , drop = FALSE]
   df[["gene_pos"]] <- unname(gene_pos[df[["gene"]]])
-  gr <- GenomicRanges::GRanges(
+  granges <- get_namespace_fun("GenomicRanges", "GRanges")
+  iranges <- get_namespace_fun("IRanges", "IRanges")
+  gr <- granges(
     seqnames = df[["seqnames"]],
-    ranges = IRanges::IRanges(
+    ranges = iranges(
       start = pmin(df[["region_mid"]], df[["gene_pos"]]),
       end = pmax(df[["region_mid"]], df[["gene_pos"]])
     ),

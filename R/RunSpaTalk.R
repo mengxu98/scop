@@ -245,6 +245,7 @@ spatalk_deconvolution_spec <- function(
         message_type = "error"
       )
     }
+    spatial_require_coordinate_contract(stored, "RunRCTD()")
   }
   if (is.null(dec_result)) {
     log_message(
@@ -473,6 +474,7 @@ RunSpaTalk <- function(
     long_table = long_table,
     native_object = if (identical(store.object, "full")) native else NULL
   )
+  result <- spatial_tag_coordinate_contract(result)
   results <- existing$results %||% list()
   results[[result.name]] <- result
   parameters <- list(
@@ -504,6 +506,7 @@ RunSpaTalk <- function(
       repository = .spatalk_repository
     )
   )
+  bundle <- spatial_tag_coordinate_contract(bundle)
   validate_result_bundle(bundle, label = "SpaTalk",
     empty_message = "SpaTalk result bundle has no communication rows")
   srt@tools[["SpaTalk"]] <- bundle
@@ -516,10 +519,11 @@ RunSpaTalk <- function(
 spatalk_plot_object <- function(object, stored) {
   long_table <- stored$result$long_table %||% spatalk_long_table(stored$result$lr_table)
   bundle <- stored$bundle
+  spatial_require_coordinate_contract(stored$result, "RunSpaTalk()")
   bundle$active_result <- stored$result.name
   bundle$long_table <- long_table
   bundle$primary_table <- long_table
-  object@tools[["SpaTalk"]] <- bundle
+  object@tools[["SpaTalk"]] <- spatial_tag_coordinate_contract(bundle)
   ccc_update_unified_bundle(object, method = "SpaTalk", bundle = bundle, backend = "r")
 }
 
@@ -544,6 +548,7 @@ SpaTalkPlot <- function(
 ) {
   plot_type <- match.arg(plot_type)
   stored <- tool_bundle_get_result(object, "SpaTalk", result.name)
+  spatial_require_coordinate_contract(stored$result, "RunSpaTalk()")
   if (identical(plot_type, "network")) {
     plot_object <- spatalk_plot_object(object, stored)
     return(do.call(CCCNetworkPlot, c(list(srt = plot_object, method = "SpaTalk", plot_type = "circle"), list(...))))

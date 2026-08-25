@@ -82,14 +82,14 @@ test_that("dedicated spatial result plots accept result-only input", {
   misty <- list(results = list(
     improvements = data.frame(target = c("A", "B"), measure = "gain.R2", value = c(0.1, 0.4)),
     contributions = data.frame(target = "A", view = "paraview.3", value = 0.3)
-  ))
+  ), coordinate_contract_version = 2L)
   expect_s3_class(MistyRPlot(res = misty), "ggplot")
   expect_s3_class(MistyRPlot(res = misty, type = "contributions"), "ggplot")
 
   statial <- list(table = data.frame(
     imageID = rep(c("s1", "s2"), each = 2), test = rep(c("A:B", "B:A"), 2),
     r = rep(c(10, 20), 2), kontextual = c(-1, 0.5, 0.2, 1)
-  ))
+  ), coordinate_contract_version = 2L)
   expect_s3_class(StatialKontextualPlot(res = statial), "ggplot")
 })
 
@@ -260,7 +260,7 @@ test_that("analysis and plotting never silently select the first spatial image",
   expect_identical(nrow(selected$data), 1986L)
   expect_identical(selected$source$image, "slice2")
   expect_identical(selected$source$coordinate_space, "legacy_display")
-  expect_identical(selected$source$coord.cols, c("x", "y"))
+  expect_identical(selected$source$coord.cols, c("y", "x"))
   expect_true(all(c("scale", "y_flip", "raw_x_col", "raw_y_col") %in%
     names(selected$transform)))
 

@@ -92,6 +92,74 @@ test_that("coordinate conversion is explicit and micron based", {
     "explicit positive"
   )
 })
+
+test_that("raw SpatialCellChat coordinates do not require a display scale", {
+  counts <- matrix(
+    seq_len(24),
+    nrow = 3,
+    dimnames = list(paste0("gene", 1:3), paste0("spot", 1:8))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
+  srt <- Seurat::NormalizeData(srt, verbose = FALSE)
+  srt$celltype <- rep(c("A", "B"), each = 4)
+  image <- methods::new(
+    "VisiumV1",
+    image = array(1, dim = c(20, 30, 3)),
+    scale.factors = structure(
+      list(spot = 1, fiducial = 1, hires = 0.5, lowres = NA_real_),
+      class = "scalefactors"
+    ),
+    coordinates = data.frame(
+      imagerow = rep(4:5, each = 4),
+      imagecol = rep(5:8, 2),
+      row.names = colnames(srt)
+    ),
+    spot.radius = 0.1,
+    assay = "RNA",
+    key = "v1_"
+  )
+  srt[["slice"]] <- image
+
+  metric <- spatialcellchat_metric_coordinates(
+    srt,
+    cells = colnames(srt),
+    image = "slice",
+    coord.cols = c("col", "row"),
+    technology = "visium",
+    coordinate.unit = "pixel",
+    ratio = 1,
+    tol = 1
+  )
+
+  expect_equal(metric$data$x, metric$data$x_raw)
+  expect_equal(metric$data$y, metric$data$y_raw)
+  expect_equal(metric$data$x_display, metric$data$x_raw)
+  expect_equal(metric$data$y_display, metric$data$y_raw)
+  expect_identical(metric$source$plot_coordinate_space, "raw")
+
+  local_mock_spatialcellchat_backend()
+  out <- RunSpatialCellChat(
+    srt,
+    group.by = "celltype",
+    image = "slice",
+    technology = "visium",
+    analysis.level = "cell",
+    coordinate.unit = "pixel",
+    ratio = 1,
+    tol = 1,
+    min.cells = 2,
+    min.links = 1,
+    nboot = 2,
+    database = "custom",
+    custom.db = list(mock = TRUE),
+    backend = "r",
+    verbose = FALSE
+  )
+  stored <- out@tools$SpatialCellChat$results$default$ALL
+  expect_identical(stored$source$plot_coordinate_space, "raw")
+  expect_equal(stored$coordinates$x_display, stored$coordinates$x_raw)
+  expect_equal(stored$coordinates$y_display, stored$coordinates$y_raw)
+})
 test_that("strict auto detection refuses ambiguous generic data", {
   srt <- make_spatialcellchat_test_object()
   expect_error(
@@ -525,5 +593,85 @@ test_that("full storage exposes native objects and protects result names", {
       verbose = FALSE
     ),
     "already exists"
+  )
+})
+
+test_that("appended SpatialCellChat results retain per-result coordinate contracts", {
+  local_mock_spatialcellchat_backend()
+  srt <- make_spatialcellchat_test_object()
+  common <- list(
+    group.by = "celltype",
+    technology = "generic",
+    analysis.level = "cell",
+    coordinate.unit = "micron",
+    tol = 5,
+    min.cells = 2,
+    min.links = 1,
+    nboot = 2,
+    database = "custom",
+    custom.db = list(mock = TRUE),
+    backend = "r",
+    verbose = FALSE
+  )
+  out <- do.call(RunSpatialCellChat, c(list(srt = srt), common, list(
+    result.name = "first"
+  )))
+  out@tools$SpatialCellChat$results$first$ALL$source$coordinate_contract_version <- NULL
+  out <- do.call(RunSpatialCellChat, c(list(srt = out), common, list(
+    result.name = "second"
+  )))
+  expect_setequal(names(out@tools$SpatialCellChat$results), c("first", "second"))
+  expect_error(
+    SpatialCellChatPlot(out, result.name = "first", plot_type = "outgoing"),
+    "rerun\\s+RunSpatialCellChat"
+  )
+  expect_s3_class(
+    SpatialCellChatPlot(out, result.name = "second", plot_type = "outgoing"),
+    "ggplot"
+  )
+})
+
+test_that("unified CCC plots reject old SpatialCellChat coordinate results", {
+  local_mock_spatialcellchat_backend()
+  srt <- make_spatialcellchat_test_object()
+  out <- RunSpatialCellChat(
+    srt,
+    group.by = "celltype",
+    technology = "generic",
+    analysis.level = "cell",
+    coordinate.unit = "micron",
+    tol = 5,
+    min.cells = 2,
+    min.links = 1,
+    nboot = 2,
+    database = "custom",
+    custom.db = list(mock = TRUE),
+    backend = "r",
+    verbose = FALSE
+  )
+  out@tools$SpatialCellChat$parameters$coordinate_contract_version <- NULL
+
+  expect_error(
+    CCCNetworkPlot(out, method = "SpatialCellChat", plot_type = "circle"),
+    "rerun\\s+RunSpatialCellChat"
+  )
+  expect_error(
+    CCCHeatmap(out, method = "SpatialCellChat", plot_type = "bubble"),
+    "rerun\\s+RunSpatialCellChat"
+  )
+  expect_error(
+    CCCStatPlot(out, method = "SpatialCellChat", plot_type = "bar"),
+    "rerun\\s+RunSpatialCellChat"
+  )
+
+  without_cache <- out
+  without_cache@tools$CCC <- NULL
+  expect_error(
+    CCCNetworkPlot(
+      without_cache,
+      method = "SpatialCellChat",
+      plot_type = "circle"
+    ),
+    "rerun\\s+RunSpatialCellChat"
   )
 })

@@ -150,6 +150,15 @@ test_that("spatial gradient storage keeps only plain data frames", {
     srt@tools[["SpatialGradientFeatures"]]$summary$top_features,
     c("Gene1", "Gene2")
   )
+  expect_identical(srt@tools[["SpatialGradientFeatures"]]$summary$n_results, 1L)
+  expect_false("coordinate_contract_version" %in% names(
+    srt@tools[["SpatialGradientFeatures"]]
+  ))
+  expect_identical(sgf_get_result(srt, "mock"), stored)
+  expect_error(
+    sgf_get_result(srt, "coordinate_contract_version"),
+    "not present"
+  )
 })
 
 test_that("cpp backend stores annotation gradient result tables", {

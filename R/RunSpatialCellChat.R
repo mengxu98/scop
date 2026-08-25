@@ -262,24 +262,20 @@ spatialcellchat_metric_coordinates <- function(
     space = "raw",
     image_policy = "strict"
   )
-  display <- SpatialCoordinates(
-    object = srt,
-    image = image,
-    coord.cols = coord.cols,
-    space = "display",
-    image_policy = "strict"
-  )
   coords <- raw$data[raw$data$cell_id %in% cells, , drop = FALSE]
   coords <- coords[match(cells, coords$cell_id), , drop = FALSE]
   if (nrow(coords) != length(cells) || anyNA(coords$cell_id) || !identical(as.character(coords$cell_id), cells)) {
     log_message("Spatial coordinates do not align one-to-one with selected cells or spots", message_type = "error")
   }
-  display_coords <- display$data[match(cells, display$data$cell_id), , drop = FALSE]
+  display_coords <- coords
+  plot_coordinate_space <- "raw"
+  stored_scale <- raw$transform$scale %||% NA_real_
   if (
-    nrow(display_coords) != length(cells) || anyNA(display_coords$cell_id) ||
-      !identical(as.character(display_coords$cell_id), cells)
+    length(stored_scale) == 1L && is.finite(stored_scale) &&
+      stored_scale > 0
   ) {
-    log_message("Display coordinates do not align one-to-one with selected cells or spots", message_type = "error")
+    display_coords <- spatial_coords_to_display(coords, raw$transform)
+    plot_coordinate_space <- "display"
   }
   coordinate.unit <- match.arg(coordinate.unit, c("auto", "pixel", "micron"))
   if (identical(coordinate.unit, "auto")) {
@@ -341,6 +337,7 @@ spatialcellchat_metric_coordinates <- function(
     unit_source = unit_source,
     scale_to_micron = as.numeric(ratio),
     analysis_unit = "micron",
+    plot_coordinate_space = plot_coordinate_space,
     tol_um = as.numeric(tol)
   ))
   list(data = coords, source = source, spatial.factors = list(ratio = 1, tol = as.numeric(tol)))
@@ -1167,7 +1164,7 @@ RunSpatialCellChat <- function(
         )
       }
     }
-    sample_results[[sample_name]] <- list(
+    sample_results[[sample_name]] <- spatial_tag_coordinate_contract(list(
       interactions = table,
       pathways = spatialcellchat_extract_pathways(table),
       network = spatialcellchat_extract_network(table),
@@ -1185,7 +1182,7 @@ RunSpatialCellChat <- function(
         result_level = unique(as.character(table$result_level))
       ),
       source = metric$source
-    )
+    ))
     long_tables[[sample_name]] <- table
     source_by_sample[[sample_name]] <- metric$source
   }
@@ -1236,6 +1233,7 @@ RunSpatialCellChat <- function(
       store_object = store.object
     )
   )
+  bundle <- spatial_tag_coordinate_contract(bundle)
   srt@tools[["SpatialCellChat"]] <- bundle
   srt <- ccc_update_unified_bundle(
     srt = srt,
@@ -1284,6 +1282,7 @@ GetCCCObject <- function(
     sample <- samples[[1L]]
   }
   if (!sample %in% samples) log_message("Unknown SpatialCellChat sample {.val {sample}}", message_type = "error")
+  spatial_require_coordinate_contract(result[[sample]], "RunSpatialCellChat()")
   native <- result[[sample]]$native_object
   if (is.null(native)) {
     log_message(
@@ -1310,6 +1309,7 @@ spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample
     sample <- samples[[1L]]
   }
   if (!sample %in% samples) log_message("Unknown sample {.val {sample}}", message_type = "error")
+  spatial_require_coordinate_contract(result[[sample]], "RunSpatialCellChat()")
   list(result = result[[sample]], sample = sample, result.name = result.name)
 }
 

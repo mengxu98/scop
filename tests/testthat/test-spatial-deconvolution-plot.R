@@ -26,7 +26,11 @@ add_spatial_deconvolution_result <- function(srt, key) {
   srt@tools[[key]] <- list(
     proportions = proportions,
     cells = colnames(srt),
-    parameters = list(coordinate_space = "raw")
+    coordinate_contract_version = 2L,
+    parameters = list(
+      coordinate_space = "raw",
+      coordinate_contract_version = 2L
+    )
   )
   srt
 }
@@ -128,6 +132,43 @@ test_that("SpatialDeconvolutionPlot rejects empty, partial, stale, and wrong res
   expect_error(SpatialDeconvolutionPlot(bad, "CustomCARD"), "must be numeric")
 
   expect_error(SpatialDeconvolutionPlot(srt, "MissingKey"), "not a spatial deconvolution result")
+})
+
+test_that("SpatialDeconvolutionPlot rejects old coordinate-dependent results", {
+  srt <- add_spatial_deconvolution_result(
+    make_spatial_deconvolution_plot_object(),
+    "OldRCTD"
+  )
+  srt@tools$OldRCTD$coordinate_contract_version <- NULL
+  srt@tools$OldRCTD$parameters$coordinate_contract_version <- NULL
+  srt@tools$OldRCTD$backend_api <- "mock"
+  expect_error(
+    SpatialDeconvolutionPlot(srt, "OldRCTD"),
+    "rerun.*OldRCTD"
+  )
+})
+
+test_that("SpatialDeconvolutionPlot accepts legacy coordinate-independent SpatialDWLS results", {
+  srt <- add_spatial_deconvolution_result(
+    make_spatial_deconvolution_plot_object(),
+    "OldSpatialDWLS"
+  )
+  srt@tools$OldSpatialDWLS$coordinate_contract_version <- NULL
+  srt@tools$OldSpatialDWLS$parameters$coordinate_contract_version <- NULL
+  srt@tools$OldSpatialDWLS$parameters$coordinate_dependent <- FALSE
+  srt@tools$OldSpatialDWLS$coords <- data.frame(
+    x = srt$col,
+    y = srt$row,
+    row.names = colnames(srt)
+  )
+  expect_s3_class(
+    SpatialDeconvolutionPlot(
+      srt,
+      tool_name = "OldSpatialDWLS",
+      overlay_image = FALSE
+    ),
+    "patchwork"
+  )
 })
 
 test_that("RunRCTD writes custom-key plot-ready proportions", {

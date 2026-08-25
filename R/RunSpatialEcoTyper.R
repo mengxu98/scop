@@ -336,6 +336,7 @@ RunSpatialEcoTyper <- function(
 #' @param group.by Metadata column containing SpatialEcoTyper labels.
 #' @param x.by,y.by Metadata coordinate columns used when no image coordinates
 #' are available.
+#' @param overlay_image Whether to draw the selected spatial image.
 #' @param palette,palcolor Palette passed to `palette_colors()`.
 #' @param ... Additional arguments passed to [SpatialSpotPlot()].
 #'
@@ -373,12 +374,15 @@ SpatialEcoTyperSpatialPlot <- function(
   palette = "Paired",
   palcolor = NULL,
   theme_use = "theme_scop",
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 ) {
+  image.scale <- match.arg(image.scale)
   SpatialSpotPlot(
     srt = srt,
     group.by = group.by,
     image = image,
+    image.scale = image.scale,
     overlay_image = overlay_image,
     coord.cols = coord.cols,
     palette = palette,
@@ -1328,4 +1332,3 @@ spatialecotyper_store_tool <- function(
   }
   srt
 }
-

@@ -622,11 +622,18 @@ test_that("RunCCC dispatches all four design-specific supported methods", {
         receptor = paste0("R_", method), interaction_name = paste0("L_R_", method),
         score = 1, pvalue = 0.01, method = method, stringsAsFactors = FALSE
       )
-      srt@tools[[method]] <- list(
+      bundle <- list(
         method = method, long_table = long, primary_table = long,
         pair_table = getFromNamespace("aggregate_ccc_long", "scop")(long, backend = "r"),
         parameters = list(group.by = group.by)
       )
+      if (identical(method, "SpatialCellChat")) {
+        bundle <- getFromNamespace(
+          "spatial_tag_coordinate_contract",
+          "scop"
+        )(bundle)
+      }
+      srt@tools[[method]] <- bundle
       srt
     }
   }

@@ -45,7 +45,8 @@ SpatialSpotPlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{
@@ -117,6 +118,10 @@ spacing, then multiplies by \code{pie.radius.scale}.}
 returns a list of ggplots.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

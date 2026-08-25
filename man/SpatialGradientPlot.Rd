@@ -30,7 +30,8 @@ SpatialGradientPlot(
   line_fit = c("stored", "lm"),
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE
+  byrow = TRUE,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{
@@ -68,6 +69,8 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{palette, palcolor}{Color palette passed to SCOP plotting helpers.}
 
+\item{legend.position}{Legend position for surface, line, and model plots.}
+
 \item{theme_use}{Theme name or function.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
@@ -80,6 +83,12 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 \code{screening$estimate} values produced by the selected backend. \code{"lm"} draws a
 fresh linear fit from \code{screening$value}, which is useful for showing a simple
 monotonic trend even when the backend stores a smoothed curve.}
+
+\item{nrow, ncol, byrow}{Layout controls for multi-feature plots.}
+
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
 }
 \value{
 A \code{ggplot} or \code{patchwork} object.
@@ -127,6 +136,7 @@ gradient_result <- list(
     value = c("RNA", "data", "ductal_axis")
   )
 )
+attr(gradient_result, "coordinate_contract_version") <- 2L
 srt@tools[["SpatialGradientFeatures"]] <- list(
   ductal_axis = gradient_result,
   summary = list(active_result = "ductal_axis")

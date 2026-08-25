@@ -28,7 +28,8 @@ SpatialVariableFeaturePlot(
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE
+  byrow = TRUE,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{
@@ -42,6 +43,8 @@ spatial variable feature result are used.}
 \item{nfeatures}{Number of top features used when \code{features = NULL}.}
 
 \item{score_col}{Result column used for the summary x-axis.}
+
+\item{legend.position}{Legend position for surface plots.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -70,6 +73,10 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
+
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
 }
 \value{
 A \code{ggplot} or \code{patchwork} object.

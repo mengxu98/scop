@@ -13,6 +13,9 @@
 #' (e.g. cell-to-spot assignments).
 #' @param geom `"point"` or `"jitter"` for `plot.data`.
 #' @param overlay_image,image.alpha Draw the spatial image beneath spots.
+#' @param image.scale Image scale factor matching the raster stored in the
+#'   selected image. Use `"hires"` for a hires raster; do not modify Seurat
+#'   scale-factor slots.
 #' @param crop Crop the panel to plotted spots.
 #' @param flip.y Reverse the y axis for metadata coordinates.
 #' @param show_axes Keep axis text, ticks, and grid when `theme_use` is
@@ -80,7 +83,8 @@ SpatialSpotPlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  image.scale = c("lowres", "hires")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -90,6 +94,7 @@ SpatialSpotPlot <- function(
   }
   plot_type <- match.arg(plot_type)
   geom <- match.arg(geom)
+  image.scale <- match.arg(image.scale)
   if (!is.null(plot.data)) {
     if (!identical(plot_type, "point")) {
       log_message(
@@ -104,6 +109,7 @@ SpatialSpotPlot <- function(
       color.by = color.by,
       geom = geom,
       image = image,
+      image.scale = image.scale,
       overlay_image = overlay_image,
       image.alpha = image.alpha,
       crop = crop,
@@ -137,6 +143,7 @@ SpatialSpotPlot <- function(
       group.by = group.by,
       values = values,
       image = image,
+      image.scale = image.scale,
       overlay_image = overlay_image,
       image.alpha = image.alpha,
       crop = crop,
@@ -168,6 +175,7 @@ SpatialSpotPlot <- function(
   coords <- spatial_dim_coords(
     srt = srt,
     image = image,
+    image.scale = image.scale,
     coord.cols = coord.cols,
     overlay_image = overlay_image
   )
@@ -260,6 +268,7 @@ spatial_dim_long_plot <- function(
   color.by,
   geom = c("point", "jitter"),
   image = NULL,
+  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image.alpha = 1,
   crop = TRUE,
@@ -287,6 +296,7 @@ spatial_dim_long_plot <- function(
   byrow = TRUE
 ) {
   geom <- match.arg(geom)
+  image.scale <- match.arg(image.scale)
   df <- as.data.frame(plot.data, check.names = FALSE)
   if (is.null(spot.by) || !spot.by %in% colnames(df)) {
     log_message(
@@ -306,6 +316,7 @@ spatial_dim_long_plot <- function(
   coords <- spatial_dim_coords(
     srt = srt,
     image = image,
+    image.scale = image.scale,
     coord.cols = coord.cols,
     overlay_image = overlay_image
   )
@@ -441,6 +452,7 @@ spatial_dim_pie_plot <- function(
   group.by = NULL,
   values = NULL,
   image = NULL,
+  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image.alpha = 1,
   crop = TRUE,
@@ -462,9 +474,11 @@ spatial_dim_pie_plot <- function(
   theme_args = list()
 ) {
   check_r("scatterpie", verbose = FALSE)
+  image.scale <- match.arg(image.scale)
   coords <- spatial_dim_coords(
     srt = srt,
     image = image,
+    image.scale = image.scale,
     coord.cols = coord.cols,
     overlay_image = overlay_image
   )
@@ -728,13 +742,17 @@ spatial_dim_coords <- function(
   srt,
   image = NULL,
   coord.cols = c("col", "row"),
+  image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
   image_policy = "strict"
 ) {
+  image.scale <- match.arg(image.scale)
   raw <- spatial_coords_raw(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
+    image.scale = image.scale,
+    require_scale = TRUE,
     image_policy = image_policy
   )
   selected_image <- raw$source$image
@@ -1012,15 +1030,11 @@ spatial_dim_continuous_scale <- function(values, aesthetic = c("color", "fill"),
   )
 }
 
-spatial_dim_image_scale <- function(image) {
-  sf <- image@scale.factors
-  if (!is.null(sf$lowres)) {
-    return(sf$lowres)
-  }
-  if (!is.null(sf$hires)) {
-    return(sf$hires)
-  }
-  1
+spatial_dim_image_scale <- function(
+  image,
+  image.scale = c("lowres", "hires")
+) {
+  spatial_image_scale_info(image, image.scale = image.scale)$scale
 }
 
 spatial_dim_raster <- function(image, alpha = 1) {
