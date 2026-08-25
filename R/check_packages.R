@@ -39,9 +39,13 @@ check_python <- function(
   verbose = TRUE,
   ...
 ) {
-  packages <- unique_python_requirements(packages)
   envname <- get_envname(envname)
   conda <- resolve_conda(conda)
+  packages <- unique_python_requirements(
+    packages,
+    envname = envname,
+    conda = conda
+  )
   pip_options <- normalize_cli_args(pip_options)
 
   env <- env_exist(conda = conda, envname = envname)
@@ -251,13 +255,38 @@ canonical_python_distribution_name <- function(name) {
   tolower(gsub("[-_.]+", "-", trimws(as.character(name))))
 }
 
-unique_python_requirements <- function(packages) {
-  packages <- resolve_requested_python_packages(packages)
+unique_python_requirements <- function(
+  packages,
+  envname = NULL,
+  conda = "auto"
+) {
+  packages <- resolve_requested_python_packages(
+    packages,
+    envname = envname,
+    conda = conda
+  )
   packages[!duplicated(unname(packages))]
 }
 
-resolve_requested_python_packages <- function(packages) {
+resolve_requested_python_packages <- function(
+  packages,
+  envname = NULL,
+  conda = "auto"
+) {
+  envname <- get_envname(envname)
+  conda <- resolve_conda(conda)
+  python_path <- tryCatch(
+    conda_python(envname = envname, conda = conda),
+    error = function(...) NULL
+  )
+  actual_minor <- python_minor_version(python_path)
+  version <- if (actual_minor %in% c("3.10", "3.11", "3.12")) {
+    paste0(actual_minor, "-1")
+  } else {
+    if (is_windows()) "3.11-1" else "3.10-1"
+  }
   requirements <- env_requirements(
+    version = version,
     include_optional = TRUE
   )
   package_versions <- requirements$packages

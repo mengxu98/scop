@@ -17,6 +17,8 @@
 #' @param p_adjust_method Multiple-testing method.
 #' @param show_category Number of terms shown in each dot plot.
 #' @param output_dir Optional directory for CSV/PDF exports.
+#' @param continue_on_error Whether to keep other modules when one enrichment
+#' call fails. Failures are recorded in the manifest.
 #' @param verbose Whether to print progress messages.
 #'
 #' @return The Seurat object with results under
@@ -35,6 +37,7 @@ RunCellRankEnrichment <- function(
   p_adjust_method = "BH",
   show_category = 8L,
   output_dir = NULL,
+  continue_on_error = FALSE,
   verbose = TRUE
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -73,6 +76,7 @@ RunCellRankEnrichment <- function(
     term2gene <- db_entry$TERM2GENE
     term2name <- db_entry$TERM2NAME
     db_results <- list()
+    db_errors <- list()
     for (cluster_i in names(clusters)) {
       genes_i <- intersect(unique(as.character(clusters[[cluster_i]])), universe)
       if (!length(genes_i)) {
@@ -94,6 +98,15 @@ RunCellRankEnrichment <- function(
         error = function(e) e
       )
       tab <- if (inherits(enrich, "error") || is.null(enrich)) {
+        if (inherits(enrich, "error")) {
+          db_errors[[cluster_i]] <- conditionMessage(enrich)
+          if (!isTRUE(continue_on_error)) {
+            log_message(
+              "Enrichment failed for {.val {db_i}} / cluster {.val {cluster_i}}: {.val {conditionMessage(enrich)}}",
+              message_type = "error"
+            )
+          }
+        }
         data.frame()
       } else {
         as.data.frame(enrich)
@@ -108,9 +121,10 @@ RunCellRankEnrichment <- function(
     if (is.null(combined)) combined <- data.frame()
     results[[db_i]] <- combined
     manifest[[db_i]] <- list(
-      status = if (nrow(combined)) "ok" else "no_significant_terms",
+      status = if (length(db_errors)) "failed" else if (nrow(combined)) "ok" else "no_significant_terms",
       n_clusters = length(clusters),
-      n_terms = nrow(combined)
+      n_terms = nrow(combined),
+      errors = db_errors
     )
     if (!is.null(output_dir)) {
       utils::write.csv(

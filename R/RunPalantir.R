@@ -29,6 +29,9 @@
 #' @param plot_format Format for saved plots: `"pdf"`, `"png"`, or `"svg"`.
 #' @param plot_prefix Prefix for saved plot filenames.
 #' @param dirpath The directory to save the plots.
+#' @param envname Optional Python environment name. `NULL` uses the current
+#' SCOP environment selection.
+#' @param conda Conda-compatible executable used by [PrepareEnv].
 #'
 #' @export
 #'
@@ -113,6 +116,8 @@ RunPalantir <- function(
   plot_dpi = 300,
   plot_prefix = "palantir",
   dirpath = "./",
+  envname = NULL,
+  conda = "auto",
   backend = c("python", "cpp"),
   allow_approximate = FALSE,
   return_seurat = !is.null(srt),
@@ -216,8 +221,8 @@ RunPalantir <- function(
     },
     add = TRUE
   )
-  PrepareEnv(modules = c("scanpy", "palantir"))
-  check_python("palantir", verbose = verbose)
+  PrepareEnv(envname = envname, conda = conda, modules = c("scanpy", "palantir"))
+  check_python("palantir", envname = envname, conda = conda, verbose = verbose)
   if (all(is.null(srt), is.null(adata))) {
     log_message(
       "{.arg srt} or {.arg adata} must be provided.",
@@ -284,7 +289,9 @@ RunPalantir <- function(
     "legend.position",
     "cores",
     "backend",
-    "allow_approximate"
+    "allow_approximate",
+    "envname",
+    "conda"
   )
   args <- args[!names(args) %in% params]
 
@@ -321,7 +328,8 @@ RunPalantir <- function(
       assay_x = assay_x,
       layer_x = layer_x,
       assay_y = assay_y,
-      layer_y = layer_y
+      layer_y = layer_y,
+      prepare_env = FALSE
     )
 
     if (!is.null(linear_reduction)) {
@@ -355,7 +363,7 @@ RunPalantir <- function(
   adata <- do.call(functions$Palantir, args)
 
   if (isTRUE(return_seurat)) {
-    srt_out <- adata_to_srt(adata)
+    srt_out <- adata_to_srt(adata, prepare_env = FALSE)
     if (is.null(srt)) {
       srt_final <- srt_out
     } else {
@@ -377,6 +385,14 @@ RunPalantir <- function(
     dm_reduction <- reduction_names[
       grepl("palantir.*dm", reduction_names, ignore.case = TRUE)
     ]
+    actual_parameters <- srt_final@misc[["scop_palantir_parameters"]]
+    if (!is.list(actual_parameters)) actual_parameters <- list()
+    actual_parameters$requested <- list(
+      early_group = early_group,
+      early_cell = early_cell,
+      terminal_groups = terminal_groups,
+      terminal_cells = terminal_cells
+    )
     srt_final@tools[["Palantir"]] <- list(
       backend = "python",
       group.by = group.by,
@@ -401,11 +417,15 @@ RunPalantir <- function(
         NULL
       },
       dm_kernel = srt_final@misc[["dm_kernel"]],
+      actual_start_cell = actual_parameters$early_cell %||% early_cell,
+      actual_terminal_cells = actual_parameters$terminal_cells %||% terminal_cells,
+      versions = actual_parameters$versions %||% list(),
       magic_layer = if (isTRUE(magic_impute) && magic_layer %in% names(srt_final)) {
         magic_layer
       } else {
         NULL
       },
+      actual_parameters = actual_parameters,
       parameters = list(
         linear_reduction = linear_reduction,
         nonlinear_reduction = nonlinear_reduction,

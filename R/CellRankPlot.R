@@ -32,7 +32,7 @@ CellRankPlot <- function(
   plot_type <- match.arg(plot_type)
   if (!inherits(srt, "Seurat")) log_message("{.arg srt} must be a Seurat object", message_type = "error")
   if (is.null(srt@tools$CellRank)) log_message("CellRank results are missing", message_type = "error")
-  fate <- srt@tools$CellRank$fate_probabilities %||% srt@tools$CellRank$absorption_probabilities
+  fate <- tryCatch(cellrank_fate_matrix(srt), error = function(e) NULL)
 
   if (plot_type == "fate") {
     reduction <- reduction %||% DefaultReduction(srt)
@@ -78,7 +78,23 @@ CellRankPlot <- function(
         ggplot2::geom_point(alpha = 0.7) +
         ggplot2::geom_point(data = vertices, ggplot2::aes(x, y), inherit.aes = FALSE, size = 3) +
         ggplot2::geom_text(data = vertices, ggplot2::aes(x, y, label = label), inherit.aes = FALSE, vjust = -1) +
-        ggplot2::coord_equal() + ggplot2::theme_void()
+        ggplot2::coord_equal(
+          xlim = c(-1.25, 1.25),
+          ylim = c(-1.25, 1.25),
+          clip = "off"
+        ) +
+        ggplot2::scale_color_viridis_c(
+          name = "Fate confidence",
+          limits = c(0, 1),
+          oob = scales::squish
+        ) +
+        ggplot2::theme_void() +
+        ggplot2::theme(
+          plot.background = ggplot2::element_rect(fill = "white", colour = NA),
+          panel.background = ggplot2::element_rect(fill = "white", colour = NA),
+          legend.background = ggplot2::element_rect(fill = "white", colour = NA),
+          plot.margin = ggplot2::margin(12, 36, 12, 36)
+        )
     )
   }
 
@@ -86,11 +102,16 @@ CellRankPlot <- function(
     drivers <- srt@tools$CellRank$lineage_drivers
     corr_col <- paste0(lineage, "_corr")
     if (is.null(drivers) || !corr_col %in% colnames(drivers)) log_message("Stored lineage drivers are missing", message_type = "error")
-    tab <- drivers[order(drivers[[corr_col]], decreasing = TRUE), , drop = FALSE]
-    tab$gene <- rownames(tab)
-    tab <- head(tab[is.finite(tab[[corr_col]]), c("gene", corr_col), drop = FALSE], as.integer(top_n))
+    corr_values <- as.numeric(drivers[, corr_col])
+    keep <- is.finite(corr_values)
+    tab <- data.frame(
+      gene = rownames(drivers)[keep],
+      correlation = corr_values[keep],
+      stringsAsFactors = FALSE
+    )
+    tab <- head(tab[order(tab$correlation, decreasing = TRUE), , drop = FALSE], as.integer(top_n))
     tab$gene <- factor(tab$gene, levels = rev(tab$gene))
-    return(ggplot2::ggplot(tab, ggplot2::aes(gene, .data[[corr_col]])) + ggplot2::geom_col() + ggplot2::coord_flip() + ggplot2::theme_bw() + ggplot2::labs(x = NULL, y = "Correlation"))
+    return(ggplot2::ggplot(tab, ggplot2::aes(gene, correlation)) + ggplot2::geom_col() + ggplot2::coord_flip() + ggplot2::theme_bw() + ggplot2::labs(x = NULL, y = "Correlation"))
   }
 
   trend <- srt@tools$CellRank$trends[[lineage]]

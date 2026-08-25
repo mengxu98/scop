@@ -17,8 +17,9 @@
 #' @param force Whether to force recreation of the environment.
 #' If `TRUE`, the existing environment will be removed and recreated.
 #' @param version The Python version.
-#' Default is `"3.10-1"` on macOS and Unix and `"3.11-1"` on Windows. The
-#' CellRank/Palantir reference stack upgrades this to Python `3.12-1`.
+#' Default is `"3.10-1"` on macOS and Unix and `"3.11-1"` on Windows. Existing
+#' compatible environments are reused; trajectory package pins are selected
+#' for the actual Python 3.10/3.11/3.12 profile.
 #' @param modules Optional Python dependency modules to install in addition to
 #' the default scientific stack.
 #' If `NULL` or omitted in [PrepareEnv()], the default environment is installed.
@@ -60,6 +61,7 @@ PrepareEnv <- function(
   verbose = TRUE,
   ...
 ) {
+  version_missing <- missing(version)
   components_missing <- missing(components)
   components <- norm_env_components(components)
   modules <- normalize_env_modules(modules = modules)
@@ -156,16 +158,25 @@ PrepareEnv <- function(
   }
   envname <- get_envname(envname)
   pip_options <- normalize_cli_args(pip_options)
+  conda_auto <- identical(conda, "auto")
+  if (!is.null(conda)) {
+    conda <- resolve_conda(conda)
+  }
+  if (isTRUE(version_missing) && !is.null(conda)) {
+    existing_python <- tryCatch(
+      conda_python(envname = envname, conda = conda),
+      error = function(...) NULL
+    )
+    existing_minor <- python_minor_version(existing_python)
+    if (existing_minor %in% c("3.10", "3.11", "3.12")) {
+      version <- paste0(existing_minor, "-1")
+    }
+  }
   requirements <- env_requirements(
     version = version,
     modules = modules
   )
   python_version <- requirements[["python"]]
-
-  conda_auto <- identical(conda, "auto")
-  if (!is.null(conda)) {
-    conda <- resolve_conda(conda)
-  }
 
   cache_spec <- build_env_cache_spec(
     envname = envname,
@@ -260,6 +271,14 @@ PrepareEnv <- function(
     }
 
     if (isTRUE(env)) {
+      existing_python <- conda_env_python_path(env_path)
+      if (!python_version_matches(existing_python, python_version)) {
+        actual_version <- python_minor_version(existing_python) %||% "unknown"
+        log_message(
+          "Environment {.file {envname}} uses Python {.val {actual_version}}, but this run requires {.val {python_version}}. Use {.arg force = TRUE} explicitly or select an environment with a compatible interpreter.",
+          message_type = "error"
+        )
+      }
       log_message(
         "Using existing environment: {.file {env_path}}"
       )
@@ -463,6 +482,34 @@ normalize_cli_args <- function(args) {
 
   args <- trimws(as.character(args))
   args[nzchar(args)]
+}
+
+python_minor_version <- function(python_path) {
+  if (is.null(python_path) || !length(python_path) ||
+      !nzchar(as.character(python_path)[[1L]]) ||
+      !file.exists(as.character(python_path)[[1L]])) {
+    return(NULL)
+  }
+  out <- tryCatch(
+    suppressWarnings(system2(
+      as.character(python_path)[[1L]],
+      "--version",
+      stdout = TRUE,
+      stderr = TRUE
+    )),
+    error = function(...) character()
+  )
+  hit <- regmatches(
+    paste(out, collapse = " "),
+    regexpr("[0-9]+\\.[0-9]+", paste(out, collapse = " "))
+  )
+  if (!length(hit) || !nzchar(hit)) NULL else hit
+}
+
+python_version_matches <- function(python_path, requested_version) {
+  actual <- python_minor_version(python_path)
+  requested <- sub("-1$", "", as.character(requested_version))
+  !is.null(actual) && identical(actual, requested)
 }
 
 supported_env_modules <- function() {
@@ -1003,7 +1050,9 @@ is_cached_env_valid <- function(spec) {
       error = function(e) NULL
     )
 
-  !is.null(python) && file.exists(python) && python_executable_works(python)
+  !is.null(python) && file.exists(python) &&
+    python_executable_works(python) &&
+    python_version_matches(python, spec[["python_version"]])
 }
 
 prepend_path_var <- function(var, values) {
@@ -1757,10 +1806,6 @@ env_requirements <- function(
     }
     version <- "3.10-1"
   }
-  if (any(c("palantir", "cellrank") %in% modules) &&
-      version %in% c("3.10-1", "3.11-1")) {
-    version <- "3.12-1"
-  }
   if ("cell2fate" %in% modules) {
     if (length(setdiff(modules, "cell2fate")) > 0) {
       log_message(
@@ -1848,14 +1893,31 @@ env_requirements <- function(
     package_aliases <- c(package_aliases, req_i$package_aliases)
   }
 
-  # Keep the reference CellRank + Palantir pins local to these modules so
-  # unrelated workflows retain their existing dependency stack.
-  if (any(c("palantir", "cellrank") %in% modules)) {
-    package_versions[["scanpy"]] <- "scanpy==1.12.2"
-    package_versions[["palantir"]] <- "palantir==1.4.4"
-    package_versions[["cellrank"]] <- "cellrank==2.3.2"
-    package_versions[["pandas"]] <- "pandas==2.3.3"
-    package_install_methods[c("scanpy", "palantir", "cellrank", "pandas")] <- "pip"
+  # Resolve the trajectory stack against the interpreter profile instead of
+  # forcing a single Python version. This keeps the existing SCOP environment
+  # usable on Python 3.10/3.11 while allowing the newer Python 3.12 stack.
+  if (any(c("scanpy", "palantir", "cellrank") %in% modules)) {
+    if (!version %in% c("3.10-1", "3.11-1", "3.12-1")) {
+      log_message(
+        "The Scanpy/Palantir/CellRank compatibility profiles support Python 3.10, 3.11, or 3.12; requested {.val {version}} is unsupported.",
+        message_type = "error"
+      )
+    }
+    modern <- identical(version, "3.12-1")
+    trajectory_packages <- c(
+      scanpy = if (modern) "scanpy==1.12.2" else "scanpy==1.11.3",
+      numpy = if (modern) "numpy==2.4.6" else "numpy==1.26.4",
+      pandas = if (modern) "pandas==2.3.3" else "pandas==2.2.0",
+      "charset-normalizer" = "charset-normalizer>=3.4"
+    )
+    if ("palantir" %in% modules) {
+      trajectory_packages[["palantir"]] <- "palantir==1.4.4"
+    }
+    if ("cellrank" %in% modules) {
+      trajectory_packages[["cellrank"]] <- if (modern) "cellrank==2.3.2" else "cellrank==2.0.7"
+    }
+    package_versions[names(trajectory_packages)] <- trajectory_packages
+    package_install_methods[names(trajectory_packages)] <- "pip"
   }
 
   if (all(c("scvi", "scomm") %in% modules) && "ml_dtypes" %in% names(package_versions)) {

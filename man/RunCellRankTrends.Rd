@@ -22,6 +22,12 @@ RunCellRankTrends(
   cores = 1L,
   random_state = 0L,
   output_dir = NULL,
+  envname = NULL,
+  conda = "auto",
+  min_expressed_cells = 20L,
+  distribution = "gamma",
+  link = "log",
+  fallback_distribution = "gaussian",
   verbose = TRUE
 )
 }
@@ -59,6 +65,21 @@ RunCellRankTrends(
 \item{random_state}{Reproducibility seed.}
 
 \item{output_dir}{Optional directory for CSV exports.}
+
+\item{envname}{Optional Python environment name. \code{NULL} uses the current
+SCOP environment selection.}
+
+\item{conda}{Conda-compatible executable used by \link{PrepareEnv}.}
+
+\item{min_expressed_cells}{Minimum cells with positive finite expression
+required for a GAM feature.}
+
+\item{distribution}{Primary CellRank GAM distribution.}
+
+\item{link}{Link function for the primary GAM distribution.}
+
+\item{fallback_distribution}{Optional distribution used when the primary
+model has a fatal fit failure; the selected distribution is recorded.}
 
 \item{verbose}{Whether to print progress messages.}
 }

@@ -32,7 +32,9 @@ downloaded automatically.}
 Default is \url{https://repo.anaconda.com/miniconda}.}
 
 \item{version}{The Python version.
-Default is \code{"3.10-1"} on macOS and Unix and \code{"3.11-1"} on Windows.}
+Default is \code{"3.10-1"} on macOS and Unix and \code{"3.11-1"} on Windows. Existing
+compatible environments are reused; trajectory package pins are selected for
+the actual Python 3.10/3.11/3.12 profile.}
 
 \item{force}{Whether to force recreation of the environment.
 If \code{TRUE}, the existing environment will be removed and recreated.}
