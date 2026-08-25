@@ -41,6 +41,7 @@ articles:
   - integration-workflow
   - cell-annotation-workflow
   - trajectory-dynamic-workflow
+  - cellrank-palantir-fate-workflow
   - differential-enrichment-workflow
 - title: Benchmark workflows
   navbar: Benchmark workflows
@@ -366,6 +367,8 @@ reference:
 - contents:
   - RunCell2fate
   - RunCellRank
+  - RunCellRankTrends
+  - RunCellRankEnrichment
   - RunMonocle2
   - RunMonocle3
   - RunPAGA
@@ -384,6 +387,7 @@ reference:
   - LineagePlot
   - PAGAPlot
   - PalantirTrajectoryPlot
+  - CellRankPlot
   - PseudotimeProjectionPlot
   - VECTORPlot
   - VelocityPlot

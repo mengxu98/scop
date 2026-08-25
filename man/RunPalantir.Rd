@@ -30,6 +30,8 @@ RunPalantir(
   adjust_early_cell = FALSE,
   adjust_terminal_cells = FALSE,
   max_iterations = 25,
+  magic_impute = FALSE,
+  magic_layer = "MAGIC_imputed_data",
   cores = 1,
   point_size = 20,
   palette = "Chinese",
@@ -98,6 +100,11 @@ If provided, \code{adata} will be ignored.}
 \item{adjust_terminal_cells}{Whether to adjust the terminal cells to the cells with the maximum pseudotime value for each terminal group.}
 
 \item{max_iterations}{Maximum number of iterations for pseudotime convergence.}
+
+\item{magic_impute}{Whether to calculate a Palantir MAGIC expression layer.
+This layer is for visualization and trend fitting, not count-based testing.}
+
+\item{magic_layer}{Name of the MAGIC layer to store.}
 
 \item{cores}{The number of cores to use for \code{cellrank}.}
 
