@@ -17,6 +17,7 @@ RunCellRankEnrichment(
   p_adjust_method = "BH",
   show_category = 8L,
   output_dir = NULL,
+  continue_on_error = FALSE,
   verbose = TRUE
 )
 }
@@ -45,6 +46,9 @@ lineage drivers.}
 \item{show_category}{Number of terms shown in each dot plot.}
 
 \item{output_dir}{Optional directory for CSV/PDF exports.}
+
+\item{continue_on_error}{Whether to keep other modules when one enrichment
+call fails. Failures are recorded in the manifest.}
 
 \item{verbose}{Whether to print progress messages.}
 }

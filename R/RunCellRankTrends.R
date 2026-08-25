@@ -21,6 +21,14 @@
 #' @param cores Number of Python workers.
 #' @param random_state Reproducibility seed.
 #' @param output_dir Optional directory for CSV exports.
+#' @param envname Optional Python environment name.
+#' @param conda Conda-compatible executable used by [PrepareEnv].
+#' @param min_expressed_cells Minimum cells with positive finite expression
+#' required for a GAM feature.
+#' @param distribution Primary CellRank GAM distribution.
+#' @param link Link function for the primary GAM distribution.
+#' @param fallback_distribution Optional distribution used when the primary
+#' model has a fatal fit failure; the selected distribution is recorded.
 #' @param verbose Whether to print progress messages.
 #'
 #' @return The Seurat object with a `CellRank$trends[[lineage]]` result bundle.
@@ -43,6 +51,12 @@ RunCellRankTrends <- function(
   cores = 1L,
   random_state = 0L,
   output_dir = NULL,
+  envname = NULL,
+  conda = "auto",
+  min_expressed_cells = 20L,
+  distribution = "gamma",
+  link = "log",
+  fallback_distribution = "gaussian",
   verbose = TRUE
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -51,13 +65,8 @@ RunCellRankTrends <- function(
   if (is.null(srt@tools$CellRank)) {
     log_message("Run {.fn RunCellRank} before {.fn RunCellRankTrends}", message_type = "error")
   }
-  fate <- srt@tools$CellRank$fate_probabilities %||%
-    srt@tools$CellRank$absorption_probabilities
-  if (is.null(fate)) {
-    log_message("CellRank fate probabilities are missing", message_type = "error")
-  }
-  fate <- as.matrix(fate)
-  if (is.null(colnames(fate)) || !lineage %in% colnames(fate)) {
+  fate <- cellrank_fate_matrix(srt)
+  if (!lineage %in% colnames(fate)) {
     log_message(
       "{.arg lineage} must match a stored CellRank fate-probability column",
       message_type = "error"
@@ -79,7 +88,8 @@ RunCellRankTrends <- function(
     if (is.null(drivers) || !corr_col %in% colnames(drivers)) {
       log_message("No stored driver correlation column {.val {corr_col}}", message_type = "error")
     }
-    features <- rownames(drivers)[is.finite(drivers[[corr_col]]) & drivers[[corr_col]] > 0]
+    corr_values <- drivers[, corr_col]
+    features <- rownames(drivers)[is.finite(corr_values) & corr_values > 0]
     features <- features[order(drivers[features, corr_col], decreasing = TRUE)]
   }
   features <- unique(intersect(as.character(features), rownames(srt[[assay]])))
@@ -87,10 +97,35 @@ RunCellRankTrends <- function(
     log_message("No trend genes overlap the selected assay", message_type = "error")
   }
   features <- head(features, as.integer(top_n))
+  expression <- SeuratObject::LayerData(srt[[assay]], layer = layer)[features, , drop = FALSE]
+  positive_cells <- Matrix::rowSums(expression > 0)
+  row_mean <- Matrix::rowMeans(expression)
+  row_var <- Matrix::rowSums(expression ^ 2) / ncol(expression) - row_mean ^ 2
+  valid_features <- features[
+    positive_cells >= as.integer(min_expressed_cells) &
+      is.finite(row_var) & row_var > 0
+  ]
+  if (!length(valid_features)) {
+    log_message(
+      "No trend genes pass the finite, variable, and expressed-cell filters",
+      message_type = "error"
+    )
+  }
+  features <- valid_features
 
-  PrepareEnv(modules = c("scanpy", "cellrank"), verbose = verbose)
-  check_python("cellrank", verbose = verbose)
-  adata <- srt_to_adata(srt = srt, assay_x = assay, layer_x = layer)
+  PrepareEnv(
+    envname = envname,
+    conda = conda,
+    modules = c("scanpy", "cellrank"),
+    verbose = verbose
+  )
+  check_python("cellrank", envname = envname, conda = conda, verbose = verbose)
+  adata <- srt_to_adata(
+    srt = srt,
+    assay_x = assay,
+    layer_x = layer,
+    prepare_env = FALSE
+  )
   functions <- scop_python_import("functions", convert = TRUE)
   result <- do.call(functions$CellRankTrends, list(
     adata = adata,
@@ -107,6 +142,9 @@ RunCellRankTrends <- function(
     n_knots = as.integer(n_knots),
     n_jobs = as.integer(cores),
     random_state = as.integer(random_state),
+    distribution = distribution,
+    link = link,
+    fallback_distribution = fallback_distribution,
     show_plot = FALSE,
     save = NULL
   ))
@@ -149,4 +187,39 @@ RunCellRankTrends <- function(
     )
   }
   srt
+}
+
+cellrank_fate_matrix <- function(srt) {
+  fate <- srt@tools$CellRank$fate_probabilities %||%
+    srt@tools$CellRank$absorption_probabilities
+  if (is.null(fate)) {
+    log_message("CellRank fate probabilities are missing", message_type = "error")
+  }
+  fate <- as.matrix(fate)
+  cells <- colnames(srt)
+  if (is.null(rownames(fate)) || anyDuplicated(rownames(fate))) {
+    log_message(
+      "CellRank fate probabilities must have unique cell row names",
+      message_type = "error"
+    )
+  }
+  if (is.null(colnames(fate)) || anyDuplicated(colnames(fate)) ||
+      any(!nzchar(colnames(fate)))) {
+    log_message(
+      "CellRank fate probabilities must have unique lineage names",
+      message_type = "error"
+    )
+  }
+  missing_cells <- setdiff(cells, rownames(fate))
+  if (length(missing_cells)) {
+    log_message(
+      "CellRank fate probabilities are missing cells: {.val {paste(head(missing_cells, 5), collapse = ', ')}}",
+      message_type = "error"
+    )
+  }
+  fate <- fate[cells, , drop = FALSE]
+  if (any(!is.finite(fate)) || any(rowSums(fate) <= 0)) {
+    log_message("CellRank fate probabilities contain invalid rows", message_type = "error")
+  }
+  fate
 }

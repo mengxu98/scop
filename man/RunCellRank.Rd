@@ -65,6 +65,9 @@ RunCellRank(
   palcolor = NULL,
   dirpath = "./cellrank",
   return_seurat = !is.null(srt),
+  envname = NULL,
+  conda = "auto",
+  recompute_neighbors = TRUE,
   verbose = TRUE
 )
 }
@@ -208,6 +211,15 @@ Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc.}
 \item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
 \item{dirpath}{The directory to save the plots.}
+
+\item{envname}{Optional Python environment name. \code{NULL} uses the current
+SCOP environment selection.}
+
+\item{conda}{Conda-compatible executable used by \link{PrepareEnv}.}
+
+\item{recompute_neighbors}{Whether to rebuild Scanpy neighbors before a
+pseudotime kernel. If \code{FALSE}, the existing graph must be complete,
+connected, and aligned to the current cell order.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.}
 

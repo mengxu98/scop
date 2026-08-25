@@ -19,6 +19,45 @@ make_cellrank_closure_srt <- function() {
   srt
 }
 
+test_that("trajectory dependency profiles follow the requested Python version", {
+  legacy <- env_requirements(
+    version = "3.10-1",
+    modules = c("scanpy", "palantir", "cellrank")
+  )
+  middle <- env_requirements(
+    version = "3.11-1",
+    modules = c("scanpy", "palantir", "cellrank")
+  )
+  modern <- env_requirements(
+    version = "3.12-1",
+    modules = c("scanpy", "palantir", "cellrank")
+  )
+  expect_identical(legacy$packages[["scanpy"]], "scanpy==1.11.3")
+  expect_identical(legacy$packages[["cellrank"]], "cellrank==2.0.7")
+  expect_identical(legacy$packages[["numpy"]], "numpy==1.26.4")
+  expect_identical(middle$packages[["scanpy"]], "scanpy==1.11.3")
+  expect_identical(middle$packages[["cellrank"]], "cellrank==2.0.7")
+  expect_identical(modern$packages[["scanpy"]], "scanpy==1.12.2")
+  expect_identical(modern$packages[["cellrank"]], "cellrank==2.3.2")
+  expect_identical(modern$packages[["numpy"]], "numpy==2.4.6")
+})
+
+test_that("package checks use the selected environment interpreter profile", {
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    conda_python = function(...) "C:/fake/python.exe",
+    python_minor_version = function(...) "3.12",
+    resolve_conda = function(x) "C:/fake/conda.exe",
+    is_windows = function() TRUE
+  )
+  req <- unique_python_requirements(
+    "cellrank",
+    envname = "scop_env",
+    conda = "C:/fake/conda.exe"
+  )
+  expect_true("cellrank==2.3.2" %in% req)
+})
+
 test_that("RunCellRankTrends stores normalized trend payload", {
   srt <- make_cellrank_closure_srt()
   testthat::local_mocked_bindings(
@@ -43,11 +82,21 @@ test_that("RunCellRankTrends stores normalized trend payload", {
     lineage = "A",
     top_n = 2,
     n_points = 3,
+    min_expressed_cells = 1L,
     verbose = FALSE
   )
   expect_true("A" %in% names(out@tools$CellRank$trends))
   expect_equal(out@tools$CellRank$trends$A$cluster_table$cluster, c("0", "1"))
   expect_equal(out@tools$CellRank$trends$A$heatmap_genes, c("g1", "g2"))
+})
+
+test_that("RunCellRankTrends rejects fate matrices without cell names", {
+  srt <- make_cellrank_closure_srt()
+  rownames(srt@tools$CellRank$fate_probabilities) <- NULL
+  expect_error(
+    RunCellRankTrends(srt, lineage = "A", verbose = FALSE),
+    "unique cell row names"
+  )
 })
 
 test_that("RunCellRankEnrichment records empty and non-empty module results", {
@@ -75,6 +124,33 @@ test_that("CellRankPlot circular consumes stored fate probabilities", {
   srt <- make_cellrank_closure_srt()
   p <- CellRankPlot(srt, plot_type = "circular")
   expect_s3_class(p, "ggplot")
+})
+
+test_that("CellRankPlot drivers consumes matrix driver payloads", {
+  srt <- make_cellrank_closure_srt()
+  p <- CellRankPlot(srt, plot_type = "drivers", lineage = "A", top_n = 2)
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("RunCellRankEnrichment distinguishes backend failures", {
+  srt <- make_cellrank_closure_srt()
+  srt@tools$CellRank$trends <- list(A = list(
+    cluster_table = data.frame(gene = c("g1", "g2"), cluster = c("0", "1"))
+  ))
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    check_r = function(...) TRUE,
+    get_namespace_fun = function(pkg, fun) {
+      function(...) stop("malformed TERM2GENE")
+    },
+    PrepareDB = function(...) list(Mus_musculus = list(
+      TEST = list(TERM2GENE = data.frame(term = "t1", gene = "g1"), TERM2NAME = data.frame(term = "t1", name = "term"))
+    ))
+  )
+  expect_error(
+    RunCellRankEnrichment(srt, lineage = "A", db = "TEST", verbose = FALSE),
+    "malformed TERM2GENE"
+  )
 })
 
 test_that("C++ backend rejects CellRank reference-only options", {
