@@ -198,7 +198,6 @@ RunSTdeconvolve <- function(
         round_counts = round_counts
       )
     )
-    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
 
   log_message(
@@ -261,8 +260,8 @@ STdeconvolvePlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  image.scale = c("lowres", "hires"),
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")

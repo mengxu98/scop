@@ -292,7 +292,10 @@ test_that("public HE overlay wrappers expose image.scale", {
     "image.scale" %in% names(formals(getExportedValue("scop", name)))
   }, logical(1))))
   expect_true(all(vapply(wrappers, function(name) {
-    args <- setdiff(names(formals(getExportedValue("scop", name))), "...")
+    args <- names(formals(getExportedValue("scop", name)))
+    if ("..." %in% args) {
+      return(match("...", args) < match("image.scale", args))
+    }
     identical(utils::tail(args, 1L), "image.scale")
   }, logical(1))))
 })

@@ -92,6 +92,49 @@ test_that("coordinate conversion is explicit and micron based", {
     "explicit positive"
   )
 })
+
+test_that("raw SpatialCellChat coordinates do not require a display scale", {
+  counts <- matrix(
+    seq_len(24),
+    nrow = 3,
+    dimnames = list(paste0("gene", 1:3), paste0("spot", 1:8))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
+  image <- methods::new(
+    "VisiumV1",
+    image = array(1, dim = c(20, 30, 3)),
+    scale.factors = structure(
+      list(spot = 1, fiducial = 1, hires = 0.5, lowres = NA_real_),
+      class = "scalefactors"
+    ),
+    coordinates = data.frame(
+      imagerow = rep(4:5, each = 4),
+      imagecol = rep(5:8, 2),
+      row.names = colnames(srt)
+    ),
+    spot.radius = 0.1,
+    assay = "RNA",
+    key = "v1_"
+  )
+  srt[["slice"]] <- image
+
+  metric <- spatialcellchat_metric_coordinates(
+    srt,
+    cells = colnames(srt),
+    image = "slice",
+    coord.cols = c("col", "row"),
+    technology = "visium",
+    coordinate.unit = "pixel",
+    ratio = 1,
+    tol = 1
+  )
+
+  expect_equal(metric$data$x, metric$data$x_raw)
+  expect_equal(metric$data$y, metric$data$y_raw)
+  expect_equal(metric$data$x_display, metric$data$x_raw)
+  expect_equal(metric$data$y_display, metric$data$y_raw)
+  expect_identical(metric$source$plot_coordinate_space, "raw")
+})
 test_that("strict auto detection refuses ambiguous generic data", {
   srt <- make_spatialcellchat_test_object()
   expect_error(

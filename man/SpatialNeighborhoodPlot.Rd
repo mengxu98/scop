@@ -36,8 +36,8 @@ SpatialNeighborhoodPlot(
   byrow = TRUE,
   seed = 11,
   verbose = TRUE,
-  image.scale = c("lowres", "hires"),
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{

@@ -13,8 +13,8 @@ Cell2locationPlot(
   image = NULL,
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
-  image.scale = c("lowres", "hires"),
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{

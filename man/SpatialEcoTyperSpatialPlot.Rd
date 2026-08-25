@@ -15,8 +15,8 @@ SpatialEcoTyperSpatialPlot(
   palette = "Paired",
   palcolor = NULL,
   theme_use = "theme_scop",
-  image.scale = c("lowres", "hires"),
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{

@@ -265,8 +265,8 @@ SpatialIntegrationPlot <- function(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  image.scale = c("lowres", "hires"),
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message(
