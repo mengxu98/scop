@@ -1,5 +1,96 @@
 # Pure coordinate and graph primitives for spatial analyses.
 
+.spatial_coordinate_contract_version <- 2L
+
+spatial_coordinate_contract_version <- function(result) {
+  candidates <- list(
+    attr(result, "coordinate_contract_version", exact = TRUE),
+    result$coordinate_contract_version,
+    result$source$coordinate_contract_version,
+    result$parameters$coordinate_contract_version,
+    result$parameters$source$coordinate_contract_version
+  )
+  candidates <- candidates[!vapply(candidates, is.null, logical(1))]
+  if (length(candidates) == 0L) {
+    return(NA_integer_)
+  }
+  suppressWarnings(as.integer(candidates[[1L]][[1L]]))
+}
+
+spatial_require_coordinate_contract <- function(result, producer) {
+  version <- spatial_coordinate_contract_version(result)
+  if (
+    length(version) != 1L || is.na(version) ||
+      version < .spatial_coordinate_contract_version
+  ) {
+    log_message(
+      paste0(
+        "Stored spatial result uses an old or unknown coordinate contract; rerun ",
+        producer, " with the current SCOP version"
+      ),
+      message_type = "error"
+    )
+  }
+  invisible(version)
+}
+
+spatial_tag_coordinate_contract <- function(result) {
+  if (!is.list(result)) {
+    log_message(
+      "A coordinate-dependent stored result must be a list",
+      message_type = "error"
+    )
+  }
+  tagged <- FALSE
+  if (is.list(result$parameters)) {
+    result$parameters$coordinate_contract_version <- .spatial_coordinate_contract_version
+    tagged <- TRUE
+  }
+  if (is.list(result$source)) {
+    result$source$coordinate_contract_version <- .spatial_coordinate_contract_version
+    tagged <- TRUE
+  }
+  if (!isTRUE(tagged)) {
+    result$coordinate_contract_version <- .spatial_coordinate_contract_version
+  }
+  result
+}
+
+spatial_image_scale_info <- function(
+  image,
+  image.scale = c("lowres", "hires"),
+  required = TRUE
+) {
+  image.scale <- match.arg(image.scale)
+  if (!"scale.factors" %in% methods::slotNames(image)) {
+    return(list(
+      scale = 1,
+      scale_name = "identity",
+      has_scale_factors = FALSE
+    ))
+  }
+  scale_factors <- methods::slot(image, "scale.factors")
+  scale <- tryCatch(scale_factors[[image.scale]], error = function(e) NULL)
+  if (is.null(scale) || length(scale) != 1L || !is.finite(scale) || scale <= 0) {
+    if (!isTRUE(required)) {
+      return(list(
+        scale = NA_real_,
+        scale_name = image.scale,
+        has_scale_factors = TRUE
+      ))
+    }
+    log_message(
+      "Spatial image scale factor {.val {image.scale}} is missing or invalid",
+      message_type = "error"
+    )
+  }
+  list(
+    scale = as.numeric(scale),
+    scale_name = image.scale,
+    has_scale_factors = TRUE
+  )
+}
+
 spatial_image_resolve <- function(
   srt,
   image = NULL,
@@ -41,8 +132,11 @@ spatial_coords_raw <- function(
   srt,
   image = NULL,
   coord.cols = c("col", "row"),
+  image.scale = c("lowres", "hires"),
+  require_scale = FALSE,
   image_policy = "strict"
 ) {
+  image.scale <- match.arg(image.scale)
   resolved_image <- spatial_image_resolve(
     srt = srt,
     image = image,
@@ -56,21 +150,57 @@ spatial_coords_raw <- function(
     source_coord_cols <- coord.cols[1:2]
     transform <- list(
       scale = 1,
+      scale_name = "identity",
       y_flip = FALSE,
       image_width = NA_real_,
       image_height = NA_real_,
       raw_x_col = coord.cols[[1L]],
-      raw_y_col = coord.cols[[2L]]
+      raw_y_col = coord.cols[[2L]],
+      image_class = NULL,
+      coordinate_contract_version = .spatial_coordinate_contract_version
     )
   } else {
-    raw <- as.data.frame(SeuratObject::GetTissueCoordinates(srt[[selected_image]]))
+    spatial_image <- srt[[selected_image]]
+    raw <- tryCatch(
+      as.data.frame(SeuratObject::GetTissueCoordinates(
+        spatial_image,
+        scale = NULL,
+        full = FALSE
+      )),
+      error = function(e) {
+        log_message(
+          paste0(
+            "Unable to recover full-resolution raw coordinates from spatial image ",
+            selected_image, ": ", conditionMessage(e)
+          ),
+          message_type = "error"
+        )
+      }
+    )
     cell_col <- if ("cell" %in% colnames(raw)) "cell" else NULL
     cells <- if (is.null(cell_col)) rownames(raw) else as.character(raw[[cell_col]])
     if (is.null(cells) || anyNA(cells) || any(!nzchar(cells)) || anyDuplicated(cells)) {
       log_message("Spatial image coordinates must have unique, non-missing cell or spot identifiers", message_type = "error")
     }
-    x_col <- spatial_dim_pick_col(raw, c("x", "pxl_col_in_fullres", "imagecol"))
-    y_col <- spatial_dim_pick_col(raw, c("y", "pxl_row_in_fullres", "imagerow"))
+    raw_names <- tolower(colnames(raw))
+    has_explicit_pixels <- any(c("pxl_col_in_fullres", "imagecol") %in% raw_names) &&
+      any(c("pxl_row_in_fullres", "imagerow") %in% raw_names)
+    if (isTRUE(has_explicit_pixels)) {
+      x_col <- spatial_dim_pick_col(raw, c("pxl_col_in_fullres", "imagecol"))
+      y_col <- spatial_dim_pick_col(raw, c("pxl_row_in_fullres", "imagerow"))
+    } else if (
+      inherits(spatial_image, "VisiumV2") &&
+        all(c("x", "y") %in% raw_names)
+    ) {
+      # Seurat spatial plotting treats the first coordinate column as image
+      # row and the second as image column for VisiumV2 tables named x/y.
+      # Normalize them to horizontal x and vertical y here.
+      x_col <- spatial_dim_pick_col(raw, "y")
+      y_col <- spatial_dim_pick_col(raw, "x")
+    } else {
+      x_col <- spatial_dim_pick_col(raw, c("x", "pxl_col_in_fullres", "imagecol"))
+      y_col <- spatial_dim_pick_col(raw, c("y", "pxl_row_in_fullres", "imagerow"))
+    }
     source_coord_cols <- c(x_col, y_col)
     coords <- data.frame(
       x = suppressWarnings(as.numeric(raw[[x_col]])),
@@ -78,15 +208,23 @@ spatial_coords_raw <- function(
       row.names = cells,
       stringsAsFactors = FALSE
     )
-    scale <- tryCatch(spatial_dim_image_scale(srt[[selected_image]]), error = function(e) 1)
-    image_dims <- tryCatch(dim(srt[[selected_image]]@image), error = function(e) NULL)
+    scale_info <- spatial_image_scale_info(
+      spatial_image,
+      image.scale = image.scale,
+      required = require_scale
+    )
+    image_array <- tryCatch(methods::slot(spatial_image, "image"), error = function(e) NULL)
+    image_dims <- if (is.null(image_array)) NULL else dim(image_array)
     transform <- list(
-      scale = if (length(scale) == 1L && is.finite(scale) && scale > 0) scale else 1,
+      scale = scale_info$scale,
+      scale_name = scale_info$scale_name,
       y_flip = !is.null(image_dims) && length(image_dims) >= 2L,
       image_width = if (!is.null(image_dims)) image_dims[[2L]] else NA_real_,
       image_height = if (!is.null(image_dims)) image_dims[[1L]] else NA_real_,
       raw_x_col = x_col,
-      raw_y_col = y_col
+      raw_y_col = y_col,
+      image_class = class(spatial_image),
+      coordinate_contract_version = .spatial_coordinate_contract_version
     )
   }
   if (anyDuplicated(cells)) {
@@ -102,7 +240,20 @@ spatial_coords_raw <- function(
   coords$cell_id <- rownames(coords)
   coords <- coords[, c("cell_id", "x", "y"), drop = FALSE]
   object_cells <- colnames(srt)
+  unknown <- setdiff(coords$cell_id, object_cells)
+  if (length(unknown) > 0L) {
+    log_message(
+      "Spatial image coordinates contain cell or spot identifiers absent from {.arg srt}",
+      message_type = "error"
+    )
+  }
   keep <- object_cells[object_cells %in% coords$cell_id]
+  if (length(keep) == 0L) {
+    log_message(
+      "Spatial coordinates do not match any cell or spot in {.arg srt}",
+      message_type = "error"
+    )
+  }
   coords <- coords[match(keep, coords$cell_id), , drop = FALSE]
   rownames(coords) <- coords$cell_id
   coords$image <- if (is.null(selected_image)) NA_character_ else selected_image
@@ -114,7 +265,13 @@ spatial_coords_raw <- function(
       image = selected_image,
       coord.cols = source_coord_cols,
       image_policy = image_policy,
-      coordinate_space = "raw"
+      coordinate_space = "raw",
+      image_class = transform$image_class,
+      image_width = transform$image_width,
+      image_height = transform$image_height,
+      scale_name = transform$scale_name,
+      scale_factor = transform$scale,
+      coordinate_contract_version = .spatial_coordinate_contract_version
     )
   )
   attr(result$data, "spatial_source") <- result$source
@@ -128,6 +285,12 @@ spatial_coords_to_display <- function(raw, transform) {
     log_message("{.arg raw} must contain x and y columns", message_type = "error")
   }
   scale <- transform$scale %||% 1
+  if (length(scale) != 1L || !is.finite(scale) || scale <= 0) {
+    log_message(
+      "Display conversion requires a positive finite image scale factor",
+      message_type = "error"
+    )
+  }
   out$x <- as.numeric(out$x) * scale
   out$y <- as.numeric(out$y) * scale
   if (isTRUE(transform$y_flip)) {
@@ -145,15 +308,45 @@ spatial_analysis_coords <- function(
   image = NULL,
   coord.cols = c("col", "row"),
   coordinate_space = c("legacy_display", "raw"),
+  image.scale = c("lowres", "hires"),
   image_policy = "strict"
 ) {
   coordinate_space <- match.arg(coordinate_space)
+  image.scale <- match.arg(image.scale)
   if (identical(coordinate_space, "legacy_display")) {
+    # Preserve the historical lowres-to-hires fallback only for the explicit
+    # compatibility mode. Current display APIs remain strict about image.scale.
+    if (identical(image.scale, "lowres")) {
+      resolved_image <- spatial_image_resolve(
+        srt = srt,
+        image = image,
+        image_policy = image_policy
+      )$image
+      if (!is.null(resolved_image)) {
+        spatial_image <- srt[[resolved_image]]
+        lowres <- spatial_image_scale_info(
+          spatial_image,
+          image.scale = "lowres",
+          required = FALSE
+        )$scale
+        if (length(lowres) != 1L || !is.finite(lowres) || lowres <= 0) {
+          hires <- spatial_image_scale_info(
+            spatial_image,
+            image.scale = "hires",
+            required = FALSE
+          )$scale
+          if (length(hires) == 1L && is.finite(hires) && hires > 0) {
+            image.scale <- "hires"
+          }
+        }
+      }
+    }
     display <- spatial_dim_coords(
       srt = srt,
       image = image,
       coord.cols = coord.cols,
       overlay_image = FALSE,
+      image.scale = image.scale,
       image_policy = image_policy
     )
     coords <- as.data.frame(display$data, stringsAsFactors = FALSE)
@@ -202,6 +395,7 @@ spatial_analysis_coords <- function(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
+    image.scale = image.scale,
     image_policy = image_policy
   )
 }
@@ -210,12 +404,18 @@ spatial_analysis_coords <- function(
 #'
 #' @description
 #' Return raw analysis coordinates or display coordinates together with their
-#' source and reversible transform. This function does not modify the object.
+#' source and reversible transform. Image-backed coordinates are normalized to
+#' horizontal `x` (image column) and vertical `y` (image row), including
+#' VisiumV2 tables whose Seurat `x`/`y` names retain row/column ordering.
+#' This function does not modify the object.
 #'
 #' @param object A `Seurat` object.
 #' @param image Optional Seurat image name.
 #' @param coord.cols Metadata columns used when no image is available.
 #' @param space Coordinate space to return.
+#' @param image.scale Image scale factor used only when `space = "display"`.
+#'   Choose `"hires"` when the image slot contains a hires raster. Raw
+#'   coordinates are always returned in full-resolution units.
 #' @param image_policy Multi-image selection policy. The default requires an
 #'   explicit image when more than one image is available.
 #'
@@ -226,14 +426,18 @@ SpatialCoordinates <- function(
   image = NULL,
   coord.cols = c("col", "row"),
   space = c("raw", "display"),
-  image_policy = "strict"
+  image_policy = "strict",
+  image.scale = c("lowres", "hires")
 ) {
   space <- match.arg(space)
+  image.scale <- match.arg(image.scale)
   image_policy <- match.arg(image_policy, "strict")
   result <- spatial_coords_raw(
     srt = object,
     image = image,
     coord.cols = coord.cols,
+    image.scale = image.scale,
+    require_scale = identical(space, "display"),
     image_policy = image_policy
   )
   if (identical(space, "display")) {

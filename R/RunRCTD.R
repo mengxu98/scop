@@ -372,6 +372,7 @@ RunRCTD <- function(
         image = image,
         coord.cols = coord.cols,
         coordinate_space = coordinate_space,
+        coordinate_dependent = TRUE,
         rctd_mode = rctd_mode,
         max_cores = max_cores,
         min_cells = min_cells,
@@ -383,6 +384,7 @@ RunRCTD <- function(
       ),
       object = backend$object
     )
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
 
   log_message(

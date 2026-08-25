@@ -18,7 +18,8 @@ SpatialNetworkPlot(
   raster = FALSE,
   raster.dpi = 300,
   theme_use = "theme_spatial",
-  theme_args = list()
+  theme_args = list(),
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{
@@ -42,6 +43,8 @@ SpatialNetworkPlot(
 
 \item{theme_use, theme_args}{Theme used to style the plot. Default is
 `"theme_spatial"`.}
+
+\item{image.scale}{Image scale factor matching the raster in `object`.}
 }
 \value{
 A `ggplot` object.

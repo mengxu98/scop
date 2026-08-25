@@ -48,6 +48,13 @@ Before running methods, make one direct map. This checks whether coordinates,
 image orientation, labels, and the default spatial theme are sensible.
 If this first map is rotated, mirrored, or shifted, downstream spatial domains
 and neighborhood results will be difficult to interpret even if the model runs.
+SCOP reads full-resolution raw coordinates for analysis and applies the selected
+Seurat scale factor exactly once for display. The default is the low-resolution
+raster. If the image slot contains `tissue_hires_image.png`, pass
+`image.scale = "hires"`; do not rewrite `@scale.factors`.
+SCOP also normalizes Seurat's spatial row/column ordering to horizontal x and
+vertical y; this is important for VisiumV2 tables whose columns are named
+`x`/`y` but are plotted by Seurat as the second column versus the first.
 
 ```{r inspect-spatial}
 SpatialSpotPlot(
@@ -61,6 +68,9 @@ SpatialSpotPlot(
   assay = "Spatial",
   layer = "counts"
 )
+
+# For an object loaded with a hires raster:
+# SpatialSpotPlot(spatial, group.by = "coda_label", image.scale = "hires")
 ```
 
 ## Run the Basic Spatial Workflow
@@ -275,14 +285,16 @@ network_graph <- GetSpatialGraph(
 names(spatial@tools)
 ```
 
-Distance-sensitive methods retain `coordinate_space = "legacy_display"` as
-the compatibility default in this release. Set `coordinate_space = "raw"`
-when radius or distance values must stay in original acquisition units. Plot
-functions continue to map results to display coordinates by cell or spot ID.
+Distance-sensitive methods default to full-resolution raw acquisition
+coordinates. `coordinate_space = "legacy_display"` remains an explicit
+compatibility option only. Plot functions map results to display coordinates by
+cell or spot ID and `image.scale` never changes raw distances or neighborhoods.
 Objects with multiple spatial images must always select one explicitly with
 `image`; analysis, plotting, and framework conversion never silently use the
-first image. A future release will make raw coordinates the default for all
-distance-sensitive producers.
+first image. Coordinate-dependent results created before contract v2 are not
+silently migrated; rerun their producer. Metadata passed directly to
+`SpatialSpotPlot()` cannot be traced to its producer, so users upgrading an old
+analysis should rerun that analysis before plotting its metadata.
 
 ```r
 spatial <- RunMistyR(

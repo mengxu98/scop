@@ -265,6 +265,7 @@ RunMERINGUE <- function(
       parameters = parameters,
       summary = list(top_features = top_features)
     )
+    srt@tools[["MERINGUE"]] <- spatial_tag_coordinate_contract(srt@tools[["MERINGUE"]])
   }
   log_message(
     "Stored {.val {length(top_features)}} MERINGUE spatial features",

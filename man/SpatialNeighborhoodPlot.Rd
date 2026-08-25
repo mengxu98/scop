@@ -36,7 +36,8 @@ SpatialNeighborhoodPlot(
   byrow = TRUE,
   seed = 11,
   verbose = TRUE,
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{
@@ -68,6 +69,9 @@ method is used.}
 \item{image}{Name of the Seurat spatial image. Required when multiple images
 are present; a single image is selected automatically when \code{NULL}.}
 
+\item{overlay_image}{Whether to draw the selected spatial image for
+\code{plot_type = "spatial"}.}
+
 \item{coord.cols}{Metadata coordinate columns used when no Seurat image
 coordinates are available.}
 
@@ -91,6 +95,10 @@ returns a list of ggplots.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{image.scale}{Image scale factor matching the raster stored in the
+selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
+scale-factor slots.}
 
 \item{...}{Additional arguments passed to the selected backend.}
 }

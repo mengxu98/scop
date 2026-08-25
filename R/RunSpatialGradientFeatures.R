@@ -281,6 +281,8 @@ RunSpatialGradientFeatures <- function(
 #' result are used.
 #' @param nfeatures Number of top variables used when `features = NULL`.
 #' @param palette,palcolor Color palette passed to SCOP plotting helpers.
+#' @param legend.position Legend position for surface, line, and model plots.
+#' @param nrow,ncol,byrow Layout controls for multi-feature plots.
 #' @param line_size Size of fitted gradient lines.
 #' @param line_alpha Alpha for raw value points.
 #' @param line_fit Gradient line source. `"stored"` uses the saved
@@ -330,6 +332,7 @@ RunSpatialGradientFeatures <- function(
 #'     value = c("RNA", "data", "ductal_axis")
 #'   )
 #' )
+#' attr(gradient_result, "coordinate_contract_version") <- 2L
 #' srt@tools[["SpatialGradientFeatures"]] <- list(
 #'   ductal_axis = gradient_result,
 #'   summary = list(active_result = "ductal_axis")
@@ -373,14 +376,17 @@ SpatialGradientPlot <- function(
   line_fit = c("stored", "lm"),
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE
+  byrow = TRUE,
+  image.scale = c("lowres", "hires")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   plot_type <- match.arg(plot_type)
+  image.scale <- match.arg(image.scale)
   line_fit <- match.arg(line_fit)
   result <- sgf_get_result(srt, result_name = result_name)
+  spatial_require_coordinate_contract(result, "RunSpatialGradientFeatures()")
   features <- sgf_plot_features(result, features = features, nfeatures = nfeatures)
   layer <- sgf_plot_layer(srt = srt, result = result, assay = assay, layer = layer, features = features)
 
@@ -392,6 +398,7 @@ SpatialGradientPlot <- function(
       assay = assay,
       layer = layer,
       image = image,
+      image.scale = image.scale,
       overlay_image = overlay_image,
       image.alpha = image.alpha,
       coord.cols = coord.cols,
@@ -456,6 +463,7 @@ SpatialGradientPlot <- function(
     assay = assay,
     layer = layer,
     image = image,
+    image.scale = image.scale,
     overlay_image = overlay_image,
     image.alpha = image.alpha,
     coord.cols = coord.cols,
@@ -925,11 +933,15 @@ sgf_store_result <- function(
   if (is.null(srt@tools[["SpatialGradientFeatures"]])) {
     srt@tools[["SpatialGradientFeatures"]] <- list()
   }
-  srt@tools[["SpatialGradientFeatures"]][[result_name]] <- result[expected]
+  stored_result <- result[expected]
+  attr(stored_result, "coordinate_contract_version") <-
+    .spatial_coordinate_contract_version
+  srt@tools[["SpatialGradientFeatures"]][[result_name]] <- stored_result
   srt@tools[["SpatialGradientFeatures"]]$parameters <- list(
     result_name = result_name,
     assay = assay,
-    backend = backend
+    backend = backend,
+    coordinate_contract_version = .spatial_coordinate_contract_version
   )
   srt@tools[["SpatialGradientFeatures"]]$summary <- list(
     active_result = result_name,
@@ -1032,6 +1044,7 @@ sgf_surface_plot <- function(
   assay,
   layer,
   image,
+  image.scale,
   overlay_image,
   image.alpha,
   coord.cols,
@@ -1057,6 +1070,7 @@ sgf_surface_plot <- function(
     assay = assay,
     layer = layer,
     image = image,
+    image.scale = image.scale,
     overlay_image = overlay_image,
     image.alpha = image.alpha,
     coord.cols = coord.cols,
@@ -1230,4 +1244,3 @@ sgf_as_df <- function(df) {
   }
   as.data.frame(df, stringsAsFactors = FALSE, check.names = FALSE)
 }
-

@@ -16,7 +16,8 @@ SpatialDMPlot(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ SpatialDMPlot(
 \item{highlight}{LR interactions to label in the global plot.}
 
 \item{palette, palcolor, theme_use, theme_args}{SCOP plotting controls.}
+
+\item{image.scale}{Image scale factor matching the selected raster.}
 
 \item{...}{Additional arguments passed to SCOP spatial plotting functions.}
 }

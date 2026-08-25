@@ -265,6 +265,7 @@ RunCARD <- function(
         image = image,
         coord.cols = coord.cols,
         coordinate_space = coordinate_space,
+        coordinate_dependent = TRUE,
         sample_varname = sample_varname,
         minCountGene = minCountGene,
         minCountSpot = minCountSpot,
@@ -276,6 +277,7 @@ RunCARD <- function(
         card_deconvolution_params = card_deconvolution_params
       )
     )
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
 
   log_message(
@@ -526,4 +528,3 @@ card_match_formals <- function(fun, args) {
   }
   args[names(args) %in% fmls]
 }
-

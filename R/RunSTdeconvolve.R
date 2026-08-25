@@ -260,13 +260,15 @@ STdeconvolvePlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
   plot_type <- match.arg(plot_type)
+  image.scale <- match.arg(image.scale)
   stored <- srt@tools[[tool_name]]
   if (!is.list(stored)) {
     log_message(
@@ -289,12 +291,19 @@ STdeconvolvePlot <- function(
   values <- theta[, topic_names, drop = FALSE]
   colnames(values) <- paste0(prefix, "_prop_", make.names(topic_names))
   if (identical(plot_type, "pie")) {
-    return(SpatialSpotPlot(srt, values = values, plot_type = "pie", ...))
+    return(SpatialSpotPlot(
+      srt,
+      values = values,
+      plot_type = "pie",
+      image.scale = image.scale,
+      ...
+    ))
   }
   plots <- SpatialSpotPlot(
     srt,
     values = values,
     plot_type = "point",
+    image.scale = image.scale,
     combine = FALSE,
     ...
   )
@@ -546,4 +555,3 @@ stdeconvolve_resolve_k <- function(k = NULL, k_candidates = 2:9) {
   }
   unique(as.integer(k_use))
 }
-

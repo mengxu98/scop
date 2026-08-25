@@ -160,6 +160,7 @@ RunSpatialDWLS <- function(
         image = image,
         coord.cols = coord.cols,
         coordinate_space = coordinate_space,
+        coordinate_dependent = FALSE,
         min_cells = min_cells,
         prefix = prefix,
         tool_name = tool_name,
@@ -221,4 +222,3 @@ spatial_dwls_fit_weights <- function(signatures, spatial_expr) {
   }
   weights
 }
-

@@ -62,7 +62,7 @@ test_that("shared-library preloading retries dependencies loaded out of order", 
   )
 
   testthat::local_mocked_bindings(
-    dyn.load = function(lib, ...) {
+    load_shared_library = function(lib) {
       if (identical(lib, first)) {
         attempts$first <- attempts$first + 1L
         if (attempts$first == 1L) {

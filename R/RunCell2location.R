@@ -418,6 +418,7 @@ RunCell2location <- function(
 #' or pie plots.
 #' @param prefix Metadata prefix used by [RunCell2location()].
 #' @param tool_name Name of the `srt@tools` result entry.
+#' @param overlay_image Whether to draw the selected spatial image.
 #' @param ... Additional arguments passed to [SpatialSpotPlot()].
 #'
 #' @return A `ggplot`, `patchwork`, or list of plots.
@@ -455,15 +456,18 @@ Cell2locationPlot <- function(
   image = NULL,
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
-  ...
+  ...,
+  image.scale = c("lowres", "hires")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   plot_type <- match.arg(plot_type)
+  image.scale <- match.arg(image.scale)
   coords <- spatial_dim_coords(
     srt = srt,
     image = image,
+    image.scale = image.scale,
     coord.cols = coord.cols,
     overlay_image = overlay_image
   )$data
@@ -492,6 +496,7 @@ Cell2locationPlot <- function(
   defaults <- list(
     srt = srt,
     image = image,
+    image.scale = image.scale,
     overlay_image = overlay_image,
     coord.cols = coord.cols
   )
