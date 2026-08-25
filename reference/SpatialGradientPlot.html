@@ -24,6 +24,7 @@
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
@@ -91,7 +92,8 @@
 <span>  line_fit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stored"</span>, <span class="st">"lm"</span><span class="op">)</span>,</span>
 <span>  nrow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ncol <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  byrow <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  byrow <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  image.scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lowres"</span>, <span class="st">"hires"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -161,8 +163,16 @@ radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi<
 <dd><p>Color palette passed to SCOP plotting helpers.</p></dd>
 
 
+<dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
+<dd><p>Legend position for surface, line, and model plots.</p></dd>
+
+
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
 <dd><p>Theme name or function.</p></dd>
+
+
+<dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
+<dd><p>Theme name or function, plus extra theme arguments.</p></dd>
 
 
 <dt id="arg-line-size">line_size<a class="anchor" aria-label="anchor" href="#arg-line-size"></a></dt>
@@ -178,6 +188,16 @@ radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi<
 <code>screening$estimate</code> values produced by the selected backend. <code>"lm"</code> draws a
 fresh linear fit from <code>screening$value</code>, which is useful for showing a simple
 monotonic trend even when the backend stores a smoothed curve.</p></dd>
+
+
+<dt id="arg-nrow-ncol-byrow">nrow, ncol, byrow<a class="anchor" aria-label="anchor" href="#arg-nrow-ncol-byrow"></a></dt>
+<dd><p>Layout controls for multi-feature plots.</p></dd>
+
+
+<dt id="arg-image-scale">image.scale<a class="anchor" aria-label="anchor" href="#arg-image-scale"></a></dt>
+<dd><p>Image scale factor matching the raster stored in the
+selected image. Use <code>"hires"</code> for a hires raster; do not modify Seurat
+scale-factor slots.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -227,6 +247,7 @@ monotonic trend even when the backend stores a smoothed curve.</p></dd>
 <span class="r-in"><span>    value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RNA"</span>, <span class="st">"data"</span>, <span class="st">"ductal_axis"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">gradient_result</span>, <span class="st">"coordinate_contract_version"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fl">2L</span></span></span>
 <span class="r-in"><span><span class="va">srt</span><span class="op">@</span><span class="va">tools</span><span class="op">[[</span><span class="st">"SpatialGradientFeatures"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  ductal_axis <span class="op">=</span> <span class="va">gradient_result</span>,</span></span>
 <span class="r-in"><span>  summary <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>active_result <span class="op">=</span> <span class="st">"ductal_axis"</span><span class="op">)</span></span></span>

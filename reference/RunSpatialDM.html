@@ -24,6 +24,7 @@
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
@@ -124,12 +125,88 @@
 <dd><p>Spatial image or metadata coordinate columns.</p></dd>
 
 
+<dt id="arg-coordinate-unit">coordinate.unit<a class="anchor" aria-label="anchor" href="#arg-coordinate-unit"></a></dt>
+<dd><p>Unit of the raw input coordinates. Automatic unit selection uses technology-specific rules.</p></dd>
+
+
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
 <dd><p>Official global/local test mode.</p></dd>
 
 
+<dt id="arg-run-local">run.local<a class="anchor" aria-label="anchor" href="#arg-run-local"></a></dt>
+<dd><p>Whether to run locally.</p></dd>
+
+
 <dt id="arg-l-eff-dist">l, eff_dist<a class="anchor" aria-label="anchor" href="#arg-l-eff-dist"></a></dt>
 <dd><p>SpatialDM RBF scale; one must be supplied.</p></dd>
+
+
+<dt id="arg-cutoff">cutoff<a class="anchor" aria-label="anchor" href="#arg-cutoff"></a></dt>
+<dd><p>Maximum selected-cell fraction used by Scissor's alpha search.</p></dd>
+
+
+<dt id="arg-n-neighbors">n_neighbors<a class="anchor" aria-label="anchor" href="#arg-n-neighbors"></a></dt>
+<dd><p>Number of neighbors to use for constructing the KNN graph.</p></dd>
+
+
+<dt id="arg-n-neighbor-layers">n_neighbor_layers<a class="anchor" aria-label="anchor" href="#arg-n-neighbor-layers"></a></dt>
+<dd><p>Number of neighbor layers to use.</p></dd>
+
+
+<dt id="arg-single-cell">single_cell<a class="anchor" aria-label="anchor" href="#arg-single-cell"></a></dt>
+<dd><p>Whether the input is a single-cell (rather than spatial) dataset.</p></dd>
+
+
+<dt id="arg-complex-mean">complex.mean<a class="anchor" aria-label="anchor" href="#arg-complex-mean"></a></dt>
+<dd><p>Whether to use a modified mean test statistic in complex heatmaps.</p></dd>
+
+
+<dt id="arg-min-cell">min_cell<a class="anchor" aria-label="anchor" href="#arg-min-cell"></a></dt>
+<dd><p>Minimum number of cells required.</p></dd>
+
+
+<dt id="arg-n-perm">n_perm<a class="anchor" aria-label="anchor" href="#arg-n-perm"></a></dt>
+<dd><p>Number of permutations.</p></dd>
+
+
+<dt id="arg-nproc">nproc<a class="anchor" aria-label="anchor" href="#arg-nproc"></a></dt>
+<dd><p>Number of parallel processes.</p></dd>
+
+
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
+<dd><p>Random seed.</p></dd>
+
+
+<dt id="arg-global-fdr">global.fdr<a class="anchor" aria-label="anchor" href="#arg-global-fdr"></a></dt>
+<dd><p>Global FDR threshold.</p></dd>
+
+
+<dt id="arg-global-threshold">global.threshold<a class="anchor" aria-label="anchor" href="#arg-global-threshold"></a></dt>
+<dd><p>Global threshold.</p></dd>
+
+
+<dt id="arg-local-fdr">local.fdr<a class="anchor" aria-label="anchor" href="#arg-local-fdr"></a></dt>
+<dd><p>Local FDR threshold.</p></dd>
+
+
+<dt id="arg-local-threshold">local.threshold<a class="anchor" aria-label="anchor" href="#arg-local-threshold"></a></dt>
+<dd><p>Local threshold.</p></dd>
+
+
+<dt id="arg-result-name">result.name<a class="anchor" aria-label="anchor" href="#arg-result-name"></a></dt>
+<dd><p>Stored result name.</p></dd>
+
+
+<dt id="arg-envname">envname<a class="anchor" aria-label="anchor" href="#arg-envname"></a></dt>
+<dd><p>Conda-compatible Python environment. If <code>NULL</code>, the environment name will be set to <code>"scop_env"</code>.</p></dd>
+
+
+<dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
+<dd><p>Whether to overwrite existing metadata.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Whether to print messages.</p></dd>
 
 </dl></div>
     <div class="section level2">

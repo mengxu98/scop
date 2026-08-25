@@ -26,6 +26,7 @@ plotting style."></head><body>
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
@@ -79,7 +80,8 @@ plotting style.</p>
 <span>  palette <span class="op">=</span> <span class="st">"Paired"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_scop"</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  image.scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lowres"</span>, <span class="st">"hires"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -105,6 +107,10 @@ are available.</p></dd>
 a single image is selected automatically when <code>NULL</code>.</p></dd>
 
 
+<dt id="arg-overlay-image">overlay_image<a class="anchor" aria-label="anchor" href="#arg-overlay-image"></a></dt>
+<dd><p>Whether to draw the selected spatial image.</p></dd>
+
+
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
 <dd><p>Metadata coordinate columns used when no image is available.</p></dd>
 
@@ -115,6 +121,12 @@ a single image is selected automatically when <code>NULL</code>.</p></dd>
 
 <dt id="arg-theme-use">theme_use<a class="anchor" aria-label="anchor" href="#arg-theme-use"></a></dt>
 <dd><p>Theme name or function.</p></dd>
+
+
+<dt id="arg-image-scale">image.scale<a class="anchor" aria-label="anchor" href="#arg-image-scale"></a></dt>
+<dd><p>Image scale factor matching the raster stored in the
+selected image. Use <code>"hires"</code> for a hires raster; do not modify Seurat
+scale-factor slots.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

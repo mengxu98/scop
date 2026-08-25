@@ -24,6 +24,7 @@
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
@@ -112,6 +113,10 @@
 <dd><p>Assay layer to use.</p></dd>
 
 
+<dt id="arg-linear-reduction">linear_reduction<a class="anchor" aria-label="anchor" href="#arg-linear-reduction"></a></dt>
+<dd><p>Linear reduction (<code>"pca"</code>, <code>"svd"</code>, <code>"ica"</code>, <code>"nmf"</code>, <code>"mds"</code>, <code>"glmpca"</code>). <code>linear_reduction_dims_use = NULL</code> uses estimated dimensions, else the first 50.</p></dd>
+
+
 <dt id="arg-linear-reduction-dims">linear_reduction_dims<a class="anchor" aria-label="anchor" href="#arg-linear-reduction-dims"></a></dt>
 <dd><p>Total number of dimensions to compute and store for <code>linear_reduction</code>.</p></dd>
 
@@ -122,6 +127,10 @@
 
 <dt id="arg-force-linear-reduction">force_linear_reduction<a class="anchor" aria-label="anchor" href="#arg-force-linear-reduction"></a></dt>
 <dd><p>Whether force to do linear dimension reduction.</p></dd>
+
+
+<dt id="arg-nonlinear-reduction">nonlinear_reduction<a class="anchor" aria-label="anchor" href="#arg-nonlinear-reduction"></a></dt>
+<dd><p>Nonlinear reduction (<code>"umap"</code>, <code>"umap-naive"</code>, <code>"tsne"</code>, <code>"dm"</code>, <code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"largevis"</code>, <code>"fr"</code>).</p></dd>
 
 
 <dt id="arg-nonlinear-reduction-dims">nonlinear_reduction_dims<a class="anchor" aria-label="anchor" href="#arg-nonlinear-reduction-dims"></a></dt>
@@ -158,7 +167,10 @@ Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Random seed.</p></dd>
+<dd><p>Optional integer seed. When supplied, every input receives a
+deterministic independent L'Ecuyer-CMRG random-number stream, making results
+reproducible across worker counts and scheduling order. The caller's random
+number state is restored when the call finishes.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -24,6 +24,7 @@
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
@@ -80,10 +81,6 @@
 <dd><p>Assay layer to use.</p></dd>
 
 
-<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Print progress messages.</p></dd>
-
-
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Random seed.</p></dd>
 
@@ -110,14 +107,6 @@
 
 <dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
 <dd><p>Cell names to include.</p></dd>
-
-
-<dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
-<dd><p>Color palette name. See <a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>.</p></dd>
-
-
-<dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
-<dd><p>Custom colors used to build the palette.</p></dd>
 
 
 <dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
@@ -150,12 +139,308 @@ the default; <code>"legacy_display"</code> remains available for compatibility.<
 <dd><p>Name of the <code>srt@tools</code> slot used to store results.</p></dd>
 
 
-<dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
-<dd><p>Overwrite existing results.</p></dd>
-
-
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to the underlying method.</p></dd>
+
+
+<dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
+<dd><p>Whether to fill matrices/plots by row.</p></dd>
+
+
+<dt id="arg-cell-annotation">cell_annotation<a class="anchor" aria-label="anchor" href="#arg-cell-annotation"></a></dt>
+<dd><p>Cell annotations. Palette length should match <code>cell_annotation</code>.</p></dd>
+
+
+<dt id="arg-cell-annotation-palcolor">cell_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-cell-annotation-palcolor"></a></dt>
+<dd><p>Custom colors for cell-type annotations.</p></dd>
+
+
+<dt id="arg-cell-annotation-palette">cell_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-cell-annotation-palette"></a></dt>
+<dd><p>Color palette for cell-type annotations.</p></dd>
+
+
+<dt id="arg-cells-highlight">cells.highlight<a class="anchor" aria-label="anchor" href="#arg-cells-highlight"></a></dt>
+<dd><p>Cells to highlight and their appearance. <code>TRUE</code> highlights all cells.</p></dd>
+
+
+<dt id="arg-cluster-columns">cluster_columns<a class="anchor" aria-label="anchor" href="#arg-cluster-columns"></a></dt>
+<dd><p>Whether to cluster heatmap rows/columns. Defaults are both <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-cluster-row-slices">cluster_row_slices<a class="anchor" aria-label="anchor" href="#arg-cluster-row-slices"></a></dt>
+<dd><p>Whether to cluster row slices.</p></dd>
+
+
+<dt id="arg-cluster-rows">cluster_rows<a class="anchor" aria-label="anchor" href="#arg-cluster-rows"></a></dt>
+<dd><p>Whether to cluster heatmap rows/columns. Defaults are both <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-cols-highlight">cols.highlight<a class="anchor" aria-label="anchor" href="#arg-cols-highlight"></a></dt>
+<dd><p>Cells to highlight and their appearance. <code>TRUE</code> highlights all cells.</p></dd>
+
+
+<dt id="arg-column-title">column_title<a class="anchor" aria-label="anchor" href="#arg-column-title"></a></dt>
+<dd><p>The title for the column names in the heatmap. Default is to use the reference grouping variable.</p></dd>
+
+
+<dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
+<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
+
+
+<dt id="arg-complex-mean">complex.mean<a class="anchor" aria-label="anchor" href="#arg-complex-mean"></a></dt>
+<dd><p>Whether to use a modified mean test statistic in complex heatmaps.</p></dd>
+
+
+<dt id="arg-coordinate-unit">coordinate.unit<a class="anchor" aria-label="anchor" href="#arg-coordinate-unit"></a></dt>
+<dd><p>Unit of the raw input coordinates. Automatic unit selection uses technology-specific rules.</p></dd>
+
+
+<dt id="arg-cutoff">cutoff<a class="anchor" aria-label="anchor" href="#arg-cutoff"></a></dt>
+<dd><p>Maximum selected-cell fraction used by Scissor's alpha search.</p></dd>
+
+
+<dt id="arg-decreasing">decreasing<a class="anchor" aria-label="anchor" href="#arg-decreasing"></a></dt>
+<dd><p>Order groups decreasingly.</p></dd>
+
+
+<dt id="arg-envname">envname<a class="anchor" aria-label="anchor" href="#arg-envname"></a></dt>
+<dd><p>Conda-compatible Python environment. If <code>NULL</code>, the environment name will be set to <code>"scop_env"</code>.</p></dd>
+
+
+<dt id="arg-feature-annotation-palcolor">feature_annotation_palcolor<a class="anchor" aria-label="anchor" href="#arg-feature-annotation-palcolor"></a></dt>
+<dd><p>Custom colors for feature annotations.</p></dd>
+
+
+<dt id="arg-feature-annotation-palette">feature_annotation_palette<a class="anchor" aria-label="anchor" href="#arg-feature-annotation-palette"></a></dt>
+<dd><p>Color palette for feature annotations.</p></dd>
+
+
+<dt id="arg-feature-split">feature_split<a class="anchor" aria-label="anchor" href="#arg-feature-split"></a></dt>
+<dd><p>Feature splitting. <code>split_method</code> is <code>"kmeans"</code>, <code>"hclust"</code>, or <code>"mfuzz"</code>.</p></dd>
+
+
+<dt id="arg-feature-split-palcolor">feature_split_palcolor<a class="anchor" aria-label="anchor" href="#arg-feature-split-palcolor"></a></dt>
+<dd><p>Custom colors for feature-split annotation labels.</p></dd>
+
+
+<dt id="arg-feature-split-palette">feature_split_palette<a class="anchor" aria-label="anchor" href="#arg-feature-split-palette"></a></dt>
+<dd><p>Split colors.</p></dd>
+
+
+<dt id="arg-global-fdr">global.fdr<a class="anchor" aria-label="anchor" href="#arg-global-fdr"></a></dt>
+<dd><p>Global FDR threshold.</p></dd>
+
+
+<dt id="arg-global-threshold">global.threshold<a class="anchor" aria-label="anchor" href="#arg-global-threshold"></a></dt>
+<dd><p>Global threshold.</p></dd>
+
+
+<dt id="arg-graph">graph<a class="anchor" aria-label="anchor" href="#arg-graph"></a></dt>
+<dd><p>Neighbor-graph edges.</p></dd>
+
+
+<dt id="arg-group-palcolor">group_palcolor<a class="anchor" aria-label="anchor" href="#arg-group-palcolor"></a></dt>
+<dd><p>Custom colors for cell types (groups) in Manhattan plot.</p></dd>
+
+
+<dt id="arg-group-palette">group_palette<a class="anchor" aria-label="anchor" href="#arg-group-palette"></a></dt>
+<dd><p>Palette for cell types (groups) in Manhattan plot.</p></dd>
+
+
+<dt id="arg-heatmap-palcolor">heatmap_palcolor<a class="anchor" aria-label="anchor" href="#arg-heatmap-palcolor"></a></dt>
+<dd><p>Palette used for CNV heatmap values.</p></dd>
+
+
+<dt id="arg-heatmap-palette">heatmap_palette<a class="anchor" aria-label="anchor" href="#arg-heatmap-palette"></a></dt>
+<dd><p>Palette used for CNV heatmap values.</p></dd>
+
+
+<dt id="arg-hex">hex<a class="anchor" aria-label="anchor" href="#arg-hex"></a></dt>
+<dd><p>Whether to use hexagonal binning for 2D assignments.</p></dd>
+
+
+<dt id="arg-hex-bins">hex.bins<a class="anchor" aria-label="anchor" href="#arg-hex-bins"></a></dt>
+<dd><p>Number of hexagonal bins.</p></dd>
+
+
+<dt id="arg-hex-binwidth">hex.binwidth<a class="anchor" aria-label="anchor" href="#arg-hex-binwidth"></a></dt>
+<dd><p>Width of hexagonal bins.</p></dd>
+
+
+<dt id="arg-hex-linewidth">hex.linewidth<a class="anchor" aria-label="anchor" href="#arg-hex-linewidth"></a></dt>
+<dd><p>Line width of six-point hexagons.</p></dd>
+
+
+<dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
+<dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
+
+
+<dt id="arg-label-bg">label.bg<a class="anchor" aria-label="anchor" href="#arg-label-bg"></a></dt>
+<dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
+
+
+<dt id="arg-label-bg-r">label.bg.r<a class="anchor" aria-label="anchor" href="#arg-label-bg-r"></a></dt>
+<dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
+
+
+<dt id="arg-label-fg">label.fg<a class="anchor" aria-label="anchor" href="#arg-label-fg"></a></dt>
+<dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
+
+
+<dt id="arg-label-size">label.size<a class="anchor" aria-label="anchor" href="#arg-label-size"></a></dt>
+<dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
+
+
+<dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
+<dd><p>Legend direction: <code>"horizontal"</code> or <code>"vertical"</code>.</p></dd>
+
+
+<dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
+<dd><p>Legend placement (<code>"none"</code>, <code>"left"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"top"</code>), direction, and title. <code>legend.title = NULL</code> uses the group name.</p></dd>
+
+
+<dt id="arg-lineages">lineages<a class="anchor" aria-label="anchor" href="#arg-lineages"></a></dt>
+<dd><p>Pseudotime columns to use. If <code>NULL</code>, lineage-like pseudotime columns such as <code>Lineage1</code>, <code>Lineage2</code>, <code>prefix_Lineage1</code>, or <code>pseudotime</code> are detected and merged into one global pseudotime for a single panel. Use <code>"all"</code> to plot each detected lineage in separate panels.</p></dd>
+
+
+<dt id="arg-lineages-palette">lineages_palette<a class="anchor" aria-label="anchor" href="#arg-lineages-palette"></a></dt>
+<dd><p>Color palette used for lineage groups.</p></dd>
+
+
+<dt id="arg-linear-reduction">linear_reduction<a class="anchor" aria-label="anchor" href="#arg-linear-reduction"></a></dt>
+<dd><p>Linear reduction (<code>"pca"</code>, <code>"svd"</code>, <code>"ica"</code>, <code>"nmf"</code>, <code>"mds"</code>, <code>"glmpca"</code>). <code>linear_reduction_dims_use = NULL</code> uses estimated dimensions, else the first 50.</p></dd>
+
+
+<dt id="arg-local-fdr">local.fdr<a class="anchor" aria-label="anchor" href="#arg-local-fdr"></a></dt>
+<dd><p>Local FDR threshold.</p></dd>
+
+
+<dt id="arg-local-threshold">local.threshold<a class="anchor" aria-label="anchor" href="#arg-local-threshold"></a></dt>
+<dd><p>Local threshold.</p></dd>
+
+
+<dt id="arg-min-cell">min_cell<a class="anchor" aria-label="anchor" href="#arg-min-cell"></a></dt>
+<dd><p>Minimum number of cells required.</p></dd>
+
+
+<dt id="arg-n-neighbor-layers">n_neighbor_layers<a class="anchor" aria-label="anchor" href="#arg-n-neighbor-layers"></a></dt>
+<dd><p>Number of neighbor layers to use.</p></dd>
+
+
+<dt id="arg-n-neighbors">n_neighbors<a class="anchor" aria-label="anchor" href="#arg-n-neighbors"></a></dt>
+<dd><p>Number of neighbors to use for constructing the KNN graph.</p></dd>
+
+
+<dt id="arg-n-perm">n_perm<a class="anchor" aria-label="anchor" href="#arg-n-perm"></a></dt>
+<dd><p>Number of permutations.</p></dd>
+
+
+<dt id="arg-n-split">n_split<a class="anchor" aria-label="anchor" href="#arg-n-split"></a></dt>
+<dd><p>Number of splits for feature dependencies.</p></dd>
+
+
+<dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
+<dd><p>Number of columns of the combined plot.</p></dd>
+
+
+<dt id="arg-nlabel">nlabel<a class="anchor" aria-label="anchor" href="#arg-nlabel"></a></dt>
+<dd><p>The maximum number of labels to show on each side of the heatmap. If set to 0, no labels will be shown. This can be useful for reducing clutter in large heatmaps.</p></dd>
+
+
+<dt id="arg-nonlinear-reduction">nonlinear_reduction<a class="anchor" aria-label="anchor" href="#arg-nonlinear-reduction"></a></dt>
+<dd><p>Nonlinear reduction (<code>"umap"</code>, <code>"umap-naive"</code>, <code>"tsne"</code>, <code>"dm"</code>, <code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"largevis"</code>, <code>"fr"</code>).</p></dd>
+
+
+<dt id="arg-nproc">nproc<a class="anchor" aria-label="anchor" href="#arg-nproc"></a></dt>
+<dd><p>Number of parallel processes.</p></dd>
+
+
+<dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
+<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
+
+
+<dt id="arg-overlay-image">overlay_image<a class="anchor" aria-label="anchor" href="#arg-overlay-image"></a></dt>
+<dd><p>Draw the spatial image beneath spots.</p></dd>
+
+
+<dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
+<dd><p>Whether to overwrite existing metadata.</p></dd>
+
+
+<dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
+<dd><p>Custom colors used to create a color palette.</p></dd>
+
+
+<dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
+<dd><p>Color palette name.</p></dd>
+
+
+<dt id="arg-pt-alpha">pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-alpha"></a></dt>
+<dd><p>Point size and transparency. <code>pt.size = NULL</code> scales with <code>sqrt(n)</code> (minimum <code>0.3</code>). Rasterized points keep at least a two-pixel radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi</code>.</p></dd>
+
+
+<dt id="arg-pt-size">pt.size<a class="anchor" aria-label="anchor" href="#arg-pt-size"></a></dt>
+<dd><p>Point size and transparency. <code>pt.size = NULL</code> scales with <code>sqrt(n)</code> (minimum <code>0.3</code>). Rasterized points keep at least a two-pixel radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi</code>.</p></dd>
+
+
+<dt id="arg-result-name">result.name<a class="anchor" aria-label="anchor" href="#arg-result-name"></a></dt>
+<dd><p>Stored result name.</p></dd>
+
+
+<dt id="arg-row-title">row_title<a class="anchor" aria-label="anchor" href="#arg-row-title"></a></dt>
+<dd><p>The title for the row names in the heatmap. If not provided, the default is to use the query grouping variable.</p></dd>
+
+
+<dt id="arg-run-local">run.local<a class="anchor" aria-label="anchor" href="#arg-run-local"></a></dt>
+<dd><p>Whether to run locally.</p></dd>
+
+
+<dt id="arg-show-column-names">show_column_names<a class="anchor" aria-label="anchor" href="#arg-show-column-names"></a></dt>
+<dd><p>Whether to draw row/column names for the heatmap body.</p></dd>
+
+
+<dt id="arg-show-row-names">show_row_names<a class="anchor" aria-label="anchor" href="#arg-show-row-names"></a></dt>
+<dd><p>Whether to draw row/column names for the heatmap body.</p></dd>
+
+
+<dt id="arg-single-cell">single_cell<a class="anchor" aria-label="anchor" href="#arg-single-cell"></a></dt>
+<dd><p>Whether the input is a single-cell (rather than spatial) dataset.</p></dd>
+
+
+<dt id="arg-sizes-highlight">sizes.highlight<a class="anchor" aria-label="anchor" href="#arg-sizes-highlight"></a></dt>
+<dd><p>Cells to highlight and their appearance. <code>TRUE</code> highlights all cells.</p></dd>
+
+
+<dt id="arg-split-method">split_method<a class="anchor" aria-label="anchor" href="#arg-split-method"></a></dt>
+<dd><p>Method for splitting features into groups.</p></dd>
+
+
+<dt id="arg-split-order">split_order<a class="anchor" aria-label="anchor" href="#arg-split-order"></a></dt>
+<dd><p>Order of feature split groups (e.g. <code>c("A", "B")</code>).</p></dd>
+
+
+<dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
+<dd><p>Plot subtitle.</p></dd>
+
+
+<dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
+<dd><p>Theme name or function, plus extra theme arguments.</p></dd>
+
+
+<dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
+<dd><p>Plot title. <code>NULL</code> hides the title for merged/single panels. When multiple lineages are plotted and <code>title</code> is <code>NULL</code>, each panel is titled with its lineage column.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Whether to print messages.</p></dd>
+
+
+<dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
+<dd><p>Plot labels.</p></dd>
+
+
+<dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
+<dd><p>Plot labels.</p></dd>
 
 </dl></div>
 
