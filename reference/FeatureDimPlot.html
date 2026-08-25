@@ -26,6 +26,7 @@ numeric metadata)."></head><body>
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
@@ -170,7 +171,7 @@ assay gene names or numeric metadata columns.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>Reduction to plot. <code>NULL</code> uses <a href="DefaultReduction.html">DefaultReduction</a>.</p></dd>
+<dd><p>Dimensionality reduction to use. <code>NULL</code> uses <a href="DefaultReduction.html">DefaultReduction</a>.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
@@ -178,7 +179,7 @@ assay gene names or numeric metadata columns.</p></dd>
 
 
 <dt id="arg-split-by">split.by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>
-<dd><p>Metadata column to facet by.</p></dd>
+<dd><p>Metadata column to split the analysis or plot by.</p></dd>
 
 
 <dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
@@ -197,14 +198,20 @@ assay gene names or numeric metadata columns.</p></dd>
 <dd><p>Show cell-count statistics on the plot.</p></dd>
 
 
-<dt id="arg-palette-palcolor">palette, palcolor<a class="anchor" aria-label="anchor" href="#arg-palette-palcolor"></a></dt>
-<dd><p>Palette name (<a href="https://mengxu98.github.io/thisplot/reference/show_palettes.html" class="external-link">thisplot::show_palettes</a>) or custom colors.</p></dd>
+<dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
+<dd><p>Color palette name.</p></dd>
 
 
-<dt id="arg-pt-size-pt-alpha">pt.size, pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-size-pt-alpha"></a></dt>
-<dd><p>Point size and transparency. <code>pt.size = NULL</code> scales
-with <code>sqrt(n)</code> (minimum <code>0.3</code>). Rasterized points keep at least a two-pixel
-radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi</code>.</p></dd>
+<dt id="arg-palcolor">palcolor<a class="anchor" aria-label="anchor" href="#arg-palcolor"></a></dt>
+<dd><p>Custom colors used to create a color palette.</p></dd>
+
+
+<dt id="arg-pt-size">pt.size<a class="anchor" aria-label="anchor" href="#arg-pt-size"></a></dt>
+<dd><p>Point size and transparency. <code>pt.size = NULL</code> scales with <code>sqrt(n)</code> (minimum <code>0.3</code>). Rasterized points keep at least a two-pixel radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi</code>.</p></dd>
+
+
+<dt id="arg-pt-alpha">pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-alpha"></a></dt>
+<dd><p>Point size and transparency. <code>pt.size = NULL</code> scales with <code>sqrt(n)</code> (minimum <code>0.3</code>). Rasterized points keep at least a two-pixel radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi</code>.</p></dd>
 
 
 <dt id="arg-bg-cutoff">bg_cutoff<a class="anchor" aria-label="anchor" href="#arg-bg-cutoff"></a></dt>
@@ -231,7 +238,15 @@ quantile or absolute cutoffs for the color scale.</p></dd>
 <dd><p>Density contours; <code>density_filled</code> draws filled bands.</p></dd>
 
 
-<dt id="arg-cells-highlight-cols-highlight-sizes-highlight-alpha-highlight-stroke-highlight">cells.highlight, cols.highlight, sizes.highlight, alpha.highlight, stroke.highlight<a class="anchor" aria-label="anchor" href="#arg-cells-highlight-cols-highlight-sizes-highlight-alpha-highlight-stroke-highlight"></a></dt>
+<dt id="arg-cells-highlight">cells.highlight<a class="anchor" aria-label="anchor" href="#arg-cells-highlight"></a></dt>
+<dd><p>Cells to highlight and their appearance. <code>TRUE</code> highlights all cells.</p></dd>
+
+
+<dt id="arg-cols-highlight">cols.highlight<a class="anchor" aria-label="anchor" href="#arg-cols-highlight"></a></dt>
+<dd><p>Cells to highlight and their appearance. <code>TRUE</code> highlights all cells.</p></dd>
+
+
+<dt id="arg-sizes-highlight">sizes.highlight<a class="anchor" aria-label="anchor" href="#arg-sizes-highlight"></a></dt>
 <dd><p>Cells to highlight and their appearance. <code>TRUE</code> highlights all cells.</p></dd>
 
 
@@ -251,6 +266,22 @@ quantile or absolute cutoffs for the color scale.</p></dd>
 <dd><p>Label high-expressing cells.</p></dd>
 
 
+<dt id="arg-label-size">label.size<a class="anchor" aria-label="anchor" href="#arg-label-size"></a></dt>
+<dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
+
+
+<dt id="arg-label-fg">label.fg<a class="anchor" aria-label="anchor" href="#arg-label-fg"></a></dt>
+<dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
+
+
+<dt id="arg-label-bg">label.bg<a class="anchor" aria-label="anchor" href="#arg-label-bg"></a></dt>
+<dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
+
+
+<dt id="arg-label-bg-r">label.bg.r<a class="anchor" aria-label="anchor" href="#arg-label-bg-r"></a></dt>
+<dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
+
+
 <dt id="arg-label-insitu">label_insitu<a class="anchor" aria-label="anchor" href="#arg-label-insitu"></a></dt>
 <dd><p>Use feature names instead of numbers when
 <code>compare_features = TRUE</code>.</p></dd>
@@ -260,16 +291,36 @@ quantile or absolute cutoffs for the color scale.</p></dd>
 <dd><p>Repel labels away from cluster centers.</p></dd>
 
 
-<dt id="arg-lineages-lineages-trim-lineages-span-lineages-palette-lineages-palcolor-lineages-arrow-lineages-linewidth-lineages-line-bg-lineages-line-bg-stroke-lineages-whiskers-lineages-whiskers-linewidth-lineages-whiskers-alpha">lineages, lineages_trim, lineages_span, lineages_palette, lineages_palcolor, lineages_arrow, lineages_linewidth, lineages_line_bg, lineages_line_bg_stroke, lineages_whiskers, lineages_whiskers_linewidth, lineages_whiskers_alpha<a class="anchor" aria-label="anchor" href="#arg-lineages-lineages-trim-lineages-span-lineages-palette-lineages-palcolor-lineages-arrow-lineages-linewidth-lineages-line-bg-lineages-line-bg-stroke-lineages-whiskers-lineages-whiskers-linewidth-lineages-whiskers-alpha"></a></dt>
-<dd><p>Pseudotime lineages as <a href="https://rdrr.io/r/stats/loess.html" class="external-link">stats::loess</a> curves. See <a href="https://rdrr.io/r/grid/arrow.html" class="external-link">grid::arrow</a> for <code>lineages_arrow</code>.</p></dd>
+<dt id="arg-lineages">lineages<a class="anchor" aria-label="anchor" href="#arg-lineages"></a></dt>
+<dd><p>Pseudotime columns to use. If <code>NULL</code>, lineage-like pseudotime columns such as <code>Lineage1</code>, <code>Lineage2</code>, <code>prefix_Lineage1</code>, or <code>pseudotime</code> are detected and merged into one global pseudotime for a single panel. Use <code>"all"</code> to plot each detected lineage in separate panels.</p></dd>
 
 
-<dt id="arg-graph-edge-size-edge-alpha-edge-color">graph, edge_size, edge_alpha, edge_color<a class="anchor" aria-label="anchor" href="#arg-graph-edge-size-edge-alpha-edge-color"></a></dt>
+<dt id="arg-lineages-palette">lineages_palette<a class="anchor" aria-label="anchor" href="#arg-lineages-palette"></a></dt>
+<dd><p>Color palette used for lineage groups.</p></dd>
+
+
+<dt id="arg-graph">graph<a class="anchor" aria-label="anchor" href="#arg-graph"></a></dt>
 <dd><p>Neighbor-graph edges.</p></dd>
+
+
+<dt id="arg-hex">hex<a class="anchor" aria-label="anchor" href="#arg-hex"></a></dt>
+<dd><p>Whether to use hexagonal binning for 2D assignments.</p></dd>
+
+
+<dt id="arg-hex-linewidth">hex.linewidth<a class="anchor" aria-label="anchor" href="#arg-hex-linewidth"></a></dt>
+<dd><p>Line width of six-point hexagons.</p></dd>
 
 
 <dt id="arg-hex-color">hex.color<a class="anchor" aria-label="anchor" href="#arg-hex-color"></a></dt>
 <dd><p>Border color of hexagonal bins.</p></dd>
+
+
+<dt id="arg-hex-bins">hex.bins<a class="anchor" aria-label="anchor" href="#arg-hex-bins"></a></dt>
+<dd><p>Number of hexagonal bins.</p></dd>
+
+
+<dt id="arg-hex-binwidth">hex.binwidth<a class="anchor" aria-label="anchor" href="#arg-hex-binwidth"></a></dt>
+<dd><p>Width of hexagonal bins.</p></dd>
 
 
 <dt id="arg-raster-raster-dpi">raster, raster.dpi<a class="anchor" aria-label="anchor" href="#arg-raster-raster-dpi"></a></dt>
@@ -281,23 +332,48 @@ there are more than 100,000 cells.</p></dd>
 <dd><p>Panel aspect ratio.</p></dd>
 
 
-<dt id="arg-title-subtitle-xlab-ylab">title, subtitle, xlab, ylab<a class="anchor" aria-label="anchor" href="#arg-title-subtitle-xlab-ylab"></a></dt>
+<dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
+<dd><p>Plot title. <code>NULL</code> hides the title for merged/single panels. When multiple lineages are plotted and <code>title</code> is <code>NULL</code>, each panel is titled with its lineage column.</p></dd>
+
+
+<dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
+<dd><p>Plot subtitle.</p></dd>
+
+
+<dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
 <dd><p>Plot labels.</p></dd>
 
 
-<dt id="arg-legend-position-legend-direction-legend-title">legend.position, legend.direction, legend.title<a class="anchor" aria-label="anchor" href="#arg-legend-position-legend-direction-legend-title"></a></dt>
-<dd><p>Legend placement
-(<code>"none"</code>, <code>"left"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"top"</code>), direction, and title.
-<code>legend.title = NULL</code> uses the group name.</p></dd>
+<dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
+<dd><p>Plot labels.</p></dd>
 
 
-<dt id="arg-theme-use-theme-args">theme_use, theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-use-theme-args"></a></dt>
+<dt id="arg-legend-position">legend.position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
+<dd><p>Legend placement (<code>"none"</code>, <code>"left"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"top"</code>), direction, and title. <code>legend.title = NULL</code> uses the group name.</p></dd>
+
+
+<dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
+<dd><p>Legend direction: <code>"horizontal"</code> or <code>"vertical"</code>.</p></dd>
+
+
+<dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
 <dd><p>Theme name or function, plus extra theme arguments.</p></dd>
 
 
-<dt id="arg-combine-nrow-ncol-byrow">combine, nrow, ncol, byrow<a class="anchor" aria-label="anchor" href="#arg-combine-nrow-ncol-byrow"></a></dt>
-<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code>
-returns a list of ggplots.</p></dd>
+<dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
+<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
+
+
+<dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
+<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
+
+
+<dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
+<dd><p>Number of columns of the combined plot.</p></dd>
+
+
+<dt id="arg-byrow">byrow<a class="anchor" aria-label="anchor" href="#arg-byrow"></a></dt>
+<dd><p>Whether to fill matrices/plots by row.</p></dd>
 
 
 <dt id="arg-force">force<a class="anchor" aria-label="anchor" href="#arg-force"></a></dt>
@@ -309,7 +385,7 @@ returns a list of ggplots.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Print progress messages.</p></dd>
+<dd><p>Whether to print messages.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -321,23 +397,23 @@ returns a list of ggplots.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:40] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:40] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-23 19:15:40] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:05] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:05] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-25 09:21:05] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 1/1 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:40] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:41] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:41] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:41] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:41] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:41] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:41] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:42] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:42] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:15:42] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-23 19:15:50] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:05] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:05] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:05] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:05] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:05] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:05] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:06] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:06] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:06] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:21:06] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-25 09:21:14] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="fu">FeatureDimPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="st">"G2M_score"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span></span></span>

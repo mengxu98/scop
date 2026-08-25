@@ -28,6 +28,7 @@ aligned coordinates in a Seurat object."></head><body>
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
@@ -149,7 +150,8 @@ a method-specific name is used.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Print progress messages.</p></dd>
+<dd><p>Whether to print the message.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-coordinate-space">coordinate_space<a class="anchor" aria-label="anchor" href="#arg-coordinate-space"></a></dt>
@@ -191,6 +193,7 @@ metadata, reductions, and <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span><span class="va">spatial</span><span class="op">$</span><span class="va">SpatialIntegration_PRECAST_aligned_y</span> <span class="op">&lt;-</span> <span class="va">spatial</span><span class="op">$</span><span class="va">y</span></span></span>
 <span class="r-in"><span><span class="va">integration_parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"PRECAST"</span>,</span></span>
+<span class="r-in"><span>  coordinate_contract_version <span class="op">=</span> <span class="fl">2L</span>,</span></span>
 <span class="r-in"><span>  sample.by <span class="op">=</span> <span class="st">"sample"</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
 <span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
@@ -204,7 +207,10 @@ metadata, reductions, and <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialIntegration</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  active_method <span class="op">=</span> <span class="st">"PRECAST"</span>,</span></span>
-<span class="r-in"><span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PRECAST <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>parameters <span class="op">=</span> <span class="va">integration_parameters</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PRECAST <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    coordinate_contract_version <span class="op">=</span> <span class="fl">2L</span>,</span></span>
+<span class="r-in"><span>    parameters <span class="op">=</span> <span class="va">integration_parameters</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  parameters <span class="op">=</span> <span class="va">integration_parameters</span>,</span></span>
 <span class="r-in"><span>  samples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">sample</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></span>
@@ -272,9 +278,9 @@ metadata, reductions, and <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-23 20:48:11.849648 : ***** Filtering step for raw count data finished!, 0.006 mins elapsed.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-25 10:48:47.04001 : ***** Filtering step for raw count data finished!, 0.007 mins elapsed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Select the variable genes for each data batch...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-23 20:48:11.852996 : ***** Gene selection finished!, 0 mins elapsed.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-25 10:48:47.046724 : ***** Gene selection finished!, 0 mins elapsed.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
@@ -314,7 +320,7 @@ metadata, reductions, and <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Normalizing layer: counts</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Normalizing layer: counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-23 20:48:16.611179 : ***** Filtering step for count data with variable genes finished!, 0.077 mins elapsed.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-25 10:48:52.622716 : ***** Filtering step for count data with variable genes finished!, 0.089 mins elapsed.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Neighbors were identified for 0 out of 991 spots.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Neighbors were identified for 0 out of 995 spots.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> -----Intergrative data info.: 2 samples, 300 genes X 1986 spots------</span>

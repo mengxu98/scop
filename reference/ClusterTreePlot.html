@@ -26,6 +26,7 @@ resolutions."></head><body>
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
@@ -162,7 +163,27 @@ Edges below this threshold are still available when <code>return_data = TRUE</co
 <dd><p>Label high-expressing cells.</p></dd>
 
 
-<dt id="arg-title-subtitle-xlab-ylab">title, subtitle, xlab, ylab<a class="anchor" aria-label="anchor" href="#arg-title-subtitle-xlab-ylab"></a></dt>
+<dt id="arg-label-size">label.size<a class="anchor" aria-label="anchor" href="#arg-label-size"></a></dt>
+<dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
+
+
+<dt id="arg-label-fg">label.fg<a class="anchor" aria-label="anchor" href="#arg-label-fg"></a></dt>
+<dd><p>Group labels. <code>label_insitu = FALSE</code> uses numbers instead of group names.</p></dd>
+
+
+<dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
+<dd><p>Plot title. <code>NULL</code> hides the title for merged/single panels. When multiple lineages are plotted and <code>title</code> is <code>NULL</code>, each panel is titled with its lineage column.</p></dd>
+
+
+<dt id="arg-subtitle">subtitle<a class="anchor" aria-label="anchor" href="#arg-subtitle"></a></dt>
+<dd><p>Plot subtitle.</p></dd>
+
+
+<dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
+<dd><p>Plot labels.</p></dd>
+
+
+<dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
 <dd><p>Plot labels.</p></dd>
 
 
@@ -171,8 +192,16 @@ Edges below this threshold are still available when <code>return_data = TRUE</co
 <code>"bottom"</code> to keep the multiple cluster-tree guides compact.</p></dd>
 
 
-<dt id="arg-theme-use-theme-args">theme_use, theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-use-theme-args"></a></dt>
+<dt id="arg-theme-args">theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-args"></a></dt>
 <dd><p>Theme name or function, plus extra theme arguments.</p></dd>
+
+
+<dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
+<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code> returns a list of ggplots.</p></dd>
+
+
+<dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
+<dd><p>Number of columns of the combined plot.</p></dd>
 
 
 <dt id="arg-return-data">return_data<a class="anchor" aria-label="anchor" href="#arg-return-data"></a></dt>
@@ -180,7 +209,7 @@ Edges below this threshold are still available when <code>return_data = TRUE</co
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Print progress messages.</p></dd>
+<dd><p>Whether to print messages.</p></dd>
 
 </dl></div>
     <div class="section level2">

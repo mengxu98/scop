@@ -24,6 +24,7 @@
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
@@ -341,8 +342,48 @@ Default is <code>NULL</code>, which means that the built-in words (<a href="word
 <dd><p>The line height for y-axis labels.</p></dd>
 
 
+<dt id="arg-feature-split">feature_split<a class="anchor" aria-label="anchor" href="#arg-feature-split"></a></dt>
+<dd><p>Feature splitting. <code>split_method</code> is <code>"kmeans"</code>, <code>"hclust"</code>, or <code>"mfuzz"</code>.</p></dd>
+
+
+<dt id="arg-n-split">n_split<a class="anchor" aria-label="anchor" href="#arg-n-split"></a></dt>
+<dd><p>Number of splits for feature dependencies.</p></dd>
+
+
+<dt id="arg-split-order">split_order<a class="anchor" aria-label="anchor" href="#arg-split-order"></a></dt>
+<dd><p>Order of feature split groups (e.g. <code>c("A", "B")</code>).</p></dd>
+
+
+<dt id="arg-split-method">split_method<a class="anchor" aria-label="anchor" href="#arg-split-method"></a></dt>
+<dd><p>Method for splitting features into groups.</p></dd>
+
+
+<dt id="arg-decreasing">decreasing<a class="anchor" aria-label="anchor" href="#arg-decreasing"></a></dt>
+<dd><p>Order groups decreasingly.</p></dd>
+
+
 <dt id="arg-fuzzification">fuzzification<a class="anchor" aria-label="anchor" href="#arg-fuzzification"></a></dt>
 <dd><p>Mfuzz fuzzification coefficient.</p></dd>
+
+
+<dt id="arg-cluster-rows">cluster_rows<a class="anchor" aria-label="anchor" href="#arg-cluster-rows"></a></dt>
+<dd><p>Whether to cluster heatmap rows/columns. Defaults are both <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-cluster-columns">cluster_columns<a class="anchor" aria-label="anchor" href="#arg-cluster-columns"></a></dt>
+<dd><p>Whether to cluster heatmap rows/columns. Defaults are both <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-cluster-row-slices">cluster_row_slices<a class="anchor" aria-label="anchor" href="#arg-cluster-row-slices"></a></dt>
+<dd><p>Whether to cluster row slices.</p></dd>
+
+
+<dt id="arg-show-row-names">show_row_names<a class="anchor" aria-label="anchor" href="#arg-show-row-names"></a></dt>
+<dd><p>Whether to draw row/column names for the heatmap body.</p></dd>
+
+
+<dt id="arg-show-column-names">show_column_names<a class="anchor" aria-label="anchor" href="#arg-show-column-names"></a></dt>
+<dd><p>Whether to draw row/column names for the heatmap body.</p></dd>
 
 
 <dt id="arg-row-names-side-column-names-side-row-names-rot-column-names-rot">row_names_side, column_names_side, row_names_rot, column_names_rot<a class="anchor" aria-label="anchor" href="#arg-row-names-side-column-names-side-row-names-rot-column-names-rot"></a></dt>
@@ -386,6 +427,10 @@ Default is <code>NULL</code>, which means that the built-in words (<a href="word
 Gap to the heatmap grows automatically when long row names are on the right.</p></dd>
 
 
+<dt id="arg-legend-direction">legend.direction<a class="anchor" aria-label="anchor" href="#arg-legend-direction"></a></dt>
+<dd><p>Legend direction: <code>"horizontal"</code> or <code>"vertical"</code>.</p></dd>
+
+
 <dt id="arg-theme-use-theme-args">theme_use, theme_args<a class="anchor" aria-label="anchor" href="#arg-theme-use-theme-args"></a></dt>
 <dd><p>Theme name or function, plus extra theme arguments.</p></dd>
 
@@ -405,12 +450,16 @@ a plot.</p></dd>
 <code>*_border</code> arguments inherit this when <code>NULL</code>.</p></dd>
 
 
+<dt id="arg-nlabel">nlabel<a class="anchor" aria-label="anchor" href="#arg-nlabel"></a></dt>
+<dd><p>The maximum number of labels to show on each side of the heatmap. If set to 0, no labels will be shown. This can be useful for reducing clutter in large heatmaps.</p></dd>
+
+
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Random seed.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Print progress messages.</p></dd>
+<dd><p>Whether to print messages.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -441,16 +490,16 @@ sample-level statistical tests and adjusted p-values on GSVA scores.</p>
 <span class="r-in"><span>  minGSSize <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  min.sz <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:20:49] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:20:49] Single-cell GSVA mode: using expression matrix directly ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:20:49] Expression matrix: <span style="color: #0000BB;">12238</span> genes x <span style="color: #0000BB;">80</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:20:49] Processing database: <span style="color: #0000BB;">"custom"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:20:49] Initial overlap: <span style="color: #0000BB;">6</span> genes out of <span style="color: #0000BB;">12238</span> expression genes and <span style="color: #0000BB;">10</span> genes in gene sets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:20:49] Running GSVA for <span style="color: #0000BB;">2</span> gene sets ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:26:02] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:26:02] Single-cell GSVA mode: using expression matrix directly ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:26:02] Expression matrix: <span style="color: #0000BB;">12238</span> genes x <span style="color: #0000BB;">80</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:26:02] Processing database: <span style="color: #0000BB;">"custom"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:26:02] Initial overlap: <span style="color: #0000BB;">6</span> genes out of <span style="color: #0000BB;">12238</span> expression genes and <span style="color: #0000BB;">10</span> genes in gene sets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:26:02] Running GSVA for <span style="color: #0000BB;">2</span> gene sets ...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Feature names cannot have underscores ('_'), replacing with dashes ('-')</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Layer counts isn't present in the assay object; returning NULL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-23 19:20:49] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA"</span>, meta.data, and tools slot <span style="color: #0000BB;">"GSVA_cell_zscore"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-23 19:20:49] <span style="color: #0000BB;">GSVA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-25 09:26:02] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA"</span>, meta.data, and tools slot <span style="color: #0000BB;">"GSVA_cell_zscore"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-25 09:26:02] <span style="color: #0000BB;">GSVA</span> analysis done</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

@@ -24,6 +24,7 @@
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
     <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
@@ -106,7 +107,12 @@
 <span>  softmax_scale <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  n_macrostates <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  schur_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"krylov"</span>, <span class="st">"brandts"</span><span class="op">)</span>,</span>
+<span>  schur_n_components <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_cells_terminal <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  terminal_states <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  terminal_state_agg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"top_n"</span>, <span class="st">"union"</span><span class="op">)</span>,</span>
+<span>  driver_lineages <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  compute_lineage_drivers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  backward <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"python"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
 <span>  allow_approximate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -160,6 +166,14 @@ If provided, <code>adata</code> will be ignored.</p></dd>
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
 <dd><p>The number of cores to use for <code>cellrank</code>.</p></dd>
+
+
+<dt id="arg-linear-reduction">linear_reduction<a class="anchor" aria-label="anchor" href="#arg-linear-reduction"></a></dt>
+<dd><p>Linear reduction (<code>"pca"</code>, <code>"svd"</code>, <code>"ica"</code>, <code>"nmf"</code>, <code>"mds"</code>, <code>"glmpca"</code>). <code>linear_reduction_dims_use = NULL</code> uses estimated dimensions, else the first 50.</p></dd>
+
+
+<dt id="arg-nonlinear-reduction">nonlinear_reduction<a class="anchor" aria-label="anchor" href="#arg-nonlinear-reduction"></a></dt>
+<dd><p>Nonlinear reduction (<code>"umap"</code>, <code>"umap-naive"</code>, <code>"tsne"</code>, <code>"dm"</code>, <code>"phate"</code>, <code>"pacmap"</code>, <code>"trimap"</code>, <code>"largevis"</code>, <code>"fr"</code>).</p></dd>
 
 
 <dt id="arg-basis">basis<a class="anchor" aria-label="anchor" href="#arg-basis"></a></dt>
@@ -298,8 +312,30 @@ If <code>NULL</code> (default), automatically determined based on eigenvalue spe
 Only used for GPCCA estimator.</p></dd>
 
 
+<dt id="arg-schur-n-components">schur_n_components<a class="anchor" aria-label="anchor" href="#arg-schur-n-components"></a></dt>
+<dd><p>Number of Schur components. If <code>NULL</code>, retain the
+existing size heuristic.</p></dd>
+
+
 <dt id="arg-n-cells-terminal">n_cells_terminal<a class="anchor" aria-label="anchor" href="#arg-n-cells-terminal"></a></dt>
 <dd><p>Minimum number of cells required for a state to be considered terminal.</p></dd>
+
+
+<dt id="arg-terminal-states">terminal_states<a class="anchor" aria-label="anchor" href="#arg-terminal-states"></a></dt>
+<dd><p>Optional macrostate names to set as terminal states.
+Names are validated against the computed macrostates before fate estimation.</p></dd>
+
+
+<dt id="arg-terminal-state-agg">terminal_state_agg<a class="anchor" aria-label="anchor" href="#arg-terminal-state-agg"></a></dt>
+<dd><p>Aggregation policy for combined terminal states.</p></dd>
+
+
+<dt id="arg-driver-lineages">driver_lineages<a class="anchor" aria-label="anchor" href="#arg-driver-lineages"></a></dt>
+<dd><p>Optional lineage names for driver-gene computation.</p></dd>
+
+
+<dt id="arg-compute-lineage-drivers">compute_lineage_drivers<a class="anchor" aria-label="anchor" href="#arg-compute-lineage-drivers"></a></dt>
+<dd><p>Whether to compute and store lineage drivers.</p></dd>
 
 
 <dt id="arg-backward">backward<a class="anchor" aria-label="anchor" href="#arg-backward"></a></dt>
