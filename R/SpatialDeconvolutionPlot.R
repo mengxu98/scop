@@ -85,10 +85,7 @@ SpatialDeconvolutionPlot <- function(
       message_type = "error"
     )
   }
-  if (
-    !is.null(stored$parameters$coordinate_space) ||
-      !is.null(stored$coords) || !is.null(stored$coordinates)
-  ) {
+  if (spatial_deconvolution_requires_coordinate_contract(stored)) {
     spatial_require_coordinate_contract(stored, paste0(tool_name, " producer"))
   }
   proportions <- spatial_deconvolution_proportions(
@@ -165,6 +162,12 @@ SpatialDeconvolutionPlot <- function(
     byrow = byrow,
     guides = "collect"
   ) + patchwork::plot_annotation(title = paste0(tool_name, " proportions"))
+}
+
+spatial_deconvolution_requires_coordinate_contract <- function(stored) {
+  isTRUE(stored$parameters$coordinate_dependent) ||
+    !is.null(stored$backend_api) ||
+    !is.null(stored$backend_package)
 }
 
 spatial_deconvolution_proportions <- function(x, spot_ids, tool_name) {

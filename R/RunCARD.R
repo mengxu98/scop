@@ -265,6 +265,7 @@ RunCARD <- function(
         image = image,
         coord.cols = coord.cols,
         coordinate_space = coordinate_space,
+        coordinate_dependent = TRUE,
         sample_varname = sample_varname,
         minCountGene = minCountGene,
         minCountSpot = minCountSpot,
