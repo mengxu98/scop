@@ -22,6 +22,9 @@
 #' @param adjust_early_cell Whether to adjust the early cell to the cell with the minimum pseudotime value.
 #' @param adjust_terminal_cells Whether to adjust the terminal cells to the cells with the maximum pseudotime value for each terminal group.
 #' @param max_iterations Maximum number of iterations for pseudotime convergence.
+#' @param magic_impute Whether to calculate a Palantir MAGIC expression layer.
+#' This layer is for visualization and trend fitting, not count-based testing.
+#' @param magic_layer Name of the MAGIC layer to store.
 #' @param point_size The point size for plotting.
 #' @param plot_format Format for saved plots: `"pdf"`, `"png"`, or `"svg"`.
 #' @param plot_prefix Prefix for saved plot filenames.
@@ -97,6 +100,8 @@ RunPalantir <- function(
   adjust_early_cell = FALSE,
   adjust_terminal_cells = FALSE,
   max_iterations = 25,
+  magic_impute = FALSE,
+  magic_layer = "MAGIC_imputed_data",
   cores = 1,
   point_size = 20,
   palette = "Chinese",
@@ -158,6 +163,9 @@ RunPalantir <- function(
     if (isTRUE(save_plot)) {
       unsupported_cpp <- c(unsupported_cpp, "save_plot")
     }
+    if (isTRUE(magic_impute)) {
+      unsupported_cpp <- c(unsupported_cpp, "magic_impute")
+    }
     if (length(unsupported_cpp) > 0L) {
       reject_unsupported_cpp_arguments(
         unsupported_cpp,
@@ -208,7 +216,7 @@ RunPalantir <- function(
     },
     add = TRUE
   )
-  PrepareEnv(modules = "palantir")
+  PrepareEnv(modules = c("scanpy", "palantir"))
   check_python("palantir", verbose = verbose)
   if (all(is.null(srt), is.null(adata))) {
     log_message(
@@ -393,11 +401,25 @@ RunPalantir <- function(
         NULL
       },
       dm_kernel = srt_final@misc[["dm_kernel"]],
+      magic_layer = if (isTRUE(magic_impute) && magic_layer %in% names(srt_final)) {
+        magic_layer
+      } else {
+        NULL
+      },
       parameters = list(
         linear_reduction = linear_reduction,
         nonlinear_reduction = nonlinear_reduction,
         n_pcs = n_pcs,
-        n_neighbors = n_neighbors
+        n_neighbors = n_neighbors,
+        dm_n_components = dm_n_components,
+        dm_alpha = dm_alpha,
+        dm_n_eigs = dm_n_eigs,
+        early_group = early_group,
+        early_cell = early_cell,
+        terminal_groups = terminal_groups,
+        terminal_cells = terminal_cells,
+        magic_impute = magic_impute,
+        magic_layer = magic_layer
       )
     )
     return(srt_final)
