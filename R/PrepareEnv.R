@@ -1115,6 +1115,12 @@ find_conda_cuda_libraries <- function(env_path) {
 }
 
 
+# Keep a package-local seam because dyn.load() is bound in base, not scop.
+load_shared_library <- function(lib) {
+  dyn.load(lib, local = FALSE, now = TRUE)
+}
+
+
 preload_shared_libraries <- function(libraries, max_passes = 3L) {
   libraries <- unique(libraries[file.exists(libraries)])
   if (length(libraries) == 0L) {
@@ -1130,9 +1136,7 @@ preload_shared_libraries <- function(libraries, max_passes = 3L) {
       function(lib) {
         tryCatch(
           {
-            { .inline0 <- lib; 
-  dyn.load(.inline0, local = FALSE, now = TRUE)
- }
+            load_shared_library(lib)
             TRUE
           },
           error = function(...) FALSE
