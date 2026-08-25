@@ -123,6 +123,9 @@ spatalk_input <- function(srt, group.by, assay, layer, image, coord.cols) {
   if (any(!is.finite(coords$data$x)) || any(!is.finite(coords$data$y))) {
     log_message("SpaTalk requires finite raw x and y coordinates", message_type = "error")
   }
+  plot_coordinates <- ccc_spatial_payload_from_raw(
+    coords$data, coords$source, transform = coords$transform
+  )
   expression <- GetAssayData5(srt, assay = assay, layer = layer)[, cells, drop = FALSE]
   spatalk_validate_matrix(expression, "srt expression")
   labels <- as.character(srt[[]][cells, group.by])
@@ -135,7 +138,9 @@ spatalk_input <- function(srt, group.by, assay, layer, image, coord.cols) {
     source = coords$source,
     cells = cells,
     labels = labels,
-    assay = assay
+    assay = assay,
+    plot_coordinates = plot_coordinates$coordinates,
+    plot_source = plot_coordinates$source
   )
 }
 
@@ -265,6 +270,23 @@ spatalk_deconvolution_spec <- function(
 spatalk_pick_col <- function(df, candidates) {
   hit <- intersect(candidates, colnames(df))
   if (length(hit) == 0L) NULL else hit[[1L]]
+}
+
+spatalk_plot_composition <- function(deconv, spot_ids) {
+  deconv <- as.matrix(deconv)
+  if (nrow(deconv) == 0L || ncol(deconv) == 0L) {
+    log_message("SpaTalk spot results do not contain a deconvolution matrix for spatial plotting", message_type = "error")
+  }
+  row_hit <- !is.null(rownames(deconv)) && all(spot_ids %in% rownames(deconv))
+  col_hit <- !is.null(colnames(deconv)) && all(spot_ids %in% colnames(deconv))
+  if (isTRUE(row_hit) && isTRUE(col_hit)) {
+    log_message("SpaTalk deconvolution orientation is ambiguous for spatial plotting", message_type = "error")
+  }
+  if (isTRUE(col_hit)) deconv <- t(deconv)
+  if (!isTRUE(row_hit) && !isTRUE(col_hit)) {
+    log_message("SpaTalk deconvolution does not contain all selected spot identifiers", message_type = "error")
+  }
+  deconv[spot_ids, , drop = FALSE]
 }
 
 spatalk_long_table <- function(lr_table) {
@@ -474,6 +496,21 @@ RunSpaTalk <- function(
     long_table = long_table,
     native_object = if (identical(store.object, "full")) native else NULL
   )
+  result$spatial_plot <- if (identical(mode, "spot")) {
+    ccc_spatial_plot_payload_from_composition(
+      coordinates = input$plot_coordinates,
+      composition = spatalk_plot_composition(deconv, input$cells),
+      source = input$plot_source,
+      analysis_level = mode
+    )
+  } else {
+    ccc_spatial_plot_payload_from_labels(
+      coordinates = input$plot_coordinates,
+      labels = stats::setNames(input$labels, input$cells),
+      source = input$plot_source,
+      analysis_level = mode
+    )
+  }
   result <- spatial_tag_coordinate_contract(result)
   results <- existing$results %||% list()
   results[[result.name]] <- result

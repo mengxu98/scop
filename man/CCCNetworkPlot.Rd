@@ -12,7 +12,7 @@ CCCNetworkPlot(
   comparison = c(1, 2),
   plot_type = c("circle", "circle_focused", "chord", "lr_chord", "gene_chord", "pathway",
     "individual_lr", "individual", "individual_outgoing", "individual_incoming", "arrow",
-    "sigmoid", "bipartite", "embedding_network", "diff_network", "diffusion"),
+    "sigmoid", "bipartite", "embedding_network", "diff_network", "spatial", "diffusion"),
   display_by = c("aggregation", "interaction"),
   sender.use = NULL,
   receiver.use = NULL,
@@ -70,6 +70,10 @@ CCCNetworkPlot(
   combine_methods = c("separate", "support", "rank", "legacy"),
   resource = NULL,
   sample = NULL,
+  spot_size = 1.2,
+  spot_alpha = 0.35,
+  composition_display = c("pie", "dominant", "none"),
+  composition_radius = NULL,
   ...
 )
 }
@@ -86,7 +90,9 @@ CCCNetworkPlot(
 
 \item{plot_type}{Plot type. One of \code{"circle"}, \code{"chord"}, \code{"pathway"},
 \code{"individual_lr"}, \code{"arrow"}, \code{"sigmoid"}, \code{"bipartite"},
-\code{"embedding_network"}, or \code{"diff_network"}.}
+\code{"embedding_network"}, \code{"diff_network"}, or \code{"spatial"}. The spatial
+view overlays stored communication on the selected slice coordinates and
+supports \code{SpatialCellChat}, \code{SpaTalk}, and \code{COMMOT} results.}
 
 \item{display_by}{Whether to summarize by \code{"aggregation"} or \code{"interaction"}.}
 
@@ -214,6 +220,14 @@ retains the deprecated raw-score aggregation.}
 
 \item{resource, sample}{Optional resource and sample/context filters for
 unified CCC results.}
+
+\item{spot_size, spot_alpha}{Size and alpha of ordinary spatial observations.}
+
+\item{composition_display}{How composition-mode observations are rendered:
+proportional pies, dominant cell type, or neutral points.}
+
+\item{composition_radius}{Radius of composition pies in display-coordinate
+units. \code{NULL} derives a density-aware default.}
 
 \item{...}{Additional plot-specific options. For chord plots, \code{reduce},
 \code{max.groups}, \code{small.gap}, \code{big.gap}, and \code{lab.cex} can be used to adjust

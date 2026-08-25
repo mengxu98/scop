@@ -351,10 +351,30 @@ spatial <- RunSpatialCellChat(
 )
 
 CCCNetworkPlot(spatial, method = "SpatialCellChat", plot_type = "circle")
+CCCNetworkPlot(
+  spatial,
+  method = "SpatialCellChat",
+  condition = "default",
+  sample = "slice1",
+  plot_type = "spatial",
+  signaling = "SPP1",
+  top_n = 50
+)
 CCCHeatmap(spatial, method = "SpatialCellChat", plot_type = "bubble")
 SpatialCellChatPlot(spatial, plot_type = "incoming")
 result <- spatial@tools$SpatialCellChat
 ```
+
+`CCCNetworkPlot(plot_type = "spatial")` is the common stored-result renderer
+for `SpatialCellChat`, `SpaTalk`, and `COMMOT`. It overlays all stored cells or
+spots, draws group-centroid nodes with abundance-scaled sizes, and draws
+sender-coloured directed edges whose widths represent the filtered communication
+score. For `analysis.level = "composition"`, the default spot layer is a
+proportion pie (`composition_display = "pie"`); use `composition_display =
+"dominant"` only when a single representative type is acceptable. This plot
+does not rerun an optional backend. A result created before the current spatial
+plot payload was stored must be rerun rather than reconstructed from mutable
+metadata.
 
 `store.object = "minimal"` stores normalized interaction, pathway, network,
 coordinate, and diagnostic results but not the large native S4 object or a
