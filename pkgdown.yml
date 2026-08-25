@@ -3,6 +3,7 @@ pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   cell-annotation-workflow: cell-annotation-workflow.html
+  cellrank-palantir-fate-workflow: cellrank-palantir-fate-workflow.html
   differential-enrichment-workflow: differential-enrichment-workflow.html
   integration-benchmark-workflow: integration-benchmark-workflow.html
   integration-workflow: integration-workflow.html
@@ -12,7 +13,7 @@ articles:
   spatial-framework-bridges: spatial-framework-bridges.html
   spatial-main-workflow: spatial-main-workflow.html
   trajectory-dynamic-workflow: trajectory-dynamic-workflow.html
-last_built: 2026-08-25T08:11Z
+last_built: 2026-08-25T08:44Z
 urls:
   reference: https://mengxu98.github.io/scop/reference
   article: https://mengxu98.github.io/scop/articles
