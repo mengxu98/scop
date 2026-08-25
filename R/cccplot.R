@@ -854,6 +854,7 @@ ccc_long_table_for_method <- function(
   thresh = 0.05
 ) {
   method <- detect_method(srt = srt, method = method)
+  ccc_require_coordinate_contracts(srt, method)
   use_cellchat_direct <- identical(method, "CellChat") &&
     (
       !is.null(condition) ||
