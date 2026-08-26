@@ -192,9 +192,10 @@ spatial_coords_raw <- function(
       inherits(spatial_image, "VisiumV2") &&
         all(c("x", "y") %in% raw_names)
     ) {
-      # Seurat spatial plotting treats the first coordinate column as image
-      # row and the second as image column for VisiumV2 tables named x/y.
-      # Normalize them to horizontal x and vertical y here.
+      # Seurat's Read10X_Image() builds VisiumV2 by passing the source
+      # imagerow/imagecol columns positionally to CreateFOV(). CreateCentroids
+      # then names those positions x/y, so the returned x is image-row and y
+      # is image-column. Recover the physical horizontal/vertical order here.
       x_col <- spatial_dim_pick_col(raw, "y")
       y_col <- spatial_dim_pick_col(raw, "x")
     } else {
@@ -405,8 +406,11 @@ spatial_analysis_coords <- function(
 #' @description
 #' Return raw analysis coordinates or display coordinates together with their
 #' source and reversible transform. Image-backed coordinates are normalized to
-#' horizontal `x` (image column) and vertical `y` (image row), including
-#' VisiumV2 tables whose Seurat `x`/`y` names retain row/column ordering.
+#' horizontal `x` and vertical `y`. Seurat's standard `VisiumV2` loader stores
+#' source `imagerow`/`imagecol` values positionally as centroid `x`/`y`; SCOP
+#' restores horizontal image-column and vertical image-row order. Generic FOV
+#' centroid tables with explicit `x`/`y` retain their order. SCOP then applies
+#' only the selected scale and display-axis flip.
 #' This function does not modify the object.
 #'
 #' @param object A `Seurat` object.
