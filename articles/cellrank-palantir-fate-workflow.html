@@ -101,8 +101,10 @@ probabilities; neither is a direct experimental time course.</p>
 <div class="section level2">
 <h2 id="palantir-direction-and-magic-layer">Palantir direction and MAGIC layer<a class="anchor" aria-label="anchor" href="#palantir-direction-and-magic-layer"></a>
 </h2>
-<p>The Python reference backend uses the dedicated Python 3.12
-trajectory environment. MAGIC is optional and should be used for
+<p>The Python reference backend reuses the SCOP environment selected by
+<code><a href="../reference/PrepareEnv.html">PrepareEnv()</a></code>. Existing Python 3.10/3.11 environments
+receive the compatible legacy pins, while Python 3.12 environments
+receive the current pins. MAGIC is optional and should be used for
 visualization or trend fitting, never as a replacement for raw counts in
 differential testing.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -126,8 +128,9 @@ differential testing.</p>
 <h2 id="cellrank-fate-mapping">CellRank fate mapping<a class="anchor" aria-label="anchor" href="#cellrank-fate-mapping"></a>
 </h2>
 <p>Use the stored Palantir pseudotime to construct a directed
-<code>PseudotimeKernel</code>. The explicit Schur size and
-terminal-state names make the run reproducible; unknown terminal states
+<code>PseudotimeKernel</code>. The explicit Schur size makes the small
+tutorial run reproducible. The computed macrostate names are printed
+before any optional manual terminal-state rerun; unknown terminal states
 stop before the Seurat object is mutated.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunCellRank.html">RunCellRank</a></span><span class="op">(</span></span>
@@ -135,14 +138,16 @@ stop before the Seurat object is mutated.</p>
 <span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
 <span>  kernel_type <span class="op">=</span> <span class="st">"pseudotime"</span>,</span>
 <span>  time_key <span class="op">=</span> <span class="st">"palantir_pseudotime"</span>,</span>
-<span>  schur_method <span class="op">=</span> <span class="st">"krylov"</span>,</span>
-<span>  schur_n_components <span class="op">=</span> <span class="fl">20L</span>,</span>
-<span>  n_macrostates <span class="op">=</span> <span class="fl">11L</span>,</span>
-<span>  n_cells_terminal <span class="op">=</span> <span class="fl">30L</span>,</span>
-<span>  terminal_states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alpha"</span>, <span class="st">"Beta"</span>, <span class="st">"Delta"</span>, <span class="st">"Epsilon"</span><span class="op">)</span>,</span>
+<span>  <span class="co"># `brandts` is portable for small tutorial data; use `krylov` only after</span></span>
+<span>  <span class="co"># installing PETSc/SLEPc in the selected environment.</span></span>
+<span>  schur_method <span class="op">=</span> <span class="st">"brandts"</span>,</span>
+<span>  schur_n_components <span class="op">=</span> <span class="fl">10L</span>,</span>
+<span>  n_macrostates <span class="op">=</span> <span class="fl">8L</span>,</span>
+<span>  n_cells_terminal <span class="op">=</span> <span class="fl">10L</span>,</span>
 <span>  backend <span class="op">=</span> <span class="st">"python"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">CellRank</span><span class="op">)</span></span>
+<span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">CellRank</span><span class="op">$</span><span class="va">states</span><span class="op">$</span><span class="va">macrostate_names</span></span>
 <span><span class="fu"><a href="../reference/CellRankPlot.html">CellRankPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"fate"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/CellRankPlot.html">CellRankPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"circular"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -156,8 +161,8 @@ modules.</p>
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunCellRankTrends.html">RunCellRankTrends</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  lineage <span class="op">=</span> <span class="st">"Alpha"</span>,</span>
-<span>  assay <span class="op">=</span> <span class="st">"MAGIC_imputed_data"</span>,</span>
-<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"MAGIC_imputed_data"</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">500L</span>,</span>
 <span>  heatmap_n <span class="op">=</span> <span class="fl">50L</span>,</span>
 <span>  n_points <span class="op">=</span> <span class="fl">200L</span>,</span>
@@ -173,7 +178,13 @@ modules.</p>
 <span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="st">"cellrank_objects"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">CellRank</span><span class="op">$</span><span class="va">enrichment</span><span class="op">$</span><span class="va">Alpha</span><span class="op">$</span><span class="va">manifest</span></span></code></pre></div>
+<span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">CellRank</span><span class="op">$</span><span class="va">enrichment</span><span class="op">$</span><span class="va">Alpha</span><span class="op">$</span><span class="va">manifest</span></span>
+<span><span class="fu"><a href="../reference/CellRankPlot.html">CellRankPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"enrichment"</span>,</span>
+<span>  lineage <span class="op">=</span> <span class="st">"Alpha"</span>,</span>
+<span>  database <span class="op">=</span> <span class="st">"GO_BP"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>The complete payload is stored in <code>srt@tools$Palantir</code> and
 <code>srt@tools$CellRank</code>, including the actual backend, versions,
 cell/lineage names, transition matrix, fate probabilities, drivers,
