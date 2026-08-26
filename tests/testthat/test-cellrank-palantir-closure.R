@@ -191,6 +191,7 @@ test_that("RunCellRank stores named fate and driver payloads", {
     transition_key = "cellrank_transition",
     versions = list(cellrank = "2.3.2")
   )
+  captured <- new.env(parent = emptyenv())
   testthat::local_mocked_bindings(
     .package = "scop",
     PrepareEnv = function(...) NULL,
@@ -198,7 +199,10 @@ test_that("RunCellRank stores named fate and driver payloads", {
     py_to_r2 = function(x) x,
     srt_to_adata = function(...) list(obs = data.frame(cluster = factor(c("a", "a", "b", "b")))),
     palette_colors = function(...) c(a = "#111111", b = "#222222"),
-    scop_python_import = function(...) list(CellRank = function(...) list("adata", "estimator", "kernel", payload)),
+    scop_python_import = function(...) list(CellRank = function(...) {
+      captured$recompute_neighbors <- list(...)$recompute_neighbors
+      list("adata", "estimator", "kernel", payload)
+    }),
     adata_to_srt = function(...) adata_out
   )
   out <- RunCellRank(
@@ -208,9 +212,15 @@ test_that("RunCellRank stores named fate and driver payloads", {
     nonlinear_reduction = "pca",
     backend = "python",
     return_seurat = TRUE,
+    recompute_neighbors = FALSE,
     verbose = FALSE
   )
   expect_equal(colnames(out@tools$CellRank$fate_probabilities), c("A", "B"))
   expect_true(all(c("cellrank_fate_A", "cellrank_fate_B") %in% colnames(out@meta.data)))
   expect_equal(out@tools$CellRank$versions$cellrank, "2.3.2")
+  expect_false(captured$recompute_neighbors)
+})
+
+test_that("CellRank trend fallback uses the CellRank normal distribution name", {
+  expect_identical(formals(RunCellRankTrends)$fallback_distribution, "normal")
 })

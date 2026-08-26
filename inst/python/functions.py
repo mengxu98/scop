@@ -6135,7 +6135,7 @@ def CellRankTrends(
     save=None,
     distribution="gamma",
     link="log",
-    fallback_distribution="gaussian",
+    fallback_distribution="normal",
 ):
     """Fit and cluster CellRank GAM trends and return plain R-friendly arrays."""
     import numpy as np

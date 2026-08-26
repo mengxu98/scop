@@ -19,9 +19,11 @@ pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 
 ## Palantir direction and MAGIC layer
 
-The Python reference backend uses the dedicated Python 3.12 trajectory
-environment. MAGIC is optional and should be used for visualization or trend
-fitting, never as a replacement for raw counts in differential testing.
+The Python reference backend reuses the SCOP environment selected by
+`PrepareEnv()`. Existing Python 3.10/3.11 environments receive the compatible
+legacy pins, while Python 3.12 environments receive the current pins. MAGIC is
+optional and should be used for visualization or trend fitting, never as a
+replacement for raw counts in differential testing.
 
 ```{r palantir, eval=FALSE}
 pancreas_sub <- RunPalantir(
@@ -53,7 +55,9 @@ pancreas_sub <- RunCellRank(
   group.by = "SubCellType",
   kernel_type = "pseudotime",
   time_key = "palantir_pseudotime",
-  schur_method = "krylov",
+  # `brandts` is portable for small tutorial data; use `krylov` only after
+  # installing PETSc/SLEPc in the selected environment.
+  schur_method = "brandts",
   schur_n_components = 20L,
   n_macrostates = 11L,
   n_cells_terminal = 30L,
@@ -74,8 +78,8 @@ similar expression-shape clusters, not causal regulatory modules.
 pancreas_sub <- RunCellRankTrends(
   pancreas_sub,
   lineage = "Alpha",
-  assay = "MAGIC_imputed_data",
-  layer = "counts",
+  assay = "RNA",
+  layer = "MAGIC_imputed_data",
   top_n = 500L,
   heatmap_n = 50L,
   n_points = 200L,

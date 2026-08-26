@@ -280,7 +280,7 @@ resolve_requested_python_packages <- function(
     error = function(...) NULL
   )
   actual_minor <- python_minor_version(python_path)
-  version <- if (actual_minor %in% c("3.10", "3.11", "3.12")) {
+  version <- if (isTRUE(actual_minor %in% c("3.10", "3.11", "3.12"))) {
     paste0(actual_minor, "-1")
   } else {
     if (is_windows()) "3.11-1" else "3.10-1"
