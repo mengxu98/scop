@@ -242,18 +242,56 @@ CellRankPlot <- function(
     tab <- do.call(rbind, lapply(split(tab, tab$cluster), function(x) {
       head(x[order(x$p.adjust, -x$Count), , drop = FALSE], as.integer(top_n))
     }))
+    if ("GeneRatio" %in% names(tab)) {
+      tab$GeneRatio <- vapply(
+        as.character(tab$GeneRatio),
+        function(value) {
+          parts <- strsplit(value, "/", fixed = TRUE)[[1L]]
+          if (length(parts) == 2L) {
+            as.numeric(parts[[1L]]) / as.numeric(parts[[2L]])
+          } else {
+            suppressWarnings(as.numeric(value))
+          }
+        },
+        numeric(1)
+      )
+    } else {
+      tab$GeneRatio <- as.numeric(tab$Count) /
+        max(as.numeric(tab$Count), na.rm = TRUE)
+    }
+    tab$Description <- capitalize(as.character(tab$Description))
+    tab$Description <- stringr::str_wrap(tab$Description, width = 45)
     tab$cluster <- factor(tab$cluster, levels = unique(as.character(tab$cluster)))
     tab$Description <- factor(tab$Description, levels = rev(unique(as.character(tab$Description))))
-    tab$minus_log10_q <- -log10(pmax(as.numeric(tab$p.adjust), .Machine$double.xmin))
     return(
       ggplot2::ggplot(
         tab,
-        ggplot2::aes(cluster, Description, size = Count, color = minus_log10_q)
+        ggplot2::aes(cluster, Description)
       ) +
-        ggplot2::geom_point(alpha = 0.9) +
-        ggplot2::scale_color_gradientn(colors = continuous_colors, name = expression(-log[10](adjusted~italic(P)))) +
+        ggplot2::geom_point(
+          ggplot2::aes(size = GeneRatio, fill = p.adjust),
+          shape = 21,
+          color = "black",
+          stroke = 0.25
+        ) +
+        ggplot2::scale_size_area(name = "GeneRatio", max_size = 6, n.breaks = 4) +
+        ggplot2::scale_fill_gradientn(
+          colors = rev(continuous_colors),
+          name = "p.adjust",
+          na.value = "grey80",
+          guide = ggplot2::guide_colorbar(
+            frame.colour = "black",
+            ticks.colour = "black",
+            title.hjust = 0,
+            order = 2
+          )
+        ) +
         ggplot2::labs(x = "Trend module", y = NULL, title = database) +
-        theme_layer
+        theme_layer +
+        ggplot2::theme(
+          panel.grid.major = ggplot2::element_line(colour = "grey80", linetype = 2),
+          axis.text.y = ggplot2::element_text(lineheight = 0.8, hjust = 1)
+        )
     )
   }
 
