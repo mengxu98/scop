@@ -5,8 +5,11 @@
 #'
 #' @param srt A Seurat object returned by [RunCellRank].
 #' @param plot_type One of `"fate"`, `"states"`, `"circular"`, `"drivers"`,
-#' `"trends"`, `"clusters"`, `"projection"`, or `"random_walks"`.
+#' `"trends"`, `"clusters"`, `"enrichment"`, `"projection"`, or
+#' `"random_walks"`.
 #' @param lineage Lineage used for driver/trend plots.
+#' @param database Enrichment database used when `plot_type = "enrichment"`.
+#' If `NULL`, the first stored non-empty database is used.
 #' @param reduction Reduction used for cell-space plots.
 #' @param group.by Group column used for state/random-walk plots.
 #' @param top_n Number of driver genes to display.
@@ -19,8 +22,9 @@
 #' @export
 CellRankPlot <- function(
   srt,
-  plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters", "projection", "random_walks"),
+  plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters", "enrichment", "projection", "random_walks"),
   lineage = NULL,
+  database = NULL,
   reduction = NULL,
   group.by = NULL,
   top_n = 20L,
@@ -48,17 +52,72 @@ CellRankPlot <- function(
   }
   if (plot_type == "projection") {
     reduction <- reduction %||% DefaultReduction(srt)
-    time_key <- if ("palantir_pseudotime" %in% colnames(srt@meta.data)) {
-      "palantir_pseudotime"
-    } else {
-      "cellrank_pseudotime"
+    transition <- srt@tools$CellRank$transition_matrix %||%
+      srt@graphs[["cellrank_transition"]]
+    if (is.null(transition)) {
+      log_message("Stored CellRank transition matrix is missing", message_type = "error")
     }
-    return(PseudotimeProjectionPlot(
-      srt, reduction = reduction, time_key = time_key,
-      plot_type = "stream", group.by = group.by, ...
-    ))
+    cells <- colnames(srt)
+    coords <- SeuratObject::Embeddings(srt[[reduction]])[, 1:2, drop = FALSE]
+    if (!is.null(rownames(transition)) && !is.null(colnames(transition))) {
+      missing_cells <- union(
+        setdiff(cells, rownames(transition)),
+        setdiff(cells, colnames(transition))
+      )
+      if (length(missing_cells)) {
+        log_message("Stored CellRank transition matrix is not aligned to current cells", message_type = "error")
+      }
+      transition <- transition[cells, cells, drop = FALSE]
+    } else if (!identical(dim(transition), c(length(cells), length(cells)))) {
+      log_message("Stored CellRank transition matrix has incompatible dimensions", message_type = "error")
+    }
+    next_xy <- as.matrix(transition %*% coords)
+    delta <- next_xy - coords
+    magnitude <- sqrt(rowSums(delta ^ 2))
+    scale_ref <- as.numeric(stats::quantile(magnitude[magnitude > 0], 0.95, na.rm = TRUE))
+    if (!is.finite(scale_ref) || scale_ref <= 0) scale_ref <- 1
+    delta <- delta / scale_ref * 0.8
+    n_arrows <- min(nrow(coords), 250L)
+    arrow_idx <- unique(as.integer(round(seq(1, nrow(coords), length.out = n_arrows))))
+    arrow_df <- data.frame(
+      x = coords[arrow_idx, 1],
+      y = coords[arrow_idx, 2],
+      xend = coords[arrow_idx, 1] + delta[arrow_idx, 1],
+      yend = coords[arrow_idx, 2] + delta[arrow_idx, 2]
+    )
+    cell_df <- data.frame(x = coords[, 1], y = coords[, 2])
+    if (!is.null(group.by) && group.by %in% colnames(srt@meta.data)) {
+      cell_df$group <- srt@meta.data[[group.by]]
+      p <- ggplot2::ggplot(cell_df, ggplot2::aes(x, y, color = group)) +
+        ggplot2::geom_point(size = 0.8, alpha = 0.75)
+    } else {
+      time_key <- if ("palantir_pseudotime" %in% colnames(srt@meta.data)) {
+        "palantir_pseudotime"
+      } else {
+        "cellrank_pseudotime"
+      }
+      cell_df$value <- srt@meta.data[[time_key]]
+      p <- ggplot2::ggplot(cell_df, ggplot2::aes(x, y, color = value)) +
+        ggplot2::geom_point(size = 0.8, alpha = 0.75) +
+        ggplot2::scale_color_viridis_c(name = time_key)
+    }
+    return(
+      p +
+        ggplot2::geom_segment(
+          data = arrow_df,
+          ggplot2::aes(x, y, xend = xend, yend = yend),
+          inherit.aes = FALSE,
+          color = "black",
+          linewidth = 0.25,
+          alpha = 0.7,
+          arrow = grid::arrow(length = grid::unit(1.3, "mm"), type = "closed")
+        ) +
+        ggplot2::coord_equal() +
+        ggplot2::theme_bw() +
+        ggplot2::labs(x = colnames(coords)[1], y = colnames(coords)[2], color = group.by)
+    )
   }
-  if (plot_type %in% c("drivers", "trends", "clusters") && is.null(lineage)) {
+  if (plot_type %in% c("drivers", "trends", "clusters", "enrichment") && is.null(lineage)) {
     log_message("{.arg lineage} is required for this plot type", message_type = "error")
   }
 
@@ -114,26 +173,71 @@ CellRankPlot <- function(
     return(ggplot2::ggplot(tab, ggplot2::aes(gene, correlation)) + ggplot2::geom_col() + ggplot2::coord_flip() + ggplot2::theme_bw() + ggplot2::labs(x = NULL, y = "Correlation"))
   }
 
-  trend <- srt@tools$CellRank$trends[[lineage]]
-  if (is.null(trend)) log_message("Run {.fn RunCellRankTrends} before plotting trends", message_type = "error")
-  mat <- as.matrix(trend$trend_matrix)
-  if (plot_type == "trends") {
-    genes <- intersect(trend$heatmap_genes %||% rownames(mat), rownames(mat))
-    long <- reshape2::melt(mat[genes, , drop = FALSE], varnames = c("gene", "time"), value.name = "value")
-    return(ggplot2::ggplot(long, ggplot2::aes(time, gene, fill = value)) + ggplot2::geom_raster() + ggplot2::scale_fill_viridis_c() + ggplot2::theme_minimal() + ggplot2::labs(x = "Pseudotime", y = NULL))
+  if (plot_type == "enrichment") {
+    enrichment <- srt@tools$CellRank$enrichment[[lineage]]$databases
+    if (is.null(enrichment) || !length(enrichment)) {
+      log_message("Run {.fn RunCellRankEnrichment} before plotting enrichment", message_type = "error")
+    }
+    if (is.null(database)) {
+      nonempty <- names(enrichment)[vapply(enrichment, nrow, integer(1)) > 0L]
+      database <- if (length(nonempty)) nonempty[[1L]] else NULL
+    }
+    if (is.null(database) || !database %in% names(enrichment) || !nrow(enrichment[[database]])) {
+      log_message("Stored enrichment table is empty for the requested database", message_type = "error")
+    }
+    tab <- as.data.frame(enrichment[[database]], stringsAsFactors = FALSE)
+    required <- c("Description", "p.adjust", "Count", "cluster")
+    if (!all(required %in% names(tab))) {
+      log_message("Stored enrichment table is missing plotting columns", message_type = "error")
+    }
+    tab <- do.call(rbind, lapply(split(tab, tab$cluster), function(x) {
+      head(x[order(x$p.adjust, -x$Count), , drop = FALSE], as.integer(top_n))
+    }))
+    tab$cluster <- factor(tab$cluster, levels = unique(as.character(tab$cluster)))
+    tab$Description <- factor(tab$Description, levels = rev(unique(as.character(tab$Description))))
+    tab$minus_log10_q <- -log10(pmax(as.numeric(tab$p.adjust), .Machine$double.xmin))
+    return(
+      ggplot2::ggplot(
+        tab,
+        ggplot2::aes(cluster, Description, size = Count, color = minus_log10_q)
+      ) +
+        ggplot2::geom_point(alpha = 0.9) +
+        ggplot2::scale_color_viridis_c(name = expression(-log[10](adjusted~italic(P)))) +
+        ggplot2::labs(x = "Trend module", y = NULL, title = database) +
+        ggplot2::theme_bw()
+    )
   }
-  clusters <- trend$cluster_table
-  if (plot_type == "clusters") {
+
+  if (plot_type %in% c("trends", "clusters")) {
+    trend <- srt@tools$CellRank$trends[[lineage]]
+    if (is.null(trend)) log_message("Run {.fn RunCellRankTrends} before plotting trends", message_type = "error")
+    mat <- as.matrix(trend$trend_matrix)
+    if (plot_type == "trends") {
+      genes <- intersect(trend$heatmap_genes %||% rownames(mat), rownames(mat))
+      long <- reshape2::melt(mat[genes, , drop = FALSE], varnames = c("gene", "time"), value.name = "value")
+      return(ggplot2::ggplot(long, ggplot2::aes(time, gene, fill = value)) + ggplot2::geom_raster() + ggplot2::scale_fill_viridis_c() + ggplot2::theme_minimal() + ggplot2::labs(x = "Pseudotime", y = NULL))
+    }
+    clusters <- trend$cluster_table
     selected <- clusters$gene
     long <- reshape2::melt(mat[selected, , drop = FALSE], varnames = c("gene", "time"), value.name = "value")
     long$cluster <- clusters$cluster[match(long$gene, clusters$gene)]
-    return(ggplot2::ggplot(long, ggplot2::aes(time, value, group = gene, color = cluster)) + ggplot2::geom_line(alpha = 0.25) + ggplot2::stat_summary(ggplot2::aes(group = cluster), fun = mean, geom = "line", linewidth = 1.2) + ggplot2::theme_bw() + ggplot2::labs(x = "Pseudotime", y = "Normalized trend"))
+    return(ggplot2::ggplot(long, ggplot2::aes(time, value, group = gene, color = cluster)) + ggplot2::geom_line(alpha = 0.25) + ggplot2::stat_summary(ggplot2::aes(group = cluster), fun = mean, geom = "line", linewidth = 1.2) + ggplot2::facet_wrap(~cluster, scales = "free_y") + ggplot2::theme_bw() + ggplot2::theme(legend.position = "none") + ggplot2::labs(x = "Pseudotime", y = "Normalized trend"))
   }
 
   transition <- srt@tools$CellRank$transition_matrix %||% srt@graphs[["cellrank_transition"]]
   if (is.null(transition)) log_message("Stored CellRank transition matrix is missing", message_type = "error")
   reduction <- reduction %||% DefaultReduction(srt)
   coords <- SeuratObject::Embeddings(srt[[reduction]])[, 1:2, drop = FALSE]
+  cells <- rownames(coords)
+  if (!is.null(rownames(transition)) && !is.null(colnames(transition))) {
+    if (length(setdiff(cells, rownames(transition))) ||
+        length(setdiff(cells, colnames(transition)))) {
+      log_message("Stored CellRank transition matrix is not aligned to current cells", message_type = "error")
+    }
+    transition <- transition[cells, cells, drop = FALSE]
+  } else if (!identical(dim(transition), c(length(cells), length(cells)))) {
+    log_message("Stored CellRank transition matrix has incompatible dimensions", message_type = "error")
+  }
   set.seed(seed)
   starts <- seq_len(nrow(coords))
   if (!is.null(group.by) && group.by %in% colnames(srt@meta.data)) starts <- which(as.character(srt@meta.data[[group.by]]) == unique(as.character(srt@meta.data[[group.by]]))[1L])

@@ -97,6 +97,12 @@ pancreas_sub <- RunCellRankEnrichment(
   output_dir = "cellrank_objects"
 )
 pancreas_sub@tools$CellRank$enrichment$Alpha$manifest
+CellRankPlot(
+  pancreas_sub,
+  plot_type = "enrichment",
+  lineage = "Alpha",
+  database = "GO_BP"
+)
 ```
 
 The complete payload is stored in `srt@tools$Palantir` and
