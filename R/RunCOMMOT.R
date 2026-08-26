@@ -48,6 +48,9 @@ commot_input <- function(srt, group.by, assay, layer, image, coord.cols) {
   if (any(!is.finite(coords$data$x)) || any(!is.finite(coords$data$y))) {
     log_message("COMMOT requires finite raw x and y coordinates", message_type = "error")
   }
+  plot_coordinates <- ccc_spatial_payload_from_raw(
+    coords$data, coords$source, transform = coords$transform
+  )
   expression <- GetAssayData5(srt, assay = assay, layer = layer)[, cells, drop = FALSE]
   commot_validate_matrix(expression)
   groups <- as.character(srt[[]][cells, group.by])
@@ -56,7 +59,8 @@ commot_input <- function(srt, group.by, assay, layer, image, coord.cols) {
   }
   list(
     expression = expression, coordinates = coords$data, cells = cells,
-    groups = groups, source = coords$source, assay = assay
+    groups = groups, source = plot_coordinates$source, assay = assay,
+    plot_coordinates = plot_coordinates$coordinates
   )
 }
 
@@ -359,7 +363,13 @@ RunCOMMOT <- function(
     long_table = long_table,
     h5ad = executed$h5ad,
     native_object = NULL,
-    manifest = executed$manifest
+    manifest = executed$manifest,
+    spatial_plot = ccc_spatial_plot_payload_from_labels(
+      coordinates = input$plot_coordinates,
+      labels = stats::setNames(input$groups, input$cells),
+      source = input$source,
+      analysis_level = "spot"
+    )
   )
   result <- spatial_tag_coordinate_contract(result)
   results <- existing$results %||% list()

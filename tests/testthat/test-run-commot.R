@@ -114,8 +114,12 @@ test_that("RunCOMMOT stores transport mass without inventing p-values", {
   expect_identical(out@tools$COMMOT$parameters$distance_units, "raw coordinate units")
   expect_identical(out@tools$COMMOT$long_table$score_type, "transport_mass")
   expect_true(is.na(out@tools$COMMOT$long_table$pvalue))
+  expect_true(is.list(out@tools$COMMOT$results$default$spatial_plot))
+  expect_identical(out@tools$COMMOT$results$default$spatial_plot$labels,
+    stats::setNames(as.character(srt$celltype), colnames(srt)))
   expect_identical(out@tools$COMMOT$provenance$backend_version, "0.0.3")
   expect_true("COMMOT" %in% out@tools$CCC$methods)
+  expect_s3_class(CCCNetworkPlot(out, method = "COMMOT", plot_type = "spatial"), "ggplot")
   expect_true(inherits(COMMOTPlot(out, plot_type = "network"), c("ggplot", "recordedplot")))
 })
 

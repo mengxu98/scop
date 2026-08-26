@@ -1153,6 +1153,23 @@ RunSpatialCellChat <- function(
       "cell_id", "x", "y", "x_raw", "y_raw", "x_display", "y_display", "image"
     ), drop = FALSE]
     coords_store$label <- metadata[coords_store$cell_id, "labels"]
+    spatial_plot <- if (identical(analysis.level, "composition")) {
+      ccc_spatial_plot_payload_from_composition(
+        coordinates = coords_store,
+        composition = composition_i,
+        source = metric$source,
+        analysis_level = analysis.level,
+        group_levels = colnames(composition_i)
+      )
+    } else {
+      ccc_spatial_plot_payload_from_labels(
+        coordinates = coords_store,
+        labels = metadata$labels,
+        source = metric$source,
+        analysis_level = analysis.level,
+        group_levels = sort(unique(metadata$labels))
+      )
+    }
     native_object <- if (identical(store.object, "full")) chat else NULL
     if (!is.null(native_object)) {
       size <- as.numeric(utils::object.size(native_object))
@@ -1181,6 +1198,7 @@ RunSpatialCellChat <- function(
         n_interactions = nrow(table),
         result_level = unique(as.character(table$result_level))
       ),
+      spatial_plot = spatial_plot,
       source = metric$source
     ))
     long_tables[[sample_name]] <- table
