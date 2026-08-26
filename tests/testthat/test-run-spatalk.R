@@ -132,8 +132,12 @@ test_that("RunSpaTalk stores official single-cell results and unified CCC rows",
   expect_identical(out@tools$SpaTalk$long_table$score_type, "spatalk_score")
   expect_null(out@tools$SpaTalk$results$default$native_object)
   expect_identical(out@tools$SpaTalk$provenance$backend_version, "1.0")
+  expect_true(is.list(out@tools$SpaTalk$results$default$spatial_plot))
+  expect_identical(out@tools$SpaTalk$results$default$spatial_plot$labels,
+    stats::setNames(as.character(srt$celltype), colnames(srt)))
   expect_true("SpaTalk" %in% out@tools$CCC$methods)
   expect_true(all(out@tools$CCC$long_table$method == "SpaTalk"))
+  expect_s3_class(CCCNetworkPlot(out, method = "SpaTalk", plot_type = "spatial"), "ggplot")
   expect_s3_class(SpaTalkPlot(out, plot_type = "tf"), "ggplot")
 })
 
@@ -155,6 +159,9 @@ test_that("RunSpaTalk spot mode runs NNLM deconvolution and can retain native ou
   expect_null(seen$dec_result)
   expect_true(is.list(out@tools$SpaTalk$results$default$native_object))
   expect_true(is.matrix(out@tools$SpaTalk$results$default$deconvolution))
+  expect_true(is.matrix(out@tools$SpaTalk$results$default$spatial_plot$composition))
+  expect_equal(unname(rowSums(out@tools$SpaTalk$results$default$spatial_plot$composition)),
+    rep(1, ncol(spatial)))
 })
 
 test_that("RunSpaTalk reuses stored RCTD weights with SpaTalk method 2", {
