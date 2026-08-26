@@ -7,8 +7,9 @@
 CellRankPlot(
   srt,
   plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters",
-    "projection", "random_walks"),
+    "enrichment", "projection", "random_walks"),
   lineage = NULL,
+  database = NULL,
   reduction = NULL,
   group.by = NULL,
   top_n = 20L,
@@ -22,9 +23,13 @@ CellRankPlot(
 \item{srt}{A Seurat object returned by [RunCellRank].}
 
 \item{plot_type}{One of `"fate"`, `"states"`, `"circular"`, `"drivers"`,
-`"trends"`, `"clusters"`, `"projection"`, or `"random_walks"`.}
+`"trends"`, `"clusters"`, `"enrichment"`, `"projection"`, or
+`"random_walks"`.}
 
 \item{lineage}{Lineage used for driver/trend plots.}
+
+\item{database}{Enrichment database used when `plot_type = "enrichment"`.
+If `NULL`, the first stored non-empty database is used.}
 
 \item{reduction}{Reduction used for cell-space plots.}
 

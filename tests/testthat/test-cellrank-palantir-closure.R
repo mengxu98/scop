@@ -108,16 +108,32 @@ test_that("RunCellRankEnrichment records empty and non-empty module results", {
     .package = "scop",
     check_r = function(...) TRUE,
     get_namespace_fun = function(pkg, fun) {
-      function(...) data.frame(ID = "t1", Description = "term", p.adjust = 0.01, Count = 2)
+      function(...) {
+        args <- list(...)
+        expect_identical(names(args$TERM2GENE), c("term", "gene"))
+        expect_true(all(args$TERM2GENE$gene %in% c("g1", "g2")))
+        data.frame(ID = "t1", Description = "term", p.adjust = 0.01, Count = 2)
+      }
     },
     PrepareDB = function(...) list(Mus_musculus = list(
-      TEST = list(TERM2GENE = data.frame(term = "t1", gene = c("g1", "g2")), TERM2NAME = data.frame(term = "t1", name = "term"))
+      TEST = list(
+        TERM2GENE = data.frame(
+          term = "t1",
+          entrez_id = c("1", "2"),
+          symbol = c("g1", "g2")
+        ),
+        TERM2NAME = data.frame(term = "t1", name = "term")
+      )
     ))
   )
   out <- RunCellRankEnrichment(srt, lineage = "A", db = "TEST", verbose = FALSE)
   expect_true("A" %in% names(out@tools$CellRank$enrichment))
   expect_true("TEST" %in% names(out@tools$CellRank$enrichment$A$databases))
   expect_true(nrow(out@tools$CellRank$enrichment$A$databases$TEST) >= 1)
+  expect_s3_class(
+    CellRankPlot(out, plot_type = "enrichment", lineage = "A", database = "TEST"),
+    "ggplot"
+  )
 })
 
 test_that("CellRankPlot circular consumes stored fate probabilities", {
@@ -130,6 +146,35 @@ test_that("CellRankPlot drivers consumes matrix driver payloads", {
   srt <- make_cellrank_closure_srt()
   p <- CellRankPlot(srt, plot_type = "drivers", lineage = "A", top_n = 2)
   expect_s3_class(p, "ggplot")
+})
+
+test_that("CellRankPlot projection consumes the stored transition matrix", {
+  srt <- make_cellrank_closure_srt()
+  coords <- matrix(
+    c(0, 0, 1, 0, 1, 1, 0, 1),
+    ncol = 2,
+    byrow = TRUE,
+    dimnames = list(colnames(srt), c("UMAP_1", "UMAP_2"))
+  )
+  srt[["umap"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = coords,
+    key = "UMAP_",
+    assay = "RNA"
+  )
+  transition <- Matrix::Diagonal(4, x = 1)
+  rownames(transition) <- colnames(srt)
+  colnames(transition) <- colnames(srt)
+  srt@tools$CellRank$transition_matrix <- transition
+  p <- CellRankPlot(srt, plot_type = "projection", reduction = "umap")
+  expect_s3_class(p, "ggplot")
+  walks <- CellRankPlot(
+    srt,
+    plot_type = "random_walks",
+    reduction = "umap",
+    n_sims = 2L,
+    max_iter = 3L
+  )
+  expect_s3_class(walks, "ggplot")
 })
 
 test_that("RunCellRankEnrichment distinguishes backend failures", {
