@@ -10,6 +10,11 @@
 #' @param lineage Lineage used for driver/trend plots.
 #' @param database Enrichment database used when `plot_type = "enrichment"`.
 #' If `NULL`, the first stored non-empty database is used.
+#' @param palette,palcolor Discrete SCOP palette for states, modules, and cell
+#' groups.
+#' @param feature_palette,feature_palcolor Continuous SCOP palette for fate,
+#' trends, pseudotime, and enrichment strength.
+#' @param theme_use,theme_args SCOP plot theme and arguments passed to it.
 #' @param reduction Reduction used for cell-space plots.
 #' @param group.by Group column used for state/random-walk plots.
 #' @param top_n Number of driver genes to display.
@@ -31,12 +36,25 @@ CellRankPlot <- function(
   n_sims = 100L,
   max_iter = 500L,
   seed = 0L,
+  palette = "Chinese",
+  palcolor = NULL,
+  feature_palette = "Spectral",
+  feature_palcolor = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
   ...
 ) {
   plot_type <- match.arg(plot_type)
   if (!inherits(srt, "Seurat")) log_message("{.arg srt} must be a Seurat object", message_type = "error")
   if (is.null(srt@tools$CellRank)) log_message("CellRank results are missing", message_type = "error")
   fate <- tryCatch(cellrank_fate_matrix(srt), error = function(e) NULL)
+  theme_fun <- resolve_plot_theme_use(theme_use)
+  theme_layer <- do.call(theme_fun, theme_args)
+  continuous_colors <- unname(palette_colors(
+    n = 11L,
+    palette = feature_palette,
+    palcolor = feature_palcolor
+  ))
 
   if (plot_type == "fate") {
     reduction <- reduction %||% DefaultReduction(srt)
@@ -44,11 +62,29 @@ CellRankPlot <- function(
     cols <- paste0("cellrank_fate_", make.names(colnames(fate), unique = TRUE))
     cols <- intersect(cols, colnames(srt@meta.data))
     if (!length(cols)) log_message("No CellRank fate metadata columns are available", message_type = "error")
-    return(FeatureDimPlot(srt, features = cols, reduction = reduction, ...))
+    return(FeatureDimPlot(
+      srt,
+      features = cols,
+      reduction = reduction,
+      palette = feature_palette,
+      palcolor = feature_palcolor,
+      theme_use = theme_use,
+      theme_args = theme_args,
+      ...
+    ))
   }
   if (plot_type == "states") {
     reduction <- reduction %||% DefaultReduction(srt)
-    return(CellDimPlot(srt, group.by = group.by %||% "cellrank_terminal_states", reduction = reduction, ...))
+    return(CellDimPlot(
+      srt,
+      group.by = group.by %||% "cellrank_terminal_states",
+      reduction = reduction,
+      palette = palette,
+      palcolor = palcolor,
+      theme_use = theme_use,
+      theme_args = theme_args,
+      ...
+    ))
   }
   if (plot_type == "projection") {
     reduction <- reduction %||% DefaultReduction(srt)
@@ -88,8 +124,14 @@ CellRankPlot <- function(
     cell_df <- data.frame(x = coords[, 1], y = coords[, 2])
     if (!is.null(group.by) && group.by %in% colnames(srt@meta.data)) {
       cell_df$group <- srt@meta.data[[group.by]]
+      group_colors <- palette_colors(
+        x = levels(factor(cell_df$group)),
+        palette = palette,
+        palcolor = palcolor
+      )
       p <- ggplot2::ggplot(cell_df, ggplot2::aes(x, y, color = group)) +
-        ggplot2::geom_point(size = 0.8, alpha = 0.75)
+        ggplot2::geom_point(size = 0.8, alpha = 0.75) +
+        ggplot2::scale_color_manual(values = group_colors)
     } else {
       time_key <- if ("palantir_pseudotime" %in% colnames(srt@meta.data)) {
         "palantir_pseudotime"
@@ -99,7 +141,7 @@ CellRankPlot <- function(
       cell_df$value <- srt@meta.data[[time_key]]
       p <- ggplot2::ggplot(cell_df, ggplot2::aes(x, y, color = value)) +
         ggplot2::geom_point(size = 0.8, alpha = 0.75) +
-        ggplot2::scale_color_viridis_c(name = time_key)
+        ggplot2::scale_color_gradientn(colors = continuous_colors, name = time_key)
     }
     return(
       p +
@@ -108,12 +150,12 @@ CellRankPlot <- function(
           ggplot2::aes(x, y, xend = xend, yend = yend),
           inherit.aes = FALSE,
           color = "black",
-          linewidth = 0.25,
-          alpha = 0.7,
+          linewidth = 0.18,
+          alpha = 0.55,
           arrow = grid::arrow(length = grid::unit(1.3, "mm"), type = "closed")
         ) +
         ggplot2::coord_equal() +
-        ggplot2::theme_bw() +
+        theme_layer +
         ggplot2::labs(x = colnames(coords)[1], y = colnames(coords)[2], color = group.by)
     )
   }
@@ -142,13 +184,19 @@ CellRankPlot <- function(
           ylim = c(-1.25, 1.25),
           clip = "off"
         ) +
-        ggplot2::scale_color_viridis_c(
+        ggplot2::scale_color_gradientn(
+          colors = continuous_colors,
           name = "Fate confidence",
           limits = c(0, 1),
           oob = scales::squish
         ) +
-        ggplot2::theme_void() +
+        theme_layer +
         ggplot2::theme(
+          axis.title = ggplot2::element_blank(),
+          axis.text = ggplot2::element_blank(),
+          axis.ticks = ggplot2::element_blank(),
+          axis.line = ggplot2::element_blank(),
+          panel.grid = ggplot2::element_blank(),
           plot.background = ggplot2::element_rect(fill = "white", colour = NA),
           panel.background = ggplot2::element_rect(fill = "white", colour = NA),
           legend.background = ggplot2::element_rect(fill = "white", colour = NA),
@@ -170,7 +218,8 @@ CellRankPlot <- function(
     )
     tab <- head(tab[order(tab$correlation, decreasing = TRUE), , drop = FALSE], as.integer(top_n))
     tab$gene <- factor(tab$gene, levels = rev(tab$gene))
-    return(ggplot2::ggplot(tab, ggplot2::aes(gene, correlation)) + ggplot2::geom_col() + ggplot2::coord_flip() + ggplot2::theme_bw() + ggplot2::labs(x = NULL, y = "Correlation"))
+    bar_color <- unname(palette_colors(n = 1L, palette = palette, palcolor = palcolor))
+    return(ggplot2::ggplot(tab, ggplot2::aes(gene, correlation)) + ggplot2::geom_col(fill = bar_color) + ggplot2::coord_flip() + theme_layer + ggplot2::labs(x = NULL, y = "Correlation"))
   }
 
   if (plot_type == "enrichment") {
@@ -202,9 +251,9 @@ CellRankPlot <- function(
         ggplot2::aes(cluster, Description, size = Count, color = minus_log10_q)
       ) +
         ggplot2::geom_point(alpha = 0.9) +
-        ggplot2::scale_color_viridis_c(name = expression(-log[10](adjusted~italic(P)))) +
+        ggplot2::scale_color_gradientn(colors = continuous_colors, name = expression(-log[10](adjusted~italic(P)))) +
         ggplot2::labs(x = "Trend module", y = NULL, title = database) +
-        ggplot2::theme_bw()
+        theme_layer
     )
   }
 
@@ -215,13 +264,18 @@ CellRankPlot <- function(
     if (plot_type == "trends") {
       genes <- intersect(trend$heatmap_genes %||% rownames(mat), rownames(mat))
       long <- reshape2::melt(mat[genes, , drop = FALSE], varnames = c("gene", "time"), value.name = "value")
-      return(ggplot2::ggplot(long, ggplot2::aes(time, gene, fill = value)) + ggplot2::geom_raster() + ggplot2::scale_fill_viridis_c() + ggplot2::theme_minimal() + ggplot2::labs(x = "Pseudotime", y = NULL))
+      return(ggplot2::ggplot(long, ggplot2::aes(time, gene, fill = value)) + ggplot2::geom_raster() + ggplot2::scale_fill_gradientn(colors = continuous_colors) + theme_layer + ggplot2::theme(panel.grid = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank()) + ggplot2::labs(x = "Pseudotime", y = NULL))
     }
     clusters <- trend$cluster_table
     selected <- clusters$gene
     long <- reshape2::melt(mat[selected, , drop = FALSE], varnames = c("gene", "time"), value.name = "value")
     long$cluster <- clusters$cluster[match(long$gene, clusters$gene)]
-    return(ggplot2::ggplot(long, ggplot2::aes(time, value, group = gene, color = cluster)) + ggplot2::geom_line(alpha = 0.25) + ggplot2::stat_summary(ggplot2::aes(group = cluster), fun = mean, geom = "line", linewidth = 1.2) + ggplot2::facet_wrap(~cluster, scales = "free_y") + ggplot2::theme_bw() + ggplot2::theme(legend.position = "none") + ggplot2::labs(x = "Pseudotime", y = "Normalized trend"))
+    cluster_colors <- palette_colors(
+      x = levels(factor(long$cluster)),
+      palette = palette,
+      palcolor = palcolor
+    )
+    return(ggplot2::ggplot(long, ggplot2::aes(time, value, group = gene, color = cluster)) + ggplot2::geom_line(alpha = 0.25) + ggplot2::stat_summary(ggplot2::aes(group = cluster), fun = mean, geom = "line", linewidth = 1.2) + ggplot2::scale_color_manual(values = cluster_colors) + ggplot2::facet_wrap(~cluster, scales = "free_y") + theme_layer + ggplot2::theme(legend.position = "none") + ggplot2::labs(x = "Pseudotime", y = "Normalized trend"))
   }
 
   transition <- srt@tools$CellRank$transition_matrix %||% srt@graphs[["cellrank_transition"]]
@@ -256,5 +310,7 @@ CellRankPlot <- function(
   }
   path_df <- do.call(rbind, paths)
   names(path_df)[3:4] <- c("x", "y")
-  ggplot2::ggplot(path_df, ggplot2::aes(x, y, group = sim, color = sim)) + ggplot2::geom_path(alpha = 0.35) + ggplot2::coord_equal() + ggplot2::theme_void() + ggplot2::guides(color = "none")
+  walk_palette <- unname(palette_colors(n = 2L, palette = palette, palcolor = palcolor))
+  walk_color <- walk_palette[[min(2L, length(walk_palette))]]
+  ggplot2::ggplot(path_df, ggplot2::aes(x, y, group = sim)) + ggplot2::geom_path(alpha = 0.35, color = walk_color, linewidth = 0.35) + ggplot2::coord_equal() + theme_layer + ggplot2::labs(x = colnames(coords)[1], y = colnames(coords)[2])
 }
