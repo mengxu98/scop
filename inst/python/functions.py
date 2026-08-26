@@ -1566,7 +1566,7 @@ def CellRank(
                     verbose=verbose,
                 )
                 exit()
-            if recompute_neighbors or not has_scanpy_neighbors():
+            if recompute_neighbors:
                 n_neighbors_use = min(int(n_neighbors), max(1, adata.n_obs - 1))
                 while True:
                     sc.pp.neighbors(
@@ -1587,6 +1587,10 @@ def CellRank(
                         "Recomputed Scanpy neighbors remain disconnected; increase n_neighbors or provide a connected graph"
                     )
             else:
+                if not has_scanpy_neighbors():
+                    raise ValueError(
+                        "Existing Scanpy neighbors are missing; set recompute_neighbors=True to build them"
+                    )
                 neighbors = adata.uns.get("neighbors", {})
                 conn_key = neighbors.get("connectivities_key", "connectivities")
                 dist_key = neighbors.get("distances_key", "distances")
