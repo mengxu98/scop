@@ -52,9 +52,12 @@ SCOP reads full-resolution raw coordinates for analysis and applies the selected
 Seurat scale factor exactly once for display. The default is the low-resolution
 raster. If the image slot contains `tissue_hires_image.png`, pass
 `image.scale = "hires"`; do not rewrite `@scale.factors`.
-SCOP also normalizes Seurat's spatial row/column ordering to horizontal x and
-vertical y; this is important for VisiumV2 tables whose columns are named
-`x`/`y` but are plotted by Seurat as the second column versus the first.
+Seurat's standard `VisiumV2` loader stores source `imagerow`/`imagecol`
+positionally as centroid `x`/`y`; SCOP restores horizontal image-column and
+vertical image-row order. Generic FOV centroid tables with explicit `x`/`y`
+retain their order. Legacy Visium pixel coordinates are normalized only when
+explicit image row/column names are available, before the selected display
+transform is applied.
 
 ```{r inspect-spatial}
 SpatialSpotPlot(
