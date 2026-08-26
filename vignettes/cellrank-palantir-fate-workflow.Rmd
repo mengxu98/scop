@@ -46,7 +46,8 @@ PalantirTrajectoryPlot(pancreas_sub, reduction = "UMAP")
 ## CellRank fate mapping
 
 Use the stored Palantir pseudotime to construct a directed `PseudotimeKernel`.
-The explicit Schur size and terminal-state names make the run reproducible;
+The explicit Schur size makes the small tutorial run reproducible. The computed
+macrostate names are printed before any optional manual terminal-state rerun;
 unknown terminal states stop before the Seurat object is mutated.
 
 ```{r cellrank, eval=FALSE}
@@ -58,13 +59,13 @@ pancreas_sub <- RunCellRank(
   # `brandts` is portable for small tutorial data; use `krylov` only after
   # installing PETSc/SLEPc in the selected environment.
   schur_method = "brandts",
-  schur_n_components = 20L,
-  n_macrostates = 11L,
-  n_cells_terminal = 30L,
-  terminal_states = c("Alpha", "Beta", "Delta", "Epsilon"),
+  schur_n_components = 10L,
+  n_macrostates = 8L,
+  n_cells_terminal = 10L,
   backend = "python"
 )
 names(pancreas_sub@tools$CellRank)
+pancreas_sub@tools$CellRank$states$macrostate_names
 CellRankPlot(pancreas_sub, plot_type = "fate", reduction = "UMAP")
 CellRankPlot(pancreas_sub, plot_type = "circular")
 ```
