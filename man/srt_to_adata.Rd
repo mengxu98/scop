@@ -16,6 +16,7 @@ srt_to_adata(
   neighbors = NULL,
   convert_tools = FALSE,
   convert_misc = FALSE,
+  prepare_env = TRUE,
   verbose = TRUE
 )
 }
@@ -47,6 +48,10 @@ objects.}
 \item{convert_tools}{Whether to convert the tool-specific data.}
 
 \item{convert_misc}{Whether to convert the miscellaneous data.}
+
+\item{prepare_env}{Whether to prepare and validate the Scanpy Python environment
+before conversion. Set to \code{FALSE} when a wrapper already prepared the
+environment and reticulate must keep the same binding.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

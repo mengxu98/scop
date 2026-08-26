@@ -4,11 +4,15 @@
 \alias{adata_to_srt}
 \title{Convert an anndata object to a seurat object}
 \usage{
-adata_to_srt(adata, verbose = TRUE)
+adata_to_srt(adata, prepare_env = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{adata}{An AnnData object.
 Can be a Python AnnData object (from \code{scanpy}/\verb{reticulate``), an }AnnDataR6\verb{object from the}anndata\verb{package, or an}InMemoryAnnData\verb{object from the}anndataR` package.}
+
+\item{prepare_env}{Whether to prepare and validate the Scanpy Python environment
+before conversion. Set to \code{FALSE} when a wrapper already prepared the
+environment and reticulate must keep the same binding.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

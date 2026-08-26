@@ -473,6 +473,14 @@ palantir_smooth_branch_path <- function(
     min(fit_dat[["pseudotime"]], na.rm = TRUE),
     max(fit_dat[["pseudotime"]], na.rm = TRUE)
   )
+  observed_interval <- range(fit_dat[["pseudotime"]], na.rm = TRUE)
+  path_interval <- c(
+    max(path_interval[1], observed_interval[1]),
+    min(path_interval[2], observed_interval[2])
+  )
+  if (!all(is.finite(path_interval)) || path_interval[1] >= path_interval[2]) {
+    return(NULL)
+  }
   grid <- data.frame(
     pseudotime = seq(path_interval[1], path_interval[2], length.out = max(2L, as.integer(n_path_points)))
   )
@@ -494,13 +502,15 @@ palantir_smooth_branch_path <- function(
         degree = 2,
         control = stats::loess.control(surface = "direct")
       )
-      data.frame(
+      result <- data.frame(
         pseudotime = grid[["pseudotime"]],
         Axis_1 = stats::predict(fit_x, newdata = grid),
         Axis_2 = stats::predict(fit_y, newdata = grid),
         branch = branch,
         stringsAsFactors = FALSE
       )
+      result <- result[is.finite(result$Axis_1) & is.finite(result$Axis_2), , drop = FALSE]
+      result
     },
     error = function(e) NULL
   )
