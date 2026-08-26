@@ -1896,7 +1896,8 @@ env_requirements <- function(
   # Resolve the trajectory stack against the interpreter profile instead of
   # forcing a single Python version. This keeps the existing SCOP environment
   # usable on Python 3.10/3.11 while allowing the newer Python 3.12 stack.
-  if (any(c("scanpy", "palantir", "cellrank") %in% modules)) {
+  if (any(c("scanpy", "palantir", "cellrank") %in% modules) &&
+      !"scmalignantfinder" %in% modules) {
     if (!version %in% c("3.10-1", "3.11-1", "3.12-1")) {
       log_message(
         "The Scanpy/Palantir/CellRank compatibility profiles support Python 3.10, 3.11, or 3.12; requested {.val {version}} is unsupported.",

@@ -56,7 +56,7 @@ RunCellRankTrends <- function(
   min_expressed_cells = 20L,
   distribution = "gamma",
   link = "log",
-  fallback_distribution = "gaussian",
+  fallback_distribution = "normal",
   verbose = TRUE
 ) {
   if (!inherits(srt, "Seurat")) {

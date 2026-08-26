@@ -437,8 +437,7 @@ RunCellRank <- function(
         "allow_approximate",
         "max_dense_gib",
         "envname",
-        "conda",
-        "recompute_neighbors"
+        "conda"
       )
   ]
 
