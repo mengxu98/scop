@@ -19,9 +19,11 @@ pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 
 ## Palantir direction and MAGIC layer
 
-The Python reference backend uses the dedicated Python 3.12 trajectory
-environment. MAGIC is optional and should be used for visualization or trend
-fitting, never as a replacement for raw counts in differential testing.
+The Python reference backend reuses the SCOP environment selected by
+`PrepareEnv()`. Existing Python 3.10/3.11 environments receive the compatible
+legacy pins, while Python 3.12 environments receive the current pins. MAGIC is
+optional and should be used for visualization or trend fitting, never as a
+replacement for raw counts in differential testing.
 
 ```{r palantir, eval=FALSE}
 pancreas_sub <- RunPalantir(
@@ -44,7 +46,8 @@ PalantirTrajectoryPlot(pancreas_sub, reduction = "UMAP")
 ## CellRank fate mapping
 
 Use the stored Palantir pseudotime to construct a directed `PseudotimeKernel`.
-The explicit Schur size and terminal-state names make the run reproducible;
+The explicit Schur size makes the small tutorial run reproducible. The computed
+macrostate names are printed before any optional manual terminal-state rerun;
 unknown terminal states stop before the Seurat object is mutated.
 
 ```{r cellrank, eval=FALSE}
@@ -53,14 +56,16 @@ pancreas_sub <- RunCellRank(
   group.by = "SubCellType",
   kernel_type = "pseudotime",
   time_key = "palantir_pseudotime",
-  schur_method = "krylov",
-  schur_n_components = 20L,
-  n_macrostates = 11L,
-  n_cells_terminal = 30L,
-  terminal_states = c("Alpha", "Beta", "Delta", "Epsilon"),
+  # `brandts` is portable for small tutorial data; use `krylov` only after
+  # installing PETSc/SLEPc in the selected environment.
+  schur_method = "brandts",
+  schur_n_components = 10L,
+  n_macrostates = 8L,
+  n_cells_terminal = 10L,
   backend = "python"
 )
 names(pancreas_sub@tools$CellRank)
+pancreas_sub@tools$CellRank$states$macrostate_names
 CellRankPlot(pancreas_sub, plot_type = "fate", reduction = "UMAP")
 CellRankPlot(pancreas_sub, plot_type = "circular")
 ```
@@ -74,8 +79,8 @@ similar expression-shape clusters, not causal regulatory modules.
 pancreas_sub <- RunCellRankTrends(
   pancreas_sub,
   lineage = "Alpha",
-  assay = "MAGIC_imputed_data",
-  layer = "counts",
+  assay = "RNA",
+  layer = "MAGIC_imputed_data",
   top_n = 500L,
   heatmap_n = 50L,
   n_points = 200L,
@@ -92,6 +97,12 @@ pancreas_sub <- RunCellRankEnrichment(
   output_dir = "cellrank_objects"
 )
 pancreas_sub@tools$CellRank$enrichment$Alpha$manifest
+CellRankPlot(
+  pancreas_sub,
+  plot_type = "enrichment",
+  lineage = "Alpha",
+  database = "GO_BP"
+)
 ```
 
 The complete payload is stored in `srt@tools$Palantir` and

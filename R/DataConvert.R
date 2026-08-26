@@ -17,6 +17,9 @@
 #' objects.
 #' @param convert_tools Whether to convert the tool-specific data.
 #' @param convert_misc Whether to convert the miscellaneous data.
+#' @param prepare_env Whether to prepare and validate the Scanpy Python
+#' environment before conversion. Wrapper functions that already prepared the
+#' environment should pass `FALSE` to keep one reticulate binding.
 #' @param features Optional vector of features to include in the anndata object.
 #' Default is all features in `assay_x`.
 #'
@@ -53,9 +56,10 @@ srt_to_adata <- function(
   neighbors = NULL,
   convert_tools = FALSE,
   convert_misc = FALSE,
+  prepare_env = TRUE,
   verbose = TRUE
 ) {
-  if (!isTRUE(getOption("scop_skip_python_prepare", FALSE))) {
+  if (isTRUE(prepare_env) && !isTRUE(getOption("scop_skip_python_prepare", FALSE))) {
     old_log_verbose <- getOption("log_message.verbose", TRUE)
     if (!isTRUE(verbose)) {
       options(log_message.verbose = FALSE)
@@ -414,6 +418,9 @@ srt_to_h5ad <- function(
 #' @md
 #' @inheritParams thisutils::log_message
 #' @param adata An AnnData object.
+#' @param prepare_env Whether to prepare and validate the Scanpy Python
+#' environment before conversion. Wrapper functions that already prepared the
+#' environment should pass `FALSE` to keep one reticulate binding.
 #' Can be a Python AnnData object (from `scanpy`/`reticulate``),
 #' an `AnnDataR6` object from the `anndata` package,
 #' or an `InMemoryAnnData` object from the `anndataR` package.
@@ -444,9 +451,10 @@ srt_to_h5ad <- function(
 #' }
 adata_to_srt <- function(
   adata,
+  prepare_env = TRUE,
   verbose = TRUE
 ) {
-  if (!isTRUE(getOption("scop_skip_python_prepare", FALSE))) {
+  if (isTRUE(prepare_env) && !isTRUE(getOption("scop_skip_python_prepare", FALSE))) {
     old_log_verbose <- getOption("log_message.verbose", TRUE)
     if (!isTRUE(verbose)) {
       options(log_message.verbose = FALSE)
@@ -1060,12 +1068,13 @@ adata_matrix_to_r <- function(x) {
     error = function(e) NULL
   )
   if (!is.null(scipy_sparse) && isTRUE(reticulate::py_to_r(scipy_sparse$issparse(x)))) {
-    x_coo <- x$tocoo()
-    dims <- as.integer(reticulate::py_to_r(x_coo$shape))
+    tocoo <- reticulate::py_get_attr(x, "tocoo")
+    x_coo <- reticulate::py_call(tocoo)
+    dims <- as.integer(reticulate::py_to_r(reticulate::py_get_attr(x_coo, "shape")))
     return(Matrix::sparseMatrix(
-      i = as.integer(reticulate::py_to_r(x_coo$row)) + 1L,
-      j = as.integer(reticulate::py_to_r(x_coo$col)) + 1L,
-      x = as.numeric(reticulate::py_to_r(x_coo$data)),
+      i = as.integer(reticulate::py_to_r(reticulate::py_get_attr(x_coo, "row"))) + 1L,
+      j = as.integer(reticulate::py_to_r(reticulate::py_get_attr(x_coo, "col"))) + 1L,
+      x = as.numeric(reticulate::py_to_r(reticulate::py_get_attr(x_coo, "data"))),
       dims = dims
     ))
   }

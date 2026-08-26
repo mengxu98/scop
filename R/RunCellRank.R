@@ -138,6 +138,12 @@
 #' be `TRUE` when `backend = "cpp"`.
 #' @param max_dense_gib Maximum estimated GiB allowed for the dense
 #' cell-by-cell working matrices used by the C++ path.
+#' @param envname Optional Python environment name. `NULL` uses the current
+#' SCOP environment selection.
+#' @param conda Conda-compatible executable used by [PrepareEnv].
+#' @param recompute_neighbors Whether to rebuild Scanpy neighbors before a
+#' pseudotime kernel. If `FALSE`, the existing graph must be complete and
+#' match the current AnnData cell order.
 RunCellRank <- function(
   srt = NULL,
   assay_x = "RNA",
@@ -198,6 +204,9 @@ RunCellRank <- function(
   palette = "Chinese",
   palcolor = NULL,
   dirpath = "./cellrank",
+  envname = NULL,
+  conda = "auto",
+  recompute_neighbors = TRUE,
   return_seurat = !is.null(srt),
   verbose = TRUE
 ) {
@@ -272,17 +281,21 @@ RunCellRank <- function(
     ))
   }
 
-  PrepareEnv(modules = c(
-    "cellrank",
-    if (kernel_type == "wot") "wot",
-    if (isTRUE(magic_impute)) "magic"
-  ))
-  check_python("cellrank", verbose = verbose)
+  PrepareEnv(
+    envname = envname,
+    conda = conda,
+    modules = c(
+      "cellrank",
+      if (kernel_type == "wot") "wot",
+      if (isTRUE(magic_impute)) "magic"
+    )
+  )
+  check_python("cellrank", envname = envname, conda = conda, verbose = verbose)
   if (kernel_type == "wot") {
-    check_python("wot", verbose = verbose)
+    check_python("wot", envname = envname, conda = conda, verbose = verbose)
   }
   if (isTRUE(magic_impute)) {
-    check_python("magic-impute", verbose = verbose)
+    check_python("magic-impute", envname = envname, conda = conda, verbose = verbose)
   }
   if (all(is.null(srt), is.null(adata))) {
     log_message(
@@ -385,7 +398,8 @@ RunCellRank <- function(
       assay_x = assay_x,
       layer_x = layer_x,
       assay_y = assay_y,
-      layer_y = layer_y
+      layer_y = layer_y,
+      prepare_env = FALSE
     )
   }
   group_by_py <- group.by
@@ -421,7 +435,9 @@ RunCellRank <- function(
         "backend",
         "backward",
         "allow_approximate",
-        "max_dense_gib"
+        "max_dense_gib",
+        "envname",
+        "conda"
       )
   ]
 
@@ -454,7 +470,7 @@ RunCellRank <- function(
   payload_drivers <- payload_frame(payload$lineage_drivers)
 
   if (isTRUE(return_seurat)) {
-    srt_out <- adata_to_srt(adata)
+    srt_out <- adata_to_srt(adata, prepare_env = FALSE)
 
     # ── Normalize Python output to match C++ backend structure ──
     # Map Python obs column names → C++ standard names
@@ -513,16 +529,18 @@ RunCellRank <- function(
     } else if ("lineages_fwd" %in% obsm_keys) {
       "lineages_fwd"
     }
-    if (!is.null(ap_key)) {
+    if (is.null(payload_fate) && !is.null(ap_key)) {
       ap_raw <- py_to_r2(adata$obsm[[ap_key]])
       if (inherits(ap_raw, c("matrix", "Matrix", "dgCMatrix", "data.frame"))) {
         ap <- as.matrix(ap_raw)
         rownames(ap) <- colnames(srt_out)
       }
     }
-    if (is.null(ap) && !is.null(payload_fate)) {
+    if (!is.null(payload_fate)) {
       ap <- as.matrix(payload_fate)
-      if (nrow(ap) == ncol(srt_out)) rownames(ap) <- colnames(srt_out)
+      if (is.null(rownames(ap)) && nrow(ap) == ncol(srt_out)) {
+        rownames(ap) <- colnames(srt_out)
+      }
     }
     if (!is.null(ap) && nrow(ap) == ncol(srt_out)) {
       ap <- ap[colnames(srt_out), , drop = FALSE]
@@ -559,7 +577,11 @@ RunCellRank <- function(
     if (!is.null(ap)) {
       srt_out@meta.data[["cellrank_fate_confidence"]] <-
         cellrank_fate_confidence_from_absorption(ap)
-      fate_confidence_source <- paste0(ap_key, " row maximum")
+      fate_confidence_source <- if (!is.null(payload_fate)) {
+        "normalized payload row maximum"
+      } else {
+        paste0(ap_key, " row maximum")
+      }
     } else if ("term_states_fwd_probs" %in% colnames(srt_out@meta.data)) {
       # Preserve the historical column when fate probabilities are unavailable,
       # but record that this is only a terminal-membership fallback.
@@ -597,7 +619,10 @@ RunCellRank <- function(
       states = list(
         macrostates = payload$macrostates %||% character(),
         terminal_states = payload$terminal_states %||% character(),
-        initial_states = payload$initial_states %||% character()
+        initial_states = payload$initial_states %||% character(),
+        macrostate_names = payload$macrostate_names %||% character(),
+        terminal_state_names = payload$terminal_state_names %||% character(),
+        initial_state_names = payload$initial_state_names %||% character()
       ),
       parameters = list(
         kernel_type = kernel_type,
@@ -605,7 +630,14 @@ RunCellRank <- function(
         n_macrostates = n_macrostates,
         n_cells_terminal = n_cells_terminal,
         backward = backward,
-        fate_confidence_source = fate_confidence_source
+        fate_confidence_source = fate_confidence_source,
+        schur_method = schur_method,
+        schur_n_components = schur_n_components,
+        terminal_states = terminal_states,
+        terminal_state_agg = terminal_state_agg,
+        driver_lineages = driver_lineages,
+        compute_lineage_drivers = compute_lineage_drivers,
+        actual = payload$parameters %||% list()
       )
     )
 
@@ -1002,6 +1034,8 @@ run_cellrank_cpp <- function(
   }
 
   storage.mode(T_mat) <- "double"
+  rownames(T_mat) <- cells
+  colnames(T_mat) <- cells
   n_mac <- if (is.null(n_macrostates)) {
     n_schur <- if (n_cells < 100L) {
       5L
@@ -1070,6 +1104,8 @@ run_cellrank_cpp <- function(
     ),
     estimator = paste0(estimator_type, "_approximation"),
     kernel = kernel_used,
+    transition_matrix = Matrix::Matrix(T_mat, sparse = TRUE),
+    transition_cells = cells,
     n_macrostates = result[["n_macrostates"]],
     eigenvalues = result[["eigenvalues"]],
     schur_vectors = result[["schur_vectors"]],

@@ -43,6 +43,8 @@ RunPalantir(
   plot_dpi = 300,
   plot_prefix = "palantir",
   dirpath = "./",
+  envname = NULL,
+  conda = "auto",
   backend = c("python", "cpp"),
   allow_approximate = FALSE,
   return_seurat = !is.null(srt),
@@ -126,6 +128,11 @@ Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc.}
 \item{plot_prefix}{Prefix for saved plot filenames.}
 
 \item{dirpath}{The directory to save the plots.}
+
+\item{envname}{Optional Python environment name. \code{NULL} uses the current
+SCOP environment selection.}
+
+\item{conda}{Conda-compatible executable used by \link{PrepareEnv}.}
 
 \item{backend}{Backend used to compute Palantir. \code{"python"} keeps the
 reference Palantir workflow and remains the default. \code{"cpp"} uses an

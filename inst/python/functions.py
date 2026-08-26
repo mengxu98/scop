@@ -424,6 +424,7 @@ def SCVELO(
             )
             if linear_reduction in adata.obsm:
                 adata.obsm["basis"] = adata.obsm[linear_reduction][:, 0:2]
+
                 basis = "basis"
             else:
                 raise ValueError(
@@ -1263,6 +1264,7 @@ def CellRank(
     terminal_state_agg="top_n",
     driver_lineages=None,
     compute_lineage_drivers=True,
+    recompute_neighbors=True,
     save_plot=False,
     plot_format="png",
     plot_dpi=600,
@@ -1301,6 +1303,15 @@ def CellRank(
     import numpy as np
     import scanpy as sc
     import random
+
+    if estimator_type == "GPCCA" and schur_method == "krylov":
+        try:
+            import petsc4py  # noqa: F401
+            import slepc4py  # noqa: F401
+        except ImportError as exc:
+            raise RuntimeError(
+                "schur_method='krylov' requires petsc4py and slepc4py in the active Python environment; use brandts for small datasets"
+            ) from exc
 
     random.seed(0)
     np.random.seed(0)
@@ -1418,6 +1429,9 @@ def CellRank(
                 basis = "basis"
                 adata.obsm["basis"] = adata.obsm[linear_reduction][:, 0:2]
 
+        if linear_reduction and linear_reduction in adata.obsm:
+            n_pcs = min(int(n_pcs), int(adata.obsm[linear_reduction].shape[1]))
+
         mode.append(fitting_by)
         if kinetics is True or denoise is True:
             mode.append("dynamical")
@@ -1467,6 +1481,17 @@ def CellRank(
                 connectivities_key in adata.obsp
                 and distances_key in adata.obsp
             )
+
+        def scanpy_neighbors_connected():
+            if not has_scanpy_neighbors():
+                return False
+            from scipy.sparse.csgraph import connected_components
+
+            neighbors = adata.uns["neighbors"]
+            key = neighbors.get("connectivities_key", "connectivities")
+            graph = adata.obsp[key]
+            n_components, _ = connected_components(graph, directed=False)
+            return int(n_components) == 1
 
         if kernel_type == "velocity":
             has_velocity_data = (
@@ -1532,27 +1557,59 @@ def CellRank(
 
         elif kernel_type == "pseudotime":
             use_pseudotime = True
+            if linear_reduction and linear_reduction in adata.obsm:
+                rep_key = linear_reduction
+            else:
+                log_message(
+                    "{.arg linear_reduction} {.val {linear_reduction}} not found in adata.obsm",
+                    message_type="error",
+                    verbose=verbose,
+                )
+                exit()
+            if recompute_neighbors:
+                n_neighbors_use = min(int(n_neighbors), max(1, adata.n_obs - 1))
+                while True:
+                    sc.pp.neighbors(
+                        adata,
+                        n_neighbors=n_neighbors_use,
+                        n_pcs=n_pcs,
+                        use_rep=rep_key,
+                        random_state=0,
+                    )
+                    if scanpy_neighbors_connected() or n_neighbors_use >= adata.n_obs - 1:
+                        break
+                    n_neighbors_use = min(
+                        adata.n_obs - 1,
+                        max(n_neighbors_use + 1, n_neighbors_use * 2),
+                    )
+                if not scanpy_neighbors_connected():
+                    raise ValueError(
+                        "Recomputed Scanpy neighbors remain disconnected; increase n_neighbors or provide a connected graph"
+                    )
+            else:
+                if not has_scanpy_neighbors():
+                    raise ValueError(
+                        "Existing Scanpy neighbors are missing; set recompute_neighbors=True to build them"
+                    )
+                neighbors = adata.uns.get("neighbors", {})
+                conn_key = neighbors.get("connectivities_key", "connectivities")
+                dist_key = neighbors.get("distances_key", "distances")
+                for graph_key in (conn_key, dist_key):
+                    graph = adata.obsp.get(graph_key)
+                    if graph is None or graph.shape != (adata.n_obs, adata.n_obs):
+                        raise ValueError(
+                            "Existing Scanpy neighbors do not match the current AnnData cell order; set recompute_neighbors=True"
+                        )
+                if not scanpy_neighbors_connected():
+                    raise ValueError(
+                        "Existing Scanpy neighbors are disconnected; set recompute_neighbors=True"
+                    )
             if time_key not in adata.obs:
                 log_message(
                     "Pseudotime {.val {time_key}} not found. Computing DPT pseudotime...",
                     message_type="info",
                     verbose=verbose,
                 )
-                if linear_reduction and linear_reduction in adata.obsm:
-                    rep_key = linear_reduction
-                else:
-                    log_message(
-                        "{.arg linear_reduction} {.val {linear_reduction}} not found in adata.obsm",
-                        message_type="error",
-                        verbose=verbose,
-                    )
-                    exit()
-
-                if not has_scanpy_neighbors():
-                    sc.pp.neighbors(
-                        adata, n_neighbors=n_neighbors, n_pcs=n_pcs, use_rep=rep_key
-                    )
-
                 sc.tl.diffmap(adata)
                 adata.uns["iroot"] = 0
                 sc.tl.dpt(adata)
@@ -2337,7 +2394,10 @@ def CellRank(
             else:
                 estimator.compute_fate_probabilities()
         except ValueError as e:
-            if "do not sum to 1" not in str(e):
+            if (
+                "do not sum to 1" not in str(e)
+                and "negative" not in str(e).lower()
+            ):
                 raise
             if kernel_type == "wot":
                 fate_probabilities_available = False
@@ -2354,6 +2414,7 @@ def CellRank(
                 )
                 estimator.compute_fate_probabilities(solver="direct")
 
+        lineage_driver_result = None
         if fate_probabilities_available and compute_lineage_drivers:
             log_message(
                 "Computing lineage drivers for {.arg cluster_key}={.val {group_by}}...",
@@ -2361,7 +2422,7 @@ def CellRank(
                 verbose=verbose,
             )
             try:
-                estimator.compute_lineage_drivers(
+                lineage_driver_result = estimator.compute_lineage_drivers(
                     lineages=driver_lineages,
                     cluster_key=group_by,
                     use_raw=False,
@@ -2985,33 +3046,51 @@ def CellRank(
         }
 
     fate = getattr(estimator, "fate_probabilities", None)
+    fate_columns_for_payload = None
     if fate is not None:
         fate_array = _cellrank_array(fate)
+        fate_columns_for_payload = [str(x) for x in getattr(fate, "names", [])]
+        if not fate_columns_for_payload:
+            fate_columns_for_payload = [str(x) for x in getattr(fate, "columns", [])]
         if fate_array is not None and fate_array.ndim == 2:
-            adata.obsm["to_terminal_states"] = fate_array
-            fate_columns = [str(x) for x in getattr(fate, "names", [])]
-            if not fate_columns:
-                fate_columns = [str(x) for x in getattr(fate, "columns", [])]
-            if fate_columns:
-                adata.uns["scop_cellrank_fate_columns"] = fate_columns
+            if len(fate_columns_for_payload) == fate_array.shape[1]:
+                adata.obsm["to_terminal_states"] = pd.DataFrame(
+                    fate_array,
+                    index=adata.obs_names,
+                    columns=fate_columns_for_payload,
+                )
+            else:
+                adata.obsm["to_terminal_states"] = fate_array
+            if fate_columns_for_payload:
+                adata.uns["scop_cellrank_fate_columns"] = fate_columns_for_payload
 
     try:
         adata.obsp["cellrank_transition"] = final_kernel.transition_matrix
     except Exception:
         pass
 
-    fate_names_for_payload = getattr(fate, "names", None)
-    if fate_names_for_payload is None or len(fate_names_for_payload) == 0:
-        fate_names_for_payload = getattr(fate, "columns", None)
+    fate_names_for_payload = fate_columns_for_payload
     macro_obj = getattr(estimator, "macrostates", None)
     terminal_obj = getattr(estimator, "terminal_states", None)
+    initial_obj = getattr(estimator, "initial_states", None)
+
+    def _categorical_values(value):
+        if value is None:
+            return []
+        categories = getattr(getattr(value, "cat", None), "categories", None)
+        if categories is not None:
+            return [str(x) for x in categories]
+        return []
+
     payload = {
         "fate_probabilities": _cellrank_frame(
             fate,
             fate_names_for_payload,
         ),
         "lineage_drivers": _cellrank_frame(
-            getattr(estimator, "lineage_drivers", None)
+            lineage_driver_result
+            if lineage_driver_result is not None
+            else getattr(estimator, "lineage_drivers", None)
         ),
         "macrostates": [str(x) for x in getattr(macro_obj, "to_list", lambda: [])()],
         "terminal_states": [str(x) for x in getattr(terminal_obj, "to_list", lambda: [])()],
@@ -3021,6 +3100,19 @@ def CellRank(
                 getattr(estimator, "initial_states", None), "to_list", lambda: []
             )()
         ],
+        "macrostate_names": _categorical_values(macro_obj),
+        "terminal_state_names": _categorical_values(terminal_obj),
+        "initial_state_names": _categorical_values(initial_obj),
+        "parameters": {
+            "schur_method": schur_method,
+            "schur_n_components": int(n_states_schur) if estimator_type == "GPCCA" else None,
+            "n_macrostates": int(n_macro) if estimator_type == "GPCCA" else n_macrostates,
+            "terminal_states": terminal_states,
+            "terminal_state_agg": terminal_state_agg,
+            "driver_lineages": driver_lineages,
+            "compute_lineage_drivers": bool(compute_lineage_drivers),
+            "recompute_neighbors": bool(recompute_neighbors),
+        },
         "transition_key": "cellrank_transition",
         "versions": {},
     }
@@ -3722,9 +3814,16 @@ def Palantir(
         )
         ms_data = palantir.utils.determine_multiscale_space(dm_res, n_eigs=dm_n_eigs)
         if magic_impute:
-            adata.layers[magic_layer] = palantir.utils.run_magic_imputation(
-                adata, dm_res
+            palantir.utils.run_magic_imputation(
+                adata,
+                dm_res,
+                imputation_key=magic_layer,
+                n_jobs=n_jobs,
             )
+            if magic_layer not in adata.layers:
+                raise RuntimeError(
+                    f"Palantir did not create the requested MAGIC layer {magic_layer!r}"
+                )
         log_message("Running palantir", message_type="info", verbose=verbose)
         pr_res = palantir.core.run_palantir(
             data=ms_data,
@@ -3780,6 +3879,22 @@ def Palantir(
             pr_res.branch_probs = pr_res.branch_probs.rename(
                 columns=terminal_cells_dict
             )
+        # Keep the resolved cell identities and branch names with the result.
+        # This is intentionally stored in ``uns`` so the R conversion can
+        # preserve the actual cells selected from groups (including any
+        # adjustments), rather than only the user's requested arguments.
+        adata.uns["scop_palantir_parameters"] = {
+            "early_cell": str(early_cell),
+            "terminal_cells": [str(x) for x in (terminal_cells or [])],
+            "terminal_groups": [str(x) for x in (terminal_groups or [])],
+            "branch_names": [str(x) for x in pr_res.branch_probs.columns],
+            "magic_impute": bool(magic_impute),
+            "magic_layer": str(magic_layer) if magic_impute else None,
+            "versions": {
+                "palantir": str(getattr(palantir, "__version__", "unknown")),
+                "scanpy": str(getattr(sc, "__version__", "unknown")),
+            },
+        }
         for term in np.append(
             pr_res.branch_probs.columns.values,
             np.array(["palantir_pseudotime", "palantir_diff_potential"]),
@@ -6022,6 +6137,9 @@ def CellRankTrends(
     random_state=0,
     show_plot=False,
     save=None,
+    distribution="gamma",
+    link="log",
+    fallback_distribution="normal",
 ):
     """Fit and cluster CellRank GAM trends and return plain R-friendly arrays."""
     import numpy as np
@@ -6040,34 +6158,107 @@ def CellRankTrends(
     fate = np.asarray(fate_probabilities, dtype=float)
     if fate.ndim != 2 or fate.shape[0] != adata.n_obs:
         raise ValueError("Fate probabilities must be cells x lineages and match AnnData")
-    adata.obsm["to_terminal_states"] = pd.DataFrame(
-        fate, index=adata.obs_names, columns=[str(x) for x in fate_columns]
-    )
+    lineage_names = [str(x) for x in fate_columns]
+    from cellrank._utils._lineage import Lineage
 
-    model = cr.models.GAM(
-        adata,
-        max_iter=int(max_iter),
-        spline_order=int(spline_order),
-        n_knots=int(n_knots),
-    )
+    lineage_array = Lineage(fate, names=lineage_names)
+    adata.obsm["to_terminal_states"] = lineage_array
+    adata.obsm["lineages_fwd"] = lineage_array
+
     key = f"lineage_{lineage}_trend"
-    cr.pl.cluster_trends(
-        adata,
-        model=model,
-        genes=genes,
-        lineage=lineage,
-        time_key=time_key,
-        n_points=int(n_points),
-        norm=bool(norm),
-        recompute=True,
-        random_state=int(random_state),
-        n_jobs=int(n_jobs),
-        backend="threading",
-        clustering_kwargs={"resolution": float(resolution), "random_state": int(random_state)},
-        show_progress_bar=False,
-        show=bool(show_plot),
-        save=save,
-    )
+    model_kwargs = {
+        "max_iter": int(max_iter),
+        "spline_order": int(spline_order),
+        "n_knots": int(n_knots),
+        "distribution": distribution,
+        "link": link,
+    }
+    dropped_genes = []
+    dropped_errors = []
+    first_error = None
+    try:
+        model = cr.models.GAM(adata, **model_kwargs)
+        distribution_used = distribution
+        cr.pl.cluster_trends(
+            adata,
+            model=model,
+            genes=genes,
+            lineage=lineage,
+            time_key=time_key,
+            n_points=int(n_points),
+            norm=bool(norm),
+            recompute=True,
+            random_state=int(random_state),
+            n_jobs=int(n_jobs),
+            backend="threading",
+            clustering_kwargs={"resolution": float(resolution), "random_state": int(random_state)},
+            show_progress_bar=False,
+            save=save,
+        )
+    except Exception as trend_error:
+        first_error = trend_error
+        if not fallback_distribution or fallback_distribution == distribution:
+            raise
+        adata.uns.pop(key, None)
+        dropped_genes = []
+        dropped_errors = []
+        distribution_used = fallback_distribution
+        from anndata import AnnData
+        from sklearn.cluster import KMeans
+
+        curves = []
+        fitted_genes = []
+        for gene in genes:
+            try:
+                fallback_model = cr.models.GAM(
+                    adata,
+                    **dict(model_kwargs, distribution=fallback_distribution, link="identity")
+                )
+                fallback_model.prepare(
+                    gene=gene,
+                    lineage=lineage,
+                    time_key=time_key,
+                    n_test_points=int(n_points),
+                )
+                fallback_model.fit()
+                curve = np.asarray(fallback_model.predict(), dtype=float).reshape(-1)
+                if curve.size != int(n_points) or not np.all(np.isfinite(curve)):
+                    raise ValueError("GAM prediction is not finite")
+                curves.append(curve)
+                fitted_genes.append(gene)
+            except Exception as gene_error:
+                dropped_genes.append(gene)
+                dropped_errors.append(f"{gene}: {type(gene_error).__name__}: {gene_error}")
+        if len(curves) < 2:
+            raise RuntimeError(
+                "CellRank GAM could not fit at least two genes for this lineage: "
+                + " | ".join(dropped_errors[:5])
+            ) from first_error
+        curves = np.asarray(curves, dtype=float)
+        if norm:
+            curves = (curves - curves.mean(axis=1, keepdims=True)) / np.maximum(
+                curves.std(axis=1, keepdims=True), np.finfo(float).eps
+            )
+        n_clusters = min(
+            len(fitted_genes),
+            max(2, int(round(float(resolution) * 3))),
+        )
+        assignments = KMeans(
+            n_clusters=n_clusters,
+            random_state=int(random_state),
+            n_init=10,
+        ).fit_predict(curves)
+        trend_adata = AnnData(curves)
+        trend_adata.obs_names = fitted_genes
+        trend_adata.var_names = [str(x) for x in np.linspace(
+            float(np.nanmin(adata.obs[time_key])),
+            float(np.nanmax(adata.obs[time_key])),
+            int(n_points),
+        )]
+        trend_adata.obs["clusters"] = assignments.astype(str)
+        adata.uns[key] = trend_adata
+        genes = fitted_genes
+        distribution_used = f"{fallback_distribution}+kmeans"
     if key not in adata.uns:
         raise RuntimeError(f"CellRank did not create trend result {key!r}")
     trend_adata = adata.uns[key]
@@ -6088,5 +6279,10 @@ def CellRankTrends(
             "spline_order": int(spline_order),
             "n_knots": int(n_knots),
             "random_state": int(random_state),
+            "distribution_requested": distribution,
+            "distribution_used": distribution_used,
+            "fallback_error": str(first_error) if distribution_used != distribution else None,
+            "dropped_genes": dropped_genes,
+            "dropped_errors": dropped_errors,
         },
     }

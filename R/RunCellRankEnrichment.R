@@ -17,6 +17,8 @@
 #' @param p_adjust_method Multiple-testing method.
 #' @param show_category Number of terms shown in each dot plot.
 #' @param output_dir Optional directory for CSV/PDF exports.
+#' @param continue_on_error Whether to keep other modules when one enrichment
+#' call fails. Failures are recorded in the manifest.
 #' @param verbose Whether to print progress messages.
 #'
 #' @return The Seurat object with results under
@@ -35,6 +37,7 @@ RunCellRankEnrichment <- function(
   p_adjust_method = "BH",
   show_category = 8L,
   output_dir = NULL,
+  continue_on_error = FALSE,
   verbose = TRUE
 ) {
   if (!inherits(srt, "Seurat")) {
@@ -70,9 +73,14 @@ RunCellRankEnrichment <- function(
       manifest[[db_i]] <- list(status = "unavailable", n_clusters = length(clusters))
       next
     }
-    term2gene <- db_entry$TERM2GENE
-    term2name <- db_entry$TERM2NAME
+    term2gene_info <- cellrank_term2gene(
+      db_entry$TERM2GENE,
+      universe = universe
+    )
+    term2gene <- term2gene_info$data
+    term2name <- cellrank_term2name(db_entry$TERM2NAME)
     db_results <- list()
+    db_errors <- list()
     for (cluster_i in names(clusters)) {
       genes_i <- intersect(unique(as.character(clusters[[cluster_i]])), universe)
       if (!length(genes_i)) {
@@ -94,6 +102,15 @@ RunCellRankEnrichment <- function(
         error = function(e) e
       )
       tab <- if (inherits(enrich, "error") || is.null(enrich)) {
+        if (inherits(enrich, "error")) {
+          db_errors[[cluster_i]] <- conditionMessage(enrich)
+          if (!isTRUE(continue_on_error)) {
+            log_message(
+              "Enrichment failed for {.val {db_i}} / cluster {.val {cluster_i}}: {.val {conditionMessage(enrich)}}",
+              message_type = "error"
+            )
+          }
+        }
         data.frame()
       } else {
         as.data.frame(enrich)
@@ -108,9 +125,12 @@ RunCellRankEnrichment <- function(
     if (is.null(combined)) combined <- data.frame()
     results[[db_i]] <- combined
     manifest[[db_i]] <- list(
-      status = if (nrow(combined)) "ok" else "no_significant_terms",
+      status = if (length(db_errors)) "failed" else if (nrow(combined)) "ok" else "no_significant_terms",
       n_clusters = length(clusters),
-      n_terms = nrow(combined)
+      n_terms = nrow(combined),
+      term_column = term2gene_info$term_column,
+      gene_column = term2gene_info$gene_column,
+      errors = db_errors
     )
     if (!is.null(output_dir)) {
       utils::write.csv(
@@ -148,4 +168,48 @@ RunCellRankEnrichment <- function(
   )
   srt@tools$CellRank$enrichment[[lineage]] <- bundle
   srt
+}
+
+cellrank_term2gene <- function(term2gene, universe) {
+  term2gene <- as.data.frame(term2gene, stringsAsFactors = FALSE)
+  if (ncol(term2gene) < 2L) {
+    log_message(
+      "CellRank enrichment TERM2GENE must contain term and gene columns",
+      message_type = "error"
+    )
+  }
+  term_col <- names(term2gene)[1L]
+  gene_cols <- names(term2gene)[-1L]
+  universe <- unique(as.character(universe))
+  overlap <- vapply(
+    gene_cols,
+    function(column) {
+      length(intersect(universe, unique(as.character(term2gene[[column]]))))
+    },
+    integer(1)
+  )
+  if (any(overlap > 0L)) {
+    gene_col <- gene_cols[which.max(overlap)]
+  } else {
+    symbol_col <- gene_cols[grepl("symbol|gene.?name", gene_cols, ignore.case = TRUE)]
+    gene_col <- if (length(symbol_col)) symbol_col[[1L]] else gene_cols[[1L]]
+  }
+  out <- data.frame(
+    term = as.character(term2gene[[term_col]]),
+    gene = as.character(term2gene[[gene_col]]),
+    stringsAsFactors = FALSE
+  )
+  out <- unique(out[nzchar(out$term) & nzchar(out$gene), , drop = FALSE])
+  list(data = out, term_column = term_col, gene_column = gene_col)
+}
+
+cellrank_term2name <- function(term2name) {
+  if (is.null(term2name)) return(NULL)
+  term2name <- as.data.frame(term2name, stringsAsFactors = FALSE)
+  if (ncol(term2name) < 2L) return(NULL)
+  data.frame(
+    term = as.character(term2name[[1L]]),
+    name = as.character(term2name[[2L]]),
+    stringsAsFactors = FALSE
+  )
 }

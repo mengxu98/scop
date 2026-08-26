@@ -7,14 +7,21 @@
 CellRankPlot(
   srt,
   plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters",
-    "projection", "random_walks"),
+    "enrichment", "projection", "random_walks"),
   lineage = NULL,
+  database = NULL,
   reduction = NULL,
   group.by = NULL,
   top_n = 20L,
   n_sims = 100L,
   max_iter = 500L,
   seed = 0L,
+  palette = "Chinese",
+  palcolor = NULL,
+  feature_palette = "Spectral",
+  feature_palcolor = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
   ...
 )
 }
@@ -22,9 +29,21 @@ CellRankPlot(
 \item{srt}{A Seurat object returned by [RunCellRank].}
 
 \item{plot_type}{One of `"fate"`, `"states"`, `"circular"`, `"drivers"`,
-`"trends"`, `"clusters"`, `"projection"`, or `"random_walks"`.}
+`"trends"`, `"clusters"`, `"enrichment"`, `"projection"`, or
+`"random_walks"`.}
 
 \item{lineage}{Lineage used for driver/trend plots.}
+
+\item{database}{Enrichment database used when `plot_type = "enrichment"`.
+If `NULL`, the first stored non-empty database is used.}
+
+\item{palette, palcolor}{Discrete SCOP palette for states, modules, and cell
+groups.}
+
+\item{feature_palette, feature_palcolor}{Continuous SCOP palette for fate,
+trends, pseudotime, and enrichment strength.}
+
+\item{theme_use, theme_args}{SCOP plot theme and arguments passed to it.}
 
 \item{reduction}{Reduction used for cell-space plots.}
 
