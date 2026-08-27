@@ -127,6 +127,9 @@ srt_to_adata <- function(
   }
 
   var <- GetFeaturesData(srt, assay = assay_x)[features, , drop = FALSE]
+  if ("features" %in% colnames(var)) {
+    var <- var[, colnames(var) != "features", drop = FALSE]
+  }
   if (ncol(var) > 0) {
     for (i in seq_len(ncol(var))) {
       if (is.logical(var[, i]) && !identical(colnames(var)[i], "highly_variable")) {
@@ -598,10 +601,16 @@ adata_to_srt <- function(
   }
 
   if (length(adata$var_keys()) > 0) {
-    srt[["RNA"]] <- Seurat::AddMetaData(
-      srt[["RNA"]],
-      metadata = as.data.frame(py_to_r2(adata$var))
-    )
+    var_meta <- as.data.frame(py_to_r2(adata$var))
+    if ("features" %in% colnames(var_meta)) {
+      var_meta <- var_meta[, colnames(var_meta) != "features", drop = FALSE]
+    }
+    if (ncol(var_meta) > 0) {
+      srt[["RNA"]] <- Seurat::AddMetaData(
+        srt[["RNA"]],
+        metadata = var_meta
+      )
+    }
   }
 
   keys <- get_adata_keys(adata$varm)
