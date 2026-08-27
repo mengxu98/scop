@@ -1,17 +1,28 @@
-sct_is_default_clip <- function(clip.range, n_cells) {
-  if (
-    !is.numeric(clip.range) ||
-      length(clip.range) != 2L ||
-      any(!is.finite(clip.range))
-  ) {
-    return(FALSE)
-  }
-  isTRUE(all.equal(
-    as.numeric(clip.range),
-    c(-sqrt(n_cells / 30), sqrt(n_cells / 30)),
-    tolerance = sqrt(.Machine$double.eps),
-    check.attributes = FALSE
-  ))
+sct_scalar_pos <- function(x) {
+  is.numeric(x) &&
+    length(x) == 1L &&
+    is.finite(x) &&
+    x > 0
+}
+
+sct_clip_ok <- function(clip.range) {
+  is.numeric(clip.range) &&
+    length(clip.range) == 2L &&
+    all(is.finite(clip.range)) &&
+    clip.range[1] < clip.range[2]
+}
+
+sct_regress_out <- function(mat, latent.df) {
+  renamed <- latent.df
+  names(renamed) <- paste0("v", seq_len(ncol(latent.df)))
+  design <- stats::model.matrix(
+    stats::as.formula(paste("~", paste(names(renamed), collapse = " + "))),
+    data = renamed
+  )
+  fit <- stats::lm.fit(design, t(mat))
+  resid <- t(fit$residuals)
+  dimnames(resid) <- dimnames(mat)
+  resid
 }
 
 sct_model_formula <- function(model_str) {
@@ -400,17 +411,12 @@ sct_vst <- function(
     cells_step1 = cells_step1,
     cell_attr = cell_attr
   )
-  rm(res)
-  rv$y <- {
-    rv <- rv$y
-    if (length(rv) == 0L) {
-      rv
-    } else {
-      rv[rv < res_clip_range[1L]] <- res_clip_range[1L]
-      rv[rv > res_clip_range[2L]] <- res_clip_range[2L]
-      rv
-    }
+  if (length(res) > 0L) {
+    res[res < res_clip_range[1L]] <- res_clip_range[1L]
+    res[res > res_clip_range[2L]] <- res_clip_range[2L]
   }
+  rv$y <- res
+  rm(res)
   if (!return_cell_attr) {
     rv[["cell_attr"]] <- NULL
   }
@@ -447,34 +453,107 @@ SCTransform.default <- function(
   ...
 ) {
   extra_args <- list(...)
-  if (
+  sct_delegates <-
     !is.null(reference.SCT.model) ||
       !isTRUE(do.correct.umi) ||
-      !is.numeric(ncells) ||
-      length(ncells) != 1L ||
-      !is.finite(ncells) ||
-      ncells <= 0 ||
       !is.null(residual.features) ||
-      is.null(variable.features.n) ||
-      !is.numeric(variable.features.n) ||
-      length(variable.features.n) != 1L ||
-      !is.finite(variable.features.n) ||
-      variable.features.n <= 0 ||
-      !identical(variable.features.rv.th, 1.3) ||
-      !is.null(vars.to.regress) ||
-      !is.null(latent.data) ||
+      !isFALSE(conserve.memory) ||
+      !identical(vst.flavor, "v2") ||
       !isFALSE(do.scale) ||
       !isTRUE(do.center) ||
-      !sct_is_default_clip(clip.range, ncol(object)) ||
-      !identical(vst.flavor, "v2") ||
-      !isFALSE(conserve.memory) ||
       !isTRUE(return.only.var.genes) ||
-      length(extra_args) != 0L
-  ) {
+      length(extra_args) != 0L ||
+      !sct_scalar_pos(ncells) ||
+      !sct_scalar_pos(variable.features.n) ||
+      !sct_scalar_pos(variable.features.rv.th) ||
+      !sct_clip_ok(clip.range) ||
+      (!is.null(vars.to.regress) &&
+        (is.null(cell.attr) ||
+          !all(vars.to.regress %in% colnames(cell.attr))))
+  if (sct_delegates) {
     log_message(
-      "SCTransform.default received unsupported arguments for the scop implementation.",
-      message_type = "error"
+      "{.fn SCTransform} received arguments beyond the scop fast path; delegating to Seurat.",
+      message_type = "info"
     )
+    seurat_sct <- utils::getFromNamespace("SCTransform.default", "Seurat")
+    return(seurat_sct(
+      object = object,
+      cell.attr = cell.attr,
+      reference.SCT.model = reference.SCT.model,
+      do.correct.umi = do.correct.umi,
+      ncells = ncells,
+      residual.features = residual.features,
+      variable.features.n = variable.features.n,
+      variable.features.rv.th = variable.features.rv.th,
+      vars.to.regress = vars.to.regress,
+      latent.data = latent.data,
+      do.scale = do.scale,
+      do.center = do.center,
+      clip.range = clip.range,
+      vst.flavor = vst.flavor,
+      conserve.memory = conserve.memory,
+      return.only.var.genes = return.only.var.genes,
+      seed.use = seed.use,
+      verbose = verbose,
+      ...
+    ))
+  }
+  sct_latent_df <- NULL
+  if (!is.null(vars.to.regress) && !is.null(cell.attr)) {
+    sct_latent_df <- cell.attr[, vars.to.regress, drop = FALSE]
+  }
+  if (!is.null(latent.data)) {
+    latent.df <- as.data.frame(latent.data)
+    latent.df <- latent.df[, !colnames(latent.df) %in%
+      (if (is.null(sct_latent_df)) character(0) else colnames(sct_latent_df)),
+    drop = FALSE
+    ]
+    if (ncol(latent.df) > 0L) {
+      if (is.null(sct_latent_df)) {
+        sct_latent_df <- latent.df
+      } else {
+        if (is.null(rownames(latent.df))) {
+          if (nrow(latent.df) != nrow(sct_latent_df)) {
+            log_message(
+              "latent.data has {nrow(latent.df)} rows but the cell attributes have {nrow(sct_latent_df)}.",
+              message_type = "error"
+            )
+          }
+          rownames(latent.df) <- rownames(sct_latent_df)
+        } else if (!setequal(rownames(latent.df), rownames(sct_latent_df))) {
+          log_message(
+            "latent.data rownames do not match the cell attribute rownames.",
+            message_type = "error"
+          )
+        }
+        latent.df <- latent.df[rownames(sct_latent_df), , drop = FALSE]
+        sct_latent_df <- cbind(sct_latent_df, latent.df)
+      }
+    }
+  }
+  if (!is.null(sct_latent_df)) {
+    if (any(!stats::complete.cases(sct_latent_df))) {
+      log_message(
+        "Regression variables contain missing values; SCTransform requires complete cases.",
+        message_type = "error"
+      )
+    }
+    sct_cells <- colnames(SeuratObject::as.sparse(object))
+    if (is.null(rownames(sct_latent_df))) {
+      if (nrow(sct_latent_df) != length(sct_cells)) {
+        log_message(
+          "Regression variables have {nrow(sct_latent_df)} rows for {length(sct_cells)} cells.",
+          message_type = "error"
+        )
+      }
+      rownames(sct_latent_df) <- sct_cells
+    } else if (!setequal(rownames(sct_latent_df), sct_cells)) {
+      log_message(
+        "Regression variable rownames do not match cell names.",
+        message_type = "error"
+      )
+    }
+    sct_latent_df <- sct_latent_df[sct_cells, , drop = FALSE]
   }
   check_r("sctransform", verbose = FALSE)
   check_r("glmGamPoi", verbose = FALSE)
@@ -712,6 +791,11 @@ SCTransform.default <- function(
   )
   dimnames(scale.data) <- list(top.features, col_names)
   rm(csr, corrected_list)
+  if (!is.null(sct_latent_df)) {
+    scale.data <- sct_regress_out(scale.data, sct_latent_df[col_names, , drop = FALSE])
+    vst.out$arguments$sct.latent.vars <- colnames(sct_latent_df)
+    scale.data <- scale.data - rowMeans(scale.data)
+  }
   vst.out$y <- scale.data
   vst.out$variable_features <- top.features
   vst.out
@@ -747,33 +831,49 @@ SCTransform.Seurat <- function(
     log_message("SCTransform.Seurat requires a single non-SCT assay.", message_type = "error")
   }
   extra_args <- list(...)
-  if (
+  sct_delegates <-
     !is.null(reference.SCT.model) ||
       !isTRUE(do.correct.umi) ||
-      !is.numeric(ncells) ||
-      length(ncells) != 1L ||
-      !is.finite(ncells) ||
-      ncells <= 0 ||
       !is.null(residual.features) ||
-      is.null(variable.features.n) ||
-      !is.numeric(variable.features.n) ||
-      length(variable.features.n) != 1L ||
-      !is.finite(variable.features.n) ||
-      variable.features.n <= 0 ||
-      !identical(variable.features.rv.th, 1.3) ||
-      !is.null(vars.to.regress) ||
+      !isFALSE(conserve.memory) ||
+      !identical(vst.flavor, "v2") ||
       !isFALSE(do.scale) ||
       !isTRUE(do.center) ||
-      !sct_is_default_clip(clip.range, ncol(object[[assay]])) ||
-      !identical(vst.flavor, "v2") ||
-      !isFALSE(conserve.memory) ||
       !isTRUE(return.only.var.genes) ||
-      length(extra_args) != 0L
-  ) {
+      length(extra_args) != 0L ||
+      !sct_scalar_pos(ncells) ||
+      !sct_scalar_pos(variable.features.n) ||
+      !sct_scalar_pos(variable.features.rv.th) ||
+      !sct_clip_ok(clip.range) ||
+      (!is.null(vars.to.regress) &&
+        !all(vars.to.regress %in% colnames(object[[]])))
+  if (sct_delegates) {
     log_message(
-      "SCTransform.Seurat received unsupported arguments for the scop implementation.",
-      message_type = "error"
+      "{.fn SCTransform} received arguments beyond the scop fast path; delegating to Seurat.",
+      message_type = "info"
     )
+    seurat_sct <- utils::getFromNamespace("SCTransform.Seurat", "Seurat")
+    return(seurat_sct(
+      object = object,
+      assay = assay,
+      new.assay.name = new.assay.name,
+      reference.SCT.model = reference.SCT.model,
+      do.correct.umi = do.correct.umi,
+      ncells = ncells,
+      residual.features = residual.features,
+      variable.features.n = variable.features.n,
+      variable.features.rv.th = variable.features.rv.th,
+      vars.to.regress = vars.to.regress,
+      do.scale = do.scale,
+      do.center = do.center,
+      clip.range = clip.range,
+      vst.flavor = vst.flavor,
+      conserve.memory = conserve.memory,
+      return.only.var.genes = return.only.var.genes,
+      seed.use = seed.use,
+      verbose = verbose,
+      ...
+    ))
   }
   if (!is.null(seed.use)) {
     set.seed(seed.use)
@@ -859,6 +959,17 @@ SCTransform.Seurat <- function(
 }
 
 #' Apply SCTransform normalization
+#'
+#' @details
+#' Calls that stick to the scop fast path defaults (`vst.flavor = "v2"`, no
+#' `conserve.memory`) run through scop's optimized sparse implementation.
+#' Regression variables passed via `vars.to.regress` or `latent.data` are
+#' removed from the centered residuals with an ordinary least-squares fit on
+#' the fast path, matching Seurat's post-VST regression semantics. Truly
+#' unsupported combinations, such as `conserve.memory`,
+#' `reference.SCT.model`, `residual.features`, or `vst.flavor = "v1"`,
+#' automatically delegate to the original `Seurat::SCTransform`
+#' implementation.
 #'
 #' @param object Object containing count data.
 #' @param ... Passed to methods.
