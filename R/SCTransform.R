@@ -13,9 +13,11 @@ sct_clip_ok <- function(clip.range) {
 }
 
 sct_regress_out <- function(mat, latent.df) {
+  renamed <- latent.df
+  names(renamed) <- paste0("v", seq_len(ncol(latent.df)))
   design <- stats::model.matrix(
-    stats::as.formula(paste("~", paste(colnames(latent.df), collapse = " + "))),
-    data = latent.df
+    stats::as.formula(paste("~", paste(names(renamed), collapse = " + "))),
+    data = renamed
   )
   fit <- stats::lm.fit(design, t(mat))
   resid <- t(fit$residuals)
@@ -465,8 +467,9 @@ SCTransform.default <- function(
       !sct_scalar_pos(variable.features.n) ||
       !sct_scalar_pos(variable.features.rv.th) ||
       !sct_clip_ok(clip.range) ||
-      (!is.null(vars.to.regress) && !is.null(cell.attr) &&
-        !all(vars.to.regress %in% colnames(cell.attr)))
+      (!is.null(vars.to.regress) &&
+        (is.null(cell.attr) ||
+          !all(vars.to.regress %in% colnames(cell.attr))))
   if (sct_delegates) {
     log_message(
       "{.fn SCTransform} received arguments beyond the scop fast path; delegating to Seurat.",
@@ -509,6 +512,21 @@ SCTransform.default <- function(
       if (is.null(sct_latent_df)) {
         sct_latent_df <- latent.df
       } else {
+        if (is.null(rownames(latent.df))) {
+          if (nrow(latent.df) != nrow(sct_latent_df)) {
+            log_message(
+              "latent.data has {nrow(latent.df)} rows but the cell attributes have {nrow(sct_latent_df)}.",
+              message_type = "error"
+            )
+          }
+          rownames(latent.df) <- rownames(sct_latent_df)
+        } else if (!setequal(rownames(latent.df), rownames(sct_latent_df))) {
+          log_message(
+            "latent.data rownames do not match the cell attribute rownames.",
+            message_type = "error"
+          )
+        }
+        latent.df <- latent.df[rownames(sct_latent_df), , drop = FALSE]
         sct_latent_df <- cbind(sct_latent_df, latent.df)
       }
     }

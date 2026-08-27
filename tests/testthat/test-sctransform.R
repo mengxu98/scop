@@ -15,6 +15,7 @@ srt$percent.mt <- Matrix::colMeans(counts[seq_len(5), ]) /
 srt$group <- rep(c("A", "B"), length.out = length(cells))
 
 test_that("SCTransform fast path handles default arguments", {
+  skip_if_not_installed("glmGamPoi")
   out <- suppressMessages(SCTransform(srt, seed.use = 42))
   expect_s4_class(out[["SCT"]], "SCTAssay")
   expect_true(length(SeuratObject::VariableFeatures(out)) > 0L)
@@ -22,6 +23,7 @@ test_that("SCTransform fast path handles default arguments", {
 })
 
 test_that("SCTransform regresses variables on the fast path", {
+  skip_if_not_installed("glmGamPoi")
   out <- SCTransform(srt, vars.to.regress = "percent.mt", seed.use = 42)
   scale.data <- SeuratObject::GetAssayData(
     out[["SCT"]],
@@ -34,6 +36,7 @@ test_that("SCTransform regresses variables on the fast path", {
 })
 
 test_that("SCTransform regresses factor covariates on the fast path", {
+  skip_if_not_installed("glmGamPoi")
   out <- suppressMessages(SCTransform(
     srt,
     vars.to.regress = c("percent.mt", "group"),
@@ -65,6 +68,7 @@ test_that("SCTransform delegates truly unsupported arguments to Seurat", {
 })
 
 test_that("SCTransform.default accepts latent.data regression", {
+  skip_if_not_installed("glmGamPoi")
   cell.attr <- data.frame(row.names = cells)
   latent <- data.frame(score = rnorm(length(cells)), row.names = cells)
   out <- suppressMessages(SCTransform.default(
