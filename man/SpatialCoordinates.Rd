@@ -35,7 +35,10 @@ A plain list with `data`, `source`, and `transform` entries.
 \description{
 Return raw analysis coordinates or display coordinates together with their
 source and reversible transform. Image-backed coordinates are normalized to
-horizontal `x` (image column) and vertical `y` (image row), including
-VisiumV2 tables whose Seurat `x`/`y` names retain row/column ordering.
+horizontal `x` and vertical `y`. Seurat's standard `VisiumV2` loader stores
+source `imagerow`/`imagecol` values positionally as centroid `x`/`y`; SCOP
+restores horizontal image-column and vertical image-row order. Generic FOV
+centroid tables with explicit `x`/`y` retain their order. SCOP then applies
+only the selected scale and display-axis flip.
 This function does not modify the object.
 }

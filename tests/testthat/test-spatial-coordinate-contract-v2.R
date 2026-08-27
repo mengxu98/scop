@@ -33,8 +33,10 @@ make_coordinate_contract_object <- function(image_class = c("VisiumV1", "VisiumV
   } else {
     fov <- SeuratObject::CreateFOV(
       data.frame(
-        x = raw$y,
-        y = raw$x,
+        # This is the positional input used by Seurat::Read10X_Image() for a
+        # VisiumV2 image: imagerow becomes centroid x and imagecol becomes y.
+        imagerow = raw$y,
+        imagecol = raw$x,
         row.names = rownames(raw)
       ),
       type = "centroids",
@@ -101,7 +103,7 @@ test_that("display coordinates scale and flip exactly once", {
   expect_identical(high$source$scale_name, "hires")
 })
 
-test_that("VisiumV2 x/y names follow Seurat row-column display semantics", {
+test_that("VisiumV2 restores Read10X row/column order", {
   fixture <- make_coordinate_contract_object("VisiumV2")
   image <- fixture$object[["slice"]]
   seurat_coords <- SeuratObject::GetTissueCoordinates(
@@ -115,6 +117,14 @@ test_that("VisiumV2 x/y names follow Seurat row-column display semantics", {
     space = "display",
     image.scale = "lowres"
   )$data
+  raw <- SpatialCoordinates(
+    fixture$object,
+    image = "slice",
+    space = "raw"
+  )
+  expect_equal(raw$data$x, fixture$raw$x)
+  expect_equal(raw$data$y, fixture$raw$y)
+  expect_identical(raw$source$coord.cols, c("y", "x"))
   expect_equal(display$x, seurat_coords$y)
   expect_equal(display$y, dim(image@image)[1L] - seurat_coords$x)
 })
