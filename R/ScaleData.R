@@ -138,31 +138,37 @@ ScaleData.Seurat <- function(
         message_type = "error"
       )
     }
-    layers <- methods::slot(assay_obj, "layers")
     data_mats <- lapply(src_layers, function(src_layer) {
-      mat <- layers[[src_layer]]
-      if (is.null(colnames(mat))) {
-        cells_map <- methods::slot(assay_obj, "cells")
-        colnames(mat) <- rownames(cells_map)[cells_map[, src_layer, drop = TRUE]]
-      }
-      if (nrow(mat) == length(all_genes)) {
-        mat[idx + 1L, , drop = FALSE]
-      } else {
-        mat
-      }
+      SeuratObject::LayerData(
+        assay_obj,
+        layer = src_layer,
+        features = features
+      )
     })
-    data_mat <- do.call(cbind, unname(data_mats))
-    if (ncol(data_mat) == length(colnames(object))) {
-      data_mat <- data_mat[, colnames(object), drop = FALSE]
+    data_mat <- if (length(data_mats) == 1L) {
+      data_mats[[1L]]
+    } else {
+      SeuratObject::StitchMatrix(
+        x = data_mats[[1L]],
+        y = data_mats[-1L],
+        rowmap = methods::slot(assay_obj, "features")[
+          features,
+          src_layers,
+          drop = FALSE
+        ],
+        colmap = methods::slot(assay_obj, "cells")[
+          ,
+          src_layers,
+          drop = FALSE
+        ]
+      )
     }
+    data_mat <- data_mat[features, colnames(object), drop = FALSE]
     idx <- seq_along(features) - 1L
   }
 
   sct_latent_df <- NULL
-  regress_vars <- union(
-    vars.to.regress,
-    if (is.null(latent.data)) character(0) else colnames(latent.data)
-  )
+  regress_vars <- vars.to.regress
   if (length(regress_vars) > 0L) {
     meta <- methods::slot(object, "meta.data")
     found_meta <- intersect(regress_vars, colnames(meta))
@@ -184,18 +190,6 @@ ScaleData.Seurat <- function(
       df_feature <- as.data.frame(t(expr_rows))
       sct_latent_df <- cbind(sct_latent_df, df_feature)
     }
-    missing_vars <- setdiff(
-      regress_vars,
-      union(colnames(sct_latent_df), character(0))
-    )
-    if (length(missing_vars) == length(regress_vars) &&
-      length(regress_vars) > 0L
-    ) {
-      log_message(
-        "None of the requested variables to regress are present in the object.",
-        message_type = "error"
-      )
-    }
     if (!is.null(latent.data)) {
       extra <- as.data.frame(latent.data)
       missing_cells <- setdiff(cell_order, rownames(extra))
@@ -210,6 +204,22 @@ ScaleData.Seurat <- function(
       if (ncol(extra) > 0L) {
         sct_latent_df <- cbind(sct_latent_df, extra)
       }
+    }
+    missing_vars <- setdiff(regress_vars, colnames(sct_latent_df))
+    if (length(missing_vars) == length(regress_vars) &&
+      length(regress_vars) > 0L
+    ) {
+      log_message(
+        "None of the requested variables to regress are present in the object.",
+        message_type = "error"
+      )
+    }
+    if (length(missing_vars) > 0L) {
+      log_message(
+        "Requested variables to regress not in object: {missing_vars}.",
+        message_type = "warning",
+        verbose = verbose
+      )
     }
     if (any(!stats::complete.cases(sct_latent_df))) {
       log_message(
