@@ -693,6 +693,14 @@ pca_backend_run <- function(X, npcs, weight_by_var = TRUE) {
     .Call(`_scop_pca_backend_run`, X, npcs, weight_by_var)
 }
 
+cca_crossprod_matrix <- function(X1, X2) {
+    .Call(`_scop_cca_crossprod_matrix`, X1, X2)
+}
+
+matrix_product <- function(A, B) {
+    .Call(`_scop_matrix_product`, A, B)
+}
+
 scale_sparse_full <- function(sparse_mat, gene_indices, scale_max) {
     .Call(`_scop_scale_sparse_full`, sparse_mat, gene_indices, scale_max)
 }

@@ -287,11 +287,13 @@ Rcpp::List pca_backend_run(const arma::mat& X,
   );
 }
 
+// [[Rcpp::export]]
 arma::mat cca_crossprod_matrix(const arma::mat& X1,
                                const arma::mat& X2) {
   return X1.t() * X2;
 }
 
+// [[Rcpp::export]]
 arma::mat matrix_product(const arma::mat& A,
                          const arma::mat& B) {
   return A * B;

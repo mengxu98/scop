@@ -1,3 +1,30 @@
+sct_norm_sparse <- function(counts, normalization.method, scale.factor, margin) {
+  if (identical(normalization.method, "RC")) {
+    counts@x <- counts@x + 0
+    sizes <- Matrix::colSums(counts)
+    sizes[sizes == 0] <- 1
+    counts@x <- counts@x * rep.int(
+      scale.factor / as.numeric(sizes),
+      diff(counts@p)
+    )
+    return(counts)
+  }
+  if (identical(normalization.method, "CLR")) {
+    if (as.integer(margin) == 2L) {
+      denom <- exp(Matrix::colSums(log1p(counts)) / nrow(counts))
+      counts@x <- log1p(counts@x / rep.int(denom, diff(counts@p)))
+    } else {
+      denom <- exp(Matrix::rowSums(log1p(counts)) / ncol(counts))
+      counts@x <- log1p(counts@x / denom[counts@i + 1L])
+    }
+    return(counts)
+  }
+  norm <- counts
+  norm@x <- counts@x + 0
+  log_normalize_dgc(norm, scale.factor, 100L)
+  norm
+}
+
 #' @export
 NormalizeData.Seurat <- function(
   object,
@@ -11,18 +38,25 @@ NormalizeData.Seurat <- function(
 ) {
   dots_call <- match.call(expand.dots = FALSE)$...
   if (
-    !identical(normalization.method, "LogNormalize") ||
+    !normalization.method %in% c("LogNormalize", "CLR", "RC") ||
       !is.numeric(scale.factor) ||
       length(scale.factor) != 1L ||
       !is.finite(scale.factor) ||
+      scale.factor <= 0 ||
       !is.numeric(margin) ||
       length(margin) != 1L ||
       !is.finite(margin) ||
-      margin != 1 ||
-      !is.null(block.size) ||
-      length(dots_call) != 0L
+      !(margin %in% c(1, 2)) ||
+      (identical(normalization.method, "LogNormalize") &&
+        as.integer(margin) != 1L)
   ) {
-    log_message("NormalizeData.Seurat supports LogNormalize, margin = 1, and no extra arguments.", message_type = "error")
+    log_message(
+      "NormalizeData.Seurat supports LogNormalize (margin = 1), CLR, and RC with margin 1 or 2.",
+      message_type = "error"
+    )
+  }
+  if (!is.null(block.size)) {
+    message("NormalizeData: block.size is ignored; normalization runs in a single pass.")
   }
 
   assay <- if (is.null(assay)) {
@@ -49,9 +83,7 @@ NormalizeData.Seurat <- function(
         log_message("NormalizeData.Seurat requires counts convertible to dgCMatrix.", message_type = "error")
       }
     }
-    data_mat <- counts
-    data_mat@x <- counts@x + 0
-    log_normalize_dgc(data_mat, scale.factor, 100L)
+    data_mat <- sct_norm_sparse(counts, normalization.method, scale.factor, margin)
     methods::slot(assay_obj, "data") <- data_mat
     assays[[assay]] <- assay_obj
     methods::slot(object, "assays") <- assays
@@ -94,9 +126,7 @@ NormalizeData.Seurat <- function(
       }
     }
 
-    data_mat <- counts
-    data_mat@x <- counts@x + 0
-    log_normalize_dgc(data_mat, scale.factor, 100L)
+    data_mat <- sct_norm_sparse(counts, normalization.method, scale.factor, margin)
     layers[[data_layer]] <- data_mat
   }
   methods::slot(assay_obj, "layers") <- layers
