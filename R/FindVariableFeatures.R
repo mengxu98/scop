@@ -349,6 +349,64 @@ FindVariableFeatures.StdAssay <- function(
   object
 }
 
+sct_mvp_info <- function(data_mat,
+                         selection.method,
+                         mean.function,
+                         dispersion.function,
+                         num.bin,
+                         binning.method,
+                         nfeatures,
+                         mean.cutoff,
+                         dispersion.cutoff,
+                         verbose) {
+  mean_fun <- mean.function %||% utils::getFromNamespace("FastExpMean", "Seurat")
+  disp_fun <- dispersion.function %||% utils::getFromNamespace("FastLogVMR", "Seurat")
+  feature.mean <- mean_fun(data_mat, verbose)
+  feature.dispersion <- disp_fun(data_mat, verbose)
+  names(feature.mean) <- names(feature.dispersion) <- rownames(data_mat)
+  feature.dispersion[is.na(feature.dispersion)] <- 0
+  feature.mean[is.na(feature.mean)] <- 0
+  data.x.breaks <- switch(
+    EXPR = binning.method,
+    equal_width = num.bin,
+    equal_frequency = c(-1, stats::quantile(
+      x = feature.mean[feature.mean > 0],
+      probs = seq.int(from = 0, to = 1, length.out = num.bin)
+    )),
+    stop("Unknown binning method: ", binning.method)
+  )
+  data.x.bin <- cut(x = feature.mean, breaks = data.x.breaks)
+  mean.y <- tapply(X = feature.dispersion, INDEX = data.x.bin, FUN = mean)
+  sd.y <- tapply(X = feature.dispersion, INDEX = data.x.bin, FUN = stats::sd)
+  dispersion.scaled <-
+    (feature.dispersion - mean.y[as.numeric(x = data.x.bin)]) /
+      sd.y[as.numeric(x = data.x.bin)]
+  hvf.info <- data.frame(
+    mvp.mean = feature.mean,
+    mvp.dispersion = feature.dispersion,
+    mvp.dispersion.scaled = dispersion.scaled,
+    row.names = rownames(data_mat)
+  )
+  hvf.info$variable <- FALSE
+  hvf.info$rank <- NA_integer_
+  if (identical(selection.method, "dispersion")) {
+    selected <- head(
+      order(hvf.info$mvp.dispersion, decreasing = TRUE),
+      nfeatures
+    )
+  } else {
+    ordered <- order(hvf.info$mvp.dispersion, decreasing = TRUE)
+    keep <- hvf.info$mvp.mean[ordered] > mean.cutoff[1] &
+      hvf.info$mvp.mean[ordered] < mean.cutoff[2] &
+      hvf.info$mvp.dispersion.scaled[ordered] > dispersion.cutoff[1] &
+      hvf.info$mvp.dispersion.scaled[ordered] < dispersion.cutoff[2]
+    selected <- ordered[which(keep)]
+  }
+  hvf.info$variable[selected] <- TRUE
+  hvf.info$rank[selected] <- seq_along(selected)
+  hvf.info
+}
+
 #' @export
 FindVariableFeatures.Seurat <- function(
   object,
@@ -366,8 +424,17 @@ FindVariableFeatures.Seurat <- function(
   verbose = TRUE,
   ...
 ) {
-  if (!identical(selection.method, "vst")) {
-    log_message("FindVariableFeatures.Seurat supports selection.method = 'vst'.", message_type = "error")
+  selection.method <- switch(
+    EXPR = selection.method,
+    mvp = "mean.var.plot",
+    disp = "dispersion",
+    selection.method
+  )
+  if (!selection.method %in% c("vst", "dispersion", "mean.var.plot")) {
+    log_message(
+      "{.fn FindVariableFeatures} supports {.val vst}, {.val disp}, and {.val mean.var.plot}.",
+      message_type = "error"
+    )
   }
   assay <- if (is.null(assay)) {
     SeuratObject::DefaultAssay(object)
@@ -375,19 +442,100 @@ FindVariableFeatures.Seurat <- function(
     assay[1L]
   }
   assay_obj <- object[[assay]]
-  if (
-    !inherits(assay_obj, "Assay") && !inherits(assay_obj, "Assay5") ||
+  if (identical(selection.method, "vst")) {
+    if (
       length(SeuratObject::Layers(assay_obj, search = "counts")) == 0L
-  ) {
-    log_message("FindVariableFeatures.Seurat requires an assay with a counts layer.", message_type = "error")
+    ) {
+      log_message("FindVariableFeatures.Seurat requires an assay with a counts layer.", message_type = "error")
+    }
+    assay_obj <- FindVariableFeatures.StdAssay(
+      object = assay_obj,
+      nfeatures = nfeatures,
+      span = loess.span,
+      clip = if (identical(clip.max, "auto")) NULL else clip.max,
+      verbose = verbose
+    )
+    methods::slot(object, "assays")[[assay]] <- assay_obj
+    return(object)
   }
-  assay_obj <- FindVariableFeatures.StdAssay(
-    object = assay_obj,
+  data_layers <- SeuratObject::Layers(assay_obj, search = "data")
+  data_layers <- data_layers[grepl("^data(\\.|$)", data_layers)]
+  if (length(data_layers) == 0L) {
+    log_message("FindVariableFeatures.Seurat requires an assay with a data layer.", message_type = "error")
+  }
+
+  if (inherits(assay_obj, "StdAssay") && length(data_layers) > 1L) {
+    gene_names <- rownames(assay_obj)
+    key <- if (identical(selection.method, "dispersion")) "disp" else "mvp"
+    layer_hvf <- lapply(data_layers, function(data_layer) {
+      data_mat <- SeuratObject::LayerData(assay_obj, layer = data_layer)
+      hvf.info <- sct_mvp_info(
+        data_mat = data_mat,
+        selection.method = selection.method,
+        mean.function = mean.function,
+        dispersion.function = dispersion.function,
+        num.bin = num.bin,
+        binning.method = binning.method,
+        nfeatures = nfeatures,
+        mean.cutoff = mean.cutoff,
+        dispersion.cutoff = dispersion.cutoff,
+        verbose = verbose
+      )
+      layer_features <- rownames(data_mat)
+      rownames(hvf.info) <- layer_features
+      hvf.info <- hvf.info[match(gene_names, layer_features), , drop = FALSE]
+      rownames(hvf.info) <- gene_names
+      colnames(hvf.info) <- paste(
+        "vf",
+        key,
+        data_layer,
+        colnames(hvf.info),
+        sep = "_"
+      )
+      hvf.info
+    })
+    meta_data <- methods::slot(assay_obj, "meta.data")
+    new_cols <- unlist(lapply(layer_hvf, colnames), use.names = FALSE)
+    hvf_columns <- do.call(c, lapply(layer_hvf, as.list))
+    names(hvf_columns) <- new_cols
+    meta_data <- meta_data[, setdiff(colnames(meta_data), new_cols), drop = FALSE]
+    meta_data[new_cols] <- hvf_columns
+    methods::slot(assay_obj, "meta.data") <- meta_data
+    consensus_features <- SeuratObject::VariableFeatures(
+      assay_obj,
+      nfeatures = nfeatures,
+      method = key
+    )
+    SeuratObject::VariableFeatures(assay_obj) <- consensus_features
+    methods::slot(object, "assays")[[assay]] <- assay_obj
+    return(object)
+  }
+
+  data_mat <- tryCatch(
+    SeuratObject::GetAssayData(assay_obj, layer = "data"),
+    error = function(e) NULL
+  )
+  if (is.null(data_mat)) {
+    log_message("FindVariableFeatures.Seurat requires an assay with a data layer.", message_type = "error")
+  }
+  hvf.info <- sct_mvp_info(
+    data_mat = data_mat,
+    selection.method = selection.method,
+    mean.function = mean.function,
+    dispersion.function = dispersion.function,
+    num.bin = num.bin,
+    binning.method = binning.method,
     nfeatures = nfeatures,
-    span = loess.span,
-    clip = if (identical(clip.max, "auto")) NULL else clip.max,
+    mean.cutoff = mean.cutoff,
+    dispersion.cutoff = dispersion.cutoff,
     verbose = verbose
   )
+  top.features <- rownames(hvf.info)[order(hvf.info$rank, na.last = NA)]
+  SeuratObject::VariableFeatures(assay_obj) <- top.features
+  vf.name <- "mvp.variable"
+  hvf.info <- hvf.info[, 1:3, drop = FALSE]
+  assay_obj[[colnames(hvf.info)]] <- hvf.info
+  assay_obj[[vf.name]] <- rownames(assay_obj[[]]) %in% top.features
   methods::slot(object, "assays")[[assay]] <- assay_obj
   object
 }

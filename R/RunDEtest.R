@@ -901,6 +901,11 @@ FoldChange <- function(object, ...) {
 }
 
 #' @export
+FoldChange.Seurat <- function(object, ...) {
+  utils::getFromNamespace("FoldChange.Seurat", "Seurat")(object = object, ...)
+}
+
+#' @export
 FoldChange.default <- function(
   object,
   cells.1,

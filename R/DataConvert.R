@@ -1,3 +1,31 @@
+prepare_adata_feature_metadata <- function(metadata,
+                                           feature_names,
+                                           reserve_features = FALSE) {
+  feature_columns <- which(colnames(metadata) == "features")
+  if (length(feature_columns) == 0L) {
+    return(metadata)
+  }
+  generated <- vapply(feature_columns, function(index) {
+    values <- metadata[[index]]
+    length(values) == length(feature_names) &&
+      identical(as.character(values), as.character(feature_names))
+  }, logical(1))
+  if (any(generated)) {
+    metadata <- metadata[, -feature_columns[generated], drop = FALSE]
+  }
+  if (isTRUE(reserve_features) && any(!generated)) {
+    remaining <- which(colnames(metadata) == "features")
+    used_names <- setdiff(colnames(metadata), "features")
+    for (index in remaining) {
+      replacement <- make.unique(c(used_names, "features.metadata"))
+      replacement <- replacement[[length(replacement)]]
+      colnames(metadata)[index] <- replacement
+      used_names <- c(used_names, replacement)
+    }
+  }
+  metadata
+}
+
 #' @title Convert a Seurat object to an AnnData object
 #'
 #' @md
@@ -127,9 +155,11 @@ srt_to_adata <- function(
   }
 
   var <- GetFeaturesData(srt, assay = assay_x)[features, , drop = FALSE]
-  if ("features" %in% colnames(var)) {
-    var <- var[, colnames(var) != "features", drop = FALSE]
-  }
+  var <- prepare_adata_feature_metadata(
+    metadata = var,
+    feature_names = features,
+    reserve_features = TRUE
+  )
   if (ncol(var) > 0) {
     for (i in seq_len(ncol(var))) {
       if (is.logical(var[, i]) && !identical(colnames(var)[i], "highly_variable")) {
@@ -602,9 +632,10 @@ adata_to_srt <- function(
 
   if (length(adata$var_keys()) > 0) {
     var_meta <- as.data.frame(py_to_r2(adata$var))
-    if ("features" %in% colnames(var_meta)) {
-      var_meta <- var_meta[, colnames(var_meta) != "features", drop = FALSE]
-    }
+    var_meta <- prepare_adata_feature_metadata(
+      metadata = var_meta,
+      feature_names = get_adata_names(adata, "var")
+    )
     if (ncol(var_meta) > 0) {
       srt[["RNA"]] <- Seurat::AddMetaData(
         srt[["RNA"]],
