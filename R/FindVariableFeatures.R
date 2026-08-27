@@ -400,10 +400,37 @@ FindVariableFeatures.Seurat <- function(
     methods::slot(object, "assays")[[assay]] <- assay_obj
     return(object)
   }
-  data_mat <- tryCatch(
-    SeuratObject::GetAssayData(assay_obj, layer = "data"),
+  # For Assay5 objects with split data layers the statistics run on a joint
+  # matrix across layers, mirroring how scop's vst branch aggregates layers.
+  data_layers <- tryCatch(
+    {
+      lay <- SeuratObject::Layers(assay_obj, search = "data")
+      lay <- lay[grepl("^data(\\.|$)", lay)]
+      if (length(lay) > 1L) {
+        layers_slot <- methods::slot(assay_obj, "layers")
+        cells_map <- methods::slot(assay_obj, "cells")
+        mats <- lapply(lay, function(l) {
+          m <- layers_slot[[l]]
+          if (is.null(colnames(m))) {
+            colnames(m) <- rownames(cells_map)[cells_map[, l, drop = TRUE]]
+          }
+          m
+        })
+        list(do.call(cbind, unname(mats)))
+      } else {
+        NULL
+      }
+    },
     error = function(e) NULL
   )
+  data_mat <- if (!is.null(data_layers)) {
+    data_layers[[1L]]
+  } else {
+    tryCatch(
+      SeuratObject::GetAssayData(assay_obj, layer = "data"),
+      error = function(e) NULL
+    )
+  }
   if (is.null(data_mat)) {
     log_message("FindVariableFeatures.Seurat requires an assay with a data layer.", message_type = "error")
   }

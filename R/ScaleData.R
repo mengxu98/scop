@@ -117,16 +117,19 @@ ScaleData.Seurat <- function(
       }
     }
   } else {
-    if (
-      !inherits(assay_obj, "Assay5") ||
-        length(SeuratObject::Layers(assay_obj, search = "data")) == 0L
-    ) {
+    if (!inherits(assay_obj, "Assay5")) {
       log_message(
-        "ScaleData.Seurat requires an Assay5 object with a data layer.",
+        "ScaleData.Seurat requires an Assay5 object for the layers path.",
         message_type = "error"
       )
     }
     prefix <- if (want_counts) "counts" else "data"
+    if (length(SeuratObject::Layers(assay_obj, search = prefix)) == 0L) {
+      log_message(
+        "ScaleData.Seurat requires an Assay5 object with a {prefix} layer.",
+        message_type = "error"
+      )
+    }
     src_layers <- SeuratObject::Layers(assay_obj, search = prefix)
     src_layers <- src_layers[grepl(paste0("^", prefix, "(\\.|$)"), src_layers)]
     if (length(src_layers) == 0L) {
@@ -168,6 +171,30 @@ ScaleData.Seurat <- function(
       meta[match(cell_order, rownames(meta)), found_meta, drop = FALSE]
     } else {
       data.frame(row.names = cell_order)
+    }
+    # requested covariates that are assay features come from expression rows
+    feature_vars <- setdiff(vars.to.regress, colnames(sct_latent_df))
+    feature_vars <- intersect(feature_vars, rownames(assay_obj))
+    if (length(feature_vars) > 0L) {
+      expr_rows <- as.matrix(data_mat[
+        match(feature_vars, rownames(data_mat)),
+        cell_order,
+        drop = FALSE
+      ])
+      df_feature <- as.data.frame(t(expr_rows))
+      sct_latent_df <- cbind(sct_latent_df, df_feature)
+    }
+    missing_vars <- setdiff(
+      regress_vars,
+      union(colnames(sct_latent_df), character(0))
+    )
+    if (length(missing_vars) == length(regress_vars) &&
+      length(regress_vars) > 0L
+    ) {
+      log_message(
+        "None of the requested variables to regress are present in the object.",
+        message_type = "error"
+      )
     }
     if (!is.null(latent.data)) {
       extra <- as.data.frame(latent.data)
