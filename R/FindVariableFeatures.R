@@ -366,8 +366,17 @@ FindVariableFeatures.Seurat <- function(
   verbose = TRUE,
   ...
 ) {
-  if (!identical(selection.method, "vst")) {
-    log_message("FindVariableFeatures.Seurat supports selection.method = 'vst'.", message_type = "error")
+  selection.method <- switch(
+    EXPR = selection.method,
+    mvp = "mean.var.plot",
+    disp = "dispersion",
+    selection.method
+  )
+  if (!selection.method %in% c("vst", "dispersion", "mean.var.plot")) {
+    log_message(
+      "{.fn FindVariableFeatures} supports {.val vst}, {.val disp}, and {.val mean.var.plot}.",
+      message_type = "error"
+    )
   }
   assay <- if (is.null(assay)) {
     SeuratObject::DefaultAssay(object)
@@ -375,19 +384,68 @@ FindVariableFeatures.Seurat <- function(
     assay[1L]
   }
   assay_obj <- object[[assay]]
-  if (
-    !inherits(assay_obj, "Assay") && !inherits(assay_obj, "Assay5") ||
+  if (identical(selection.method, "vst")) {
+    if (
       length(SeuratObject::Layers(assay_obj, search = "counts")) == 0L
-  ) {
-    log_message("FindVariableFeatures.Seurat requires an assay with a counts layer.", message_type = "error")
+    ) {
+      log_message("FindVariableFeatures.Seurat requires an assay with a counts layer.", message_type = "error")
+    }
+    assay_obj <- FindVariableFeatures.StdAssay(
+      object = assay_obj,
+      nfeatures = nfeatures,
+      span = loess.span,
+      clip = if (identical(clip.max, "auto")) NULL else clip.max,
+      verbose = verbose
+    )
+    methods::slot(object, "assays")[[assay]] <- assay_obj
+    return(object)
   }
-  assay_obj <- FindVariableFeatures.StdAssay(
-    object = assay_obj,
-    nfeatures = nfeatures,
-    span = loess.span,
-    clip = if (identical(clip.max, "auto")) NULL else clip.max,
-    verbose = verbose
+  data_mat <- tryCatch(
+    SeuratObject::GetAssayData(assay_obj, layer = "data"),
+    error = function(e) NULL
   )
+  if (is.null(data_mat)) {
+    log_message("FindVariableFeatures.Seurat requires an assay with a data layer.", message_type = "error")
+  }
+  mean_fun <- mean.function %||% utils::getFromNamespace("FastExpMean", "Seurat")
+  disp_fun <- dispersion.function %||% utils::getFromNamespace("FastLogVMR", "Seurat")
+  feature.mean <- mean_fun(data_mat, verbose)
+  feature.dispersion <- disp_fun(data_mat, verbose)
+  names(feature.mean) <- names(feature.dispersion) <- rownames(assay_obj)
+  feature.dispersion[is.na(feature.dispersion)] <- 0
+  feature.mean[is.na(feature.mean)] <- 0
+  data.x.breaks <- switch(
+    EXPR = binning.method,
+    equal_width = num.bin,
+    equal_frequency = c(-1, stats::quantile(
+      x = feature.mean[feature.mean > 0],
+      probs = seq.int(from = 0, to = 1, length.out = num.bin)
+    )),
+    stop("Unknown binning method: ", binning.method)
+  )
+  data.x.bin <- cut(x = feature.mean, breaks = data.x.breaks)
+  mean.y <- tapply(X = feature.dispersion, INDEX = data.x.bin, FUN = mean)
+  sd.y <- tapply(X = feature.dispersion, INDEX = data.x.bin, FUN = sd)
+  dispersion.scaled <-
+    (feature.dispersion - mean.y[as.numeric(x = data.x.bin)]) /
+      sd.y[as.numeric(x = data.x.bin)]
+  hvf.info <- data.frame(feature.mean, feature.dispersion, dispersion.scaled)
+  rownames(hvf.info) <- rownames(assay_obj)
+  colnames(hvf.info) <- paste0("mvp.", c("mean", "dispersion", "dispersion.scaled"))
+  hvf.info <- hvf.info[which(hvf.info$mvp.mean != 0), , drop = FALSE]
+  hvf.info <- hvf.info[order(hvf.info$mvp.dispersion, decreasing = TRUE), , drop = FALSE]
+  top.features <- if (identical(selection.method, "dispersion")) {
+    head(x = rownames(hvf.info), n = nfeatures)
+  } else {
+    means.use <- hvf.info$mvp.mean > mean.cutoff[1] &
+      hvf.info$mvp.mean < mean.cutoff[2]
+    dispersions.use <- hvf.info$mvp.dispersion.scaled > dispersion.cutoff[1] &
+      hvf.info$mvp.dispersion.scaled < dispersion.cutoff[2]
+    rownames(hvf.info)[which(means.use & dispersions.use)]
+  }
+  SeuratObject::VariableFeatures(assay_obj) <- top.features
+  vf.name <- paste0(ifelse(test = selection.method == "vst", yes = "vst", no = "mvp"), ".variable")
+  assay_obj[[vf.name]] <- rownames(assay_obj[[]]) %in% top.features
   methods::slot(object, "assays")[[assay]] <- assay_obj
   object
 }
