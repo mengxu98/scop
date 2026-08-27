@@ -85,6 +85,18 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An object with SCTransform results.</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Calls that stick to the scop fast path defaults (<code>vst.flavor = "v2"</code>, no
+<code>conserve.memory</code>) run through scop's optimized sparse implementation.
+Regression variables passed via <code>vars.to.regress</code> or <code>latent.data</code>
+are removed from the centered residuals with an ordinary least-squares fit on
+the fast path, matching Seurat's post-VST regression semantics. Truly
+unsupported combinations, such as <code>conserve.memory</code>,
+<code>reference.SCT.model</code>, <code>residual.features</code>, or
+<code>vst.flavor = "v1"</code>, automatically delegate to the original
+<code><a href="https://satijalab.org/seurat/reference/SCTransform.html" class="external-link">Seurat::SCTransform</a></code> implementation.</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
