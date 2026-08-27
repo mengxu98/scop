@@ -1,3 +1,36 @@
+test_that("feature metadata only drops generated identifier columns", {
+  feature_names <- c("g1", "g2", "g3")
+  generated <- data.frame(
+    features = feature_names,
+    symbol = c("A", "B", "C"),
+    row.names = feature_names
+  )
+  external <- data.frame(
+    features = c("protein_coding", "lncRNA", "protein_coding"),
+    symbol = c("A", "B", "C"),
+    row.names = feature_names
+  )
+
+  generated_out <- scop:::prepare_adata_feature_metadata(
+    generated,
+    feature_names
+  )
+  external_import <- scop:::prepare_adata_feature_metadata(
+    external,
+    feature_names
+  )
+  external_export <- scop:::prepare_adata_feature_metadata(
+    external,
+    feature_names,
+    reserve_features = TRUE
+  )
+
+  expect_false("features" %in% colnames(generated_out))
+  expect_identical(external_import$features, external$features)
+  expect_false("features" %in% colnames(external_export))
+  expect_identical(external_export$features.metadata, external$features)
+})
+
 test_that("srt <-> adata roundtrip keeps var column names unique", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("SeuratObject")
