@@ -104,7 +104,6 @@ DynamicPlot <- function(
   features,
   group.by = NULL,
   group_use = NULL,
-  fit.by = NULL,
   cells = NULL,
   layer = "counts",
   assay = NULL,
@@ -144,7 +143,8 @@ DynamicPlot <- function(
   byrow = TRUE,
   cores = 1,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  fit.by = NULL
 ) {
   set.seed(seed)
 
@@ -265,8 +265,9 @@ DynamicPlot <- function(
     }
     if (length(fit_groups) == 0) {
       log_message(
-        "No non-missing groups found for {.arg fit.by} in the selected cells.",
-        message_type = "error"
+        "No non-missing groups found for {.arg fit.by} in the selected cells. Raw points and rugs will be retained without fitted trajectories.",
+        message_type = "warning",
+        verbose = verbose
       )
     }
     raw_feature_matrix <- GetAssayData5(
@@ -281,6 +282,47 @@ DynamicPlot <- function(
       )
     }
     raw_feature_matrix <- raw_feature_matrix[features, , drop = FALSE]
+  }
+  add_group_matrices <- function(
+    raw_matrix,
+    fitted_matrix,
+    upr_matrix,
+    lwr_matrix,
+    lineage,
+    fit_group
+  ) {
+    fit_id <- paste0("fit", length(raw_matrix_list) + 1L)
+    raw_matrix_list[[fit_id]] <<- raw_matrix
+    fitted_matrix_list[[fit_id]] <<- fitted_matrix
+    upr_matrix_list[[fit_id]] <<- upr_matrix
+    lwr_matrix_list[[fit_id]] <<- lwr_matrix
+    fit_lineage_list[[fit_id]] <<- lineage
+    fit_group_list[[fit_id]] <<- fit_group
+    cell_union <<- unique(c(cell_union, rownames(raw_matrix)))
+  }
+  empty_fit_matrix <- function(cell_names) {
+    matrix(
+      NA_real_,
+      nrow = length(cell_names),
+      ncol = length(features),
+      dimnames = list(cell_names, features)
+    )
+  }
+  subset_family <- function(features_fit) {
+    if (is.null(family) || length(family) == 1) {
+      return(family)
+    }
+    if (length(family) != length(features)) {
+      log_message(
+        "{.arg family} must be one character or a vector of the same length as features",
+        message_type = "error"
+      )
+    }
+    family_all <- family
+    if (is.null(names(family_all))) {
+      names(family_all) <- features
+    }
+    family_all[features_fit]
   }
   for (l in lineages) {
     if (!is.null(fit.by)) {
@@ -304,24 +346,57 @@ DynamicPlot <- function(
           raw_matrix <- t(as_matrix(
             raw_feature_matrix[, ordered_cells, drop = FALSE]
           ))
-          empty_fit <- matrix(
-            NA_real_,
-            nrow = length(ordered_cells),
-            ncol = length(features),
-            dimnames = list(ordered_cells, features)
+          empty_fit <- empty_fit_matrix(ordered_cells)
+          add_group_matrices(
+            raw_matrix,
+            empty_fit,
+            empty_fit,
+            empty_fit,
+            l,
+            g
           )
-          fit_id <- paste0("fit", length(raw_matrix_list) + 1L)
-          raw_matrix_list[[fit_id]] <- raw_matrix
-          fitted_matrix_list[[fit_id]] <- empty_fit
-          upr_matrix_list[[fit_id]] <- empty_fit
-          lwr_matrix_list[[fit_id]] <- empty_fit
-          fit_lineage_list[[fit_id]] <- l
-          fit_group_list[[fit_id]] <- g
-          cell_union <- unique(c(cell_union, ordered_cells))
           log_message(
             "Skip the fitted trajectory for {.val {g}} in {.val {l}}: the default GAM requires at least ten cells and ten unique pseudotime values. Raw points and rugs are retained.",
             message_type = "warning",
             verbose = verbose
+          )
+          next
+        }
+
+        feature_values <- as_matrix(
+          raw_feature_matrix[, valid_cells, drop = FALSE]
+        )
+        feature_supported <- vapply(
+          seq_along(features),
+          function(i) {
+            valid_feature <- is.finite(feature_values[i, ])
+            sum(valid_feature) >= 10 &&
+              length(unique(valid_pseudotime[valid_feature])) >= 10
+          },
+          logical(1)
+        )
+        features_fit <- features[feature_supported]
+        features_raw_only <- features[!feature_supported]
+        if (length(features_raw_only) > 0) {
+          log_message(
+            "Skip the fitted trajectory for {.val {features_raw_only}} in {.val {g}} / {.val {l}}: each feature requires at least ten finite observations and ten unique pseudotime values. Raw points and rugs are retained.",
+            message_type = "warning",
+            verbose = verbose
+          )
+        }
+        ordered_cells <- valid_cells[order(valid_pseudotime)]
+        if (length(features_fit) == 0) {
+          raw_matrix <- t(as_matrix(
+            raw_feature_matrix[, ordered_cells, drop = FALSE]
+          ))
+          empty_fit <- empty_fit_matrix(ordered_cells)
+          add_group_matrices(
+            raw_matrix,
+            empty_fit,
+            empty_fit,
+            empty_fit,
+            l,
+            g
           )
           next
         }
@@ -332,34 +407,66 @@ DynamicPlot <- function(
         srt_tmp <- RunDynamicFeatures(
           srt_tmp,
           lineages = l,
-          features = features,
+          features = features_fit,
           assay = assay,
           layer = layer,
-          family = family,
+          family = subset_family(features_fit),
           libsize = libsize,
           cores = cores,
           verbose = verbose
         )
         fit_result <- srt_tmp@tools[[paste0("DynamicFeatures_", l)]]
-        fit_id <- paste0("fit", length(raw_matrix_list) + 1L)
-        raw_matrix_list[[fit_id]] <- as_matrix(
-          fit_result[["raw_matrix"]][, features, drop = FALSE]
-        )
-        fitted_matrix_list[[fit_id]] <- as_matrix(
-          fit_result[["fitted_matrix"]][, features, drop = FALSE]
-        )
-        upr_matrix_list[[fit_id]] <- as_matrix(
-          fit_result[["upr_matrix"]][, features, drop = FALSE]
-        )
-        lwr_matrix_list[[fit_id]] <- as_matrix(
-          fit_result[["lwr_matrix"]][, features, drop = FALSE]
-        )
-        fit_lineage_list[[fit_id]] <- l
-        fit_group_list[[fit_id]] <- g
-        cell_union <- unique(c(
-          cell_union,
-          rownames(fit_result[["raw_matrix"]])
+        fitted_cells <- rownames(fit_result[["raw_matrix"]])
+        raw_matrix <- t(as_matrix(
+          raw_feature_matrix[, fitted_cells, drop = FALSE]
         ))
+        fitted_matrix <- empty_fit_matrix(fitted_cells)
+        upr_matrix <- empty_fit_matrix(fitted_cells)
+        lwr_matrix <- empty_fit_matrix(fitted_cells)
+        fitted_matrix[, features_fit] <- as_matrix(
+          fit_result[["fitted_matrix"]][, features_fit, drop = FALSE]
+        )
+        upr_matrix[, features_fit] <- as_matrix(
+          fit_result[["upr_matrix"]][, features_fit, drop = FALSE]
+        )
+        lwr_matrix[, features_fit] <- as_matrix(
+          fit_result[["lwr_matrix"]][, features_fit, drop = FALSE]
+        )
+        add_group_matrices(
+          raw_matrix,
+          fitted_matrix,
+          upr_matrix,
+          lwr_matrix,
+          l,
+          g
+        )
+      }
+      unassigned_cells <- fit_cells[
+        is.na(fit_values) | !nzchar(as.character(fit_values))
+      ]
+      unassigned_pseudotime <- srt@meta.data[
+        unassigned_cells,
+        l,
+        drop = TRUE
+      ]
+      unassigned_cells <- unassigned_cells[is.finite(unassigned_pseudotime)]
+      unassigned_pseudotime <- unassigned_pseudotime[
+        is.finite(unassigned_pseudotime)
+      ]
+      if (length(unassigned_cells) > 0) {
+        ordered_cells <- unassigned_cells[order(unassigned_pseudotime)]
+        raw_matrix <- t(as_matrix(
+          raw_feature_matrix[, ordered_cells, drop = FALSE]
+        ))
+        empty_fit <- empty_fit_matrix(ordered_cells)
+        add_group_matrices(
+          raw_matrix,
+          empty_fit,
+          empty_fit,
+          empty_fit,
+          l,
+          NA_character_
+        )
       }
       next
     }

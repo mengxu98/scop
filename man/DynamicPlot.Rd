@@ -10,7 +10,6 @@ DynamicPlot(
   features,
   group.by = NULL,
   group_use = NULL,
-  fit.by = NULL,
   cells = NULL,
   layer = "counts",
   assay = NULL,
@@ -44,7 +43,8 @@ DynamicPlot(
   byrow = TRUE,
   cores = 1,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  fit.by = NULL
 )
 }
 \arguments{

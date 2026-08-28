@@ -47,7 +47,24 @@ mock_dynamic_fit_result <- function(
 ) {
   cells <- rownames(srt@meta.data)[is.finite(srt@meta.data[[lineages]])]
   pseudotime <- srt@meta.data[cells, lineages, drop = TRUE]
-  raw_values <- as.matrix(srt[["RNA"]]$counts[features, cells, drop = FALSE])
+  gene_features <- features[features %in% rownames(srt[["RNA"]])]
+  meta_features <- features[features %in% colnames(srt@meta.data)]
+  raw_values <- matrix(
+    NA_real_,
+    nrow = length(features),
+    ncol = length(cells),
+    dimnames = list(features, cells)
+  )
+  if (length(gene_features) > 0) {
+    raw_values[gene_features, ] <- as.matrix(
+      srt[["RNA"]]$counts[gene_features, cells, drop = FALSE]
+    )
+  }
+  if (length(meta_features) > 0) {
+    raw_values[meta_features, ] <- t(as.matrix(
+      srt@meta.data[cells, meta_features, drop = FALSE]
+    ))
+  }
   raw <- cbind(pseudotime = pseudotime, t(raw_values))
   group <- as.character(srt$condition[cells][1])
   fit_base <- fitted_by_group[[group]]
@@ -658,4 +675,101 @@ test_that("DynamicPlot deduplicates points across compared lineages", {
 
   point_data <- dynamic_plot_built_layer(plots[[1]], "point")
   expect_equal(nrow(point_data), ncol(srt))
+})
+
+test_that("DynamicPlot keeps cells with missing fit groups as raw points", {
+  srt <- make_dynamic_plot_test_object()
+  srt$condition[c("cell1", "cell13")] <- c(NA_character_, "")
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = "Lineage1",
+    features = "Gene1",
+    group.by = "condition",
+    fit.by = "condition",
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_line = FALSE,
+    add_interval = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  point_data <- dynamic_plot_built_layer(plots[[1]], "point")
+  expect_equal(nrow(point_data), ncol(srt))
+})
+
+test_that("DynamicPlot checks finite support for each fitted feature", {
+  srt <- make_dynamic_plot_test_object()
+  srt$score <- seq_len(ncol(srt))
+  srt$score[paste0("cell", 4:12)] <- NA_real_
+  fitted_features <- list()
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      group <- as.character(srt$condition[
+        is.finite(srt@meta.data[[lineages]])
+      ][1])
+      fitted_features[[group]] <<- features
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = "Lineage1",
+    features = c("Gene1", "score"),
+    fit.by = "condition",
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_point = FALSE,
+    add_interval = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  expect_identical(fitted_features[["control"]], "Gene1")
+  expect_setequal(fitted_features[["HUA"]], c("Gene1", "score"))
+  score_line <- dynamic_plot_built_layer(plots[["Lineage1.score"]], "line")
+  expect_equal(length(unique(score_line$colour)), 1)
+})
+
+test_that("DynamicPlot appends fit.by after the positional API", {
+  srt <- make_dynamic_plot_test_object()
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  expect_identical(names(formals(DynamicPlot))[[6]], "cells")
+  expect_identical(tail(names(formals(DynamicPlot)), 1), "fit.by")
+  expect_no_error(do.call(
+    DynamicPlot,
+    list(
+      srt,
+      "Lineage1",
+      "Gene1",
+      NULL,
+      NULL,
+      colnames(srt),
+      add_point = FALSE,
+      add_interval = FALSE,
+      add_rug = FALSE,
+      combine = FALSE,
+      verbose = FALSE
+    )
+  ))
 })
