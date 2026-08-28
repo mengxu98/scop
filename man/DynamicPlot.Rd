@@ -10,6 +10,7 @@ DynamicPlot(
   features,
   group.by = NULL,
   group_use = NULL,
+  fit.by = NULL,
   cells = NULL,
   layer = "counts",
   assay = NULL,
@@ -58,6 +59,11 @@ DynamicPlot(
 \item{group_use}{Groups from \code{group.by} to
 keep. If both \code{group_use} and \code{cells} are provided, their intersection will
 be used.}
+
+\item{fit.by}{Optional metadata column used to fit an independent trajectory
+for each group over that group's observed pseudotime range. The fit is not
+extrapolated beyond observed cells. This does not change the existing
+point-coloring behavior of \code{group.by}.}
 
 \item{cells}{Cell names to use.}
 
@@ -133,6 +139,23 @@ DynamicPlot(
   group.by = "SubCellType",
   group_use = c("Ductal", "Beta"),
   compare_features = TRUE
+)
+
+# Demonstration only: create two conditions spanning the same pseudotime.
+lineage1_cells <- rownames(pancreas_sub@meta.data)[
+  order(pancreas_sub$Lineage1, na.last = NA)
+]
+pancreas_sub$condition <- NA_character_
+pancreas_sub$condition[lineage1_cells] <- rep(
+  c("control", "HUA"),
+  length.out = length(lineage1_cells)
+)
+DynamicPlot(
+  pancreas_sub,
+  lineages = "Lineage1",
+  features = "Vim",
+  group.by = "condition",
+  fit.by = "condition"
 )
 
 DynamicPlot(
