@@ -14,7 +14,8 @@
 #' @param fit.by Optional metadata column used to fit an independent trajectory
 #' for each group over that group's observed pseudotime range. The fit is not
 #' extrapolated beyond observed cells. This does not change the existing
-#' point-coloring behavior of `group.by`.
+#' point-coloring behavior of `group.by`. Groups with fewer than 10 cells or 10
+#' unique pseudotime values are shown as raw points or rugs but are not fitted.
 #' @param cells Cell names to use.
 #' @param family GLM family. `NULL` chooses automatically.
 #' @param exp_method Expression transform: `"log1p"`, `"raw"`, `"zscore"`, `"fc"`,
@@ -240,24 +241,43 @@ DynamicPlot <- function(
   fit_group_list <- list()
   if (is.null(fit.by)) {
     fit_groups <- NA_character_
+    fit_group_levels <- "all"
   } else {
     fit_cells <- rownames(srt@meta.data)
     if (!is.null(cells)) {
       fit_cells <- intersect(fit_cells, cells)
     }
     fit_values <- srt@meta.data[fit_cells, fit.by, drop = TRUE]
-    fit_groups <- unique(as.character(fit_values[!is.na(fit_values)]))
-    fit_groups <- fit_groups[nzchar(fit_groups)]
+    fit_values_present <- as.character(fit_values[!is.na(fit_values)])
+    fit_values_present <- fit_values_present[nzchar(fit_values_present)]
+    if (is.factor(srt@meta.data[[fit.by]])) {
+      fit_group_levels <- levels(srt@meta.data[[fit.by]])
+      fit_groups <- fit_group_levels[fit_group_levels %in% fit_values_present]
+    } else {
+      fit_groups <- unique(fit_values_present)
+      fit_group_levels <- fit_groups
+    }
     if (length(fit_groups) == 0) {
       log_message(
         "No non-missing groups found for {.arg fit.by} in the selected cells.",
         message_type = "error"
       )
     }
+    raw_feature_matrix <- GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer
+    )[gene, , drop = FALSE]
+    if (length(meta) > 0) {
+      raw_feature_matrix <- rbind(
+        raw_feature_matrix,
+        Matrix::t(srt@meta.data[, meta, drop = FALSE])
+      )
+    }
+    raw_feature_matrix <- raw_feature_matrix[features, , drop = FALSE]
   }
   for (l in lineages) {
     if (!is.null(fit.by)) {
-      n_fit_before <- length(raw_matrix_list)
       for (g in fit_groups) {
         group_cells <- fit_cells[
           !is.na(fit_values) & as.character(fit_values) == g
@@ -265,9 +285,27 @@ DynamicPlot <- function(
         lineage_values <- srt@meta.data[group_cells, l, drop = TRUE]
         valid_cells <- group_cells[is.finite(lineage_values)]
         valid_pseudotime <- lineage_values[is.finite(lineage_values)]
-        if (length(valid_cells) < 4 || length(unique(valid_pseudotime)) < 3) {
+        if (length(valid_cells) < 10 || length(unique(valid_pseudotime)) < 10) {
+          ordered_cells <- valid_cells[order(valid_pseudotime)]
+          raw_matrix <- t(as_matrix(
+            raw_feature_matrix[, ordered_cells, drop = FALSE]
+          ))
+          empty_fit <- matrix(
+            NA_real_,
+            nrow = length(ordered_cells),
+            ncol = length(features),
+            dimnames = list(ordered_cells, features)
+          )
+          fit_id <- paste0("fit", length(raw_matrix_list) + 1L)
+          raw_matrix_list[[fit_id]] <- raw_matrix
+          fitted_matrix_list[[fit_id]] <- empty_fit
+          upr_matrix_list[[fit_id]] <- empty_fit
+          lwr_matrix_list[[fit_id]] <- empty_fit
+          fit_lineage_list[[fit_id]] <- l
+          fit_group_list[[fit_id]] <- g
+          cell_union <- unique(c(cell_union, ordered_cells))
           log_message(
-            "Skip {.val {g}} in {.val {l}}: at least four cells and three unique pseudotime values are required.",
+            "Skip the fitted trajectory for {.val {g}} in {.val {l}}: the default GAM requires at least ten cells and ten unique pseudotime values. Raw points and rugs are retained.",
             message_type = "warning",
             verbose = verbose
           )
@@ -308,12 +346,6 @@ DynamicPlot <- function(
           cell_union,
           rownames(fit_result[["raw_matrix"]])
         ))
-      }
-      if (length(raw_matrix_list) == n_fit_before) {
-        log_message(
-          "No group in {.val {fit.by}} has enough observations for {.val {l}}.",
-          message_type = "error"
-        )
       }
       next
     }
@@ -435,7 +467,6 @@ DynamicPlot <- function(
   }
 
   df_list <- list()
-  fit_groups_fitted <- unique(unlist(fit_group_list, use.names = FALSE))
   y_libsize <- Matrix::colSums(
     GetAssayData5(
       srt,
@@ -443,16 +474,33 @@ DynamicPlot <- function(
       layer = "counts"
     )
   )
+  if (!is.null(libsize)) {
+    if (!length(libsize) %in% c(1, ncol(srt))) {
+      log_message(
+        "{.arg libsize} must be length of 1 or the number of cells",
+        message_type = "error"
+      )
+    }
+    libsize_all <- if (length(libsize) == 1) {
+      stats::setNames(rep(libsize, ncol(srt)), colnames(srt))
+    } else {
+      stats::setNames(as.numeric(libsize), colnames(srt))
+    }
+    normalization_center <- stats::median(libsize_all)
+  } else {
+    libsize_all <- NULL
+    normalization_center <- stats::median(y_libsize)
+  }
+
   for (fit_id in names(raw_matrix_list)) {
-    l <- fit_lineage_list[[fit_id]]
-    fit_group <- fit_group_list[[fit_id]]
     raw_matrix <- raw_matrix_list[[fit_id]]
-    fitted_matrix <- fitted_matrix_list[[fit_id]]
-    upr_matrix <- upr_matrix_list[[fit_id]]
-    lwr_matrix <- lwr_matrix_list[[fit_id]]
-    if (isTRUE(lib_normalize) && min(raw_matrix[, gene], na.rm = TRUE) >= 0) {
-      if (!is.null(libsize)) {
-        libsize_use <- libsize
+    if (
+      isTRUE(lib_normalize) &&
+        length(gene) > 0 &&
+        min(raw_matrix[, gene, drop = FALSE], na.rm = TRUE) >= 0
+    ) {
+      if (!is.null(libsize_all)) {
+        libsize_use <- libsize_all[rownames(raw_matrix)]
       } else {
         libsize_use <- y_libsize[rownames(raw_matrix)]
         isfloat <- any(libsize_use %% 1 != 0, na.rm = TRUE)
@@ -466,8 +514,43 @@ DynamicPlot <- function(
       }
       raw_matrix[, gene] <- raw_matrix[, gene, drop = FALSE] /
         libsize_use *
-        stats::median(y_libsize)
+        normalization_center
     }
+    raw_matrix_list[[fit_id]] <- raw_matrix
+  }
+
+  transform_reference_list <- stats::setNames(
+    lapply(lineages, function(l) {
+      fit_ids <- names(fit_lineage_list)[
+        unlist(fit_lineage_list, use.names = FALSE) == l
+      ]
+      do.call(rbind, raw_matrix_list[fit_ids])
+    }),
+    lineages
+  )
+  replace_infinite <- function(x) {
+    infinite <- is.infinite(x)
+    if (!any(infinite)) {
+      return(x)
+    }
+    finite_values <- x[is.finite(x)]
+    cap <- if (length(finite_values) > 0) {
+      max(abs(finite_values))
+    } else {
+      NA_real_
+    }
+    x[infinite] <- cap * ifelse(x[infinite] > 0, 1, -1)
+    x
+  }
+
+  for (fit_id in names(raw_matrix_list)) {
+    l <- fit_lineage_list[[fit_id]]
+    fit_group <- fit_group_list[[fit_id]]
+    raw_matrix <- raw_matrix_list[[fit_id]]
+    fitted_matrix <- fitted_matrix_list[[fit_id]]
+    upr_matrix <- upr_matrix_list[[fit_id]]
+    lwr_matrix <- lwr_matrix_list[[fit_id]]
+    transform_reference <- transform_reference_list[[l]]
 
     if (is.function(exp_method)) {
       raw_matrix <- t(exp_method(t(raw_matrix)))
@@ -480,20 +563,20 @@ DynamicPlot <- function(
       upr_matrix <- upr_matrix
       lwr_matrix <- lwr_matrix
     } else if (exp_method == "zscore") {
-      center <- Matrix::colMeans(raw_matrix)
-      sd <- MatrixGenerics::colSds(raw_matrix)
-      raw_matrix <- scale(raw_matrix, center = center, scale = sd)
-      fitted_matrix <- scale(fitted_matrix, center = center, scale = sd)
-      upr_matrix <- scale(upr_matrix, center = center, scale = sd)
-      lwr_matrix <- scale(lwr_matrix, center = center, scale = sd)
+      center <- Matrix::colMeans(transform_reference)
+      scale_sd <- MatrixGenerics::colSds(transform_reference)
+      raw_matrix <- scale(raw_matrix, center = center, scale = scale_sd)
+      fitted_matrix <- scale(fitted_matrix, center = center, scale = scale_sd)
+      upr_matrix <- scale(upr_matrix, center = center, scale = scale_sd)
+      lwr_matrix <- scale(lwr_matrix, center = center, scale = scale_sd)
     } else if (exp_method == "fc") {
-      colm <- Matrix::colMeans(raw_matrix)
+      colm <- Matrix::colMeans(transform_reference)
       raw_matrix <- t(t(raw_matrix) / colm)
       fitted_matrix <- t(t(fitted_matrix) / colm)
       upr_matrix <- t(t(upr_matrix) / colm)
       lwr_matrix <- t(t(lwr_matrix) / colm)
     } else if (exp_method == "log2fc") {
-      colm <- Matrix::colMeans(raw_matrix)
+      colm <- Matrix::colMeans(transform_reference)
       raw_matrix <- t(log2(t(raw_matrix) / colm))
       fitted_matrix <- t(log2(t(fitted_matrix) / colm))
       upr_matrix <- t(log2(t(upr_matrix) / colm))
@@ -504,25 +587,10 @@ DynamicPlot <- function(
       upr_matrix <- log1p(upr_matrix)
       lwr_matrix <- log1p(lwr_matrix)
     }
-    raw_matrix[is.infinite(raw_matrix)] <- max(
-      abs(raw_matrix[!is.infinite(raw_matrix)]),
-      na.rm = TRUE
-    ) *
-      ifelse(raw_matrix[is.infinite(raw_matrix)] > 0, 1, -1)
-    fitted_matrix[is.infinite(fitted_matrix)] <- max(abs(fitted_matrix[
-      !is.infinite(fitted_matrix)
-    ])) *
-      ifelse(fitted_matrix[is.infinite(fitted_matrix)] > 0, 1, -1)
-    upr_matrix[is.infinite(upr_matrix)] <- max(
-      abs(upr_matrix[!is.infinite(upr_matrix)]),
-      na.rm = TRUE
-    ) *
-      ifelse(upr_matrix[is.infinite(upr_matrix)] > 0, 1, -1)
-    lwr_matrix[is.infinite(lwr_matrix)] <- max(
-      abs(lwr_matrix[!is.infinite(lwr_matrix)]),
-      na.rm = TRUE
-    ) *
-      ifelse(lwr_matrix[is.infinite(lwr_matrix)] > 0, 1, -1)
+    raw_matrix <- replace_infinite(raw_matrix)
+    fitted_matrix <- replace_infinite(fitted_matrix)
+    upr_matrix <- replace_infinite(upr_matrix)
+    lwr_matrix <- replace_infinite(lwr_matrix)
 
     raw <- as.data.frame(cbind(
       cell_metadata[rownames(raw_matrix), c(l, "x_assign")],
@@ -592,7 +660,7 @@ DynamicPlot <- function(
     df_tmp[["FitGroup"]] <- if (is.null(fit.by)) {
       factor("all")
     } else {
-      factor(fit_group, levels = fit_groups_fitted)
+      factor(fit_group, levels = fit_group_levels)
     }
     df_list[[fit_id]] <- df_tmp
   }
@@ -672,8 +740,24 @@ DynamicPlot <- function(
       }
       df_point <- unique(df[
         df[["Value"]] == "raw",
-        c("Cell", "x_assign", "exp", group.by)
+        unique(c(
+          "Cell", "x_assign", "exp", "Features", "Lineages", group.by
+        ))
       ])
+      fitted_groups <- unique(as.character(df[["FitGroup"]][
+        df[["Value"]] == "fitted" & is.finite(df[["exp"]])
+      ]))
+      point_groups <- if (is.null(fit.by)) {
+        character()
+      } else {
+        unique(as.character(df[["FitGroup"]][df[["Value"]] == "raw"]))
+      }
+      hide_point_guide <- identical(group.by, fit.by) &&
+        isTRUE(add_line) &&
+        all(point_groups %in% fitted_groups)
+      fit_series <- unique(as.character(df[["LineagesFeatures"]]))
+      fit_series <- fit_series[nzchar(fit_series)]
+      distinguish_fit_series <- !is.null(fit.by) && length(fit_series) > 1
       if (isTRUE(compare_features)) {
         raw_point <- NULL
       } else {
@@ -703,7 +787,7 @@ DynamicPlot <- function(
                   palette = point_palette,
                   palcolor = point_palcolor
                 ),
-                guide = if (identical(group.by, fit.by)) {
+                guide = if (isTRUE(hide_point_guide)) {
                   "none"
                 } else {
                   guide_legend(
@@ -712,23 +796,7 @@ DynamicPlot <- function(
                   )
                 }
               ),
-              scale_fill_manual(
-                values = palette_colors(
-                  df[[group.by]],
-                  palette = point_palette,
-                  palcolor = point_palcolor
-                ),
-                guide = if (identical(group.by, fit.by)) {
-                  "none"
-                } else {
-                  guide_legend(
-                    override.aes = list(alpha = 1, size = 3),
-                    order = 1
-                  )
-                }
-              ),
-              ggnewscale::new_scale_color(),
-              ggnewscale::new_scale_fill()
+              ggnewscale::new_scale_color()
             )
           }
         } else {
@@ -773,7 +841,13 @@ DynamicPlot <- function(
       if (isTRUE(add_interval)) {
         interval <- list(
           geom_ribbon(
-            data = subset(df, df[["Value"]] == "fitted"),
+            data = subset(
+              df,
+              df[["Value"]] == "fitted" &
+                is.finite(df[["exp"]]) &
+                is.finite(df[["lwr"]]) &
+                is.finite(df[["upr"]])
+            ),
             mapping = aes(
               x = .data[["Pseudotime"]],
               y = .data[["exp"]],
@@ -800,8 +874,10 @@ DynamicPlot <- function(
               }
             ),
             name = if (is.null(fit.by)) NULL else fit.by,
-            guide = if (!is.null(fit.by)) {
+            guide = if (!is.null(fit.by) && isTRUE(add_line)) {
               "none"
+            } else if (!is.null(fit.by)) {
+              guide_legend(order = 2)
             } else if (
               fill_by == "Features" || lineages_guide || length(l) == 1
             ) {
@@ -817,15 +893,43 @@ DynamicPlot <- function(
       }
       if (!is.null(fit.by)) {
         if (isTRUE(add_line)) {
+          line_mapping <- if (isTRUE(distinguish_fit_series)) {
+            aes(
+              x = .data[["Pseudotime"]],
+              y = .data[["exp"]],
+              color = .data[["FitGroup"]],
+              linetype = .data[["LineagesFeatures"]],
+              group = .data[["LineagesFeaturesFitGroups"]]
+            )
+          } else {
+            aes(
+              x = .data[["Pseudotime"]],
+              y = .data[["exp"]],
+              color = .data[["FitGroup"]],
+              group = .data[["LineagesFeaturesFitGroups"]]
+            )
+          }
+          linetype_scale <- if (isTRUE(distinguish_fit_series)) {
+            linetype_values <- rep(
+              c("solid", "dashed", "dotted", "dotdash", "longdash", "twodash"),
+              length.out = length(fit_series)
+            )
+            names(linetype_values) <- fit_series
+            scale_linetype_manual(
+              name = "Lineage - feature",
+              values = linetype_values,
+              guide = guide_legend(order = 3)
+            )
+          } else {
+            NULL
+          }
           line <- list(
             geom_line(
-              data = subset(df, df[["Value"]] == "fitted"),
-              mapping = aes(
-                x = .data[["Pseudotime"]],
-                y = .data[["exp"]],
-                color = .data[["FitGroup"]],
-                group = .data[["LineagesFeaturesFitGroups"]]
+              data = subset(
+                df,
+                df[["Value"]] == "fitted" & is.finite(df[["exp"]])
               ),
+              mapping = line_mapping,
               linewidth = line.size,
               alpha = 0.8
             ),
@@ -849,6 +953,7 @@ DynamicPlot <- function(
                 order = 2
               )
             ),
+            linetype_scale,
             ggnewscale::new_scale_color()
           )
         } else {

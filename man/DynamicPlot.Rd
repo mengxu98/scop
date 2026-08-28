@@ -63,7 +63,8 @@ be used.}
 \item{fit.by}{Optional metadata column used to fit an independent trajectory
 for each group over that group's observed pseudotime range. The fit is not
 extrapolated beyond observed cells. This does not change the existing
-point-coloring behavior of \code{group.by}.}
+point-coloring behavior of \code{group.by}. Groups with fewer than 10 cells or 10
+unique pseudotime values are shown as raw points or rugs but are not fitted.}
 
 \item{cells}{Cell names to use.}
 
