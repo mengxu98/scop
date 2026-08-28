@@ -424,3 +424,238 @@ test_that("DynamicPlot uses factor levels for matching point and line colors", {
   )
   expect_identical(line_colors[names(point_colors)], point_colors)
 })
+
+test_that("DynamicPlot preserves metadata named FitGroup", {
+  srt <- make_dynamic_plot_test_object()
+  srt$FitGroup <- rep(c("meta-A", "meta-B"), times = 12)
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = "Lineage1",
+    features = "Gene1",
+    group.by = "FitGroup",
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_line = FALSE,
+    add_interval = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  point_data <- dynamic_plot_built_layer(plots[[1]], "point")
+  expect_equal(length(unique(point_data$colour)), 2)
+})
+
+test_that("DynamicPlot applies custom transforms over the shared lineage", {
+  srt <- make_dynamic_plot_test_object(
+    gene1_values = c(rep(1, 12), rep(3, 12))
+  )
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(
+        srt,
+        lineages,
+        features,
+        fitted_by_group = c(control = 1, HUA = 3)
+      )
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = "Lineage1",
+    features = "Gene1",
+    group.by = "condition",
+    fit.by = "condition",
+    exp_method = function(x) x - mean(x, na.rm = TRUE),
+    lib_normalize = FALSE,
+    add_line = FALSE,
+    add_interval = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  point_data <- dynamic_plot_built_layer(plots[[1]], "point")
+  group_means <- sort(as.numeric(tapply(
+    point_data$y,
+    point_data$colour,
+    mean
+  )))
+  expect_equal(group_means, c(-1, 1))
+})
+
+test_that("DynamicPlot caps log2fc infinities over the shared lineage", {
+  values <- c(0, 1:11, 0, rep(100, 11))
+  srt <- make_dynamic_plot_test_object(gene1_values = values)
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = "Lineage1",
+    features = "Gene1",
+    group.by = "condition",
+    fit.by = "condition",
+    exp_method = "log2fc",
+    lib_normalize = FALSE,
+    add_line = FALSE,
+    add_interval = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  point_data <- dynamic_plot_built_layer(plots[[1]], "point")
+  group_minima <- tapply(point_data$y, point_data$colour, min)
+  expect_equal(length(unique(round(group_minima, 8))), 1)
+})
+
+test_that("DynamicPlot distinguishes interval-only combined series", {
+  srt <- make_dynamic_plot_test_object()
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = c("Lineage1", "Lineage2"),
+    features = c("Gene1", "Gene2"),
+    fit.by = "condition",
+    compare_lineages = TRUE,
+    compare_features = TRUE,
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_point = FALSE,
+    add_line = FALSE,
+    add_interval = TRUE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  built <- ggplot2::ggplot_build(plots[[1]])$data
+  ribbon_data <- built[[which(vapply(
+    built,
+    function(x) "ymin" %in% names(x),
+    logical(1)
+  ))[1]]]
+  expect_equal(length(unique(ribbon_data$linetype)), 4)
+})
+
+test_that("DynamicPlot rejects more than six grouped combined series", {
+  srt <- make_dynamic_plot_test_object()
+  for (i in 3:7) {
+    srt[[paste0("Lineage", i)]] <- srt$Lineage1
+  }
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  expect_error(
+    DynamicPlot(
+      srt,
+      lineages = paste0("Lineage", 1:7),
+      features = "Gene1",
+      fit.by = "condition",
+      compare_lineages = TRUE,
+      exp_method = "raw",
+      lib_normalize = FALSE,
+      add_point = FALSE,
+      add_interval = FALSE,
+      add_rug = FALSE,
+      combine = FALSE,
+      verbose = FALSE
+    ),
+    "at most six"
+  )
+})
+
+test_that("DynamicPlot builds grouped legends from every panel", {
+  srt <- make_dynamic_plot_test_object()
+  srt$Lineage1[paste0("cell", 13:24)] <- NA_real_
+  srt$Lineage2[paste0("cell", 1:12)] <- NA_real_
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = c("Lineage1", "Lineage2"),
+    features = "Gene1",
+    fit.by = "condition",
+    compare_lineages = FALSE,
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_point = FALSE,
+    add_interval = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  built <- ggplot2::ggplot_build(plots[[1]])
+  fit_scales <- Filter(
+    function(x) identical(x$name, "condition"),
+    built$plot$scales$scales
+  )
+  expect_length(fit_scales, 1)
+  expect_setequal(fit_scales[[1]]$get_breaks(), c("control", "HUA"))
+})
+
+test_that("DynamicPlot deduplicates points across compared lineages", {
+  srt <- make_dynamic_plot_test_object()
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = c("Lineage1", "Lineage2"),
+    features = "Gene1",
+    group.by = "condition",
+    fit.by = "condition",
+    compare_lineages = TRUE,
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_line = FALSE,
+    add_interval = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  point_data <- dynamic_plot_built_layer(plots[[1]], "point")
+  expect_equal(nrow(point_data), ncol(srt))
+})

@@ -75,14 +75,17 @@ unique pseudotime values are shown as raw points or rugs but are not fitted.}
 \item{family}{GLM family. \code{NULL} chooses automatically.}
 
 \item{exp_method}{Expression transform: \code{"log1p"}, \code{"raw"}, \code{"zscore"}, \code{"fc"},
-or \code{"log2fc"}.}
+or \code{"log2fc"}. With \code{fit.by}, transform parameters are shared across groups
+within each lineage.}
 
 \item{lib_normalize}{Library-size normalize. Defaults to \code{TRUE} when \code{layer}
 is counts.}
 
 \item{libsize}{Library size for each cell.}
 
-\item{compare_lineages, compare_features}{Compare lineages or features on one plot.}
+\item{compare_lineages, compare_features}{Compare lineages or features on one
+plot. Grouped line or interval plots support up to six combined
+lineage-feature series.}
 
 \item{add_line, add_interval, line.size, line_palette, line_palcolor}{Fitted line and CI.}
 

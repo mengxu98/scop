@@ -19,11 +19,14 @@
 #' @param cells Cell names to use.
 #' @param family GLM family. `NULL` chooses automatically.
 #' @param exp_method Expression transform: `"log1p"`, `"raw"`, `"zscore"`, `"fc"`,
-#' or `"log2fc"`.
+#' or `"log2fc"`. With `fit.by`, transform parameters are shared across groups
+#' within each lineage.
 #' @param lib_normalize Library-size normalize. Defaults to `TRUE` when `layer`
 #' is counts.
 #' @param libsize Library size for each cell.
-#' @param compare_lineages,compare_features Compare lineages or features on one plot.
+#' @param compare_lineages,compare_features Compare lineages or features on one
+#' plot. Grouped line or interval plots support up to six combined
+#' lineage-feature series.
 #' @param add_line,add_interval,line.size,line_palette,line_palcolor Fitted line and CI.
 #' @param add_point,pt.size,point_palette,point_palcolor Overlay points.
 #' @param add_rug Draw rugs.
@@ -222,6 +225,9 @@ DynamicPlot <- function(
   }
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  fit_group_col <- make.unique(
+    c(colnames(srt@meta.data), ".scop_fit_group")
+  )[[ncol(srt@meta.data) + 1L]]
   gene <- features[features %in% rownames(srt@assays[[assay]])]
   meta <- features[features %in% colnames(srt@meta.data)]
   features <- c(gene, meta)
@@ -285,6 +291,14 @@ DynamicPlot <- function(
         lineage_values <- srt@meta.data[group_cells, l, drop = TRUE]
         valid_cells <- group_cells[is.finite(lineage_values)]
         valid_pseudotime <- lineage_values[is.finite(lineage_values)]
+        if (length(valid_cells) == 0) {
+          log_message(
+            "Skip {.val {g}} in {.val {l}}: no cells have finite pseudotime values.",
+            message_type = "warning",
+            verbose = verbose
+          )
+          next
+        }
         if (length(valid_cells) < 10 || length(unique(valid_pseudotime)) < 10) {
           ordered_cells <- valid_cells[order(valid_pseudotime)]
           raw_matrix <- t(as_matrix(
@@ -528,20 +542,136 @@ DynamicPlot <- function(
     }),
     lineages
   )
+  map_lineage_matrices <- function(matrix_list, transform) {
+    transformed_list <- matrix_list
+    for (l in lineages) {
+      fit_ids <- names(fit_lineage_list)[
+        unlist(fit_lineage_list, use.names = FALSE) == l
+      ]
+      if (length(fit_ids) == 0) {
+        next
+      }
+      row_counts <- vapply(matrix_list[fit_ids], nrow, integer(1))
+      combined <- do.call(rbind, matrix_list[fit_ids])
+      transformed <- as_matrix(transform(combined))
+      if (!identical(dim(transformed), dim(combined))) {
+        log_message(
+          "{.arg exp_method} must preserve the dimensions of the expression matrix.",
+          message_type = "error"
+        )
+      }
+      dimnames(transformed) <- dimnames(combined)
+      row_ends <- cumsum(row_counts)
+      row_starts <- row_ends - row_counts + 1L
+      for (i in seq_along(fit_ids)) {
+        rows <- if (row_counts[[i]] == 0) {
+          integer()
+        } else {
+          seq.int(row_starts[[i]], row_ends[[i]])
+        }
+        transformed_list[[fit_ids[[i]]]] <- transformed[
+          rows, ,
+          drop = FALSE
+        ]
+      }
+    }
+    transformed_list
+  }
+
+  if (is.function(exp_method)) {
+    apply_exp_method <- function(x) t(exp_method(t(x)))
+    raw_matrix_list <- map_lineage_matrices(
+      raw_matrix_list,
+      apply_exp_method
+    )
+    fitted_matrix_list <- map_lineage_matrices(
+      fitted_matrix_list,
+      apply_exp_method
+    )
+    upr_matrix_list <- map_lineage_matrices(upr_matrix_list, apply_exp_method)
+    lwr_matrix_list <- map_lineage_matrices(lwr_matrix_list, apply_exp_method)
+  } else {
+    for (fit_id in names(raw_matrix_list)) {
+      l <- fit_lineage_list[[fit_id]]
+      transform_reference <- transform_reference_list[[l]]
+      raw_matrix <- raw_matrix_list[[fit_id]]
+      fitted_matrix <- fitted_matrix_list[[fit_id]]
+      upr_matrix <- upr_matrix_list[[fit_id]]
+      lwr_matrix <- lwr_matrix_list[[fit_id]]
+
+      if (exp_method == "zscore") {
+        center <- Matrix::colMeans(transform_reference)
+        scale_sd <- MatrixGenerics::colSds(transform_reference)
+        raw_matrix <- scale(raw_matrix, center = center, scale = scale_sd)
+        fitted_matrix <- scale(fitted_matrix, center = center, scale = scale_sd)
+        upr_matrix <- scale(upr_matrix, center = center, scale = scale_sd)
+        lwr_matrix <- scale(lwr_matrix, center = center, scale = scale_sd)
+      } else if (exp_method == "fc") {
+        colm <- Matrix::colMeans(transform_reference)
+        raw_matrix <- t(t(raw_matrix) / colm)
+        fitted_matrix <- t(t(fitted_matrix) / colm)
+        upr_matrix <- t(t(upr_matrix) / colm)
+        lwr_matrix <- t(t(lwr_matrix) / colm)
+      } else if (exp_method == "log2fc") {
+        colm <- Matrix::colMeans(transform_reference)
+        raw_matrix <- t(log2(t(raw_matrix) / colm))
+        fitted_matrix <- t(log2(t(fitted_matrix) / colm))
+        upr_matrix <- t(log2(t(upr_matrix) / colm))
+        lwr_matrix <- t(log2(t(lwr_matrix) / colm))
+      } else if (exp_method == "log1p") {
+        raw_matrix <- log1p(raw_matrix)
+        fitted_matrix <- log1p(fitted_matrix)
+        upr_matrix <- log1p(upr_matrix)
+        lwr_matrix <- log1p(lwr_matrix)
+      }
+      raw_matrix_list[[fit_id]] <- raw_matrix
+      fitted_matrix_list[[fit_id]] <- fitted_matrix
+      upr_matrix_list[[fit_id]] <- upr_matrix
+      lwr_matrix_list[[fit_id]] <- lwr_matrix
+    }
+  }
+
   replace_infinite <- function(x) {
-    infinite <- is.infinite(x)
-    if (!any(infinite)) {
+    if (is.null(fit.by)) {
+      infinite <- is.infinite(x)
+      if (!any(infinite)) {
+        return(x)
+      }
+      finite_values <- x[is.finite(x)]
+      cap <- if (length(finite_values) > 0) {
+        max(abs(finite_values))
+      } else {
+        NA_real_
+      }
+      x[infinite] <- cap * ifelse(x[infinite] > 0, 1, -1)
       return(x)
     }
-    finite_values <- x[is.finite(x)]
-    cap <- if (length(finite_values) > 0) {
-      max(abs(finite_values))
-    } else {
-      NA_real_
+    for (feature in colnames(x)) {
+      infinite <- is.infinite(x[, feature])
+      if (!any(infinite)) {
+        next
+      }
+      finite_values <- x[is.finite(x[, feature]), feature]
+      cap <- if (length(finite_values) > 0) {
+        max(abs(finite_values))
+      } else {
+        NA_real_
+      }
+      x[infinite, feature] <- cap * ifelse(
+        x[infinite, feature] > 0,
+        1,
+        -1
+      )
     }
-    x[infinite] <- cap * ifelse(x[infinite] > 0, 1, -1)
     x
   }
+  raw_matrix_list <- map_lineage_matrices(raw_matrix_list, replace_infinite)
+  fitted_matrix_list <- map_lineage_matrices(
+    fitted_matrix_list,
+    replace_infinite
+  )
+  upr_matrix_list <- map_lineage_matrices(upr_matrix_list, replace_infinite)
+  lwr_matrix_list <- map_lineage_matrices(lwr_matrix_list, replace_infinite)
 
   for (fit_id in names(raw_matrix_list)) {
     l <- fit_lineage_list[[fit_id]]
@@ -550,47 +680,6 @@ DynamicPlot <- function(
     fitted_matrix <- fitted_matrix_list[[fit_id]]
     upr_matrix <- upr_matrix_list[[fit_id]]
     lwr_matrix <- lwr_matrix_list[[fit_id]]
-    transform_reference <- transform_reference_list[[l]]
-
-    if (is.function(exp_method)) {
-      raw_matrix <- t(exp_method(t(raw_matrix)))
-      fitted_matrix <- t(exp_method(t(fitted_matrix)))
-      upr_matrix <- t(exp_method(t(upr_matrix)))
-      lwr_matrix <- t(exp_method(t(lwr_matrix)))
-    } else if (exp_method == "raw") {
-      raw_matrix <- raw_matrix
-      fitted_matrix <- fitted_matrix
-      upr_matrix <- upr_matrix
-      lwr_matrix <- lwr_matrix
-    } else if (exp_method == "zscore") {
-      center <- Matrix::colMeans(transform_reference)
-      scale_sd <- MatrixGenerics::colSds(transform_reference)
-      raw_matrix <- scale(raw_matrix, center = center, scale = scale_sd)
-      fitted_matrix <- scale(fitted_matrix, center = center, scale = scale_sd)
-      upr_matrix <- scale(upr_matrix, center = center, scale = scale_sd)
-      lwr_matrix <- scale(lwr_matrix, center = center, scale = scale_sd)
-    } else if (exp_method == "fc") {
-      colm <- Matrix::colMeans(transform_reference)
-      raw_matrix <- t(t(raw_matrix) / colm)
-      fitted_matrix <- t(t(fitted_matrix) / colm)
-      upr_matrix <- t(t(upr_matrix) / colm)
-      lwr_matrix <- t(t(lwr_matrix) / colm)
-    } else if (exp_method == "log2fc") {
-      colm <- Matrix::colMeans(transform_reference)
-      raw_matrix <- t(log2(t(raw_matrix) / colm))
-      fitted_matrix <- t(log2(t(fitted_matrix) / colm))
-      upr_matrix <- t(log2(t(upr_matrix) / colm))
-      lwr_matrix <- t(log2(t(lwr_matrix) / colm))
-    } else if (exp_method == "log1p") {
-      raw_matrix <- log1p(raw_matrix)
-      fitted_matrix <- log1p(fitted_matrix)
-      upr_matrix <- log1p(upr_matrix)
-      lwr_matrix <- log1p(lwr_matrix)
-    }
-    raw_matrix <- replace_infinite(raw_matrix)
-    fitted_matrix <- replace_infinite(fitted_matrix)
-    upr_matrix <- replace_infinite(upr_matrix)
-    lwr_matrix <- replace_infinite(lwr_matrix)
 
     raw <- as.data.frame(cbind(
       cell_metadata[rownames(raw_matrix), c(l, "x_assign")],
@@ -657,7 +746,7 @@ DynamicPlot <- function(
 
     df_tmp <- rbind(raw, fitted)
     df_tmp[["Lineages"]] <- factor(l, levels = lineages)
-    df_tmp[["FitGroup"]] <- if (is.null(fit.by)) {
+    df_tmp[[fit_group_col]] <- if (is.null(fit.by)) {
       factor("all")
     } else {
       factor(fit_group, levels = fit_group_levels)
@@ -684,9 +773,18 @@ DynamicPlot <- function(
   )
   df_all[["LineagesFeaturesFitGroups"]] <- paste(
     df_all[["LineagesFeatures"]],
-    df_all[["FitGroup"]],
+    df_all[[fit_group_col]],
     sep = "-"
   )
+
+  fitted_group_levels <- if (is.null(fit.by)) {
+    character()
+  } else {
+    fitted_groups_all <- unique(as.character(df_all[[fit_group_col]][
+      df_all[["Value"]] == "fitted" & is.finite(df_all[["exp"]])
+    ]))
+    fit_group_levels[fit_group_levels %in% fitted_groups_all]
+  }
 
   if (!is.null(cells)) {
     df_all <- df_all[df_all[["Cell"]] %in% cells, , drop = FALSE]
@@ -725,7 +823,7 @@ DynamicPlot <- function(
     features_guide <- FALSE
   }
   if (!is.null(fit.by)) {
-    fill_by <- "FitGroup"
+    fill_by <- fit_group_col
   }
 
   for (l in lineages_use) {
@@ -738,19 +836,24 @@ DynamicPlot <- function(
         df[, "x_assign"] <- rank(df[, "x_assign"])
         df[, "Pseudotime"] <- rank(df[, "Pseudotime"])
       }
+      point_columns <- c("Cell", "x_assign", "exp", group.by)
+      if (!isTRUE(compare_features)) {
+        point_columns <- c(point_columns, "Features")
+      }
+      if (!isTRUE(compare_lineages)) {
+        point_columns <- c(point_columns, "Lineages")
+      }
       df_point <- unique(df[
         df[["Value"]] == "raw",
-        unique(c(
-          "Cell", "x_assign", "exp", "Features", "Lineages", group.by
-        ))
+        unique(point_columns)
       ])
-      fitted_groups <- unique(as.character(df[["FitGroup"]][
+      fitted_groups <- unique(as.character(df[[fit_group_col]][
         df[["Value"]] == "fitted" & is.finite(df[["exp"]])
       ]))
       point_groups <- if (is.null(fit.by)) {
         character()
       } else {
-        unique(as.character(df[["FitGroup"]][df[["Value"]] == "raw"]))
+        unique(as.character(df[[fit_group_col]][df[["Value"]] == "raw"]))
       }
       hide_point_guide <- identical(group.by, fit.by) &&
         isTRUE(add_line) &&
@@ -758,6 +861,16 @@ DynamicPlot <- function(
       fit_series <- unique(as.character(df[["LineagesFeatures"]]))
       fit_series <- fit_series[nzchar(fit_series)]
       distinguish_fit_series <- !is.null(fit.by) && length(fit_series) > 1
+      if (
+        (isTRUE(add_line) || isTRUE(add_interval)) &&
+          isTRUE(distinguish_fit_series) &&
+          length(fit_series) > 6
+      ) {
+        log_message(
+          "Grouped combined plots support at most six lineage-feature series. Set {.arg compare_lineages} or {.arg compare_features} to {.val FALSE}.",
+          message_type = "error"
+        )
+      }
       if (isTRUE(compare_features)) {
         raw_point <- NULL
       } else {
@@ -839,26 +952,69 @@ DynamicPlot <- function(
       }
 
       if (isTRUE(add_interval)) {
-        interval <- list(
+        interval_data <- subset(
+          df,
+          df[["Value"]] == "fitted" &
+            is.finite(df[["exp"]]) &
+            is.finite(df[["lwr"]]) &
+            is.finite(df[["upr"]])
+        )
+        distinguish_interval_series <- !is.null(fit.by) &&
+          !isTRUE(add_line) &&
+          isTRUE(distinguish_fit_series)
+        interval_mapping <- if (isTRUE(distinguish_interval_series)) {
+          aes(
+            x = .data[["Pseudotime"]],
+            y = .data[["exp"]],
+            ymin = .data[["lwr"]],
+            ymax = .data[["upr"]],
+            fill = .data[[fill_by]],
+            linetype = .data[["LineagesFeatures"]],
+            group = .data[["LineagesFeaturesFitGroups"]]
+          )
+        } else {
+          aes(
+            x = .data[["Pseudotime"]],
+            y = .data[["exp"]],
+            ymin = .data[["lwr"]],
+            ymax = .data[["upr"]],
+            fill = .data[[fill_by]],
+            group = .data[["LineagesFeaturesFitGroups"]]
+          )
+        }
+        interval_geom <- if (isTRUE(distinguish_interval_series)) {
           geom_ribbon(
-            data = subset(
-              df,
-              df[["Value"]] == "fitted" &
-                is.finite(df[["exp"]]) &
-                is.finite(df[["lwr"]]) &
-                is.finite(df[["upr"]])
-            ),
-            mapping = aes(
-              x = .data[["Pseudotime"]],
-              y = .data[["exp"]],
-              ymin = .data[["lwr"]],
-              ymax = .data[["upr"]],
-              fill = .data[[fill_by]],
-              group = .data[["LineagesFeaturesFitGroups"]]
-            ),
+            data = interval_data,
+            mapping = interval_mapping,
+            alpha = 0.4,
+            color = "grey30",
+            linewidth = 0.4
+          )
+        } else {
+          geom_ribbon(
+            data = interval_data,
+            mapping = interval_mapping,
             alpha = 0.4,
             color = "grey90"
-          ),
+          )
+        }
+        interval_linetype_scale <- if (isTRUE(distinguish_interval_series)) {
+          linetype_values <- c(
+            "solid", "dashed", "dotted", "dotdash", "longdash", "twodash"
+          )[seq_along(fit_series)]
+          names(linetype_values) <- fit_series
+          scale_linetype_manual(
+            name = "Lineage - feature",
+            values = linetype_values,
+            limits = fit_series,
+            drop = FALSE,
+            guide = guide_legend(order = 3)
+          )
+        } else {
+          NULL
+        }
+        interval <- list(
+          interval_geom,
           scale_fill_manual(
             values = palette_colors(
               df[[fill_by]],
@@ -874,6 +1030,8 @@ DynamicPlot <- function(
               }
             ),
             name = if (is.null(fit.by)) NULL else fit.by,
+            limits = if (is.null(fit.by)) NULL else fitted_group_levels,
+            drop = is.null(fit.by),
             guide = if (!is.null(fit.by) && isTRUE(add_line)) {
               "none"
             } else if (!is.null(fit.by)) {
@@ -886,6 +1044,7 @@ DynamicPlot <- function(
               guide_legend()
             }
           ),
+          interval_linetype_scale,
           ggnewscale::new_scale_fill()
         )
       } else {
@@ -897,7 +1056,7 @@ DynamicPlot <- function(
             aes(
               x = .data[["Pseudotime"]],
               y = .data[["exp"]],
-              color = .data[["FitGroup"]],
+              color = .data[[fit_group_col]],
               linetype = .data[["LineagesFeatures"]],
               group = .data[["LineagesFeaturesFitGroups"]]
             )
@@ -905,15 +1064,14 @@ DynamicPlot <- function(
             aes(
               x = .data[["Pseudotime"]],
               y = .data[["exp"]],
-              color = .data[["FitGroup"]],
+              color = .data[[fit_group_col]],
               group = .data[["LineagesFeaturesFitGroups"]]
             )
           }
           linetype_scale <- if (isTRUE(distinguish_fit_series)) {
-            linetype_values <- rep(
-              c("solid", "dashed", "dotted", "dotdash", "longdash", "twodash"),
-              length.out = length(fit_series)
-            )
+            linetype_values <- c(
+              "solid", "dashed", "dotted", "dotdash", "longdash", "twodash"
+            )[seq_along(fit_series)]
             names(linetype_values) <- fit_series
             scale_linetype_manual(
               name = "Lineage - feature",
@@ -936,7 +1094,7 @@ DynamicPlot <- function(
             scale_color_manual(
               name = fit.by,
               values = palette_colors(
-                df[["FitGroup"]],
+                df[[fit_group_col]],
                 palette = if (identical(group.by, fit.by)) {
                   point_palette
                 } else {
@@ -948,6 +1106,8 @@ DynamicPlot <- function(
                   line_palcolor
                 }
               ),
+              limits = fitted_group_levels,
+              drop = FALSE,
               guide = guide_legend(
                 override.aes = list(alpha = 1, linewidth = 2),
                 order = 2
