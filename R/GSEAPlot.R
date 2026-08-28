@@ -715,7 +715,7 @@ GSEAPlot <- function(
             hjust = 1,
             color = "#3C298C",
             size = 4,
-            label = "Negtively correlated "
+            label = "Negatively correlated "
           )
       }
       if (max(df2$y) > 0 && min(df2$y) < 0) {
