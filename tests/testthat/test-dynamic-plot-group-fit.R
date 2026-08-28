@@ -773,3 +773,144 @@ test_that("DynamicPlot appends fit.by after the positional API", {
     )
   ))
 })
+
+test_that("DynamicPlot keeps grouped series keys collision safe", {
+  srt <- make_dynamic_plot_test_object()
+  srt[["A-B"]] <- seq_len(ncol(srt))
+  srt[["A"]] <- rev(seq_len(ncol(srt)))
+  srt$condition <- rep(c("C", "B-C"), each = 12)
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(
+        srt,
+        lineages,
+        features,
+        fitted_by_group = c(C = 1, `B-C` = 2)
+      )
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = "Lineage1",
+    features = c("A-B", "A"),
+    fit.by = "condition",
+    compare_features = TRUE,
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_interval = FALSE,
+    add_point = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  line_data <- dynamic_plot_built_layer(plots[[1]], "line")
+  expect_equal(length(unique(line_data$group)), 4)
+})
+
+test_that("DynamicPlot keeps feature linetypes stable across lineage panels", {
+  srt <- make_dynamic_plot_test_object()
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(
+        srt,
+        lineages,
+        features,
+        fitted_by_group = c(control = 0, HUA = 10)
+      )
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = c("Lineage1", "Lineage2"),
+    features = c("Gene1", "Gene2"),
+    fit.by = "condition",
+    compare_lineages = FALSE,
+    compare_features = TRUE,
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_interval = FALSE,
+    add_point = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  linetypes <- lapply(plots, function(plot) {
+    line_data <- dynamic_plot_built_layer(plot, "line")
+    vapply(
+      split(line_data$linetype, line_data$y),
+      function(x) unique(x)[1],
+      character(1)
+    )
+  })
+  expect_identical(linetypes[[1]], linetypes[[2]])
+})
+
+test_that("DynamicPlot includes usable library sizes in feature support", {
+  srt <- make_dynamic_plot_test_object()
+  custom_libsize <- rep(1, ncol(srt))
+  custom_libsize[10:12] <- 0
+  fitted_groups <- character()
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      cells <- rownames(srt@meta.data)[is.finite(srt@meta.data[[lineages]])]
+      fitted_groups <<- c(fitted_groups, as.character(srt$condition[cells][1]))
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  DynamicPlot(
+    srt,
+    lineages = "Lineage1",
+    features = "Gene1",
+    fit.by = "condition",
+    libsize = custom_libsize,
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_interval = FALSE,
+    add_point = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  expect_identical(fitted_groups, "HUA")
+})
+
+test_that("DynamicPlot preserves metadata named LineagesFeaturesFitGroups", {
+  srt <- make_dynamic_plot_test_object()
+  srt$LineagesFeaturesFitGroups <- rep(c("meta-A", "meta-B"), times = 12)
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = "Lineage1",
+    features = "Gene1",
+    group.by = "LineagesFeaturesFitGroups",
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_line = FALSE,
+    add_interval = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  point_data <- dynamic_plot_built_layer(plots[[1]], "point")
+  expect_equal(length(unique(point_data$colour)), 2)
+})

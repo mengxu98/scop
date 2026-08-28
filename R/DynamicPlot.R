@@ -225,9 +225,18 @@ DynamicPlot <- function(
   }
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
-  fit_group_col <- make.unique(
-    c(colnames(srt@meta.data), ".scop_fit_group")
-  )[[ncol(srt@meta.data) + 1L]]
+  internal_cols <- make.unique(c(
+    colnames(srt@meta.data),
+    ".scop_fit_group",
+    ".scop_fit_series",
+    ".scop_fit_path"
+  ))
+  internal_cols <- internal_cols[
+    ncol(srt@meta.data) + seq_len(3L)
+  ]
+  fit_group_col <- internal_cols[[1]]
+  fit_series_col <- internal_cols[[2]]
+  fit_path_col <- internal_cols[[3]]
   gene <- features[features %in% rownames(srt@assays[[assay]])]
   meta <- features[features %in% colnames(srt@meta.data)]
   features <- c(gene, meta)
@@ -324,6 +333,58 @@ DynamicPlot <- function(
     }
     family_all[features_fit]
   }
+  fit_libsize_all <- NULL
+  feature_uses_libsize <- stats::setNames(
+    rep(FALSE, length(features)),
+    features
+  )
+  if (!is.null(fit.by) && layer == "counts" && length(gene) > 0) {
+    counts_status <- CheckDataType(
+      srt,
+      assay = assay,
+      layer = "counts",
+      verbose = FALSE
+    )
+    family_all <- subset_family(features)
+    if (is.null(family_all)) {
+      family_all <- stats::setNames(
+        rep("gaussian", length(features)),
+        features
+      )
+      if (counts_status == "raw_counts") {
+        family_all[gene] <- "nb"
+      }
+    } else if (length(family_all) == 1) {
+      family_all <- stats::setNames(
+        rep(family_all, length(features)),
+        features
+      )
+    }
+    feature_uses_libsize[gene] <- family_all[gene] != "gaussian"
+    if (any(feature_uses_libsize)) {
+      if (is.null(libsize)) {
+        fit_libsize_all <- if (counts_status == "raw_counts") {
+          Matrix::colSums(
+            GetAssayData5(srt, assay = assay, layer = "counts")
+          )
+        } else {
+          stats::setNames(rep(1, ncol(srt)), colnames(srt))
+        }
+      } else {
+        if (!length(libsize) %in% c(1, ncol(srt))) {
+          log_message(
+            "{.arg libsize} must be length of 1 or the number of cells",
+            message_type = "error"
+          )
+        }
+        fit_libsize_all <- if (length(libsize) == 1) {
+          stats::setNames(rep(libsize, ncol(srt)), colnames(srt))
+        } else {
+          stats::setNames(as.numeric(libsize), colnames(srt))
+        }
+      }
+    }
+  }
   for (l in lineages) {
     if (!is.null(fit.by)) {
       for (g in fit_groups) {
@@ -370,6 +431,11 @@ DynamicPlot <- function(
           seq_along(features),
           function(i) {
             valid_feature <- is.finite(feature_values[i, ])
+            if (feature_uses_libsize[[i]]) {
+              libsize_group <- fit_libsize_all[valid_cells]
+              valid_feature <- valid_feature &
+                is.finite(libsize_group) & libsize_group > 0
+            }
             sum(valid_feature) >= 10 &&
               length(unique(valid_pseudotime[valid_feature])) >= 10
           },
@@ -379,7 +445,7 @@ DynamicPlot <- function(
         features_raw_only <- features[!feature_supported]
         if (length(features_raw_only) > 0) {
           log_message(
-            "Skip the fitted trajectory for {.val {features_raw_only}} in {.val {g}} / {.val {l}}: each feature requires at least ten finite observations and ten unique pseudotime values. Raw points and rugs are retained.",
+            "Skip the fitted trajectory for {.val {features_raw_only}} in {.val {g}} / {.val {l}}: each feature requires at least ten finite usable observations and ten unique pseudotime values. Raw points and rugs are retained.",
             message_type = "warning",
             verbose = verbose
           )
@@ -873,16 +939,41 @@ DynamicPlot <- function(
     }
     df_all <- cbind(df_all, cell_group)
   }
-  df_all[["LineagesFeatures"]] <- paste(
-    df_all[["Lineages"]],
-    df_all[["Features"]],
-    sep = "-"
+  lineage_code <- match(as.character(df_all[["Lineages"]]), lineages)
+  feature_code <- match(as.character(df_all[["Features"]]), features)
+  fit_group_code <- match(
+    as.character(df_all[[fit_group_col]]),
+    fit_group_levels
   )
-  df_all[["LineagesFeaturesFitGroups"]] <- paste(
-    df_all[["LineagesFeatures"]],
-    df_all[[fit_group_col]],
-    sep = "-"
+  if (isTRUE(compare_lineages) && isTRUE(compare_features)) {
+    fit_series_index <- lineage_code +
+      (feature_code - 1L) * length(lineages)
+    fit_series_labels <- as.vector(outer(
+      lineages,
+      features,
+      paste,
+      sep = " - "
+    ))
+  } else if (isTRUE(compare_features)) {
+    fit_series_index <- feature_code
+    fit_series_labels <- features
+  } else if (isTRUE(compare_lineages)) {
+    fit_series_index <- lineage_code
+    fit_series_labels <- lineages
+  } else {
+    fit_series_index <- rep(1L, nrow(df_all))
+    fit_series_labels <- "Series"
+  }
+  fit_series_levels <- paste0("series", seq_along(fit_series_labels))
+  names(fit_series_labels) <- fit_series_levels
+  df_all[[fit_series_col]] <- factor(
+    paste0("series", fit_series_index),
+    levels = fit_series_levels
   )
+  fit_path_index <- lineage_code +
+    (feature_code - 1L) * length(lineages) +
+    (fit_group_code - 1L) * length(lineages) * length(features)
+  df_all[[fit_path_col]] <- factor(paste0("path", fit_path_index))
 
   fitted_group_levels <- if (is.null(fit.by)) {
     character()
@@ -965,8 +1056,10 @@ DynamicPlot <- function(
       hide_point_guide <- identical(group.by, fit.by) &&
         isTRUE(add_line) &&
         all(point_groups %in% fitted_groups)
-      fit_series <- unique(as.character(df[["LineagesFeatures"]]))
-      fit_series <- fit_series[nzchar(fit_series)]
+      fitted_series <- unique(as.character(df[[fit_series_col]][
+        df[["Value"]] == "fitted" & is.finite(df[["exp"]])
+      ]))
+      fit_series <- fit_series_levels[fit_series_levels %in% fitted_series]
       distinguish_fit_series <- !is.null(fit.by) && length(fit_series) > 1
       if (
         (isTRUE(add_line) || isTRUE(add_interval)) &&
@@ -1076,8 +1169,8 @@ DynamicPlot <- function(
             ymin = .data[["lwr"]],
             ymax = .data[["upr"]],
             fill = .data[[fill_by]],
-            linetype = .data[["LineagesFeatures"]],
-            group = .data[["LineagesFeaturesFitGroups"]]
+            linetype = .data[[fit_series_col]],
+            group = .data[[fit_path_col]]
           )
         } else {
           aes(
@@ -1086,7 +1179,7 @@ DynamicPlot <- function(
             ymin = .data[["lwr"]],
             ymax = .data[["upr"]],
             fill = .data[[fill_by]],
-            group = .data[["LineagesFeaturesFitGroups"]]
+            group = .data[[fit_path_col]]
           )
         }
         interval_geom <- if (isTRUE(distinguish_interval_series)) {
@@ -1114,6 +1207,7 @@ DynamicPlot <- function(
             name = "Lineage - feature",
             values = linetype_values,
             limits = fit_series,
+            labels = fit_series_labels[fit_series],
             drop = FALSE,
             guide = guide_legend(order = 3)
           )
@@ -1164,15 +1258,15 @@ DynamicPlot <- function(
               x = .data[["Pseudotime"]],
               y = .data[["exp"]],
               color = .data[[fit_group_col]],
-              linetype = .data[["LineagesFeatures"]],
-              group = .data[["LineagesFeaturesFitGroups"]]
+              linetype = .data[[fit_series_col]],
+              group = .data[[fit_path_col]]
             )
           } else {
             aes(
               x = .data[["Pseudotime"]],
               y = .data[["exp"]],
               color = .data[[fit_group_col]],
-              group = .data[["LineagesFeaturesFitGroups"]]
+              group = .data[[fit_path_col]]
             )
           }
           linetype_scale <- if (isTRUE(distinguish_fit_series)) {
@@ -1183,6 +1277,8 @@ DynamicPlot <- function(
             scale_linetype_manual(
               name = "Lineage - feature",
               values = linetype_values,
+              limits = fit_series,
+              labels = fit_series_labels[fit_series],
               guide = guide_legend(order = 3)
             )
           } else {
@@ -1234,7 +1330,7 @@ DynamicPlot <- function(
               x = .data[["Pseudotime"]],
               y = .data[["exp"]],
               color = .data[["Features"]],
-              group = .data[["LineagesFeatures"]]
+              group = .data[[fit_path_col]]
             ),
             linewidth = line.size,
             alpha = 0.8
@@ -1265,7 +1361,7 @@ DynamicPlot <- function(
                 x = .data[["Pseudotime"]],
                 y = .data[["exp"]],
                 color = .data[["Lineages"]],
-                group = .data[["LineagesFeatures"]]
+                group = .data[[fit_path_col]]
               ),
               linewidth = line.size,
               alpha = 0.8
