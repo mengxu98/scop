@@ -225,6 +225,15 @@ DynamicPlot <- function(
   }
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  if (!is.null(family) && length(family) > 1 && is.null(names(family))) {
+    if (length(family) != length(features)) {
+      log_message(
+        "{.arg family} must be one character or a vector of the same length as features",
+        message_type = "error"
+      )
+    }
+    names(family) <- features
+  }
   internal_cols <- make.unique(c(
     colnames(srt@meta.data),
     ".scop_fit_group",
@@ -983,6 +992,14 @@ DynamicPlot <- function(
     ]))
     fit_group_levels[fit_group_levels %in% fitted_groups_all]
   }
+  fitted_series_all <- unique(as.character(df_all[[fit_series_col]][
+    df_all[["Value"]] == "fitted" & is.finite(df_all[["exp"]])
+  ]))
+  fit_series <- fit_series_levels[fit_series_levels %in% fitted_series_all]
+  linetype_values <- c(
+    "solid", "dashed", "dotted", "dotdash", "longdash", "twodash"
+  )[seq_along(fit_series_levels)]
+  names(linetype_values) <- fit_series_levels
 
   if (!is.null(cells)) {
     df_all <- df_all[df_all[["Cell"]] %in% cells, , drop = FALSE]
@@ -1056,15 +1073,11 @@ DynamicPlot <- function(
       hide_point_guide <- identical(group.by, fit.by) &&
         isTRUE(add_line) &&
         all(point_groups %in% fitted_groups)
-      fitted_series <- unique(as.character(df[[fit_series_col]][
-        df[["Value"]] == "fitted" & is.finite(df[["exp"]])
-      ]))
-      fit_series <- fit_series_levels[fit_series_levels %in% fitted_series]
       distinguish_fit_series <- !is.null(fit.by) && length(fit_series) > 1
       if (
         (isTRUE(add_line) || isTRUE(add_interval)) &&
           isTRUE(distinguish_fit_series) &&
-          length(fit_series) > 6
+          length(fit_series_levels) > 6
       ) {
         log_message(
           "Grouped combined plots support at most six lineage-feature series. Set {.arg compare_lineages} or {.arg compare_features} to {.val FALSE}.",
@@ -1199,10 +1212,6 @@ DynamicPlot <- function(
           )
         }
         interval_linetype_scale <- if (isTRUE(distinguish_interval_series)) {
-          linetype_values <- c(
-            "solid", "dashed", "dotted", "dotdash", "longdash", "twodash"
-          )[seq_along(fit_series)]
-          names(linetype_values) <- fit_series
           scale_linetype_manual(
             name = "Lineage - feature",
             values = linetype_values,
@@ -1270,10 +1279,6 @@ DynamicPlot <- function(
             )
           }
           linetype_scale <- if (isTRUE(distinguish_fit_series)) {
-            linetype_values <- c(
-              "solid", "dashed", "dotted", "dotdash", "longdash", "twodash"
-            )[seq_along(fit_series)]
-            names(linetype_values) <- fit_series
             scale_linetype_manual(
               name = "Lineage - feature",
               values = linetype_values,
