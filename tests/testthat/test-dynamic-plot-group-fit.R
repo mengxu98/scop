@@ -914,3 +914,102 @@ test_that("DynamicPlot preserves metadata named LineagesFeaturesFitGroups", {
   point_data <- dynamic_plot_built_layer(plots[[1]], "point")
   expect_equal(length(unique(point_data$colour)), 2)
 })
+
+test_that("DynamicPlot keeps global linetypes when panel fits differ", {
+  srt <- make_dynamic_plot_test_object()
+  srt$condition <- "all"
+  srt$Lineage1[13:24] <- NA_real_
+  srt$Lineage2[1:12] <- NA_real_
+  srt$score1 <- seq_len(ncol(srt))
+  srt$score1[1:12] <- NA_real_
+  srt$score2 <- rev(seq_len(ncol(srt)))
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(
+        srt,
+        lineages,
+        features,
+        fitted_by_group = c(all = 1)
+      )
+    },
+    .package = "scop"
+  )
+
+  for (add_line in c(TRUE, FALSE)) {
+    plots <- DynamicPlot(
+      srt,
+      lineages = c("Lineage1", "Lineage2"),
+      features = c("score1", "score2"),
+      fit.by = "condition",
+      compare_lineages = FALSE,
+      compare_features = TRUE,
+      exp_method = "raw",
+      lib_normalize = FALSE,
+      add_line = add_line,
+      add_interval = !add_line,
+      add_point = FALSE,
+      add_rug = FALSE,
+      combine = FALSE,
+      verbose = FALSE
+    )
+
+    plot_layers <- lapply(plots, function(plot) {
+      layers <- ggplot2::ggplot_build(plot)$data
+      is_target <- vapply(layers, function(x) {
+        if (add_line) {
+          "linewidth" %in% names(x) && !"ymin" %in% names(x)
+        } else {
+          "ymin" %in% names(x)
+        }
+      }, logical(1))
+      layers[[which(is_target)[1]]]
+    })
+    lineage1_score2 <- as.character(unique(plot_layers[[1]]$linetype))
+    score2_rows <- if (add_line) {
+      plot_layers[[2]]$y == 2
+    } else {
+      plot_layers[[2]]$group == max(plot_layers[[2]]$group)
+    }
+    lineage2_score2 <- as.character(unique(
+      plot_layers[[2]]$linetype[score2_rows]
+    ))
+    expect_identical(lineage1_score2, lineage2_score2)
+  }
+})
+
+test_that("DynamicPlot preserves unnamed family order before feature regrouping", {
+  srt <- make_dynamic_plot_test_object()
+  srt$score <- seq_len(ncol(srt))
+  fitted_families <- list()
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, family, ...) {
+      cells <- rownames(srt@meta.data)[is.finite(srt@meta.data[[lineages]])]
+      group <- as.character(srt$condition[cells][1])
+      fitted_families[[group]] <<- family
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  DynamicPlot(
+    srt,
+    lineages = "Lineage1",
+    features = c("score", "Gene1"),
+    fit.by = "condition",
+    family = c("gaussian", "nb"),
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_line = TRUE,
+    add_interval = FALSE,
+    add_point = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  expected <- c(Gene1 = "nb", score = "gaussian")
+  expect_identical(fitted_families[["control"]], expected)
+  expect_identical(fitted_families[["HUA"]], expected)
+})
