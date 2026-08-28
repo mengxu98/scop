@@ -255,10 +255,7 @@ RunDynamicFeatures <- function(
     verbose = verbose
   )
 
-  if (layer == "counts") {
-    gene_status <- status
-  }
-  gene_status <- status <- CheckDataType(srt, assay = assay, layer = layer)
+  gene_status <- CheckDataType(srt, assay = assay, layer = layer)
   meta_status <- sapply(meta, function(x) {
     CheckDataType(srt[[x]])
   })

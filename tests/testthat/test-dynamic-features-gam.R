@@ -118,3 +118,29 @@ test_that("dynamic raw matrix matches legacy construction", {
 
   expect_equal(dynamic_raw_matrix(y_ordered, t_ordered), legacy)
 })
+
+test_that("RunDynamicFeatures accepts custom library sizes for counts", {
+  if (identical(Sys.info()[["sysname"]], "Darwin") && getRversion() >= "4.6.0") {
+    skip("mgcv can segfault while loading on macOS ARM with R >= 4.6")
+  }
+  skip_if_not_installed("mgcv")
+
+  cells <- paste0("cell", seq_len(24))
+  counts <- Matrix::Matrix(
+    rbind(Gene1 = seq_len(24), Gene2 = rev(seq_len(24))),
+    sparse = TRUE
+  )
+  colnames(counts) <- cells
+  srt <- Seurat::CreateSeuratObject(counts)
+  srt$Lineage1 <- seq(0, 1, length.out = ncol(srt))
+
+  expect_no_error(
+    RunDynamicFeatures(
+      srt,
+      lineages = "Lineage1",
+      features = "Gene1",
+      libsize = rep(1, ncol(srt)),
+      verbose = FALSE
+    )
+  )
+})
