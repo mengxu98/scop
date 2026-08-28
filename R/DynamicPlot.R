@@ -11,6 +11,10 @@
 #' @param group_use Groups from `group.by` to
 #' keep. If both `group_use` and `cells` are provided, their intersection will
 #' be used.
+#' @param fit.by Optional metadata column used to fit an independent trajectory
+#' for each group over that group's observed pseudotime range. The fit is not
+#' extrapolated beyond observed cells. This does not change the existing
+#' point-coloring behavior of `group.by`.
 #' @param cells Cell names to use.
 #' @param family GLM family. `NULL` chooses automatically.
 #' @param exp_method Expression transform: `"log1p"`, `"raw"`, `"zscore"`, `"fc"`,
@@ -56,6 +60,23 @@
 #'   compare_features = TRUE
 #' )
 #'
+#' # Demonstration only: create two conditions spanning the same pseudotime.
+#' lineage1_cells <- rownames(pancreas_sub@meta.data)[
+#'   order(pancreas_sub$Lineage1, na.last = NA)
+#' ]
+#' pancreas_sub$condition <- NA_character_
+#' pancreas_sub$condition[lineage1_cells] <- rep(
+#'   c("control", "HUA"),
+#'   length.out = length(lineage1_cells)
+#' )
+#' DynamicPlot(
+#'   pancreas_sub,
+#'   lineages = "Lineage1",
+#'   features = "Vim",
+#'   group.by = "condition",
+#'   fit.by = "condition"
+#' )
+#'
 #' DynamicPlot(
 #'   pancreas_sub,
 #'   lineages = c("Lineage1", "Lineage2"),
@@ -79,6 +100,7 @@ DynamicPlot <- function(
   features,
   group.by = NULL,
   group_use = NULL,
+  fit.by = NULL,
   cells = NULL,
   layer = "counts",
   assay = NULL,
@@ -129,6 +151,20 @@ DynamicPlot <- function(
     if (length(group_missing) > 0) {
       log_message(
         "{.val {group_missing}} is not in the meta.data of srt object",
+        message_type = "error"
+      )
+    }
+  }
+  if (!is.null(fit.by)) {
+    if (length(fit.by) != 1) {
+      log_message(
+        "{.arg fit.by} must be one metadata column.",
+        message_type = "error"
+      )
+    }
+    if (!fit.by %in% colnames(srt@meta.data)) {
+      log_message(
+        "{.val {fit.by}} is not in the meta.data of srt object",
         message_type = "error"
       )
     }
@@ -200,24 +236,108 @@ DynamicPlot <- function(
   fitted_matrix_list <- list()
   upr_matrix_list <- list()
   lwr_matrix_list <- list()
+  fit_lineage_list <- list()
+  fit_group_list <- list()
+  if (is.null(fit.by)) {
+    fit_groups <- NA_character_
+  } else {
+    fit_cells <- rownames(srt@meta.data)
+    if (!is.null(cells)) {
+      fit_cells <- intersect(fit_cells, cells)
+    }
+    fit_values <- srt@meta.data[fit_cells, fit.by, drop = TRUE]
+    fit_groups <- unique(as.character(fit_values[!is.na(fit_values)]))
+    fit_groups <- fit_groups[nzchar(fit_groups)]
+    if (length(fit_groups) == 0) {
+      log_message(
+        "No non-missing groups found for {.arg fit.by} in the selected cells.",
+        message_type = "error"
+      )
+    }
+  }
   for (l in lineages) {
+    if (!is.null(fit.by)) {
+      n_fit_before <- length(raw_matrix_list)
+      for (g in fit_groups) {
+        group_cells <- fit_cells[
+          !is.na(fit_values) & as.character(fit_values) == g
+        ]
+        lineage_values <- srt@meta.data[group_cells, l, drop = TRUE]
+        valid_cells <- group_cells[is.finite(lineage_values)]
+        valid_pseudotime <- lineage_values[is.finite(lineage_values)]
+        if (length(valid_cells) < 4 || length(unique(valid_pseudotime)) < 3) {
+          log_message(
+            "Skip {.val {g}} in {.val {l}}: at least four cells and three unique pseudotime values are required.",
+            message_type = "warning",
+            verbose = verbose
+          )
+          next
+        }
+
+        srt_tmp <- srt
+        exclude_cells <- setdiff(rownames(srt_tmp@meta.data), valid_cells)
+        srt_tmp@meta.data[exclude_cells, l] <- NA_real_
+        srt_tmp <- RunDynamicFeatures(
+          srt_tmp,
+          lineages = l,
+          features = features,
+          assay = assay,
+          layer = layer,
+          family = family,
+          libsize = libsize,
+          cores = cores,
+          verbose = verbose
+        )
+        fit_result <- srt_tmp@tools[[paste0("DynamicFeatures_", l)]]
+        fit_id <- paste0("fit", length(raw_matrix_list) + 1L)
+        raw_matrix_list[[fit_id]] <- as_matrix(
+          fit_result[["raw_matrix"]][, features, drop = FALSE]
+        )
+        fitted_matrix_list[[fit_id]] <- as_matrix(
+          fit_result[["fitted_matrix"]][, features, drop = FALSE]
+        )
+        upr_matrix_list[[fit_id]] <- as_matrix(
+          fit_result[["upr_matrix"]][, features, drop = FALSE]
+        )
+        lwr_matrix_list[[fit_id]] <- as_matrix(
+          fit_result[["lwr_matrix"]][, features, drop = FALSE]
+        )
+        fit_lineage_list[[fit_id]] <- l
+        fit_group_list[[fit_id]] <- g
+        cell_union <- unique(c(
+          cell_union,
+          rownames(fit_result[["raw_matrix"]])
+        ))
+      }
+      if (length(raw_matrix_list) == n_fit_before) {
+        log_message(
+          "No group in {.val {fit.by}} has enough observations for {.val {l}}.",
+          message_type = "error"
+        )
+      }
+      next
+    }
+
     features_exist <- c()
     raw_matrix <- NULL
     if (paste0("DynamicFeatures_", l) %in% names(srt@tools)) {
       raw_matrix <- srt@tools[[paste0("DynamicFeatures_", l)]][["raw_matrix"]][
         ,
-        -1
+        -1,
+        drop = FALSE
       ]
       fitted_matrix <- srt@tools[[paste0("DynamicFeatures_", l)]][[
         "fitted_matrix"
-      ]][, -1]
+      ]][, -1, drop = FALSE]
       upr_matrix <- srt@tools[[paste0("DynamicFeatures_", l)]][["upr_matrix"]][
         ,
-        -1
+        -1,
+        drop = FALSE
       ]
       lwr_matrix <- srt@tools[[paste0("DynamicFeatures_", l)]][["lwr_matrix"]][
         ,
-        -1
+        -1,
+        drop = FALSE
       ]
       features_exist <- colnames(raw_matrix)
     }
@@ -284,6 +404,8 @@ DynamicPlot <- function(
     lwr_matrix_list[[l]] <- as_matrix(
       lwr_matrix[, features, drop = FALSE]
     )
+    fit_lineage_list[[l]] <- l
+    fit_group_list[[l]] <- NA_character_
     cell_union <- unique(c(cell_union, rownames(raw_matrix)))
   }
 
@@ -313,6 +435,7 @@ DynamicPlot <- function(
   }
 
   df_list <- list()
+  fit_groups_fitted <- unique(unlist(fit_group_list, use.names = FALSE))
   y_libsize <- Matrix::colSums(
     GetAssayData5(
       srt,
@@ -320,11 +443,13 @@ DynamicPlot <- function(
       layer = "counts"
     )
   )
-  for (l in lineages) {
-    raw_matrix <- raw_matrix_list[[l]]
-    fitted_matrix <- fitted_matrix_list[[l]]
-    upr_matrix <- upr_matrix_list[[l]]
-    lwr_matrix <- lwr_matrix_list[[l]]
+  for (fit_id in names(raw_matrix_list)) {
+    l <- fit_lineage_list[[fit_id]]
+    fit_group <- fit_group_list[[fit_id]]
+    raw_matrix <- raw_matrix_list[[fit_id]]
+    fitted_matrix <- fitted_matrix_list[[fit_id]]
+    upr_matrix <- upr_matrix_list[[fit_id]]
+    lwr_matrix <- lwr_matrix_list[[fit_id]]
     if (isTRUE(lib_normalize) && min(raw_matrix[, gene], na.rm = TRUE) >= 0) {
       if (!is.null(libsize)) {
         libsize_use <- libsize
@@ -464,7 +589,12 @@ DynamicPlot <- function(
 
     df_tmp <- rbind(raw, fitted)
     df_tmp[["Lineages"]] <- factor(l, levels = lineages)
-    df_list[[l]] <- df_tmp
+    df_tmp[["FitGroup"]] <- if (is.null(fit.by)) {
+      factor("all")
+    } else {
+      factor(fit_group, levels = fit_groups_fitted)
+    }
+    df_list[[fit_id]] <- df_tmp
   }
   df_all <- do.call(rbind, df_list)
   rownames(df_all) <- NULL
@@ -482,6 +612,11 @@ DynamicPlot <- function(
   df_all[["LineagesFeatures"]] <- paste(
     df_all[["Lineages"]],
     df_all[["Features"]],
+    sep = "-"
+  )
+  df_all[["LineagesFeaturesFitGroups"]] <- paste(
+    df_all[["LineagesFeatures"]],
+    df_all[["FitGroup"]],
     sep = "-"
   )
 
@@ -520,6 +655,9 @@ DynamicPlot <- function(
     features_guide <- TRUE
   } else {
     features_guide <- FALSE
+  }
+  if (!is.null(fit.by)) {
+    fill_by <- "FitGroup"
   }
 
   for (l in lineages_use) {
@@ -564,7 +702,15 @@ DynamicPlot <- function(
                   df[[group.by]],
                   palette = point_palette,
                   palcolor = point_palcolor
-                )
+                ),
+                guide = if (identical(group.by, fit.by)) {
+                  "none"
+                } else {
+                  guide_legend(
+                    override.aes = list(alpha = 1, size = 3),
+                    order = 1
+                  )
+                }
               ),
               scale_fill_manual(
                 values = palette_colors(
@@ -572,10 +718,14 @@ DynamicPlot <- function(
                   palette = point_palette,
                   palcolor = point_palcolor
                 ),
-                guide = guide_legend(
-                  override.aes = list(alpha = 1, size = 3),
-                  order = 1
-                )
+                guide = if (identical(group.by, fit.by)) {
+                  "none"
+                } else {
+                  guide_legend(
+                    override.aes = list(alpha = 1, size = 3),
+                    order = 1
+                  )
+                }
               ),
               ggnewscale::new_scale_color(),
               ggnewscale::new_scale_fill()
@@ -630,7 +780,7 @@ DynamicPlot <- function(
               ymin = .data[["lwr"]],
               ymax = .data[["upr"]],
               fill = .data[[fill_by]],
-              group = .data[["LineagesFeatures"]]
+              group = .data[["LineagesFeaturesFitGroups"]]
             ),
             alpha = 0.4,
             color = "grey90"
@@ -638,10 +788,21 @@ DynamicPlot <- function(
           scale_fill_manual(
             values = palette_colors(
               df[[fill_by]],
-              palette = line_palette,
-              palcolor = line_palcolor
+              palette = if (!is.null(fit.by) && identical(group.by, fit.by)) {
+                point_palette
+              } else {
+                line_palette
+              },
+              palcolor = if (!is.null(fit.by) && identical(group.by, fit.by)) {
+                point_palcolor
+              } else {
+                line_palcolor
+              }
             ),
-            guide = if (
+            name = if (is.null(fit.by)) NULL else fit.by,
+            guide = if (!is.null(fit.by)) {
+              "none"
+            } else if (
               fill_by == "Features" || lineages_guide || length(l) == 1
             ) {
               "none"
@@ -654,7 +815,46 @@ DynamicPlot <- function(
       } else {
         interval <- NULL
       }
-      if (isTRUE(compare_features)) {
+      if (!is.null(fit.by)) {
+        if (isTRUE(add_line)) {
+          line <- list(
+            geom_line(
+              data = subset(df, df[["Value"]] == "fitted"),
+              mapping = aes(
+                x = .data[["Pseudotime"]],
+                y = .data[["exp"]],
+                color = .data[["FitGroup"]],
+                group = .data[["LineagesFeaturesFitGroups"]]
+              ),
+              linewidth = line.size,
+              alpha = 0.8
+            ),
+            scale_color_manual(
+              name = fit.by,
+              values = palette_colors(
+                df[["FitGroup"]],
+                palette = if (identical(group.by, fit.by)) {
+                  point_palette
+                } else {
+                  line_palette
+                },
+                palcolor = if (identical(group.by, fit.by)) {
+                  point_palcolor
+                } else {
+                  line_palcolor
+                }
+              ),
+              guide = guide_legend(
+                override.aes = list(alpha = 1, linewidth = 2),
+                order = 2
+              )
+            ),
+            ggnewscale::new_scale_color()
+          )
+        } else {
+          line <- NULL
+        }
+      } else if (isTRUE(compare_features)) {
         line <- list(
           geom_line(
             data = subset(df, df[["Value"]] == "fitted"),
