@@ -87,6 +87,12 @@ trend matrix and gene modules in `srt@tools$CellRank$trends`.</p>
 <span>  cores <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  random_state <span class="op">=</span> <span class="fl">0L</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  envname <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  conda <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span>  min_expressed_cells <span class="op">=</span> <span class="fl">20L</span>,</span>
+<span>  distribution <span class="op">=</span> <span class="st">"gamma"</span>,</span>
+<span>  link <span class="op">=</span> <span class="st">"log"</span>,</span>
+<span>  fallback_distribution <span class="op">=</span> <span class="st">"normal"</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -161,6 +167,33 @@ trend matrix and gene modules in `srt@tools$CellRank$trends`.</p>
 
 <dt id="arg-output-dir">output_dir<a class="anchor" aria-label="anchor" href="#arg-output-dir"></a></dt>
 <dd><p>Optional directory for CSV exports.</p></dd>
+
+
+<dt id="arg-envname">envname<a class="anchor" aria-label="anchor" href="#arg-envname"></a></dt>
+<dd><p>Optional Python environment name. <code>NULL</code> uses the current
+SCOP environment selection.</p></dd>
+
+
+<dt id="arg-conda">conda<a class="anchor" aria-label="anchor" href="#arg-conda"></a></dt>
+<dd><p>Conda-compatible executable used by <a href="PrepareEnv.html">PrepareEnv</a>.</p></dd>
+
+
+<dt id="arg-min-expressed-cells">min_expressed_cells<a class="anchor" aria-label="anchor" href="#arg-min-expressed-cells"></a></dt>
+<dd><p>Minimum cells with positive finite expression
+required for a GAM feature.</p></dd>
+
+
+<dt id="arg-distribution">distribution<a class="anchor" aria-label="anchor" href="#arg-distribution"></a></dt>
+<dd><p>Primary CellRank GAM distribution.</p></dd>
+
+
+<dt id="arg-link">link<a class="anchor" aria-label="anchor" href="#arg-link"></a></dt>
+<dd><p>Link function for the primary GAM distribution.</p></dd>
+
+
+<dt id="arg-fallback-distribution">fallback_distribution<a class="anchor" aria-label="anchor" href="#arg-fallback-distribution"></a></dt>
+<dd><p>Optional distribution used when the primary
+model has a fatal fit failure; the selected distribution is recorded.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

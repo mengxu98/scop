@@ -66,7 +66,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">adata_to_srt</span><span class="op">(</span><span class="va">adata</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">adata_to_srt</span><span class="op">(</span><span class="va">adata</span>, prepare_env <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -76,6 +76,12 @@
 <dl><dt id="arg-adata">adata<a class="anchor" aria-label="anchor" href="#arg-adata"></a></dt>
 <dd><p>An AnnData object.
 Can be a Python AnnData object (from <code>scanpy</code>/<code>reticulate``), an </code>AnnDataR6<code>object from the</code>anndata<code>package, or an</code>InMemoryAnnData<code>object from the</code>anndataR` package.</p></dd>
+
+
+<dt id="arg-prepare-env">prepare_env<a class="anchor" aria-label="anchor" href="#arg-prepare-env"></a></dt>
+<dd><p>Whether to prepare and validate the Scanpy Python environment
+before conversion. Set to <code>FALSE</code> when a wrapper already prepared the
+environment and reticulate must keep the same binding.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

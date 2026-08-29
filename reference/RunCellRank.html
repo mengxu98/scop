@@ -106,7 +106,7 @@
 <span>  connectivity_weight <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>  softmax_scale <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  n_macrostates <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  schur_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"krylov"</span>, <span class="st">"brandts"</span><span class="op">)</span>,</span>
+<span>  schur_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"brandts"</span>, <span class="st">"krylov"</span><span class="op">)</span>,</span>
 <span>  schur_n_components <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_cells_terminal <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  terminal_states <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -127,6 +127,9 @@
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dirpath <span class="op">=</span> <span class="st">"./cellrank"</span>,</span>
 <span>  return_seurat <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span>,</span>
+<span>  envname <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  conda <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span>  recompute_neighbors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -308,8 +311,9 @@ If <code>NULL</code> (default), automatically determined based on eigenvalue spe
 
 
 <dt id="arg-schur-method">schur_method<a class="anchor" aria-label="anchor" href="#arg-schur-method"></a></dt>
-<dd><p>Method for Schur decomposition: <code>"krylov"</code> or <code>"brandts"</code>.
-Only used for GPCCA estimator.</p></dd>
+<dd><p>Method for Schur decomposition: <code>"brandts"</code> (default) or
+<code>"krylov"</code>. Only used for the GPCCA estimator. The <code>"krylov"</code> method requires
+the optional Python packages <code>petsc4py</code> and <code>slepc4py</code>.</p></dd>
 
 
 <dt id="arg-schur-n-components">schur_n_components<a class="anchor" aria-label="anchor" href="#arg-schur-n-components"></a></dt>
@@ -389,6 +393,21 @@ Can be <code>"on data"</code>, <code>"right margin"</code>, <code>"bottom right"
 
 <dt id="arg-dirpath">dirpath<a class="anchor" aria-label="anchor" href="#arg-dirpath"></a></dt>
 <dd><p>The directory to save the plots.</p></dd>
+
+
+<dt id="arg-envname">envname<a class="anchor" aria-label="anchor" href="#arg-envname"></a></dt>
+<dd><p>Optional Python environment name. <code>NULL</code> uses the current
+SCOP environment selection.</p></dd>
+
+
+<dt id="arg-conda">conda<a class="anchor" aria-label="anchor" href="#arg-conda"></a></dt>
+<dd><p>Conda-compatible executable used by <a href="PrepareEnv.html">PrepareEnv</a>.</p></dd>
+
+
+<dt id="arg-recompute-neighbors">recompute_neighbors<a class="anchor" aria-label="anchor" href="#arg-recompute-neighbors"></a></dt>
+<dd><p>Whether to rebuild Scanpy neighbors before a
+pseudotime kernel. If <code>FALSE</code>, the existing graph must be complete,
+connected, and aligned to the current cell order.</p></dd>
 
 
 <dt id="arg-return-seurat">return_seurat<a class="anchor" aria-label="anchor" href="#arg-return-seurat"></a></dt>
