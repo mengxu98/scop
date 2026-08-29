@@ -372,9 +372,13 @@ GetSimilarFeatures <- function(
   query <- as_matrix(Seurat::FetchData(srt, features))
   covariances_all <- data_use %*% query - gene_averages %o% colSums(query)
   correlations_all <- Matrix::Diagonal(x = 1 / gene_sds) %*% covariances_all
+  rownames(correlations_all) <- rownames(data_use)
 
   if (ncol(correlations_all) == 1) {
-    correlation <- as.vector(correlations_all)
+    correlation <- stats::setNames(
+      as.vector(correlations_all),
+      rownames(correlations_all)
+    )
   } else {
     correlation <- get_similar_features_aggregate(correlations_all, aggregator)
   }
