@@ -287,6 +287,38 @@ test_that("DynamicPlot subsets custom library sizes for grouped raw points", {
   )
 })
 
+test_that("DynamicPlot masks zero library sizes before shared transforms", {
+  srt <- make_dynamic_plot_test_object()
+  custom_libsize <- rep(1, ncol(srt))
+  custom_libsize[24] <- 0
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  plots <- suppressWarnings(DynamicPlot(
+    srt,
+    lineages = "Lineage1",
+    features = "Gene1",
+    group.by = "condition",
+    fit.by = "condition",
+    libsize = custom_libsize,
+    exp_method = "zscore",
+    add_line = FALSE,
+    add_interval = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  ))
+
+  point_data <- dynamic_plot_built_layer(plots[[1]], "point")
+  expect_equal(sum(is.finite(point_data$y)), 23)
+  expect_false(any(is.infinite(point_data$y)))
+})
+
 test_that("DynamicPlot uses shared expression transforms across fit groups", {
   values <- c(rep(1, 12), rep(3, 12))
   srt <- make_dynamic_plot_test_object(gene1_values = values)
@@ -740,6 +772,115 @@ test_that("DynamicPlot keeps a point guide for globally raw-only fit groups", {
     "C" %in% x$get_breaks() && !identical(x$guide, "none")
   }, logical(1)))
   expect_true(has_raw_only_guide)
+})
+
+test_that("DynamicPlot keeps a rug guide for globally raw-only fit groups", {
+  cells <- paste0("cell", seq_len(25))
+  counts <- Matrix::Matrix(rbind(Gene1 = seq_len(25)), sparse = TRUE)
+  colnames(counts) <- cells
+  srt <- Seurat::CreateSeuratObject(counts)
+  srt$condition <- c(rep("A", 10), rep("B", 10), rep("C", 5))
+  srt$Lineage1 <- c(
+    seq(0, 1, length.out = 10),
+    seq(0, 1, length.out = 10),
+    rep(NA_real_, 5)
+  )
+  srt$Lineage2 <- c(
+    seq(0, 1, length.out = 10),
+    rep(NA_real_, 10),
+    seq(0, 1, length.out = 5)
+  )
+  legend_plot <- NULL
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(
+        srt,
+        lineages,
+        features,
+        fitted_by_group = c(A = 1, B = 2, C = 3)
+      )
+    },
+    get_legend = function(plot) {
+      legend_plot <<- plot
+      grid::nullGrob()
+    },
+    .package = "scop"
+  )
+
+  DynamicPlot(
+    srt,
+    lineages = c("Lineage1", "Lineage2"),
+    features = "Gene1",
+    group.by = "condition",
+    fit.by = "condition",
+    compare_lineages = FALSE,
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_point = FALSE,
+    add_rug = TRUE,
+    add_interval = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  built <- ggplot2::ggplot_build(legend_plot)$plot
+  rug_layers <- Filter(
+    function(x) inherits(x$geom, "GeomRug"),
+    built$layers
+  )
+  expect_length(rug_layers, 1)
+  expect_true(rug_layers[[1]]$show.legend)
+  expect_true(any(vapply(built$scales$scales, function(x) {
+    "C" %in% x$get_breaks() && !identical(x$guide, "none")
+  }, logical(1))))
+})
+
+test_that("DynamicPlot disambiguates combined series legend labels", {
+  srt <- make_dynamic_plot_test_object()
+  srt@meta.data[["A - B"]] <- srt$Lineage1
+  srt@meta.data[["A"]] <- srt$Lineage2
+  srt@meta.data[["C"]] <- seq_len(ncol(srt))
+  srt@meta.data[["B - C"]] <- rev(seq_len(ncol(srt)))
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  plots <- DynamicPlot(
+    srt,
+    lineages = c("A - B", "A"),
+    features = c("C", "B - C"),
+    fit.by = "condition",
+    compare_lineages = TRUE,
+    compare_features = TRUE,
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_point = FALSE,
+    add_rug = FALSE,
+    add_interval = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  scales <- ggplot2::ggplot_build(plots[[1]])$plot$scales$scales
+  linetype_scale <- Filter(
+    function(x) "linetype" %in% x$aesthetics,
+    scales
+  )[[1]]
+  expect_length(unique(linetype_scale$get_labels()), 4)
+  expect_setequal(
+    linetype_scale$get_labels(),
+    c(
+      "Lineage: A - B; feature: C",
+      "Lineage: A; feature: C",
+      "Lineage: A - B; feature: B - C",
+      "Lineage: A; feature: B - C"
+    )
+  )
 })
 
 test_that("DynamicPlot deduplicates points across compared lineages", {
