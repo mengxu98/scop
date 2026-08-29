@@ -1257,7 +1257,7 @@ def CellRank(
     connectivity_weight=0.2,
     softmax_scale=4,
     n_macrostates=None,
-    schur_method="krylov",
+    schur_method="brandts",
     schur_n_components=None,
     n_cells_terminal=10,
     terminal_states=None,

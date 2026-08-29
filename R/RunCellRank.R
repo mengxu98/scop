@@ -66,8 +66,9 @@
 #' @param softmax_scale Scaling parameter for softmax transformation of velocity kernel.
 #' @param n_macrostates Number of macrostates to compute.
 #' If `NULL` (default), automatically determined based on eigenvalue spectrum.
-#' @param schur_method Method for Schur decomposition: `"krylov"` or `"brandts"`.
-#' Only used for GPCCA estimator.
+#' @param schur_method Method for Schur decomposition: `"brandts"` (default) or
+#' `"krylov"`. Only used for the GPCCA estimator. The `"krylov"` method requires
+#' the optional Python packages `petsc4py` and `slepc4py`.
 #' @param n_cells_terminal Minimum number of cells required for a state to be considered terminal.
 #' @param schur_n_components Number of Schur components. If `NULL`, retain the
 #' existing size heuristic.
@@ -184,7 +185,7 @@ RunCellRank <- function(
   connectivity_weight = 0.2,
   softmax_scale = 4,
   n_macrostates = NULL,
-  schur_method = c("krylov", "brandts"),
+  schur_method = c("brandts", "krylov"),
   schur_n_components = NULL,
   n_cells_terminal = 10,
   terminal_states = NULL,

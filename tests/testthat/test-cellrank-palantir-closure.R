@@ -246,6 +246,7 @@ test_that("RunCellRank stores named fate and driver payloads", {
     palette_colors = function(...) c(a = "#111111", b = "#222222"),
     scop_python_import = function(...) list(CellRank = function(...) {
       captured$recompute_neighbors <- list(...)$recompute_neighbors
+      captured$schur_method <- list(...)$schur_method
       list("adata", "estimator", "kernel", payload)
     }),
     adata_to_srt = function(...) adata_out
@@ -264,6 +265,18 @@ test_that("RunCellRank stores named fate and driver payloads", {
   expect_true(all(c("cellrank_fate_A", "cellrank_fate_B") %in% colnames(out@meta.data)))
   expect_equal(out@tools$CellRank$versions$cellrank, "2.3.2")
   expect_false(captured$recompute_neighbors)
+  expect_identical(captured$schur_method, "brandts")
+})
+
+test_that("RunCellRank default Schur method does not require PETSc", {
+  expect_identical(eval(formals(RunCellRank)$schur_method)[[1L]], "brandts")
+
+  python_source <- readLines(
+    system.file("python", "functions.py", package = "scop"),
+    warn = FALSE
+  )
+  expect_true(any(grepl('schur_method="brandts"', python_source, fixed = TRUE)))
+  expect_false(any(grepl('schur_method="krylov"', python_source, fixed = TRUE)))
 })
 
 test_that("CellRank trend fallback uses the CellRank normal distribution name", {
