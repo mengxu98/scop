@@ -724,6 +724,9 @@ DynamicPlot <- function(
           )
         }
       }
+      libsize_use[
+        !is.finite(libsize_use) | libsize_use <= 0
+      ] <- NA_real_
       raw_matrix[, gene] <- raw_matrix[, gene, drop = FALSE] /
         libsize_use *
         normalization_center
@@ -979,8 +982,9 @@ DynamicPlot <- function(
     fit_series_labels <- as.vector(outer(
       lineages,
       features,
-      paste,
-      sep = " - "
+      function(lineage, feature) {
+        paste0("Lineage: ", lineage, "; feature: ", feature)
+      }
     ))
   } else if (isTRUE(compare_features)) {
     fit_series_index <- feature_code
@@ -1044,6 +1048,8 @@ DynamicPlot <- function(
   hide_point_guide <- identical(group.by, fit.by) &&
     isTRUE(add_line) &&
     all(point_group_levels %in% fitted_group_levels)
+  show_rug_guide <- isTRUE(compare_features) ||
+    (!isTRUE(add_point) && !isTRUE(hide_point_guide))
 
   if (!is.null(cells)) {
     df_all <- df_all[df_all[["Cell"]] %in% cells, , drop = FALSE]
@@ -1183,7 +1189,7 @@ DynamicPlot <- function(
               ),
               alpha = 1,
               length = grid::unit(0.05, "npc"),
-              show.legend = isTRUE(compare_features)
+              show.legend = show_rug_guide
             ),
             scale_color_manual(
               values = point_palette_values,
