@@ -43,7 +43,8 @@ DynamicPlot(
   byrow = TRUE,
   cores = 1,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  fit.by = NULL
 )
 }
 \arguments{
@@ -59,6 +60,12 @@ DynamicPlot(
 keep. If both \code{group_use} and \code{cells} are provided, their intersection will
 be used.}
 
+\item{fit.by}{Optional metadata column used to fit an independent trajectory
+for each group over that group's observed pseudotime range. The fit is not
+extrapolated beyond observed cells. This does not change the existing
+point-coloring behavior of \code{group.by}. Groups with fewer than 10 cells or 10
+unique pseudotime values are shown as raw points or rugs but are not fitted.}
+
 \item{cells}{Cell names to use.}
 
 \item{layer}{Assay layer to use.}
@@ -68,14 +75,17 @@ be used.}
 \item{family}{GLM family. \code{NULL} chooses automatically.}
 
 \item{exp_method}{Expression transform: \code{"log1p"}, \code{"raw"}, \code{"zscore"}, \code{"fc"},
-or \code{"log2fc"}.}
+or \code{"log2fc"}. With \code{fit.by}, transform parameters are shared across groups
+within each lineage.}
 
 \item{lib_normalize}{Library-size normalize. Defaults to \code{TRUE} when \code{layer}
 is counts.}
 
 \item{libsize}{Library size for each cell.}
 
-\item{compare_lineages, compare_features}{Compare lineages or features on one plot.}
+\item{compare_lineages, compare_features}{Compare lineages or features on one
+plot. Grouped line or interval plots support up to six combined
+lineage-feature series.}
 
 \item{add_line, add_interval, line.size, line_palette, line_palcolor}{Fitted line and CI.}
 
@@ -133,6 +143,23 @@ DynamicPlot(
   group.by = "SubCellType",
   group_use = c("Ductal", "Beta"),
   compare_features = TRUE
+)
+
+# Demonstration only: create two conditions spanning the same pseudotime.
+lineage1_cells <- rownames(pancreas_sub@meta.data)[
+  order(pancreas_sub$Lineage1, na.last = NA)
+]
+pancreas_sub$condition <- NA_character_
+pancreas_sub$condition[lineage1_cells] <- rep(
+  c("control", "HUA"),
+  length.out = length(lineage1_cells)
+)
+DynamicPlot(
+  pancreas_sub,
+  lineages = "Lineage1",
+  features = "Vim",
+  group.by = "condition",
+  fit.by = "condition"
 )
 
 DynamicPlot(
