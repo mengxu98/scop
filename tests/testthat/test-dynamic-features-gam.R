@@ -144,3 +144,33 @@ test_that("RunDynamicFeatures accepts custom library sizes for counts", {
     )
   )
 })
+
+test_that("RunDynamicFeatures ignores unusable library sizes outside a lineage", {
+  if (identical(Sys.info()[["sysname"]], "Darwin") && getRversion() >= "4.6.0") {
+    skip("mgcv can segfault while loading on macOS ARM with R >= 4.6")
+  }
+  skip_if_not_installed("mgcv")
+
+  cells <- paste0("cell", seq_len(24))
+  counts <- Matrix::Matrix(
+    rbind(Gene1 = seq_len(24)),
+    sparse = TRUE
+  )
+  colnames(counts) <- cells
+  srt <- Seurat::CreateSeuratObject(counts)
+  srt$Lineage1 <- c(seq(0, 1, length.out = 12), rep(NA_real_, 12))
+  srt$score <- rep(c(1, 3, 2, 5, 4, 6, 5, 8, 7, 9, 8, 10), 2)
+  custom_libsize <- rep(1, ncol(srt))
+  custom_libsize[24] <- NA_real_
+
+  out <- RunDynamicFeatures(
+    srt,
+    lineages = "Lineage1",
+    features = "score",
+    family = "gaussian",
+    libsize = custom_libsize,
+    verbose = FALSE
+  )
+  fitted <- out@tools[["DynamicFeatures_Lineage1"]]$fitted_matrix[, "score"]
+  expect_equal(sum(is.finite(fitted)), 12)
+})

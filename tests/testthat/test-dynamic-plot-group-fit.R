@@ -255,6 +255,7 @@ test_that("DynamicPlot keeps raw points when a group lacks enough GAM support", 
 test_that("DynamicPlot subsets custom library sizes for grouped raw points", {
   srt <- make_dynamic_plot_test_object()
   custom_libsize <- seq_len(ncol(srt))
+  custom_libsize[24] <- NA_real_
 
   testthat::local_mocked_bindings(
     RunDynamicFeatures = function(srt, lineages, features, ...) {
@@ -263,7 +264,7 @@ test_that("DynamicPlot subsets custom library sizes for grouped raw points", {
     .package = "scop"
   )
 
-  plots <- DynamicPlot(
+  plots <- suppressWarnings(DynamicPlot(
     srt,
     lineages = "Lineage1",
     features = "Gene1",
@@ -276,10 +277,14 @@ test_that("DynamicPlot subsets custom library sizes for grouped raw points", {
     add_rug = FALSE,
     combine = FALSE,
     verbose = FALSE
-  )
+  ))
 
   point_data <- dynamic_plot_built_layer(plots[[1]], "point")
-  expect_equal(unique(point_data$y), stats::median(custom_libsize))
+  expect_equal(sum(is.finite(point_data$y)), 23)
+  expect_equal(
+    unique(point_data$y[is.finite(point_data$y)]),
+    stats::median(custom_libsize, na.rm = TRUE)
+  )
 })
 
 test_that("DynamicPlot uses shared expression transforms across fit groups", {
@@ -324,6 +329,37 @@ test_that("DynamicPlot uses shared expression transforms across fit groups", {
       tolerance = 1e-8,
       info = method
     )
+  }
+})
+
+test_that("DynamicPlot shared transforms ignore partial missing values", {
+  srt <- make_dynamic_plot_test_object()
+  srt$score <- seq_len(ncol(srt))
+  srt$score[3] <- NA_real_
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(srt, lineages, features)
+    },
+    .package = "scop"
+  )
+
+  for (method in c("zscore", "fc", "log2fc")) {
+    plots <- suppressWarnings(DynamicPlot(
+      srt,
+      lineages = "Lineage1",
+      features = "score",
+      fit.by = "condition",
+      exp_method = method,
+      lib_normalize = FALSE,
+      add_line = FALSE,
+      add_interval = FALSE,
+      add_rug = FALSE,
+      combine = FALSE,
+      verbose = FALSE
+    ))
+    point_data <- dynamic_plot_built_layer(plots[[1]], "point")
+    expect_equal(sum(is.finite(point_data$y)), 23)
   }
 })
 
@@ -645,6 +681,65 @@ test_that("DynamicPlot builds grouped legends from every panel", {
   )
   expect_length(fit_scales, 1)
   expect_setequal(fit_scales[[1]]$get_breaks(), c("control", "HUA"))
+})
+
+test_that("DynamicPlot keeps a point guide for globally raw-only fit groups", {
+  cells <- paste0("cell", seq_len(25))
+  counts <- Matrix::Matrix(
+    rbind(Gene1 = seq_len(25)),
+    sparse = TRUE
+  )
+  colnames(counts) <- cells
+  srt <- Seurat::CreateSeuratObject(counts)
+  srt$condition <- c(rep("A", 10), rep("B", 10), rep("C", 5))
+  srt$Lineage1 <- c(
+    seq(0, 1, length.out = 10),
+    seq(0, 1, length.out = 10),
+    rep(NA_real_, 5)
+  )
+  srt$Lineage2 <- c(
+    seq(0, 1, length.out = 10),
+    rep(NA_real_, 10),
+    seq(0, 1, length.out = 5)
+  )
+  legend_plot <- NULL
+
+  testthat::local_mocked_bindings(
+    RunDynamicFeatures = function(srt, lineages, features, ...) {
+      mock_dynamic_fit_result(
+        srt,
+        lineages,
+        features,
+        fitted_by_group = c(A = 1, B = 2, C = 3)
+      )
+    },
+    get_legend = function(plot) {
+      legend_plot <<- plot
+      grid::nullGrob()
+    },
+    .package = "scop"
+  )
+
+  DynamicPlot(
+    srt,
+    lineages = c("Lineage1", "Lineage2"),
+    features = "Gene1",
+    group.by = "condition",
+    fit.by = "condition",
+    compare_lineages = FALSE,
+    exp_method = "raw",
+    lib_normalize = FALSE,
+    add_interval = FALSE,
+    add_rug = FALSE,
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  scales <- ggplot2::ggplot_build(legend_plot)$plot$scales$scales
+  has_raw_only_guide <- any(vapply(scales, function(x) {
+    "C" %in% x$get_breaks() && !identical(x$guide, "none")
+  }, logical(1)))
+  expect_true(has_raw_only_guide)
 })
 
 test_that("DynamicPlot deduplicates points across compared lineages", {
