@@ -682,10 +682,26 @@ DynamicPlot <- function(
     } else {
       stats::setNames(as.numeric(libsize), colnames(srt))
     }
-    normalization_center <- stats::median(libsize_all)
   } else {
     libsize_all <- NULL
-    normalization_center <- stats::median(y_libsize)
+  }
+  normalization_libsize <- libsize_all %||% y_libsize
+  valid_normalization_libsize <- is.finite(normalization_libsize) &
+    normalization_libsize > 0
+  normalization_center <- if (any(valid_normalization_libsize)) {
+    stats::median(normalization_libsize[valid_normalization_libsize])
+  } else {
+    NA_real_
+  }
+  if (
+    isTRUE(lib_normalize) &&
+      length(gene) > 0 &&
+      !is.finite(normalization_center)
+  ) {
+    log_message(
+      "No finite positive library sizes are available for normalization.",
+      message_type = "error"
+    )
   }
 
   for (fit_id in names(raw_matrix_list)) {
@@ -782,20 +798,23 @@ DynamicPlot <- function(
       lwr_matrix <- lwr_matrix_list[[fit_id]]
 
       if (exp_method == "zscore") {
-        center <- Matrix::colMeans(transform_reference)
-        scale_sd <- MatrixGenerics::colSds(transform_reference)
+        center <- Matrix::colMeans(transform_reference, na.rm = TRUE)
+        scale_sd <- MatrixGenerics::colSds(
+          transform_reference,
+          na.rm = TRUE
+        )
         raw_matrix <- scale(raw_matrix, center = center, scale = scale_sd)
         fitted_matrix <- scale(fitted_matrix, center = center, scale = scale_sd)
         upr_matrix <- scale(upr_matrix, center = center, scale = scale_sd)
         lwr_matrix <- scale(lwr_matrix, center = center, scale = scale_sd)
       } else if (exp_method == "fc") {
-        colm <- Matrix::colMeans(transform_reference)
+        colm <- Matrix::colMeans(transform_reference, na.rm = TRUE)
         raw_matrix <- t(t(raw_matrix) / colm)
         fitted_matrix <- t(t(fitted_matrix) / colm)
         upr_matrix <- t(t(upr_matrix) / colm)
         lwr_matrix <- t(t(lwr_matrix) / colm)
       } else if (exp_method == "log2fc") {
-        colm <- Matrix::colMeans(transform_reference)
+        colm <- Matrix::colMeans(transform_reference, na.rm = TRUE)
         raw_matrix <- t(log2(t(raw_matrix) / colm))
         fitted_matrix <- t(log2(t(fitted_matrix) / colm))
         upr_matrix <- t(log2(t(upr_matrix) / colm))
@@ -1000,6 +1019,31 @@ DynamicPlot <- function(
     "solid", "dashed", "dotted", "dotdash", "longdash", "twodash"
   )[seq_along(fit_series_levels)]
   names(linetype_values) <- fit_series_levels
+  point_group_levels <- character()
+  point_palette_values <- NULL
+  if (!is.null(group.by)) {
+    point_groups_present <- unique(as.character(df_all[[group.by]][
+      df_all[["Value"]] == "raw"
+    ]))
+    point_groups_present <- point_groups_present[
+      !is.na(point_groups_present) & nzchar(point_groups_present)
+    ]
+    point_group_levels <- if (is.factor(df_all[[group.by]])) {
+      levels(df_all[[group.by]])[
+        levels(df_all[[group.by]]) %in% point_groups_present
+      ]
+    } else {
+      point_groups_present
+    }
+    point_palette_values <- palette_colors(
+      df_all[[group.by]],
+      palette = point_palette,
+      palcolor = point_palcolor
+    )
+  }
+  hide_point_guide <- identical(group.by, fit.by) &&
+    isTRUE(add_line) &&
+    all(point_group_levels %in% fitted_group_levels)
 
   if (!is.null(cells)) {
     df_all <- df_all[df_all[["Cell"]] %in% cells, , drop = FALSE]
@@ -1062,17 +1106,6 @@ DynamicPlot <- function(
         df[["Value"]] == "raw",
         unique(point_columns)
       ])
-      fitted_groups <- unique(as.character(df[[fit_group_col]][
-        df[["Value"]] == "fitted" & is.finite(df[["exp"]])
-      ]))
-      point_groups <- if (is.null(fit.by)) {
-        character()
-      } else {
-        unique(as.character(df[[fit_group_col]][df[["Value"]] == "raw"]))
-      }
-      hide_point_guide <- identical(group.by, fit.by) &&
-        isTRUE(add_line) &&
-        all(point_groups %in% fitted_groups)
       distinguish_fit_series <- !is.null(fit.by) && length(fit_series) > 1
       if (
         (isTRUE(add_line) || isTRUE(add_interval)) &&
@@ -1108,11 +1141,13 @@ DynamicPlot <- function(
                 alpha = 0.8
               ),
               scale_color_manual(
-                values = palette_colors(
-                  df[[group.by]],
-                  palette = point_palette,
-                  palcolor = point_palcolor
-                ),
+                values = point_palette_values,
+                limits = if (identical(group.by, fit.by)) {
+                  point_group_levels
+                } else {
+                  NULL
+                },
+                drop = !identical(group.by, fit.by),
                 guide = if (isTRUE(hide_point_guide)) {
                   "none"
                 } else {
@@ -1151,11 +1186,13 @@ DynamicPlot <- function(
               show.legend = isTRUE(compare_features)
             ),
             scale_color_manual(
-              values = palette_colors(
-                df[[group.by]],
-                palette = point_palette,
-                palcolor = point_palcolor
-              )
+              values = point_palette_values,
+              limits = if (identical(group.by, fit.by)) {
+                point_group_levels
+              } else {
+                NULL
+              },
+              drop = !identical(group.by, fit.by)
             ),
             ggnewscale::new_scale_color()
           )

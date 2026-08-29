@@ -390,6 +390,14 @@ dynamic_features_gam <- function(
   verbose
 ) {
   l_libsize <- y_libsize[names(t_ordered)]
+  valid_libsize <- is.finite(y_libsize) & y_libsize > 0
+  if (!any(valid_libsize)) {
+    log_message(
+      "No finite positive library sizes are available for GAM fitting.",
+      message_type = "error"
+    )
+  }
+  libsize_center <- stats::median(y_libsize[valid_libsize])
   gam_out <- parallelize_fun(
     rownames(y_ordered),
     function(n) {
@@ -413,7 +421,7 @@ dynamic_features_gam <- function(
       if (layer == "counts" && family_use != "gaussian" && !n %in% meta) {
         l_use <- l_libsize
       } else {
-        l_use <- rep(stats::median(y_libsize), ncol(y_ordered))
+        l_use <- rep(libsize_center, ncol(y_ordered))
       }
       valid <- is.finite(y) & is.finite(t_ordered) & is.finite(l_use) & l_use > 0
       if (sum(valid) < 4 || length(unique(t_ordered[valid])) < 3) {
@@ -424,7 +432,7 @@ dynamic_features_gam <- function(
         )
         log_message("insufficient finite observations", message_type = "error")
       }
-      sizefactror <- stats::median(y_libsize) / l_use
+      sizefactror <- libsize_center / l_use
       mod <- mgcv::gam(
         y ~ s(x, bs = "cs") + offset(log(l_use)),
         family = family_use,
