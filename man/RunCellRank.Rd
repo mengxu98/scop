@@ -44,7 +44,7 @@ RunCellRank(
   connectivity_weight = 0.2,
   softmax_scale = 4,
   n_macrostates = NULL,
-  schur_method = c("krylov", "brandts"),
+  schur_method = c("brandts", "krylov"),
   schur_n_components = NULL,
   n_cells_terminal = 10,
   terminal_states = NULL,
@@ -166,8 +166,9 @@ Weights are automatically normalized to sum to \code{1.0}.}
 \item{n_macrostates}{Number of macrostates to compute.
 If \code{NULL} (default), automatically determined based on eigenvalue spectrum.}
 
-\item{schur_method}{Method for Schur decomposition: \code{"krylov"} or \code{"brandts"}.
-Only used for GPCCA estimator.}
+\item{schur_method}{Method for Schur decomposition: \code{"brandts"} (default) or
+\code{"krylov"}. Only used for the GPCCA estimator. The \code{"krylov"} method requires
+the optional Python packages \code{petsc4py} and \code{slepc4py}.}
 
 \item{schur_n_components}{Number of Schur components. If \code{NULL}, retain the
 existing size heuristic.}
