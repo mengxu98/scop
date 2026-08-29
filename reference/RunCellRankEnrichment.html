@@ -82,6 +82,7 @@ keep complete tables and an execution manifest in the Seurat object.</p>
 <span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span>,</span>
 <span>  show_category <span class="op">=</span> <span class="fl">8L</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  continue_on_error <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -137,6 +138,11 @@ lineage drivers.</p></dd>
 
 <dt id="arg-output-dir">output_dir<a class="anchor" aria-label="anchor" href="#arg-output-dir"></a></dt>
 <dd><p>Optional directory for CSV/PDF exports.</p></dd>
+
+
+<dt id="arg-continue-on-error">continue_on_error<a class="anchor" aria-label="anchor" href="#arg-continue-on-error"></a></dt>
+<dd><p>Whether to keep other modules when one enrichment
+call fails. Failures are recorded in the manifest.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
