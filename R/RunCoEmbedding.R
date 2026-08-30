@@ -176,12 +176,12 @@ RunCoEmbedding <- function(
 
   coembed <- merge(reference, srt)
   SeuratObject::DefaultAssay(coembed) <- reference_assay
-  coembed <- Seurat::ScaleData(
+  coembed <- ScaleData(
     coembed,
     features = anchor_features,
     verbose = FALSE
   )
-  coembed <- Seurat::RunPCA(
+  coembed <- RunPCA(
     coembed,
     features = anchor_features,
     npcs = npcs,
@@ -189,7 +189,7 @@ RunCoEmbedding <- function(
     reduction.key = paste0(coembed_prefix, "PCA_"),
     verbose = FALSE
   )
-  coembed <- Seurat::RunUMAP(
+  coembed <- RunUMAP(
     coembed,
     reduction = paste0(coembed_prefix, "PCA"),
     dims = umap_dims,
