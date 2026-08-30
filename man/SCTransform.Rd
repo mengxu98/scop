@@ -18,13 +18,8 @@ An object with SCTransform results.
 Apply SCTransform normalization
 }
 \details{
-Calls that stick to the scop fast path defaults (\verb{vst.flavor = "v2"}, no
-\code{conserve.memory}) run through scop's optimized sparse implementation.
-Regression variables passed via \code{vars.to.regress} or \code{latent.data}
-are removed from the centered residuals with an ordinary least-squares fit on
-the fast path, matching Seurat's post-VST regression semantics. Truly
-unsupported combinations, such as \code{conserve.memory},
-\code{reference.SCT.model}, \code{residual.features}, or
-\verb{vst.flavor = "v1"}, automatically delegate to the original
-\code{\link[Seurat:SCTransform]{Seurat::SCTransform}} implementation.
+The validated sparse `vst.flavor = "v2"` path uses native corrected-count
+and residual kernels. Reference models, specified residual features,
+memory-conserving mode, regression, custom VST arguments, and other flavors
+transparently delegate to `Seurat::SCTransform`.
 }

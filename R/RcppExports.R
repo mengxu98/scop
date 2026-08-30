@@ -717,8 +717,16 @@ sct_stats_correct_sparse <- function(intercepts, cell_mu_base, csr_row_ptr, csr_
     .Call(`_scop_sct_stats_correct_sparse`, intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, corr_factor, min_var, clip_lo, clip_hi, do_correct)
 }
 
-sct_fused_resid_center_sparse <- function(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi) {
-    .Call(`_scop_sct_fused_resid_center_sparse`, intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi)
+sct_fused_resid_center_sparse <- function(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi, do_center, do_scale) {
+    .Call(`_scop_sct_fused_resid_center_sparse`, intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi, do_center, do_scale)
+}
+
+sct_fit_beta_intercept_offset <- function(y, log_offset, dispersions, beta_start = NULL, return_mu = FALSE, tolerance = 1e-8, max_iter = 100L) {
+    .Call(`_scop_sct_fit_beta_intercept_offset`, y, log_offset, dispersions, beta_start, return_mu, tolerance, max_iter)
+}
+
+sct_overdispersion_mle_intercept <- function(y, mu, max_iter = 200L, tolerance = 1e-8) {
+    .Call(`_scop_sct_overdispersion_mle_intercept`, y, mu, max_iter, tolerance)
 }
 
 tage_elastic_net_predict_cpp <- function(expr, feature_match, imputer, center, scale, coef, intercept) {
