@@ -251,14 +251,14 @@ FindVariableFeatures.StdAssay <- function(
     ]
     return(object)
   }
+  layer_query <- layer %||% "counts"
   if (
     !inherits(object, "Assay5") ||
-      length(SeuratObject::Layers(object, search = "counts")) == 0L
+      length(SeuratObject::Layers(object, search = layer_query)) == 0L
   ) {
     log_message("FindVariableFeatures.StdAssay requires an Assay5 object with a counts layer.", message_type = "error")
   }
-  counts_layers <- SeuratObject::Layers(object, search = "counts")
-  counts_layers <- counts_layers[grepl("^counts(\\.|$)", counts_layers)]
+  counts_layers <- SeuratObject::Layers(object, search = layer_query)
   if (length(counts_layers) == 0L) {
     log_message("FindVariableFeatures.StdAssay requires an Assay5 object with a counts layer.", message_type = "error")
   }
@@ -337,8 +337,8 @@ FindVariableFeatures.StdAssay <- function(
     SeuratObject::VariableFeatures(object) <- consensus_features
     return(object)
   }
-  colnames(hvf.info) <- paste("vf_vst_counts", colnames(hvf.info), sep = "_")
-  rownames(hvf.info) <- SeuratObject::Features(object, layer = "counts")
+  colnames(hvf.info) <- paste("vf_vst", counts_layers[[1L]], colnames(hvf.info), sep = "_")
+  rownames(hvf.info) <- SeuratObject::Features(object, layer = counts_layers[[1L]])
   object[["var.features"]] <- NULL
   object[["var.features.rank"]] <- NULL
   object[[names(hvf.info)]] <- NULL
@@ -424,6 +424,9 @@ FindVariableFeatures.Seurat <- function(
   verbose = TRUE,
   ...
 ) {
+  dots <- list(...)
+  unnamed_dots <- length(dots) > 0L &&
+    (is.null(names(dots)) || any(!nzchar(names(dots))))
   selection.method <- switch(
     EXPR = selection.method,
     mvp = "mean.var.plot",
@@ -442,6 +445,39 @@ FindVariableFeatures.Seurat <- function(
     assay[1L]
   }
   assay_obj <- object[[assay]]
+  # Custom layer/method arguments and SCTAssay residual handling are owned by
+  # Seurat. Delegate these uncommon branches instead of silently dropping them.
+  native_layer <- dots[["layer"]]
+  remaining_dots <- dots[setdiff(names(dots), "layer")]
+  if (
+    unnamed_dots || length(remaining_dots) > 0L ||
+      inherits(assay_obj, "SCTAssay") ||
+      (!is.null(native_layer) && !identical(selection.method, "vst"))
+  ) {
+    fallback_args <- list(
+      object = object,
+      assay = assay,
+      selection.method = selection.method,
+      loess.span = loess.span,
+      clip.max = clip.max,
+      num.bin = num.bin,
+      binning.method = binning.method,
+      nfeatures = nfeatures,
+      mean.cutoff = mean.cutoff,
+      dispersion.cutoff = dispersion.cutoff,
+      verbose = verbose
+    )
+    if (!is.null(mean.function)) {
+      fallback_args$mean.function <- mean.function
+    }
+    if (!is.null(dispersion.function)) {
+      fallback_args$dispersion.function <- dispersion.function
+    }
+    return(do.call(
+      utils::getFromNamespace("FindVariableFeatures.Seurat", "Seurat"),
+      c(fallback_args, dots)
+    ))
+  }
   if (identical(selection.method, "vst")) {
     if (
       length(SeuratObject::Layers(assay_obj, search = "counts")) == 0L
@@ -451,12 +487,13 @@ FindVariableFeatures.Seurat <- function(
     assay_obj <- FindVariableFeatures.StdAssay(
       object = assay_obj,
       nfeatures = nfeatures,
+      layer = native_layer,
       span = loess.span,
       clip = if (identical(clip.max, "auto")) NULL else clip.max,
       verbose = verbose
     )
     methods::slot(object, "assays")[[assay]] <- assay_obj
-    return(object)
+    return(SeuratObject::LogSeuratCommand(object))
   }
   data_layers <- SeuratObject::Layers(assay_obj, search = "data")
   data_layers <- data_layers[grepl("^data(\\.|$)", data_layers)]
@@ -508,7 +545,7 @@ FindVariableFeatures.Seurat <- function(
     )
     SeuratObject::VariableFeatures(assay_obj) <- consensus_features
     methods::slot(object, "assays")[[assay]] <- assay_obj
-    return(object)
+    return(SeuratObject::LogSeuratCommand(object))
   }
 
   data_mat <- tryCatch(
@@ -537,7 +574,7 @@ FindVariableFeatures.Seurat <- function(
   assay_obj[[colnames(hvf.info)]] <- hvf.info
   assay_obj[[vf.name]] <- rownames(assay_obj[[]]) %in% top.features
   methods::slot(object, "assays")[[assay]] <- assay_obj
-  object
+  SeuratObject::LogSeuratCommand(object)
 }
 
 #' Find variable features
@@ -552,6 +589,21 @@ FindVariableFeatures <- function(object, ...) {
 }
 
 #' @export
-FindVariableFeatures.default <- function(object, ...) {
-  log_message("FindVariableFeatures supports Seurat and StdAssay objects.", message_type = "error")
+FindVariableFeatures.default <- function(
+  object,
+  method = NULL,
+  nfeatures = 2000L,
+  verbose = TRUE,
+  selection.method = selection.method,
+  ...
+) {
+  vst <- utils::getFromNamespace("VST", "Seurat")
+  method_use <- method %||% vst
+  get("FindVariableFeatures.default", asNamespace("Seurat"))(
+    object = object,
+    method = method_use,
+    nfeatures = nfeatures,
+    verbose = verbose,
+    ...
+  )
 }

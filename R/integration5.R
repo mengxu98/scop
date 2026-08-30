@@ -697,7 +697,7 @@ run_integration5 <- function(
         "Perform {.fn Seurat::NormalizeData} on split layers for Seurat v5 integration",
         verbose = verbose
       )
-      srt_integrated <- Seurat::NormalizeData(
+      srt_integrated <- NormalizeData(
         object = srt_integrated,
         assay = assay,
         normalization.method = "LogNormalize",
@@ -720,7 +720,7 @@ run_integration5 <- function(
             "Perform {.fn Seurat::FindVariableFeatures} per batch ({.arg HVF_source = 'separate'})",
             verbose = verbose
           )
-          srt_integrated <- Seurat::FindVariableFeatures(
+          srt_integrated <- FindVariableFeatures(
             object = srt_integrated,
             assay = assay,
             nfeatures = nHVF,
@@ -763,7 +763,7 @@ run_integration5 <- function(
           )
           srt_global <- srt_integrated
           srt_global[[assay]] <- SeuratObject::JoinLayers(srt_global[[assay]])
-          srt_global <- Seurat::FindVariableFeatures(
+          srt_global <- FindVariableFeatures(
             object = srt_global,
             assay = assay,
             nfeatures = nHVF,
@@ -825,7 +825,7 @@ run_integration5 <- function(
         "Perform {.fn Seurat::ScaleData} on split layers for Seurat v5 integration",
         verbose = verbose
       )
-      srt_integrated <- Seurat::ScaleData(
+      srt_integrated <- ScaleData(
         object = srt_integrated,
         assay = assay,
         features = HVF,

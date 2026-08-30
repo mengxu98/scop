@@ -1,8 +1,5 @@
 #include <Rcpp.h>
 #include <cmath>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 using namespace Rcpp;
 
 static inline double column_total(const double* values, int begin, int end) {
@@ -28,9 +25,6 @@ void log_normalize_dgc(S4 mat, double scale_factor, int grain_size = 100) {
   double* values = REAL(x);
   const int* colptr = INTEGER(p);
 
-  #ifdef _OPENMP
-  #pragma omp parallel for schedule(dynamic, grain_size)
-  #endif
   for (int col = 0; col < columns; ++col) {
     const int first = colptr[col];
     const int last = colptr[col + 1];
