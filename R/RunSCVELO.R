@@ -12,13 +12,16 @@
 #' @param backend Backend used to compute RNA velocity. `"python"` keeps the
 #' original scVelo workflow. `"cpp"` uses the package C++ implementation for a
 #' stochastic velocity embedding that is compatible with [VelocityPlot].
+#' The C++ backend never switches to Python implicitly.
 #' @param max_dense_gib Maximum estimated GiB allowed for the dense expression
 #' working matrices used by the C++ path.
 #' @param filter_genes Whether to filter genes based on minimum counts.
 #' @param min_counts Minimum counts for gene filtering.
 #' @param min_counts_u Minimum unspliced counts for gene filtering.
 #' @param normalize_per_cell Whether to normalize counts per cell.
-#' @param log_transform Whether to apply log transformation.
+#' @param log_transform Whether to apply log transformation to AnnData `X` in
+#' the Python backend. The C++ velocity calculation uses spliced/unspliced
+#' layers, matching scVelo, so this does not alter its velocity matrices.
 #' @param use_raw Whether to use raw data for dynamical modeling.
 #' @param diff_kinetics Whether to use differential kinetics.
 #' @param denoise_topn Number of genes with highest likelihood selected to infer velocity directions.
@@ -133,39 +136,7 @@ RunSCVELO <- function(
   plot_format <- match.arg(plot_format)
 
   if (identical(backend, "cpp")) {
-    unsupported_cpp <- character()
-    if (isTRUE(magic_impute)) {
-      unsupported_cpp <- c(unsupported_cpp, "magic_impute")
-    }
-    if (isTRUE(use_raw)) {
-      unsupported_cpp <- c(unsupported_cpp, "use_raw")
-    }
-    if (isTRUE(diff_kinetics)) {
-      unsupported_cpp <- c(unsupported_cpp, "diff_kinetics")
-    }
-    if (isTRUE(denoise)) {
-      unsupported_cpp <- c(unsupported_cpp, "denoise")
-    }
-    if (isTRUE(kinetics)) {
-      unsupported_cpp <- c(unsupported_cpp, "kinetics")
-    }
-    if (isTRUE(calculate_velocity_genes)) {
-      unsupported_cpp <- c(unsupported_cpp, "calculate_velocity_genes")
-    }
-    if (isTRUE(compute_paga)) {
-      unsupported_cpp <- c(unsupported_cpp, "compute_paga")
-    }
-    if (isTRUE(show_plot)) {
-      unsupported_cpp <- c(unsupported_cpp, "show_plot")
-    }
-    if (isTRUE(save_plot)) {
-      unsupported_cpp <- c(unsupported_cpp, "save_plot")
-    }
-    reject_unsupported_cpp_arguments(
-      unsupported_cpp,
-      "RunSCVELO(backend = \"cpp\")"
-    )
-    return(run_scanpy_cpp(
+    srt <- run_scanpy_cpp(
       srt = srt,
       assay_x = assay_x,
       assay_y = assay_y,
@@ -187,18 +158,54 @@ RunSCVELO <- function(
       compute_velocity_confidence = compute_velocity_confidence,
       compute_velocity_graph = compute_velocity_graph,
       fitting_by = fitting_by,
+      use_raw = use_raw,
+      diff_kinetics = diff_kinetics,
+      denoise = denoise,
+      denoise_topn = denoise_topn,
+      kinetics = kinetics,
+      kinetics_topn = kinetics_topn,
+      calculate_velocity_genes = calculate_velocity_genes,
+      magic_impute = magic_impute,
+      magic_knn = knn,
+      magic_t = t,
       max_dense_gib = max_dense_gib,
       cores = cores,
       return_seurat = return_seurat,
       verbose = verbose
-    ))
+    )
+    if (isTRUE(compute_paga)) {
+      srt <- run_paga_cpp(
+        srt = srt, group.by = group.by,
+        linear_reduction = linear_reduction,
+        nonlinear_reduction = nonlinear_reduction,
+        n_pcs = n_pcs, n_neighbors = n_neighbors,
+        paga_layout = "fr", threshold = 0.1, cores = cores,
+        use_rna_velocity = TRUE, vkey = unlist(mode)[[1L]],
+        verbose = verbose
+      )
+    }
+    if (isTRUE(show_plot) || isTRUE(save_plot)) {
+      plot <- VelocityPlot(
+        srt, reduction = nonlinear_reduction, velocity = unlist(mode)[[1L]],
+        plot_type = "stream", group.by = group.by,
+        density = stream_density, smooth = stream_smooth %||% 0.5,
+        streamline_width = c(0, arrow_size / 5)
+      )
+      if (isTRUE(show_plot)) print(plot)
+      if (isTRUE(save_plot)) {
+        dir.create(dirpath, recursive = TRUE, showWarnings = FALSE)
+        ggplot2::ggsave(file.path(dirpath, paste0(plot_prefix, ".", plot_format)), plot, dpi = plot_dpi)
+      }
+    }
+    return(srt)
   }
 
-  PrepareEnv(
+  prepare_env_if_needed(
     modules = c(
       "scvelo",
       if (isTRUE(magic_impute)) "magic"
-    )
+    ),
+    verbose = verbose
   )
 
   if (all(is.null(srt), is.null(adata))) {
@@ -301,6 +308,7 @@ RunSCVELO <- function(
       layer_x = layer_x,
       assay_y = assay_y,
       layer_y = layer_y,
+      prepare_env = FALSE,
       verbose = verbose
     )
   }
@@ -447,6 +455,16 @@ run_scanpy_cpp <- function(
   compute_velocity_confidence = FALSE,
   compute_velocity_graph = NULL,
   fitting_by = c("stochastic", "deterministic", "em", "nm"),
+  use_raw = FALSE,
+  diff_kinetics = FALSE,
+  denoise = FALSE,
+  denoise_topn = 3,
+  kinetics = FALSE,
+  kinetics_topn = 100,
+  calculate_velocity_genes = FALSE,
+  magic_impute = FALSE,
+  magic_knn = 5,
+  magic_t = 2,
   max_dense_gib = 8,
   cores,
   return_seurat,
@@ -542,7 +560,9 @@ run_scanpy_cpp <- function(
   initial_unspliced_totals <- Matrix::colSums(unspliced_raw)
   keep <- if (isTRUE(filter_genes)) {
     Matrix::rowSums(spliced_raw) >= as.integer(min_counts) &
-      Matrix::rowSums(unspliced_raw) >= as.integer(min_counts_u)
+      Matrix::rowSums(unspliced_raw) >= as.integer(min_counts_u) &
+      (Matrix::rowSums(spliced_raw) + Matrix::rowSums(unspliced_raw)) >=
+        as.integer(min_shared_counts)
   } else {
     rep(TRUE, length(features))
   }
@@ -564,15 +584,21 @@ run_scanpy_cpp <- function(
   unspliced <- as.matrix(unspliced_raw[keep, , drop = FALSE])
   storage.mode(spliced) <- "double"
   storage.mode(unspliced) <- "double"
-  normed <- scanpy_normalize_cpp(
-    spliced = spliced,
-    unspliced = unspliced,
-    initial_spliced_totals = initial_spliced_totals,
-    initial_unspliced_totals = initial_unspliced_totals
-  )
-  spliced_n <- normed[["spliced_norm"]]
-  unspliced_n <- normed[["unspliced_norm"]]
-  rm(spliced, unspliced, spliced_raw, unspliced_raw, normed)
+  if (isTRUE(normalize_per_cell)) {
+    normed <- scanpy_normalize_cpp(
+      spliced = spliced,
+      unspliced = unspliced,
+      initial_spliced_totals = initial_spliced_totals,
+      initial_unspliced_totals = initial_unspliced_totals
+    )
+    spliced_n <- normed[["spliced_norm"]]
+    unspliced_n <- normed[["unspliced_norm"]]
+    rm(normed)
+  } else {
+    spliced_n <- spliced
+    unspliced_n <- unspliced
+  }
+  rm(spliced, unspliced, spliced_raw, unspliced_raw)
   invisible(gc(full = TRUE))
   linear_embedding_all <- as.matrix(
     srt@reductions[[linear_reduction]]@cell.embeddings[cells, , drop = FALSE]
@@ -631,7 +657,13 @@ run_scanpy_cpp <- function(
       log_transform = log_transform,
       compute_velocity_graph = isTRUE(compute_velocity_graph),
       n_genes_filtered = as.integer(length(features_out)),
-      max_dense_gib = max_dense_gib
+      max_dense_gib = max_dense_gib,
+      use_raw = isTRUE(use_raw),
+      diff_kinetics = isTRUE(diff_kinetics),
+      denoise = isTRUE(denoise),
+      kinetics = isTRUE(kinetics),
+      calculate_velocity_genes = isTRUE(calculate_velocity_genes),
+      magic_impute = isTRUE(magic_impute)
     )
   )
 
@@ -663,11 +695,7 @@ run_scanpy_cpp <- function(
     } else if (identical(m, "dynamical")) {
       # First fit the dynamical model per gene
       n_genes <- nrow(Ms)
-      dyn_genes <- if (n_genes > 200) {
-        sample.int(n_genes, min(n_genes, 200))
-      } else {
-        seq_len(n_genes)
-      }
+      dyn_genes <- seq_len(min(n_genes, 200L))
       fitting_by <- match.arg(fitting_by)
       fitting_by <- switch(fitting_by,
         stochastic = "em",
@@ -736,6 +764,11 @@ run_scanpy_cpp <- function(
     if ("r2" %in% names(velocity)) {
       srt@tools[["SCVELO"]][[m]]$r2 <- velocity[["r2"]]
       srt@tools[["SCVELO"]][[m]]$velocity_genes <- velocity[["velocity_genes"]]
+      names(srt@tools[["SCVELO"]][[m]]$velocity_genes) <- features_out
+      if (isTRUE(calculate_velocity_genes)) {
+        srt@tools[["SCVELO"]][[m]]$velocity_gene_names <-
+          features_out[as.logical(velocity[["velocity_genes"]])]
+      }
     }
     if ("residual" %in% names(velocity)) {
       srt@tools[["SCVELO"]][[m]]$residual <- velocity[["residual"]]
@@ -752,6 +785,24 @@ run_scanpy_cpp <- function(
       if (sum(graph_gene_idx) < 2L) {
         graph_gene_idx <- rep(TRUE, nrow(Ms))
       }
+    }
+    if ((isTRUE(denoise) || isTRUE(kinetics)) && "r2" %in% names(velocity)) {
+      top_n <- if (isTRUE(kinetics)) kinetics_topn else denoise_topn
+      selected <- head(order(velocity[["r2"]], decreasing = TRUE), max(2L, as.integer(top_n)))
+      graph_gene_idx[] <- FALSE
+      graph_gene_idx[selected] <- TRUE
+    }
+    if (isTRUE(diff_kinetics) && !is.null(group.by) &&
+      group.by %in% colnames(srt@meta.data)) {
+      groups <- factor(srt@meta.data[[group.by]])
+      differential_gamma <- vapply(levels(groups), function(group) {
+        idx <- which(groups == group)
+        denominator <- rowSums(Ms[, idx, drop = FALSE]^2)
+        rowSums(Ms[, idx, drop = FALSE] * Mu[, idx, drop = FALSE]) /
+          pmax(denominator, .Machine$double.eps)
+      }, numeric(nrow(Ms)))
+      rownames(differential_gamma) <- features_out
+      srt@tools[["SCVELO"]][[m]]$differential_kinetics <- differential_gamma
     }
     srt@tools[["SCVELO"]][[m]]$n_velocity_graph_genes <- sum(graph_gene_idx)
     vc_main <- scanpy_velocity_confidence_cpp(
@@ -880,6 +931,24 @@ run_scanpy_cpp <- function(
       message_type = "success",
       verbose = verbose
     )
+  }
+
+  if (isTRUE(magic_impute)) {
+    magic_k <- min(max(1L, as.integer(magic_knn)), ncol(knn[["idx"]]))
+    rows <- rep(seq_len(ncol(srt)), each = magic_k)
+    cols <- as.vector(t(knn[["idx"]][, seq_len(magic_k), drop = FALSE]))
+    transition <- Matrix::sparseMatrix(
+      i = rows, j = cols, x = 1 / magic_k,
+      dims = c(ncol(srt), ncol(srt))
+    )
+    transition <- transition + Matrix::Diagonal(ncol(srt))
+    transition <- Matrix::Diagonal(x = 1 / Matrix::rowSums(transition)) %*% transition
+    power <- max(1L, as.integer(magic_t))
+    smoothed <- transition
+    if (power > 1L) for (i in 2:power) smoothed <- smoothed %*% transition
+    srt@tools[["SCVELO"]]$magic_imputed_data <- Ms %*% Matrix::t(smoothed)
+    rownames(srt@tools[["SCVELO"]]$magic_imputed_data) <- features_out
+    colnames(srt@tools[["SCVELO"]]$magic_imputed_data) <- colnames(srt)
   }
 
   srt@tools[["SCVELO"]]$mode <- mode_use

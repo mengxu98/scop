@@ -7,6 +7,7 @@
 #' @param backend Backend used to compute Palantir. `"python"` keeps the
 #' reference Palantir workflow and remains the default. `"cpp"` uses an
 #' approximate C++ workflow and stores results in `srt@tools[["Palantir"]]`.
+#' The C++ backend never switches to Python implicitly.
 #' @param allow_approximate Whether to allow the approximate C++ workflow. This
 #' must be `TRUE` when `backend = "cpp"`.
 #' @param dm_n_components The number of diffusion components to calculate.
@@ -155,30 +156,10 @@ RunPalantir <- function(
         message_type = "error"
       )
     }
-    unsupported_cpp <- character(0)
-    if (isTRUE(adjust_early_cell)) {
-      unsupported_cpp <- c(unsupported_cpp, "adjust_early_cell")
-    }
-    if (isTRUE(adjust_terminal_cells)) {
-      unsupported_cpp <- c(unsupported_cpp, "adjust_terminal_cells")
-    }
-    if (isTRUE(show_plot)) {
-      unsupported_cpp <- c(unsupported_cpp, "show_plot")
-    }
-    if (isTRUE(save_plot)) {
-      unsupported_cpp <- c(unsupported_cpp, "save_plot")
-    }
-    if (isTRUE(magic_impute)) {
-      unsupported_cpp <- c(unsupported_cpp, "magic_impute")
-    }
-    if (length(unsupported_cpp) > 0L) {
-      reject_unsupported_cpp_arguments(
-        unsupported_cpp,
-        "RunPalantir(backend = \"cpp\")"
-      )
-    }
-    return(run_palantir_cpp(
+    srt <- run_palantir_cpp(
       srt = srt,
+      assay_x = assay_x,
+      layer_x = layer_x,
       group.by = group.by,
       linear_reduction = linear_reduction,
       nonlinear_reduction = nonlinear_reduction,
@@ -186,6 +167,7 @@ RunPalantir <- function(
       n_neighbors = n_neighbors,
       dm_n_components = dm_n_components,
       dm_alpha = dm_alpha,
+      dm_n_eigs = dm_n_eigs,
       early_group = early_group,
       early_cell = early_cell,
       terminal_cells = terminal_cells,
@@ -193,10 +175,23 @@ RunPalantir <- function(
       num_waypoints = num_waypoints,
       scale_components = scale_components,
       use_early_cell_as_start = use_early_cell_as_start,
+      adjust_early_cell = adjust_early_cell,
+      adjust_terminal_cells = adjust_terminal_cells,
       max_iterations = max_iterations,
+      magic_impute = magic_impute,
+      magic_layer = magic_layer,
       cores = cores,
       verbose = verbose
-    ))
+    )
+    if (isTRUE(show_plot) || isTRUE(save_plot)) {
+      plot <- PalantirTrajectoryPlot(srt, reduction = nonlinear_reduction)
+      if (isTRUE(show_plot)) print(plot)
+      if (isTRUE(save_plot)) {
+        dir.create(dirpath, recursive = TRUE, showWarnings = FALSE)
+        ggplot2::ggsave(file.path(dirpath, paste0(plot_prefix, ".", plot_format)), plot, dpi = plot_dpi)
+      }
+    }
+    return(srt)
   }
 
   old_env <- Sys.getenv(c(
@@ -221,7 +216,12 @@ RunPalantir <- function(
     },
     add = TRUE
   )
-  PrepareEnv(envname = envname, conda = conda, modules = c("scanpy", "palantir"))
+  prepare_env_if_needed(
+    envname = envname,
+    conda = conda,
+    modules = c("scanpy", "palantir"),
+    verbose = verbose
+  )
   check_python("palantir", envname = envname, conda = conda, verbose = verbose)
   if (all(is.null(srt), is.null(adata))) {
     log_message(
@@ -450,6 +450,8 @@ RunPalantir <- function(
 
 run_palantir_cpp <- function(
   srt,
+  assay_x = "RNA",
+  layer_x = "counts",
   group.by = NULL,
   linear_reduction = NULL,
   nonlinear_reduction = NULL,
@@ -457,6 +459,7 @@ run_palantir_cpp <- function(
   n_neighbors = 30,
   dm_n_components = 10,
   dm_alpha = 0,
+  dm_n_eigs = NULL,
   early_group = NULL,
   early_cell = NULL,
   terminal_cells = NULL,
@@ -464,7 +467,11 @@ run_palantir_cpp <- function(
   num_waypoints = 1200,
   scale_components = TRUE,
   use_early_cell_as_start = TRUE,
+  adjust_early_cell = FALSE,
+  adjust_terminal_cells = FALSE,
   max_iterations = 25,
+  magic_impute = FALSE,
+  magic_layer = "MAGIC_imputed_data",
   cores = 1,
   verbose = TRUE
 ) {
@@ -602,7 +609,7 @@ run_palantir_cpp <- function(
     n = as.integer(kernel[["n"]])
   )
 
-  n_eigs <- min(as.integer(dm_n_components), n_cells - 2L)
+  n_eigs <- min(as.integer(dm_n_eigs %||% dm_n_components), n_cells - 2L)
   T_dm <- Matrix::sparseMatrix(
     i = as.integer(norm[["T_i"]]),
     j = as.integer(norm[["T_j"]]),
@@ -689,6 +696,39 @@ run_palantir_cpp <- function(
   pseudotime_raw <- pseudotime
   names(pseudotime) <- rownames(embedding)
   names(pseudotime_raw) <- rownames(embedding)
+
+  if (isTRUE(adjust_early_cell) || isTRUE(adjust_terminal_cells)) {
+    adjusted_early <- early_cell
+    if (isTRUE(adjust_early_cell)) {
+      candidates <- if (!is.null(early_group)) {
+        which(srt@meta.data[[group.by]] == early_group)
+      } else seq_len(n_cells)
+      adjusted_early <- candidates[which.min(pseudotime[candidates])]
+    }
+    adjusted_terminal <- terminal_state_cells
+    if (isTRUE(adjust_terminal_cells) && length(terminal_groups)) {
+      adjusted_terminal <- vapply(terminal_groups, function(group) {
+        candidates <- which(srt@meta.data[[group.by]] == group)
+        candidates[which.max(pseudotime[candidates])]
+      }, integer(1L))
+    }
+    adjusted <- run_palantir_cpp(
+      srt = srt, assay_x = assay_x, layer_x = layer_x,
+      group.by = group.by, linear_reduction = linear_reduction,
+      nonlinear_reduction = nonlinear_reduction, n_pcs = n_pcs,
+      n_neighbors = n_neighbors, dm_n_components = dm_n_components,
+      dm_alpha = dm_alpha, dm_n_eigs = dm_n_eigs,
+      early_cell = cell_names[adjusted_early],
+      terminal_cells = cell_names[adjusted_terminal],
+      num_waypoints = num_waypoints, scale_components = scale_components,
+      use_early_cell_as_start = use_early_cell_as_start,
+      max_iterations = max_iterations, magic_impute = magic_impute,
+      magic_layer = magic_layer, cores = cores, verbose = verbose
+    )
+    adjusted@tools[["Palantir"]]$parameters$adjust_early_cell <- isTRUE(adjust_early_cell)
+    adjusted@tools[["Palantir"]]$parameters$adjust_terminal_cells <- isTRUE(adjust_terminal_cells)
+    return(adjusted)
+  }
 
   wp_ms <- ms_data_scaled[wp, , drop = FALSE]
   wp_pseudotime <- pseudotime[wp]
@@ -882,12 +922,31 @@ run_palantir_cpp <- function(
       kernel_knn_k = kernel_knn_k,
       dm_n_components = as.integer(dm_n_components),
       dm_alpha = dm_alpha,
+      dm_n_eigs = n_eigs,
       num_waypoints = n_wp,
       scale_components = scale_components,
       use_early_cell_as_start = use_early_cell_as_start,
-      max_iterations = max_iterations
+      max_iterations = max_iterations,
+      adjust_early_cell = isTRUE(adjust_early_cell),
+      adjust_terminal_cells = isTRUE(adjust_terminal_cells),
+      magic_impute = isTRUE(magic_impute)
     )
   )
+
+  if (isTRUE(magic_impute)) {
+    expression <- GetAssayData5(srt, assay = assay_x, layer = layer_x)[, cell_names, drop = FALSE]
+    rows <- rep(seq_len(n_cells), each = ncol(knn_res[["idx"]]))
+    cols <- as.vector(t(knn_res[["idx"]]))
+    transition <- Matrix::sparseMatrix(
+      i = rows, j = cols, x = 1 / ncol(knn_res[["idx"]]),
+      dims = c(n_cells, n_cells)
+    ) + Matrix::Diagonal(n_cells)
+    transition <- Matrix::Diagonal(x = 1 / Matrix::rowSums(transition)) %*% transition
+    imputed <- expression %*% Matrix::t(transition %*% transition)
+    rownames(imputed) <- rownames(expression)
+    colnames(imputed) <- cell_names
+    srt[[magic_layer]] <- SeuratObject::CreateAssay5Object(data = imputed)
+  }
 
   log_message(
     "{.pkg Palantir} cpp backend completed",

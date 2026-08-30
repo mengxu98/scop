@@ -74,7 +74,10 @@ reference:
 - subtitle: "Feature Processing"
 - contents:
   - AddFeaturesData
+  - AddModuleScore
+  - AggregateExpression
   - AnnotateFeatures
+  - AverageExpression
   - GetFeaturesData
   - GetSimilarFeatures
   - RenameFeatures
@@ -104,6 +107,7 @@ reference:
 
 - subtitle: "Cell Cycle Analysis"
 - contents:
+  - CellCycleScoring
   - CycGenePrefetch
   - RunCellCycle
 
@@ -123,6 +127,7 @@ reference:
 
 - subtitle: "Data Integration and Batch Effect Removal"
 - contents:
+  - SelectIntegrationFeatures
   - Uncorrected_integrate
   - Seurat_integrate
   - CCA_integrate
@@ -169,6 +174,8 @@ reference:
   - RunPCA
   - RunCCA
   - RunUMAP
+  - FindClusters
+  - FindMultiModalNeighbors
   - FindNeighbors
   - SCTransform
   - RunDimsEstimate

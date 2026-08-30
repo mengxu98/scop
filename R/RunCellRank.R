@@ -135,6 +135,8 @@
 #' @param backend Backend for computation: `"python"` (default) or `"cpp"`.
 #' The C++ path is an explicitly opted-in approximation and does not reproduce
 #' the complete CellRank estimator.
+#' The selected backend is stable: the C++ path never switches to Python
+#' because of an argument value.
 #' @param allow_approximate Whether to allow the approximate C++ path. This must
 #' be `TRUE` when `backend = "cpp"`.
 #' @param max_dense_gib Maximum estimated GiB allowed for the dense
@@ -215,81 +217,74 @@ RunCellRank <- function(
   backend <- match.arg(backend)
   estimator_type_upper <- toupper(match.arg(estimator_type))
   terminal_state_agg <- match.arg(terminal_state_agg)
+  schur_method <- match.arg(schur_method)
 
   if (identical(backend, "cpp")) {
     assert_cpp_approximation_opt_in(
       allow_approximate,
       "RunCellRank(backend = \"cpp\")"
     )
-    unsupported_cpp <- character()
-    if (isTRUE(show_plot)) {
-      unsupported_cpp <- c(unsupported_cpp, "show_plot")
-    }
-    if (isTRUE(save_plot)) {
-      unsupported_cpp <- c(unsupported_cpp, "save_plot")
-    }
-    if (!is.null(schur_n_components)) {
-      unsupported_cpp <- c(unsupported_cpp, "schur_n_components")
-    }
-    if (!is.null(terminal_states)) {
-      unsupported_cpp <- c(unsupported_cpp, "terminal_states")
-    }
-    if (!identical(terminal_state_agg, "top_n")) {
-      unsupported_cpp <- c(unsupported_cpp, "terminal_state_agg")
-    }
-    if (!is.null(driver_lineages)) {
-      unsupported_cpp <- c(unsupported_cpp, "driver_lineages")
-    }
-    if (!isTRUE(compute_lineage_drivers)) {
-      unsupported_cpp <- c(unsupported_cpp, "compute_lineage_drivers")
-    }
-    reject_unsupported_cpp_arguments(
-      unsupported_cpp,
-      "RunCellRank(backend = \"cpp\")"
-    )
     if (!is.null(srt)) {
       assert_cpp_dense_budget(
-        n_rows = ncol(srt),
-        n_cols = ncol(srt),
-        copies = 8,
+        n_rows = ncol(srt), n_cols = ncol(srt), copies = 8,
         max_dense_gib = max_dense_gib,
         context = "RunCellRank(backend = \"cpp\")"
       )
     }
-    if (identical(kernel_type, "wot")) {
-      log_message(
-        "{.arg backend = 'cpp'} does not support {.arg kernel_type = 'wot'}; use {.arg backend = 'python'} for Waddington-OT",
-        message_type = "error"
+    srt <- run_cellrank_cpp(
+        srt = srt, assay_y = assay_y, layer_y = layer_y,
+        group.by = group.by, linear_reduction = linear_reduction,
+        nonlinear_reduction = nonlinear_reduction,
+        n_pcs = n_pcs, n_neighbors = n_neighbors,
+        mode = mode, kernel_type = kernel_type, time_key = time_key,
+        velocity_weight = velocity_weight,
+        connectivity_weight = connectivity_weight,
+        use_connectivity_kernel = use_connectivity_kernel,
+        softmax_scale = softmax_scale,
+        n_macrostates = n_macrostates,
+        schur_n_components = schur_n_components,
+        n_cells_terminal = n_cells_terminal,
+        terminal_states = terminal_states,
+        terminal_state_agg = terminal_state_agg,
+        driver_lineages = driver_lineages,
+        estimator_type = tolower(estimator_type_upper),
+        backward = backward,
+        schur_method = schur_method,
+        recompute_neighbors = recompute_neighbors,
+        time_field = time_field,
+        fitting_by = fitting_by,
+        magic_impute = magic_impute,
+        magic_knn = knn,
+        magic_t = t,
+        min_shared_counts = min_shared_counts,
+        denoise = denoise,
+        kinetics = kinetics,
+        calculate_velocity_genes = calculate_velocity_genes,
+        compute_lineage_drivers = compute_lineage_drivers,
+        max_dense_gib = max_dense_gib,
+        cores = cores, return_seurat = return_seurat,
+        verbose = verbose
       )
+    if (isTRUE(show_plot) || isTRUE(save_plot)) {
+      plot <- CellRankPlot(srt, plot_type = "fate", reduction = nonlinear_reduction)
+      if (isTRUE(show_plot)) print(plot)
+      if (isTRUE(save_plot)) {
+        dir.create(dirpath, recursive = TRUE, showWarnings = FALSE)
+        ggplot2::ggsave(file.path(dirpath, paste0(plot_prefix, ".", plot_format)), plot, dpi = plot_dpi)
+      }
     }
-    return(run_cellrank_cpp(
-      srt = srt, assay_y = assay_y, layer_y = layer_y,
-      group.by = group.by, linear_reduction = linear_reduction,
-      nonlinear_reduction = nonlinear_reduction,
-      n_pcs = n_pcs, n_neighbors = n_neighbors,
-      mode = mode, kernel_type = kernel_type,
-      velocity_weight = velocity_weight,
-      connectivity_weight = connectivity_weight,
-      use_connectivity_kernel = use_connectivity_kernel,
-      softmax_scale = softmax_scale,
-      n_macrostates = n_macrostates,
-      n_cells_terminal = n_cells_terminal,
-      estimator_type = tolower(estimator_type_upper),
-      backward = backward,
-      max_dense_gib = max_dense_gib,
-      cores = cores, return_seurat = return_seurat,
-      verbose = verbose
-    ))
+    return(srt)
   }
 
-  PrepareEnv(
+  prepare_env_if_needed(
     envname = envname,
     conda = conda,
     modules = c(
       "cellrank",
       if (kernel_type == "wot") "wot",
       if (isTRUE(magic_impute)) "magic"
-    )
+    ),
+    verbose = verbose
   )
   check_python("cellrank", envname = envname, conda = conda, verbose = verbose)
   if (kernel_type == "wot") {
@@ -312,7 +307,6 @@ RunCellRank <- function(
   }
 
   estimator_type <- match.arg(estimator_type)
-  schur_method <- match.arg(schur_method)
   plot_format <- match.arg(plot_format)
 
   if (use_connectivity_kernel) {
@@ -737,6 +731,51 @@ cellrank_density_normalize_connectivities <- function(connectivities) {
   )
 }
 
+cellrank_umap_connectivities <- function(knn_idx, knn_dist) {
+  if (!identical(dim(knn_idx), dim(knn_dist))) {
+    log_message("CellRank KNN indices and distances must have the same dimensions", message_type = "error")
+  }
+  n_cells <- nrow(knn_idx)
+  n_neighbors <- ncol(knn_idx) + 1L
+  target <- log2(n_neighbors)
+  weights <- numeric(length(knn_dist))
+  global_mean <- mean(c(rep(0, n_cells), knn_dist), na.rm = TRUE)
+
+  for (cell in seq_len(n_cells)) {
+    distances <- c(0, knn_dist[cell, ])
+    non_zero <- distances[is.finite(distances) & distances > 0]
+    rho <- if (length(non_zero)) min(non_zero) else 0
+    lower <- 0
+    upper <- Inf
+    sigma <- 1
+    for (iteration in seq_len(64L)) {
+      delta <- distances[-1L] - rho
+      sum_memberships <- sum(ifelse(delta > 0, exp(-delta / sigma), 1), na.rm = TRUE)
+      if (abs(sum_memberships - target) < 1e-5) break
+      if (sum_memberships > target) {
+        upper <- sigma
+        sigma <- (lower + upper) / 2
+      } else {
+        lower <- sigma
+        sigma <- if (is.infinite(upper)) sigma * 2 else (lower + upper) / 2
+      }
+    }
+    local_mean <- if (rho > 0) mean(distances, na.rm = TRUE) else global_mean
+    sigma <- max(sigma, 1e-3 * local_mean)
+    delta <- knn_dist[cell, ] - rho
+    block <- (cell - 1L) * ncol(knn_idx) + seq_len(ncol(knn_idx))
+    weights[block] <- ifelse(delta <= 0, 1, exp(-delta / sigma))
+  }
+
+  directed <- Matrix::sparseMatrix(
+    i = rep(seq_len(n_cells), each = ncol(knn_idx)),
+    j = as.vector(t(knn_idx)), x = weights,
+    dims = c(n_cells, n_cells)
+  )
+  transpose <- Matrix::t(directed)
+  Matrix::drop0(directed + transpose - directed * transpose)
+}
+
 cellrank_hard_threshold_kernel <- function(
   connectivities,
   pseudotime,
@@ -770,14 +809,33 @@ cellrank_hard_threshold_kernel <- function(
   )
 }
 
+cellrank_knn_from_connectivities <- function(connectivities, k) {
+  graph <- as.matrix(connectivities)
+  diag(graph) <- -Inf
+  k <- min(as.integer(k), nrow(graph) - 1L)
+  idx <- t(apply(graph, 1L, function(x) order(x, decreasing = TRUE)[seq_len(k)]))
+  weight <- matrix(graph[cbind(rep(seq_len(nrow(graph)), each = k), as.vector(t(idx)))],
+    nrow = nrow(graph), byrow = TRUE)
+  list(idx = idx, dist = 1 - pmax(weight, 0))
+}
+
 run_cellrank_cpp <- function(
   srt, assay_y, layer_y, group.by,
   linear_reduction, nonlinear_reduction,
-  n_pcs, n_neighbors, mode, kernel_type,
+  n_pcs, n_neighbors, mode, kernel_type, time_key,
   velocity_weight, connectivity_weight, use_connectivity_kernel,
   softmax_scale, n_macrostates, n_cells_terminal,
+  schur_n_components = NULL, terminal_states = NULL,
+  terminal_state_agg = "top_n", driver_lineages = NULL,
   estimator_type = c("gpcca", "cflare"),
   backward = FALSE,
+  schur_method = "brandts", recompute_neighbors = TRUE,
+  time_field = "Time",
+  fitting_by = "stochastic", magic_impute = FALSE,
+  magic_knn = 5, magic_t = 2, min_shared_counts = 30,
+  denoise = FALSE, kinetics = FALSE,
+  calculate_velocity_genes = FALSE,
+  compute_lineage_drivers = TRUE,
   max_dense_gib = 8,
   cores, return_seurat, verbose
 ) {
@@ -844,7 +902,7 @@ run_cellrank_cpp <- function(
     )
     velocity_reduction <- velocity_reduction_fallback
   }
-  pt_key <- paste0(mode, "_pseudotime")
+  pt_key <- time_key
   graph_connectivities <- if ("connectivities" %in% names(srt@graphs)) {
     srt@graphs[["connectivities"]][cells, cells, drop = FALSE]
   } else {
@@ -864,8 +922,13 @@ run_cellrank_cpp <- function(
       linear_reduction = linear_reduction, nonlinear_reduction = nonlinear_reduction,
       n_pcs = n_pcs, n_neighbors = n_neighbors, mode = mode,
       filter_genes = TRUE, normalize_per_cell = TRUE, log_transform = TRUE,
+      min_shared_counts = min_shared_counts,
       compute_terminal_states = FALSE, compute_pseudotime = FALSE,
       compute_velocity_confidence = FALSE,
+      fitting_by = fitting_by,
+      magic_impute = magic_impute, magic_knn = magic_knn, magic_t = magic_t,
+      denoise = denoise, kinetics = kinetics,
+      calculate_velocity_genes = calculate_velocity_genes,
       cores = cores, return_seurat = TRUE, verbose = verbose
     )
   } else if (isTRUE(needs_velocity)) {
@@ -891,13 +954,19 @@ run_cellrank_cpp <- function(
   ])
   storage.mode(le) <- "double"
   knn_k <- max(1L, min(as.integer(n_neighbors) - 1L, n_cells - 1L))
-  knn <- run_biocneighbors_knn(
-    reference = le,
-    k = knn_k,
-    metric = "euclidean",
-    exclude_self = TRUE,
-    n_threads = as.integer(cores)
-  )
+  knn <- if (!isTRUE(recompute_neighbors) && !is.null(graph_connectivities)) {
+    cellrank_knn_from_connectivities(graph_connectivities, knn_k)
+  } else {
+    run_biocneighbors_knn(
+      reference = le, k = knn_k, metric = "euclidean",
+      exclude_self = TRUE, n_threads = as.integer(cores)
+    )
+  }
+  if (isTRUE(recompute_neighbors)) {
+    graph_connectivities <- cellrank_umap_connectivities(
+      knn_idx = knn[["idx"]], knn_dist = knn[["dist"]]
+    )
+  }
   graph_transition <- NULL
   if (isTRUE(use_connectivity_kernel) && !is.null(graph_connectivities)) {
     graph_transition <- as.matrix(
@@ -1006,6 +1075,22 @@ run_cellrank_cpp <- function(
     combined <- combine_with_connectivity(main_transition)
     T_mat <- combined$transition
     if (isTRUE(combined$combined)) kernel_used <- "cytotrace_connectivity_combined"
+  } else if (kernel_type == "wot") {
+    time_values <- if (time_field %in% colnames(srt@meta.data)) {
+      as.numeric(factor(srt@meta.data[[time_field]], levels = unique(srt@meta.data[[time_field]])))
+    } else if (time_key %in% colnames(srt@meta.data)) {
+      as.numeric(srt@meta.data[[time_key]])
+    } else {
+      log_message("Native WOT kernel requires {.arg time_field} or {.arg time_key} metadata", message_type = "error")
+    }
+    main_transition <- cellrank_pseudotime_kernel_cpp(
+      pseudotime = time_values, knn_idx = knn[["idx"]],
+      cell_weights = rep(1, n_cells), backward = isTRUE(backward)
+    )
+    combined <- combine_with_connectivity(main_transition)
+    T_mat <- combined$transition
+    kernel_used <- if (isTRUE(combined$combined)) "wot_connectivity_combined" else "wot"
+    pseudotime_source <- time_field
   } else {
     # Default: velocity kernel (original inline computation)
     T_mat <- matrix(0, n_cells, n_cells)
@@ -1053,11 +1138,31 @@ run_cellrank_cpp <- function(
   }
   n_mac <- min(n_mac, n_cells)
 
+  if (!is.null(terminal_states)) {
+    terminal_cells <- intersect(as.character(terminal_states), cells)
+    if (!is.null(group.by) && group.by %in% colnames(srt@meta.data)) {
+      group_cells <- cells[as.character(srt@meta.data[[group.by]]) %in% as.character(terminal_states)]
+      terminal_cells <- union(terminal_cells, group_cells)
+    }
+    if (identical(terminal_state_agg, "top_n") && length(terminal_cells) > n_cells_terminal) {
+      terminal_cells <- terminal_cells[seq_len(n_cells_terminal)]
+    }
+    terminal_idx <- match(terminal_cells, cells)
+    for (idx in terminal_idx[!is.na(terminal_idx)]) {
+      T_mat[idx, ] <- 0
+      T_mat[idx, idx] <- 1
+    }
+  }
+
   # Choose estimator
   if (identical(estimator_type, "cflare")) {
     result <- cellrank_cflare_cpp(T_ = T_mat, n_states = n_mac)
   } else {
-    result <- cellrank_gpcca_cpp(T_ = T_mat, n_states = n_mac, n_cells_terminal = as.integer(n_cells_terminal))
+    result <- cellrank_gpcca_cpp(
+      T_ = T_mat, n_states = n_mac,
+      n_cells_terminal = as.integer(n_cells_terminal),
+      schur_n_components = as.integer(schur_n_components %||% max(n_mac, 10L))
+    )
   }
   srt[["cellrank_terminal_states"]] <- as.integer(result[["terminal_states"]])
   srt[["cellrank_fate_confidence"]] <- as.numeric(result[["fate_confidence"]])
@@ -1074,7 +1179,36 @@ run_cellrank_cpp <- function(
   if ("absorption_probabilities" %in% names(result)) {
     ap <- result[["absorption_probabilities"]]
     rownames(ap) <- cells
+    lineage_names <- paste0("Lineage", seq_len(ncol(ap)))
+    colnames(ap) <- lineage_names
     srt@tools[["CellRank"]]$absorption_probabilities <- ap
+    srt@tools[["CellRank"]]$fate_probabilities <- ap
+    for (lineage in lineage_names) {
+      srt[[paste0("cellrank_fate_", lineage)]] <- as.numeric(ap[, lineage])
+    }
+    if (isTRUE(compute_lineage_drivers)) {
+      expression <- as.matrix(GetAssayData5(
+        srt,
+        assay = assay_y[[1L]],
+        layer = layer_y
+      ))[, cells, drop = FALSE]
+      lineage_idx <- if (is.null(driver_lineages)) integer() else {
+        idx <- suppressWarnings(as.integer(driver_lineages))
+        idx[is.finite(idx) & idx >= 1L & idx <= ncol(ap)]
+      }
+      drivers <- cellrank_lineage_drivers_cpp(expression, ap, lineage_idx)
+      lineage_names <- paste0("Lineage", drivers[["lineage_idx"]])
+      driver_table <- as.data.frame(cbind(
+        drivers[["correlation"]],
+        drivers[["pval"]]
+      ))
+      colnames(driver_table) <- c(
+        paste0(lineage_names, "_corr"),
+        paste0(lineage_names, "_pval")
+      )
+      rownames(driver_table) <- rownames(expression)
+      srt@tools[["CellRank"]]$lineage_drivers <- driver_table
+    }
   }
   if ("lineage_assignment" %in% names(result)) {
     srt@tools[["CellRank"]]$lineage_assignment <- as.integer(result[["lineage_assignment"]])
@@ -1115,8 +1249,24 @@ run_cellrank_cpp <- function(
       mode = mode, kernel_type = kernel_type, estimator_type = estimator_type,
       softmax_scale = softmax_scale, n_macrostates = n_mac,
       n_cells_terminal = as.integer(n_cells_terminal),
+      schur_n_components = as.integer(schur_n_components %||% max(n_mac, 10L)),
+      schur_method = schur_method,
+      terminal_states = terminal_states,
+      terminal_state_agg = terminal_state_agg,
+      driver_lineages = driver_lineages,
+      recompute_neighbors = isTRUE(recompute_neighbors),
+      fitting_by = fitting_by,
+      magic_impute = isTRUE(magic_impute),
+      magic_knn = as.integer(magic_knn),
+      magic_t = as.integer(magic_t),
+      min_shared_counts = as.integer(min_shared_counts),
+      denoise = isTRUE(denoise),
+      kinetics = isTRUE(kinetics),
+      calculate_velocity_genes = isTRUE(calculate_velocity_genes),
       backward = backward,
       pseudotime_source = pseudotime_source,
+      time_key = time_key,
+      compute_lineage_drivers = isTRUE(compute_lineage_drivers),
       max_dense_gib = max_dense_gib
     )
   ))
