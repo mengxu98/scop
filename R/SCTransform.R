@@ -12,6 +12,40 @@ sct_clip_ok <- function(clip.range) {
     clip.range[1] < clip.range[2]
 }
 
+sct_fast_path_supported <- function(
+  reference.SCT.model,
+  do.correct.umi,
+  residual.features,
+  conserve.memory,
+  vst.flavor,
+  do.scale,
+  do.center,
+  return.only.var.genes,
+  extra_args,
+  ncells,
+  variable.features.n,
+  variable.features.rv.th,
+  clip.range,
+  regression_ok = TRUE
+) {
+  is.null(reference.SCT.model) &&
+    is.logical(do.correct.umi) && length(do.correct.umi) == 1L && !is.na(do.correct.umi) &&
+    is.null(residual.features) &&
+    isFALSE(conserve.memory) &&
+    identical(vst.flavor, "v2") &&
+    all(vapply(
+      list(do.scale, do.center, return.only.var.genes),
+      function(x) is.logical(x) && length(x) == 1L && !is.na(x),
+      logical(1)
+    )) &&
+    length(extra_args) == 0L &&
+    sct_scalar_pos(ncells) &&
+    (is.null(variable.features.n) || sct_scalar_pos(variable.features.n)) &&
+    sct_scalar_pos(variable.features.rv.th) &&
+    sct_clip_ok(clip.range) &&
+    isTRUE(regression_ok)
+}
+
 sct_regress_out <- function(mat, latent.df) {
   renamed <- latent.df
   names(renamed) <- paste0("v", seq_len(ncol(latent.df)))
@@ -27,6 +61,123 @@ sct_regress_out <- function(mat, latent.df) {
 
 sct_model_formula <- function(model_str) {
   stats::as.formula(sub("^\\s*y\\s*~", "~", model_str))
+}
+
+sct_single_offset_available <- function() {
+  validated_glmgampoi <- c("1.18.0", "1.22.0")
+  if (
+    !requireNamespace("glmGamPoi", quietly = TRUE) ||
+      !requireNamespace("sctransform", quietly = TRUE) ||
+      !as.character(packageVersion("glmGamPoi")) %in% validated_glmgampoi ||
+      packageVersion("sctransform") != "0.4.3"
+  ) {
+    return(FALSE)
+  }
+  required <- c(
+    "get_groups_for_model_matrix",
+    "estimate_dispersions_roughly",
+    "estimate_betas_roughly_group_wise",
+    "estimate_betas_group_wise",
+    "estimate_betas_group_wise_optimize_helper",
+    "calculate_mu",
+    "overdispersion_mle",
+    "overdispersion_shrinkage"
+  )
+  gp_ns <- asNamespace("glmGamPoi")
+  all(vapply(required, exists, logical(1), envir = gp_ns, inherits = FALSE))
+}
+
+sct_fit_glmgampoi_offset_single <- function(umi, data) {
+  gp_ns <- asNamespace("glmGamPoi")
+  model_matrix <- matrix(1, nrow = ncol(umi), ncol = 1L)
+  log_umi <- log(10^data$log_umi)
+  offset_matrix <- matrix(
+    rep(log_umi, each = nrow(umi)),
+    nrow = nrow(umi),
+    ncol = ncol(umi)
+  )
+  groups <- get("get_groups_for_model_matrix", gp_ns)(model_matrix)
+  disp_init <- get("estimate_dispersions_roughly", gp_ns)(
+    umi,
+    model_matrix,
+    offset_matrix
+  )
+  beta_group_init <- get("estimate_betas_roughly_group_wise", gp_ns)(
+    umi,
+    offset_matrix,
+    groups
+  )[, 1L]
+  beta_res <- sct_fit_beta_intercept_offset(
+    umi,
+    log_offset = log_umi,
+    dispersions = disp_init,
+    beta_start = beta_group_init,
+    return_mu = TRUE
+  )
+  if (any(!beta_res$converged)) {
+    fallback <- which(!beta_res$converged)
+    optimize_beta <- get(
+      "estimate_betas_group_wise_optimize_helper",
+      gp_ns
+    )
+    beta_res$beta[fallback] <- vapply(fallback, function(idx) {
+      optimize_beta(umi[idx, ], log_umi, disp_init[idx])
+    }, numeric(1))
+    beta_res$mu[fallback, ] <- exp(
+      beta_res$beta[fallback] + rep(log_umi, each = length(fallback))
+    )
+  }
+  beta <- beta_res$beta
+  mu <- beta_res$mu
+  rm(offset_matrix, beta_group_init, groups)
+  disp_est <- sct_overdispersion_mle_intercept(umi, mu)
+  unstable_dispersion <- !is.finite(disp_est) |
+    disp_est < 1e-3 |
+    disp_est > 10
+  if (any(unstable_dispersion)) {
+    reference_dispersion <- get("overdispersion_mle", gp_ns)(
+      umi[unstable_dispersion, , drop = FALSE],
+      mu[unstable_dispersion, , drop = FALSE],
+      model_matrix = model_matrix,
+      do_cox_reid_adjustment = TRUE,
+      subsample = FALSE
+    )$estimate
+    disp_est[unstable_dispersion] <- reference_dispersion
+  }
+  shrinkage <- get("overdispersion_shrinkage", gp_ns)(
+    disp_est,
+    gene_means = rowMeans(mu),
+    df = ncol(umi) - ncol(model_matrix),
+    ql_disp_trend = length(disp_est) >= 100L,
+    npoints = max(0.1 * length(disp_est), 100),
+    verbose = FALSE
+  )
+  beta_res <- sct_fit_beta_intercept_offset(
+    umi,
+    log_offset = log_umi,
+    dispersions = shrinkage$dispersion_trend,
+    beta_start = beta
+  )
+  if (any(!beta_res$converged)) {
+    fallback <- which(!beta_res$converged)
+    optimize_beta <- get(
+      "estimate_betas_group_wise_optimize_helper",
+      gp_ns
+    )
+    beta_res$beta[fallback] <- vapply(fallback, function(idx) {
+      optimize_beta(umi[idx, ], log_umi, shrinkage$dispersion_trend[idx])
+    }, numeric(1))
+  }
+  model_pars <- cbind(
+    1 / disp_est,
+    beta_res$beta,
+    rep(log(10), nrow(umi))
+  )
+  dimnames(model_pars) <- list(
+    rownames(umi),
+    c("theta", "(Intercept)", "log_umi")
+  )
+  model_pars
 }
 
 
@@ -55,7 +206,15 @@ sct_get_model_pars <- function(
     "sctransform",
     "fit_glmGamPoi_offset"
   )
-  if (startsWith(method, "offset") || is.null(cluster)) {
+  single_offset_fast <-
+    is.null(cluster) &&
+      identical(method, "glmGamPoi_offset") &&
+      isTRUE(exclude_poisson) &&
+      identical(model_str, "y ~ log_umi") &&
+      !isTRUE(fix_intercept) &&
+      !isTRUE(fix_slope) &&
+      sct_single_offset_available()
+  if (startsWith(method, "offset") || (is.null(cluster) && !single_offset_fast)) {
     return(get_model_pars(
       genes_step1,
       bin_size,
@@ -81,6 +240,13 @@ sct_get_model_pars <- function(
   for (i in seq_len(max_bin)) {
     genes_bin_regress <- genes_step1[bin_ind == i]
     umi_bin <- as.matrix(umi[genes_bin_regress, cells_step1, drop = FALSE])
+    if (single_offset_fast) {
+      model_pars[[i]] <- sct_fit_glmgampoi_offset_single(
+        umi = umi_bin,
+        data = data_step1
+      )
+      next
+    }
     n_genes_bin <- nrow(umi_bin)
     cores <- min(as.integer(cores), n_genes_bin)
     gene_indices <- split(
@@ -453,26 +619,25 @@ SCTransform.default <- function(
   ...
 ) {
   extra_args <- list(...)
-  sct_delegates <-
-    !is.null(reference.SCT.model) ||
-      !isTRUE(do.correct.umi) ||
-      !is.null(residual.features) ||
-      !isFALSE(conserve.memory) ||
-      !identical(vst.flavor, "v2") ||
-      !isFALSE(do.scale) ||
-      !isTRUE(do.center) ||
-      !isTRUE(return.only.var.genes) ||
-      length(extra_args) != 0L ||
-      !sct_scalar_pos(ncells) ||
-      !sct_scalar_pos(variable.features.n) ||
-      !sct_scalar_pos(variable.features.rv.th) ||
-      !sct_clip_ok(clip.range) ||
-      (!is.null(vars.to.regress) &&
-        (is.null(cell.attr) ||
-          !all(vars.to.regress %in% colnames(cell.attr))))
+  sct_delegates <- !sct_fast_path_supported(
+    reference.SCT.model = reference.SCT.model,
+    do.correct.umi = do.correct.umi,
+    residual.features = residual.features,
+    conserve.memory = conserve.memory,
+    vst.flavor = vst.flavor,
+    do.scale = do.scale,
+    do.center = do.center,
+    return.only.var.genes = return.only.var.genes,
+    extra_args = extra_args,
+    ncells = ncells,
+    variable.features.n = variable.features.n,
+    variable.features.rv.th = variable.features.rv.th,
+    clip.range = clip.range,
+    regression_ok = is.null(vars.to.regress) && is.null(latent.data)
+  )
   if (sct_delegates) {
     log_message(
-      "{.fn SCTransform} received arguments beyond the scop fast path; delegating to Seurat.",
+      "{.fn SCTransform} received arguments beyond the validated native path; delegating to Seurat.",
       message_type = "info"
     )
     seurat_sct <- utils::getFromNamespace("SCTransform.default", "Seurat")
@@ -559,54 +724,6 @@ SCTransform.default <- function(
   check_r("glmGamPoi", verbose = FALSE)
   sct_cluster <- NULL
   sct_cores <- 1L
-  requested_cores <- suppressWarnings(as.integer(cores))
-  if (
-    .Platform$OS.type == "windows" &&
-      length(requested_cores) == 1L &&
-      !is.na(requested_cores) &&
-      requested_cores > 1L
-  ) {
-    available_cores <- as.integer(parallel::detectCores(logical = FALSE))
-    if (is.na(available_cores) || available_cores < 1L) {
-      available_cores <- 1L
-    }
-    if (available_cores > 1L) {
-      sct_cores <- min(requested_cores, available_cores - 1L)
-      sct_cluster <- tryCatch(
-        {
-          cl <- parallel::makeCluster(
-            sct_cores,
-            port = 20000L + sample.int(1000L, 1L)
-          )
-          message(sprintf(
-            "[scop] SCTransform PSOCK ready (%d cores / %d available)",
-            sct_cores,
-            available_cores
-          ))
-          cl
-        },
-        error = function(e) {
-          message(sprintf(
-            "[scop] SCT PSOCK init failed (%s); GLM fitting will be sequential",
-            conditionMessage(e)
-          ))
-          NULL
-        }
-      )
-      if (is.null(sct_cluster)) {
-        sct_cores <- 1L
-      }
-      if (!is.null(sct_cluster)) {
-        on.exit(
-          tryCatch(
-            parallel::stopCluster(sct_cluster),
-            error = function(e) NULL
-          ),
-          add = TRUE
-        )
-      }
-    }
-  }
 
   if (!is.null(seed.use)) {
     set.seed(seed.use)
@@ -626,54 +743,10 @@ SCTransform.default <- function(
   vst.args[["return_corrected_umi"]] <- FALSE
   vst.args[["residual_type"]] <- "none"
   vst.args[["n_cells"]] <- min(ncells, ncol(umi))
-  vst.args[["bin_size"]] <- 15000
-  vst.args[["sct_cluster"]] <- sct_cluster
-  vst.args[["sct_cores"]] <- sct_cores
-
-  orig_sct_vst <- get_namespace_fun("sctransform", "vst")
-  orig_sct_rowgmean <- get_namespace_fun("sctransform", "row_gmean")
-  row_gmean_cache <- new.env(parent = emptyenv())
-  row_gmean_cache$full_result <- NULL
-  row_gmean_cache$full_ncol <- NULL
-  cached_row_gmean <- function(x, eps = 1) {
-    if (!inherits(x, "dgCMatrix")) {
-      return(orig_sct_rowgmean(x, eps = eps))
-    }
-    nc <- ncol(x)
-    if (
-      !is.null(row_gmean_cache$full_result) &&
-        nc == row_gmean_cache$full_ncol
-    ) {
-      rn <- rownames(x)
-      if (!is.null(rn) && all(rn %in% names(row_gmean_cache$full_result))) {
-        return(row_gmean_cache$full_result[rn])
-      }
-    }
-    value <- orig_sct_rowgmean(x, eps = eps)
-    if (
-      is.null(row_gmean_cache$full_result) ||
-        length(value) > length(row_gmean_cache$full_result)
-    ) {
-      row_gmean_cache$full_result <- value
-      row_gmean_cache$full_ncol <- nc
-    }
-    value
-  }
-  utils::assignInNamespace("vst", sct_vst, ns = "sctransform")
-  utils::assignInNamespace("row_gmean", cached_row_gmean, ns = "sctransform")
-  on.exit(
-    {
-      utils::assignInNamespace("vst", orig_sct_vst, ns = "sctransform")
-      utils::assignInNamespace(
-        "row_gmean",
-        orig_sct_rowgmean,
-        ns = "sctransform"
-      )
-    },
-    add = TRUE
+  vst.out <- do.call(
+    get_namespace_fun("sctransform", "vst"),
+    args = vst.args
   )
-  sct_vst_fun <- get_namespace_fun("sctransform", "vst")
-  vst.out <- do.call(sct_vst_fun, args = vst.args)
 
   regressor_data_orig <- model.matrix(
     sct_model_formula(vst.out$model_str),
@@ -701,7 +774,7 @@ SCTransform.default <- function(
   ))
   genes <- rownames(umi)[rownames(umi) %in% rownames(model_pars_fit)]
   if (identical(vst.out$arguments$min_variance, "umi_median")) {
-    x_vals <- umi@x
+    x_vals <- umi[genes, , drop = FALSE]@x
     n <- length(x_vals)
     half <- n %/% 2L
     min_var <- if (n %% 2L == 1L) {
@@ -768,33 +841,45 @@ SCTransform.default <- function(
   )
   vst.out$gene_attr <- gene_attr
   feature.variance <- sort(res_var, decreasing = TRUE)
-  top.features <- names(feature.variance)[
-    1:min(variable.features.n, length(feature.variance))
-  ]
-  feat_positions <- match(top.features, all_gene_names)
-  top.features <- top.features[order(feat_positions)]
+  top.features <- if (is.null(variable.features.n)) {
+    names(feature.variance)[feature.variance >= variable.features.rv.th]
+  } else {
+    names(feature.variance)[seq_len(min(variable.features.n, length(feature.variance)))]
+  }
+  output.features <- if (isFALSE(return.only.var.genes)) {
+    genes
+  } else {
+    top.features
+  }
 
   rm(umi)
   scale.data <- sct_fused_resid_center_sparse(
-    as.numeric(model_pars_fit[top.features, 2]),
+    as.numeric(model_pars_fit[output.features, 2]),
     cell_mu_base,
     csr$row_ptr,
     csr$col_idx,
     csr$vals,
-    match(top.features, all_gene_names) - 1L,
-    model_pars_fit[top.features, 1],
+    match(output.features, all_gene_names) - 1L,
+    model_pars_fit[output.features, 1],
     min_var,
     res.clip.range[1],
     res.clip.range[2],
     clip.range[1],
-    clip.range[2]
+    clip.range[2],
+    isTRUE(do.center) && is.null(sct_latent_df),
+    isTRUE(do.scale) && is.null(sct_latent_df)
   )
-  dimnames(scale.data) <- list(top.features, col_names)
+  dimnames(scale.data) <- list(output.features, col_names)
+  scale.data <- scale.data[
+    all_gene_names[all_gene_names %in% output.features],
+    ,
+    drop = FALSE
+  ]
   rm(csr, corrected_list)
   if (!is.null(sct_latent_df)) {
     scale.data <- sct_regress_out(scale.data, sct_latent_df[col_names, , drop = FALSE])
     vst.out$arguments$sct.latent.vars <- colnames(sct_latent_df)
-    scale.data <- scale.data - rowMeans(scale.data)
+    scale.data <- sct_fastrowscale(scale.data, do.scale, do.center, Inf)
   }
   vst.out$y <- scale.data
   vst.out$variable_features <- top.features
@@ -831,25 +916,25 @@ SCTransform.Seurat <- function(
     log_message("SCTransform.Seurat requires a single non-SCT assay.", message_type = "error")
   }
   extra_args <- list(...)
-  sct_delegates <-
-    !is.null(reference.SCT.model) ||
-      !isTRUE(do.correct.umi) ||
-      !is.null(residual.features) ||
-      !isFALSE(conserve.memory) ||
-      !identical(vst.flavor, "v2") ||
-      !isFALSE(do.scale) ||
-      !isTRUE(do.center) ||
-      !isTRUE(return.only.var.genes) ||
-      length(extra_args) != 0L ||
-      !sct_scalar_pos(ncells) ||
-      !sct_scalar_pos(variable.features.n) ||
-      !sct_scalar_pos(variable.features.rv.th) ||
-      !sct_clip_ok(clip.range) ||
-      (!is.null(vars.to.regress) &&
-        !all(vars.to.regress %in% colnames(object[[]])))
+  sct_delegates <- !sct_fast_path_supported(
+    reference.SCT.model = reference.SCT.model,
+    do.correct.umi = do.correct.umi,
+    residual.features = residual.features,
+    conserve.memory = conserve.memory,
+    vst.flavor = vst.flavor,
+    do.scale = do.scale,
+    do.center = do.center,
+    return.only.var.genes = return.only.var.genes,
+    extra_args = extra_args,
+    ncells = ncells,
+    variable.features.n = variable.features.n,
+    variable.features.rv.th = variable.features.rv.th,
+    clip.range = clip.range,
+    regression_ok = is.null(vars.to.regress)
+  )
   if (sct_delegates) {
     log_message(
-      "{.fn SCTransform} received arguments beyond the scop fast path; delegating to Seurat.",
+      "{.fn SCTransform} received arguments beyond the validated native path; delegating to Seurat.",
       message_type = "info"
     )
     seurat_sct <- utils::getFromNamespace("SCTransform.Seurat", "Seurat")
@@ -961,15 +1046,10 @@ SCTransform.Seurat <- function(
 #' Apply SCTransform normalization
 #'
 #' @details
-#' Calls that stick to the scop fast path defaults (`vst.flavor = "v2"`, no
-#' `conserve.memory`) run through scop's optimized sparse implementation.
-#' Regression variables passed via `vars.to.regress` or `latent.data` are
-#' removed from the centered residuals with an ordinary least-squares fit on
-#' the fast path, matching Seurat's post-VST regression semantics. Truly
-#' unsupported combinations, such as `conserve.memory`,
-#' `reference.SCT.model`, `residual.features`, or `vst.flavor = "v1"`,
-#' automatically delegate to the original `Seurat::SCTransform`
-#' implementation.
+#' The validated sparse `vst.flavor = "v2"` path uses native corrected-count
+#' and residual kernels. Reference models, specified residual features,
+#' memory-conserving mode, regression, custom VST arguments, and other flavors
+#' transparently delegate to `Seurat::SCTransform`.
 #'
 #' @param object Object containing count data.
 #' @param ... Passed to methods.

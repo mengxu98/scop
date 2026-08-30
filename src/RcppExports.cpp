@@ -2843,8 +2843,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // sct_fused_resid_center_sparse
-NumericMatrix sct_fused_resid_center_sparse(NumericVector intercepts, NumericVector cell_mu_base, IntegerVector csr_row_ptr, IntegerVector csr_col_idx, NumericVector csr_vals, IntegerVector gene_idx, NumericVector theta, double min_var, double wide_clip_lo, double wide_clip_hi, double narrow_clip_lo, double narrow_clip_hi);
-RcppExport SEXP _scop_sct_fused_resid_center_sparse(SEXP interceptsSEXP, SEXP cell_mu_baseSEXP, SEXP csr_row_ptrSEXP, SEXP csr_col_idxSEXP, SEXP csr_valsSEXP, SEXP gene_idxSEXP, SEXP thetaSEXP, SEXP min_varSEXP, SEXP wide_clip_loSEXP, SEXP wide_clip_hiSEXP, SEXP narrow_clip_loSEXP, SEXP narrow_clip_hiSEXP) {
+NumericMatrix sct_fused_resid_center_sparse(NumericVector intercepts, NumericVector cell_mu_base, IntegerVector csr_row_ptr, IntegerVector csr_col_idx, NumericVector csr_vals, IntegerVector gene_idx, NumericVector theta, double min_var, double wide_clip_lo, double wide_clip_hi, double narrow_clip_lo, double narrow_clip_hi, bool do_center, bool do_scale);
+RcppExport SEXP _scop_sct_fused_resid_center_sparse(SEXP interceptsSEXP, SEXP cell_mu_baseSEXP, SEXP csr_row_ptrSEXP, SEXP csr_col_idxSEXP, SEXP csr_valsSEXP, SEXP gene_idxSEXP, SEXP thetaSEXP, SEXP min_varSEXP, SEXP wide_clip_loSEXP, SEXP wide_clip_hiSEXP, SEXP narrow_clip_loSEXP, SEXP narrow_clip_hiSEXP, SEXP do_centerSEXP, SEXP do_scaleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2860,7 +2860,40 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type wide_clip_hi(wide_clip_hiSEXP);
     Rcpp::traits::input_parameter< double >::type narrow_clip_lo(narrow_clip_loSEXP);
     Rcpp::traits::input_parameter< double >::type narrow_clip_hi(narrow_clip_hiSEXP);
-    rcpp_result_gen = Rcpp::wrap(sct_fused_resid_center_sparse(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi));
+    Rcpp::traits::input_parameter< bool >::type do_center(do_centerSEXP);
+    Rcpp::traits::input_parameter< bool >::type do_scale(do_scaleSEXP);
+    rcpp_result_gen = Rcpp::wrap(sct_fused_resid_center_sparse(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi, do_center, do_scale));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sct_fit_beta_intercept_offset
+List sct_fit_beta_intercept_offset(NumericMatrix y, NumericVector log_offset, NumericVector dispersions, Nullable<NumericVector> beta_start, bool return_mu, double tolerance, int max_iter);
+RcppExport SEXP _scop_sct_fit_beta_intercept_offset(SEXP ySEXP, SEXP log_offsetSEXP, SEXP dispersionsSEXP, SEXP beta_startSEXP, SEXP return_muSEXP, SEXP toleranceSEXP, SEXP max_iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type log_offset(log_offsetSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dispersions(dispersionsSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericVector> >::type beta_start(beta_startSEXP);
+    Rcpp::traits::input_parameter< bool >::type return_mu(return_muSEXP);
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    rcpp_result_gen = Rcpp::wrap(sct_fit_beta_intercept_offset(y, log_offset, dispersions, beta_start, return_mu, tolerance, max_iter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sct_overdispersion_mle_intercept
+NumericVector sct_overdispersion_mle_intercept(NumericMatrix y, NumericMatrix mu, int max_iter, double tolerance);
+RcppExport SEXP _scop_sct_overdispersion_mle_intercept(SEXP ySEXP, SEXP muSEXP, SEXP max_iterSEXP, SEXP toleranceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
+    rcpp_result_gen = Rcpp::wrap(sct_overdispersion_mle_intercept(y, mu, max_iter, tolerance));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -3122,7 +3155,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scale_sparse_rows_from_stats", (DL_FUNC) &_scop_scale_sparse_rows_from_stats, 3},
     {"_scop_csc_to_csr", (DL_FUNC) &_scop_csc_to_csr, 5},
     {"_scop_sct_stats_correct_sparse", (DL_FUNC) &_scop_sct_stats_correct_sparse, 12},
-    {"_scop_sct_fused_resid_center_sparse", (DL_FUNC) &_scop_sct_fused_resid_center_sparse, 12},
+    {"_scop_sct_fused_resid_center_sparse", (DL_FUNC) &_scop_sct_fused_resid_center_sparse, 14},
+    {"_scop_sct_fit_beta_intercept_offset", (DL_FUNC) &_scop_sct_fit_beta_intercept_offset, 7},
+    {"_scop_sct_overdispersion_mle_intercept", (DL_FUNC) &_scop_sct_overdispersion_mle_intercept, 4},
     {"_scop_tage_elastic_net_predict_cpp", (DL_FUNC) &_scop_tage_elastic_net_predict_cpp, 7},
     {"_scop_sparse_row_mean_var", (DL_FUNC) &_scop_sparse_row_mean_var, 5},
     {"_scop_sparse_row_mean_var_dgc_list", (DL_FUNC) &_scop_sparse_row_mean_var_dgc_list, 2},
