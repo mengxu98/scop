@@ -152,6 +152,7 @@ Suggests:
     SpaNorm,
     withr
 Remotes:
+    immunogenomics/presto,
     mengxu98/thisplot,
     mengxu98/thisutils,
     jinworks/SpatialCellChat,
