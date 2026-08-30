@@ -36,9 +36,31 @@ NormalizeData.Seurat <- function(
   verbose = TRUE,
   ...
 ) {
-  dots_call <- match.call(expand.dots = FALSE)$...
+  dots <- list(...)
+  delegate <- function() {
+    do.call(
+      utils::getFromNamespace("NormalizeData.Seurat", "Seurat"),
+      c(
+        list(
+          object = object,
+          assay = assay,
+          normalization.method = normalization.method,
+          scale.factor = scale.factor,
+          margin = margin,
+          block.size = block.size,
+          verbose = verbose
+        ),
+        dots
+      )
+    )
+  }
+  if (length(dots) > 0L && (is.null(names(dots)) || any(!nzchar(names(dots))))) {
+    return(delegate())
+  }
   if (
-    !normalization.method %in% c("LogNormalize", "CLR", "RC") ||
+    !is.character(normalization.method) ||
+      length(normalization.method) != 1L || is.na(normalization.method) ||
+      !normalization.method %in% c("LogNormalize", "CLR", "RC") ||
       !is.numeric(scale.factor) ||
       length(scale.factor) != 1L ||
       !is.finite(scale.factor) ||
@@ -50,13 +72,10 @@ NormalizeData.Seurat <- function(
       (identical(normalization.method, "LogNormalize") &&
         as.integer(margin) != 1L)
   ) {
-    log_message(
-      "NormalizeData.Seurat supports LogNormalize (margin = 1), CLR, and RC with margin 1 or 2.",
-      message_type = "error"
-    )
+    return(delegate())
   }
   if (!is.null(block.size)) {
-    message("NormalizeData: block.size is ignored; normalization runs in a single pass.")
+    return(delegate())
   }
 
   assay <- if (is.null(assay)) {
@@ -72,7 +91,17 @@ NormalizeData.Seurat <- function(
     log_message(sprintf("Assay '%s' is not present in object.", assay), message_type = "error")
   }
   assay_obj <- assays[[assay]]
+  seurat_fallback <- delegate
+  layer_arg <- dots[["layer"]] %||% "counts"
+  save_arg <- dots[["save"]] %||% "data"
+  remaining_dots <- dots[setdiff(names(dots), c("layer", "save"))]
+  if (length(remaining_dots) > 0L || inherits(assay_obj, "SCTAssay")) {
+    return(seurat_fallback())
+  }
   if (inherits(assay_obj, "Assay") && !inherits(assay_obj, "StdAssay")) {
+    if (!identical(layer_arg, "counts") || !identical(save_arg, "data")) {
+      return(seurat_fallback())
+    }
     counts <- methods::slot(assay_obj, "counts")
     if (!inherits(counts, "dgCMatrix")) {
       counts <- tryCatch(
@@ -85,8 +114,7 @@ NormalizeData.Seurat <- function(
     }
     data_mat <- sct_norm_sparse(counts, normalization.method, scale.factor, margin)
     methods::slot(assay_obj, "data") <- data_mat
-    assays[[assay]] <- assay_obj
-    methods::slot(object, "assays") <- assays
+    object[[assay]] <- assay_obj
     return(SeuratObject::LogSeuratCommand(object))
   }
   assay_slots <- methods::slotNames(assay_obj)
@@ -96,25 +124,29 @@ NormalizeData.Seurat <- function(
   ) {
     log_message("NormalizeData.Seurat requires an assay with layers, cells, and features slots.", message_type = "error")
   }
-  counts_layers <- tryCatch(
-    SeuratObject::Layers(assay_obj, search = "counts"),
+  source_patterns <- unique(layer_arg)
+  source_layers <- tryCatch(
+    SeuratObject::Layers(assay_obj, search = source_patterns),
     error = function(e) NULL
   )
-  if (
-    length(counts_layers) == 0L ||
-      anyNA(counts_layers) ||
-      !all(grepl("^counts(\\.|$)", counts_layers))
-  ) {
-    log_message("NormalizeData.Seurat requires counts layers named 'counts' or 'counts.*'.", message_type = "error")
+  if (length(source_layers) == 0L || anyNA(source_layers)) {
+    return(seurat_fallback())
+  }
+  save_layers <- save_arg
+  if (length(save_layers) != length(source_layers)) {
+    save_layers <- make.unique(gsub(
+      pattern = source_patterns,
+      replacement = save_arg,
+      x = source_layers
+    ))
   }
   layers <- methods::slot(assay_obj, "layers")
-  data_layers <- sub("^counts", "data", counts_layers)
-  for (i in seq_along(counts_layers)) {
-    counts_layer <- counts_layers[[i]]
-    data_layer <- data_layers[[i]]
-    counts <- layers[[counts_layer]]
+  for (i in seq_along(source_layers)) {
+    source_layer <- source_layers[[i]]
+    save_layer <- save_layers[[i]]
+    counts <- layers[[source_layer]]
     if (is.null(counts)) {
-      log_message("NormalizeData.Seurat requires a counts layer.", message_type = "error")
+      return(seurat_fallback())
     }
     if (!inherits(counts, "dgCMatrix")) {
       counts <- tryCatch(
@@ -127,44 +159,43 @@ NormalizeData.Seurat <- function(
     }
 
     data_mat <- sct_norm_sparse(counts, normalization.method, scale.factor, margin)
-    layers[[data_layer]] <- data_mat
+    layers[[save_layer]] <- data_mat
   }
   methods::slot(assay_obj, "layers") <- layers
 
   cm <- methods::slot(assay_obj, "cells")
-  missing_data_layers <- setdiff(data_layers, colnames(cm))
+  missing_data_layers <- setdiff(save_layers, colnames(cm))
   if (length(missing_data_layers) > 0L) {
     cm_data <- methods::slot(cm, ".Data")
-    for (i in seq_along(counts_layers)) {
-      counts_layer <- counts_layers[[i]]
-      data_layer <- data_layers[[i]]
-      if (!data_layer %in% missing_data_layers) {
+    for (i in seq_along(source_layers)) {
+      source_layer <- source_layers[[i]]
+      save_layer <- save_layers[[i]]
+      if (!save_layer %in% missing_data_layers) {
         next
       }
-      cm_data <- cbind(cm_data, cm_data[, counts_layer, drop = FALSE])
-      colnames(cm_data)[ncol(cm_data)] <- data_layer
+      cm_data <- cbind(cm_data, cm_data[, source_layer, drop = FALSE])
+      colnames(cm_data)[ncol(cm_data)] <- save_layer
     }
     methods::slot(cm, ".Data") <- cm_data
     methods::slot(assay_obj, "cells") <- cm
   }
   fm <- methods::slot(assay_obj, "features")
-  missing_data_layers <- setdiff(data_layers, colnames(fm))
+  missing_data_layers <- setdiff(save_layers, colnames(fm))
   if (length(missing_data_layers) > 0L) {
     fm_data <- methods::slot(fm, ".Data")
-    for (i in seq_along(counts_layers)) {
-      counts_layer <- counts_layers[[i]]
-      data_layer <- data_layers[[i]]
-      if (!data_layer %in% missing_data_layers) {
+    for (i in seq_along(source_layers)) {
+      source_layer <- source_layers[[i]]
+      save_layer <- save_layers[[i]]
+      if (!save_layer %in% missing_data_layers) {
         next
       }
-      fm_data <- cbind(fm_data, fm_data[, counts_layer, drop = FALSE])
-      colnames(fm_data)[ncol(fm_data)] <- data_layer
+      fm_data <- cbind(fm_data, fm_data[, source_layer, drop = FALSE])
+      colnames(fm_data)[ncol(fm_data)] <- save_layer
     }
     methods::slot(fm, ".Data") <- fm_data
     methods::slot(assay_obj, "features") <- fm
   }
-  assays[[assay]] <- assay_obj
-  methods::slot(object, "assays") <- assays
+  object[[assay]] <- assay_obj
   SeuratObject::LogSeuratCommand(object)
 }
 
@@ -180,6 +211,37 @@ NormalizeData <- function(object, ...) {
 }
 
 #' @export
-NormalizeData.default <- function(object, ...) {
-  log_message("NormalizeData supports Seurat objects.", message_type = "error")
+NormalizeData.default <- function(
+  object,
+  normalization.method = c("LogNormalize", "CLR", "RC"),
+  scale.factor = 10000,
+  cmargin = 2L,
+  margin = 1L,
+  verbose = TRUE,
+  ...
+) {
+  method <- normalization.method[[1L]]
+  native <- inherits(object, "dgCMatrix") &&
+    method %in% c("LogNormalize", "CLR", "RC") &&
+    is.numeric(scale.factor) && length(scale.factor) == 1L &&
+    is.finite(scale.factor) && scale.factor > 0 &&
+    is.numeric(margin) && length(margin) == 1L && margin %in% c(1, 2) &&
+    (!identical(method, "LogNormalize") || identical(as.integer(cmargin), 2L))
+  if (native) {
+    return(sct_norm_sparse(object, method, scale.factor, margin))
+  }
+  do.call(
+    utils::getFromNamespace("NormalizeData.default", "Seurat"),
+    c(
+      list(
+        object = object,
+        normalization.method = normalization.method,
+        scale.factor = scale.factor,
+        cmargin = cmargin,
+        margin = margin,
+        verbose = verbose
+      ),
+      list(...)
+    )
+  )
 }
