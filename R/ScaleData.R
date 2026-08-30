@@ -22,9 +22,9 @@ sct_fastrowscale <- function(mat_dense, do.scale, do.center, scale.max) {
 # honoring split.by groups. Regression runs per group as in Seurat; with
 # use.umi the residual space is mapped back through log1p after a per-gene
 # shift, matching RegressOutMatrix.
-sct_scale_general <- function(mat,              # sparse or dense, features x all cells
-                              latent_df,        # data.frame aligned to colnames(mat) or NULL
-                              split_levels,     # factor over colnames(mat) or NULL
+sct_scale_general <- function(mat, # sparse or dense, features x all cells
+                              latent_df, # data.frame aligned to colnames(mat) or NULL
+                              split_levels, # factor over colnames(mat) or NULL
                               do.scale,
                               do.center,
                               scale.max,
@@ -71,11 +71,36 @@ ScaleData.Seurat <- function(
   verbose = TRUE,
   ...
 ) {
-  if (!identical(model.use, "linear")) {
-    log_message(
-      "{.fn ScaleData} supports only {.val linear} for {.val model.use}.",
-      message_type = "error"
-    )
+  dots <- list(...)
+  if (
+    !identical(model.use, "linear") ||
+      !all(vapply(
+        list(use.umi, do.scale, do.center),
+        function(x) is.logical(x) && length(x) == 1L && !is.na(x),
+        logical(1)
+      ))
+  ) {
+    return(do.call(
+      utils::getFromNamespace("ScaleData.Seurat", "Seurat"),
+      c(
+        list(
+          object = object,
+          features = features,
+          assay = assay,
+          vars.to.regress = vars.to.regress,
+          split.by = split.by,
+          model.use = model.use,
+          use.umi = use.umi,
+          do.scale = do.scale,
+          do.center = do.center,
+          scale.max = scale.max,
+          block.size = block.size,
+          min.cells.to.block = min.cells.to.block,
+          verbose = verbose
+        ),
+        dots
+      )
+    ))
   }
   assay_name <- if (is.null(assay)) {
     SeuratObject::DefaultAssay(object)
@@ -83,6 +108,29 @@ ScaleData.Seurat <- function(
     assay[1L]
   }
   assay_obj <- methods::slot(object, "assays")[[assay_name]]
+  if (length(dots) > 0L || inherits(assay_obj, "SCTAssay")) {
+    return(do.call(
+      utils::getFromNamespace("ScaleData.Seurat", "Seurat"),
+      c(
+        list(
+          object = object,
+          features = features,
+          assay = assay_name,
+          vars.to.regress = vars.to.regress,
+          split.by = split.by,
+          model.use = model.use,
+          use.umi = use.umi,
+          do.scale = do.scale,
+          do.center = do.center,
+          scale.max = scale.max,
+          block.size = block.size,
+          min.cells.to.block = min.cells.to.block,
+          verbose = verbose
+        ),
+        dots
+      )
+    ))
+  }
   features <- if (is.null(features)) {
     SeuratObject::VariableFeatures(object)
   } else {
@@ -262,7 +310,8 @@ ScaleData.Seurat <- function(
   if (inherits(assay_obj, "Assay") && !inherits(assay_obj, "StdAssay")) {
     methods::slot(assay_obj, "scale.data") <- result
     methods::slot(object, "assays")[[assay_name]] <- assay_obj
-    return(object)
+    assay <- assay_name
+    return(SeuratObject::LogSeuratCommand(object))
   }
   assay_obj@layers[["scale.data"]] <- result
   if (!"scale.data" %in% colnames(assay_obj@cells)) {
@@ -288,7 +337,8 @@ ScaleData.Seurat <- function(
     )
   }
   methods::slot(object, "assays")[[assay_name]] <- assay_obj
-  object
+  assay <- assay_name
+  SeuratObject::LogSeuratCommand(object)
 }
 
 #' Scale expression data
@@ -303,6 +353,97 @@ ScaleData <- function(object, ...) {
 }
 
 #' @export
-ScaleData.default <- function(object, ...) {
-  log_message("ScaleData supports Seurat objects.", message_type = "error")
+ScaleData.default <- function(
+  object,
+  features = NULL,
+  vars.to.regress = NULL,
+  latent.data = NULL,
+  split.by = NULL,
+  model.use = "linear",
+  use.umi = FALSE,
+  do.scale = TRUE,
+  do.center = TRUE,
+  scale.max = 10,
+  block.size = 1000,
+  min.cells.to.block = 3000,
+  verbose = TRUE,
+  ...
+) {
+  fallback <- function() {
+    utils::getFromNamespace("ScaleData.default", "Seurat")(
+      object = object,
+      features = features,
+      vars.to.regress = vars.to.regress,
+      latent.data = latent.data,
+      split.by = split.by,
+      model.use = model.use,
+      use.umi = use.umi,
+      do.scale = do.scale,
+      do.center = do.center,
+      scale.max = scale.max,
+      block.size = block.size,
+      min.cells.to.block = min.cells.to.block,
+      verbose = verbose,
+      ...
+    )
+  }
+  if (
+    !inherits(object, "dgCMatrix") ||
+      !identical(model.use, "linear") ||
+      !all(vapply(
+        list(use.umi, do.scale, do.center),
+        function(x) is.logical(x) && length(x) == 1L && !is.na(x),
+        logical(1)
+      )) ||
+      length(list(...)) > 0L
+  ) {
+    return(fallback())
+  }
+  features <- features %||% rownames(object)
+  features <- intersect(features, rownames(object))
+  data <- object[features, , drop = FALSE]
+  latent <- NULL
+  if (!is.null(vars.to.regress)) {
+    latent <- if (is.null(latent.data)) {
+      data.frame(row.names = colnames(data))
+    } else {
+      as.data.frame(latent.data)[colnames(data), , drop = FALSE]
+    }
+    feature_vars <- intersect(vars.to.regress, rownames(data))
+    if (length(feature_vars)) {
+      latent <- cbind(latent, as.data.frame(t(data[feature_vars, , drop = FALSE])))
+    }
+    present <- intersect(vars.to.regress, colnames(latent))
+    if (!length(present)) {
+      return(fallback())
+    }
+    latent <- latent[, present, drop = FALSE]
+    if (any(!stats::complete.cases(latent))) {
+      return(fallback())
+    }
+  }
+  split_levels <- if (is.null(split.by)) NULL else factor(split.by)
+  if (!is.null(split_levels) && length(split_levels) != ncol(data)) {
+    return(fallback())
+  }
+  if (
+    is.null(latent) && is.null(split_levels) &&
+      isTRUE(do.scale) && isTRUE(do.center)
+  ) {
+    out <- scale_sparse_full(data, seq_len(nrow(data)) - 1L, scale.max)
+    dimnames(out) <- dimnames(data)
+    return(out)
+  }
+  out <- sct_scale_general(
+    data,
+    latent,
+    split_levels,
+    do.scale,
+    do.center,
+    scale.max,
+    use.umi = use.umi
+  )
+  out[is.na(out)] <- 0
+  dimnames(out) <- dimnames(data)
+  out
 }

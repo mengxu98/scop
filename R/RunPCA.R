@@ -1,3 +1,21 @@
+pca_native_auto_supported <- function(object, npcs, extra_args) {
+  is.matrix(object) &&
+    is.numeric(object) &&
+    length(extra_args) == 0L &&
+    nrow(object) >= 2L &&
+    nrow(object) <= 5000L &&
+    ncol(object) >= 8L * nrow(object) &&
+    npcs >= 1L &&
+    npcs + 1L < min(nrow(object), ncol(object))
+}
+
+pca_native_candidate_acceptable <- function(eigvals, npcs, min_gap = 0.005) {
+  length(eigvals) >= npcs + 1L &&
+    all(is.finite(eigvals[seq_len(npcs + 1L)])) &&
+    eigvals[[npcs]] > 0 &&
+    (eigvals[[npcs]] - eigvals[[npcs + 1L]]) / eigvals[[npcs]] >= min_gap
+}
+
 #' @export
 RunPCA.default <- function(
   object,
@@ -18,8 +36,41 @@ RunPCA.default <- function(
   if (!is.matrix(object) && !inherits(object, "Matrix")) {
     log_message("RunPCA supports Seurat, assay, matrix, and Matrix objects.", message_type = "error")
   }
-  if (isTRUE(rev.pca) || !isTRUE(approx)) {
-    log_message("RunPCA.default supports rev.pca = FALSE and approx = TRUE.", message_type = "error")
+  dots <- list(...)
+  backend <- dots[["backend"]] %||% "auto"
+  backend <- match.arg(backend, c("auto", "irlba", "cpp"))
+  dots[["backend"]] <- NULL
+  logical_flags <- list(rev.pca, weight.by.var, approx)
+  if (
+    !all(vapply(
+      logical_flags,
+      function(x) is.logical(x) && length(x) == 1L && !is.na(x),
+      logical(1)
+    )) ||
+      !is.numeric(npcs) || length(npcs) != 1L || !is.finite(npcs) ||
+      npcs < 1 || npcs != as.integer(npcs) ||
+      isTRUE(rev.pca) || !isTRUE(approx) ||
+      (inherits(object, "Matrix") && !identical(backend, "cpp"))
+  ) {
+    return(do.call(
+      utils::getFromNamespace("RunPCA.default", "Seurat"),
+      c(
+        list(
+          object = object,
+          assay = assay,
+          npcs = npcs,
+          rev.pca = rev.pca,
+          weight.by.var = weight.by.var,
+          verbose = verbose,
+          ndims.print = ndims.print,
+          nfeatures.print = nfeatures.print,
+          reduction.key = reduction.key,
+          seed.use = seed.use,
+          approx = approx
+        ),
+        dots
+      )
+    ))
   }
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
@@ -36,21 +87,33 @@ RunPCA.default <- function(
   if (!is.double(obj)) {
     storage.mode(obj) <- "double"
   }
-  backend <- list(...)[["backend"]] %||% "irlba"
-  backend <- match.arg(backend, c("irlba", "cpp"))
   nv <- NULL
-  if (identical(backend, "cpp")) {
+  native_auto <- identical(backend, "auto") &&
+    pca_native_auto_supported(obj, npcs, dots)
+  if (identical(backend, "cpp") || native_auto) {
+    native_npcs <- if (native_auto) npcs + 1L else npcs
     nv <- tryCatch(
-      pca_backend_run(obj, as.integer(npcs), isTRUE(weight.by.var)),
+      pca_backend_run(obj, as.integer(native_npcs), isTRUE(weight.by.var)),
       error = function(e) NULL
     )
+    if (
+      native_auto &&
+        !is.null(nv) &&
+        !pca_native_candidate_acceptable(nv$eigvals, npcs)
+    ) {
+      nv <- NULL
+    }
   }
   if (!is.null(nv)) {
-    feature.loadings <- nv$loadings
-    cell.embeddings <- nv$embeddings
-    sdev <- as.numeric(nv$sdev)
+    keep <- seq_len(npcs)
+    feature.loadings <- nv$loadings[, keep, drop = FALSE]
+    cell.embeddings <- nv$embeddings[, keep, drop = FALSE]
+    sdev <- as.numeric(nv$sdev[keep])
   } else {
-    pca <- irlba::irlba(A = Matrix::t(obj), nv = npcs, ...)
+    pca <- do.call(
+      irlba::irlba,
+      c(list(A = Matrix::t(obj), nv = npcs), dots)
+    )
     feature.loadings <- pca$v
     if (isTRUE(weight.by.var)) {
       cell.embeddings <- pca$u %*% diag(pca$d, nrow = length(pca$d))
@@ -68,7 +131,7 @@ RunPCA.default <- function(
     cell.embeddings = cell.embeddings,
     feature.loadings = feature.loadings,
     feature.loadings.projected = matrix(nrow = 0L, ncol = 0L),
-    assay.used = assay %||% character(0),
+    assay.used = assay %||% "RNA",
     global = FALSE,
     stdev = as.numeric(sdev),
     jackstraw = methods::new("JackStrawData"),
@@ -169,9 +232,15 @@ RunPCA.Seurat <- function(
     )
   }
   assay <- assay %||% SeuratObject::DefaultAssay(object)
+  approx <- extra[["approx"]] %||% TRUE
   if (
-    isTRUE(rev.pca) ||
-      isFALSE(extra[["approx"]]) ||
+    !all(vapply(
+      list(rev.pca, weight.by.var, approx),
+      function(x) is.logical(x) && length(x) == 1L && !is.na(x),
+      logical(1)
+    )) ||
+      isTRUE(rev.pca) ||
+      isFALSE(approx) ||
       !assay %in% SeuratObject::Assays(object)
   ) {
     return(run_seurat())
