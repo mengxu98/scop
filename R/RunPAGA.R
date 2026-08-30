@@ -11,6 +11,8 @@
 #' scanpy workflow and remains the default. `"cpp"` uses the package C++
 #' implementation for the standard connectivity graph and tree, plus an
 #' approximate R igraph layout stored in `paga$pos`.
+#' All arguments stay on the selected backend; the C++ backend never switches
+#' to Python implicitly.
 #' @param use_rna_velocity Whether to use RNA velocity for PAGA analysis.
 #' @param vkey RNA velocity data to use if `use_rna_velocity` is `TRUE`.
 #' Default is `"stochastic"`. If the corresponding velocity embedding is not
@@ -141,22 +143,6 @@ RunPAGA <- function(
         message_type = "error"
       )
     }
-    unsupported_cpp <- character(0)
-    if (isTRUE(embedded_with_PAGA)) {
-      unsupported_cpp <- c(unsupported_cpp, "embedded_with_PAGA")
-    }
-    if (isTRUE(show_plot)) {
-      unsupported_cpp <- c(unsupported_cpp, "show_plot")
-    }
-    if (isTRUE(save_plot)) {
-      unsupported_cpp <- c(unsupported_cpp, "save_plot")
-    }
-    if (length(unsupported_cpp) > 0L) {
-      reject_unsupported_cpp_arguments(
-        unsupported_cpp,
-        "RunPAGA(backend = \"cpp\")"
-      )
-    }
     srt <- run_paga_cpp(
       srt = srt,
       group.by = group.by,
@@ -175,12 +161,25 @@ RunPAGA <- function(
       min_group_size = min_group_size,
       use_rna_velocity = use_rna_velocity,
       vkey = vkey,
+      embedded_with_PAGA = embedded_with_PAGA,
       verbose = verbose
     )
+    if (isTRUE(show_plot) || isTRUE(save_plot)) {
+      plot <- PAGAPlot(srt, reduction = nonlinear_reduction)
+      if (isTRUE(show_plot)) print(plot)
+      if (isTRUE(save_plot)) {
+        dir.create(dirpath, recursive = TRUE, showWarnings = FALSE)
+        ggplot2::ggsave(
+          filename = file.path(dirpath, paste0(plot_prefix, ".", plot_format)),
+          plot = plot,
+          dpi = plot_dpi
+        )
+      }
+    }
     return(srt)
   }
 
-  PrepareEnv(modules = "scanpy")
+  prepare_env_if_needed(modules = "scanpy", verbose = verbose)
 
   args <- mget(names(formals()))
   args <- lapply(
@@ -243,7 +242,8 @@ RunPAGA <- function(
       assay_x = assay_x,
       layer_x = layer_x,
       assay_y = assay_y,
-      layer_y = layer_y
+      layer_y = layer_y,
+      prepare_env = FALSE
     )
   }
   if ("group.by" %in% names(args)) {
@@ -316,6 +316,7 @@ run_paga_cpp <- function(
   min_group_size = 0.01,
   use_rna_velocity = FALSE,
   vkey = "stochastic",
+  embedded_with_PAGA = FALSE,
   knn_override = NULL,
   verbose = TRUE
 ) {
@@ -500,12 +501,10 @@ run_paga_cpp <- function(
     }
 
     if (isTRUE(paga_allow_cell_dpt(ncol(srt)))) {
-      connectivities <- connectivities_py(
+      check_r("RSpectra", verbose = FALSE)
+      connectivities <- gauss_connectivities_cpp(
         knn_idx = knn[["idx"]],
-        knn_dist = knn[["dist"]],
-        n_obs = ncol(srt),
-        n_neighbors = ncol(knn[["idx"]]),
-        verbose = verbose
+        knn_dist = knn[["dist"]]
       )
       dpt_cell <- dpt_from_connectivities_cpp(
         connectivities = connectivities,
@@ -545,6 +544,25 @@ run_paga_cpp <- function(
       message_type = "success",
       verbose = verbose
     )
+  }
+
+  if (isTRUE(embedded_with_PAGA) && !is.null(nonlinear_reduction) &&
+    nonlinear_reduction %in% names(srt@reductions)) {
+    current <- as.matrix(srt@reductions[[nonlinear_reduction]]@cell.embeddings)
+    centers <- sweep(rowsum(current, groups), 1L, as.numeric(table(groups)), "/")
+    offsets <- current - centers[as.integer(groups), , drop = FALSE]
+    scale <- apply(offsets, 2L, stats::sd)
+    scale[!is.finite(scale) | scale == 0] <- 1
+    embedded <- pos[as.integer(groups), , drop = FALSE] +
+      sweep(offsets[, seq_len(min(2L, ncol(offsets))), drop = FALSE], 2L, scale, "/") * 0.1
+    colnames(embedded) <- paste0("PAGA_", seq_len(ncol(embedded)))
+    rownames(embedded) <- colnames(srt)
+    srt[["paga"]] <- SeuratObject::CreateDimReducObject(
+      embeddings = embedded,
+      assay = SeuratObject::DefaultAssay(srt),
+      key = "PAGA_"
+    )
+    srt@tools[["PAGA"]]$parameters$embedded_with_PAGA <- TRUE
   }
 
   # Velocity-based PAGA transitions
@@ -592,48 +610,6 @@ run_paga_cpp <- function(
     verbose = verbose
   )
   srt
-}
-
-connectivities_py <- function(
-  knn_idx,
-  knn_dist,
-  n_obs,
-  n_neighbors,
-  verbose = TRUE
-) {
-  if (requireNamespace("reticulate", quietly = TRUE)) {
-    conn_module <- tryCatch(
-      reticulate::import("scanpy.neighbors._connectivity", delay_load = TRUE),
-      error = function(e) NULL
-    )
-    if (!is.null(conn_module)) {
-      umap_W <- tryCatch({
-        idx <- matrix(as.integer(knn_idx - 1L), nrow = nrow(knn_idx))
-        dist <- as.matrix(knn_dist)
-        storage.mode(dist) <- "double"
-        W <- conn_module$umap(
-          idx,
-          dist,
-          n_obs = as.integer(n_obs),
-          n_neighbors = as.integer(n_neighbors)
-        )
-        as.matrix(W)
-      }, error = function(e) NULL)
-      if (
-        !is.null(umap_W) &&
-          nrow(umap_W) == n_obs &&
-          ncol(umap_W) == n_obs
-      ) {
-        return(umap_W)
-      }
-      log_message(
-        "{.pkg scanpy} connectivity helper failed; using C++ Gaussian connectivity fallback for cell-level DPT",
-        message_type = "warning",
-        verbose = verbose
-      )
-    }
-  }
-  gauss_connectivities_cpp(knn_idx = knn_idx, knn_dist = knn_dist)
 }
 
 paga_allow_cell_dpt <- function(n_cells, max_dense_cells = 4000L) {
