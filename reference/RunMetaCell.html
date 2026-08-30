@@ -170,18 +170,18 @@ cellular states from single-cell genomics data. <em>Nature Biotechnology</em>.</
 <span class="r-in"><span>  nonlinear_reduction_dims <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 19:04:15] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 22:18:34] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">mc1</span> <span class="op">&lt;-</span> <span class="fu">RunMetaCell</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"supercell"</span>,</span></span>
 <span class="r-in"><span>  gamma <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 19:04:27] Running <span style="color: #0000BB;">SuperCell</span> with gamma = <span style="color: #0000BB;">20</span>, k.knn = <span style="color: #0000BB;">5</span> on <span style="color: #0000BB;">1000</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 19:04:30] `RunMetaCell()` (<span style="color: #0000BB;">"supercell"</span>) built <span style="color: #0000BB;">50</span> metacells from <span style="color: #0000BB;">1000</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 19:04:30] Metacell size summary: min <span style="color: #0000BB;">5</span>, median <span style="color: #0000BB;">16.5</span>, mean <span style="color: #0000BB;">20</span>, max <span style="color: #0000BB;">56</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 22:18:44] Running <span style="color: #0000BB;">SuperCell</span> with gamma = <span style="color: #0000BB;">20</span>, k.knn = <span style="color: #0000BB;">5</span> on <span style="color: #0000BB;">1000</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 22:18:45] `RunMetaCell()` (<span style="color: #0000BB;">"supercell"</span>) built <span style="color: #0000BB;">50</span> metacells from <span style="color: #0000BB;">1000</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 22:18:45] Metacell size summary: min <span style="color: #0000BB;">5</span>, median <span style="color: #0000BB;">16.5</span>, mean <span style="color: #0000BB;">20</span>, max <span style="color: #0000BB;">56</span> cells</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-30 19:04:30] `RunMetaCell()` returned metacell Seurat with <span style="color: #0000BB;">50</span> metacells. Original cells in `@misc[["original_srt"]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-30 22:18:45] `RunMetaCell()` returned metacell Seurat with <span style="color: #0000BB;">50</span> metacells. Original cells in `@misc[["original_srt"]]`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="MetaCellPlot.html">MetaCellPlot</a></span><span class="op">(</span><span class="va">mc1</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunMetaCell-1.png" alt="" width="700" height="433"></span>
@@ -191,10 +191,10 @@ cellular states from single-cell genomics data. <em>Nature Biotechnology</em>.</
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"metacell"</span>,</span></span>
 <span class="r-in"><span>  gamma <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 19:04:33] Running <span style="color: #0000BB;">MetaCell</span>-style KNN partitioning with k = <span style="color: #0000BB;">20</span> on <span style="color: #0000BB;">1000</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 19:04:33] `RunMetaCell()` (<span style="color: #0000BB;">"metacell"</span>) built <span style="color: #0000BB;">8</span> metacells from <span style="color: #0000BB;">1000</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 19:04:33] Metacell size summary: min <span style="color: #0000BB;">16</span>, median <span style="color: #0000BB;">150</span>, mean <span style="color: #0000BB;">125</span>, max <span style="color: #0000BB;">215</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-30 19:04:33] `RunMetaCell()` returned metacell Seurat with <span style="color: #0000BB;">8</span> metacells. Original cells in `@misc[["original_srt"]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 22:18:48] Running <span style="color: #0000BB;">MetaCell</span>-style KNN partitioning with k = <span style="color: #0000BB;">20</span> on <span style="color: #0000BB;">1000</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 22:18:48] `RunMetaCell()` (<span style="color: #0000BB;">"metacell"</span>) built <span style="color: #0000BB;">8</span> metacells from <span style="color: #0000BB;">1000</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 22:18:48] Metacell size summary: min <span style="color: #0000BB;">16</span>, median <span style="color: #0000BB;">150</span>, mean <span style="color: #0000BB;">125</span>, max <span style="color: #0000BB;">215</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-30 22:18:48] `RunMetaCell()` returned metacell Seurat with <span style="color: #0000BB;">8</span> metacells. Original cells in `@misc[["original_srt"]]`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="MetaCellPlot.html">MetaCellPlot</a></span><span class="op">(</span><span class="va">mc2</span>, group.by <span class="op">=</span> <span class="st">"CellType"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunMetaCell-2.png" alt="" width="700" height="433"></span>
