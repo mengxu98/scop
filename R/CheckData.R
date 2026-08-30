@@ -601,7 +601,7 @@ CheckDataList <- function(
         if (HVF_method == "scran") {
           HVF <- names(utils::head(HVF_filter, n = nHVF %||% length(HVF_filter)))
         } else {
-          HVF <- Seurat::SelectIntegrationFeatures(
+          HVF <- SelectIntegrationFeatures(
             object.list = srt_list,
             nfeatures = nHVF,
             verbose = FALSE
