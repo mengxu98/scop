@@ -96,6 +96,7 @@ Suggests:
     pkgload,
     purrr,
     plotly,
+    presto,
     ps,
     proxyC,
     qlcMatrix,
@@ -151,7 +152,9 @@ Suggests:
     SpaNorm,
     withr
 Remotes:
+    immunogenomics/presto,
     mengxu98/thisplot,
+    mengxu98/thisutils,
     jinworks/SpatialCellChat,
     linxihui/NNLM,
     ZJUFanLab/SpaTalk

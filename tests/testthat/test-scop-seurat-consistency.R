@@ -23,7 +23,9 @@ test_that("RunPCA default output is identical to Seurat", {
     seed.use = 42,
     verbose = FALSE
   )
-  seurat_pca <- Seurat::RunPCA(
+  seurat_pca <- seurat_reference_method(
+    "RunPCA",
+    "Seurat",
     obj,
     features = hvf,
     npcs = 8,
@@ -38,12 +40,124 @@ test_that("RunPCA default output is identical to Seurat", {
   )
 })
 
-test_that("RunPCA cpp backend is opt-in and does not alter the default", {
+test_that("RunPCA cpp backend remains an explicit override", {
   obj <- make_consistency_object()
   hvf <- SeuratObject::VariableFeatures(obj)
   expect_no_error(
     RunPCA(obj, features = hvf, npcs = 8, backend = "cpp", verbose = FALSE)
   )
+})
+
+test_that("RunPCA native auto gate covers shape and argument branches", {
+  gate <- get("pca_native_auto_supported", asNamespace("scop"))
+  x <- matrix(0, nrow = 100L, ncol = 800L)
+  expect_true(gate(x, npcs = 20L, extra_args = list()))
+  expect_false(gate(x[, seq_len(799L), drop = FALSE], 20L, list()))
+  expect_false(gate(x, 20L, list(tol = 1e-5)))
+  expect_false(gate(Matrix::Matrix(x, sparse = TRUE), 20L, list()))
+  expect_false(gate(matrix(0, nrow = 5001L, ncol = 1L), 20L, list()))
+  expect_false(gate(x, 0L, list()))
+})
+
+test_that("RunPCA native eigengap gate rejects unstable trailing PCs", {
+  acceptable <- get(
+    "pca_native_candidate_acceptable",
+    asNamespace("scop")
+  )
+  expect_true(acceptable(c(10, 8, 6, 5), npcs = 3L))
+  expect_false(acceptable(c(10, 8, 6, 5.99), npcs = 3L))
+  expect_false(acceptable(c(10, 8, NA_real_, 5), npcs = 3L))
+})
+
+test_that("RunPCA matrix method supplies Seurat's default assay contract", {
+  set.seed(20260830)
+  x <- matrix(stats::rnorm(30L * 20L), nrow = 30L)
+  rownames(x) <- paste0("g", seq_len(nrow(x)))
+  colnames(x) <- paste0("c", seq_len(ncol(x)))
+  result <- RunPCA(x, npcs = 5L, verbose = FALSE)
+  expect_s4_class(result, "DimReduc")
+  expect_identical(result@assay.used, "RNA")
+})
+
+test_that("RunPCA matrix fallback retains exact and reverse PCA branches", {
+  set.seed(20260905)
+  x <- matrix(stats::rnorm(40L * 30L), nrow = 40L)
+  rownames(x) <- paste0("g", seq_len(nrow(x)))
+  colnames(x) <- paste0("c", seq_len(ncol(x)))
+  for (args in list(
+    list(approx = FALSE),
+    list(rev.pca = TRUE, approx = FALSE),
+    list(weight.by.var = FALSE, approx = FALSE)
+  )) {
+    actual <- suppressWarnings(do.call(
+      RunPCA,
+      c(list(object = x, npcs = 5L, verbose = FALSE), args)
+    ))
+    expected <- suppressWarnings(do.call(
+      function(object, ...) seurat_reference_method("RunPCA", "default", object, ...),
+      c(list(object = x, npcs = 5L, verbose = FALSE), args)
+    ))
+    expect_equal(
+      SeuratObject::Embeddings(actual),
+      SeuratObject::Embeddings(expected),
+      tolerance = 1e-12
+    )
+    expect_equal(
+      SeuratObject::Loadings(actual),
+      SeuratObject::Loadings(expected),
+      tolerance = 1e-12
+    )
+  }
+
+  sparse <- methods::as(Matrix::Matrix(x, sparse = TRUE), "dgCMatrix")
+  expect_error(
+    RunPCA(sparse, npcs = 5L, verbose = FALSE),
+    "unused argument"
+  )
+  expect_no_error(RunPCA(
+    sparse,
+    npcs = 5L,
+    backend = "cpp",
+    verbose = FALSE
+  ))
+})
+
+test_that("RunPCA native auto path preserves a separated PCA subspace", {
+  set.seed(20260830)
+  features <- 80L
+  cells <- 800L
+  latent <- 12L
+  x <- matrix(stats::rnorm(features * latent), nrow = features) %*%
+    matrix(stats::rnorm(latent * cells), nrow = latent)
+  x <- x + matrix(stats::rnorm(length(x), sd = 0.05), nrow = features)
+  x <- x - rowMeans(x)
+  rownames(x) <- paste0("g", seq_len(features))
+  colnames(x) <- paste0("c", seq_len(cells))
+  reference <- RunPCA(
+    x,
+    assay = "RNA",
+    npcs = 10L,
+    backend = "irlba",
+    seed.use = 42,
+    verbose = FALSE
+  )
+  candidate <- RunPCA(
+    x,
+    assay = "RNA",
+    npcs = 10L,
+    seed.use = 42,
+    verbose = FALSE
+  )
+  reference_embedding <- SeuratObject::Embeddings(reference)
+  candidate_embedding <- SeuratObject::Embeddings(candidate)
+  signs <- sign(colSums(reference_embedding * candidate_embedding))
+  signs[signs == 0] <- 1
+  candidate_embedding <- sweep(candidate_embedding, 2L, signs, `*`)
+  expect_lt(
+    sqrt(mean((candidate_embedding - reference_embedding)^2)),
+    1e-8
+  )
+  expect_equal(candidate@stdev, reference@stdev, tolerance = 1e-10)
 })
 
 test_that("FindNeighbors nn graph is identical to Seurat (self edges preserved)", {
@@ -59,7 +173,9 @@ test_that("FindNeighbors nn graph is identical to Seurat (self edges preserved)"
     graph.name = c("nn_scop", "snn_scop"),
     verbose = FALSE
   )
-  seurat_nn <- Seurat::FindNeighbors(
+  seurat_nn <- seurat_reference_method(
+    "FindNeighbors",
+    "Seurat",
     obj,
     reduction = "pca",
     dims = 1:8,
@@ -92,7 +208,9 @@ test_that("FindNeighbors SNN graph is identical to Seurat", {
     graph.name = c("nn_scop", "snn_scop"),
     verbose = FALSE
   )
-  seurat_nn <- Seurat::FindNeighbors(
+  seurat_nn <- seurat_reference_method(
+    "FindNeighbors",
+    "Seurat",
     obj,
     reduction = "pca",
     dims = 1:8,
@@ -119,7 +237,14 @@ test_that("VST on split Assay5 layers matches Seurat's layered reference", {
     FindVariableFeatures(obj, selection.method = "vst", nfeatures = 40, verbose = FALSE)
   )
   seurat_layered_hvf <- SeuratObject::VariableFeatures(
-    Seurat::FindVariableFeatures(obj, selection.method = "vst", nfeatures = 40, verbose = FALSE)
+    seurat_reference_method(
+      "FindVariableFeatures",
+      "Seurat",
+      obj,
+      selection.method = "vst",
+      nfeatures = 40,
+      verbose = FALSE
+    )
   )
   joined_hvf <- SeuratObject::VariableFeatures(
     FindVariableFeatures(joined, selection.method = "vst", nfeatures = 40, verbose = FALSE)
@@ -159,7 +284,9 @@ test_that("VST aligns Assay5 layers with partially overlapping features", {
     nfeatures = 20,
     verbose = FALSE
   ))
-  seurat_result <- suppressWarnings(Seurat::FindVariableFeatures(
+  seurat_result <- suppressWarnings(seurat_reference_method(
+    "FindVariableFeatures",
+    "Seurat",
     obj,
     selection.method = "vst",
     nfeatures = 20,
@@ -197,7 +324,9 @@ test_that("VST aligns Assay5 layers with partially overlapping features", {
     nfeatures = 20,
     verbose = FALSE
   ))
-  reordered_seurat <- suppressWarnings(Seurat::FindVariableFeatures(
+  reordered_seurat <- suppressWarnings(seurat_reference_method(
+    "FindVariableFeatures",
+    "Seurat",
     reordered_obj,
     selection.method = "vst",
     nfeatures = 20,

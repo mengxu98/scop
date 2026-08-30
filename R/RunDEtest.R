@@ -1219,11 +1219,13 @@ RunDEtestFindAllMarkers <- function(
     ctx = ctx,
     min.cells.group = min.cells.group,
     min.pct = min.pct,
+    min.diff.pct = min.diff.pct,
     logfc.threshold = logfc.threshold,
     only.pos = only.pos,
     return.thresh = Inf,
     base = base,
-    p.adjust.method = p.adjust.method
+    p.adjust.method = p.adjust.method,
+    p.adjust.n = nrow(srt[[assay]])
   )
   if (nrow(markers) == 0L) {
     return(markers)
@@ -1336,10 +1338,15 @@ RunDEtestSparseWilcoxMarkers <- function(
   }
 
   data.de <- data.use[features, c(cells.1, cells.2), drop = FALSE]
-  p_val <- run_sparse_wilcox_all_cells(
-    x = data.de,
-    n_group1 = length(cells.1)
+  group <- factor(
+    c(rep("Group1", length(cells.1)), rep("Group2", length(cells.2))),
+    levels = c("Group1", "Group2")
   )
+  presto.result <- presto::wilcoxauc(X = data.de, y = group, verbose = FALSE)
+  keep <- as.character(presto.result$group) == "Group1"
+  p_val <- presto.result$pval[keep]
+  names(p_val) <- presto.result$feature[keep]
+  p_val <- p_val[rownames(data.de)]
   de.results <- data.frame(
     p_val = p_val,
     row.names = names(p_val)
@@ -1348,7 +1355,9 @@ RunDEtestSparseWilcoxMarkers <- function(
     de.results,
     fc.results[rownames(de.results), , drop = FALSE]
   )
-  de.results <- de.results[order(de.results$p_val, -de.results[[fc_col]]), ]
+  de.results <- de.results[
+    order(de.results$p_val, -abs(de.results$pct.1 - de.results$pct.2)),
+  ]
   de.results$p_val_adj <- stats::p.adjust(
     p = de.results$p_val,
     method = "bonferroni",

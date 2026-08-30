@@ -27,11 +27,11 @@ using Annoy::Manhattan;
 typedef AnnoyIndex<int, float, Euclidean, Kiss64Random,
   AnnoyIndexSingleThreadedBuildPolicy> EuclideanAnnoyIndex;
 typedef AnnoyIndex<int, float, Angular, Kiss64Random,
-  AnnoyIndexMultiThreadedBuildPolicy> AngularAnnoyIndex;
+  AnnoyIndexSingleThreadedBuildPolicy> AngularAnnoyIndex;
 typedef AnnoyIndex<int, float, Manhattan, Kiss64Random,
-  AnnoyIndexMultiThreadedBuildPolicy> ManhattanAnnoyIndex;
+  AnnoyIndexSingleThreadedBuildPolicy> ManhattanAnnoyIndex;
 typedef AnnoyIndex<int, float, Euclidean, Kiss64Random,
-  AnnoyIndexMultiThreadedBuildPolicy> EuclideanCrossAnnoyIndex;
+  AnnoyIndexSingleThreadedBuildPolicy> EuclideanCrossAnnoyIndex;
 
 static int core_count(int requested, int jobs) {
   int n = requested > 0 ? requested :

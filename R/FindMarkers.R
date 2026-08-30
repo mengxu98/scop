@@ -1,5 +1,3 @@
-
-
 marker_pair_supported <- function(
   opts,
   ident.1,
@@ -21,7 +19,20 @@ marker_pair_supported <- function(
     is.null(mean.fxn) &&
     is.null(fc.name) &&
     identical(opts$test, "wilcox") &&
-    opts$layer %in% c("data", "counts") &&
+    identical(opts$layer, "data") &&
+    is.logical(opts$positive) &&
+    length(opts$positive) == 1L &&
+    !is.na(opts$positive) &&
+    is.numeric(opts$logfc) && length(opts$logfc) == 1L &&
+    is.finite(opts$logfc) &&
+    is.numeric(opts$min_pct) && length(opts$min_pct) == 1L &&
+    is.finite(opts$min_pct) &&
+    is.numeric(opts$min_diff) && length(opts$min_diff) == 1L &&
+    !is.na(opts$min_diff) &&
+    is.numeric(opts$base) && length(opts$base) == 1L &&
+    is.finite(opts$base) && opts$base > 0 && opts$base != 1 &&
+    is.numeric(opts$cell_cap) && length(opts$cell_cap) == 1L &&
+    !is.na(opts$cell_cap) && opts$cell_cap > 0 &&
     (is.null(ident.1) || length(ident.1) == 1L) &&
     (!is.null(ident.1) || !is.null(cells.1)) &&
     (is.null(features) || is.character(features)) &&
@@ -89,91 +100,6 @@ marker_pair_cells <- function(object, assay, layer, ident.1, ident.2, cells.1, c
   list(cells.1 = cells.1, cells.2 = cells.2)
 }
 
-marker_pair_parallel <- function(
-  object,
-  assay,
-  layer,
-  features,
-  cells.1,
-  cells.2,
-  logfc.threshold,
-  base,
-  min.pct,
-  min.diff.pct,
-  min.cells.group,
-  min.cells.feature,
-  only.pos,
-  pseudocount.use
-) {
-  if (
-    !identical(layer, "data") ||
-      is.finite(min.diff.pct) ||
-      !identical(as.numeric(min.cells.group), 3) ||
-      !identical(as.numeric(min.cells.feature), 3)
-  ) {
-    return(NULL)
-  }
-  data.use <- marker_get_data(object, object[[assay]], layer)
-  if (!inherits(data.use, "dgCMatrix")) {
-    return(NULL)
-  }
-  if (!is.null(features)) {
-    data.use <- data.use[features, , drop = FALSE]
-  }
-  cell.use <- c(cells.1, cells.2)
-  data.use <- data.use[, cell.use, drop = FALSE]
-  group <- factor(
-    c(rep("group1", length(cells.1)), rep("group2", length(cells.2))),
-    levels = c("group1", "group2")
-  )
-  group_sizes <- tabulate(as.integer(group), nbins = 2L)
-  if (any(group_sizes < min.cells.group)) {
-    return(NULL)
-  }
-  marker_result <- parallel_all_in_one_dgc(
-    x_sexp = data.use,
-    groups = as.integer(group),
-    group_sizes = as.integer(group_sizes)
-  )
-  marker_result$pval_by_group[is.nan(marker_result$pval_by_group)] <- 1
-  n1 <- group_sizes[[1L]]
-  n2 <- group_sizes[[2L]]
-  sums1 <- marker_result$sum_by_group[, 1L]
-  sums2 <- marker_result$sum_by_group[, 2L]
-  counts1 <- marker_result$detected_by_group[, 1L]
-  counts2 <- marker_result$detected_by_group[, 2L]
-  fc <- log((sums1 + pseudocount.use) / n1, base = base) -
-    log((sums2 + pseudocount.use) / n2, base = base)
-  pct1 <- round(counts1 / n1, digits = 3)
-  pct2 <- round(counts2 / n2, digits = 3)
-  pass <- pmax(pct1, pct2) >= min.pct
-  pass <- pass & if (isTRUE(only.pos)) fc >= logfc.threshold else abs(fc) >= logfc.threshold
-  selected <- which(pass)
-  if (!length(selected)) {
-    return(data.frame(
-      p_val = numeric(),
-      avg_log2FC = numeric(),
-      pct.1 = numeric(),
-      pct.2 = numeric(),
-      p_val_adj = numeric()
-    ))
-  }
-  out <- data.frame(
-    p_val = marker_result$pval_by_group[selected, 1L],
-    avg_log2FC = fc[selected],
-    pct.1 = pct1[selected],
-    pct.2 = pct2[selected],
-    row.names = rownames(data.use)[selected],
-    check.names = FALSE
-  )
-  if (isTRUE(only.pos)) {
-    out <- out[out$avg_log2FC > 0, , drop = FALSE]
-  }
-  out <- out[order(out$p_val, -abs(out$pct.1 - out$pct.2)), , drop = FALSE]
-  out$p_val_adj <- pmin(out$p_val * nrow(data.use), 1)
-  out
-}
-
 #' @export
 FindMarkers.Seurat <- function(
   object,
@@ -187,6 +113,8 @@ FindMarkers.Seurat <- function(
   ...
 ) {
   dots <- list(...)
+  unnamed_dots <- length(dots) > 0L &&
+    (is.null(names(dots)) || any(!nzchar(names(dots))))
   cells.1 <- dots[["cells.1"]]
   cells.2 <- dots[["cells.2"]]
   run_seurat <- function() {
@@ -280,7 +208,7 @@ FindMarkers.Seurat <- function(
     "only.pos", "norm.method", "pseudocount.use", "mean.fxn", "fc.name",
     "verbose", "random.seed"
   )
-  extra_args <- dots[setdiff(names(dots), supported_args)]
+  extra_args <- if (unnamed_dots) dots else dots[setdiff(names(dots), supported_args)]
   opts <- list(
     test = test.use,
     layer = layer,
@@ -296,48 +224,27 @@ FindMarkers.Seurat <- function(
   )
   if (
     marker_assay_is_chromatin(object, assay) ||
+      !requireNamespace("presto", quietly = TRUE) ||
       !marker_pair_supported(
-      opts = opts,
-      ident.1 = ident.1,
-      cells.1 = cells.1,
-      latent.vars = latent.vars,
-      group.by = group.by,
-      subset.ident = subset.ident,
-      reduction = reduction,
-      features = features,
-      mean.fxn = mean.fxn,
-      fc.name = fc.name,
-      norm.method = norm.method,
-      extra_args = extra_args
-    )
+        opts = opts,
+        ident.1 = ident.1,
+        cells.1 = cells.1,
+        latent.vars = latent.vars,
+        group.by = group.by,
+        subset.ident = subset.ident,
+        reduction = reduction,
+        features = features,
+        mean.fxn = mean.fxn,
+        fc.name = fc.name,
+        norm.method = norm.method,
+        extra_args = extra_args
+      )
   ) {
     return(run_seurat())
   }
   cells <- marker_pair_cells(object, assay, opts$layer, ident.1, ident.2, cells.1, cells.2)
   if (is.null(cells)) {
     return(run_seurat())
-  }
-  fast <- tryCatch(
-    marker_pair_parallel(
-      object = object,
-      assay = assay %||% SeuratObject::DefaultAssay(object),
-      layer = opts$layer,
-      features = features,
-      cells.1 = cells$cells.1,
-      cells.2 = cells$cells.2,
-      logfc.threshold = opts$logfc,
-      base = opts$base,
-      min.pct = opts$min_pct,
-      min.diff.pct = opts$min_diff,
-      min.cells.group = opts$min_group,
-      min.cells.feature = opts$min_feature,
-      only.pos = opts$positive,
-      pseudocount.use = opts$pseudocount
-    ),
-    error = function(e) NULL
-  )
-  if (!is.null(fast)) {
-    return(fast)
   }
   RunDEtestSparseWilcoxMarkers(
     srt = object,
@@ -372,5 +279,8 @@ FindMarkers <- function(object, ...) {
 
 #' @export
 FindMarkers.default <- function(object, ...) {
-  Seurat::FindMarkers(object = object, ...)
+  get("FindMarkers.default", asNamespace("Seurat"))(
+    object = object,
+    ...
+  )
 }

@@ -13,16 +13,19 @@ RunCCA.default <- function(
   }
   cells1 <- colnames(object1)
   cells2 <- colnames(object2)
-  if (standardize) {
-    standardize_fun <- get_namespace_fun("Seurat", "Standardize")
-    object1 <- standardize_fun(mat = object1, display_progress = FALSE)
-    object2 <- standardize_fun(mat = object2, display_progress = FALSE)
-  }
+  # Seurat's Standardize helper expects an ordinary numeric matrix. Convert
+  # sparse inputs before calling it so RunCCA.default can accept the Matrix
+  # inputs produced by the standard normalization workflow.
   if (inherits(object1, "sparseMatrix")) {
     object1 <- as.matrix(object1)
   }
   if (inherits(object2, "sparseMatrix")) {
     object2 <- as.matrix(object2)
+  }
+  if (standardize) {
+    standardize_fun <- get_namespace_fun("Seurat", "Standardize")
+    object1 <- standardize_fun(mat = object1, display_progress = FALSE)
+    object2 <- standardize_fun(mat = object2, display_progress = FALSE)
   }
 
   cca_mult <- function(L, R) {
