@@ -2390,7 +2390,7 @@ def CellRank(
         fate_probabilities_available = True
         try:
             if kernel_type == "wot":
-                estimator.compute_fate_probabilities(solver="direct")
+                estimator.compute_fate_probabilities(solver="direct", use_petsc=False)
             else:
                 estimator.compute_fate_probabilities()
         except ValueError as e:
@@ -2412,7 +2412,7 @@ def CellRank(
                     message_type="warning",
                     verbose=verbose,
                 )
-                estimator.compute_fate_probabilities(solver="direct")
+                estimator.compute_fate_probabilities(solver="direct", use_petsc=False)
 
         lineage_driver_result = None
         if fate_probabilities_available and compute_lineage_drivers:
