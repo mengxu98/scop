@@ -152,6 +152,7 @@ Suggests:
     withr
 Remotes:
     mengxu98/thisplot,
+    mengxu98/thisutils,
     jinworks/SpatialCellChat,
     linxihui/NNLM,
     ZJUFanLab/SpaTalk
