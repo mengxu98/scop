@@ -35,8 +35,9 @@
 #' `subtitle = NULL`, the feature or feature-set name is used.
 #' @param xlab,ylab Axis titles.
 #' @param legend.position The position of the legend. The default is `"auto"`:
-#' a compact legend card is placed in the open corner on the starting side of
-#' the tree, with an automatic fallback to `"right"` for start-heavy trees.
+#' horizontal trees place a compact guide row above the panel, aligned to the
+#' starting side, while vertical trees place guides on the right. Use
+#' `"inside"` to force an in-panel legend.
 #' @param theme_use,theme_args Plot theme and additional theme arguments.
 #' @param return_data Whether to return plot data along with the plot.
 #'
@@ -124,7 +125,8 @@ ClusterTreePlot <- function(
   )
   legend.position <- clustertree_resolve_legend_position(
     legend.position = legend.position,
-    nodes = tree_data$nodes
+    nodes = tree_data$nodes,
+    direction = direction
   )
 
   feature_values <- clustertree_feature_values(
@@ -785,7 +787,7 @@ clustertree_single_plot <- function(
     ggplot2::scale_size_continuous(
       name = "Cluster size",
       range = node_size,
-      breaks = clustertree_compact_breaks(3),
+      breaks = clustertree_compact_breaks(2),
       guide = if (isTRUE(show_shared_guides)) {
         ggplot2::guide_legend(
           order = 3,
@@ -875,7 +877,7 @@ clustertree_single_plot <- function(
       ) +
       ggplot2::scale_fill_gradientn(
         name = if (
-          clustertree_is_inside_legend(legend.position) && is.null(subtitle)
+          clustertree_is_compact_legend(legend.position) && is.null(subtitle)
         ) {
           NULL
         } else {
@@ -918,7 +920,7 @@ clustertree_single_plot <- function(
 clustertree_is_horizontal_legend <- function(legend.position) {
   is.character(legend.position) &&
     length(legend.position) == 1L &&
-    legend.position %in% c("bottom", "top")
+    legend.position %in% c("bottom", "top", "top-left", "top-right")
 }
 
 clustertree_is_inside_legend <- function(legend.position) {
@@ -927,22 +929,33 @@ clustertree_is_inside_legend <- function(legend.position) {
     identical(legend.position, "inside")
 }
 
-clustertree_resolve_legend_position <- function(legend.position, nodes) {
+clustertree_is_corner_legend <- function(legend.position) {
+  is.character(legend.position) &&
+    length(legend.position) == 1L &&
+    legend.position %in% c("top-left", "top-right")
+}
+
+clustertree_is_compact_legend <- function(legend.position) {
+  clustertree_is_inside_legend(legend.position) ||
+    clustertree_is_corner_legend(legend.position)
+}
+
+clustertree_resolve_legend_position <- function(
+  legend.position,
+  nodes = NULL,
+  direction = "left-to-right"
+) {
   if (!identical(legend.position, "auto")) {
     return(legend.position)
   }
-  level_ids <- sort(unique(nodes$resolution_index))
-  early_n <- max(1L, ceiling(length(level_ids) * 0.3))
-  early_ids <- level_ids[seq_len(early_n)]
-  early_top <- max(nodes$y[nodes$resolution_index %in% early_ids], na.rm = TRUE)
-  tree_top <- max(nodes$y, na.rm = TRUE)
-  first_count <- sum(nodes$resolution_index == level_ids[1L])
-  last_count <- sum(nodes$resolution_index == level_ids[length(level_ids)])
-  upper_left_clear <- is.finite(tree_top) &&
-    tree_top > 0 &&
-    early_top / tree_top <= 0.65 &&
-    first_count < last_count
-  if (isTRUE(upper_left_clear)) "inside" else "right"
+  switch(
+    direction,
+    "left-to-right" = "top-left",
+    "right-to-left" = "top-right",
+    "top-to-bottom" = "right",
+    "bottom-to-top" = "right",
+    "right"
+  )
 }
 
 clustertree_legend_anchor <- function(direction = "left-to-right") {
@@ -992,12 +1005,19 @@ clustertree_compact_breaks <- function(n = 3L) {
 clustertree_colorbar_guide <- function(legend.position, order = 1) {
   horizontal <- clustertree_is_horizontal_legend(legend.position) ||
     clustertree_is_inside_legend(legend.position)
+  corner <- clustertree_is_corner_legend(legend.position)
   ggplot2::guide_colorbar(
     order = order,
     direction = if (horizontal) "horizontal" else "vertical",
     title.position = "top",
     title.hjust = 0,
-    barwidth = if (horizontal) grid::unit(74, "pt") else grid::unit(7, "pt"),
+    barwidth = if (corner) {
+      grid::unit(60, "pt")
+    } else if (horizontal) {
+      grid::unit(74, "pt")
+    } else {
+      grid::unit(7, "pt")
+    },
     barheight = if (horizontal) grid::unit(8, "pt") else grid::unit(48, "pt")
   )
 }
@@ -1009,9 +1029,17 @@ clustertree_legend_theme <- function(
 ) {
   horizontal <- clustertree_is_horizontal_legend(legend.position)
   inside <- clustertree_is_inside_legend(legend.position)
+  corner <- clustertree_is_corner_legend(legend.position)
+  compact <- inside || corner
   guide_horizontal <- horizontal || inside
   vertical_tree <- direction %in% c("top-to-bottom", "bottom-to-top")
   legend_anchor <- clustertree_legend_anchor(direction)
+  legend_position_use <- if (corner) "top" else legend.position
+  corner_justification <- if (identical(legend.position, "top-right")) {
+    "right"
+  } else {
+    "left"
+  }
   ggplot2::theme(
     text = ggplot2::element_text(family = family, color = "black"),
     plot.title = ggplot2::element_text(
@@ -1044,13 +1072,29 @@ clustertree_legend_theme <- function(
         margin = ggplot2::margin(t = 4)
       )
     },
-    legend.position = legend.position,
+    legend.position = legend_position_use,
     legend.position.inside = legend_anchor$position,
     legend.direction = if (guide_horizontal) "horizontal" else "vertical",
-    legend.box = if (inside) "vertical" else if (horizontal) "horizontal" else "vertical",
-    legend.justification = if (inside) legend_anchor$justification else if (horizontal) "center" else "top",
+    legend.box = if (inside) {
+      "vertical"
+    } else if (corner || horizontal) {
+      "horizontal"
+    } else {
+      "vertical"
+    },
+    legend.justification = if (inside) {
+      legend_anchor$justification
+    } else if (corner) {
+      corner_justification
+    } else if (horizontal) {
+      "center"
+    } else {
+      "top"
+    },
     legend.justification.inside = legend_anchor$justification,
-    legend.box.just = if (inside && legend_anchor$justification[1L] == 1) {
+    legend.box.just = if (corner) {
+      corner_justification
+    } else if (inside && legend_anchor$justification[1L] == 1) {
       "right"
     } else if (horizontal) {
       "center"
@@ -1069,17 +1113,25 @@ clustertree_legend_theme <- function(
       color = "black"
     ),
     legend.key.height = grid::unit(14, "pt"),
-    legend.key.width = grid::unit(if (guide_horizontal) 24 else 16, "pt"),
-    legend.spacing.x = grid::unit(5, "pt"),
-    legend.spacing.y = grid::unit(if (inside) 1 else 4, "pt"),
-    legend.box.spacing = grid::unit(if (inside) 0 else 6, "pt"),
-    legend.margin = if (inside) {
+    legend.key.width = grid::unit(
+      if (corner) 20 else if (guide_horizontal) 24 else 16,
+      "pt"
+    ),
+    legend.spacing.x = grid::unit(if (corner) 3 else 5, "pt"),
+    legend.spacing.y = grid::unit(if (compact) 1 else 4, "pt"),
+    legend.box.spacing = grid::unit(if (compact) 0 else 6, "pt"),
+    legend.margin = if (compact) {
       ggplot2::margin(t = 0, r = 0, b = 0, l = 0)
     } else {
       ggplot2::margin(t = 2, r = 2, b = 2, l = 2)
     },
-    legend.box.margin = if (inside) {
-      ggplot2::margin(t = 3, r = 5, b = 3, l = 5)
+    legend.box.margin = if (compact) {
+      ggplot2::margin(
+        t = 3,
+        r = if (corner) 2 else 4,
+        b = 3,
+        l = if (corner) 2 else 4
+      )
     } else {
       ggplot2::margin(t = 7, r = 5, b = 2, l = 5)
     },
