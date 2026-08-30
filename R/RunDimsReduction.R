@@ -297,12 +297,12 @@ RunDimsReduction <- function(
     if (linear_reduction == "pca") {
       pca_out <- srt[[paste0(prefix, linear_reduction)]]
       if (inherits(srt[[assay]], "Assay5")) {
-        scale_mat <- as.matrix(SeuratObject::LayerData(
+        scale_mat <- SeuratObject::LayerData(
           object = srt[[assay]],
           layer = "scale.data"
-        ))
+        )
       } else {
-        scale_mat <- as.matrix(GetAssayData5(srt, assay = assay, layer = "scale.data"))
+        scale_mat <- GetAssayData5(srt, assay = assay, layer = "scale.data")
       }
       scale_features <- rownames(scale_mat)
       features_use <- intersect(features, scale_features)
@@ -314,11 +314,7 @@ RunDimsReduction <- function(
           verbose = verbose
         )
       }
-      if (inherits(srt[[assay]], "Assay5")) {
-        center <- rowMeans(scale_mat[features_use, , drop = FALSE])
-      } else {
-        center <- rowMeans(scale_mat[features_use, , drop = FALSE])
-      }
+      center <- rowMeans(scale_mat[features_use, , drop = FALSE])
       model <- list(
         sdev = pca_out@stdev,
         rotation = pca_out@feature.loadings,
