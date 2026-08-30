@@ -263,8 +263,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // cellrank_gpcca_cpp
-List cellrank_gpcca_cpp(NumericMatrix T_, int n_states, int n_cells_terminal, bool skip_perron);
-RcppExport SEXP _scop_cellrank_gpcca_cpp(SEXP T_SEXP, SEXP n_statesSEXP, SEXP n_cells_terminalSEXP, SEXP skip_perronSEXP) {
+List cellrank_gpcca_cpp(NumericMatrix T_, int n_states, int n_cells_terminal, bool skip_perron, int schur_n_components);
+RcppExport SEXP _scop_cellrank_gpcca_cpp(SEXP T_SEXP, SEXP n_statesSEXP, SEXP n_cells_terminalSEXP, SEXP skip_perronSEXP, SEXP schur_n_componentsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -272,7 +272,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type n_states(n_statesSEXP);
     Rcpp::traits::input_parameter< int >::type n_cells_terminal(n_cells_terminalSEXP);
     Rcpp::traits::input_parameter< bool >::type skip_perron(skip_perronSEXP);
-    rcpp_result_gen = Rcpp::wrap(cellrank_gpcca_cpp(T_, n_states, n_cells_terminal, skip_perron));
+    Rcpp::traits::input_parameter< int >::type schur_n_components(schur_n_componentsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cellrank_gpcca_cpp(T_, n_states, n_cells_terminal, skip_perron, schur_n_components));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2993,7 +2994,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_cellrank_pseudotime_kernel_cpp", (DL_FUNC) &_scop_cellrank_pseudotime_kernel_cpp, 5},
     {"_scop_cellrank_cytotrace_kernel_cpp", (DL_FUNC) &_scop_cellrank_cytotrace_kernel_cpp, 4},
     {"_scop_cellrank_cflare_cpp", (DL_FUNC) &_scop_cellrank_cflare_cpp, 4},
-    {"_scop_cellrank_gpcca_cpp", (DL_FUNC) &_scop_cellrank_gpcca_cpp, 4},
+    {"_scop_cellrank_gpcca_cpp", (DL_FUNC) &_scop_cellrank_gpcca_cpp, 5},
     {"_scop_cellrank_lineage_drivers_cpp", (DL_FUNC) &_scop_cellrank_lineage_drivers_cpp, 3},
     {"_scop_combine_conserved_pvalues_cpp", (DL_FUNC) &_scop_combine_conserved_pvalues_cpp, 2},
     {"_scop_cytospace_assign", (DL_FUNC) &_scop_cytospace_assign, 6},

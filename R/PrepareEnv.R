@@ -470,6 +470,37 @@ PrepareEnv <- function(
   set_env_cache(cache_spec, python)
 }
 
+prepare_env_if_needed <- function(
+  modules,
+  envname = NULL,
+  conda = "auto",
+  verbose = TRUE
+) {
+  modules <- normalize_env_modules(modules = modules)
+  can_reuse <- is.null(envname) && identical(conda, "auto") &&
+    isTRUE(reticulate::py_available(initialize = FALSE)) &&
+    all(vapply(
+      modules,
+      function(module) {
+        tryCatch(
+          reticulate::py_module_available(module),
+          error = function(...) FALSE
+        )
+      },
+      logical(1)
+    ))
+  if (can_reuse) {
+    return(invisible(FALSE))
+  }
+  PrepareEnv(
+    envname = envname,
+    conda = conda,
+    modules = modules,
+    verbose = verbose
+  )
+  invisible(TRUE)
+}
+
 normalize_cli_args <- function(args) {
   if (length(args) == 0) {
     return(character())

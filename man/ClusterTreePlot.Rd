@@ -17,22 +17,29 @@ ClusterTreePlot(
   node_palcolor = NULL,
   edge_palette = "YlOrRd",
   edge_palcolor = NULL,
-  node_size = c(3, 10),
-  edge_size = c(0.25, 1.8),
+  node_size = c(4, 8.5),
+  edge_size = c(0.35, 2),
   label = TRUE,
-  label.size = 3,
-  label.fg = "black",
-  title = "Cluster tree",
+  label.size = 2.8,
+  label.fg = "auto",
+  title = NULL,
   subtitle = NULL,
   xlab = "Resolution",
   ylab = "Cluster",
-  legend.position = "bottom",
+  legend.position = "auto",
   theme_use = "theme_scop",
   theme_args = list(),
   combine = TRUE,
   ncol = NULL,
   return_data = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  family = "Arial",
+  direction = c(
+    "left-to-right",
+    "right-to-left",
+    "top-to-bottom",
+    "bottom-to-top"
+  )
 )
 }
 \arguments{
@@ -66,32 +73,38 @@ Edges below this threshold are still available when \code{return_data = TRUE}.}
 
 \item{edge_size}{Numeric range used for edge widths.}
 
-\item{label}{Label high-expressing cells.}
+\item{label}{Whether to draw cluster IDs inside nodes.}
 
-\item{label.size}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+\item{label.size, label.fg}{Size and color of cluster-ID labels.
+\code{label.fg = "auto"} chooses black or white for each node from its fill.}
 
-\item{label.fg}{Group labels. \code{label_insitu = FALSE} uses numbers instead of group names.}
+\item{title}{Plot title. \code{NULL} (the default) hides the redundant overall
+cluster-tree title; feature names are still shown as panel subtitles.}
 
-\item{title}{Plot title. \code{NULL} hides the title for merged/single panels. When multiple lineages are plotted and \code{title} is \code{NULL}, each panel is titled with its lineage column.}
+\item{subtitle}{Optional plot subtitle. When features are supplied and
+\code{subtitle = NULL}, the feature or feature-set name is used.}
 
-\item{subtitle}{Plot subtitle.}
+\item{xlab, ylab}{Axis titles.}
 
-\item{xlab}{Plot labels.}
+\item{legend.position}{The position of the legend. The default is \code{"auto"}:
+horizontal trees place a compact guide row above the panel, aligned to the
+starting side, while vertical trees place guides on the right. Use
+\code{"inside"} to force an in-panel legend.}
 
-\item{ylab}{Plot labels.}
+\item{theme_use, theme_args}{Plot theme and additional theme arguments.}
 
-\item{legend.position}{The position of the legend. The default is
-\code{"bottom"} to keep the multiple cluster-tree guides compact.}
-
-\item{theme_args}{Theme name or function, plus extra theme arguments.}
-
-\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{combine}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{ncol}{Number of columns of the combined plot.}
 
 \item{return_data}{Whether to return plot data along with the plot.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{family}{Font family used for node labels, axes, titles, and legends.}
+
+\item{direction}{Tree direction: \code{"left-to-right"}, \code{"right-to-left"},
+\code{"top-to-bottom"}, or \code{"bottom-to-top"}.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, list of \code{ggplot} objects, or a list with
@@ -99,7 +112,10 @@ plot data when \code{return_data = TRUE}.
 }
 \description{
 Visualize how cells move between clusters across multiple Seurat clustering
-resolutions.
+resolutions. In the default direction, nodes are bottom-aligned so the tree
+expands from lower left to upper right; the direction can be reversed or
+transposed. Automatically detected resolutions are ordered numerically;
+explicit \code{cluster_cols} keep the supplied order.
 }
 \examples{
 \dontrun{

@@ -23,9 +23,12 @@
 #' @param do_cluster Whether to perform clustering on the PHATE embeddings.
 #' @param backend PHATE backend. `"python"` calls the upstream `phate` Python
 #' package and `"cpp"` uses the native C++ helper path.
-#' @param mds MDS algorithm passed to PHATE. The native C++ backend currently
-#' implements the `"classic"` path.
-#' @param mds_solver Metric MDS solver passed to the Python backend.
+#' The selected backend is stable; native arguments never trigger an implicit
+#' Python workflow.
+#' @param mds MDS algorithm passed to PHATE. The native backend uses its C++
+#' classical MDS or R's native metric MDS implementation.
+#' @param mds_solver Metric MDS solver; recorded by the native backend and
+#' passed through to Python when that backend is selected.
 #' @param n_clusters A number of clusters to be identified.
 #' @param max_clusters The maximum number of clusters to test.
 #' @param reduction.name Reduction to be stored in the Seurat object.
@@ -210,11 +213,15 @@ RunPHATE.default <- function(
       t_max = t_max,
       do_cluster = do_cluster,
       mds = mds,
-      reduction.key = reduction.key
+      mds_solver = mds_solver,
+      n_clusters = n_clusters,
+      max_clusters = max_clusters,
+      reduction.key = reduction.key,
+      native_options = list(...)
     ))
   }
 
-  PrepareEnv(modules = "phate")
+  prepare_env_if_needed(modules = "phate", verbose = verbose)
   check_python("phate", verbose = verbose)
   phate <- reticulate::import("phate")
 
@@ -291,33 +298,12 @@ run_phate_cpp_reduction <- function(
   t_max = 100,
   do_cluster = FALSE,
   mds = "classic",
+  mds_solver = "sgd",
+  n_clusters = "auto",
+  max_clusters = 100,
+  native_options = list(),
   reduction.key = "PHATE_"
 ) {
-  if (!identical(mds, "classic")) {
-    log_message(
-      "{.fn RunPHATE} cpp backend currently supports {.arg mds = 'classic'} only",
-      message_type = "error"
-    )
-  }
-  if (!identical(knn_dist, "euclidean")) {
-    log_message(
-      "{.fn RunPHATE} cpp backend currently supports {.val euclidean} distance only",
-      message_type = "error"
-    )
-  }
-  if (!identical(as.numeric(gamma), 1)) {
-    log_message(
-      "{.fn RunPHATE} cpp backend currently supports {.arg gamma = 1} only",
-      message_type = "error"
-    )
-  }
-  if (isTRUE(do_cluster)) {
-    log_message(
-      "{.fn RunPHATE} cpp backend currently does not support {.arg do_cluster = TRUE}",
-      message_type = "error"
-    )
-  }
-
   data_use <- as.matrix(object)
   if (!is.numeric(data_use)) {
     storage.mode(data_use) <- "double"
@@ -327,6 +313,12 @@ run_phate_cpp_reduction <- function(
   }
   cell_names <- rownames(data_use)
   n_pca_used <- NULL
+  if (identical(tolower(knn_dist), "precomputed")) {
+    if (nrow(data_use) != ncol(data_use)) {
+      log_message("Precomputed PHATE distances must be square", message_type = "error")
+    }
+    n_pca <- NULL
+  }
   if (!is.null(n_pca)) {
     n_pca <- max(1L, min(as.integer(n_pca), ncol(data_use), nrow(data_use) - 1L))
     if (n_pca < ncol(data_use) && nrow(data_use) > 1L) {
@@ -359,6 +351,7 @@ run_phate_cpp_reduction <- function(
     minimum_landmarks,
     min(as.integer(n_landmark), n_cells)
   )
+  if (!identical(tolower(knn_dist), "euclidean")) n_landmark <- n_cells
 
   if (n_cells > n_landmark) {
     landmark_index <- sort(sample.int(n_cells, n_landmark, replace = FALSE))
@@ -377,6 +370,8 @@ run_phate_cpp_reduction <- function(
       t_max = t_max,
       do_cluster = FALSE,
       mds = mds,
+      mds_solver = mds_solver,
+      native_options = native_options,
       reduction.key = reduction.key
     )
     landmark_embedding <- SeuratObject::Embeddings(landmark_reduction)
@@ -418,7 +413,7 @@ run_phate_cpp_reduction <- function(
     embedding[landmark_index, ] <- landmark_embedding
     colnames(embedding) <- paste0(reduction.key, seq_len(ncol(embedding)))
     rownames(embedding) <- cell_names
-    return(Seurat::CreateDimReducObject(
+    reduction <- Seurat::CreateDimReducObject(
       embeddings = embedding,
       key = reduction.key,
       assay = assay,
@@ -432,16 +427,29 @@ run_phate_cpp_reduction <- function(
         projection_k = projection_k,
         n_pca = n_pca_used
       )
-    ))
+    )
+    if (isTRUE(do_cluster)) {
+      cluster_count <- if (is.numeric(n_clusters)) as.integer(n_clusters) else {
+        min(as.integer(max_clusters), max(2L, round(sqrt(n_cells / 2))))
+      }
+      clusters <- factor(stats::kmeans(
+        embedding, centers = min(max(1L, cluster_count), n_cells)
+      )$cluster)
+      names(clusters) <- rownames(embedding)
+      SeuratObject::Misc(reduction, slot = "clusters") <- clusters
+    }
+    return(reduction)
   }
 
-  affinity <- phate_graphtools_affinity_data_cpp(
-    data = data_use,
-    knn = knn,
-    decay = as.numeric(decay),
-    thresh = 1e-4,
-    knn_max = if (is.null(knn_max)) -1L else as.integer(knn_max)
-  )
+  affinity <- if (identical(tolower(knn_dist), "euclidean")) {
+    phate_graphtools_affinity_data_cpp(
+      data = data_use, knn = knn, decay = as.numeric(decay),
+      thresh = native_options$thresh %||% 1e-4,
+      knn_max = if (is.null(knn_max)) -1L else as.integer(knn_max)
+    )
+  } else {
+    phate_native_affinity(data_use, knn_search, decay, knn_dist)
+  }
   diffusion_t <- if (identical(t, "auto")) {
     phate_find_optimal_t_cpp(
       rows = affinity$affinity_rows,
@@ -460,18 +468,23 @@ run_phate_cpp_reduction <- function(
     n_cells = affinity$n_cells,
     t_max = diffusion_t
   )
+  if (!identical(as.numeric(gamma), 1)) {
+    log_transition <- exp(log_transition * ((1 - as.numeric(gamma)) / 2))
+  }
   distance <- phate_potential_distance_cpp(
     log_transition = log_transition,
     n_landmarks = as.integer(n_landmark)
   )
-  embedding <- phate_metric_mds_cpp(
-    D = distance,
-    n_components = n_components
-  )
+  embedding <- if (identical(mds, "classic")) {
+    phate_metric_mds_cpp(D = distance, n_components = n_components)
+  } else {
+    check_r("MASS", verbose = FALSE)
+    MASS::isoMDS(stats::as.dist(distance), k = n_components, trace = FALSE)$points
+  }
   colnames(embedding) <- paste0(reduction.key, seq_len(ncol(embedding)))
   rownames(embedding) <- rownames(data_use)
 
-  Seurat::CreateDimReducObject(
+  reduction <- Seurat::CreateDimReducObject(
     embeddings = embedding,
     key = reduction.key,
     assay = assay,
@@ -481,7 +494,51 @@ run_phate_cpp_reduction <- function(
       t = diffusion_t,
       landmark = FALSE,
       n_landmarks = n_cells,
-      n_pca = n_pca_used
+      n_pca = n_pca_used,
+      gamma = gamma,
+      knn_dist = knn_dist,
+      mds = mds,
+      mds_solver = mds_solver,
+      native_options = native_options
     )
+  )
+  if (isTRUE(do_cluster)) {
+    cluster_count <- if (is.numeric(n_clusters)) {
+      as.integer(n_clusters)
+    } else {
+      min(as.integer(max_clusters), max(2L, round(sqrt(n_cells / 2))))
+    }
+    cluster_count <- min(max(1L, cluster_count), n_cells)
+    clusters <- factor(stats::kmeans(embedding, centers = cluster_count)$cluster)
+    names(clusters) <- rownames(embedding)
+    SeuratObject::Misc(reduction, slot = "clusters") <- clusters
+  }
+  reduction
+}
+
+phate_native_affinity <- function(data, k, decay, metric) {
+  metric <- tolower(metric)
+  distance <- if (metric == "precomputed") {
+    data
+  } else if (metric %in% c("manhattan", "maximum", "canberra")) {
+    as.matrix(stats::dist(data, method = metric))
+  } else if (metric %in% c("cosine", "correlation")) {
+    centered <- if (metric == "correlation") sweep(data, 1L, rowMeans(data), "-") else data
+    norm <- sqrt(rowSums(centered^2))
+    1 - tcrossprod(centered) / pmax(outer(norm, norm), .Machine$double.eps)
+  } else {
+    log_message("Unsupported native PHATE distance {.val {metric}}", message_type = "error")
+  }
+  diag(distance) <- Inf
+  idx <- t(apply(distance, 1L, order))[, seq_len(k), drop = FALSE]
+  d <- matrix(distance[cbind(rep(seq_len(nrow(data)), each = k), as.vector(t(idx)))],
+    nrow = nrow(data), byrow = TRUE)
+  bandwidth <- pmax(d[, min(k, ncol(d))], .Machine$double.eps)
+  weight <- exp(-(d / bandwidth)^as.numeric(decay))
+  list(
+    affinity_rows = as.integer(rep(seq_len(nrow(data)) - 1L, each = k)),
+    affinity_cols = as.integer(as.vector(t(idx)) - 1L),
+    affinity_vals = as.numeric(t(weight)),
+    n_cells = as.integer(nrow(data))
   )
 }

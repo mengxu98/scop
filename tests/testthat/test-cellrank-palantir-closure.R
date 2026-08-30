@@ -277,6 +277,11 @@ test_that("RunCellRank default Schur method does not require PETSc", {
   )
   expect_true(any(grepl('schur_method="brandts"', python_source, fixed = TRUE)))
   expect_false(any(grepl('schur_method="krylov"', python_source, fixed = TRUE)))
+  expect_equal(sum(grepl(
+    'compute_fate_probabilities(solver="direct", use_petsc=False)',
+    python_source,
+    fixed = TRUE
+  )), 2L)
 })
 
 test_that("CellRank trend fallback uses the CellRank normal distribution name", {

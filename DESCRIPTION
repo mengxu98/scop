@@ -27,7 +27,7 @@ Imports:
     reticulate,
     rlang,
     ggforce,
-    ggplot2,
+    ggplot2 (>= 3.5.0),
     methods,
     Matrix,
     Rcpp,
@@ -152,6 +152,7 @@ Suggests:
     SpaNorm,
     withr
 Remotes:
+    immunogenomics/presto,
     mengxu98/thisplot,
     mengxu98/thisutils,
     jinworks/SpatialCellChat,
