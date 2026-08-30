@@ -2,13 +2,6 @@ runumap_equal_scalar <- function(x, y) {
   length(x) == 1L && !is.na(x) && identical(as.character(x), as.character(y))
 }
 
-runumap_default_epochs <- function(n_cells, n_epochs) {
-  if (!is.null(n_epochs)) {
-    return(as.integer(n_epochs))
-  }
-  if (n_cells <= 10000L) 500L else 200L
-}
-
 runumap_supported <- function(
   extra,
   dims,
@@ -71,7 +64,6 @@ runumap_embedding <- function(
   negative.sample.rate,
   cores
 ) {
-  epochs <- runumap_default_epochs(nrow(X), n.epochs)
   if (is.null(a) || is.null(b)) {
     find_ab_params <- get("find_ab_params", envir = asNamespace("uwot"))
     ab <- find_ab_params(spread = spread, min_dist = min.dist)
@@ -85,21 +77,27 @@ runumap_embedding <- function(
   if (!is.null(seed.use)) {
     set.seed(seed.use)
   }
-  use_umap2 <- exists("umap2", envir = asNamespace("uwot"), inherits = FALSE)
-  umap_fun <- if (use_umap2) {
-    get("umap2", envir = asNamespace("uwot"))
+  # Seurat's `umap.method = "uwot"` path calls `uwot::umap`, not `umap2`.
+  # Keeping the same backend and argument defaults is important: selecting
+  # `umap2` merely because it is installed changes the embedding and can be
+  # slower for the standard Seurat workflow.
+  umap_fun <- get("umap", envir = asNamespace("uwot"))
+  workers <- if (is.null(cores)) {
+    if (requireNamespace("future", quietly = TRUE)) {
+      future::nbrOfWorkers()
+    } else {
+      1L
+    }
   } else {
-    get("umap", envir = asNamespace("uwot"))
+    as.integer(cores)
   }
   args <- list(
     X = X,
-    n_threads = if (is.null(cores)) NULL else as.integer(cores),
+    n_threads = as.integer(workers),
     n_neighbors = as.integer(n.neighbors),
-    n_trees = 50L,
-    search_k = 2L * as.integer(n.neighbors) * 50L,
     n_components = as.integer(n.components),
     metric = "cosine",
-    n_epochs = as.integer(epochs),
+    n_epochs = n.epochs,
     learning_rate = learning.rate,
     min_dist = min.dist,
     spread = spread,
@@ -114,9 +112,6 @@ runumap_embedding <- function(
     verbose = FALSE,
     ret_model = FALSE
   )
-  if (use_umap2) {
-    args$seed <- seed.use
-  }
   do.call(umap_fun, args)
 }
 

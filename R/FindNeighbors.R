@@ -21,9 +21,8 @@ FindNeighbors.Seurat <- function(
   ...
 ) {
   extra <- list(...)
-  seurat_find_neighbors <- get("FindNeighbors.Seurat", envir = asNamespace("Seurat"))
   run_seurat <- function() {
-    seurat_find_neighbors(
+    find_neighbors_seurat_seurat(
       object = object,
       reduction = reduction,
       dims = dims,
@@ -45,117 +44,78 @@ FindNeighbors.Seurat <- function(
       ...
     )
   }
-  supported <- length(extra) == 0L &&
-    !is.null(reduction) &&
-    length(reduction) == 1L &&
-    reduction %in% SeuratObject::Reductions(object) &&
-    !is.null(dims) &&
-    is.null(features) &&
-    isFALSE(return.neighbor) &&
-    isTRUE(compute.SNN) &&
-    identical(nn.method, "annoy") &&
-    identical(annoy.metric, "euclidean") &&
-    isTRUE(all.equal(as.numeric(nn.eps), 0)) &&
-    isFALSE(do.plot) &&
-    isFALSE(l2.norm) &&
-    isFALSE(cache.index)
-  if (!isTRUE(supported)) {
+  if (length(extra) || isTRUE(do.plot)) {
     return(run_seurat())
   }
 
-  emb <- SeuratObject::Embeddings(object[[reduction]])
-  dims <- as.integer(dims)
-  dims <- dims[is.finite(dims) & dims >= 1L & dims <= ncol(emb)]
-  if (!length(dims)) {
-    return(run_seurat())
-  }
-  data.use <- emb[, dims, drop = FALSE]
-  if (!is.double(data.use)) {
-    storage.mode(data.use) <- "double"
-  }
-  n_cells <- nrow(data.use)
-  if (n_cells < 2L) {
-    return(run_seurat())
-  }
-  k.use <- min(as.integer(k.param), n_cells - 1L)
-  if (!is.finite(k.use) || k.use < 1L) {
-    return(run_seurat())
-  }
-  n_trees <- max(1L, as.integer(n.trees))
-  cores <- suppressWarnings(parallel::detectCores(logical = TRUE))
-  if (length(cores) != 1L || is.na(cores) || cores < 1L) {
-    cores <- 1L
-  }
-  cores <- max(1L, min(8L, as.integer(cores)))
-  raw_idx <- tryCatch(
-    annoy_build_search(
-      data = data.use,
-      k = k.use,
-      n_trees = n_trees,
-      cores = cores
-    ),
-    error = function(e) NULL
-  )
-  if (is.null(raw_idx)) {
-    return(run_seurat())
-  }
-  nn_idx <- matrix(NA_integer_, nrow = n_cells, ncol = k.use)
-  for (i in seq_len(n_cells)) {
-    hits <- raw_idx[i, ]
-    hits <- hits[!is.na(hits)]
-    if (length(hits) < k.use) {
-      fill <- setdiff(seq_len(n_cells), hits)
-      hits <- c(hits, fill[seq_len(min(length(fill), k.use - length(hits)))])
+  if (!is.null(dims)) {
+    if (
+      length(reduction) != 1L ||
+        !reduction %in% SeuratObject::Reductions(object)
+    ) {
+      return(run_seurat())
     }
-    nn_idx[i, ] <- hits[seq_len(k.use)]
+    assay.use <- SeuratObject::DefaultAssay(object[[reduction]])
+    data.use <- SeuratObject::Embeddings(object[[reduction]])
+    if (!length(dims) || any(!is.finite(dims)) || any(dims < 1L)) {
+      return(run_seurat())
+    }
+    if (max(dims) > ncol(data.use)) {
+      stop("More dimensions specified in dims than have been computed")
+    }
+    data.use <- data.use[, dims, drop = FALSE]
+    neighbor.graphs <- FindNeighbors.default(
+      object = data.use,
+      k.param = k.param,
+      return.neighbor = return.neighbor,
+      compute.SNN = compute.SNN,
+      prune.SNN = prune.SNN,
+      nn.method = nn.method,
+      n.trees = n.trees,
+      annoy.metric = annoy.metric,
+      nn.eps = nn.eps,
+      verbose = verbose,
+      l2.norm = l2.norm,
+      cache.index = cache.index
+    )
+  } else {
+    assay.use <- assay %||% SeuratObject::DefaultAssay(object)
+    neighbor.graphs <- FindNeighbors.Assay(
+      object = object[[assay.use]],
+      features = features,
+      k.param = k.param,
+      return.neighbor = return.neighbor,
+      compute.SNN = compute.SNN,
+      prune.SNN = prune.SNN,
+      nn.method = nn.method,
+      n.trees = n.trees,
+      annoy.metric = annoy.metric,
+      nn.eps = nn.eps,
+      verbose = verbose,
+      l2.norm = l2.norm,
+      cache.index = cache.index
+    )
   }
 
-  cell_names <- rownames(data.use)
-  if (is.null(cell_names)) {
-    cell_names <- colnames(object)
+  if (length(neighbor.graphs) == 1L && !identical(names(neighbor.graphs), "nn")) {
+    neighbor.graphs <- list(nn = neighbor.graphs)
   }
-  assay.use <- assay %||% object[[reduction]]@assay.used
-  if (length(assay.use) != 1L || is.na(assay.use) || !nzchar(assay.use)) {
-    assay.use <- SeuratObject::DefaultAssay(object)
+  graph.name <- graph.name %||% if (return.neighbor) {
+    paste0(assay.use, ".", names(neighbor.graphs))
+  } else {
+    paste0(assay.use, "_", names(neighbor.graphs))
   }
-  graph_names <- graph.name
-  if (is.null(graph_names)) {
-    graph_names <- paste0(assay.use, c("_nn", "_snn"))
+  if (length(graph.name) == 1L && isTRUE(verbose)) {
+    message("Only one graph name supplied, storing nearest-neighbor graph only")
   }
-  if (length(graph_names) == 1L) {
-    graph_names <- c(graph_names, paste0(graph_names, "_snn"))
+  for (ii in seq_along(graph.name)) {
+    value <- neighbor.graphs[[ii]]
+    if (inherits(value, "Graph")) {
+      SeuratObject::DefaultAssay(value) <- assay.use
+    }
+    object[[graph.name[[ii]]]] <- value
   }
-
-  nn_i <- rep(seq_len(n_cells), each = k.use)
-  nn_j <- as.vector(t(nn_idx))
-  nn_graph <- Matrix::sparseMatrix(
-    i = nn_i,
-    j = nn_j,
-    x = 1,
-    dims = c(n_cells, n_cells),
-    dimnames = list(cell_names, cell_names)
-  )
-  nn_graph <- methods::as(nn_graph, "Graph")
-  nn_graph@assay.used <- assay.use
-
-  membership <- Matrix::sparseMatrix(
-    i = nn_i,
-    j = nn_j,
-    x = 1,
-    dims = c(n_cells, n_cells),
-    dimnames = list(cell_names, cell_names)
-  )
-  snn <- Matrix::tcrossprod(membership)
-  snn@x <- snn@x / (2 * k.use - snn@x)
-  snn@x[snn@x < prune.SNN] <- 0
-  snn <- Matrix::drop0(snn)
-  snn <- methods::as(snn, "generalMatrix")
-  snn <- methods::as(snn, "Graph")
-  snn@assay.used <- assay.use
-
-  object@graphs[[graph_names[[1L]]]] <- nn_graph
-  object@graphs[[graph_names[[2L]]]] <- snn
-  return(SeuratObject::LogSeuratCommand(object = object))
+  SeuratObject::LogSeuratCommand(object = object)
 }
 
 # Convert a nearest-neighbour index matrix to reference cell names without an
@@ -192,10 +152,254 @@ FindNeighbors <- function(object, ...) {
   UseMethod("FindNeighbors")
 }
 
-#' @export
-FindNeighbors.default <- function(object, ...) {
-  log_message("FindNeighbors supports Seurat objects.", message_type = "error")
+find_neighbors_seurat_seurat <- function(object, ...) {
+  method <- get("FindNeighbors.Seurat", envir = asNamespace("Seurat"))
+  method(object = object, ...)
 }
+
+find_neighbors_default_seurat <- function(object, ...) {
+  method <- get("FindNeighbors.default", envir = asNamespace("Seurat"))
+  method(object = object, ...)
+}
+
+find_neighbors_native_distance <- function(object, k) {
+  if (
+    !is.matrix(object) || !is.numeric(object) ||
+      nrow(object) != ncol(object) || any(!is.finite(object))
+  ) {
+    return(NULL)
+  }
+  result <- tryCatch(
+    thisutils::run_dense_topk(
+      object,
+      k = k,
+      by = "row",
+      decreasing = FALSE
+    ),
+    error = function(e) NULL
+  )
+  if (
+    is.null(result) || !is.matrix(result[["idx"]]) ||
+      !identical(dim(result[["idx"]]), c(nrow(object), k))
+  ) {
+    return(NULL)
+  }
+  list(idx = result[["idx"]], distance = result[["value"]])
+}
+
+find_neighbors_as_graphs <- function(indices, cell_names, compute.SNN, prune.SNN) {
+  n_cells <- length(cell_names)
+  k <- ncol(indices)
+  if (!n_cells || nrow(indices) != n_cells || anyNA(indices)) {
+    return(NULL)
+  }
+  i <- rep(seq_len(n_cells), each = k)
+  j <- as.vector(t(indices))
+  nn <- Matrix::sparseMatrix(
+    i = i,
+    j = j,
+    x = 1,
+    dims = c(n_cells, n_cells),
+    dimnames = list(cell_names, cell_names)
+  )
+  nn <- methods::as(nn, "Graph")
+  graphs <- list(nn = nn)
+  if (isTRUE(compute.SNN)) {
+    membership <- Matrix::sparseMatrix(
+      i = i,
+      j = j,
+      x = 1,
+      dims = c(n_cells, n_cells),
+      dimnames = list(cell_names, cell_names)
+    )
+    snn <- Matrix::tcrossprod(membership)
+    snn@x <- snn@x / (2 * k - snn@x)
+    snn@x[snn@x < prune.SNN] <- 0
+    snn <- Matrix::drop0(snn)
+    snn <- methods::as(snn, "generalMatrix")
+    snn <- methods::as(snn, "Graph")
+    graphs[["snn"]] <- snn
+  }
+  graphs
+}
+
+#' @export
+FindNeighbors.default <- function(
+  object,
+  query = NULL,
+  distance.matrix = FALSE,
+  k.param = 20,
+  return.neighbor = FALSE,
+  compute.SNN = !return.neighbor,
+  prune.SNN = 1 / 15,
+  nn.method = "annoy",
+  n.trees = 50,
+  annoy.metric = "euclidean",
+  nn.eps = 0,
+  verbose = TRUE,
+  l2.norm = FALSE,
+  cache.index = FALSE,
+  index = NULL,
+  ...
+) {
+  extra <- list(...)
+  fallback <- function() {
+    find_neighbors_default_seurat(
+      object = object,
+      query = query,
+      distance.matrix = distance.matrix,
+      k.param = k.param,
+      return.neighbor = return.neighbor,
+      compute.SNN = compute.SNN,
+      prune.SNN = prune.SNN,
+      nn.method = nn.method,
+      n.trees = n.trees,
+      annoy.metric = annoy.metric,
+      nn.eps = nn.eps,
+      verbose = verbose,
+      l2.norm = l2.norm,
+      cache.index = cache.index,
+      index = index,
+      ...
+    )
+  }
+
+  if (
+    length(extra) || !is.matrix(object) || !is.numeric(object) ||
+      !is.logical(distance.matrix) || length(distance.matrix) != 1L ||
+      is.na(distance.matrix) ||
+      !is.logical(return.neighbor) || length(return.neighbor) != 1L ||
+      is.na(return.neighbor) ||
+      !is.logical(compute.SNN) || length(compute.SNN) != 1L ||
+      is.na(compute.SNN) ||
+      !is.logical(l2.norm) || length(l2.norm) != 1L || is.na(l2.norm) ||
+      !is.logical(cache.index) || length(cache.index) != 1L ||
+      is.na(cache.index) || cache.index || !is.null(index) ||
+      !is.numeric(prune.SNN) || length(prune.SNN) != 1L ||
+      is.na(prune.SNN) ||
+      length(nn.method) != 1L || is.na(nn.method) ||
+      length(annoy.metric) != 1L || is.na(annoy.metric)
+  ) {
+    return(fallback())
+  }
+  if (!isTRUE(distance.matrix)) {
+    return(fallback())
+  }
+  n_reference <- nrow(object)
+  k <- suppressWarnings(as.integer(k.param))
+  if (
+    length(k) != 1L || is.na(k) || k < 1L || n_reference < 2L ||
+      !isTRUE(all.equal(as.numeric(k.param), as.numeric(k))) ||
+      is.null(rownames(object))
+  ) {
+    return(fallback())
+  }
+  k_adjusted <- n_reference < k
+  if (n_reference < k) {
+    k <- n_reference - 1L
+  }
+
+  if (!is.null(query) || isTRUE(l2.norm)) {
+    return(fallback())
+  }
+  result <- find_neighbors_native_distance(object = object, k = k)
+  if (is.null(result)) {
+    return(fallback())
+  }
+  if (isTRUE(k_adjusted)) {
+    warning(
+      "k.param set larger than number of cells. Setting k.param to number of cells - 1.",
+      call. = FALSE
+    )
+  }
+
+  graphs <- find_neighbors_as_graphs(
+    indices = result[["idx"]],
+    cell_names = rownames(object),
+    compute.SNN = compute.SNN,
+    prune.SNN = prune.SNN
+  )
+  graphs %||% fallback()
+}
+
+#' @export
+FindNeighbors.dist <- function(
+  object,
+  k.param = 20,
+  return.neighbor = FALSE,
+  compute.SNN = !return.neighbor,
+  prune.SNN = 1 / 15,
+  nn.method = "annoy",
+  n.trees = 50,
+  annoy.metric = "euclidean",
+  nn.eps = 0,
+  verbose = TRUE,
+  l2.norm = FALSE,
+  cache.index = FALSE,
+  ...
+) {
+  FindNeighbors.default(
+    object = as.matrix(object),
+    distance.matrix = TRUE,
+    k.param = k.param,
+    return.neighbor = return.neighbor,
+    compute.SNN = compute.SNN,
+    prune.SNN = prune.SNN,
+    nn.method = nn.method,
+    n.trees = n.trees,
+    annoy.metric = annoy.metric,
+    nn.eps = nn.eps,
+    verbose = verbose,
+    l2.norm = l2.norm,
+    cache.index = cache.index,
+    ...
+  )
+}
+
+#' @export
+FindNeighbors.Assay <- function(
+  object,
+  features = NULL,
+  k.param = 20,
+  return.neighbor = FALSE,
+  compute.SNN = !return.neighbor,
+  prune.SNN = 1 / 15,
+  nn.method = "annoy",
+  n.trees = 50,
+  annoy.metric = "euclidean",
+  nn.eps = 0,
+  verbose = TRUE,
+  l2.norm = FALSE,
+  cache.index = FALSE,
+  ...
+) {
+  features <- features %||% SeuratObject::VariableFeatures(object)
+  data.use <- Matrix::t(SeuratObject::GetAssayData(
+    object = object,
+    layer = "data"
+  )[features, , drop = FALSE])
+  FindNeighbors.default(
+    object = data.use,
+    k.param = k.param,
+    return.neighbor = return.neighbor,
+    compute.SNN = compute.SNN,
+    prune.SNN = prune.SNN,
+    nn.method = nn.method,
+    n.trees = n.trees,
+    annoy.metric = annoy.metric,
+    nn.eps = nn.eps,
+    verbose = verbose,
+    l2.norm = l2.norm,
+    cache.index = cache.index,
+    ...
+  )
+}
+
+# SeuratObject's v5 assay class is not an S3 subclass of `Assay`, so it needs
+# an explicit method even though both assay generations share the same data
+# extraction contract here.
+#' @export
+FindNeighbors.Assay5 <- FindNeighbors.Assay
 
 knn_cross_topk_native <- function(reference, query, k, distance_metric) {
   if (
@@ -223,16 +427,13 @@ knn_cross_topk_native <- function(reference, query, k, distance_metric) {
     }
     distance_metric <- "cosine"
   }
-  cores <- suppressWarnings(parallel::detectCores(logical = TRUE))
-  if (length(cores) != 1L || is.na(cores) || cores < 1L) cores <- 1L
-  cores <- max(1L, min(8L, as.integer(cores)))
   tryCatch(
     cross_knn_f32(
       reference = reference,
       query = query,
       k = as.integer(k),
       metric = distance_metric,
-      cores = cores
+      cores = 1L
     ),
     error = function(e) NULL
   )
