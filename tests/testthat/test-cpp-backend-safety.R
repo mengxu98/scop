@@ -85,7 +85,12 @@ test_that("approximate public backends require explicit opt-in", {
   expect_identical(eval(formals(RunSCENICPlus)$backend)[[1]], "python")
 
   expect_error(
-    RunCellRank(srt = srt, backend = "cpp", verbose = FALSE),
+    RunCellRank(
+      srt = srt,
+      backend = "cpp",
+      show_plot = FALSE,
+      verbose = FALSE
+    ),
     "allow_approximate = TRUE"
   )
   expect_error(
@@ -104,33 +109,89 @@ test_that("approximate public backends require explicit opt-in", {
   )
 })
 
-test_that("unsupported Palantir and PAGA C++ arguments fail before computation", {
+test_that("Palantir C++ supports dm_n_eigs", {
+  skip_if_not_installed("BiocNeighbors")
   srt <- make_cpp_backend_safety_object()
-
-  expect_error(
-    RunPalantir(
-      srt = srt,
-      backend = "cpp",
-      allow_approximate = TRUE,
-      linear_reduction = "pca",
-      nonlinear_reduction = "umap",
-      early_cell = colnames(srt)[[1L]],
-      adjust_early_cell = TRUE,
-      verbose = FALSE
-    ),
-    "adjust_early_cell"
+  out <- RunPalantir(
+    srt = srt,
+    backend = "cpp",
+    allow_approximate = TRUE,
+    linear_reduction = "pca",
+    nonlinear_reduction = "umap",
+    n_neighbors = 5L,
+    early_cell = colnames(srt)[[1L]],
+    dm_n_eigs = 4L,
+    verbose = FALSE
   )
-  expect_error(
-    RunPAGA(
-      srt = srt,
-      group.by = "group",
-      linear_reduction = "pca",
-      nonlinear_reduction = "umap",
-      backend = "cpp",
-      embedded_with_PAGA = TRUE,
-      verbose = FALSE
-    ),
-    "embedded_with_PAGA"
+
+  expect_identical(out@tools$Palantir$parameters$dm_n_eigs, 4L)
+})
+
+test_that("PAGA C++ keeps embedded_with_PAGA native", {
+  skip_if_not_installed("BiocNeighbors")
+  srt <- make_cpp_backend_safety_object()
+  out <- RunPAGA(
+    srt, group.by = "group", linear_reduction = "pca",
+    nonlinear_reduction = "umap", n_neighbors = 5L,
+    embedded_with_PAGA = TRUE, backend = "cpp",
+    show_plot = FALSE, verbose = FALSE
+  )
+  expect_identical(out@tools$PAGA$backend, "cpp")
+  expect_true("paga" %in% names(out@reductions))
+  expect_true(all(is.finite(SeuratObject::Embeddings(out[["paga"]]))))
+})
+
+test_that("PHATE C++ handles gamma, native distance, MDS, and clustering", {
+  set.seed(1)
+  data <- matrix(stats::rnorm(180), nrow = 30L)
+  rownames(data) <- paste0("cell", seq_len(nrow(data)))
+  out <- RunPHATE(
+    data, assay = "RNA", backend = "cpp", n_pca = NULL, n_landmark = 30L,
+    knn = 5L, t = 3L, gamma = 0, knn_dist = "cosine",
+    mds = "metric", do_cluster = TRUE, n_clusters = 3L
+  )
+  expect_identical(SeuratObject::Misc(out, "backend"), "cpp")
+  expect_true(all(is.finite(SeuratObject::Embeddings(out))))
+  expect_identical(nlevels(SeuratObject::Misc(out, "clusters")), 3L)
+})
+
+test_that("scVelo C++ handles native postprocessing parameters", {
+  srt <- make_cpp_backend_safety_object()
+  out <- RunSCVELO(
+    srt, assay_y = c("spliced", "unspliced"), group.by = "group",
+    linear_reduction = "pca", nonlinear_reduction = "umap",
+    n_neighbors = 5L, backend = "cpp", filter_genes = FALSE,
+    magic_impute = TRUE, knn = 3L, t = 2L,
+    diff_kinetics = TRUE, denoise = TRUE, denoise_topn = 3L,
+    calculate_velocity_genes = TRUE, show_plot = FALSE, verbose = FALSE
+  )
+  expect_identical(out@tools$SCVELO$backend, "cpp")
+  expect_true(!is.null(out@tools$SCVELO$magic_imputed_data))
+  expect_true(!is.null(out@tools$SCVELO$stochastic$differential_kinetics))
+  expect_lte(out@tools$SCVELO$stochastic$n_velocity_graph_genes, 3L)
+})
+
+test_that("CellRank C++ accepts Schur, terminal, lineage, and graph controls", {
+  skip_if_not_installed("BiocNeighbors")
+  srt <- make_cpp_backend_safety_object()
+  srt$custom_time <- seq(0, 1, length.out = ncol(srt))
+  out <- RunCellRank(
+    srt, group.by = "group", linear_reduction = "pca",
+    nonlinear_reduction = "umap", kernel_type = "pseudotime",
+    time_key = "custom_time", n_neighbors = 5L, n_macrostates = 3L,
+    schur_method = "krylov", schur_n_components = 6L,
+    terminal_states = "g3", terminal_state_agg = "union",
+    driver_lineages = c(1L, 2L), recompute_neighbors = FALSE,
+    backend = "cpp", allow_approximate = TRUE,
+    show_plot = FALSE, verbose = FALSE
+  )
+  expect_identical(out@tools$CellRank$backend, "cpp")
+  expect_identical(out@tools$CellRank$parameters$schur_n_components, 6L)
+  expect_false(out@tools$CellRank$parameters$recompute_neighbors)
+  expect_identical(ncol(out@tools$CellRank$lineage_drivers), 4L)
+  expect_identical(
+    sum(startsWith(colnames(out@meta.data), "cellrank_fate_Lineage")),
+    ncol(out@tools$CellRank$fate_probabilities)
   )
 })
 
@@ -147,32 +208,6 @@ test_that("CellRank blocks an unsafe dense cell-by-cell allocation", {
       verbose = FALSE
     ),
     "exceeding max_dense_gib"
-  )
-})
-
-test_that("CellRank and scVelo reject ignored plotting or analysis options", {
-  srt <- make_cpp_backend_safety_object()
-
-  expect_error(
-    RunCellRank(
-      srt = srt,
-      backend = "cpp",
-      allow_approximate = TRUE,
-      show_plot = TRUE,
-      verbose = FALSE
-    ),
-    "show_plot"
-  )
-  expect_error(
-    RunSCVELO(
-      srt = srt,
-      assay_y = c("spliced", "unspliced"),
-      backend = "cpp",
-      denoise = TRUE,
-      show_plot = FALSE,
-      verbose = FALSE
-    ),
-    "denoise"
   )
 })
 
@@ -285,6 +320,30 @@ test_that("scVelo public C++ path records memory and result semantics", {
     out@tools$SCVELO$implementation$dense_working_set_gib_lower_bound,
     0
   )
+  expect_true(out@tools$SCVELO$parameters$normalize_per_cell)
+})
+
+test_that("scVelo C++ honors disabled per-cell normalization", {
+  srt <- make_cpp_backend_safety_object()
+  out <- RunSCVELO(
+    srt = srt,
+    assay_y = c("spliced", "unspliced"),
+    linear_reduction = "pca",
+    nonlinear_reduction = "umap",
+    n_neighbors = 5L,
+    mode = "deterministic",
+    backend = "cpp",
+    filter_genes = FALSE,
+    normalize_per_cell = FALSE,
+    compute_velocity_graph = FALSE,
+    compute_terminal_states = FALSE,
+    compute_pseudotime = FALSE,
+    show_plot = FALSE,
+    verbose = FALSE
+  )
+
+  expect_false(out@tools$SCVELO$parameters$normalize_per_cell)
+  expect_true(all(is.finite(Seurat::Embeddings(out[["deterministic_umap"]]))))
 })
 
 test_that("CellRank public C++ path records approximation and memory scope", {
@@ -340,6 +399,30 @@ test_that("CellRank C++ pseudotime path preserves direction before connectivity 
   expect_identical(out@tools$CellRank$parameters$n_macrostates, 3L)
 })
 
+test_that("CellRank C++ honors a custom pseudotime key and computes drivers", {
+  skip_if_not_installed("BiocNeighbors")
+
+  srt <- make_cpp_backend_safety_object()
+  srt$custom_time <- seq(0, 1, length.out = ncol(srt))
+  out <- RunCellRank(
+    srt = srt,
+    group.by = "group",
+    linear_reduction = "pca",
+    nonlinear_reduction = "umap",
+    kernel_type = "pseudotime",
+    time_key = "custom_time",
+    n_neighbors = 5L,
+    backend = "cpp",
+    allow_approximate = TRUE,
+    show_plot = FALSE,
+    verbose = FALSE
+  )
+
+  expect_identical(out@tools$CellRank$parameters$pseudotime_source, "custom_time")
+  expect_identical(out@tools$CellRank$parameters$time_key, "custom_time")
+  expect_true(any(grepl("_corr$", colnames(out@tools$CellRank$lineage_drivers))))
+})
+
 test_that("CellRank hard pseudotime threshold retains a stochastic directed graph", {
   hard_threshold <- getFromNamespace("cellrank_hard_threshold_kernel", "scop")
   graph <- Matrix::sparseMatrix(
@@ -379,6 +462,19 @@ test_that("CellRank connectivity kernel applies CellRank density normalization",
 
   expect_equal(as.matrix(observed), as.matrix(expected), tolerance = 1e-12)
   expect_equal(as.numeric(Matrix::rowSums(observed)), rep(1, 4), tolerance = 1e-12)
+})
+
+test_that("CellRank rebuilds Scanpy-compatible UMAP fuzzy connectivities", {
+  build_connectivities <- getFromNamespace("cellrank_umap_connectivities", "scop")
+  knn_idx <- matrix(c(2L, 3L, 1L, 4L, 4L, 1L, 3L, 2L), nrow = 4, byrow = TRUE)
+  knn_dist <- matrix(c(0.2, 0.8, 0.2, 0.8, 0.2, 0.8, 0.2, 0.8), nrow = 4, byrow = TRUE)
+  graph <- as.matrix(build_connectivities(knn_idx, knn_dist))
+  far_membership <- log2(3) - 1
+
+  expect_equal(graph, t(graph), tolerance = 1e-12)
+  expect_equal(diag(graph), rep(0, 4), tolerance = 1e-12)
+  expect_equal(graph[cbind(1:4, c(2, 1, 4, 3))], rep(1, 4), tolerance = 1e-12)
+  expect_equal(graph[1, 3], 2 * far_membership - far_membership^2, tolerance = 1e-5)
 })
 
 test_that("CellRank GPCCA solves cell-level absorption for every macrostate", {
