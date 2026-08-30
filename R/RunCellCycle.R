@@ -182,7 +182,7 @@ RunCellCycleSeurat <- function(
   }
   assay_raw <- SeuratObject::DefaultAssay(srt)
   SeuratObject::DefaultAssay(srt) <- assay
-  srt_tmp <- Seurat::CellCycleScoring(
+  srt_tmp <- CellCycleScoring(
     object = srt,
     s.features = s_features,
     g2m.features = g2m_features,
@@ -490,4 +490,3 @@ cellcycle_score_or_na <- function(scores, phase) {
   }
   stats::setNames(rep(NA_real_, nrow(scores)), rownames(scores))
 }
-
