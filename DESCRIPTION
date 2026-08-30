@@ -27,7 +27,7 @@ Imports:
     reticulate,
     rlang,
     ggforce,
-    ggplot2,
+    ggplot2 (>= 3.5.0),
     methods,
     Matrix,
     Rcpp,
