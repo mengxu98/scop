@@ -131,15 +131,29 @@ List dpt_from_transition(
     thisutils::log_message("n_dcs must be at least 1", "error");
   }
 
-  Environment base("package:base");
-  Function eigen_fun = base["eigen"];
-  List eig = eigen_fun(transitions_sym, Named("symmetric", true));
+  List eig;
+  if (n_comps < n_cells - 1) {
+    // Only the leading diffusion components are used below.  A partial
+    // decomposition avoids the cubic full-eigen cost on cell-level graphs.
+    Environment rspectra = Environment::namespace_env("RSpectra");
+    Function eigs_sym = rspectra["eigs_sym"];
+    eig = eigs_sym(
+      transitions_sym,
+      Named("k", n_comps),
+      Named("which", "LA")
+    );
+  } else {
+    Environment base("package:base");
+    Function eigen_fun = base["eigen"];
+    eig = eigen_fun(transitions_sym, Named("symmetric", true));
+  }
   NumericVector evals_all = eig["values"];
   NumericMatrix evecs_all = eig["vectors"];
+  const int n_eig = evals_all.size();
 
   std::vector<std::pair<double, int>> pairs;
-  pairs.reserve(n_cells);
-  for (int i = 0; i < n_cells; ++i) {
+  pairs.reserve(n_eig);
+  for (int i = 0; i < n_eig; ++i) {
     pairs.push_back({evals_all[i], i});
   }
   std::sort(
