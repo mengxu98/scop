@@ -14,7 +14,7 @@ test_that("RunDEtest uses scop FindMarkers-compatible sparse Wilcoxon path", {
   cells2 <- colnames(srt)[16:30]
   features <- rownames(srt)[1:50]
 
-  seurat_fm <- Seurat::FindMarkers(
+  seurat_fm <- get("FindMarkers.Seurat", asNamespace("Seurat"))(
     srt,
     ident.1 = "A",
     ident.2 = "B",
@@ -62,6 +62,38 @@ test_that("RunDEtest uses scop FindMarkers-compatible sparse Wilcoxon path", {
   expect_equal(cell_fm$avg_log2FC, markers$avg_log2FC, tolerance = 1e-12)
   expect_equal(cell_fm$pct.1, markers$pct.1, tolerance = 0)
   expect_equal(cell_fm$pct.2, markers$pct.2, tolerance = 0)
+})
+
+test_that("FindMarkers native branches exactly match the Seurat method", {
+  set.seed(20260909)
+  counts <- Matrix::rsparsematrix(
+    300,
+    150,
+    density = 0.1,
+    rand.x = function(n) stats::rpois(n, 2) + 1
+  )
+  dimnames(counts) <- list(paste0("g", 1:300), paste0("c", 1:150))
+  object <- Seurat::CreateSeuratObject(counts)
+  object <- Seurat::NormalizeData(object, verbose = FALSE)
+  SeuratObject::Idents(object) <- factor(rep(c("A", "B", "C"), each = 50))
+  seurat_method <- get("FindMarkers.Seurat", asNamespace("Seurat"))
+  cases <- list(
+    list(ident.1 = "A"),
+    list(ident.1 = "A", ident.2 = c("B", "C")),
+    list(ident.1 = "A", min.diff.pct = 0.05),
+    list(ident.1 = "A", max.cells.per.ident = 25, random.seed = 8),
+    list(ident.1 = "A", min.cells.group = 5, min.cells.feature = 5),
+    list(ident.1 = "A", only.pos = TRUE),
+    list(ident.1 = "A", features = paste0("g", 1:80)),
+    list(ident.1 = "A", slot = "counts")
+  )
+  for (case in cases) {
+    args <- c(
+      list(object = object, logfc.threshold = 0, min.pct = 0, verbose = FALSE),
+      case
+    )
+    expect_equal(do.call(scop::FindMarkers, args), do.call(seurat_method, args), tolerance = 1e-12)
+  }
 })
 
 test_that("RunDEtest exports internal marker workers to parallel processes", {
@@ -144,7 +176,7 @@ test_that("supported RunDEtest Wilcoxon branches stay on the scop backend", {
   ))
   expect_s3_class(pair, "data.frame")
 
-  expect_no_error(conserved <- FindConservedMarkers2(
+  expect_no_error(conserved <- get("FindConservedMarkers2", asNamespace("scop"))(
     object = srt,
     grouping.var = "batch",
     cells.1 = cells1,
@@ -173,7 +205,10 @@ test_that("supported RunDEtest Wilcoxon branches stay on the scop backend", {
     if (markers_type %in% c("conserved", "disturbed")) {
       args[["grouping.var"]] <- "batch"
     }
-    expect_no_error(do.call(RunDEtest.Seurat, args))
+    expect_no_error(do.call(
+      get("RunDEtest.Seurat", asNamespace("scop")),
+      args
+    ))
   }
 })
 
@@ -240,7 +275,7 @@ test_that("RunDEtest all-in-one markers match the pairwise scop backend", {
   names(cell_group) <- colnames(srt)
   features <- rownames(srt)[1:80]
 
-  all_in_one <- RunDEtestFindAllMarkers(
+  all_in_one <- get("RunDEtestFindAllMarkers", asNamespace("scop"))(
     srt = srt,
     assay = "RNA",
     layer = "data",
