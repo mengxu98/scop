@@ -87,8 +87,9 @@ cluster-tree title; feature names are still shown as panel subtitles.}
 \item{xlab, ylab}{Axis titles.}
 
 \item{legend.position}{The position of the legend. The default is \code{"auto"}:
-a compact legend card is placed in the open corner on the starting side of
-the tree, with an automatic fallback to \code{"right"} for start-heavy trees.}
+horizontal trees place a compact guide row above the panel, aligned to the
+starting side, while vertical trees place guides on the right. Use
+\code{"inside"} to force an in-panel legend.}
 
 \item{theme_use, theme_args}{Plot theme and additional theme arguments.}
 

@@ -203,7 +203,7 @@ test_that("ClusterTreePlot supports all tree directions", {
   }
 })
 
-test_that("ClusterTreePlot moves auto legends away from left-heavy trees", {
+test_that("ClusterTreePlot keeps auto legends outside the plot panel", {
   srt <- make_cluster_tree_seurat()
 
   auto_plot <- ClusterTreePlot(
@@ -224,8 +224,41 @@ test_that("ClusterTreePlot moves auto legends away from left-heavy trees", {
     legend.position = "inside"
   )
 
-  expect_identical(auto_plot$theme$legend.position, "right")
+  expect_identical(auto_plot$theme$legend.position, "top")
+  expect_identical(auto_plot$theme$legend.justification, "left")
   expect_identical(forced_inside$theme$legend.position, "inside")
+})
+
+test_that("ClusterTreePlot auto legends follow tree direction without overlap", {
+  srt <- make_cluster_tree_seurat()
+  expected_positions <- c(
+    "left-to-right" = "top",
+    "right-to-left" = "top",
+    "top-to-bottom" = "right",
+    "bottom-to-top" = "right"
+  )
+  expected_top_justification <- c(
+    "left-to-right" = "left",
+    "right-to-left" = "right"
+  )
+
+  for (tree_direction in names(expected_positions)) {
+    plot <- ClusterTreePlot(
+      srt,
+      prefix = "RNA_snn",
+      direction = tree_direction
+    )
+    expect_identical(
+      plot$theme$legend.position,
+      unname(expected_positions[tree_direction])
+    )
+    if (tree_direction %in% names(expected_top_justification)) {
+      expect_identical(
+        plot$theme$legend.justification,
+        unname(expected_top_justification[tree_direction])
+      )
+    }
+  }
 })
 
 test_that("ClusterTreePlot respects explicit titles and font families", {
