@@ -69,8 +69,8 @@ cellrank_cflare_cpp <- function(T_, n_states = 5L, max_iter = 1000L, tol = 1e-6)
     .Call(`_scop_cellrank_cflare_cpp`, T_, n_states, max_iter, tol)
 }
 
-cellrank_gpcca_cpp <- function(T_, n_states = 5L, n_cells_terminal = 10L, skip_perron = FALSE) {
-    .Call(`_scop_cellrank_gpcca_cpp`, T_, n_states, n_cells_terminal, skip_perron)
+cellrank_gpcca_cpp <- function(T_, n_states = 5L, n_cells_terminal = 10L, skip_perron = FALSE, schur_n_components = -1L) {
+    .Call(`_scop_cellrank_gpcca_cpp`, T_, n_states, n_cells_terminal, skip_perron, schur_n_components)
 }
 
 cellrank_lineage_drivers_cpp <- function(expression, abs_probs, lineage_idx = integer()) {

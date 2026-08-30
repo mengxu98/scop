@@ -1415,7 +1415,8 @@ List cellrank_gpcca_cpp(
     NumericMatrix T_,
     int n_states = 5,
     int n_cells_terminal = 10,
-    bool skip_perron = false)
+    bool skip_perron = false,
+    int schur_n_components = -1)
 {
   int n = T_.nrow();
 
@@ -1425,7 +1426,9 @@ List cellrank_gpcca_cpp(
   NumericVector pi = cellrank_stationary_distribution_cpp(T, 200, 1e-8);
   NumericVector eta(n, 1.0 / static_cast<double>(n));
 
-  int schur_components = skip_perron ? (n_states + 2) : n_states;
+  int schur_components = schur_n_components > 0 ?
+    schur_n_components : (skip_perron ? (n_states + 2) : n_states);
+  schur_components = std::max(n_states, std::min(schur_components, n));
   List schur_result = cellrank_schur_cpp(T, schur_components);
   NumericVector eigenvalues_all = schur_result["eigenvalues"];
   NumericMatrix schur_vecs_all = schur_result["schur_vectors"];
