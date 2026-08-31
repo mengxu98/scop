@@ -21,12 +21,14 @@ test_that("RunCisTarget exposes the native cisTarget backend", {
                           motif_annotations,
                           min_regulon_size,
                           cores,
+                          parallel_backend,
                           verbose) {
       expect_true("importance" %in% colnames(adjacency))
       expect_null(expr_mtx)
       expect_identical(ranking_dbs, ranking)
       expect_identical(motif_annotations, motif)
       expect_identical(min_regulon_size, 2L)
+      expect_identical(parallel_backend, "psock")
       list("TF1(+)" = c("Gene1", "Gene2", "Gene3"))
     }
   )
@@ -37,6 +39,7 @@ test_that("RunCisTarget exposes the native cisTarget backend", {
     ranking_dbs = ranking,
     motif_annotations = motif,
     min_regulon_size = 2,
+    parallel_backend = "psock",
     work_dir = work_dir,
     verbose = FALSE
   )

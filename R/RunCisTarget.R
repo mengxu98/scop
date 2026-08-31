@@ -81,11 +81,13 @@ RunCisTarget <- function(
   envname = NULL,
   conda = "auto",
   cores = 1,
+  parallel_backend = c("auto", "psock", "fork"),
   force = FALSE,
   verbose = TRUE,
   ...
 ) {
   backend <- match.arg(backend)
+  parallel_backend <- match.arg(parallel_backend)
   species <- match.arg(species)
 
   work_dir <- work_dir %||% "."
@@ -182,6 +184,7 @@ RunCisTarget <- function(
       txt_output = txt_output,
       min_regulon_size = min_regulon_size,
       cores = cores,
+      parallel_backend = parallel_backend,
       force = force,
       verbose = verbose,
       ...
@@ -214,6 +217,7 @@ cisTarget_cpp <- function(
   txt_output,
   min_regulon_size,
   cores,
+  parallel_backend,
   force,
   verbose,
   ...
@@ -261,6 +265,7 @@ cisTarget_cpp <- function(
       motif_annotations = motif_annotations,
       min_regulon_size = as.integer(min_regulon_size),
       cores = as.integer(cores),
+      parallel_backend = parallel_backend,
       verbose = verbose
     ),
     list(...)
@@ -548,14 +553,15 @@ read_regulons_from_gmt <- function(gmt_file, min_regulon_size = 10) {
 }
 
 
-
 write_regulons_file <- function(regulons, file, sep = "\t") {
   lines <- character(length(regulons))
   for (i in seq_along(regulons)) {
     tf <- names(regulons)[i]
     genes <- regulons[[i]]
-    lines[i] <- paste0(tf, "(", length(genes), "g)", "\tna\t",
-      paste(genes, collapse = sep))
+    lines[i] <- paste0(
+      tf, "(", length(genes), "g)", "\tna\t",
+      paste(genes, collapse = sep)
+    )
   }
   writeLines(lines, file)
 }

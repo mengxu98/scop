@@ -29,6 +29,7 @@ RunSCENIC(
   subsample = 0.9,
   early_stop_window_length = 25,
   cores = 1,
+  parallel_backend = c("auto", "psock", "fork"),
   seed = 1234,
   force = FALSE,
   assay_name = "scenic",
@@ -112,6 +113,11 @@ cisTarget pruning, and AUCell scoring together.}
 \item{cores}{Number of workers used by GRNBoost2, \verb{scenic ctx}, and
 AUCell scoring. If multicore execution is not supported, this is
 automatically reduced to one core.}
+
+\item{parallel_backend}{Parallel backend used for native C++ cisTarget
+module processing. \code{"auto"} preserves the current cross-platform PSOCK
+behavior. \code{"fork"} is an explicit opt-in on macOS and Linux and is not
+available on Windows.}
 
 \item{seed}{Random seed used by GRNBoost2 and Seurat overclustering.}
 
