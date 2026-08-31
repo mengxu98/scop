@@ -125,7 +125,9 @@ Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc.}
 \item{backend}{Backend used to compute PAGA. \code{"python"} keeps the original
 scanpy workflow and remains the default. \code{"cpp"} uses the package C++
 implementation for the standard connectivity graph and tree, plus an
-approximate R igraph layout stored in \code{paga$pos}.}
+approximate R igraph layout stored in \code{paga$pos}.
+All arguments stay on the selected backend; the C++ backend never switches
+to Python implicitly.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.}
 

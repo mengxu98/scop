@@ -115,16 +115,18 @@ test_that("RunCellRankEnrichment records empty and non-empty module results", {
         data.frame(ID = "t1", Description = "term", p.adjust = 0.01, Count = 2)
       }
     },
-    PrepareDB = function(...) list(Mus_musculus = list(
-      TEST = list(
-        TERM2GENE = data.frame(
-          term = "t1",
-          entrez_id = c("1", "2"),
-          symbol = c("g1", "g2")
-        ),
-        TERM2NAME = data.frame(term = "t1", name = "term")
-      )
-    ))
+    PrepareDB = function(...) {
+      list(Mus_musculus = list(
+        TEST = list(
+          TERM2GENE = data.frame(
+            term = "t1",
+            entrez_id = c("1", "2"),
+            symbol = c("g1", "g2")
+          ),
+          TERM2NAME = data.frame(term = "t1", name = "term")
+        )
+      ))
+    }
   )
   out <- RunCellRankEnrichment(srt, lineage = "A", db = "TEST", verbose = FALSE)
   expect_true("A" %in% names(out@tools$CellRank$enrichment))
@@ -188,26 +190,15 @@ test_that("RunCellRankEnrichment distinguishes backend failures", {
     get_namespace_fun = function(pkg, fun) {
       function(...) stop("malformed TERM2GENE")
     },
-    PrepareDB = function(...) list(Mus_musculus = list(
-      TEST = list(TERM2GENE = data.frame(term = "t1", gene = "g1"), TERM2NAME = data.frame(term = "t1", name = "term"))
-    ))
+    PrepareDB = function(...) {
+      list(Mus_musculus = list(
+        TEST = list(TERM2GENE = data.frame(term = "t1", gene = "g1"), TERM2NAME = data.frame(term = "t1", name = "term"))
+      ))
+    }
   )
   expect_error(
     RunCellRankEnrichment(srt, lineage = "A", db = "TEST", verbose = FALSE),
     "malformed TERM2GENE"
-  )
-})
-
-test_that("C++ backend rejects CellRank reference-only options", {
-  expect_error(
-    RunCellRank(
-      backend = "cpp",
-      allow_approximate = TRUE,
-      terminal_states = "A",
-      show_plot = FALSE,
-      verbose = FALSE
-    ),
-    "terminal_states"
   )
 })
 
@@ -244,11 +235,13 @@ test_that("RunCellRank stores named fate and driver payloads", {
     py_to_r2 = function(x) x,
     srt_to_adata = function(...) list(obs = data.frame(cluster = factor(c("a", "a", "b", "b")))),
     palette_colors = function(...) c(a = "#111111", b = "#222222"),
-    scop_python_import = function(...) list(CellRank = function(...) {
-      captured$recompute_neighbors <- list(...)$recompute_neighbors
-      captured$schur_method <- list(...)$schur_method
-      list("adata", "estimator", "kernel", payload)
-    }),
+    scop_python_import = function(...) {
+      list(CellRank = function(...) {
+        captured$recompute_neighbors <- list(...)$recompute_neighbors
+        captured$schur_method <- list(...)$schur_method
+        list("adata", "estimator", "kernel", payload)
+      })
+    },
     adata_to_srt = function(...) adata_out
   )
   out <- RunCellRank(

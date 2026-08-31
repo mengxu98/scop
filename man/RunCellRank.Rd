@@ -64,10 +64,10 @@ RunCellRank(
   palette = "Chinese",
   palcolor = NULL,
   dirpath = "./cellrank",
-  return_seurat = !is.null(srt),
   envname = NULL,
   conda = "auto",
   recompute_neighbors = TRUE,
+  return_seurat = !is.null(srt),
   verbose = TRUE
 )
 }
@@ -188,7 +188,9 @@ Names are validated against the computed macrostates before fate estimation.}
 
 \item{backend}{Backend for computation: \code{"python"} (default) or \code{"cpp"}.
 The C++ path is an explicitly opted-in approximation and does not reproduce
-the complete CellRank estimator.}
+the complete CellRank estimator.
+The selected backend is stable: the C++ path never switches to Python
+because of an argument value.}
 
 \item{allow_approximate}{Whether to allow the approximate C++ path. This must
 be \code{TRUE} when \code{backend = "cpp"}.}
@@ -219,8 +221,8 @@ SCOP environment selection.}
 \item{conda}{Conda-compatible executable used by \link{PrepareEnv}.}
 
 \item{recompute_neighbors}{Whether to rebuild Scanpy neighbors before a
-pseudotime kernel. If \code{FALSE}, the existing graph must be complete,
-connected, and aligned to the current cell order.}
+pseudotime kernel. If \code{FALSE}, the existing graph must be complete and
+match the current AnnData cell order.}
 
 \item{return_seurat}{Whether to return a Seurat object instead of an anndata object.}
 
@@ -280,5 +282,6 @@ DynamicPlot(
 }
 }
 \seealso{
-\link{RunSCVELO}, \link{RunPAGA}, \link{VelocityPlot}, \link{CellDimPlot}, \link{DynamicPlot}
+\link{RunSCVELO}, \link{RunPAGA}, \link{VelocityPlot}, \link{CellDimPlot}, \link{DynamicPlot},
+\link{RunCellRankTrends}, \link{RunCellRankEnrichment}, \link{CellRankPlot}
 }

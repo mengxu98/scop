@@ -7,12 +7,13 @@
 adata_to_srt(adata, prepare_env = TRUE, verbose = TRUE)
 }
 \arguments{
-\item{adata}{An AnnData object.
-Can be a Python AnnData object (from \code{scanpy}/\verb{reticulate``), an }AnnDataR6\verb{object from the}anndata\verb{package, or an}InMemoryAnnData\verb{object from the}anndataR` package.}
+\item{adata}{An AnnData object. Can be a Python AnnData object (from
+\code{scanpy}/\code{reticulate}), an \code{AnnDataR6} object from the \code{anndata} package,
+or an \code{InMemoryAnnData} object from the \code{anndataR} package.}
 
-\item{prepare_env}{Whether to prepare and validate the Scanpy Python environment
-before conversion. Set to \code{FALSE} when a wrapper already prepared the
-environment and reticulate must keep the same binding.}
+\item{prepare_env}{Whether to prepare and validate the Scanpy Python
+environment before conversion. Wrapper functions that already prepared the
+environment should pass \code{FALSE} to keep one reticulate binding.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

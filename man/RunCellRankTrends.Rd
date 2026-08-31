@@ -66,10 +66,9 @@ RunCellRankTrends(
 
 \item{output_dir}{Optional directory for CSV exports.}
 
-\item{envname}{Optional Python environment name. \code{NULL} uses the current
-SCOP environment selection.}
+\item{envname}{Optional Python environment name.}
 
-\item{conda}{Conda-compatible executable used by \link{PrepareEnv}.}
+\item{conda}{Conda-compatible executable used by [PrepareEnv].}
 
 \item{min_expressed_cells}{Minimum cells with positive finite expression
 required for a GAM feature.}

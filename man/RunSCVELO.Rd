@@ -112,7 +112,9 @@ what an object converted from an AnnData (via \link{adata_to_srt}) contains.}
 
 \item{normalize_per_cell}{Whether to normalize counts per cell.}
 
-\item{log_transform}{Whether to apply log transformation.}
+\item{log_transform}{Whether to apply log transformation to AnnData \code{X} in
+the Python backend. The C++ velocity calculation uses spliced/unspliced
+layers, matching scVelo, so this does not alter its velocity matrices.}
 
 \item{use_raw}{Whether to use raw data for dynamical modeling.}
 
@@ -178,7 +180,8 @@ Can be \code{"on data"}, \code{"right margin"}, \code{"bottom right"}, etc.}
 
 \item{backend}{Backend used to compute RNA velocity. \code{"python"} keeps the
 original scVelo workflow. \code{"cpp"} uses the package C++ implementation for a
-stochastic velocity embedding that is compatible with \link{VelocityPlot}.}
+stochastic velocity embedding that is compatible with \link{VelocityPlot}.
+The C++ backend never switches to Python implicitly.}
 
 \item{max_dense_gib}{Maximum estimated GiB allowed for the dense expression
 working matrices used by the C++ path.}
