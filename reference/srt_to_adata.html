@@ -138,9 +138,9 @@ objects.</p></dd>
 
 
 <dt id="arg-prepare-env">prepare_env<a class="anchor" aria-label="anchor" href="#arg-prepare-env"></a></dt>
-<dd><p>Whether to prepare and validate the Scanpy Python environment
-before conversion. Set to <code>FALSE</code> when a wrapper already prepared the
-environment and reticulate must keep the same binding.</p></dd>
+<dd><p>Whether to prepare and validate the Scanpy Python
+environment before conversion. Wrapper functions that already prepared the
+environment should pass <code>FALSE</code> to keep one reticulate binding.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

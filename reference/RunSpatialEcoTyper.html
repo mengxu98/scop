@@ -362,42 +362,31 @@ returned.</p>
 <span class="r-in"><span>  allow_partial <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>replacing previous import ‘Matrix::unpack’ by ‘tidyr::unpack’ when loading ‘SpatialEcoTyper’</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>replacing previous import ‘Matrix::expand’ by ‘tidyr::expand’ when loading ‘SpatialEcoTyper’</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>replacing previous import ‘Matrix::pack’ by ‘tidyr::pack’ when loading ‘SpatialEcoTyper’</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'spdep':</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   method   from</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   plot.mst ape </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-30 22:31:05.646826 Construct spatial meta cells for each cell type</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-31 16:34:48.931387 Construct spatial meta cells for each cell type</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Excluding cell types due to insufficient spatial metacells: panin, fat.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Total spatial neighborhoods: 1147; total spatial meta cells: 1440</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-30 22:31:05.990715 PCA for each cell type</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-31 16:34:49.28324 PCA for each cell type</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>You're computing too large a percentage of total singular values, use a standard svd instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-30 22:31:07.862121 Construct cell-type-specific similarity network</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-31 16:34:51.024847 Construct cell-type-specific similarity network</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Removing 889 spatial neighborhoods with fewer than 2 distinct cell types.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-30 22:31:07.981925 Similarity network fusion</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-30 22:31:07.983551 Normalize networks ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-30 22:31:07.991325 Calculate the local transition matrix ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-30 22:31:08.184404 Perform the diffusion ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-30 22:31:08.185805 Iteration: 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-30 22:31:08.257776 Iteration: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-30 22:31:08.377763 Iteration: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-30 22:31:08.501081 Iteration: 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-30 22:31:08.625368 Iteration: 5</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-30 22:31:08.748709 Iteration: 6</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-30 22:31:08.874361 Iteration: 7</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-30 22:31:08.997203 Iteration: 8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-30 22:31:09.11925 Iteration: 9</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-30 22:31:09.241254 Iteration: 10</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-30 22:31:09.427019 Create Seurat object and perform clustering analysis</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> To use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> This message will be shown once per session</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-31 16:34:51.169973 Similarity network fusion</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-31 16:34:51.171733 Normalize networks ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-31 16:34:51.1792 Calculate the local transition matrix ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-31 16:34:51.450582 Perform the diffusion ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-31 16:34:51.452179 Iteration: 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-31 16:34:51.516989 Iteration: 2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-31 16:34:51.613904 Iteration: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-31 16:34:51.713289 Iteration: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-31 16:34:51.812357 Iteration: 5</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-31 16:34:51.910138 Iteration: 6</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-31 16:34:52.007866 Iteration: 7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-31 16:34:52.105566 Iteration: 8</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-31 16:34:52.203883 Iteration: 9</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-08-31 16:34:52.302534 Iteration: 10</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-08-31 16:34:52.455768 Create Seurat object and perform clustering analysis</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># A genuine multi-sample spatial input is required for conserved-SE discovery.</span></span></span>
 <span class="r-in"><span><span class="co"># The bundled object contains one sample, so this is a parameter template.</span></span></span>

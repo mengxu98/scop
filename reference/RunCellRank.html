@@ -126,10 +126,10 @@
 <span>  palette <span class="op">=</span> <span class="st">"Chinese"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dirpath <span class="op">=</span> <span class="st">"./cellrank"</span>,</span>
-<span>  return_seurat <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span>,</span>
 <span>  envname <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  conda <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>  recompute_neighbors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  return_seurat <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -349,7 +349,9 @@ Names are validated against the computed macrostates before fate estimation.</p>
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
 <dd><p>Backend for computation: <code>"python"</code> (default) or <code>"cpp"</code>.
 The C++ path is an explicitly opted-in approximation and does not reproduce
-the complete CellRank estimator.</p></dd>
+the complete CellRank estimator.
+The selected backend is stable: the C++ path never switches to Python
+because of an argument value.</p></dd>
 
 
 <dt id="arg-allow-approximate">allow_approximate<a class="anchor" aria-label="anchor" href="#arg-allow-approximate"></a></dt>
@@ -406,8 +408,8 @@ SCOP environment selection.</p></dd>
 
 <dt id="arg-recompute-neighbors">recompute_neighbors<a class="anchor" aria-label="anchor" href="#arg-recompute-neighbors"></a></dt>
 <dd><p>Whether to rebuild Scanpy neighbors before a
-pseudotime kernel. If <code>FALSE</code>, the existing graph must be complete,
-connected, and aligned to the current cell order.</p></dd>
+pseudotime kernel. If <code>FALSE</code>, the existing graph must be complete and
+match the current AnnData cell order.</p></dd>
 
 
 <dt id="arg-return-seurat">return_seurat<a class="anchor" aria-label="anchor" href="#arg-return-seurat"></a></dt>
@@ -426,7 +428,8 @@ The estimator and kernel objects are stored in <code>srt@misc$cellrank</code>.</
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="RunSCVELO.html">RunSCVELO</a>, <a href="RunPAGA.html">RunPAGA</a>, <a href="VelocityPlot.html">VelocityPlot</a>, <a href="CellDimPlot.html">CellDimPlot</a>, <a href="DynamicPlot.html">DynamicPlot</a></p></div>
+    <div class="dont-index"><p><a href="RunSCVELO.html">RunSCVELO</a>, <a href="RunPAGA.html">RunPAGA</a>, <a href="VelocityPlot.html">VelocityPlot</a>, <a href="CellDimPlot.html">CellDimPlot</a>, <a href="DynamicPlot.html">DynamicPlot</a>,
+<a href="RunCellRankTrends.html">RunCellRankTrends</a>, <a href="RunCellRankEnrichment.html">RunCellRankEnrichment</a>, <a href="CellRankPlot.html">CellRankPlot</a></p></div>
     </div>
 
     <div class="section level2">

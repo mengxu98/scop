@@ -211,16 +211,19 @@ For very large datasets, setting <code>knn_max</code> to a small multiple of <co
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
 <dd><p>PHATE backend. <code>"python"</code> calls the upstream <code>phate</code> Python
-package and <code>"cpp"</code> uses the native C++ helper path.</p></dd>
+package and <code>"cpp"</code> uses the native C++ helper path.
+The selected backend is stable; native arguments never trigger an implicit
+Python workflow.</p></dd>
 
 
 <dt id="arg-mds">mds<a class="anchor" aria-label="anchor" href="#arg-mds"></a></dt>
-<dd><p>MDS algorithm passed to PHATE. The native C++ backend currently
-implements the <code>"classic"</code> path.</p></dd>
+<dd><p>MDS algorithm passed to PHATE. The native backend uses its C++
+classical MDS or R's native metric MDS implementation.</p></dd>
 
 
 <dt id="arg-mds-solver">mds_solver<a class="anchor" aria-label="anchor" href="#arg-mds-solver"></a></dt>
-<dd><p>Metric MDS solver passed to the Python backend.</p></dd>
+<dd><p>Metric MDS solver; recorded by the native backend and
+passed through to Python when that backend is selected.</p></dd>
 
 
 <dt id="arg-n-clusters">n_clusters<a class="anchor" aria-label="anchor" href="#arg-n-clusters"></a></dt>
