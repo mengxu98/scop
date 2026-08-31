@@ -36,8 +36,9 @@ CellScoring(
 \arguments{
 \item{srt}{A \code{Seurat} object.}
 
-\item{features}{A named list of feature lists for scoring.
-If \code{NULL}, \code{db} will be used to create features sets.}
+\item{features}{A named list of gene sets for scoring. Every gene set is
+scored in every cell; list names are program labels and do not need to be
+cell types. If \code{NULL}, \code{db} will be used to create feature sets.}
 
 \item{layer}{Assay layer to use.}
 
@@ -117,6 +118,8 @@ Default is \code{TRUE}.}
 Performs cell scoring on a Seurat object.
 It calculates scores for a given set of features and stores them in \code{meta.data}
 and/or a score assay, depending on \code{new_assay} and \code{store_metadata}.
+Scoring provenance is retained for downstream plot functions such as
+\code{\link[=CellScoringPlot]{CellScoringPlot()}}.
 }
 \examples{
 data(pancreas_sub)
@@ -164,5 +167,4 @@ GroupHeatmap(
   features = c("AUCell_A", "GSVA_A", "Sox9", "Anxa2", "Bicc1"),
   group.by = "CellType"
 )
-
 }
