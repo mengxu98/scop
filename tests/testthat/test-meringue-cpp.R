@@ -60,14 +60,22 @@ test_that("meringue_moran_cpp matches MERINGUE::moranTest exactly", {
       rounding_sample = rounding
     )
     r_out <- MERINGUE::moranTest(z, weight, alternative = "greater")
-    expect_equal(cpp_out[["observed"]], r_out[["observed"]], tolerance = 1e-12,
-      label = paste0(feature, " observed"))
-    expect_equal(cpp_out[["expected"]], r_out[["expected"]], tolerance = 1e-12,
-      label = paste0(feature, " expected"))
-    expect_equal(cpp_out[["sd"]], r_out[["sd"]], tolerance = 1e-12,
-      label = paste0(feature, " sd"))
-    expect_equal(cpp_out[["p_value"]], r_out[["p.value"]], tolerance = 1e-12,
-      label = paste0(feature, " p"))
+    expect_equal(cpp_out[["observed"]], r_out[["observed"]],
+      tolerance = 1e-12,
+      label = paste0(feature, " observed")
+    )
+    expect_equal(cpp_out[["expected"]], r_out[["expected"]],
+      tolerance = 1e-12,
+      label = paste0(feature, " expected")
+    )
+    expect_equal(cpp_out[["sd"]], r_out[["sd"]],
+      tolerance = 1e-12,
+      label = paste0(feature, " sd")
+    )
+    expect_equal(cpp_out[["p_value"]], r_out[["p.value"]],
+      tolerance = 1e-12,
+      label = paste0(feature, " p")
+    )
   }
 })
 
@@ -113,11 +121,13 @@ test_that("RunMERINGUE batch cpp path matches the r backend end to end", {
   features <- meringue_real_features(srt, k = 100)
 
   cpp_out <- RunMERINGUE(
-    srt, mode = "autocorrelation", coord.cols = c("x", "y"),
+    srt,
+    mode = "autocorrelation", coord.cols = c("x", "y"),
     features = features, min_spots = 5, nperm = 0, backend = "cpp", verbose = FALSE
   )
   r_out <- RunMERINGUE(
-    srt, mode = "autocorrelation", coord.cols = c("x", "y"),
+    srt,
+    mode = "autocorrelation", coord.cols = c("x", "y"),
     features = features, min_spots = 5, nperm = 0, backend = "r", verbose = FALSE
   )
   ct <- cpp_out@tools$MERINGUE$autocorrelation
@@ -163,14 +173,22 @@ test_that("meringue_moran_cpp permutation matches MERINGUE::moranPermutationTest
       ncores = 1,
       plot = FALSE
     )
-    expect_equal(cpp_out[["observed"]], r_out[["observed"]], tolerance = 1e-12,
-      label = paste0(feature, " observed"))
-    expect_equal(cpp_out[["expected"]], r_out[["expected"]], tolerance = 1e-12,
-      label = paste0(feature, " expected"))
-    expect_equal(cpp_out[["sd"]], r_out[["sd"]], tolerance = 1e-12,
-      label = paste0(feature, " sd"))
-    expect_equal(cpp_out[["p_value"]], r_out[["p.value"]], tolerance = 1e-12,
-      label = paste0(feature, " p"))
+    expect_equal(cpp_out[["observed"]], r_out[["observed"]],
+      tolerance = 1e-12,
+      label = paste0(feature, " observed")
+    )
+    expect_equal(cpp_out[["expected"]], r_out[["expected"]],
+      tolerance = 1e-12,
+      label = paste0(feature, " expected")
+    )
+    expect_equal(cpp_out[["sd"]], r_out[["sd"]],
+      tolerance = 1e-12,
+      label = paste0(feature, " sd")
+    )
+    expect_equal(cpp_out[["p_value"]], r_out[["p.value"]],
+      tolerance = 1e-12,
+      label = paste0(feature, " p")
+    )
   }
 })
 

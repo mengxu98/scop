@@ -357,15 +357,15 @@ CellStatPlot(
   plot_type = "chord"
 )
 
-  CellStatPlot(
-    pancreas_sub,
-    stat.by = c("CellType", "Phase"),
-    plot_type = "venn",
-    stat_level = list(
-      CellType = c("Ductal", "Ngn3-low-EP"),
-      Phase = "S"
-    )
+CellStatPlot(
+  pancreas_sub,
+  stat.by = c("CellType", "Phase"),
+  plot_type = "venn",
+  stat_level = list(
+    CellType = c("Ductal", "Ngn3-low-EP"),
+    Phase = "S"
   )
+)
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType \%in\% c("Ngn3-low-EP", "Ngn3-high-EP")
 pancreas_sub$G2M <- pancreas_sub$Phase == "G2M"

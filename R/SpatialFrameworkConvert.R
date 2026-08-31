@@ -12,7 +12,10 @@
 #'
 #' @export
 srt_to_giotto <- function(srt, image = NULL, ...) {
-  image <- { .img_resolved <- spatial_image_resolve(srt = srt, image = image, image_policy = "strict"); .img_resolved$image }
+  image <- {
+    .img_resolved <- spatial_image_resolve(srt = srt, image = image, image_policy = "strict")
+    .img_resolved$image
+  }
   srt_use <- spatial_framework_subset_image(srt, image = image)
   check_r("drieslab/Giotto", verbose = FALSE)
   converter_name <- if (seurat_major_version() >= 5L) {

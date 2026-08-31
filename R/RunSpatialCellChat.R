@@ -166,7 +166,7 @@ spatialcellchat_detect_level <- function(srt, analysis.level, technology, compos
   if (technology %in% c("visium", "visium_hd")) {
     return("spot")
   }
-  log_message(    "Cannot determine {.arg analysis.level}; choose {.val cell}, {.val spot}, or {.val composition}",
+  log_message("Cannot determine {.arg analysis.level}; choose {.val cell}, {.val spot}, or {.val composition}",
     message_type = "error"
   )
 }

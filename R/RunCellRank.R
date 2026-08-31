@@ -451,7 +451,9 @@ RunCellRank <- function(
   payload <- if (length(result) >= 4L) result[[4]] else list()
 
   payload_frame <- function(x) {
-    if (is.null(x) || is.null(x$values)) return(NULL)
+    if (is.null(x) || is.null(x$values)) {
+      return(NULL)
+    }
     values <- as.matrix(x$values)
     if (!is.null(x$index) && length(x$index) == nrow(values)) {
       rownames(values) <- as.character(x$index)

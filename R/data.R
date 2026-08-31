@@ -8,9 +8,9 @@
 #' @md
 #' @format A `Seurat` object.
 #' @source
-#' 
+#'
 #'   \href{https://scvelo.readthedocs.io/en/stable/scvelo.datasets.pancreas.html}{scvelo.datasets.pancreas},
-#' 
+#'
 #'   \href{https://github.com/theislab/scvelo_notebooks/raw/master/data/Pancreas/endocrinogenesis_day15.h5ad}{endocrinogenesis_day15.h5ad}
 #'
 #' @examples
@@ -204,15 +204,13 @@ NULL
 #' @examples
 #' if (interactive()) {
 #'   download.file(
-#' 
-#'   "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8058nnn/GSM8058244/suppl/GSM8058244_PanIN-LG2.tar.gz",
+#'     "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8058nnn/GSM8058244/suppl/GSM8058244_PanIN-LG2.tar.gz",
 #'     destfile = "GSM8058244_PanIN-LG2.tar.gz",
 #'     mode = "wb"
 #'   )
 #'   untar("GSM8058244_PanIN-LG2.tar.gz", exdir = ".")
 #'   download.file(
-#' 
-#'   "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE254nnn/GSE254829/suppl/GSE254829_codatable_may202024.csv.gz",
+#'     "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE254nnn/GSE254829/suppl/GSE254829_codatable_may202024.csv.gz",
 #'     destfile = "GSE254829_codatable_may202024.csv.gz",
 #'     mode = "wb"
 #'   )
@@ -242,8 +240,10 @@ NULL
 #'   coda <- coda[coda$sample == "PanIN-LG2" & coda$barcode %in% colnames(spatial), ]
 #'   rownames(coda) <- coda$barcode
 #'   coda <- coda[colnames(spatial), ]
-#' comp_cols <- c("islets", "normal epithelium", "smooth muscle", "fat", "acini", "collagen",
-#'   "panin")
+#'   comp_cols <- c(
+#'     "islets", "normal epithelium", "smooth muscle", "fat", "acini", "collagen",
+#'     "panin"
+#'   )
 #'   coda$coda_label <- names(coda[comp_cols])[
 #'     max.col(as.matrix(coda[comp_cols]), ties.method = "first")
 #'   ]

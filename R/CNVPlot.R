@@ -565,4 +565,3 @@ cnv_order_cnv_levels <- function(values) {
   rank[is.na(rank)] <- length(priority) + seq_len(sum(is.na(rank)))
   values[order(rank, values)]
 }
-

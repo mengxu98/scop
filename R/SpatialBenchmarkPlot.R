@@ -712,10 +712,12 @@ benchmark_status_plot <- function(data) {
   data$method <- factor(data$method, levels = rev(data$method))
   data$label <- paste0(
     data$method, "  |  ", data$status,
-    ifelse(nzchar(data$error), paste0("  -  ", { .inline0 <- data$error; .inline1 <- 72L; 
-  .inline0 <- gsub("[\r\n]+", " ", .inline0)
-  ifelse(nchar(.inline0) > .inline1, paste0(substr(.inline0, 1L, .inline1 - 3L), "..."), .inline0)
- }), "")
+    ifelse(nzchar(data$error), paste0("  -  ", {
+      .inline0 <- data$error
+      .inline1 <- 72L
+      .inline0 <- gsub("[\r\n]+", " ", .inline0)
+      ifelse(nchar(.inline0) > .inline1, paste0(substr(.inline0, 1L, .inline1 - 3L), "..."), .inline0)
+    }), "")
   )
   ggplot2::ggplot(data, ggplot2::aes(
     x = 1, y = .data[["method"]], fill = .data[["status"]]

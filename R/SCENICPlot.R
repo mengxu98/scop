@@ -1907,8 +1907,9 @@ scenic_plot_target_bar <- function(
       ggplot2::geom_col(width = 0.75) +
       scenic_gradient_scale(
         fill_colors,
-        if (identical(value_col, "importance")) "Importance" else "Rank"
-      , fill = TRUE) +
+        if (identical(value_col, "importance")) "Importance" else "Rank",
+        fill = TRUE
+      ) +
       theme_scop() +
       ggplot2::theme(
         axis.title = ggplot2::element_text(colour = "black", size = 12),
@@ -2454,12 +2455,10 @@ scenic_calc_rss_matrix <- function(
     p_cell_type <- p_cell_type / sum(p_cell_type)
     vapply(
       seq_len(nrow(norm_auc)),
-      function(regulon_idx) {
-        { .inline0 <- norm_auc[regulon_idx, ]; .inline1 <- p_cell_type; 
-  jsd <- scenic_calc_jsd(.inline0, .inline1)
-  1 - sqrt(pmax(jsd, 0))
- }
-      },
+      function(regulon_idx) {{ .inline0 <- norm_auc[regulon_idx, ]
+        .inline1 <- p_cell_type
+        jsd <- scenic_calc_jsd(.inline0, .inline1)
+        1 - sqrt(pmax(jsd, 0)) }},
       numeric(1)
     )
   })

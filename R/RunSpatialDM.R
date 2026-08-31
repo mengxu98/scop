@@ -6,10 +6,10 @@
 
 spatialdm_validate_matrix <- function(x, label, nonnegative = TRUE) {
   if ((!is.matrix(x) && !methods::is(x, "sparseMatrix")) ||
-      is.null(rownames(x)) || is.null(colnames(x)) ||
-      anyNA(rownames(x)) || anyNA(colnames(x)) ||
-      any(!nzchar(rownames(x))) || any(!nzchar(colnames(x))) ||
-      anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
+    is.null(rownames(x)) || is.null(colnames(x)) ||
+    anyNA(rownames(x)) || anyNA(colnames(x)) ||
+    any(!nzchar(rownames(x))) || any(!nzchar(colnames(x))) ||
+    anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
     log_message("{.val {label}} must be a named matrix with unique feature and spot IDs", message_type = "error")
   }
   values <- matrix_values(x)
@@ -109,7 +109,8 @@ spatialdm_runtime <- function(envname, verbose) {
 spatialdm_read_table <- function(path, required = character(), label, allow.empty = FALSE, sep = "\t") {
   if (!file.exists(path)) log_message("SpatialDM did not produce {.val {label}} output", message_type = "error")
   value <- tryCatch(utils::read.table(path, header = TRUE, sep = sep, stringsAsFactors = FALSE, check.names = FALSE, na.strings = c("", "NA", "NaN", "nan")),
-    error = function(e) log_message("Unable to read SpatialDM {.val {label}} output: {conditionMessage(e)}", message_type = "error"))
+    error = function(e) log_message("Unable to read SpatialDM {.val {label}} output: {conditionMessage(e)}", message_type = "error")
+  )
   if (!all(required %in% colnames(value)) || (!allow.empty && nrow(value) == 0L)) {
     log_message("SpatialDM returned invalid {.val {label}} output", message_type = "error")
   }
@@ -118,7 +119,9 @@ spatialdm_read_table <- function(path, required = character(), label, allow.empt
 
 spatialdm_read_matrix <- function(path, cells = NULL, label = "matrix", logical = FALSE) {
   table <- spatialdm_read_table(path, required = character(), label = label, allow.empty = TRUE)
-  if (ncol(table) == 0L) return(matrix(numeric(), nrow = 0L, ncol = 0L))
+  if (ncol(table) == 0L) {
+    return(matrix(numeric(), nrow = 0L, ncol = 0L))
+  }
   ids <- as.character(table[[1L]])
   table[[1L]] <- NULL
   out <- as.matrix(table)
@@ -189,7 +192,8 @@ spatialdm_execute <- function(input, species, lr.database, parameters, result.na
   if (!identical(status, 0L)) runner_error(status, stdout.path, stderr.path, backend = "SpatialDM")
   manifest <- runner_read_json(file.path(output, "manifest.json"))
   global <- spatialdm_read_table(file.path(output, "global.csv"),
-    required = c("interaction", "moran_r", "z_score", "pvalue", "selected"), label = "global", allow.empty = FALSE, sep = ",")
+    required = c("interaction", "moran_r", "z_score", "pvalue", "selected"), label = "global", allow.empty = FALSE, sep = ","
+  )
   numeric.cols <- intersect(c("moran_r", "z_score", "pvalue", "z_pval", "perm_pval", "fdr", "n_spots"), colnames(global))
   for (column in numeric.cols) global[[column]] <- suppressWarnings(as.numeric(global[[column]]))
   global$selected <- as.logical(global$selected)
@@ -366,9 +370,15 @@ spatialdm_get_result <- function(object, result.name = NULL) {
 GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "local", "weights"), pair = NULL) {
   type <- match.arg(type)
   result <- spatialdm_get_result(object, result.name)
-  if (identical(type, "global")) return(result$global)
-  if (identical(type, "weights")) return(result$weights)
-  if (is.null(pair)) return(result$local)
+  if (identical(type, "global")) {
+    return(result$global)
+  }
+  if (identical(type, "weights")) {
+    return(result$weights)
+  }
+  if (is.null(pair)) {
+    return(result$local)
+  }
   if (!pair %in% rownames(result$local$local_p)) log_message("Unknown SpatialDM {.arg pair}: {.val {pair}}", message_type = "error")
   lapply(result$local, function(x) if (is.matrix(x)) x[pair, , drop = TRUE] else x)
 }
@@ -403,10 +413,12 @@ SpatialDMPlot <- function(
     if (is.null(spot) || length(spot) != 1L || !spot %in% as.character(result$coordinates$cell_id)) log_message("{.arg spot} must identify one stored SpatialDM spot", message_type = "error")
     values <- as.numeric(result$weights[[signaling]][spot, , drop = TRUE])
     names(values) <- colnames(result$weights[[signaling]])
-    return(SpatialSpotPlot(object, values = values, image = result$parameters$image,
+    return(SpatialSpotPlot(object,
+      values = values, image = result$parameters$image,
       image.scale = image.scale,
       coord.cols = result$parameters$coord.cols, palette = palette, palcolor = palcolor,
-      theme_use = theme_use, theme_args = theme_args, legend.title = "Spatial weight", ...))
+      theme_use = theme_use, theme_args = theme_args, legend.title = "Spatial weight", ...
+    ))
   }
   if (identical(plot_type, "global")) {
     df <- result$global
@@ -430,14 +442,22 @@ SpatialDMPlot <- function(
   ligands <- ligands[!is.na(ligands) & nzchar(ligands)]
   receptors <- receptors[!is.na(receptors) & nzchar(receptors)]
   local_label <- if (isTRUE(result$parameters$local.fdr)) "1 - local FDR" else "1 - local p"
-  plots <- list(SpatialSpotPlot(object, values = 1 - pvalue, image = result$parameters$image,
+  plots <- list(SpatialSpotPlot(object,
+    values = 1 - pvalue, image = result$parameters$image,
     image.scale = image.scale,
     coord.cols = result$parameters$coord.cols, palette = "Reds", theme_use = theme_use,
-    theme_args = theme_args, legend.title = local_label, ...))
-  for (gene in c(ligands, receptors)) if (gene %in% rownames(object)) plots[[length(plots) + 1L]] <- SpatialSpotPlot(object, features = gene,
-    assay = result$parameters$assay, layer = result$parameters$layer, image = result$parameters$image,
-    image.scale = image.scale,
-    coord.cols = result$parameters$coord.cols, palette = palette, palcolor = palcolor,
-    theme_use = theme_use, theme_args = theme_args, legend.title = gene, ...)
+    theme_args = theme_args, legend.title = local_label, ...
+  ))
+  for (gene in c(ligands, receptors)) {
+    if (gene %in% rownames(object)) {
+      plots[[length(plots) + 1L]] <- SpatialSpotPlot(object,
+        features = gene,
+        assay = result$parameters$assay, layer = result$parameters$layer, image = result$parameters$image,
+        image.scale = image.scale,
+        coord.cols = result$parameters$coord.cols, palette = palette, palcolor = palcolor,
+        theme_use = theme_use, theme_args = theme_args, legend.title = gene, ...
+      )
+    }
+  }
   patchwork::wrap_plots(plots, ncol = length(plots)) + patchwork::plot_annotation(title = pair)
 }

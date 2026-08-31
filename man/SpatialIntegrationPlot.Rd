@@ -61,12 +61,12 @@ list.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 
+\item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} or
+\code{\link[=CellDimPlot]{CellDimPlot()}}.}
+
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
-
-\item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} or
-\code{\link[=CellDimPlot]{CellDimPlot()}}.}
 }
 \value{
 A \code{ggplot}, patchwork object, or list of plots.

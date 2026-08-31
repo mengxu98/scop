@@ -44,8 +44,6 @@ spatial variable feature result are used.}
 
 \item{score_col}{Result column used for the summary x-axis.}
 
-\item{legend.position}{Legend position for surface plots.}
-
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
 \item{layer}{Assay layer to use.}
@@ -66,6 +64,8 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 \item{stroke}{Point border width.}
 
 \item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
+
+\item{legend.position}{Legend position for surface plots.}
 
 \item{theme_use}{Theme name or function.}
 

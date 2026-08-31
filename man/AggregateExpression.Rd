@@ -46,6 +46,6 @@ To use multiple categories, specify a vector, such as c('ident', 'replicate', 'c
 A named list of aggregated matrices or a Seurat object.
 }
 \description{
-Uses a sparse single-assay fast path when its output contract is exact and
-delegates all other branches to [Seurat::AggregateExpression()].
+Seurat already performs this operation as sparse matrix multiplication.
+scop preserves its complete parameter and object contract.
 }

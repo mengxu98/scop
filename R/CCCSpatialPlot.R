@@ -90,9 +90,9 @@ ccc_spatial_plot_payload_validate <- function(payload, producer = "spatial CCC p
     composition <- as.matrix(composition)
     storage.mode(composition) <- "double"
     if (is.null(rownames(composition)) || is.null(colnames(composition)) ||
-        anyNA(rownames(composition)) || anyNA(colnames(composition)) ||
-        anyDuplicated(rownames(composition)) || anyDuplicated(colnames(composition)) ||
-        !identical(as.character(rownames(composition)), ids)) {
+      anyNA(rownames(composition)) || anyNA(colnames(composition)) ||
+      anyDuplicated(rownames(composition)) || anyDuplicated(colnames(composition)) ||
+      !identical(as.character(rownames(composition)), ids)) {
       log_message("Spatial CCC composition must align one-to-one with coordinate IDs", message_type = "error")
     }
     if (any(!is.finite(composition)) || any(composition < 0) || any(rowSums(composition) <= 0)) {
@@ -330,7 +330,7 @@ ccc_spatial_network_data <- function(
   pair_df$spatial_weight <- suppressWarnings(as.numeric(pair_df[[edge_value]]))
   pair_df$spatial_weight[!is.finite(pair_df$spatial_weight)] <- 0
   if (!is.numeric(edge_threshold) || length(edge_threshold) != 1L ||
-      !is.finite(edge_threshold) || edge_threshold < 0) {
+    !is.finite(edge_threshold) || edge_threshold < 0) {
     log_message("{.arg edge_threshold} must be one non-negative finite value", message_type = "error")
   }
   pair_df <- pair_df[pair_df$spatial_weight >= edge_threshold, , drop = FALSE]
@@ -362,7 +362,9 @@ ccc_spatial_render_data <- function(payload, pair_df) {
   node_rows <- lapply(seq_along(groups), function(i) {
     weight <- membership[, i]
     total <- sum(weight, na.rm = TRUE)
-    if (!is.finite(total) || total <= 0) return(NULL)
+    if (!is.finite(total) || total <= 0) {
+      return(NULL)
+    }
     data.frame(
       group = groups[[i]],
       x = sum(coords$x_display * weight, na.rm = TRUE) / total,
@@ -376,7 +378,8 @@ ccc_spatial_render_data <- function(payload, pair_df) {
   lookup <- stats::setNames(seq_len(nrow(nodes)), nodes$group)
   edges <- pair_df[
     as.character(pair_df$sender) %in% nodes$group &
-      as.character(pair_df$receiver) %in% nodes$group, , drop = FALSE
+      as.character(pair_df$receiver) %in% nodes$group, ,
+    drop = FALSE
   ]
   if (nrow(edges) == 0L) {
     log_message("Spatial CCC communication groups do not match the stored spatial payload", message_type = "error")

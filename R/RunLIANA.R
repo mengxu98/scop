@@ -154,10 +154,10 @@ RunLIANA <- function(
     provenance = list(
       producer = "RunLIANA",
       backend = "liana",
-      backend_version = { ; 
-  version_fun <- liana_get_fun("packageVersion", package = "utils")
-  as.character(version_fun("liana"))
- }
+      backend_version = {
+        version_fun <- liana_get_fun("packageVersion", package = "utils")
+        as.character(version_fun("liana"))
+      }
     ),
     parameters = list(
       group.by = group.by,

@@ -81,7 +81,8 @@ and added to SCOP's unified CCC table.
 \examples{
 \dontrun{
 available <- unname(unlist(thisutils::check_r(
-  c("linxihui/NNLM", "ZJUFanLab/SpaTalk"), verbose = FALSE
+  c("linxihui/NNLM", "ZJUFanLab/SpaTalk"),
+  verbose = FALSE
 )))
 if (length(available) == 2L && all(available)) {
   spatial <- RunSpaTalk(

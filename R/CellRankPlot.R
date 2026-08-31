@@ -109,7 +109,7 @@ CellRankPlot <- function(
     }
     next_xy <- as.matrix(transition %*% coords)
     delta <- next_xy - coords
-    magnitude <- sqrt(rowSums(delta ^ 2))
+    magnitude <- sqrt(rowSums(delta^2))
     scale_ref <- as.numeric(stats::quantile(magnitude[magnitude > 0], 0.95, na.rm = TRUE))
     if (!is.finite(scale_ref) || scale_ref <= 0) scale_ref <- 1
     delta <- delta / scale_ref * 0.8
@@ -219,7 +219,11 @@ CellRankPlot <- function(
     tab <- head(tab[order(tab$correlation, decreasing = TRUE), , drop = FALSE], as.integer(top_n))
     tab$gene <- factor(tab$gene, levels = rev(tab$gene))
     bar_color <- unname(palette_colors(n = 1L, palette = palette, palcolor = palcolor))
-    return(ggplot2::ggplot(tab, ggplot2::aes(gene, correlation)) + ggplot2::geom_col(fill = bar_color) + ggplot2::coord_flip() + theme_layer + ggplot2::labs(x = NULL, y = "Correlation"))
+    return(ggplot2::ggplot(tab, ggplot2::aes(gene, correlation)) +
+      ggplot2::geom_col(fill = bar_color) +
+      ggplot2::coord_flip() +
+      theme_layer +
+      ggplot2::labs(x = NULL, y = "Correlation"))
   }
 
   if (plot_type == "enrichment") {
@@ -302,7 +306,12 @@ CellRankPlot <- function(
     if (plot_type == "trends") {
       genes <- intersect(trend$heatmap_genes %||% rownames(mat), rownames(mat))
       long <- reshape2::melt(mat[genes, , drop = FALSE], varnames = c("gene", "time"), value.name = "value")
-      return(ggplot2::ggplot(long, ggplot2::aes(time, gene, fill = value)) + ggplot2::geom_raster() + ggplot2::scale_fill_gradientn(colors = continuous_colors) + theme_layer + ggplot2::theme(panel.grid = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank()) + ggplot2::labs(x = "Pseudotime", y = NULL))
+      return(ggplot2::ggplot(long, ggplot2::aes(time, gene, fill = value)) +
+        ggplot2::geom_raster() +
+        ggplot2::scale_fill_gradientn(colors = continuous_colors) +
+        theme_layer +
+        ggplot2::theme(panel.grid = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank()) +
+        ggplot2::labs(x = "Pseudotime", y = NULL))
     }
     clusters <- trend$cluster_table
     selected <- clusters$gene
@@ -313,7 +322,14 @@ CellRankPlot <- function(
       palette = palette,
       palcolor = palcolor
     )
-    return(ggplot2::ggplot(long, ggplot2::aes(time, value, group = gene, color = cluster)) + ggplot2::geom_line(alpha = 0.25) + ggplot2::stat_summary(ggplot2::aes(group = cluster), fun = mean, geom = "line", linewidth = 1.2) + ggplot2::scale_color_manual(values = cluster_colors) + ggplot2::facet_wrap(~cluster, scales = "free_y") + theme_layer + ggplot2::theme(legend.position = "none") + ggplot2::labs(x = "Pseudotime", y = "Normalized trend"))
+    return(ggplot2::ggplot(long, ggplot2::aes(time, value, group = gene, color = cluster)) +
+      ggplot2::geom_line(alpha = 0.25) +
+      ggplot2::stat_summary(ggplot2::aes(group = cluster), fun = mean, geom = "line", linewidth = 1.2) +
+      ggplot2::scale_color_manual(values = cluster_colors) +
+      ggplot2::facet_wrap(~cluster, scales = "free_y") +
+      theme_layer +
+      ggplot2::theme(legend.position = "none") +
+      ggplot2::labs(x = "Pseudotime", y = "Normalized trend"))
   }
 
   transition <- srt@tools$CellRank$transition_matrix %||% srt@graphs[["cellrank_transition"]]
@@ -323,7 +339,7 @@ CellRankPlot <- function(
   cells <- rownames(coords)
   if (!is.null(rownames(transition)) && !is.null(colnames(transition))) {
     if (length(setdiff(cells, rownames(transition))) ||
-        length(setdiff(cells, colnames(transition)))) {
+      length(setdiff(cells, colnames(transition)))) {
       log_message("Stored CellRank transition matrix is not aligned to current cells", message_type = "error")
     }
     transition <- transition[cells, cells, drop = FALSE]
@@ -340,7 +356,10 @@ CellRankPlot <- function(
     visited[1L] <- current
     for (step in 2:as.integer(max_iter)) {
       probs <- as.numeric(transition[current, ])
-      if (!any(probs > 0)) { visited <- visited[seq_len(step - 1L)]; break }
+      if (!any(probs > 0)) {
+        visited <- visited[seq_len(step - 1L)]
+        break
+      }
       current <- sample.int(nrow(coords), 1L, prob = probs / sum(probs))
       visited[step] <- current
     }
@@ -350,5 +369,9 @@ CellRankPlot <- function(
   names(path_df)[3:4] <- c("x", "y")
   walk_palette <- unname(palette_colors(n = 2L, palette = palette, palcolor = palcolor))
   walk_color <- walk_palette[[min(2L, length(walk_palette))]]
-  ggplot2::ggplot(path_df, ggplot2::aes(x, y, group = sim)) + ggplot2::geom_path(alpha = 0.35, color = walk_color, linewidth = 0.35) + ggplot2::coord_equal() + theme_layer + ggplot2::labs(x = colnames(coords)[1], y = colnames(coords)[2])
+  ggplot2::ggplot(path_df, ggplot2::aes(x, y, group = sim)) +
+    ggplot2::geom_path(alpha = 0.35, color = walk_color, linewidth = 0.35) +
+    ggplot2::coord_equal() +
+    theme_layer +
+    ggplot2::labs(x = colnames(coords)[1], y = colnames(coords)[2])
 }

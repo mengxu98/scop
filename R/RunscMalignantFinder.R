@@ -157,12 +157,14 @@ RunscMalignantFinder <- function(
   }
 
   source_cols <- c("scMalignantFinder_prediction", "malignancy_probability")
-  output_cols <- { .inline0 <- source_cols; .inline1 <- prefix; 
-  stats::setNames(
-    if (nzchar(.inline1)) paste0(.inline1, .inline0) else .inline0,
-    .inline0
-  )
- }
+  output_cols <- {
+    .inline0 <- source_cols
+    .inline1 <- prefix
+    stats::setNames(
+      if (nzchar(.inline1)) paste0(.inline1, .inline0) else .inline0,
+      .inline0
+    )
+  }
   srt <- scmf_append_obs_to_srt(
     srt = srt,
     obs = obs,
@@ -773,7 +775,7 @@ scmf_prepare_python <- function(verbose = TRUE) {
   explicit_python <- Sys.getenv("RETICULATE_PYTHON", unset = "")
   python_initialized <- isTRUE(reticulate::py_available(initialize = FALSE))
   if ((nzchar(explicit_python) || python_initialized) &&
-      isTRUE(scmf_python_classifier_available())) {
+    isTRUE(scmf_python_classifier_available())) {
     return(invisible(TRUE))
   }
   envname <- "scmalignantfinder_env"

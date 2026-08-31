@@ -226,7 +226,8 @@ test_that("PLAGE leading-eigen path is deterministic and matches full SVD", {
     min_size = 1L, max_size = 500L, dense_standardize = TRUE
   )
   reference <- reference_plage_scores(
-    expr, gene_sets, min_size = 1L, max_size = 500L
+    expr, gene_sets,
+    min_size = 1L, max_size = 500L
   )
 
   expect_identical(first, second)

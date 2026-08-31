@@ -166,13 +166,19 @@ test_that("RunBANKSY clusters match the original Banksy pipeline", {
     ),
     spatialCoords = as.matrix(coords[colnames(expr), c("x", "y")])
   )
-  se <- Banksy::computeBanksy(se, assay_name = "scop_input", coord_names = c("x", "y"),
-    compute_agf = FALSE, M = 1, k_geom = 10)
-  se <- Banksy::runBanksyPCA(se, assay_name = "scop_input", M = 1, lambda = 0.2,
-    npcs = 10, use_agf = FALSE, group = NULL, seed = 1)
-  se <- Banksy::clusterBanksy(se, assay_name = "scop_input", M = 1, lambda = 0.2,
+  se <- Banksy::computeBanksy(se,
+    assay_name = "scop_input", coord_names = c("x", "y"),
+    compute_agf = FALSE, M = 1, k_geom = 10
+  )
+  se <- Banksy::runBanksyPCA(se,
+    assay_name = "scop_input", M = 1, lambda = 0.2,
+    npcs = 10, use_agf = FALSE, group = NULL, seed = 1
+  )
+  se <- Banksy::clusterBanksy(se,
+    assay_name = "scop_input", M = 1, lambda = 0.2,
     use_agf = FALSE, npcs = 10, algo = "leiden", k_neighbors = 20,
-    resolution = 0.5, group = NULL, seed = 1)
+    resolution = 0.5, group = NULL, seed = 1
+  )
   original_clusters <- as.character(
     SummarizedExperiment::colData(se)[[Banksy::clusterNames(se)[1]]]
   )
@@ -257,8 +263,10 @@ test_that("RunCARD(CARDspa) proportions match the original CARDspa pipeline", {
   informative <- get("select_info", asNamespace("CARDspa"))(basis, sc_eset, common_genes, ct_use, ct_varname)
   informative_counts <- st_counts[rownames(st_counts) %in% informative, , drop = FALSE]
   informative_counts <- informative_counts[Matrix::rowSums(informative_counts) > 0, , drop = FALSE]
-  supported <- intersect(colnames(st_counts),
-    colnames(informative_counts)[Matrix::colSums(informative_counts) > 0])
+  supported <- intersect(
+    colnames(st_counts),
+    colnames(informative_counts)[Matrix::colSums(informative_counts) > 0]
+  )
   CARDspa_obj@spatial_countMat <- st_counts[, supported, drop = FALSE]
   deconv_fun <- get("CARD_deconvolution", asNamespace("CARDspa"))
   set.seed(42)
@@ -314,10 +322,14 @@ test_that("RunSpotSweeper local outliers match the original SpotSweeper pipeline
     colData = S4Vectors::DataFrame(coldata),
     spatialCoords = as.matrix(coords[, c("x", "y")])
   )
-  spe <- SpotSweeper::localOutliers(spe, metric = "nCount_Spatial", direction = "lower",
-    n_neighbors = 20, samples = ".SpotSweeper_sample", log = TRUE, cutoff = 3, workers = 1)
-  spe <- SpotSweeper::localOutliers(spe, metric = "nFeature_Spatial", direction = "lower",
-    n_neighbors = 20, samples = ".SpotSweeper_sample", log = TRUE, cutoff = 3, workers = 1)
+  spe <- SpotSweeper::localOutliers(spe,
+    metric = "nCount_Spatial", direction = "lower",
+    n_neighbors = 20, samples = ".SpotSweeper_sample", log = TRUE, cutoff = 3, workers = 1
+  )
+  spe <- SpotSweeper::localOutliers(spe,
+    metric = "nFeature_Spatial", direction = "lower",
+    n_neighbors = 20, samples = ".SpotSweeper_sample", log = TRUE, cutoff = 3, workers = 1
+  )
 
   wrapped_cd <- wrapped@tools$SpotSweeper$colData
   original_cd <- as.data.frame(SummarizedExperiment::colData(spe))

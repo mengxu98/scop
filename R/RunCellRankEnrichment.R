@@ -142,12 +142,15 @@ RunCellRankEnrichment <- function(
         p <- ggplot2::ggplot(
           head(combined[order(combined$p.adjust), , drop = FALSE], as.integer(show_category)),
           ggplot2::aes(x = cluster, y = reorder(Description, -log10(p.adjust)), size = Count, color = p.adjust)
-        ) + ggplot2::geom_point() + ggplot2::scale_color_viridis_c(trans = "log10", direction = -1) +
+        ) +
+          ggplot2::geom_point() +
+          ggplot2::scale_color_viridis_c(trans = "log10", direction = -1) +
           ggplot2::labs(x = "Trend module", y = NULL, title = paste(lineage, db_i)) +
           ggplot2::theme_bw()
         ggplot2::ggsave(
           file.path(output_dir, paste0(make.names(lineage), "_", make.names(db_i), "_enrichment.pdf")),
-          p, width = 8, height = 5
+          p,
+          width = 8, height = 5
         )
       }
     }
@@ -204,9 +207,13 @@ cellrank_term2gene <- function(term2gene, universe) {
 }
 
 cellrank_term2name <- function(term2name) {
-  if (is.null(term2name)) return(NULL)
+  if (is.null(term2name)) {
+    return(NULL)
+  }
   term2name <- as.data.frame(term2name, stringsAsFactors = FALSE)
-  if (ncol(term2name) < 2L) return(NULL)
+  if (ncol(term2name) < 2L) {
+    return(NULL)
+  }
   data.frame(
     term = as.character(term2name[[1L]]),
     name = as.character(term2name[[2L]]),

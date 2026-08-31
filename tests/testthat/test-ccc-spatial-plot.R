@@ -37,7 +37,8 @@ make_ccc_spatial_plot_object <- function(composition = FALSE, two_samples = FALS
       dimnames = list(ids, c("A", "B", "C"))
     )
     payload <- ccc_spatial_plot_payload_from_composition(
-      coordinates, composition_matrix, source = list(image = "slice1")
+      coordinates, composition_matrix,
+      source = list(image = "slice1")
     )
   } else {
     payload <- ccc_spatial_plot_payload_from_labels(
@@ -54,8 +55,10 @@ make_ccc_spatial_plot_object <- function(composition = FALSE, two_samples = FALS
   ))
   samples <- if (isTRUE(two_samples)) list(slice1 = entry, slice2 = entry) else list(slice1 = entry)
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(
-    matrix(seq_len(2 * length(ids)), nrow = 2, ncol = length(ids),
-      dimnames = list(c("g1", "g2"), ids))
+    matrix(seq_len(2 * length(ids)),
+      nrow = 2, ncol = length(ids),
+      dimnames = list(c("g1", "g2"), ids)
+    )
   ))
   srt@tools$SpatialCellChat <- spatial_tag_coordinate_contract(list(
     method = "SpatialCellChat",
@@ -76,7 +79,8 @@ test_that("spatial payloads normalize labels and composition without backend cal
   expect_identical(payload$group_levels, c("A", "B"))
 
   composition <- matrix(
-    c(2, 1, 1, 3), nrow = 2, byrow = TRUE,
+    c(2, 1, 1, 3),
+    nrow = 2, byrow = TRUE,
     dimnames = list(ids, c("A", "B"))
   )
   payload <- ccc_spatial_plot_payload_from_composition(coords, composition)

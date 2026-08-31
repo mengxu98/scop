@@ -6,7 +6,8 @@ make_spatialdm_test_object <- function() {
       4, 0, 1, 2,
       0, 3, 2, 0,
       2, 1, 0, 4
-    ), nrow = 3, byrow = TRUE), sparse = TRUE
+    ), nrow = 3, byrow = TRUE),
+    sparse = TRUE
   )
   rownames(counts) <- c("L1", "R1", "G1")
   colnames(counts) <- paste0("spot", 1:4)
@@ -26,8 +27,10 @@ mock_spatialdm_execution <- function(input, species, lr.database, parameters, re
     stringsAsFactors = FALSE
   )
   rownames(global) <- global$interaction
-  local_matrix <- matrix(c(0.5, 0.1, 0.2, 0.7), nrow = 1,
-    dimnames = list("L1_R1", cells))
+  local_matrix <- matrix(c(0.5, 0.1, 0.2, 0.7),
+    nrow = 1,
+    dimnames = list("L1_R1", cells)
+  )
   weights <- Matrix::Diagonal(length(cells))
   dimnames(weights) <- list(cells, cells)
   list(
@@ -94,7 +97,8 @@ test_that("SpatialDM method does not require group.by in RunCCC", {
     .package = "scop"
   )
   out <- scop::RunCCC(
-    srt, methods = "SpatialDM",
+    srt,
+    methods = "SpatialDM",
     method_params = list(SpatialDM = list(coord.cols = c("col", "row"))),
     verbose = FALSE
   )

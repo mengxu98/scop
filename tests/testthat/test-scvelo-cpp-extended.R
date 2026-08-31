@@ -328,6 +328,7 @@ test_that("scanpy_moments_cpp rejects mismatched knn_idx rows", {
 
   expect_error(
     scanpy_moments_cpp(spliced, unspliced, knn_idx),
-    "knn_idx", ignore.case = TRUE
+    "knn_idx",
+    ignore.case = TRUE
   )
 })

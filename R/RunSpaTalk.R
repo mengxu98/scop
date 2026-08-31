@@ -29,9 +29,9 @@ spatalk_check_r <- function() {
 }
 
 spatalk_get_fun <- function(fun) {
-  if (!fun %in% { ; 
-  c("createSpaTalk", "dec_celltype", "find_lr_path", "dec_cci_all")
- }) {
+  if (!fun %in% {
+    c("createSpaTalk", "dec_celltype", "find_lr_path", "dec_cci_all")
+  }) {
     log_message("Unsupported {.pkg SpaTalk} function {.fn {fun}}", message_type = "error")
   }
   get_namespace_fun(.spatalk_package, fun)
@@ -88,9 +88,9 @@ spatalk_validate_matrix <- function(x, name) {
     log_message("{.arg {name}} must resolve to a matrix", message_type = "error")
   }
   if (is.null(rownames(x)) || is.null(colnames(x)) ||
-      anyNA(rownames(x)) || anyNA(colnames(x)) ||
-      any(!nzchar(rownames(x))) || any(!nzchar(colnames(x))) ||
-      anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
+    anyNA(rownames(x)) || anyNA(colnames(x)) ||
+    any(!nzchar(rownames(x))) || any(!nzchar(colnames(x))) ||
+    anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
     log_message("{.arg {name}} must have unique, non-missing row and column names", message_type = "error")
   }
   values <- if (methods::is(x, "sparseMatrix")) methods::slot(x, "x") else as.numeric(x)
@@ -124,7 +124,8 @@ spatalk_input <- function(srt, group.by, assay, layer, image, coord.cols) {
     log_message("SpaTalk requires finite raw x and y coordinates", message_type = "error")
   }
   plot_coordinates <- ccc_spatial_payload_from_raw(
-    coords$data, coords$source, transform = coords$transform
+    coords$data, coords$source,
+    transform = coords$transform
   )
   expression <- GetAssayData5(srt, assay = assay, layer = layer)[, cells, drop = FALSE]
   spatalk_validate_matrix(expression, "srt expression")
@@ -149,7 +150,7 @@ spatalk_reference_input <- function(reference, reference.group.by, assay, layer)
     log_message("Spot-mode {.arg reference} must be a {.cls Seurat} object", message_type = "error")
   }
   if (!is.character(reference.group.by) || length(reference.group.by) != 1L ||
-      !reference.group.by %in% colnames(reference[[]])) {
+    !reference.group.by %in% colnames(reference[[]])) {
     log_message("{.arg reference.group.by} must be one reference metadata column", message_type = "error")
   }
   assay <- assay %||% SeuratObject::DefaultAssay(reference)
@@ -175,10 +176,10 @@ spatalk_prepare_dec_result <- function(dec_result, spot_ids, reference_labels, s
   }
   dec_result <- as.matrix(dec_result)
   if (!is.numeric(dec_result) || nrow(dec_result) == 0L || ncol(dec_result) == 0L ||
-      is.null(rownames(dec_result)) || is.null(colnames(dec_result)) ||
-      anyNA(rownames(dec_result)) || anyNA(colnames(dec_result)) ||
-      any(!nzchar(rownames(dec_result))) || any(!nzchar(colnames(dec_result))) ||
-      anyDuplicated(rownames(dec_result)) || anyDuplicated(colnames(dec_result))) {
+    is.null(rownames(dec_result)) || is.null(colnames(dec_result)) ||
+    anyNA(rownames(dec_result)) || anyNA(colnames(dec_result)) ||
+    any(!nzchar(rownames(dec_result))) || any(!nzchar(colnames(dec_result))) ||
+    anyDuplicated(rownames(dec_result)) || anyDuplicated(colnames(dec_result))) {
     log_message(
       "SpaTalk {.arg dec_result} from {.val {source}} must have unique spot and cell-type names",
       message_type = "error"
@@ -374,7 +375,8 @@ spatalk_pathway_table <- function(object, lr_table) {
 #' @examples
 #' \dontrun{
 #' available <- unname(unlist(thisutils::check_r(
-#'   c("linxihui/NNLM", "ZJUFanLab/SpaTalk"), verbose = FALSE
+#'   c("linxihui/NNLM", "ZJUFanLab/SpaTalk"),
+#'   verbose = FALSE
 #' )))
 #' if (length(available) == 2L && all(available)) {
 #'   spatial <- RunSpaTalk(
@@ -544,8 +546,10 @@ RunSpaTalk <- function(
     )
   )
   bundle <- spatial_tag_coordinate_contract(bundle)
-  validate_result_bundle(bundle, label = "SpaTalk",
-    empty_message = "SpaTalk result bundle has no communication rows")
+  validate_result_bundle(bundle,
+    label = "SpaTalk",
+    empty_message = "SpaTalk result bundle has no communication rows"
+  )
   srt@tools[["SpaTalk"]] <- bundle
   srt <- ccc_update_unified_bundle(srt, method = "SpaTalk", bundle = bundle, backend = backend)
   log_message("SpaTalk analysis completed", message_type = "success", verbose = verbose)

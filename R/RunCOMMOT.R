@@ -12,10 +12,10 @@ commot_validate_param_list <- function(x, name) {
 
 commot_validate_matrix <- function(x) {
   if ((!is.matrix(x) && !methods::is(x, "Matrix")) ||
-      is.null(rownames(x)) || is.null(colnames(x)) ||
-      anyNA(rownames(x)) || anyNA(colnames(x)) ||
-      any(!nzchar(rownames(x))) || any(!nzchar(colnames(x))) ||
-      anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
+    is.null(rownames(x)) || is.null(colnames(x)) ||
+    anyNA(rownames(x)) || anyNA(colnames(x)) ||
+    any(!nzchar(rownames(x))) || any(!nzchar(colnames(x))) ||
+    anyDuplicated(rownames(x)) || anyDuplicated(colnames(x))) {
     log_message("COMMOT expression must be a named matrix with unique feature and cell IDs", message_type = "error")
   }
   values <- matrix_values(x)
@@ -49,7 +49,8 @@ commot_input <- function(srt, group.by, assay, layer, image, coord.cols) {
     log_message("COMMOT requires finite raw x and y coordinates", message_type = "error")
   }
   plot_coordinates <- ccc_spatial_payload_from_raw(
-    coords$data, coords$source, transform = coords$transform
+    coords$data, coords$source,
+    transform = coords$transform
   )
   expression <- GetAssayData5(srt, assay = assay, layer = layer)[, cells, drop = FALSE]
   commot_validate_matrix(expression)
@@ -107,7 +108,8 @@ commot_read_table <- function(path, required, numeric, label, allow_empty = FALS
   }
   value <- tryCatch(
     utils::read.csv(
-      path, stringsAsFactors = FALSE, check.names = FALSE,
+      path,
+      stringsAsFactors = FALSE, check.names = FALSE,
       na.strings = c("", "NA", "NaN", "nan")
     ),
     error = function(e) {
@@ -175,11 +177,14 @@ commot_copy_h5ad <- function(source, destination, overwrite) {
       log_message("Unable to stage the existing COMMOT H5AD for replacement", message_type = "error")
     }
   }
-  on.exit({
-    if (!published && !is.null(backup) && file.exists(backup) && !file.exists(destination)) {
-      file.rename(backup, destination)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (!published && !is.null(backup) && file.exists(backup) && !file.exists(destination)) {
+        file.rename(backup, destination)
+      }
+    },
+    add = TRUE
+  )
   if (!file.rename(temporary, destination)) {
     log_message("Unable to atomically publish COMMOT H5AD artifact", message_type = "error")
   }
@@ -242,8 +247,8 @@ commot_execute <- function(
   manifest <- runner_read_json(file.path(output, "manifest.json"))
   commot_validate_manifest(manifest, input, communication, cluster_table, direction_table)
   if (!all(communication$method == "COMMOT") ||
-      !all(communication$score_type == "transport_mass") ||
-      any(!is.na(communication$pvalue))) {
+    !all(communication$score_type == "transport_mass") ||
+    any(!is.na(communication$pvalue))) {
     log_message("COMMOT transport output has invalid method, score type, or p-value semantics", message_type = "error")
   }
   artifact <- NULL
@@ -335,8 +340,8 @@ RunCOMMOT <- function(
     log_message("{.arg result.name} must be one non-empty string", message_type = "error")
   }
   if (!is.null(distance.threshold) &&
-      (!is.numeric(distance.threshold) || length(distance.threshold) != 1L ||
-       is.na(distance.threshold) || !is.finite(distance.threshold) || distance.threshold <= 0)) {
+    (!is.numeric(distance.threshold) || length(distance.threshold) != 1L ||
+      is.na(distance.threshold) || !is.finite(distance.threshold) || distance.threshold <= 0)) {
     log_message("{.arg distance.threshold} must be NULL or one positive finite raw-coordinate distance", message_type = "error")
   }
   input <- commot_input(srt, group.by, assay, layer, image, coord.cols)

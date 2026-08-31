@@ -44,6 +44,6 @@ the order of 'assays' (if specified) or object's assays}
 A named list of averaged matrices or a Seurat object.
 }
 \description{
-Uses a sparse single-assay fast path when its output contract is exact and
-delegates all other branches to [Seurat::AverageExpression()].
+Seurat already performs this operation as sparse matrix multiplication.
+scop preserves its complete parameter and object contract.
 }

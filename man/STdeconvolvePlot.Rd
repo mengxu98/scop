@@ -40,11 +40,11 @@ plots is returned.}
 \item{nrow, ncol, byrow}{Point-plot layout controls. When both \code{nrow} and
 \code{ncol} are \code{NULL}, a near-square layout with at most three columns is used.}
 
+\item{...}{Additional arguments passed to \code{SpatialSpotPlot()}.}
+
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
-
-\item{...}{Additional arguments passed to \code{SpatialSpotPlot()}.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

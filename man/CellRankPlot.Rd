@@ -37,14 +37,6 @@ CellRankPlot(
 \item{database}{Enrichment database used when `plot_type = "enrichment"`.
 If `NULL`, the first stored non-empty database is used.}
 
-\item{palette, palcolor}{Discrete SCOP palette for states, modules, and cell
-groups.}
-
-\item{feature_palette, feature_palcolor}{Continuous SCOP palette for fate,
-trends, pseudotime, and enrichment strength.}
-
-\item{theme_use, theme_args}{SCOP plot theme and arguments passed to it.}
-
 \item{reduction}{Reduction used for cell-space plots.}
 
 \item{group.by}{Group column used for state/random-walk plots.}
@@ -56,6 +48,14 @@ trends, pseudotime, and enrichment strength.}
 \item{max_iter}{Maximum length of each random walk.}
 
 \item{seed}{Random seed.}
+
+\item{palette, palcolor}{Discrete SCOP palette for states, modules, and cell
+groups.}
+
+\item{feature_palette, feature_palcolor}{Continuous SCOP palette for fate,
+trends, pseudotime, and enrichment strength.}
+
+\item{theme_use, theme_args}{SCOP plot theme and arguments passed to it.}
 
 \item{...}{Arguments passed to the underlying SCOP plotting function.}
 }

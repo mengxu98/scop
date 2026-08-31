@@ -325,8 +325,9 @@ STdeconvolvePlot <- function(
       plot <- set_continuous_color_scale(
         plot = plot,
         limits = c(0, common_limit),
-        title = legend_title
-      , context = "topic-proportion")
+        title = legend_title,
+        context = "topic-proportion"
+      )
       plot +
         ggplot2::labs(title = topic) +
         ggplot2::theme(plot.title = ggplot2::element_text(margin = ggplot2::margin(b = 4)))

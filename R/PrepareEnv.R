@@ -517,8 +517,8 @@ normalize_cli_args <- function(args) {
 
 python_minor_version <- function(python_path) {
   if (is.null(python_path) || !length(python_path) ||
-      !nzchar(as.character(python_path)[[1L]]) ||
-      !file.exists(as.character(python_path)[[1L]])) {
+    !nzchar(as.character(python_path)[[1L]]) ||
+    !file.exists(as.character(python_path)[[1L]])) {
     return(NULL)
   }
   out <- tryCatch(
@@ -1615,20 +1615,20 @@ find_managed_micromamba <- function() {
 }
 
 configure_managed_micromamba_root <- function() {
-  root <- { ; 
-  file.path(
-    tools::R_user_dir("scop", which = "cache"),
-    "micromamba-root"
-  )
- }
+  root <- {
+    file.path(
+      tools::R_user_dir("scop", which = "cache"),
+      "micromamba-root"
+    )
+  }
   current <- Sys.getenv("MAMBA_ROOT_PREFIX", unset = "")
   current_norm <- normalize_conda_paths(current)
-  managed_roots <- normalize_conda_paths(c(root, { ; 
-  file.path(
-    tools::R_user_dir("scop", which = "data"),
-    "micromamba-root"
-  )
- }))
+  managed_roots <- normalize_conda_paths(c(root, {
+    file.path(
+      tools::R_user_dir("scop", which = "data"),
+      "micromamba-root"
+    )
+  }))
 
   if (
     !nzchar(current) ||
@@ -1877,7 +1877,7 @@ env_requirements <- function(
     version <- "3.10-1"
   }
   if (identical(version, "3.9-1") &&
-      !any(c("cell2fate", "commot", "scmalignantfinder") %in% modules)) {
+    !any(c("cell2fate", "commot", "scmalignantfinder") %in% modules)) {
     log_message(
       "{.arg version = '3.9-1'} is only supported for standalone Python 3.9 modules such as {.val cell2fate} and {.val commot}.",
       message_type = "error"
@@ -1890,19 +1890,16 @@ env_requirements <- function(
     spatialdm_core_python_requirements()
   } else if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_core_python_requirements()
-  } else if (any(c("scenic", "cell2fate") %in% modules)) {
-    { ; 
-  list(
-    packages = c(
-      "setuptools" = "setuptools<81"
-    ),
-    install_methods = c(
-      "setuptools" = "pip"
-    ),
-    package_aliases = list()
-  )
- }
-  } else {
+  } else if (any(c("scenic", "cell2fate") %in% modules)) {{
+    list(
+      packages = c(
+        "setuptools" = "setuptools<81"
+      ),
+      install_methods = c(
+        "setuptools" = "pip"
+      ),
+      package_aliases = list()
+    ) }} else {
     core_python_requirements()
   }
   package_install_methods <- base_requirements$install_methods
@@ -1928,7 +1925,7 @@ env_requirements <- function(
   # forcing a single Python version. This keeps the existing SCOP environment
   # usable on Python 3.10/3.11 while allowing the newer Python 3.12 stack.
   if (any(c("scanpy", "palantir", "cellrank") %in% modules) &&
-      !"scmalignantfinder" %in% modules) {
+    !"scmalignantfinder" %in% modules) {
     if (!version %in% c("3.10-1", "3.11-1", "3.12-1")) {
       log_message(
         "The Scanpy/Palantir/CellRank compatibility profiles support Python 3.10, 3.11, or 3.12; requested {.val {version}} is unsupported.",
@@ -3471,10 +3468,10 @@ RemoveEnv <- function(
   }
 
   if (result) {
-    { ; 
-  options(scop_env_cache = NULL)
-  invisible(NULL)
- }
+    {
+      options(scop_env_cache = NULL)
+      invisible(NULL)
+    }
     Sys.unsetenv("RETICULATE_PYTHON")
     log_message(
       "{.file {envname}} environment removed successfully",
