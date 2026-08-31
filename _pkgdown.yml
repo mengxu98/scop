@@ -349,6 +349,7 @@ reference:
 
 - subtitle: "Enrichment Analysis Plot"
 - contents:
+  - CellScoringPlot
   - DorotheaPlot
   - EnrichmentPlot
   - FerrisWheelPlot

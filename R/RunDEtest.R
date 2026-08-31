@@ -1179,6 +1179,9 @@ RunDEtestFindAllMarkers <- function(
   p.adjust.method,
   ...
 ) {
+  if (!requireNamespace("presto", quietly = TRUE)) {
+    return(NULL)
+  }
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   supported <- !marker_assay_is_chromatin(srt, assay) &&
     identical(test.use, "wilcox") &&

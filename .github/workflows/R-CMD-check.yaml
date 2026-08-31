@@ -64,7 +64,7 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::rcmdcheck, any::testthat
+          extra-packages: any::rcmdcheck, any::testthat, any::presto
           needs: check
           dependencies: '"hard"'
           cache: false

@@ -275,7 +275,8 @@ test_that("RunDEtest all-in-one markers match the pairwise scop backend", {
   names(cell_group) <- colnames(srt)
   features <- rownames(srt)[1:80]
 
-  all_in_one <- get("RunDEtestFindAllMarkers", asNamespace("scop"))(
+  native_all_markers <- get("RunDEtestFindAllMarkers", asNamespace("scop"))
+  native_args <- list(
     srt = srt,
     assay = "RNA",
     layer = "data",
@@ -295,6 +296,13 @@ test_that("RunDEtest all-in-one markers match the pairwise scop backend", {
     mean.fxn = NULL,
     p.adjust.method = "bonferroni"
   )
+  expect_null(testthat::with_mocked_bindings(
+    do.call(native_all_markers, native_args),
+    requireNamespace = function(package, ...) !identical(package, "presto"),
+    .package = "base"
+  ))
+
+  all_in_one <- do.call(native_all_markers, native_args)
   pairwise <- lapply(levels(cell_group), function(group) {
     markers <- scop::FindMarkers(
       object = srt,
