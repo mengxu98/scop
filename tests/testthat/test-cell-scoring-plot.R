@@ -50,6 +50,7 @@ test_that("CellScoringPlot returns group/feature component pairs", {
     features = c("AUC_one", "AUC_two"),
     group.by = "celltype",
     reduction = "umap",
+    thresholds = 0.25,
     ncol = 3,
     nrow = 2,
     verbose = FALSE
@@ -265,6 +266,7 @@ test_that("CellScoringPlot preserves paired visual primitives", {
     features = c("A" = "AUC_one"),
     group.by = "celltype",
     reduction = "umap",
+    thresholds = 0.25,
     show.score.legend = TRUE,
     combine = FALSE,
     verbose = FALSE
@@ -353,6 +355,7 @@ test_that("CellScoringPlot applies separate main and AUC UMAP themes", {
     srt,
     features = c("A" = "AUC_one"),
     group.by = "celltype",
+    thresholds = 0.25,
     theme_use = main_theme,
     auc_theme_use = auc_theme,
     combine = FALSE,
@@ -389,6 +392,7 @@ test_that("CellScoringPlot orients collected legends from their position", {
       srt,
       features = c("A" = "AUC_one"),
       group.by = "celltype",
+      thresholds = 0.25,
       legend.position = position,
       combine = FALSE,
       verbose = FALSE
@@ -427,6 +431,7 @@ test_that("CellScoringPlot anchors combined titles to UMAP panels", {
     srt,
     features = c("A" = "AUC_one"),
     group.by = "celltype",
+    thresholds = 0.25,
     combine = FALSE,
     verbose = FALSE
   )[["umap_A"]]
@@ -467,6 +472,7 @@ test_that("CellScoringPlot supports benchmark-style hull highlights", {
     features = c("A" = "AUC_one"),
     group.by = "celltype",
     reduction = "umap",
+    thresholds = 0.25,
     highlight.mark.type = "hull",
     combine = FALSE,
     verbose = FALSE
@@ -487,6 +493,7 @@ test_that("CellScoringPlot controls UMAP and statistic row proportions", {
     features = c("AUC_one", "AUC_two"),
     group.by = "celltype",
     reduction = "umap",
+    thresholds = 0.25,
     ncol = 3,
     nrow = 2,
     row.heights = c(0.47, 0.53),
@@ -499,6 +506,7 @@ test_that("CellScoringPlot controls UMAP and statistic row proportions", {
       srt,
       features = "AUC_one",
       group.by = "celltype",
+      thresholds = 0.25,
       row.heights = c(1, 0),
       verbose = FALSE
     ),
@@ -512,6 +520,7 @@ test_that("CellScoringPlot uses theme_scop without default in-situ labels", {
     srt,
     features = c("A" = "AUC_one"),
     group.by = "celltype",
+    thresholds = 0.25,
     combine = FALSE,
     verbose = FALSE
   )
@@ -527,6 +536,7 @@ test_that("CellScoringPlot has an independent continuous AUCell palette", {
     srt,
     features = c("A" = "AUC_one"),
     group.by = "celltype",
+    thresholds = 0.25,
     combine = FALSE,
     verbose = FALSE
   )[["umap_A"]]
@@ -540,6 +550,7 @@ test_that("CellScoringPlot has an independent continuous AUCell palette", {
     srt,
     features = "AUC_one",
     group.by = "celltype",
+    thresholds = 0.25,
     score.palette = "viridis",
     score.palcolor = c("white", "navy"),
     combine = FALSE,
@@ -556,6 +567,7 @@ test_that("CellScoringPlot uses matched group colors for feature titles and outl
     features = c("A" = "AUC_one"),
     group.by = "celltype",
     reduction = "umap",
+    thresholds = 0.25,
     group.palcolor = c(C = "#333333", A = "#111111", B = "#222222"),
     combine = FALSE,
     verbose = FALSE
@@ -583,6 +595,7 @@ test_that("CellScoringPlot accepts both score-matrix orientations", {
     scores = feature_by_cell,
     features = c("A" = "program_a", "B" = "program_b"),
     group.by = "celltype",
+    thresholds = 0.25,
     combine = FALSE,
     verbose = FALSE
   )
@@ -591,6 +604,7 @@ test_that("CellScoringPlot accepts both score-matrix orientations", {
     scores = t(feature_by_cell),
     features = c("A" = "program_a", "B" = "program_b"),
     group.by = "celltype",
+    thresholds = 0.25,
     combine = FALSE,
     verbose = FALSE
   )
@@ -621,6 +635,7 @@ test_that("CellScoringPlot adds explicit threshold panels and validates paired l
       srt,
       features = "AUC_one",
       group.by = "celltype",
+      thresholds = 0.25,
       nrow = 3,
       verbose = FALSE
     ),
@@ -631,6 +646,7 @@ test_that("CellScoringPlot adds explicit threshold panels and validates paired l
       srt,
       features = c("AUC_one", "AUC_two"),
       group.by = "celltype",
+      thresholds = 0.25,
       ncol = 1,
       nrow = 2,
       verbose = FALSE
@@ -645,6 +661,7 @@ test_that("CellScoringPlot forwards CellDimPlot functionality without moving leg
     srt,
     features = c("A" = "AUC_one"),
     group.by = "celltype",
+    thresholds = 0.25,
     label = TRUE,
     label.fg = "purple",
     cells.highlight = colnames(srt)[1:2],
@@ -738,6 +755,7 @@ test_that("CellScoringPlot highlight colors are independently configurable", {
     srt,
     features = c("A" = "AUC_one"),
     group.by = "celltype",
+    thresholds = 0.25,
     combine = FALSE,
     verbose = FALSE
   )
