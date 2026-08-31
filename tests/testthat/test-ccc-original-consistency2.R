@@ -50,10 +50,14 @@ test_that("RunLIANA results match the original liana pipeline", {
   original_df <- as.data.frame(original)
   expect_true(nrow(original_df) > 0)
 
-  long_key <- paste(long_table$sender, long_table$receiver,
-    long_table$ligand.complex, long_table$receptor.complex)
-  original_key <- paste(original_df$source, original_df$target,
-    original_df$ligand.complex, original_df$receptor.complex)
+  long_key <- paste(
+    long_table$sender, long_table$receiver,
+    long_table$ligand.complex, long_table$receptor.complex
+  )
+  original_key <- paste(
+    original_df$source, original_df$target,
+    original_df$ligand.complex, original_df$receptor.complex
+  )
   expect_gt(length(intersect(long_key, original_key)) / length(unique(original_key)), 0.9)
 
   # scores agree for shared interactions (logfc_comb is the logfc method score)
@@ -73,10 +77,14 @@ test_that("RunLIANA cpp and r backends produce identical tables", {
 
   srt <- real_ccc_input(n_cells = 200)
 
-  cpp_out <- RunLIANA(srt, group.by = "CellType", method = "logfc",
-    species = "mouse", backend = "cpp", verbose = FALSE)
-  r_out <- RunLIANA(srt, group.by = "CellType", method = "logfc",
-    species = "mouse", backend = "r", verbose = FALSE)
+  cpp_out <- RunLIANA(srt,
+    group.by = "CellType", method = "logfc",
+    species = "mouse", backend = "cpp", verbose = FALSE
+  )
+  r_out <- RunLIANA(srt,
+    group.by = "CellType", method = "logfc",
+    species = "mouse", backend = "r", verbose = FALSE
+  )
 
   lt_cpp <- cpp_out@tools$LIANA$long_table
   lt_r <- r_out@tools$LIANA$long_table

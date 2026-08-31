@@ -38,11 +38,11 @@ a single image is selected automatically when \code{NULL}.}
 
 \item{theme_use}{Theme name or function.}
 
+\item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.}
+
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
-
-\item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

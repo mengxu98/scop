@@ -18,25 +18,35 @@ mock_commot_result <- function(input, cluster = FALSE, direction = FALSE) {
     pvalue = NA_real_, method = "COMMOT", score_type = "transport_mass",
     stringsAsFactors = FALSE
   )
-  cluster_table <- if (isTRUE(cluster)) data.frame(
-    sender = c("A", "B"), receiver = c("B", "A"),
-    ligand = NA_character_, receptor = NA_character_,
-    interaction_name = NA_character_, pathway_name = "P1",
-    score = c(3, 1), pvalue = c(0.01, 0.2), method = "COMMOT",
-    score_type = "cluster_communication", key = "CellChat-P1",
-    stringsAsFactors = FALSE
-  ) else data.frame()
-  direction_table <- if (isTRUE(direction)) do.call(rbind, lapply(
-    c("sender", "receiver"),
-    function(perspective) data.frame(
-      cell_id = input$cells, group = input$groups, key = "CellChat-P1",
-      perspective = perspective,
-      x = input$coordinates$x, y = input$coordinates$y,
-      dx = c(0.1, 0.2, 0.1, 0), dy = c(0, 0.1, 0.2, 0.1),
-      magnitude = c(0.1, sqrt(0.05), sqrt(0.05), 0.1),
+  cluster_table <- if (isTRUE(cluster)) {
+    data.frame(
+      sender = c("A", "B"), receiver = c("B", "A"),
+      ligand = NA_character_, receptor = NA_character_,
+      interaction_name = NA_character_, pathway_name = "P1",
+      score = c(3, 1), pvalue = c(0.01, 0.2), method = "COMMOT",
+      score_type = "cluster_communication", key = "CellChat-P1",
       stringsAsFactors = FALSE
     )
-  )) else data.frame()
+  } else {
+    data.frame()
+  }
+  direction_table <- if (isTRUE(direction)) {
+    do.call(rbind, lapply(
+      c("sender", "receiver"),
+      function(perspective) {
+        data.frame(
+          cell_id = input$cells, group = input$groups, key = "CellChat-P1",
+          perspective = perspective,
+          x = input$coordinates$x, y = input$coordinates$y,
+          dx = c(0.1, 0.2, 0.1, 0), dy = c(0, 0.1, 0.2, 0.1),
+          magnitude = c(0.1, sqrt(0.05), sqrt(0.05), 0.1),
+          stringsAsFactors = FALSE
+        )
+      }
+    ))
+  } else {
+    data.frame()
+  }
   list(
     communication = communication,
     cluster_table = cluster_table,
@@ -106,7 +116,8 @@ test_that("RunCOMMOT stores transport mass without inventing p-values", {
   srt <- make_commot_test_object()
   mock_commot_execute()
   out <- RunCOMMOT(
-    srt, group.by = "celltype", coord.cols = c("col", "row"),
+    srt,
+    group.by = "celltype", coord.cols = c("col", "row"),
     distance.threshold = 2, backend = "r", verbose = FALSE
   )
   expect_identical(out@tools$COMMOT$method, "COMMOT")
@@ -115,8 +126,10 @@ test_that("RunCOMMOT stores transport mass without inventing p-values", {
   expect_identical(out@tools$COMMOT$long_table$score_type, "transport_mass")
   expect_true(is.na(out@tools$COMMOT$long_table$pvalue))
   expect_true(is.list(out@tools$COMMOT$results$default$spatial_plot))
-  expect_identical(out@tools$COMMOT$results$default$spatial_plot$labels,
-    stats::setNames(as.character(srt$celltype), colnames(srt)))
+  expect_identical(
+    out@tools$COMMOT$results$default$spatial_plot$labels,
+    stats::setNames(as.character(srt$celltype), colnames(srt))
+  )
   expect_identical(out@tools$COMMOT$provenance$backend_version, "0.0.3")
   expect_true("COMMOT" %in% out@tools$CCC$methods)
   expect_s3_class(CCCNetworkPlot(out, method = "COMMOT", plot_type = "spatial"), "ggplot")
@@ -127,7 +140,8 @@ test_that("RunCOMMOT retains official cluster p-values and stored directions", {
   srt <- make_commot_test_object()
   mock_commot_execute()
   out <- RunCOMMOT(
-    srt, group.by = "celltype", coord.cols = c("col", "row"),
+    srt,
+    group.by = "celltype", coord.cols = c("col", "row"),
     cluster = TRUE, direction = TRUE,
     cluster.args = list(pathway_name = "P1", n_permutations = 10),
     direction.args = list(pathway_name = "P1"),
@@ -162,7 +176,8 @@ test_that("RunCOMMOT accepts one explicitly selected spatial image", {
   )
   mock_commot_execute()
   out <- RunCOMMOT(
-    srt, group.by = "celltype", image = "slice1",
+    srt,
+    group.by = "celltype", image = "slice1",
     backend = "r", verbose = FALSE
   )
   expect_identical(out@tools$COMMOT$parameters$image, "slice1")
@@ -225,7 +240,8 @@ test_that("COMMOT failures and empty output do not mutate the input object", {
   mock_commot_execute(fail = TRUE)
   expect_error(
     RunCOMMOT(
-      srt, group.by = "celltype", coord.cols = c("col", "row"),
+      srt,
+      group.by = "celltype", coord.cols = c("col", "row"),
       backend = "r", verbose = FALSE
     ),
     "subprocess failed"
@@ -238,7 +254,8 @@ test_that("COMMOT failures and empty output do not mutate the input object", {
   mock_commot_execute(empty = TRUE)
   expect_error(
     RunCOMMOT(
-      srt, group.by = "celltype", coord.cols = c("col", "row"),
+      srt,
+      group.by = "celltype", coord.cols = c("col", "row"),
       backend = "r", verbose = FALSE
     ),
     "incomplete"
@@ -254,7 +271,8 @@ test_that("RunCCC dispatches COMMOT only when explicitly selected", {
   srt <- make_commot_test_object()
   mock_commot_execute()
   out <- RunCCC(
-    srt, group.by = "celltype", methods = "commot",
+    srt,
+    group.by = "celltype", methods = "commot",
     method_params = list(COMMOT = list(coord.cols = c("col", "row"))),
     backend = "r", verbose = FALSE
   )
@@ -267,13 +285,15 @@ test_that("COMMOTPlot requires an explicit result when several are stored", {
   srt <- make_commot_test_object()
   mock_commot_execute()
   out <- RunCOMMOT(
-    srt, group.by = "celltype", coord.cols = c("col", "row"),
+    srt,
+    group.by = "celltype", coord.cols = c("col", "row"),
     result.name = "first", direction = TRUE,
     backend = "r", verbose = FALSE
   )
   out@tools$COMMOT$results$first$coordinate_contract_version <- NULL
   out <- RunCOMMOT(
-    out, group.by = "celltype", coord.cols = c("col", "row"),
+    out,
+    group.by = "celltype", coord.cols = c("col", "row"),
     result.name = "second", direction = TRUE,
     backend = "r", verbose = FALSE
   )

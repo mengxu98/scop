@@ -819,7 +819,6 @@ spot_sweeper_pass_fail <- function(fail) {
 }
 
 
-
 spot_sweeper_assert_positive_integer <- function(x, arg) {
   if (!is.numeric(x) || length(x) != 1L || is.na(x) || x < 1 || x != round(x)) {
     log_message(

@@ -1220,9 +1220,11 @@ sgf_model_plot <- function(
       size = 3,
       color = "grey15"
     ) +
-    ggplot2::scale_fill_gradientn(colors = rev({ .inline0 <- palette; .inline1 <- palcolor; 
-  palette_colors(palette = .inline0, palcolor = .inline1, n = 9)
- }), na.value = "grey85") +
+    ggplot2::scale_fill_gradientn(colors = rev({
+      .inline0 <- palette
+      .inline1 <- palcolor
+      palette_colors(palette = .inline0, palcolor = .inline1, n = 9)
+    }), na.value = "grey85") +
     ggplot2::labs(x = "Model", y = NULL, fill = "RMSE") +
     apply_plot_theme(theme_use = theme_use, theme_args = theme_args, fallback = ggplot2::theme_minimal) +
     ggplot2::theme(

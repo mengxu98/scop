@@ -383,7 +383,8 @@ test_that("palantir_pseudotime_cpp rejects invalid start_cell", {
       knn = 3,
       max_iterations = 5
     ),
-    "start_cell out of range", ignore.case = TRUE
+    "start_cell out of range",
+    ignore.case = TRUE
   )
   expect_error(
     palantir_pseudotime_cpp(
@@ -393,7 +394,8 @@ test_that("palantir_pseudotime_cpp rejects invalid start_cell", {
       knn = 3,
       max_iterations = 5
     ),
-    "start_cell out of range", ignore.case = TRUE
+    "start_cell out of range",
+    ignore.case = TRUE
   )
 })
 

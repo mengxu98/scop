@@ -100,7 +100,7 @@ RunCellRankTrends <- function(
   expression <- SeuratObject::LayerData(srt[[assay]], layer = layer)[features, , drop = FALSE]
   positive_cells <- Matrix::rowSums(expression > 0)
   row_mean <- Matrix::rowMeans(expression)
-  row_var <- Matrix::rowSums(expression ^ 2) / ncol(expression) - row_mean ^ 2
+  row_var <- Matrix::rowSums(expression^2) / ncol(expression) - row_mean^2
   valid_features <- features[
     positive_cells >= as.integer(min_expressed_cells) &
       is.finite(row_var) & row_var > 0
@@ -204,7 +204,7 @@ cellrank_fate_matrix <- function(srt) {
     )
   }
   if (is.null(colnames(fate)) || anyDuplicated(colnames(fate)) ||
-      any(!nzchar(colnames(fate)))) {
+    any(!nzchar(colnames(fate)))) {
     log_message(
       "CellRank fate probabilities must have unique lineage names",
       message_type = "error"

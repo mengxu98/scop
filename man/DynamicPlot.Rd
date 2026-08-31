@@ -60,12 +60,6 @@ DynamicPlot(
 keep. If both \code{group_use} and \code{cells} are provided, their intersection will
 be used.}
 
-\item{fit.by}{Optional metadata column used to fit an independent trajectory
-for each group over that group's observed pseudotime range. The fit is not
-extrapolated beyond observed cells. This does not change the existing
-point-coloring behavior of \code{group.by}. Groups with fewer than 10 cells or 10
-unique pseudotime values are shown as raw points or rugs but are not fitted.}
-
 \item{cells}{Cell names to use.}
 
 \item{layer}{Assay layer to use.}
@@ -115,6 +109,12 @@ returns a list of ggplots.}
 Default is \code{TRUE}.}
 
 \item{seed}{Random seed.}
+
+\item{fit.by}{Optional metadata column used to fit an independent trajectory
+for each group over that group's observed pseudotime range. The fit is not
+extrapolated beyond observed cells. This does not change the existing
+point-coloring behavior of \code{group.by}. Groups with fewer than 10 cells or 10
+unique pseudotime values are shown as raw points or rugs but are not fitted.}
 }
 \description{
 Plot dynamic features across pseudotime

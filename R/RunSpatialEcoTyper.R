@@ -734,12 +734,13 @@ spatialecotyper_run_multi <- function(
       metadata_list[[sample_name]][[Region]] <- meta[sample_cells, Region, drop = TRUE]
     }
   }
-  outdir <- outdir %||% { .inline0 <- prefix; 
-  file.path(
-    tempdir(),
-    paste0(.inline0, "_", format(Sys.time(), "%Y%m%d%H%M%S"))
-  )
- }
+  outdir <- outdir %||% {
+    .inline0 <- prefix
+    file.path(
+      tempdir(),
+      paste0(.inline0, "_", format(Sys.time(), "%Y%m%d%H%M%S"))
+    )
+  }
   if (!dir.exists(outdir)) {
     dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
   }

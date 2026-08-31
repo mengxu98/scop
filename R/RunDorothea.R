@@ -544,10 +544,10 @@ dorothea_normalize_network <- function(regulons, source = "custom") {
   } else if (identical(source, "collectri")) {
     "collectri"
   } else if (identical(regulator_col, "TF") &&
-      identical(weight_col, "importance")) {
+    identical(weight_col, "importance")) {
     "scop_grn"
   } else if (identical(regulator_col, "source") &&
-      identical(weight_col, "mor")) {
+    identical(weight_col, "mor")) {
     "decoupler_network"
   } else {
     "custom_table"

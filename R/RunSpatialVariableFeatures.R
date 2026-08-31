@@ -478,7 +478,6 @@ spatial_variable_result_features <- function(df, fallback) {
 }
 
 
-
 #' @title Plot spatial variable feature results
 #'
 #' @description

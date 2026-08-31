@@ -247,8 +247,7 @@ build_sccoda_sample_inputs <- function(dat) {
 
   sample_pairs <- unique(dat[, c("sample", "condition"), drop = FALSE])
   sample_pairs <- sample_pairs[
-    order(sample_pairs$sample, sample_pairs$condition),
-    ,
+    order(sample_pairs$sample, sample_pairs$condition), ,
     drop = FALSE
   ]
   rownames(sample_pairs) <- NULL

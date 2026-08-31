@@ -456,7 +456,9 @@ test_that("RunCHOIR errors when the pinned backend cannot be verified", {
   srt <- make_choir_seurat()
   expect_error(
     with_mock_choir(
-      { RunCHOIR(srt, verbose = FALSE) },
+      {
+        RunCHOIR(srt, verbose = FALSE)
+      },
       installed_commit = NULL
     ),
     "Unable to install the pinned optional"
@@ -467,7 +469,9 @@ test_that("RunCHOIR refuses to replace a loaded stale namespace", {
   srt <- make_choir_seurat()
   expect_error(
     with_mock_choir(
-      { RunCHOIR(srt, verbose = FALSE) },
+      {
+        RunCHOIR(srt, verbose = FALSE)
+      },
       namespace_loaded = TRUE,
       loaded_commit = "stale"
     ),
@@ -478,7 +482,9 @@ test_that("RunCHOIR refuses to replace a loaded stale namespace", {
 test_that("RunCHOIR accepts a loaded pinned namespace on the fast path", {
   srt <- make_choir_seurat()
   mocked <- with_mock_choir(
-    { RunCHOIR(srt, verbose = FALSE) },
+    {
+      RunCHOIR(srt, verbose = FALSE)
+    },
     namespace_loaded = TRUE
   )
   expect_s4_class(mocked$result, "Seurat")

@@ -37,9 +37,9 @@ SpatialDMPlot(
 
 \item{palette, palcolor, theme_use, theme_args}{SCOP plotting controls.}
 
-\item{image.scale}{Image scale factor matching the selected raster.}
-
 \item{...}{Additional arguments passed to SCOP spatial plotting functions.}
+
+\item{image.scale}{Image scale factor matching the selected raster.}
 }
 \value{
 A `ggplot` or `patchwork` object.

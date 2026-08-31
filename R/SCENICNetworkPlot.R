@@ -14,7 +14,11 @@ scenic_plot_network_graph <- function(
   rank_table = NULL,
   regulon_label = "auto"
 ) {
-  layout_use <- if (is.null(network_layout) || identical(network_layout, "auto")) {"kk"} else network_layout
+  layout_use <- if (is.null(network_layout) || identical(network_layout, "auto")) {
+    "kk"
+  } else {
+    network_layout
+  }
   scenic_plot_one_network(
     srt = srt,
     tool_name = tool_name,
@@ -321,8 +325,7 @@ scenic_network_edges <- function(
     adjacency <- adjacency[adjacency[["TF"]] %in% tfs, , drop = FALSE]
   } else if (length(tfs) > 0L) {
     adjacency <- adjacency[
-      adjacency[["TF"]] %in% tfs | adjacency[["target"]] %in% tfs,
-      ,
+      adjacency[["TF"]] %in% tfs | adjacency[["target"]] %in% tfs, ,
       drop = FALSE
     ]
   }
@@ -422,8 +425,7 @@ scenic_aggregate_edges <- function(edge_data) {
 scenic_clean_edges <- function(edge_data) {
   edge_data <- edge_data[edge_data[["from"]] != edge_data[["to"]], , drop = FALSE]
   edge_data <- edge_data[
-    stats::complete.cases(edge_data[, c("from", "to"), drop = FALSE]),
-    ,
+    stats::complete.cases(edge_data[, c("from", "to"), drop = FALSE]), ,
     drop = FALSE
   ]
   if (nrow(edge_data) == 0L) {
@@ -521,8 +523,7 @@ scenic_network_layout <- function(graph, layout = "kk", node_type = NULL) {
     )
   }
   node_type <- node_type[names]
-  xy <- switch(
-    layout,
+  xy <- switch(layout,
     star = scenic_layout_star(graph, node_type),
     hub = scenic_layout_hubs(graph, node_type),
     tripartite = scenic_layout_tripartite(graph, node_type),
@@ -783,8 +784,7 @@ scenic_network_label_data <- function(
   if (identical(label_nodes, "auto")) {
     label_nodes <- default
   }
-  label_data <- switch(
-    label_nodes,
+  label_data <- switch(label_nodes,
     all = node_data,
     tfs = {
       tf_nodes <- node_data[as.character(node_data[["node_type"]]) == "TF", , drop = FALSE]
@@ -995,8 +995,7 @@ scenic_network_tf_annotations <- function(
   count_idx <- match(out[["TF"]], names(regulon_counts))
   has_count <- !is.na(count_idx)
   out[["regulons_per_tf"]][has_count] <- unname(regulon_counts[count_idx[has_count]])
-  out[["show_regulon"]] <- switch(
-    regulon_label,
+  out[["show_regulon"]] <- switch(regulon_label,
     tf = rep(FALSE, nrow(out)),
     regulon = !is.na(out[["regulon"]]) & nzchar(out[["regulon"]]),
     auto = out[["regulons_per_tf"]] > 1L
@@ -1165,9 +1164,10 @@ scenic_network_ggplot <- function(
   }
   region_labels <- region_nodes
   if (identical(label_nodes, "all")) {
-    region_labels <- region_nodes[!{ .inline0 <- region_nodes[["name"]]; 
-  grepl("^(chr|CHR)[^[:space:]]*[:_-][0-9]", as.character(.inline0))
- }, , drop = FALSE]
+    region_labels <- region_nodes[!{
+      .inline0 <- region_nodes[["name"]]
+      grepl("^(chr|CHR)[^[:space:]]*[:_-][0-9]", as.character(.inline0))
+    }, , drop = FALSE]
   } else {
     region_labels <- region_nodes[FALSE, , drop = FALSE]
   }
@@ -1213,8 +1213,7 @@ scenic_network_ggplot <- function(
     )
   }
   tf_annotations <- tf_annotations[
-    match(names(tf_cols), tf_annotations[["TF"]]),
-    ,
+    match(names(tf_cols), tf_annotations[["TF"]]), ,
     drop = FALSE
   ]
   has_annotation <- nrow(tf_annotations) > 0L && any(

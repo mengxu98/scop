@@ -1074,10 +1074,13 @@ run_cibersort_bundle <- function(
   call_args <- call_args[names(call_args) %in% names(formals(cibersort_fun))]
   previous_future_plan <- future::plan()
   previous_future_options <- options("future.globals.maxSize")
-  on.exit({
-    future::plan(previous_future_plan)
-    options(previous_future_options)
-  }, add = TRUE)
+  on.exit(
+    {
+      future::plan(previous_future_plan)
+      options(previous_future_options)
+    },
+    add = TRUE
+  )
   fit <- tryCatch(
     do.call(cibersort_fun, call_args),
     error = function(e) e

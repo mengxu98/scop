@@ -90,7 +90,6 @@ test_that("SPATA2 output tables are standardized to stable column names", {
 })
 
 
-
 test_that("cpp backend coordinates prefer metadata coord.cols", {
   srt <- make_spatial_gradient_seurat()
   coords <- sgf_cpp_coords(srt, image = NULL, coord.cols = c("x", "y"))

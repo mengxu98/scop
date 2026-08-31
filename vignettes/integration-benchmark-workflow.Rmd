@@ -70,8 +70,7 @@ thisplot::print_colored_table(
 
 metrics <- bench$metrics
 metrics <- metrics[
-  !grepl("_LISI_mean$", metrics$metric),
-  ,
+  !grepl("_LISI_mean$", metrics$metric), ,
   drop = FALSE
 ]
 thisplot::print_colored_table(

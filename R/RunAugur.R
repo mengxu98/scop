@@ -319,11 +319,12 @@ augur_select_variance <- function(
   var_quantile = 0.5,
   filter_negative_residuals = FALSE
 ) {
-  sds <- { .inline0 <- mat; 
-  sds <- MatrixGenerics::rowSds(.inline0)
-  sds[is.na(sds)] <- 0
-  sds
- }
+  sds <- {
+    .inline0 <- mat
+    sds <- MatrixGenerics::rowSds(.inline0)
+    sds[is.na(sds)] <- 0
+    sds
+  }
   sds[is.na(sds)] <- 0
   mat <- mat[sds > 0, , drop = FALSE]
   if (nrow(mat) == 0L) {

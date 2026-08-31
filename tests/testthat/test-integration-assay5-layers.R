@@ -230,7 +230,7 @@ test_that("srt_to_adata stacks split Assay5 layers into sparse X", {
         pkgload::load_all(package_path, quiet = TRUE)
       }
       if (!reticulate::py_module_available("anndata") ||
-          !reticulate::py_module_available("scipy")) {
+        !reticulate::py_module_available("scipy")) {
         return(list(available = FALSE))
       }
 

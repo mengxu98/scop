@@ -507,4 +507,3 @@ spotlight_extract_weights <- function(result, spot_ids) {
   colnames(weights) <- make.unique(as.character(colnames(weights)), sep = "_")
   weights
 }
-

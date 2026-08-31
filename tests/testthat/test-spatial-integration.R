@@ -187,5 +187,3 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
   expect_identical(observed$selected, list(step = "created"))
   expect_identical(out, list(step = "created"))
 })
-
-

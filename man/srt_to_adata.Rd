@@ -49,9 +49,9 @@ objects.}
 
 \item{convert_misc}{Whether to convert the miscellaneous data.}
 
-\item{prepare_env}{Whether to prepare and validate the Scanpy Python environment
-before conversion. Set to \code{FALSE} when a wrapper already prepared the
-environment and reticulate must keep the same binding.}
+\item{prepare_env}{Whether to prepare and validate the Scanpy Python
+environment before conversion. Wrapper functions that already prepared the
+environment should pass \code{FALSE} to keep one reticulate binding.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

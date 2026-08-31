@@ -332,7 +332,8 @@ test_that("scvelo rejects mismatched spliced/unspliced dimensions", {
       knn_idx = dat$knn_idx,
       embedding = dat$embedding
     ),
-    "spliced and unspliced must have identical dimensions", ignore.case = TRUE
+    "spliced and unspliced must have identical dimensions",
+    ignore.case = TRUE
   )
 })
 
@@ -345,7 +346,8 @@ test_that("scvelo rejects mismatched knn_idx rows vs cells", {
       knn_idx = dat$knn_idx[1:5, , drop = FALSE],
       embedding = dat$embedding
     ),
-    "knn_idx", ignore.case = TRUE
+    "knn_idx",
+    ignore.case = TRUE
   )
 })
 
@@ -358,7 +360,8 @@ test_that("scvelo rejects mismatched embedding rows vs cells", {
       knn_idx = dat$knn_idx,
       embedding = dat$embedding[1:5, , drop = FALSE]
     ),
-    "embedding", ignore.case = TRUE
+    "embedding",
+    ignore.case = TRUE
   )
 })
 

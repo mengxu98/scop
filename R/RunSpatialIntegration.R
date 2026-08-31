@@ -465,11 +465,13 @@ spatial_integration_prepare_input <- function(
   split_cells <- split(cells, srt@meta.data[cells, sample.by, drop = TRUE])
   list(
     srt = srt,
-    srt_list = { .inline0 <- srt; .inline1 <- split_cells; 
-  lapply(.inline1, function(cells) {
-    .inline0[, cells]
-  })
- },
+    srt_list = {
+      .inline0 <- srt
+      .inline1 <- split_cells
+      lapply(.inline1, function(cells) {
+        .inline0[, cells]
+      })
+    },
     expr = expr,
     expr_list = lapply(split_cells, function(x) expr[, x, drop = FALSE]),
     coords = coords,

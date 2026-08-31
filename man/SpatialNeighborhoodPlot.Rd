@@ -96,11 +96,11 @@ returns a list of ggplots.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
+\item{...}{Additional arguments passed to the selected backend.}
+
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
-
-\item{...}{Additional arguments passed to the selected backend.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

@@ -23,8 +23,10 @@ test_that("RunReferenceMapping transfers labels in the ATAC reduction", {
   query <- Seurat::CreateSeuratObject(query_counts)
   peaks <- paste0("chr1-", seq(1, 61, by = 10), "-", seq(10, 70, by = 10))
   peak_counts <- Matrix::Matrix(
-    matrix(1, nrow = length(peaks), ncol = length(query_cells),
-      dimnames = list(peaks, query_cells)),
+    matrix(1,
+      nrow = length(peaks), ncol = length(query_cells),
+      dimnames = list(peaks, query_cells)
+    ),
     sparse = TRUE
   )
   query[["peaks"]] <- Signac::CreateChromatinAssay(counts = peak_counts)
@@ -80,9 +82,7 @@ test_that("RunReferenceMapping transfers labels in the ATAC reduction", {
   )
   testthat::local_mocked_bindings(
     atac_k_weight = function(...) 1L,
-    atac_transfer_labels = function(
-      srt, linear_reduction_dims_use, weight_reduction, ...
-    ) {
+    atac_transfer_labels = function(srt, linear_reduction_dims_use, weight_reduction, ...) {
       transfer_args <<- list(
         dims = linear_reduction_dims_use,
         reduction = weight_reduction

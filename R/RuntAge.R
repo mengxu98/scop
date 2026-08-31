@@ -787,13 +787,18 @@ select_tage_model_file <- function(
   if (length(idx) != 1L) {
     candidates <- keys[
       grepl(paste0("^", mode, "_", clock), keys, ignore.case = TRUE) &
-        grepl({ .inline0 <- preprocessing; 
-  switch(.inline0,
-    scaled_diff = "scaleddiff",
-    yugene_diff = "yugenediff",
-    .inline0
-  )
- }, keys, ignore.case = TRUE)
+        grepl(
+          {
+            .inline0 <- preprocessing
+            switch(.inline0,
+              scaled_diff = "scaleddiff",
+              yugene_diff = "yugenediff",
+              .inline0
+            )
+          },
+          keys,
+          ignore.case = TRUE
+        )
     ]
     log_message(
       paste0(

@@ -48,7 +48,7 @@ RunCCC <- function(
     isTRUE(ccc_method_spec(method)$requires_group)
   }, logical(1)))
   if (isTRUE(requires_group) &&
-      (!is.character(group.by) || length(group.by) != 1L || !group.by %in% colnames(srt[[]]))) {
+    (!is.character(group.by) || length(group.by) != 1L || !group.by %in% colnames(srt[[]]))) {
     log_message(
       "{.arg group.by} must be a valid metadata column in {.cls Seurat}",
       message_type = "error"
@@ -292,7 +292,7 @@ ccc_preflight_method <- function(method, srt, params = list()) {
     spot_mode <- identical(mode, "spot") ||
       (identical(mode, "auto") && !is.null(params$reference))
     if (isTRUE(spot_mode) &&
-        (is.null(params$reference) || is.null(params$reference.group.by))) {
+      (is.null(params$reference) || is.null(params$reference.group.by))) {
       log_message(
         "CCC method {.val SpaTalk} in spot mode requires {.arg reference} and {.arg reference.group.by}",
         message_type = "error"
@@ -414,14 +414,11 @@ ccc_method_specs <- function() {
 ccc_method_spec <- function(method, error = TRUE) {
   method <- normalize_ccc_method(method)
   spec <- ccc_method_specs()[[method]]
-  if (is.null(spec) && isTRUE(error)) {
-    { .inline0 <- method; 
-  log_message(
-    "Unsupported CCC method {.val {method}}",
-    message_type = "error"
-  )
- }
-  }
+  if (is.null(spec) && isTRUE(error)) {{ .inline0 <- method
+    log_message(
+      "Unsupported CCC method {.val {method}}",
+      message_type = "error"
+    ) }}
   spec
 }
 
@@ -451,4 +448,3 @@ normalize_ccc_method <- function(method) {
   }
   method_chr
 }
-

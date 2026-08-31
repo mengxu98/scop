@@ -810,9 +810,10 @@ spatial_neighborhood_heatmap_plot <- function(
 ) {
   cols <- palette_colors(type = "continuous", palette = palette, palcolor = palcolor)
   ggplot2::ggplot(df, ggplot2::aes(x = .data$to, y = .data$from, fill = .data[[value]])) +
-    do.call(ggplot2::geom_tile, c(list(color = "white"), { .inline0 <- 0.2; 
-  stats::setNames(list(.inline0), spatial_neighborhood_linewidth_name())
- })) +
+    do.call(ggplot2::geom_tile, c(list(color = "white"), {
+      .inline0 <- 0.2
+      stats::setNames(list(.inline0), spatial_neighborhood_linewidth_name())
+    })) +
     ggplot2::scale_fill_gradientn(colors = cols, na.value = "grey90") +
     ggplot2::labs(x = "To", y = "From", fill = legend.title %||% value) +
     apply_plot_theme(theme_use, theme_args, allow_null = TRUE) +

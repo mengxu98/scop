@@ -5708,7 +5708,6 @@ ccc_standardize_ligand_target_df <- function(
 }
 
 
-
 ccc_filter_table_context <- function(
   df,
   resource = NULL,

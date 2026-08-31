@@ -569,8 +569,10 @@ matrix_values <- function(x) {
 }
 
 write_tsv <- function(x, path) {
-  utils::write.table(x, file = path, sep = "\t", quote = FALSE,
-    row.names = FALSE, col.names = TRUE, na = "")
+  utils::write.table(x,
+    file = path, sep = "\t", quote = FALSE,
+    row.names = FALSE, col.names = TRUE, na = ""
+  )
   invisible(path)
 }
 
@@ -588,8 +590,10 @@ rename_first_column <- function(df, target, candidates) {
 }
 
 set_continuous_color_scale <- function(plot, limits, title, context = "proportion") {
-  scale_index <- which(vapply(plot$scales$scales, function(scale) any(scale$aesthetics %in%
-    c("colour", "color")), logical(1)))
+  scale_index <- which(vapply(plot$scales$scales, function(scale) {
+    any(scale$aesthetics %in%
+      c("colour", "color"))
+  }, logical(1)))
   if (length(scale_index) != 1L) {
     log_message(
       paste0("Unable to identify the continuous ", context, " color scale"),
