@@ -450,13 +450,12 @@ srt_to_h5ad <- function(
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param adata An AnnData object.
+#' @param adata An AnnData object. Can be a Python AnnData object (from
+#' `scanpy`/`reticulate`), an `AnnDataR6` object from the `anndata` package,
+#' or an `InMemoryAnnData` object from the `anndataR` package.
 #' @param prepare_env Whether to prepare and validate the Scanpy Python
 #' environment before conversion. Wrapper functions that already prepared the
 #' environment should pass `FALSE` to keep one reticulate binding.
-#' Can be a Python AnnData object (from `scanpy`/`reticulate``),
-#' an `AnnDataR6` object from the `anndata` package,
-#' or an `InMemoryAnnData` object from the `anndataR` package.
 #'
 #' @export
 #'

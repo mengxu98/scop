@@ -136,7 +136,8 @@ SCOP environment selection.}
 
 \item{backend}{Backend used to compute Palantir. \code{"python"} keeps the
 reference Palantir workflow and remains the default. \code{"cpp"} uses an
-approximate C++ workflow and stores results in \code{srt@tools[["Palantir"]]}.}
+approximate C++ workflow and stores results in \code{srt@tools[["Palantir"]]}.
+The C++ backend never switches to Python implicitly.}
 
 \item{allow_approximate}{Whether to allow the approximate C++ workflow. This
 must be \code{TRUE} when \code{backend = "cpp"}.}
