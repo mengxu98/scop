@@ -1205,37 +1205,43 @@ CellDimPlot <- function(
         }
       }
       legend_title_use <- if (is.null(legend.title)) paste0(g, ":") else legend.title
-      color_guide <- if (is.null(legend.by)) {
-        guide_legend(
-          title.hjust = 0,
-          order = 1,
-          override.aes = list(shape = "circle", size = 4, alpha = 1)
-        )
-      } else {
-        "none"
-      }
+      # Store a character on the scale. ggnewscale < 0.5.0 does
+      # `scale$guide == "none"` and errors when `guide` is a Guide object
+      # (ggplot2 >= 3.5). Lineage / PAGA / velocity layers call
+      # `new_scale_color()` on this plot.
+      color_scale_guide <- if (is.null(legend.by)) "legend" else "none"
       p <- p +
         scale_color_manual(
           name = legend_title_use,
           values = colors[names(labels_tb)],
           labels = label_use,
           na.value = bg_color,
-          guide = color_guide
+          guide = color_scale_guide
         )
       if (isTRUE(hex)) {
-        fill_guide <- if (is.null(legend.by)) {
-          guide_legend(title.hjust = 0, order = 1)
-        } else {
-          "none"
-        }
+        fill_scale_guide <- if (is.null(legend.by)) "legend" else "none"
         p <- p +
           scale_fill_manual(
             name = legend_title_use,
             values = colors[names(labels_tb)],
             labels = label_use,
             na.value = bg_color,
-            guide = fill_guide
+            guide = fill_scale_guide
           )
+      }
+      if (is.null(legend.by)) {
+        p <- p +
+          guides(
+            color = guide_legend(
+              title.hjust = 0,
+              order = 1,
+              override.aes = list(shape = "circle", size = 4, alpha = 1)
+            )
+          )
+        if (isTRUE(hex)) {
+          p <- p +
+            guides(fill = guide_legend(title.hjust = 0, order = 1))
+        }
       }
       p_base <- p
       nested_legend <- NULL

@@ -134,27 +134,42 @@ RunSlingshot <- function(
   )
 
   if (isTRUE(show_plot)) {
-    if (
-      ncol(srt[[reduction]]@cell.embeddings) == 2 ||
-        ncol(srt[[reduction]]@cell.embeddings) > 3
-    ) {
-      p <- CellDimPlot(
-        srt,
-        group.by = group.by,
-        reduction = reduction,
-        dims = c(1, 2),
-        lineages = colnames(df)
-      )
-      print(p)
-    } else if (ncol(srt[[reduction]]@cell.embeddings) == 3) {
-      p <- CellDimPlot3D(
-        srt,
-        group.by = group.by,
-        reduction = reduction,
-        lineages = colnames(df)
-      )
-      print(p)
-    }
+    tryCatch(
+      {
+        if (
+          ncol(srt[[reduction]]@cell.embeddings) == 2 ||
+            ncol(srt[[reduction]]@cell.embeddings) > 3
+        ) {
+          p <- CellDimPlot(
+            srt,
+            group.by = group.by,
+            reduction = reduction,
+            dims = c(1, 2),
+            lineages = colnames(df)
+          )
+          print(p)
+        } else if (ncol(srt[[reduction]]@cell.embeddings) == 3) {
+          p <- CellDimPlot3D(
+            srt,
+            group.by = group.by,
+            reduction = reduction,
+            lineages = colnames(df)
+          )
+          print(p)
+        }
+      },
+      error = function(e) {
+        log_message(
+          paste0(
+            "Slingshot results were saved, but the lineage plot failed: ",
+            conditionMessage(e),
+            ". Use show_plot = FALSE and CellDimPlot() to plot later."
+          ),
+          message_type = "warning",
+          verbose = verbose
+        )
+      }
+    )
   }
   return(srt)
 }

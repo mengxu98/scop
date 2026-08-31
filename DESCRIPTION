@@ -21,7 +21,7 @@ Imports:
     cli,
     ComplexHeatmap,
     dplyr,
-    ggnewscale,
+    ggnewscale (>= 0.5.2),
     ggrepel,
     igraph,
     reticulate,
