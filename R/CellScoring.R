@@ -4,6 +4,8 @@
 #' Performs cell scoring on a Seurat object.
 #' It calculates scores for a given set of features and stores them in `meta.data`
 #' and/or a score assay, depending on `new_assay` and `store_metadata`.
+#' Scoring provenance is retained for downstream plot functions such as
+#' [CellScoringPlot()].
 #'
 #' @md
 #' @inheritParams thisutils::parallelize_fun
@@ -12,8 +14,9 @@
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams FeatureDimPlot
 #' @inheritParams RunGSVA
-#' @param features A named list of feature lists for scoring.
-#' If `NULL`, `db` will be used to create features sets.
+#' @param features A named list of gene sets for scoring. Every gene set is
+#' scored in every cell; list names are program labels and do not need to be
+#' cell types. If `NULL`, `db` will be used to create feature sets.
 #' @param termnames A vector of term names to be used from the database. Default is `NULL`, in which case all features from the database are used.
 #' @param method The method to use for scoring. Can be `"Seurat"`, `"AUCell"`,
 #' `"UCell"`, `"GSVA"`, `"ssGSEA"`, `"zscore"`, `"PLAGE"`, or `"VISION"`.
@@ -83,7 +86,6 @@
 #'   features = c("AUCell_A", "GSVA_A", "Sox9", "Anxa2", "Bicc1"),
 #'   group.by = "CellType"
 #' )
-#'
 CellScoring <- function(
   srt,
   features = NULL,
@@ -742,11 +744,13 @@ CellScoring <- function(
     )
   }
 
+  feature_labels <- features_nm_used[colnames(scores_mat)]
+  feature_labels[is.na(feature_labels)] <- colnames(scores_mat)[is.na(
+    feature_labels
+  )]
+  display_labels <- make.unique(as.character(unname(feature_labels)))
+  class_col <- NULL
   if (isTRUE(classification)) {
-    feature_labels <- features_nm_used[colnames(scores_mat)]
-    feature_labels[is.na(feature_labels)] <- colnames(scores_mat)[is.na(
-      feature_labels
-    )]
     assignments <- apply(
       scores_mat,
       MARGIN = 1,
@@ -771,6 +775,23 @@ CellScoring <- function(
     srt[[class_col]] <- assignments[rownames(scores_mat)]
   }
 
+  srt <- cell_scoring_store_record(
+    srt,
+    record = list(
+      method = method,
+      features = stats::setNames(colnames(scores_mat), display_labels),
+      assay_features = if (isTRUE(new_assay)) {
+        stats::setNames(rownames(srt[[name]]), display_labels)
+      } else {
+        NULL
+      },
+      metadata = isTRUE(store_metadata),
+      assay = if (isTRUE(new_assay)) name else NULL,
+      classification = class_col,
+      name = name
+    )
+  )
+
   log_message(
     "Cell scoring completed",
     message_type = "success",
@@ -778,6 +799,16 @@ CellScoring <- function(
   )
 
   return(srt)
+}
+
+cell_scoring_store_record <- function(srt, record) {
+  provenance <- srt@misc[["CellScoring"]]
+  if (!is.list(provenance) || !is.list(provenance$records)) {
+    provenance <- list(records = list())
+  }
+  provenance$records[[length(provenance$records) + 1L]] <- record
+  srt@misc[["CellScoring"]] <- provenance
+  srt
 }
 
 AddModuleScore2 <- function(

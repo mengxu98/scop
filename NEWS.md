@@ -1,6 +1,7 @@
 # scop (development)
 
 * **feat**:
+  * Added `CellScoringPlot()` for paired group/score UMAPs, score distributions, threshold proportions, and complete multi-program layouts from `CellScoring()` results.
   * CellRank + Palantir fate workflow now supports MAGIC layers, explicit Schur sizes and terminal-state validation, normalized fate/driver/transition payloads, CellRank GAM trend modules, module enrichment, and result-only `CellRankPlot()` views.
   * Added `RunCOMMOT()` and `COMMOTPlot()` for official COMMOT spatial communication through an isolated Python subprocess with raw-coordinate provenance and optional external H5AD storage.
   * Added `RunSpaTalk()` and `SpaTalkPlot()` for official SpaTalk single-cell and spot-reference spatial communication workflows with compact unified CCC storage.
