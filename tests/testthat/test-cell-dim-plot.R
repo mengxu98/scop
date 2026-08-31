@@ -73,6 +73,39 @@ test_that("FeatureDimPlot3D supports sparse co-expression", {
   expect_s3_class(plot, "plotly")
 })
 
+test_that("CellDimPlot keeps colour scale guides as characters for ggnewscale", {
+  srt <- make_cell_dim_plot_srt()
+
+  plot <- CellDimPlot(
+    srt = srt,
+    group.by = "celltype",
+    reduction = "umap",
+    raster = FALSE,
+    force = TRUE
+  )
+
+  colour_scale <- plot$scales$get_scales("colour")
+  expect_true(is.character(colour_scale$guide))
+  expect_false(inherits(colour_scale$guide, "Guide"))
+})
+
+test_that("CellDimPlot can overlay lineages without ggplot2 guide comparison errors", {
+  srt <- make_cell_dim_plot_srt()
+  srt$Lineage1 <- seq(0, 1, length.out = ncol(srt))
+
+  plot <- CellDimPlot(
+    srt = srt,
+    group.by = "celltype",
+    reduction = "umap",
+    lineages = "Lineage1",
+    raster = FALSE,
+    force = TRUE
+  )
+
+  expect_true(inherits(plot, "ggplot") || inherits(plot, "patchwork"))
+  expect_no_error(ggplot2::ggplot_build(plot))
+})
+
 test_that("CellDimPlot supports atlas-style grid and marked groups", {
   srt <- make_cell_dim_plot_srt()
 
