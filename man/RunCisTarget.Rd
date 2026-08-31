@@ -21,6 +21,7 @@ RunCisTarget(
   envname = NULL,
   conda = "auto",
   cores = 1,
+  parallel_backend = c("auto", "psock", "fork"),
   force = FALSE,
   verbose = TRUE,
   ...
@@ -78,6 +79,11 @@ reference files. If \code{NULL}, files are stored under
 \item{conda}{Conda-compatible executable (Python backend only).}
 
 \item{cores}{Number of workers.}
+
+\item{parallel_backend}{Parallel backend used for native C++ cisTarget
+module processing. \code{"auto"} preserves the current cross-platform PSOCK
+behavior. \code{"fork"} is an explicit opt-in on macOS and Linux and is not
+available on Windows.}
 
 \item{force}{Whether to rebuild existing outputs.}
 

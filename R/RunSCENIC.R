@@ -51,6 +51,10 @@
 #' @param cores Number of workers used by GRNBoost2, `scenic ctx`, and
 #' AUCell scoring. If multicore execution is not supported, this is
 #' automatically reduced to one core.
+#' @param parallel_backend Parallel backend used for native C++ cisTarget
+#' module processing. `"auto"` preserves the current cross-platform PSOCK
+#' behavior. `"fork"` is an explicit opt-in on macOS and Linux and is not
+#' available on Windows.
 #' @param seed Random seed used by GRNBoost2 and Seurat overclustering.
 #' @param force Whether to rebuild existing SCENIC outputs.
 #' @param assay_name Name of the assay used to store regulon activity scores.
@@ -122,6 +126,7 @@ RunSCENIC <- function(
   subsample = 0.9,
   early_stop_window_length = 25,
   cores = 1,
+  parallel_backend = c("auto", "psock", "fork"),
   seed = 1234,
   force = FALSE,
   assay_name = "scenic",
@@ -139,6 +144,7 @@ RunSCENIC <- function(
   }
   species <- match.arg(species)
   backend <- match.arg(backend)
+  parallel_backend <- match.arg(parallel_backend)
 
   if (identical(backend, "cpp")) {
     return(scenic_cpp(
@@ -165,6 +171,7 @@ RunSCENIC <- function(
       subsample = subsample,
       early_stop_window_length = early_stop_window_length,
       cores = cores,
+      parallel_backend = parallel_backend,
       seed = seed,
       force = force,
       assay_name = assay_name,
@@ -711,6 +718,7 @@ scenic_cpp <- function(
   subsample,
   early_stop_window_length,
   cores,
+  parallel_backend,
   seed,
   force,
   assay_name,
@@ -946,6 +954,7 @@ scenic_cpp <- function(
           min_regulon_size = min_regulon_size,
           include_negative_regulons = include_negative_regulons,
           cores = cores,
+          parallel_backend = parallel_backend,
           verbose = verbose
         )
       })
@@ -1144,9 +1153,20 @@ cistarget2 <- function(
   auc_threshold = 0.05,
   include_negative_regulons = FALSE,
   cores = 1,
+  parallel_backend = c("auto", "psock", "fork"),
   diagnostics = FALSE,
   verbose = TRUE
 ) {
+  parallel_backend <- match.arg(parallel_backend)
+  if (
+    identical(parallel_backend, "fork") &&
+      identical(.Platform$OS.type, "windows")
+  ) {
+    stop(
+      "The fork parallel backend is unavailable on Windows; use parallel_backend = \"psock\" or \"auto\".",
+      call. = FALSE
+    )
+  }
   check_r("arrow", verbose = FALSE)
   profile_time <- function(expr) {
     start <- proc.time()[["elapsed"]]
@@ -1375,28 +1395,49 @@ cistarget2 <- function(
     lapply(imp_list, max)
   })
 
+  worker_state <- list(
+    profile_template = profile * 0,
+    all_genes = all_genes,
+    min_regulon_size = min_regulon_size,
+    gene_to_clusters = gene_to_clusters,
+    rank_matrices = rank_matrices,
+    rank_threshold = rank_threshold,
+    nes_threshold = nes_threshold,
+    motif_tbl_by_tf = motif_tbl_by_tf,
+    empty_motif_tbl = motif_tbl[FALSE, , drop = FALSE],
+    tf_importance_map = tf_importance_map,
+    diagnostics = diagnostics
+  )
   process_module <- function(module) {
-    local_profile <- profile * 0
+    profile_time <- function(expr) {
+      start <- proc.time()[["elapsed"]]
+      value <- force(expr)
+      list(
+        value = value,
+        elapsed = proc.time()[["elapsed"]] - start
+      )
+    }
+    local_profile <- state[["profile_template"]]
     tf <- module[["tf"]]
     suffix <- module[["suffix"]] %||% "(+)"
     regulon_name <- scenic_regulon_name(tf, suffix = suffix)
-    target_set <- intersect(module[["genes"]], all_genes)
+    target_set <- intersect(module[["genes"]], state[["all_genes"]])
 
-    if (length(target_set) < min_regulon_size) {
+    if (length(target_set) < state[["min_regulon_size"]]) {
       return(NULL)
     }
 
-    tf_clusters <- gene_to_clusters[[tf]]
+    tf_clusters <- state[["gene_to_clusters"]][[tf]]
     if (is.null(tf_clusters) || length(tf_clusters) == 0) {
       return(NULL)
     }
 
     cluster_score_list <- list()
 
-    for (rm in rank_matrices) {
+    for (rm in state[["rank_matrices"]]) {
       gene_idx <- unname(rm[["gene_index"]][target_set])
       gene_idx <- gene_idx[!is.na(gene_idx)]
-      if (length(gene_idx) < min_regulon_size) {
+      if (length(gene_idx) < state[["min_regulon_size"]]) {
         next
       }
 
@@ -1409,7 +1450,7 @@ cistarget2 <- function(
         scenic_ctx_auc_avg2sd(
           ranks = ranking_sub,
           total_genes = rm[["total_genes"]],
-          rank_threshold = as.integer(rank_threshold),
+          rank_threshold = as.integer(state[["rank_threshold"]]),
           rank_cutoff = rm[["rank_cutoff"]]
         )
       })
@@ -1421,15 +1462,15 @@ cistarget2 <- function(
         next
       }
       ness <- (aucs - mean(aucs)) / auc_sd
-      enriched_idx <- which(ness >= nes_threshold)
+      enriched_idx <- which(ness >= state[["nes_threshold"]])
       if (length(enriched_idx) == 0) {
         next
       }
 
       profiled <- profile_time({
-        annotated_tf <- motif_tbl_by_tf[[tf]]
+        annotated_tf <- state[["motif_tbl_by_tf"]][[tf]]
         if (is.null(annotated_tf)) {
-          motif_tbl[FALSE, , drop = FALSE]
+          state[["empty_motif_tbl"]]
         } else {
           annotated_tf[
             annotated_tf[["motif"]] %in% rm[["clusters"]][enriched_idx], ,
@@ -1503,14 +1544,9 @@ cistarget2 <- function(
       drop = FALSE
     ]
 
-    # ── Merge leading-edge genes across enriched motifs (ctxcore-compatible) ──
-    # ctxcore groups motifs by shared TF annotation (already done: all motifs
-    # here are annotated to this TF).  It merges via Regulon.union() which takes
-    # the *maximum GRN importance weight* per gene across all enriched motifs.
-    # Reference: ctxcore/genesig.py:206-220 (Regulon.union),
-    #            ctxcore/transform.py:262-307 (_regulon4group).
+    # ctxcore Regulon.union() retains the maximum GRN importance per gene.
     n_motifs <- nrow(cluster_scores)
-    tf_adj <- tf_importance_map[[tf]]
+    tf_adj <- state[["tf_importance_map"]][[tf]]
     if (!is.null(tf_adj) && length(tf_adj) > 0L) {
       gene_scores <- list()
       for (ri in seq_len(n_motifs)) {
@@ -1533,7 +1569,7 @@ cistarget2 <- function(
         regulon = regulon_name,
         genes = regulon_genes,
         profile = local_profile,
-        diagnostics = if (isTRUE(diagnostics)) {
+        diagnostics = if (isTRUE(state[["diagnostics"]])) {
           list(
             tf = tf,
             context = module[["context"]],
@@ -1552,12 +1588,33 @@ cistarget2 <- function(
       diagnostics = NULL
     )
   }
+  environment(process_module) <- list2env(
+    list(state = worker_state),
+    parent = environment(cistarget2)
+  )
+  worker_state_bytes <- as.numeric(utils::object.size(worker_state))
+  if (
+    .Platform$OS.type != "windows" &&
+      !identical(parallel_backend, "fork") &&
+      as.integer(cores) > 1L &&
+      worker_state_bytes >= 256 * 1024^2
+  ) {
+    log_message(
+      paste0(
+        "Native cisTarget has {.val {sprintf('%.1f MiB', worker_state_bytes / 1024^2)}} of read-only worker state; ",
+        "PSOCK copies this state to each worker. On macOS/Linux, {.code parallel_backend = 'fork'} may reduce startup time and physical memory through copy-on-write, but use it only when forking is safe for the current R process."
+      ),
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
 
   module_cores <- max(1L, as.integer(cores))
   module_results <- thisutils::parallelize_fun(
     modules,
     process_module,
     cores = module_cores,
+    backend = parallel_backend,
     verbose = verbose
   )
   diagnostics_out <- list()
