@@ -26,6 +26,35 @@ test_that("RunKNNPredict probability maxima retain row labels and missing values
   )
 })
 
+test_that("matrix neighbor dispatch remains available to KNN reference mapping", {
+  set.seed(17)
+  reference <- matrix(
+    stats::rnorm(80),
+    nrow = 20,
+    dimnames = list(paste0("ref", seq_len(20)), paste0("dim", seq_len(4)))
+  )
+  query <- matrix(
+    stats::rnorm(40),
+    nrow = 10,
+    dimnames = list(paste0("query", seq_len(10)), paste0("dim", seq_len(4)))
+  )
+
+  observed <- Seurat::FindNeighbors(
+    object = reference,
+    query = query,
+    k.param = 3,
+    nn.method = "annoy",
+    annoy.metric = "cosine",
+    return.neighbor = TRUE,
+    verbose = FALSE
+  )
+
+  expect_s4_class(observed, "Neighbor")
+  expect_identical(dim(observed@nn.idx), c(10L, 3L))
+  expect_identical(observed@cell.names, rownames(query))
+  expect_true(all(observed@nn.idx >= 1L & observed@nn.idx <= nrow(reference)))
+})
+
 test_that("KNN prediction labels retain legacy ties and non-finite values", {
   finite_probabilities <- rbind(
     Query1 = c(B = 0.8, A = 0.8, C = 0.1),
