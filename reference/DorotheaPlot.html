@@ -338,7 +338,7 @@ Default is <code>TRUE</code>.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 21:10:35] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-31 14:52:02] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDorothea.html">RunDorothea</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
@@ -346,9 +346,9 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"ulm"</span>,</span></span>
 <span class="r-in"><span>  minsize <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 21:11:27] Run <span style="color: #0000BB;">"DoRothEA"</span>/<span style="color: #0000BB;">decoupleR</span> with <span style="color: #0000BB;">12895</span> regulon edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 21:11:35] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in assay <span style="color: #0000BB;">"dorothea"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 21:11:35] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in <span style="color: #0000BB;">&lt;Seurat&gt;</span> metadata</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-31 14:52:56] Run <span style="color: #0000BB;">"DoRothEA"</span>/<span style="color: #0000BB;">decoupleR</span> with <span style="color: #0000BB;">12895</span> regulon edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-31 14:53:07] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in assay <span style="color: #0000BB;">"dorothea"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-31 14:53:07] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in <span style="color: #0000BB;">&lt;Seurat&gt;</span> metadata</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">DorotheaPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -358,7 +358,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 21:11:35] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-31 14:53:07] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
 <span class="r-plt img"><img src="DorotheaPlot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">DorotheaPlot</span><span class="op">(</span></span></span>
@@ -369,7 +369,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"lollipop"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 21:11:35] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-31 14:53:08] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
 <span class="r-plt img"><img src="DorotheaPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">DorotheaPlot</span><span class="op">(</span></span></span>
@@ -379,7 +379,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  group2 <span class="op">=</span> <span class="st">"Ductal"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"volcano"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 21:11:36] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-31 14:53:08] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
 <span class="r-plt img"><img src="DorotheaPlot-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu">DorotheaPlot</span><span class="op">(</span></span></span>
@@ -388,7 +388,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 21:11:36] Draw <span style="color: #0000BB;">"DoRothEA"</span> TF activity heatmap for <span style="color: #0000BB;">20</span> TFs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-31 14:53:09] Draw <span style="color: #0000BB;">"DoRothEA"</span> TF activity heatmap for <span style="color: #0000BB;">20</span> TFs</span>
 <span class="r-in"><span><span class="va">ht</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="DorotheaPlot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -398,7 +398,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="st">"Sox9"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dim"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 21:11:37] Draw <span style="color: #0000BB;">"DoRothEA"</span> embedding plots for <span style="color: #0000BB;">1</span> TFs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-31 14:53:10] Draw <span style="color: #0000BB;">"DoRothEA"</span> embedding plots for <span style="color: #0000BB;">1</span> TFs</span>
 <span class="r-plt img"><img src="DorotheaPlot-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">DorotheaPlot</span><span class="op">(</span></span></span>
@@ -408,13 +408,7 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"stat"</span>,</span></span>
 <span class="r-in"><span>  stat_plot_type <span class="op">=</span> <span class="st">"violin"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 21:11:38] Draw <span style="color: #0000BB;">"DoRothEA"</span> activity distributions for <span style="color: #0000BB;">3</span> TFs</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-31 14:53:11] Draw <span style="color: #0000BB;">"DoRothEA"</span> activity distributions for <span style="color: #0000BB;">3</span> TFs</span>
 <span class="r-plt img"><img src="DorotheaPlot-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">DorotheaPlot</span><span class="op">(</span></span></span>
@@ -425,9 +419,8 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="st">"Sox9"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"targets"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-30 21:11:39] Dropping <span style="color: #0000BB;">3</span> <span style="color: #0000BB;">"Sox9"</span> targets missing from assay <span style="color: #0000BB;">"RNA"</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Dropping 3 "Sox9" targets missing from assay "RNA"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-30 21:11:39] Draw <span style="color: #0000BB;">"DoRothEA"</span> regulon-target volcano for <span style="color: #0000BB;">"Sox9"</span> (<span style="color: #0000BB;">10</span> targets)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-08-31 14:53:12] Dropping <span style="color: #0000BB;">3</span> <span style="color: #0000BB;">"Sox9"</span> targets missing from assay <span style="color: #0000BB;">"RNA"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-08-31 14:53:12] Draw <span style="color: #0000BB;">"DoRothEA"</span> regulon-target volcano for <span style="color: #0000BB;">"Sox9"</span> (<span style="color: #0000BB;">10</span> targets)</span>
 <span class="r-plt img"><img src="DorotheaPlot-7.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

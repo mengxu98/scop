@@ -127,12 +127,12 @@ map derived from the stored proportions, or one spot-level pie map.</p></dd>
 <code>NULL</code>, a near-square layout with at most three columns is used.</p></dd>
 
 
-<dt id="arg-image-scale">image.scale<a class="anchor" aria-label="anchor" href="#arg-image-scale"></a></dt>
-<dd><p>Image scale factor matching the selected raster.</p></dd>
-
-
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to <code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code>.</p></dd>
+
+
+<dt id="arg-image-scale">image.scale<a class="anchor" aria-label="anchor" href="#arg-image-scale"></a></dt>
+<dd><p>Image scale factor matching the selected raster.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -146,15 +146,6 @@ map derived from the stored proportions, or one spot-level pie map.</p></dd>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">keep_spots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">200</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span><span class="op">[</span>, <span class="va">keep_spots</span><span class="op">]</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
 <span class="r-in"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="va">panc8_sub</span><span class="op">[</span>, <span class="va">panc8_sub</span><span class="op">$</span><span class="va">celltype</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ductal"</span>, <span class="st">"alpha"</span>, <span class="st">"beta"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/FindVariableFeatures.html" class="external-link">FindVariableFeatures</a></span><span class="op">(</span><span class="va">reference</span>, nfeatures <span class="op">=</span> <span class="fl">300</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">shared</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span></span></span>
@@ -170,15 +161,6 @@ map derived from the stored proportions, or one spot-level pie map.</p></dd>
 <span class="r-in"><span>  normalize <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
 <span class="r-in"><span><span class="fu">SpatialDeconvolutionPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
 <span class="r-in"><span>  tool_name <span class="op">=</span> <span class="st">"SpatialDWLS"</span>,</span></span>
