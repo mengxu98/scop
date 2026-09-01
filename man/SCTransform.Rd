@@ -20,6 +20,6 @@ Apply SCTransform normalization
 \details{
 The validated sparse `vst.flavor = "v2"` path uses native corrected-count
 and residual kernels. Reference models, specified residual features,
-memory-conserving mode, regression, custom VST arguments, and other flavors
-transparently delegate to `Seurat::SCTransform`.
+memory-conserving mode, unsupported regression designs, custom VST arguments,
+and other flavors transparently delegate to `Seurat::SCTransform`.
 }
