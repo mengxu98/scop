@@ -1813,7 +1813,7 @@ EnrichmentHeatmap <- function(
   }
 
   srt_tmp <- Seurat::CreateSeuratObject(counts = scores_for_seurat)
-  srt_tmp <- Seurat::NormalizeData(
+  srt_tmp <- NormalizeData(
     object = srt_tmp,
     normalization.method = "LogNormalize",
     verbose = FALSE

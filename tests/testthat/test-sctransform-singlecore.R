@@ -115,6 +115,35 @@ test_that("SCTransform gates the validated native and fallback branches", {
   }
 })
 
+test_that("SCTransform methods track Seurat parameters", {
+  for (method in c("SCTransform.default", "SCTransform.Seurat")) {
+    reference <- names(formals(get(method, asNamespace("Seurat"))))
+    candidate <- names(formals(get(method, asNamespace("scop"))))
+    expect_identical(sort(candidate), sort(c(reference, "cores")))
+  }
+})
+
+test_that("SCTransform validates native regression designs", {
+  validate <- get("sct_regression_supported", asNamespace("scop"))
+  cells <- paste0("C", seq_len(12L))
+  cell_attr <- data.frame(
+    numeric_covariate = seq_along(cells),
+    batch = factor(rep(c("a", "b"), length.out = length(cells))),
+    row.names = cells
+  )
+  latent <- data.frame(
+    latent_covariate = stats::runif(length(cells)),
+    row.names = rev(cells)
+  )
+  expect_true(validate(NULL, NULL, cell_attr, cells))
+  expect_true(validate("numeric_covariate", NULL, cell_attr, cells))
+  expect_true(validate(c("numeric_covariate", "batch"), latent, cell_attr, cells))
+  expect_false(validate("missing", NULL, cell_attr, cells))
+  cell_attr$numeric_covariate[[1L]] <- NA_real_
+  expect_false(validate("numeric_covariate", NULL, cell_attr, cells))
+  expect_false(validate(NULL, latent[-1L, , drop = FALSE], cell_attr, cells))
+})
+
 test_that("SCTransform native path preserves Seurat output semantics", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("glmGamPoi")
@@ -197,4 +226,90 @@ test_that("SCTransform native path preserves Seurat output semantics", {
       )
     }
   }
+
+  regression_specs <- list(
+    "numeric_covariate",
+    "batch",
+    c("numeric_covariate", "batch")
+  )
+  for (vars in regression_specs) {
+    expected_object <- Seurat::CreateSeuratObject(counts = umi)
+    actual_object <- Seurat::CreateSeuratObject(counts = umi)
+    covariate <- seq_len(ncol(umi)) / ncol(umi)
+    batch <- factor(rep(c("a", "b", "c"), length.out = ncol(umi)))
+    expected_object$numeric_covariate <- covariate
+    actual_object$numeric_covariate <- covariate
+    expected_object$batch <- batch
+    actual_object$batch <- batch
+    args <- list(
+      vst.flavor = "v2",
+      variable.features.n = 100,
+      ncells = 150,
+      vars.to.regress = vars,
+      seed.use = 31,
+      verbose = FALSE
+    )
+    expected <- suppressWarnings(do.call(
+      seurat_sct,
+      c(list(object = expected_object), args)
+    ))
+    actual <- suppressWarnings(do.call(
+      SCTransform,
+      c(list(object = actual_object), args)
+    ))
+    expect_identical(
+      SeuratObject::VariableFeatures(actual),
+      SeuratObject::VariableFeatures(expected),
+      info = paste(vars, collapse = ",")
+    )
+    expect_equal(
+      SeuratObject::LayerData(actual[["SCT"]], layer = "scale.data"),
+      SeuratObject::LayerData(expected[["SCT"]], layer = "scale.data"),
+      tolerance = 1e-9,
+      info = paste(vars, collapse = ",")
+    )
+  }
+})
+
+test_that("SCTransform default native path supports latent.data", {
+  skip_if_not_installed("glmGamPoi")
+  set.seed(20260901)
+  umi <- Matrix::rsparsematrix(
+    nrow = 180L,
+    ncol = 120L,
+    density = 0.03,
+    rand.x = function(n) stats::rpois(n, lambda = 3) + 1
+  )
+  dimnames(umi) <- list(paste0("G", seq_len(nrow(umi))), paste0("C", seq_len(ncol(umi))))
+  umi[1L, ] <- 1
+  cell_attr <- data.frame(
+    log_umi = log10(Matrix::colSums(umi)),
+    batch = factor(rep(c("a", "b"), length.out = ncol(umi))),
+    numeric_covariate = seq_len(ncol(umi)) / ncol(umi),
+    row.names = colnames(umi)
+  )
+  latent <- data.frame(
+    batch = cell_attr$batch,
+    numeric_covariate = cell_attr$numeric_covariate,
+    row.names = colnames(umi)
+  )
+  args <- list(
+    object = umi,
+    cell.attr = cell_attr,
+    vars.to.regress = c("batch", "numeric_covariate"),
+    latent.data = latent,
+    vst.flavor = "v2",
+    variable.features.n = 80,
+    ncells = 120,
+    seed.use = 91,
+    verbose = FALSE
+  )
+  expected <- suppressWarnings(do.call(
+    get("SCTransform.default", asNamespace("Seurat")),
+    args
+  ))
+  actual <- suppressWarnings(do.call(getS3method("SCTransform", "default"), args))
+  expect_identical(actual$variable_features, expected$variable_features)
+  expect_equal(actual$y, expected$y, tolerance = 1e-9)
+  expect_equal(actual$umi_corrected, expected$umi_corrected, tolerance = 0)
 })

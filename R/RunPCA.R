@@ -9,7 +9,7 @@ pca_native_auto_supported <- function(object, npcs, extra_args) {
     npcs + 1L < min(nrow(object), ncol(object))
 }
 
-pca_native_candidate_acceptable <- function(eigvals, npcs, min_gap = 0.005) {
+pca_native_candidate_acceptable <- function(eigvals, npcs, min_gap = 5e-4) {
   length(eigvals) >= npcs + 1L &&
     all(is.finite(eigvals[seq_len(npcs + 1L)])) &&
     eigvals[[npcs]] > 0 &&

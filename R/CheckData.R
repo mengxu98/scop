@@ -444,7 +444,7 @@ CheckDataList <- function(
               verbose = FALSE
             )
           } else {
-            Seurat::FindVariableFeatures(
+            FindVariableFeatures(
               srt_list[[i]],
               assay = assay,
               nfeatures = nHVF,
@@ -566,7 +566,7 @@ CheckDataList <- function(
               verbose = FALSE
             )
           } else {
-            Seurat::FindVariableFeatures(
+            FindVariableFeatures(
               srt_merge,
               assay = SeuratObject::DefaultAssay(srt_merge),
               nfeatures = nHVF,

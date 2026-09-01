@@ -147,7 +147,7 @@ Uncorrected_integrate <- function(
           srt_merge[[assay_merge]]
         )
       }
-      srt_merge <- Seurat::ScaleData(
+      srt_merge <- ScaleData(
         object = srt_merge,
         split.by = if (isTRUE(scale_within_batch)) batch else NULL,
         assay = SeuratObject::DefaultAssay(srt_merge),
@@ -381,7 +381,7 @@ WNN_integrate <- function(
     verbose = verbose
   )
   SeuratObject::DefaultAssay(srt_merge) <- rna_assay
-  srt_merge <- Seurat::FindMultiModalNeighbors(
+  srt_merge <- FindMultiModalNeighbors(
     object = srt_merge,
     reduction.list = list(rna_reduction, atac_reduction),
     dims.list = list(rna_dims_use, atac_dims_use),
@@ -1280,7 +1280,7 @@ Seurat_integrate <- function(
         log_message(
           "Perform {.fn Seurat::ScaleData} on {.arg srt}"
         )
-        srt <- Seurat::ScaleData(
+        srt <- ScaleData(
           object = srt,
           assay = SeuratObject::DefaultAssay(srt),
           features = HVF,
@@ -1353,7 +1353,7 @@ Seurat_integrate <- function(
     )
     if (isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))) {
       log_message("Perform ScaleData on {.arg srt_integrated}")
-      srt_integrated <- Seurat::ScaleData(
+      srt_integrated <- ScaleData(
         object = srt_integrated,
         split.by = if (isTRUE(scale_within_batch)) batch else NULL,
         assay = SeuratObject::DefaultAssay(srt_integrated),
@@ -1957,7 +1957,7 @@ MNN_integrate <- function(
     isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))
   ) {
     log_message("Perform ScaleData")
-    srt_integrated <- Seurat::ScaleData(
+    srt_integrated <- ScaleData(
       object = srt_integrated,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
       assay = SeuratObject::DefaultAssay(srt_integrated),
@@ -2429,7 +2429,7 @@ Harmony_integrate <- function(
         srt_merge[[assay_merge]]
       )
     }
-    srt_merge <- Seurat::ScaleData(
+    srt_merge <- ScaleData(
       object = srt_merge,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
       assay = SeuratObject::DefaultAssay(srt_merge),
@@ -2957,7 +2957,7 @@ BBKNN_integrate <- function(
         srt_merge[[assay_merge]]
       )
     }
-    srt_merge <- Seurat::ScaleData(
+    srt_merge <- ScaleData(
       object = srt_merge,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
       assay = SeuratObject::DefaultAssay(srt_merge),
@@ -3482,7 +3482,7 @@ CSS_integrate <- function(
         srt_merge[[assay_merge]]
       )
     }
-    srt_merge <- Seurat::ScaleData(
+    srt_merge <- ScaleData(
       object = srt_merge,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
       assay = SeuratObject::DefaultAssay(srt_merge),
@@ -4040,7 +4040,7 @@ Conos_integrate <- function(
       log_message(
         "Perform ScaleData on the data {.val {i}} ..."
       )
-      srt <- Seurat::ScaleData(
+      srt <- ScaleData(
         object = srt,
         assay = SeuratObject::DefaultAssay(srt),
         features = HVF,
@@ -4363,7 +4363,7 @@ ComBat_integrate <- function(
     isTRUE(do_scaling) || (is.null(do_scaling) && any(!HVF %in% scale_features))
   ) {
     log_message("Perform {.fn Seurat::ScaleData}")
-    srt_integrated <- Seurat::ScaleData(
+    srt_integrated <- ScaleData(
       srt_integrated,
       split.by = if (isTRUE(scale_within_batch)) batch else NULL,
       assay = SeuratObject::DefaultAssay(srt_integrated),

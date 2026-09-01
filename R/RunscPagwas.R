@@ -459,7 +459,7 @@ scpagwas_prepare_seurat <- function(single_data, group.by = NULL, assay = NULL) 
     )
   )
   if (is.null(data_layer) || any(dim(data_layer) == 0L)) {
-    single_data <- Seurat::NormalizeData(single_data, assay = assay, verbose = FALSE)
+    single_data <- NormalizeData(single_data, assay = assay, verbose = FALSE)
   }
   if (is.null(group.by)) {
     return(single_data)

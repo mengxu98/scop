@@ -71,7 +71,7 @@ test_that("SCTransform.default accepts latent.data regression", {
   skip_if_not_installed("glmGamPoi")
   cell.attr <- data.frame(row.names = cells)
   latent <- data.frame(score = rnorm(length(cells)), row.names = cells)
-  out <- suppressMessages(SCTransform.default(
+  out <- suppressMessages(getS3method("SCTransform", "default")(
     object = counts,
     cell.attr = cell.attr,
     latent.data = latent,
