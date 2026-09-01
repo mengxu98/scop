@@ -1,6 +1,9 @@
-# scop (development)
+# scop 0.9.1
 
 * **feat**:
+  * Internal preprocessing and integration workflows now use scop's Seurat-compatible entry points, enabling validated native acceleration for normalization, variable-feature selection, scaling, PCA, and neighbor search while retaining transparent Seurat fallback for unsupported paths.
+  * The native `SCTransform(vst.flavor = "v2")` path now supports validated numeric and factor `vars.to.regress` designs and `latent.data`; unsupported regression designs continue to delegate to Seurat.
+  * The native PCA auto path accepts smaller stable trailing eigengaps after numerical and neighborhood-parity validation, allowing more datasets to use the accelerated implementation.
   * Added `CellScoringPlot()` for paired group/score UMAPs, score distributions, threshold proportions, and complete multi-program layouts from `CellScoring()` results.
   * CellRank + Palantir fate workflow now supports MAGIC layers, explicit Schur sizes and terminal-state validation, normalized fate/driver/transition payloads, CellRank GAM trend modules, module enrichment, and result-only `CellRankPlot()` views.
   * Added `RunCOMMOT()` and `COMMOTPlot()` for official COMMOT spatial communication through an isolated Python subprocess with raw-coordinate provenance and optional external H5AD storage.
@@ -15,6 +18,7 @@
   * `RunIntegrationBenchmark()` compares integration methods with scIB-style iLISI/cLISI, ASW, graph connectivity, and ARI/NMI scores and returns a `Seurat` object. Tables live in `srt@tools$IntegrationBenchmark` and are printed with `thisplot::print_colored_table()`. `IntegrationBenchmarkPlot()` draws `box` (per-cell LISI), heatmap, scatter, and UMAP views. `LISIPlot()` is removed; use `IntegrationBenchmarkPlot(plot_type = "box")`.
   * `SCENICPlot()` / `SCENICPlusPlot()`: `heatmap_dotplot`, `eregulon_dim`, `coverage`, `network`, `network_graph`, `egrn`, `overlap`. `"network"` draws one hub per TF. Network plots have no title. Networks use `"Chinese"` when `palette = "RdYlBu"`. Multi-TF legends show the top RSS cell type.
 * **fixed**:
+  * R-CMD-check now installs `presto` directly from `immunogenomics/presto`, avoiding dependency-resolution failures caused by treating the GitHub-only package as a CRAN package.
   * `RunCellRank()` now disables PETSc explicitly when retrying fate probabilities with SciPy's direct solver, preventing CellRank 2.0.7 from silently reverting the retry to GMRES and rejecting harmless floating-point negative probabilities (#380).
   * `RunCellRank()` defaults to the dependency-free `brandts` Schur method again, so the standard `scop_env` no longer fails because the optional `petsc4py` and `slepc4py` packages are absent. Users can still request `schur_method = "krylov"` when those packages are installed (#380).
   * CellRank stored-result plotting now follows SCOP's `theme_scop`, `Chinese`, and `Spectral` visual contracts; draws transition projections directly from the saved sparse transition matrix; supports random walks without requiring trend results; facets trend modules; and adds module-enrichment dot plots. CellRank enrichment selects the database gene-ID column that overlaps the actual driver background, including three-column GO tables with both Entrez and symbol identifiers.

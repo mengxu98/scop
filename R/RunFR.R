@@ -100,7 +100,7 @@ RunFR.Seurat <- function(
       "Computing nearest neighbor graph and SNN",
       verbose = verbose
     )
-    data_use <- Seurat::FindNeighbors(
+    data_use <- FindNeighbors(
       data_use,
       k.param = k.param,
       verbose = FALSE
@@ -116,7 +116,7 @@ RunFR.Seurat <- function(
       )
     }
     data_use <- data_use[, dims]
-    data_use <- Seurat::FindNeighbors(
+    data_use <- FindNeighbors(
       data_use,
       k.param = k.param
     )[["snn"]]

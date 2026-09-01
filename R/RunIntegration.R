@@ -1033,7 +1033,7 @@ find_neighbors_and_clusters <- function(
   srt <- tryCatch(
     {
       if (isTRUE(run_find_neighbors)) {
-        srt <- Seurat::FindNeighbors(
+        srt <- FindNeighbors(
           object = srt,
           reduction = reduction,
           dims = dims_use,
@@ -1048,7 +1048,7 @@ find_neighbors_and_clusters <- function(
         "Perform {.fn Seurat::FindClusters} with {.val {cluster_algorithm}}",
         verbose = verbose
       )
-      srt <- Seurat::FindClusters(
+      srt <- FindClusters(
         object = srt,
         resolution = cluster_resolution,
         algorithm = cluster_algorithm_index,

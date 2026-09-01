@@ -269,9 +269,9 @@ RunRareQ <- function(
       verbose = verbose
     )
     srt <- if (isTRUE(verbose)) {
-      do.call(Seurat::FindNeighbors, find_neighbors_args)
+      do.call(FindNeighbors, find_neighbors_args)
     } else {
-      suppressMessages(do.call(Seurat::FindNeighbors, find_neighbors_args))
+      suppressMessages(do.call(FindNeighbors, find_neighbors_args))
     }
     if (!neighbor_slot %in% names(srt@neighbors)) {
       log_message(
