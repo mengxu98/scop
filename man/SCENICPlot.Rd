@@ -52,6 +52,7 @@ SCENICPlot(
   expression_assay = NULL,
   expression_layer = "data",
   expression_scale = TRUE,
+  violin_args = list(),
   dim_args = list(),
   atac_assay = NULL,
   extend.upstream = 50000,
@@ -162,6 +163,9 @@ direct score comparison, or \code{"free"} for the legacy per-panel scale.}
 \item{expression_assay, expression_layer}{Assay and layer for TF expression.}
 
 \item{expression_scale}{Z-score TF expression in \code{"heatmap_dotplot"}.}
+
+\item{violin_args}{Extra arguments for \code{\link[=FeatureStatPlot]{FeatureStatPlot()}} in
+\code{"activity_violin"}.}
 
 \item{dim_args}{Extra arguments for \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} / \code{\link[=CellDimPlot]{CellDimPlot()}}.}
 
