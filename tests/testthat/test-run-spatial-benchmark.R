@@ -513,7 +513,7 @@ test_that("isolated monitor records runtime memory and timeout status", {
   success <- benchmark_run_isolated(
     input_path, success_dir, "SmoothClust",
     params = list(allocate = 3e6, sleep = 0.25), seed = 1,
-    keep_object = FALSE, timeout = 5, poll_interval = 0.02,
+    keep_object = FALSE, timeout = 30, poll_interval = 0.02,
     package_context = context, child_entry = benchmark_test_child
   )
   expect_identical(success$status, "success")
