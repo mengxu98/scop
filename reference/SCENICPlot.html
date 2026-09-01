@@ -17,7 +17,7 @@ in the returned annotation table.'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -129,6 +129,7 @@ in the returned annotation table.</p>
 <span>  expression_assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  expression_layer <span class="op">=</span> <span class="st">"data"</span>,</span>
 <span>  expression_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  violin_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  dim_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  atac_assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  extend.upstream <span class="op">=</span> <span class="fl">50000</span>,</span>
@@ -314,6 +315,11 @@ direct score comparison, or <code>"free"</code> for the legacy per-panel scale.<
 
 <dt id="arg-expression-scale">expression_scale<a class="anchor" aria-label="anchor" href="#arg-expression-scale"></a></dt>
 <dd><p>Z-score TF expression in <code>"heatmap_dotplot"</code>.</p></dd>
+
+
+<dt id="arg-violin-args">violin_args<a class="anchor" aria-label="anchor" href="#arg-violin-args"></a></dt>
+<dd><p>Extra arguments for <code><a href="FeatureStatPlot.html">FeatureStatPlot()</a></code> in
+<code>"activity_violin"</code>.</p></dd>
 
 
 <dt id="arg-dim-args">dim_args<a class="anchor" aria-label="anchor" href="#arg-dim-args"></a></dt>
