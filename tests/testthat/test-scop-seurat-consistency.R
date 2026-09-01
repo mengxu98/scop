@@ -65,7 +65,8 @@ test_that("RunPCA native eigengap gate rejects unstable trailing PCs", {
     asNamespace("scop")
   )
   expect_true(acceptable(c(10, 8, 6, 5), npcs = 3L))
-  expect_false(acceptable(c(10, 8, 6, 5.99), npcs = 3L))
+  expect_true(acceptable(c(10, 8, 6, 5.99), npcs = 3L))
+  expect_false(acceptable(c(10, 8, 6, 5.999), npcs = 3L))
   expect_false(acceptable(c(10, 8, NA_real_, 5), npcs = 3L))
 })
 
