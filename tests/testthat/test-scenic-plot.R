@@ -207,6 +207,32 @@ test_that("SCENICPlot activity heatmap returns drawable plot object", {
   expect_true("matrix_list" %in% names(out$heatmap))
 })
 
+test_that("SCENICPlot activity violin forwards statistical arguments", {
+  skip_if_not_installed("ggpubr")
+  dat <- make_scenic_plot_mock(seed = 2)
+  out <- SCENICPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "activity_violin",
+    features = rownames(dat$auc)[1],
+    violin_args = list(
+      comparisons = list(c("A", "B")),
+      pairwise_method = "wilcox.test",
+      sig_label = "p.format"
+    ),
+    combine = FALSE,
+    verbose = FALSE
+  )
+
+  compare_layers <- Filter(
+    function(layer) inherits(layer$stat, "StatSignif"),
+    out$plots[[1]]$layers
+  )
+  expect_length(compare_layers, 1)
+  expect_equal(compare_layers[[1]]$stat_params$comparisons, list(c("A", "B")))
+  expect_no_error(suppressWarnings(ggplot2::ggplot_build(out$plots[[1]])))
+})
+
 test_that("SCENICPlot activity heatmap can order rows by RSS source group", {
   dat <- make_scenic_plot_mock(seed = 22)
   dat$auc[, ] <- 0

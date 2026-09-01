@@ -55,6 +55,8 @@
 #' @param compare_expression Add TF expression next to `"activity_dim"`.
 #' @param expression_assay,expression_layer Assay and layer for TF expression.
 #' @param expression_scale Z-score TF expression in `"heatmap_dotplot"`.
+#' @param violin_args Extra arguments for [FeatureStatPlot()] in
+#'   `"activity_violin"`.
 #' @param dim_args Extra arguments for [FeatureDimPlot()] / [CellDimPlot()].
 #' @param atac_assay Chromatin assay for `"coverage"`.
 #' @param extend.upstream,extend.downstream Flanks for `"coverage"`.
@@ -167,6 +169,7 @@ SCENICPlot <- function(
   expression_assay = NULL,
   expression_layer = "data",
   expression_scale = TRUE,
+  violin_args = list(),
   dim_args = list(),
   atac_assay = NULL,
   extend.upstream = 50000,
@@ -509,7 +512,8 @@ SCENICPlot <- function(
       layer = layer,
       combine = combine,
       ncol = ncol,
-      title = title
+      title = title,
+      violin_args = violin_args
     ),
     activity_dim = scenic_plot_activity_dim(
       srt = srt,
@@ -1254,7 +1258,8 @@ scenic_plot_activity_violin <- function(
   layer = "data",
   combine = TRUE,
   ncol = 3,
-  title = NULL
+  title = NULL,
+  violin_args = list()
 ) {
   regulons <- scenic_resolve_regulon_features(
     features = features,
@@ -1277,19 +1282,23 @@ scenic_plot_activity_violin <- function(
   plot_data[["group"]] <- factor(plot_data[["group"]], levels = unique(group_annotation))
 
   srt_use <- scenic_attach_auc_assay(srt = srt, auc_mat = auc_mat, assay = assay)
-  plot <- FeatureStatPlot(
-    srt = srt_use,
-    stat.by = regulons,
-    group.by = group.by,
-    assay = assay,
-    layer = layer,
-    plot_type = "violin",
-    add_box = TRUE,
-    ylab = "Regulon activity",
-    title = title,
-    combine = combine,
-    ncol = ncol,
-    force = TRUE
+  plot <- scenic_call_with_args(
+    FeatureStatPlot,
+    args = list(
+      srt = srt_use,
+      stat.by = regulons,
+      group.by = group.by,
+      assay = assay,
+      layer = layer,
+      plot_type = "violin",
+      add_box = TRUE,
+      ylab = "Regulon activity",
+      title = title,
+      combine = combine,
+      ncol = ncol,
+      force = TRUE
+    ),
+    extra_args = violin_args
   )
   plots <- if (is.list(plot) && !inherits(plot, c("ggplot", "patchwork"))) {
     plot
@@ -2007,7 +2016,7 @@ scenic_call_with_args <- function(fun, args, extra_args = list()) {
   extra_args <- extra_args %||% list()
   if (!is.list(extra_args)) {
     log_message(
-      "{.arg heatmap_args} must be a list",
+      "{.arg extra_args} must be a list",
       message_type = "error"
     )
   }
