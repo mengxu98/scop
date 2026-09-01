@@ -259,7 +259,7 @@ RunKNNPredict <- function(
       if (features_type == "HVF" && feature_source %in% c("both", "query")) {
         if (length(SeuratObject::VariableFeatures(srt_query, assay = query_assay)) == 0) {
           log_message("Perform {.fn Seurat::FindVariableFeatures} on the query data...", verbose = verbose)
-          srt_query <- Seurat::FindVariableFeatures(
+          srt_query <- FindVariableFeatures(
             srt_query,
             nfeatures = nfeatures,
             assay = query_assay,
@@ -420,7 +420,7 @@ RunKNNPredict <- function(
         if (features_type == "HVF" && feature_source %in% c("both", "ref")) {
           log_message("Use the HVF to calculate distance metric", verbose = verbose)
           if (length(SeuratObject::VariableFeatures(srt_ref, assay = ref_assay)) == 0) {
-            srt_ref <- Seurat::FindVariableFeatures(
+            srt_ref <- FindVariableFeatures(
               srt_ref,
               nfeatures = nfeatures,
               assay = ref_assay
@@ -715,7 +715,7 @@ RunKNNPredict <- function(
     match_k_distance <- native_knn[["distance"]]
     rownames(match_k_distance) <- rownames(query)
   } else if (nn_method %in% c("annoy", "rann")) {
-    query.neighbor <- Seurat::FindNeighbors(
+    query.neighbor <- FindNeighbors(
       query = query,
       object = ref,
       k.param = k,

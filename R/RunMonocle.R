@@ -220,7 +220,7 @@ RunMonocle2 <- function(
       )
       if (length(features) == 0) {
         features <- SeuratObject::VariableFeatures(
-          Seurat::FindVariableFeatures(srt, assay = assay, verbose = FALSE),
+          FindVariableFeatures(srt, assay = assay, verbose = FALSE),
           assay = assay
         )
       }
@@ -457,7 +457,7 @@ run_monocle2_cpp <- function(
       )
       if (length(features) == 0) {
         features <- SeuratObject::VariableFeatures(
-          Seurat::FindVariableFeatures(srt, assay = assay, verbose = FALSE),
+          FindVariableFeatures(srt, assay = assay, verbose = FALSE),
           assay = assay
         )
       }

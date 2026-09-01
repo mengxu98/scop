@@ -11,6 +11,56 @@ make_fast_path_object <- function(seed = 7) {
   RunPCA(obj, features = SeuratObject::VariableFeatures(obj), npcs = 10, verbose = FALSE)
 }
 
+test_that("internal workflows use scop Seurat-compatible entry points", {
+  has_namespaced_call <- function(expr, entry_point) {
+    if (
+      is.call(expr) && length(expr) >= 3L &&
+        identical(expr[[1L]], quote(`::`)) &&
+        identical(expr[[2L]], quote(Seurat)) &&
+        identical(as.character(expr[[3L]]), entry_point)
+    ) {
+      return(TRUE)
+    }
+    is.recursive(expr) && any(vapply(
+      as.list(expr),
+      has_namespaced_call,
+      logical(1),
+      entry_point = entry_point
+    ))
+  }
+  routes <- list(
+    NormalizeData = c(
+      "scpagwas_prepare_seurat", "EnrichmentHeatmap", "scissor_heatmap_plot"
+    ),
+    FindVariableFeatures = c(
+      "srt_reorder", "RunKNNMap", "RunKNNPredict", "RunMonocle2",
+      "RunDynamicFeatures", "CheckDataList"
+    ),
+    ScaleData = c(
+      "Uncorrected_integrate", "Seurat_integrate", "MNN_integrate",
+      "Harmony_integrate", "BBKNN_integrate", "CSS_integrate",
+      "Conos_integrate", "ComBat_integrate"
+    ),
+    FindNeighbors = c(
+      "find_neighbors_and_clusters", "RunKNNMap", "RunKNNPredict",
+      "RunFR.Seurat", "RunRareQ"
+    ),
+    FindClusters = c("find_neighbors_and_clusters", "RunStandardWorkflow"),
+    FindMultiModalNeighbors = "WNN_integrate"
+  )
+  ns <- asNamespace("scop")
+  for (entry_point in names(routes)) {
+    for (workflow in routes[[entry_point]]) {
+      code <- body(get(workflow, envir = ns, inherits = FALSE))
+      expect_true(
+        entry_point %in% all.names(code, functions = TRUE),
+        info = paste(workflow, entry_point)
+      )
+      expect_false(has_namespaced_call(code, entry_point), info = paste(workflow, entry_point))
+    }
+  }
+})
+
 test_that("NormalizeData uses the fast path for Assay5 objects", {
   set.seed(11)
   mat <- Matrix::rsparsematrix(20, 10, density = 0.2)

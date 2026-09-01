@@ -31,7 +31,7 @@ srt_reorder <- function(
 ) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (is.null(features)) {
-    srt <- Seurat::FindVariableFeatures(
+    srt <- FindVariableFeatures(
       srt,
       assay = SeuratObject::DefaultAssay(srt),
       verbose = FALSE

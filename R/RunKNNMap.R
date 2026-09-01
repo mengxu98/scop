@@ -221,7 +221,7 @@ RunKNNMap <- function(
         assay = ref_assay
       )
       if (length(vf_ref) == 0) {
-        srt_ref <- Seurat::FindVariableFeatures(
+        srt_ref <- FindVariableFeatures(
           srt_ref,
           nfeatures = nfeatures,
           assay = ref_assay
@@ -236,7 +236,7 @@ RunKNNMap <- function(
         assay = query_assay
       )
       if (length(vf_query) == 0) {
-        srt_query <- Seurat::FindVariableFeatures(
+        srt_query <- FindVariableFeatures(
           srt_query,
           nfeatures = nfeatures,
           assay = query_assay
@@ -334,7 +334,7 @@ RunKNNMap <- function(
     ]
     group <- rep(rownames(query), k)
   } else if (nn_method %in% c("annoy", "rann")) {
-    query_neighbor <- Seurat::FindNeighbors(
+    query_neighbor <- FindNeighbors(
       query = query,
       object = ref,
       k.param = k,
