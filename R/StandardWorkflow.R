@@ -248,6 +248,7 @@ RunStandardWorkflow <- function(
       neighbor_k = neighbor_k,
       cluster_algorithm = cluster_algorithm,
       cluster_resolution = cluster_resolution,
+      cores = cores,
       verbose = verbose,
       seed = seed,
       ...
@@ -724,6 +725,7 @@ run_standard_spatial_workflow <- function(
   neighbor_k = 20L,
   cluster_algorithm = "louvain",
   cluster_resolution = 0.6,
+  cores = 1L,
   verbose = TRUE,
   seed = 11,
   ...
@@ -752,6 +754,7 @@ run_standard_spatial_workflow <- function(
       message_type = "error"
     )
   }
+  cores <- validate_scalar_integer(cores, "cores")
 
   validate_named_list(spot_qc_params, "spot_qc_params")
   validate_named_list(
@@ -911,6 +914,7 @@ run_standard_spatial_workflow <- function(
     neighbor_k = neighbor_k,
     cluster_algorithm = cluster_algorithm,
     cluster_resolution = cluster_resolution,
+    cores = cores,
     verbose = verbose,
     seed = seed,
     ...
