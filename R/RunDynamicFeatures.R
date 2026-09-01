@@ -227,7 +227,7 @@ RunDynamicFeatures <- function(
         )
       }
       HVF <- SeuratObject::VariableFeatures(
-        Seurat::FindVariableFeatures(
+        FindVariableFeatures(
           srt_sub,
           nfeatures = n_candidates,
           assay = assay,

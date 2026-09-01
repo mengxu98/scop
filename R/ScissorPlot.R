@@ -594,7 +594,7 @@ scissor_heatmap_plot <- function(
     )
   )
   if (is.null(data_layer) || nrow(data_layer) == 0L || ncol(data_layer) == 0L) {
-    srt <- Seurat::NormalizeData(srt, assay = assay, verbose = FALSE)
+    srt <- NormalizeData(srt, assay = assay, verbose = FALSE)
   }
   if (is.null(features)) {
     features <- scissor_select_heatmap_features(

@@ -533,7 +533,7 @@ RunStandardWorkflow <- function(
           identical(tolower(cluster_algorithm), "leiden") &&
             "leiden_method" %in% names(formals(find_clusters_method))
         ) {
-          srt <- Seurat::FindClusters(
+          srt <- FindClusters(
             object = srt,
             resolution = cluster_resolution,
             algorithm = cluster_algorithm_index,
@@ -542,7 +542,7 @@ RunStandardWorkflow <- function(
             leiden_method = "igraph"
           )
         } else {
-          srt <- Seurat::FindClusters(
+          srt <- FindClusters(
             object = srt,
             resolution = cluster_resolution,
             algorithm = cluster_algorithm_index,
