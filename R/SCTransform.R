@@ -12,6 +12,57 @@ sct_clip_ok <- function(clip.range) {
     clip.range[1] < clip.range[2]
 }
 
+sct_regression_supported <- function(vars.to.regress, latent.data, cell.attr, cells) {
+  if (is.null(vars.to.regress) && is.null(latent.data)) {
+    return(TRUE)
+  }
+  if (
+    !is.character(cells) || anyNA(cells) || anyDuplicated(cells) ||
+      (!is.null(vars.to.regress) && (
+        !is.character(vars.to.regress) || !length(vars.to.regress) ||
+          anyNA(vars.to.regress) || anyDuplicated(vars.to.regress) ||
+          !is.data.frame(cell.attr) ||
+          !all(vars.to.regress %in% colnames(cell.attr))
+      ))
+  ) {
+    return(FALSE)
+  }
+  regressors <- if (is.null(vars.to.regress)) {
+    NULL
+  } else {
+    cell.attr[, vars.to.regress, drop = FALSE]
+  }
+  if (!is.null(latent.data)) {
+    latent <- tryCatch(as.data.frame(latent.data), error = function(e) NULL)
+    if (is.null(latent) || !ncol(latent)) {
+      return(FALSE)
+    }
+    latent <- latent[, !colnames(latent) %in% colnames(regressors), drop = FALSE]
+    regressors <- if (is.null(regressors)) latent else cbind(regressors, latent)
+  }
+  if (is.null(regressors) || nrow(regressors) != length(cells)) {
+    return(FALSE)
+  }
+  if (is.null(rownames(regressors))) {
+    rownames(regressors) <- cells
+  } else if (!setequal(rownames(regressors), cells)) {
+    return(FALSE)
+  }
+  regressors <- regressors[cells, , drop = FALSE]
+  if (any(!stats::complete.cases(regressors))) {
+    return(FALSE)
+  }
+  names(regressors) <- paste0("v", seq_len(ncol(regressors)))
+  design <- tryCatch(
+    stats::model.matrix(
+      stats::as.formula(paste("~", paste(names(regressors), collapse = " + "))),
+      data = regressors
+    ),
+    error = function(e) NULL
+  )
+  !is.null(design) && all(is.finite(design))
+}
+
 sct_fast_path_supported <- function(
   reference.SCT.model,
   do.correct.umi,
@@ -633,7 +684,12 @@ SCTransform.default <- function(
     variable.features.n = variable.features.n,
     variable.features.rv.th = variable.features.rv.th,
     clip.range = clip.range,
-    regression_ok = is.null(vars.to.regress) && is.null(latent.data)
+    regression_ok = sct_regression_supported(
+      vars.to.regress = vars.to.regress,
+      latent.data = latent.data,
+      cell.attr = cell.attr,
+      cells = colnames(object)
+    )
   )
   if (sct_delegates) {
     log_message(
@@ -870,11 +926,6 @@ SCTransform.default <- function(
     isTRUE(do.scale) && is.null(sct_latent_df)
   )
   dimnames(scale.data) <- list(output.features, col_names)
-  scale.data <- scale.data[
-    all_gene_names[all_gene_names %in% output.features],
-    ,
-    drop = FALSE
-  ]
   rm(csr, corrected_list)
   if (!is.null(sct_latent_df)) {
     scale.data <- sct_regress_out(scale.data, sct_latent_df[col_names, , drop = FALSE])
@@ -930,7 +981,12 @@ SCTransform.Seurat <- function(
     variable.features.n = variable.features.n,
     variable.features.rv.th = variable.features.rv.th,
     clip.range = clip.range,
-    regression_ok = is.null(vars.to.regress)
+    regression_ok = sct_regression_supported(
+      vars.to.regress = vars.to.regress,
+      latent.data = NULL,
+      cell.attr = methods::slot(object, "meta.data"),
+      cells = colnames(object[[assay]])
+    )
   )
   if (sct_delegates) {
     log_message(
@@ -1016,7 +1072,13 @@ SCTransform.Seurat <- function(
   SeuratObject::VariableFeatures(assay.out) <- vst.out$variable_features
   methods::slot(assay.out, "data") <- data_layer
   rm(data_layer)
-  methods::slot(assay.out, "scale.data") <- vst.out$y
+  scale.data <- vst.out$y[
+    rownames(assay.out)[rownames(assay.out) %in% rownames(vst.out$y)],
+    ,
+    drop = FALSE
+  ]
+  methods::slot(assay.out, "scale.data") <- scale.data
+  rm(scale.data)
   vst.out$y <- NULL
   vst.out$arguments$sct.clip.range <- clip.range
   vst.out$arguments <- vst.out$arguments[
@@ -1048,8 +1110,8 @@ SCTransform.Seurat <- function(
 #' @details
 #' The validated sparse `vst.flavor = "v2"` path uses native corrected-count
 #' and residual kernels. Reference models, specified residual features,
-#' memory-conserving mode, regression, custom VST arguments, and other flavors
-#' transparently delegate to `Seurat::SCTransform`.
+#' memory-conserving mode, unsupported regression designs, custom VST arguments,
+#' and other flavors transparently delegate to `Seurat::SCTransform`.
 #'
 #' @param object Object containing count data.
 #' @param ... Passed to methods.
