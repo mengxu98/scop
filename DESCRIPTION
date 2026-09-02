@@ -96,7 +96,6 @@ Suggests:
     pkgload,
     purrr,
     plotly,
-    presto,
     ps,
     proxyC,
     qlcMatrix,

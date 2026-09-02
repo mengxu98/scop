@@ -296,11 +296,20 @@ test_that("RunDEtest all-in-one markers match the pairwise scop backend", {
     mean.fxn = NULL,
     p.adjust.method = "bonferroni"
   )
+  install_requested <- NULL
   expect_null(testthat::with_mocked_bindings(
     do.call(native_all_markers, native_args),
-    requireNamespace = function(package, ...) !identical(package, "presto"),
-    .package = "base"
+    presto_get_fun = function(
+      fun = "wilcoxauc",
+      install = FALSE,
+      error_on_missing = TRUE
+    ) {
+      install_requested <<- install
+      NULL
+    },
+    .package = "scop"
   ))
+  expect_false(install_requested)
 
   all_in_one <- do.call(native_all_markers, native_args)
   pairwise <- lapply(levels(cell_group), function(group) {

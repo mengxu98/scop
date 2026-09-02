@@ -229,6 +229,7 @@ marker_one_cluster <- function(
 
 marker_all_from_context <- function(
   ctx,
+  presto_fun,
   min.cells.group,
   min.pct,
   min.diff.pct,
@@ -258,7 +259,7 @@ marker_all_from_context <- function(
         c(rep("Group1", length(cells_1)), rep("Group2", length(cells_2))),
         levels = c("Group1", "Group2")
       )
-      presto_result <- presto::wilcoxauc(
+      presto_result <- presto_fun(
         X = sampled,
         y = sampled_group,
         verbose = FALSE
@@ -271,7 +272,7 @@ marker_all_from_context <- function(
       block$pval[match(ctx$features, block$feature)]
     }, numeric(ctx$feature_count))
   } else {
-    presto_result <- presto::wilcoxauc(
+    presto_result <- presto_fun(
       X = ctx$data,
       y = ctx$group,
       verbose = FALSE
@@ -384,7 +385,6 @@ FindAllMarkers.Seurat <- function(
   }
   if (
     marker_assay_is_chromatin(object, assay) ||
-      !requireNamespace("presto", quietly = TRUE) ||
       !marker_all_supported(
         extra_args = list(...),
         features = features,
@@ -424,8 +424,16 @@ FindAllMarkers.Seurat <- function(
   if (is.null(ctx) || length(ctx$labels) < 2L) {
     return(run_seurat())
   }
+  presto_fun <- presto_get_fun(
+    install = FALSE,
+    error_on_missing = FALSE
+  )
+  if (is.null(presto_fun)) {
+    return(run_seurat())
+  }
   marker_all_from_context(
     ctx = ctx,
+    presto_fun = presto_fun,
     min.cells.group = min.cells.group,
     min.pct = min.pct,
     min.diff.pct = min.diff.pct,
