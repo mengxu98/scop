@@ -779,38 +779,38 @@ run_standard_spatial_workflow <- function(
     neighbor_metric <- atac_args$neighbor_metric
   }
   cores <- validate_scalar_integer(cores, "cores")
+  validate_scalar_flag(do_spot_qc, "do_spot_qc")
+  validate_scalar_flag(
+    do_spatial_variable_features,
+    "do_spatial_variable_features"
+  )
+  validate_scalar_flag(do_spatial_cluster, "do_spatial_cluster")
+  if (!is.null(do_deconvolution)) {
+    validate_scalar_flag(do_deconvolution, "do_deconvolution")
+  }
 
-  validate_named_list(spot_qc_params, "spot_qc_params")
-  validate_named_list(
-    spatial_variable_features_params,
-    "spatial_variable_features_params"
-  )
-  validate_named_list(bayesspace_params, "bayesspace_params")
-
-  spatial_cluster_method <- match.arg(spatial_cluster_method, "BayesSpace")
-  deconvolution_method <- match.arg(
-    deconvolution_method,
-    c("RCTD", "SPOTlight", "Cell2location")
-  )
-  deconv_default_name <- switch(deconvolution_method,
-    RCTD = "RCTD",
-    SPOTlight = "SPOTlight",
-    Cell2location = "Cell2location"
-  )
-  deconv_producer <- switch(deconvolution_method,
-    RCTD = "RunRCTD",
-    SPOTlight = "RunSPOTlight",
-    Cell2location = "RunCell2location"
-  )
-  deconv_fun <- switch(deconvolution_method,
-    RCTD = RunRCTD,
-    SPOTlight = RunSPOTlight,
-    Cell2location = RunCell2location
-  )
-
+  spatial_cluster_method_label <- if (
+    is.character(spatial_cluster_method) &&
+      length(spatial_cluster_method) == 1L &&
+      !is.na(spatial_cluster_method) &&
+      nzchar(spatial_cluster_method)
+  ) {
+    spatial_cluster_method
+  } else {
+    "BayesSpace"
+  }
+  deconvolution_method_label <- if (
+    is.character(deconvolution_method) &&
+      length(deconvolution_method) == 1L &&
+      !is.na(deconvolution_method) &&
+      nzchar(deconvolution_method)
+  ) {
+    deconvolution_method
+  } else {
+    "RCTD"
+  }
   deconvolution_requested <- isTRUE(do_deconvolution) ||
-    is.null(do_deconvolution) ||
-    length(deconvolution_params) > 0L
+    is.null(do_deconvolution)
   stages <- data.frame(
     stage = c("quality_control", "spatial_variable_features", "spatial_clustering", "deconvolution"),
     requested = c(
@@ -827,7 +827,7 @@ run_standard_spatial_workflow <- function(
     ),
     requested_method = c(
       "RunSpotQC", "RunSpatialVariableFeatures",
-      spatial_cluster_method, deconvolution_method
+      spatial_cluster_method_label, deconvolution_method_label
     ),
     actual_method = NA_character_,
     result_tool_key = NA_character_,
@@ -956,17 +956,102 @@ run_standard_spatial_workflow <- function(
     )
   }
 
-  deconvolution_params <- run_stage_setup(
-    stage = "deconvolution",
-    actual_method = deconv_producer,
-    expr = {
-      validate_named_list(
-        deconvolution_params,
-        "deconvolution_params"
+  spatial_cluster_method <- if (do_spatial_cluster) {
+    run_stage_setup(
+      stage = "spatial_clustering",
+      actual_method = "RunBayesSpace",
+      expr = match.arg(spatial_cluster_method, "BayesSpace")
+    )
+  } else {
+    "BayesSpace"
+  }
+  spatial_clustering_row <- match("spatial_clustering", stages$stage)
+  stages$requested_method[[spatial_clustering_row]] <- spatial_cluster_method
+
+  deconvolution_method <- if (deconvolution_requested) {
+    run_stage_setup(
+      stage = "deconvolution",
+      actual_method = "deconvolution_method validation",
+      expr = match.arg(
+        deconvolution_method,
+        c("RCTD", "SPOTlight", "Cell2location")
       )
-      deconvolution_params
-    }
+    )
+  } else {
+    "RCTD"
+  }
+  deconvolution_row <- match("deconvolution", stages$stage)
+  stages$requested_method[[deconvolution_row]] <- deconvolution_method
+  deconv_default_name <- switch(deconvolution_method,
+    RCTD = "RCTD",
+    SPOTlight = "SPOTlight",
+    Cell2location = "Cell2location"
   )
+  deconv_producer <- switch(deconvolution_method,
+    RCTD = "RunRCTD",
+    SPOTlight = "RunSPOTlight",
+    Cell2location = "RunCell2location"
+  )
+  deconv_fun <- switch(deconvolution_method,
+    RCTD = RunRCTD,
+    SPOTlight = RunSPOTlight,
+    Cell2location = RunCell2location
+  )
+
+  spot_qc_params <- if (do_spot_qc) {
+    run_stage_setup(
+      stage = "quality_control",
+      actual_method = "RunSpotQC",
+      expr = {
+        validate_named_list(spot_qc_params, "spot_qc_params")
+        spot_qc_params
+      }
+    )
+  } else {
+    list()
+  }
+  spatial_variable_features_params <- if (do_spatial_variable_features) {
+    run_stage_setup(
+      stage = "spatial_variable_features",
+      actual_method = "RunSpatialVariableFeatures",
+      expr = {
+        validate_named_list(
+          spatial_variable_features_params,
+          "spatial_variable_features_params"
+        )
+        spatial_variable_features_params
+      }
+    )
+  } else {
+    list()
+  }
+  bayesspace_params <- if (do_spatial_cluster) {
+    run_stage_setup(
+      stage = "spatial_clustering",
+      actual_method = "RunBayesSpace",
+      expr = {
+        validate_named_list(bayesspace_params, "bayesspace_params")
+        bayesspace_params
+      }
+    )
+  } else {
+    list()
+  }
+  deconvolution_params <- if (deconvolution_requested) {
+    run_stage_setup(
+      stage = "deconvolution",
+      actual_method = deconv_producer,
+      expr = {
+        validate_named_list(
+          deconvolution_params,
+          "deconvolution_params"
+        )
+        deconvolution_params
+      }
+    )
+  } else {
+    list()
+  }
   if (is.null(do_deconvolution)) {
     do_deconvolution <- !is.null(reference) ||
       (
@@ -974,7 +1059,6 @@ run_standard_spatial_workflow <- function(
           !is.null(deconvolution_params[["reference_signatures"]])
       )
   }
-  deconvolution_row <- match("deconvolution", stages$stage)
   stages$requested[[deconvolution_row]] <- isTRUE(do_deconvolution)
   stages$status[[deconvolution_row]] <- if (isTRUE(do_deconvolution)) {
     "requested"
@@ -1012,7 +1096,8 @@ run_standard_spatial_workflow <- function(
     prefix = prefix,
     linear_reduction = linear_reduction,
     normalization_method = normalization_method,
-    is_atac_assay = is_atac_assay
+    is_atac_assay = is_atac_assay,
+    cluster_resolution = cluster_resolution
   )
   spot_qc_args <- NULL
   spot_qc_metadata_targets <- character()
@@ -1086,8 +1171,7 @@ run_standard_spatial_workflow <- function(
       expr = {
         validate_scalar_string(
           planned_deconv_prefix,
-          "deconvolution_params$prefix",
-          require_character = FALSE
+          "deconvolution_params$prefix"
         )
         validate_scalar_flag(
           planned_deconv_store_results,
@@ -1247,6 +1331,14 @@ run_standard_spatial_workflow <- function(
         svf_args$set_variable_features <-
           svf_args$set_variable_features %||% TRUE
         svf_args$store_results <- svf_args$store_results %||% TRUE
+        validate_scalar_flag(
+          svf_args$set_variable_features,
+          "spatial_variable_features_params$set_variable_features"
+        )
+        validate_scalar_flag(
+          svf_args$store_results,
+          "spatial_variable_features_params$store_results"
+        )
         svf_store_results <- isTRUE(svf_args$store_results)
         svf_set_variable_features <- isTRUE(svf_args$set_variable_features)
         variable_features_before <- length(
@@ -1785,7 +1877,8 @@ standard_spatial_preprocessing_metadata_targets <- function(
   prefix,
   linear_reduction,
   normalization_method,
-  is_atac_assay = FALSE
+  is_atac_assay = FALSE,
+  cluster_resolution = 0.6
 ) {
   prefix <- prefix %||% ""
   validate_scalar_string(prefix, "prefix", require_character = FALSE)
@@ -1809,10 +1902,25 @@ standard_spatial_preprocessing_metadata_targets <- function(
   } else {
     linear_reduction
   }
+  resolution_cluster_cols <- unlist(
+    lapply(
+      effective_linear_reduction,
+      function(reduction) {
+        paste0(
+          prefix,
+          reduction,
+          "_SNN_res.",
+          cluster_resolution
+        )
+      }
+    ),
+    use.names = FALSE
+  )
   unique(c(
     paste0(prefix, effective_linear_reduction, "clusters"),
     paste0(prefix, "clusters"),
-    if (is_atac_assay) paste0(prefix, "lsiclusters")
+    if (is_atac_assay) paste0(prefix, "lsiclusters"),
+    resolution_cluster_cols
   ))
 }
 
@@ -1962,16 +2070,14 @@ standard_spatial_add_clustering_output_plan <- function(
 ) {
   validate_scalar_string(
     cluster_colname,
-    "bayesspace_params$cluster_colname",
-    require_character = FALSE
+    "bayesspace_params$cluster_colname"
   )
   metadata_targets <- c(metadata_targets, as.character(cluster_colname))
   metadata_owners <- c(metadata_owners, "spatial_clustering cluster_colname")
   if (!is.null(init_colname)) {
     validate_scalar_string(
       init_colname,
-      "bayesspace_params$init_colname",
-      require_character = FALSE
+      "bayesspace_params$init_colname"
     )
     metadata_targets <- c(metadata_targets, as.character(init_colname))
     metadata_owners <- c(metadata_owners, "spatial_clustering init_colname")
@@ -2341,9 +2447,7 @@ standardize_atac <- function(srt, prefix = "ATAC") {
   prefix <- prefix %||% ""
   svd_name <- paste0(prefix, "svd")
   lsi_name <- paste0(prefix, "lsi")
-  if (
-    svd_name %in% names(srt@reductions) && !lsi_name %in% names(srt@reductions)
-  ) {
+  if (svd_name %in% names(srt@reductions)) {
     reduc <- srt@reductions[[svd_name]]
     SeuratObject::Key(reduc) <- paste0(lsi_name, "_")
     srt@reductions[[lsi_name]] <- reduc
@@ -2351,20 +2455,13 @@ standardize_atac <- function(srt, prefix = "ATAC") {
 
   svd_cluster <- paste0(prefix, "svdclusters")
   lsi_cluster <- paste0(prefix, "lsiclusters")
-  if (
-    svd_cluster %in%
-      colnames(srt@meta.data) &&
-      !lsi_cluster %in% colnames(srt@meta.data)
-  ) {
+  if (svd_cluster %in% colnames(srt@meta.data)) {
     srt[[lsi_cluster]] <- srt[[svd_cluster]]
-  }
-  prefix_cluster <- paste0(prefix, "clusters")
-  if (
-    prefix_cluster %in%
-      colnames(srt@meta.data) &&
-      !lsi_cluster %in% colnames(srt@meta.data)
-  ) {
-    srt[[lsi_cluster]] <- srt[[prefix_cluster]]
+  } else {
+    prefix_cluster <- paste0(prefix, "clusters")
+    if (prefix_cluster %in% colnames(srt@meta.data)) {
+      srt[[lsi_cluster]] <- srt[[prefix_cluster]]
+    }
   }
 
   default_reduction <- srt@misc[["Default_reduction"]] %||% NULL

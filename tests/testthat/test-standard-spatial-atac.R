@@ -209,3 +209,64 @@ test_that("custom ATAC workflow values retain atac_defaults semantics", {
   expect_identical(domain$status, "completed")
   expect_identical(domain$result_metadata_key, "Customicaclusters")
 })
+
+test_that("standardize_atac refreshes LSI aliases on rerun", {
+  standardize <- getFromNamespace("standardize_atac", "scop")
+  srt <- add_standard_spatial_atac_reduction(
+    make_standard_spatial_atac_object(),
+    "ATACsvd"
+  )
+  first_clusters <- factor(c("one", "one", "two", "two"))
+  srt[["ATACsvdclusters"]] <- first_clusters
+  srt@misc[["Default_reduction"]] <- "ATACsvdUMAP2D"
+
+  first <- standardize(srt, prefix = "ATAC")
+  first_lsi <- SeuratObject::Embeddings(first, reduction = "ATAClsi")
+  expect_equal(
+    unname(first_lsi),
+    unname(SeuratObject::Embeddings(first, reduction = "ATACsvd"))
+  )
+  expect_identical(SeuratObject::Key(first[["ATAClsi"]]), "ATAClsi_")
+  expect_identical(
+    as.character(first[["ATAClsiclusters", drop = TRUE]]),
+    as.character(first_clusters)
+  )
+  expect_identical(first@misc[["Default_reduction"]], "ATAClsiUMAP2D")
+  expect_identical(
+    first@misc[["ATAC_default_linear_reduction"]],
+    "ATAClsi"
+  )
+  expect_identical(
+    first@misc[["ATAC_default_cluster_col"]],
+    "ATAClsiclusters"
+  )
+
+  fresh_embeddings <- first_lsi + 100
+  first[["ATACsvd"]] <- SeuratObject::CreateDimReducObject(
+    embeddings = fresh_embeddings,
+    assay = "peaks",
+    key = "FRESH_"
+  )
+  fresh_clusters <- factor(c("three", "four", "three", "four"))
+  first[["ATACsvdclusters"]] <- fresh_clusters
+  first@misc[["Default_reduction"]] <- "ATACsvdUMAP2D"
+
+  second <- standardize(first, prefix = "ATAC")
+  second_lsi <- SeuratObject::Embeddings(second, reduction = "ATAClsi")
+  expect_equal(unname(second_lsi), unname(fresh_embeddings))
+  expect_false(isTRUE(all.equal(second_lsi, first_lsi)))
+  expect_identical(SeuratObject::Key(second[["ATAClsi"]]), "ATAClsi_")
+  expect_identical(
+    as.character(second[["ATAClsiclusters", drop = TRUE]]),
+    as.character(fresh_clusters)
+  )
+  expect_identical(second@misc[["Default_reduction"]], "ATAClsiUMAP2D")
+  expect_identical(
+    second@misc[["ATAC_default_linear_reduction"]],
+    "ATAClsi"
+  )
+  expect_identical(
+    second@misc[["ATAC_default_cluster_col"]],
+    "ATAClsiclusters"
+  )
+})
