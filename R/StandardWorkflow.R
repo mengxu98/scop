@@ -789,12 +789,29 @@ run_standard_spatial_workflow <- function(
     SPOTlight = "SPOTlight",
     Cell2location = "Cell2location"
   )
-  if (
-    isTRUE(do_deconvolution) &&
-      (!is.null(reference) || has_cell2location_signatures)
-  ) {
+  deconv_will_run <- isTRUE(do_deconvolution) &&
+    (!is.null(reference) || has_cell2location_signatures)
+  planned_deconv_prefix <- deconvolution_params[["prefix"]] %||%
+    deconv_default_name
+  planned_deconv_tool_name <- deconvolution_params[["tool_name"]] %||%
+    deconv_default_name
+  planned_deconv_store_results <- isTRUE(
+    deconvolution_params[["store_results"]] %||% TRUE
+  )
+  planned_bayesspace_cluster_colname <-
+    bayesspace_params[["cluster_colname"]] %||% "BayesSpace_cluster"
+
+  standard_spatial_validate_metadata_output_plan(
+    do_spot_qc = isTRUE(do_spot_qc),
+    do_spatial_cluster = isTRUE(do_spatial_cluster),
+    bayesspace_cluster_colname = planned_bayesspace_cluster_colname,
+    do_deconvolution = deconv_will_run,
+    deconvolution_prefix = planned_deconv_prefix
+  )
+  if (deconv_will_run) {
     standard_spatial_validate_deconvolution_tool_name(
-      deconvolution_params[["tool_name"]] %||% deconv_default_name
+      planned_deconv_tool_name,
+      check_reserved = planned_deconv_store_results
     )
   }
 
@@ -1004,9 +1021,6 @@ run_standard_spatial_workflow <- function(
 
   cluster_col <- paste0(prefix, "clusters")
   if (isTRUE(do_spatial_variable_features)) {
-    variable_features_before <- length(
-      standard_spatial_variable_features(srt, assay = assay)
-    )
     svf_args <- merge_call_args(
       list(
         srt = srt,
@@ -1021,21 +1035,26 @@ run_standard_spatial_workflow <- function(
       ),
       spatial_variable_features_params
     )
+    svf_assay <- svf_args$assay %||% SeuratObject::DefaultAssay(srt)
+    svf_args$assay <- svf_assay
     svf_args$set_variable_features <- svf_args$set_variable_features %||% TRUE
     svf_args$store_results <- svf_args$store_results %||% TRUE
     svf_store_results <- isTRUE(svf_args$store_results)
     svf_set_variable_features <- isTRUE(svf_args$set_variable_features)
+    variable_features_before <- length(
+      standard_spatial_variable_features(srt, assay = svf_assay)
+    )
     if (is.null(svf_args$features)) {
       input_features <- standard_spatial_variable_features(
         srt,
-        assay = assay
+        assay = svf_assay
       )
       if (length(input_features) > 0L) {
         svf_args$features <- input_features
       }
     }
     svf_input <- if (svf_set_variable_features) {
-      standard_spatial_suspend_variable_features(srt, assay = assay)
+      standard_spatial_suspend_variable_features(srt, assay = svf_assay)
     } else {
       list(srt = srt, restore_metadata = NULL)
     }
@@ -1053,7 +1072,7 @@ run_standard_spatial_workflow <- function(
       actual_method = "RunSpatialVariableFeatures",
       result_probe = function(result) {
         variable_features <- if (svf_set_variable_features) {
-          standard_spatial_variable_features(result, assay = assay)
+          standard_spatial_variable_features(result, assay = svf_assay)
         } else {
           character()
         }
@@ -1070,28 +1089,34 @@ run_standard_spatial_workflow <- function(
           },
           tool_required = svf_store_results,
           extra_locations = if (length(variable_features) > 0L) {
-            sprintf('VariableFeatures("%s")', assay)
+            sprintf('VariableFeatures("%s")', svf_assay)
           } else {
             character()
           },
           extra_required = svf_set_variable_features &&
             !valid_empty_selection,
-          extra_expected = sprintf('VariableFeatures("%s")', assay)
+          extra_expected = sprintf('VariableFeatures("%s")', svf_assay)
         )
       }
     )
     if (svf_set_variable_features) {
+      preserve_empty_selection <-
+        length(standard_spatial_variable_features(srt, assay = svf_assay)) ==
+          0L &&
+        svf_store_results &&
+        standard_spatial_svf_has_valid_empty_selection(srt)
       srt <- standard_spatial_restore_variable_feature_info(
         srt,
-        assay = assay,
-        metadata = svf_input$restore_metadata
+        assay = svf_assay,
+        metadata = svf_input$restore_metadata,
+        preserve_empty_selection = preserve_empty_selection
       )
     }
     update_stage(
       stage = "spatial_variable_features",
       variable_features_before = variable_features_before,
       variable_features_after = length(
-        standard_spatial_variable_features(srt, assay = assay)
+        standard_spatial_variable_features(srt, assay = svf_assay)
       ),
       set_variable_features = svf_set_variable_features
     )
@@ -1149,8 +1174,8 @@ run_standard_spatial_workflow <- function(
       bayesspace_args,
       bayesspace_params
     )
-    bayesspace_args$cluster_colname <- bayesspace_args$cluster_colname %||%
-      "BayesSpace_cluster"
+    bayesspace_args$cluster_colname <-
+      bayesspace_args$cluster_colname %||% "BayesSpace_cluster"
     bayesspace_cluster_colname <- bayesspace_args$cluster_colname
     bayesspace_args$srt <- standard_spatial_clear_outputs(
       srt,
@@ -1227,7 +1252,10 @@ run_standard_spatial_workflow <- function(
       deconv_prefix <- deconv_args$prefix
       deconv_tool_name <- deconv_args$tool_name
       deconv_store_results <- isTRUE(deconv_args$store_results)
-      standard_spatial_validate_deconvolution_tool_name(deconv_tool_name)
+      standard_spatial_validate_deconvolution_tool_name(
+        deconv_tool_name,
+        check_reserved = deconv_store_results
+      )
       deconv_args$srt <- standard_spatial_clear_outputs(
         srt,
         tool_keys = if (deconv_store_results) {
@@ -1382,16 +1410,33 @@ standard_spatial_suspend_variable_features <- function(srt, assay) {
 standard_spatial_restore_variable_feature_info <- function(
   srt,
   assay,
-  metadata
+  metadata,
+  preserve_empty_selection = FALSE
 ) {
-  if (is.null(metadata) || ncol(metadata) == 0L) {
+  if (
+    (is.null(metadata) || ncol(metadata) == 0L) &&
+      !isTRUE(preserve_empty_selection)
+  ) {
     return(srt)
   }
   assay_object <- srt[[assay]]
-  for (column in colnames(metadata)) {
-    values <- metadata[[column]]
-    names(values) <- rownames(metadata)
-    assay_object[[column]] <- values[rownames(assay_object)]
+  if (!is.null(metadata) && ncol(metadata) > 0L) {
+    for (column in colnames(metadata)) {
+      values <- metadata[[column]]
+      names(values) <- rownames(metadata)
+      assay_object[[column]] <- values[rownames(assay_object)]
+    }
+  }
+  if (isTRUE(preserve_empty_selection) && inherits(assay_object, "StdAssay")) {
+    # Keep an explicit empty core selection so restored vf_* statistics do not
+    # become the active fallback. SeuratObject may expose an NA sentinel for
+    # this zero-feature state; standard_spatial_variable_features() removes it.
+    feature_names <- rownames(assay_object)
+    empty_labels <- rep(FALSE, length(feature_names))
+    empty_ranks <- rep(NA_integer_, length(feature_names))
+    names(empty_labels) <- names(empty_ranks) <- feature_names
+    assay_object[["var.features"]] <- empty_labels
+    assay_object[["var.features.rank"]] <- empty_ranks
   }
   srt[[assay]] <- assay_object
   srt
@@ -1445,7 +1490,10 @@ standard_spatial_svf_has_valid_empty_selection <- function(srt) {
   all(!is.finite(tool$result$score))
 }
 
-standard_spatial_validate_deconvolution_tool_name <- function(tool_name) {
+standard_spatial_validate_deconvolution_tool_name <- function(
+  tool_name,
+  check_reserved = TRUE
+) {
   validate_scalar_string(tool_name, "deconvolution_params$tool_name")
   workflow_owned_keys <- c(
     "run_standard_spatial_workflow",
@@ -1453,7 +1501,7 @@ standard_spatial_validate_deconvolution_tool_name <- function(tool_name) {
     "SpatialVariableFeatures",
     "BayesSpace"
   )
-  if (tool_name %in% workflow_owned_keys) {
+  if (isTRUE(check_reserved) && tool_name %in% workflow_owned_keys) {
     log_message(
       paste0(
         "{.arg deconvolution_params$tool_name} {.val {tool_name}} is ",
@@ -1461,6 +1509,76 @@ standard_spatial_validate_deconvolution_tool_name <- function(tool_name) {
       ),
       message_type = "error"
     )
+  }
+  invisible(TRUE)
+}
+
+standard_spatial_validate_metadata_output_plan <- function(
+  do_spot_qc,
+  do_spatial_cluster,
+  bayesspace_cluster_colname,
+  do_deconvolution,
+  deconvolution_prefix
+) {
+  metadata_targets <- character()
+  metadata_owners <- character()
+  if (isTRUE(do_spot_qc)) {
+    metadata_targets <- c(metadata_targets, "SpotQC")
+    metadata_owners <- c(metadata_owners, "quality_control")
+  }
+  if (isTRUE(do_spatial_cluster)) {
+    validate_scalar_string(
+      bayesspace_cluster_colname,
+      "bayesspace_params$cluster_colname",
+      require_character = FALSE
+    )
+    metadata_targets <- c(
+      metadata_targets,
+      as.character(bayesspace_cluster_colname)
+    )
+    metadata_owners <- c(metadata_owners, "spatial_clustering")
+  }
+
+  duplicated_targets <- unique(metadata_targets[
+    duplicated(metadata_targets) |
+      duplicated(metadata_targets, fromLast = TRUE)
+  ])
+  if (length(duplicated_targets) > 0L) {
+    log_message(
+      paste0(
+        "Planned spatial workflow metadata outputs collide at {.val ",
+        "{duplicated_targets}}; choose distinct output names"
+      ),
+      message_type = "error"
+    )
+  }
+
+  if (isTRUE(do_deconvolution)) {
+    validate_scalar_string(
+      deconvolution_prefix,
+      "deconvolution_params$prefix",
+      require_character = FALSE
+    )
+    deconvolution_collisions <- metadata_targets[
+      standard_spatial_is_deconv_metadata_key(
+        metadata_targets,
+        prefix = as.character(deconvolution_prefix)
+      )
+    ]
+    if (length(deconvolution_collisions) > 0L) {
+      collision_owners <- metadata_owners[
+        metadata_targets %in% deconvolution_collisions
+      ]
+      log_message(
+        paste0(
+          "Planned deconvolution metadata with prefix {.val ",
+          "{deconvolution_prefix}} collides with {.val ",
+          "{deconvolution_collisions}} from spatial workflow stage(s) ",
+          "{.val {collision_owners}}; choose a distinct prefix or output name"
+        ),
+        message_type = "error"
+      )
+    }
   }
   invisible(TRUE)
 }
@@ -1601,14 +1719,16 @@ standard_spatial_clear_outputs <- function(
 
 standard_spatial_deconv_metadata_keys <- function(srt, prefix) {
   metadata_keys <- colnames(srt@meta.data)
-  metadata_keys[
-    startsWith(metadata_keys, paste0(prefix, "_prop_")) |
-      startsWith(metadata_keys, paste0(prefix, "_abundance_")) |
-      metadata_keys %in% paste0(
-        prefix,
-        c("_dominant_type", "_max_prop")
-      )
-  ]
+  metadata_keys[standard_spatial_is_deconv_metadata_key(metadata_keys, prefix)]
+}
+
+standard_spatial_is_deconv_metadata_key <- function(metadata_keys, prefix) {
+  startsWith(metadata_keys, paste0(prefix, "_prop_")) |
+    startsWith(metadata_keys, paste0(prefix, "_abundance_")) |
+    metadata_keys %in% paste0(
+      prefix,
+      c("_dominant_type", "_max_prop")
+    )
 }
 
 standard_spatial_deconv_metadata_complete <- function(metadata_keys, prefix) {
