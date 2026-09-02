@@ -88,6 +88,23 @@ mock_bayesspace_complete <- function(sce, ...) {
   sce
 }
 
+bayesspace_receipt_plain <- function(messages) {
+  cli::ansi_strip(paste(messages, collapse = "\n"))
+}
+
+bayesspace_expect_receipt_plot <- function(messages, expected_call, srt) {
+  plain <- bayesspace_receipt_plain(messages)
+  expect_true(grepl(paste0("Plot `", expected_call, "`"), plain, fixed = TRUE))
+  expect_error(parse(text = expected_call), NA)
+  plot <- suppressWarnings(eval(
+    parse(text = expected_call),
+    envir = list(srt = srt),
+    enclos = parent.frame()
+  ))
+  expect_s3_class(plot, "ggplot")
+  invisible(plain)
+}
+
 test_that("RunBayesSpace stores raw coordinate provenance and aligned cells", {
   skip_if_not_installed("SingleCellExperiment")
   srt <- make_bayesspace_object()
@@ -110,6 +127,83 @@ test_that("RunBayesSpace stores raw coordinate provenance and aligned cells", {
   expect_identical(rownames(result$colData), colnames(out))
   expect_false("sce" %in% names(result))
   expect_false(anyNA(out$BayesSpace_cluster))
+})
+
+test_that("RunBayesSpace emits an exact receipt and safely quotes its Plot key", {
+  skip_if_not_installed("SingleCellExperiment")
+  srt <- make_bayesspace_object()
+  cluster_colname <- 'Bayes "quoted"\\domain'
+  out <- NULL
+  messages <- suppressWarnings(testthat::capture_messages(
+    out <- with_mock_bayesspace(mock_bayesspace_complete, {
+      RunBayesSpace(
+        srt,
+        q = 2,
+        preprocess = FALSE,
+        cluster_colname = cluster_colname,
+        store_sce = FALSE,
+        verbose = TRUE
+      )
+    })
+  ))
+  plain <- bayesspace_receipt_plain(messages)
+  expect_true(grepl(
+    "BayesSpace completed: 4 spots, 2 domains, domain size 2-2",
+    plain,
+    fixed = TRUE
+  ))
+  expect_true(grepl("Scope assay", plain, fixed = TRUE))
+  expect_true(grepl("raw coordinates", plain, fixed = TRUE))
+  expect_true(grepl("Saved metadata column", plain, fixed = TRUE))
+  expect_true(grepl(cluster_colname, plain, fixed = TRUE))
+  expect_true(grepl("srt@tools[['BayesSpace']]", plain, fixed = TRUE))
+  expect_true(cluster_colname %in% colnames(out[[]]))
+  plot_call <- paste0(
+    "SpatialSpotPlot(srt, group.by = ",
+    deparse1(cluster_colname, width.cutoff = 500L),
+    ")"
+  )
+  bayesspace_expect_receipt_plot(messages, plot_call, out)
+})
+
+test_that("RunBayesSpace is silent on request and failure has no receipt", {
+  skip_if_not_installed("SingleCellExperiment")
+  srt <- make_bayesspace_object()
+  quiet <- NULL
+  quiet_messages <- suppressWarnings(testthat::capture_messages(
+    quiet <- with_mock_bayesspace(mock_bayesspace_complete, {
+      RunBayesSpace(
+        srt,
+        q = 2,
+        preprocess = FALSE,
+        store_sce = FALSE,
+        verbose = FALSE
+      )
+    })
+  ))
+  expect_length(quiet_messages, 0L)
+  expect_s4_class(quiet, "Seurat")
+
+  missing_cluster <- function(sce, ...) sce
+  failure_messages <- suppressWarnings(testthat::capture_messages(
+    with_mock_bayesspace(missing_cluster, {
+      expect_error(
+        RunBayesSpace(
+          srt,
+          q = 2,
+          preprocess = FALSE,
+          store_sce = FALSE,
+          verbose = TRUE
+        ),
+        "did not return"
+      )
+    })
+  ))
+  expect_false(grepl(
+    "BayesSpace completed",
+    bayesspace_receipt_plain(failure_messages),
+    fixed = TRUE
+  ))
 })
 
 test_that("BayesSpace preserves exact Visium array indices separately from raw pixels", {
