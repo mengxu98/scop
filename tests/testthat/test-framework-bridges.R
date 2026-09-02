@@ -141,40 +141,53 @@ test_that("srt_to_giotto and giotto_to_srt round-trip with a real GiottoClass", 
 
   package_path <- getNamespaceInfo(asNamespace("scop"), "path")
   source_tree <- file.exists(file.path(package_path, ".Rbuildignore"))
-  result <- callr::r(
-    function(package_path, source_tree, libpath) {
-      if (!source_tree) {
-        libpath <- unique(c(dirname(package_path), libpath))
-      }
-      .libPaths(libpath)
-      if (source_tree) {
-        pkgload::load_all(package_path, quiet = TRUE)
-      }
+  timeout_seconds <- 120
+  result <- tryCatch(
+    callr::r(
+      function(package_path, source_tree, libpath) {
+        if (!source_tree) {
+          libpath <- unique(c(dirname(package_path), libpath))
+        }
+        .libPaths(libpath)
+        if (source_tree) {
+          pkgload::load_all(package_path, quiet = TRUE, compile = FALSE)
+        }
 
-      data_env <- new.env(parent = emptyenv())
-      utils::data(
-        list = "visium_human_pancreas_sub",
-        package = "scop",
-        envir = data_env
-      )
-      srt <- Seurat::NormalizeData(
-        data_env$visium_human_pancreas_sub,
-        assay = "Spatial",
-        verbose = FALSE
-      )
-      to_giotto <- getExportedValue("scop", "srt_to_giotto")
-      to_seurat <- getExportedValue("scop", "giotto_to_srt")
-      g <- suppressWarnings(suppressMessages(to_giotto(srt)))
-      srt2 <- suppressWarnings(suppressMessages(to_seurat(g)))
+        data_env <- new.env(parent = emptyenv())
+        utils::data(
+          list = "visium_human_pancreas_sub",
+          package = "scop",
+          envir = data_env
+        )
+        srt <- Seurat::NormalizeData(
+          data_env$visium_human_pancreas_sub,
+          assay = "Spatial",
+          verbose = FALSE
+        )
+        to_giotto <- getExportedValue("scop", "srt_to_giotto")
+        to_seurat <- getExportedValue("scop", "giotto_to_srt")
+        g <- suppressWarnings(suppressMessages(to_giotto(srt)))
+        srt2 <- suppressWarnings(suppressMessages(to_seurat(g)))
 
-      list(
-        is_giotto = methods::is(g, "giotto"),
-        is_seurat = methods::is(srt2, "Seurat"),
-        cells = ncol(srt2),
-        layers = SeuratObject::Layers(srt2, assay = "rna")
+        list(
+          is_giotto = methods::is(g, "giotto"),
+          is_seurat = methods::is(srt2, "Seurat"),
+          cells = ncol(srt2),
+          layers = SeuratObject::Layers(srt2, assay = "rna")
+        )
+      },
+      args = list(package_path, source_tree, .libPaths()),
+      timeout = timeout_seconds
+    ),
+    error = function(e) {
+      stop(
+        paste0(
+          "Giotto live round-trip failed in the isolated runner within ",
+          timeout_seconds, " seconds: ", conditionMessage(e)
+        ),
+        call. = FALSE
       )
-    },
-    args = list(package_path, source_tree, .libPaths())
+    }
   )
 
   expect_true(result$is_giotto)
