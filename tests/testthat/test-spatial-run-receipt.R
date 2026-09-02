@@ -42,6 +42,36 @@ make_receipt_multi_image_object <- function() {
   srt
 }
 
+make_receipt_svf_multi_image_object <- function() {
+  srt <- make_receipt_spatial_object()
+  alt_counts <- SeuratObject::LayerData(srt, assay = "RNA", layer = "counts")
+  rownames(alt_counts) <- paste0("AltGene", seq_len(nrow(alt_counts)))
+  srt[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = alt_counts)
+  slice1 <- data.frame(
+    x = c(0, 2, 1),
+    y = c(0, 0, 1),
+    row.names = c("Spot1", "Spot2", "Spot3")
+  )
+  slice2 <- data.frame(
+    x = c(2, 1, 3),
+    y = c(0, 1, 1),
+    row.names = c("Spot2", "Spot3", "Spot4")
+  )
+  srt[["slice1"]] <- SeuratObject::CreateFOV(
+    slice1,
+    type = "centroids",
+    assay = "RNA",
+    key = "svf1_"
+  )
+  srt[["slice2"]] <- SeuratObject::CreateFOV(
+    slice2,
+    type = "centroids",
+    assay = "RNA",
+    key = "svf2_"
+  )
+  srt
+}
+
 receipt_plain <- function(messages) {
   cli::ansi_strip(paste(messages, collapse = "\n"))
 }
@@ -50,6 +80,18 @@ expect_receipt_plot_hint <- function(messages, expected_call) {
   plain <- receipt_plain(messages)
   expect_true(grepl(
     paste0("Plot returned object `", expected_call, "`"),
+    plain,
+    fixed = TRUE
+  ))
+  expect_true(grepl("<returned_object>", expected_call, fixed = TRUE))
+  expect_false(grepl("srt", expected_call, fixed = TRUE))
+  invisible(plain)
+}
+
+expect_receipt_inspect_hint <- function(messages, expected_call) {
+  plain <- receipt_plain(messages)
+  expect_true(grepl(
+    paste0("Inspect returned object `", expected_call, "`"),
     plain,
     fixed = TRUE
   ))
@@ -235,6 +277,37 @@ test_that("RunSpotQC emits an exact receipt with an explicit result placeholder"
   expect_equal(ncol(filtered), 4)
 })
 
+test_that("RunSpotQC offers an honest Inspect hint without plottable coordinates", {
+  counts <- matrix(
+    c(3, 1, 0, 2, 0, 4, 1, 0),
+    nrow = 2,
+    dimnames = list(paste0("Gene", 1:2), paste0("Spot", 1:4))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
+  out <- NULL
+  messages <- suppressWarnings(testthat::capture_messages(
+    out <- RunSpotQC(
+      srt,
+      assay = "RNA",
+      UMI_threshold = 0,
+      gene_threshold = 0,
+      mito_threshold = 100,
+      verbose = TRUE
+    )
+  ))
+  inspect_call <- paste0(
+    "table(<returned_object>[[\"SpotQC\", drop = TRUE]], ",
+    "useNA = \"ifany\")"
+  )
+  plain <- expect_receipt_inspect_hint(messages, inspect_call)
+  expect_false(grepl("Plot returned object", plain, fixed = TRUE))
+  expect_true("SpotQC" %in% colnames(out[[]]))
+  expect_identical(
+    eval(parse(text = sub("<returned_object>", "out", inspect_call, fixed = TRUE))),
+    table(out[["SpotQC", drop = TRUE]], useNA = "ifany")
+  )
+})
+
 test_that("RunSpotQC is silent on request and failure has no receipt", {
   srt <- make_receipt_spatial_object()
   quiet <- NULL
@@ -326,6 +399,42 @@ test_that("RunSpatialVariableFeatures reports exactly what the returned object r
     }
     expect_false(grepl("srt", plain, fixed = TRUE))
   }
+})
+
+test_that("RunSpatialVariableFeatures Plot hint preserves resolved plotting context", {
+  skip_if_not_installed("BiocNeighbors")
+  srt <- make_receipt_svf_multi_image_object()
+  out <- NULL
+  messages <- suppressWarnings(testthat::capture_messages(
+    out <- RunSpatialVariableFeatures(
+      srt,
+      assay = "ALT",
+      layer = "counts",
+      method = "moran",
+      image = "slice1",
+      coord.cols = c("ignored_x", "ignored_y"),
+      k = 1,
+      nfeatures = 2,
+      min_spots = 1,
+      backend = "r",
+      verbose = TRUE
+    )
+  ))
+  plot_call <- paste0(
+    "SpatialVariableFeaturePlot(<returned_object>, plot_type = \"combined\", ",
+    "assay = \"ALT\", image = \"slice1\", coord.cols = c(\"x\", \"y\"))"
+  )
+  expect_receipt_plot_hint(messages, plot_call)
+  expect_identical(
+    out@tools[["SpatialVariableFeatures"]]$parameters$assay,
+    "ALT"
+  )
+  expect_error(
+    SpatialVariableFeaturePlot(out, plot_type = "combined"),
+    "Multiple spatial images"
+  )
+  executable_call <- sub("<returned_object>", "out", plot_call, fixed = TRUE)
+  expect_no_error(eval(parse(text = executable_call)))
 })
 
 test_that("RunSpotQC gives an all-image hint with an explicit result placeholder", {

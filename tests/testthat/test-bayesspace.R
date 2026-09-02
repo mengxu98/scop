@@ -132,6 +132,15 @@ test_that("RunBayesSpace emits an exact receipt and safely quotes its Plot hint"
   skip_if_not_installed("SingleCellExperiment")
   srt <- make_bayesspace_object()
   cluster_colname <- 'Bayes "quoted"\\domain'
+  coord_cols <- c('x "quoted"', "y\\path")
+  custom_coords <- data.frame(
+    x = c(10, 20, 10, 20),
+    y = c(30, 30, 40, 40),
+    row.names = colnames(srt),
+    check.names = FALSE
+  )
+  colnames(custom_coords) <- coord_cols
+  srt <- SeuratObject::AddMetaData(srt, metadata = custom_coords)
   out <- NULL
   messages <- suppressWarnings(testthat::capture_messages(
     out <- with_mock_bayesspace(mock_bayesspace_complete, {
@@ -140,6 +149,7 @@ test_that("RunBayesSpace emits an exact receipt and safely quotes its Plot hint"
         q = 2,
         preprocess = FALSE,
         cluster_colname = cluster_colname,
+        coord.cols = coord_cols,
         store_sce = FALSE,
         verbose = TRUE
       )
@@ -160,9 +170,17 @@ test_that("RunBayesSpace emits an exact receipt and safely quotes its Plot hint"
   plot_call <- paste0(
     "SpatialSpotPlot(<returned_object>, group.by = ",
     deparse1(cluster_colname, width.cutoff = 500L),
+    ", coord.cols = ",
+    deparse1(coord_cols, width.cutoff = 500L),
     ")"
   )
   bayesspace_expect_receipt_plot_hint(messages, plot_call)
+  expect_identical(
+    out@tools[["BayesSpace"]]$parameters$coord.cols,
+    coord_cols
+  )
+  executable_call <- sub("<returned_object>", "out", plot_call, fixed = TRUE)
+  expect_no_error(eval(parse(text = executable_call)))
   expect_false(grepl("srt", plain, fixed = TRUE))
 })
 

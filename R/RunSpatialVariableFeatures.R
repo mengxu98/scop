@@ -106,6 +106,13 @@ RunSpatialVariableFeatures <- function(
   method <- match.arg(method)
   backend <- match.arg(backend)
   native_method <- method %in% c("moran", "geary")
+  backend_name <- if (isTRUE(native_method)) {
+    backend
+  } else if (identical(method, "SPARKX")) {
+    "SPARK"
+  } else {
+    "nnSVG"
+  }
   if (!is.numeric(k) || length(k) != 1L || is.na(k) || k < 1) {
     log_message(
       "{.arg k} must be a positive number",
@@ -145,12 +152,13 @@ RunSpatialVariableFeatures <- function(
   }
   set.seed(seed)
 
-  coords <- spatial_analysis_coords(
+  coordinate_input <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
     coordinate_space = coordinate_space
-  )$data
+  )
+  coords <- coordinate_input$data
   spots <- intersect(colnames(srt), rownames(coords))
   if (length(spots) == 0L) {
     log_message(
@@ -266,7 +274,7 @@ RunSpatialVariableFeatures <- function(
         min_spots = min_spots,
         nperm = nperm,
         seed = seed,
-        backend = backend,
+        backend = backend_name,
         set_variable_features = set_variable_features
       )
     )
@@ -296,8 +304,33 @@ RunSpatialVariableFeatures <- function(
   if (length(saved) == 0L) {
     done <- paste0(done, "; results not retained")
   }
+  plot_image <- coordinate_input$source$image
+  has_plot_image <- is.character(plot_image) && length(plot_image) == 1L &&
+    !is.na(plot_image) && nzchar(plot_image)
+  plot_coord_cols <- coordinate_input$source$coord.cols %||% coord.cols
   plot_call <- if (isTRUE(store_results)) {
-    "SpatialVariableFeaturePlot(<returned_object>, plot_type = \"combined\")"
+    plot_args <- c(
+      "plot_type = \"combined\"",
+      paste0("assay = ", spatial_run_receipt_quote(assay, "assay"))
+    )
+    if (isTRUE(has_plot_image)) {
+      plot_args <- c(
+        plot_args,
+        paste0("image = ", spatial_run_receipt_quote(plot_image, "image"))
+      )
+    }
+    plot_args <- c(
+      plot_args,
+      paste0(
+        "coord.cols = ",
+        deparse1(unname(as.character(plot_coord_cols)), width.cutoff = 500L)
+      )
+    )
+    paste0(
+      "SpatialVariableFeaturePlot(<returned_object>, ",
+      paste(plot_args, collapse = ", "),
+      ")"
+    )
   } else {
     NULL
   }
@@ -313,7 +346,7 @@ RunSpatialVariableFeatures <- function(
   spatial_run_receipt(
     done = done,
     scope = paste0(
-      "method {.val {method}} ({.val {backend}} backend); ",
+      "method {.val {method}} ({.val {backend_name}} backend); ",
       "assay {.val {assay}}, layer {.val {layer}}; ",
       "{.val {length(spots)}} spots; coordinates {.val {coordinate_space}}"
     ),

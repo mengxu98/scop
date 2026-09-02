@@ -195,23 +195,65 @@ RunSpotQC <- function(
     SeuratObject::Images(srt),
     error = function(e) character()
   )
-  plot_call <- if (length(image_names) > 1L) {
+  can_plot <- !isTRUE(return_filtered) && spot_qc_has_plottable_coordinates(
+    srt = srt,
+    image_names = image_names
+  )
+  plot_call <- if (isTRUE(can_plot) && length(image_names) > 1L) {
     paste0(
       "lapply(SeuratObject::Images(<returned_object>), function(image) ",
       "SpatialSpotPlot(<returned_object>, group.by = \"SpotQC\", image = image))"
     )
-  } else {
+  } else if (isTRUE(can_plot)) {
     "SpatialSpotPlot(<returned_object>, group.by = \"SpotQC\")"
+  } else {
+    NULL
+  }
+  inspect_call <- if (!isTRUE(return_filtered) && !isTRUE(can_plot)) {
+    "table(<returned_object>[[\"SpotQC\", drop = TRUE]], useNA = \"ifany\")"
+  } else {
+    NULL
   }
   spatial_run_receipt(
     done = done,
     scope = "assay {.val {assay}}, layer {.val counts}",
     saved = "metadata column {.var SpotQC}",
-    plot = if (isTRUE(return_filtered)) NULL else plot_call,
+    plot = plot_call,
+    inspect = inspect_call,
     verbose = verbose,
     .envir = environment()
   )
   srt
+}
+
+spot_qc_has_plottable_coordinates <- function(srt, image_names = NULL) {
+  if (is.null(image_names)) {
+    image_names <- tryCatch(
+      SeuratObject::Images(srt),
+      error = function(e) character()
+    )
+  }
+  targets <- if (length(image_names) > 0L) as.list(image_names) else list(NULL)
+  all(vapply(
+    targets,
+    function(image) {
+      tryCatch(
+        {
+          coords <- spatial_coords_raw(
+            srt = srt,
+            image = image,
+            coord.cols = c("col", "row"),
+            image.scale = "lowres",
+            require_scale = TRUE,
+            image_policy = "strict"
+          )$data
+          nrow(coords) > 0L
+        },
+        error = function(e) FALSE
+      )
+    },
+    logical(1)
+  ))
 }
 
 spot_qc_mito_features <- function(features, mito_pattern, mito_gene = NULL) {
