@@ -58,8 +58,8 @@ RunSpatialGradientFeatures(
 \item{reference}{Spatial reference type: \code{"trajectory"} for STS or
 \code{"annotation"} for SAS.}
 
-\item{backend}{Computation backend. \code{"cpp"} uses a compiled fast spatial
-uses SPATA2 directly for full upstream SAS/STS behavior.}
+\item{backend}{Computation backend. The supported backend is \code{"cpp"}, which
+uses the compiled native spatial implementation.}
 
 \item{result_name}{Name used to store this result. If \code{NULL}, a name is
 generated from \code{reference}.}
@@ -68,11 +68,9 @@ generated from \code{reference}.}
 
 \item{layer}{Assay layer used for expression values.}
 
-\item{variables}{Numeric variables or genes passed to SPATA2. If \code{NULL},
+\item{variables}{Numeric variables or genes tested by the native backend. If \code{NULL},
 \code{srt@tools[["SpatialVariableFeatures"]]} is used first, then variable
 features, then all assay features.}
-
-\item{sample_name, platform, img_scale_fct, assay_modality}{Arguments forwarded}
 
 \item{image}{Spatial image name. Required when multiple images are present;
 a single image is selected automatically when \code{NULL}.}
@@ -80,25 +78,31 @@ a single image is selected automatically when \code{NULL}.}
 \item{coord.cols}{Metadata coordinate columns used by the \code{"cpp"}
 backend when no image coordinates are available.}
 
-\item{trajectory_id, start, end, traj_df, width}{Trajectory setup passed to
-\code{SPATA2::addSpatialTrajectory()} and \code{SPATA2::spatialTrajectoryScreening()}.}
+\item{start, end, traj_df}{Trajectory geometry used by the native backend when
+\code{reference = "trajectory"}.}
 
-\item{annotation_ids}{Existing SPATA2 spatial annotation ids. If \code{NULL},
-annotations are created from \code{annotation.by} and \code{annotation.groups}, or from
-\code{annotation.variable} and \code{annotation.threshold}.}
+\item{annotation_ids}{Reserved compatibility input. It is not supported by
+the native backend; use \code{annotation.by} with \code{annotation.groups}, or
+\code{annotation.variable} with \code{annotation.threshold}.}
 
-\item{annotation.by, annotation.groups}{Metadata grouping used to create
-SPATA2 group annotations.}
+\item{annotation.by, annotation.groups}{Metadata grouping used to create the
+native annotation mask.}
 
 \item{annotation.variable, annotation.threshold}{Numeric variable and
-threshold used to create SPATA2 numeric annotations. Numeric thresholds are
-interpreted as \code{">{threshold}"}.}
+threshold used to create a native numeric annotation mask. Numeric
+thresholds are interpreted as \code{">{threshold}"}.}
 
-\item{annotation_id}{Base id used when creating annotations.}
+\item{sample_name, platform, img_scale_fct, assay_modality, trajectory_id, width, annotation_id, core, distance, angle_span, resolution, model_add, model_subset, model_remove, control}{Legacy compatibility inputs. The native backend ignores these values and
+does not include them in the stored effective-parameter summary.}
 
-\item{core, distance, angle_span}{SAS parameters forwarded to SPATA2.}
+\item{unit}{Optional coordinate-unit label stored in the result source. It
+does not transform coordinates.}
 
-\item{resolution, unit, sign_var, sign_threshold, model_add, model_subset, model_remove, n_random, seed, control}{SPATA2 screening parameters.}
+\item{sign_var, sign_threshold}{Column and cutoff used to select top gradient
+variables from the native significance table.}
+
+\item{n_random, seed}{Permutation count and random seed used by the native
+screening backend.}
 
 \item{n_bins}{Number of distance bins used for the \code{"cpp"} backend
 screening curve.}
@@ -119,21 +123,22 @@ Default is \code{TRUE}.}
 
 \item{coordinate_space}{Coordinate system used by the C++ distance
 calculations. The default is raw acquisition coordinates, so \code{start},
-\code{end}, trajectory positions, widths, and C++ distances share raw
+\code{end}, trajectory positions, and C++ distances share raw
 coordinate units. Use \code{"legacy_display"} explicitly for pre-0.9.0 display
-coordinates. SPATA2-backed runs retain backend-native units.}
+coordinates. Results retain the raw coordinate units used by the native
+backend.}
 
-\item{...}{Additional arguments forwarded to the SPATA2 screening function.}
+\item{...}{Additional named arguments accepted for compatibility. The native
+backend ignores them and does not store them as effective parameters.}
 }
 \value{
 A \code{Seurat} object with spatial gradient screening results stored in
 \code{srt@tools[["SpatialGradientFeatures"]]}.
 }
 \description{
-Run spatial trajectory or annotation gradient screening for Seurat objects.
-distance-based screening, while the \code{"r"} backend keeps full upstream
-SPATA2 SAS/STS behavior. Results are normalized into plain data.frames and
-is never stored.
+Run native spatial trajectory or annotation gradient screening for Seurat
+objects. The compiled C++ backend computes distance-based screening and
+stores validated result tables in \code{srt@tools} when requested.
 }
 \examples{
 data(visium_human_pancreas_sub)
