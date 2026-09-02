@@ -28,6 +28,19 @@ make_standard_spatial_rerun_object <- function() {
   srt
 }
 
+make_standard_spatial_empty_svf_object <- function() {
+  counts <- matrix(
+    1,
+    nrow = 3,
+    ncol = 9,
+    dimnames = list(paste0("gene", 1:3), paste0("spot", 1:9))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
+  srt$col <- rep(0:2, 3)
+  srt$row <- rep(0:2, each = 3)
+  srt
+}
+
 run_storage_workflow <- function(
   srt,
   do_spatial_variable_features = FALSE,
@@ -486,6 +499,57 @@ test_that("stale variable features do not satisfy a quiet producer", {
   )
 })
 
+test_that("malformed explicit-empty sentinels do not satisfy the workflow", {
+  malformed_cases <- c("missing_rank", "numeric_rank")
+  srt <- make_standard_spatial_storage_object()
+  SeuratObject::VariableFeatures(srt, assay = "RNA") <- c("gene1", "gene2")
+  caller_before <- srt
+
+  for (case_name in malformed_cases) {
+    testthat::local_mocked_bindings(
+      RunStandardWorkflow = function(srt, ...) srt,
+      RunSpatialVariableFeatures = function(srt, assay, ...) {
+        assay_object <- srt[[assay]]
+        labels <- rep(FALSE, nrow(assay_object))
+        names(labels) <- rownames(assay_object)
+        assay_object[["var.features"]] <- labels
+        if (identical(case_name, "numeric_rank")) {
+          ranks <- rep(NA_real_, nrow(assay_object))
+          names(ranks) <- rownames(assay_object)
+          assay_object[["var.features.rank"]] <- ranks
+        }
+        srt[[assay]] <- assay_object
+        srt
+      },
+      .package = "scop"
+    )
+
+    condition <- tryCatch(
+      run_storage_workflow(
+        srt,
+        do_spatial_variable_features = TRUE,
+        spatial_variable_features_params = list(
+          store_results = FALSE,
+          set_variable_features = TRUE
+        )
+      ),
+      error = identity
+    )
+    stages <- attr(condition, "standard_spatial_stages")
+    svf <- stages[
+      stages$stage == "spatial_variable_features",
+      ,
+      drop = FALSE
+    ]
+
+    expect_s3_class(condition, "error")
+    expect_identical(svf$status, "failed", info = case_name)
+    expect_false(isTRUE(svf$result_stored), info = case_name)
+    expect_match(svf$reason, "VariableFeatures", info = case_name)
+    expect_identical(srt, caller_before, info = case_name)
+  }
+})
+
 test_that("native spatial variable feature workflow can be rerun unchanged", {
   skip_if_not_installed("BiocNeighbors")
   public_workflow <- RunStandardWorkflow
@@ -576,6 +640,152 @@ test_that("native variable-feature-only output is verified without a tool", {
   )
 })
 
+test_that("storage-off native SVF certifies a fresh explicit empty selection", {
+  skip_if_not_installed("BiocNeighbors")
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  srt <- make_standard_spatial_empty_svf_object()
+  SeuratObject::VariableFeatures(srt, assay = "RNA") <- "gene1"
+
+  out <- original(
+    srt,
+    assay = "RNA",
+    do_spot_qc = FALSE,
+    do_spatial_variable_features = TRUE,
+    spatial_variable_features_params = list(
+      layer = "counts",
+      coord.cols = c("col", "row"),
+      k = 2,
+      nfeatures = 3,
+      min_spots = 1,
+      nperm = 0,
+      backend = "r",
+      store_results = FALSE,
+      set_variable_features = TRUE
+    ),
+    do_spatial_cluster = FALSE,
+    do_deconvolution = FALSE,
+    do_normalization = FALSE,
+    do_HVF_finding = FALSE,
+    do_scaling = FALSE,
+    verbose = FALSE
+  )
+  stages <- out@tools$run_standard_spatial_workflow$stages
+  svf <- stages[stages$stage == "spatial_variable_features", , drop = FALSE]
+
+  expect_identical(svf$status, "completed")
+  expect_true(isTRUE(svf$result_stored))
+  expect_true(is.na(svf$result_tool_key))
+  expect_match(svf$result_location, 'VariableFeatures\\("RNA"\\)')
+  expect_identical(svf$variable_features_after, 0L)
+  expect_null(out@tools[["SpatialVariableFeatures"]])
+  expect_identical(
+    standard_spatial_variable_features(out, assay = "RNA"),
+    character()
+  )
+  expect_true(spatial_has_explicit_empty_variable_features(out, assay = "RNA"))
+})
+
+test_that("classic Assay empty-selection handshake preserves misc state", {
+  skip_if_not_installed("BiocNeighbors")
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  base <- make_standard_spatial_empty_svf_object()
+  counts <- SeuratObject::LayerData(base, assay = "RNA", layer = "counts")
+  base[["Classic"]] <- SeuratObject::CreateAssayObject(counts = counts)
+  SeuratObject::VariableFeatures(base, assay = "Classic") <- "gene1"
+  marker_key <- spatial_svf_selection_marker_key()
+  old_marker <- list(user_value = "keep exactly")
+
+  for (has_old_marker in c(FALSE, TRUE)) {
+    srt <- base
+    if (has_old_marker) {
+      assay_object <- srt[["Classic"]]
+      assay_object@misc[[marker_key]] <- old_marker
+      srt[["Classic"]] <- assay_object
+    }
+
+    out <- original(
+      srt,
+      assay = "Classic",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = TRUE,
+      spatial_variable_features_params = list(
+        layer = "counts",
+        coord.cols = c("col", "row"),
+        k = 2,
+        nfeatures = 3,
+        min_spots = 1,
+        nperm = 0,
+        backend = "r",
+        store_results = FALSE,
+        set_variable_features = TRUE
+      ),
+      do_spatial_cluster = FALSE,
+      do_deconvolution = FALSE,
+      do_normalization = FALSE,
+      do_HVF_finding = FALSE,
+      do_scaling = FALSE,
+      verbose = FALSE
+    )
+    returned_misc <- out[["Classic"]]@misc
+
+    expect_identical(
+      marker_key %in% names(returned_misc),
+      has_old_marker
+    )
+    if (has_old_marker) {
+      expect_identical(returned_misc[[marker_key]], old_marker)
+    }
+    expect_identical(
+      standard_spatial_variable_features(out, assay = "Classic"),
+      character()
+    )
+    expect_identical(
+      out@tools$run_standard_spatial_workflow$status,
+      "completed"
+    )
+  }
+
+  quiet_srt <- base
+  quiet_assay <- quiet_srt[["Classic"]]
+  quiet_assay@misc[[marker_key]] <- old_marker
+  quiet_srt[["Classic"]] <- quiet_assay
+  quiet_before <- quiet_srt
+  testthat::local_mocked_bindings(
+    RunSpatialVariableFeatures = function(srt, ...) srt,
+    .package = "scop"
+  )
+  condition <- tryCatch(
+    original(
+      quiet_srt,
+      assay = "Classic",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = TRUE,
+      spatial_variable_features_params = list(
+        store_results = FALSE,
+        set_variable_features = TRUE
+      ),
+      do_spatial_cluster = FALSE,
+      do_deconvolution = FALSE,
+      do_normalization = FALSE,
+      do_HVF_finding = FALSE,
+      do_scaling = FALSE,
+      verbose = FALSE
+    ),
+    error = identity
+  )
+
+  expect_s3_class(condition, "error")
+  expect_identical(quiet_srt, quiet_before)
+})
+
 test_that("NULL SVF controls resolve to producer defaults", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
@@ -632,6 +842,11 @@ test_that("fresh non-finite SVF scores certify a valid empty selection", {
         suppressWarnings(SeuratObject::VariableFeatures(srt, assay = assay)),
         0L
       )
+      srt <- spatial_set_active_variable_features(
+        srt,
+        assay = assay,
+        features = character()
+      )
       srt@tools[["SpatialVariableFeatures"]] <- make_valid_empty_svf_tool()
       srt
     },
@@ -678,6 +893,11 @@ test_that("restored HVF statistics do not revive a valid empty SVF selection", {
     RunStandardWorkflow = function(srt, ...) srt,
     RunSpatialVariableFeatures = function(srt, assay, ...) {
       expect_false(any(startsWith(colnames(srt[[assay]][[]]), "vf_")))
+      srt <- spatial_set_active_variable_features(
+        srt,
+        assay = assay,
+        features = character()
+      )
       srt@tools[["SpatialVariableFeatures"]] <- make_valid_empty_svf_tool()
       srt
     },
@@ -751,6 +971,11 @@ test_that("malformed SVF tools cannot certify an empty selection", {
         expect_length(
           suppressWarnings(SeuratObject::VariableFeatures(srt, assay = assay)),
           0L
+        )
+        srt <- spatial_set_active_variable_features(
+          srt,
+          assay = assay,
+          features = character()
         )
         srt@tools[["SpatialVariableFeatures"]] <- candidate
         srt

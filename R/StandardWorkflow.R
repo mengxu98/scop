@@ -1094,7 +1094,8 @@ run_standard_spatial_workflow <- function(
           store_results = svf_store_results,
           set_variable_features = svf_set_variable_features,
           variable_features_before = variable_features_before,
-          restore_metadata = svf_input$restore_metadata
+          restore_metadata = svf_input$restore_metadata,
+          selection_marker = svf_input$selection_marker %||% NULL
         )
       }
     )
@@ -1104,6 +1105,7 @@ run_standard_spatial_workflow <- function(
     svf_set_variable_features <- svf_setup$set_variable_features
     variable_features_before <- svf_setup$variable_features_before
     svf_restore_metadata <- svf_setup$restore_metadata
+    svf_selection_marker <- svf_setup$selection_marker
     srt <- run_stage(
       stage = "spatial_variable_features",
       expr = do.call(RunSpatialVariableFeatures, svf_args),
@@ -1114,10 +1116,20 @@ run_standard_spatial_workflow <- function(
         } else {
           character()
         }
-        valid_empty_selection <- svf_set_variable_features &&
+        explicit_empty_selection <- svf_set_variable_features &&
           length(variable_features) == 0L &&
-          svf_store_results &&
-          standard_spatial_svf_has_valid_empty_selection(result)
+          spatial_has_explicit_empty_variable_features(
+            result,
+            assay = svf_assay,
+            expected_token = svf_selection_marker$token %||% NULL
+          )
+        valid_empty_selection <- explicit_empty_selection &&
+          (
+            !svf_store_results ||
+              standard_spatial_svf_has_valid_empty_selection(result)
+          )
+        variable_features_stored <- length(variable_features) > 0L ||
+          valid_empty_selection
         standard_spatial_result_probe(
           srt = result,
           tool_key = if (svf_store_results) {
@@ -1126,7 +1138,9 @@ run_standard_spatial_workflow <- function(
             NULL
           },
           tool_required = svf_store_results,
-          extra_locations = if (length(variable_features) > 0L) {
+          extra_locations = if (
+            svf_set_variable_features && variable_features_stored
+          ) {
             sprintf('VariableFeatures("%s")', svf_assay)
           } else {
             character()
@@ -1141,13 +1155,21 @@ run_standard_spatial_workflow <- function(
       preserve_empty_selection <-
         length(standard_spatial_variable_features(srt, assay = svf_assay)) ==
           0L &&
-        svf_store_results &&
-        standard_spatial_svf_has_valid_empty_selection(srt)
+        spatial_has_explicit_empty_variable_features(
+          srt,
+          assay = svf_assay,
+          expected_token = svf_selection_marker$token %||% NULL
+        ) &&
+        (
+          !svf_store_results ||
+            standard_spatial_svf_has_valid_empty_selection(srt)
+        )
       srt <- standard_spatial_restore_variable_feature_info(
         srt,
         assay = svf_assay,
         metadata = svf_restore_metadata,
-        preserve_empty_selection = preserve_empty_selection
+        preserve_empty_selection = preserve_empty_selection,
+        selection_marker = svf_selection_marker
       )
     }
     update_stage(
@@ -1450,7 +1472,12 @@ standard_spatial_suspend_variable_features <- function(srt, assay) {
   if (!inherits(assay_object, "StdAssay")) {
     SeuratObject::VariableFeatures(assay_object) <- character()
     srt[[assay]] <- assay_object
-    return(list(srt = srt, restore_metadata = NULL))
+    marker <- spatial_begin_svf_selection(srt, assay = assay)
+    return(list(
+      srt = marker$srt,
+      restore_metadata = NULL,
+      selection_marker = marker$state
+    ))
   }
 
   feature_metadata <- assay_object[[]]
@@ -1470,18 +1497,24 @@ standard_spatial_suspend_variable_features <- function(srt, assay) {
     assay_object[[column]] <- NULL
   }
   srt[[assay]] <- assay_object
-  list(srt = srt, restore_metadata = restore_metadata)
+  list(
+    srt = srt,
+    restore_metadata = restore_metadata,
+    selection_marker = NULL
+  )
 }
 
 standard_spatial_restore_variable_feature_info <- function(
   srt,
   assay,
   metadata,
-  preserve_empty_selection = FALSE
+  preserve_empty_selection = FALSE,
+  selection_marker = NULL
 ) {
   if (
     (is.null(metadata) || ncol(metadata) == 0L) &&
-      !isTRUE(preserve_empty_selection)
+      !isTRUE(preserve_empty_selection) &&
+      is.null(selection_marker)
   ) {
     return(srt)
   }
@@ -1493,18 +1526,21 @@ standard_spatial_restore_variable_feature_info <- function(
       assay_object[[column]] <- values[rownames(assay_object)]
     }
   }
-  if (isTRUE(preserve_empty_selection) && inherits(assay_object, "StdAssay")) {
-    # Keep an explicit empty core selection so restored vf_* statistics do not
-    # become the active fallback. SeuratObject may expose an NA sentinel for
-    # this zero-feature state; standard_spatial_variable_features() removes it.
-    feature_names <- rownames(assay_object)
-    empty_labels <- rep(FALSE, length(feature_names))
-    empty_ranks <- rep(NA_integer_, length(feature_names))
-    names(empty_labels) <- names(empty_ranks) <- feature_names
-    assay_object[["var.features"]] <- empty_labels
-    assay_object[["var.features.rank"]] <- empty_ranks
-  }
   srt[[assay]] <- assay_object
+  if (isTRUE(preserve_empty_selection)) {
+    # SeuratObject may expose an NA sentinel for the explicit StdAssay
+    # zero-feature state; standard_spatial_variable_features() removes it.
+    srt <- spatial_set_active_variable_features(
+      srt,
+      assay = assay,
+      features = character()
+    )
+  }
+  srt <- spatial_restore_svf_selection_marker(
+    srt,
+    assay = assay,
+    state = selection_marker
+  )
   srt
 }
 

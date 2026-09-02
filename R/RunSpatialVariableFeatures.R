@@ -248,8 +248,12 @@ RunSpatialVariableFeatures <- function(
     method = method
   )
   top_features <- utils::head(result$feature[is.finite(result$score)], nfeatures)
-  if (isTRUE(set_variable_features) && length(top_features) > 0L) {
-    SeuratObject::VariableFeatures(srt, assay = assay) <- top_features
+  if (isTRUE(set_variable_features)) {
+    srt <- spatial_set_active_variable_features(
+      srt,
+      assay = assay,
+      features = top_features
+    )
   }
   if (isTRUE(store_results)) {
     score_lookup <- stats::setNames(result$score, result$feature)
@@ -283,7 +287,7 @@ RunSpatialVariableFeatures <- function(
     )
   }
   n_top <- length(top_features)
-  variable_features_set <- isTRUE(set_variable_features) && n_top > 0L
+  variable_features_set <- isTRUE(set_variable_features)
   saved <- character()
   if (isTRUE(variable_features_set)) {
     saved <- c(

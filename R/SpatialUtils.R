@@ -229,6 +229,127 @@ spatial_feature_summary <- function(features, scores = NULL, n = 20L) {
   out
 }
 
+spatial_svf_selection_marker_key <- function() {
+  ".scop_RunSpatialVariableFeatures_selection"
+}
+
+spatial_begin_svf_selection <- function(srt, assay) {
+  assay_object <- srt[[assay]]
+  key <- spatial_svf_selection_marker_key()
+  old_exists <- key %in% names(assay_object@misc)
+  old_value <- if (old_exists) assay_object@misc[[key]] else NULL
+  token <- basename(tempfile("scop-svf-selection-"))
+  assay_object@misc[[key]] <- structure(
+    list(pending_token = token),
+    class = "scop_svf_selection_pending"
+  )
+  srt[[assay]] <- assay_object
+  list(
+    srt = srt,
+    state = list(
+      key = key,
+      token = token,
+      old_exists = old_exists,
+      old_value = old_value
+    )
+  )
+}
+
+spatial_restore_svf_selection_marker <- function(srt, assay, state) {
+  if (is.null(state)) {
+    return(srt)
+  }
+  assay_object <- srt[[assay]]
+  if (isTRUE(state$old_exists)) {
+    assay_object@misc[[state$key]] <- state$old_value
+  } else {
+    assay_object@misc[[state$key]] <- NULL
+  }
+  srt[[assay]] <- assay_object
+  srt
+}
+
+spatial_set_active_variable_features <- function(srt, assay, features) {
+  features <- unique(as.character(features))
+  features <- features[!is.na(features) & nzchar(features)]
+  assay_object <- srt[[assay]]
+
+  if (length(features) > 0L) {
+    SeuratObject::VariableFeatures(assay_object) <- features
+  } else if (inherits(assay_object, "StdAssay")) {
+    feature_names <- rownames(assay_object)
+    empty_labels <- rep(FALSE, length(feature_names))
+    empty_ranks <- rep(NA_integer_, length(feature_names))
+    names(empty_labels) <- names(empty_ranks) <- feature_names
+    assay_object[["var.features"]] <- empty_labels
+    assay_object[["var.features.rank"]] <- empty_ranks
+  } else {
+    SeuratObject::VariableFeatures(assay_object) <- character()
+  }
+
+  marker_key <- spatial_svf_selection_marker_key()
+  marker <- assay_object@misc[[marker_key]]
+  if (inherits(marker, "scop_svf_selection_pending") &&
+    is.character(marker$pending_token) &&
+    length(marker$pending_token) == 1L &&
+    !is.na(marker$pending_token) &&
+    nzchar(marker$pending_token)) {
+    assay_object@misc[[marker_key]] <- structure(
+      list(completed_token = marker$pending_token),
+      class = "scop_svf_selection_completed"
+    )
+  }
+  srt[[assay]] <- assay_object
+  srt
+}
+
+spatial_has_explicit_empty_variable_features <- function(
+  srt,
+  assay,
+  expected_token = NULL
+) {
+  assay_object <- srt[[assay]]
+  active_features <- suppressWarnings(
+    SeuratObject::VariableFeatures(assay_object)
+  )
+  active_features <- as.character(active_features)
+  active_features <- active_features[
+    !is.na(active_features) & nzchar(active_features)
+  ]
+  if (length(active_features) > 0L) {
+    return(FALSE)
+  }
+
+  if (!is.null(expected_token)) {
+    marker <- assay_object@misc[[spatial_svf_selection_marker_key()]]
+    if (
+      !inherits(marker, "scop_svf_selection_completed") ||
+        !identical(marker$completed_token, expected_token)
+    ) {
+      return(FALSE)
+    }
+  }
+
+  if (!inherits(assay_object, "StdAssay")) {
+    return(TRUE)
+  }
+
+  feature_metadata <- assay_object[[]]
+  if (!all(c("var.features", "var.features.rank") %in%
+    colnames(feature_metadata))) {
+    return(FALSE)
+  }
+  labels <- feature_metadata[["var.features"]]
+  ranks <- feature_metadata[["var.features.rank"]]
+  is.logical(labels) &&
+    length(labels) == nrow(feature_metadata) &&
+    !anyNA(labels) &&
+    !any(labels) &&
+    is.integer(ranks) &&
+    length(ranks) == nrow(feature_metadata) &&
+    all(is.na(ranks))
+}
+
 spatial_neighborhood_summary <- function(pair_table, edge_table = NULL) {
   list(
     n_pairs = nrow(pair_table),
