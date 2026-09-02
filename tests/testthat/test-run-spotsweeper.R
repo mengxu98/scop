@@ -31,7 +31,10 @@ skip_if_no_spotsweeper_infra <- function() {
 
 with_mock_spotsweeper <- function(
   code,
-  artifact_mode = c("success", "error", "missing", "invalid", "nonbinary"),
+  artifact_mode = c(
+    "success", "error", "missing", "invalid", "nonbinary",
+    "drop", "rename", "reorder"
+  ),
   local_mode = c("success", "missing", "partial", "invalid")
 ) {
   artifact_mode <- match.arg(artifact_mode)
@@ -94,6 +97,15 @@ with_mock_spotsweeper <- function(
     cdata$artifact <- colnames(spe) %in% c("Spot4", "Spot6")
     cdata$k18 <- seq_len(nrow(cdata))
     SummarizedExperiment::colData(spe) <- S4Vectors::DataFrame(cdata)
+    if (identical(artifact_mode, "drop")) {
+      spe <- spe[, seq_len(ncol(spe) - 1L)]
+    } else if (identical(artifact_mode, "rename")) {
+      spot_names <- colnames(spe)
+      spot_names[[1]] <- paste0(spot_names[[1]], "_renamed")
+      colnames(spe) <- spot_names
+    } else if (identical(artifact_mode, "reorder")) {
+      spe <- spe[, rev(seq_len(ncol(spe)))]
+    }
     spe
   }
   failing_artifact <- function(...) {
@@ -119,7 +131,10 @@ with_mock_spotsweeper <- function(
     error = failing_artifact,
     missing = missing_artifact,
     invalid = invalid_artifact,
-    nonbinary = nonbinary_artifact
+    nonbinary = nonbinary_artifact,
+    drop = fake_artifact,
+    rename = fake_artifact,
+    reorder = fake_artifact
   )
   testthat::local_mocked_bindings(
     .package = "scop",
@@ -308,6 +323,37 @@ test_that("RunSpotSweeper rejects missing or invalid artifact backend output tru
   }
 })
 
+test_that("RunSpotSweeper rejects artifact output with changed spot alignment", {
+  skip_if_no_spotsweeper_infra()
+  for (artifact_mode in c("drop", "rename", "reorder")) {
+    out <- suppressWarnings(with_mock_spotsweeper({
+      RunSpotSweeper(
+        make_spotsweeper_seurat(),
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        n_neighbors = 2,
+        n_order = 2,
+        verbose = FALSE
+      )
+    }, artifact_mode = artifact_mode))
+
+    status <- out@tools$SpotSweeper$artifact_status
+    expect_identical(out@tools$SpotSweeper$status, "partial", info = artifact_mode)
+    expect_true(all(status$status == "failed"), info = artifact_mode)
+    expect_equal(status$n_spots, c(3L, 3L), info = artifact_mode)
+    expect_true(all(grepl(
+      "changed spot count, identities, or order",
+      status$reason,
+      fixed = TRUE
+    )), info = artifact_mode)
+    expect_true(all(is.na(out$SpotSweeper_artifact)), info = artifact_mode)
+    expect_true(all(
+      as.character(out$SpotSweeper_artifact_qc) == "NotEvaluated"
+    ), info = artifact_mode)
+  }
+})
+
 test_that("RunSpotSweeper marks incomplete local-outlier output partial", {
   skip_if_no_spotsweeper_infra()
   for (local_mode in c("missing", "partial", "invalid")) {
@@ -430,13 +476,12 @@ test_that("RunSpotSweeper does not reuse a stale artifact metadata column", {
 })
 
 test_that("RunSpotSweeper rejects reserved artifact input columns atomically", {
-  skip_if_no_spotsweeper_infra()
   srt <- make_spotsweeper_seurat()
   srt$artifact <- seq_len(ncol(srt))
   metadata_before <- srt@meta.data
   tools_before <- srt@tools
 
-  for (input_arg in c("mito_percent", "mito_sum")) {
+  for (input_arg in c("sample.by", "mito_percent", "mito_sum")) {
     check_called <- FALSE
     args <- list(
       srt = srt,
@@ -461,6 +506,36 @@ test_that("RunSpotSweeper rejects reserved artifact input columns atomically", {
     )
     expect_false(check_called, info = input_arg)
   }
+  expect_identical(srt@meta.data, metadata_before)
+  expect_identical(srt@tools, tools_before)
+})
+
+test_that("RunSpotSweeper rejects missing sample labels before backend checks", {
+  srt <- make_spotsweeper_seurat()
+  srt$sample[[2]] <- NA_character_
+  metadata_before <- srt@meta.data
+  tools_before <- srt@tools
+  check_called <- FALSE
+
+  expect_error(
+    testthat::with_mocked_bindings(
+      RunSpotSweeper(
+        srt,
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        n_neighbors = 2,
+        verbose = FALSE
+      ),
+      check_r = function(...) {
+        check_called <<- TRUE
+        stop("backend check should not run", call. = FALSE)
+      },
+      .package = "scop"
+    ),
+    "contains missing values"
+  )
+  expect_false(check_called)
   expect_identical(srt@meta.data, metadata_before)
   expect_identical(srt@tools, tools_before)
 })

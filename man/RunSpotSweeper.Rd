@@ -48,7 +48,9 @@ available.}
 are present; a single image is selected automatically when \code{NULL}.}
 
 \item{sample.by}{Optional metadata column identifying samples or images.
-If \code{NULL}, all spots are treated as one sample.}
+If \code{NULL}, all spots are treated as one sample. The selected column must not
+contain missing values. The reserved backend output name \code{"artifact"} cannot
+be used when \code{run_artifact = TRUE}.}
 
 \item{metrics}{QC metrics used by \code{SpotSweeper::localOutliers()}. If \code{NULL},
 \verb{nCount_<assay>}, \verb{nFeature_<assay>}, and \code{percent.mito} are used.

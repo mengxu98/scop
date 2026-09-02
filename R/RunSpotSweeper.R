@@ -22,7 +22,9 @@
 #' explicit compatibility option. Neighbor counts are unitless, while any
 #' backend distance calculation uses the selected coordinate units.
 #' @param sample.by Optional metadata column identifying samples or images.
-#' If `NULL`, all spots are treated as one sample.
+#' If `NULL`, all spots are treated as one sample. The selected column must not
+#' contain missing values. The reserved backend output name `"artifact"` cannot
+#' be used when `run_artifact = TRUE`.
 #' @param metrics QC metrics used by `SpotSweeper::localOutliers()`. If `NULL`,
 #' `nCount_<assay>`, `nFeature_<assay>`, and `percent.mito` are used.
 #' The corresponding `<metric>_outliers` and `<metric>_z` names are reserved for
@@ -164,6 +166,9 @@ RunSpotSweeper <- function(
   validate_scalar_flag(run_artifact, "run_artifact")
   validate_scalar_flag(return_filtered, "return_filtered")
   validate_scalar_flag(store_results, "store_results")
+  if (!is.null(sample.by)) {
+    validate_scalar_string(sample.by, "sample.by")
+  }
   if (!is.null(mito_percent)) {
     validate_scalar_string(mito_percent, "mito_percent")
   }
@@ -172,13 +177,13 @@ RunSpotSweeper <- function(
   }
   if (isTRUE(run_artifact) &&
     any(vapply(
-      list(mito_percent, mito_sum),
+      list(sample.by, mito_percent, mito_sum),
       identical,
       logical(1),
       y = "artifact"
     ))) {
     log_message(
-      "Metadata column {.val artifact} is reserved for {.pkg SpotSweeper} artifact output and cannot be used as {.arg mito_percent} or {.arg mito_sum} when {.arg run_artifact = TRUE}",
+      "Metadata column {.val artifact} is reserved for {.pkg SpotSweeper} artifact output and cannot be used as {.arg sample.by}, {.arg mito_percent}, or {.arg mito_sum} when {.arg run_artifact = TRUE}",
       message_type = "error"
     )
   }
@@ -731,6 +736,8 @@ spot_sweeper_run_artifacts <- function(
         nrow(SummarizedExperiment::colData(spe_sample))
       )
     }
+    input_spots <- colnames(spe_sample)
+    input_sample_coldata <- spot_sweeper_coldata(spe_sample)
     args <- c(
       list(
         spe = spe_sample,
@@ -744,29 +751,45 @@ spot_sweeper_run_artifacts <- function(
       ),
       spot_sweeper_filter_args(artifact_fun, extra_args)
     )
-    spe_sample <- tryCatch(
+    artifact_spe <- tryCatch(
       do.call(artifact_fun, args),
       error = function(e) e
     )
-    if (inherits(spe_sample, "error")) {
+    if (inherits(artifact_spe, "error")) {
       log_message(
-        "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: the installed {.pkg SpotSweeper} {.fn findArtifacts} failed ({conditionMessage(spe_sample)}); only local-outlier QC is stored",
+        "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: the installed {.pkg SpotSweeper} {.fn findArtifacts} failed ({conditionMessage(artifact_spe)}); only local-outlier QC is stored",
         message_type = "running",
         verbose = verbose
       )
       reason <- paste0(
         "upstream failure in SpotSweeper::findArtifacts: ",
-        conditionMessage(spe_sample)
+        conditionMessage(artifact_spe)
       )
       record_sample(
         sample = sample,
-        sample_coldata = sample_coldata,
+        sample_coldata = input_sample_coldata,
         status = "failed",
         reason = reason
       )
       next
     }
-    sample_coldata <- spot_sweeper_coldata(spe_sample)
+    output_spots <- tryCatch(colnames(artifact_spe), error = function(e) NULL)
+    if (!identical(output_spots, input_spots)) {
+      reason <- "SpotSweeper::findArtifacts changed spot count, identities, or order"
+      log_message(
+        "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: {reason}",
+        message_type = "running",
+        verbose = verbose
+      )
+      record_sample(
+        sample = sample,
+        sample_coldata = input_sample_coldata,
+        status = "failed",
+        reason = reason
+      )
+      next
+    }
+    sample_coldata <- spot_sweeper_coldata(artifact_spe)
     if (!"artifact" %in% colnames(sample_coldata)) {
       reason <- "SpotSweeper::findArtifacts returned no artifact column"
       log_message(
@@ -1063,6 +1086,12 @@ spot_sweeper_resolve_sample_col <- function(coldata, sample.by = NULL) {
   if (!sample.by %in% colnames(coldata)) {
     log_message(
       "{.arg sample.by} {.val {sample.by}} is not present in metadata",
+      message_type = "error"
+    )
+  }
+  if (anyNA(coldata[[sample.by]])) {
+    log_message(
+      "{.arg sample.by} {.val {sample.by}} contains missing values; every spot must have a sample label",
       message_type = "error"
     )
   }
