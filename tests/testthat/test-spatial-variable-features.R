@@ -176,19 +176,31 @@ test_that("SPARKX backend output is normalized without storing backend objects",
     }
   )
 
-  out <- RunSpatialVariableFeatures(
-    srt,
-    method = "SPARKX",
-    layer = "counts",
-    coord.cols = c("x", "y"),
-    min_spots = 1,
-    nfeatures = 2,
-    verbose = FALSE
+  messages <- testthat::capture_messages(
+    out <- RunSpatialVariableFeatures(
+      srt,
+      method = "SPARKX",
+      layer = "counts",
+      coord.cols = c("x", "y"),
+      min_spots = 1,
+      nfeatures = 2,
+      verbose = TRUE
+    )
   )
 
   result <- out@tools[["SpatialVariableFeatures"]][["result"]]
+  plain <- cli::ansi_strip(paste(messages, collapse = "\n"))
   expect_equal(unique(result$method), "SPARKX")
   expect_equal(result$feature[[1]], "Gene2")
+  expect_true(grepl(
+    'Scope method "SPARKX" ("SPARK" backend)',
+    plain,
+    fixed = TRUE
+  ))
+  expect_identical(
+    out@tools[["SpatialVariableFeatures"]]$parameters$backend,
+    "SPARK"
+  )
   expect_equal(
     out@tools[["SpatialVariableFeatures"]]$summary$top_features,
     c("Gene2", "Gene3")
@@ -221,19 +233,31 @@ test_that("nnSVG backend output is normalized through lightweight helpers", {
     spatial_variable_row_data = function(x) x$row_data
   )
 
-  out <- RunSpatialVariableFeatures(
-    srt,
-    method = "nnSVG",
-    layer = "counts",
-    coord.cols = c("x", "y"),
-    min_spots = 1,
-    nfeatures = 2,
-    verbose = FALSE
+  messages <- testthat::capture_messages(
+    out <- RunSpatialVariableFeatures(
+      srt,
+      method = "nnSVG",
+      layer = "counts",
+      coord.cols = c("x", "y"),
+      min_spots = 1,
+      nfeatures = 2,
+      verbose = TRUE
+    )
   )
 
   result <- out@tools[["SpatialVariableFeatures"]][["result"]]
+  plain <- cli::ansi_strip(paste(messages, collapse = "\n"))
   expect_equal(unique(result$method), "nnSVG")
   expect_equal(result$feature[[1]], "Gene2")
+  expect_true(grepl(
+    'Scope method "nnSVG" ("nnSVG" backend)',
+    plain,
+    fixed = TRUE
+  ))
+  expect_identical(
+    out@tools[["SpatialVariableFeatures"]]$parameters$backend,
+    "nnSVG"
+  )
   expect_equal(
     out@tools[["SpatialVariableFeatures"]]$summary$top_features,
     c("Gene2", "Gene4")

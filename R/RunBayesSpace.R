@@ -237,9 +237,32 @@ RunBayesSpace <- function(
   } else {
     "assay {.val {assay}}, image {.val {image_use}}, raw coordinates"
   }
+  plot_args <- c(
+    paste0(
+      "group.by = ",
+      spatial_run_receipt_quote(cluster_colname, "cluster_colname")
+    )
+  )
+  if (isTRUE(has_image)) {
+    plot_args <- c(
+      plot_args,
+      paste0("image = ", spatial_run_receipt_quote(image_use, "image"))
+    )
+  } else {
+    plot_args <- c(
+      plot_args,
+      paste0(
+        "coord.cols = ",
+        deparse1(
+          unname(as.character(coordinate_input$source$coord.cols)),
+          width.cutoff = 500L
+        )
+      )
+    )
+  }
   plot_call <- paste0(
-    "SpatialSpotPlot(<returned_object>, group.by = ",
-    spatial_run_receipt_quote(cluster_colname, "cluster_colname"),
+    "SpatialSpotPlot(<returned_object>, ",
+    paste(plot_args, collapse = ", "),
     ")"
   )
   spatial_run_receipt(
