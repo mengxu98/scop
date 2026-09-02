@@ -142,8 +142,10 @@ test_that("spatial gradient storage keeps only plain data frames", {
   )
 
   stored <- srt@tools[["SpatialGradientFeatures"]][["mock"]]
-  expect_equal(names(stored), c("screening", "significance", "model_fits", "top_variables", "parameters"))
-  expect_true(all(vapply(stored, is.data.frame, logical(1))))
+  table_names <- c("screening", "significance", "model_fits", "top_variables", "parameters")
+  expect_equal(names(stored), c(table_names, "source"))
+  expect_true(all(vapply(stored[table_names], is.data.frame, logical(1))))
+  expect_type(stored$source, "list")
   expect_false(any(vapply(stored, methods::is, logical(1), class2 = "SPATA2")))
   expect_equal(
     srt@tools[["SpatialGradientFeatures"]]$summary$top_features,
@@ -184,8 +186,10 @@ test_that("cpp backend stores annotation gradient result tables", {
   )
 
   stored <- srt@tools[["SpatialGradientFeatures"]][["cpp_annotation"]]
-  expect_equal(names(stored), c("screening", "significance", "model_fits", "top_variables", "parameters"))
-  expect_true(all(vapply(stored, is.data.frame, logical(1))))
+  table_names <- c("screening", "significance", "model_fits", "top_variables", "parameters")
+  expect_equal(names(stored), c(table_names, "source"))
+  expect_true(all(vapply(stored[table_names], is.data.frame, logical(1))))
+  expect_type(stored$source, "list")
   expect_false(any(vapply(stored, methods::is, logical(1), class2 = "SPATA2")))
   expect_true(nrow(stored$screening) > 0)
   expect_true(nrow(stored$top_variables) > 0)
@@ -238,6 +242,7 @@ test_that("cpp backend stores trajectory gradient result tables", {
     core = TRUE,
     distance = "ignored_distance",
     angle_span = c(15, 180),
+    unit = "micron",
     layer = "counts",
     coord.cols = c("x", "y"),
     n_random = 0,
@@ -249,7 +254,10 @@ test_that("cpp backend stores trajectory gradient result tables", {
   )
 
   stored <- srt@tools[["SpatialGradientFeatures"]][["cpp_trajectory"]]
-  expect_true(all(vapply(stored, is.data.frame, logical(1))))
+  table_names <- c("screening", "significance", "model_fits", "top_variables", "parameters")
+  expect_true(all(vapply(stored[table_names], is.data.frame, logical(1))))
+  expect_identical(stored$source$units, "micron")
+  expect_identical(stored$source$coordinate_space, "raw")
   expect_true(nrow(stored$significance) > 0)
   expect_true(nrow(stored$model_fits) > 0)
   expect_equal(unique(stored$screening$mode), "trajectory")
