@@ -46,10 +46,11 @@
 #' `"leiden"`). Larger `cluster_resolution` yields fewer clusters.
 #' @param ... Additional arguments passed to reduction methods.
 #'
-#' @return A `Seurat` object. Spatial workflows store per-stage state in
-#' `srt@tools[["run_standard_spatial_workflow"]]`, including the effective
-#' `set_variable_features` value. A failed stage signals an error with the same
-#' table in attribute `standard_spatial_stages`.
+#' @return A `Seurat` object. Spatial workflows store per-stage execution and
+#' result-storage state in `srt@tools[["run_standard_spatial_workflow"]]`,
+#' including the effective `set_variable_features` value, `result_stored`, and
+#' `result_location`. A failed stage signals an error with the same table in
+#' attribute `standard_spatial_stages`.
 #'
 #' @export
 #'
@@ -801,6 +802,8 @@ run_standard_spatial_workflow <- function(
     actual_method = NA_character_,
     result_tool_key = NA_character_,
     result_metadata_key = NA_character_,
+    result_stored = FALSE,
+    result_location = NA_character_,
     variable_features_before = NA_integer_,
     variable_features_after = NA_integer_,
     set_variable_features = NA,
@@ -816,54 +819,105 @@ run_standard_spatial_workflow <- function(
   )
   update_stage <- function(
     stage,
-    status,
-    actual_method = NA_character_,
-    result_tool_key = NA_character_,
-    result_metadata_key = NA_character_,
-    variable_features_before = NA_integer_,
-    variable_features_after = NA_integer_,
-    set_variable_features = NA,
-    reason = NA_character_
+    status = NULL,
+    actual_method = NULL,
+    result_tool_key = NULL,
+    result_metadata_key = NULL,
+    result_stored = NULL,
+    result_location = NULL,
+    variable_features_before = NULL,
+    variable_features_after = NULL,
+    set_variable_features = NULL,
+    reason = NULL
   ) {
     i <- match(stage, stages$stage)
-    stages$status[[i]] <<- status
-    stages$actual_method[[i]] <<- actual_method
-    stages$result_tool_key[[i]] <<- result_tool_key
-    stages$result_metadata_key[[i]] <<- result_metadata_key
-    stages$variable_features_before[[i]] <<- variable_features_before
-    stages$variable_features_after[[i]] <<- variable_features_after
-    stages$set_variable_features[[i]] <<- set_variable_features
-    stages$reason[[i]] <<- reason
+    if (!is.null(status)) {
+      stages$status[[i]] <<- status
+    }
+    if (!is.null(actual_method)) {
+      stages$actual_method[[i]] <<- actual_method
+    }
+    if (!is.null(result_tool_key)) {
+      stages$result_tool_key[[i]] <<- result_tool_key
+    }
+    if (!is.null(result_metadata_key)) {
+      stages$result_metadata_key[[i]] <<- result_metadata_key
+    }
+    if (!is.null(result_stored)) {
+      stages$result_stored[[i]] <<- isTRUE(result_stored)
+    }
+    if (!is.null(result_location)) {
+      stages$result_location[[i]] <<- result_location
+    }
+    if (!is.null(variable_features_before)) {
+      stages$variable_features_before[[i]] <<- variable_features_before
+    }
+    if (!is.null(variable_features_after)) {
+      stages$variable_features_after[[i]] <<- variable_features_after
+    }
+    if (!is.null(set_variable_features)) {
+      stages$set_variable_features[[i]] <<- set_variable_features
+    }
+    if (!is.null(reason)) {
+      stages$reason[[i]] <<- reason
+    }
     invisible(NULL)
   }
   run_stage <- function(
     stage,
     expr,
     actual_method,
-    result_tool_key = NA_character_,
-    result_metadata_key = NA_character_
+    result_probe
   ) {
     tryCatch(
       {
         value <- force(expr)
+        probe <- result_probe(value)
+        if (!is.list(probe)) {
+          log_message(
+            "Spatial stage result probe must return a list",
+            message_type = "error"
+          )
+        }
         update_stage(
           stage = stage,
-          status = "completed",
+          status = if (isTRUE(probe$result_complete)) "completed" else "failed",
           actual_method = actual_method,
-          result_tool_key = result_tool_key,
-          result_metadata_key = result_metadata_key
+          result_tool_key = probe$result_tool_key %||% NA_character_,
+          result_metadata_key = probe$result_metadata_key %||% NA_character_,
+          result_stored = isTRUE(probe$result_stored),
+          result_location = probe$result_location %||% NA_character_,
+          reason = if (isTRUE(probe$result_complete)) {
+            NA_character_
+          } else {
+            probe$reason %||% "expected result is missing"
+          }
         )
+        if (!isTRUE(probe$result_complete)) {
+          log_message(
+            paste0(
+              "Spatial stage {.val {stage}} completed without ",
+              "the expected result"
+            ),
+            message_type = "error"
+          )
+        }
         value
       },
       error = function(e) {
-        update_stage(
-          stage = stage,
-          status = "failed",
-          actual_method = actual_method,
-          result_tool_key = result_tool_key,
-          result_metadata_key = result_metadata_key,
-          reason = conditionMessage(e)
-        )
+        i <- match(stage, stages$stage)
+        if (!identical(stages$status[[i]], "failed")) {
+          update_stage(
+            stage = stage,
+            status = "failed",
+            actual_method = actual_method,
+            result_tool_key = NA_character_,
+            result_metadata_key = NA_character_,
+            result_stored = FALSE,
+            result_location = NA_character_,
+            reason = conditionMessage(e)
+          )
+        }
         attr(e, "standard_spatial_stages") <- stages
         stop(e)
       }
@@ -879,11 +933,22 @@ run_standard_spatial_workflow <- function(
       ),
       spot_qc_params
     )
+    spot_qc_args$srt <- standard_spatial_clear_outputs(
+      srt,
+      metadata_keys = "SpotQC"
+    )
     srt <- run_stage(
       stage = "quality_control",
       expr = do.call(RunSpotQC, spot_qc_args),
       actual_method = "RunSpotQC",
-      result_metadata_key = "SpotQC"
+      result_probe = function(result) {
+        standard_spatial_result_probe(
+          srt = result,
+          metadata_keys = "SpotQC",
+          metadata_required = TRUE,
+          metadata_expected = 'meta.data[["SpotQC"]]'
+        )
+      }
     )
   }
 
@@ -922,7 +987,9 @@ run_standard_spatial_workflow <- function(
 
   cluster_col <- paste0(prefix, "clusters")
   if (isTRUE(do_spatial_variable_features)) {
-    variable_features_before <- length(SeuratObject::VariableFeatures(srt, assay = assay))
+    variable_features_before <- length(
+      standard_spatial_variable_features(srt, assay = assay)
+    )
     svf_args <- merge_call_args(
       list(
         srt = srt,
@@ -931,25 +998,80 @@ run_standard_spatial_workflow <- function(
         coord.cols = coord.cols,
         coordinate_space = "raw",
         set_variable_features = FALSE,
+        store_results = TRUE,
         verbose = verbose,
         seed = seed
       ),
       spatial_variable_features_params
     )
+    svf_args$set_variable_features <- svf_args$set_variable_features %||% TRUE
+    svf_args$store_results <- svf_args$store_results %||% TRUE
+    svf_store_results <- isTRUE(svf_args$store_results)
+    svf_set_variable_features <- isTRUE(svf_args$set_variable_features)
+    if (is.null(svf_args$features)) {
+      input_features <- standard_spatial_variable_features(
+        srt,
+        assay = assay
+      )
+      if (length(input_features) > 0L) {
+        svf_args$features <- input_features
+      }
+    }
+    svf_input <- if (svf_set_variable_features) {
+      standard_spatial_suspend_variable_features(srt, assay = assay)
+    } else {
+      list(srt = srt, restore_metadata = NULL)
+    }
+    svf_args$srt <- standard_spatial_clear_outputs(
+      svf_input$srt,
+      tool_keys = if (svf_store_results) {
+        "SpatialVariableFeatures"
+      } else {
+        character()
+      }
+    )
     srt <- run_stage(
       stage = "spatial_variable_features",
       expr = do.call(RunSpatialVariableFeatures, svf_args),
       actual_method = "RunSpatialVariableFeatures",
-      result_tool_key = "SpatialVariableFeatures"
+      result_probe = function(result) {
+        variable_features <- if (svf_set_variable_features) {
+          standard_spatial_variable_features(result, assay = assay)
+        } else {
+          character()
+        }
+        standard_spatial_result_probe(
+          srt = result,
+          tool_key = if (svf_store_results) {
+            "SpatialVariableFeatures"
+          } else {
+            NULL
+          },
+          tool_required = svf_store_results,
+          extra_locations = if (length(variable_features) > 0L) {
+            sprintf('VariableFeatures("%s")', assay)
+          } else {
+            character()
+          },
+          extra_required = svf_set_variable_features,
+          extra_expected = sprintf('VariableFeatures("%s")', assay)
+        )
+      }
     )
+    if (svf_set_variable_features) {
+      srt <- standard_spatial_restore_variable_feature_info(
+        srt,
+        assay = assay,
+        metadata = svf_input$restore_metadata
+      )
+    }
     update_stage(
       stage = "spatial_variable_features",
-      status = "completed",
-      actual_method = "RunSpatialVariableFeatures",
-      result_tool_key = "SpatialVariableFeatures",
       variable_features_before = variable_features_before,
-      variable_features_after = length(SeuratObject::VariableFeatures(srt, assay = assay)),
-      set_variable_features = isTRUE(svf_args$set_variable_features)
+      variable_features_after = length(
+        standard_spatial_variable_features(srt, assay = assay)
+      ),
+      set_variable_features = svf_set_variable_features
     )
   }
 
@@ -1005,11 +1127,31 @@ run_standard_spatial_workflow <- function(
       bayesspace_args,
       bayesspace_params
     )
+    bayesspace_args$cluster_colname <- bayesspace_args$cluster_colname %||%
+      "BayesSpace_cluster"
+    bayesspace_cluster_colname <- bayesspace_args$cluster_colname
+    bayesspace_args$srt <- standard_spatial_clear_outputs(
+      srt,
+      tool_keys = "BayesSpace",
+      metadata_keys = bayesspace_cluster_colname
+    )
     srt <- run_stage(
       stage = "spatial_clustering",
       expr = do.call(RunBayesSpace, bayesspace_args),
       actual_method = "RunBayesSpace",
-      result_tool_key = "BayesSpace"
+      result_probe = function(result) {
+        standard_spatial_result_probe(
+          srt = result,
+          tool_key = "BayesSpace",
+          tool_required = TRUE,
+          metadata_keys = bayesspace_cluster_colname,
+          metadata_required = TRUE,
+          metadata_expected = sprintf(
+            'meta.data[["%s"]]',
+            bayesspace_cluster_colname
+          )
+        )
+      }
     )
   }
 
@@ -1035,10 +1177,63 @@ run_standard_spatial_workflow <- function(
         SPOTlight = "RunSPOTlight",
         Cell2location = "RunCell2location"
       )
+      deconv_default_name <- switch(deconvolution_method,
+        RCTD = "RCTD",
+        SPOTlight = "SPOTlight",
+        Cell2location = "Cell2location"
+      )
+      if (identical(deconvolution_method, "RCTD")) {
+        deconvolution_params <- standard_spatial_prepare_rctd_params(
+          deconvolution_params = deconvolution_params,
+          verbose = verbose
+        )
+      }
+      deconv_defaults <- list(
+        srt = srt,
+        reference = reference,
+        reference_label = reference_label,
+        assay = assay,
+        reference_assay = reference_assay,
+        prefix = deconv_default_name,
+        tool_name = deconv_default_name,
+        store_results = TRUE,
+        verbose = verbose
+      )
+      if (identical(deconvolution_method, "RCTD")) {
+        deconv_defaults$image <- image
+        deconv_defaults$coord.cols <- coord.cols
+        deconv_defaults$coordinate_space <- "raw"
+      }
+      deconv_args <- merge_call_args(
+        deconv_defaults,
+        deconvolution_params
+      )
+      deconv_args$prefix <- deconv_args$prefix %||% deconv_default_name
+      deconv_args$tool_name <- deconv_args$tool_name %||% deconv_default_name
+      deconv_args$store_results <- deconv_args$store_results %||% TRUE
+      deconv_prefix <- deconv_args$prefix
+      deconv_tool_name <- deconv_args$tool_name
+      deconv_store_results <- isTRUE(deconv_args$store_results)
+      deconv_args$srt <- standard_spatial_clear_outputs(
+        srt,
+        tool_keys = if (deconv_store_results) {
+          deconv_tool_name
+        } else {
+          character()
+        },
+        metadata_keys = standard_spatial_deconv_metadata_keys(
+          srt,
+          prefix = deconv_prefix
+        )
+      )
+      deconv_fun <- switch(deconvolution_method,
+        RCTD = RunRCTD,
+        SPOTlight = RunSPOTlight,
+        Cell2location = RunCell2location
+      )
       srt <- run_stage(
         stage = "deconvolution",
         actual_method = deconv_producer,
-        result_tool_key = deconvolution_method,
         expr = {
           if (is.null(reference_label) && !has_cell2location_signatures) {
             log_message(
@@ -1046,33 +1241,37 @@ run_standard_spatial_workflow <- function(
               message_type = "error"
             )
           }
-          deconv_defaults <- list(
-            srt = srt,
-            reference = reference,
-            reference_label = reference_label,
-            assay = assay,
-            reference_assay = reference_assay,
-            verbose = verbose
-          )
-          if (identical(deconvolution_method, "RCTD")) {
-            deconvolution_params <- standard_spatial_prepare_rctd_params(
-              deconvolution_params = deconvolution_params,
-              verbose = verbose
-            )
-            deconv_defaults$image <- image
-            deconv_defaults$coord.cols <- coord.cols
-            deconv_defaults$coordinate_space <- "raw"
-          }
-          deconv_args <- merge_call_args(
-            deconv_defaults,
-            deconvolution_params
-          )
-          deconv_fun <- switch(deconvolution_method,
-            RCTD = RunRCTD,
-            SPOTlight = RunSPOTlight,
-            Cell2location = RunCell2location
-          )
           do.call(deconv_fun, deconv_args)
+        },
+        result_probe = function(result) {
+          metadata_keys <- standard_spatial_deconv_metadata_keys(
+            result,
+            prefix = deconv_prefix
+          )
+          standard_spatial_result_probe(
+            srt = result,
+            tool_key = if (deconv_store_results) {
+              deconv_tool_name
+            } else {
+              NULL
+            },
+            tool_required = deconv_store_results,
+            metadata_keys = metadata_keys,
+            metadata_required = TRUE,
+            metadata_complete = standard_spatial_deconv_metadata_complete(
+              metadata_keys,
+              prefix = deconv_prefix
+            ),
+            metadata_expected = sprintf(
+              paste0(
+                'meta.data columns "%s_prop_*", ',
+                '"%s_dominant_type", and "%s_max_prop"'
+              ),
+              deconv_prefix,
+              deconv_prefix,
+              deconv_prefix
+            )
+          )
         }
       )
     }
@@ -1101,7 +1300,8 @@ run_standard_spatial_workflow <- function(
       spatial_cluster_method = spatial_cluster_method,
       spatial_q = spatial_q,
       do_deconvolution = do_deconvolution,
-      deconvolution_method = deconvolution_method
+      deconvolution_method = deconvolution_method,
+      cores = cores
     ),
     cluster_col = if (cluster_col %in% colnames(srt@meta.data)) {
       cluster_col
@@ -1125,6 +1325,216 @@ run_standard_spatial_workflow <- function(
     )
   }
   srt
+}
+
+standard_spatial_variable_features <- function(srt, assay) {
+  variable_features <- suppressWarnings(
+    SeuratObject::VariableFeatures(srt, assay = assay)
+  )
+  variable_features <- as.character(variable_features)
+  variable_features[
+    !is.na(variable_features) & nzchar(variable_features)
+  ]
+}
+
+standard_spatial_suspend_variable_features <- function(srt, assay) {
+  assay_object <- srt[[assay]]
+  if (!inherits(assay_object, "StdAssay")) {
+    SeuratObject::VariableFeatures(assay_object) <- character()
+    srt[[assay]] <- assay_object
+    return(list(srt = srt, restore_metadata = NULL))
+  }
+
+  feature_metadata <- assay_object[[]]
+  clear_columns <- unique(c(
+    intersect(
+      c("var.features", "var.features.rank"),
+      colnames(feature_metadata)
+    ),
+    grep("^vf_", colnames(feature_metadata), value = TRUE)
+  ))
+  restore_columns <- setdiff(
+    clear_columns,
+    c("var.features", "var.features.rank")
+  )
+  restore_metadata <- feature_metadata[, restore_columns, drop = FALSE]
+  for (column in clear_columns) {
+    assay_object[[column]] <- NULL
+  }
+  srt[[assay]] <- assay_object
+  list(srt = srt, restore_metadata = restore_metadata)
+}
+
+standard_spatial_restore_variable_feature_info <- function(
+  srt,
+  assay,
+  metadata
+) {
+  if (is.null(metadata) || ncol(metadata) == 0L) {
+    return(srt)
+  }
+  assay_object <- srt[[assay]]
+  for (column in colnames(metadata)) {
+    values <- metadata[[column]]
+    names(values) <- rownames(metadata)
+    assay_object[[column]] <- values[rownames(assay_object)]
+  }
+  srt[[assay]] <- assay_object
+  srt
+}
+
+standard_spatial_result_probe <- function(
+  srt,
+  tool_key = NULL,
+  tool_required = FALSE,
+  metadata_keys = character(),
+  metadata_required = FALSE,
+  metadata_complete = NULL,
+  metadata_expected = NULL,
+  extra_locations = character(),
+  extra_required = FALSE,
+  extra_expected = NULL
+) {
+  if (!inherits(srt, "Seurat")) {
+    log_message(
+      "Spatial stage result probe requires a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
+
+  tool_key <- if (
+    is.character(tool_key) &&
+      length(tool_key) == 1L &&
+      !is.na(tool_key) &&
+      nzchar(tool_key)
+  ) {
+    tool_key
+  } else {
+    NULL
+  }
+  tool_stored <- !is.null(tool_key) && !is.null(srt@tools[[tool_key]])
+
+  metadata_keys <- unique(as.character(metadata_keys))
+  metadata_keys <- metadata_keys[
+    !is.na(metadata_keys) &
+      nzchar(metadata_keys) &
+      metadata_keys %in% colnames(srt@meta.data)
+  ]
+  metadata_stored <- length(metadata_keys) > 0L
+  metadata_complete <- if (is.null(metadata_complete)) {
+    metadata_stored
+  } else {
+    isTRUE(metadata_complete)
+  }
+
+  extra_locations <- unique(as.character(extra_locations))
+  extra_locations <- extra_locations[
+    !is.na(extra_locations) & nzchar(extra_locations)
+  ]
+  extra_stored <- length(extra_locations) > 0L
+
+  locations <- character()
+  if (tool_stored) {
+    locations <- c(locations, sprintf('tools[["%s"]]', tool_key))
+  }
+  if (metadata_stored) {
+    locations <- c(
+      locations,
+      paste0("meta.data: ", paste(metadata_keys, collapse = ", "))
+    )
+  }
+  if (extra_stored) {
+    locations <- c(locations, extra_locations)
+  }
+
+  missing <- character()
+  if (isTRUE(tool_required) && !tool_stored) {
+    tool_expected <- if (is.null(tool_key)) {
+      "required tools output"
+    } else {
+      sprintf('tools[["%s"]]', tool_key)
+    }
+    missing <- c(
+      missing,
+      tool_expected
+    )
+  }
+  if (isTRUE(metadata_required) && !metadata_complete) {
+    missing <- c(
+      missing,
+      metadata_expected %||% "required metadata output"
+    )
+  }
+  if (isTRUE(extra_required) && !extra_stored) {
+    missing <- c(
+      missing,
+      extra_expected %||% "required additional output"
+    )
+  }
+
+  list(
+    result_stored = length(locations) > 0L,
+    result_complete = length(missing) == 0L,
+    result_location = if (length(locations) > 0L) {
+      paste(locations, collapse = "; ")
+    } else {
+      NA_character_
+    },
+    result_tool_key = if (tool_stored) tool_key else NA_character_,
+    result_metadata_key = if (metadata_stored) {
+      paste(metadata_keys, collapse = "; ")
+    } else {
+      NA_character_
+    },
+    reason = if (length(missing) > 0L) {
+      paste0("missing expected output: ", paste(missing, collapse = ", "))
+    } else {
+      NA_character_
+    }
+  )
+}
+
+standard_spatial_clear_outputs <- function(
+  srt,
+  tool_keys = character(),
+  metadata_keys = character()
+) {
+  tool_keys <- unique(as.character(tool_keys))
+  tool_keys <- tool_keys[!is.na(tool_keys) & nzchar(tool_keys)]
+  for (tool_key in tool_keys) {
+    srt@tools[[tool_key]] <- NULL
+  }
+
+  metadata_keys <- unique(as.character(metadata_keys))
+  metadata_keys <- metadata_keys[
+    !is.na(metadata_keys) &
+      nzchar(metadata_keys) &
+      metadata_keys %in% colnames(srt@meta.data)
+  ]
+  for (metadata_key in metadata_keys) {
+    srt[[metadata_key]] <- NULL
+  }
+  srt
+}
+
+standard_spatial_deconv_metadata_keys <- function(srt, prefix) {
+  metadata_keys <- colnames(srt@meta.data)
+  metadata_keys[
+    startsWith(metadata_keys, paste0(prefix, "_prop_")) |
+      startsWith(metadata_keys, paste0(prefix, "_abundance_")) |
+      metadata_keys %in% paste0(
+        prefix,
+        c("_dominant_type", "_max_prop")
+      )
+  ]
+}
+
+standard_spatial_deconv_metadata_complete <- function(metadata_keys, prefix) {
+  any(startsWith(metadata_keys, paste0(prefix, "_prop_"))) &&
+    all(
+      paste0(prefix, c("_dominant_type", "_max_prop")) %in%
+        metadata_keys
+    )
 }
 
 merge_call_args <- function(defaults, extra) {
