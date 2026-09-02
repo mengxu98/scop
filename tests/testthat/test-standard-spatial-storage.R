@@ -1567,6 +1567,61 @@ test_that("planned spatial metadata collisions fail before any producer", {
   expect_length(calls, 0L)
 })
 
+test_that("all SpotQC status outputs are protected before producers run", {
+  producer_calls <- character()
+  testthat::local_mocked_bindings(
+    RunSpotQC = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunSpotQC")
+      srt
+    },
+    RunStandardWorkflow = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunStandardWorkflow")
+      srt
+    },
+    RunBayesSpace = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunBayesSpace")
+      srt
+    },
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  srt <- make_standard_spatial_storage_object()
+  caller_before <- srt
+  spot_qc_targets <- c(
+    "SpotQC",
+    "spot_umi_qc",
+    "spot_gene_qc",
+    "spot_mito_qc",
+    "spot_outlier_qc"
+  )
+
+  for (target in spot_qc_targets) {
+    for (bayes_arg in c("cluster_colname", "init_colname")) {
+      bayes_params <- list(
+        cluster_colname = "CustomCluster",
+        init_colname = "CustomInit"
+      )
+      bayes_params[[bayes_arg]] <- target
+      expect_error(
+        original(
+          srt,
+          assay = "RNA",
+          do_spot_qc = TRUE,
+          do_spatial_variable_features = FALSE,
+          do_spatial_cluster = TRUE,
+          spatial_q = 2,
+          bayesspace_params = bayes_params,
+          do_deconvolution = FALSE,
+          verbose = FALSE
+        ),
+        "metadata outputs collide"
+      )
+      expect_length(producer_calls, 0L)
+      expect_identical(srt, caller_before)
+    }
+  }
+})
+
 test_that("RCTD preserves an abundance-named BayesSpace init output", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,

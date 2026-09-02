@@ -1639,8 +1639,18 @@ standard_spatial_validate_metadata_output_plan <- function(
   metadata_targets <- as.character(ordinary_cluster_col)
   metadata_owners <- "single_cell_preprocessing cluster_col"
   if (isTRUE(do_spot_qc)) {
-    metadata_targets <- c(metadata_targets, "SpotQC")
-    metadata_owners <- c(metadata_owners, "quality_control")
+    spot_qc_targets <- c(
+      "SpotQC",
+      "spot_umi_qc",
+      "spot_gene_qc",
+      "spot_mito_qc",
+      "spot_outlier_qc"
+    )
+    metadata_targets <- c(metadata_targets, spot_qc_targets)
+    metadata_owners <- c(
+      metadata_owners,
+      rep("quality_control", length(spot_qc_targets))
+    )
   }
   if (isTRUE(do_spatial_cluster)) {
     validate_scalar_string(
