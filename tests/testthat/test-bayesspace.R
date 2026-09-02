@@ -104,6 +104,56 @@ bayesspace_expect_receipt_plot_hint <- function(messages, expected_call) {
   invisible(plain)
 }
 
+test_that("RunBayesSpace validates output names and storage before backend work", {
+  backend_checks <- 0L
+  testthat::local_mocked_bindings(
+    check_r = function(...) {
+      backend_checks <<- backend_checks + 1L
+      stop("backend check reached")
+    },
+    get_namespace_fun = function(...) {
+      stop("backend should not run")
+    },
+    .package = "scop"
+  )
+  invalid <- list(
+    cluster_colname = list("", 1L),
+    init_colname = list("", 1L),
+    store_sce = list(1L, NA)
+  )
+  base_args <- list(
+    srt = make_bayesspace_object(),
+    q = 2,
+    preprocess = FALSE,
+    verbose = FALSE
+  )
+  for (arg in names(invalid)) {
+    pattern <- if (identical(arg, "store_sce")) {
+      "store_sce.*TRUE or FALSE"
+    } else {
+      paste0(arg, ".*single non-empty string")
+    }
+    for (value in invalid[[arg]]) {
+      args <- base_args
+      args[[arg]] <- value
+      expect_error(do.call(RunBayesSpace, args), pattern)
+    }
+  }
+  expect_identical(backend_checks, 0L)
+
+  expect_error(
+    RunBayesSpace(
+      make_bayesspace_object(),
+      q = 2,
+      preprocess = FALSE,
+      init_colname = NULL,
+      verbose = FALSE
+    ),
+    "backend check reached"
+  )
+  expect_identical(backend_checks, 1L)
+})
+
 test_that("RunBayesSpace stores raw coordinate provenance and aligned cells", {
   skip_if_not_installed("SingleCellExperiment")
   srt <- make_bayesspace_object()

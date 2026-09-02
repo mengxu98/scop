@@ -89,6 +89,11 @@ RunBayesSpace <- function(
       message_type = "error"
     )
   }
+  validate_scalar_string(cluster_colname, "cluster_colname")
+  if (!is.null(init_colname)) {
+    validate_scalar_string(init_colname, "init_colname")
+  }
+  validate_scalar_flag(store_sce, "store_sce")
   platform <- match.arg(platform)
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
 

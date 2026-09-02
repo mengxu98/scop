@@ -96,6 +96,8 @@ RunSpatialVariableFeatures <- function(
       message_type = "error"
     )
   }
+  validate_scalar_flag(set_variable_features, "set_variable_features")
+  validate_scalar_flag(store_results, "store_results")
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(

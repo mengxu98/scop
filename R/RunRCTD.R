@@ -154,6 +154,9 @@ RunRCTD <- function(
       message_type = "error"
     )
   }
+  validate_scalar_string(prefix, "prefix")
+  validate_scalar_string(tool_name, "tool_name")
+  validate_scalar_flag(store_results, "store_results")
   if (!is.list(create_rctd_params) || !is.list(run_rctd_params)) {
     log_message(
       "{.arg create_rctd_params} and {.arg run_rctd_params} must be lists",
@@ -164,7 +167,6 @@ RunRCTD <- function(
   validate_named_param_list(run_rctd_params, "run_rctd_params")
   rctd_mode <- match.arg(rctd_mode)
   coordinate_space <- match.arg(coordinate_space)
-  validate_scalar_string(tool_name, "tool_name")
   max_cores <- rctd_check_single_positive(max_cores, "max_cores")
   min_cells <- rctd_check_single_positive(min_cells, "min_cells")
   validate_scalar_flag(round_counts, "round_counts")
