@@ -151,9 +151,21 @@ test_that("supported RunDEtest Wilcoxon branches stay on the scop backend", {
   cells2 <- colnames(srt)[srt$group == "B"]
   features <- rownames(srt)[1:60]
 
+  # The source-mode Presto CI intentionally avoids compiling the full SCOP DLL
+  # before R CMD check. Conserved-marker aggregation is orthogonal to the
+  # Presto marker path under test, so use its exact R implementation here.
+  metap_fun <- get("metap", asNamespace("scop"))
+  combine_pvalues_r <- function(pvalues, method) {
+    apply(as.matrix(pvalues), 1, function(x) metap_fun(x, method = method)$p)
+  }
+
   testthat::local_mocked_bindings(
     FindMarkers = function(...) stop("Seurat marker backend was reached"),
     .package = "Seurat"
+  )
+  testthat::local_mocked_bindings(
+    combine_conserved_pvalues_cpp = combine_pvalues_r,
+    .package = "scop"
   )
 
   expect_no_error(pair <- scop::FindMarkers(
@@ -262,11 +274,15 @@ test_that("unsupported FindMarkers arguments still use the Seurat fallback", {
 
 test_that("RunDEtest all-in-one fallback never installs missing Presto", {
   install_requested <- NULL
+  context_materialized <- FALSE
   native_all_markers <- get("RunDEtestFindAllMarkers", asNamespace("scop"))
 
   testthat::local_mocked_bindings(
     marker_assay_is_chromatin = function(...) FALSE,
-    marker_context = function(...) list(labels = c("A", "B")),
+    marker_context = function(...) {
+      context_materialized <<- TRUE
+      stop("marker context should not be materialized without Presto")
+    },
     presto_get_fun = function(
       fun = "wilcoxauc",
       install = FALSE,
@@ -277,6 +293,29 @@ test_that("RunDEtest all-in-one fallback never installs missing Presto", {
     },
     .package = "scop"
   )
+
+  expect_null(native_all_markers(
+    srt = NULL,
+    assay = "RNA",
+    layer = "data",
+    cell_group = factor(c("A", "B")),
+    features = NULL,
+    test.use = "roc",
+    logfc.threshold = 0,
+    base = 2,
+    min.pct = 0,
+    min.diff.pct = -Inf,
+    min.cells.feature = 3,
+    min.cells.group = 3,
+    latent.vars = NULL,
+    only.pos = FALSE,
+    norm.method = "LogNormalize",
+    pseudocount.use = 1,
+    mean.fxn = NULL,
+    p.adjust.method = "bonferroni"
+  ))
+  expect_null(install_requested)
+  expect_false(context_materialized)
 
   expect_null(native_all_markers(
     srt = NULL,
@@ -299,6 +338,7 @@ test_that("RunDEtest all-in-one fallback never installs missing Presto", {
     p.adjust.method = "bonferroni"
   ))
   expect_false(install_requested)
+  expect_false(context_materialized)
 })
 
 test_that("RunDEtest all-in-one markers match the pairwise scop backend", {

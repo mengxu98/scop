@@ -403,6 +403,14 @@ FindAllMarkers.Seurat <- function(
     return(run_seurat())
   }
 
+  presto_fun <- presto_get_fun(
+    install = FALSE,
+    error_on_missing = FALSE
+  )
+  if (is.null(presto_fun)) {
+    return(run_seurat())
+  }
+
   groups <- NULL
   if (!is.null(group.by) && !identical(group.by, "ident")) {
     metadata <- methods::slot(object, "meta.data")
@@ -422,13 +430,6 @@ FindAllMarkers.Seurat <- function(
     groups = groups
   )
   if (is.null(ctx) || length(ctx$labels) < 2L) {
-    return(run_seurat())
-  }
-  presto_fun <- presto_get_fun(
-    install = FALSE,
-    error_on_missing = FALSE
-  )
-  if (is.null(presto_fun)) {
     return(run_seurat())
   }
   marker_all_from_context(

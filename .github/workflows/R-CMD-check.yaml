@@ -86,6 +86,29 @@ jobs:
             reporter = "summary",
             stop_on_failure = TRUE
           )
+          source_parity_tests <- list(
+            "tests/testthat/test-rundetest-findmarkers.R" = c(
+              "RunDEtest uses scop FindMarkers-compatible sparse Wilcoxon path",
+              "FindMarkers native branches exactly match the Seurat method",
+              "supported RunDEtest Wilcoxon branches stay on the scop backend",
+              "RunDEtest all-in-one markers match the pairwise scop backend"
+            ),
+            "tests/testthat/test-seurat-fast-paths.R" = c(
+              "FindAllMarkers supports feature subsets with Seurat parity",
+              "FindAllMarkers native path covers metadata groups and FC controls",
+              "FindAllMarkers accelerates Seurat-compatible sampling"
+            )
+          )
+          for (test_path in names(source_parity_tests)) {
+            for (test_description in source_parity_tests[[test_path]]) {
+              testthat::test_file(
+                test_path,
+                desc = test_description,
+                reporter = "summary",
+                stop_on_failure = TRUE
+              )
+            }
+          }
 
       - name: Save R package cache 💾
         uses: actions/cache/save@v5
