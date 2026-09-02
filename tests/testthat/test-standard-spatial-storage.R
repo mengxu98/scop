@@ -223,6 +223,102 @@ test_that("variable-feature-only output is certified without a tool", {
   expect_identical(out@tools[["SpatialVariableFeatures"]], stale_tool)
 })
 
+test_that("SVF bookkeeping follows the effective assay override", {
+  srt <- make_standard_spatial_storage_object()
+  alt_counts <- SeuratObject::LayerData(srt, assay = "RNA", layer = "counts")
+  srt[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = alt_counts)
+  SeuratObject::VariableFeatures(srt, assay = "RNA") <- "gene1"
+  SeuratObject::VariableFeatures(srt, assay = "ALT") <- c("gene2", "gene3")
+
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunSpatialVariableFeatures = function(
+      srt,
+      assay,
+      features,
+      set_variable_features,
+      store_results,
+      ...
+    ) {
+      expect_identical(assay, "ALT")
+      expect_identical(features, c("gene2", "gene3"))
+      expect_length(
+        suppressWarnings(SeuratObject::VariableFeatures(srt, assay = assay)),
+        0L
+      )
+      expect_identical(
+        standard_spatial_variable_features(srt, assay = "RNA"),
+        "gene1"
+      )
+      expect_true(set_variable_features)
+      expect_false(store_results)
+      SeuratObject::VariableFeatures(srt, assay = assay) <- "gene3"
+      srt
+    },
+    .package = "scop"
+  )
+
+  out <- run_storage_workflow(
+    srt,
+    do_spatial_variable_features = TRUE,
+    spatial_variable_features_params = list(
+      assay = "ALT",
+      store_results = FALSE,
+      set_variable_features = TRUE
+    )
+  )
+  stages <- out@tools$run_standard_spatial_workflow$stages
+  svf <- stages[stages$stage == "spatial_variable_features", , drop = FALSE]
+
+  expect_identical(svf$status, "completed")
+  expect_identical(svf$variable_features_before, 2L)
+  expect_identical(svf$variable_features_after, 1L)
+  expect_match(svf$result_location, 'VariableFeatures\\("ALT"\\)')
+  expect_identical(
+    standard_spatial_variable_features(out, assay = "RNA"),
+    "gene1"
+  )
+  expect_identical(
+    standard_spatial_variable_features(out, assay = "ALT"),
+    "gene3"
+  )
+})
+
+test_that("NULL SVF assay resolves to the producer default assay", {
+  srt <- make_standard_spatial_storage_object()
+  alt_counts <- SeuratObject::LayerData(srt, assay = "RNA", layer = "counts")
+  srt[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = alt_counts)
+  SeuratObject::DefaultAssay(srt) <- "ALT"
+  SeuratObject::VariableFeatures(srt, assay = "ALT") <- "gene2"
+
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunSpatialVariableFeatures = function(srt, assay, features, ...) {
+      expect_identical(assay, "ALT")
+      expect_identical(features, "gene2")
+      SeuratObject::VariableFeatures(srt, assay = assay) <- "gene3"
+      srt
+    },
+    .package = "scop"
+  )
+
+  out <- run_storage_workflow(
+    srt,
+    do_spatial_variable_features = TRUE,
+    spatial_variable_features_params = list(
+      assay = NULL,
+      store_results = FALSE,
+      set_variable_features = TRUE
+    )
+  )
+  stages <- out@tools$run_standard_spatial_workflow$stages
+  svf <- stages[stages$stage == "spatial_variable_features", , drop = FALSE]
+
+  expect_identical(svf$variable_features_before, 1L)
+  expect_identical(svf$variable_features_after, 1L)
+  expect_match(svf$result_location, 'VariableFeatures\\("ALT"\\)')
+})
+
 test_that("SVF output replaces stale selection and preserves HVF metadata", {
   srt <- make_standard_spatial_storage_object()
   assay_object <- srt[["RNA"]]
@@ -505,6 +601,71 @@ test_that("fresh non-finite SVF scores certify a valid empty selection", {
   expect_identical(out@tools$run_standard_spatial_workflow$status, "completed")
 })
 
+test_that("restored HVF statistics do not revive a valid empty SVF selection", {
+  srt <- make_standard_spatial_storage_object()
+  assay_object <- srt[["RNA"]]
+  skip_if_not(inherits(assay_object, "StdAssay"))
+  variable <- c(TRUE, FALSE, TRUE)
+  rank <- c(1L, NA_integer_, 2L)
+  names(variable) <- names(rank) <- rownames(assay_object)
+  assay_object[["vf_mock_counts_variable"]] <- variable
+  assay_object[["vf_mock_counts_rank"]] <- rank
+  srt[["RNA"]] <- assay_object
+  SeuratObject::VariableFeatures(srt, assay = "RNA") <- c("gene1", "gene3")
+  hvf_before <- srt[["RNA"]][[]][
+    ,
+    c("vf_mock_counts_variable", "vf_mock_counts_rank"),
+    drop = FALSE
+  ]
+
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunSpatialVariableFeatures = function(srt, assay, ...) {
+      expect_false(any(startsWith(colnames(srt[[assay]][[]]), "vf_")))
+      srt@tools[["SpatialVariableFeatures"]] <- make_valid_empty_svf_tool()
+      srt
+    },
+    .package = "scop"
+  )
+
+  out <- run_storage_workflow(
+    srt,
+    do_spatial_variable_features = TRUE,
+    spatial_variable_features_params = list(
+      store_results = TRUE,
+      set_variable_features = TRUE
+    )
+  )
+  feature_metadata <- out[["RNA"]][[]]
+  hvf_after <- feature_metadata[
+    ,
+    c("vf_mock_counts_variable", "vf_mock_counts_rank"),
+    drop = FALSE
+  ]
+  raw_active_features <- suppressWarnings(
+    SeuratObject::VariableFeatures(out, assay = "RNA")
+  )
+  active_features <- standard_spatial_variable_features(out, assay = "RNA")
+  historical_hvfs <- suppressWarnings(
+    SeuratObject::VariableFeatures(
+      out[["RNA"]],
+      method = "mock",
+      layer = "counts"
+    )
+  )
+  stages <- out@tools$run_standard_spatial_workflow$stages
+  svf <- stages[stages$stage == "spatial_variable_features", , drop = FALSE]
+
+  expect_identical(hvf_after, hvf_before)
+  expect_identical(active_features, character())
+  expect_false(any(raw_active_features %in% rownames(out[["RNA"]]), na.rm = TRUE))
+  expect_identical(historical_hvfs, c("gene1", "gene3"))
+  expect_true("var.features" %in% colnames(feature_metadata))
+  expect_false(any(feature_metadata$var.features, na.rm = TRUE))
+  expect_true(all(is.na(feature_metadata$var.features.rank)))
+  expect_identical(svf$variable_features_after, 0L)
+})
+
 test_that("malformed SVF tools cannot certify an empty selection", {
   valid_tool <- make_valid_empty_svf_tool()
   malformed_tools <- list(
@@ -740,6 +901,144 @@ test_that("deconvolution rejects workflow-owned result keys before execution", {
   }
 
   expect_length(calls, 0L)
+})
+
+test_that("metadata-only deconvolution allows workflow-owned tool names", {
+  called <- FALSE
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunRCTD = function(srt, prefix, tool_name, store_results, ...) {
+      called <<- TRUE
+      expect_identical(tool_name, "BayesSpace")
+      expect_false(store_results)
+      add_mock_deconv_outputs(srt, prefix = prefix)
+    },
+    .package = "scop"
+  )
+  srt <- make_standard_spatial_storage_object()
+  srt$label <- factor(rep("typeA", ncol(srt)))
+  bayesspace_tool <- list(result = "keep")
+  srt@tools[["BayesSpace"]] <- bayesspace_tool
+
+  out <- run_storage_workflow(
+    srt,
+    do_deconvolution = TRUE,
+    deconvolution_method = "RCTD",
+    reference = srt,
+    reference_label = "label",
+    deconvolution_params = list(
+      prefix = "Custom",
+      tool_name = "BayesSpace",
+      store_results = FALSE
+    )
+  )
+  stages <- out@tools$run_standard_spatial_workflow$stages
+  deconv <- stages[stages$stage == "deconvolution", , drop = FALSE]
+
+  expect_true(called)
+  expect_identical(deconv$status, "completed")
+  expect_true(is.na(deconv$result_tool_key))
+  expect_match(deconv$result_metadata_key, "Custom_prop_typeA")
+  expect_identical(out@tools[["BayesSpace"]], bayesspace_tool)
+})
+
+test_that("planned spatial metadata collisions fail before any producer", {
+  calls <- character()
+  testthat::local_mocked_bindings(
+    RunSpotQC = function(srt, ...) {
+      calls <<- c(calls, "RunSpotQC")
+      srt
+    },
+    RunStandardWorkflow = function(srt, ...) {
+      calls <<- c(calls, "RunStandardWorkflow")
+      srt
+    },
+    RunBayesSpace = function(srt, ...) {
+      calls <<- c(calls, "RunBayesSpace")
+      srt
+    },
+    RunRCTD = function(srt, ...) {
+      calls <<- c(calls, "RunRCTD")
+      srt
+    },
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  srt <- make_standard_spatial_storage_object()
+  srt$label <- factor(rep("typeA", ncol(srt)))
+
+  expect_error(
+    original(
+      srt,
+      assay = "RNA",
+      do_spot_qc = TRUE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = TRUE,
+      spatial_q = 2,
+      bayesspace_params = list(cluster_colname = "SpotQC"),
+      do_deconvolution = FALSE,
+      verbose = FALSE
+    ),
+    "metadata outputs collide"
+  )
+  expect_length(calls, 0L)
+
+  expect_error(
+    original(
+      srt,
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = TRUE,
+      spatial_q = 2,
+      bayesspace_params = list(
+        cluster_colname = "Custom_prop_typeA"
+      ),
+      do_deconvolution = TRUE,
+      deconvolution_method = "RCTD",
+      reference = srt,
+      reference_label = "label",
+      deconvolution_params = list(prefix = "Custom"),
+      verbose = FALSE
+    ),
+    "deconvolution metadata.*collides"
+  )
+  expect_length(calls, 0L)
+})
+
+test_that("unrequested stage names do not create metadata collisions", {
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunBayesSpace = function(srt, cluster_colname, ...) {
+      expect_identical(cluster_colname, "SpotQC")
+      srt[[cluster_colname]] <- rep("domain1", ncol(srt))
+      srt@tools[["BayesSpace"]] <- list(result = "fresh")
+      srt
+    },
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+
+  out <- original(
+    make_standard_spatial_storage_object(),
+    assay = "RNA",
+    do_spot_qc = FALSE,
+    do_spatial_variable_features = FALSE,
+    do_spatial_cluster = TRUE,
+    spatial_q = 2,
+    bayesspace_params = list(cluster_colname = "SpotQC"),
+    do_deconvolution = FALSE,
+    verbose = FALSE,
+    do_normalization = FALSE,
+    do_HVF_finding = FALSE,
+    do_scaling = FALSE
+  )
+  stages <- out@tools$run_standard_spatial_workflow$stages
+  domain <- stages[stages$stage == "spatial_clustering", , drop = FALSE]
+
+  expect_identical(domain$status, "completed")
+  expect_identical(domain$result_metadata_key, "SpotQC")
+  expect_equal(unique(out$SpotQC), "domain1")
 })
 
 test_that("SPOTlight dispatch satisfies the normalized storage contract", {
