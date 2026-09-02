@@ -1450,6 +1450,24 @@ test_that("planned spatial metadata collisions fail before any producer", {
     original(
       srt,
       assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = TRUE,
+      spatial_q = 2,
+      bayesspace_params = list(
+        cluster_colname = "BayesSpace_init"
+      ),
+      do_deconvolution = FALSE,
+      verbose = FALSE
+    ),
+    "metadata outputs collide"
+  )
+  expect_length(calls, 0L)
+
+  expect_error(
+    original(
+      srt,
+      assay = "RNA",
       do_spot_qc = TRUE,
       do_spatial_variable_features = FALSE,
       do_spatial_cluster = TRUE,
@@ -1599,6 +1617,89 @@ test_that("RCTD preserves an abundance-named BayesSpace init output", {
   expect_identical(unique(out$Custom_abundance_annotation), "initial1")
 })
 
+test_that("explicit NULL BayesSpace init is preserved through dispatch", {
+  producer_calls <- 0L
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunBayesSpace = function(
+      srt,
+      cluster_colname,
+      init_colname = "unexpected default",
+      ...
+    ) {
+      producer_calls <<- producer_calls + 1L
+      expect_null(init_colname)
+      if (identical(cluster_colname, "BayesSpace_init")) {
+        expect_false("BayesSpace_init" %in% colnames(srt@meta.data))
+      } else {
+        expect_identical(
+          unique(srt$BayesSpace_init),
+          "existing annotation"
+        )
+      }
+      srt[[cluster_colname]] <- rep("domain1", ncol(srt))
+      srt@tools[["BayesSpace"]] <- list(result = "fresh")
+      srt
+    },
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+
+  run_case <- function(cluster_colname) {
+    srt <- make_standard_spatial_storage_object()
+    srt$BayesSpace_init <- "existing annotation"
+    srt$CustomCluster <- "stale cluster"
+    original(
+      srt,
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = TRUE,
+      spatial_q = 2,
+      bayesspace_params = list(
+        cluster_colname = cluster_colname,
+        init_colname = NULL
+      ),
+      do_deconvolution = FALSE,
+      do_normalization = FALSE,
+      do_HVF_finding = FALSE,
+      do_scaling = FALSE,
+      verbose = FALSE
+    )
+  }
+
+  cluster_uses_default_init_name <- run_case("BayesSpace_init")
+  cluster_elsewhere <- run_case("CustomCluster")
+  first_tools <- methods::slot(cluster_uses_default_init_name, "tools")
+  first_receipt <- first_tools[["run_standard_spatial_workflow"]]
+  first_stage <- first_receipt$stages
+  second_stage <- cluster_elsewhere@tools$run_standard_spatial_workflow$stages
+  first_domain <- first_stage[
+    first_stage$stage == "spatial_clustering",
+    ,
+    drop = FALSE
+  ]
+  second_domain <- second_stage[
+    second_stage$stage == "spatial_clustering",
+    ,
+    drop = FALSE
+  ]
+
+  expect_identical(producer_calls, 2L)
+  expect_identical(first_domain$status, "completed")
+  expect_identical(first_domain$result_metadata_key, "BayesSpace_init")
+  expect_identical(
+    unique(cluster_uses_default_init_name$BayesSpace_init),
+    "domain1"
+  )
+  expect_identical(second_domain$status, "completed")
+  expect_identical(second_domain$result_metadata_key, "CustomCluster")
+  expect_identical(
+    unique(cluster_elsewhere$BayesSpace_init),
+    "existing annotation"
+  )
+})
+
 test_that("unrequested stage names do not create metadata collisions", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
@@ -1608,9 +1709,8 @@ test_that("unrequested stage names do not create metadata collisions", {
     },
     RunBayesSpace = function(srt, cluster_colname, init_colname, ...) {
       expect_identical(cluster_colname, "SpotQC")
-      expect_identical(init_colname, "BayesSpace_init")
+      expect_null(init_colname)
       srt[[cluster_colname]] <- rep("domain1", ncol(srt))
-      srt[[init_colname]] <- rep("initial1", ncol(srt))
       srt@tools[["BayesSpace"]] <- list(result = "fresh")
       srt
     },
@@ -1640,7 +1740,7 @@ test_that("unrequested stage names do not create metadata collisions", {
 
   expect_identical(domain$status, "completed")
   expect_match(domain$result_metadata_key, "SpotQC")
-  expect_match(domain$result_metadata_key, "BayesSpace_init")
+  expect_false(grepl("BayesSpace_init", domain$result_metadata_key, fixed = TRUE))
   expect_equal(unique(out$SpotQC), "domain1")
 
   qc_only <- original(

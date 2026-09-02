@@ -800,8 +800,13 @@ run_standard_spatial_workflow <- function(
   )
   planned_bayesspace_cluster_colname <-
     bayesspace_params[["cluster_colname"]] %||% "BayesSpace_cluster"
-  planned_bayesspace_init_colname <-
-    bayesspace_params[["init_colname"]] %||% "BayesSpace_init"
+  planned_bayesspace_init_colname <- if (
+    "init_colname" %in% names(bayesspace_params)
+  ) {
+    bayesspace_params[["init_colname"]]
+  } else {
+    "BayesSpace_init"
+  }
   cluster_col <- paste0(prefix, "clusters")
 
   standard_spatial_validate_metadata_output_plan(
@@ -1236,10 +1241,11 @@ run_standard_spatial_workflow <- function(
     )
     bayesspace_args$cluster_colname <-
       bayesspace_args$cluster_colname %||% "BayesSpace_cluster"
-    bayesspace_args$init_colname <-
-      bayesspace_args$init_colname %||% "BayesSpace_init"
+    bayesspace_args["init_colname"] <- list(
+      planned_bayesspace_init_colname
+    )
     bayesspace_cluster_colname <- bayesspace_args$cluster_colname
-    bayesspace_init_colname <- bayesspace_args$init_colname
+    bayesspace_init_colname <- planned_bayesspace_init_colname
     bayesspace_metadata_keys <- c(
       bayesspace_cluster_colname,
       if (!is.null(bayesspace_init_colname)) bayesspace_init_colname
