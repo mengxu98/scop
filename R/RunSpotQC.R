@@ -84,6 +84,7 @@ RunSpotQC <- function(
   }
 
   counts <- GetAssayData5(srt, assay = assay, layer = "counts")
+  n_evaluated <- ncol(counts)
   nCount <- Matrix::colSums(counts)
   nFeature <- Matrix::colSums(counts > 0)
   srt[[paste0("nCount_", assay)]] <- nCount
@@ -176,15 +177,40 @@ RunSpotQC <- function(
     srt[[qc]] <- factor(srt[[qc, drop = TRUE]], levels = c("Pass", "Fail"))
   }
 
-  log_message(
-    "{.val {ncol(srt) - length(SpotQC)}} spots passed QC and {.val {length(SpotQC)}} spots failed QC",
-    message_type = "success",
-    verbose = verbose
-  )
-
+  n_failed <- length(SpotQC)
+  n_passed <- n_evaluated - n_failed
   if (isTRUE(return_filtered)) {
     srt <- srt[, srt$SpotQC == "Pass"]
   }
+
+  n_returned <- ncol(srt)
+  done <- paste0(
+    "Spot QC completed: {.val {n_evaluated}} evaluated, ",
+    "{.val {n_passed}} Pass, {.val {n_failed}} Fail"
+  )
+  if (isTRUE(return_filtered)) {
+    done <- paste0(done, "; {.val {n_returned}} returned")
+  }
+  image_names <- tryCatch(
+    SeuratObject::Images(srt),
+    error = function(e) character()
+  )
+  plot_call <- if (length(image_names) > 1L) {
+    paste0(
+      "lapply(SeuratObject::Images(srt), function(image) ",
+      "SpatialSpotPlot(srt, group.by = \"SpotQC\", image = image))"
+    )
+  } else {
+    "SpatialSpotPlot(srt, group.by = \"SpotQC\")"
+  }
+  spatial_run_receipt(
+    done = done,
+    scope = "assay {.val {assay}}, layer {.val counts}",
+    saved = "metadata column {.var SpotQC}",
+    plot = if (isTRUE(return_filtered)) NULL else plot_call,
+    verbose = verbose,
+    .envir = environment()
+  )
   srt
 }
 

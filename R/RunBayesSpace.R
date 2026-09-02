@@ -225,9 +225,37 @@ RunBayesSpace <- function(
   }
   srt@tools[["BayesSpace"]] <- spatial_tag_coordinate_contract(tool)
 
-  log_message(
-    "{.pkg BayesSpace} clusters stored in metadata column {.val {cluster_colname}}",
-    verbose = verbose
+  domain_summary <- spatial_domain_summary(cluster_df[[cluster_colname]])
+  n_spots <- nrow(cluster_df)
+  n_domains <- nrow(domain_summary)
+  domain_size_min <- if (n_domains > 0L) min(domain_summary$count) else 0L
+  domain_size_max <- if (n_domains > 0L) max(domain_summary$count) else 0L
+  image_use <- coordinate_input$source$image
+  has_image <- length(image_use) == 1L && !is.na(image_use) && nzchar(image_use)
+  scope <- if (!isTRUE(has_image)) {
+    "assay {.val {assay}}, raw coordinates"
+  } else {
+    "assay {.val {assay}}, image {.val {image_use}}, raw coordinates"
+  }
+  plot_call <- paste0(
+    "SpatialSpotPlot(srt, group.by = ",
+    spatial_run_receipt_quote(cluster_colname, "cluster_colname"),
+    ")"
+  )
+  spatial_run_receipt(
+    done = paste0(
+      "{.pkg BayesSpace} completed: {.val {n_spots}} spots, ",
+      "{.val {n_domains}} domains, domain size ",
+      "{.val {domain_size_min}}-{.val {domain_size_max}}"
+    ),
+    scope = scope,
+    saved = paste0(
+      "metadata column {.var {cluster_colname}} and ",
+      "{.code srt@tools[['BayesSpace']]}"
+    ),
+    plot = plot_call,
+    verbose = verbose,
+    .envir = environment()
   )
   srt
 }

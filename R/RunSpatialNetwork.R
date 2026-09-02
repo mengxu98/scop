@@ -125,6 +125,7 @@ RunSpatialNetwork <- function(
     graphs = list()
   )
   store$graphs <- store$graphs %||% list()
+  existing_graph <- !is.null(store$graphs[[graph.name]])
   if (!is.null(store$graphs[[graph.name]]) && !isTRUE(overwrite)) {
     log_message(
       "Spatial graph {.val {graph.name}} already exists; set {.arg overwrite = TRUE} to replace it",
@@ -147,10 +148,39 @@ RunSpatialNetwork <- function(
     n_edges = nrow(edges)
   )
   srt@tools[["SpatialNetwork"]] <- store
-  log_message(
-    "Stored spatial graph {.val {graph.name}} with {.val {nrow(nodes)}} nodes and {.val {nrow(edges)}} edges",
-    message_type = "success",
-    verbose = verbose
+  done <- if (identical(method, "knn")) {
+    paste0(
+      "Spatial graph completed: {.val {method}}, {.arg k} = {.val {k}}, ",
+      "{.val {nrow(nodes)}} nodes, {.val {nrow(edges)}} edges"
+    )
+  } else {
+    paste0(
+      "Spatial graph completed: {.val {method}}, {.arg radius} = {.val {radius}}, ",
+      "{.val {nrow(nodes)}} nodes, {.val {nrow(edges)}} edges"
+    )
+  }
+  scope <- if (is.null(selected_image)) {
+    "raw coordinates"
+  } else {
+    "image {.val {selected_image}}, raw coordinates"
+  }
+  scope <- paste0(scope, "; {.val {nrow(nodes)}} observations")
+  plot_call <- paste0(
+    "SpatialNetworkPlot(srt, graph.name = ",
+    spatial_run_receipt_quote(graph.name, "graph.name"),
+    ")"
+  )
+  spatial_run_receipt(
+    done = done,
+    scope = scope,
+    saved = paste0(
+      "graph {.val {graph.name}} in ",
+      "{.code srt@tools[['SpatialNetwork']]$graphs}"
+    ),
+    plot = plot_call,
+    replaced = isTRUE(existing_graph) && isTRUE(overwrite),
+    verbose = verbose,
+    .envir = environment()
   )
   srt
 }
