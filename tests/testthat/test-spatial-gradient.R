@@ -190,6 +190,7 @@ test_that("cpp backend stores annotation gradient result tables", {
   expect_true(nrow(stored$screening) > 0)
   expect_true(nrow(stored$top_variables) > 0)
   expect_equal(stored$parameters$value[match("backend", stored$parameters$key)], "cpp")
+  expect_false("spata2_version" %in% stored$parameters$key)
   expect_true(all(c("norm_var", "rel_var", "linear_r2") %in% colnames(stored$significance)))
   expect_true(all(c("ascending", "descending", "peak", "valley", "linear") %in% stored$model_fits$model))
   expect_true(any(stored$significance$tot_var != stored$significance$linear_r2, na.rm = TRUE))
@@ -197,6 +198,27 @@ test_that("cpp backend stores annotation gradient result tables", {
   expect_identical(
     srt@tools$SpatialGradientFeatures$summary$active_result,
     "cpp_annotation"
+  )
+})
+
+test_that("cpp backend rejects legacy SPATA2 annotation ids explicitly", {
+  srt <- make_spatial_gradient_seurat()
+
+  expect_error(
+    RunSpatialGradientFeatures(
+      srt,
+      reference = "annotation",
+      backend = "cpp",
+      variables = "Gene1",
+      annotation_ids = "legacy_annotation",
+      layer = "counts",
+      coord.cols = c("x", "y"),
+      n_random = 0,
+      n_bins = 3,
+      min_spots = 1,
+      verbose = FALSE
+    ),
+    "annotation_ids.*not supported"
   )
 })
 
