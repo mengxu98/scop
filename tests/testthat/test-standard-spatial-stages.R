@@ -64,6 +64,272 @@ test_that("standard spatial workflow records completed and skipped stages truthf
   expect_match(deconv$reason, "unavailable")
 })
 
+test_that("top-level spatial stage controls require logical scalars", {
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  producer_calls <- character()
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    RunSpotQC = function(...) producer_calls <<- c(producer_calls, "RunSpotQC"),
+    RunStandardWorkflow = function(...) {
+      producer_calls <<- c(producer_calls, "RunStandardWorkflow")
+    },
+    RunSpatialVariableFeatures = function(...) {
+      producer_calls <<- c(producer_calls, "RunSpatialVariableFeatures")
+    },
+    RunBayesSpace = function(...) producer_calls <<- c(producer_calls, "RunBayesSpace"),
+    RunRCTD = function(...) producer_calls <<- c(producer_calls, "RunRCTD")
+  )
+  srt <- make_standard_spatial_stage_object()
+  caller_before <- srt
+  cases <- list(
+    do_spot_qc = "yes",
+    do_spatial_variable_features = 1,
+    do_spatial_cluster = c(TRUE, FALSE),
+    do_deconvolution = NA
+  )
+
+  for (arg in names(cases)) {
+    args <- list(
+      srt = srt,
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = FALSE,
+      do_deconvolution = FALSE,
+      verbose = FALSE
+    )
+    args[[arg]] <- cases[[arg]]
+    expect_error(
+      do.call(original, args),
+      paste0(arg, ".*TRUE or FALSE")
+    )
+    expect_length(producer_calls, 0L)
+    expect_identical(srt, caller_before)
+  }
+})
+
+test_that("requested stage parameter lists fail through their stage wrapper", {
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  producer_calls <- character()
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    RunSpotQC = function(...) producer_calls <<- c(producer_calls, "RunSpotQC"),
+    RunStandardWorkflow = function(...) {
+      producer_calls <<- c(producer_calls, "RunStandardWorkflow")
+    },
+    RunSpatialVariableFeatures = function(...) {
+      producer_calls <<- c(producer_calls, "RunSpatialVariableFeatures")
+    },
+    RunBayesSpace = function(...) producer_calls <<- c(producer_calls, "RunBayesSpace")
+  )
+  srt <- make_standard_spatial_stage_object()
+  caller_before <- srt
+  cases <- list(
+    quality_control = list(
+      flag = "do_spot_qc",
+      params = "spot_qc_params",
+      actual_method = "RunSpotQC"
+    ),
+    spatial_variable_features = list(
+      flag = "do_spatial_variable_features",
+      params = "spatial_variable_features_params",
+      actual_method = "RunSpatialVariableFeatures"
+    ),
+    spatial_clustering = list(
+      flag = "do_spatial_cluster",
+      params = "bayesspace_params",
+      actual_method = "RunBayesSpace"
+    )
+  )
+
+  for (stage in names(cases)) {
+    case <- cases[[stage]]
+    args <- list(
+      srt = srt,
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = FALSE,
+      do_deconvolution = FALSE,
+      verbose = FALSE
+    )
+    args[[case$flag]] <- TRUE
+    args[[case$params]] <- "invalid"
+    condition <- tryCatch(do.call(original, args), error = identity)
+    stages <- attr(condition, "standard_spatial_stages")
+    failed <- stages[stages$stage == stage, , drop = FALSE]
+
+    expect_s3_class(condition, "error")
+    expect_match(conditionMessage(condition), case$params)
+    expect_s3_class(stages, "data.frame")
+    expect_identical(failed$status, "failed")
+    expect_identical(failed$actual_method, case$actual_method)
+    expect_false(isTRUE(failed$result_stored))
+    expect_length(producer_calls, 0L)
+    expect_identical(srt, caller_before)
+  }
+})
+
+test_that("requested stage methods fail through their stage wrapper", {
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  producer_calls <- character()
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    RunStandardWorkflow = function(...) {
+      producer_calls <<- c(producer_calls, "RunStandardWorkflow")
+    },
+    RunBayesSpace = function(...) producer_calls <<- c(producer_calls, "RunBayesSpace"),
+    RunRCTD = function(...) producer_calls <<- c(producer_calls, "RunRCTD"),
+    RunSPOTlight = function(...) producer_calls <<- c(producer_calls, "RunSPOTlight"),
+    RunCell2location = function(...) producer_calls <<- c(producer_calls, "RunCell2location")
+  )
+  srt <- make_standard_spatial_stage_object()
+  caller_before <- srt
+  cases <- list(
+    spatial_clustering = list(
+      flag = "do_spatial_cluster",
+      value = TRUE,
+      method_arg = "spatial_cluster_method",
+      actual_method = "RunBayesSpace"
+    ),
+    deconvolution = list(
+      flag = "do_deconvolution",
+      value = TRUE,
+      method_arg = "deconvolution_method",
+      actual_method = "deconvolution_method validation"
+    ),
+    automatic_deconvolution = list(
+      stage = "deconvolution",
+      flag = "do_deconvolution",
+      value = NULL,
+      method_arg = "deconvolution_method",
+      actual_method = "deconvolution_method validation"
+    )
+  )
+
+  for (case_name in names(cases)) {
+    case <- cases[[case_name]]
+    stage <- if (is.null(case$stage)) case_name else case$stage
+    args <- list(
+      srt = srt,
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = FALSE,
+      do_deconvolution = FALSE,
+      verbose = FALSE
+    )
+    args[case$flag] <- list(case$value)
+    args[[case$method_arg]] <- "invalid"
+    condition <- tryCatch(do.call(original, args), error = identity)
+    stages <- attr(condition, "standard_spatial_stages")
+    failed <- stages[stages$stage == stage, , drop = FALSE]
+
+    expect_s3_class(condition, "error")
+    expect_match(conditionMessage(condition), "should be")
+    expect_s3_class(stages, "data.frame")
+    expect_true(failed$requested)
+    expect_identical(failed$status, "failed")
+    expect_identical(failed$requested_method, "invalid")
+    expect_identical(failed$actual_method, case$actual_method)
+    expect_length(producer_calls, 0L)
+    expect_identical(srt, caller_before)
+  }
+})
+
+test_that("parameters for unrequested spatial stages are ignored", {
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  preprocessing_calls <- 0L
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    RunStandardWorkflow = function(srt, ...) {
+      preprocessing_calls <<- preprocessing_calls + 1L
+      srt
+    }
+  )
+  out <- original(
+    make_standard_spatial_stage_object(),
+    assay = "RNA",
+    do_spot_qc = FALSE,
+    spot_qc_params = "ignored",
+    do_spatial_variable_features = FALSE,
+    spatial_variable_features_params = "ignored",
+    do_spatial_cluster = FALSE,
+    spatial_cluster_method = "ignored",
+    bayesspace_params = "ignored",
+    do_deconvolution = FALSE,
+    deconvolution_method = "ignored",
+    deconvolution_params = "ignored",
+    do_normalization = FALSE,
+    do_HVF_finding = FALSE,
+    do_scaling = FALSE,
+    verbose = FALSE
+  )
+
+  expect_identical(preprocessing_calls, 1L)
+  expect_identical(
+    out@tools$run_standard_spatial_workflow$status,
+    "completed"
+  )
+  expect_identical(
+    out@tools$run_standard_spatial_workflow$stages$requested_method,
+    c("RunSpotQC", "RunSpatialVariableFeatures", "BayesSpace", "RCTD")
+  )
+})
+
+test_that("effective SVF storage controls require logical scalars", {
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  producer_called <- FALSE
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunSpatialVariableFeatures = function(...) {
+      producer_called <<- TRUE
+      stop("SVF producer was reached")
+    }
+  )
+  srt <- make_standard_spatial_stage_object()
+  caller_before <- srt
+  cases <- list(
+    set_variable_features = "yes",
+    store_results = c(TRUE, FALSE)
+  )
+
+  for (arg in names(cases)) {
+    params <- list()
+    params[[arg]] <- cases[[arg]]
+    condition <- tryCatch(
+      original(
+        srt,
+        assay = "RNA",
+        do_spot_qc = FALSE,
+        do_spatial_variable_features = TRUE,
+        spatial_variable_features_params = params,
+        do_spatial_cluster = FALSE,
+        do_deconvolution = FALSE,
+        do_normalization = FALSE,
+        do_HVF_finding = FALSE,
+        do_scaling = FALSE,
+        verbose = FALSE
+      ),
+      error = identity
+    )
+    stages <- attr(condition, "standard_spatial_stages")
+    svf <- stages[
+      stages$stage == "spatial_variable_features",
+      ,
+      drop = FALSE
+    ]
+
+    expect_s3_class(condition, "error")
+    expect_match(conditionMessage(condition), paste0("spatial_variable_features_params\\$", arg))
+    expect_identical(svf$status, "failed")
+    expect_identical(svf$actual_method, "RunSpatialVariableFeatures")
+    expect_false(producer_called)
+    expect_identical(srt, caller_before)
+  }
+})
+
 test_that("standard spatial workflow exposes failed stage diagnostics on errors", {
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   testthat::local_mocked_bindings(
@@ -160,8 +426,16 @@ test_that("BayesSpace planning failures carry clustering stage diagnostics", {
       params = list(cluster_colname = c("one", "two"), init_colname = NULL),
       pattern = "bayesspace_params\\$cluster_colname"
     ),
+    non_character_cluster = list(
+      params = list(cluster_colname = 1, init_colname = NULL),
+      pattern = "bayesspace_params\\$cluster_colname"
+    ),
     malformed_init = list(
       params = list(cluster_colname = "CustomCluster", init_colname = ""),
+      pattern = "bayesspace_params\\$init_colname"
+    ),
+    non_character_init = list(
+      params = list(cluster_colname = "CustomCluster", init_colname = 1),
       pattern = "bayesspace_params\\$init_colname"
     ),
     preprocessing_collision = list(

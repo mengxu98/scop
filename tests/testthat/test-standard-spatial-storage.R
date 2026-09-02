@@ -1363,6 +1363,10 @@ test_that("deconvolution setup validation fails with stage diagnostics before pr
       params = list(prefix = ""),
       pattern = "deconvolution_params\\$prefix"
     ),
+    non_character_prefix = list(
+      params = list(prefix = 1),
+      pattern = "deconvolution_params\\$prefix"
+    ),
     invalid_store_results = list(
       params = list(store_results = "yes"),
       pattern = "deconvolution_params\\$store_results"
@@ -1686,6 +1690,27 @@ test_that("all preprocessing cluster outputs are protected before producers run"
       normalization_method = "TFIDF",
       bayes_arg = "cluster_colname",
       target = "Standardsvdclusters"
+    ),
+    multi_reduction_resolution_cluster = list(
+      linear_reduction = c("pca", "ica"),
+      normalization_method = "LogNormalize",
+      cluster_resolution = c(0.4, 0.8),
+      bayes_arg = "cluster_colname",
+      target = "Standardica_SNN_res.0.8"
+    ),
+    multi_reduction_resolution_init = list(
+      linear_reduction = c("pca", "ica"),
+      normalization_method = "LogNormalize",
+      cluster_resolution = c(0.4, 0.8),
+      bayes_arg = "init_colname",
+      target = "Standardpca_SNN_res.0.4"
+    ),
+    tfidf_resolution = list(
+      linear_reduction = c("pca", "ica"),
+      normalization_method = "TFIDF",
+      cluster_resolution = 0.6,
+      bayes_arg = "cluster_colname",
+      target = "Standardsvd_SNN_res.0.6"
     )
   )
 
@@ -1708,6 +1733,11 @@ test_that("all preprocessing cluster outputs are protected before producers run"
         do_deconvolution = FALSE,
         linear_reduction = case$linear_reduction,
         normalization_method = case$normalization_method,
+        cluster_resolution = if (is.null(case$cluster_resolution)) {
+          0.6
+        } else {
+          case$cluster_resolution
+        },
         verbose = FALSE
       ),
       "metadata outputs collide"
@@ -1744,6 +1774,56 @@ test_that("all preprocessing cluster outputs are protected before producers run"
     tfidf_domain$result_metadata_key,
     "Standardpcaclusters"
   )
+})
+
+test_that("resolution cluster outputs are protected from deconvolution", {
+  producer_calls <- character()
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunStandardWorkflow")
+      srt
+    },
+    RunRCTD = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunRCTD")
+      srt
+    },
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  srt <- make_standard_spatial_storage_object()
+  srt$label <- factor(rep("typeA", ncol(srt)))
+  caller_before <- srt
+  condition <- tryCatch(
+    original(
+      srt,
+      prefix = "Custom_prop_",
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = FALSE,
+      do_deconvolution = TRUE,
+      deconvolution_method = "RCTD",
+      reference = srt,
+      reference_label = "label",
+      deconvolution_params = list(prefix = "Custom"),
+      linear_reduction = "pca",
+      cluster_resolution = 0.6,
+      verbose = FALSE
+    ),
+    error = identity
+  )
+  stages <- attr(condition, "standard_spatial_stages")
+  deconv <- stages[stages$stage == "deconvolution", , drop = FALSE]
+
+  expect_s3_class(condition, "error")
+  expect_match(
+    conditionMessage(condition),
+    "Custom_prop_pca_SNN_res\\.0\\.6"
+  )
+  expect_identical(deconv$status, "failed")
+  expect_identical(deconv$actual_method, "RunRCTD")
+  expect_length(producer_calls, 0L)
+  expect_identical(srt, caller_before)
 })
 
 test_that("all default SpotQC outputs are protected before producers run", {
