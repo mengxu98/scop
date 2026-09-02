@@ -25,6 +25,8 @@
 #' If `NULL`, all spots are treated as one sample.
 #' @param metrics QC metrics used by `SpotSweeper::localOutliers()`. If `NULL`,
 #' `nCount_<assay>`, `nFeature_<assay>`, and `percent.mito` are used.
+#' The corresponding `<metric>_outliers` and `<metric>_z` names are reserved for
+#' backend output and cannot also be requested as input columns.
 #' @param directions Outlier direction for each metric. If `NULL`, count and
 #' feature metrics use `"lower"` and mitochondrial metrics use `"higher"`.
 #' @param n_neighbors Unitless number of nearest spatial neighbors for local
@@ -61,8 +63,9 @@
 #' stored in `srt@tools[[tool_name]]`. The artifact metadata uses `NA` and
 #' `"NotEvaluated"` when a requested artifact stage did not run; the overall
 #' `*_local_outlier_qc` uses `"NotEvaluated"` outside the tested coordinate
-#' scope, and the overall `*_QC` column uses `"Partial"` whenever a spot was not
-#' fully evaluated by the requested QC stages.
+#' scope. In the overall `*_QC` column, `"Fail"` takes precedence when any
+#' evaluated check fails; otherwise `"Partial"` marks spots not fully evaluated
+#' by the requested QC stages.
 #' @export
 #'
 #' @examples
@@ -186,11 +189,6 @@ RunSpotSweeper <- function(
   extra_args <- list(...)
   spot_sweeper_validate_named_list(extra_args, "...")
 
-  check_r(
-    c("MicTott/SpotSweeper", "SpatialExperiment", "SummarizedExperiment", "S4Vectors"),
-    verbose = FALSE
-  )
-
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
   coords <- spatial_analysis_coords(
     srt = srt,
@@ -211,6 +209,30 @@ RunSpotSweeper <- function(
     mito_percent = mito_percent,
     mito_sum = mito_sum,
     verbose = verbose
+  )
+  local_output_columns <- c(
+    paste0(inputs$metrics, "_outliers"),
+    paste0(inputs$metrics, "_z")
+  )
+  required_input_columns <- unique(c(
+    inputs$metrics,
+    inputs$sample_col,
+    if (isTRUE(run_artifact)) c(inputs$mito_percent, inputs$mito_sum)
+  ))
+  local_output_collisions <- intersect(
+    local_output_columns,
+    required_input_columns
+  )
+  if (length(local_output_collisions) > 0L) {
+    log_message(
+      "Requested input column{?s} collide with reserved {.pkg SpotSweeper} local-output names: {.val {local_output_collisions}}",
+      message_type = "error"
+    )
+  }
+
+  check_r(
+    c("MicTott/SpotSweeper", "SpatialExperiment", "SummarizedExperiment", "S4Vectors"),
+    verbose = FALSE
   )
   spe <- spot_sweeper_make_spe(
     expr = expr[inputs$features, inputs$spots, drop = FALSE],
@@ -566,6 +588,13 @@ spot_sweeper_run_local_outliers <- function(
       "Run {.pkg SpotSweeper} local outlier detection for {.val {metric}}",
       verbose = verbose
     )
+    outlier_col <- paste0(metric, "_outliers")
+    z_col <- paste0(metric, "_z")
+    input_spots <- colnames(spe)
+    input_coldata <- spot_sweeper_coldata(spe)
+    input_coldata[[outlier_col]] <- NULL
+    input_coldata[[z_col]] <- NULL
+    SummarizedExperiment::colData(spe) <- S4Vectors::DataFrame(input_coldata)
     args <- c(
       list(
         spe = spe,
@@ -580,6 +609,12 @@ spot_sweeper_run_local_outliers <- function(
       spot_sweeper_filter_args(local_fun, extra_args)
     )
     spe <- do.call(local_fun, args)
+    if (!identical(colnames(spe), input_spots)) {
+      log_message(
+        "{.pkg SpotSweeper} {.fn localOutliers} changed spot identities or order for metric {.val {metric}}",
+        message_type = "error"
+      )
+    }
     result[[metric]] <- spot_sweeper_coldata(spe)
   }
   list(spe = spe, result = result)
@@ -747,8 +782,12 @@ spot_sweeper_run_artifacts <- function(
       )
       next
     }
-    artifact_values <- as.logical(sample_coldata$artifact)
-    if (length(artifact_values) != nrow(sample_coldata) || anyNA(artifact_values)) {
+    artifact_values <- spot_sweeper_binary_values(
+      sample_coldata$artifact,
+      expected_length = nrow(sample_coldata),
+      allow_na = FALSE
+    )
+    if (is.null(artifact_values)) {
       reason <- "SpotSweeper::findArtifacts returned invalid artifact values"
       log_message(
         "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: {reason}",
@@ -793,6 +832,7 @@ spot_sweeper_finalize_metadata <- function(
   local_fail <- rep(FALSE, length(all_spots))
   names(local_fail) <- all_spots
   local_evaluated <- all_spots %in% rownames(cdata)
+  names(local_evaluated) <- all_spots
 
   for (metric in metrics) {
     outlier_raw <- paste0(metric, "_outliers")
@@ -802,9 +842,16 @@ spot_sweeper_finalize_metadata <- function(
     metadata[[outlier_col]] <- rep(NA, length(all_spots))
     metadata[[z_col]] <- NA_real_
     outlier <- if (outlier_raw %in% colnames(cdata)) {
-      as.logical(cdata[[outlier_raw]])
+      spot_sweeper_binary_values(
+        cdata[[outlier_raw]],
+        expected_length = nrow(cdata),
+        allow_na = TRUE
+      )
     } else {
-      rep(FALSE, nrow(cdata))
+      NULL
+    }
+    if (is.null(outlier)) {
+      outlier <- rep(NA, nrow(cdata))
     }
     z <- if (z_raw %in% colnames(cdata)) {
       suppressWarnings(as.numeric(cdata[[z_raw]]))
@@ -813,7 +860,10 @@ spot_sweeper_finalize_metadata <- function(
     }
     metadata[rownames(cdata), outlier_col] <- outlier
     metadata[rownames(cdata), z_col] <- z
-    local_fail[rownames(cdata)] <- local_fail[rownames(cdata)] | outlier
+    local_evaluated[rownames(cdata)] <-
+      local_evaluated[rownames(cdata)] & !is.na(outlier)
+    local_fail[rownames(cdata)] <-
+      local_fail[rownames(cdata)] | (!is.na(outlier) & outlier)
     local_table[[metric]] <- data.frame(
       spot = rownames(cdata),
       metric = metric,
@@ -876,9 +926,9 @@ spot_sweeper_finalize_metadata <- function(
   )
 
   local_outlier_qc <- ifelse(
-    local_evaluated,
-    ifelse(local_fail, "Fail", "Pass"),
-    "NotEvaluated"
+    local_fail,
+    "Fail",
+    ifelse(local_evaluated, "Pass", "NotEvaluated")
   )
   metadata[[paste0(prefix, "_local_outlier_qc")]] <- factor(
     local_outlier_qc,
@@ -1066,6 +1116,31 @@ spot_sweeper_coldata <- function(spe) {
   out <- as.data.frame(SummarizedExperiment::colData(spe), stringsAsFactors = FALSE)
   rownames(out) <- colnames(spe)
   out
+}
+
+spot_sweeper_binary_values <- function(
+  values,
+  expected_length,
+  allow_na = FALSE
+) {
+  if (length(values) != expected_length) {
+    return(NULL)
+  }
+  if (is.logical(values)) {
+    out <- values
+  } else if (is.numeric(values)) {
+    observed <- values[!is.na(values)]
+    if (!all(observed %in% c(0, 1))) {
+      return(NULL)
+    }
+    out <- as.logical(values)
+  } else {
+    return(NULL)
+  }
+  if (!isTRUE(allow_na) && anyNA(out)) {
+    return(NULL)
+  }
+  unname(out)
 }
 
 spot_sweeper_metadata_col <- function(prefix, metric, suffix) {

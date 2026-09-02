@@ -51,7 +51,9 @@ are present; a single image is selected automatically when \code{NULL}.}
 If \code{NULL}, all spots are treated as one sample.}
 
 \item{metrics}{QC metrics used by \code{SpotSweeper::localOutliers()}. If \code{NULL},
-\verb{nCount_<assay>}, \verb{nFeature_<assay>}, and \code{percent.mito} are used.}
+\verb{nCount_<assay>}, \verb{nFeature_<assay>}, and \code{percent.mito} are used.
+The corresponding \verb{<metric>_outliers} and \verb{<metric>_z} names are reserved for
+backend output and cannot also be requested as input columns.}
 
 \item{directions}{Outlier direction for each metric. If \code{NULL}, count and
 feature metrics use \code{"lower"} and mitochondrial metrics use \code{"higher"}.}
@@ -112,8 +114,9 @@ A \code{Seurat} object with SpotSweeper QC metadata. When
 table are stored in \code{srt@tools[[tool_name]]}. The artifact metadata uses
 \code{NA} and \code{"NotEvaluated"} when a requested artifact stage did not
 run; \code{*_local_outlier_qc} uses \code{"NotEvaluated"} outside the tested
-coordinate scope, and the overall \code{*_QC} column uses \code{"Partial"}
-whenever a spot was not fully evaluated by the requested QC stages.
+coordinate scope. In the overall \code{*_QC} column, \code{"Fail"} takes
+precedence when any evaluated check fails; otherwise \code{"Partial"} marks
+spots not fully evaluated by the requested QC stages.
 }
 \description{
 Run \code{SpotSweeper} spatially aware spot-level quality control on a spatial

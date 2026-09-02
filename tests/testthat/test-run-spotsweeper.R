@@ -31,9 +31,11 @@ skip_if_no_spotsweeper_infra <- function() {
 
 with_mock_spotsweeper <- function(
   code,
-  artifact_mode = c("success", "error", "missing", "invalid")
+  artifact_mode = c("success", "error", "missing", "invalid", "nonbinary"),
+  local_mode = c("success", "missing", "partial", "invalid")
 ) {
   artifact_mode <- match.arg(artifact_mode)
+  local_mode <- match.arg(local_mode)
   fake_local <- function(
     spe,
     metric,
@@ -57,8 +59,20 @@ with_mock_spotsweeper <- function(
     if (identical(metric, "percent.mito")) {
       outlier["Spot2"] <- TRUE
     }
+    if (identical(local_mode, "missing")) {
+      return(spe)
+    }
+    if (identical(local_mode, "partial")) {
+      outlier[[3]] <- NA
+    } else if (identical(local_mode, "invalid")) {
+      outlier <- rep(2, length(outlier))
+    }
     cdata[[paste0(metric, "_outliers")]] <- outlier
-    cdata[[paste0(metric, "_z")]] <- ifelse(outlier, cutoff + 1, 0)
+    cdata[[paste0(metric, "_z")]] <- ifelse(
+      is.na(outlier),
+      NA_real_,
+      ifelse(outlier == 1, cutoff + 1, 0)
+    )
     SummarizedExperiment::colData(spe) <- S4Vectors::DataFrame(cdata)
     spe
   }
@@ -94,11 +108,18 @@ with_mock_spotsweeper <- function(
     SummarizedExperiment::colData(spe) <- S4Vectors::DataFrame(cdata)
     spe
   }
+  nonbinary_artifact <- function(spe, ...) {
+    cdata <- as.data.frame(SummarizedExperiment::colData(spe))
+    cdata$artifact <- rep(c(0, 1, 2), length.out = nrow(cdata))
+    SummarizedExperiment::colData(spe) <- S4Vectors::DataFrame(cdata)
+    spe
+  }
   selected_artifact <- switch(artifact_mode,
     success = fake_artifact,
     error = failing_artifact,
     missing = missing_artifact,
-    invalid = invalid_artifact
+    invalid = invalid_artifact,
+    nonbinary = nonbinary_artifact
   )
   testthat::local_mocked_bindings(
     .package = "scop",
@@ -260,7 +281,8 @@ test_that("RunSpotSweeper rejects missing or invalid artifact backend output tru
   skip_if_no_spotsweeper_infra()
   expected_reason <- c(
     missing = "returned no artifact column",
-    invalid = "returned invalid artifact values"
+    invalid = "returned invalid artifact values",
+    nonbinary = "returned invalid artifact values"
   )
   for (artifact_mode in names(expected_reason)) {
     srt <- make_spotsweeper_seurat()
@@ -284,6 +306,103 @@ test_that("RunSpotSweeper rejects missing or invalid artifact backend output tru
     expect_true(all(as.character(out$SpotSweeper_artifact_qc) == "NotEvaluated"))
     expect_true(all(as.character(out$SpotSweeper_QC[3:6]) == "Partial"))
   }
+})
+
+test_that("RunSpotSweeper marks incomplete local-outlier output partial", {
+  skip_if_no_spotsweeper_infra()
+  for (local_mode in c("missing", "partial", "invalid")) {
+    out <- suppressMessages(with_mock_spotsweeper({
+      RunSpotSweeper(
+        make_spotsweeper_seurat(),
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        n_neighbors = 2,
+        run_artifact = FALSE,
+        verbose = TRUE
+      )
+    }, local_mode = local_mode))
+
+    expect_identical(out@tools$SpotSweeper$status, "partial", info = local_mode)
+    expect_true(any(
+      as.character(out$SpotSweeper_local_outlier_qc) == "NotEvaluated"
+    ), info = local_mode)
+    expect_true(any(as.character(out$SpotSweeper_QC) == "Partial"), info = local_mode)
+  }
+
+  expect_error(
+    with_mock_spotsweeper({
+      RunSpotSweeper(
+        make_spotsweeper_seurat(),
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        n_neighbors = 2,
+        run_artifact = FALSE,
+        return_filtered = TRUE,
+        verbose = FALSE
+      )
+    }, local_mode = "missing"),
+    "completed for every spot"
+  )
+})
+
+test_that("RunSpotSweeper does not reuse stale local-outlier metadata", {
+  skip_if_no_spotsweeper_infra()
+  srt <- make_spotsweeper_seurat()
+  metrics <- c("nCount_RNA", "nFeature_RNA", "percent.mito")
+  for (metric in metrics) {
+    srt[[paste0(metric, "_outliers")]] <- FALSE
+    srt[[paste0(metric, "_z")]] <- 0
+  }
+
+  out <- suppressMessages(with_mock_spotsweeper({
+    RunSpotSweeper(
+      srt,
+      layer = "counts",
+      coord.cols = c("x", "y"),
+      sample.by = "sample",
+      n_neighbors = 2,
+      run_artifact = FALSE,
+      verbose = TRUE
+    )
+  }, local_mode = "missing"))
+
+  expect_identical(out@tools$SpotSweeper$status, "partial")
+  expect_true(all(as.character(out$SpotSweeper_local_outlier_qc) == "NotEvaluated"))
+  expect_true(all(as.character(out$SpotSweeper_QC) == "Partial"))
+  for (metric in metrics) {
+    output_col <- spot_sweeper_metadata_col("SpotSweeper", metric, "outlier")
+    expect_true(all(is.na(out[[output_col, drop = TRUE]])), info = metric)
+  }
+})
+
+test_that("RunSpotSweeper rejects local-output input collisions before backend checks", {
+  srt <- make_spotsweeper_seurat()
+  srt$nCount_RNA_outliers <- seq_len(ncol(srt))
+  check_called <- FALSE
+
+  expect_error(
+    testthat::with_mocked_bindings(
+      RunSpotSweeper(
+        srt,
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        metrics = c("nCount_RNA", "nCount_RNA_outliers"),
+        n_neighbors = 2,
+        run_artifact = FALSE,
+        verbose = FALSE
+      ),
+      check_r = function(...) {
+        check_called <<- TRUE
+        stop("backend check should not run", call. = FALSE)
+      },
+      .package = "scop"
+    ),
+    "collide with reserved.*local-output"
+  )
+  expect_false(check_called)
 })
 
 test_that("RunSpotSweeper does not reuse a stale artifact metadata column", {
@@ -651,7 +770,12 @@ test_that("RunSpotSweeper partial completion survives warning escalation", {
     readiness = list(include_mito = FALSE, artifact_mode = "success", status = "skipped"),
     backend_error = list(include_mito = TRUE, artifact_mode = "error", status = "failed"),
     missing_output = list(include_mito = TRUE, artifact_mode = "missing", status = "failed"),
-    invalid_output = list(include_mito = TRUE, artifact_mode = "invalid", status = "failed")
+    invalid_output = list(include_mito = TRUE, artifact_mode = "invalid", status = "failed"),
+    nonbinary_output = list(
+      include_mito = TRUE,
+      artifact_mode = "nonbinary",
+      status = "failed"
+    )
   )
   for (case_name in names(cases)) {
     case <- cases[[case_name]]
