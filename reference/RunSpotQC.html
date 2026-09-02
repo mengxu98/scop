@@ -11,7 +11,7 @@ doublet calling or ambient RNA decontamination."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -119,7 +119,9 @@ Seurat object.</p></dd>
 
 
 <dt id="arg-outlier-n">outlier_n<a class="anchor" aria-label="anchor" href="#arg-outlier-n"></a></dt>
-<dd><p>Minimum number of outlier metrics required to fail a spot.</p></dd>
+<dd><p>Positive integer giving the minimum number of outlier rules
+required to fail a spot. It cannot exceed the number of
+<code>outlier_threshold</code> rules.</p></dd>
 
 
 <dt id="arg-umi-threshold">UMI_threshold<a class="anchor" aria-label="anchor" href="#arg-umi-threshold"></a></dt>
@@ -156,7 +158,11 @@ Default is <code>TRUE</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>Seurat</code> object with spot QC metadata columns.</p>
+    <p>A <code>Seurat</code> object with spot QC metadata columns. Cells that are not
+present in the selected assay receive <code>NA</code> QC labels. A selected-assay cell
+also receives <code>NA</code> when at least one requested QC is unresolved and no
+requested QC has a known failure. Only cells labelled <code>Pass</code> are retained when
+<code>return_filtered = TRUE</code>.</p>
     </div>
 
     <div class="section level2">
@@ -166,8 +172,11 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-08-31 16:37:31] Running spot-level quality control</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-08-31 16:37:31] <span style="color: #0000BB;">1907</span> spots passed QC and <span style="color: #0000BB;">79</span> spots failed QC</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">◌</span> [2026-09-02 18:38:33] Running spot-level quality control</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-02 18:38:33] Spot QC completed: <span style="color: #0000BB;">1986</span> evaluated, <span style="color: #0000BB;">1907</span> Pass, <span style="color: #0000BB;">79</span> Fail</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Scope</span> assay <span style="color: #0000BB;">"Spatial"</span>, layer <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Saved</span> metadata column `SpotQC`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Plot returned object</span> `SpatialSpotPlot(&lt;returned_object&gt;, group.by = "SpotQC")`</span>
 <span class="r-in"><span><span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">spatial</span>, group.by <span class="op">=</span> <span class="st">"SpotQC"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunSpotQC-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
