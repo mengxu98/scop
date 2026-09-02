@@ -424,7 +424,7 @@ test_that("RunSpotSweeper console status is truthful and respects verbose", {
   }))
   expect_true(any(vapply(
     partial_events,
-    function(x) identical(x$type, "warning") && grepl("completed partially", x$text),
+    function(x) identical(x$type, "running") && grepl("completed partially", x$text),
     logical(1)
   )))
   expect_false(any(vapply(
@@ -465,6 +465,28 @@ test_that("RunSpotSweeper console status is truthful and respects verbose", {
     )
   }, artifact_mode = "error"))
   expect_length(silent_events, 0L)
+})
+
+test_that("RunSpotSweeper partial completion survives warning escalation", {
+  skip_if_no_spotsweeper_infra()
+  old_options <- options(warn = 2)
+  on.exit(options(old_options), add = TRUE)
+
+  out <- NULL
+  expect_no_error(
+    out <- suppressMessages(with_mock_spotsweeper({
+      RunSpotSweeper(
+        make_spotsweeper_seurat(include_mito = FALSE),
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        n_neighbors = 2,
+        verbose = TRUE
+      )
+    }))
+  )
+  expect_s4_class(out, "Seurat")
+  expect_identical(out@tools$SpotSweeper$status, "partial")
 })
 
 test_that("RunSpotSweeper supports return_filtered and store_results = FALSE", {
