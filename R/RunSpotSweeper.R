@@ -38,15 +38,17 @@
 #' @param mito_gene Optional explicit mitochondrial gene vector. When provided,
 #' `mito_pattern` is ignored.
 #' @param mito_percent Metadata column used as mitochondrial percent for
-#' artifact detection. If `NULL`, `percent.mito` is used.
+#' artifact detection. If `NULL`, `percent.mito` is used. The reserved backend
+#' output name `"artifact"` cannot be used when `run_artifact = TRUE`.
 #' @param mito_sum Metadata column used as mitochondrial counts for artifact
-#' detection. If `NULL`, mitochondrial counts are computed.
+#' detection. If `NULL`, mitochondrial counts are computed. The reserved
+#' backend output name `"artifact"` cannot be used when `run_artifact = TRUE`.
 #' @param n_order,shape Parameters passed to `SpotSweeper::findArtifacts()`.
 #' @param prefix Prefix used for metadata columns.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param return_filtered Whether to return only spots passing SpotSweeper QC.
-#' A fully filtered object is not returned when requested artifact detection is
-#' incomplete; set `run_artifact = FALSE` to request local-outlier-only filtering.
+#' A fully filtered object is not returned when any requested QC stage is
+#' incomplete.
 #' @param store_results Whether to store detailed results in `srt@tools`.
 #' @param cores Number of workers passed to SpotSweeper local outlier detection.
 #' @param workers Deprecated alias for `cores`.
@@ -58,8 +60,9 @@
 #' `store_results = TRUE`, detailed results and an `artifact_status` table are
 #' stored in `srt@tools[[tool_name]]`. The artifact metadata uses `NA` and
 #' `"NotEvaluated"` when a requested artifact stage did not run; the overall
-#' `*_QC` column uses `"Partial"` for spots that passed local QC but were not
-#' evaluated for artifacts.
+#' `*_local_outlier_qc` uses `"NotEvaluated"` outside the tested coordinate
+#' scope, and the overall `*_QC` column uses `"Partial"` whenever a spot was not
+#' fully evaluated by the requested QC stages.
 #' @export
 #'
 #' @examples
@@ -158,6 +161,24 @@ RunSpotSweeper <- function(
   validate_scalar_flag(run_artifact, "run_artifact")
   validate_scalar_flag(return_filtered, "return_filtered")
   validate_scalar_flag(store_results, "store_results")
+  if (!is.null(mito_percent)) {
+    validate_scalar_string(mito_percent, "mito_percent")
+  }
+  if (!is.null(mito_sum)) {
+    validate_scalar_string(mito_sum, "mito_sum")
+  }
+  if (isTRUE(run_artifact) &&
+    any(vapply(
+      list(mito_percent, mito_sum),
+      identical,
+      logical(1),
+      y = "artifact"
+    ))) {
+    log_message(
+      "Metadata column {.val artifact} is reserved for {.pkg SpotSweeper} artifact output and cannot be used as {.arg mito_percent} or {.arg mito_sum} when {.arg run_artifact = TRUE}",
+      message_type = "error"
+    )
+  }
   n_neighbors <- spot_sweeper_assert_positive_integer(n_neighbors, "n_neighbors")
   n_order <- spot_sweeper_assert_positive_integer(n_order, "n_order")
   cores <- spot_sweeper_assert_positive_integer(cores, "cores")
@@ -191,7 +212,6 @@ RunSpotSweeper <- function(
     mito_sum = mito_sum,
     verbose = verbose
   )
-
   spe <- spot_sweeper_make_spe(
     expr = expr[inputs$features, inputs$spots, drop = FALSE],
     coldata = inputs$coldata,
@@ -245,7 +265,7 @@ RunSpotSweeper <- function(
 
   if (isTRUE(return_filtered) && identical(finalized$status, "partial")) {
     log_message(
-      "Cannot return a fully filtered SpotSweeper object because artifact detection was not completed for every sample; set {.arg return_filtered = FALSE} or disable artifact detection explicitly",
+      "Cannot return a fully filtered SpotSweeper object because QC was not completed for every spot; set {.arg return_filtered = FALSE} and inspect the per-spot status metadata",
       message_type = "error"
     )
   }
@@ -298,6 +318,11 @@ RunSpotSweeper <- function(
 
   failed <- sum(srt[[paste0(prefix, "_QC"), drop = TRUE]] == "Fail", na.rm = TRUE)
   if (identical(finalized$status, "partial")) {
+    local_not_evaluated <- sum(
+      as.character(finalized$metadata[[paste0(prefix, "_local_outlier_qc")]]) ==
+        "NotEvaluated",
+      na.rm = TRUE
+    )
     skipped <- sum(finalized$artifact_status$status == "skipped", na.rm = TRUE)
     failed_artifact <- sum(finalized$artifact_status$status == "failed", na.rm = TRUE)
     not_evaluated <- sum(
@@ -305,11 +330,19 @@ RunSpotSweeper <- function(
         "NotEvaluated",
       na.rm = TRUE
     )
-    log_message(
-      "{.pkg SpotSweeper} completed partially: {.val {failed}} spots failed QC; artifact detection skipped for {.val {skipped}} sample{?s}, failed for {.val {failed_artifact}} sample{?s}, and left {.val {not_evaluated}} spots not evaluated",
-      message_type = "running",
-      verbose = verbose
-    )
+    if (isTRUE(run_artifact)) {
+      log_message(
+        "{.pkg SpotSweeper} completed partially: {.val {failed}} spots failed QC; local-outlier detection left {.val {local_not_evaluated}} spots not evaluated; artifact detection skipped for {.val {skipped}} sample{?s}, failed for {.val {failed_artifact}} sample{?s}, and left {.val {not_evaluated}} spots not evaluated",
+        message_type = "running",
+        verbose = verbose
+      )
+    } else {
+      log_message(
+        "{.pkg SpotSweeper} completed partially: {.val {failed}} spots failed local QC; local-outlier detection left {.val {local_not_evaluated}} spots not evaluated; artifact detection was not requested",
+        message_type = "running",
+        verbose = verbose
+      )
+    }
   } else if (!isTRUE(run_artifact)) {
     log_message(
       "{.pkg SpotSweeper} completed local-outlier QC; artifact detection was not requested; {.val {failed}} spots failed local QC with prefix {.val {prefix}}",
@@ -593,6 +626,10 @@ spot_sweeper_run_artifacts <- function(
     idx <- which(as.character(cdata[[sample_col]]) == sample)
     spe_sample <- spe[, idx]
     sample_coldata <- spot_sweeper_coldata(spe_sample)
+    sample_coldata$artifact <- NULL
+    SummarizedExperiment::colData(spe_sample) <- S4Vectors::DataFrame(
+      sample_coldata
+    )
     artifact_ready <- spot_sweeper_artifact_ready(
       sample_coldata = sample_coldata,
       mito_percent = mito_percent,
@@ -611,8 +648,6 @@ spot_sweeper_run_artifacts <- function(
       )
       next
     }
-    spe_sample <- spe[, idx]
-    sample_coldata <- spot_sweeper_coldata(spe_sample)
     upstream_subset_ok <- tryCatch(
       ncol(subset(spe_sample, , TRUE)) == ncol(spe_sample),
       error = function(e) FALSE
@@ -757,13 +792,14 @@ spot_sweeper_finalize_metadata <- function(
   local_table <- list()
   local_fail <- rep(FALSE, length(all_spots))
   names(local_fail) <- all_spots
+  local_evaluated <- all_spots %in% rownames(cdata)
 
   for (metric in metrics) {
     outlier_raw <- paste0(metric, "_outliers")
     z_raw <- paste0(metric, "_z")
     outlier_col <- spot_sweeper_metadata_col(prefix, metric, "outlier")
     z_col <- spot_sweeper_metadata_col(prefix, metric, "z")
-    metadata[[outlier_col]] <- FALSE
+    metadata[[outlier_col]] <- rep(NA, length(all_spots))
     metadata[[z_col]] <- NA_real_
     outlier <- if (outlier_raw %in% colnames(cdata)) {
       as.logical(cdata[[outlier_raw]])
@@ -839,8 +875,17 @@ spot_sweeper_finalize_metadata <- function(
     levels = c("Pass", "Fail", "NotEvaluated")
   )
 
-  metadata[[paste0(prefix, "_local_outlier_qc")]] <- spot_sweeper_pass_fail(local_fail)
-  partial <- isTRUE(run_artifact) & is.na(artifact_values) & !local_fail
+  local_outlier_qc <- ifelse(
+    local_evaluated,
+    ifelse(local_fail, "Fail", "Pass"),
+    "NotEvaluated"
+  )
+  metadata[[paste0(prefix, "_local_outlier_qc")]] <- factor(
+    local_outlier_qc,
+    levels = c("Pass", "Fail", "NotEvaluated")
+  )
+  partial <- !local_evaluated |
+    (isTRUE(run_artifact) & is.na(artifact_values) & !local_fail)
   overall <- ifelse(
     local_fail | artifact_fail,
     "Fail",
@@ -861,10 +906,17 @@ spot_sweeper_finalize_metadata <- function(
     )
   }
   rownames(artifact_status) <- NULL
-  all_requested_completed <- all(
+  all_artifact_completed <- all(
     !is.na(artifact_status$status) & artifact_status$status == "completed"
-  )
-  overall_status <- if (isTRUE(run_artifact) && !all_requested_completed) {
+  ) &&
+    all(
+      !is.na(artifact_status_values) &
+        artifact_status_values == "completed"
+    ) &&
+    all(!is.na(artifact_values))
+  all_requested_completed <- all(local_evaluated) &&
+    (!isTRUE(run_artifact) || all_artifact_completed)
+  overall_status <- if (!all_requested_completed) {
     "partial"
   } else {
     "completed"
