@@ -312,6 +312,7 @@ test_that("standard spatial workflow dispatches cell2location signatures", {
       expect_identical(prefix, "Cell2location")
       expect_identical(tool_name, "Cell2location")
       expect_true(store_results)
+      srt$Cell2location_abundance_Alpha <- 1
       srt$Cell2location_prop_Alpha <- 1
       srt$Cell2location_dominant_type <- "Alpha"
       srt$Cell2location_max_prop <- 1
