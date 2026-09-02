@@ -319,6 +319,62 @@ test_that("NULL SVF assay resolves to the producer default assay", {
   expect_match(svf$result_location, 'VariableFeatures\\("ALT"\\)')
 })
 
+test_that("invalid effective SVF assays fail through the stage wrapper", {
+  producer_calls <- 0L
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunSpatialVariableFeatures = function(...) {
+      producer_calls <<- producer_calls + 1L
+      stop("SVF producer was reached")
+    },
+    .package = "scop"
+  )
+  srt <- make_standard_spatial_storage_object()
+  SeuratObject::VariableFeatures(srt, assay = "RNA") <- c("gene1", "gene2")
+  srt@tools[["SpatialVariableFeatures"]] <- list(result = "stale")
+  caller_before <- srt
+  invalid_assays <- list(
+    missing = list(value = "missing_assay", reason = "not present"),
+    malformed = list(
+      value = c("RNA", "another_assay"),
+      reason = "single non-empty\\s+string"
+    )
+  )
+
+  for (case_name in names(invalid_assays)) {
+    case <- invalid_assays[[case_name]]
+    condition <- tryCatch(
+      run_storage_workflow(
+        srt,
+        do_spatial_variable_features = TRUE,
+        spatial_variable_features_params = list(assay = case$value)
+      ),
+      error = identity
+    )
+    stages <- attr(condition, "standard_spatial_stages")
+    svf <- stages[
+      stages$stage == "spatial_variable_features",
+      ,
+      drop = FALSE
+    ]
+
+    expect_s3_class(condition, "error")
+    expect_s3_class(stages, "data.frame")
+    expect_identical(svf$status, "failed", info = case_name)
+    expect_identical(
+      svf$actual_method,
+      "RunSpatialVariableFeatures",
+      info = case_name
+    )
+    expect_false(isTRUE(svf$result_stored), info = case_name)
+    expect_true(is.na(svf$result_location), info = case_name)
+    expect_match(svf$reason, case$reason, info = case_name)
+    expect_identical(srt, caller_before, info = case_name)
+  }
+
+  expect_identical(producer_calls, 0L)
+})
+
 test_that("SVF output replaces stale selection and preserves HVF metadata", {
   srt <- make_standard_spatial_storage_object()
   assay_object <- srt[["RNA"]]

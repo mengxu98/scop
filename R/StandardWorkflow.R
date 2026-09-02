@@ -897,12 +897,30 @@ run_standard_spatial_workflow <- function(
     }
     invisible(NULL)
   }
-  run_stage <- function(
-    stage,
-    expr,
-    actual_method,
-    result_probe
-  ) {
+  fail_stage <- function(stage, actual_method, error) {
+    i <- match(stage, stages$stage)
+    if (!identical(stages$status[[i]], "failed")) {
+      update_stage(
+        stage = stage,
+        status = "failed",
+        actual_method = actual_method,
+        result_tool_key = NA_character_,
+        result_metadata_key = NA_character_,
+        result_stored = FALSE,
+        result_location = NA_character_,
+        reason = conditionMessage(error)
+      )
+    }
+    attr(error, "standard_spatial_stages") <- stages
+    stop(error)
+  }
+  run_stage_setup <- function(stage, expr, actual_method) {
+    tryCatch(
+      force(expr),
+      error = function(e) fail_stage(stage, actual_method, e)
+    )
+  }
+  run_stage <- function(stage, expr, actual_method, result_probe) {
     tryCatch(
       {
         value <- force(expr)
@@ -938,23 +956,7 @@ run_standard_spatial_workflow <- function(
         }
         value
       },
-      error = function(e) {
-        i <- match(stage, stages$stage)
-        if (!identical(stages$status[[i]], "failed")) {
-          update_stage(
-            stage = stage,
-            status = "failed",
-            actual_method = actual_method,
-            result_tool_key = NA_character_,
-            result_metadata_key = NA_character_,
-            result_stored = FALSE,
-            result_location = NA_character_,
-            reason = conditionMessage(e)
-          )
-        }
-        attr(e, "standard_spatial_stages") <- stages
-        stop(e)
-      }
+      error = function(e) fail_stage(stage, actual_method, e)
     )
   }
 
@@ -1021,51 +1023,82 @@ run_standard_spatial_workflow <- function(
 
   cluster_col <- paste0(prefix, "clusters")
   if (isTRUE(do_spatial_variable_features)) {
-    svf_args <- merge_call_args(
-      list(
-        srt = srt,
-        assay = assay,
-        image = image,
-        coord.cols = coord.cols,
-        coordinate_space = "raw",
-        set_variable_features = FALSE,
-        store_results = TRUE,
-        verbose = verbose,
-        seed = seed
-      ),
-      spatial_variable_features_params
-    )
-    svf_assay <- svf_args$assay %||% SeuratObject::DefaultAssay(srt)
-    svf_args$assay <- svf_assay
-    svf_args$set_variable_features <- svf_args$set_variable_features %||% TRUE
-    svf_args$store_results <- svf_args$store_results %||% TRUE
-    svf_store_results <- isTRUE(svf_args$store_results)
-    svf_set_variable_features <- isTRUE(svf_args$set_variable_features)
-    variable_features_before <- length(
-      standard_spatial_variable_features(srt, assay = svf_assay)
-    )
-    if (is.null(svf_args$features)) {
-      input_features <- standard_spatial_variable_features(
-        srt,
-        assay = svf_assay
-      )
-      if (length(input_features) > 0L) {
-        svf_args$features <- input_features
+    svf_setup <- run_stage_setup(
+      stage = "spatial_variable_features",
+      actual_method = "RunSpatialVariableFeatures",
+      expr = {
+        svf_args <- merge_call_args(
+          list(
+            srt = srt,
+            assay = assay,
+            image = image,
+            coord.cols = coord.cols,
+            coordinate_space = "raw",
+            set_variable_features = FALSE,
+            store_results = TRUE,
+            verbose = verbose,
+            seed = seed
+          ),
+          spatial_variable_features_params
+        )
+        svf_assay <- svf_args$assay %||% SeuratObject::DefaultAssay(srt)
+        validate_scalar_string(
+          svf_assay,
+          "spatial_variable_features_params$assay"
+        )
+        if (!svf_assay %in% SeuratObject::Assays(srt)) {
+          log_message(
+            "Effective spatial variable feature assay {.val {svf_assay}} is not present in {.cls Seurat}",
+            message_type = "error"
+          )
+        }
+        svf_args$assay <- svf_assay
+        svf_args$set_variable_features <-
+          svf_args$set_variable_features %||% TRUE
+        svf_args$store_results <- svf_args$store_results %||% TRUE
+        svf_store_results <- isTRUE(svf_args$store_results)
+        svf_set_variable_features <- isTRUE(svf_args$set_variable_features)
+        variable_features_before <- length(
+          standard_spatial_variable_features(srt, assay = svf_assay)
+        )
+        if (is.null(svf_args$features)) {
+          input_features <- standard_spatial_variable_features(
+            srt,
+            assay = svf_assay
+          )
+          if (length(input_features) > 0L) {
+            svf_args$features <- input_features
+          }
+        }
+        svf_input <- if (svf_set_variable_features) {
+          standard_spatial_suspend_variable_features(srt, assay = svf_assay)
+        } else {
+          list(srt = srt, restore_metadata = NULL)
+        }
+        svf_args$srt <- standard_spatial_clear_outputs(
+          svf_input$srt,
+          tool_keys = if (svf_store_results) {
+            "SpatialVariableFeatures"
+          } else {
+            character()
+          }
+        )
+        list(
+          args = svf_args,
+          assay = svf_assay,
+          store_results = svf_store_results,
+          set_variable_features = svf_set_variable_features,
+          variable_features_before = variable_features_before,
+          restore_metadata = svf_input$restore_metadata
+        )
       }
-    }
-    svf_input <- if (svf_set_variable_features) {
-      standard_spatial_suspend_variable_features(srt, assay = svf_assay)
-    } else {
-      list(srt = srt, restore_metadata = NULL)
-    }
-    svf_args$srt <- standard_spatial_clear_outputs(
-      svf_input$srt,
-      tool_keys = if (svf_store_results) {
-        "SpatialVariableFeatures"
-      } else {
-        character()
-      }
     )
+    svf_args <- svf_setup$args
+    svf_assay <- svf_setup$assay
+    svf_store_results <- svf_setup$store_results
+    svf_set_variable_features <- svf_setup$set_variable_features
+    variable_features_before <- svf_setup$variable_features_before
+    svf_restore_metadata <- svf_setup$restore_metadata
     srt <- run_stage(
       stage = "spatial_variable_features",
       expr = do.call(RunSpatialVariableFeatures, svf_args),
@@ -1108,7 +1141,7 @@ run_standard_spatial_workflow <- function(
       srt <- standard_spatial_restore_variable_feature_info(
         srt,
         assay = svf_assay,
-        metadata = svf_input$restore_metadata,
+        metadata = svf_restore_metadata,
         preserve_empty_selection = preserve_empty_selection
       )
     }
