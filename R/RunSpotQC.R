@@ -197,11 +197,11 @@ RunSpotQC <- function(
   )
   plot_call <- if (length(image_names) > 1L) {
     paste0(
-      "lapply(SeuratObject::Images(srt), function(image) ",
-      "SpatialSpotPlot(srt, group.by = \"SpotQC\", image = image))"
+      "lapply(SeuratObject::Images(<returned_object>), function(image) ",
+      "SpatialSpotPlot(<returned_object>, group.by = \"SpotQC\", image = image))"
     )
   } else {
-    "SpatialSpotPlot(srt, group.by = \"SpotQC\")"
+    "SpatialSpotPlot(<returned_object>, group.by = \"SpotQC\")"
   }
   spatial_run_receipt(
     done = done,

@@ -166,7 +166,7 @@ RunSpatialNetwork <- function(
   }
   scope <- paste0(scope, "; {.val {nrow(nodes)}} observations")
   plot_call <- paste0(
-    "SpatialNetworkPlot(srt, graph.name = ",
+    "SpatialNetworkPlot(<returned_object>, graph.name = ",
     spatial_run_receipt_quote(graph.name, "graph.name"),
     ")"
   )
@@ -174,8 +174,8 @@ RunSpatialNetwork <- function(
     done = done,
     scope = scope,
     saved = paste0(
-      "graph {.val {graph.name}} in ",
-      "{.code srt@tools[['SpatialNetwork']]$graphs}"
+      "graph {.val {graph.name}} in returned object tool bundle ",
+      "{.var SpatialNetwork}, field {.var graphs}"
     ),
     plot = plot_call,
     replaced = isTRUE(existing_graph) && isTRUE(overwrite),

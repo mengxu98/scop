@@ -46,26 +46,25 @@ receipt_plain <- function(messages) {
   cli::ansi_strip(paste(messages, collapse = "\n"))
 }
 
-expect_receipt_plot <- function(messages, expected_call, srt) {
+expect_receipt_plot_hint <- function(messages, expected_call) {
   plain <- receipt_plain(messages)
-  expect_true(grepl(paste0("Plot `", expected_call, "`"), plain, fixed = TRUE))
-  expect_error(parse(text = expected_call), NA)
-  plot <- suppressWarnings(eval(
-    parse(text = expected_call),
-    envir = list(srt = srt),
-    enclos = parent.frame()
+  expect_true(grepl(
+    paste0("Plot returned object `", expected_call, "`"),
+    plain,
+    fixed = TRUE
   ))
-  expect_s3_class(plot, "ggplot")
+  expect_true(grepl("<returned_object>", expected_call, fixed = TRUE))
+  expect_false(grepl("srt", expected_call, fixed = TRUE))
   invisible(plain)
 }
 
-test_that("spatial_run_receipt renders exact inline labels and a parseable call", {
-  plot_call <- 'SpatialSpotPlot(srt, group.by = "BANKSY_cluster")'
+test_that("spatial_run_receipt renders exact inline labels and an explicit result placeholder", {
+  plot_call <- 'SpatialSpotPlot(<returned_object>, group.by = "BANKSY_cluster")'
   out <- testthat::capture_messages(
     spatial_run_receipt(
       done = "{.pkg BANKSY} completed for {.val 10} spots",
       scope = "assay {.val Spatial}, layer {.val counts}",
-      saved = "metadata column {.var BANKSY_cluster} and {.code srt@tools[['BANKSY']]}",
+      saved = "metadata column {.var BANKSY_cluster} and returned object tool bundle {.var BANKSY}",
       plot = plot_call,
       verbose = TRUE,
       .envir = environment()
@@ -75,9 +74,13 @@ test_that("spatial_run_receipt renders exact inline labels and a parseable call"
   expect_match(plain, "BANKSY completed for \"10\" spots")
   expect_match(plain, "Scope assay \"Spatial\", layer \"counts\"")
   expect_match(plain, "Saved metadata column `BANKSY_cluster`")
-  expect_match(plain, "srt@tools")
-  expect_true(grepl(paste0("Plot `", plot_call, "`"), plain, fixed = TRUE))
-  expect_error(parse(text = plot_call), NA)
+  expect_match(plain, "returned object tool bundle `BANKSY`")
+  expect_true(grepl(
+    paste0("Plot returned object `", plot_call, "`"),
+    plain,
+    fixed = TRUE
+  ))
+  expect_false(grepl("srt", plain, fixed = TRUE))
 })
 
 test_that("spatial_run_receipt renders partial output without a warning condition", {
@@ -88,7 +91,7 @@ test_that("spatial_run_receipt renders partial output without a warning conditio
       spatial_run_receipt(
         done = "SpotSweeper completed partially",
         scope = "assay {.val Spatial}",
-        inspect = "srt@tools[['SpotSweeper']]",
+        inspect = "tool bundle SpotSweeper",
         status = "partial",
         verbose = TRUE,
         .envir = environment()
@@ -98,7 +101,11 @@ test_that("spatial_run_receipt renders partial output without a warning conditio
   )
   plain <- receipt_plain(out)
   expect_match(plain, "SpotSweeper completed partially")
-  expect_true(grepl("Inspect `srt@tools[['SpotSweeper']]`", plain, fixed = TRUE))
+  expect_true(grepl(
+    "Inspect returned object `tool bundle SpotSweeper`",
+    plain,
+    fixed = TRUE
+  ))
 })
 
 test_that("spatial_run_receipt maps partial output to non-success display", {
@@ -123,8 +130,8 @@ test_that("spatial_run_receipt is silent when verbose is FALSE", {
     spatial_run_receipt(
       done = "{.pkg BANKSY} completed",
       scope = "assay {.val Spatial}",
-      saved = "{.code srt@tools[['BANKSY']]}",
-      plot = "SpatialSpotPlot(srt)",
+      saved = "returned object tool bundle {.var BANKSY}",
+      plot = "SpatialSpotPlot(<returned_object>)",
       verbose = FALSE,
       .envir = environment()
     )
@@ -137,7 +144,7 @@ test_that("spatial_run_receipt reuses thisutils verbose NULL semantics", {
   expect_silent(
     spatial_run_receipt(
       done = "{.pkg BANKSY} completed",
-      plot = "SpatialSpotPlot(srt)",
+      plot = "SpatialSpotPlot(<returned_object>)",
       verbose = NULL,
       .envir = environment()
     )
@@ -145,13 +152,13 @@ test_that("spatial_run_receipt reuses thisutils verbose NULL semantics", {
 })
 
 test_that("spatial_run_receipt uses Replaced and prefers Plot over Inspect", {
-  plot_call <- 'SpatialNetworkPlot(srt, graph.name = "knn_k6")'
+  plot_call <- 'SpatialNetworkPlot(<returned_object>, graph.name = "knn_k6")'
   out <- testthat::capture_messages(
     spatial_run_receipt(
       done = "{.pkg SpatialNetwork} completed",
       saved = "graph {.val knn_k6}",
       plot = plot_call,
-      inspect = "srt@tools[['SpatialNetwork']]",
+      inspect = "tool bundle SpatialNetwork",
       replaced = TRUE,
       verbose = TRUE,
       .envir = environment()
@@ -159,7 +166,11 @@ test_that("spatial_run_receipt uses Replaced and prefers Plot over Inspect", {
   )
   plain <- receipt_plain(out)
   expect_match(plain, "Replaced graph")
-  expect_true(grepl(paste0("Plot `", plot_call, "`"), plain, fixed = TRUE))
+  expect_true(grepl(
+    paste0("Plot returned object `", plot_call, "`"),
+    plain,
+    fixed = TRUE
+  ))
   expect_false(grepl("Inspect", plain, fixed = TRUE))
 })
 
@@ -173,11 +184,13 @@ test_that("spatial_run_receipt_quote safely round-trips custom keys", {
 test_that("spatial_run_receipt validates its visible interface", {
   expect_error(spatial_run_receipt(done = character()), "done")
   expect_error(spatial_run_receipt(done = "ok", scope = 1), "scope")
+  expect_error(spatial_run_receipt(done = "ok", plot = c("a", "b")), "plot")
+  expect_error(spatial_run_receipt(done = "ok", inspect = c("a", "b")), "inspect")
   expect_error(spatial_run_receipt(done = "ok", replaced = NA), "replaced")
   expect_error(spatial_run_receipt(done = "ok", .envir = NULL), "envir")
 })
 
-test_that("RunSpotQC emits an exact receipt and its Plot call executes", {
+test_that("RunSpotQC emits an exact receipt with an explicit result placeholder", {
   srt <- make_receipt_spatial_object()
   out <- NULL
   messages <- suppressWarnings(testthat::capture_messages(
@@ -199,10 +212,9 @@ test_that("RunSpotQC emits an exact receipt and its Plot call executes", {
   expect_true(grepl('Scope assay "RNA", layer "counts"', plain, fixed = TRUE))
   expect_true(grepl("Saved metadata column `SpotQC`", plain, fixed = TRUE))
   expect_identical(as.integer(table(out$SpotQC)), c(4L, 0L))
-  expect_receipt_plot(
+  expect_receipt_plot_hint(
     messages,
-    'SpatialSpotPlot(srt, group.by = "SpotQC")',
-    out
+    'SpatialSpotPlot(<returned_object>, group.by = "SpotQC")'
   )
 
   filtered <- NULL
@@ -245,7 +257,78 @@ test_that("RunSpotQC is silent on request and failure has no receipt", {
   expect_false(grepl("Spot QC completed", receipt_plain(failure_messages), fixed = TRUE))
 })
 
-test_that("RunSpotQC gives an executable all-image Plot call", {
+test_that("RunSpatialVariableFeatures reports exactly what the returned object retains", {
+  skip_if_not_installed("BiocNeighbors")
+  cases <- list(
+    both = list(set = TRUE, store = TRUE),
+    features_only = list(set = TRUE, store = FALSE),
+    tool_only = list(set = FALSE, store = TRUE),
+    neither = list(set = FALSE, store = FALSE)
+  )
+
+  for (case_name in names(cases)) {
+    case <- cases[[case_name]]
+    messages <- suppressWarnings(testthat::capture_messages(
+      out <- RunSpatialVariableFeatures(
+        make_receipt_spatial_object(),
+        assay = "RNA",
+        layer = "counts",
+        method = "moran",
+        coord.cols = c("col", "row"),
+        k = 1,
+        nfeatures = 2,
+        min_spots = 1,
+        set_variable_features = case$set,
+        store_results = case$store,
+        backend = "r",
+        verbose = TRUE
+      )
+    ))
+    plain <- receipt_plain(messages)
+
+    expect_true(grepl(
+      "Spatial variable features completed: 3 tested, 2 ranked in the top set",
+      plain,
+      fixed = TRUE
+    ), info = case_name)
+    expect_false(grepl("Stored 2 spatial variable features", plain, fixed = TRUE))
+    expect_identical(
+      !is.null(out@tools[["SpatialVariableFeatures"]]),
+      case$store,
+      info = case_name
+    )
+    expect_identical(
+      length(SeuratObject::VariableFeatures(out, assay = "RNA")) == 2L,
+      case$set,
+      info = case_name
+    )
+
+    if (isTRUE(case$store)) {
+      expect_true(grepl(
+        "returned object tool bundle `SpatialVariableFeatures`",
+        plain,
+        fixed = TRUE
+      ), info = case_name)
+      expect_true(grepl(
+        "Plot returned object `SpatialVariableFeaturePlot(<returned_object>",
+        plain,
+        fixed = TRUE
+      ), info = case_name)
+    } else {
+      expect_false(grepl("SpatialVariableFeaturePlot", plain, fixed = TRUE))
+    }
+    if (isTRUE(case$set)) {
+      expect_true(grepl("top features as assay `VariableFeatures`", plain, fixed = TRUE))
+    }
+    if (!isTRUE(case$set) && !isTRUE(case$store)) {
+      expect_true(grepl("results not retained", plain, fixed = TRUE))
+      expect_false(grepl("Saved", plain, fixed = TRUE))
+    }
+    expect_false(grepl("srt", plain, fixed = TRUE))
+  }
+})
+
+test_that("RunSpotQC gives an all-image hint with an explicit result placeholder", {
   srt <- make_receipt_multi_image_object()
   out <- NULL
   messages <- suppressWarnings(testthat::capture_messages(
@@ -259,22 +342,16 @@ test_that("RunSpotQC gives an executable all-image Plot call", {
     )
   ))
   plot_call <- paste0(
-    "lapply(SeuratObject::Images(srt), function(image) ",
-    "SpatialSpotPlot(srt, group.by = \"SpotQC\", image = image))"
+    "lapply(SeuratObject::Images(<returned_object>), function(image) ",
+    "SpatialSpotPlot(<returned_object>, group.by = \"SpotQC\", image = image))"
   )
   plain <- receipt_plain(messages)
-  expect_true(grepl(paste0("Plot `", plot_call, "`"), plain, fixed = TRUE))
-  expect_error(parse(text = plot_call), NA)
-  plots <- suppressWarnings(eval(
-    parse(text = plot_call),
-    envir = list(srt = out),
-    enclos = parent.frame()
-  ))
-  expect_length(plots, 2L)
-  expect_true(all(vapply(plots, inherits, logical(1), what = "ggplot")))
+  expect_receipt_plot_hint(messages, plot_call)
+  expect_s4_class(out, "Seurat")
+  expect_false(grepl("srt", plain, fixed = TRUE))
 })
 
-test_that("RunSpatialNetwork emits actual graph state and an executable Plot call", {
+test_that("RunSpatialNetwork emits actual graph state and an explicit result placeholder", {
   skip_if_not_installed("BiocNeighbors")
   srt <- make_receipt_spatial_object()
   out <- NULL
@@ -289,10 +366,9 @@ test_that("RunSpatialNetwork emits actual graph state and an executable Plot cal
   ))
   expect_true(grepl("Scope raw coordinates; 4 observations", plain, fixed = TRUE))
   expect_true(grepl('Saved graph "knn_k1"', plain, fixed = TRUE))
-  expect_receipt_plot(
+  expect_receipt_plot_hint(
     messages,
-    'SpatialNetworkPlot(srt, graph.name = "knn_k1")',
-    out
+    'SpatialNetworkPlot(<returned_object>, graph.name = "knn_k1")'
   )
 
   replaced <- NULL
@@ -326,11 +402,11 @@ test_that("RunSpatialNetwork reports radius and safely quotes a custom graph nam
   ))
   expect_true(graph_name %in% names(out@tools[["SpatialNetwork"]]$graphs))
   plot_call <- paste0(
-    "SpatialNetworkPlot(srt, graph.name = ",
+    "SpatialNetworkPlot(<returned_object>, graph.name = ",
     deparse1(graph_name, width.cutoff = 500L),
     ")"
   )
-  expect_receipt_plot(messages, plot_call, out)
+  expect_receipt_plot_hint(messages, plot_call)
 })
 
 test_that("RunSpatialNetwork respects verbose NULL and emits no receipt on failure", {
