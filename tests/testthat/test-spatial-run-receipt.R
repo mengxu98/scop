@@ -407,6 +407,190 @@ test_that("RunSpotQC aligns metadata outlier metrics to noncontiguous assay cell
   expect_true(all(is.na(out[[outlier_col, drop = TRUE]][c("Spot2", "Spot5")])))
 })
 
+test_that("RunSpotQC preserves tri-state outlier rules and aggregates uncertainty", {
+  full_counts <- matrix(
+    1,
+    nrow = 2,
+    ncol = 8,
+    dimnames = list(paste0("Gene", 1:2), paste0("Spot", 1:8))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(full_counts))
+  evaluated_spots <- c("Spot1", "Spot3", "Spot4", "Spot5", "Spot7", "Spot8")
+  assay_counts <- full_counts[, evaluated_spots, drop = FALSE]
+  assay_counts[, "Spot3"] <- 0
+  srt[["SUBSET"]] <- suppressWarnings(
+    SeuratObject::CreateAssay5Object(
+      counts = assay_counts
+    )
+  )
+  metric_a <- setNames(rep(0, ncol(srt)), colnames(srt))
+  metric_b <- metric_a
+  metric_a[evaluated_spots] <- c(100, 200, 1, NA, 3, 4)
+  metric_b[evaluated_spots] <- c(100, NA, Inf, NA, 2, 3)
+  srt$metric_a <- metric_a
+  srt$metric_b <- metric_b
+
+  out <- NULL
+  messages <- suppressWarnings(testthat::capture_messages(
+    out <- RunSpotQC(
+      srt,
+      assay = "SUBSET",
+      qc_metrics = c("outlier", "umi"),
+      outlier_threshold = c(
+        "metric_a:higher:3",
+        "metric_b:higher:3"
+      ),
+      outlier_n = 2,
+      UMI_threshold = 1,
+      verbose = TRUE
+    )
+  ))
+
+  expect_identical(
+    unname(as.character(out$SpotQC[evaluated_spots])),
+    c("Fail", "Fail", "Pass", NA, "Pass", "Pass")
+  )
+  expect_identical(
+    unname(as.character(out$spot_outlier_qc[evaluated_spots])),
+    c("Fail", NA, "Pass", NA, "Pass", "Pass")
+  )
+  expect_true(all(is.na(out$SpotQC[c("Spot2", "Spot6")])))
+  raw_a <- make.names("spot_metric_a:higher:3")
+  raw_b <- make.names("spot_metric_b:higher:3")
+  expect_identical(
+    unname(out[[raw_a, drop = TRUE]][evaluated_spots]),
+    c(TRUE, TRUE, FALSE, NA, FALSE, FALSE)
+  )
+  expect_identical(
+    unname(out[[raw_b, drop = TRUE]][evaluated_spots]),
+    c(TRUE, NA, NA, NA, FALSE, FALSE)
+  )
+  expect_true(all(is.na(out[[raw_a, drop = TRUE]][c("Spot2", "Spot6")])))
+  expect_true(grepl(
+    paste0(
+      "Spot QC completed: 5 evaluated, 3 Pass, 2 Fail; 1\\s+",
+      "NotEvaluated"
+    ),
+    receipt_plain(messages)
+  ))
+
+  filtered <- suppressWarnings(RunSpotQC(
+    srt,
+    assay = "SUBSET",
+    qc_metrics = c("outlier", "umi"),
+    outlier_threshold = c(
+      "metric_a:higher:3",
+      "metric_b:higher:3"
+    ),
+    outlier_n = 2,
+    UMI_threshold = 1,
+    return_filtered = TRUE,
+    verbose = FALSE
+  ))
+  expect_identical(
+    colnames(filtered),
+    c("Spot4", "Spot7", "Spot8")
+  )
+})
+
+test_that("RunSpotQC validates outlier aggregation and metadata metrics", {
+  srt <- make_receipt_spatial_object()
+  srt$custom_metric <- c(1, 2, 100, 3)
+
+  expect_error(
+    RunSpotQC(
+      srt,
+      assay = "RNA",
+      qc_metrics = "outlier",
+      outlier_threshold = NA_character_,
+      verbose = FALSE
+    ),
+    "outlier_threshold.*non-empty character vector"
+  )
+  expect_error(
+    RunSpotQC(
+      srt,
+      assay = "RNA",
+      qc_metrics = "outlier",
+      outlier_threshold = "custom_metric:higher:3",
+      outlier_n = NA_real_,
+      verbose = FALSE
+    ),
+    "outlier_n.*finite positive integer"
+  )
+  expect_error(
+    RunSpotQC(
+      srt,
+      assay = "RNA",
+      qc_metrics = "outlier",
+      outlier_threshold = "custom_metric:higher:3",
+      outlier_n = 2,
+      verbose = FALSE
+    ),
+    "cannot exceed.*outlier_threshold"
+  )
+
+  srt$factor_metric <- factor(c("1", "2", "100", "3"))
+  expect_error(
+    suppressWarnings(RunSpotQC(
+      srt,
+      assay = "RNA",
+      qc_metrics = "outlier",
+      outlier_threshold = "factor_metric:higher:3",
+      verbose = FALSE
+    )),
+    "factor_metric.*numeric vector"
+  )
+  expect_error(
+    spot_qc_validate_metric(1, metric = "short", n_expected = 2),
+    "one\\s+value per selected-assay spot"
+  )
+  expect_error(
+    RunSpotQC(
+      srt,
+      assay = "RNA",
+      qc_metrics = "umi",
+      UMI_threshold = NA_real_,
+      verbose = FALSE
+    ),
+    "UMI_threshold.*finite.*number"
+  )
+  expect_error(
+    RunSpotQC(
+      srt,
+      assay = "RNA",
+      qc_metrics = "mito",
+      mito_threshold = Inf,
+      verbose = FALSE
+    ),
+    "mito_threshold.*finite.*number"
+  )
+  expect_error(
+    RunSpotQC(
+      srt,
+      assay = "RNA",
+      return_filtered = NA,
+      verbose = FALSE
+    ),
+    "return_filtered.*TRUE or FALSE"
+  )
+})
+
+test_that("RunSpotQC gives a clear error when filtering would return no spots", {
+  srt <- make_receipt_spatial_object()
+  expect_error(
+    suppressWarnings(RunSpotQC(
+      srt,
+      assay = "RNA",
+      qc_metrics = "umi",
+      UMI_threshold = 1e9,
+      return_filtered = TRUE,
+      verbose = FALSE
+    )),
+    "No spots passed QC.*return_filtered = FALSE"
+  )
+})
+
 test_that("RunSpotQC is silent on request and failure has no receipt", {
   srt <- make_receipt_spatial_object()
   quiet <- NULL

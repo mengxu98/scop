@@ -36,7 +36,9 @@ Seurat object.}
 \code{"metric:direction:nmads"}. Available default metrics are
 \code{"log10_nCount"}, \code{"log10_nFeature"}, and \code{"spot_featurecount_dist"}.}
 
-\item{outlier_n}{Minimum number of outlier metrics required to fail a spot.}
+\item{outlier_n}{Positive integer giving the minimum number of outlier rules
+required to fail a spot. It cannot exceed the number of
+\code{outlier_threshold} rules.}
 
 \item{UMI_threshold}{Minimum UMI count required to pass \code{"umi"} QC.}
 
@@ -58,7 +60,9 @@ Default is \code{TRUE}.}
 }
 \value{
 A \code{Seurat} object with spot QC metadata columns. Cells that are not
-present in the selected assay receive \code{NA} QC labels and are excluded when
+present in the selected assay receive \code{NA} QC labels. A selected-assay cell
+also receives \code{NA} when at least one requested QC is unresolved and no
+requested QC has a known failure. Only cells labelled \code{Pass} are retained when
 \code{return_filtered = TRUE}.
 }
 \description{

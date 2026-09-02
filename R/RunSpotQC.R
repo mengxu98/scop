@@ -15,7 +15,9 @@
 #' @param outlier_threshold Character vector specifying outlier thresholds as
 #' `"metric:direction:nmads"`. Available default metrics are
 #' `"log10_nCount"`, `"log10_nFeature"`, and `"spot_featurecount_dist"`.
-#' @param outlier_n Minimum number of outlier metrics required to fail a spot.
+#' @param outlier_n Positive integer giving the minimum number of outlier rules
+#' required to fail a spot. It cannot exceed the number of
+#' `outlier_threshold` rules.
 #' @param UMI_threshold Minimum UMI count required to pass `"umi"` QC.
 #' @param gene_threshold Minimum detected gene count required to pass `"gene"`
 #' QC.
@@ -27,7 +29,9 @@
 #' @param seed Random seed for reproducibility.
 #'
 #' @return A `Seurat` object with spot QC metadata columns. Cells that are not
-#' present in the selected assay receive `NA` QC labels and are excluded when
+#' present in the selected assay receive `NA` QC labels. A selected-assay cell
+#' also receives `NA` when at least one requested QC is unresolved and no
+#' requested QC has a known failure. Only cells labelled `Pass` are retained when
 #' `return_filtered = TRUE`.
 #' @export
 #'
@@ -62,8 +66,6 @@ RunSpotQC <- function(
     message_type = "running",
     verbose = verbose
   )
-  set.seed(seed)
-
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -84,6 +86,66 @@ RunSpotQC <- function(
       message_type = "error"
     )
   }
+  validate_scalar_flag(return_filtered, "return_filtered")
+  if ("umi" %in% qc_metrics) {
+    UMI_threshold <- spot_qc_validate_cutoff(
+      UMI_threshold,
+      arg = "UMI_threshold",
+      minimum = 0
+    )
+  }
+  if ("gene" %in% qc_metrics) {
+    gene_threshold <- spot_qc_validate_cutoff(
+      gene_threshold,
+      arg = "gene_threshold",
+      minimum = 0
+    )
+  }
+  if ("mito" %in% qc_metrics) {
+    mito_threshold <- spot_qc_validate_cutoff(
+      mito_threshold,
+      arg = "mito_threshold"
+    )
+  }
+  if ("outlier" %in% qc_metrics) {
+    valid_outlier_threshold <- is.character(outlier_threshold) &&
+      length(outlier_threshold) > 0L &&
+      !anyNA(outlier_threshold) &&
+      all(nzchar(outlier_threshold))
+    if (!isTRUE(valid_outlier_threshold)) {
+      log_message(
+        paste0(
+          "{.arg outlier_threshold} must be a non-empty character vector ",
+          "of {.val metric:direction:nmads} rules"
+        ),
+        message_type = "error"
+      )
+    }
+    outlier_n_valid <- is.numeric(outlier_n) &&
+      length(outlier_n) == 1L &&
+      !is.na(outlier_n) &&
+      is.finite(outlier_n) &&
+      outlier_n >= 1 &&
+      outlier_n == floor(outlier_n)
+    if (!isTRUE(outlier_n_valid)) {
+      log_message(
+        "{.arg outlier_n} must be a finite positive integer",
+        message_type = "error"
+      )
+    }
+    n_outlier_rules <- length(outlier_threshold)
+    if (outlier_n > n_outlier_rules) {
+      log_message(
+        paste0(
+          "{.arg outlier_n} cannot exceed the number of ",
+          "{.arg outlier_threshold} rules ({.val {n_outlier_rules}})"
+        ),
+        message_type = "error"
+      )
+    }
+    outlier_n <- as.integer(outlier_n)
+  }
+  set.seed(seed)
 
   counts <- GetAssayData5(srt, assay = assay, layer = "counts")
   evaluated_spots <- colnames(counts)
@@ -130,7 +192,7 @@ RunSpotQC <- function(
     spot_mito_qc <- evaluated_spots[which(percent_mito > mito_threshold)]
   }
   if ("outlier" %in% qc_metrics) {
-    outlier <- lapply(
+    outlier_flags <- lapply(
       strsplit(outlier_threshold, ":", fixed = TRUE),
       function(rule) {
         if (length(rule) != 3L) {
@@ -148,53 +210,97 @@ RunSpotQC <- function(
           log10_nFeature = log10_nFeature,
           spot_featurecount_dist = spot_featurecount_dist
         )
-        evaluated_spots[spot_qc_is_outlier(
+        nmads <- suppressWarnings(as.numeric(rule[[3L]]))
+        spot_qc_is_outlier(
           metric,
-          nmads = as.numeric(rule[[3L]]),
+          nmads = nmads,
           type = rule[[2L]]
-        )]
+        )
       }
     )
-    names(outlier) <- outlier_threshold
-    outlier_tb <- table(unlist(outlier))
-    spot_outlier_qc <- names(outlier_tb)[outlier_tb >= outlier_n]
-    for (nm in names(outlier)) {
+    names(outlier_flags) <- outlier_threshold
+    outlier_matrix <- do.call(cbind, unname(outlier_flags))
+    rownames(outlier_matrix) <- evaluated_spots
+    colnames(outlier_matrix) <- outlier_threshold
+    known_fail <- rowSums(outlier_matrix == TRUE, na.rm = TRUE)
+    missing_rules <- rowSums(is.na(outlier_matrix))
+    spot_outlier_status <- rep(NA_character_, n_evaluated)
+    names(spot_outlier_status) <- evaluated_spots
+    spot_outlier_status[known_fail >= outlier_n] <- "Fail"
+    spot_outlier_status[
+      is.na(spot_outlier_status) &
+        known_fail + missing_rules < outlier_n
+    ] <- "Pass"
+    spot_outlier_qc <- evaluated_spots[which(spot_outlier_status == "Fail")]
+    for (i in seq_along(outlier_flags)) {
+      nm <- names(outlier_flags)[[i]]
       outlier_flag <- rep(NA, ncol(srt))
       names(outlier_flag) <- colnames(srt)
-      outlier_flag[evaluated_spots] <- evaluated_spots %in% outlier[[nm]]
+      outlier_flag[evaluated_spots] <- outlier_flags[[i]]
       srt[[make.names(paste0("spot_", nm))]] <- outlier_flag
     }
+  } else {
+    spot_outlier_status <- setNames(
+      rep("Pass", n_evaluated),
+      evaluated_spots
+    )
   }
 
-  SpotQC <- unique(c(
-    spot_umi_qc,
-    spot_gene_qc,
-    spot_mito_qc,
-    spot_outlier_qc
-  ))
-  qc_map <- list(
-    spot_umi_qc = spot_umi_qc,
-    spot_gene_qc = spot_gene_qc,
-    spot_mito_qc = spot_mito_qc,
-    spot_outlier_qc = spot_outlier_qc,
-    SpotQC = SpotQC
+  pass_fail_status <- function(failed_spots) {
+    out <- ifelse(evaluated_spots %in% failed_spots, "Fail", "Pass")
+    names(out) <- evaluated_spots
+    out
+  }
+  qc_status_map <- list(
+    spot_umi_qc = pass_fail_status(spot_umi_qc),
+    spot_gene_qc = pass_fail_status(spot_gene_qc),
+    spot_mito_qc = pass_fail_status(spot_mito_qc),
+    spot_outlier_qc = spot_outlier_status
   )
-  for (qc in names(qc_map)) {
+  requested_status_names <- paste0("spot_", qc_metrics, "_qc")
+  if (length(requested_status_names) == 0L) {
+    overall_status <- setNames(rep("Pass", n_evaluated), evaluated_spots)
+  } else {
+    requested_status <- do.call(
+      cbind,
+      unname(qc_status_map[requested_status_names])
+    )
+    known_fail <- rowSums(requested_status == "Fail", na.rm = TRUE) > 0L
+    not_evaluated <- rowSums(is.na(requested_status)) > 0L
+    overall_status <- ifelse(
+      known_fail,
+      "Fail",
+      ifelse(not_evaluated, NA_character_, "Pass")
+    )
+    names(overall_status) <- evaluated_spots
+  }
+  qc_status_map$SpotQC <- overall_status
+  for (qc in names(qc_status_map)) {
     qc_status <- rep(NA_character_, ncol(srt))
     names(qc_status) <- colnames(srt)
-    qc_status[evaluated_spots] <- ifelse(
-      evaluated_spots %in% qc_map[[qc]],
-      "Fail",
-      "Pass"
-    )
+    qc_status[evaluated_spots] <- qc_status_map[[qc]]
     srt[[qc]] <- qc_status
     srt[[qc]] <- factor(srt[[qc, drop = TRUE]], levels = c("Pass", "Fail"))
   }
 
-  n_failed <- length(SpotQC)
-  n_passed <- n_evaluated - n_failed
+  selected_labels <- as.character(
+    srt@meta.data[evaluated_spots, "SpotQC", drop = TRUE]
+  )
+  n_passed <- sum(selected_labels == "Pass", na.rm = TRUE)
+  n_failed <- sum(selected_labels == "Fail", na.rm = TRUE)
+  n_not_evaluated <- sum(is.na(selected_labels))
+  n_evaluated <- n_passed + n_failed
   if (isTRUE(return_filtered)) {
     keep <- !is.na(srt$SpotQC) & srt$SpotQC == "Pass"
+    if (!any(keep)) {
+      log_message(
+        paste0(
+          "No spots passed QC; set {.arg return_filtered = FALSE} ",
+          "to inspect the unfiltered result"
+        ),
+        message_type = "error"
+      )
+    }
     srt <- srt[, keep]
   }
 
@@ -203,6 +309,12 @@ RunSpotQC <- function(
     "Spot QC completed: {.val {n_evaluated}} evaluated, ",
     "{.val {n_passed}} Pass, {.val {n_failed}} Fail"
   )
+  if (n_not_evaluated > 0L) {
+    done <- paste0(
+      done,
+      "; {.val {n_not_evaluated}} NotEvaluated"
+    )
+  }
   if (isTRUE(return_filtered)) {
     done <- paste0(done, "; {.val {n_returned}} returned")
   }
@@ -235,6 +347,7 @@ RunSpotQC <- function(
     saved = "metadata column {.var SpotQC}",
     plot = plot_call,
     inspect = inspect_call,
+    status = if (n_not_evaluated > 0L) "partial" else "completed",
     verbose = verbose,
     .envir = environment()
   )
@@ -321,10 +434,24 @@ spot_qc_metric <- function(
   }
   assay_metric <- paste0(metric, "_", assay)
   if (assay_metric %in% colnames(srt@meta.data)) {
-    return(srt@meta.data[evaluated_spots, assay_metric, drop = TRUE])
+    metric_values <- srt@meta.data[
+      evaluated_spots,
+      assay_metric,
+      drop = TRUE
+    ]
+    return(spot_qc_validate_metric(
+      metric_values,
+      metric = assay_metric,
+      n_expected = length(evaluated_spots)
+    ))
   }
   if (metric %in% colnames(srt@meta.data)) {
-    return(srt@meta.data[evaluated_spots, metric, drop = TRUE])
+    metric_values <- srt@meta.data[evaluated_spots, metric, drop = TRUE]
+    return(spot_qc_validate_metric(
+      metric_values,
+      metric = metric,
+      n_expected = length(evaluated_spots)
+    ))
   }
   log_message(
     "{.arg outlier_threshold} metric {.val {metric}} was not found",
@@ -332,16 +459,54 @@ spot_qc_metric <- function(
   )
 }
 
+spot_qc_validate_metric <- function(x, metric, n_expected) {
+  if (!is.numeric(x) || length(x) != n_expected) {
+    log_message(
+      paste0(
+        "{.arg outlier_threshold} metric {.val {metric}} must be a numeric ",
+        "vector with one value per selected-assay spot"
+      ),
+      message_type = "error"
+    )
+  }
+  x
+}
+
+spot_qc_validate_cutoff <- function(x, arg, minimum = -Inf) {
+  if (
+    !is.numeric(x) ||
+      length(x) != 1L ||
+      is.na(x) ||
+      !is.finite(x) ||
+      x < minimum
+  ) {
+    qualifier <- if (is.finite(minimum)) "non-negative " else ""
+    log_message(
+      paste0("{.arg {arg}} must be a finite ", qualifier, "number"),
+      message_type = "error"
+    )
+  }
+  as.numeric(x)
+}
+
 spot_qc_is_outlier <- function(x, nmads = 3, type = c("lower", "higher")) {
   type <- match.arg(type)
-  if (!is.numeric(nmads) || length(nmads) != 1L || is.na(nmads) || nmads < 0) {
+  if (
+    !is.numeric(nmads) ||
+      length(nmads) != 1L ||
+      is.na(nmads) ||
+      !is.finite(nmads) ||
+      nmads < 0
+  ) {
     log_message(
       "{.arg nmads} must be a non-negative number",
       message_type = "error"
     )
   }
   keep <- is.finite(x)
-  out <- rep(FALSE, length(x))
+  out <- rep(NA, length(x))
+  names(out) <- names(x)
+  out[keep] <- FALSE
   if (sum(keep) == 0L) {
     return(out)
   }
