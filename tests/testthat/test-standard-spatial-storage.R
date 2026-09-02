@@ -80,6 +80,33 @@ add_mock_deconv_outputs <- function(
   srt
 }
 
+make_valid_empty_svf_tool <- function() {
+  list(
+    result = data.frame(
+      feature = c("gene1", "gene2"),
+      rank = 1:2,
+      method = rep("moran", 2),
+      statistic = c(NA_real_, NA_real_),
+      score = c(NA_real_, NaN),
+      p_value = c(NA_real_, NA_real_),
+      q_value = c(NA_real_, NA_real_),
+      mean = c(1, 2),
+      variance = c(0, 0),
+      n_spots = c(4L, 4L)
+    ),
+    summary = list(
+      n_features = 2L,
+      top_features = character(),
+      top_feature_summary = data.frame(
+        feature = character(),
+        rank = integer(),
+        score = numeric()
+      )
+    ),
+    parameters = list(set_variable_features = TRUE)
+  )
+}
+
 test_that("stored spatial variable feature results are reported", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
@@ -436,6 +463,140 @@ test_that("NULL SVF controls resolve to producer defaults", {
   expect_match(svf$result_location, "VariableFeatures")
 })
 
+test_that("fresh non-finite SVF scores certify a valid empty selection", {
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunSpatialVariableFeatures = function(
+      srt,
+      assay,
+      set_variable_features,
+      store_results,
+      ...
+    ) {
+      expect_true(set_variable_features)
+      expect_true(store_results)
+      expect_null(srt@tools[["SpatialVariableFeatures"]])
+      expect_length(
+        suppressWarnings(SeuratObject::VariableFeatures(srt, assay = assay)),
+        0L
+      )
+      srt@tools[["SpatialVariableFeatures"]] <- make_valid_empty_svf_tool()
+      srt
+    },
+    .package = "scop"
+  )
+
+  out <- run_storage_workflow(
+    make_standard_spatial_storage_object(),
+    do_spatial_variable_features = TRUE,
+    spatial_variable_features_params = list(
+      store_results = TRUE,
+      set_variable_features = TRUE
+    )
+  )
+  stages <- out@tools$run_standard_spatial_workflow$stages
+  svf <- stages[stages$stage == "spatial_variable_features", , drop = FALSE]
+
+  expect_identical(svf$status, "completed")
+  expect_true(isTRUE(svf$result_stored))
+  expect_identical(svf$result_tool_key, "SpatialVariableFeatures")
+  expect_match(svf$result_location, "SpatialVariableFeatures")
+  expect_identical(svf$variable_features_after, 0L)
+  expect_identical(out@tools$run_standard_spatial_workflow$status, "completed")
+})
+
+test_that("malformed SVF tools cannot certify an empty selection", {
+  valid_tool <- make_valid_empty_svf_tool()
+  malformed_tools <- list(
+    list_top_features = within(valid_tool, {
+      summary$top_features <- list()
+    }),
+    logical_scores = within(valid_tool, {
+      result$score <- c(NA, NA)
+    }),
+    finite_score = within(valid_tool, {
+      result$score <- c(NA_real_, 1)
+    }),
+    incomplete_result = within(valid_tool, {
+      result$method <- NULL
+    }),
+    inconsistent_summary = within(valid_tool, {
+      summary$n_features <- 1L
+    })
+  )
+
+  for (case_name in names(malformed_tools)) {
+    candidate <- malformed_tools[[case_name]]
+    testthat::local_mocked_bindings(
+      RunStandardWorkflow = function(srt, ...) srt,
+      RunSpatialVariableFeatures = function(srt, assay, ...) {
+        expect_null(srt@tools[["SpatialVariableFeatures"]])
+        expect_length(
+          suppressWarnings(SeuratObject::VariableFeatures(srt, assay = assay)),
+          0L
+        )
+        srt@tools[["SpatialVariableFeatures"]] <- candidate
+        srt
+      },
+      .package = "scop"
+    )
+
+    expect_error(
+      run_storage_workflow(
+        make_standard_spatial_storage_object(),
+        do_spatial_variable_features = TRUE,
+        spatial_variable_features_params = list(
+          store_results = TRUE,
+          set_variable_features = TRUE
+        )
+      ),
+      "completed without the expected",
+      info = case_name
+    )
+  }
+})
+
+test_that("a stale empty SVF tool cannot certify an empty selection", {
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunSpatialVariableFeatures = function(srt, assay, ...) {
+      expect_null(srt@tools[["SpatialVariableFeatures"]])
+      expect_length(
+        suppressWarnings(SeuratObject::VariableFeatures(srt, assay = assay)),
+        0L
+      )
+      srt
+    },
+    .package = "scop"
+  )
+  srt <- make_standard_spatial_storage_object()
+  stale_tool <- list(
+    result = data.frame(feature = "gene1", score = NA_real_),
+    summary = list(top_features = character())
+  )
+  srt@tools[["SpatialVariableFeatures"]] <- stale_tool
+
+  condition <- tryCatch(
+    run_storage_workflow(
+      srt,
+      do_spatial_variable_features = TRUE,
+      spatial_variable_features_params = list(
+        store_results = TRUE,
+        set_variable_features = TRUE
+      )
+    ),
+    error = identity
+  )
+  stages <- attr(condition, "standard_spatial_stages")
+  svf <- stages[stages$stage == "spatial_variable_features", , drop = FALSE]
+
+  expect_s3_class(condition, "error")
+  expect_identical(svf$status, "failed")
+  expect_false(isTRUE(svf$result_stored))
+  expect_match(svf$reason, "SpatialVariableFeatures")
+  expect_identical(srt@tools[["SpatialVariableFeatures"]], stale_tool)
+})
+
 test_that("a stale SVF tool does not satisfy a quiet stored producer", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
@@ -539,6 +700,46 @@ test_that("stored deconvolution records a custom tool and metadata", {
   expect_identical(deconv$result_tool_key, "CustomTool")
   expect_match(deconv$result_metadata_key, "Custom_prop_typeA")
   expect_match(deconv$result_location, "CustomTool")
+})
+
+test_that("deconvolution rejects workflow-owned result keys before execution", {
+  calls <- character()
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) {
+      calls <<- c(calls, "RunStandardWorkflow")
+      srt
+    },
+    RunRCTD = function(...) {
+      calls <<- c(calls, "RunRCTD")
+      stop("deconvolution backend was reached")
+    },
+    .package = "scop"
+  )
+  srt <- make_standard_spatial_storage_object()
+  srt$label <- factor(rep("typeA", ncol(srt)))
+  workflow_owned_keys <- c(
+    "run_standard_spatial_workflow",
+    "SpotQC",
+    "SpatialVariableFeatures",
+    "BayesSpace"
+  )
+
+  for (tool_name in workflow_owned_keys) {
+    expect_error(
+      run_storage_workflow(
+        srt,
+        do_deconvolution = TRUE,
+        deconvolution_method = "RCTD",
+        reference = srt,
+        reference_label = "label",
+        deconvolution_params = list(tool_name = tool_name)
+      ),
+      "reserved",
+      fixed = TRUE
+    )
+  }
+
+  expect_length(calls, 0L)
 })
 
 test_that("SPOTlight dispatch satisfies the normalized storage contract", {
