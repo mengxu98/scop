@@ -72,16 +72,14 @@ generated from \code{reference}.}
 \code{srt@tools[["SpatialVariableFeatures"]]} is used first, then variable
 features, then all assay features.}
 
-\item{sample_name, platform, img_scale_fct, assay_modality}{Arguments forwarded}
-
 \item{image}{Spatial image name. Required when multiple images are present;
 a single image is selected automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used by the \code{"cpp"}
 backend when no image coordinates are available.}
 
-\item{trajectory_id, start, end, traj_df, width}{Trajectory setup used by the
-native backend when \code{reference = "trajectory"}.}
+\item{start, end, traj_df}{Trajectory geometry used by the native backend when
+\code{reference = "trajectory"}.}
 
 \item{annotation_ids}{Reserved compatibility input. It is not supported by
 the native backend; use \code{annotation.by} with \code{annotation.groups}, or
@@ -94,15 +92,17 @@ native annotation mask.}
 threshold used to create a native numeric annotation mask. Numeric
 thresholds are interpreted as \code{">{threshold}"}.}
 
-\item{annotation_id}{Compatibility identifier retained in the stored
-parameter summary.}
+\item{sample_name, platform, img_scale_fct, assay_modality, trajectory_id, width, annotation_id, core, distance, angle_span, resolution, model_add, model_subset, model_remove, control}{Legacy compatibility inputs. The native backend ignores these values and
+does not include them in the stored effective-parameter summary.}
 
-\item{core, distance, angle_span}{Compatibility parameters retained in the
-stored parameter summary. The native backend currently uses its own distance
-calculation.}
+\item{unit}{Optional coordinate-unit label stored in the result source. It
+does not transform coordinates.}
 
-\item{resolution, unit, sign_var, sign_threshold, model_add, model_subset, model_remove, n_random, seed, control}{Screening and model parameters retained for reproducibility; unsupported
-values are not forwarded to an external backend.}
+\item{sign_var, sign_threshold}{Column and cutoff used to select top gradient
+variables from the native significance table.}
+
+\item{n_random, seed}{Permutation count and random seed used by the native
+screening backend.}
 
 \item{n_bins}{Number of distance bins used for the \code{"cpp"} backend
 screening curve.}
@@ -123,12 +123,13 @@ Default is \code{TRUE}.}
 
 \item{coordinate_space}{Coordinate system used by the C++ distance
 calculations. The default is raw acquisition coordinates, so \code{start},
-\code{end}, trajectory positions, widths, and C++ distances share raw
+\code{end}, trajectory positions, and C++ distances share raw
 coordinate units. Use \code{"legacy_display"} explicitly for pre-0.9.0 display
 coordinates. Results retain the raw coordinate units used by the native
 backend.}
 
-\item{...}{Additional named arguments retained for compatibility.}
+\item{...}{Additional named arguments accepted for compatibility. The native
+backend ignores them and does not store them as effective parameters.}
 }
 \value{
 A \code{Seurat} object with spatial gradient screening results stored in

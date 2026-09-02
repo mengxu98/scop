@@ -233,6 +233,11 @@ test_that("cpp backend stores trajectory gradient result tables", {
     variables = c("Gene1", "Gene2"),
     start = c(1, 1),
     end = c(2, 2),
+    trajectory_id = "ignored_trajectory",
+    annotation_id = "ignored_annotation",
+    core = TRUE,
+    distance = "ignored_distance",
+    angle_span = c(15, 180),
     layer = "counts",
     coord.cols = c("x", "y"),
     n_random = 0,
@@ -248,6 +253,9 @@ test_that("cpp backend stores trajectory gradient result tables", {
   expect_true(nrow(stored$significance) > 0)
   expect_true(nrow(stored$model_fits) > 0)
   expect_equal(unique(stored$screening$mode), "trajectory")
+  expect_false(any(c(
+    "trajectory_id", "annotation_id", "core", "distance", "angle_span"
+  ) %in% stored$parameters$key))
   expect_identical(
     srt@tools$SpatialGradientFeatures$summary$active_result,
     "cpp_trajectory"
