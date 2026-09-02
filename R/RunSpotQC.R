@@ -143,6 +143,7 @@ RunSpotQC <- function(
           metric = rule[[1L]],
           srt = srt,
           assay = assay,
+          evaluated_spots = evaluated_spots,
           log10_nCount = log10_nCount,
           log10_nFeature = log10_nFeature,
           spot_featurecount_dist = spot_featurecount_dist
@@ -304,6 +305,7 @@ spot_qc_metric <- function(
   metric,
   srt,
   assay,
+  evaluated_spots,
   log10_nCount,
   log10_nFeature,
   spot_featurecount_dist
@@ -319,10 +321,10 @@ spot_qc_metric <- function(
   }
   assay_metric <- paste0(metric, "_", assay)
   if (assay_metric %in% colnames(srt@meta.data)) {
-    return(srt[[assay_metric, drop = TRUE]])
+    return(srt@meta.data[evaluated_spots, assay_metric, drop = TRUE])
   }
   if (metric %in% colnames(srt@meta.data)) {
-    return(srt[[metric, drop = TRUE]])
+    return(srt@meta.data[evaluated_spots, metric, drop = TRUE])
   }
   log_message(
     "{.arg outlier_threshold} metric {.val {metric}} was not found",

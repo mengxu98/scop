@@ -364,6 +364,49 @@ test_that("RunSpotQC counts and labels only cells present in the selected assay"
   expect_identical(colnames(filtered), paste0("Spot", 2:4))
 })
 
+test_that("RunSpotQC aligns metadata outlier metrics to noncontiguous assay cells", {
+  full_counts <- matrix(
+    1,
+    nrow = 2,
+    ncol = 6,
+    dimnames = list(paste0("Gene", 1:2), paste0("Spot", 1:6))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(full_counts))
+  evaluated_spots <- c("Spot1", "Spot3", "Spot4", "Spot6")
+  srt[["SUBSET"]] <- suppressWarnings(
+    SeuratObject::CreateAssay5Object(
+      counts = full_counts[, evaluated_spots, drop = FALSE]
+    )
+  )
+  srt$custom_metric <- c(0, 100, 0.5, 1, 2, 1.5)
+
+  out <- NULL
+  messages <- suppressWarnings(testthat::capture_messages(
+    out <- RunSpotQC(
+      srt,
+      assay = "SUBSET",
+      qc_metrics = "outlier",
+      outlier_threshold = "custom_metric:higher:3",
+      outlier_n = 1,
+      verbose = TRUE
+    )
+  ))
+
+  expect_true(grepl(
+    "Spot QC completed: 4 evaluated, 4 Pass, 0 Fail",
+    receipt_plain(messages),
+    fixed = TRUE
+  ))
+  expect_identical(as.character(out$SpotQC[evaluated_spots]), rep("Pass", 4))
+  expect_true(all(is.na(out$SpotQC[c("Spot2", "Spot5")])))
+  outlier_col <- make.names("spot_custom_metric:higher:3")
+  expect_identical(
+    unname(out[[outlier_col, drop = TRUE]][evaluated_spots]),
+    rep(FALSE, 4)
+  )
+  expect_true(all(is.na(out[[outlier_col, drop = TRUE]][c("Spot2", "Spot5")])))
+})
+
 test_that("RunSpotQC is silent on request and failure has no receipt", {
   srt <- make_receipt_spatial_object()
   quiet <- NULL
