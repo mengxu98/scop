@@ -165,11 +165,40 @@ RunSpatialNetwork <- function(
     "image {.val {selected_image}}, raw coordinates"
   }
   scope <- paste0(scope, "; {.val {nrow(nodes)}} observations")
-  plot_call <- paste0(
-    "SpatialNetworkPlot(<returned_object>, graph.name = ",
-    spatial_run_receipt_quote(graph.name, "graph.name"),
-    ")"
-  )
+  display_scale <- if (isTRUE(thisutils::get_verbose(verbose))) {
+    spatial_run_receipt_display_scale(srt, selected_image)
+  } else {
+    NULL
+  }
+  plot_call <- if (is.null(selected_image) || !is.null(display_scale)) {
+    plot_args <- c(
+      paste0(
+        "graph.name = ",
+        spatial_run_receipt_quote(graph.name, "graph.name")
+      )
+    )
+    if (identical(display_scale, "hires")) {
+      plot_args <- c(
+        plot_args,
+        paste0(
+          "image.scale = ",
+          spatial_run_receipt_quote(display_scale, "image.scale")
+        )
+      )
+    }
+    paste0(
+      "SpatialNetworkPlot(<returned_object>, ",
+      paste(plot_args, collapse = ", "),
+      ")"
+    )
+  } else {
+    paste0(
+      "SpatialNetworkPlot(res = <returned_object>@tools[[\"SpatialNetwork\"]], ",
+      "graph.name = ",
+      spatial_run_receipt_quote(graph.name, "graph.name"),
+      ")"
+    )
+  }
   spatial_run_receipt(
     done = done,
     scope = scope,

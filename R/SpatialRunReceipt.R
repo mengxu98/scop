@@ -21,6 +21,36 @@ spatial_run_receipt_quote <- function(x, name) {
   deparse1(x, width.cutoff = 500L)
 }
 
+spatial_run_receipt_display_scale <- function(srt, image) {
+  if (is.null(image)) {
+    return(NULL)
+  }
+  tryCatch({
+    resolved_image <- spatial_image_resolve(
+      srt = srt,
+      image = image,
+      image_policy = "strict"
+    )$image
+    if (is.null(resolved_image)) {
+      return(NULL)
+    }
+    spatial_image <- srt[[resolved_image]]
+    candidates <- c("lowres", "hires")
+    usable <- vapply(candidates, function(candidate) {
+      scale <- spatial_image_scale_info(
+        spatial_image,
+        image.scale = candidate,
+        required = FALSE
+      )$scale
+      length(scale) == 1L && is.finite(scale) && scale > 0
+    }, logical(1))
+    if (!any(usable)) {
+      return(NULL)
+    }
+    candidates[[which(usable)[[1L]]]]
+  }, error = function(e) NULL)
+}
+
 spatial_run_receipt <- function(
   done,
   scope = NULL,

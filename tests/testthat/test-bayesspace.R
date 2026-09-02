@@ -184,6 +184,77 @@ test_that("RunBayesSpace emits an exact receipt and safely quotes its Plot hint"
   expect_false(grepl("srt", plain, fixed = TRUE))
 })
 
+test_that("RunBayesSpace receipt uses a valid image scale or metadata inspection", {
+  skip_if_not_installed("SingleCellExperiment")
+  fixture <- make_bayesspace_visium_v1_object()
+  fixture$object[["slice"]]@scale.factors$lowres <- NA_real_
+
+  hires_messages <- testthat::capture_messages(
+    hires_out <- with_mock_bayesspace(mock_bayesspace_complete, {
+      RunBayesSpace(
+        fixture$object,
+        q = 2,
+        image = "slice",
+        preprocess = FALSE,
+        store_sce = FALSE,
+        verbose = TRUE
+      )
+    })
+  )
+  hires_call <- paste0(
+    "SpatialSpotPlot(<returned_object>, group.by = \"BayesSpace_cluster\", ",
+    "image = \"slice\", image.scale = \"hires\")"
+  )
+  bayesspace_expect_receipt_plot_hint(hires_messages, hires_call)
+  hires_plot <- NULL
+  expect_no_error(
+    hires_plot <- eval(parse(text = sub(
+      "<returned_object>",
+      "hires_out",
+      hires_call,
+      fixed = TRUE
+    )))
+  )
+  expect_s3_class(hires_plot, "ggplot")
+
+  no_scale <- make_bayesspace_visium_v1_object()$object
+  no_scale[["slice"]]@scale.factors$lowres <- NA_real_
+  no_scale[["slice"]]@scale.factors$hires <- NA_real_
+  inspect_messages <- testthat::capture_messages(
+    inspect_out <- with_mock_bayesspace(mock_bayesspace_complete, {
+      RunBayesSpace(
+        no_scale,
+        q = 2,
+        image = "slice",
+        preprocess = FALSE,
+        store_sce = FALSE,
+        verbose = TRUE
+      )
+    })
+  )
+  inspect_plain <- bayesspace_receipt_plain(inspect_messages)
+  inspect_call <- paste0(
+    "<returned_object>[[]][, \"BayesSpace_cluster\", drop = FALSE]"
+  )
+  expect_true(grepl(
+    paste0("Inspect returned object `", inspect_call, "`"),
+    inspect_plain,
+    fixed = TRUE
+  ))
+  expect_false(grepl("Plot returned object", inspect_plain, fixed = TRUE))
+  inspected <- NULL
+  expect_no_error(
+    inspected <- eval(parse(text = sub(
+      "<returned_object>",
+      "inspect_out",
+      inspect_call,
+      fixed = TRUE
+    )))
+  )
+  expect_identical(colnames(inspected), "BayesSpace_cluster")
+  expect_identical(rownames(inspected), colnames(inspect_out))
+})
+
 test_that("RunBayesSpace is silent on request and failure has no receipt", {
   skip_if_not_installed("SingleCellExperiment")
   srt <- make_bayesspace_object()
