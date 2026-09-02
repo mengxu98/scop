@@ -1179,9 +1179,6 @@ RunDEtestFindAllMarkers <- function(
   p.adjust.method,
   ...
 ) {
-  if (!requireNamespace("presto", quietly = TRUE)) {
-    return(NULL)
-  }
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   supported <- !marker_assay_is_chromatin(srt, assay) &&
     identical(test.use, "wilcox") &&
@@ -1217,9 +1214,17 @@ RunDEtestFindAllMarkers <- function(
   if (is.null(ctx)) {
     return(NULL)
   }
+  presto_fun <- presto_get_fun(
+    install = FALSE,
+    error_on_missing = FALSE
+  )
+  if (is.null(presto_fun)) {
+    return(NULL)
+  }
 
   markers <- marker_all_from_context(
     ctx = ctx,
+    presto_fun = presto_fun,
     min.cells.group = min.cells.group,
     min.pct = min.pct,
     min.diff.pct = min.diff.pct,
@@ -1267,7 +1272,8 @@ RunDEtestSparseWilcoxMarkers <- function(
   only.pos,
   pseudocount.use,
   random.seed,
-  verbose
+  verbose,
+  presto_fun
 ) {
   data.use <- GetAssayData5(
     object = srt,
@@ -1345,7 +1351,7 @@ RunDEtestSparseWilcoxMarkers <- function(
     c(rep("Group1", length(cells.1)), rep("Group2", length(cells.2))),
     levels = c("Group1", "Group2")
   )
-  presto.result <- presto::wilcoxauc(X = data.de, y = group, verbose = FALSE)
+  presto.result <- presto_fun(X = data.de, y = group, verbose = FALSE)
   keep <- as.character(presto.result$group) == "Group1"
   p_val <- presto.result$pval[keep]
   names(p_val) <- presto.result$feature[keep]
