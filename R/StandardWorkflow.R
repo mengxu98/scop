@@ -1049,11 +1049,23 @@ run_standard_spatial_workflow <- function(
     )
   }
 
-  metadata_output_plan <- standard_spatial_validate_metadata_output_plan(
-    preprocessing_cluster_cols = preprocessing_cluster_cols,
-    do_spot_qc = isTRUE(do_spot_qc),
-    spot_qc_metadata_targets = spot_qc_metadata_targets
-  )
+  metadata_output_plan <- if (isTRUE(do_spot_qc)) {
+    run_stage_setup(
+      stage = "quality_control",
+      actual_method = "RunSpotQC",
+      expr = standard_spatial_validate_metadata_output_plan(
+        preprocessing_cluster_cols = preprocessing_cluster_cols,
+        do_spot_qc = TRUE,
+        spot_qc_metadata_targets = spot_qc_metadata_targets
+      )
+    )
+  } else {
+    standard_spatial_validate_metadata_output_plan(
+      preprocessing_cluster_cols = preprocessing_cluster_cols,
+      do_spot_qc = FALSE,
+      spot_qc_metadata_targets = spot_qc_metadata_targets
+    )
+  }
   if (isTRUE(do_spatial_cluster)) {
     metadata_output_plan <- run_stage_setup(
       stage = "spatial_clustering",

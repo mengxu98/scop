@@ -92,6 +92,53 @@ test_that("standard spatial workflow exposes failed stage diagnostics on errors"
   expect_match(svf$reason, "synthetic SVF failure")
 })
 
+test_that("SpotQC planning collisions carry quality-control diagnostics", {
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  producer_calls <- character()
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    RunSpotQC = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunSpotQC")
+      srt
+    },
+    RunStandardWorkflow = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunStandardWorkflow")
+      srt
+    }
+  )
+  srt <- make_standard_spatial_stage_object()
+  counts <- SeuratObject::LayerData(srt, assay = "RNA", layer = "counts")
+  srt[["pcaclusters"]] <- SeuratObject::CreateAssay5Object(counts = counts)
+  caller_before <- srt
+  condition <- tryCatch(
+    original(
+      srt,
+      prefix = "nCount_",
+      assay = "pcaclusters",
+      do_spot_qc = TRUE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = FALSE,
+      do_deconvolution = FALSE,
+      linear_reduction = "pca",
+      verbose = FALSE
+    ),
+    error = identity
+  )
+  stages <- attr(condition, "standard_spatial_stages")
+  qc <- stages[stages$stage == "quality_control", , drop = FALSE]
+
+  expect_s3_class(condition, "error")
+  expect_match(conditionMessage(condition), "metadata outputs collide")
+  expect_s3_class(stages, "data.frame")
+  expect_true(qc$requested)
+  expect_identical(qc$status, "failed")
+  expect_identical(qc$actual_method, "RunSpotQC")
+  expect_false(isTRUE(qc$result_stored))
+  expect_match(qc$reason, "metadata outputs collide")
+  expect_length(producer_calls, 0L)
+  expect_identical(srt, caller_before)
+})
+
 test_that("BayesSpace planning failures carry clustering stage diagnostics", {
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   producer_calls <- character()
