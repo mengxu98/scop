@@ -17,6 +17,32 @@ make_spatial_variable_seurat <- function() {
   srt
 }
 
+make_spatial_variable_image_seurat <- function(
+  lowres = NA_real_,
+  hires = 0.5
+) {
+  srt <- make_spatial_variable_seurat()
+  scale_factors <- structure(
+    list(spot = 1, fiducial = 1, hires = hires, lowres = lowres),
+    class = "scalefactors"
+  )
+  coordinates <- data.frame(
+    imagerow = c(4, 6, 8, 10, 12),
+    imagecol = c(5, 10, 15, 20, 25),
+    row.names = colnames(srt)
+  )
+  srt[["slice"]] <- methods::new(
+    "VisiumV1",
+    image = array(1, dim = c(20, 30, 3)),
+    scale.factors = scale_factors,
+    coordinates = coordinates,
+    spot.radius = 0.1,
+    assay = SeuratObject::DefaultAssay(srt),
+    key = "svf_"
+  )
+  srt
+}
+
 test_that("native spatial variable feature results keep normalized columns", {
   skip_if_not_installed("BiocNeighbors")
   srt <- RunSpatialVariableFeatures(
@@ -176,19 +202,31 @@ test_that("SPARKX backend output is normalized without storing backend objects",
     }
   )
 
-  out <- RunSpatialVariableFeatures(
-    srt,
-    method = "SPARKX",
-    layer = "counts",
-    coord.cols = c("x", "y"),
-    min_spots = 1,
-    nfeatures = 2,
-    verbose = FALSE
+  messages <- testthat::capture_messages(
+    out <- RunSpatialVariableFeatures(
+      srt,
+      method = "SPARKX",
+      layer = "counts",
+      coord.cols = c("x", "y"),
+      min_spots = 1,
+      nfeatures = 2,
+      verbose = TRUE
+    )
   )
 
   result <- out@tools[["SpatialVariableFeatures"]][["result"]]
+  plain <- cli::ansi_strip(paste(messages, collapse = "\n"))
   expect_equal(unique(result$method), "SPARKX")
   expect_equal(result$feature[[1]], "Gene2")
+  expect_true(grepl(
+    'Scope method "SPARKX" ("SPARK" backend)',
+    plain,
+    fixed = TRUE
+  ))
+  expect_identical(
+    out@tools[["SpatialVariableFeatures"]]$parameters$backend,
+    "SPARK"
+  )
   expect_equal(
     out@tools[["SpatialVariableFeatures"]]$summary$top_features,
     c("Gene2", "Gene3")
@@ -221,19 +259,31 @@ test_that("nnSVG backend output is normalized through lightweight helpers", {
     spatial_variable_row_data = function(x) x$row_data
   )
 
-  out <- RunSpatialVariableFeatures(
-    srt,
-    method = "nnSVG",
-    layer = "counts",
-    coord.cols = c("x", "y"),
-    min_spots = 1,
-    nfeatures = 2,
-    verbose = FALSE
+  messages <- testthat::capture_messages(
+    out <- RunSpatialVariableFeatures(
+      srt,
+      method = "nnSVG",
+      layer = "counts",
+      coord.cols = c("x", "y"),
+      min_spots = 1,
+      nfeatures = 2,
+      verbose = TRUE
+    )
   )
 
   result <- out@tools[["SpatialVariableFeatures"]][["result"]]
+  plain <- cli::ansi_strip(paste(messages, collapse = "\n"))
   expect_equal(unique(result$method), "nnSVG")
   expect_equal(result$feature[[1]], "Gene2")
+  expect_true(grepl(
+    'Scope method "nnSVG" ("nnSVG" backend)',
+    plain,
+    fixed = TRUE
+  ))
+  expect_identical(
+    out@tools[["SpatialVariableFeatures"]]$parameters$backend,
+    "nnSVG"
+  )
   expect_equal(
     out@tools[["SpatialVariableFeatures"]]$summary$top_features,
     c("Gene2", "Gene4")
@@ -298,4 +348,116 @@ test_that("SpatialVariableFeaturePlot combined returns patchwork when available"
     theme_use = NULL
   )
   expect_s3_class(p, "patchwork")
+})
+
+test_that("SVF receipt carries the hires scale selected by legacy display fallback", {
+  skip_if_not_installed("BiocNeighbors")
+  skip_if_not_installed("patchwork")
+  messages <- testthat::capture_messages(
+    out <- RunSpatialVariableFeatures(
+      make_spatial_variable_image_seurat(),
+      method = "moran",
+      layer = "counts",
+      image = "slice",
+      k = 1,
+      min_spots = 1,
+      nfeatures = 2,
+      coordinate_space = "legacy_display",
+      backend = "r",
+      verbose = TRUE
+    )
+  )
+  plain <- cli::ansi_strip(paste(messages, collapse = "\n"))
+  plot_call <- paste0(
+    "SpatialVariableFeaturePlot(<returned_object>, plot_type = \"combined\", ",
+    "assay = \"RNA\", image = \"slice\", image.scale = \"hires\", ",
+    "coord.cols = c(\"imagecol\", \"imagerow\"))"
+  )
+  expect_true(grepl(plot_call, plain, fixed = TRUE))
+  plot <- NULL
+  expect_no_error(
+    plot <- eval(parse(text = sub(
+      "<returned_object>",
+      "out",
+      plot_call,
+      fixed = TRUE
+    )))
+  )
+  expect_s3_class(plot, "patchwork")
+})
+
+test_that("SVF receipt falls back to a summary plot when no display scale works", {
+  skip_if_not_installed("BiocNeighbors")
+  messages <- testthat::capture_messages(
+    out <- RunSpatialVariableFeatures(
+      make_spatial_variable_image_seurat(hires = NA_real_),
+      method = "moran",
+      layer = "counts",
+      image = "slice",
+      k = 1,
+      min_spots = 1,
+      nfeatures = 2,
+      coordinate_space = "raw",
+      backend = "r",
+      verbose = TRUE
+    )
+  )
+  plain <- cli::ansi_strip(paste(messages, collapse = "\n"))
+  plot_call <- paste0(
+    "SpatialVariableFeaturePlot(<returned_object>, plot_type = \"summary\", ",
+    "assay = \"RNA\")"
+  )
+  expect_true(grepl(plot_call, plain, fixed = TRUE))
+  expect_false(grepl("image.scale", plain, fixed = TRUE))
+  plot <- NULL
+  expect_no_error(
+    plot <- eval(parse(text = sub(
+      "<returned_object>",
+      "out",
+      plot_call,
+      fixed = TRUE
+    )))
+  )
+  expect_s3_class(plot, "ggplot")
+})
+
+test_that("SVF receipt uses a dependency-free summary when patchwork is unavailable", {
+  skip_if_not_installed("BiocNeighbors")
+  testthat::local_mocked_bindings(
+    spatial_run_receipt_package_available = function(package) {
+      expect_identical(package, "patchwork")
+      FALSE
+    },
+    .package = "scop"
+  )
+  messages <- testthat::capture_messages(
+    out <- RunSpatialVariableFeatures(
+      make_spatial_variable_image_seurat(lowres = 0.25),
+      method = "moran",
+      layer = "counts",
+      image = "slice",
+      k = 1,
+      min_spots = 1,
+      nfeatures = 2,
+      backend = "r",
+      verbose = TRUE
+    )
+  )
+  plain <- cli::ansi_strip(paste(messages, collapse = "\n"))
+  plot_call <- paste0(
+    "SpatialVariableFeaturePlot(<returned_object>, plot_type = \"summary\", ",
+    "assay = \"RNA\")"
+  )
+  expect_true(grepl(plot_call, plain, fixed = TRUE))
+  expect_false(grepl("plot_type = \"combined\"", plain, fixed = TRUE))
+  plot <- NULL
+  expect_no_error(
+    plot <- eval(parse(text = sub(
+      "<returned_object>",
+      "out",
+      plot_call,
+      fixed = TRUE
+    )))
+  )
+  expect_s3_class(plot, "ggplot")
 })
