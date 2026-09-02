@@ -18,17 +18,16 @@
 #' @param variables Numeric variables or genes tested by the native backend. If `NULL`,
 #' `srt@tools[["SpatialVariableFeatures"]]` is used first, then variable
 #' features, then all assay features.
-#' @param sample_name,platform,img_scale_fct,assay_modality Arguments forwarded
 #' @param coord.cols Metadata coordinate columns used by the `"cpp"`
 #' backend when no image coordinates are available.
 #' @param coordinate_space Coordinate system used by the C++ distance
 #' calculations. The default is raw acquisition coordinates, so `start`,
-#' `end`, trajectory positions, widths, and C++ distances share raw
+#' `end`, trajectory positions, and C++ distances share raw
 #' coordinate units. Use `"legacy_display"` explicitly for pre-0.9.0 display
 #' coordinates. Results retain the raw coordinate units used by the native
 #' backend.
-#' @param trajectory_id,start,end,traj_df,width Trajectory setup used by the
-#' native backend when `reference = "trajectory"`.
+#' @param start,end,traj_df Trajectory geometry used by the native backend when
+#' `reference = "trajectory"`.
 #' @param annotation_ids Reserved compatibility input. It is not supported by
 #' the native backend; use `annotation.by` with `annotation.groups`, or
 #' `annotation.variable` with `annotation.threshold`.
@@ -37,14 +36,15 @@
 #' @param annotation.variable,annotation.threshold Numeric variable and
 #' threshold used to create a native numeric annotation mask. Numeric
 #' thresholds are interpreted as `">{threshold}"`.
-#' @param annotation_id Compatibility identifier retained in the stored
-#' parameter summary.
-#' @param core,distance,angle_span Compatibility parameters retained in the
-#' stored parameter summary. The native backend currently uses its own distance
-#' calculation.
-#' @param resolution,unit,sign_var,sign_threshold,model_add,model_subset,model_remove,n_random,seed,control
-#' Screening and model parameters retained for reproducibility; unsupported
-#' values are not forwarded to an external backend.
+#' @param sample_name,platform,img_scale_fct,assay_modality,trajectory_id,width,annotation_id,core,distance,angle_span,resolution,model_add,model_subset,model_remove,control
+#' Legacy compatibility inputs. The native backend ignores these values and
+#' does not include them in the stored effective-parameter summary.
+#' @param unit Optional coordinate-unit label stored in the result source. It
+#' does not transform coordinates.
+#' @param sign_var,sign_threshold Column and cutoff used to select top gradient
+#' variables from the native significance table.
+#' @param n_random,seed Permutation count and random seed used by the native
+#' screening backend.
 #' @param n_bins Number of distance bins used for the `"cpp"` backend
 #' screening curve.
 #' @param min_spots Minimum number of non-zero spots required for a variable in
@@ -54,7 +54,8 @@
 #' @param set_variable_features Whether to set top gradient variables as Seurat
 #' variable features.
 #' @param store_results Whether to store the normalized result in `srt@tools`.
-#' @param ... Additional named arguments retained for compatibility.
+#' @param ... Additional named arguments accepted for compatibility. The native
+#' backend ignores them and does not store them as effective parameters.
 #'
 #' @return A `Seurat` object with spatial gradient screening results stored in
 #' `srt@tools[["SpatialGradientFeatures"]]`.
@@ -221,12 +222,10 @@ RunSpatialGradientFeatures <- function(
         image = image,
         coord.cols = paste(coord.cols, collapse = ","),
         coordinate_space = coordinate_space,
-        trajectory_id = trajectory_id,
         annotation.by = annotation.by,
         annotation.groups = paste(annotation.groups %||% character(0), collapse = ","),
         annotation.variable = annotation.variable,
         annotation.threshold = annotation.threshold,
-        distance = distance,
         n_random = n_random,
         seed = seed,
         n_bins = n_bins,
