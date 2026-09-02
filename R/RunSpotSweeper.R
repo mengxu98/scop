@@ -633,7 +633,7 @@ spot_sweeper_run_artifacts <- function(
     if (!isTRUE(upstream_subset_ok)) {
       log_message(
         "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: the installed {.pkg SpotSweeper} {.fn localVariance} breaks on {.cls SpatialExperiment} colData (matrix coordinate column breaks {.code DataFrame[i, j]} extraction); only local-outlier QC is stored",
-        message_type = "warning",
+        message_type = "running",
         verbose = verbose
       )
       reason <- "upstream bug in SpotSweeper::localVariance"
@@ -681,7 +681,7 @@ spot_sweeper_run_artifacts <- function(
     if (inherits(spe_sample, "error")) {
       log_message(
         "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: the installed {.pkg SpotSweeper} {.fn findArtifacts} failed ({conditionMessage(spe_sample)}); only local-outlier QC is stored",
-        message_type = "warning",
+        message_type = "running",
         verbose = verbose
       )
       reason <- paste0(
@@ -701,7 +701,7 @@ spot_sweeper_run_artifacts <- function(
       reason <- "SpotSweeper::findArtifacts returned no artifact column"
       log_message(
         "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: {reason}",
-        message_type = "warning",
+        message_type = "running",
         verbose = verbose
       )
       record_sample(
@@ -717,7 +717,7 @@ spot_sweeper_run_artifacts <- function(
       reason <- "SpotSweeper::findArtifacts returned invalid artifact values"
       log_message(
         "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: {reason}",
-        message_type = "warning",
+        message_type = "running",
         verbose = verbose
       )
       record_sample(

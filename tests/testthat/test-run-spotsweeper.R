@@ -472,21 +472,35 @@ test_that("RunSpotSweeper partial completion survives warning escalation", {
   old_options <- options(warn = 2)
   on.exit(options(old_options), add = TRUE)
 
-  out <- NULL
-  expect_no_error(
-    out <- suppressMessages(with_mock_spotsweeper({
-      RunSpotSweeper(
-        make_spotsweeper_seurat(include_mito = FALSE),
-        layer = "counts",
-        coord.cols = c("x", "y"),
-        sample.by = "sample",
-        n_neighbors = 2,
-        verbose = TRUE
-      )
-    }))
+  cases <- list(
+    readiness = list(include_mito = FALSE, artifact_mode = "success", status = "skipped"),
+    backend_error = list(include_mito = TRUE, artifact_mode = "error", status = "failed"),
+    missing_output = list(include_mito = TRUE, artifact_mode = "missing", status = "failed"),
+    invalid_output = list(include_mito = TRUE, artifact_mode = "invalid", status = "failed")
   )
-  expect_s4_class(out, "Seurat")
-  expect_identical(out@tools$SpotSweeper$status, "partial")
+  for (case_name in names(cases)) {
+    case <- cases[[case_name]]
+    out <- NULL
+    expect_no_error(
+      out <- suppressMessages(with_mock_spotsweeper({
+        RunSpotSweeper(
+          make_spotsweeper_seurat(include_mito = case$include_mito),
+          layer = "counts",
+          coord.cols = c("x", "y"),
+          sample.by = "sample",
+          n_neighbors = 2,
+          verbose = TRUE
+        )
+      }, artifact_mode = case$artifact_mode)),
+      message = case_name
+    )
+    expect_s4_class(out, "Seurat")
+    expect_identical(out@tools$SpotSweeper$status, "partial", info = case_name)
+    expect_true(
+      all(out@tools$SpotSweeper$artifact_status$status == case$status),
+      info = case_name
+    )
+  }
 })
 
 test_that("RunSpotSweeper supports return_filtered and store_results = FALSE", {
