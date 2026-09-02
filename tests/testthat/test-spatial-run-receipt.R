@@ -613,6 +613,43 @@ test_that("RunSpotQC is silent on request and failure has no receipt", {
   expect_false(grepl("Spot QC completed", receipt_plain(failure_messages), fixed = TRUE))
 })
 
+test_that("quiet RunSpotQC skips receipt image and coordinate probes", {
+  srt <- make_receipt_spatial_object()
+  image_probes <- coordinate_probes <- 0L
+  testthat::local_mocked_bindings(
+    Images = function(...) {
+      image_probes <<- image_probes + 1L
+      stop("quiet RunSpotQC must not inspect images")
+    },
+    .package = "SeuratObject"
+  )
+  testthat::local_mocked_bindings(
+    spot_qc_has_plottable_coordinates = function(...) {
+      coordinate_probes <<- coordinate_probes + 1L
+      stop("quiet RunSpotQC must not inspect coordinates")
+    },
+    .package = "scop"
+  )
+
+  run_quiet <- function(verbose) {
+    suppressWarnings(RunSpotQC(
+      srt,
+      assay = "RNA",
+      UMI_threshold = 0,
+      gene_threshold = 0,
+      mito_threshold = 100,
+      verbose = verbose
+    ))
+  }
+
+  expect_s4_class(run_quiet(FALSE), "Seurat")
+  old_options <- options(log_message.verbose = FALSE)
+  on.exit(options(old_options), add = TRUE)
+  expect_s4_class(run_quiet(NULL), "Seurat")
+  expect_identical(image_probes, 0L)
+  expect_identical(coordinate_probes, 0L)
+})
+
 test_that("RunSpatialVariableFeatures reports exactly what the returned object retains", {
   skip_if_not_installed("BiocNeighbors")
   cases <- list(

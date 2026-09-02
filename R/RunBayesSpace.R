@@ -237,18 +237,34 @@ RunBayesSpace <- function(
   } else {
     "assay {.val {assay}}, image {.val {image_use}}, raw coordinates"
   }
+  display_scale <- if (
+    isTRUE(has_image) && isTRUE(thisutils::get_verbose(verbose))
+  ) {
+    spatial_run_receipt_display_scale(srt, image_use)
+  } else {
+    NULL
+  }
   plot_args <- c(
     paste0(
       "group.by = ",
       spatial_run_receipt_quote(cluster_colname, "cluster_colname")
     )
   )
-  if (isTRUE(has_image)) {
+  if (isTRUE(has_image) && !is.null(display_scale)) {
     plot_args <- c(
       plot_args,
       paste0("image = ", spatial_run_receipt_quote(image_use, "image"))
     )
-  } else {
+    if (identical(display_scale, "hires")) {
+      plot_args <- c(
+        plot_args,
+        paste0(
+          "image.scale = ",
+          spatial_run_receipt_quote(display_scale, "image.scale")
+        )
+      )
+    }
+  } else if (!isTRUE(has_image)) {
     plot_args <- c(
       plot_args,
       paste0(
@@ -260,11 +276,24 @@ RunBayesSpace <- function(
       )
     )
   }
-  plot_call <- paste0(
-    "SpatialSpotPlot(<returned_object>, ",
-    paste(plot_args, collapse = ", "),
-    ")"
-  )
+  plot_call <- if (!isTRUE(has_image) || !is.null(display_scale)) {
+    paste0(
+      "SpatialSpotPlot(<returned_object>, ",
+      paste(plot_args, collapse = ", "),
+      ")"
+    )
+  } else {
+    NULL
+  }
+  inspect_call <- if (isTRUE(has_image) && is.null(display_scale)) {
+    paste0(
+      "<returned_object>[[]][, ",
+      spatial_run_receipt_quote(cluster_colname, "cluster_colname"),
+      ", drop = FALSE]"
+    )
+  } else {
+    NULL
+  }
   spatial_run_receipt(
     done = paste0(
       "{.pkg BayesSpace} completed: {.val {n_spots}} spots, ",
@@ -277,6 +306,7 @@ RunBayesSpace <- function(
       "returned object tool bundle {.var BayesSpace}"
     ),
     plot = plot_call,
+    inspect = inspect_call,
     verbose = verbose,
     .envir = environment()
   )

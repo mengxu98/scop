@@ -308,24 +308,51 @@ RunSpatialVariableFeatures <- function(
   has_plot_image <- is.character(plot_image) && length(plot_image) == 1L &&
     !is.na(plot_image) && nzchar(plot_image)
   plot_coord_cols <- coordinate_input$source$coord.cols %||% coord.cols
+  display_scale <- if (
+    isTRUE(store_results) &&
+      isTRUE(has_plot_image) &&
+      isTRUE(thisutils::get_verbose(verbose))
+  ) {
+    spatial_run_receipt_display_scale(srt, plot_image)
+  } else {
+    NULL
+  }
   plot_call <- if (isTRUE(store_results)) {
     plot_args <- c(
-      "plot_type = \"combined\"",
+      paste0(
+        "plot_type = ",
+        if (isTRUE(has_plot_image) && is.null(display_scale)) {
+          "\"summary\""
+        } else {
+          "\"combined\""
+        }
+      ),
       paste0("assay = ", spatial_run_receipt_quote(assay, "assay"))
     )
-    if (isTRUE(has_plot_image)) {
+    if (isTRUE(has_plot_image) && !is.null(display_scale)) {
       plot_args <- c(
         plot_args,
         paste0("image = ", spatial_run_receipt_quote(plot_image, "image"))
       )
+      if (identical(display_scale, "hires")) {
+        plot_args <- c(
+          plot_args,
+          paste0(
+            "image.scale = ",
+            spatial_run_receipt_quote(display_scale, "image.scale")
+          )
+        )
+      }
     }
-    plot_args <- c(
-      plot_args,
-      paste0(
-        "coord.cols = ",
-        deparse1(unname(as.character(plot_coord_cols)), width.cutoff = 500L)
+    if (!isTRUE(has_plot_image) || !is.null(display_scale)) {
+      plot_args <- c(
+        plot_args,
+        paste0(
+          "coord.cols = ",
+          deparse1(unname(as.character(plot_coord_cols)), width.cutoff = 500L)
+        )
       )
-    )
+    }
     paste0(
       "SpatialVariableFeaturePlot(<returned_object>, ",
       paste(plot_args, collapse = ", "),

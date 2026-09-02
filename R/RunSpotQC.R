@@ -318,28 +318,32 @@ RunSpotQC <- function(
   if (isTRUE(return_filtered)) {
     done <- paste0(done, "; {.val {n_returned}} returned")
   }
-  image_names <- tryCatch(
-    SeuratObject::Images(srt),
-    error = function(e) character()
-  )
-  can_plot <- !isTRUE(return_filtered) && spot_qc_has_plottable_coordinates(
-    srt = srt,
-    image_names = image_names
-  )
-  plot_call <- if (isTRUE(can_plot) && length(image_names) > 1L) {
-    paste0(
-      "lapply(SeuratObject::Images(<returned_object>), function(image) ",
-      "SpatialSpotPlot(<returned_object>, group.by = \"SpotQC\", image = image))"
+  receipt_verbose <- thisutils::get_verbose(verbose)
+  plot_call <- inspect_call <- NULL
+  if (isTRUE(receipt_verbose)) {
+    image_names <- tryCatch(
+      SeuratObject::Images(srt),
+      error = function(e) character()
     )
-  } else if (isTRUE(can_plot)) {
-    "SpatialSpotPlot(<returned_object>, group.by = \"SpotQC\")"
-  } else {
-    NULL
-  }
-  inspect_call <- if (!isTRUE(return_filtered) && !isTRUE(can_plot)) {
-    "table(<returned_object>[[\"SpotQC\", drop = TRUE]], useNA = \"ifany\")"
-  } else {
-    NULL
+    can_plot <- !isTRUE(return_filtered) && spot_qc_has_plottable_coordinates(
+      srt = srt,
+      image_names = image_names
+    )
+    plot_call <- if (isTRUE(can_plot) && length(image_names) > 1L) {
+      paste0(
+        "lapply(SeuratObject::Images(<returned_object>), function(image) ",
+        "SpatialSpotPlot(<returned_object>, group.by = \"SpotQC\", image = image))"
+      )
+    } else if (isTRUE(can_plot)) {
+      "SpatialSpotPlot(<returned_object>, group.by = \"SpotQC\")"
+    } else {
+      NULL
+    }
+    inspect_call <- if (!isTRUE(return_filtered) && !isTRUE(can_plot)) {
+      "table(<returned_object>[[\"SpotQC\", drop = TRUE]], useNA = \"ifany\")"
+    } else {
+      NULL
+    }
   }
   spatial_run_receipt(
     done = done,
@@ -348,7 +352,7 @@ RunSpotQC <- function(
     plot = plot_call,
     inspect = inspect_call,
     status = if (n_not_evaluated > 0L) "partial" else "completed",
-    verbose = verbose,
+    verbose = receipt_verbose,
     .envir = environment()
   )
   srt
