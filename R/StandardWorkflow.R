@@ -808,10 +808,50 @@ run_standard_spatial_workflow <- function(
     "BayesSpace_init"
   }
   cluster_col <- paste0(prefix, "clusters")
+  preprocessing_cluster_cols <- standard_spatial_preprocessing_metadata_targets(
+    prefix = prefix,
+    linear_reduction = linear_reduction,
+    normalization_method = normalization_method
+  )
+  spot_qc_args <- NULL
+  spot_qc_metadata_targets <- character()
+  if (isTRUE(do_spot_qc)) {
+    spot_qc_args <- merge_call_args(
+      list(
+        srt = srt,
+        assay = assay,
+        qc_metrics = c("outlier", "umi", "gene", "mito"),
+        outlier_threshold = c(
+          "log10_nCount:lower:3",
+          "log10_nFeature:lower:3",
+          "spot_featurecount_dist:lower:3"
+        ),
+        verbose = verbose
+      ),
+      spot_qc_params
+    )
+    spot_qc_args$assay <- spot_qc_args$assay %||%
+      SeuratObject::DefaultAssay(srt)
+    spot_qc_args$qc_metrics <- spot_qc_args$qc_metrics %||%
+      c("outlier", "umi", "gene", "mito")
+    spot_qc_args$outlier_threshold <- spot_qc_args$outlier_threshold %||%
+      c(
+        "log10_nCount:lower:3",
+        "log10_nFeature:lower:3",
+        "spot_featurecount_dist:lower:3"
+      )
+    spot_qc_metadata_targets <- standard_spatial_spot_qc_metadata_targets(
+      srt = srt,
+      assay = spot_qc_args$assay,
+      qc_metrics = spot_qc_args$qc_metrics,
+      outlier_threshold = spot_qc_args$outlier_threshold
+    )
+  }
 
   standard_spatial_validate_metadata_output_plan(
-    ordinary_cluster_col = cluster_col,
+    preprocessing_cluster_cols = preprocessing_cluster_cols,
     do_spot_qc = isTRUE(do_spot_qc),
+    spot_qc_metadata_targets = spot_qc_metadata_targets,
     do_spatial_cluster = isTRUE(do_spatial_cluster),
     bayesspace_cluster_colname = planned_bayesspace_cluster_colname,
     bayesspace_init_colname = planned_bayesspace_init_colname,
@@ -972,13 +1012,18 @@ run_standard_spatial_workflow <- function(
   }
 
   if (isTRUE(do_spot_qc)) {
-    spot_qc_args <- merge_call_args(
-      list(
-        srt = srt,
-        assay = assay,
-        verbose = verbose
-      ),
-      spot_qc_params
+    spot_qc_args <- run_stage_setup(
+      stage = "quality_control",
+      actual_method = "RunSpotQC",
+      expr = {
+        standard_spatial_validate_spot_qc_effective_args(
+          srt = srt,
+          assay = spot_qc_args$assay,
+          qc_metrics = spot_qc_args$qc_metrics,
+          outlier_threshold = spot_qc_args$outlier_threshold
+        )
+        spot_qc_args
+      }
     )
     spot_qc_args$srt <- standard_spatial_clear_outputs(
       srt,
@@ -1621,9 +1666,135 @@ standard_spatial_validate_deconvolution_tool_name <- function(
   invisible(TRUE)
 }
 
+standard_spatial_preprocessing_metadata_targets <- function(
+  prefix,
+  linear_reduction,
+  normalization_method
+) {
+  prefix <- prefix %||% ""
+  validate_scalar_string(prefix, "prefix", require_character = FALSE)
+  valid_linear_reduction <- is.character(linear_reduction) &&
+    length(linear_reduction) > 0L &&
+    !anyNA(linear_reduction) &&
+    all(nzchar(linear_reduction))
+  if (!isTRUE(valid_linear_reduction)) {
+    log_message(
+      "{.arg linear_reduction} must be a non-empty character vector",
+      message_type = "error"
+    )
+  }
+  validate_scalar_string(normalization_method, "normalization_method")
+  effective_linear_reduction <- if (identical(
+    normalization_method,
+    "TFIDF"
+  )) {
+    "svd"
+  } else {
+    linear_reduction
+  }
+  unique(c(
+    paste0(prefix, effective_linear_reduction, "clusters"),
+    paste0(prefix, "clusters")
+  ))
+}
+
+standard_spatial_spot_qc_metadata_targets <- function(
+  srt,
+  assay,
+  qc_metrics,
+  outlier_threshold
+) {
+  qc_metrics_available <- c("outlier", "umi", "gene", "mito")
+  valid_assay <- is.character(assay) &&
+    length(assay) == 1L &&
+    !is.na(assay) &&
+    nzchar(assay) &&
+    assay %in% SeuratObject::Assays(srt)
+  valid_qc_metrics <- is.character(qc_metrics) &&
+    !anyNA(qc_metrics) &&
+    all(nzchar(qc_metrics)) &&
+    all(qc_metrics %in% qc_metrics_available)
+  targets <- c(
+    "percent.mito",
+    "spot_featurecount_dist",
+    "SpotQC",
+    "spot_umi_qc",
+    "spot_gene_qc",
+    "spot_mito_qc",
+    "spot_outlier_qc"
+  )
+  if (isTRUE(valid_assay)) {
+    targets <- c(
+      paste0("nCount_", assay),
+      paste0("nFeature_", assay),
+      paste0("log10_nCount_", assay),
+      paste0("log10_nFeature_", assay),
+      targets
+    )
+  }
+  valid_outlier_threshold <- is.character(outlier_threshold) &&
+    length(outlier_threshold) > 0L &&
+    !anyNA(outlier_threshold) &&
+    all(nzchar(outlier_threshold))
+  if (
+    isTRUE(valid_qc_metrics) &&
+      "outlier" %in% qc_metrics &&
+      isTRUE(valid_outlier_threshold)
+  ) {
+    targets <- c(
+      targets,
+      make.names(paste0("spot_", outlier_threshold))
+    )
+  }
+  targets
+}
+
+standard_spatial_validate_spot_qc_effective_args <- function(
+  srt,
+  assay,
+  qc_metrics,
+  outlier_threshold
+) {
+  validate_scalar_string(assay, "spot_qc_params$assay")
+  if (!assay %in% SeuratObject::Assays(srt)) {
+    log_message(
+      "Effective spot QC assay {.val {assay}} is not present in {.cls Seurat}",
+      message_type = "error"
+    )
+  }
+  qc_metrics_available <- c("outlier", "umi", "gene", "mito")
+  valid_qc_metrics <- is.character(qc_metrics) &&
+    !anyNA(qc_metrics) &&
+    all(nzchar(qc_metrics)) &&
+    all(qc_metrics %in% qc_metrics_available)
+  if (!isTRUE(valid_qc_metrics)) {
+    log_message(
+      "{.arg spot_qc_params$qc_metrics} must contain only {.val {qc_metrics_available}}",
+      message_type = "error"
+    )
+  }
+  if ("outlier" %in% qc_metrics) {
+    valid_outlier_threshold <- is.character(outlier_threshold) &&
+      length(outlier_threshold) > 0L &&
+      !anyNA(outlier_threshold) &&
+      all(nzchar(outlier_threshold))
+    if (!isTRUE(valid_outlier_threshold)) {
+      log_message(
+        paste0(
+          "{.arg spot_qc_params$outlier_threshold} must be a non-empty ",
+          "character vector of {.val metric:direction:nmads} rules"
+        ),
+        message_type = "error"
+      )
+    }
+  }
+  invisible(TRUE)
+}
+
 standard_spatial_validate_metadata_output_plan <- function(
-  ordinary_cluster_col,
+  preprocessing_cluster_cols,
   do_spot_qc,
+  spot_qc_metadata_targets,
   do_spatial_cluster,
   bayesspace_cluster_colname,
   bayesspace_init_colname,
@@ -1631,25 +1802,27 @@ standard_spatial_validate_metadata_output_plan <- function(
   deconvolution_prefix,
   deconvolution_method
 ) {
-  validate_scalar_string(
-    ordinary_cluster_col,
-    "prefix-derived ordinary cluster output",
-    require_character = FALSE
-  )
-  metadata_targets <- as.character(ordinary_cluster_col)
-  metadata_owners <- "single_cell_preprocessing cluster_col"
-  if (isTRUE(do_spot_qc)) {
-    spot_qc_targets <- c(
-      "SpotQC",
-      "spot_umi_qc",
-      "spot_gene_qc",
-      "spot_mito_qc",
-      "spot_outlier_qc"
+  valid_preprocessing_targets <- is.character(preprocessing_cluster_cols) &&
+    length(preprocessing_cluster_cols) > 0L &&
+    !anyNA(preprocessing_cluster_cols) &&
+    all(nzchar(preprocessing_cluster_cols))
+  if (!isTRUE(valid_preprocessing_targets)) {
+    log_message(
+      "Planned preprocessing cluster outputs must be non-empty strings",
+      message_type = "error"
     )
-    metadata_targets <- c(metadata_targets, spot_qc_targets)
+  }
+  preprocessing_cluster_cols <- unique(preprocessing_cluster_cols)
+  metadata_targets <- preprocessing_cluster_cols
+  metadata_owners <- rep(
+    "single_cell_preprocessing cluster_col",
+    length(preprocessing_cluster_cols)
+  )
+  if (isTRUE(do_spot_qc)) {
+    metadata_targets <- c(metadata_targets, spot_qc_metadata_targets)
     metadata_owners <- c(
       metadata_owners,
-      rep("quality_control", length(spot_qc_targets))
+      rep("quality_control", length(spot_qc_metadata_targets))
     )
   }
   if (isTRUE(do_spatial_cluster)) {

@@ -1567,7 +1567,106 @@ test_that("planned spatial metadata collisions fail before any producer", {
   expect_length(calls, 0L)
 })
 
-test_that("all SpotQC status outputs are protected before producers run", {
+test_that("all preprocessing cluster outputs are protected before producers run", {
+  producer_calls <- character()
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunStandardWorkflow")
+      srt
+    },
+    RunBayesSpace = function(srt, cluster_colname, init_colname, ...) {
+      producer_calls <<- c(producer_calls, "RunBayesSpace")
+      srt[[cluster_colname]] <- rep("domain1", ncol(srt))
+      if (!is.null(init_colname)) {
+        srt[[init_colname]] <- rep("initial1", ncol(srt))
+      }
+      srt@tools[["BayesSpace"]] <- list(result = "fresh")
+      srt
+    },
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  srt <- make_standard_spatial_storage_object()
+  caller_before <- srt
+  cases <- list(
+    multi_reduction_cluster = list(
+      linear_reduction = c("pca", "ica"),
+      normalization_method = "LogNormalize",
+      bayes_arg = "cluster_colname",
+      target = "Standardpcaclusters"
+    ),
+    multi_reduction_init = list(
+      linear_reduction = c("pca", "ica"),
+      normalization_method = "LogNormalize",
+      bayes_arg = "init_colname",
+      target = "Standardicaclusters"
+    ),
+    tfidf_forced_svd = list(
+      linear_reduction = c("pca", "ica"),
+      normalization_method = "TFIDF",
+      bayes_arg = "cluster_colname",
+      target = "Standardsvdclusters"
+    )
+  )
+
+  for (case_name in names(cases)) {
+    case <- cases[[case_name]]
+    bayes_params <- list(
+      cluster_colname = "CustomCluster",
+      init_colname = "CustomInit"
+    )
+    bayes_params[[case$bayes_arg]] <- case$target
+    expect_error(
+      original(
+        srt,
+        assay = "RNA",
+        do_spot_qc = FALSE,
+        do_spatial_variable_features = FALSE,
+        do_spatial_cluster = TRUE,
+        spatial_q = 2,
+        bayesspace_params = bayes_params,
+        do_deconvolution = FALSE,
+        linear_reduction = case$linear_reduction,
+        normalization_method = case$normalization_method,
+        verbose = FALSE
+      ),
+      "metadata outputs collide"
+    )
+    expect_length(producer_calls, 0L)
+    expect_identical(srt, caller_before, info = case_name)
+  }
+
+  tfidf_out <- original(
+    srt,
+    assay = "RNA",
+    do_spot_qc = FALSE,
+    do_spatial_variable_features = FALSE,
+    do_spatial_cluster = TRUE,
+    spatial_q = 2,
+    bayesspace_params = list(
+      cluster_colname = "Standardpcaclusters",
+      init_colname = NULL
+    ),
+    do_deconvolution = FALSE,
+    linear_reduction = "pca",
+    normalization_method = "TFIDF",
+    verbose = FALSE
+  )
+  tfidf_stages <- tfidf_out@tools$run_standard_spatial_workflow$stages
+  tfidf_domain <- tfidf_stages[
+    tfidf_stages$stage == "spatial_clustering",
+    ,
+    drop = FALSE
+  ]
+
+  expect_identical(tfidf_domain$status, "completed")
+  expect_identical(
+    tfidf_domain$result_metadata_key,
+    "Standardpcaclusters"
+  )
+})
+
+test_that("all default SpotQC outputs are protected before producers run", {
   producer_calls <- character()
   testthat::local_mocked_bindings(
     RunSpotQC = function(srt, ...) {
@@ -1588,11 +1687,22 @@ test_that("all SpotQC status outputs are protected before producers run", {
   srt <- make_standard_spatial_storage_object()
   caller_before <- srt
   spot_qc_targets <- c(
+    "nCount_RNA",
+    "nFeature_RNA",
+    "percent.mito",
+    "log10_nCount_RNA",
+    "log10_nFeature_RNA",
+    "spot_featurecount_dist",
     "SpotQC",
     "spot_umi_qc",
     "spot_gene_qc",
     "spot_mito_qc",
-    "spot_outlier_qc"
+    "spot_outlier_qc",
+    make.names(paste0("spot_", c(
+      "log10_nCount:lower:3",
+      "log10_nFeature:lower:3",
+      "spot_featurecount_dist:lower:3"
+    )))
   )
 
   for (target in spot_qc_targets) {
@@ -1619,6 +1729,234 @@ test_that("all SpotQC status outputs are protected before producers run", {
       expect_length(producer_calls, 0L)
       expect_identical(srt, caller_before)
     }
+  }
+})
+
+test_that("effective SpotQC parameters define planned metadata targets", {
+  producer_calls <- character()
+  testthat::local_mocked_bindings(
+    RunSpotQC = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunSpotQC")
+      srt
+    },
+    RunStandardWorkflow = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunStandardWorkflow")
+      srt
+    },
+    RunBayesSpace = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunBayesSpace")
+      srt
+    },
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  base <- make_standard_spatial_storage_object()
+  alt_counts <- SeuratObject::LayerData(base, assay = "RNA", layer = "counts")
+  base[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = alt_counts)
+  custom_rule <- "custom score:upper:2"
+  cases <- list(
+    assay_override = list(
+      default_assay = "RNA",
+      spot_qc_params = list(assay = "ALT", qc_metrics = "umi"),
+      bayes_arg = "cluster_colname",
+      target = "nCount_ALT"
+    ),
+    null_uses_default = list(
+      default_assay = "ALT",
+      spot_qc_params = list(assay = NULL, qc_metrics = "gene"),
+      bayes_arg = "init_colname",
+      target = "log10_nFeature_ALT"
+    ),
+    custom_outlier = list(
+      default_assay = "RNA",
+      spot_qc_params = list(
+        qc_metrics = "outlier",
+        outlier_threshold = custom_rule
+      ),
+      bayes_arg = "init_colname",
+      target = make.names(paste0("spot_", custom_rule))
+    )
+  )
+
+  for (case_name in names(cases)) {
+    case <- cases[[case_name]]
+    srt <- base
+    SeuratObject::DefaultAssay(srt) <- case$default_assay
+    caller_before <- srt
+    bayes_params <- list(
+      cluster_colname = "CustomCluster",
+      init_colname = "CustomInit"
+    )
+    bayes_params[[case$bayes_arg]] <- case$target
+    expect_error(
+      original(
+        srt,
+        assay = "RNA",
+        do_spot_qc = TRUE,
+        spot_qc_params = case$spot_qc_params,
+        do_spatial_variable_features = FALSE,
+        do_spatial_cluster = TRUE,
+        spatial_q = 2,
+        bayesspace_params = bayes_params,
+        do_deconvolution = FALSE,
+        verbose = FALSE
+      ),
+      "metadata outputs collide"
+    )
+    expect_length(producer_calls, 0L)
+    expect_identical(srt, caller_before, info = case_name)
+  }
+})
+
+test_that("SpotQC dispatch reuses the effective parameters used for planning", {
+  called <- FALSE
+  custom_rules <- c("custom score:upper:2", "nCount_RNA:lower:3")
+  testthat::local_mocked_bindings(
+    RunSpotQC = function(
+      srt,
+      assay,
+      qc_metrics,
+      outlier_threshold,
+      ...
+    ) {
+      called <<- TRUE
+      expect_identical(assay, "ALT")
+      expect_identical(qc_metrics, c("outlier", "gene"))
+      expect_identical(outlier_threshold, custom_rules)
+      srt$SpotQC <- rep("Pass", ncol(srt))
+      srt
+    },
+    RunStandardWorkflow = function(srt, ...) srt,
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  srt <- make_standard_spatial_storage_object()
+  alt_counts <- SeuratObject::LayerData(srt, assay = "RNA", layer = "counts")
+  srt[["ALT"]] <- SeuratObject::CreateAssay5Object(counts = alt_counts)
+  SeuratObject::DefaultAssay(srt) <- "ALT"
+
+  out <- original(
+    srt,
+    assay = "RNA",
+    do_spot_qc = TRUE,
+    spot_qc_params = list(
+      assay = NULL,
+      qc_metrics = c("outlier", "gene"),
+      outlier_threshold = custom_rules
+    ),
+    do_spatial_variable_features = FALSE,
+    do_spatial_cluster = FALSE,
+    do_deconvolution = FALSE,
+    do_normalization = FALSE,
+    do_HVF_finding = FALSE,
+    do_scaling = FALSE,
+    verbose = FALSE
+  )
+
+  expect_true(called)
+  expect_identical(
+    out@tools$run_standard_spatial_workflow$status,
+    "completed"
+  )
+})
+
+test_that("deconvolution cannot clear a planned SpotQC outlier flag", {
+  producer_calls <- character()
+  testthat::local_mocked_bindings(
+    RunSpotQC = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunSpotQC")
+      srt
+    },
+    RunStandardWorkflow = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunStandardWorkflow")
+      srt
+    },
+    RunRCTD = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunRCTD")
+      srt
+    },
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  srt <- make_standard_spatial_storage_object()
+  srt$label <- factor(rep("typeA", ncol(srt)))
+  caller_before <- srt
+
+  expect_error(
+    original(
+      srt,
+      assay = "RNA",
+      do_spot_qc = TRUE,
+      spot_qc_params = list(
+        qc_metrics = "outlier",
+        outlier_threshold = "prop_custom:lower:3"
+      ),
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = FALSE,
+      do_deconvolution = TRUE,
+      deconvolution_method = "RCTD",
+      reference = srt,
+      reference_label = "label",
+      deconvolution_params = list(prefix = "spot"),
+      verbose = FALSE
+    ),
+    "deconvolution metadata.*collides"
+  )
+  expect_length(producer_calls, 0L)
+  expect_identical(srt, caller_before)
+})
+
+test_that("malformed SpotQC planning parameters fail without producer work", {
+  producer_calls <- character()
+  testthat::local_mocked_bindings(
+    RunSpotQC = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunSpotQC")
+      srt
+    },
+    RunStandardWorkflow = function(srt, ...) {
+      producer_calls <<- c(producer_calls, "RunStandardWorkflow")
+      srt
+    },
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  srt <- make_standard_spatial_storage_object()
+  caller_before <- srt
+  malformed <- list(
+    assay = list(assay = c("RNA", "RNA")),
+    qc_metrics = list(qc_metrics = list("outlier")),
+    outlier_threshold = list(
+      qc_metrics = "outlier",
+      outlier_threshold = 1
+    )
+  )
+
+  for (case_name in names(malformed)) {
+    condition <- tryCatch(
+      original(
+        srt,
+        assay = "RNA",
+        do_spot_qc = TRUE,
+        spot_qc_params = malformed[[case_name]],
+        do_spatial_variable_features = FALSE,
+        do_spatial_cluster = FALSE,
+        do_deconvolution = FALSE,
+        verbose = FALSE
+      ),
+      error = identity
+    )
+    stages <- attr(condition, "standard_spatial_stages")
+    qc <- stages[stages$stage == "quality_control", , drop = FALSE]
+
+    expect_s3_class(condition, "error")
+    expect_match(conditionMessage(condition), "spot_qc_params")
+    expect_s3_class(stages, "data.frame")
+    expect_identical(qc$status, "failed", info = case_name)
+    expect_identical(qc$actual_method, "RunSpotQC", info = case_name)
+    expect_false(isTRUE(qc$result_stored), info = case_name)
+    expect_match(qc$reason, "spot_qc_params", info = case_name)
+    expect_length(producer_calls, 0L)
+    expect_identical(srt, caller_before, info = case_name)
   }
 })
 
@@ -1822,6 +2160,11 @@ test_that("unrequested stage names do not create metadata collisions", {
     prefix = "Custom_prop_typeA_",
     assay = "RNA",
     do_spot_qc = FALSE,
+    spot_qc_params = list(
+      assay = c("missing", "assay"),
+      qc_metrics = list("not valid"),
+      outlier_threshold = 1
+    ),
     do_spatial_variable_features = FALSE,
     do_spatial_cluster = FALSE,
     bayesspace_params = list(
