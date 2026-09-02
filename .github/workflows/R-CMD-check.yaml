@@ -69,6 +69,24 @@ jobs:
           dependencies: '"hard"'
           cache: false
 
+      # Presto is deliberately runtime-optional and therefore is not exposed
+      # as a declared dependency inside R CMD check. Exercise the real GitHub
+      # installation here, before the check process narrows its library view.
+      - name: Verify runtime Presto backend 🧪
+        shell: Rscript {0}
+        run: |
+          pkgload::load_all(".", quiet = TRUE, compile = FALSE)
+          presto_fun <- get("presto_get_fun", asNamespace("scop"))(
+            install = FALSE,
+            error_on_missing = FALSE
+          )
+          stopifnot(is.function(presto_fun))
+          testthat::test_file(
+            "tests/testthat/test-presto-backend.R",
+            reporter = "summary",
+            stop_on_failure = TRUE
+          )
+
       - name: Save R package cache 💾
         uses: actions/cache/save@v5
         with:

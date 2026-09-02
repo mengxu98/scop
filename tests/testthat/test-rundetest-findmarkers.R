@@ -128,6 +128,10 @@ test_that("RunDEtest exports internal marker workers to parallel processes", {
 test_that("supported RunDEtest Wilcoxon branches stay on the scop backend", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
+  skip_if(
+    is.null(presto_get_fun(install = FALSE, error_on_missing = FALSE)),
+    "The runtime-optional Presto backend is unavailable"
+  )
 
   set.seed(3)
   counts <- Matrix::rsparsematrix(
@@ -256,9 +260,54 @@ test_that("unsupported FindMarkers arguments still use the Seurat fallback", {
   expect_true(reached_seurat)
 })
 
+test_that("RunDEtest all-in-one fallback never installs missing Presto", {
+  install_requested <- NULL
+  native_all_markers <- get("RunDEtestFindAllMarkers", asNamespace("scop"))
+
+  testthat::local_mocked_bindings(
+    marker_assay_is_chromatin = function(...) FALSE,
+    marker_context = function(...) list(labels = c("A", "B")),
+    presto_get_fun = function(
+      fun = "wilcoxauc",
+      install = FALSE,
+      error_on_missing = TRUE
+    ) {
+      install_requested <<- install
+      NULL
+    },
+    .package = "scop"
+  )
+
+  expect_null(native_all_markers(
+    srt = NULL,
+    assay = "RNA",
+    layer = "data",
+    cell_group = factor(c("A", "B")),
+    features = NULL,
+    test.use = "wilcox",
+    logfc.threshold = 0,
+    base = 2,
+    min.pct = 0,
+    min.diff.pct = -Inf,
+    min.cells.feature = 3,
+    min.cells.group = 3,
+    latent.vars = NULL,
+    only.pos = FALSE,
+    norm.method = "LogNormalize",
+    pseudocount.use = 1,
+    mean.fxn = NULL,
+    p.adjust.method = "bonferroni"
+  ))
+  expect_false(install_requested)
+})
+
 test_that("RunDEtest all-in-one markers match the pairwise scop backend", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
+  skip_if(
+    is.null(presto_get_fun(install = FALSE, error_on_missing = FALSE)),
+    "The runtime-optional Presto backend is unavailable"
+  )
 
   set.seed(5)
   counts <- Matrix::rsparsematrix(
@@ -296,21 +345,6 @@ test_that("RunDEtest all-in-one markers match the pairwise scop backend", {
     mean.fxn = NULL,
     p.adjust.method = "bonferroni"
   )
-  install_requested <- NULL
-  expect_null(testthat::with_mocked_bindings(
-    do.call(native_all_markers, native_args),
-    presto_get_fun = function(
-      fun = "wilcoxauc",
-      install = FALSE,
-      error_on_missing = TRUE
-    ) {
-      install_requested <<- install
-      NULL
-    },
-    .package = "scop"
-  ))
-  expect_false(install_requested)
-
   all_in_one <- do.call(native_all_markers, native_args)
   pairwise <- lapply(levels(cell_group), function(group) {
     markers <- scop::FindMarkers(

@@ -84,6 +84,17 @@ test_that("presto_get_fun treats a missing backend symbol as unavailable", {
   expect_error(presto_get_fun(), "does not provide.*wilcoxauc")
 })
 
+test_that("presto_get_fun rejects a NULL namespace lookup", {
+  testthat::local_mocked_bindings(
+    presto_check_r = function(...) TRUE,
+    get_namespace_fun = function(...) NULL,
+    .package = "scop"
+  )
+
+  expect_null(presto_get_fun(error_on_missing = FALSE))
+  expect_error(presto_get_fun(), "does not provide.*wilcoxauc.*not found")
+})
+
 test_that("CellChat requests Presto only for a supported fast path", {
   installs <- logical()
   testthat::local_mocked_bindings(
@@ -214,6 +225,90 @@ test_that("automatic marker fast paths fall back without installing Presto", {
   expect_true(all(vapply(requests, function(x) identical(x$fun, "wilcoxauc"), logical(1))))
   expect_true(all(!vapply(requests, `[[`, logical(1), "install")))
   expect_true(all(!vapply(requests, `[[`, logical(1), "error_on_missing")))
+})
+
+test_that("the installed runtime Presto backend resolves and executes its current API", {
+  skip_if_not_installed("Matrix")
+
+  presto_fun <- presto_get_fun(
+    install = FALSE,
+    error_on_missing = FALSE
+  )
+  skip_if(is.null(presto_fun), "The runtime-optional Presto backend is unavailable")
+
+  expression <- Matrix::Matrix(
+    matrix(
+      c(
+        8, 7, 9, 1, 0, 2,
+        0, 1, 0, 7, 8, 9,
+        2, 2, 3, 2, 3, 2
+      ),
+      nrow = 3,
+      byrow = TRUE,
+      dimnames = list(paste0("g", 1:3), paste0("c", 1:6))
+    ),
+    sparse = TRUE
+  )
+  result <- presto_fun(
+    X = expression,
+    y = factor(rep(c("A", "B"), each = 3)),
+    verbose = FALSE
+  )
+
+  expect_s3_class(result, "data.frame")
+  expect_setequal(unique(as.character(result$group)), c("A", "B"))
+  expect_true(all(c("feature", "group", "pval", "padj") %in% colnames(result)))
+  expect_setequal(unique(result$feature), rownames(expression))
+})
+
+test_that("the installed runtime Presto backend drives SCOP marker entry points", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  presto_fun <- presto_get_fun(
+    install = FALSE,
+    error_on_missing = FALSE
+  )
+  skip_if(is.null(presto_fun), "The runtime-optional Presto backend is unavailable")
+
+  set.seed(16)
+  counts <- Matrix::rsparsematrix(
+    40,
+    20,
+    density = 0.25,
+    rand.x = function(n) stats::rpois(n, 2) + 1
+  )
+  dimnames(counts) <- list(paste0("g", 1:40), paste0("c", 1:20))
+  object <- Seurat::CreateSeuratObject(counts)
+  object <- Seurat::NormalizeData(object, verbose = FALSE)
+  SeuratObject::Idents(object) <- factor(rep(c("A", "B"), each = 10))
+
+  testthat::local_mocked_bindings(
+    FindMarkers.Seurat = function(...) stop("Seurat pairwise fallback was reached"),
+    FindAllMarkers = function(...) stop("Seurat all-markers fallback was reached"),
+    .package = "Seurat"
+  )
+
+  pair <- scop::FindMarkers(
+    object,
+    cells.1 = colnames(object)[1:10],
+    cells.2 = colnames(object)[11:20],
+    logfc.threshold = 0,
+    min.pct = 0,
+    verbose = FALSE
+  )
+  all_markers <- scop::FindAllMarkers(
+    object,
+    logfc.threshold = 0,
+    min.pct = 0,
+    return.thresh = 1,
+    verbose = FALSE
+  )
+
+  expect_s3_class(pair, "data.frame")
+  expect_s3_class(all_markers, "data.frame")
+  expect_true(all(c("p_val", "p_val_adj") %in% colnames(pair)))
+  expect_true(all(c("gene", "cluster", "p_val", "p_val_adj") %in% colnames(all_markers)))
 })
 
 test_that("Presto remains declared only as a runtime remote", {
