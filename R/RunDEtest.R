@@ -1202,6 +1202,14 @@ RunDEtestFindAllMarkers <- function(
     return(NULL)
   }
 
+  presto_fun <- presto_get_fun(
+    install = FALSE,
+    error_on_missing = FALSE
+  )
+  if (is.null(presto_fun)) {
+    return(NULL)
+  }
+
   ctx <- marker_context(
     object = srt,
     assay = assay,
@@ -1212,13 +1220,6 @@ RunDEtestFindAllMarkers <- function(
     groups = cell_group
   )
   if (is.null(ctx)) {
-    return(NULL)
-  }
-  presto_fun <- presto_get_fun(
-    install = FALSE,
-    error_on_missing = FALSE
-  )
-  if (is.null(presto_fun)) {
     return(NULL)
   }
 

@@ -95,6 +95,61 @@ test_that("presto_get_fun rejects a NULL namespace lookup", {
   expect_error(presto_get_fun(), "does not provide.*wilcoxauc.*not found")
 })
 
+test_that("FindAllMarkers probes Presto only after support checks and before marker context", {
+  native_all_markers <- get("FindAllMarkers.Seurat", asNamespace("scop"))
+  fallback <- data.frame(path = "Seurat", stringsAsFactors = FALSE)
+  events <- character()
+
+  testthat::local_mocked_bindings(
+    marker_assay_is_chromatin = function(...) {
+      events <<- c(events, "chromatin")
+      FALSE
+    },
+    marker_all_supported = function(test.use, ...) {
+      events <<- c(events, "supported")
+      identical(test.use, "wilcox")
+    },
+    presto_get_fun = function(
+      fun = "wilcoxauc",
+      install = FALSE,
+      error_on_missing = TRUE
+    ) {
+      events <<- c(events, "presto")
+      expect_identical(fun, "wilcoxauc")
+      expect_false(install)
+      expect_false(error_on_missing)
+      NULL
+    },
+    marker_context = function(...) {
+      events <<- c(events, "context")
+      stop("marker context should not be materialized without Presto")
+    },
+    get_namespace_fun = function(package, fun) {
+      expect_identical(package, "Seurat")
+      expect_identical(fun, "FindAllMarkers")
+      function(...) fallback
+    },
+    .package = "scop"
+  )
+
+  supported <- native_all_markers(
+    object = NULL,
+    test.use = "wilcox",
+    verbose = FALSE
+  )
+  expect_identical(supported, fallback)
+  expect_identical(events, c("chromatin", "supported", "presto"))
+
+  events <- character()
+  unsupported <- native_all_markers(
+    object = NULL,
+    test.use = "roc",
+    verbose = FALSE
+  )
+  expect_identical(unsupported, fallback)
+  expect_identical(events, c("chromatin", "supported"))
+})
+
 test_that("CellChat requests Presto only for a supported fast path", {
   installs <- logical()
   testthat::local_mocked_bindings(
