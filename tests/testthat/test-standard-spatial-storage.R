@@ -308,6 +308,7 @@ test_that("stale variable features do not satisfy a quiet producer", {
 })
 
 test_that("native spatial variable feature workflow can be rerun unchanged", {
+  skip_if_not_installed("BiocNeighbors")
   public_workflow <- RunStandardWorkflow
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
@@ -353,6 +354,7 @@ test_that("native spatial variable feature workflow can be rerun unchanged", {
 })
 
 test_that("native variable-feature-only output is verified without a tool", {
+  skip_if_not_installed("BiocNeighbors")
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
     .package = "scop"
