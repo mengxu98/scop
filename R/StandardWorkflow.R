@@ -780,6 +780,23 @@ run_standard_spatial_workflow <- function(
           !is.null(deconvolution_params[["reference_signatures"]])
       )
   }
+  has_cell2location_signatures <- identical(
+    deconvolution_method,
+    "Cell2location"
+  ) && !is.null(deconvolution_params[["reference_signatures"]])
+  deconv_default_name <- switch(deconvolution_method,
+    RCTD = "RCTD",
+    SPOTlight = "SPOTlight",
+    Cell2location = "Cell2location"
+  )
+  if (
+    isTRUE(do_deconvolution) &&
+      (!is.null(reference) || has_cell2location_signatures)
+  ) {
+    standard_spatial_validate_deconvolution_tool_name(
+      deconvolution_params[["tool_name"]] %||% deconv_default_name
+    )
+  }
 
   stages <- data.frame(
     stage = c("quality_control", "spatial_variable_features", "spatial_clustering", "deconvolution"),
@@ -1040,6 +1057,10 @@ run_standard_spatial_workflow <- function(
         } else {
           character()
         }
+        valid_empty_selection <- svf_set_variable_features &&
+          length(variable_features) == 0L &&
+          svf_store_results &&
+          standard_spatial_svf_has_valid_empty_selection(result)
         standard_spatial_result_probe(
           srt = result,
           tool_key = if (svf_store_results) {
@@ -1053,7 +1074,8 @@ run_standard_spatial_workflow <- function(
           } else {
             character()
           },
-          extra_required = svf_set_variable_features,
+          extra_required = svf_set_variable_features &&
+            !valid_empty_selection,
           extra_expected = sprintf('VariableFeatures("%s")', assay)
         )
       }
@@ -1156,10 +1178,6 @@ run_standard_spatial_workflow <- function(
   }
 
   if (isTRUE(do_deconvolution)) {
-    has_cell2location_signatures <- identical(
-      deconvolution_method,
-      "Cell2location"
-    ) && !is.null(deconvolution_params[["reference_signatures"]])
     if (is.null(reference) && !has_cell2location_signatures) {
       update_stage(
         stage = "deconvolution",
@@ -1176,11 +1194,6 @@ run_standard_spatial_workflow <- function(
         RCTD = "RunRCTD",
         SPOTlight = "RunSPOTlight",
         Cell2location = "RunCell2location"
-      )
-      deconv_default_name <- switch(deconvolution_method,
-        RCTD = "RCTD",
-        SPOTlight = "SPOTlight",
-        Cell2location = "Cell2location"
       )
       if (identical(deconvolution_method, "RCTD")) {
         deconvolution_params <- standard_spatial_prepare_rctd_params(
@@ -1214,6 +1227,7 @@ run_standard_spatial_workflow <- function(
       deconv_prefix <- deconv_args$prefix
       deconv_tool_name <- deconv_args$tool_name
       deconv_store_results <- isTRUE(deconv_args$store_results)
+      standard_spatial_validate_deconvolution_tool_name(deconv_tool_name)
       deconv_args$srt <- standard_spatial_clear_outputs(
         srt,
         tool_keys = if (deconv_store_results) {
@@ -1381,6 +1395,74 @@ standard_spatial_restore_variable_feature_info <- function(
   }
   srt[[assay]] <- assay_object
   srt
+}
+
+standard_spatial_svf_has_valid_empty_selection <- function(srt) {
+  tool <- srt@tools[["SpatialVariableFeatures"]]
+  required_result_columns <- c(
+    "feature", "rank", "method", "statistic", "score", "p_value",
+    "q_value", "mean", "variance", "n_spots"
+  )
+  required_summary_fields <- c(
+    "n_features", "top_features", "top_feature_summary"
+  )
+  if (
+    !is.list(tool) ||
+      !is.data.frame(tool$result) ||
+      nrow(tool$result) == 0L ||
+      !all(required_result_columns %in% colnames(tool$result)) ||
+      !is.character(tool$result$feature) ||
+      !is.null(dim(tool$result$feature)) ||
+      length(tool$result$feature) != nrow(tool$result) ||
+      anyNA(tool$result$feature) ||
+      any(!nzchar(tool$result$feature)) ||
+      anyDuplicated(tool$result$feature) > 0L ||
+      !is.numeric(tool$result$score) ||
+      !is.null(dim(tool$result$score)) ||
+      length(tool$result$score) != nrow(tool$result) ||
+      !is.list(tool$summary) ||
+      !all(required_summary_fields %in% names(tool$summary)) ||
+      !is.numeric(tool$summary$n_features) ||
+      length(tool$summary$n_features) != 1L ||
+      is.na(tool$summary$n_features) ||
+      tool$summary$n_features != nrow(tool$result) ||
+      !identical(tool$summary$top_features, character()) ||
+      !is.data.frame(tool$summary$top_feature_summary) ||
+      nrow(tool$summary$top_feature_summary) != 0L ||
+      !all(
+        c("feature", "rank", "score") %in%
+          colnames(tool$summary$top_feature_summary)
+      ) ||
+      !is.character(tool$summary$top_feature_summary$feature) ||
+      !is.integer(tool$summary$top_feature_summary$rank) ||
+      !is.numeric(tool$summary$top_feature_summary$score) ||
+      !is.list(tool$parameters) ||
+      !isTRUE(tool$parameters$set_variable_features)
+  ) {
+    return(FALSE)
+  }
+
+  all(!is.finite(tool$result$score))
+}
+
+standard_spatial_validate_deconvolution_tool_name <- function(tool_name) {
+  validate_scalar_string(tool_name, "deconvolution_params$tool_name")
+  workflow_owned_keys <- c(
+    "run_standard_spatial_workflow",
+    "SpotQC",
+    "SpatialVariableFeatures",
+    "BayesSpace"
+  )
+  if (tool_name %in% workflow_owned_keys) {
+    log_message(
+      paste0(
+        "{.arg deconvolution_params$tool_name} {.val {tool_name}} is ",
+        "reserved for output owned by the spatial workflow"
+      ),
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
 }
 
 standard_spatial_result_probe <- function(
