@@ -119,7 +119,7 @@ test_that("ATAC preprocessing cluster targets reject BayesSpace collisions", {
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
 
-  for (target in c("ATACclusters", "ATACsvdclusters")) {
+  for (target in c("ATACclusters", "ATACsvdclusters", "ATAClsiclusters")) {
     for (bayes_arg in c("cluster_colname", "init_colname")) {
       bayes_params <- list(
         cluster_colname = "CustomCluster",
