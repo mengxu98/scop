@@ -755,6 +755,29 @@ run_standard_spatial_workflow <- function(
       message_type = "error"
     )
   }
+  is_atac_assay <- inherits(srt[[assay]], "ChromatinAssay")
+  if (is_atac_assay) {
+    atac_args <- atac_defaults(
+      prefix = prefix,
+      do_normalization = do_normalization,
+      normalization_method = normalization_method,
+      do_HVF_finding = do_HVF_finding,
+      nHVF = nHVF,
+      do_scaling = do_scaling,
+      linear_reduction = linear_reduction,
+      linear_reduction_dims_use = linear_reduction_dims_use,
+      neighbor_metric = neighbor_metric
+    )
+    prefix <- atac_args$prefix
+    do_normalization <- atac_args$do_normalization
+    normalization_method <- atac_args$normalization_method
+    do_HVF_finding <- atac_args$do_HVF_finding
+    nHVF <- atac_args$nHVF
+    do_scaling <- atac_args$do_scaling
+    linear_reduction <- atac_args$linear_reduction
+    linear_reduction_dims_use <- atac_args$linear_reduction_dims_use
+    neighbor_metric <- atac_args$neighbor_metric
+  }
   cores <- validate_scalar_integer(cores, "cores")
 
   validate_named_list(spot_qc_params, "spot_qc_params")
@@ -1263,7 +1286,14 @@ run_standard_spatial_workflow <- function(
       image = image,
       verbose = verbose
     )
-    linear_reduction_use <- linear_reduction[[1L]]
+    linear_reduction_use <- if (identical(
+      normalization_method,
+      "TFIDF"
+    )) {
+      "svd"
+    } else {
+      linear_reduction[[1L]]
+    }
     reduction_use <- paste0(prefix, linear_reduction_use)
     if (
       reduction_use %in% SeuratObject::Reductions(srt) &&
