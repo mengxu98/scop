@@ -307,7 +307,7 @@ RunSpotSweeper <- function(
     )
     log_message(
       "{.pkg SpotSweeper} completed partially: {.val {failed}} spots failed QC; artifact detection skipped for {.val {skipped}} sample{?s}, failed for {.val {failed_artifact}} sample{?s}, and left {.val {not_evaluated}} spots not evaluated",
-      message_type = "warning",
+      message_type = "running",
       verbose = verbose
     )
   } else if (!isTRUE(run_artifact)) {
