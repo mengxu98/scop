@@ -802,8 +802,10 @@ run_standard_spatial_workflow <- function(
     bayesspace_params[["cluster_colname"]] %||% "BayesSpace_cluster"
   planned_bayesspace_init_colname <-
     bayesspace_params[["init_colname"]] %||% "BayesSpace_init"
+  cluster_col <- paste0(prefix, "clusters")
 
   standard_spatial_validate_metadata_output_plan(
+    ordinary_cluster_col = cluster_col,
     do_spot_qc = isTRUE(do_spot_qc),
     do_spatial_cluster = isTRUE(do_spatial_cluster),
     bayesspace_cluster_colname = planned_bayesspace_cluster_colname,
@@ -1025,7 +1027,6 @@ run_standard_spatial_workflow <- function(
     ...
   )
 
-  cluster_col <- paste0(prefix, "clusters")
   if (isTRUE(do_spatial_variable_features)) {
     svf_setup <- run_stage_setup(
       stage = "spatial_variable_features",
@@ -1579,6 +1580,7 @@ standard_spatial_validate_deconvolution_tool_name <- function(
 }
 
 standard_spatial_validate_metadata_output_plan <- function(
+  ordinary_cluster_col,
   do_spot_qc,
   do_spatial_cluster,
   bayesspace_cluster_colname,
@@ -1587,8 +1589,13 @@ standard_spatial_validate_metadata_output_plan <- function(
   deconvolution_prefix,
   deconvolution_method
 ) {
-  metadata_targets <- character()
-  metadata_owners <- character()
+  validate_scalar_string(
+    ordinary_cluster_col,
+    "prefix-derived ordinary cluster output",
+    require_character = FALSE
+  )
+  metadata_targets <- as.character(ordinary_cluster_col)
+  metadata_owners <- "single_cell_preprocessing cluster_col"
   if (isTRUE(do_spot_qc)) {
     metadata_targets <- c(metadata_targets, "SpotQC")
     metadata_owners <- c(metadata_owners, "quality_control")

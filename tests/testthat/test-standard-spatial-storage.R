@@ -1160,6 +1160,66 @@ test_that("planned spatial metadata collisions fail before any producer", {
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   srt <- make_standard_spatial_storage_object()
   srt$label <- factor(rep("typeA", ncol(srt)))
+  caller_before <- srt
+
+  expect_error(
+    original(
+      srt,
+      prefix = "Standard",
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = TRUE,
+      spatial_q = 2,
+      bayesspace_params = list(
+        cluster_colname = "Standardclusters"
+      ),
+      do_deconvolution = FALSE,
+      verbose = FALSE
+    ),
+    "metadata outputs collide"
+  )
+  expect_length(calls, 0L)
+
+  expect_error(
+    original(
+      srt,
+      prefix = "Standard",
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = TRUE,
+      spatial_q = 2,
+      bayesspace_params = list(
+        cluster_colname = "CustomCluster",
+        init_colname = "Standardclusters"
+      ),
+      do_deconvolution = FALSE,
+      verbose = FALSE
+    ),
+    "metadata outputs collide"
+  )
+  expect_length(calls, 0L)
+
+  expect_error(
+    original(
+      srt,
+      prefix = "Custom_prop_typeA_",
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = FALSE,
+      do_deconvolution = TRUE,
+      deconvolution_method = "RCTD",
+      reference = srt,
+      reference_label = "label",
+      deconvolution_params = list(prefix = "Custom"),
+      verbose = FALSE
+    ),
+    "deconvolution metadata.*collides"
+  )
+  expect_length(calls, 0L)
+  expect_identical(srt, caller_before)
 
   expect_error(
     original(
@@ -1376,6 +1436,31 @@ test_that("unrequested stage names do not create metadata collisions", {
 
   expect_identical(qc$status, "completed")
   expect_equal(unique(qc_only$SpotQC), "Pass")
+
+  optional_stages_off <- original(
+    make_standard_spatial_storage_object(),
+    prefix = "Custom_prop_typeA_",
+    assay = "RNA",
+    do_spot_qc = FALSE,
+    do_spatial_variable_features = FALSE,
+    do_spatial_cluster = FALSE,
+    bayesspace_params = list(
+      cluster_colname = "Custom_prop_typeA_clusters",
+      init_colname = "Custom_prop_typeA_clusters"
+    ),
+    do_deconvolution = FALSE,
+    deconvolution_method = "RCTD",
+    deconvolution_params = list(prefix = "Custom"),
+    verbose = FALSE,
+    do_normalization = FALSE,
+    do_HVF_finding = FALSE,
+    do_scaling = FALSE
+  )
+
+  expect_identical(
+    optional_stages_off@tools$run_standard_spatial_workflow$status,
+    "completed"
+  )
 })
 
 test_that("SPOTlight dispatch satisfies the normalized storage contract", {
