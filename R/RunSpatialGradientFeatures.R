@@ -936,7 +936,14 @@ sgf_store_result <- function(
   if (is.null(srt@tools[["SpatialGradientFeatures"]])) {
     srt@tools[["SpatialGradientFeatures"]] <- list()
   }
-  stored_result <- result[expected]
+  source <- source %||% result$source %||% list()
+  if (!is.list(source)) {
+    log_message(
+      "Spatial gradient result source must be a list",
+      message_type = "error"
+    )
+  }
+  stored_result <- c(result[expected], list(source = source))
   attr(stored_result, "coordinate_contract_version") <-
     .spatial_coordinate_contract_version
   srt@tools[["SpatialGradientFeatures"]][[result_name]] <- stored_result
