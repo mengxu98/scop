@@ -73,10 +73,12 @@ returned metadata and stored result are marked as partial.}
 \code{mito_pattern} is ignored.}
 
 \item{mito_percent}{Metadata column used as mitochondrial percent for
-artifact detection. If \code{NULL}, \code{percent.mito} is used.}
+artifact detection. If \code{NULL}, \code{percent.mito} is used. The reserved
+backend output name \code{"artifact"} cannot be used when \code{run_artifact = TRUE}.}
 
 \item{mito_sum}{Metadata column used as mitochondrial counts for artifact
-detection. If \code{NULL}, mitochondrial counts are computed.}
+detection. If \code{NULL}, mitochondrial counts are computed. The reserved
+backend output name \code{"artifact"} cannot be used when \code{run_artifact = TRUE}.}
 
 \item{n_order, shape}{Parameters passed to \code{SpotSweeper::findArtifacts()}.}
 
@@ -85,8 +87,8 @@ detection. If \code{NULL}, mitochondrial counts are computed.}
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
 \item{return_filtered}{Whether to return only spots passing SpotSweeper QC.
-A fully filtered object is not returned when requested artifact detection is
-incomplete; set \code{run_artifact = FALSE} to request local-outlier-only filtering.}
+A fully filtered object is not returned when any requested QC stage is
+incomplete.}
 
 \item{store_results}{Whether to store detailed results in \code{srt@tools}.}
 
@@ -109,8 +111,9 @@ A \code{Seurat} object with SpotSweeper QC metadata. When
 \code{store_results = TRUE}, detailed results and an \code{artifact_status}
 table are stored in \code{srt@tools[[tool_name]]}. The artifact metadata uses
 \code{NA} and \code{"NotEvaluated"} when a requested artifact stage did not
-run; the overall \code{*_QC} column uses \code{"Partial"} for spots that
-passed local QC but were not evaluated for artifacts.
+run; \code{*_local_outlier_qc} uses \code{"NotEvaluated"} outside the tested
+coordinate scope, and the overall \code{*_QC} column uses \code{"Partial"}
+whenever a spot was not fully evaluated by the requested QC stages.
 }
 \description{
 Run \code{SpotSweeper} spatially aware spot-level quality control on a spatial

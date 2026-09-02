@@ -286,6 +286,181 @@ test_that("RunSpotSweeper rejects missing or invalid artifact backend output tru
   }
 })
 
+test_that("RunSpotSweeper does not reuse a stale artifact metadata column", {
+  skip_if_no_spotsweeper_infra()
+  srt <- make_spotsweeper_seurat()
+  srt$artifact <- rep(c(TRUE, FALSE), length.out = ncol(srt))
+  artifact_before <- srt$artifact
+
+  out <- suppressMessages(with_mock_spotsweeper({
+    RunSpotSweeper(
+      srt,
+      layer = "counts",
+      coord.cols = c("x", "y"),
+      sample.by = "sample",
+      n_neighbors = 2,
+      verbose = TRUE
+    )
+  }, artifact_mode = "missing"))
+
+  expect_identical(out@tools$SpotSweeper$status, "partial")
+  expect_true(all(out@tools$SpotSweeper$artifact_status$status == "failed"))
+  expect_true(all(is.na(out$SpotSweeper_artifact)))
+  expect_true(all(as.character(out$SpotSweeper_artifact_qc) == "NotEvaluated"))
+  expect_identical(out$artifact, artifact_before)
+})
+
+test_that("RunSpotSweeper rejects reserved artifact input columns atomically", {
+  skip_if_no_spotsweeper_infra()
+  srt <- make_spotsweeper_seurat()
+  srt$artifact <- seq_len(ncol(srt))
+  metadata_before <- srt@meta.data
+  tools_before <- srt@tools
+
+  for (input_arg in c("mito_percent", "mito_sum")) {
+    check_called <- FALSE
+    args <- list(
+      srt = srt,
+      layer = "counts",
+      coord.cols = c("x", "y"),
+      sample.by = "sample",
+      n_neighbors = 2,
+      verbose = FALSE
+    )
+    args[[input_arg]] <- "artifact"
+    expect_error(
+      testthat::with_mocked_bindings(
+        do.call(RunSpotSweeper, args),
+        check_r = function(...) {
+          check_called <<- TRUE
+          stop("backend check should not run", call. = FALSE)
+        },
+        .package = "scop"
+      ),
+      "reserved.*artifact output",
+      info = input_arg
+    )
+    expect_false(check_called, info = input_arg)
+  }
+  expect_identical(srt@meta.data, metadata_before)
+  expect_identical(srt@tools, tools_before)
+})
+
+test_that("RunSpotSweeper includes untested coordinate spots in overall status", {
+  skip_if_no_spotsweeper_infra()
+  srt <- make_spotsweeper_seurat()
+  coords <- data.frame(
+    x = srt$x[seq_len(5)],
+    y = srt$y[seq_len(5)],
+    row.names = colnames(srt)[seq_len(5)]
+  )
+
+  out <- testthat::with_mocked_bindings(
+    suppressMessages(with_mock_spotsweeper({
+      RunSpotSweeper(
+        srt,
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        n_neighbors = 2,
+        verbose = TRUE
+      )
+    })),
+    spatial_analysis_coords = function(...) list(data = coords),
+    .package = "scop"
+  )
+
+  expect_identical(out@tools$SpotSweeper$status, "partial")
+  expect_false("Spot6" %in% out@tools$SpotSweeper$tested_spots)
+  expect_identical(
+    as.character(out$SpotSweeper_local_outlier_qc[[6]]),
+    "NotEvaluated"
+  )
+  metric_outlier_cols <- grep(
+    "^SpotSweeper_.*_outlier$",
+    colnames(out[[]]),
+    value = TRUE
+  )
+  expect_true(all(vapply(
+    metric_outlier_cols,
+    function(column) is.na(out[[column, drop = TRUE]][[6]]),
+    logical(1)
+  )))
+  expect_identical(out$SpotSweeper_artifact_status[[6]], "skipped")
+  expect_true(is.na(out$SpotSweeper_artifact[[6]]))
+  expect_identical(as.character(out$SpotSweeper_artifact_qc[[6]]), "NotEvaluated")
+  expect_identical(as.character(out$SpotSweeper_QC[[6]]), "Partial")
+})
+
+test_that("RunSpotSweeper marks incomplete local-only coordinate scope partial", {
+  skip_if_no_spotsweeper_infra()
+  srt <- make_spotsweeper_seurat()
+  coords <- data.frame(
+    x = srt$x[seq_len(5)],
+    y = srt$y[seq_len(5)],
+    row.names = colnames(srt)[seq_len(5)]
+  )
+
+  out <- NULL
+  events <- testthat::with_mocked_bindings(
+    capture_spotsweeper_logs(with_mock_spotsweeper({
+      out <- RunSpotSweeper(
+        srt,
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        n_neighbors = 2,
+        run_artifact = FALSE,
+        verbose = TRUE
+      )
+    })),
+    spatial_analysis_coords = function(...) list(data = coords),
+    .package = "scop"
+  )
+
+  expect_identical(out@tools$SpotSweeper$status, "partial")
+  expect_identical(
+    as.character(out$SpotSweeper_local_outlier_qc[[6]]),
+    "NotEvaluated"
+  )
+  expect_identical(out$SpotSweeper_artifact_status[[6]], "not_requested")
+  expect_identical(as.character(out$SpotSweeper_QC[[6]]), "Partial")
+  expect_true(any(vapply(
+    events,
+    function(x) {
+      identical(x$type, "running") &&
+        grepl("completed partially", x$text) &&
+        grepl("artifact detection was not requested", x$text)
+    },
+    logical(1)
+  )))
+  expect_false(any(vapply(
+    events,
+    function(x) identical(x$type, "success"),
+    logical(1)
+  )))
+
+  expect_error(
+    testthat::with_mocked_bindings(
+      with_mock_spotsweeper({
+        RunSpotSweeper(
+          srt,
+          layer = "counts",
+          coord.cols = c("x", "y"),
+          sample.by = "sample",
+          n_neighbors = 2,
+          run_artifact = FALSE,
+          return_filtered = TRUE,
+          verbose = FALSE
+        )
+      }),
+      spatial_analysis_coords = function(...) list(data = coords),
+      .package = "scop"
+    ),
+    "completed for every spot"
+  )
+})
+
 test_that("RunSpotSweeper preserves mixed per-sample artifact statuses", {
   skip_if_no_spotsweeper_infra()
   srt <- make_spotsweeper_seurat()
