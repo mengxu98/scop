@@ -800,13 +800,17 @@ run_standard_spatial_workflow <- function(
   )
   planned_bayesspace_cluster_colname <-
     bayesspace_params[["cluster_colname"]] %||% "BayesSpace_cluster"
+  planned_bayesspace_init_colname <-
+    bayesspace_params[["init_colname"]] %||% "BayesSpace_init"
 
   standard_spatial_validate_metadata_output_plan(
     do_spot_qc = isTRUE(do_spot_qc),
     do_spatial_cluster = isTRUE(do_spatial_cluster),
     bayesspace_cluster_colname = planned_bayesspace_cluster_colname,
+    bayesspace_init_colname = planned_bayesspace_init_colname,
     do_deconvolution = deconv_will_run,
-    deconvolution_prefix = planned_deconv_prefix
+    deconvolution_prefix = planned_deconv_prefix,
+    deconvolution_method = deconvolution_method
   )
   if (deconv_will_run) {
     standard_spatial_validate_deconvolution_tool_name(
@@ -1209,11 +1213,18 @@ run_standard_spatial_workflow <- function(
     )
     bayesspace_args$cluster_colname <-
       bayesspace_args$cluster_colname %||% "BayesSpace_cluster"
+    bayesspace_args$init_colname <-
+      bayesspace_args$init_colname %||% "BayesSpace_init"
     bayesspace_cluster_colname <- bayesspace_args$cluster_colname
+    bayesspace_init_colname <- bayesspace_args$init_colname
+    bayesspace_metadata_keys <- c(
+      bayesspace_cluster_colname,
+      if (!is.null(bayesspace_init_colname)) bayesspace_init_colname
+    )
     bayesspace_args$srt <- standard_spatial_clear_outputs(
       srt,
       tool_keys = "BayesSpace",
-      metadata_keys = bayesspace_cluster_colname
+      metadata_keys = bayesspace_metadata_keys
     )
     srt <- run_stage(
       stage = "spatial_clustering",
@@ -1224,8 +1235,10 @@ run_standard_spatial_workflow <- function(
           srt = result,
           tool_key = "BayesSpace",
           tool_required = TRUE,
-          metadata_keys = bayesspace_cluster_colname,
+          metadata_keys = bayesspace_metadata_keys,
           metadata_required = TRUE,
+          metadata_complete = bayesspace_cluster_colname %in%
+            colnames(result@meta.data),
           metadata_expected = sprintf(
             'meta.data[["%s"]]',
             bayesspace_cluster_colname
@@ -1298,7 +1311,8 @@ run_standard_spatial_workflow <- function(
         },
         metadata_keys = standard_spatial_deconv_metadata_keys(
           srt,
-          prefix = deconv_prefix
+          prefix = deconv_prefix,
+          method = deconvolution_method
         )
       )
       deconv_fun <- switch(deconvolution_method,
@@ -1321,7 +1335,8 @@ run_standard_spatial_workflow <- function(
         result_probe = function(result) {
           metadata_keys <- standard_spatial_deconv_metadata_keys(
             result,
-            prefix = deconv_prefix
+            prefix = deconv_prefix,
+            method = deconvolution_method
           )
           standard_spatial_result_probe(
             srt = result,
@@ -1335,17 +1350,34 @@ run_standard_spatial_workflow <- function(
             metadata_required = TRUE,
             metadata_complete = standard_spatial_deconv_metadata_complete(
               metadata_keys,
-              prefix = deconv_prefix
+              prefix = deconv_prefix,
+              method = deconvolution_method
             ),
-            metadata_expected = sprintf(
-              paste0(
-                'meta.data columns "%s_prop_*", ',
-                '"%s_dominant_type", and "%s_max_prop"'
-              ),
-              deconv_prefix,
-              deconv_prefix,
-              deconv_prefix
-            )
+            metadata_expected = if (identical(
+              deconvolution_method,
+              "Cell2location"
+            )) {
+              sprintf(
+                paste0(
+                  'meta.data columns "%s_abundance_*", "%s_prop_*", ',
+                  '"%s_dominant_type", and "%s_max_prop"'
+                ),
+                deconv_prefix,
+                deconv_prefix,
+                deconv_prefix,
+                deconv_prefix
+              )
+            } else {
+              sprintf(
+                paste0(
+                  'meta.data columns "%s_prop_*", ',
+                  '"%s_dominant_type", and "%s_max_prop"'
+                ),
+                deconv_prefix,
+                deconv_prefix,
+                deconv_prefix
+              )
+            }
           )
         }
       )
@@ -1550,8 +1582,10 @@ standard_spatial_validate_metadata_output_plan <- function(
   do_spot_qc,
   do_spatial_cluster,
   bayesspace_cluster_colname,
+  bayesspace_init_colname,
   do_deconvolution,
-  deconvolution_prefix
+  deconvolution_prefix,
+  deconvolution_method
 ) {
   metadata_targets <- character()
   metadata_owners <- character()
@@ -1569,7 +1603,19 @@ standard_spatial_validate_metadata_output_plan <- function(
       metadata_targets,
       as.character(bayesspace_cluster_colname)
     )
-    metadata_owners <- c(metadata_owners, "spatial_clustering")
+    metadata_owners <- c(metadata_owners, "spatial_clustering cluster_colname")
+    if (!is.null(bayesspace_init_colname)) {
+      validate_scalar_string(
+        bayesspace_init_colname,
+        "bayesspace_params$init_colname",
+        require_character = FALSE
+      )
+      metadata_targets <- c(
+        metadata_targets,
+        as.character(bayesspace_init_colname)
+      )
+      metadata_owners <- c(metadata_owners, "spatial_clustering init_colname")
+    }
   }
 
   duplicated_targets <- unique(metadata_targets[
@@ -1595,7 +1641,8 @@ standard_spatial_validate_metadata_output_plan <- function(
     deconvolution_collisions <- metadata_targets[
       standard_spatial_is_deconv_metadata_key(
         metadata_targets,
-        prefix = as.character(deconvolution_prefix)
+        prefix = as.character(deconvolution_prefix),
+        method = deconvolution_method
       )
     ]
     if (length(deconvolution_collisions) > 0L) {
@@ -1750,26 +1797,48 @@ standard_spatial_clear_outputs <- function(
   srt
 }
 
-standard_spatial_deconv_metadata_keys <- function(srt, prefix) {
+standard_spatial_deconv_metadata_keys <- function(srt, prefix, method) {
   metadata_keys <- colnames(srt@meta.data)
-  metadata_keys[standard_spatial_is_deconv_metadata_key(metadata_keys, prefix)]
+  metadata_keys[
+    standard_spatial_is_deconv_metadata_key(metadata_keys, prefix, method)
+  ]
 }
 
-standard_spatial_is_deconv_metadata_key <- function(metadata_keys, prefix) {
-  startsWith(metadata_keys, paste0(prefix, "_prop_")) |
-    startsWith(metadata_keys, paste0(prefix, "_abundance_")) |
-    metadata_keys %in% paste0(
-      prefix,
-      c("_dominant_type", "_max_prop")
-    )
+standard_spatial_is_deconv_metadata_key <- function(
+  metadata_keys,
+  prefix,
+  method
+) {
+  summary_key <- metadata_keys %in% paste0(
+    prefix,
+    c("_dominant_type", "_max_prop")
+  )
+  proportion_key <- startsWith(metadata_keys, paste0(prefix, "_prop_"))
+  abundance_key <- if (identical(method, "Cell2location")) {
+    startsWith(metadata_keys, paste0(prefix, "_abundance_"))
+  } else {
+    rep(FALSE, length(metadata_keys))
+  }
+  proportion_key | summary_key | abundance_key
 }
 
-standard_spatial_deconv_metadata_complete <- function(metadata_keys, prefix) {
-  any(startsWith(metadata_keys, paste0(prefix, "_prop_"))) &&
-    all(
-      paste0(prefix, c("_dominant_type", "_max_prop")) %in%
-        metadata_keys
+standard_spatial_deconv_metadata_complete <- function(
+  metadata_keys,
+  prefix,
+  method
+) {
+  core_complete <- any(
+    startsWith(metadata_keys, paste0(prefix, "_prop_"))
+  ) && all(
+    paste0(prefix, c("_dominant_type", "_max_prop")) %in% metadata_keys
+  )
+  if (identical(method, "Cell2location")) {
+    return(
+      core_complete &&
+        any(startsWith(metadata_keys, paste0(prefix, "_abundance_")))
     )
+  }
+  core_complete
 }
 
 merge_call_args <- function(defaults, extra) {

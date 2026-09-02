@@ -880,6 +880,140 @@ test_that("metadata-only deconvolution records actual output columns", {
   expect_match(deconv$result_location, "Custom_dominant_type")
 })
 
+test_that("non-cell2location methods preserve same-prefix abundance annotations", {
+  producer <- function(srt, prefix, store_results, ...) {
+    expect_false(store_results)
+    expect_true(paste0(prefix, "_abundance_annotation") %in%
+      colnames(srt@meta.data))
+    expect_false(any(startsWith(
+      colnames(srt@meta.data),
+      paste0(prefix, "_prop_")
+    )))
+    expect_false(
+      paste0(prefix, "_dominant_type") %in% colnames(srt@meta.data)
+    )
+    expect_false(paste0(prefix, "_max_prop") %in% colnames(srt@meta.data))
+    add_mock_deconv_outputs(srt, prefix = prefix)
+  }
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunRCTD = producer,
+    RunSPOTlight = producer,
+    .package = "scop"
+  )
+
+  for (method in c("RCTD", "SPOTlight")) {
+    srt <- make_standard_spatial_storage_object()
+    srt$label <- factor(rep("typeA", ncol(srt)))
+    srt$Custom_abundance_annotation <- seq_len(ncol(srt))
+    srt <- add_mock_deconv_outputs(srt, prefix = "Custom")
+
+    out <- run_storage_workflow(
+      srt,
+      do_deconvolution = TRUE,
+      deconvolution_method = method,
+      reference = srt,
+      reference_label = "label",
+      deconvolution_params = list(
+        prefix = "Custom",
+        store_results = FALSE
+      )
+    )
+    stages <- out@tools$run_standard_spatial_workflow$stages
+    deconv <- stages[stages$stage == "deconvolution", , drop = FALSE]
+
+    expect_identical(deconv$status, "completed", info = method)
+    expect_identical(
+      unname(out$Custom_abundance_annotation),
+      seq_len(ncol(out)),
+      info = method
+    )
+  }
+})
+
+test_that("Cell2location clears and replaces stale abundance metadata", {
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunCell2location = function(srt, prefix, store_results, ...) {
+      expect_false(store_results)
+      expect_false(any(startsWith(
+        colnames(srt@meta.data),
+        paste0(prefix, "_abundance_")
+      )))
+      expect_false(any(startsWith(
+        colnames(srt@meta.data),
+        paste0(prefix, "_prop_")
+      )))
+      srt[[paste0(prefix, "_abundance_typeA")]] <- rep(3, ncol(srt))
+      add_mock_deconv_outputs(srt, prefix = prefix)
+    },
+    .package = "scop"
+  )
+  srt <- make_standard_spatial_storage_object()
+  srt$label <- factor(rep("typeA", ncol(srt)))
+  srt$Custom_abundance_stale <- 99
+  srt <- add_mock_deconv_outputs(srt, prefix = "Custom")
+
+  out <- run_storage_workflow(
+    srt,
+    do_deconvolution = TRUE,
+    deconvolution_method = "Cell2location",
+    reference = srt,
+    reference_label = "label",
+    deconvolution_params = list(
+      prefix = "Custom",
+      store_results = FALSE
+    )
+  )
+  stages <- out@tools$run_standard_spatial_workflow$stages
+  deconv <- stages[stages$stage == "deconvolution", , drop = FALSE]
+
+  expect_identical(deconv$status, "completed")
+  expect_false("Custom_abundance_stale" %in% colnames(out@meta.data))
+  expect_true("Custom_abundance_typeA" %in% colnames(out@meta.data))
+  expect_match(deconv$result_metadata_key, "Custom_abundance_typeA")
+})
+
+test_that("Cell2location cannot complete without fresh abundance metadata", {
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunCell2location = function(srt, prefix, ...) {
+      expect_false(any(startsWith(
+        colnames(srt@meta.data),
+        paste0(prefix, "_abundance_")
+      )))
+      add_mock_deconv_outputs(srt, prefix = prefix)
+    },
+    .package = "scop"
+  )
+  srt <- make_standard_spatial_storage_object()
+  srt$label <- factor(rep("typeA", ncol(srt)))
+  srt$Custom_abundance_stale <- 99
+  caller_before <- srt
+
+  condition <- tryCatch(
+    run_storage_workflow(
+      srt,
+      do_deconvolution = TRUE,
+      deconvolution_method = "Cell2location",
+      reference = srt,
+      reference_label = "label",
+      deconvolution_params = list(
+        prefix = "Custom",
+        store_results = FALSE
+      )
+    ),
+    error = identity
+  )
+  stages <- attr(condition, "standard_spatial_stages")
+  deconv <- stages[stages$stage == "deconvolution", , drop = FALSE]
+
+  expect_s3_class(condition, "error")
+  expect_identical(deconv$status, "failed")
+  expect_match(deconv$reason, "Custom_abundance")
+  expect_identical(srt, caller_before)
+})
+
 test_that("stored deconvolution records a custom tool and metadata", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
@@ -1017,6 +1151,10 @@ test_that("planned spatial metadata collisions fail before any producer", {
       calls <<- c(calls, "RunRCTD")
       srt
     },
+    RunCell2location = function(srt, ...) {
+      calls <<- c(calls, "RunCell2location")
+      srt
+    },
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
@@ -1048,6 +1186,25 @@ test_that("planned spatial metadata collisions fail before any producer", {
       do_spatial_cluster = TRUE,
       spatial_q = 2,
       bayesspace_params = list(
+        cluster_colname = "SharedDomain",
+        init_colname = "SharedDomain"
+      ),
+      do_deconvolution = FALSE,
+      verbose = FALSE
+    ),
+    "metadata outputs collide"
+  )
+  expect_length(calls, 0L)
+
+  expect_error(
+    original(
+      srt,
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = TRUE,
+      spatial_q = 2,
+      bayesspace_params = list(
         cluster_colname = "Custom_prop_typeA"
       ),
       do_deconvolution = TRUE,
@@ -1060,14 +1217,115 @@ test_that("planned spatial metadata collisions fail before any producer", {
     "deconvolution metadata.*collides"
   )
   expect_length(calls, 0L)
+
+  expect_error(
+    original(
+      srt,
+      assay = "RNA",
+      do_spot_qc = TRUE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = TRUE,
+      spatial_q = 2,
+      bayesspace_params = list(
+        cluster_colname = "CustomCluster",
+        init_colname = "SpotQC"
+      ),
+      do_deconvolution = FALSE,
+      verbose = FALSE
+    ),
+    "metadata outputs collide"
+  )
+  expect_length(calls, 0L)
+
+  expect_error(
+    original(
+      srt,
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = TRUE,
+      spatial_q = 2,
+      bayesspace_params = list(
+        cluster_colname = "CustomCluster",
+        init_colname = "Custom_abundance_typeA"
+      ),
+      do_deconvolution = TRUE,
+      deconvolution_method = "Cell2location",
+      reference = srt,
+      reference_label = "label",
+      deconvolution_params = list(
+        prefix = "Custom",
+        store_results = FALSE
+      ),
+      verbose = FALSE
+    ),
+    "deconvolution metadata.*collides"
+  )
+  expect_length(calls, 0L)
+})
+
+test_that("RCTD preserves an abundance-named BayesSpace init output", {
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunBayesSpace = function(srt, cluster_colname, init_colname, ...) {
+      srt[[cluster_colname]] <- rep("domain1", ncol(srt))
+      srt[[init_colname]] <- rep("initial1", ncol(srt))
+      srt@tools[["BayesSpace"]] <- list(result = "fresh")
+      srt
+    },
+    RunRCTD = function(srt, prefix, store_results, ...) {
+      expect_false(store_results)
+      expect_true("Custom_abundance_annotation" %in% colnames(srt@meta.data))
+      add_mock_deconv_outputs(srt, prefix = prefix)
+    },
+    .package = "scop"
+  )
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  srt <- make_standard_spatial_storage_object()
+  srt$label <- factor(rep("typeA", ncol(srt)))
+
+  out <- original(
+    srt,
+    assay = "RNA",
+    do_spot_qc = FALSE,
+    do_spatial_variable_features = FALSE,
+    do_spatial_cluster = TRUE,
+    spatial_q = 2,
+    bayesspace_params = list(
+      cluster_colname = "CustomCluster",
+      init_colname = "Custom_abundance_annotation"
+    ),
+    do_deconvolution = TRUE,
+    deconvolution_method = "RCTD",
+    reference = srt,
+    reference_label = "label",
+    deconvolution_params = list(
+      prefix = "Custom",
+      store_results = FALSE
+    ),
+    do_normalization = FALSE,
+    do_HVF_finding = FALSE,
+    do_scaling = FALSE,
+    verbose = FALSE
+  )
+  stages <- out@tools$run_standard_spatial_workflow$stages
+
+  expect_true(all(stages$status[stages$requested] == "completed"))
+  expect_identical(unique(out$Custom_abundance_annotation), "initial1")
 })
 
 test_that("unrequested stage names do not create metadata collisions", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunBayesSpace = function(srt, cluster_colname, ...) {
+    RunSpotQC = function(srt, ...) {
+      srt$SpotQC <- rep("Pass", ncol(srt))
+      srt
+    },
+    RunBayesSpace = function(srt, cluster_colname, init_colname, ...) {
       expect_identical(cluster_colname, "SpotQC")
+      expect_identical(init_colname, "BayesSpace_init")
       srt[[cluster_colname]] <- rep("domain1", ncol(srt))
+      srt[[init_colname]] <- rep("initial1", ncol(srt))
       srt@tools[["BayesSpace"]] <- list(result = "fresh")
       srt
     },
@@ -1082,7 +1340,10 @@ test_that("unrequested stage names do not create metadata collisions", {
     do_spatial_variable_features = FALSE,
     do_spatial_cluster = TRUE,
     spatial_q = 2,
-    bayesspace_params = list(cluster_colname = "SpotQC"),
+    bayesspace_params = list(
+      cluster_colname = "SpotQC",
+      init_colname = NULL
+    ),
     do_deconvolution = FALSE,
     verbose = FALSE,
     do_normalization = FALSE,
@@ -1093,8 +1354,28 @@ test_that("unrequested stage names do not create metadata collisions", {
   domain <- stages[stages$stage == "spatial_clustering", , drop = FALSE]
 
   expect_identical(domain$status, "completed")
-  expect_identical(domain$result_metadata_key, "SpotQC")
+  expect_match(domain$result_metadata_key, "SpotQC")
+  expect_match(domain$result_metadata_key, "BayesSpace_init")
   expect_equal(unique(out$SpotQC), "domain1")
+
+  qc_only <- original(
+    make_standard_spatial_storage_object(),
+    assay = "RNA",
+    do_spot_qc = TRUE,
+    do_spatial_variable_features = FALSE,
+    do_spatial_cluster = FALSE,
+    bayesspace_params = list(init_colname = "SpotQC"),
+    do_deconvolution = FALSE,
+    verbose = FALSE,
+    do_normalization = FALSE,
+    do_HVF_finding = FALSE,
+    do_scaling = FALSE
+  )
+  qc_stages <- qc_only@tools$run_standard_spatial_workflow$stages
+  qc <- qc_stages[qc_stages$stage == "quality_control", , drop = FALSE]
+
+  expect_identical(qc$status, "completed")
+  expect_equal(unique(qc_only$SpotQC), "Pass")
 })
 
 test_that("SPOTlight dispatch satisfies the normalized storage contract", {
@@ -1299,6 +1580,54 @@ test_that("incomplete metadata remains visible when a tool was stored", {
   expect_match(deconv$reason, "RCTD_prop")
 })
 
+test_that("a stale BayesSpace init is removed when fresh init is absent", {
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunBayesSpace = function(srt, cluster_colname, init_colname, ...) {
+      expect_false(cluster_colname %in% colnames(srt@meta.data))
+      expect_false(init_colname %in% colnames(srt@meta.data))
+      expect_null(srt@tools[["BayesSpace"]])
+      srt[[cluster_colname]] <- rep("domain1", ncol(srt))
+      srt@tools[["BayesSpace"]] <- list(result = "fresh")
+      srt
+    },
+    .package = "scop"
+  )
+  srt <- make_standard_spatial_storage_object()
+  srt$CustomCluster <- "stale cluster"
+  srt$CustomInit <- "stale init"
+  srt@tools[["BayesSpace"]] <- list(result = "stale")
+  caller_before <- srt
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+
+  out <- original(
+    srt,
+    assay = "RNA",
+    do_spot_qc = FALSE,
+    do_spatial_variable_features = FALSE,
+    do_spatial_cluster = TRUE,
+    spatial_q = 2,
+    bayesspace_params = list(
+      cluster_colname = "CustomCluster",
+      init_colname = "CustomInit"
+    ),
+    do_deconvolution = FALSE,
+    do_normalization = FALSE,
+    do_HVF_finding = FALSE,
+    do_scaling = FALSE,
+    verbose = FALSE
+  )
+  stages <- out@tools$run_standard_spatial_workflow$stages
+  domain <- stages[stages$stage == "spatial_clustering", , drop = FALSE]
+
+  expect_identical(domain$status, "completed")
+  expect_true(isTRUE(domain$result_stored))
+  expect_match(domain$result_metadata_key, "CustomCluster")
+  expect_false(grepl("CustomInit", domain$result_metadata_key, fixed = TRUE))
+  expect_false("CustomInit" %in% colnames(out@meta.data))
+  expect_identical(srt, caller_before)
+})
+
 test_that("quality control and BayesSpace probes replace stale outputs", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
@@ -1307,11 +1636,20 @@ test_that("quality control and BayesSpace probes replace stale outputs", {
       srt$SpotQC <- factor(rep("Pass", ncol(srt)), levels = c("Pass", "Fail"))
       srt
     },
-    RunBayesSpace = function(srt, cluster_colname = "BayesSpace_cluster", ...) {
+    RunBayesSpace = function(
+      srt,
+      cluster_colname = "BayesSpace_cluster",
+      init_colname = "BayesSpace_init",
+      ...
+    ) {
       expect_false(cluster_colname %in% colnames(srt@meta.data))
+      expect_false(init_colname %in% colnames(srt@meta.data))
       expect_null(srt@tools[["BayesSpace"]])
       srt[[cluster_colname]] <- factor(
         rep(c("A", "B"), length.out = ncol(srt))
+      )
+      srt[[init_colname]] <- factor(
+        rep(c("B", "A"), length.out = ncol(srt))
       )
       srt@tools[["BayesSpace"]] <- list(
         colData = data.frame(row.names = colnames(srt))
@@ -1323,6 +1661,7 @@ test_that("quality control and BayesSpace probes replace stale outputs", {
   srt <- make_standard_spatial_storage_object()
   srt$SpotQC <- "stale"
   srt$CustomCluster <- "stale"
+  srt$CustomInit <- "stale"
   srt@tools[["BayesSpace"]] <- list(result = "stale")
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
 
@@ -1333,7 +1672,10 @@ test_that("quality control and BayesSpace probes replace stale outputs", {
     do_spatial_variable_features = FALSE,
     do_spatial_cluster = TRUE,
     spatial_q = 2,
-    bayesspace_params = list(cluster_colname = "CustomCluster"),
+    bayesspace_params = list(
+      cluster_colname = "CustomCluster",
+      init_colname = "CustomInit"
+    ),
     do_deconvolution = FALSE,
     do_normalization = FALSE,
     do_HVF_finding = FALSE,
@@ -1350,5 +1692,6 @@ test_that("quality control and BayesSpace probes replace stale outputs", {
   expect_identical(domain$status, "completed")
   expect_true(isTRUE(domain$result_stored))
   expect_identical(domain$result_tool_key, "BayesSpace")
-  expect_identical(domain$result_metadata_key, "CustomCluster")
+  expect_match(domain$result_metadata_key, "CustomCluster")
+  expect_match(domain$result_metadata_key, "CustomInit")
 })
