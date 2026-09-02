@@ -26,7 +26,9 @@
 #' `mito_pattern` is ignored.
 #' @param seed Random seed for reproducibility.
 #'
-#' @return A `Seurat` object with spot QC metadata columns.
+#' @return A `Seurat` object with spot QC metadata columns. Cells that are not
+#' present in the selected assay receive `NA` QC labels and are excluded when
+#' `return_filtered = TRUE`.
 #' @export
 #'
 #' @examples
@@ -84,6 +86,7 @@ RunSpotQC <- function(
   }
 
   counts <- GetAssayData5(srt, assay = assay, layer = "counts")
+  evaluated_spots <- colnames(counts)
   n_evaluated <- ncol(counts)
   nCount <- Matrix::colSums(counts)
   nFeature <- Matrix::colSums(counts > 0)
@@ -118,13 +121,13 @@ RunSpotQC <- function(
 
   spot_umi_qc <- spot_gene_qc <- spot_mito_qc <- spot_outlier_qc <- character()
   if ("umi" %in% qc_metrics) {
-    spot_umi_qc <- colnames(srt)[which(nCount < UMI_threshold)]
+    spot_umi_qc <- evaluated_spots[which(nCount < UMI_threshold)]
   }
   if ("gene" %in% qc_metrics) {
-    spot_gene_qc <- colnames(srt)[which(nFeature < gene_threshold)]
+    spot_gene_qc <- evaluated_spots[which(nFeature < gene_threshold)]
   }
   if ("mito" %in% qc_metrics) {
-    spot_mito_qc <- colnames(srt)[which(percent_mito > mito_threshold)]
+    spot_mito_qc <- evaluated_spots[which(percent_mito > mito_threshold)]
   }
   if ("outlier" %in% qc_metrics) {
     outlier <- lapply(
@@ -144,7 +147,7 @@ RunSpotQC <- function(
           log10_nFeature = log10_nFeature,
           spot_featurecount_dist = spot_featurecount_dist
         )
-        colnames(srt)[spot_qc_is_outlier(
+        evaluated_spots[spot_qc_is_outlier(
           metric,
           nmads = as.numeric(rule[[3L]]),
           type = rule[[2L]]
@@ -155,7 +158,10 @@ RunSpotQC <- function(
     outlier_tb <- table(unlist(outlier))
     spot_outlier_qc <- names(outlier_tb)[outlier_tb >= outlier_n]
     for (nm in names(outlier)) {
-      srt[[make.names(paste0("spot_", nm))]] <- colnames(srt) %in% outlier[[nm]]
+      outlier_flag <- rep(NA, ncol(srt))
+      names(outlier_flag) <- colnames(srt)
+      outlier_flag[evaluated_spots] <- evaluated_spots %in% outlier[[nm]]
+      srt[[make.names(paste0("spot_", nm))]] <- outlier_flag
     }
   }
 
@@ -173,14 +179,22 @@ RunSpotQC <- function(
     SpotQC = SpotQC
   )
   for (qc in names(qc_map)) {
-    srt[[qc]] <- ifelse(colnames(srt) %in% qc_map[[qc]], "Fail", "Pass")
+    qc_status <- rep(NA_character_, ncol(srt))
+    names(qc_status) <- colnames(srt)
+    qc_status[evaluated_spots] <- ifelse(
+      evaluated_spots %in% qc_map[[qc]],
+      "Fail",
+      "Pass"
+    )
+    srt[[qc]] <- qc_status
     srt[[qc]] <- factor(srt[[qc, drop = TRUE]], levels = c("Pass", "Fail"))
   }
 
   n_failed <- length(SpotQC)
   n_passed <- n_evaluated - n_failed
   if (isTRUE(return_filtered)) {
-    srt <- srt[, srt$SpotQC == "Pass"]
+    keep <- !is.na(srt$SpotQC) & srt$SpotQC == "Pass"
+    srt <- srt[, keep]
   }
 
   n_returned <- ncol(srt)
