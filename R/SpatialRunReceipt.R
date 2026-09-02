@@ -21,6 +21,14 @@ spatial_run_receipt_quote <- function(x, name) {
   deparse1(x, width.cutoff = 500L)
 }
 
+spatial_run_receipt_package_available <- function(package) {
+  is.character(package) &&
+    length(package) == 1L &&
+    !is.na(package) &&
+    nzchar(package) &&
+    nzchar(system.file(package = package))
+}
+
 spatial_run_receipt_display_scale <- function(srt, image) {
   if (is.null(image)) {
     return(NULL)

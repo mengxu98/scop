@@ -420,3 +420,44 @@ test_that("SVF receipt falls back to a summary plot when no display scale works"
   )
   expect_s3_class(plot, "ggplot")
 })
+
+test_that("SVF receipt uses a dependency-free summary when patchwork is unavailable", {
+  skip_if_not_installed("BiocNeighbors")
+  testthat::local_mocked_bindings(
+    spatial_run_receipt_package_available = function(package) {
+      expect_identical(package, "patchwork")
+      FALSE
+    },
+    .package = "scop"
+  )
+  messages <- testthat::capture_messages(
+    out <- RunSpatialVariableFeatures(
+      make_spatial_variable_image_seurat(lowres = 0.25),
+      method = "moran",
+      layer = "counts",
+      image = "slice",
+      k = 1,
+      min_spots = 1,
+      nfeatures = 2,
+      backend = "r",
+      verbose = TRUE
+    )
+  )
+  plain <- cli::ansi_strip(paste(messages, collapse = "\n"))
+  plot_call <- paste0(
+    "SpatialVariableFeaturePlot(<returned_object>, plot_type = \"summary\", ",
+    "assay = \"RNA\")"
+  )
+  expect_true(grepl(plot_call, plain, fixed = TRUE))
+  expect_false(grepl("plot_type = \"combined\"", plain, fixed = TRUE))
+  plot <- NULL
+  expect_no_error(
+    plot <- eval(parse(text = sub(
+      "<returned_object>",
+      "out",
+      plot_call,
+      fixed = TRUE
+    )))
+  )
+  expect_s3_class(plot, "ggplot")
+})
