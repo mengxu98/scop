@@ -758,9 +758,26 @@ test_that("SVF receipt reports a retained zero-feature active selection", {
     fixed = TRUE
   ))
   expect_false(grepl("results not retained", plain, fixed = TRUE))
-  expect_true(grepl("SeuratObject::VariableFeatures", plain, fixed = TRUE))
+  inspect_call <- paste0(
+    "as.character(stats::na.omit(SeuratObject::VariableFeatures(",
+    "<returned_object>, assay = \"RNA\")))"
+  )
+  expect_true(grepl(
+    paste0("Inspect returned object `", inspect_call, "`"),
+    plain,
+    fixed = TRUE
+  ))
   expect_null(out@tools[["SpatialVariableFeatures"]])
   expect_true(spatial_has_explicit_empty_variable_features(out, assay = "RNA"))
+  expect_identical(
+    eval(parse(text = sub(
+      "<returned_object>",
+      "out",
+      inspect_call,
+      fixed = TRUE
+    ))),
+    character()
+  )
 })
 
 test_that("RunSpatialVariableFeatures Plot hint preserves resolved plotting context", {

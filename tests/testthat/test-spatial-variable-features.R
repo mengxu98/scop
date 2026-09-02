@@ -111,6 +111,24 @@ test_that("native SVF writes an explicit empty active selection", {
     standard_spatial_variable_features(out, assay = "RNA"),
     character()
   )
+
+  rerun <- NULL
+  expect_no_error(
+    rerun <- RunSpatialVariableFeatures(
+      out,
+      method = "moran",
+      layer = "counts",
+      coord.cols = c("x", "y"),
+      k = 2,
+      min_spots = 1,
+      nfeatures = 3,
+      backend = "r",
+      set_variable_features = TRUE,
+      store_results = FALSE,
+      verbose = FALSE
+    )
+  )
+  expect_true(spatial_has_explicit_empty_variable_features(rerun, assay = "RNA"))
 })
 
 test_that("C++ spatial scores agree with the R reference", {

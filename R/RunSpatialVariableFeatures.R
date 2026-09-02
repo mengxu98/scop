@@ -182,7 +182,11 @@ RunSpatialVariableFeatures <- function(
 
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
   if (is.null(features)) {
-    features <- SeuratObject::VariableFeatures(srt, assay = assay)
+    features <- suppressWarnings(
+      SeuratObject::VariableFeatures(srt, assay = assay)
+    )
+    features <- as.character(features)
+    features <- features[!is.na(features) & nzchar(features)]
     if (length(features) == 0L) {
       features <- rownames(expr)
     }
@@ -368,11 +372,16 @@ RunSpatialVariableFeatures <- function(
     NULL
   }
   inspect_call <- if (!isTRUE(store_results) && isTRUE(variable_features_set)) {
-    paste0(
+    variable_features_call <- paste0(
       "SeuratObject::VariableFeatures(<returned_object>, assay = ",
       spatial_run_receipt_quote(assay, "assay"),
       ")"
     )
+    if (n_top == 0L) {
+      paste0("as.character(stats::na.omit(", variable_features_call, "))")
+    } else {
+      variable_features_call
+    }
   } else {
     NULL
   }
