@@ -229,6 +229,10 @@ test_that("FindAllMarkers supports feature subsets with Seurat parity", {
 })
 
 test_that("FindAllMarkers native path covers metadata groups and FC controls", {
+  skip_if(
+    is.null(presto_get_fun(install = FALSE, error_on_missing = FALSE)),
+    "The runtime-optional Presto backend is unavailable"
+  )
   set.seed(20260830)
   counts <- matrix(stats::rpois(150L * 180L, lambda = 1), nrow = 150L)
   groups <- factor(
@@ -280,6 +284,10 @@ test_that("FindAllMarkers native path covers metadata groups and FC controls", {
 })
 
 test_that("FindAllMarkers accelerates Seurat-compatible sampling", {
+  skip_if(
+    is.null(presto_get_fun(install = FALSE, error_on_missing = FALSE)),
+    "The runtime-optional Presto backend is unavailable"
+  )
   object <- make_fast_path_object(seed = 14)
   SeuratObject::Idents(object) <- rep(c("A", "B", "C", "D"), each = 20)
   args <- list(

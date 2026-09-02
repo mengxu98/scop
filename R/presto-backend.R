@@ -49,16 +49,25 @@ presto_get_fun <- function(
       message_type = "error"
     )
   }
+  resolution_error <- NULL
   resolved <- tryCatch(
     get_namespace_fun(.presto_package, fun),
-    error = identity
+    error = function(error) {
+      resolution_error <<- error
+      NULL
+    }
   )
-  if (inherits(resolved, "error")) {
+  if (!is.function(resolved)) {
     if (!isTRUE(error_on_missing)) {
       return(NULL)
     }
+    detail <- if (inherits(resolution_error, "error")) {
+      conditionMessage(resolution_error)
+    } else {
+      paste0("function `", fun, "` was not found")
+    }
     log_message(
-      "The optional {.pkg presto} backend does not provide {.fn {fun}}: {conditionMessage(resolved)}",
+      "The optional {.pkg presto} backend does not provide {.fn {fun}}: {.val {detail}}",
       message_type = "error"
     )
   }
