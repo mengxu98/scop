@@ -10,8 +10,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-dedicated bridge functions. Each bridge processes exactly one image at a time
-and never wraps the target framework's analysis or plotting API.
+This article documents SCOP's lightweight bridge to Giotto. The bridge moves a
+single spatial image between Seurat and Giotto; it does not wrap Giotto's
+analysis or plotting workflow and it does not merge slices implicitly.
 
 ## Choose the interface
 
@@ -34,23 +35,6 @@ These converters are expected from a current GiottoClass installation. If an
 older Giotto installation does not provide them, update Giotto before using
 the bridges.
 
-## GitHub documentation build contract
-
-in this article are deliberately shown but not evaluated during the GitHub
-pkgdown build, so publishing the documentation does not select or install a
-particular framework generation. Reference pages are still parsed and indexed,
-and dependency checks run when a user calls a bridge.
-
-On pull requests, the GitHub workflow validates the complete reference index.
-After a merge to `main`, changes that include source, reference, or pkgdown
-configuration files trigger a full site build; an article-only change can use
-the narrower article build. The scheduled full build remains the compatibility
-check against the then-current dependency ecosystem.
-
-Ordinary package and pkgdown checks remain independent of a user's Giotto
-installation. A Giotto compatibility failure must be classified as a scop
-regression, an upstream Giotto API regression, or a runner failure.
-
 ## Single-image conversion
 
 The bridges process exactly one image at a time:
@@ -60,19 +44,19 @@ The bridges process exactly one image at a time:
 - an unknown image name is rejected;
 - slices are never merged implicitly.
 
-```{r}
+```{r giotto-roundtrip}
+data(visium_human_pancreas_sub)
+
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  verbose = FALSE
+)
+
 gobject <- srt_to_giotto(spatial, image = "slice1")
 spatial_roundtrip <- giotto_to_srt(gobject)
 ```
 
-
-plotting.
-
-converter. scop still calls the official function first; when it does not
-return a Seurat object, the compatibility fallback transfers counts, metadata,
-and raw coordinates into a new Seurat object. It does not attempt to reproduce
-
-```{r}
-```
-
-single-image isolation, dependency checks, and object exchange.
+After conversion, inspect the returned object with the target framework's own
+accessors. SCOP retains responsibility for Seurat-side analysis and plotting;
+Giotto retains responsibility for Giotto-side analysis and plotting.

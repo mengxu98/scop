@@ -125,6 +125,7 @@ RunSpatialNetwork <- function(
     graphs = list()
   )
   store$graphs <- store$graphs %||% list()
+  existing_graph <- !is.null(store$graphs[[graph.name]])
   if (!is.null(store$graphs[[graph.name]]) && !isTRUE(overwrite)) {
     log_message(
       "Spatial graph {.val {graph.name}} already exists; set {.arg overwrite = TRUE} to replace it",
@@ -147,10 +148,68 @@ RunSpatialNetwork <- function(
     n_edges = nrow(edges)
   )
   srt@tools[["SpatialNetwork"]] <- store
-  log_message(
-    "Stored spatial graph {.val {graph.name}} with {.val {nrow(nodes)}} nodes and {.val {nrow(edges)}} edges",
-    message_type = "success",
-    verbose = verbose
+  done <- if (identical(method, "knn")) {
+    paste0(
+      "Spatial graph completed: {.val {method}}, {.arg k} = {.val {k}}, ",
+      "{.val {nrow(nodes)}} nodes, {.val {nrow(edges)}} edges"
+    )
+  } else {
+    paste0(
+      "Spatial graph completed: {.val {method}}, {.arg radius} = {.val {radius}}, ",
+      "{.val {nrow(nodes)}} nodes, {.val {nrow(edges)}} edges"
+    )
+  }
+  scope <- if (is.null(selected_image)) {
+    "raw coordinates"
+  } else {
+    "image {.val {selected_image}}, raw coordinates"
+  }
+  scope <- paste0(scope, "; {.val {nrow(nodes)}} observations")
+  display_scale <- if (isTRUE(thisutils::get_verbose(verbose))) {
+    spatial_run_receipt_display_scale(srt, selected_image)
+  } else {
+    NULL
+  }
+  plot_call <- if (is.null(selected_image) || !is.null(display_scale)) {
+    plot_args <- c(
+      paste0(
+        "graph.name = ",
+        spatial_run_receipt_quote(graph.name, "graph.name")
+      )
+    )
+    if (identical(display_scale, "hires")) {
+      plot_args <- c(
+        plot_args,
+        paste0(
+          "image.scale = ",
+          spatial_run_receipt_quote(display_scale, "image.scale")
+        )
+      )
+    }
+    paste0(
+      "SpatialNetworkPlot(<returned_object>, ",
+      paste(plot_args, collapse = ", "),
+      ")"
+    )
+  } else {
+    paste0(
+      "SpatialNetworkPlot(res = <returned_object>@tools[[\"SpatialNetwork\"]], ",
+      "graph.name = ",
+      spatial_run_receipt_quote(graph.name, "graph.name"),
+      ")"
+    )
+  }
+  spatial_run_receipt(
+    done = done,
+    scope = scope,
+    saved = paste0(
+      "graph {.val {graph.name}} in returned object tool bundle ",
+      "{.var SpatialNetwork}, field {.var graphs}"
+    ),
+    plot = plot_call,
+    replaced = isTRUE(existing_graph) && isTRUE(overwrite),
+    verbose = verbose,
+    .envir = environment()
   )
   srt
 }
