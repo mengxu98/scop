@@ -238,7 +238,7 @@ RunBayesSpace <- function(
     "assay {.val {assay}}, image {.val {image_use}}, raw coordinates"
   }
   plot_call <- paste0(
-    "SpatialSpotPlot(srt, group.by = ",
+    "SpatialSpotPlot(<returned_object>, group.by = ",
     spatial_run_receipt_quote(cluster_colname, "cluster_colname"),
     ")"
   )
@@ -251,7 +251,7 @@ RunBayesSpace <- function(
     scope = scope,
     saved = paste0(
       "metadata column {.var {cluster_colname}} and ",
-      "{.code srt@tools[['BayesSpace']]}"
+      "returned object tool bundle {.var BayesSpace}"
     ),
     plot = plot_call,
     verbose = verbose,

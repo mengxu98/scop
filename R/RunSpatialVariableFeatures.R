@@ -274,10 +274,54 @@ RunSpatialVariableFeatures <- function(
       srt@tools[["SpatialVariableFeatures"]]
     )
   }
-  log_message(
-    "Stored {.val {length(top_features)}} spatial variable features",
-    message_type = "success",
-    verbose = verbose
+  n_top <- length(top_features)
+  variable_features_set <- isTRUE(set_variable_features) && n_top > 0L
+  saved <- character()
+  if (isTRUE(variable_features_set)) {
+    saved <- c(
+      saved,
+      "{.val {n_top}} top features as assay {.var VariableFeatures}"
+    )
+  }
+  if (isTRUE(store_results)) {
+    saved <- c(
+      saved,
+      "full result in returned object tool bundle {.var SpatialVariableFeatures}"
+    )
+  }
+  done <- paste0(
+    "Spatial variable features completed: {.val {nrow(result)}} tested, ",
+    "{.val {n_top}} ranked in the top set"
+  )
+  if (length(saved) == 0L) {
+    done <- paste0(done, "; results not retained")
+  }
+  plot_call <- if (isTRUE(store_results)) {
+    "SpatialVariableFeaturePlot(<returned_object>, plot_type = \"combined\")"
+  } else {
+    NULL
+  }
+  inspect_call <- if (!isTRUE(store_results) && isTRUE(variable_features_set)) {
+    paste0(
+      "SeuratObject::VariableFeatures(<returned_object>, assay = ",
+      spatial_run_receipt_quote(assay, "assay"),
+      ")"
+    )
+  } else {
+    NULL
+  }
+  spatial_run_receipt(
+    done = done,
+    scope = paste0(
+      "method {.val {method}} ({.val {backend}} backend); ",
+      "assay {.val {assay}}, layer {.val {layer}}; ",
+      "{.val {length(spots)}} spots; coordinates {.val {coordinate_space}}"
+    ),
+    saved = if (length(saved) > 0L) paste(saved, collapse = "; ") else NULL,
+    plot = plot_call,
+    inspect = inspect_call,
+    verbose = verbose,
+    .envir = environment()
   )
   srt
 }

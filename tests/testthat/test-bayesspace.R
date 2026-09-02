@@ -92,16 +92,15 @@ bayesspace_receipt_plain <- function(messages) {
   cli::ansi_strip(paste(messages, collapse = "\n"))
 }
 
-bayesspace_expect_receipt_plot <- function(messages, expected_call, srt) {
+bayesspace_expect_receipt_plot_hint <- function(messages, expected_call) {
   plain <- bayesspace_receipt_plain(messages)
-  expect_true(grepl(paste0("Plot `", expected_call, "`"), plain, fixed = TRUE))
-  expect_error(parse(text = expected_call), NA)
-  plot <- suppressWarnings(eval(
-    parse(text = expected_call),
-    envir = list(srt = srt),
-    enclos = parent.frame()
+  expect_true(grepl(
+    paste0("Plot returned object `", expected_call, "`"),
+    plain,
+    fixed = TRUE
   ))
-  expect_s3_class(plot, "ggplot")
+  expect_true(grepl("<returned_object>", expected_call, fixed = TRUE))
+  expect_false(grepl("srt", expected_call, fixed = TRUE))
   invisible(plain)
 }
 
@@ -129,7 +128,7 @@ test_that("RunBayesSpace stores raw coordinate provenance and aligned cells", {
   expect_false(anyNA(out$BayesSpace_cluster))
 })
 
-test_that("RunBayesSpace emits an exact receipt and safely quotes its Plot key", {
+test_that("RunBayesSpace emits an exact receipt and safely quotes its Plot hint", {
   skip_if_not_installed("SingleCellExperiment")
   srt <- make_bayesspace_object()
   cluster_colname <- 'Bayes "quoted"\\domain'
@@ -156,14 +155,15 @@ test_that("RunBayesSpace emits an exact receipt and safely quotes its Plot key",
   expect_true(grepl("raw coordinates", plain, fixed = TRUE))
   expect_true(grepl("Saved metadata column", plain, fixed = TRUE))
   expect_true(grepl(cluster_colname, plain, fixed = TRUE))
-  expect_true(grepl("srt@tools[['BayesSpace']]", plain, fixed = TRUE))
+  expect_true(grepl("returned object tool bundle `BayesSpace`", plain, fixed = TRUE))
   expect_true(cluster_colname %in% colnames(out[[]]))
   plot_call <- paste0(
-    "SpatialSpotPlot(srt, group.by = ",
+    "SpatialSpotPlot(<returned_object>, group.by = ",
     deparse1(cluster_colname, width.cutoff = 500L),
     ")"
   )
-  bayesspace_expect_receipt_plot(messages, plot_call, out)
+  bayesspace_expect_receipt_plot_hint(messages, plot_call)
+  expect_false(grepl("srt", plain, fixed = TRUE))
 })
 
 test_that("RunBayesSpace is silent on request and failure has no receipt", {

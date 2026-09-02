@@ -45,6 +45,12 @@ spatial_run_receipt <- function(
   saved <- spatial_run_receipt_lines(saved, "saved")
   plot <- spatial_run_receipt_lines(plot, "plot")
   inspect <- spatial_run_receipt_lines(inspect, "inspect")
+  if (length(plot) > 1L) {
+    stop("plot must contain at most one non-empty string", call. = FALSE)
+  }
+  if (length(inspect) > 1L) {
+    stop("inspect must contain at most one non-empty string", call. = FALSE)
+  }
   if (!is.logical(replaced) || length(replaced) != 1L || is.na(replaced)) {
     stop("replaced must be one non-missing logical value", call. = FALSE)
   }
@@ -82,7 +88,11 @@ spatial_run_receipt <- function(
   }
 
   next_lines <- if (length(plot) > 0L) plot else inspect
-  next_label <- if (length(plot) > 0L) "{.field Plot}" else "{.field Inspect}"
+  next_label <- if (length(plot) > 0L) {
+    "{.field Plot returned object}"
+  } else {
+    "{.field Inspect returned object}"
+  }
   if (length(next_lines) > 0L) {
     next_call <- next_lines[[1L]]
     log_message(
