@@ -57,7 +57,9 @@ Default is \code{TRUE}.}
 \item{seed}{Random seed for reproducibility.}
 }
 \value{
-A \code{Seurat} object with spot QC metadata columns.
+A \code{Seurat} object with spot QC metadata columns. Cells that are not
+present in the selected assay receive \code{NA} QC labels and are excluded when
+\code{return_filtered = TRUE}.
 }
 \description{
 Calculate common spot-level QC metrics for spatial transcriptomics data and

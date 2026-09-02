@@ -308,6 +308,62 @@ test_that("RunSpotQC offers an honest Inspect hint without plottable coordinates
   )
 })
 
+test_that("RunSpotQC counts and labels only cells present in the selected assay", {
+  full_counts <- matrix(
+    1,
+    nrow = 2,
+    ncol = 6,
+    dimnames = list(paste0("Gene", 1:2), paste0("Spot", 1:6))
+  )
+  srt <- suppressWarnings(SeuratObject::CreateSeuratObject(full_counts))
+  assay_counts <- full_counts[, 1:4, drop = FALSE]
+  assay_counts[, "Spot1"] <- 0
+  srt[["SUBSET"]] <- suppressWarnings(
+    SeuratObject::CreateAssay5Object(counts = assay_counts)
+  )
+
+  out <- NULL
+  messages <- suppressWarnings(testthat::capture_messages(
+    out <- RunSpotQC(
+      srt,
+      assay = "SUBSET",
+      qc_metrics = c("umi", "gene", "mito"),
+      UMI_threshold = 1,
+      gene_threshold = 0,
+      mito_threshold = 100,
+      verbose = TRUE
+    )
+  ))
+  plain <- receipt_plain(messages)
+
+  expect_true(grepl(
+    "Spot QC completed: 4 evaluated, 3 Pass, 1 Fail",
+    plain,
+    fixed = TRUE
+  ))
+  expect_identical(
+    as.character(out$SpotQC[1:4]),
+    c("Fail", rep("Pass", 3))
+  )
+  expect_true(all(is.na(out$SpotQC[5:6])))
+  expect_identical(
+    as.integer(table(out$SpotQC, useNA = "always")),
+    c(3L, 1L, 2L)
+  )
+
+  filtered <- suppressWarnings(RunSpotQC(
+    srt,
+    assay = "SUBSET",
+    qc_metrics = c("umi", "gene", "mito"),
+    UMI_threshold = 1,
+    gene_threshold = 0,
+    mito_threshold = 100,
+    return_filtered = TRUE,
+    verbose = FALSE
+  ))
+  expect_identical(colnames(filtered), paste0("Spot", 2:4))
+})
+
 test_that("RunSpotQC is silent on request and failure has no receipt", {
   srt <- make_receipt_spatial_object()
   quiet <- NULL
