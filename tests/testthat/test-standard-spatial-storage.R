@@ -1293,6 +1293,7 @@ test_that("deconvolution rejects workflow-owned result keys before execution", {
   )
   srt <- make_standard_spatial_storage_object()
   srt$label <- factor(rep("typeA", ncol(srt)))
+  caller_before <- srt
   workflow_owned_keys <- c(
     "run_standard_spatial_workflow",
     "SpotQC",
@@ -1301,7 +1302,7 @@ test_that("deconvolution rejects workflow-owned result keys before execution", {
   )
 
   for (tool_name in workflow_owned_keys) {
-    expect_error(
+    condition <- tryCatch(
       run_storage_workflow(
         srt,
         do_deconvolution = TRUE,
@@ -1310,12 +1311,91 @@ test_that("deconvolution rejects workflow-owned result keys before execution", {
         reference_label = "label",
         deconvolution_params = list(tool_name = tool_name)
       ),
-      "reserved",
-      fixed = TRUE
+      error = identity
     )
+    stages <- attr(condition, "standard_spatial_stages")
+    deconv <- stages[stages$stage == "deconvolution", , drop = FALSE]
+
+    expect_s3_class(condition, "error")
+    expect_match(conditionMessage(condition), "reserved", fixed = TRUE)
+    expect_s3_class(stages, "data.frame")
+    expect_true(deconv$requested)
+    expect_identical(deconv$status, "failed")
+    expect_identical(deconv$actual_method, "RunRCTD")
+    expect_false(isTRUE(deconv$result_stored))
+    expect_match(deconv$reason, "reserved", fixed = TRUE)
+    expect_identical(srt, caller_before)
   }
 
   expect_length(calls, 0L)
+})
+
+test_that("deconvolution setup validation fails with stage diagnostics before producers", {
+  calls <- character()
+  testthat::local_mocked_bindings(
+    RunStandardWorkflow = function(srt, ...) {
+      calls <<- c(calls, "RunStandardWorkflow")
+      srt
+    },
+    RunRCTD = function(...) {
+      calls <<- c(calls, "RunRCTD")
+      stop("deconvolution backend was reached")
+    },
+    .package = "scop"
+  )
+  srt <- make_standard_spatial_storage_object()
+  srt$label <- factor(rep("typeA", ncol(srt)))
+  caller_before <- srt
+  cases <- list(
+    not_a_list = list(
+      params = "invalid",
+      pattern = "deconvolution_params"
+    ),
+    unnamed_list = list(
+      params = list("invalid"),
+      pattern = "deconvolution_params"
+    ),
+    invalid_tool_name = list(
+      params = list(tool_name = c("one", "two")),
+      pattern = "deconvolution_params\\$tool_name"
+    ),
+    invalid_prefix = list(
+      params = list(prefix = ""),
+      pattern = "deconvolution_params\\$prefix"
+    ),
+    invalid_store_results = list(
+      params = list(store_results = "yes"),
+      pattern = "deconvolution_params\\$store_results"
+    )
+  )
+
+  for (case_name in names(cases)) {
+    case <- cases[[case_name]]
+    condition <- tryCatch(
+      run_storage_workflow(
+        srt,
+        do_deconvolution = TRUE,
+        deconvolution_method = "RCTD",
+        reference = srt,
+        reference_label = "label",
+        deconvolution_params = case$params
+      ),
+      error = identity
+    )
+    stages <- attr(condition, "standard_spatial_stages")
+    deconv <- stages[stages$stage == "deconvolution", , drop = FALSE]
+
+    expect_s3_class(condition, "error")
+    expect_match(conditionMessage(condition), case$pattern)
+    expect_s3_class(stages, "data.frame")
+    expect_true(deconv$requested)
+    expect_identical(deconv$status, "failed")
+    expect_identical(deconv$actual_method, "RunRCTD")
+    expect_false(isTRUE(deconv$result_stored))
+    expect_match(deconv$reason, case$pattern)
+    expect_length(calls, 0L)
+    expect_identical(srt, caller_before)
+  }
 })
 
 test_that("metadata-only deconvolution allows workflow-owned tool names", {
@@ -1882,7 +1962,7 @@ test_that("deconvolution cannot clear a planned SpotQC outlier flag", {
   srt$label <- factor(rep("typeA", ncol(srt)))
   caller_before <- srt
 
-  expect_error(
+  condition <- tryCatch(
     original(
       srt,
       assay = "RNA",
@@ -1900,8 +1980,19 @@ test_that("deconvolution cannot clear a planned SpotQC outlier flag", {
       deconvolution_params = list(prefix = "spot"),
       verbose = FALSE
     ),
-    "deconvolution metadata.*collides"
+    error = identity
   )
+  stages <- attr(condition, "standard_spatial_stages")
+  deconv <- stages[stages$stage == "deconvolution", , drop = FALSE]
+
+  expect_s3_class(condition, "error")
+  expect_match(conditionMessage(condition), "deconvolution metadata.*collides")
+  expect_s3_class(stages, "data.frame")
+  expect_true(deconv$requested)
+  expect_identical(deconv$status, "failed")
+  expect_identical(deconv$actual_method, "RunRCTD")
+  expect_false(isTRUE(deconv$result_stored))
+  expect_match(deconv$reason, "deconvolution metadata.*collides")
   expect_length(producer_calls, 0L)
   expect_identical(srt, caller_before)
 })
