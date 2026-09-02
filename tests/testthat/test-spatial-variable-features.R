@@ -17,6 +17,19 @@ make_spatial_variable_seurat <- function() {
   srt
 }
 
+make_empty_spatial_variable_seurat <- function() {
+  counts <- matrix(
+    1,
+    nrow = 3,
+    ncol = 9,
+    dimnames = list(paste0("Gene", 1:3), paste0("Spot", 1:9))
+  )
+  srt <- suppressWarnings(Seurat::CreateSeuratObject(counts = counts))
+  srt$x <- rep(0:2, 3)
+  srt$y <- rep(0:2, each = 3)
+  srt
+}
+
 make_spatial_variable_image_seurat <- function(
   lowres = NA_real_,
   hires = 0.5
@@ -70,6 +83,33 @@ test_that("native spatial variable feature results keep normalized columns", {
   expect_named(
     srt@tools[["SpatialVariableFeatures"]]$summary,
     c("n_features", "top_features", "top_feature_summary")
+  )
+})
+
+test_that("native SVF writes an explicit empty active selection", {
+  skip_if_not_installed("BiocNeighbors")
+  out <- RunSpatialVariableFeatures(
+    make_empty_spatial_variable_seurat(),
+    method = "moran",
+    layer = "counts",
+    coord.cols = c("x", "y"),
+    k = 2,
+    min_spots = 1,
+    nfeatures = 3,
+    backend = "r",
+    set_variable_features = TRUE,
+    store_results = FALSE,
+    verbose = FALSE
+  )
+  feature_metadata <- out[["RNA"]][[]]
+
+  expect_null(out@tools[["SpatialVariableFeatures"]])
+  expect_true(spatial_has_explicit_empty_variable_features(out, assay = "RNA"))
+  expect_true(all(!feature_metadata$var.features))
+  expect_true(all(is.na(feature_metadata$var.features.rank)))
+  expect_identical(
+    standard_spatial_variable_features(out, assay = "RNA"),
+    character()
   )
 })
 

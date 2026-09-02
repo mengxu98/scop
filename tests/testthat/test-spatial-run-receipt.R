@@ -721,6 +721,48 @@ test_that("RunSpatialVariableFeatures reports exactly what the returned object r
   }
 })
 
+test_that("SVF receipt reports a retained zero-feature active selection", {
+  skip_if_not_installed("BiocNeighbors")
+  counts <- matrix(
+    1,
+    nrow = 3,
+    ncol = 9,
+    dimnames = list(paste0("Gene", 1:3), paste0("Spot", 1:9))
+  )
+  srt <- suppressWarnings(Seurat::CreateSeuratObject(counts = counts))
+  srt$col <- rep(0:2, 3)
+  srt$row <- rep(0:2, each = 3)
+
+  messages <- testthat::capture_messages(
+    out <- RunSpatialVariableFeatures(
+      srt,
+      assay = "RNA",
+      layer = "counts",
+      method = "moran",
+      coord.cols = c("col", "row"),
+      k = 2,
+      nfeatures = 3,
+      min_spots = 1,
+      backend = "r",
+      set_variable_features = TRUE,
+      store_results = FALSE,
+      verbose = TRUE
+    )
+  )
+  plain <- receipt_plain(messages)
+
+  expect_true(grepl("0 ranked in the top set", plain, fixed = TRUE))
+  expect_true(grepl(
+    "0 top features as assay `VariableFeatures`",
+    plain,
+    fixed = TRUE
+  ))
+  expect_false(grepl("results not retained", plain, fixed = TRUE))
+  expect_true(grepl("SeuratObject::VariableFeatures", plain, fixed = TRUE))
+  expect_null(out@tools[["SpatialVariableFeatures"]])
+  expect_true(spatial_has_explicit_empty_variable_features(out, assay = "RNA"))
+})
+
 test_that("RunSpatialVariableFeatures Plot hint preserves resolved plotting context", {
   skip_if_not_installed("BiocNeighbors")
   srt <- make_receipt_svf_multi_image_object()
