@@ -63,7 +63,9 @@ outlier detection.}
 
 \item{log}{Whether SpotSweeper should log1p-transform local outlier metrics.}
 
-\item{run_artifact}{Whether to run \code{SpotSweeper::findArtifacts()} per sample.}
+\item{run_artifact}{Whether to run \code{SpotSweeper::findArtifacts()} per sample.
+If the requested artifact stage is skipped or fails for any sample, the
+returned metadata and stored result are marked as partial.}
 
 \item{mito_pattern}{Regex prefixes used to identify mitochondrial genes.}
 
@@ -82,7 +84,9 @@ detection. If \code{NULL}, mitochondrial counts are computed.}
 
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
-\item{return_filtered}{Whether to return only spots passing SpotSweeper QC.}
+\item{return_filtered}{Whether to return only spots passing SpotSweeper QC.
+A fully filtered object is not returned when requested artifact detection is
+incomplete; set \code{run_artifact = FALSE} to request local-outlier-only filtering.}
 
 \item{store_results}{Whether to store detailed results in \code{srt@tools}.}
 
@@ -90,7 +94,7 @@ detection. If \code{NULL}, mitochondrial counts are computed.}
 
 \item{workers}{Deprecated alias for \code{cores}.}
 
-\item{verbose}{Whether to print progress messages.}
+\item{verbose}{Whether to print progress and completion status messages.}
 
 \item{coordinate_space}{Coordinate system used for spatial neighborhoods.
 The default is raw acquisition coordinates; \code{"legacy_display"} remains an
@@ -102,15 +106,20 @@ functions when those arguments are supported by the installed version.}
 }
 \value{
 A \code{Seurat} object with SpotSweeper QC metadata. When
-\code{store_results = TRUE}, detailed results are stored in
-\code{srt@tools[[tool_name]]}.
+\code{store_results = TRUE}, detailed results and an \code{artifact_status}
+table are stored in \code{srt@tools[[tool_name]]}. The artifact metadata uses
+\code{NA} and \code{"NotEvaluated"} when a requested artifact stage did not
+run; the overall \code{*_QC} column uses \code{"Partial"} for spots that
+passed local QC but were not evaluated for artifacts.
 }
 \description{
 Run \code{SpotSweeper} spatially aware spot-level quality control on a spatial
 \code{Seurat} object. The wrapper computes standard spot QC metrics, runs local
 outlier detection for each metric, optionally runs regional artifact
-detection per sample, and writes standardized pass/fail metadata that can be
-visualized with \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.
+detection per sample, and writes standardized QC status metadata that can be
+visualized with \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}. Artifact
+detection is reported as completed, skipped, failed, or not requested; an
+artifact that was not evaluated is never reported as a negative artifact call.
 }
 \examples{
 data(visium_human_pancreas_sub)

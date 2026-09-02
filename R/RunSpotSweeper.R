@@ -4,8 +4,10 @@
 #' Run `SpotSweeper` spatially aware spot-level quality control on a spatial
 #' `Seurat` object. The wrapper computes standard spot QC metrics, runs local
 #' outlier detection for each metric, optionally runs regional artifact
-#' detection per sample, and writes standardized pass/fail metadata that can be
-#' visualized with [SpatialSpotPlot()].
+#' detection per sample, and writes standardized QC status metadata that can be
+#' visualized with [SpatialSpotPlot()]. Artifact detection is reported as
+#' completed, skipped, failed, or not requested; an artifact that was not
+#' evaluated is never reported as a negative artifact call.
 #'
 #' @md
 #' @param srt A `Seurat` object.
@@ -30,6 +32,8 @@
 #' @param cutoff Modified z-score cutoff passed to local outlier detection.
 #' @param log Whether SpotSweeper should log1p-transform local outlier metrics.
 #' @param run_artifact Whether to run `SpotSweeper::findArtifacts()` per sample.
+#' If the requested artifact stage is skipped or fails for any sample, the
+#' returned metadata and stored result are marked as partial.
 #' @param mito_pattern Regex prefixes used to identify mitochondrial genes.
 #' @param mito_gene Optional explicit mitochondrial gene vector. When provided,
 #' `mito_pattern` is ignored.
@@ -41,16 +45,21 @@
 #' @param prefix Prefix used for metadata columns.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param return_filtered Whether to return only spots passing SpotSweeper QC.
+#' A fully filtered object is not returned when requested artifact detection is
+#' incomplete; set `run_artifact = FALSE` to request local-outlier-only filtering.
 #' @param store_results Whether to store detailed results in `srt@tools`.
 #' @param cores Number of workers passed to SpotSweeper local outlier detection.
 #' @param workers Deprecated alias for `cores`.
-#' @param verbose Whether to print progress messages.
+#' @param verbose Whether to print progress and completion status messages.
 #' @param ... Additional named arguments passed to matching SpotSweeper backend
 #' functions when those arguments are supported by the installed version.
 #'
 #' @return A `Seurat` object with SpotSweeper QC metadata. When
-#' `store_results = TRUE`, detailed results are stored in
-#' `srt@tools[[tool_name]]`.
+#' `store_results = TRUE`, detailed results and an `artifact_status` table are
+#' stored in `srt@tools[[tool_name]]`. The artifact metadata uses `NA` and
+#' `"NotEvaluated"` when a requested artifact stage did not run; the overall
+#' `*_QC` column uses `"Partial"` for spots that passed local QC but were not
+#' evaluated for artifacts.
 #' @export
 #'
 #' @examples
@@ -204,6 +213,10 @@ RunSpotSweeper <- function(
   spe <- local_out$spe
 
   artifact_out <- NULL
+  artifact_status <- spot_sweeper_artifact_status_not_requested(
+    coldata = inputs$coldata,
+    sample_col = inputs$sample_col
+  )
   if (isTRUE(run_artifact)) {
     artifact_out <- spot_sweeper_run_artifacts(
       spe = spe,
@@ -217,6 +230,7 @@ RunSpotSweeper <- function(
       verbose = verbose
     )
     spe <- artifact_out$spe
+    artifact_status <- artifact_out$status
   }
 
   finalized <- spot_sweeper_finalize_metadata(
@@ -225,12 +239,23 @@ RunSpotSweeper <- function(
     prefix = prefix,
     metrics = inputs$metrics,
     metric_columns = inputs$metric_columns,
-    run_artifact = run_artifact
+    run_artifact = run_artifact,
+    artifact_status = artifact_status
   )
+
+  if (isTRUE(return_filtered) && identical(finalized$status, "partial")) {
+    log_message(
+      "Cannot return a fully filtered SpotSweeper object because artifact detection was not completed for every sample; set {.arg return_filtered = FALSE} or disable artifact detection explicitly",
+      message_type = "error"
+    )
+  }
+
   srt <- Seurat::AddMetaData(srt, metadata = finalized$metadata)
 
   if (isTRUE(store_results)) {
     srt@tools[[tool_name]] <- list(
+      status = finalized$status,
+      artifact_status = finalized$artifact_status,
       local_outliers = finalized$local_outliers,
       artifacts = finalized$artifacts,
       colData = finalized$coldata,
@@ -272,11 +297,32 @@ RunSpotSweeper <- function(
   }
 
   failed <- sum(srt[[paste0(prefix, "_QC"), drop = TRUE]] == "Fail", na.rm = TRUE)
-  log_message(
-    "{.pkg SpotSweeper} flagged {.val {failed}} spots with prefix {.val {prefix}}",
-    message_type = "success",
-    verbose = verbose
-  )
+  if (identical(finalized$status, "partial")) {
+    skipped <- sum(finalized$artifact_status$status == "skipped", na.rm = TRUE)
+    failed_artifact <- sum(finalized$artifact_status$status == "failed", na.rm = TRUE)
+    not_evaluated <- sum(
+      as.character(finalized$metadata[[paste0(prefix, "_artifact_qc")]]) ==
+        "NotEvaluated",
+      na.rm = TRUE
+    )
+    log_message(
+      "{.pkg SpotSweeper} completed partially: {.val {failed}} spots failed QC; artifact detection skipped for {.val {skipped}} sample{?s}, failed for {.val {failed_artifact}} sample{?s}, and left {.val {not_evaluated}} spots not evaluated",
+      message_type = "warning",
+      verbose = verbose
+    )
+  } else if (!isTRUE(run_artifact)) {
+    log_message(
+      "{.pkg SpotSweeper} completed local-outlier QC; artifact detection was not requested; {.val {failed}} spots failed local QC with prefix {.val {prefix}}",
+      message_type = "success",
+      verbose = verbose
+    )
+  } else {
+    log_message(
+      "{.pkg SpotSweeper} flagged {.val {failed}} spots with prefix {.val {prefix}}",
+      message_type = "success",
+      verbose = verbose
+    )
+  }
 
   if (isTRUE(return_filtered)) {
     srt <- srt[, srt[[paste0(prefix, "_QC"), drop = TRUE]] == "Pass"]
@@ -521,9 +567,28 @@ spot_sweeper_run_artifacts <- function(
   cdata <- spot_sweeper_coldata(spe)
   samples <- unique(as.character(cdata[[sample_col]]))
   combined <- cdata
-  combined$artifact <- FALSE
+  combined$artifact <- NA
   combined$.SpotSweeper_artifact_skip_reason <- NA_character_
+  combined$.SpotSweeper_artifact_status <- "skipped"
   result <- list()
+  status_rows <- vector("list", length(samples))
+  names(status_rows) <- samples
+  record_sample <- function(sample, sample_coldata, status, reason = NA_character_) {
+    if (!identical(status, "completed")) {
+      sample_coldata$artifact <- NA
+    }
+    sample_coldata$.SpotSweeper_artifact_skip_reason <- reason
+    sample_coldata$.SpotSweeper_artifact_status <- status
+    combined <<- spot_sweeper_merge_coldata(combined, sample_coldata)
+    result[[sample]] <<- sample_coldata
+    status_rows[[sample]] <<- spot_sweeper_artifact_status_row(
+      sample = sample,
+      sample_coldata = sample_coldata,
+      status = status,
+      reason = reason
+    )
+    invisible(NULL)
+  }
   for (sample in samples) {
     idx <- which(as.character(cdata[[sample_col]]) == sample)
     spe_sample <- spe[, idx]
@@ -538,10 +603,12 @@ spot_sweeper_run_artifacts <- function(
         "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: {artifact_ready$reason}",
         verbose = verbose
       )
-      sample_coldata$artifact <- FALSE
-      sample_coldata$.SpotSweeper_artifact_skip_reason <- artifact_ready$reason
-      combined <- spot_sweeper_merge_coldata(combined, sample_coldata)
-      result[[sample]] <- sample_coldata
+      record_sample(
+        sample = sample,
+        sample_coldata = sample_coldata,
+        status = "skipped",
+        reason = artifact_ready$reason
+      )
       next
     }
     spe_sample <- spe[, idx]
@@ -566,12 +633,16 @@ spot_sweeper_run_artifacts <- function(
     if (!isTRUE(upstream_subset_ok)) {
       log_message(
         "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: the installed {.pkg SpotSweeper} {.fn localVariance} breaks on {.cls SpatialExperiment} colData (matrix coordinate column breaks {.code DataFrame[i, j]} extraction); only local-outlier QC is stored",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
-      sample_coldata$artifact <- FALSE
-      sample_coldata$.SpotSweeper_artifact_skip_reason <- "upstream bug in SpotSweeper::localVariance"
-      combined <- spot_sweeper_merge_coldata(combined, sample_coldata)
-      result[[sample]] <- sample_coldata
+      reason <- "upstream bug in SpotSweeper::localVariance"
+      record_sample(
+        sample = sample,
+        sample_coldata = sample_coldata,
+        status = "skipped",
+        reason = reason
+      )
       next
     }
     log_message(
@@ -610,24 +681,65 @@ spot_sweeper_run_artifacts <- function(
     if (inherits(spe_sample, "error")) {
       log_message(
         "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: the installed {.pkg SpotSweeper} {.fn findArtifacts} failed ({conditionMessage(spe_sample)}); only local-outlier QC is stored",
-        message_type = "warning"
+        message_type = "warning",
+        verbose = verbose
       )
-      sample_coldata$artifact <- FALSE
-      sample_coldata$.SpotSweeper_artifact_skip_reason <- paste0(
+      reason <- paste0(
         "upstream failure in SpotSweeper::findArtifacts: ",
         conditionMessage(spe_sample)
       )
-      combined <- spot_sweeper_merge_coldata(combined, sample_coldata)
-      result[[sample]] <- sample_coldata
+      record_sample(
+        sample = sample,
+        sample_coldata = sample_coldata,
+        status = "failed",
+        reason = reason
+      )
       next
     }
     sample_coldata <- spot_sweeper_coldata(spe_sample)
-    sample_coldata$.SpotSweeper_artifact_skip_reason <- NA_character_
-    combined <- spot_sweeper_merge_coldata(combined, sample_coldata)
-    result[[sample]] <- sample_coldata
+    if (!"artifact" %in% colnames(sample_coldata)) {
+      reason <- "SpotSweeper::findArtifacts returned no artifact column"
+      log_message(
+        "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: {reason}",
+        message_type = "warning",
+        verbose = verbose
+      )
+      record_sample(
+        sample = sample,
+        sample_coldata = sample_coldata,
+        status = "failed",
+        reason = reason
+      )
+      next
+    }
+    artifact_values <- as.logical(sample_coldata$artifact)
+    if (length(artifact_values) != nrow(sample_coldata) || anyNA(artifact_values)) {
+      reason <- "SpotSweeper::findArtifacts returned invalid artifact values"
+      log_message(
+        "Skip {.pkg SpotSweeper} artifact detection for sample {.val {sample}}: {reason}",
+        message_type = "warning",
+        verbose = verbose
+      )
+      record_sample(
+        sample = sample,
+        sample_coldata = sample_coldata,
+        status = "failed",
+        reason = reason
+      )
+      next
+    }
+    sample_coldata$artifact <- artifact_values
+    record_sample(
+      sample = sample,
+      sample_coldata = sample_coldata,
+      status = "completed",
+      reason = NA_character_
+    )
   }
   SummarizedExperiment::colData(spe) <- S4Vectors::DataFrame(combined[colnames(spe), , drop = FALSE])
-  list(spe = spe, result = result)
+  status <- do.call(rbind, status_rows)
+  rownames(status) <- NULL
+  list(spe = spe, result = result, status = status)
 }
 
 spot_sweeper_finalize_metadata <- function(
@@ -636,6 +748,7 @@ spot_sweeper_finalize_metadata <- function(
   prefix,
   metrics,
   metric_columns,
+  artifact_status,
   run_artifact = TRUE
 ) {
   cdata <- spot_sweeper_coldata(spe)
@@ -676,17 +789,37 @@ spot_sweeper_finalize_metadata <- function(
   local_table <- do.call(rbind, local_table)
   rownames(local_table) <- NULL
 
+  artifact_values <- rep(NA, length(all_spots))
+  names(artifact_values) <- all_spots
+  artifact_status_values <- rep("not_requested", length(all_spots))
+  names(artifact_status_values) <- all_spots
+  artifact_qc_values <- rep("NotEvaluated", length(all_spots))
+  names(artifact_qc_values) <- all_spots
+  if (isTRUE(run_artifact)) {
+    artifact_status_values[] <- "skipped"
+    if (".SpotSweeper_artifact_status" %in% colnames(cdata)) {
+      artifact_status_values[rownames(cdata)] <- as.character(
+        cdata$.SpotSweeper_artifact_status
+      )
+    }
+  }
+
   artifact_fail <- rep(FALSE, length(all_spots))
   names(artifact_fail) <- all_spots
   artifact_table <- NULL
   if (isTRUE(run_artifact) && "artifact" %in% colnames(cdata)) {
     artifact <- as.logical(cdata[["artifact"]])
-    metadata[[paste0(prefix, "_artifact")]] <- FALSE
-    metadata[rownames(cdata), paste0(prefix, "_artifact")] <- artifact
-    artifact_fail[rownames(cdata)] <- artifact
+    artifact_values[rownames(cdata)] <- artifact
+    artifact_qc_values[rownames(cdata)] <- ifelse(
+      is.na(artifact),
+      "NotEvaluated",
+      ifelse(artifact, "Fail", "Pass")
+    )
+    artifact_fail[rownames(cdata)] <- !is.na(artifact) & artifact
     artifact_table <- data.frame(
       spot = rownames(cdata),
       artifact = artifact,
+      artifact_status = unname(artifact_status_values[rownames(cdata)]),
       stringsAsFactors = FALSE
     )
     var_cols <- grep("^k[0-9]+$", colnames(cdata), value = TRUE)
@@ -699,16 +832,52 @@ spot_sweeper_finalize_metadata <- function(
     }
   }
 
+  metadata[[paste0(prefix, "_artifact")]] <- artifact_values
+  metadata[[paste0(prefix, "_artifact_status")]] <- artifact_status_values
+  metadata[[paste0(prefix, "_artifact_qc")]] <- factor(
+    artifact_qc_values,
+    levels = c("Pass", "Fail", "NotEvaluated")
+  )
+
   metadata[[paste0(prefix, "_local_outlier_qc")]] <- spot_sweeper_pass_fail(local_fail)
-  metadata[[paste0(prefix, "_artifact_qc")]] <- spot_sweeper_pass_fail(artifact_fail)
-  metadata[[paste0(prefix, "_QC")]] <- spot_sweeper_pass_fail(local_fail | artifact_fail)
+  partial <- isTRUE(run_artifact) & is.na(artifact_values) & !local_fail
+  overall <- ifelse(
+    local_fail | artifact_fail,
+    "Fail",
+    ifelse(partial, "Partial", "Pass")
+  )
+  metadata[[paste0(prefix, "_QC")]] <- factor(
+    overall,
+    levels = c("Pass", "Fail", "Partial")
+  )
+
+  required_status_columns <- c("sample", "status", "reason", "n_spots", "n_artifacts")
+  if (!is.data.frame(artifact_status) ||
+    nrow(artifact_status) == 0L ||
+    !all(required_status_columns %in% colnames(artifact_status))) {
+    log_message(
+      "Internal SpotSweeper artifact status is missing required sample-level fields",
+      message_type = "error"
+    )
+  }
+  rownames(artifact_status) <- NULL
+  all_requested_completed <- all(
+    !is.na(artifact_status$status) & artifact_status$status == "completed"
+  )
+  overall_status <- if (isTRUE(run_artifact) && !all_requested_completed) {
+    "partial"
+  } else {
+    "completed"
+  }
 
   list(
     metadata = metadata,
     local_outliers = local_table,
     artifacts = artifact_table,
     coldata = cdata,
-    metric_columns = metric_columns
+    metric_columns = metric_columns,
+    artifact_status = artifact_status,
+    status = overall_status
   )
 }
 
@@ -724,6 +893,43 @@ spot_sweeper_merge_coldata <- function(combined, sample_coldata) {
   sample_coldata <- sample_coldata[, colnames(combined), drop = FALSE]
   combined[rownames(sample_coldata), ] <- sample_coldata
   combined
+}
+
+spot_sweeper_artifact_status_row <- function(
+  sample,
+  sample_coldata,
+  status,
+  reason = NA_character_
+) {
+  artifact_count <- if (identical(status, "completed") && "artifact" %in% colnames(sample_coldata)) {
+    sum(as.logical(sample_coldata$artifact), na.rm = TRUE)
+  } else {
+    NA_integer_
+  }
+  data.frame(
+    sample = as.character(sample),
+    status = as.character(status),
+    reason = if (length(reason) == 0L || is.null(reason)) NA_character_ else as.character(reason),
+    n_spots = as.integer(nrow(sample_coldata)),
+    n_artifacts = as.integer(artifact_count),
+    stringsAsFactors = FALSE
+  )
+}
+
+spot_sweeper_artifact_status_not_requested <- function(coldata, sample_col) {
+  samples <- unique(as.character(coldata[[sample_col]]))
+  rows <- lapply(samples, function(sample) {
+    sample_coldata <- coldata[as.character(coldata[[sample_col]]) == sample, , drop = FALSE]
+    spot_sweeper_artifact_status_row(
+      sample = sample,
+      sample_coldata = sample_coldata,
+      status = "not_requested",
+      reason = NA_character_
+    )
+  })
+  out <- do.call(rbind, rows)
+  rownames(out) <- NULL
+  out
 }
 
 spot_sweeper_artifact_ready <- function(sample_coldata, mito_percent, mito_sum) {
