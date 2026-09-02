@@ -308,28 +308,30 @@ RunSpatialVariableFeatures <- function(
   has_plot_image <- is.character(plot_image) && length(plot_image) == 1L &&
     !is.na(plot_image) && nzchar(plot_image)
   plot_coord_cols <- coordinate_input$source$coord.cols %||% coord.cols
+  receipt_verbose <- thisutils::get_verbose(verbose)
   display_scale <- if (
     isTRUE(store_results) &&
       isTRUE(has_plot_image) &&
-      isTRUE(thisutils::get_verbose(verbose))
+      isTRUE(receipt_verbose)
   ) {
     spatial_run_receipt_display_scale(srt, plot_image)
   } else {
     NULL
   }
+  can_plot_spatially <- !isTRUE(has_plot_image) || !is.null(display_scale)
+  can_combine <- isTRUE(store_results) &&
+    isTRUE(receipt_verbose) &&
+    isTRUE(can_plot_spatially) &&
+    spatial_run_receipt_package_available("patchwork")
   plot_call <- if (isTRUE(store_results)) {
     plot_args <- c(
       paste0(
         "plot_type = ",
-        if (isTRUE(has_plot_image) && is.null(display_scale)) {
-          "\"summary\""
-        } else {
-          "\"combined\""
-        }
+        if (isTRUE(can_combine)) "\"combined\"" else "\"summary\""
       ),
       paste0("assay = ", spatial_run_receipt_quote(assay, "assay"))
     )
-    if (isTRUE(has_plot_image) && !is.null(display_scale)) {
+    if (isTRUE(can_combine) && isTRUE(has_plot_image)) {
       plot_args <- c(
         plot_args,
         paste0("image = ", spatial_run_receipt_quote(plot_image, "image"))
@@ -344,7 +346,7 @@ RunSpatialVariableFeatures <- function(
         )
       }
     }
-    if (!isTRUE(has_plot_image) || !is.null(display_scale)) {
+    if (isTRUE(can_combine)) {
       plot_args <- c(
         plot_args,
         paste0(
