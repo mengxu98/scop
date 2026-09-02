@@ -49,6 +49,46 @@ with_mock_spotlight <- function(fake_fun, code) {
   force(code)
 }
 
+test_that("RunSPOTlight validates result names and storage before backend work", {
+  pair <- make_spotlight_seurat_pair()
+  backend_touched <- FALSE
+  testthat::local_mocked_bindings(
+    check_r = function(...) {
+      backend_touched <<- TRUE
+      stop("backend check should not run")
+    },
+    get_namespace_fun = function(...) {
+      backend_touched <<- TRUE
+      stop("backend should not run")
+    },
+    .package = "scop"
+  )
+  invalid <- list(
+    prefix = list("", 1L),
+    tool_name = list("", 1L),
+    store_results = list(1L, NA)
+  )
+  base_args <- list(
+    srt = pair$spatial,
+    reference = pair$reference,
+    reference_label = "celltype",
+    verbose = FALSE
+  )
+  for (arg in names(invalid)) {
+    pattern <- if (identical(arg, "store_results")) {
+      "store_results.*TRUE or FALSE"
+    } else {
+      paste0(arg, ".*single non-empty string")
+    }
+    for (value in invalid[[arg]]) {
+      args <- base_args
+      args[[arg]] <- value
+      expect_error(do.call(RunSPOTlight, args), pattern)
+    }
+  }
+  expect_false(backend_touched)
+})
+
 test_that("RunSPOTlight writes proportions and tool results", {
   pair <- make_spotlight_seurat_pair()
   fake_fun <- function(x, y, groups, mgs, gene_id, group_id, weight_id, min_prop, scale, ...) {

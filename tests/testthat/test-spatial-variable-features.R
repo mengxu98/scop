@@ -56,6 +56,44 @@ make_spatial_variable_image_seurat <- function(
   srt
 }
 
+test_that("RunSpatialVariableFeatures validates storage flags before backend work", {
+  backend_touched <- FALSE
+  testthat::local_mocked_bindings(
+    check_r = function(...) {
+      backend_touched <<- TRUE
+      stop("backend check should not run")
+    },
+    get_namespace_fun = function(...) {
+      backend_touched <<- TRUE
+      stop("backend should not run")
+    },
+    .package = "scop"
+  )
+  invalid <- list(
+    set_variable_features = list(1L, NA, c(TRUE, FALSE)),
+    store_results = list(1L, NA, c(TRUE, FALSE))
+  )
+  base_args <- list(
+    srt = make_spatial_variable_seurat(),
+    method = "SPARKX",
+    layer = "counts",
+    coord.cols = c("x", "y"),
+    min_spots = 1,
+    verbose = FALSE
+  )
+  for (arg in names(invalid)) {
+    for (value in invalid[[arg]]) {
+      args <- base_args
+      args[[arg]] <- value
+      expect_error(
+        do.call(RunSpatialVariableFeatures, args),
+        paste0(arg, ".*TRUE or FALSE")
+      )
+    }
+  }
+  expect_false(backend_touched)
+})
+
 test_that("native spatial variable feature results keep normalized columns", {
   skip_if_not_installed("BiocNeighbors")
   srt <- RunSpatialVariableFeatures(
