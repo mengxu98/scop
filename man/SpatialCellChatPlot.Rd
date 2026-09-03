@@ -55,7 +55,7 @@ data(visium_human_pancreas_results_sub)
 SpatialCellChatPlot(
   visium_human_pancreas_results_sub,
   plot_type = "incoming",
-  sample = "slice1",
+  sample = "ALL",
   top_n = 10
 )
 }

@@ -89,9 +89,26 @@ on a Seurat object or AnnData object.
 }
 \examples{
 data(pbmc_celltypist_sub)
+pbmc_celltypist_sub <- RunStandardWorkflow(
+  pbmc_celltypist_sub,
+  assay = "RNA",
+  linear_reduction_dims = 10,
+  verbose = FALSE
+)
+# Collapse the real CellTypist labels to short display groups so the
+# default-width example remains readable; the full labels stay in metadata.
+predicted <- as.character(pbmc_celltypist_sub$celltypist_predicted_labels)
+pbmc_celltypist_sub$celltypist_display <- ifelse(
+  grepl("monocyte|Mono-mac", predicted, ignore.case = TRUE), "Mono",
+  ifelse(grepl("DC|pDC", predicted, ignore.case = TRUE), "DC",
+    ifelse(grepl("B cells", predicted, ignore.case = TRUE), "B",
+      ifelse(grepl("NK|T cells|MAIT", predicted, ignore.case = TRUE), "T/NK", "Other")
+    )
+  )
+)
 CellDimPlot(
   pbmc_celltypist_sub,
-  group.by = "celltypist_predicted_labels",
+  group.by = "celltypist_display",
   label = TRUE,
   legend.position = "bottom"
 )

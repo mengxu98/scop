@@ -505,6 +505,10 @@ reference:
   - panc8_sub
   - pancreas_sub
   - pbmcmultiome_sub
+  - pbmc_celltypist_sub
   - ref_scMCA
+  - visium_human_pancreas_pair_sub
   - visium_human_pancreas_sub
+  - visium_human_pancreas_results_sub
+  - xenium_human_pancreas_boundaries_sub
   - words_excluded

@@ -192,12 +192,35 @@ spatial_coords_raw <- function(
       inherits(spatial_image, "VisiumV2") &&
         all(c("x", "y") %in% raw_names)
     ) {
-      # Seurat's Read10X_Image() builds VisiumV2 by passing the source
-      # imagerow/imagecol columns positionally to CreateFOV(). CreateCentroids
-      # then names those positions x/y, so the returned x is image-row and y
-      # is image-column. Recover the physical horizontal/vertical order here.
-      x_col <- spatial_dim_pick_col(raw, "y")
-      y_col <- spatial_dim_pick_col(raw, "x")
+      # VisiumV2 objects created by different Seurat loaders disagree about
+      # whether CreateFOV()'s positional x/y columns represent image-column /
+      # image-row or the original imagerow / imagecol order. Prefer the
+      # object's explicit metadata coordinates when they match the image;
+      # retain the historical swap only for objects without that evidence.
+      x_col <- spatial_dim_pick_col(raw, "x")
+      y_col <- spatial_dim_pick_col(raw, "y")
+      metadata <- tryCatch(as.data.frame(srt[[]]), error = function(e) NULL)
+      metadata_match <- !is.null(metadata) &&
+        all(c("x", "y") %in% colnames(metadata)) &&
+        all(rownames(raw) %in% rownames(metadata))
+      if (isTRUE(metadata_match)) {
+        metadata <- metadata[rownames(raw), c("x", "y"), drop = FALSE]
+        metadata_match <- all(is.finite(as.numeric(metadata$x))) &&
+          all(is.finite(as.numeric(metadata$y)))
+      }
+      if (isTRUE(metadata_match)) {
+        direct_error <- sum(abs(as.numeric(metadata$x) - as.numeric(raw[[x_col]])), na.rm = TRUE) +
+          sum(abs(as.numeric(metadata$y) - as.numeric(raw[[y_col]])), na.rm = TRUE)
+        swapped_error <- sum(abs(as.numeric(metadata$x) - as.numeric(raw[[y_col]])), na.rm = TRUE) +
+          sum(abs(as.numeric(metadata$y) - as.numeric(raw[[x_col]])), na.rm = TRUE)
+        if (is.finite(swapped_error) && swapped_error < direct_error) {
+          x_col <- spatial_dim_pick_col(raw, "y")
+          y_col <- spatial_dim_pick_col(raw, "x")
+        }
+      } else {
+        x_col <- spatial_dim_pick_col(raw, "y")
+        y_col <- spatial_dim_pick_col(raw, "x")
+      }
     } else {
       x_col <- spatial_dim_pick_col(raw, c("x", "pxl_col_in_fullres", "imagecol"))
       y_col <- spatial_dim_pick_col(raw, c("y", "pxl_row_in_fullres", "imagerow"))

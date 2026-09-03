@@ -55,6 +55,7 @@ plotting style.
 data(visium_human_pancreas_pair_sub)
 SpatialEcoTyperSpatialPlot(
   visium_human_pancreas_pair_sub,
+  group.by = "domain",
   overlay_image = FALSE,
   coord.cols = c("x", "y"),
   pt.size = 1.5

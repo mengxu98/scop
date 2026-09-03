@@ -129,6 +129,27 @@ test_that("VisiumV2 restores Read10X row/column order", {
   expect_equal(display$y, dim(image@image)[1L] - seurat_coords$x)
 })
 
+test_that("VisiumV2 objects with explicit metadata coordinates overlay their image", {
+  data("visium_human_pancreas_sub", package = "scop")
+  srt <- visium_human_pancreas_sub
+  image <- srt[["slice1"]]
+  raw <- SpatialCoordinates(srt, image = "slice1", space = "raw")$data
+  display <- SpatialCoordinates(
+    srt,
+    image = "slice1",
+    space = "display",
+    image.scale = "lowres"
+  )$data
+  image_coords <- as.data.frame(
+    SeuratObject::GetTissueCoordinates(image, scale = "lowres", full = FALSE)
+  )
+  image_coords <- image_coords[match(raw$cell_id, rownames(image_coords)), , drop = FALSE]
+  expect_equal(display$x, image_coords$x)
+  expect_equal(display$y, dim(image@image)[1L] - image_coords$y)
+  expect_true(all(display$x >= 0 & display$x <= dim(image@image)[2L]))
+  expect_true(all(display$y >= 0 & display$y <= dim(image@image)[1L]))
+})
+
 test_that("FOV and metadata coordinates use identity transforms", {
   counts <- matrix(1:12, nrow = 3, dimnames = list(paste0("g", 1:3), paste0("c", 1:4)))
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))

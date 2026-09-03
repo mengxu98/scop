@@ -179,15 +179,19 @@ object when possible.
 }
 \examples{
 data(visium_human_pancreas_pair_sub)
-
+# Plot the stored spatial grouping from the real two-sample object. This
+# compact fixture keeps the real spatial grouping for a fast layout demo;
+# rerun SpatialEcoTyper in the dontrun block for a new SE result.
 SpatialEcoTyperSpatialPlot(
   visium_human_pancreas_pair_sub,
+  group.by = "domain",
   overlay_image = FALSE,
   coord.cols = c("x", "y"),
   pt.size = 1.5
 )
 SpatialEcoTyperCompositionPlot(
   visium_human_pancreas_pair_sub,
+  se.by = "domain",
   group.by = "coda_label",
   sample.by = "sample",
   position = "fill"

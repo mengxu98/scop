@@ -173,14 +173,15 @@ chat$summary
 SpatialCellChatPlot(
   visium_human_pancreas_results_sub,
   plot_type = "incoming",
-  sample = "slice1"
+  sample = "ALL"
 )
 
 \dontrun{
 check_r("jinworks/SpatialCellChat", verbose = FALSE)
 spatial <- RunSpatialCellChat(
   visium_human_pancreas_results_sub,
-  group.by = "coda_label", assay = "Spatial", image = "slice1",
+  group.by = "coda_label", assay = "Spatial", image = NULL,
+  coord.cols = c("x", "y"),
   technology = "visium", analysis.level = "spot",
   coordinate.unit = "pixel", species = "Homo_sapiens",
   store.object = "minimal", verbose = FALSE
