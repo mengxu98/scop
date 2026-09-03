@@ -277,6 +277,106 @@ test_that("parameters for unrequested spatial stages are ignored", {
   )
 })
 
+test_that("empty and NULL spatial prefixes normalize to the empty string", {
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  plan_targets <- getFromNamespace(
+    "standard_spatial_preprocessing_metadata_targets",
+    "scop"
+  )
+  expected_targets <- c(
+    "pcaclusters",
+    "clusters",
+    "pca_SNN_res.0.6",
+    "ident"
+  )
+  expect_identical(
+    plan_targets("", "pca", "LogNormalize"),
+    expected_targets
+  )
+  expect_identical(
+    plan_targets(NULL, "pca", "LogNormalize"),
+    expected_targets
+  )
+  for (invalid_prefix in list(1, c("one", "two"), NA_character_)) {
+    expect_error(
+      plan_targets(invalid_prefix, "pca", "LogNormalize"),
+      "prefix.*single character string"
+    )
+  }
+
+  nested_prefixes <- character()
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    RunStandardWorkflow = function(srt, prefix, ...) {
+      nested_prefixes <<- c(nested_prefixes, prefix)
+      srt
+    }
+  )
+  for (prefix_value in list("", NULL)) {
+    out <- original(
+      make_standard_spatial_stage_object(),
+      prefix = prefix_value,
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = FALSE,
+      do_deconvolution = FALSE,
+      do_normalization = FALSE,
+      do_HVF_finding = FALSE,
+      do_scaling = FALSE,
+      verbose = FALSE
+    )
+    expect_identical(
+      out@tools$run_standard_spatial_workflow$parameters$prefix,
+      ""
+    )
+  }
+  expect_identical(nested_prefixes, c("", ""))
+})
+
+test_that("duplicate SpotQC rules do not create a planning collision", {
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  duplicate_rules <- rep("log10_nCount:lower:3", 2L)
+  captured <- NULL
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    RunStandardWorkflow = function(srt, ...) srt,
+    RunSpotQC = function(srt, outlier_threshold, outlier_n, ...) {
+      captured <<- list(
+        outlier_threshold = outlier_threshold,
+        outlier_n = outlier_n
+      )
+      srt$SpotQC <- rep("Pass", ncol(srt))
+      srt
+    }
+  )
+
+  out <- original(
+    make_standard_spatial_stage_object(),
+    assay = "RNA",
+    do_spot_qc = TRUE,
+    spot_qc_params = list(
+      qc_metrics = "outlier",
+      outlier_threshold = duplicate_rules,
+      outlier_n = 2
+    ),
+    do_spatial_variable_features = FALSE,
+    do_spatial_cluster = FALSE,
+    do_deconvolution = FALSE,
+    do_normalization = FALSE,
+    do_HVF_finding = FALSE,
+    do_scaling = FALSE,
+    verbose = FALSE
+  )
+  qc <- out@tools$run_standard_spatial_workflow$stages
+  qc <- qc[qc$stage == "quality_control", , drop = FALSE]
+
+  expect_identical(captured$outlier_threshold, duplicate_rules)
+  expect_identical(captured$outlier_n, 2)
+  expect_identical(qc$status, "completed")
+  expect_identical(unique(out$SpotQC), "Pass")
+})
+
 test_that("effective SVF storage controls require logical scalars", {
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   producer_called <- FALSE
@@ -440,6 +540,14 @@ test_that("BayesSpace planning failures carry clustering stage diagnostics", {
     ),
     preprocessing_collision = list(
       params = list(cluster_colname = "Standardclusters", init_colname = NULL),
+      pattern = "metadata outputs collide"
+    ),
+    retained_ident_cluster = list(
+      params = list(cluster_colname = "ident", init_colname = NULL),
+      pattern = "metadata outputs collide"
+    ),
+    retained_ident_init = list(
+      params = list(cluster_colname = "CustomCluster", init_colname = "ident"),
       pattern = "metadata outputs collide"
     )
   )
