@@ -42,32 +42,22 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' data(pancreas_sub)
-#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#' pancreas_sub <- RunCellTypist(
-#'   pancreas_sub,
-#'   model = "Developing_Mouse_Brain.pkl"
-#' )
+#' data(pbmc_celltypist_sub)
 #' CellDimPlot(
-#'   pancreas_sub,
+#'   pbmc_celltypist_sub,
 #'   group.by = "celltypist_predicted_labels",
-#'   legend.position = "none"
+#'   label = TRUE,
+#'   legend.position = "bottom"
 #' )
 #'
-#' # Use prob match mode
-#' pancreas_sub <- RunCellTypist(
-#'   pancreas_sub,
-#'   model = "Developing_Mouse_Brain.pkl",
-#'   mode = "prob match",
-#'   p_thres = 0.5
+#' \dontrun{
+#' check_python(c("celltypist", "anndata"))
+#' data(pbmcmultiome_sub)
+#' pbmcmultiome_sub <- RunStandardWorkflow(
+#'   pbmcmultiome_sub, assay = "RNA", linear_reduction_dims = 10
 #' )
-#'
-#' # Use majority voting
-#' pancreas_sub <- RunCellTypist(
-#'   pancreas_sub,
-#'   model = "Developing_Mouse_Brain.pkl",
-#'   majority_voting = TRUE
+#' pbmcmultiome_sub <- RunCellTypist(
+#'   pbmcmultiome_sub, model = "Immune_All_Low.pkl", verbose = FALSE
 #' )
 #' }
 RunCellTypist <- function(
@@ -280,56 +270,15 @@ RunCellTypist <- function(
 #'
 #' @examples
 #' \dontrun{
-#' data(pancreas_sub)
-#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#'
+#' check_python(c("celltypist", "anndata"))
+#' data(pbmcmultiome_sub)
+#' pbmcmultiome_sub <- RunStandardWorkflow(
+#'   pbmcmultiome_sub, assay = "RNA", linear_reduction_dims = 10
+#' )
 #' model_info <- TrainCellTypist(
-#'   srt = pancreas_sub,
-#'   labels = "SubCellType",
+#'   srt = pbmcmultiome_sub, labels = "CellType",
 #'   model_path = tempfile(fileext = ".pkl")
 #' )
-#'
-#' data(panc8_sub)
-#' genenames <- make.unique(
-#'   thisutils::capitalize(
-#'     rownames(panc8_sub),
-#'     force_tolower = TRUE
-#'   )
-#' )
-#' names(genenames) <- rownames(panc8_sub)
-#' panc8_sub <- RenameFeatures(
-#'   panc8_sub,
-#'   newnames = genenames
-#' )
-#' panc8_sub <- RunStandardWorkflow(panc8_sub)
-#'
-#' pancreas_sub <- RunCellTypist(
-#'   srt = pancreas_sub,
-#'   model = model_info
-#' )
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = c("SubCellType", "celltypist_predicted_labels")
-#' )
-#'
-#' panc8_sub <- RunCellTypist(
-#'   srt = panc8_sub,
-#'   model = model_info
-#' )
-#' CellDimPlot(
-#'   panc8_sub,
-#'   group.by = c("celltype", "celltypist_predicted_labels")
-#' )
-#'
-#' ht <- CellCorHeatmap(
-#'   srt_query = panc8_sub,
-#'   srt_ref = panc8_sub,
-#'   query_group = "celltypist_predicted_labels",
-#'   ref_group = "celltype",
-#'   width = 4,
-#'   height = 3
-#' )
-#' ht$plot
 #' }
 TrainCellTypist <- function(
   srt = NULL,
@@ -509,32 +458,10 @@ TrainCellTypist <- function(
 #'
 #' @examples
 #' \dontrun{
-#' # Get available models
-#' models <- CellTypistModels()
-#' print(models)
-#'
-#' # Show downloaded models only
-#' local_models <- CellTypistModels(on_the_fly = TRUE)
-#'
-#' # Download a model
-#' CellTypistModels(
-#'   action = "download",
-#'   model = "Immune_All_Low.pkl"
-#' )
-#'
-#' # Inspect a model
-#' CellTypistModels(
-#'   action = "info",
-#'   model = "Immune_All_Low.pkl"
-#' )
-#'
-#' # Extract top markers for a cell type
-#' CellTypistModels(
-#'   action = "markers",
-#'   model = "Immune_All_Low.pkl",
-#'   cell_type = "B cells",
-#'   top_n = 20
-#' )
+#' check_python("celltypist")
+#' models <- CellTypistModels(action = "list", on_the_fly = TRUE)
+#' head(models)
+#' CellTypistModels(action = "info", model = "Immune_All_Low.pkl")
 #' }
 CellTypistModels <- function(
   action = c("list", "download", "info", "markers", "subset", "convert", "delete"),

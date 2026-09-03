@@ -79,40 +79,17 @@ labeled reference \code{Seurat} object.
 }
 \examples{
 data(panc8_sub)
-genenames <- make.unique(
-  thisutils::capitalize(
-    rownames(panc8_sub),
-    force_tolower = TRUE
-  )
+keep <- panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")
+panc8_sub <- Seurat::NormalizeData(panc8_sub[, keep], verbose = FALSE)
+reference <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
+query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
+query <- RunSciBet(
+  srt_query = query, srt_ref = reference,
+  ref_group = "celltype", nfeatures = 200, verbose = FALSE
 )
-names(genenames) <- rownames(panc8_sub)
-panc8_sub <- RenameFeatures(
-  panc8_sub,
-  newnames = genenames
-)
-
-data(pancreas_sub)
-pancreas_sub <- RunSciBet(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_sub,
-  ref_group = "celltype",
-  nfeatures = 200
-)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
+query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
 CellDimPlot(
-  pancreas_sub,
-  group.by = c("SubCellType", "scibet_annotation"),
-  xlab = "UMAP_1",
-  ylab = "UMAP_2"
+  query, group.by = "scibet_annotation",
+  label = TRUE, legend.position = "bottom"
 )
-
-ht <- CellCorHeatmap(
-  srt_query = pancreas_sub,
-  srt_ref = pancreas_sub,
-  query_group = "scibet_annotation",
-  ref_group = "SubCellType",
-  width = 3,
-  height = 3
-)
-ht$plot
 }

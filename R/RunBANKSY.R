@@ -46,29 +46,24 @@
 #' @export
 #'
 #' @examples
-#' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
-#' spatial$BANKSY_cluster <- factor(
-#'   paste0("BANKSY", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
-#' )
-#'
-#' SpatialSpotPlot(
-#'   spatial,
-#'   group.by = "BANKSY_cluster",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
-#'
+#' data(visium_human_pancreas_results_sub)
 #' spatial <- RunBANKSY(
-#'   spatial,
+#'   visium_human_pancreas_results_sub,
 #'   assay = "Spatial",
 #'   layer = "counts",
 #'   coord.cols = c("x", "y"),
-#'   features = rownames(spatial)[1:300],
+#'   features = rownames(visium_human_pancreas_results_sub)[1:200],
 #'   lambda = 0.2,
 #'   k_geom = 8,
 #'   resolution = 0.6,
 #'   verbose = FALSE
+#' )
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "BANKSY_cluster",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y"),
+#'   pt.size = 1.5
 #' )
 RunBANKSY <- function(
   srt,
