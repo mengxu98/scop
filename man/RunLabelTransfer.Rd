@@ -102,18 +102,21 @@ scRNA-seq reference via gene activity.
 }
 \examples{
 data("pbmcmultiome_sub", package = "scop")
+pbmcmultiome_sub <- pbmcmultiome_sub[, seq_len(200)]
 pbmcmultiome_sub <- RunStandardWorkflow(
   pbmcmultiome_sub,
   assay = "RNA",
-  linear_reduction_dims = 20
+  linear_reduction_dims = 10,
+  verbose = FALSE
 )
-reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:250])
-query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[251:350])
+reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:120])
+query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[121:200])
 query <- RunStandardWorkflow(
   query,
   assay = "peaks",
   normalization_method = "TFIDF",
-  linear_reduction_dims = 20
+  linear_reduction_dims = 10,
+  verbose = FALSE
 )
 query <- RunLabelTransfer(
   srt = query,
@@ -123,6 +126,8 @@ query <- RunLabelTransfer(
   reference_reduction = "Standardpca",
   reference_label = "CellType",
   reference_dims = 1:10,
-  dims = 2:10
+  dims = 2:5,
+  verbose = FALSE
 )
+head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = FALSE])
 }

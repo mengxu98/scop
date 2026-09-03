@@ -21,10 +21,12 @@
 #' @export
 #' @examples
 #' data(pbmcmultiome_sub)
+#' pbmcmultiome_sub <- pbmcmultiome_sub[, seq_len(200)]
 #' pbmcmultiome_sub <- RunStandardWorkflow(
 #'   pbmcmultiome_sub,
 #'   assay = c("RNA", "peaks"),
-#'   linear_reduction_dims = 20
+#'   linear_reduction_dims = 10,
+#'   verbose = FALSE
 #' )
 #' coembed <- RunCoEmbedding(
 #'   srt = pbmcmultiome_sub,
@@ -33,9 +35,10 @@
 #'   reference_assay = "RNA",
 #'   gene_activity_assay = "RNA",
 #'   reference_reduction = "RNApca",
-#'   reference_dims = 1:10,
-#'   dims = 2:10,
-#'   umap_dims = 1:10
+#'   reference_dims = 1:5,
+#'   dims = 2:5,
+#'   umap_dims = 1:5,
+#'   verbose = FALSE
 #' )
 #'
 #' CellDimPlot(

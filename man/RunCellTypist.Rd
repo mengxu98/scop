@@ -88,32 +88,22 @@ based on logistic regression classifiers. This function runs CellTypist annotati
 on a Seurat object or AnnData object.
 }
 \examples{
-\dontrun{
-data(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-pancreas_sub <- RunCellTypist(
-  pancreas_sub,
-  model = "Developing_Mouse_Brain.pkl"
-)
+data(pbmc_celltypist_sub)
 CellDimPlot(
-  pancreas_sub,
+  pbmc_celltypist_sub,
   group.by = "celltypist_predicted_labels",
-  legend.position = "none"
+  label = TRUE,
+  legend.position = "bottom"
 )
 
-# Use prob match mode
-pancreas_sub <- RunCellTypist(
-  pancreas_sub,
-  model = "Developing_Mouse_Brain.pkl",
-  mode = "prob match",
-  p_thres = 0.5
+\dontrun{
+check_python(c("celltypist", "anndata"))
+data(pbmcmultiome_sub)
+pbmcmultiome_sub <- RunStandardWorkflow(
+  pbmcmultiome_sub, assay = "RNA", linear_reduction_dims = 10
 )
-
-# Use majority voting
-pancreas_sub <- RunCellTypist(
-  pancreas_sub,
-  model = "Developing_Mouse_Brain.pkl",
-  majority_voting = TRUE
+pbmcmultiome_sub <- RunCellTypist(
+  pbmcmultiome_sub, model = "Immune_All_Low.pkl", verbose = FALSE
 )
 }
 }

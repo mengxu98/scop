@@ -75,53 +75,16 @@ A \code{ggplot}, patchwork object, or list of plots.
 Visualize standardized results produced by \code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}.
 }
 \examples{
-data(visium_human_pancreas_sub)
-spatial <- visium_human_pancreas_sub
-spatial$sample <- ifelse(spatial$y > stats::median(spatial$y), "slice_a", "slice_b")
-spatial$SpatialIntegration_PRECAST_domain <- factor(
-  paste0("domain_", (seq_len(ncol(spatial)) - 1) \%\% 3 + 1)
-)
-embedding <- cbind(
-  SI_1 = as.numeric(scale(spatial$x)),
-  SI_2 = as.numeric(scale(spatial$y))
-)
-rownames(embedding) <- colnames(spatial)
-spatial[["SpatialIntegration_PRECAST"]] <- SeuratObject::CreateDimReducObject(
-  embeddings = embedding,
-  key = "SI_",
-  assay = "Spatial"
-)
-spatial$SpatialIntegration_PRECAST_aligned_x <- spatial$x +
-  ifelse(spatial$sample == "slice_b", -stats::median(spatial$x), 0)
-spatial$SpatialIntegration_PRECAST_aligned_y <- spatial$y
-integration_parameters <- list(
-  method = "PRECAST",
-  sample.by = "sample",
-  assay = "Spatial",
-  layer = "counts",
-  coord.cols = c("x", "y"),
-  reduction.name = "SpatialIntegration_PRECAST",
-  cluster_colname = "SpatialIntegration_PRECAST_domain",
-  aligned_coord_cols = c(
-    "SpatialIntegration_PRECAST_aligned_x",
-    "SpatialIntegration_PRECAST_aligned_y"
-  )
-)
-spatial@tools$SpatialIntegration <- list(
-  active_method = "PRECAST",
-  methods = list(PRECAST = list(parameters = integration_parameters)),
-  parameters = integration_parameters,
-  samples = unique(spatial$sample),
-  cells = colnames(spatial)
-)
-
+data(visium_human_pancreas_pair_sub)
 SpatialIntegrationPlot(
-  spatial,
+  visium_human_pancreas_pair_sub,
   plot_type = "spatial",
+  group.by = "domain",
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-SpatialIntegrationPlot(spatial, plot_type = "embedding")
-SpatialIntegrationPlot(spatial, plot_type = "alignment")
-SpatialIntegrationPlot(spatial, plot_type = "composition")
+SpatialIntegrationPlot(
+  visium_human_pancreas_pair_sub,
+  plot_type = "embedding"
+)
 }

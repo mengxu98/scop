@@ -51,38 +51,25 @@
 #' @export
 #'
 #' @examples
-#' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
-#' spatial$SmoothClust_cluster <- factor(
-#'   paste0("SmoothClust", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
-#' )
-#'
-#' SpatialSpotPlot(
-#'   spatial,
-#'   group.by = "SmoothClust_cluster",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
-#'
-#' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
-#' spatial <- Seurat::FindVariableFeatures(
-#'   spatial,
-#'   assay = "Spatial",
-#'   nfeatures = 200,
-#'   verbose = FALSE
-#' )
-#'
+#' data(visium_human_pancreas_results_sub)
 #' spatial <- RunSmoothClust(
-#'   spatial,
+#'   visium_human_pancreas_results_sub,
 #'   assay = "Spatial",
 #'   n_clusters = 3,
 #'   smooth_method = "knn",
 #'   coord.cols = c("x", "y"),
 #'   k = 6,
+#'   nfeatures = 200,
+#'   cores = 1,
 #'   verbose = FALSE
 #' )
-#'
-#' table(spatial$SmoothClust_cluster)
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "SmoothClust_cluster",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y"),
+#'   pt.size = 1.5
+#' )
 RunSmoothClust <- function(
   srt,
   assay = NULL,

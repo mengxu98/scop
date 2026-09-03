@@ -45,22 +45,20 @@
 #' @export
 #'
 #' @examples
-#' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
-#' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
+#' data(visium_human_pancreas_results_sub)
+#' misty <- visium_human_pancreas_results_sub@tools$MistyR
+#' misty$summary
+#' MistyRPlot(res = misty, type = "improvements", top_n = 10)
 #'
+#' \dontrun{
+#' check_r("saezlab/mistyR", verbose = FALSE)
 #' spatial <- RunMistyR(
-#'   spatial,
-#'   assay = "Spatial",
-#'   layer = "data",
-#'   features = rownames(spatial)[1:10],
-#'   coord.cols = c("x", "y"),
-#'   views = "para",
-#'   para_l = 5,
-#'   cv_folds = 3,
-#'   verbose = FALSE
+#'   visium_human_pancreas_results_sub,
+#'   assay = "Spatial", features = rownames(visium_human_pancreas_results_sub)[1:5],
+#'   coord.cols = c("x", "y"), views = "para", para_l = 5,
+#'   cv_folds = 3, verbose = FALSE
 #' )
-#' spatial@tools$MistyR$summary
+#' }
 RunMistyR <- function(
   srt,
   assay = NULL,
@@ -335,6 +333,13 @@ mistyr_summary <- function(results, views = character()) {
 #' @param target Optional target feature filter.
 #' @return A `ggplot` object.
 #' @export
+#' @examples
+#' data(visium_human_pancreas_results_sub)
+#' MistyRPlot(
+#'   res = visium_human_pancreas_results_sub@tools$MistyR,
+#'   type = "improvements",
+#'   top_n = 10
+#' )
 MistyRPlot <- function(
   object = NULL,
   res = NULL,

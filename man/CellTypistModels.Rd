@@ -76,32 +76,10 @@ convert models, or delete local models.
 }
 \examples{
 \dontrun{
-# Get available models
-models <- CellTypistModels()
-print(models)
-
-# Show downloaded models only
-local_models <- CellTypistModels(on_the_fly = TRUE)
-
-# Download a model
-CellTypistModels(
-  action = "download",
-  model = "Immune_All_Low.pkl"
-)
-
-# Inspect a model
-CellTypistModels(
-  action = "info",
-  model = "Immune_All_Low.pkl"
-)
-
-# Extract top markers for a cell type
-CellTypistModels(
-  action = "markers",
-  model = "Immune_All_Low.pkl",
-  cell_type = "B cells",
-  top_n = 20
-)
+check_python("celltypist")
+models <- CellTypistModels(action = "list", on_the_fly = TRUE)
+head(models)
+CellTypistModels(action = "info", model = "Immune_All_Low.pkl")
 }
 }
 \seealso{

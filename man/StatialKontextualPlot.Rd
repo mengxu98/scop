@@ -23,3 +23,9 @@ A `ggplot` object.
 Plot contextual relationship scores across radii from a result
 produced by [RunStatialKontextual()] without rerunning Statial.
 }
+\examples{
+data(visium_human_pancreas_results_sub)
+StatialKontextualPlot(
+  res = visium_human_pancreas_results_sub@tools$StatialKontextual
+)
+}

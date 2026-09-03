@@ -899,32 +899,24 @@ spatialcellchat_run_one <- function(
 #'   distinct method name `"SpatialCellChat"`.
 #'
 #' @examples
-#' # SpatialCellChat is a runtime-optional backend and a full run can be slow.
-#' # The following example uses constructed domain labels only to demonstrate
-#' # the SpatialCellChat interface.
+#' data(visium_human_pancreas_results_sub)
+#' chat <- visium_human_pancreas_results_sub@tools$SpatialCellChat
+#' chat$summary
+#' SpatialCellChatPlot(
+#'   visium_human_pancreas_results_sub,
+#'   plot_type = "incoming",
+#'   sample = "slice1"
+#' )
+#'
 #' \dontrun{
-#' if (all(unlist(
-#'   thisutils::check_r("jinworks/SpatialCellChat", verbose = FALSE),
-#'   use.names = FALSE
-#' ))) {
-#'   data(visium_human_pancreas_sub)
-#'   spatial <- visium_human_pancreas_sub
-#'   spatial$spatial_domain <- ifelse(
-#'     spatial$x <= stats::median(spatial$x), "left", "right"
-#'   )
-#'   spatial <- RunSpatialCellChat(
-#'     spatial,
-#'     group.by = "spatial_domain",
-#'     assay = "Spatial",
-#'     image = "slice1",
-#'     technology = "visium",
-#'     analysis.level = "spot",
-#'     coordinate.unit = "pixel",
-#'     species = "Homo_sapiens",
-#'     store.object = "minimal"
-#'   )
-#'   SpatialCellChatPlot(spatial, sample = "slice1", plot_type = "incoming")
-#' }
+#' check_r("jinworks/SpatialCellChat", verbose = FALSE)
+#' spatial <- RunSpatialCellChat(
+#'   visium_human_pancreas_results_sub,
+#'   group.by = "coda_label", assay = "Spatial", image = "slice1",
+#'   technology = "visium", analysis.level = "spot",
+#'   coordinate.unit = "pixel", species = "Homo_sapiens",
+#'   store.object = "minimal", verbose = FALSE
+#' )
 #' }
 #'
 #' @references
@@ -1352,6 +1344,14 @@ spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample
 #'
 #' @return A `ggplot` object.
 #' @export
+#' @examples
+#' data(visium_human_pancreas_results_sub)
+#' SpatialCellChatPlot(
+#'   visium_human_pancreas_results_sub,
+#'   plot_type = "incoming",
+#'   sample = "slice1",
+#'   top_n = 10
+#' )
 SpatialCellChatPlot <- function(
   object,
   result.name = NULL,

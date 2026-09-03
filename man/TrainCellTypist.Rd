@@ -107,56 +107,15 @@ Train a CellTypist model from a Seurat object, AnnData object, or h5ad file.
 }
 \examples{
 \dontrun{
-data(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-
+check_python(c("celltypist", "anndata"))
+data(pbmcmultiome_sub)
+pbmcmultiome_sub <- RunStandardWorkflow(
+  pbmcmultiome_sub, assay = "RNA", linear_reduction_dims = 10
+)
 model_info <- TrainCellTypist(
-  srt = pancreas_sub,
-  labels = "SubCellType",
+  srt = pbmcmultiome_sub, labels = "CellType",
   model_path = tempfile(fileext = ".pkl")
 )
-
-data(panc8_sub)
-genenames <- make.unique(
-  thisutils::capitalize(
-    rownames(panc8_sub),
-    force_tolower = TRUE
-  )
-)
-names(genenames) <- rownames(panc8_sub)
-panc8_sub <- RenameFeatures(
-  panc8_sub,
-  newnames = genenames
-)
-panc8_sub <- RunStandardWorkflow(panc8_sub)
-
-pancreas_sub <- RunCellTypist(
-  srt = pancreas_sub,
-  model = model_info
-)
-CellDimPlot(
-  pancreas_sub,
-  group.by = c("SubCellType", "celltypist_predicted_labels")
-)
-
-panc8_sub <- RunCellTypist(
-  srt = panc8_sub,
-  model = model_info
-)
-CellDimPlot(
-  panc8_sub,
-  group.by = c("celltype", "celltypist_predicted_labels")
-)
-
-ht <- CellCorHeatmap(
-  srt_query = panc8_sub,
-  srt_ref = panc8_sub,
-  query_group = "celltypist_predicted_labels",
-  ref_group = "celltype",
-  width = 4,
-  height = 3
-)
-ht$plot
 }
 }
 \seealso{
