@@ -86,6 +86,7 @@
 <span>  nrow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  row.heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  point.size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  raster <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  raster.dpi <span class="op">=</span> <span class="fl">512</span>,</span>
 <span>  point.fraction <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  point.alpha <span class="op">=</span> <span class="fl">0.2</span>,</span>
@@ -148,15 +149,15 @@ Seurat identities.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
-<dd><p>Dimensional reduction. `NULL` uses [DefaultReduction()].</p></dd>
+<dd><p>Reduction to plot. <code>NULL</code> uses <a href="DefaultReduction.html">DefaultReduction</a>.</p></dd>
 
 
 <dt id="arg-dims">dims<a class="anchor" aria-label="anchor" href="#arg-dims"></a></dt>
-<dd><p>Two dimensions to plot.</p></dd>
+<dd><p>Length-2 vector of dimensions to plot.</p></dd>
 
 
 <dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
-<dd><p>Cells to include. `NULL` uses all cells.</p></dd>
+<dd><p>Cell names to include.</p></dd>
 
 
 <dt id="arg-thresholds">thresholds<a class="anchor" aria-label="anchor" href="#arg-thresholds"></a></dt>
@@ -214,8 +215,9 @@ each row pair. Use `c(0.47, 0.53)` for the compact benchmark layout.</p></dd>
 [CellDimPlot()] choose a readable size from the number of plotted cells.</p></dd>
 
 
-<dt id="arg-raster-dpi">raster.dpi<a class="anchor" aria-label="anchor" href="#arg-raster-dpi"></a></dt>
-<dd><p>Raster resolution for UMAP points.</p></dd>
+<dt id="arg-raster-raster-dpi">raster, raster.dpi<a class="anchor" aria-label="anchor" href="#arg-raster-raster-dpi"></a></dt>
+<dd><p>Rasterize points. <code>raster = NULL</code> rasterizes when
+there are more than 100,000 cells.</p></dd>
 
 
 <dt id="arg-point-fraction">point.fraction<a class="anchor" aria-label="anchor" href="#arg-point-fraction"></a></dt>
@@ -307,10 +309,7 @@ Legends are horizontal at `"top"` or `"bottom"`, and vertical at
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments forwarded to [CellDimPlot()] for the group
-dimensional plot. This exposes labels, selected-cell outlines, marks,
-density, grid, graph, PAGA, velocity, and related functionality.
-Structural arguments and legend placement remain controlled here.</p></dd>
+<dd><p>Additional arguments forwarded to [CellDimPlot()].</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
@@ -337,7 +336,7 @@ sampling.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 03:17:28] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 07:53:49] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="va">reduction</span> <span class="op">&lt;-</span> <span class="fu"><a href="DefaultReduction.html">DefaultReduction</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Key.html" class="external-link">Key</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">[[</span><span class="va">reduction</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"UMAP_"</span></span></span>
 <span class="r-in"><span><span class="va">genesets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
@@ -351,19 +350,19 @@ sampling.</p></dd>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"AUCell"</span>,</span></span>
 <span class="r-in"><span>  classification <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 03:17:34] Start cell scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 03:17:35] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 03:17:35] Number of feature lists to be scored: <span style="color: #0000BB;">3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-03 03:17:35] Cell scoring completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 07:53:56] Start cell scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 07:53:56] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 07:53:56] Number of feature lists to be scored: <span style="color: #0000BB;">3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-03 07:53:57] Cell scoring completed</span>
 <span class="r-in"><span><span class="fu">CellScoringPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"AUCell"</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 03:17:35] Using the latest AUCell result recorded by `CellScoring()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 03:17:36] Plotting AUCell feature <span style="color: #0000BB;">"Alpha"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 03:17:36] Plotting AUCell feature <span style="color: #0000BB;">"Beta"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 03:17:36] Plotting AUCell feature <span style="color: #0000BB;">"Ductal"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 07:53:57] Using the latest AUCell result recorded by `CellScoring()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 07:53:57] Plotting AUCell feature <span style="color: #0000BB;">"Alpha"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 07:53:57] Plotting AUCell feature <span style="color: #0000BB;">"Beta"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 07:53:58] Plotting AUCell feature <span style="color: #0000BB;">"Ductal"</span></span>
 <span class="r-plt img"><img src="CellScoringPlot-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
