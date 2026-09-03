@@ -11,6 +11,16 @@ make_fast_path_object <- function(seed = 7) {
   RunPCA(obj, features = SeuratObject::VariableFeatures(obj), npcs = 10, verbose = FALSE)
 }
 
+make_marker_fast_path_object <- function(seed = 13) {
+  set.seed(seed)
+  mat <- Matrix::rsparsematrix(120, 80, density = 0.08)
+  mat@x <- abs(mat@x * 10)
+  rownames(mat) <- paste0("g", seq_len(nrow(mat)))
+  colnames(mat) <- paste0("c", seq_len(ncol(mat)))
+  object <- Seurat::CreateSeuratObject(counts = mat)
+  Seurat::NormalizeData(object, verbose = FALSE)
+}
+
 test_that("internal workflows use scop Seurat-compatible entry points", {
   has_namespaced_call <- function(expr, entry_point) {
     if (
@@ -195,7 +205,7 @@ test_that("Seurat fast paths support legacy Assay preprocessing", {
 })
 
 test_that("FindAllMarkers supports feature subsets with Seurat parity", {
-  obj <- make_fast_path_object(seed = 13)
+  obj <- make_marker_fast_path_object(seed = 13)
   SeuratObject::Idents(obj) <- rep(c("A", "B", "C", "D"), each = 20)
   features <- rownames(obj)[1:40]
 
@@ -229,6 +239,10 @@ test_that("FindAllMarkers supports feature subsets with Seurat parity", {
 })
 
 test_that("FindAllMarkers native path covers metadata groups and FC controls", {
+  skip_if(
+    is.null(presto_get_fun(install = FALSE, error_on_missing = FALSE)),
+    "The runtime-optional Presto backend is unavailable"
+  )
   set.seed(20260830)
   counts <- matrix(stats::rpois(150L * 180L, lambda = 1), nrow = 150L)
   groups <- factor(
@@ -280,7 +294,11 @@ test_that("FindAllMarkers native path covers metadata groups and FC controls", {
 })
 
 test_that("FindAllMarkers accelerates Seurat-compatible sampling", {
-  object <- make_fast_path_object(seed = 14)
+  skip_if(
+    is.null(presto_get_fun(install = FALSE, error_on_missing = FALSE)),
+    "The runtime-optional Presto backend is unavailable"
+  )
+  object <- make_marker_fast_path_object(seed = 14)
   SeuratObject::Idents(object) <- rep(c("A", "B", "C", "D"), each = 20)
   args <- list(
     object = object,
