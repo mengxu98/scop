@@ -1,5 +1,35 @@
 # Internal helpers shared by spatial workflow wrappers.
 
+# Resolve the common Seurat-object input used by native spatial functions.
+#
+# Spatial plotting and analysis APIs historically used `srt`, while some
+# result-oriented plotting APIs use `object`. Keep `srt` as the documented
+# primary name for backwards compatibility and accept `object` as an explicit
+# alias so named calls are consistent from a user's perspective.
+spatial_resolve_srt <- function(srt = NULL, object = NULL) {
+  if (!is.null(srt) && !is.null(object)) {
+    log_message(
+      "Provide only one of {.arg srt} or {.arg object}",
+      message_type = "error"
+    )
+  }
+  input_arg <- if (is.null(srt)) "object" else "srt"
+  resolved <- if (is.null(srt)) object else srt
+  if (is.null(resolved)) {
+    log_message(
+      "Provide a {.cls Seurat} object through {.arg srt} or {.arg object}",
+      message_type = "error"
+    )
+  }
+  if (!inherits(resolved, "Seurat")) {
+    log_message(
+      "{.arg {input_arg}} must be a {.cls Seurat} object",
+      message_type = "error"
+    )
+  }
+  resolved
+}
+
 spatial_resolve_coord_cols <- function(srt, coord.cols = c("col", "row")) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
