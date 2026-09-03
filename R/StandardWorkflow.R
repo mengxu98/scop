@@ -755,6 +755,7 @@ run_standard_spatial_workflow <- function(
       message_type = "error"
     )
   }
+  prefix <- standard_spatial_normalize_prefix(prefix)
   is_atac_assay <- inherits(srt[[assay]], "ChromatinAssay")
   if (is_atac_assay) {
     atac_args <- atac_defaults(
@@ -1873,6 +1874,21 @@ standard_spatial_validate_deconvolution_tool_name <- function(
   invisible(TRUE)
 }
 
+standard_spatial_normalize_prefix <- function(prefix) {
+  prefix <- prefix %||% ""
+  if (
+    !is.character(prefix) ||
+      length(prefix) != 1L ||
+      is.na(prefix)
+  ) {
+    log_message(
+      "{.arg prefix} must be a single character string",
+      message_type = "error"
+    )
+  }
+  prefix
+}
+
 standard_spatial_preprocessing_metadata_targets <- function(
   prefix,
   linear_reduction,
@@ -1880,8 +1896,7 @@ standard_spatial_preprocessing_metadata_targets <- function(
   is_atac_assay = FALSE,
   cluster_resolution = 0.6
 ) {
-  prefix <- prefix %||% ""
-  validate_scalar_string(prefix, "prefix", require_character = FALSE)
+  prefix <- standard_spatial_normalize_prefix(prefix)
   valid_linear_reduction <- is.character(linear_reduction) &&
     length(linear_reduction) > 0L &&
     !anyNA(linear_reduction) &&
@@ -1920,7 +1935,8 @@ standard_spatial_preprocessing_metadata_targets <- function(
     paste0(prefix, effective_linear_reduction, "clusters"),
     paste0(prefix, "clusters"),
     if (is_atac_assay) paste0(prefix, "lsiclusters"),
-    resolution_cluster_cols
+    resolution_cluster_cols,
+    "ident"
   ))
 }
 
@@ -1972,7 +1988,7 @@ standard_spatial_spot_qc_metadata_targets <- function(
       make.names(paste0("spot_", outlier_threshold))
     )
   }
-  targets
+  unique(targets)
 }
 
 standard_spatial_validate_spot_qc_effective_args <- function(
