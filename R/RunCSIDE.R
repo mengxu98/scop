@@ -44,63 +44,38 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
+#' data(panc8_sub)
+#' keep_spots <- unique(round(seq(
+#'   1,
+#'   ncol(visium_human_pancreas_sub),
+#'   length.out = 120
+#' )))
+#' spatial <- visium_human_pancreas_sub[, keep_spots]
 #' spatial$region <- cut(
 #'   spatial$x,
 #'   breaks = stats::quantile(spatial$x, probs = seq(0, 1, length.out = 4)),
 #'   include.lowest = TRUE,
 #'   labels = c("left", "middle", "right")
 #' )
-#' spatial$CSIDE_n_sig <- unname(
-#'   c(left = 4, middle = 8, right = 12)[as.character(spatial$region)]
-#' )
-#' spatial$CSIDE_mode <- "regions"
-#' cside_result <- data.frame(
-#'   feature = rownames(spatial)[1:4],
-#'   celltype = rep(c("ductal", "alpha"), each = 2),
-#'   parameter = "right_vs_left",
-#'   logFC = c(1.2, 0.8, -0.9, -1.1),
-#'   statistic = c(4.1, 3.5, -3.2, -3.8),
-#'   p_value = c(0.001, 0.004, 0.006, 0.002),
-#'   q_value = c(0.004, 0.008, 0.010, 0.006),
-#'   significant = TRUE,
-#'   method = "regions"
-#' )
-#' spatial@tools$CSIDE <- list(
-#'   result_table = cside_result,
-#'   parameters = list(mode = "regions", group.by = "region")
-#' )
-#'
-#' SpatialSpotPlot(
-#'   spatial,
-#'   group.by = "CSIDE_n_sig",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
-#' SpatialSpotPlot(
-#'   spatial,
-#'   features = cside_result$feature[1:2],
-#'   assay = "Spatial",
-#'   layer = "counts",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
-#'
-#' data(panc8_sub)
-#' set.seed(1234)
-#' spatial <- spatial[, sample(seq_len(ncol(spatial)), 120)]
-#' reference <- panc8_sub[, panc8_sub$celltype %in% c("ductal", "alpha", "beta")]
+#' reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
+#'   c("ductal", "alpha", "beta")]
 #' reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
-#' features_use <- intersect(
+#' features_use <- head(intersect(
 #'   SeuratObject::VariableFeatures(reference),
 #'   rownames(spatial)
-#' )
+#' ), 300)
 #' spatial <- RunRCTD(
-#'   spatial,
+#'   srt = spatial,
 #'   reference = reference,
 #'   reference_label = "celltype",
+#'   assay = "Spatial",
+#'   reference_assay = "RNA",
+#'   layer = "counts",
+#'   reference_layer = "counts",
 #'   features = features_use,
+#'   coord.cols = c("x", "y"),
 #'   rctd_mode = "full",
 #'   max_cores = 1,
 #'   min_cells = 25,
@@ -108,13 +83,21 @@
 #' )
 #' spatial <- spatial[, rownames(spatial@tools$RCTD$weights)]
 #' spatial <- RunCSIDE(
-#'   spatial,
+#'   srt = spatial,
 #'   group.by = "region",
 #'   celltypes = c("ductal", "alpha"),
+#'   features = features_use,
 #'   gene_threshold = 0.00005,
 #'   cell_type_threshold = 5,
 #'   verbose = FALSE
 #' )
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "CSIDE_n_sig",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y")
+#' )
+#' }
 RunCSIDE <- function(
   srt,
   rctd_result = NULL,
