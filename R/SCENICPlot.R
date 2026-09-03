@@ -790,7 +790,7 @@ scenic_plot_rss_rank <- function(
         breaks = rank_breaks,
         expand = ggplot2::expansion(mult = c(0.025, 0.055))
       ) +
-      ggplot2::theme_classic(base_size = 10, base_family = "Arial") +
+      ggplot2::theme_classic(base_size = 10) +
       ggplot2::theme(
         axis.line = ggplot2::element_blank(),
         axis.ticks = ggplot2::element_line(colour = "#30343B", linewidth = 0.4),
