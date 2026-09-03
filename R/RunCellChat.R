@@ -1,3 +1,18 @@
+cellchat_check_presto <- function(do.fast, identify_formals) {
+  uses_fast_backend <- isTRUE(do.fast) &&
+    ("..." %in% identify_formals || "do.fast" %in% identify_formals)
+  if (!uses_fast_backend) {
+    return(invisible(FALSE))
+  }
+  if (!isTRUE(presto_check_r(install = TRUE))) {
+    log_message(
+      "The optional {.pkg presto} backend required by {.arg do.fast = TRUE} is unavailable",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
 #' @title Run CellChat analysis
 #'
 #' @md
@@ -75,12 +90,7 @@ RunCellChat <- function(
   check_r("jinworks/CellChat", verbose = FALSE)
   identifyOverExpressedGenes <- get_namespace_fun("CellChat", "identifyOverExpressedGenes")
   identify_formals <- names(formals(identifyOverExpressedGenes))
-  if (
-    isTRUE(do.fast) &&
-      ("..." %in% identify_formals || "do.fast" %in% identify_formals)
-  ) {
-    check_r("immunogenomics/presto", verbose = FALSE)
-  }
+  cellchat_check_presto(do.fast = do.fast, identify_formals = identify_formals)
 
   validate_cc_input(
     srt = srt,

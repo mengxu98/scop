@@ -128,6 +128,10 @@ test_that("RunDEtest exports internal marker workers to parallel processes", {
 test_that("supported RunDEtest Wilcoxon branches stay on the scop backend", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
+  skip_if(
+    is.null(presto_get_fun(install = FALSE, error_on_missing = FALSE)),
+    "The runtime-optional Presto backend is unavailable"
+  )
 
   set.seed(3)
   counts <- Matrix::rsparsematrix(
@@ -147,9 +151,21 @@ test_that("supported RunDEtest Wilcoxon branches stay on the scop backend", {
   cells2 <- colnames(srt)[srt$group == "B"]
   features <- rownames(srt)[1:60]
 
+  # The source-mode Presto CI intentionally avoids compiling the full SCOP DLL
+  # before R CMD check. Conserved-marker aggregation is orthogonal to the
+  # Presto marker path under test, so use its exact R implementation here.
+  metap_fun <- get("metap", asNamespace("scop"))
+  combine_pvalues_r <- function(pvalues, method) {
+    apply(as.matrix(pvalues), 1, function(x) metap_fun(x, method = method)$p)
+  }
+
   testthat::local_mocked_bindings(
     FindMarkers = function(...) stop("Seurat marker backend was reached"),
     .package = "Seurat"
+  )
+  testthat::local_mocked_bindings(
+    combine_conserved_pvalues_cpp = combine_pvalues_r,
+    .package = "scop"
   )
 
   expect_no_error(pair <- scop::FindMarkers(
@@ -256,9 +272,82 @@ test_that("unsupported FindMarkers arguments still use the Seurat fallback", {
   expect_true(reached_seurat)
 })
 
+test_that("RunDEtest all-in-one fallback never installs missing Presto", {
+  install_requested <- NULL
+  context_materialized <- FALSE
+  native_all_markers <- get("RunDEtestFindAllMarkers", asNamespace("scop"))
+
+  testthat::local_mocked_bindings(
+    marker_assay_is_chromatin = function(...) FALSE,
+    marker_context = function(...) {
+      context_materialized <<- TRUE
+      stop("marker context should not be materialized without Presto")
+    },
+    presto_get_fun = function(
+      fun = "wilcoxauc",
+      install = FALSE,
+      error_on_missing = TRUE
+    ) {
+      install_requested <<- install
+      NULL
+    },
+    .package = "scop"
+  )
+
+  expect_null(native_all_markers(
+    srt = NULL,
+    assay = "RNA",
+    layer = "data",
+    cell_group = factor(c("A", "B")),
+    features = NULL,
+    test.use = "roc",
+    logfc.threshold = 0,
+    base = 2,
+    min.pct = 0,
+    min.diff.pct = -Inf,
+    min.cells.feature = 3,
+    min.cells.group = 3,
+    latent.vars = NULL,
+    only.pos = FALSE,
+    norm.method = "LogNormalize",
+    pseudocount.use = 1,
+    mean.fxn = NULL,
+    p.adjust.method = "bonferroni"
+  ))
+  expect_null(install_requested)
+  expect_false(context_materialized)
+
+  expect_null(native_all_markers(
+    srt = NULL,
+    assay = "RNA",
+    layer = "data",
+    cell_group = factor(c("A", "B")),
+    features = NULL,
+    test.use = "wilcox",
+    logfc.threshold = 0,
+    base = 2,
+    min.pct = 0,
+    min.diff.pct = -Inf,
+    min.cells.feature = 3,
+    min.cells.group = 3,
+    latent.vars = NULL,
+    only.pos = FALSE,
+    norm.method = "LogNormalize",
+    pseudocount.use = 1,
+    mean.fxn = NULL,
+    p.adjust.method = "bonferroni"
+  ))
+  expect_false(install_requested)
+  expect_false(context_materialized)
+})
+
 test_that("RunDEtest all-in-one markers match the pairwise scop backend", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
+  skip_if(
+    is.null(presto_get_fun(install = FALSE, error_on_missing = FALSE)),
+    "The runtime-optional Presto backend is unavailable"
+  )
 
   set.seed(5)
   counts <- Matrix::rsparsematrix(
@@ -296,12 +385,6 @@ test_that("RunDEtest all-in-one markers match the pairwise scop backend", {
     mean.fxn = NULL,
     p.adjust.method = "bonferroni"
   )
-  expect_null(testthat::with_mocked_bindings(
-    do.call(native_all_markers, native_args),
-    requireNamespace = function(package, ...) !identical(package, "presto"),
-    .package = "base"
-  ))
-
   all_in_one <- do.call(native_all_markers, native_args)
   pairwise <- lapply(levels(cell_group), function(group) {
     markers <- scop::FindMarkers(
