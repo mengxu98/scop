@@ -114,7 +114,7 @@ the optional <code>STdeconvolve</code> package.</p>
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
 <dd><p>Number of topics. If <code>NULL</code>, models are fit over <code>k_candidates</code> and
-<code><a href="https://rdrr.io/pkg/STdeconvolve/man/optimalModel.html" class="external-link">STdeconvolve::optimalModel()</a></code> is used to choose a model.</p></dd>
+<code>STdeconvolve::optimalModel()</code> is used to choose a model.</p></dd>
 
 
 <dt id="arg-k-candidates">k_candidates<a class="anchor" aria-label="anchor" href="#arg-k-candidates"></a></dt>
@@ -122,35 +122,35 @@ the optional <code>STdeconvolve</code> package.</p>
 
 
 <dt id="arg-opt">opt<a class="anchor" aria-label="anchor" href="#arg-opt"></a></dt>
-<dd><p>Optimal model selector passed to <code><a href="https://rdrr.io/pkg/STdeconvolve/man/optimalModel.html" class="external-link">STdeconvolve::optimalModel()</a></code>.</p></dd>
+<dd><p>Optimal model selector passed to <code>STdeconvolve::optimalModel()</code>.</p></dd>
 
 
 <dt id="arg-clean-counts">clean_counts<a class="anchor" aria-label="anchor" href="#arg-clean-counts"></a></dt>
-<dd><p>Whether to call <code><a href="https://rdrr.io/pkg/STdeconvolve/man/cleanCounts.html" class="external-link">STdeconvolve::cleanCounts()</a></code>.</p></dd>
+<dd><p>Whether to call <code>STdeconvolve::cleanCounts()</code>.</p></dd>
 
 
 <dt id="arg-clean-counts-params">clean_counts_params<a class="anchor" aria-label="anchor" href="#arg-clean-counts-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code><a href="https://rdrr.io/pkg/STdeconvolve/man/cleanCounts.html" class="external-link">STdeconvolve::cleanCounts()</a></code>.</p></dd>
+<code>STdeconvolve::cleanCounts()</code>.</p></dd>
 
 
 <dt id="arg-restrict-corpus">restrict_corpus<a class="anchor" aria-label="anchor" href="#arg-restrict-corpus"></a></dt>
-<dd><p>Whether to call <code><a href="https://rdrr.io/pkg/STdeconvolve/man/restrictCorpus.html" class="external-link">STdeconvolve::restrictCorpus()</a></code>.</p></dd>
+<dd><p>Whether to call <code>STdeconvolve::restrictCorpus()</code>.</p></dd>
 
 
 <dt id="arg-restrict-corpus-params">restrict_corpus_params<a class="anchor" aria-label="anchor" href="#arg-restrict-corpus-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code><a href="https://rdrr.io/pkg/STdeconvolve/man/restrictCorpus.html" class="external-link">STdeconvolve::restrictCorpus()</a></code>.</p></dd>
+<code>STdeconvolve::restrictCorpus()</code>.</p></dd>
 
 
 <dt id="arg-fit-lda-params">fit_lda_params<a class="anchor" aria-label="anchor" href="#arg-fit-lda-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code><a href="https://rdrr.io/pkg/STdeconvolve/man/fitLDA.html" class="external-link">STdeconvolve::fitLDA()</a></code>.</p></dd>
+<code>STdeconvolve::fitLDA()</code>.</p></dd>
 
 
 <dt id="arg-get-beta-theta-params">get_beta_theta_params<a class="anchor" aria-label="anchor" href="#arg-get-beta-theta-params"></a></dt>
 <dd><p>Additional parameters passed to
-<code><a href="https://rdrr.io/pkg/STdeconvolve/man/getBetaTheta.html" class="external-link">STdeconvolve::getBetaTheta()</a></code>.</p></dd>
+<code>STdeconvolve::getBetaTheta()</code>.</p></dd>
 
 
 <dt id="arg-prefix">prefix<a class="anchor" aria-label="anchor" href="#arg-prefix"></a></dt>
@@ -186,73 +186,29 @@ results stored in <code>srt@tools[[tool_name]]</code> when <code>store_results =
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span></span>
-<span class="r-in"><span><span class="va">topic_weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  STdeconvolve_prop_topic_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">0.20</span>, length.out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  STdeconvolve_prop_topic_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.20</span>, <span class="fl">0.70</span>, length.out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  STdeconvolve_prop_topic_3 <span class="op">=</span> <span class="fl">0.10</span>,</span></span>
-<span class="r-in"><span>  row.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">topic_weights</span> <span class="op">&lt;-</span> <span class="va">topic_weights</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">topic_weights</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/AddMetaData.html" class="external-link">AddMetaData</a></span><span class="op">(</span><span class="va">spatial</span>, <span class="va">topic_weights</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span><span class="op">$</span><span class="va">STdeconvolve_dominant_type</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">"^STdeconvolve_prop_"</span>,</span></span>
-<span class="r-in"><span>  <span class="st">""</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">topic_weights</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/maxCol.html" class="external-link">max.col</a></span><span class="op">(</span><span class="va">topic_weights</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span><span class="op">$</span><span class="va">STdeconvolve_max_prop</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">topic_weights</span>, <span class="fl">1</span>, <span class="va">max</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"STdeconvolve_dominant_type"</span>,</span></span>
-<span class="r-in"><span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunSTdeconvolve-1.png" alt="" width="700" height="433"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">keep_spots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  length.out <span class="op">=</span> <span class="fl">120</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span><span class="op">[</span>, <span class="va">keep_spots</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunSTdeconvolve</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">300</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span>, <span class="fl">300</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  k <span class="op">=</span> <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Removing 0 genes present in 100% or more of pixels...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 300 genes remaining...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Removing 0 genes present in 5% or less of pixels...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 300 genes remaining...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Restricting to overdispersed genes with alpha = 0.05...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating variance fit ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using gam with k=5...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 68 overdispersed genes ... </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  Using top 1000 overdispersed genes.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  number of top overdispersed genes available: 68</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Time to fit LDA models was 0.07 mins</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing perplexity for each fitted model...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Time to compute perplexities was 0.04 mins</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting predicted cell-types at low proportions...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Time to compute cell-types at low proportions was 0 mins</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Plotting...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> `geom_line()`: Each group consists of only one observation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Do you need to adjust the <span style="color: #00BB00;">group</span> aesthetic?</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> `geom_line()`: Each group consists of only one observation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Do you need to adjust the <span style="color: #00BB00;">group</span> aesthetic?</span>
-<span class="r-plt img"><img src="RunSTdeconvolve-2.png" alt="" width="700" height="433"></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Filtering out cell-types in pixels that contribute less than 0.05 of the pixel proportion.</span>
 <span class="r-in"><span><span class="fu"><a href="STdeconvolvePlot.html">STdeconvolvePlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>  topics <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,</span></span>
+<span class="r-in"><span>  topics <span class="op">=</span> <span class="fl">1L</span>,</span></span>
 <span class="r-in"><span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunSTdeconvolve-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu"><a href="STdeconvolvePlot.html">STdeconvolvePlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"pie"</span>,</span></span>
-<span class="r-in"><span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunSTdeconvolve-4.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

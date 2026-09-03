@@ -133,6 +133,41 @@ coordinates are always returned in full-resolution units.</p></dd>
     <p>A plain list with `data`, `source`, and `transform` entries.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">coords_raw</span> <span class="op">&lt;-</span> <span class="fu">SpatialCoordinates</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span></span>
+<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  space <span class="op">=</span> <span class="st">"raw"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">coords_display</span> <span class="op">&lt;-</span> <span class="fu">SpatialCoordinates</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span></span>
+<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  space <span class="op">=</span> <span class="st">"display"</span>,</span></span>
+<span class="r-in"><span>  image.scale <span class="op">=</span> <span class="st">"lowres"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coords_raw</span><span class="op">$</span><span class="va">data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell_id"</span>, <span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                               cell_id    x   y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TGGTATCGGTCTGTAT-1 TGGTATCGGTCTGTAT-1 3859 662</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ATTATCTCGACAGATC-1 ATTATCTCGACAGATC-1 3914 662</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TGAGATCAAATACTCA-1 TGAGATCAAATACTCA-1 3969 662</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CTGGTCCTAACTTGGC-1 CTGGTCCTAACTTGGC-1 4024 662</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ATAGTCTTTGACGTGC-1 ATAGTCTTTGACGTGC-1 4079 662</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GGGTGGTCCAGCCTGT-1 GGGTGGTCCAGCCTGT-1 4134 662</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coords_display</span><span class="op">$</span><span class="va">data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell_id"</span>, <span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                               cell_id        x        y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TGGTATCGGTCTGTAT-1 TGGTATCGGTCTGTAT-1 301.4844 288.2812</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ATTATCTCGACAGATC-1 ATTATCTCGACAGATC-1 305.7812 288.2812</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TGAGATCAAATACTCA-1 TGAGATCAAATACTCA-1 310.0781 288.2812</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CTGGTCCTAACTTGGC-1 CTGGTCCTAACTTGGC-1 314.3750 288.2812</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ATAGTCTTTGACGTGC-1 ATAGTCTTTGACGTGC-1 318.6719 288.2812</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GGGTGGTCCAGCCTGT-1 GGGTGGTCCAGCCTGT-1 322.9688 288.2812</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

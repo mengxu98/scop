@@ -303,32 +303,41 @@ additional analysis with the upstream SpatialCellChat object is needed.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># SpatialCellChat is a runtime-optional backend and a full run can be slow.</span></span></span>
-<span class="r-in"><span><span class="co"># The following example uses constructed domain labels only to demonstrate</span></span></span>
-<span class="r-in"><span><span class="co"># the SpatialCellChat interface.</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_results_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">chat</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_results_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialCellChat</span></span></span>
+<span class="r-in"><span><span class="va">chat</span><span class="op">$</span><span class="va">summary</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $result_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "default"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $samples</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "ALL"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $analysis_level</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "spot"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $n_interactions</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 959</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $store_object</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "minimal"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="fu"><a href="SpatialCellChatPlot.html">SpatialCellChatPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">visium_human_pancreas_results_sub</span>,</span></span>
+<span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"incoming"</span>,</span></span>
+<span class="r-in"><span>  sample <span class="op">=</span> <span class="st">"ALL"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="RunSpatialCellChat-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/check_r.html" class="external-link">check_r</a></span><span class="op">(</span><span class="st">"jinworks/SpatialCellChat"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  use.names <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span><span class="op">$</span><span class="va">spatial_domain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">spatial</span><span class="op">$</span><span class="va">x</span> <span class="op">&lt;=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">x</span><span class="op">)</span>, <span class="st">"left"</span>, <span class="st">"right"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunSpatialCellChat</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"spatial_domain"</span>,</span></span>
-<span class="r-in"><span>    assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
-<span class="r-in"><span>    image <span class="op">=</span> <span class="st">"slice1"</span>,</span></span>
-<span class="r-in"><span>    technology <span class="op">=</span> <span class="st">"visium"</span>,</span></span>
-<span class="r-in"><span>    analysis.level <span class="op">=</span> <span class="st">"spot"</span>,</span></span>
-<span class="r-in"><span>    coordinate.unit <span class="op">=</span> <span class="st">"pixel"</span>,</span></span>
-<span class="r-in"><span>    species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
-<span class="r-in"><span>    store.object <span class="op">=</span> <span class="st">"minimal"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="SpatialCellChatPlot.html">SpatialCellChatPlot</a></span><span class="op">(</span><span class="va">spatial</span>, sample <span class="op">=</span> <span class="st">"slice1"</span>, plot_type <span class="op">=</span> <span class="st">"incoming"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="fu">check_r</span><span class="op">(</span><span class="st">"jinworks/SpatialCellChat"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunSpatialCellChat</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">visium_human_pancreas_results_sub</span>,</span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, image <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  technology <span class="op">=</span> <span class="st">"visium"</span>, analysis.level <span class="op">=</span> <span class="st">"spot"</span>,</span></span>
+<span class="r-in"><span>  coordinate.unit <span class="op">=</span> <span class="st">"pixel"</span>, species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span></span>
+<span class="r-in"><span>  store.object <span class="op">=</span> <span class="st">"minimal"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

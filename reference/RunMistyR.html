@@ -150,13 +150,13 @@ of <code>"para"</code> and <code>"juxta"</code>.</p></dd>
 
 <dt id="arg-para-l-para-zoi-para-family-para-approx-para-nn">para_l, para_zoi, para_family, para_approx, para_nn<a class="anchor" aria-label="anchor" href="#arg-para-l-para-zoi-para-family-para-approx-para-nn"></a></dt>
 <dd><p>Parameters passed to
-<code><a href="https://saezlab.github.io/mistyR/reference/add_paraview.html" class="external-link">mistyR::add_paraview()</a></code>. <code>para_l</code> and <code>para_zoi</code> use the selected coordinate
+<code>mistyR::add_paraview()</code>. <code>para_l</code> and <code>para_zoi</code> use the selected coordinate
 units; <code>para_nn</code> is a unitless neighbor count.</p></dd>
 
 
 <dt id="arg-juxta-neighbor-thr">juxta_neighbor_thr<a class="anchor" aria-label="anchor" href="#arg-juxta-neighbor-thr"></a></dt>
 <dd><p>Neighbor threshold passed to
-<code><a href="https://saezlab.github.io/mistyR/reference/add_juxtaview.html" class="external-link">mistyR::add_juxtaview()</a></code>, expressed in the selected coordinate units.</p></dd>
+<code>mistyR::add_juxtaview()</code>, expressed in the selected coordinate units.</p></dd>
 
 
 <dt id="arg-view-cached">view_cached<a class="anchor" aria-label="anchor" href="#arg-view-cached"></a></dt>
@@ -164,12 +164,12 @@ units; <code>para_nn</code> is a unitless neighbor count.</p></dd>
 
 
 <dt id="arg-results-folder">results_folder<a class="anchor" aria-label="anchor" href="#arg-results-folder"></a></dt>
-<dd><p>Folder passed to <code><a href="https://saezlab.github.io/mistyR/reference/run_misty.html" class="external-link">mistyR::run_misty()</a></code>. If <code>NULL</code>, a
+<dd><p>Folder passed to <code>mistyR::run_misty()</code>. If <code>NULL</code>, a
 temporary folder is used.</p></dd>
 
 
 <dt id="arg-seed-target-subset-bypass-intra-cv-folds-model-cached-append">seed, target_subset, bypass_intra, cv_folds, model_cached, append<a class="anchor" aria-label="anchor" href="#arg-seed-target-subset-bypass-intra-cv-folds-model-cached-append"></a></dt>
-<dd><p>Parameters passed to <code><a href="https://saezlab.github.io/mistyR/reference/run_misty.html" class="external-link">mistyR::run_misty()</a></code>.</p></dd>
+<dd><p>Parameters passed to <code>mistyR::run_misty()</code>.</p></dd>
 
 
 <dt id="arg-tool-name">tool_name<a class="anchor" aria-label="anchor" href="#arg-tool-name"></a></dt>
@@ -197,7 +197,7 @@ explicit compatibility option.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional named arguments passed to <code><a href="https://saezlab.github.io/mistyR/reference/run_misty.html" class="external-link">mistyR::run_misty()</a></code>.</p></dd>
+<dd><p>Additional named arguments passed to <code>mistyR::run_misty()</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -208,50 +208,36 @@ when <code>store_results = TRUE</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">spatial</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunMistyR</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
-<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  views <span class="op">=</span> <span class="st">"para"</span>,</span></span>
-<span class="r-in"><span>  para_l <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>  cv_folds <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Training models</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'pROC':</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   method   from            </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   plot.roc spatstat.explore</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Collecting improvements</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Collecting contributions</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Collecting importances</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aggregating</span>
-<span class="r-in"><span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">MistyR</span><span class="op">$</span><span class="va">summary</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_results_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">misty</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_results_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">MistyR</span></span></span>
+<span class="r-in"><span><span class="va">misty</span><span class="op">$</span><span class="va">summary</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $views</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "intraview"      "misty.uniqueid" "paraview.5"    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $n_targets</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $n_improvement_records</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $n_contribution_records</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 30</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $importance_views</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "view"       "Predictor"  "Target"     "Importance" "nsamples"  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="fu"><a href="MistyRPlot.html">MistyRPlot</a></span><span class="op">(</span>res <span class="op">=</span> <span class="va">misty</span>, type <span class="op">=</span> <span class="st">"improvements"</span>, top_n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="RunMistyR-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu">check_r</span><span class="op">(</span><span class="st">"saezlab/mistyR"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunMistyR</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">visium_human_pancreas_results_sub</span>,</span></span>
+<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">visium_human_pancreas_results_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>, views <span class="op">=</span> <span class="st">"para"</span>, para_l <span class="op">=</span> <span class="fl">5</span>,</span></span>
+<span class="r-in"><span>  cv_folds <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
