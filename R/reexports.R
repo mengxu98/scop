@@ -38,7 +38,6 @@ utils::globalVariables(
     ":=",
     ".",
     ".data",
-    "annoy_build_search",
     "auc",
     "abs_Cor",
     "abundance",

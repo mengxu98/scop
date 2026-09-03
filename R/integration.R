@@ -3137,6 +3137,31 @@ BBKNN_integrate <- function(
   }
 }
 
+bbknn_seurat_annoy_cross <- function(reference, query, k, n_trees, metric) {
+  seurat_metric <- switch(
+    metric,
+    angular = "cosine",
+    euclidean = "euclidean",
+    manhattan = "manhattan",
+    metric
+  )
+  if (is.null(rownames(reference))) {
+    rownames(reference) <- paste0("r", seq_len(nrow(reference)))
+  }
+  if (is.null(rownames(query))) {
+    rownames(query) <- paste0("q", seq_len(nrow(query)))
+  }
+  result <- get_namespace_fun("Seurat", "AnnoyNN")(
+    data = reference,
+    query = query,
+    metric = seurat_metric,
+    n.trees = n_trees,
+    k = k,
+    include.distance = TRUE
+  )
+  list(idx = result$nn.idx, distance = result$nn.dists)
+}
+
 bbknn_native_matrix <- function(embedding, batches, params = list()) {
   embedding <- as.matrix(embedding)
   batches <- as.factor(batches)
@@ -3197,13 +3222,12 @@ bbknn_native_matrix <- function(embedding, batches, params = list()) {
 
   neighbor_blocks <- lapply(batch_indices, function(reference_index) {
     result <- if (identical(computation, "annoy")) {
-      annoy_cross_knn(
+      bbknn_seurat_annoy_cross(
         reference = embedding[reference_index, , drop = FALSE],
         query = embedding,
         k = neighbors_within_batch,
         n_trees = annoy_n_trees,
-        metric = metric,
-        cores = cores
+        metric = metric
       )
     } else {
       exact_metric <- if (identical(metric, "angular")) "cosine" else metric
@@ -3332,7 +3356,11 @@ bbknn_native_matrix <- function(embedding, batches, params = list()) {
       } else {
         NULL
       },
-      backend = paste0("cpp_", computation)
+      backend = if (identical(computation, "annoy")) {
+        "seurat_annoy"
+      } else {
+        paste0("cpp_", computation)
+      }
     )
   )
 }

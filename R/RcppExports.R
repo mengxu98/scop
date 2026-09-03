@@ -669,14 +669,6 @@ parallel_all_in_one_dgc <- function(x_sexp, groups, group_sizes) {
     .Call(`_scop_parallel_all_in_one_dgc`, x_sexp, groups, group_sizes)
 }
 
-annoy_build_search <- function(data, k, n_trees, cores, search_k = -1L) {
-    .Call(`_scop_annoy_build_search`, data, k, n_trees, cores, search_k)
-}
-
-annoy_cross_knn <- function(reference, query, k, n_trees, metric, cores) {
-    .Call(`_scop_annoy_cross_knn`, reference, query, k, n_trees, metric, cores)
-}
-
 exact_knn_f32 <- function(data, k, cores) {
     .Call(`_scop_exact_knn_f32`, data, k, cores)
 }
