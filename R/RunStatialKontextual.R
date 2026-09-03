@@ -44,22 +44,18 @@
 #' @export
 #'
 #' @examples
-#' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
+#' data(visium_human_pancreas_results_sub)
+#' statial <- visium_human_pancreas_results_sub@tools$StatialKontextual
+#' statial$summary
+#' StatialKontextualPlot(res = statial)
 #'
-#' labels <- unique(as.character(spatial$coda_label))
-#' if (length(labels) >= 2) {
-#'   spatial <- RunStatialKontextual(
-#'     spatial,
-#'     group.by = "coda_label",
-#'     r = 50,
-#'     from = labels[1],
-#'     to = labels[2],
-#'     parent = labels[1:2],
-#'     coord.cols = c("x", "y"),
-#'     verbose = FALSE
-#'   )
-#'   spatial@tools$StatialKontextual$summary
+#' \dontrun{
+#' check_r("sydney-informatics-hub/Statial", verbose = FALSE)
+#' spatial <- RunStatialKontextual(
+#'   visium_human_pancreas_results_sub, group.by = "coda_label", r = 50,
+#'   from = "collagen", to = "acini", parent = c("collagen", "acini"),
+#'   coord.cols = c("x", "y"), verbose = FALSE
+#' )
 #' }
 RunStatialKontextual <- function(
   srt,
@@ -331,6 +327,11 @@ statial_kontextual_summary <- function(table, top_n = 10L) {
 #' @param images Optional image identifiers to retain.
 #' @return A `ggplot` object.
 #' @export
+#' @examples
+#' data(visium_human_pancreas_results_sub)
+#' StatialKontextualPlot(
+#'   res = visium_human_pancreas_results_sub@tools$StatialKontextual
+#' )
 StatialKontextualPlot <- function(object = NULL, res = NULL, tests = NULL, images = NULL) {
   if (is.null(res)) {
     if (is.null(object) || !inherits(object, "Seurat")) {

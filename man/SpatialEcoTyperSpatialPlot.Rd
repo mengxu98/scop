@@ -52,23 +52,12 @@ Plot SpatialEcoTyper labels on spatial coordinates using the spatial
 plotting style.
 }
 \examples{
-counts <- matrix(
-  c(3, 0, 1, 2, 0, 4, 1, 0, 2, 1, 3, 0),
-  nrow = 3,
-  byrow = TRUE
-)
-rownames(counts) <- c("EPCAM", "COL1A1", "PTPRC")
-colnames(counts) <- paste0("spot", 1:4)
-srt <- Seurat::CreateSeuratObject(counts)
-srt$X <- c(0, 1, 0, 1)
-srt$Y <- c(0, 0, 1, 1)
-srt$SpatialEcoTyper_SE <- c("SE1", "SE1", "SE2", "SE2")
-srt$CellType <- c("Epithelial", "Fibroblast", "Immune", "Epithelial")
-
+data(visium_human_pancreas_pair_sub)
 SpatialEcoTyperSpatialPlot(
-  srt,
+  visium_human_pancreas_pair_sub,
+  group.by = "domain",
   overlay_image = FALSE,
-  coord.cols = c("X", "Y"),
-  pt.size = 4
+  coord.cols = c("x", "y"),
+  pt.size = 1.5
 )
 }

@@ -29,48 +29,29 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
-#' topic_weights <- data.frame(
-#'   STdeconvolve_prop_topic_1 = seq(0.75, 0.20, length.out = ncol(spatial)),
-#'   STdeconvolve_prop_topic_2 = seq(0.20, 0.70, length.out = ncol(spatial)),
-#'   STdeconvolve_prop_topic_3 = 0.10,
-#'   row.names = colnames(spatial)
-#' )
-#' topic_weights <- topic_weights / rowSums(topic_weights)
-#' spatial <- Seurat::AddMetaData(spatial, topic_weights)
-#' spatial$STdeconvolve_dominant_type <- sub(
-#'   "^STdeconvolve_prop_",
-#'   "",
-#'   colnames(topic_weights)[max.col(topic_weights)]
-#' )
-#' spatial$STdeconvolve_max_prop <- apply(topic_weights, 1, max)
-#'
-#' SpatialSpotPlot(
-#'   spatial,
-#'   group.by = "STdeconvolve_dominant_type",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
+#' keep_spots <- unique(round(seq(
+#'   1,
+#'   ncol(visium_human_pancreas_sub),
+#'   length.out = 120
+#' )))
+#' spatial <- visium_human_pancreas_sub[, keep_spots]
 #' spatial <- RunSTdeconvolve(
 #'   spatial,
 #'   assay = "Spatial",
-#'   features = rownames(spatial)[1:300],
+#'   layer = "counts",
+#'   features = head(rownames(spatial), 300),
 #'   k = 3,
 #'   verbose = FALSE
 #' )
 #' STdeconvolvePlot(
 #'   spatial,
-#'   topics = 1:2,
+#'   topics = 1L,
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")
 #' )
-#' STdeconvolvePlot(
-#'   spatial,
-#'   plot_type = "pie",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
+#' }
 RunSTdeconvolve <- function(
   srt,
   assay = NULL,
@@ -232,20 +213,9 @@ RunSTdeconvolve <- function(
 #' @export
 #'
 #' @examples
-#' thisutils::check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
-#' data(visium_human_pancreas_sub)
-#' spatial <- RunSTdeconvolve(
-#'   visium_human_pancreas_sub,
-#'   assay = "Spatial",
-#'   features = rownames(visium_human_pancreas_sub)[1:300],
-#'   k = 3,
-#'   prefix = "STFull",
-#'   tool_name = "STdeconvolveFull",
-#'   verbose = FALSE
-#' )
+#' data(visium_human_pancreas_results_sub)
 #' STdeconvolvePlot(
-#'   spatial,
-#'   tool_name = "STdeconvolveFull",
+#'   visium_human_pancreas_results_sub,
 #'   topics = 1:2,
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")

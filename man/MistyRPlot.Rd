@@ -30,3 +30,11 @@ A `ggplot` object.
 Plot model improvements or view contributions from a result
 produced by [RunMistyR()] without rerunning the backend.
 }
+\examples{
+data(visium_human_pancreas_results_sub)
+MistyRPlot(
+  res = visium_human_pancreas_results_sub@tools$MistyR,
+  type = "improvements",
+  top_n = 10
+)
+}

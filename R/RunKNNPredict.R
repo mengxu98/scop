@@ -64,152 +64,22 @@
 #' @export
 #'
 #' @examples
-#' # Annotate cells using bulk RNA-seq data
-#' data(pancreas_sub)
-#' data(ref_scMCA)
-#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#'
-#' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub,
-#'   bulk_ref = ref_scMCA
-#' )
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "KNNPredict_classification",
-#'   label = TRUE
-#' )
-#'
-#' # Removal of low credible cell types from the predicted results
-#' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub,
-#'   bulk_ref = ref_scMCA,
-#'   filter_lowfreq = 30
-#' )
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "KNNPredict_classification",
-#'   label = TRUE
-#' )
-#'
-#' # Annotate clusters using bulk RNA-seq data
-#' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub,
-#'   query_group = "SubCellType",
-#'   bulk_ref = ref_scMCA
-#' )
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "KNNPredict_classification",
-#'   label = TRUE
-#' )
-#'
-#' # Annotate using single cell RNA-seq data
 #' data(panc8_sub)
-#' # Simply convert genes from human to mouse and preprocess the data
-#' genenames <- make.unique(
-#'   thisutils::capitalize(
-#'     rownames(panc8_sub),
-#'     force_tolower = TRUE
-#'   )
+#' keep <- panc8_sub$celltype %in% c("ductal", "alpha", "beta")
+#' reference <- panc8_sub[, keep & panc8_sub$tech != "fluidigmc1"]
+#' query <- panc8_sub[, keep & panc8_sub$tech == "fluidigmc1"]
+#' genes <- intersect(rownames(reference), rownames(query))[1:200]
+#' query <- RunKNNPredict(
+#'   query, srt_ref = reference, ref_group = "celltype",
+#'   features = genes, nfeatures = length(genes),
+#'   ref_collapsing = FALSE, k = 10, verbose = FALSE
 #' )
-#' names(genenames) <- rownames(panc8_sub)
-#' panc8_sub <- RenameFeatures(
-#'   panc8_sub,
-#'   newnames = genenames
-#' )
-#' panc8_sub <- CheckDataMerge(
-#'   panc8_sub,
-#'   batch = "tech"
-#' )[["srt_merge"]]
-#' panc8_sub <- SeuratObject::JoinLayers(panc8_sub)
-#' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub,
-#'   srt_ref = panc8_sub,
-#'   ref_group = "celltype"
-#' )
+#' query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
 #' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "KNNPredict_classification",
-#'   label = TRUE
+#'   query, group.by = "KNNPredict_classification",
+#'   label = TRUE, legend.position = "bottom"
 #' )
-#' FeatureDimPlot(
-#'   pancreas_sub,
-#'   features = "KNNPredict_simil"
-#' )
-#'
-#' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub,
-#'   srt_ref = panc8_sub,
-#'   ref_group = "celltype",
-#'   ref_collapsing = FALSE
-#' )
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "KNNPredict_classification",
-#'   label = TRUE
-#' )
-#' FeatureDimPlot(
-#'   pancreas_sub,
-#'   features = "KNNPredict_prob"
-#' )
-#'
-#' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub,
-#'   srt_ref = panc8_sub,
-#'   query_group = "SubCellType",
-#'   ref_group = "celltype"
-#' )
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "KNNPredict_classification",
-#'   label = TRUE
-#' )
-#' FeatureDimPlot(
-#'   pancreas_sub,
-#'   features = "KNNPredict_simil"
-#' )
-#'
-#' # Annotate with DE gene instead of HVF
-#' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub,
-#'   srt_ref = panc8_sub,
-#'   ref_group = "celltype",
-#'   features_type = "DE",
-#'   feature_source = "ref",
-#'   DEtest_param = list(cores = 2)
-#' )
-#'
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "KNNPredict_classification",
-#'   label = TRUE
-#' )
-#'
-#' FeatureDimPlot(
-#'   pancreas_sub,
-#'   features = "KNNPredict_simil"
-#' )
-#'
-#' pancreas_sub <- RunKNNPredict(
-#'   srt_query = pancreas_sub,
-#'   srt_ref = panc8_sub,
-#'   query_group = "SubCellType",
-#'   ref_group = "celltype",
-#'   features_type = "DE",
-#'   feature_source = "both",
-#'   DEtest_param = list(cores = 2)
-#' )
-#'
-#' CellDimPlot(
-#'   pancreas_sub,
-#'   group.by = "KNNPredict_classification",
-#'   label = TRUE
-#' )
-#'
-#' FeatureDimPlot(
-#'   pancreas_sub,
-#'   features = "KNNPredict_simil"
-#' )
+#' FeatureDimPlot(query, features = "KNNPredict_simil")
 RunKNNPredict <- function(
   srt_query,
   srt_ref = NULL,

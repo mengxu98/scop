@@ -31,3 +31,20 @@ Read a graph from a `SpatialNetwork` result without modifying the Seurat
 object. Graphs can be returned as their complete list representation, a
 sparse matrix, or a Seurat `Graph` object.
 }
+\examples{
+data(visium_human_pancreas_sub)
+spatial <- RunSpatialNetwork(
+  visium_human_pancreas_sub,
+  k = 6,
+  coord.cols = c("x", "y"),
+  verbose = FALSE
+)
+graph <- GetSpatialGraph(spatial, format = "list")
+graph_sparse <- GetSpatialGraph(spatial, format = "sparse")
+c(nodes = nrow(graph$nodes), edges = nrow(graph$edges))
+graph_sparse[
+  seq_len(min(3, nrow(graph_sparse))),
+  seq_len(min(3, ncol(graph_sparse)))
+]
+
+}

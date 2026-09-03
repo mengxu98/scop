@@ -46,46 +46,22 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
-#' rctd_weights <- data.frame(
-#'   RCTD_prop_Ductal = seq(0.75, 0.15, length.out = ncol(spatial)),
-#'   RCTD_prop_Endocrine = seq(0.15, 0.65, length.out = ncol(spatial)),
-#'   RCTD_prop_Stromal = 0.10,
-#'   row.names = colnames(spatial)
-#' )
-#' rctd_weights <- rctd_weights / rowSums(rctd_weights)
-#' spatial <- Seurat::AddMetaData(spatial, rctd_weights)
-#' spatial$RCTD_dominant_type <- sub(
-#'   "^RCTD_prop_",
-#'   "",
-#'   colnames(rctd_weights)[max.col(rctd_weights)]
-#' )
-#' spatial$RCTD_max_prop <- apply(rctd_weights, 1, max)
-#'
-#' SpatialSpotPlot(
-#'   spatial,
-#'   group.by = "RCTD_dominant_type",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
-#' SpatialSpotPlot(
-#'   spatial,
-#'   group.by = "RCTD_dominant_type",
-#'   plot_type = "pie",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
-#'
 #' data(panc8_sub)
-#' spatial <- spatial[, seq_len(120)]
-#' reference <- panc8_sub[, panc8_sub$celltype %in% c("ductal", "alpha", "beta")]
+#' keep_spots <- unique(round(seq(
+#'   1,
+#'   ncol(visium_human_pancreas_sub),
+#'   length.out = 120
+#' )))
+#' spatial <- visium_human_pancreas_sub[, keep_spots]
+#' reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
+#'   c("ductal", "alpha", "beta")]
 #' reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
-#' features_use <- intersect(
+#' features_use <- head(intersect(
 #'   SeuratObject::VariableFeatures(reference),
 #'   rownames(spatial)
-#' )
-#'
+#' ), 300)
 #' spatial <- RunRCTD(
 #'   srt = spatial,
 #'   reference = reference,
@@ -95,29 +71,21 @@
 #'   layer = "counts",
 #'   reference_layer = "counts",
 #'   features = features_use,
+#'   coord.cols = c("x", "y"),
 #'   rctd_mode = "full",
 #'   max_cores = 1,
 #'   min_cells = 25,
 #'   prefix = "RCTD",
 #'   verbose = FALSE
 #' )
-#'
-#' rctd_cols <- grep("^RCTD_prop_", colnames(spatial@meta.data), value = TRUE)
-#' SpatialSpotPlot(
+#' SpatialDeconvolutionPlot(
 #'   spatial,
-#'   group.by = "RCTD_dominant_type",
+#'   tool_name = "RCTD",
+#'   plot_type = "dominant",
 #'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y"),
-#'   theme_use = "theme_scop"
+#'   coord.cols = c("x", "y")
 #' )
-#' SpatialSpotPlot(
-#'   spatial,
-#'   group.by = rctd_cols[1:min(3, length(rctd_cols))],
-#'   palette = "Spectral",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y"),
-#'   theme_use = "theme_scop"
-#' )
+#' }
 RunRCTD <- function(
   srt,
   reference,

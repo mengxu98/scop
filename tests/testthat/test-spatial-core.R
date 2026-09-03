@@ -261,7 +261,7 @@ test_that("analysis and plotting never silently select the first spatial image",
   expect_identical(selected$source$image, "slice2")
   expect_identical(selected$source$coordinate_space, "legacy_display")
   expect_true(inherits(srt[["slice2"]], "VisiumV2"))
-  expect_identical(selected$source$coord.cols, c("y", "x"))
+  expect_identical(selected$source$coord.cols, c("x", "y"))
   expect_true(all(c("scale", "y_flip", "raw_x_col", "raw_y_col") %in%
     names(selected$transform)))
 

@@ -88,32 +88,39 @@ based on logistic regression classifiers. This function runs CellTypist annotati
 on a Seurat object or AnnData object.
 }
 \examples{
-\dontrun{
-data(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-pancreas_sub <- RunCellTypist(
-  pancreas_sub,
-  model = "Developing_Mouse_Brain.pkl"
+data(pbmc_celltypist_sub)
+pbmc_celltypist_sub <- RunStandardWorkflow(
+  pbmc_celltypist_sub,
+  assay = "RNA",
+  linear_reduction_dims = 10,
+  verbose = FALSE
+)
+# Collapse the real CellTypist labels to short display groups so the
+# default-width example remains readable; the full labels stay in metadata.
+predicted <- as.character(pbmc_celltypist_sub$celltypist_predicted_labels)
+pbmc_celltypist_sub$celltypist_display <- ifelse(
+  grepl("monocyte|Mono-mac", predicted, ignore.case = TRUE), "Mono",
+  ifelse(grepl("DC|pDC", predicted, ignore.case = TRUE), "DC",
+    ifelse(grepl("B cells", predicted, ignore.case = TRUE), "B",
+      ifelse(grepl("NK|T cells|MAIT", predicted, ignore.case = TRUE), "T/NK", "Other")
+    )
+  )
 )
 CellDimPlot(
-  pancreas_sub,
-  group.by = "celltypist_predicted_labels",
-  legend.position = "none"
+  pbmc_celltypist_sub,
+  group.by = "celltypist_display",
+  label = TRUE,
+  legend.position = "bottom"
 )
 
-# Use prob match mode
-pancreas_sub <- RunCellTypist(
-  pancreas_sub,
-  model = "Developing_Mouse_Brain.pkl",
-  mode = "prob match",
-  p_thres = 0.5
+\dontrun{
+check_python(c("celltypist", "anndata"))
+data(pbmcmultiome_sub)
+pbmcmultiome_sub <- RunStandardWorkflow(
+  pbmcmultiome_sub, assay = "RNA", linear_reduction_dims = 10
 )
-
-# Use majority voting
-pancreas_sub <- RunCellTypist(
-  pancreas_sub,
-  model = "Developing_Mouse_Brain.pkl",
-  majority_voting = TRUE
+pbmcmultiome_sub <- RunCellTypist(
+  pbmcmultiome_sub, model = "Immune_All_Low.pkl", verbose = FALSE
 )
 }
 }

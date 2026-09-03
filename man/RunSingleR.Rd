@@ -91,61 +91,23 @@ Annotate single cells using SingleR
 }
 \examples{
 data(panc8_sub)
-genenames <- make.unique(
-  thisutils::capitalize(
-    rownames(panc8_sub),
-    force_tolower = TRUE
-  )
+keep <- panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")
+panc8_sub <- Seurat::NormalizeData(panc8_sub[, keep], verbose = FALSE)
+reference <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
+query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
+query <- RunSingleR(
+  srt_query = query, srt_ref = reference,
+  ref_group = "celltype", genes = "de", cores = 1, verbose = FALSE
 )
-names(genenames) <- rownames(panc8_sub)
-panc8_sub <- RenameFeatures(
-  panc8_sub,
-  newnames = genenames
-)
-panc8_sub <- RunStandardWorkflow(panc8_sub)
-
-data(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-pancreas_sub <- RunSingleR(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_sub,
-  query_group = "Standardpca_SNN_res.0.6",
-  ref_group = "celltype"
-)
+query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
 CellDimPlot(
-  pancreas_sub,
-  group.by = c("singler_annotation", "SubCellType")
+  query, group.by = "singler_annotation",
+  label = TRUE, legend.position = "bottom"
 )
-
-pancreas_sub <- RunSingleR(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_sub,
-  query_group = NULL,
-  ref_group = "celltype"
-)
-CellDimPlot(
-  pancreas_sub,
-  group.by = c("singler_annotation", "SubCellType"),
-  label = TRUE
-)
-
 FeatureStatPlot(
-  pancreas_sub,
-  stat.by = "singler_score",
+  query, stat.by = "singler_score",
   group.by = "singler_annotation"
 )
-
-ht1 <- CellCorHeatmap(
-  srt_query = pancreas_sub,
-  srt_ref = pancreas_sub,
-  query_group = "SubCellType",
-  cluster_rows = TRUE,
-  ref_group = "singler_annotation",
-  cluster_columns = TRUE,
-  width = 2,
-  height = 2
-)
-ht1$plot
 }
 \seealso{
 \link{RunKNNPredict}, \link{RunKNNMap}

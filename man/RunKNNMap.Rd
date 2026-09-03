@@ -98,30 +98,26 @@ The function maps cells from the srt_query dataset to the srt_ref dataset based 
 }
 \examples{
 data(panc8_sub)
-panc8_sub <- RunStandardWorkflow(panc8_sub)
+keep <- panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")
+panc8_sub <- panc8_sub[, keep]
+panc8_sub <- RunStandardWorkflow(
+  panc8_sub, verbose = FALSE, linear_reduction_dims = 10
+)
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
-srt_ref <- RunIntegration(
-  srt_ref,
-  batch = "tech",
-  integration_method = "Uncorrected"
-)
-CellDimPlot(
-  srt_ref,
-  group.by = c("celltype", "tech")
-)
-
-# Projection
 srt_query <- RunKNNMap(
   srt_query = srt_query,
   srt_ref = srt_ref,
-  ref_umap = "UncorrectedUMAP2D"
+  ref_umap = "StandardUMAP2D",
+  k = 10,
+  verbose = FALSE
 )
 ProjectionPlot(
   srt_query = srt_query,
   srt_ref = srt_ref,
   query_group = "celltype",
-  ref_group = "celltype"
+  ref_group = "celltype",
+  legend.position = "bottom"
 )
 }
 \seealso{
