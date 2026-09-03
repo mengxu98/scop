@@ -1462,6 +1462,96 @@ aggregate_counts_by_group <- function(counts, groups) {
   agg
 }
 
+RunDEtestCheckMinCellsSample <- function(min.cells.sample) {
+  if (
+    !is.numeric(min.cells.sample) ||
+      length(min.cells.sample) != 1L ||
+      is.na(min.cells.sample) ||
+      !is.finite(min.cells.sample) ||
+      min.cells.sample < 1
+  ) {
+    log_message(
+      "{.arg min.cells.sample} must be a single finite number greater than or equal to 1",
+      message_type = "error"
+    )
+  }
+  min.cells.sample
+}
+
+RunDEtestSampleInventory <- function(
+  meta_use,
+  sample_col,
+  condition_col,
+  group,
+  min.cells.sample
+) {
+  if (nrow(meta_use) == 0L) {
+    return(RunDEtestEmptySampleInventory())
+  }
+  sample_ids <- as.character(meta_use[[sample_col]])
+  n_by_sample <- c(table(sample_ids))
+  cond_key <- unique(meta_use[, c(sample_col, condition_col), drop = FALSE])
+  cond_map <- stats::setNames(
+    as.character(cond_key[[condition_col]]),
+    as.character(cond_key[[sample_col]])
+  )
+  data.frame(
+    group = as.character(group),
+    sample = names(n_by_sample),
+    condition = unname(cond_map[names(n_by_sample)]),
+    n_cells = as.integer(n_by_sample),
+    kept = as.numeric(n_by_sample) >= min.cells.sample,
+    stringsAsFactors = FALSE,
+    row.names = NULL
+  )
+}
+
+RunDEtestEmptySampleInventory <- function() {
+  data.frame(
+    group = character(),
+    sample = character(),
+    condition = character(),
+    n_cells = integer(),
+    kept = logical(),
+    stringsAsFactors = FALSE
+  )
+}
+
+RunDEtestBindPseudobulkResults <- function(group_results) {
+  marker_list <- lapply(group_results, function(result) {
+    if (is.null(result) || !all(c("markers", "inventory") %in% names(result))) {
+      return(NULL)
+    }
+    result$markers
+  })
+  inventory_list <- lapply(group_results, function(result) {
+    if (is.null(result) || !all(c("markers", "inventory") %in% names(result))) {
+      return(NULL)
+    }
+    result$inventory
+  })
+  marker_list <- Filter(
+    function(x) !is.null(x) && NROW(x) > 0L,
+    marker_list
+  )
+  inventory_list <- Filter(
+    function(x) !is.null(x) && NROW(x) > 0L,
+    inventory_list
+  )
+  all_markers <- if (length(marker_list) == 0L) {
+    data.frame()
+  } else {
+    do.call(rbind.data.frame, marker_list)
+  }
+  sample_inventory <- if (length(inventory_list) == 0L) {
+    RunDEtestEmptySampleInventory()
+  } else {
+    do.call(rbind.data.frame, inventory_list)
+  }
+  rownames(sample_inventory) <- NULL
+  list(markers = all_markers, inventory = sample_inventory)
+}
+
 RunDEtestStopOnParallelErrors <- function(results, context) {
   if (is.null(results) || !is.list(results)) {
     return(invisible(results))
@@ -1659,6 +1749,7 @@ RunDEtest_pseudobulk <- function(
   base = 2,
   sample_col = NULL,
   condition_col = NULL,
+  min.cells.sample = 10,
   p.adjust.method = "bonferroni",
   layer = "counts",
   assay = NULL,
@@ -1699,6 +1790,7 @@ RunDEtest_pseudobulk <- function(
       message_type = "error"
     )
   }
+  min.cells.sample <- RunDEtestCheckMinCellsSample(min.cells.sample)
 
   counts <- GetAssayData5(srt, layer = layer, assay = assay)
   features <- features %||% rownames(counts)
@@ -1768,7 +1860,10 @@ RunDEtest_pseudobulk <- function(
       meta_use <- meta_use[stats::complete.cases(meta_use), , drop = FALSE]
       cells_use <- rownames(meta_use)
       if (length(cells_use) == 0) {
-        return(NULL)
+        return(list(
+          markers = NULL,
+          inventory = RunDEtestEmptySampleInventory()
+        ))
       }
 
       sample_condition <- unique(meta_use[,
@@ -1783,6 +1878,41 @@ RunDEtest_pseudobulk <- function(
         )
       }
 
+      inventory <- RunDEtestSampleInventory(
+        meta_use = meta_use,
+        sample_col = sample_col,
+        condition_col = condition_col,
+        group = current_group,
+        min.cells.sample = min.cells.sample
+      )
+      dropped <- inventory$sample[!inventory$kept]
+      if (length(dropped) > 0L) {
+        log_message(
+          "Drop samples with fewer than {.val {min.cells.sample}} cells in {.val {current_group}}: {.val {dropped}}",
+          message_type = "warning",
+          verbose = verbose
+        )
+      }
+      keep_samples <- inventory$sample[inventory$kept]
+      if (length(keep_samples) == 0L) {
+        log_message(
+          "No samples remain in {.val {current_group}} after requiring at least {.val {min.cells.sample}} cells per sample",
+          message_type = "warning",
+          verbose = verbose
+        )
+        return(list(markers = NULL, inventory = inventory))
+      }
+      meta_use <- meta_use[
+        as.character(meta_use[[sample_col]]) %in% keep_samples,
+        ,
+        drop = FALSE
+      ]
+      cells_use <- rownames(meta_use)
+      sample_condition <- unique(meta_use[,
+        c(sample_col, condition_col),
+        drop = FALSE
+      ])
+
       counts_use <- counts[, cells_use, drop = FALSE]
       count_matrix <- aggregate_counts_by_group(
         counts = counts_use,
@@ -1793,6 +1923,16 @@ RunDEtest_pseudobulk <- function(
         sample_condition[[sample_col]]
       )
       condition_use <- condition_map[colnames(count_matrix)]
+      n_condition1 <- sum(condition_use == condition1, na.rm = TRUE)
+      n_condition2 <- sum(condition_use == condition2, na.rm = TRUE)
+      if (n_condition1 < 2L || n_condition2 < 2L) {
+        log_message(
+          "Skip {.val {current_group}}: need at least 2 samples per condition after {.arg min.cells.sample} filtering ({.val {condition1}} = {.val {n_condition1}}, {.val {condition2}} = {.val {n_condition2}})",
+          message_type = "warning",
+          verbose = verbose
+        )
+        return(list(markers = NULL, inventory = inventory))
+      }
       markers <- switch(test.use,
         limma = RunDEtest_limma(
           count_matrix = count_matrix,
@@ -1832,7 +1972,7 @@ RunDEtest_pseudobulk <- function(
         )
       )
       if (is.null(markers) || nrow(markers) == 0) {
-        return(NULL)
+        return(list(markers = NULL, inventory = inventory))
       }
       markers[, "gene"] <- rownames(markers)
       markers[, "feature"] <- rownames(markers)
@@ -1841,22 +1981,18 @@ RunDEtest_pseudobulk <- function(
       markers[, "group2"] <- paste0(condition2, "_vs_", condition1)
       markers[, "condition1"] <- condition1
       markers[, "condition2"] <- condition2
-      markers[, "sample_number1"] <- sum(
-        condition_use == condition1,
-        na.rm = TRUE
-      )
-      markers[, "sample_number2"] <- sum(
-        condition_use == condition2,
-        na.rm = TRUE
-      )
-      markers
+      markers[, "sample_number1"] <- n_condition1
+      markers[, "sample_number2"] <- n_condition2
+      list(markers = markers, inventory = inventory)
     }
   )
   RunDEtestStopOnParallelErrors(
     all_markers,
     context = "Sample-level differential testing"
   )
-  all_markers <- do.call(rbind.data.frame, all_markers)
+  bound <- RunDEtestBindPseudobulkResults(all_markers)
+  all_markers <- bound$markers
+  sample_inventory <- bound$inventory
   tool_name <- if (is.null(group.by)) {
     "DEtest_pseudobulk"
   } else {
@@ -1868,6 +2004,8 @@ RunDEtest_pseudobulk <- function(
   srt@tools[[tool_name]][["feature_type"]] <- feature_type
   srt@tools[[tool_name]][["sample_col"]] <- sample_col
   srt@tools[[tool_name]][["condition_col"]] <- condition_col
+  srt@tools[[tool_name]][["min.cells.sample"]] <- min.cells.sample
+  srt@tools[[tool_name]][["sample_inventory"]] <- sample_inventory
   srt@tools[[tool_name]][["condition1"]] <- condition1
   srt@tools[[tool_name]][["condition2"]] <- condition2
   srt@tools[[tool_name]][["test.use"]] <- test.use
@@ -1956,6 +2094,12 @@ RunDEtest_pseudobulk <- function(
 #' @param condition_col Metadata column storing condition labels.
 #' Required when `test.use` is a sample-level pseudobulk method on `Seurat`, and
 #' required for `SummarizedExperiment` input.
+#' @param min.cells.sample Minimum number of cells required for a sample to be
+#' kept in sample-level pseudobulk testing. Applied independently within each
+#' `group.by` level (for example each cell type). Samples below the threshold
+#' are dropped before aggregation. Default `10`. Set to `1` to keep every
+#' sample that has at least one cell. Ignored for cell-level tests and for
+#' `SummarizedExperiment` input.
 #' @param bulk_assay Assay name used as the bulk counts matrix for
 #' `SummarizedExperiment` input.
 #' @param p.adjust.method A character value specifying the method to use for adjusting p-values.
@@ -2167,6 +2311,7 @@ RunDEtest_pseudobulk <- function(
 #'   test.use = "edgeR",
 #'   layer = "counts",
 #'   fc.threshold = 1,
+#'   min.cells.sample = 10,
 #'   only.pos = FALSE
 #' )
 #' DEtestPlot(
@@ -2263,6 +2408,7 @@ RunDEtest.Seurat <- function(
   norm.method = "LogNormalize",
   sample_col = NULL,
   condition_col = NULL,
+  min.cells.sample = 10,
   bulk_assay = "counts",
   p.adjust.method = "bonferroni",
   layer = "data",
@@ -2277,6 +2423,8 @@ RunDEtest.Seurat <- function(
   feature_type <- match.arg(feature_type)
   markers_type <- match.arg(markers_type)
   meta.method <- match.arg(meta.method)
+  min_cells_sample_specified <- !missing(min.cells.sample)
+  min.cells.sample <- RunDEtestCheckMinCellsSample(min.cells.sample)
   if (is.null(assay)) {
     assay <- SeuratObject::DefaultAssay(srt)
   }
@@ -2386,6 +2534,7 @@ RunDEtest.Seurat <- function(
       base = base,
       sample_col = sample_col,
       condition_col = condition_col,
+      min.cells.sample = min.cells.sample,
       p.adjust.method = p.adjust.method,
       layer = layer,
       assay = assay,
@@ -2403,6 +2552,13 @@ RunDEtest.Seurat <- function(
     )
     sample_col <- NULL
     condition_col <- NULL
+  }
+  if (isTRUE(min_cells_sample_specified)) {
+    log_message(
+      "{.arg min.cells.sample} is only used by sample-level methods. Ignoring it for cell-level differential testing.",
+      message_type = "warning",
+      verbose = verbose
+    )
   }
   if (markers_type %in% c("conserved", "disturbed")) {
     if (is.null(grouping.var)) {
@@ -3305,6 +3461,7 @@ RunDEtest.SummarizedExperiment <- function(
   norm.method = "LogNormalize",
   sample_col = NULL,
   condition_col = NULL,
+  min.cells.sample = 10,
   bulk_assay = "counts",
   p.adjust.method = "bonferroni",
   layer = "counts",
@@ -3341,6 +3498,13 @@ RunDEtest.SummarizedExperiment <- function(
   if (!is.null(sample_col)) {
     log_message(
       "{.arg sample_col} is ignored for {.cls SummarizedExperiment} input because bulk sample IDs are taken from column names.",
+      message_type = "warning",
+      verbose = verbose
+    )
+  }
+  if (!missing(min.cells.sample)) {
+    log_message(
+      "{.arg min.cells.sample} is ignored for {.cls SummarizedExperiment} input because bulk samples have no per-sample cell counts.",
       message_type = "warning",
       verbose = verbose
     )
