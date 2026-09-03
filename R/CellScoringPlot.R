@@ -1,5 +1,7 @@
 #' @title Plot CellScoring results from a Seurat object
 #'
+#' @inheritParams CellDimPlot
+#'
 #' @param srt A `Seurat` object.
 #' @param method Cell-scoring method to retrieve and label. Accepts the same
 #'   values as the `method` argument of [CellScoring()].
@@ -14,9 +16,6 @@
 #'   matching [CellScoring()] record.
 #' @param group.by Metadata column used for cell groups. `NULL` uses active
 #'   Seurat identities.
-#' @param reduction Dimensional reduction. `NULL` uses [DefaultReduction()].
-#' @param dims Two dimensions to plot.
-#' @param cells Cells to include. `NULL` uses all cells.
 #' @param thresholds Optional score thresholds. Supply one value per feature,
 #'   a named vector keyed by display or source feature name, or `"auto"` to
 #'   infer thresholds for AUCell scores. When `NULL`, `add_bar = TRUE`, and
@@ -39,7 +38,6 @@
 #'   each row pair. Use `c(0.47, 0.53)` for the compact benchmark layout.
 #' @param point.size Point size in rasterized UMAPs. `NULL` lets
 #'   [CellDimPlot()] choose a readable size from the number of plotted cells.
-#' @param raster.dpi Raster resolution for UMAP points.
 #' @param point.fraction Fraction of cells shown as jittered points in each
 #'   boxplot. Boxplot statistics always use all cells.
 #' @param point.alpha Alpha for jittered points.
@@ -74,10 +72,7 @@
 #'   `"left"` or `"right"`.
 #' @param group.title Optional group legend title.
 #' @param threshold.colors Colors for cells above and below each threshold.
-#' @param ... Additional arguments forwarded to [CellDimPlot()] for the group
-#'   dimensional plot. This exposes labels, selected-cell outlines, marks,
-#'   density, grid, graph, PAGA, velocity, and related functionality.
-#'   Structural arguments and legend placement remain controlled here.
+#' @param ... Additional arguments forwarded to [CellDimPlot()].
 #' @param combine Return a patchwork when `TRUE`; otherwise return named plot
 #'   components before layout spacers are inserted.
 #' @param seed Seed used for automatic threshold inference and jitter-point
@@ -129,6 +124,7 @@ CellScoringPlot <- function(
   nrow = NULL,
   row.heights = c(1, 1),
   point.size = NULL,
+  raster = NULL,
   raster.dpi = 512,
   point.fraction = 0.1,
   point.alpha = 0.2,
@@ -299,6 +295,15 @@ CellScoringPlot <- function(
       message_type = "error"
     )
   }
+  if (
+    !is.null(raster) &&
+      (!is.logical(raster) || length(raster) != 1L || is.na(raster))
+  ) {
+    log_message(
+      "{.arg raster} must be TRUE, FALSE, or NULL",
+      message_type = "error"
+    )
+  }
 
   all_cells <- colnames(srt)
   if (is.null(cells)) {
@@ -414,6 +419,7 @@ CellScoringPlot <- function(
     group.palette = group.palette,
     group.palcolor = group_palcolor,
     point.size = point.size,
+    raster = raster,
     raster.dpi = raster.dpi,
     title = if (is.null(group.title)) "Celltype" else group.title,
     theme_use = theme_use,
@@ -458,9 +464,11 @@ CellScoringPlot <- function(
       show.legend = feature_labels[[i]] %in% legend_features,
       legend.position = legend.position,
       point.size = point.size,
+      raster = raster,
       raster.dpi = raster.dpi,
       theme_use = auc_theme_use,
-      verbose = verbose
+      verbose = verbose,
+      ...
     )
     stat_plots[[i]] <- scoreplot_stat(
       score = scores[, i],
@@ -561,6 +569,7 @@ scoreplot_group_umap <- function(
   group.palette,
   group.palcolor,
   point.size,
+  raster,
   raster.dpi,
   title,
   theme_use,
@@ -625,6 +634,7 @@ scoreplot_group_umap <- function(
     pt.alpha = 1,
     palette = group.palette,
     palcolor = group.palcolor,
+    raster = raster,
     raster.dpi = rep(raster.dpi, length.out = 2L),
     aspect.ratio = 1,
     title = title,
@@ -669,10 +679,41 @@ scoreplot_umap <- function(
   show.legend,
   legend.position,
   point.size,
+  raster,
   raster.dpi,
   theme_use,
-  verbose
+  verbose,
+  ...
 ) {
+  dots <- list(...)
+  if (
+    length(dots) &&
+      (is.null(names(dots)) || any(!nzchar(names(dots))))
+  ) {
+    log_message(
+      "Arguments passed via {.arg ...} must be named",
+      message_type = "error"
+    )
+  }
+  controlled <- c(
+    "srt",
+    "group.by",
+    "reduction",
+    "dims",
+    "cells",
+    "combine",
+    "legend.position",
+    "pt.size",
+    "raster",
+    "raster.dpi"
+  )
+  conflicts <- intersect(names(dots), controlled)
+  if (length(conflicts)) {
+    log_message(
+      "Arguments passed via {.arg ...} cannot override CellScoringPlot structural arguments: {.val {conflicts}}",
+      message_type = "error"
+    )
+  }
   plot_srt <- srt
   group_column <- group.by
   if (is.null(group_column)) {
@@ -690,7 +731,7 @@ scoreplot_umap <- function(
       levels = levels(group)
     )
   }
-  plot <- CellDimPlot(
+  defaults <- list(
     srt = plot_srt,
     group.by = group_column,
     reduction = reduction,
@@ -701,6 +742,7 @@ scoreplot_umap <- function(
     pt.size = point.size,
     pt.alpha = 1,
     palette = "Chinese",
+    raster = raster,
     raster.dpi = rep(raster.dpi, length.out = 2L),
     aspect.ratio = 1,
     title = feature,
@@ -716,6 +758,7 @@ scoreplot_umap <- function(
     force = TRUE,
     verbose = verbose
   )
+  plot <- do.call(CellDimPlot, utils::modifyList(defaults, dots))
 
   score_by_cell <- stats::setNames(as.numeric(score), cells)
   plot$data$group <- plot$data$group.by

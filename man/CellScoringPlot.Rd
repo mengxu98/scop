@@ -24,6 +24,7 @@ CellScoringPlot(
   nrow = NULL,
   row.heights = c(1, 1),
   point.size = NULL,
+  raster = NULL,
   raster.dpi = 512,
   point.fraction = 0.1,
   point.alpha = 0.2,
@@ -71,11 +72,11 @@ matching [CellScoring()] record.}
 \item{group.by}{Metadata column used for cell groups. `NULL` uses active
 Seurat identities.}
 
-\item{reduction}{Dimensional reduction. `NULL` uses [DefaultReduction()].}
+\item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
-\item{dims}{Two dimensions to plot.}
+\item{dims}{Length-2 vector of dimensions to plot.}
 
-\item{cells}{Cells to include. `NULL` uses all cells.}
+\item{cells}{Cell names to include.}
 
 \item{thresholds}{Optional score thresholds. Supply one value per feature,
 a named vector keyed by display or source feature name, or `"auto"` to
@@ -110,7 +111,8 @@ each row pair. Use `c(0.47, 0.53)` for the compact benchmark layout.}
 \item{point.size}{Point size in rasterized UMAPs. `NULL` lets
 [CellDimPlot()] choose a readable size from the number of plotted cells.}
 
-\item{raster.dpi}{Raster resolution for UMAP points.}
+\item{raster, raster.dpi}{Rasterize points. \code{raster = NULL} rasterizes when
+there are more than 100,000 cells.}
 
 \item{point.fraction}{Fraction of cells shown as jittered points in each
 boxplot. Boxplot statistics always use all cells.}
@@ -164,10 +166,7 @@ Legends are horizontal at `"top"` or `"bottom"`, and vertical at
 
 \item{threshold.colors}{Colors for cells above and below each threshold.}
 
-\item{...}{Additional arguments forwarded to [CellDimPlot()] for the group
-dimensional plot. This exposes labels, selected-cell outlines, marks,
-density, grid, graph, PAGA, velocity, and related functionality.
-Structural arguments and legend placement remain controlled here.}
+\item{...}{Additional arguments forwarded to [CellDimPlot()].}
 
 \item{combine}{Return a patchwork when `TRUE`; otherwise return named plot
 components before layout spacers are inserted.}
