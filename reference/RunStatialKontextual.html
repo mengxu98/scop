@@ -118,17 +118,17 @@ dependency installable with <code>BiocManager::install("Statial")</code>.</p>
 
 
 <dt id="arg-r">r<a class="anchor" aria-label="anchor" href="#arg-r"></a></dt>
-<dd><p>Numeric radius or radii used by <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>, expressed
+<dd><p>Numeric radius or radii used by <code>Statial::Kontextual()</code>, expressed
 in the selected coordinate units.</p></dd>
 
 
 <dt id="arg-from-to-parent">from, to, parent<a class="anchor" aria-label="anchor" href="#arg-from-to-parent"></a></dt>
-<dd><p>Cell or spot labels passed to <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>.
+<dd><p>Cell or spot labels passed to <code>Statial::Kontextual()</code>.
 Ignored when <code>parent_df</code> is supplied.</p></dd>
 
 
 <dt id="arg-parent-df">parent_df<a class="anchor" aria-label="anchor" href="#arg-parent-df"></a></dt>
-<dd><p>Optional data frame from <code><a href="https://sydneybiox.github.io/Statial/reference/parentCombinations.html" class="external-link">Statial::parentCombinations()</a></code>.</p></dd>
+<dd><p>Optional data frame from <code>Statial::parentCombinations()</code>.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
@@ -160,7 +160,7 @@ coordinates are available.</p></dd>
 
 <dt id="arg-window-window-length">window, window.length<a class="anchor" aria-label="anchor" href="#arg-window-window-length"></a></dt>
 <dd><p>Window arguments passed to
-<code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>. Numeric window lengths use the selected coordinate
+<code>Statial::Kontextual()</code>. Numeric window lengths use the selected coordinate
 units.</p></dd>
 
 
@@ -169,7 +169,7 @@ units.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>Number of cores passed to <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>.</p></dd>
+<dd><p>Number of cores passed to <code>Statial::Kontextual()</code>.</p></dd>
 
 
 <dt id="arg-tool-name">tool_name<a class="anchor" aria-label="anchor" href="#arg-tool-name"></a></dt>
@@ -197,7 +197,7 @@ explicit compatibility option.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional named arguments passed to <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>.</p></dd>
+<dd><p>Additional named arguments passed to <code>Statial::Kontextual()</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -208,23 +208,9 @@ explicit compatibility option.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">coda_label</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">labels</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunStatialKontextual</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"coda_label"</span>,</span></span>
-<span class="r-in"><span>    r <span class="op">=</span> <span class="fl">50</span>,</span></span>
-<span class="r-in"><span>    from <span class="op">=</span> <span class="va">labels</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>    to <span class="op">=</span> <span class="va">labels</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>    parent <span class="op">=</span> <span class="va">labels</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>    coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">StatialKontextual</span><span class="op">$</span><span class="va">summary</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_results_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">statial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_results_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">StatialKontextual</span></span></span>
+<span class="r-in"><span><span class="va">statial</span><span class="op">$</span><span class="va">summary</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $n_records</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -244,9 +230,22 @@ explicit compatibility option.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $top_relationships</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   imageID             test original kontextual  r inhomL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 sample1 collagen__islets      -50        -50 50  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   imageID            test original kontextual  r inhomL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 sample1 collagen__acini      -50        -50 50  FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="fu"><a href="StatialKontextualPlot.html">StatialKontextualPlot</a></span><span class="op">(</span>res <span class="op">=</span> <span class="va">statial</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `geom_line()`: Each group consists of only one observation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Do you need to adjust the <span style="color: #00BB00;">group</span> aesthetic?</span>
+<span class="r-plt img"><img src="RunStatialKontextual-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu">check_r</span><span class="op">(</span><span class="st">"sydney-informatics-hub/Statial"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunStatialKontextual</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">visium_human_pancreas_results_sub</span>, group.by <span class="op">=</span> <span class="st">"coda_label"</span>, r <span class="op">=</span> <span class="fl">50</span>,</span></span>
+<span class="r-in"><span>  from <span class="op">=</span> <span class="st">"collagen"</span>, to <span class="op">=</span> <span class="st">"acini"</span>, parent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"collagen"</span>, <span class="st">"acini"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -143,47 +143,14 @@ scale-factor slots.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/check_r.html" class="external-link">check_r</a></span><span class="op">(</span><span class="st">"JEFworks-Lab/STdeconvolve"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSTdeconvolve.html">RunSTdeconvolve</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">300</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  k <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  prefix <span class="op">=</span> <span class="st">"STFull"</span>,</span></span>
-<span class="r-in"><span>  tool_name <span class="op">=</span> <span class="st">"STdeconvolveFull"</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Removing 0 genes present in 100% or more of pixels...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 300 genes remaining...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Removing 0 genes present in 5% or less of pixels...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 300 genes remaining...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Restricting to overdispersed genes with alpha = 0.05...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating variance fit ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using gam with k=5...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 68 overdispersed genes ... </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  Using top 1000 overdispersed genes.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  number of top overdispersed genes available: 68</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Time to fit LDA models was 0.07 mins</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing perplexity for each fitted model...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Time to compute perplexities was 0.04 mins</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting predicted cell-types at low proportions...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Time to compute cell-types at low proportions was 0 mins</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Plotting...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> `geom_line()`: Each group consists of only one observation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Do you need to adjust the <span style="color: #00BB00;">group</span> aesthetic?</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> `geom_line()`: Each group consists of only one observation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Do you need to adjust the <span style="color: #00BB00;">group</span> aesthetic?</span>
-<span class="r-plt img"><img src="STdeconvolvePlot-1.png" alt="" width="700" height="433"></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Filtering out cell-types in pixels that contribute less than 0.05 of the pixel proportion.</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_results_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">STdeconvolvePlot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>  tool_name <span class="op">=</span> <span class="st">"STdeconvolveFull"</span>,</span></span>
+<span class="r-in"><span>  <span class="va">visium_human_pancreas_results_sub</span>,</span></span>
 <span class="r-in"><span>  topics <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="STdeconvolvePlot-2.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="STdeconvolvePlot-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
