@@ -248,6 +248,23 @@ spatial_graph_validate <- function(graph) {
 #' @param value Edge value used for matrix conversions.
 #'
 #' @return A graph list, `dgCMatrix`, or Seurat `Graph` object.
+#'
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- RunSpatialNetwork(
+#'   visium_human_pancreas_sub,
+#'   k = 6,
+#'   coord.cols = c("x", "y"),
+#'   verbose = FALSE
+#' )
+#' graph <- GetSpatialGraph(spatial, format = "list")
+#' graph_sparse <- GetSpatialGraph(spatial, format = "sparse")
+#' c(nodes = nrow(graph$nodes), edges = nrow(graph$edges))
+#' graph_sparse[
+#'   seq_len(min(3, nrow(graph_sparse))),
+#'   seq_len(min(3, ncol(graph_sparse)))
+#' ]
+#'
 #' @export
 GetSpatialGraph <- function(
   object = NULL,
@@ -332,6 +349,21 @@ GetSpatialGraph <- function(
 #' `"theme_spatial"`.
 #'
 #' @return A `ggplot` object.
+#'
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- RunSpatialNetwork(
+#'   visium_human_pancreas_sub,
+#'   k = 6,
+#'   coord.cols = c("x", "y"),
+#'   verbose = FALSE
+#' )
+#' SpatialNetworkPlot(
+#'   spatial,
+#'   group.by = "coda_label",
+#'   edge.linewidth = 0.15,
+#'   pt.size = 0.8
+#' )
 #'
 #' @export
 SpatialNetworkPlot <- function(

@@ -25,3 +25,22 @@ installed Seurat major version. For round trips produced by
 empty normalized layer otherwise, which its reverse converter cannot read
 back.
 }
+\examples{
+\dontrun{
+data(visium_human_pancreas_sub)
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  verbose = FALSE
+)
+if (all(unlist(
+  thisutils::check_r("drieslab/Giotto", verbose = FALSE),
+  use.names = FALSE
+))) {
+  giotto <- srt_to_giotto(spatial, image = "slice1")
+  roundtrip <- giotto_to_srt(giotto)
+  print(roundtrip)
+}
+}
+
+}

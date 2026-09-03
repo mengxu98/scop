@@ -20,3 +20,21 @@ A native Giotto object.
 Convert one Seurat spatial image into a native Giotto object without running
 a Giotto workflow or changing the input object.
 }
+\examples{
+\dontrun{
+data(visium_human_pancreas_sub)
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  verbose = FALSE
+)
+if (all(unlist(
+  thisutils::check_r("drieslab/Giotto", verbose = FALSE),
+  use.names = FALSE
+))) {
+  giotto <- srt_to_giotto(spatial, image = "slice1")
+  print(giotto)
+}
+}
+
+}

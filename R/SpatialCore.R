@@ -424,6 +424,25 @@ spatial_analysis_coords <- function(
 #'   explicit image when more than one image is available.
 #'
 #' @return A plain list with `data`, `source`, and `transform` entries.
+#'
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' coords_raw <- SpatialCoordinates(
+#'   visium_human_pancreas_sub,
+#'   image = "slice1",
+#'   coord.cols = c("x", "y"),
+#'   space = "raw"
+#' )
+#' coords_display <- SpatialCoordinates(
+#'   visium_human_pancreas_sub,
+#'   image = "slice1",
+#'   coord.cols = c("x", "y"),
+#'   space = "display",
+#'   image.scale = "lowres"
+#' )
+#' head(coords_raw$data[, c("cell_id", "x", "y")])
+#' head(coords_display$data[, c("cell_id", "x", "y")])
+#'
 #' @export
 SpatialCoordinates <- function(
   object,
