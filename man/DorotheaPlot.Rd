@@ -109,15 +109,15 @@ plots.}
 when \code{plot_type = "heatmap"}.}
 
 \item{group_palette, group_palcolor}{Group annotation palette passed to
-\code{\link[=GroupHeatmap]{GroupHeatmap()}} and \code{\link[=CellDimPlot]{CellDimPlot()}}.}
+\code{\link[=GroupHeatmap]{GroupHeatmap()}} and \code{\link[=FeatureStatPlot]{FeatureStatPlot()}}.}
 
 \item{exp_method}{Scaling method passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}} for
 \code{plot_type = "heatmap"}.}
 
 \item{heatmap_args}{Additional arguments passed to \code{\link[=GroupHeatmap]{GroupHeatmap()}}.}
 
-\item{dim_args}{Additional arguments passed to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} and
-\code{\link[=CellDimPlot]{CellDimPlot()}} when \code{plot_type = "dim"}.}
+\item{dim_args}{Additional arguments passed to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} when
+\code{plot_type = "dim"}.}
 
 \item{stat_args}{Additional arguments passed to \code{\link[=FeatureStatPlot]{FeatureStatPlot()}} when
 \code{plot_type = "stat"}.}

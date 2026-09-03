@@ -465,7 +465,7 @@ test_that("SCENICPlot activity_dim can compare TF expression", {
     dat$srt,
     group.by = "CellType",
     plot_type = "activity_dim",
-    features = "TF1(+)",
+    features = c("TF1(+)", "TF2(+)"),
     compare_expression = TRUE,
     reduction = "umap",
     return_data = TRUE,
@@ -473,8 +473,10 @@ test_that("SCENICPlot activity_dim can compare TF expression", {
   )
 
   expect_true(inherits(out$plot, c("ggplot", "patchwork")))
-  expect_equal(as.character(out$plot_data[["regulon"]]), "TF1(+)")
-  expect_equal(as.character(out$plot_data[["TF"]]), "TF1")
+  expect_equal(length(out$plots), 2L)
+  expect_equal(length(out$plot), 2L)
+  expect_equal(as.character(out$plot_data[["regulon"]]), c("TF1(+)", "TF2(+)"))
+  expect_equal(as.character(out$plot_data[["TF"]]), c("TF1", "TF2"))
 })
 
 test_that("SCENICPlusPlot defaults to heatmap_dotplot and SCENIC+ slots", {
@@ -505,7 +507,7 @@ test_that("SCENICPlusPlot eregulon_dim includes region AUC when stored", {
 
   expect_true(inherits(out$plot, c("ggplot", "patchwork")))
   expect_equal(as.character(out$plot_data[["regulon"]]), "TF1(+)")
-  expect_gt(length(out$plots), 1)
+  expect_gte(length(out$plot), 2L)
 })
 
 test_that("SCENIC network RdYlBu uses Chinese colors", {

@@ -50,12 +50,12 @@
 #' @param heatmap_palette,heatmap_palcolor Palette passed to [GroupHeatmap()]
 #' when `plot_type = "heatmap"`.
 #' @param group_palette,group_palcolor Group annotation palette passed to
-#' [GroupHeatmap()] and [CellDimPlot()].
+#' [GroupHeatmap()] and [FeatureStatPlot()].
 #' @param exp_method Scaling method passed to [GroupHeatmap()] for
 #' `plot_type = "heatmap"`.
 #' @param heatmap_args Additional arguments passed to [GroupHeatmap()].
-#' @param dim_args Additional arguments passed to [FeatureDimPlot()] and
-#' [CellDimPlot()] when `plot_type = "dim"`.
+#' @param dim_args Additional arguments passed to [FeatureDimPlot()] when
+#' `plot_type = "dim"`.
 #' @param stat_args Additional arguments passed to [FeatureStatPlot()] when
 #' `plot_type = "stat"`.
 #' @param compare_expression Whether `"dim"` also plots TF gene expression
@@ -325,7 +325,6 @@ DorotheaPlot <- function(
     out <- dorothea_plot_dim(
       srt = srt,
       scores = scores,
-      group.by = group.by,
       assay_name = assay_name,
       features = features,
       top_n = top_n,
@@ -335,8 +334,6 @@ DorotheaPlot <- function(
       reduction = reduction,
       palette = palette,
       palcolor = palcolor,
-      group_palette = group_palette,
-      group_palcolor = group_palcolor,
       theme_use = theme_use,
       theme_args = theme_args,
       legend.position = legend.position,
@@ -1066,7 +1063,6 @@ dorothea_ensure_assay <- function(srt, scores, assay_name) {
 dorothea_plot_dim <- function(
   srt,
   scores,
-  group.by,
   assay_name,
   features,
   top_n,
@@ -1076,8 +1072,6 @@ dorothea_plot_dim <- function(
   reduction,
   palette,
   palcolor,
-  group_palette,
-  group_palcolor,
   theme_use,
   theme_args,
   legend.position,
@@ -1117,25 +1111,7 @@ dorothea_plot_dim <- function(
     verbose = verbose
   )
 
-  cell_formals <- names(formals(CellDimPlot))
   feat_formals <- names(formals(FeatureDimPlot))
-  cell_args <- list(
-    srt = srt,
-    group.by = group.by,
-    reduction = reduction,
-    palette = group_palette,
-    palcolor = group_palcolor,
-    label = TRUE,
-    title = "Cell types",
-    theme_use = theme_use,
-    theme_args = theme_args,
-    legend.position = legend.position,
-    legend.direction = legend.direction
-  )
-  extra_cell <- dim_args[intersect(names(dim_args), cell_formals)]
-  extra_cell <- extra_cell[setdiff(names(extra_cell), c("srt", "group.by"))]
-  cell_args[names(extra_cell)] <- extra_cell
-  p_cell <- do.call(CellDimPlot, cell_args)
 
   tf_plots <- lapply(features, function(tf) {
     act_args <- list(
@@ -1187,20 +1163,11 @@ dorothea_plot_dim <- function(
     patchwork::wrap_plots(p_act, p_exp, ncol = 2)
   })
 
-  if (length(features) == 1L && isTRUE(compare_expression)) {
-    expr_feature <- dorothea_match_feature(features[[1L]], expr_names)
-    if (!is.na(expr_feature)) {
-      p <- patchwork::wrap_plots(p_cell, tf_plots[[1L]], ncol = 2, widths = c(1, 2))
-      if (!is.null(title)) {
-        p <- p + patchwork::plot_annotation(title = title)
-      }
-      return(list(plot = p, data = features))
-    }
+  p <- if (length(tf_plots) == 1L) {
+    tf_plots[[1L]]
+  } else {
+    patchwork::wrap_plots(tf_plots, ncol = 1)
   }
-  p <- patchwork::wrap_plots(
-    c(list(p_cell), tf_plots),
-    ncol = 1
-  )
   if (!is.null(title)) {
     p <- p + patchwork::plot_annotation(title = title)
   }
