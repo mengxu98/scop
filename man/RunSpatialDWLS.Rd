@@ -76,14 +76,35 @@ coefficients. The output follows the package deconvolution metadata convention s
 it can be plotted directly with \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.
 }
 \examples{
-\dontrun{
+data(visium_human_pancreas_sub)
+data(panc8_sub)
+keep_spots <- unique(round(seq(
+  1,
+  ncol(visium_human_pancreas_sub),
+  length.out = 120
+)))
+spatial <- visium_human_pancreas_sub[, keep_spots]
+reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] \%in\%
+  c("ductal", "alpha", "beta")]
+features_use <- head(intersect(rownames(spatial), rownames(reference)), 300)
 spatial <- RunSpatialDWLS(
-  spatial,
+  srt = spatial,
   reference = reference,
   reference_label = "celltype",
+  assay = "Spatial",
+  reference_assay = "RNA",
+  layer = "counts",
+  reference_layer = "counts",
+  features = features_use,
+  coord.cols = c("x", "y"),
+  min_cells = 2,
+  verbose = FALSE
+)
+SpatialDeconvolutionPlot(
+  spatial,
+  tool_name = "SpatialDWLS",
+  plot_type = "dominant",
+  overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-SpatialSpotPlot(spatial, group.by = "SpatialDWLS_dominant_type")
-SpatialSpotPlot(spatial, group.by = "SpatialDWLS_dominant_type", plot_type = "pie")
-}
 }

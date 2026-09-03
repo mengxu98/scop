@@ -60,19 +60,14 @@ Normalize spatial transcriptomics counts with the optional Bioconductor
 \code{SpaNorm} backend and store the normalized expression in a new Seurat assay.
 }
 \examples{
+\dontrun{
 data(visium_human_pancreas_sub)
-spatial <- visium_human_pancreas_sub
-spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
-
-SpatialSpotPlot(
-  spatial,
-  features = rownames(spatial)[1:2],
-  assay = "Spatial",
-  layer = "data",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-
+keep_spots <- unique(round(seq(
+  1,
+  ncol(visium_human_pancreas_sub),
+  length.out = 120
+)))
+spatial <- visium_human_pancreas_sub[, keep_spots]
 spatial <- RunSpaNorm(
   spatial,
   assay = "Spatial",
@@ -86,10 +81,11 @@ spatial <- RunSpaNorm(
 
 SpatialSpotPlot(
   spatial,
-  features = rownames(spatial[["SpaNorm"]])[1:2],
+  features = rownames(spatial[["SpaNorm"]])[1],
   assay = "SpaNorm",
   layer = "data",
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
+}
 }

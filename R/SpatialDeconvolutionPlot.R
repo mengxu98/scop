@@ -28,27 +28,32 @@
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' data(panc8_sub)
-#' keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 200)))
+#' keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 120)))
 #' spatial <- visium_human_pancreas_sub[, keep_spots]
-#' reference <- panc8_sub[, panc8_sub$celltype %in% c("ductal", "alpha", "beta")]
+#' reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
+#'   c("ductal", "alpha", "beta")]
 #' reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
-#' shared <- intersect(
+#' shared <- head(intersect(
 #'   SeuratObject::VariableFeatures(reference),
 #'   rownames(spatial)
-#' )
+#' ), 300)
 #' spatial <- RunSpatialDWLS(
-#'   spatial[shared, ],
+#'   srt = spatial,
 #'   reference = reference,
 #'   reference_label = "celltype",
+#'   assay = "Spatial",
+#'   reference_assay = "RNA",
+#'   layer = "counts",
+#'   reference_layer = "counts",
 #'   features = shared,
 #'   coord.cols = c("x", "y"),
-#'   normalize = FALSE,
+#'   min_cells = 2,
 #'   verbose = FALSE
 #' )
 #' SpatialDeconvolutionPlot(
 #'   spatial,
 #'   tool_name = "SpatialDWLS",
-#'   cell_types = colnames(spatial@tools$SpatialDWLS$proportions)[1],
+#'   plot_type = "dominant",
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")
 #' )

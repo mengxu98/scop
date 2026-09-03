@@ -101,31 +101,36 @@ Run CytoSPACE spatial assignment
 \examples{
 data(visium_human_pancreas_sub)
 data(panc8_sub)
-spatial <- visium_human_pancreas_sub[, seq_len(120)]
-reference <- panc8_sub[, panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")]
+keep_spots <- unique(round(seq(
+  1,
+  ncol(visium_human_pancreas_sub),
+  length.out = 120
+)))
+spatial <- visium_human_pancreas_sub[, keep_spots]
+reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] \%in\%
+  c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
-features_use <- intersect(
+features_use <- head(intersect(
   SeuratObject::VariableFeatures(reference),
   rownames(spatial)
-)
+), 300)
 spatial <- RunCytoSPACE(
-  spatial,
+  srt = spatial,
   reference = reference,
   reference_label = "celltype",
+  assay = "Spatial",
+  reference_assay = "RNA",
+  layer = "counts",
+  reference_layer = "counts",
   features = features_use,
   mean_cell_numbers = 1,
+  coord.cols = c("x", "y"),
   verbose = FALSE
 )
-
-SpatialSpotPlot(
-  visium_human_pancreas_sub,
-  group.by = "coda_label",
-  theme_use = "theme_scop"
-)
-
 SpatialSpotPlot(
   spatial,
   group.by = "CytoSPACE_dominant_type",
-  theme_use = "theme_scop"
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
 )
 }
