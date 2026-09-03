@@ -1985,10 +1985,10 @@ standard_spatial_spot_qc_metadata_targets <- function(
   ) {
     targets <- c(
       targets,
-      make.names(paste0("spot_", outlier_threshold))
+      make.names(paste0("spot_", unique(outlier_threshold)))
     )
   }
-  unique(targets)
+  targets
 }
 
 standard_spatial_validate_spot_qc_effective_args <- function(

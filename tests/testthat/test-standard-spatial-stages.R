@@ -377,6 +377,52 @@ test_that("duplicate SpotQC rules do not create a planning collision", {
   expect_identical(unique(out$SpotQC), "Pass")
 })
 
+test_that("distinct SpotQC rules cannot normalize to the same output", {
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  producer_calls <- character()
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    RunSpotQC = function(...) {
+      producer_calls <<- c(producer_calls, "RunSpotQC")
+    },
+    RunStandardWorkflow = function(...) {
+      producer_calls <<- c(producer_calls, "RunStandardWorkflow")
+    }
+  )
+  srt <- make_standard_spatial_stage_object()
+  srt[["foo-bar"]] <- seq_len(ncol(srt))
+  srt[["foo.bar"]] <- rev(seq_len(ncol(srt)))
+  caller_before <- srt
+
+  condition <- tryCatch(
+    original(
+      srt,
+      assay = "RNA",
+      do_spot_qc = TRUE,
+      spot_qc_params = list(
+        qc_metrics = "outlier",
+        outlier_threshold = c("foo-bar:lower:1", "foo.bar:lower:1")
+      ),
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = FALSE,
+      do_deconvolution = FALSE,
+      verbose = FALSE
+    ),
+    error = identity
+  )
+  stages <- attr(condition, "standard_spatial_stages")
+  qc <- stages[stages$stage == "quality_control", , drop = FALSE]
+
+  expect_s3_class(condition, "error")
+  expect_match(conditionMessage(condition), "metadata outputs collide")
+  expect_s3_class(stages, "data.frame")
+  expect_identical(qc$status, "failed")
+  expect_identical(qc$actual_method, "RunSpotQC")
+  expect_false(isTRUE(qc$result_stored))
+  expect_length(producer_calls, 0L)
+  expect_identical(srt, caller_before)
+})
+
 test_that("effective SVF storage controls require logical scalars", {
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   producer_called <- FALSE
