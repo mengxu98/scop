@@ -224,7 +224,6 @@ FindMarkers.Seurat <- function(
   )
   if (
     marker_assay_is_chromatin(object, assay) ||
-      !requireNamespace("presto", quietly = TRUE) ||
       !marker_pair_supported(
         opts = opts,
         ident.1 = ident.1,
@@ -246,6 +245,13 @@ FindMarkers.Seurat <- function(
   if (is.null(cells)) {
     return(run_seurat())
   }
+  presto_fun <- presto_get_fun(
+    install = FALSE,
+    error_on_missing = FALSE
+  )
+  if (is.null(presto_fun)) {
+    return(run_seurat())
+  }
   RunDEtestSparseWilcoxMarkers(
     srt = object,
     assay = assay %||% SeuratObject::DefaultAssay(object),
@@ -262,7 +268,8 @@ FindMarkers.Seurat <- function(
     only.pos = opts$positive,
     pseudocount.use = opts$pseudocount,
     random.seed = random.seed,
-    verbose = verbose
+    verbose = verbose,
+    presto_fun = presto_fun
   )
 }
 
