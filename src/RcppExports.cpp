@@ -2867,37 +2867,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sct_fit_beta_intercept_offset
-List sct_fit_beta_intercept_offset(NumericMatrix y, NumericVector log_offset, NumericVector dispersions, Nullable<NumericVector> beta_start, bool return_mu, double tolerance, int max_iter);
-RcppExport SEXP _scop_sct_fit_beta_intercept_offset(SEXP ySEXP, SEXP log_offsetSEXP, SEXP dispersionsSEXP, SEXP beta_startSEXP, SEXP return_muSEXP, SEXP toleranceSEXP, SEXP max_iterSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type log_offset(log_offsetSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type dispersions(dispersionsSEXP);
-    Rcpp::traits::input_parameter< Nullable<NumericVector> >::type beta_start(beta_startSEXP);
-    Rcpp::traits::input_parameter< bool >::type return_mu(return_muSEXP);
-    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
-    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
-    rcpp_result_gen = Rcpp::wrap(sct_fit_beta_intercept_offset(y, log_offset, dispersions, beta_start, return_mu, tolerance, max_iter));
-    return rcpp_result_gen;
-END_RCPP
-}
-// sct_overdispersion_mle_intercept
-NumericVector sct_overdispersion_mle_intercept(NumericMatrix y, NumericMatrix mu, int max_iter, double tolerance);
-RcppExport SEXP _scop_sct_overdispersion_mle_intercept(SEXP ySEXP, SEXP muSEXP, SEXP max_iterSEXP, SEXP toleranceSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
-    Rcpp::traits::input_parameter< double >::type tolerance(toleranceSEXP);
-    rcpp_result_gen = Rcpp::wrap(sct_overdispersion_mle_intercept(y, mu, max_iter, tolerance));
-    return rcpp_result_gen;
-END_RCPP
-}
 // tage_elastic_net_predict_cpp
 NumericVector tage_elastic_net_predict_cpp(NumericMatrix expr, IntegerVector feature_match, NumericVector imputer, NumericVector center, NumericVector scale, NumericVector coef, double intercept);
 RcppExport SEXP _scop_tage_elastic_net_predict_cpp(SEXP exprSEXP, SEXP feature_matchSEXP, SEXP imputerSEXP, SEXP centerSEXP, SEXP scaleSEXP, SEXP coefSEXP, SEXP interceptSEXP) {
@@ -3157,8 +3126,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_csc_to_csr", (DL_FUNC) &_scop_csc_to_csr, 5},
     {"_scop_sct_stats_correct_sparse", (DL_FUNC) &_scop_sct_stats_correct_sparse, 12},
     {"_scop_sct_fused_resid_center_sparse", (DL_FUNC) &_scop_sct_fused_resid_center_sparse, 14},
-    {"_scop_sct_fit_beta_intercept_offset", (DL_FUNC) &_scop_sct_fit_beta_intercept_offset, 7},
-    {"_scop_sct_overdispersion_mle_intercept", (DL_FUNC) &_scop_sct_overdispersion_mle_intercept, 4},
     {"_scop_tage_elastic_net_predict_cpp", (DL_FUNC) &_scop_tage_elastic_net_predict_cpp, 7},
     {"_scop_sparse_row_mean_var", (DL_FUNC) &_scop_sparse_row_mean_var, 5},
     {"_scop_sparse_row_mean_var_dgc_list", (DL_FUNC) &_scop_sparse_row_mean_var_dgc_list, 2},
