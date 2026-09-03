@@ -3,6 +3,8 @@
 #' @description
 #' Estimate spot-level cell type proportions from a spatial `Seurat` object
 #' using a single-cell `Seurat` reference and the optional `SPOTlight` package.
+#' The example is a non-executing template because the backend is optional and
+#' may require additional Bioconductor dependencies.
 #'
 #' @md
 #' @inheritParams RunRCTD
@@ -27,6 +29,7 @@
 #'
 #' @examples
 #' \dontrun{
+#' check_r("SPOTlight", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
 #' data(panc8_sub)
 #' keep_spots <- unique(round(seq(

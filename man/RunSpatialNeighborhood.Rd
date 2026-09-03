@@ -103,9 +103,6 @@ spatial <- RunSpatialNeighborhood(
   verbose = FALSE
 )
 
-SpatialNeighborhoodPlot(spatial, plot_type = "heatmap")
-SpatialNeighborhoodPlot(spatial, plot_type = "network", top_n = 12)
-SpatialNeighborhoodPlot(spatial, plot_type = "stat", top_n = 12)
 SpatialNeighborhoodPlot(
   spatial,
   plot_type = "spatial",

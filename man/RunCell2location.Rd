@@ -110,7 +110,8 @@ cell type, and maximum-proportion metadata.
 Estimate spot-level absolute cell abundance and proportions with the official
 Python \code{cell2location} backend. The Python model runs in an isolated
 subprocess while inputs, models, posterior outputs, logs, and a reproducible
-manifest are persisted under \code{result_dir}.
+manifest are persisted under \code{result_dir}. The example uses the official
+Human Lymph Node tutorial files; those input files are not bundled with SCOP.
 }
 \section{Official human lymph node result}{
 
@@ -124,6 +125,7 @@ model implemented by this function.
 \dontrun{
 # Official cell2location Human Lymph Node tutorial data:
 # https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_tutorial.html
+check_python(c("cell2location", "scanpy", "anndata"))
 reference <- h5ad_to_srt("reference_subset.h5ad")
 spatial <- h5ad_to_srt("spatial_subset.h5ad")
 spatial <- RunCell2location(

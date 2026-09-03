@@ -66,9 +66,15 @@
 #' @examples
 #' data(panc8_sub)
 #' keep <- panc8_sub$celltype %in% c("ductal", "alpha", "beta")
-#' reference <- panc8_sub[, keep & panc8_sub$tech != "fluidigmc1"]
-#' query <- panc8_sub[, keep & panc8_sub$tech == "fluidigmc1"]
-#' genes <- intersect(rownames(reference), rownames(query))[1:200]
+#' reference <- Seurat::NormalizeData(
+#'   panc8_sub[, keep & panc8_sub$tech != "fluidigmc1"],
+#'   verbose = FALSE
+#' )
+#' query <- Seurat::NormalizeData(
+#'   panc8_sub[, keep & panc8_sub$tech == "fluidigmc1"],
+#'   verbose = FALSE
+#' )
+#' genes <- head(intersect(rownames(reference), rownames(query)), 200)
 #' query <- RunKNNPredict(
 #'   query, srt_ref = reference, ref_group = "celltype",
 #'   features = genes, nfeatures = length(genes),
@@ -79,7 +85,12 @@
 #'   query, group.by = "KNNPredict_classification",
 #'   label = TRUE, legend.position = "bottom"
 #' )
-#' FeatureDimPlot(query, features = "KNNPredict_simil")
+#' FeatureStatPlot(
+#'   query,
+#'   stat.by = "KNNPredict_prob",
+#'   group.by = "KNNPredict_classification",
+#'   plot_type = "box"
+#' )
 RunKNNPredict <- function(
   srt_query,
   srt_ref = NULL,

@@ -83,7 +83,7 @@ spatial <- RunBayesSpace(
   n.PCs = 5,
   n.HVGs = 200,
   store_sce = FALSE,
-  spatial_cluster_params = list(nrep = 20, burn.in = 10, thin = 5),
+  spatial_cluster_params = list(nrep = 100, burn.in = 10, thin = 5),
   coord.cols = c("x", "y"),
   verbose = FALSE
 )
