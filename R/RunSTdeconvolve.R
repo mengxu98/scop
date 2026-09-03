@@ -213,20 +213,9 @@ RunSTdeconvolve <- function(
 #' @export
 #'
 #' @examples
-#' thisutils::check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
-#' data(visium_human_pancreas_sub)
-#' spatial <- RunSTdeconvolve(
-#'   visium_human_pancreas_sub,
-#'   assay = "Spatial",
-#'   features = rownames(visium_human_pancreas_sub)[1:300],
-#'   k = 3,
-#'   prefix = "STFull",
-#'   tool_name = "STdeconvolveFull",
-#'   verbose = FALSE
-#' )
+#' data(visium_human_pancreas_results_sub)
 #' STdeconvolvePlot(
-#'   spatial,
-#'   tool_name = "STdeconvolveFull",
+#'   visium_human_pancreas_results_sub,
 #'   topics = 1:2,
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")

@@ -138,6 +138,7 @@ keep_spots <- unique(round(seq(
 )))
 spatial <- visium_human_pancreas_sub[, keep_spots]
 
+# Plot a real input QC metric before running the optional backend.
 SpatialSpotPlot(
   spatial,
   group.by = "nCount_Spatial",
@@ -145,6 +146,9 @@ SpatialSpotPlot(
   coord.cols = c("x", "y")
 )
 
+# Template only: the current runtime still raises its known spot
+# identity/order validation error. This documentation change leaves that
+# backend issue unresolved and does not fabricate a successful result.
 \dontrun{
 data(visium_human_pancreas_sub)
 keep_spots <- unique(round(seq(
@@ -153,10 +157,6 @@ keep_spots <- unique(round(seq(
   length.out = 120
 )))
 spatial <- visium_human_pancreas_sub[, keep_spots]
-
-# The current runtime still raises a spot identity/order validation error.
-# This backend issue is intentionally left unresolved and no successful QC
-# result is fabricated here.
 spatial <- RunSpotSweeper(
   spatial,
   assay = "Spatial",
