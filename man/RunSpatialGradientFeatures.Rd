@@ -72,6 +72,9 @@ generated from \code{reference}.}
 \code{srt@tools[["SpatialVariableFeatures"]]} is used first, then variable
 features, then all assay features.}
 
+\item{sample_name, platform, img_scale_fct, assay_modality, trajectory_id, width, annotation_id, core, distance, angle_span, resolution, model_add, model_subset, model_remove, control}{Legacy compatibility inputs. The native backend ignores these values and
+does not include them in the stored effective-parameter summary.}
+
 \item{image}{Spatial image name. Required when multiple images are present;
 a single image is selected automatically when \code{NULL}.}
 
@@ -91,9 +94,6 @@ native annotation mask.}
 \item{annotation.variable, annotation.threshold}{Numeric variable and
 threshold used to create a native numeric annotation mask. Numeric
 thresholds are interpreted as \code{">{threshold}"}.}
-
-\item{sample_name, platform, img_scale_fct, assay_modality, trajectory_id, width, annotation_id, core, distance, angle_span, resolution, model_add, model_subset, model_remove, control}{Legacy compatibility inputs. The native backend ignores these values and
-does not include them in the stored effective-parameter summary.}
 
 \item{unit}{Optional coordinate-unit label stored in the result source. It
 does not transform coordinates.}
