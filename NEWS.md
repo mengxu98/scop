@@ -1,6 +1,7 @@
 # scop 0.9.1
 
 * **feat**:
+  * `RunDEtest()` sample-level methods gain `min.cells.sample` (default `10`) to drop pseudobulk samples whose cell count in the current `group.by` level is below a threshold, which can reverse DE direction relative to cell-level tests. Set `min.cells.sample = 1` to keep the previous unfiltered behavior.
   * Internal preprocessing and integration workflows now use scop's Seurat-compatible entry points, enabling validated native acceleration for normalization, variable-feature selection, scaling, PCA, and neighbor search while retaining transparent Seurat fallback for unsupported paths.
   * The native `SCTransform(vst.flavor = "v2")` path now supports validated numeric and factor `vars.to.regress` designs and `latent.data`; unsupported regression designs continue to delegate to Seurat.
   * The native PCA auto path accepts smaller stable trailing eigengaps after numerical and neighborhood-parity validation, allowing more datasets to use the accelerated implementation.

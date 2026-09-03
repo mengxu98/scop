@@ -40,6 +40,7 @@ RunDEtest(object = NULL, ..., srt = NULL)
   norm.method = "LogNormalize",
   sample_col = NULL,
   condition_col = NULL,
+  min.cells.sample = 10,
   bulk_assay = "counts",
   p.adjust.method = "bonferroni",
   layer = "data",
@@ -77,6 +78,7 @@ RunDEtest(object = NULL, ..., srt = NULL)
   norm.method = "LogNormalize",
   sample_col = NULL,
   condition_col = NULL,
+  min.cells.sample = 10,
   bulk_assay = "counts",
   p.adjust.method = "bonferroni",
   layer = "counts",
@@ -189,6 +191,13 @@ Required when \code{test.use} is a sample-level pseudobulk method on \code{Seura
 \item{condition_col}{Metadata column storing condition labels.
 Required when \code{test.use} is a sample-level pseudobulk method on \code{Seurat}, and
 required for \code{SummarizedExperiment} input.}
+
+\item{min.cells.sample}{Minimum number of cells required for a sample to be
+kept in sample-level pseudobulk testing. Applied independently within each
+\code{group.by} level (for example each cell type). Samples below the threshold
+are dropped before aggregation. Default \code{10}. Set to \code{1} to keep every
+sample that has at least one cell. Ignored for cell-level tests and for
+\code{SummarizedExperiment} input.}
 
 \item{bulk_assay}{Assay name used as the bulk counts matrix for
 \code{SummarizedExperiment} input.}
@@ -411,6 +420,7 @@ pancreas_sub <- RunDEtest(
   test.use = "edgeR",
   layer = "counts",
   fc.threshold = 1,
+  min.cells.sample = 10,
   only.pos = FALSE
 )
 DEtestPlot(

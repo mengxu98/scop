@@ -231,6 +231,7 @@ for (method in names(sample_method_packages)) {
       test.use = method,
       sample_col = "sample",
       condition_col = "condition",
+      min.cells.sample = 1,
       fc.threshold = 1,
       only.pos = FALSE,
       verbose = FALSE
