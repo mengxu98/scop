@@ -116,10 +116,11 @@ Default is \code{TRUE}.}
 \item{...}{Additional arguments passed to reduction methods.}
 }
 \value{
-A \code{Seurat} object. Spatial workflows store per-stage state in
-\code{srt@tools[["run_standard_spatial_workflow"]]}, including the effective
-\code{set_variable_features} value. A failed stage signals an error with the same
-table in attribute \code{standard_spatial_stages}.
+A \code{Seurat} object. Spatial workflows store per-stage execution and
+result-storage state in \code{srt@tools[["run_standard_spatial_workflow"]]},
+including the effective \code{set_variable_features} value, \code{result_stored}, and
+\code{result_location}. A failed stage signals an error with the same table in
+attribute \code{standard_spatial_stages}.
 }
 \description{
 Normalize, find variable features, scale, reduce dimensions, and cluster a
