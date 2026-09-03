@@ -5,7 +5,7 @@
 \title{Spatial spot plot}
 \usage{
 SpatialSpotPlot(
-  srt,
+  srt = NULL,
   group.by = NULL,
   features = NULL,
   assay = NULL,
@@ -46,11 +46,16 @@ SpatialSpotPlot(
   ncol = NULL,
   byrow = TRUE,
   verbose = TRUE,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  object = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{srt}{A \code{Seurat} object. The same object may be supplied as
+\code{object =} for consistency with spatial plotting APIs.}
+
+\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
+\code{object}.}
 
 \item{group.by}{Metadata columns to color spots by.}
 

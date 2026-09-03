@@ -5,7 +5,7 @@
 \title{Run spot-level quality control}
 \usage{
 RunSpotQC(
-  srt,
+  srt = NULL,
   assay = NULL,
   return_filtered = FALSE,
   qc_metrics = c("outlier", "umi", "gene", "mito"),
@@ -18,11 +18,16 @@ RunSpotQC(
   mito_pattern = c("MT-", "Mt-", "mt-"),
   mito_gene = NULL,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  object = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{srt}{A \code{Seurat} object. The same object may be supplied as
+\code{object =} for consistency with spatial plotting APIs.}
+
+\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
+\code{object}.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
