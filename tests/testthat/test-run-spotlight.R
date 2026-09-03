@@ -49,6 +49,46 @@ with_mock_spotlight <- function(fake_fun, code) {
   force(code)
 }
 
+test_that("RunSPOTlight validates result names and storage before backend work", {
+  pair <- make_spotlight_seurat_pair()
+  backend_touched <- FALSE
+  testthat::local_mocked_bindings(
+    check_r = function(...) {
+      backend_touched <<- TRUE
+      stop("backend check should not run")
+    },
+    get_namespace_fun = function(...) {
+      backend_touched <<- TRUE
+      stop("backend should not run")
+    },
+    .package = "scop"
+  )
+  invalid <- list(
+    prefix = list("", 1L),
+    tool_name = list("", 1L),
+    store_results = list(1L, NA)
+  )
+  base_args <- list(
+    srt = pair$spatial,
+    reference = pair$reference,
+    reference_label = "celltype",
+    verbose = FALSE
+  )
+  for (arg in names(invalid)) {
+    pattern <- if (identical(arg, "store_results")) {
+      "store_results.*TRUE or FALSE"
+    } else {
+      paste0(arg, ".*single non-empty string")
+    }
+    for (value in invalid[[arg]]) {
+      args <- base_args
+      args[[arg]] <- value
+      expect_error(do.call(RunSPOTlight, args), pattern)
+    }
+  }
+  expect_false(backend_touched)
+})
+
 test_that("RunSPOTlight writes proportions and tool results", {
   pair <- make_spotlight_seurat_pair()
   fake_fun <- function(x, y, groups, mgs, gene_id, group_id, weight_id, min_prop, scale, ...) {
@@ -222,12 +262,35 @@ test_that("standard spatial workflow dispatches to RunSPOTlight", {
   testthat::local_mocked_bindings(
     .package = "scop",
     RunSpotQC = function(srt, ...) srt,
-    RunSPOTlight = function(srt, reference, reference_label, assay, reference_assay, ...) {
+    RunSPOTlight = function(
+      srt,
+      reference,
+      reference_label,
+      assay,
+      reference_assay,
+      prefix,
+      tool_name,
+      store_results,
+      ...
+    ) {
       expect_identical(reference, pair$reference)
       expect_identical(reference_label, "celltype")
       expect_identical(assay, "RNA")
       expect_identical(reference_assay, "RNA")
+      expect_identical(prefix, "SPOTlight")
+      expect_identical(tool_name, "SPOTlight")
+      expect_true(store_results)
+      srt$SPOTlight_prop_Alpha <- 1
       srt$SPOTlight_dominant_type <- "Alpha"
+      srt$SPOTlight_max_prop <- 1
+      srt@tools[[tool_name]] <- list(
+        proportions = matrix(
+          1,
+          nrow = ncol(srt),
+          ncol = 1,
+          dimnames = list(colnames(srt), "Alpha")
+        )
+      )
       srt
     }
   )

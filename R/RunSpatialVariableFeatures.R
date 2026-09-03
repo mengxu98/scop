@@ -96,6 +96,8 @@ RunSpatialVariableFeatures <- function(
       message_type = "error"
     )
   }
+  validate_scalar_flag(set_variable_features, "set_variable_features")
+  validate_scalar_flag(store_results, "store_results")
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(
@@ -106,6 +108,13 @@ RunSpatialVariableFeatures <- function(
   method <- match.arg(method)
   backend <- match.arg(backend)
   native_method <- method %in% c("moran", "geary")
+  backend_name <- if (isTRUE(native_method)) {
+    backend
+  } else if (identical(method, "SPARKX")) {
+    "SPARK"
+  } else {
+    "nnSVG"
+  }
   if (!is.numeric(k) || length(k) != 1L || is.na(k) || k < 1) {
     log_message(
       "{.arg k} must be a positive number",
@@ -145,12 +154,13 @@ RunSpatialVariableFeatures <- function(
   }
   set.seed(seed)
 
-  coords <- spatial_analysis_coords(
+  coordinate_input <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
     coordinate_space = coordinate_space
-  )$data
+  )
+  coords <- coordinate_input$data
   spots <- intersect(colnames(srt), rownames(coords))
   if (length(spots) == 0L) {
     log_message(
@@ -174,7 +184,11 @@ RunSpatialVariableFeatures <- function(
 
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
   if (is.null(features)) {
-    features <- SeuratObject::VariableFeatures(srt, assay = assay)
+    features <- suppressWarnings(
+      SeuratObject::VariableFeatures(srt, assay = assay)
+    )
+    features <- as.character(features)
+    features <- features[!is.na(features) & nzchar(features)]
     if (length(features) == 0L) {
       features <- rownames(expr)
     }
@@ -240,8 +254,12 @@ RunSpatialVariableFeatures <- function(
     method = method
   )
   top_features <- utils::head(result$feature[is.finite(result$score)], nfeatures)
-  if (isTRUE(set_variable_features) && length(top_features) > 0L) {
-    SeuratObject::VariableFeatures(srt, assay = assay) <- top_features
+  if (isTRUE(set_variable_features)) {
+    srt <- spatial_set_active_variable_features(
+      srt,
+      assay = assay,
+      features = top_features
+    )
   }
   if (isTRUE(store_results)) {
     score_lookup <- stats::setNames(result$score, result$feature)
@@ -266,7 +284,7 @@ RunSpatialVariableFeatures <- function(
         min_spots = min_spots,
         nperm = nperm,
         seed = seed,
-        backend = backend,
+        backend = backend_name,
         set_variable_features = set_variable_features
       )
     )
@@ -274,10 +292,113 @@ RunSpatialVariableFeatures <- function(
       srt@tools[["SpatialVariableFeatures"]]
     )
   }
-  log_message(
-    "Stored {.val {length(top_features)}} spatial variable features",
-    message_type = "success",
-    verbose = verbose
+  n_top <- length(top_features)
+  variable_features_set <- isTRUE(set_variable_features)
+  saved <- character()
+  if (isTRUE(variable_features_set)) {
+    saved <- c(
+      saved,
+      "{.val {n_top}} top features as assay {.var VariableFeatures}"
+    )
+  }
+  if (isTRUE(store_results)) {
+    saved <- c(
+      saved,
+      "full result in returned object tool bundle {.var SpatialVariableFeatures}"
+    )
+  }
+  done <- paste0(
+    "Spatial variable features completed: {.val {nrow(result)}} tested, ",
+    "{.val {n_top}} ranked in the top set"
+  )
+  if (length(saved) == 0L) {
+    done <- paste0(done, "; results not retained")
+  }
+  plot_image <- coordinate_input$source$image
+  has_plot_image <- is.character(plot_image) && length(plot_image) == 1L &&
+    !is.na(plot_image) && nzchar(plot_image)
+  plot_coord_cols <- coordinate_input$source$coord.cols %||% coord.cols
+  receipt_verbose <- thisutils::get_verbose(verbose)
+  display_scale <- if (
+    isTRUE(store_results) &&
+      isTRUE(has_plot_image) &&
+      isTRUE(receipt_verbose)
+  ) {
+    spatial_run_receipt_display_scale(srt, plot_image)
+  } else {
+    NULL
+  }
+  can_plot_spatially <- !isTRUE(has_plot_image) || !is.null(display_scale)
+  can_combine <- isTRUE(store_results) &&
+    isTRUE(receipt_verbose) &&
+    isTRUE(can_plot_spatially) &&
+    spatial_run_receipt_package_available("patchwork")
+  plot_call <- if (isTRUE(store_results)) {
+    plot_args <- c(
+      paste0(
+        "plot_type = ",
+        if (isTRUE(can_combine)) "\"combined\"" else "\"summary\""
+      ),
+      paste0("assay = ", spatial_run_receipt_quote(assay, "assay"))
+    )
+    if (isTRUE(can_combine) && isTRUE(has_plot_image)) {
+      plot_args <- c(
+        plot_args,
+        paste0("image = ", spatial_run_receipt_quote(plot_image, "image"))
+      )
+      if (identical(display_scale, "hires")) {
+        plot_args <- c(
+          plot_args,
+          paste0(
+            "image.scale = ",
+            spatial_run_receipt_quote(display_scale, "image.scale")
+          )
+        )
+      }
+    }
+    if (isTRUE(can_combine)) {
+      plot_args <- c(
+        plot_args,
+        paste0(
+          "coord.cols = ",
+          deparse1(unname(as.character(plot_coord_cols)), width.cutoff = 500L)
+        )
+      )
+    }
+    paste0(
+      "SpatialVariableFeaturePlot(<returned_object>, ",
+      paste(plot_args, collapse = ", "),
+      ")"
+    )
+  } else {
+    NULL
+  }
+  inspect_call <- if (!isTRUE(store_results) && isTRUE(variable_features_set)) {
+    variable_features_call <- paste0(
+      "SeuratObject::VariableFeatures(<returned_object>, assay = ",
+      spatial_run_receipt_quote(assay, "assay"),
+      ")"
+    )
+    if (n_top == 0L) {
+      paste0("as.character(stats::na.omit(", variable_features_call, "))")
+    } else {
+      variable_features_call
+    }
+  } else {
+    NULL
+  }
+  spatial_run_receipt(
+    done = done,
+    scope = paste0(
+      "method {.val {method}} ({.val {backend_name}} backend); ",
+      "assay {.val {assay}}, layer {.val {layer}}; ",
+      "{.val {length(spots)}} spots; coordinates {.val {coordinate_space}}"
+    ),
+    saved = if (length(saved) > 0L) paste(saved, collapse = "; ") else NULL,
+    plot = plot_call,
+    inspect = inspect_call,
+    verbose = verbose,
+    .envir = environment()
   )
   srt
 }

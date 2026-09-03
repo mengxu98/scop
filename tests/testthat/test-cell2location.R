@@ -55,9 +55,14 @@ test_that("cell2location environment module pins compatible versions", {
 })
 
 test_that("cell2location runner translates trainer devices to Pyro device", {
-  python <- unname(Sys.which(c("python3", "python")))
-  python <- python[nzchar(python)][1]
-  skip_if(is.na(python), "Python is not available")
+  python_candidates <- unname(Sys.which(c("python3", "python")))
+  python_candidates <- python_candidates[
+    nzchar(python_candidates) &
+      file.exists(python_candidates) &
+      !grepl("[/\\\\]WindowsApps[/\\\\]", python_candidates, ignore.case = TRUE)
+  ]
+  python <- if (length(python_candidates) == 0L) NA_character_ else python_candidates[[1L]]
+  skip_if(is.na(python), "A runnable Python executable is not available")
   runner <- getFromNamespace("runner_script_path", "scop")(
     "cell2location.py",
     "cell2location"
@@ -131,6 +136,33 @@ test_that("cell2location rejects normalized input and invalid signatures", {
   expect_error(signatures_fun(bad), "finite and non-negative")
 })
 
+test_that("cell2location rejects a WindowsApps Python execution alias", {
+  pair <- make_cell2location_pair()
+  signatures <- matrix(
+    1,
+    nrow = 4,
+    ncol = 2,
+    dimnames = list(paste0("Gene", 1:4), c("Alpha", "Beta"))
+  )
+  testthat::local_mocked_bindings(
+    PrepareEnv = function(...) invisible(NULL),
+    check_python = function(...) TRUE,
+    conda_python = function(...) "C:/Users/test/AppData/Local/Microsoft/WindowsApps/python3.exe",
+    resolve_conda = function(...) "mamba",
+    .package = "scop"
+  )
+  expect_error(
+    RunCell2location(
+      pair$spatial,
+      result_dir = tempfile("cell2location_alias_"),
+      reference_signatures = signatures,
+      assay = "RNA",
+      verbose = FALSE
+    ),
+    "WindowsApps"
+  )
+})
+
 test_that("RunCell2location writes abundance, proportions, and reproducible tools", {
   pair <- make_cell2location_pair()
   signatures <- matrix(
@@ -148,7 +180,11 @@ test_that("RunCell2location writes abundance, proportions, and reproducible tool
       checked_python_packages <<- packages
       TRUE
     },
-    conda_python = function(...) Sys.which("python3"),
+    conda_python = function(...) normalizePath(
+      file.path(R.home("bin"), if (.Platform$OS.type == "windows") "Rscript.exe" else "R"),
+      winslash = "/",
+      mustWork = TRUE
+    ),
     resolve_conda = function(...) "mamba",
     runner_script_path = function(...) "cell2location.py",
     runner_write_json = function(...) invisible(NULL),
@@ -216,7 +252,11 @@ test_that("RunCell2location does not mutate Seurat when Python fails", {
     .package = "scop",
     PrepareEnv = function(...) invisible(NULL),
     check_python = function(...) TRUE,
-    conda_python = function(...) Sys.which("python3"),
+    conda_python = function(...) normalizePath(
+      file.path(R.home("bin"), if (.Platform$OS.type == "windows") "Rscript.exe" else "R"),
+      winslash = "/",
+      mustWork = TRUE
+    ),
     resolve_conda = function(...) "mamba",
     runner_script_path = function(...) "cell2location.py",
     runner_write_json = function(...) invisible(NULL),
@@ -257,11 +297,33 @@ test_that("standard spatial workflow dispatches cell2location signatures", {
   testthat::local_mocked_bindings(
     .package = "scop",
     RunStandardWorkflow = function(srt, ...) srt,
-    RunCell2location = function(srt, result_dir, reference_signatures, ...) {
+    RunCell2location = function(
+      srt,
+      result_dir,
+      reference_signatures,
+      prefix,
+      tool_name,
+      store_results,
+      ...
+    ) {
       called <<- TRUE
       expect_identical(result_dir, "c2l")
       expect_identical(reference_signatures, signatures)
+      expect_identical(prefix, "Cell2location")
+      expect_identical(tool_name, "Cell2location")
+      expect_true(store_results)
+      srt$Cell2location_abundance_Alpha <- 1
+      srt$Cell2location_prop_Alpha <- 1
       srt$Cell2location_dominant_type <- "Alpha"
+      srt$Cell2location_max_prop <- 1
+      srt@tools[[tool_name]] <- list(
+        proportions = matrix(
+          1,
+          nrow = ncol(srt),
+          ncol = 1,
+          dimnames = list(colnames(srt), "Alpha")
+        )
+      )
       srt
     }
   )

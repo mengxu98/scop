@@ -1,10 +1,9 @@
 #' @title Run spatial gradient feature screening
 #'
 #' @description
-#' Run spatial trajectory or annotation gradient screening for Seurat objects.
-#' distance-based screening, while the `"r"` backend keeps full upstream
-#' SPATA2 SAS/STS behavior. Results are normalized into plain data.frames and
-#' is never stored.
+#' Run native spatial trajectory or annotation gradient screening for Seurat
+#' objects. The compiled C++ backend computes distance-based screening and
+#' stores validated result tables in `srt@tools` when requested.
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
@@ -12,35 +11,40 @@
 #' @inheritParams scop-params
 #' @param reference Spatial reference type: `"trajectory"` for STS or
 #' `"annotation"` for SAS.
-#' @param backend Computation backend. `"cpp"` uses a compiled fast spatial
-#' uses SPATA2 directly for full upstream SAS/STS behavior.
+#' @param backend Computation backend. The supported backend is `"cpp"`, which
+#' uses the compiled native spatial implementation.
 #' @param result_name Name used to store this result. If `NULL`, a name is
 #' generated from `reference`.
-#' @param variables Numeric variables or genes passed to SPATA2. If `NULL`,
+#' @param variables Numeric variables or genes tested by the native backend. If `NULL`,
 #' `srt@tools[["SpatialVariableFeatures"]]` is used first, then variable
 #' features, then all assay features.
-#' @param sample_name,platform,img_scale_fct,assay_modality Arguments forwarded
 #' @param coord.cols Metadata coordinate columns used by the `"cpp"`
 #' backend when no image coordinates are available.
 #' @param coordinate_space Coordinate system used by the C++ distance
 #' calculations. The default is raw acquisition coordinates, so `start`,
-#' `end`, trajectory positions, widths, and C++ distances share raw
+#' `end`, trajectory positions, and C++ distances share raw
 #' coordinate units. Use `"legacy_display"` explicitly for pre-0.9.0 display
-#' coordinates. SPATA2-backed runs retain backend-native units.
-#' @param trajectory_id,start,end,traj_df,width Trajectory setup passed to
-#' `SPATA2::addSpatialTrajectory()` and `SPATA2::spatialTrajectoryScreening()`.
-#' @param annotation_ids Existing SPATA2 spatial annotation ids. If `NULL`,
-#' annotations are created from `annotation.by` and `annotation.groups`, or from
-#' `annotation.variable` and `annotation.threshold`.
-#' @param annotation.by,annotation.groups Metadata grouping used to create
-#' SPATA2 group annotations.
+#' coordinates. Results retain the raw coordinate units used by the native
+#' backend.
+#' @param start,end,traj_df Trajectory geometry used by the native backend when
+#' `reference = "trajectory"`.
+#' @param annotation_ids Reserved compatibility input. It is not supported by
+#' the native backend; use `annotation.by` with `annotation.groups`, or
+#' `annotation.variable` with `annotation.threshold`.
+#' @param annotation.by,annotation.groups Metadata grouping used to create the
+#' native annotation mask.
 #' @param annotation.variable,annotation.threshold Numeric variable and
-#' threshold used to create SPATA2 numeric annotations. Numeric thresholds are
-#' interpreted as `">{threshold}"`.
-#' @param annotation_id Base id used when creating annotations.
-#' @param core,distance,angle_span SAS parameters forwarded to SPATA2.
-#' @param resolution,unit,sign_var,sign_threshold,model_add,model_subset,model_remove,n_random,seed,control
-#' SPATA2 screening parameters.
+#' threshold used to create a native numeric annotation mask. Numeric
+#' thresholds are interpreted as `">{threshold}"`.
+#' @param sample_name,platform,img_scale_fct,assay_modality,trajectory_id,width,annotation_id,core,distance,angle_span,resolution,model_add,model_subset,model_remove,control
+#' Legacy compatibility inputs. The native backend ignores these values and
+#' does not include them in the stored effective-parameter summary.
+#' @param unit Optional coordinate-unit label stored in the result source. It
+#' does not transform coordinates.
+#' @param sign_var,sign_threshold Column and cutoff used to select top gradient
+#' variables from the native significance table.
+#' @param n_random,seed Permutation count and random seed used by the native
+#' screening backend.
 #' @param n_bins Number of distance bins used for the `"cpp"` backend
 #' screening curve.
 #' @param min_spots Minimum number of non-zero spots required for a variable in
@@ -50,7 +54,8 @@
 #' @param set_variable_features Whether to set top gradient variables as Seurat
 #' variable features.
 #' @param store_results Whether to store the normalized result in `srt@tools`.
-#' @param ... Additional arguments forwarded to the SPATA2 screening function.
+#' @param ... Additional named arguments accepted for compatibility. The native
+#' backend ignores them and does not store them as effective parameters.
 #'
 #' @return A `Seurat` object with spatial gradient screening results stored in
 #' `srt@tools[["SpatialGradientFeatures"]]`.
@@ -217,12 +222,10 @@ RunSpatialGradientFeatures <- function(
         image = image,
         coord.cols = paste(coord.cols, collapse = ","),
         coordinate_space = coordinate_space,
-        trajectory_id = trajectory_id,
         annotation.by = annotation.by,
         annotation.groups = paste(annotation.groups %||% character(0), collapse = ","),
         annotation.variable = annotation.variable,
         annotation.threshold = annotation.threshold,
-        distance = distance,
         n_random = n_random,
         seed = seed,
         n_bins = n_bins,
@@ -551,7 +554,7 @@ sgf_run_cpp_gradient <- function(
 ) {
   if (!is.null(annotation_ids) && length(annotation_ids) > 0L) {
     log_message(
-      "{.arg annotation_ids} requires {.arg backend = 'r'} because SPATA2 annotation ids are not stored in Seurat metadata",
+      "{.arg annotation_ids} is not supported by the native {.arg backend = 'cpp'} path; provide annotation metadata through {.arg annotation.by}/{.arg annotation.groups} or {.arg annotation.variable}/{.arg annotation.threshold}",
       message_type = "error"
     )
   }
@@ -636,7 +639,7 @@ sgf_run_cpp_gradient <- function(
     significance = significance,
     model_fits = model_fits,
     top_variables = top_variables,
-    parameters = parameters_summary_df(parameters, version_pkgs = c(spata2_version = "SPATA2")),
+    parameters = parameters_summary_df(parameters),
     source = coordinate_source
   )
 }
@@ -933,7 +936,14 @@ sgf_store_result <- function(
   if (is.null(srt@tools[["SpatialGradientFeatures"]])) {
     srt@tools[["SpatialGradientFeatures"]] <- list()
   }
-  stored_result <- result[expected]
+  source <- source %||% result$source %||% list()
+  if (!is.list(source)) {
+    log_message(
+      "Spatial gradient result source must be a list",
+      message_type = "error"
+    )
+  }
+  stored_result <- c(result[expected], list(source = source))
   attr(stored_result, "coordinate_contract_version") <-
     .spatial_coordinate_contract_version
   srt@tools[["SpatialGradientFeatures"]][[result_name]] <- stored_result
