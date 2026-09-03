@@ -52,6 +52,7 @@ Plot cell2location spatial results
 \examples{
 \dontrun{
 # Result from the official Human Lymph Node example in RunCell2location().
+# The tutorial result is an external file and is not downloaded by pkgdown.
 spatial <- readRDS("human_lymph_node_cell2location/official_human_lymph_node.rds")
 selected <- names(sort(
   colMeans(spatial@tools$Cell2location$proportions),

@@ -439,7 +439,8 @@ TrainCellTypist <- function(
 #' @description
 #' Unified CellTypist model management interface. Use it to list available models,
 #' download models, inspect model metadata, extract model markers, subset models,
-#' convert models, or delete local models.
+#' convert models, or delete local models. Model listing and file-management
+#' examples are non-executing because they may download or modify local files.
 #'
 #' @md
 #' @inheritParams thisutils::log_message

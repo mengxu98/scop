@@ -88,10 +88,12 @@ condition-aware differential expression. C-SIDE stores effect and
 significance results, not spot-level cell-type proportions, so it has no
 recommended proportion plot. Inspect its stored
 tables in \code{srt@tools[[tool_name]]} or plot an explicit summary column with
-\code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.
+\code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}. The example is a non-executing template because C-SIDE
+requires a completed optional RCTD result.
 }
 \examples{
 \dontrun{
+check_r("dmcable/spacexr", verbose = FALSE)
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(

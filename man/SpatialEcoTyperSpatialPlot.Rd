@@ -53,6 +53,8 @@ plotting style.
 }
 \examples{
 data(visium_human_pancreas_pair_sub)
+# The stored `domain` column is a real PRECAST grouping used only for this
+# fast spatial plotting example; it is not a new SpatialEcoTyper inference.
 SpatialEcoTyperSpatialPlot(
   visium_human_pancreas_pair_sub,
   group.by = "domain",

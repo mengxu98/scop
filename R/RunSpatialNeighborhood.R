@@ -56,9 +56,6 @@
 #'   verbose = FALSE
 #' )
 #'
-#' SpatialNeighborhoodPlot(spatial, plot_type = "heatmap")
-#' SpatialNeighborhoodPlot(spatial, plot_type = "network", top_n = 12)
-#' SpatialNeighborhoodPlot(spatial, plot_type = "stat", top_n = 12)
 #' SpatialNeighborhoodPlot(
 #'   spatial,
 #'   plot_type = "spatial",
@@ -255,21 +252,9 @@ RunSpatialNeighborhood <- function(
 #' @export
 #'
 #' @examples
-#' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
-#' spatial <- RunSpatialNeighborhood(
-#'   spatial,
-#'   group.by = "coda_label",
-#'   coord.cols = c("x", "y"),
-#'   k = 4,
-#'   verbose = FALSE
-#' )
-#'
-#' SpatialNeighborhoodPlot(spatial, plot_type = "heatmap")
-#' SpatialNeighborhoodPlot(spatial, plot_type = "network", top_n = 12)
-#' SpatialNeighborhoodPlot(spatial, plot_type = "stat", top_n = 12)
+#' data(visium_human_pancreas_results_sub)
 #' SpatialNeighborhoodPlot(
-#'   spatial,
+#'   visium_human_pancreas_results_sub,
 #'   plot_type = "spatial",
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")

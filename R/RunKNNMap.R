@@ -56,8 +56,7 @@
 #'   srt_query = srt_query,
 #'   srt_ref = srt_ref,
 #'   query_group = "celltype",
-#'   ref_group = "celltype",
-#'   legend.position = "bottom"
+#'   ref_group = "celltype"
 #' )
 RunKNNMap <- function(
   srt_query,
