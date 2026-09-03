@@ -167,7 +167,7 @@ direct score comparison, or \code{"free"} for the legacy per-panel scale.}
 \item{violin_args}{Extra arguments for \code{\link[=FeatureStatPlot]{FeatureStatPlot()}} in
 \code{"activity_violin"}.}
 
-\item{dim_args}{Extra arguments for \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} / \code{\link[=CellDimPlot]{CellDimPlot()}}.}
+\item{dim_args}{Extra arguments for \code{\link[=FeatureDimPlot]{FeatureDimPlot()}}.}
 
 \item{atac_assay}{Chromatin assay for \code{"coverage"}.}
 

@@ -57,7 +57,7 @@
 #' @param expression_scale Z-score TF expression in `"heatmap_dotplot"`.
 #' @param violin_args Extra arguments for [FeatureStatPlot()] in
 #'   `"activity_violin"`.
-#' @param dim_args Extra arguments for [FeatureDimPlot()] / [CellDimPlot()].
+#' @param dim_args Extra arguments for [FeatureDimPlot()].
 #' @param atac_assay Chromatin assay for `"coverage"`.
 #' @param extend.upstream,extend.downstream Flanks for `"coverage"`.
 #' @param coverage_args Extra arguments for [CoverageTrackPlot()].
@@ -518,7 +518,6 @@ SCENICPlot <- function(
     activity_dim = scenic_plot_activity_dim(
       srt = srt,
       auc_mat = auc_mat,
-      group.by = group.by,
       top_table = top_table,
       features = features,
       assay = assay,
@@ -532,8 +531,6 @@ SCENICPlot <- function(
       tool_name = tool_name,
       palette = palette,
       palcolor = palcolor,
-      group_palette = heatmap_group_palette,
-      group_palcolor = heatmap_group_palcolor,
       dim_args = dim_args,
       combine = combine,
       ncol = ncol,
@@ -545,7 +542,6 @@ SCENICPlot <- function(
     eregulon_dim = scenic_plot_activity_dim(
       srt = srt,
       auc_mat = auc_mat,
-      group.by = group.by,
       top_table = top_table,
       features = features,
       assay = assay,
@@ -559,8 +555,6 @@ SCENICPlot <- function(
       tool_name = tool_name,
       palette = palette,
       palcolor = palcolor,
-      group_palette = heatmap_group_palette,
-      group_palcolor = heatmap_group_palcolor,
       dim_args = dim_args,
       combine = combine,
       ncol = ncol,
@@ -1311,7 +1305,6 @@ scenic_plot_activity_violin <- function(
 scenic_plot_activity_dim <- function(
   srt,
   auc_mat,
-  group.by,
   top_table,
   features = NULL,
   assay = "scenic",
@@ -1325,8 +1318,6 @@ scenic_plot_activity_dim <- function(
   tool_name = "SCENIC",
   palette = "RdYlBu",
   palcolor = NULL,
-  group_palette = "Chinese",
-  group_palcolor = NULL,
   dim_args = list(),
   combine = TRUE,
   ncol = 3,
@@ -1399,24 +1390,7 @@ scenic_plot_activity_dim <- function(
     rownames(srt_use[[expression_assay]]),
     error = function(...) character()
   )
-  cell_formals <- names(formals(CellDimPlot))
   feat_formals <- names(formals(FeatureDimPlot))
-  cell_args <- list(
-    srt = srt_use,
-    group.by = group.by,
-    reduction = reduction,
-    dims = dims,
-    palette = group_palette,
-    palcolor = group_palcolor,
-    label = TRUE,
-    title = "Cell types",
-    pt.size = point_size,
-    pt.alpha = point_alpha
-  )
-  extra_cell <- dim_args[intersect(names(dim_args), cell_formals)]
-  extra_cell <- extra_cell[setdiff(names(extra_cell), c("srt", "group.by"))]
-  cell_args[names(extra_cell)] <- extra_cell
-  p_cell <- do.call(CellDimPlot, cell_args)
 
   tf_plots <- lapply(regulons, function(regulon) {
     assay_feature <- scenic_assay_feature(regulon, assay_features)
@@ -1497,13 +1471,17 @@ scenic_plot_activity_dim <- function(
     patchwork::wrap_plots(panels, ncol = length(panels))
   })
 
-  plot <- patchwork::wrap_plots(c(list(p_cell), tf_plots), ncol = 1)
+  plot <- if (length(tf_plots) == 1L) {
+    tf_plots[[1L]]
+  } else {
+    patchwork::wrap_plots(tf_plots, ncol = 1)
+  }
   if (!is.null(title)) {
     plot <- plot + patchwork::plot_annotation(title = title)
   }
   list(
     plot = plot,
-    plots = c(list(p_cell), tf_plots),
+    plots = tf_plots,
     data = data.frame(regulon = regulons, TF = scenic_tf_from_regulon(regulons))
   )
 }
