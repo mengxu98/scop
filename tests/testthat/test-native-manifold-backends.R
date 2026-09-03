@@ -89,7 +89,7 @@ test_that("native BBKNN graph contains neighbors from every batch", {
   expect_identical(native[[3]]$backend, "cpp_exact")
 })
 
-test_that("native BBKNN Annoy path is deterministic and reports parameters", {
+test_that("BBKNN Annoy path uses Seurat and reports parameters", {
   set.seed(20260802)
   embedding <- matrix(rnorm(80 * 8), nrow = 80)
   rownames(embedding) <- paste0("Cell", seq_len(nrow(embedding)))
@@ -111,7 +111,7 @@ test_that("native BBKNN Annoy path is deterministic and reports parameters", {
 
   expect_equal(first[[1]], second[[1]], tolerance = 0)
   expect_equal(first[[2]], second[[2]], tolerance = 0)
-  expect_identical(first[[3]]$backend, "cpp_annoy")
+  expect_identical(first[[3]]$backend, "seurat_annoy")
   expect_identical(first[[3]]$computation, "annoy")
   expect_identical(first[[3]]$annoy_n_trees, 10L)
 })

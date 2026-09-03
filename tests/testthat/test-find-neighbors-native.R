@@ -32,13 +32,15 @@ make_native_seurat_object <- function(seed = 71) {
   )
 }
 
-test_that("FindNeighbors default delegates slower Annoy matrix queries", {
+test_that("FindNeighbors embedding queries fall back to Seurat Annoy", {
   reference <- make_native_neighbor_matrix()
   query <- rbind(q1 = c(0.1, 0.1), q2 = c(4.1, 4.1))
-  calls <- 0L
+  fallback_calls <- 0L
+  fallback <- get("find_neighbors_default_seurat", asNamespace("scop"))
   testthat::local_mocked_bindings(
-    annoy_cross_knn = function(...) {
-      calls <<- calls + 1L
+    find_neighbors_default_seurat = function(...) {
+      fallback_calls <<- fallback_calls + 1L
+      fallback(...)
     },
     .package = "scop"
   )
@@ -51,7 +53,7 @@ test_that("FindNeighbors default delegates slower Annoy matrix queries", {
     verbose = FALSE
   )
 
-  expect_identical(calls, 0L)
+  expect_identical(fallback_calls, 1L)
   expect_s4_class(out, "Neighbor")
   expect_identical(dim(out@nn.idx), c(2L, 2L))
   expect_identical(out@cell.names, rownames(query))
@@ -59,7 +61,7 @@ test_that("FindNeighbors default delegates slower Annoy matrix queries", {
   expect_true(all(is.finite(out@nn.dist)))
 })
 
-test_that("delegated cosine Neighbor distances match Seurat semantics", {
+test_that("cosine Neighbor distances match Seurat via fallback", {
   reference <- rbind(
     a = c(1, 0),
     b = c(0.8, 0.2),
@@ -91,8 +93,17 @@ test_that("delegated cosine Neighbor distances match Seurat semantics", {
   expect_equal(actual@nn.dist, expected@nn.dist, tolerance = 1e-6)
 })
 
-test_that("delegated matrix flow builds Seurat-compatible NN and SNN graphs", {
+test_that("Annoy embedding flow uses Seurat and matches its NN and SNN graphs", {
   x <- make_native_neighbor_matrix()
+  fallback_calls <- 0L
+  fallback <- get("find_neighbors_default_seurat", asNamespace("scop"))
+  testthat::local_mocked_bindings(
+    find_neighbors_default_seurat = function(...) {
+      fallback_calls <<- fallback_calls + 1L
+      fallback(...)
+    },
+    .package = "scop"
+  )
   actual <- FindNeighbors(x, k.param = 3, verbose = FALSE)
   expected <- seurat_reference_method(
     "FindNeighbors",
@@ -102,9 +113,32 @@ test_that("delegated matrix flow builds Seurat-compatible NN and SNN graphs", {
     verbose = FALSE
   )
 
+  expect_identical(fallback_calls, 1L)
   expect_named(actual, c("nn", "snn"))
   expect_s4_class(actual$nn, "Graph")
   expect_s4_class(actual$snn, "Graph")
+  expect_identical(as.matrix(actual$nn), as.matrix(expected$nn))
+  expect_equal(as.matrix(actual$snn), as.matrix(expected$snn), tolerance = 1e-12)
+})
+
+test_that("native RANN embedding flow matches Seurat exact neighbors", {
+  x <- make_native_neighbor_matrix()
+  testthat::local_mocked_bindings(
+    find_neighbors_default_seurat = function(...) {
+      stop("RANN embedding unexpectedly fell back to Seurat")
+    },
+    .package = "scop"
+  )
+  actual <- FindNeighbors(x, k.param = 3, nn.method = "rann", verbose = FALSE)
+  expected <- seurat_reference_method(
+    "FindNeighbors",
+    "default",
+    x,
+    k.param = 3,
+    nn.method = "rann",
+    verbose = FALSE
+  )
+
   expect_identical(as.matrix(actual$nn), as.matrix(expected$nn))
   expect_equal(as.matrix(actual$snn), as.matrix(expected$snn), tolerance = 1e-12)
 })
@@ -138,7 +172,7 @@ test_that("precomputed distance matrices use the native graph flow", {
   expect_equal(as.matrix(actual$snn), as.matrix(expected$snn), tolerance = 1e-12)
 })
 
-test_that("unsupported index and RANN requests fall back to Seurat", {
+test_that("unsupported cache.index and non-euclidean Annoy fall back to Seurat", {
   x <- make_native_neighbor_matrix()
   fallback_calls <- 0L
   fallback <- get("find_neighbors_default_seurat", asNamespace("scop"))
@@ -154,7 +188,7 @@ test_that("unsupported index and RANN requests fall back to Seurat", {
     FindNeighbors(
       x,
       k.param = 2,
-      nn.method = "rann",
+      annoy.metric = "cosine",
       return.neighbor = TRUE,
       verbose = FALSE
     ),
@@ -173,12 +207,13 @@ test_that("unsupported index and RANN requests fall back to Seurat", {
   expect_identical(fallback_calls, 2L)
 })
 
-test_that("Seurat method stores a delegated Neighbor result", {
+test_that("Seurat method stores a native Neighbor result for RANN", {
   obj <- make_native_seurat_object()
-  native_calls <- 0L
+  fallback_calls <- 0L
   testthat::local_mocked_bindings(
-    annoy_cross_knn = function(...) {
-      native_calls <<- native_calls + 1L
+    find_neighbors_default_seurat = function(...) {
+      fallback_calls <<- fallback_calls + 1L
+      stop("Seurat embedding Neighbor unexpectedly fell back")
     },
     .package = "scop"
   )
@@ -188,11 +223,12 @@ test_that("Seurat method stores a delegated Neighbor result", {
     reduction = "pca",
     dims = 1:10,
     k.param = 10,
+    nn.method = "rann",
     return.neighbor = TRUE,
     verbose = FALSE
   )
 
-  expect_identical(native_calls, 0L)
+  expect_identical(fallback_calls, 0L)
   expect_true("RNA.nn" %in% names(out@neighbors))
   expect_s4_class(out@neighbors$RNA.nn, "Neighbor")
 })

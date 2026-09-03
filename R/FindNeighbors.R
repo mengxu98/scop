@@ -18,6 +18,7 @@ FindNeighbors.Seurat <- function(
   graph.name = NULL,
   l2.norm = FALSE,
   cache.index = FALSE,
+  cores = 1L,
   ...
 ) {
   extra <- list(...)
@@ -76,7 +77,8 @@ FindNeighbors.Seurat <- function(
       nn.eps = nn.eps,
       verbose = verbose,
       l2.norm = l2.norm,
-      cache.index = cache.index
+      cache.index = cache.index,
+      cores = cores
     )
   } else {
     assay.use <- assay %||% SeuratObject::DefaultAssay(object)
@@ -93,7 +95,8 @@ FindNeighbors.Seurat <- function(
       nn.eps = nn.eps,
       verbose = verbose,
       l2.norm = l2.norm,
-      cache.index = cache.index
+      cache.index = cache.index,
+      cores = cores
     )
   }
 
@@ -187,6 +190,115 @@ find_neighbors_native_distance <- function(object, k) {
   list(idx = result[["idx"]], distance = result[["value"]])
 }
 
+find_neighbors_l2_rows <- function(mat) {
+  norms <- sqrt(rowSums(mat * mat))
+  if (any(!is.finite(norms)) || any(norms <= 0)) {
+    return(NULL)
+  }
+  mat / norms
+}
+
+# Map a finite embedding matrix to k nearest neighbors. Native code covers the
+# exact RANN path only; Annoy always returns NULL so callers use Seurat.
+# Returns NULL when the request is outside the validated native contract.
+find_neighbors_native_embedding <- function(
+  object,
+  query = NULL,
+  k,
+  nn.method,
+  n.trees,
+  annoy.metric,
+  nn.eps,
+  cores,
+  need_distance
+) {
+  if (
+    !is.matrix(object) || !is.numeric(object) || any(!is.finite(object)) ||
+      is.null(rownames(object)) ||
+      !is.numeric(cores) || length(cores) != 1L || is.na(cores) ||
+      cores < 1L || !isTRUE(all.equal(as.numeric(cores), as.integer(cores)))
+  ) {
+    return(NULL)
+  }
+  cores <- as.integer(cores)
+  query_mat <- if (is.null(query)) {
+    object
+  } else {
+    if (
+      !is.matrix(query) || !is.numeric(query) || any(!is.finite(query)) ||
+        ncol(query) != ncol(object) || is.null(rownames(query))
+    ) {
+      return(NULL)
+    }
+    query
+  }
+
+  if (identical(nn.method, "rann")) {
+    if (
+      !identical(annoy.metric, "euclidean") ||
+        !is.numeric(nn.eps) || length(nn.eps) != 1L || is.na(nn.eps) ||
+        nn.eps != 0
+    ) {
+      return(NULL)
+    }
+    if (isTRUE(need_distance) || !is.null(query)) {
+      result <- tryCatch(
+        cross_knn_f32(
+          reference = object,
+          query = query_mat,
+          k = k,
+          metric = "euclidean",
+          cores = cores
+        ),
+        error = function(e) NULL
+      )
+      if (
+        is.null(result) || !is.matrix(result[["idx"]]) ||
+          !identical(dim(result[["idx"]]), c(nrow(query_mat), k))
+      ) {
+        return(NULL)
+      }
+      return(list(
+        idx = result[["idx"]],
+        distance = result[["distance"]],
+        cell.names = rownames(query_mat),
+        metric = "euclidean",
+        ndim = ncol(object)
+      ))
+    }
+    idx <- tryCatch(
+      exact_knn_f32(data = object, k = k, cores = cores),
+      error = function(e) NULL
+    )
+    if (is.null(idx) || !identical(dim(idx), c(nrow(object), k))) {
+      return(NULL)
+    }
+    return(list(
+      idx = idx,
+      distance = NULL,
+      cell.names = rownames(object),
+      metric = "euclidean",
+      ndim = ncol(object)
+    ))
+  }
+
+  NULL
+}
+
+find_neighbors_as_neighbor <- function(idx, distance, cell_names, metric, ndim) {
+  idx_mat <- as.matrix(idx)
+  storage.mode(idx_mat) <- "numeric"
+  dist_mat <- as.matrix(distance)
+  storage.mode(dist_mat) <- "numeric"
+  methods::new(
+    Class = "Neighbor",
+    nn.idx = idx_mat,
+    nn.dist = dist_mat,
+    alg.info = list(metric = metric, ndim = as.integer(ndim)),
+    cell.names = cell_names
+  )
+}
+
 find_neighbors_as_graphs <- function(indices, cell_names, compute.SNN, prune.SNN) {
   n_cells <- length(cell_names)
   k <- ncol(indices)
@@ -240,6 +352,7 @@ FindNeighbors.default <- function(
   l2.norm = FALSE,
   cache.index = FALSE,
   index = NULL,
+  cores = 1L,
   ...
 ) {
   extra <- list(...)
@@ -282,9 +395,7 @@ FindNeighbors.default <- function(
   ) {
     return(fallback())
   }
-  if (!isTRUE(distance.matrix)) {
-    return(fallback())
-  }
+
   n_reference <- nrow(object)
   k <- suppressWarnings(as.integer(k.param))
   if (
@@ -299,10 +410,56 @@ FindNeighbors.default <- function(
     k <- n_reference - 1L
   }
 
-  if (!is.null(query) || isTRUE(l2.norm)) {
-    return(fallback())
+  if (isTRUE(distance.matrix)) {
+    if (!is.null(query) || isTRUE(l2.norm) || isTRUE(return.neighbor)) {
+      return(fallback())
+    }
+    result <- find_neighbors_native_distance(object = object, k = k)
+    if (is.null(result)) {
+      return(fallback())
+    }
+    if (isTRUE(k_adjusted)) {
+      warning(
+        "k.param set larger than number of cells. Setting k.param to number of cells - 1.",
+        call. = FALSE
+      )
+    }
+    graphs <- find_neighbors_as_graphs(
+      indices = result[["idx"]],
+      cell_names = rownames(object),
+      compute.SNN = compute.SNN,
+      prune.SNN = prune.SNN
+    )
+    return(graphs %||% fallback())
   }
-  result <- find_neighbors_native_distance(object = object, k = k)
+
+  data_use <- object
+  query_use <- query
+  if (isTRUE(l2.norm)) {
+    data_use <- find_neighbors_l2_rows(data_use)
+    if (is.null(data_use)) {
+      return(fallback())
+    }
+    if (!is.null(query_use)) {
+      query_use <- find_neighbors_l2_rows(query_use)
+      if (is.null(query_use)) {
+        return(fallback())
+      }
+    }
+  }
+
+  need_distance <- isTRUE(return.neighbor) || !is.null(query)
+  result <- find_neighbors_native_embedding(
+    object = data_use,
+    query = query_use,
+    k = k,
+    nn.method = nn.method,
+    n.trees = n.trees,
+    annoy.metric = annoy.metric,
+    nn.eps = nn.eps,
+    cores = cores,
+    need_distance = need_distance
+  )
   if (is.null(result)) {
     return(fallback())
   }
@@ -313,9 +470,19 @@ FindNeighbors.default <- function(
     )
   }
 
+  if (isTRUE(need_distance)) {
+    return(find_neighbors_as_neighbor(
+      idx = result[["idx"]],
+      distance = result[["distance"]],
+      cell_names = result[["cell.names"]],
+      metric = result[["metric"]],
+      ndim = result[["ndim"]]
+    ))
+  }
+
   graphs <- find_neighbors_as_graphs(
     indices = result[["idx"]],
-    cell_names = rownames(object),
+    cell_names = result[["cell.names"]],
     compute.SNN = compute.SNN,
     prune.SNN = prune.SNN
   )
@@ -336,6 +503,7 @@ FindNeighbors.dist <- function(
   verbose = TRUE,
   l2.norm = FALSE,
   cache.index = FALSE,
+  cores = 1L,
   ...
 ) {
   FindNeighbors.default(
@@ -352,6 +520,7 @@ FindNeighbors.dist <- function(
     verbose = verbose,
     l2.norm = l2.norm,
     cache.index = cache.index,
+    cores = cores,
     ...
   )
 }
@@ -371,6 +540,7 @@ FindNeighbors.Assay <- function(
   verbose = TRUE,
   l2.norm = FALSE,
   cache.index = FALSE,
+  cores = 1L,
   ...
 ) {
   features <- features %||% SeuratObject::VariableFeatures(object)
@@ -379,7 +549,7 @@ FindNeighbors.Assay <- function(
     layer = "data"
   )[features, , drop = FALSE])
   FindNeighbors.default(
-    object = data.use,
+    object = as.matrix(data.use),
     k.param = k.param,
     return.neighbor = return.neighbor,
     compute.SNN = compute.SNN,
@@ -391,6 +561,7 @@ FindNeighbors.Assay <- function(
     verbose = verbose,
     l2.norm = l2.norm,
     cache.index = cache.index,
+    cores = cores,
     ...
   )
 }
@@ -401,13 +572,20 @@ FindNeighbors.Assay <- function(
 #' @export
 FindNeighbors.Assay5 <- FindNeighbors.Assay
 
-knn_cross_topk_native <- function(reference, query, k, distance_metric) {
+knn_cross_topk_native <- function(
+  reference,
+  query,
+  k,
+  distance_metric,
+  cores = 1L
+) {
   if (
     !is.matrix(reference) || !is.matrix(query) ||
       !is.numeric(reference) || !is.numeric(query) ||
       ncol(reference) != ncol(query) || nrow(reference) == 0L ||
       nrow(query) == 0L || k < 1L || k > nrow(reference) ||
-      !distance_metric %in% c("cosine", "euclidean", "pearson", "spearman")
+      !distance_metric %in% c("cosine", "euclidean", "pearson", "spearman") ||
+      !is.numeric(cores) || length(cores) != 1L || is.na(cores) || cores < 1L
   ) {
     return(NULL)
   }
@@ -433,7 +611,7 @@ knn_cross_topk_native <- function(reference, query, k, distance_metric) {
       query = query,
       k = as.integer(k),
       metric = distance_metric,
-      cores = 1L
+      cores = as.integer(cores)
     ),
     error = function(e) NULL
   )
