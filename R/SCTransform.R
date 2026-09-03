@@ -156,6 +156,7 @@ SCTransform.default <- function(
   ...
 ) {
   extra_args <- list(...)
+  cores <- validate_scalar_integer(cores, "cores")
   sct_delegates <- !sct_fast_path_supported(
     reference.SCT.model = reference.SCT.model,
     do.correct.umi = do.correct.umi,
@@ -353,7 +354,8 @@ SCTransform.default <- function(
       min_var,
       res.clip.range[1],
       res.clip.range[2],
-      do.correct.umi
+      do.correct.umi,
+      cores
     )
     res_mean[genes_bin] <- result$res_mean
     res_var[genes_bin] <- result$res_var
@@ -408,7 +410,8 @@ SCTransform.default <- function(
     clip.range[1],
     clip.range[2],
     isTRUE(do.center) && is.null(sct_latent_df),
-    isTRUE(do.scale) && is.null(sct_latent_df)
+    isTRUE(do.scale) && is.null(sct_latent_df),
+    cores
   )
   dimnames(scale.data) <- list(output.features, col_names)
   rm(csr, corrected_list)
@@ -452,6 +455,7 @@ SCTransform.Seurat <- function(
     log_message("SCTransform.Seurat requires a single non-SCT assay.", message_type = "error")
   }
   extra_args <- list(...)
+  cores <- validate_scalar_integer(cores, "cores")
   sct_delegates <- !sct_fast_path_supported(
     reference.SCT.model = reference.SCT.model,
     do.correct.umi = do.correct.umi,

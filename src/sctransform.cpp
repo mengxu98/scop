@@ -9,6 +9,15 @@
 
 using namespace Rcpp;
 
+static int sct_thread_count(int cores) {
+  if (cores < 1) cores = 1;
+#ifdef _OPENMP
+  const int available = omp_get_max_threads();
+  if (available > 0 && cores > available) cores = available;
+#endif
+  return cores;
+}
+
 struct CsrMatrixView {
   const int* row_start;
   const int* column;
@@ -122,7 +131,8 @@ List sct_stats_correct_sparse(NumericVector intercepts,
                               double min_var,
                               double clip_lo,
                               double clip_hi,
-                              bool do_correct) {
+                              bool do_correct,
+                              int cores = 1) {
   const int genes = gene_idx.size();
   const int cells = cell_mu_base.size();
   NumericVector residual_var(genes);
@@ -130,8 +140,11 @@ List sct_stats_correct_sparse(NumericVector intercepts,
   std::vector<CorrectedRow> corrected(do_correct ? genes : 0);
   CsrMatrixView csr{INTEGER(csr_row_ptr), INTEGER(csr_col_idx), REAL(csr_vals)};
   const int* source_gene = INTEGER(gene_idx);
-  std::vector<double> residuals(cells);
+  const int n_threads = sct_thread_count(cores);
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(n_threads) schedule(static)
+#endif
   for (int out_row = 0; out_row < genes; ++out_row) {
     const int input_row = source_gene[out_row];
     const double theta_g = theta[out_row];
@@ -140,6 +153,7 @@ List sct_stats_correct_sparse(NumericVector intercepts,
     const int end = csr.row_start[input_row + 1];
     double sum = 0.0;
     CorrectedRow local;
+    std::vector<double> residuals(cells);
 
     for (int cell = 0; cell < cells; ++cell) {
       double observed = 0.0;
@@ -208,7 +222,8 @@ NumericMatrix sct_fused_resid_center_sparse(
     double narrow_clip_lo,
     double narrow_clip_hi,
     bool do_center,
-    bool do_scale) {
+    bool do_scale,
+    int cores = 1) {
   const int genes = gene_idx.size();
   const int cells = cell_mu_base.size();
   NumericMatrix output(genes, cells);
@@ -216,7 +231,11 @@ NumericMatrix sct_fused_resid_center_sparse(
   const int* source_gene = INTEGER(gene_idx);
   const bool skip_wide_clip =
     narrow_clip_lo >= wide_clip_lo && narrow_clip_hi <= wide_clip_hi;
+  const int n_threads = sct_thread_count(cores);
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(n_threads) schedule(static)
+#endif
   for (int out_row = 0; out_row < genes; ++out_row) {
     const int input_row = source_gene[out_row];
     const double theta_g = theta[out_row];
