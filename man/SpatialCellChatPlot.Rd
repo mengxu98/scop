@@ -50,3 +50,12 @@ Plot normalized SpatialCellChat results without rerunning the backend. The
 network view is a group-aggregated network over group centroids, not a
 materialized individual cell-by-cell edge table.
 }
+\examples{
+data(visium_human_pancreas_results_sub)
+SpatialCellChatPlot(
+  visium_human_pancreas_results_sub,
+  plot_type = "incoming",
+  sample = "ALL",
+  top_n = 10
+)
+}

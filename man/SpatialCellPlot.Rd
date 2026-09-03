@@ -60,15 +60,11 @@ object, or extracted from a Seurat spatial image. Spot centers are never
 converted into synthetic polygons.
 }
 \examples{
-boundaries <- data.frame(
-  cell_id = rep(c("cell1", "cell2"), each = 4),
-  polygon_id = rep(c("p1", "p2"), each = 4),
-  ring_id = 1,
-  vertex_order = rep(1:4, 2),
-  x = c(0, 1, 1, 0, 1.2, 2.2, 2.2, 1.2),
-  y = c(0, 0, 1, 1, 0, 0, 1, 1),
-  cell_type = rep(c("A", "B"), each = 4)
+data(xenium_human_pancreas_boundaries_sub)
+SpatialCellPlot(
+  boundaries = xenium_human_pancreas_boundaries_sub,
+  group.by = "cell_area",
+  crop = TRUE
 )
-SpatialCellPlot(boundaries = boundaries, group.by = "cell_type")
 
 }

@@ -48,46 +48,19 @@ Annotate single cells using scmap
 }
 \examples{
 data(panc8_sub)
-panc8_sub <- RunStandardWorkflow(panc8_sub)
-
-genenames <- make.unique(
-  thisutils::capitalize(
-    rownames(panc8_sub),
-    force_tolower = TRUE
-  )
+keep <- panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")
+panc8_sub <- Seurat::NormalizeData(panc8_sub[, keep], verbose = FALSE)
+reference <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
+query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]
+query <- RunScmap(
+  srt_query = query, srt_ref = reference,
+  ref_group = "celltype", method = "scmapCluster", nfeatures = 200,
+  verbose = FALSE
 )
-names(genenames) <- rownames(panc8_sub)
-panc8_sub <- RenameFeatures(
-  panc8_sub,
-  newnames = genenames
-)
-panc8_sub <- CheckDataMerge(
-  panc8_sub,
-  batch = "tech"
-)[["srt_merge"]]
-
-data(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-pancreas_sub <- RunScmap(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_sub,
-  ref_group = "celltype",
-  method = "scmapCluster"
-)
+query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
 CellDimPlot(
-  pancreas_sub,
-  group.by = "scmap_annotation"
-)
-
-pancreas_sub <- RunScmap(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_sub,
-  ref_group = "celltype",
-  method = "scmapCell"
-)
-CellDimPlot(
-  pancreas_sub,
-  group.by = "scmap_annotation"
+  query, group.by = "scmap_annotation",
+  label = TRUE, legend.position = "bottom"
 )
 }
 \seealso{

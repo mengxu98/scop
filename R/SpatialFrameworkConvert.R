@@ -10,6 +10,23 @@
 #'
 #' @return A native Giotto object.
 #'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- Seurat::NormalizeData(
+#'   visium_human_pancreas_sub,
+#'   assay = "Spatial",
+#'   verbose = FALSE
+#' )
+#' if (all(unlist(
+#'   thisutils::check_r("drieslab/Giotto", verbose = FALSE),
+#'   use.names = FALSE
+#' ))) {
+#'   giotto <- srt_to_giotto(spatial, image = "slice1")
+#'   print(giotto)
+#' }
+#' }
+#'
 #' @export
 srt_to_giotto <- function(srt, image = NULL, ...) {
   image <- {
@@ -74,6 +91,24 @@ seurat_major_version <- function() {
 #' @param ... Additional arguments passed to the Giotto converter.
 #'
 #' @return A new `Seurat` object.
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- Seurat::NormalizeData(
+#'   visium_human_pancreas_sub,
+#'   assay = "Spatial",
+#'   verbose = FALSE
+#' )
+#' if (all(unlist(
+#'   thisutils::check_r("drieslab/Giotto", verbose = FALSE),
+#'   use.names = FALSE
+#' ))) {
+#'   giotto <- srt_to_giotto(spatial, image = "slice1")
+#'   roundtrip <- giotto_to_srt(giotto)
+#'   print(roundtrip)
+#' }
+#' }
 #'
 #' @export
 giotto_to_srt <- function(giotto, ...) {

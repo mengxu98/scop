@@ -35,34 +35,24 @@
 #' @export
 #'
 #' @examples
-#' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
-#' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
-#' spatial@tools[["MERINGUE"]] <- list(
-#'   autocorrelation = data.frame(
-#'     feature = rownames(spatial)[1:4],
-#'     statistic = c(0.42, 0.35, 0.28, 0.22),
-#'     p_value = c(0.001, 0.004, 0.010, 0.020),
-#'     q_value = c(0.004, 0.008, 0.015, 0.030)
-#'   )
-#' )
-#'
-#' head(spatial@tools[["MERINGUE"]]$autocorrelation)
+#' data(visium_human_pancreas_results_sub)
+#' mer_result <- visium_human_pancreas_results_sub@tools$MERINGUE
+#' mer_result$summary
 #' SpatialSpotPlot(
-#'   spatial,
-#'   features = spatial@tools[["MERINGUE"]]$autocorrelation$feature[1:2],
+#'   visium_human_pancreas_results_sub,
+#'   features = mer_result$autocorrelation$feature[1],
 #'   overlay_image = FALSE,
 #'   coord.cols = c("x", "y")
 #' )
 #'
+#' \dontrun{
+#' check_r("JEFworks-Lab/MERINGUE", verbose = FALSE)
 #' spatial <- RunMERINGUE(
-#'   spatial,
-#'   assay = "Spatial",
-#'   coord.cols = c("x", "y"),
-#'   mode = c("autocorrelation", "cross_correlation"),
-#'   nfeatures = 50,
-#'   verbose = FALSE
+#'   visium_human_pancreas_results_sub,
+#'   assay = "Spatial", coord.cols = c("x", "y"),
+#'   mode = "autocorrelation", nfeatures = 20, verbose = FALSE
 #' )
+#' }
 RunMERINGUE <- function(
   srt,
   assay = NULL,

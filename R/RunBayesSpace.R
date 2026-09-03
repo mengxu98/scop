@@ -30,33 +30,24 @@
 #'
 #' @export
 #' @examples
-#' data(visium_human_pancreas_sub)
-#' spatial <- visium_human_pancreas_sub
-#' spatial$BayesSpace_cluster <- factor(
-#'   paste0("domain_", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
-#' )
-#'
-#' SpatialSpotPlot(
-#'   spatial,
-#'   group.by = "BayesSpace_cluster",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
-#'
+#' data(visium_human_pancreas_results_sub)
 #' spatial <- RunBayesSpace(
-#'   spatial,
+#'   visium_human_pancreas_results_sub,
 #'   q = 3,
 #'   n.PCs = 5,
 #'   n.HVGs = 200,
 #'   store_sce = FALSE,
-#'   spatial_cluster_params = list(
-#'     nrep = 200,
-#'     burn.in = 50,
-#'     thin = 10,
-#'     save.chain = FALSE
-#'   )
+#'   spatial_cluster_params = list(nrep = 20, burn.in = 10, thin = 5),
+#'   coord.cols = c("x", "y"),
+#'   verbose = FALSE
 #' )
-#' table(spatial$BayesSpace_cluster)
+#' SpatialSpotPlot(
+#'   spatial,
+#'   group.by = "BayesSpace_cluster",
+#'   overlay_image = FALSE,
+#'   coord.cols = c("x", "y"),
+#'   pt.size = 1.5
+#' )
 RunBayesSpace <- function(
   srt,
   q,

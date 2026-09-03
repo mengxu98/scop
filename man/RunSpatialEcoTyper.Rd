@@ -178,48 +178,35 @@ package and write spatial ecotype labels or abundances back to a \code{Seurat}
 object when possible.
 }
 \examples{
-data(visium_human_pancreas_sub)
-srt <- visium_human_pancreas_sub
-srt <- Seurat::NormalizeData(srt, assay = "Spatial", verbose = FALSE)
-srt$CellType <- srt$coda_label
-srt$SpatialEcoTyper_SE <- ifelse(srt$x > stats::median(srt$x), "SE1", "SE2")
-srt$sample <- ifelse(srt$y > stats::median(srt$y), "slice_a", "slice_b")
-
+data(visium_human_pancreas_pair_sub)
+# Plot the stored spatial grouping from the real two-sample object. This
+# compact fixture keeps the real spatial grouping for a fast layout demo;
+# rerun SpatialEcoTyper in the dontrun block for a new SE result.
 SpatialEcoTyperSpatialPlot(
-  srt,
+  visium_human_pancreas_pair_sub,
+  group.by = "domain",
   overlay_image = FALSE,
-  coord.cols = c("x", "y")
+  coord.cols = c("x", "y"),
+  pt.size = 1.5
 )
 SpatialEcoTyperCompositionPlot(
-  srt,
-  group.by = "CellType",
+  visium_human_pancreas_pair_sub,
+  se.by = "domain",
+  group.by = "coda_label",
   sample.by = "sample",
   position = "fill"
 )
-srt$sample <- NULL
 
-srt <- RunSpatialEcoTyper(
-  srt,
-  celltype.by = "CellType",
-  x.by = "x",
-  y.by = "y",
-  nfeatures = 100,
-  ncores = 1,
-  allow_partial = TRUE,
-  verbose = FALSE
-)
-
-# A genuine multi-sample spatial input is required for conserved-SE discovery.
-# The bundled object contains one sample, so this is a parameter template.
-if (FALSE) {
+\dontrun{
+check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE)
   srt <- RunSpatialEcoTyper(
-    multi_sample_srt,
+    visium_human_pancreas_pair_sub,
     mode = "multi",
-    celltype.by = "CellType",
+    celltype.by = "coda_label",
     sample.by = "sample",
     x.by = "x",
     y.by = "y",
-    nfeatures = 100,
+    nfeatures = 50,
     ncores = 1,
     verbose = FALSE
   )

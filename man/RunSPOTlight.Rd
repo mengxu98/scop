@@ -82,45 +82,22 @@ Estimate spot-level cell type proportions from a spatial \code{Seurat} object
 using a single-cell \code{Seurat} reference and the optional \code{SPOTlight} package.
 }
 \examples{
+\dontrun{
 data(visium_human_pancreas_sub)
-spatial <- visium_human_pancreas_sub
-spotlight_weights <- data.frame(
-  SPOTlight_prop_Ductal = seq(0.70, 0.20, length.out = ncol(spatial)),
-  SPOTlight_prop_Endocrine = seq(0.20, 0.70, length.out = ncol(spatial)),
-  SPOTlight_prop_Immune = 0.10,
-  row.names = colnames(spatial)
-)
-spotlight_weights <- spotlight_weights / rowSums(spotlight_weights)
-spatial <- Seurat::AddMetaData(spatial, spotlight_weights)
-spatial$SPOTlight_dominant_type <- sub(
-  "^SPOTlight_prop_",
-  "",
-  colnames(spotlight_weights)[max.col(spotlight_weights)]
-)
-spatial$SPOTlight_max_prop <- apply(spotlight_weights, 1, max)
-
-SpatialSpotPlot(
-  spatial,
-  group.by = "SPOTlight_dominant_type",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-SpatialSpotPlot(
-  spatial,
-  group.by = "SPOTlight_dominant_type",
-  plot_type = "pie",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-
 data(panc8_sub)
-spatial <- spatial[, seq_len(120)]
-reference <- panc8_sub[, panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")]
+keep_spots <- unique(round(seq(
+  1,
+  ncol(visium_human_pancreas_sub),
+  length.out = 120
+)))
+spatial <- visium_human_pancreas_sub[, keep_spots]
+reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] \%in\%
+  c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
-features_use <- intersect(
+features_use <- head(intersect(
   SeuratObject::VariableFeatures(reference),
   rownames(spatial)
-)
+), 300)
 spatial <- RunSPOTlight(
   srt = spatial,
   reference = reference,
@@ -131,16 +108,12 @@ spatial <- RunSPOTlight(
   marker_top_n = 20,
   verbose = FALSE
 )
-
-spotlight_cols <- grep(
-  "^SPOTlight_prop_",
-  colnames(spatial@meta.data),
-  value = TRUE
-)
-SpatialSpotPlot(
+SpatialDeconvolutionPlot(
   spatial,
-  group.by = spotlight_cols[1:min(3, length(spotlight_cols))],
+  tool_name = "SPOTlight",
+  plot_type = "dominant",
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
+}
 }

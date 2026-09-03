@@ -53,3 +53,19 @@ A `ggplot` object.
 Plot a graph produced by [RunSpatialNetwork()]. The graph can be read from a
 Seurat object or supplied directly as `srt@tools$SpatialNetwork`.
 }
+\examples{
+data(visium_human_pancreas_sub)
+spatial <- RunSpatialNetwork(
+  visium_human_pancreas_sub,
+  k = 6,
+  coord.cols = c("x", "y"),
+  verbose = FALSE
+)
+SpatialNetworkPlot(
+  spatial,
+  group.by = "coda_label",
+  edge.linewidth = 0.15,
+  pt.size = 0.8
+)
+
+}
