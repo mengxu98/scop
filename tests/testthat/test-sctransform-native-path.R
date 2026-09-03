@@ -206,6 +206,46 @@ test_that("SCTransform native path preserves Seurat output semantics", {
   }
 })
 
+test_that("SCTransform native cores keep residualization identical", {
+  skip_if_not_installed("glmGamPoi")
+  set.seed(20260903)
+  umi <- Matrix::rsparsematrix(
+    nrow = 200L,
+    ncol = 140L,
+    density = 0.04,
+    rand.x = function(n) stats::rpois(n, lambda = 4) + 1
+  )
+  dimnames(umi) <- list(
+    paste0("G", seq_len(nrow(umi))),
+    paste0("C", seq_len(ncol(umi)))
+  )
+  umi[1L, ] <- 1
+  cell_attr <- data.frame(
+    log_umi = log10(Matrix::colSums(umi)),
+    row.names = colnames(umi)
+  )
+  args <- list(
+    object = umi,
+    cell.attr = cell_attr,
+    vst.flavor = "v2",
+    variable.features.n = 80,
+    ncells = 140,
+    seed.use = 11,
+    verbose = FALSE
+  )
+  single <- do.call(
+    getS3method("SCTransform", "default"),
+    c(args, list(cores = 1L))
+  )
+  multi <- do.call(
+    getS3method("SCTransform", "default"),
+    c(args, list(cores = 4L))
+  )
+  expect_identical(multi$variable_features, single$variable_features)
+  expect_equal(multi$y, single$y, tolerance = 1e-12)
+  expect_equal(multi$umi_corrected, single$umi_corrected, tolerance = 0)
+})
+
 test_that("SCTransform default native path supports latent.data", {
   skip_if_not_installed("glmGamPoi")
   set.seed(20260901)
