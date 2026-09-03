@@ -297,11 +297,33 @@ test_that("standard spatial workflow dispatches cell2location signatures", {
   testthat::local_mocked_bindings(
     .package = "scop",
     RunStandardWorkflow = function(srt, ...) srt,
-    RunCell2location = function(srt, result_dir, reference_signatures, ...) {
+    RunCell2location = function(
+      srt,
+      result_dir,
+      reference_signatures,
+      prefix,
+      tool_name,
+      store_results,
+      ...
+    ) {
       called <<- TRUE
       expect_identical(result_dir, "c2l")
       expect_identical(reference_signatures, signatures)
+      expect_identical(prefix, "Cell2location")
+      expect_identical(tool_name, "Cell2location")
+      expect_true(store_results)
+      srt$Cell2location_abundance_Alpha <- 1
+      srt$Cell2location_prop_Alpha <- 1
       srt$Cell2location_dominant_type <- "Alpha"
+      srt$Cell2location_max_prop <- 1
+      srt@tools[[tool_name]] <- list(
+        proportions = matrix(
+          1,
+          nrow = ncol(srt),
+          ncol = 1,
+          dimnames = list(colnames(srt), "Alpha")
+        )
+      )
       srt
     }
   )

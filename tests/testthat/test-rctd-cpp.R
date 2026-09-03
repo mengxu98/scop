@@ -9,6 +9,60 @@ rctd_normalize_weights <- function(weights) {
   weights <- as.matrix(weights)
   rctd_normalize_weights_cpp(weights)
 }
+
+make_rctd_validation_pair <- function() {
+  counts <- matrix(
+    c(4, 1, 0, 3, 2, 1),
+    nrow = 3,
+    dimnames = list(paste0("Gene", 1:3), paste0("Cell", 1:2))
+  )
+  counts <- methods::as(Matrix::Matrix(counts, sparse = TRUE), "dgCMatrix")
+  spatial <- SeuratObject::CreateSeuratObject(counts)
+  reference <- SeuratObject::CreateSeuratObject(counts)
+  reference$celltype <- c("Alpha", "Beta")
+  list(spatial = spatial, reference = reference)
+}
+
+test_that("RunRCTD validates result names and storage before backend work", {
+  pair <- make_rctd_validation_pair()
+  backend_touched <- FALSE
+  testthat::local_mocked_bindings(
+    check_r = function(...) {
+      backend_touched <<- TRUE
+      stop("backend check should not run")
+    },
+    rctd_run_spacexr = function(...) {
+      backend_touched <<- TRUE
+      stop("backend should not run")
+    },
+    .package = "scop"
+  )
+  invalid <- list(
+    prefix = list("", 1L),
+    tool_name = list("", 1L),
+    store_results = list(1L, NA)
+  )
+  base_args <- list(
+    srt = pair$spatial,
+    reference = pair$reference,
+    reference_label = "celltype",
+    verbose = FALSE
+  )
+  for (arg in names(invalid)) {
+    pattern <- if (identical(arg, "store_results")) {
+      "store_results.*TRUE or FALSE"
+    } else {
+      paste0(arg, ".*single non-empty string")
+    }
+    for (value in invalid[[arg]]) {
+      args <- base_args
+      args[[arg]] <- value
+      expect_error(do.call(RunRCTD, args), pattern)
+    }
+  }
+  expect_false(backend_touched)
+})
+
 test_that("RCTD sparse quality helper matches R sparse summaries", {
   st_dense <- matrix(
     c(

@@ -122,8 +122,9 @@ RunSPOTlight <- function(
       message_type = "error"
     )
   }
-  validate_scalar_string(prefix, "prefix", require_character = FALSE)
-  validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
+  validate_scalar_string(prefix, "prefix")
+  validate_scalar_string(tool_name, "tool_name")
+  validate_scalar_flag(store_results, "store_results")
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)

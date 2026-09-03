@@ -96,6 +96,8 @@ RunSpatialVariableFeatures <- function(
       message_type = "error"
     )
   }
+  validate_scalar_flag(set_variable_features, "set_variable_features")
+  validate_scalar_flag(store_results, "store_results")
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!assay %in% SeuratObject::Assays(srt)) {
     log_message(
@@ -182,7 +184,11 @@ RunSpatialVariableFeatures <- function(
 
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
   if (is.null(features)) {
-    features <- SeuratObject::VariableFeatures(srt, assay = assay)
+    features <- suppressWarnings(
+      SeuratObject::VariableFeatures(srt, assay = assay)
+    )
+    features <- as.character(features)
+    features <- features[!is.na(features) & nzchar(features)]
     if (length(features) == 0L) {
       features <- rownames(expr)
     }
@@ -248,8 +254,12 @@ RunSpatialVariableFeatures <- function(
     method = method
   )
   top_features <- utils::head(result$feature[is.finite(result$score)], nfeatures)
-  if (isTRUE(set_variable_features) && length(top_features) > 0L) {
-    SeuratObject::VariableFeatures(srt, assay = assay) <- top_features
+  if (isTRUE(set_variable_features)) {
+    srt <- spatial_set_active_variable_features(
+      srt,
+      assay = assay,
+      features = top_features
+    )
   }
   if (isTRUE(store_results)) {
     score_lookup <- stats::setNames(result$score, result$feature)
@@ -283,7 +293,7 @@ RunSpatialVariableFeatures <- function(
     )
   }
   n_top <- length(top_features)
-  variable_features_set <- isTRUE(set_variable_features) && n_top > 0L
+  variable_features_set <- isTRUE(set_variable_features)
   saved <- character()
   if (isTRUE(variable_features_set)) {
     saved <- c(
@@ -364,11 +374,16 @@ RunSpatialVariableFeatures <- function(
     NULL
   }
   inspect_call <- if (!isTRUE(store_results) && isTRUE(variable_features_set)) {
-    paste0(
+    variable_features_call <- paste0(
       "SeuratObject::VariableFeatures(<returned_object>, assay = ",
       spatial_run_receipt_quote(assay, "assay"),
       ")"
     )
+    if (n_top == 0L) {
+      paste0("as.character(stats::na.omit(", variable_features_call, "))")
+    } else {
+      variable_features_call
+    }
   } else {
     NULL
   }
