@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +59,90 @@
       <small>Source: <a href="https://github.com/mengxu98/scop/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.1" id="scop-091">scop 0.9.1<a class="anchor" aria-label="anchor" href="#scop-091"></a></h2>
+<ul><li>
+<strong>feat</strong>:
+<ul><li>Internal preprocessing and integration workflows now use scop’s Seurat-compatible entry points, enabling validated native acceleration for normalization, variable-feature selection, scaling, PCA, and neighbor search while retaining transparent Seurat fallback for unsupported paths.</li>
+<li>The native <code>SCTransform(vst.flavor = "v2")</code> path now supports validated numeric and factor <code>vars.to.regress</code> designs and <code>latent.data</code>; unsupported regression designs continue to delegate to Seurat.</li>
+<li>The native PCA auto path accepts smaller stable trailing eigengaps after numerical and neighborhood-parity validation, allowing more datasets to use the accelerated implementation.</li>
+<li>Added <code><a href="../reference/CellScoringPlot.html">CellScoringPlot()</a></code> for paired group/score UMAPs, score distributions, threshold proportions, and complete multi-program layouts from <code><a href="../reference/CellScoring.html">CellScoring()</a></code> results.</li>
+<li>CellRank + Palantir fate workflow now supports MAGIC layers, explicit Schur sizes and terminal-state validation, normalized fate/driver/transition payloads, CellRank GAM trend modules, module enrichment, and result-only <code><a href="../reference/CellRankPlot.html">CellRankPlot()</a></code> views.</li>
+<li>Added <code><a href="../reference/RunCOMMOT.html">RunCOMMOT()</a></code> and <code><a href="../reference/COMMOTPlot.html">COMMOTPlot()</a></code> for official COMMOT spatial communication through an isolated Python subprocess with raw-coordinate provenance and optional external H5AD storage.</li>
+<li>Added <code><a href="../reference/RunSpaTalk.html">RunSpaTalk()</a></code> and <code><a href="../reference/SpaTalkPlot.html">SpaTalkPlot()</a></code> for official SpaTalk single-cell and spot-reference spatial communication workflows with compact unified CCC storage.</li>
+<li>Added <code>CCCNetworkPlot(plot_type = "spatial")</code>, a stored-result slice overlay for SpatialCellChat, SpaTalk, and COMMOT with abundance-scaled group nodes, sender-coloured directed edges, and proportion-aware composition pies.</li>
+<li>
+<code><a href="../reference/RunCNV.html">RunCNV()</a></code> backend coverage: <code>copykat</code>, <code>fastCNV</code>, <code>SCEVAN</code>, <code>infercnv</code>, and <code>numbat</code> are now verified against their original pipelines on real bundled datasets (breast-cancer scRNA-seq, infercnv example, numbat ATC2 example), with exact prediction agreement for copykat/SCEVAN/numbat and Spearman rho = 1.0 for fastCNV/infercnv.</li>
+<li>The MERINGUE C++ permutation kernel now traverses the weight matrix sparsely (row-major edge list, bit-identical accumulation): <code>nperm = 200</code> Moran p-values at 300 spots drop from ~442s to ~14s (~30x).</li>
+<li>
+<code><a href="../reference/RunMERINGUE.html">RunMERINGUE()</a></code> gains a <code>backend = c("cpp", "r")</code> option; the C++ kernels replicate <code><a href="https://rdrr.io/pkg/MERINGUE/man/moranTest.html" class="external-link">MERINGUE::moranTest()</a></code>/<code>moranPermutationTest()</code> to machine precision (including the <code>sample.kind</code> RNG stream). <code>backend = "r"</code> retains the original calls and honors <code>moran_params</code>.</li>
+<li>Real-data consistency tests verify the wrappers against the original pipelines (CellChat, SpatialCellChat, LIANA, BayesSpace, MERINGUE, SPOTlight, SpaNorm, SpatialDWLS, RCTD, BANKSY, CARD, SpotSweeper, PRECAST).</li>
+<li>
+<code><a href="../reference/DorotheaPlot.html">DorotheaPlot()</a></code> now follows the shared scop plot style: horizontal <code>"bar"</code>/<code>"lollipop"</code> comparison plots, <code>"volcano"</code>, <code>"heatmap"</code> via <code><a href="../reference/GroupHeatmap.html">GroupHeatmap()</a></code>, <code>"dim"</code> (activity vs expression on embeddings), <code>"stat"</code> (<code>FeatureStatPlot</code> distributions), and <code>"targets"</code> (regulon-target volcano). <code><a href="../reference/RunDorothea.html">RunDorothea()</a></code> examples show <code><a href="../reference/FeatureDimPlot.html">FeatureDimPlot()</a></code> / <code><a href="../reference/FeatureStatPlot.html">FeatureStatPlot()</a></code> on the TF-activity assay.</li>
+<li>
+<code><a href="../reference/RunIntegrationBenchmark.html">RunIntegrationBenchmark()</a></code> compares integration methods with scIB-style iLISI/cLISI, ASW, graph connectivity, and ARI/NMI scores and returns a <code>Seurat</code> object. Tables live in <code>srt@tools$IntegrationBenchmark</code> and are printed with <code><a href="https://mengxu98.github.io/thisplot/reference/print_colored_table.html" class="external-link">thisplot::print_colored_table()</a></code>. <code><a href="../reference/IntegrationBenchmarkPlot.html">IntegrationBenchmarkPlot()</a></code> draws <code>box</code> (per-cell LISI), heatmap, scatter, and UMAP views. <code>LISIPlot()</code> is removed; use <code>IntegrationBenchmarkPlot(plot_type = "box")</code>.</li>
+<li>
+<code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code> / <code><a href="../reference/SCENICPlusPlot.html">SCENICPlusPlot()</a></code>: <code>heatmap_dotplot</code>, <code>eregulon_dim</code>, <code>coverage</code>, <code>network</code>, <code>network_graph</code>, <code>egrn</code>, <code>overlap</code>. <code>"network"</code> draws one hub per TF. Network plots have no title. Networks use <code>"Chinese"</code> when <code>palette = "RdYlBu"</code>. Multi-TF legends show the top RSS cell type.</li>
+</ul></li>
+<li>
+<strong>fixed</strong>:
+<ul><li>
+<code>presto</code> is now a runtime-optional GitHub backend instead of a suggested check dependency. Marker fast paths use an existing installation without installing it, while <code>RunCellChat(do.fast = TRUE)</code> can resolve the backend from <code>immunogenomics/presto</code> before execution.</li>
+<li>
+<code><a href="../reference/RunCellRank.html">RunCellRank()</a></code> now disables PETSc explicitly when retrying fate probabilities with SciPy’s direct solver, preventing CellRank 2.0.7 from silently reverting the retry to GMRES and rejecting harmless floating-point negative probabilities (<a href="https://github.com/mengxu98/scop/issues/380" class="external-link">#380</a>).</li>
+<li>
+<code><a href="../reference/RunCellRank.html">RunCellRank()</a></code> defaults to the dependency-free <code>brandts</code> Schur method again, so the standard <code>scop_env</code> no longer fails because the optional <code>petsc4py</code> and <code>slepc4py</code> packages are absent. Users can still request <code>schur_method = "krylov"</code> when those packages are installed (<a href="https://github.com/mengxu98/scop/issues/380" class="external-link">#380</a>).</li>
+<li>CellRank stored-result plotting now follows SCOP’s <code>theme_scop</code>, <code>Chinese</code>, and <code>Spectral</code> visual contracts; draws transition projections directly from the saved sparse transition matrix; supports random walks without requiring trend results; facets trend modules; and adds module-enrichment dot plots. CellRank enrichment selects the database gene-ID column that overlaps the actual driver background, including three-column GO tables with both Entrez and symbol identifiers.</li>
+<li>Linux shared-library preloading keeps a package-local <code>load_shared_library()</code> seam, so dependency-order retries can be tested without attempting to mock the base <code><a href="https://rdrr.io/r/base/dynload.html" class="external-link">dyn.load()</a></code> function as a SCOP namespace binding.</li>
+<li>Coordinate-contract validation now covers unified CCC plots for SpatialCellChat, COMMOT, and SpaTalk without rejecting coordinate-independent SpatialDWLS proportions. Explicit <code>coordinate_space = "legacy_display"</code> analysis preserves its historical lowres-to-hires fallback; current display plotting remains strict about the selected scale.</li>
+<li>Spatial coordinate contract v2 now reads full-resolution VisiumV1/VisiumV2 coordinates, restores the <code>imagerow</code>/<code>imagecol</code> order that Seurat’s standard VisiumV2 loader stores positionally as centroid <code>x</code>/<code>y</code>, preserves explicit generic FOV <code>x</code>/<code>y</code>, normalizes only explicitly named legacy image row/column coordinates, and applies exactly one selected <code>lowres</code> or <code>hires</code> display transform. <code><a href="../reference/SpatialCoordinates.html">SpatialCoordinates()</a></code>, HE-overlay point/pie/network plots, and their public wrappers gain an appended <code>image.scale</code> argument; variadic wrappers keep it named-only after <code>...</code>. Raw SpatialCellChat analysis no longer requires an available display scale, and coordinate-independent producers no longer claim a coordinate-contract version. Users no longer need to modify Seurat <code>@scale.factors</code> slots. Coordinate-dependent stored results created under an older or unknown contract must be rerun.</li>
+<li>
+<code><a href="../reference/RunSlingshot.html">RunSlingshot()</a></code> / <code>CellDimPlot(lineages=)</code> no longer fail with <code>scale$guide == "none"</code> on ggplot2 &gt;= 3.5 when <code>ggnewscale</code> is older than 0.5.0. Colour/fill scales now keep a character <code>guide</code>, legend overrides go through <code>guides()</code>, <code>ggnewscale</code> is pinned to &gt;= 0.5.2, and a failed lineage plot no longer discards the Slingshot result.</li>
+<li>
+<code><a href="../reference/RunGSEA.html">RunGSEA()</a></code> / <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code> no longer fail with “replacement has 0 rows, data has N” when the cached database carries an empty version. The KEGG REST API dropped the <code>Release</code> line from <code>/info/&lt;org&gt;</code>, so <code><a href="../reference/PrepareDB.html">PrepareDB()</a></code> now resolves the KEGG version from the release-notes page when the info endpoint does not report it (retrieval-date fallback; HPO hardened the same way), and the enrichment writers tolerate missing versions.</li>
+<li>
+<code><a href="../reference/RunSpaTalk.html">RunSpaTalk()</a></code> now reuses stored <code><a href="../reference/RunRCTD.html">RunRCTD()</a></code> weights through SpaTalk method 2, records the deconvolution source, and accepts a working installed SpaTalk package even when its DESCRIPTION lacks GitHub remote metadata.</li>
+<li>
+<code><a href="../reference/RunLIANA.html">RunLIANA()</a></code> now preserves the field set returned by LIANA’s official consensus mode: rank consensus no longer gains all-<code>NA</code> aggregate/significance placeholders, aggregate consensus no longer gains all-<code>NA</code> magnitude/specificity placeholders, and deterministic ligand-receptor display identifiers are completed during SCOP/LIANA export.</li>
+<li>
+<code><a href="../reference/RunCNV.html">RunCNV()</a></code> attaches backend packages to the search path during execution so lazy data objects (copykat <code>full.anno</code>, fastCNV <code>geneMetadata</code>, numbat <code>gtf_hg38</code>) are resolvable from backend namespace code; <code>copykat</code> is installed from its GitHub source (<code>navinlabcode/copykat</code>) because it was removed from CRAN.</li>
+<li>
+<code>RunCNV(numbat)</code> prefers the plain <code>seg</code> column over <code>seg_label</code> when reading <code>joint_post</code> output, so segment identifiers are not polluted with the <code>(loh)</code> suffix.</li>
+<li>
+<code><a href="../reference/RunCNV.html">RunCNV()</a></code> numbat extraction is vectorized (direct index assignment with duplicate averaging instead of row-by-row <code>aggregate</code>/<code>strsplit</code>, plus <code><a href="https://rdrr.io/r/base/split.html" class="external-link">split()</a></code>-partitioned bin statistics): a 300-seg x 2000-cell <code>joint_post</code> extraction drops from ~16s to ~1.3s (~12x) with bit-identical results.</li>
+<li>
+<code>visium_mouse_brain_slices_sub</code> rebuilt with the current <code>SeuratObject</code> so bundled <code>VisiumV2</code> images can be subset again.</li>
+<li>
+<code><a href="../reference/RunRCTD.html">RunRCTD()</a></code> extracts per-spot <code>all_weights</code> from <code>spacexr</code> &gt;= 2.2 <code>doublet_mode = "multi"</code> results.</li>
+<li>
+<code><a href="../reference/RunSpotSweeper.html">RunSpotSweeper()</a></code> detects upstream <code><a href="https://rdrr.io/pkg/SpotSweeper/man/localVariance.html" class="external-link">SpotSweeper::localVariance</a></code> breakage on <code>SpatialExperiment</code> colData and degrades gracefully.</li>
+<li>
+<code>RunSpatialIntegration(PRECAST)</code> writes the raw coordinates expected by <code>CreatePRECASTObject</code>.</li>
+<li>
+<code><a href="../reference/RunLIANA.html">RunLIANA()</a></code> recognizes <code>logfc_comb</code> (and other liana method score columns) as the interaction score.</li>
+<li>Exported <code>theme_scop</code> / <code>theme_spatial</code> are listed in the pkgdown reference index; the <code>theme_scop</code> alias test compares function equality rather than identity so installed-package checks pass.</li>
+<li>
+<code>DorotheaPlot(plot_type = "volcano")</code> plots every tested TF, caps Wilcoxon underflow on the y-axis, colors points by direction, and labels significant TFs. <code>"targets"</code> labels only significant genes so leader lines no longer pile at x = 0.</li>
+</ul></li>
+<li>
+<strong>removed</strong>:
+<ul><li>Removed wrappers whose upstream dependencies are unavailable or uncompilable: <code>RunSpatialQM()</code>, the <code>RunSemla*()</code> wrappers, the <code>BASS</code>/<code>SpatialMNN</code> branches of <code><a href="../reference/RunSpatialIntegration.html">RunSpatialIntegration()</a></code> (PRECAST unaffected), and the SPATA2 <code>backend = "r"</code> path of <code><a href="../reference/RunSpatialGradientFeatures.html">RunSpatialGradientFeatures()</a></code> (C++ backend only; <code>srt_to_spata2()</code>/<code>spata2_to_srt()</code> removed as well).</li>
+<li>Removed the legacy spatial registry and result-discovery APIs (<code>GetSpatialResult()</code>, <code>ListSpatialMethods()</code>, <code>SpatialBackendStatus()</code>, and <code>SpatialResultInfo()</code>). Use each producer’s documented <code>srt@tools</code> entry and, where provided, its dedicated result accessor or plotting function.</li>
+<li>The <code>CaSpER</code> branch of <code><a href="../reference/RunCNV.html">RunCNV()</a></code> is removed: <code>runCaSpER()</code> segfaults deterministically on R &gt;= 4.5 (HMM <code>manualSegment</code>, even on 50 cells), upstream is unmaintained since 2019, and its Bioconductor dependency set is archived. <code><a href="../reference/RunCNV.html">RunCNV()</a></code> now supports <code>copykat</code>, <code>fastCNV</code>, <code>scevan</code>, <code>infercnv</code>, and <code>numbat</code>.</li>
+</ul></li>
+<li>
+<strong>changed</strong>:
+<ul><li>
+<code>RunBenchmark()</code> / <code>BenchmarkPlot()</code> are replaced by <code><a href="../reference/RunSpatialBenchmark.html">RunSpatialBenchmark()</a></code> / <code><a href="../reference/SpatialBenchmarkPlot.html">SpatialBenchmarkPlot()</a></code>. The old names are removed.</li>
+<li>
+<code><a href="../reference/RunCell2fate.html">RunCell2fate()</a></code> examples call <code><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow()</a></code> and plot time, uncertainty, module activation, and module state. <code><a href="../reference/env_requirements.html">env_requirements()</a></code> also shows the standalone Cell2fate Python 3.9 stack.</li>
+<li>
+<code>ListLIANAResources()</code> is replaced by <code><a href="../reference/ListCCCDB.html">ListCCCDB()</a></code>, which enumerates ligand-receptor databases and prior models across all CCC backends with a unified <code>db</code>/<code>species</code>/<code>status</code> schema.</li>
+<li>New <code><a href="../reference/PrepareCCCDB.html">PrepareCCCDB()</a></code> prepares the CellTalk and CellChat databases (<code>TERM2GENE</code>/<code>TERM2NAME</code>, <code>R.cache</code>-backed); the CellTalk/CellChat branches were removed from <code><a href="../reference/PrepareDB.html">PrepareDB()</a></code>.</li>
+<li>Database listing outputs are unified (<code><a href="../reference/ListDB.html">ListDB()</a></code> and <code><a href="../reference/ListCCCDB.html">ListCCCDB()</a></code> return plain data frames; colored console rendering is available via <code><a href="https://mengxu98.github.io/thisplot/reference/print_colored_table.html" class="external-link">thisplot::print_colored_table()</a></code>).</li>
+<li>Python-converted object interop: <code><a href="../reference/PAGAPlot.html">PAGAPlot()</a></code>, <code><a href="../reference/VelocityPlot.html">VelocityPlot()</a></code>/<code>CellDimPlot(velocity=)</code>, <code>RunPAGA(use_rna_velocity)</code>, <code><a href="../reference/RunCellRank.html">RunCellRank()</a></code>, DE consumers (<code><a href="../reference/VolcanoPlot.html">VolcanoPlot()</a></code>, <code><a href="../reference/DEtestPlot.html">DEtestPlot()</a></code>, <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code>, <code><a href="../reference/RunGSEA.html">RunGSEA()</a></code>, …), and <code><a href="../reference/RunScissor.html">RunScissor()</a></code> now fall back to scanpy/scVelo result slots (<code>paga</code>, <code>rank_genes_groups</code>, <code>velocity_umap</code>, <code>dpt_pseudotime</code>, <code>connectivities</code>) stored by <code><a href="../reference/adata_to_srt.html">adata_to_srt()</a></code>.</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.0" id="scop-090">scop 0.9.0<a class="anchor" aria-label="anchor" href="#scop-090"></a></h2>
 <ul><li>
