@@ -3,15 +3,15 @@
 Seurat object. The wrapper computes standard spot QC metrics, runs local
 outlier detection for each metric, optionally runs regional artifact
 detection per sample, and writes standardized QC status metadata that can be
-visualized with SpatialSpotPlot(). Artifact
-detection is reported as completed, skipped, failed, or not requested; an
-artifact that was not evaluated is never reported as a negative artifact call."><meta property="og:description" content="Run SpotSweeper spatially aware spot-level quality control on a spatial
+visualized with SpatialSpotPlot(). Artifact detection is reported as
+completed, skipped, failed, or not requested; an artifact that was not
+evaluated is never reported as a negative artifact call."><meta property="og:description" content="Run SpotSweeper spatially aware spot-level quality control on a spatial
 Seurat object. The wrapper computes standard spot QC metrics, runs local
 outlier detection for each metric, optionally runs regional artifact
 detection per sample, and writes standardized QC status metadata that can be
-visualized with SpatialSpotPlot(). Artifact
-detection is reported as completed, skipped, failed, or not requested; an
-artifact that was not evaluated is never reported as a negative artifact call."></head><body>
+visualized with SpatialSpotPlot(). Artifact detection is reported as
+completed, skipped, failed, or not requested; an artifact that was not
+evaluated is never reported as a negative artifact call."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -77,9 +77,9 @@ artifact that was not evaluated is never reported as a negative artifact call.">
 <code>Seurat</code> object. The wrapper computes standard spot QC metrics, runs local
 outlier detection for each metric, optionally runs regional artifact
 detection per sample, and writes standardized QC status metadata that can be
-visualized with <code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code>. Artifact
-detection is reported as completed, skipped, failed, or not requested; an
-artifact that was not evaluated is never reported as a negative artifact call.</p>
+visualized with <code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code>. Artifact detection is reported as
+completed, skipped, failed, or not requested; an artifact that was not
+evaluated is never reported as a negative artifact call.</p>
     </div>
 
     <div class="section level2">
@@ -190,8 +190,8 @@ returned metadata and stored result are marked as partial.</p></dd>
 
 <dt id="arg-mito-percent">mito_percent<a class="anchor" aria-label="anchor" href="#arg-mito-percent"></a></dt>
 <dd><p>Metadata column used as mitochondrial percent for
-artifact detection. If <code>NULL</code>, <code>percent.mito</code> is used. The reserved
-backend output name <code>"artifact"</code> cannot be used when <code>run_artifact = TRUE</code>.</p></dd>
+artifact detection. If <code>NULL</code>, <code>percent.mito</code> is used. The reserved backend
+output name <code>"artifact"</code> cannot be used when <code>run_artifact = TRUE</code>.</p></dd>
 
 
 <dt id="arg-mito-sum">mito_sum<a class="anchor" aria-label="anchor" href="#arg-mito-sum"></a></dt>
@@ -249,13 +249,13 @@ functions when those arguments are supported by the installed version.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>Seurat</code> object with SpotSweeper QC metadata. When
-<code>store_results = TRUE</code>, detailed results and an <code>artifact_status</code>
-table are stored in <code>srt@tools[[tool_name]]</code>. The artifact metadata uses
-<code>NA</code> and <code>"NotEvaluated"</code> when a requested artifact stage did not
-run; <code>*_local_outlier_qc</code> uses <code>"NotEvaluated"</code> outside the tested
-coordinate scope. In the overall <code>*_QC</code> column, <code>"Fail"</code> takes
-precedence when any evaluated check fails; otherwise <code>"Partial"</code> marks
-spots not fully evaluated by the requested QC stages.</p>
+<code>store_results = TRUE</code>, detailed results and an <code>artifact_status</code> table are
+stored in <code>srt@tools[[tool_name]]</code>. The artifact metadata uses <code>NA</code> and
+<code>"NotEvaluated"</code> when a requested artifact stage did not run; the overall
+<code>*_local_outlier_qc</code> uses <code>"NotEvaluated"</code> outside the tested coordinate
+scope. In the overall <code>*_QC</code> column, <code>"Fail"</code> takes precedence when any
+evaluated check fails; otherwise <code>"Partial"</code> marks spots not fully evaluated
+by the requested QC stages.</p>
     </div>
 
     <div class="section level2">
