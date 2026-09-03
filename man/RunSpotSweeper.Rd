@@ -48,10 +48,14 @@ available.}
 are present; a single image is selected automatically when \code{NULL}.}
 
 \item{sample.by}{Optional metadata column identifying samples or images.
-If \code{NULL}, all spots are treated as one sample.}
+If \code{NULL}, all spots are treated as one sample. The selected column must not
+contain missing values. The reserved backend output name \code{"artifact"} cannot
+be used when \code{run_artifact = TRUE}.}
 
 \item{metrics}{QC metrics used by \code{SpotSweeper::localOutliers()}. If \code{NULL},
-\verb{nCount_<assay>}, \verb{nFeature_<assay>}, and \code{percent.mito} are used.}
+\verb{nCount_<assay>}, \verb{nFeature_<assay>}, and \code{percent.mito} are used.
+The corresponding \verb{<metric>_outliers} and \verb{<metric>_z} names are reserved for
+backend output and cannot also be requested as input columns.}
 
 \item{directions}{Outlier direction for each metric. If \code{NULL}, count and
 feature metrics use \code{"lower"} and mitochondrial metrics use \code{"higher"}.}
@@ -63,7 +67,9 @@ outlier detection.}
 
 \item{log}{Whether SpotSweeper should log1p-transform local outlier metrics.}
 
-\item{run_artifact}{Whether to run \code{SpotSweeper::findArtifacts()} per sample.}
+\item{run_artifact}{Whether to run \code{SpotSweeper::findArtifacts()} per sample.
+If the requested artifact stage is skipped or fails for any sample, the
+returned metadata and stored result are marked as partial.}
 
 \item{mito_pattern}{Regex prefixes used to identify mitochondrial genes.}
 
@@ -71,10 +77,12 @@ outlier detection.}
 \code{mito_pattern} is ignored.}
 
 \item{mito_percent}{Metadata column used as mitochondrial percent for
-artifact detection. If \code{NULL}, \code{percent.mito} is used.}
+artifact detection. If \code{NULL}, \code{percent.mito} is used. The reserved
+backend output name \code{"artifact"} cannot be used when \code{run_artifact = TRUE}.}
 
 \item{mito_sum}{Metadata column used as mitochondrial counts for artifact
-detection. If \code{NULL}, mitochondrial counts are computed.}
+detection. If \code{NULL}, mitochondrial counts are computed. The reserved
+backend output name \code{"artifact"} cannot be used when \code{run_artifact = TRUE}.}
 
 \item{n_order, shape}{Parameters passed to \code{SpotSweeper::findArtifacts()}.}
 
@@ -82,7 +90,9 @@ detection. If \code{NULL}, mitochondrial counts are computed.}
 
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
-\item{return_filtered}{Whether to return only spots passing SpotSweeper QC.}
+\item{return_filtered}{Whether to return only spots passing SpotSweeper QC.
+A fully filtered object is not returned when any requested QC stage is
+incomplete.}
 
 \item{store_results}{Whether to store detailed results in \code{srt@tools}.}
 
@@ -90,7 +100,7 @@ detection. If \code{NULL}, mitochondrial counts are computed.}
 
 \item{workers}{Deprecated alias for \code{cores}.}
 
-\item{verbose}{Whether to print progress messages.}
+\item{verbose}{Whether to print progress and completion status messages.}
 
 \item{coordinate_space}{Coordinate system used for spatial neighborhoods.
 The default is raw acquisition coordinates; \code{"legacy_display"} remains an
@@ -102,15 +112,22 @@ functions when those arguments are supported by the installed version.}
 }
 \value{
 A \code{Seurat} object with SpotSweeper QC metadata. When
-\code{store_results = TRUE}, detailed results are stored in
-\code{srt@tools[[tool_name]]}.
+\code{store_results = TRUE}, detailed results and an \code{artifact_status}
+table are stored in \code{srt@tools[[tool_name]]}. The artifact metadata uses
+\code{NA} and \code{"NotEvaluated"} when a requested artifact stage did not
+run; \code{*_local_outlier_qc} uses \code{"NotEvaluated"} outside the tested
+coordinate scope. In the overall \code{*_QC} column, \code{"Fail"} takes
+precedence when any evaluated check fails; otherwise \code{"Partial"} marks
+spots not fully evaluated by the requested QC stages.
 }
 \description{
 Run \code{SpotSweeper} spatially aware spot-level quality control on a spatial
 \code{Seurat} object. The wrapper computes standard spot QC metrics, runs local
 outlier detection for each metric, optionally runs regional artifact
-detection per sample, and writes standardized pass/fail metadata that can be
-visualized with \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.
+detection per sample, and writes standardized QC status metadata that can be
+visualized with \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}. Artifact
+detection is reported as completed, skipped, failed, or not requested; an
+artifact that was not evaluated is never reported as a negative artifact call.
 }
 \examples{
 data(visium_human_pancreas_sub)

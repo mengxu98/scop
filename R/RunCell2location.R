@@ -192,8 +192,18 @@ RunCell2location <- function(
     conda_python(envname = get_envname(envname), conda = resolve_conda("auto")),
     error = function(...) NULL
   )
-  if (is.null(python) || !file.exists(python)) {
-    log_message("Unable to resolve the cell2location Python executable", message_type = "error")
+  windows_alias <- !is.null(python) && length(python) == 1L &&
+    grepl("[/\\\\]WindowsApps[/\\\\]", as.character(python), ignore.case = TRUE)
+  if (is.null(python) || !file.exists(python) || windows_alias) {
+    detail <- if (isTRUE(windows_alias)) {
+      "The resolved path is a WindowsApps execution alias; configure the SCOP conda environment instead"
+    } else {
+      "Run PrepareEnv() and verify the configured SCOP Python environment"
+    }
+    log_message(
+      "Unable to resolve the cell2location Python executable. {detail}",
+      message_type = "error"
+    )
   }
   python <- normalizePath(python, winslash = "/", mustWork = TRUE)
   workdir <- tempfile("cell2location_inputs_")

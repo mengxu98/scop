@@ -89,6 +89,11 @@ RunBayesSpace <- function(
       message_type = "error"
     )
   }
+  validate_scalar_string(cluster_colname, "cluster_colname")
+  if (!is.null(init_colname)) {
+    validate_scalar_string(init_colname, "init_colname")
+  }
+  validate_scalar_flag(store_sce, "store_sce")
   platform <- match.arg(platform)
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
 
@@ -225,9 +230,90 @@ RunBayesSpace <- function(
   }
   srt@tools[["BayesSpace"]] <- spatial_tag_coordinate_contract(tool)
 
-  log_message(
-    "{.pkg BayesSpace} clusters stored in metadata column {.val {cluster_colname}}",
-    verbose = verbose
+  domain_summary <- spatial_domain_summary(cluster_df[[cluster_colname]])
+  n_spots <- nrow(cluster_df)
+  n_domains <- nrow(domain_summary)
+  domain_size_min <- if (n_domains > 0L) min(domain_summary$count) else 0L
+  domain_size_max <- if (n_domains > 0L) max(domain_summary$count) else 0L
+  image_use <- coordinate_input$source$image
+  has_image <- length(image_use) == 1L && !is.na(image_use) && nzchar(image_use)
+  scope <- if (!isTRUE(has_image)) {
+    "assay {.val {assay}}, raw coordinates"
+  } else {
+    "assay {.val {assay}}, image {.val {image_use}}, raw coordinates"
+  }
+  display_scale <- if (
+    isTRUE(has_image) && isTRUE(thisutils::get_verbose(verbose))
+  ) {
+    spatial_run_receipt_display_scale(srt, image_use)
+  } else {
+    NULL
+  }
+  plot_args <- c(
+    paste0(
+      "group.by = ",
+      spatial_run_receipt_quote(cluster_colname, "cluster_colname")
+    )
+  )
+  if (isTRUE(has_image) && !is.null(display_scale)) {
+    plot_args <- c(
+      plot_args,
+      paste0("image = ", spatial_run_receipt_quote(image_use, "image"))
+    )
+    if (identical(display_scale, "hires")) {
+      plot_args <- c(
+        plot_args,
+        paste0(
+          "image.scale = ",
+          spatial_run_receipt_quote(display_scale, "image.scale")
+        )
+      )
+    }
+  } else if (!isTRUE(has_image)) {
+    plot_args <- c(
+      plot_args,
+      paste0(
+        "coord.cols = ",
+        deparse1(
+          unname(as.character(coordinate_input$source$coord.cols)),
+          width.cutoff = 500L
+        )
+      )
+    )
+  }
+  plot_call <- if (!isTRUE(has_image) || !is.null(display_scale)) {
+    paste0(
+      "SpatialSpotPlot(<returned_object>, ",
+      paste(plot_args, collapse = ", "),
+      ")"
+    )
+  } else {
+    NULL
+  }
+  inspect_call <- if (isTRUE(has_image) && is.null(display_scale)) {
+    paste0(
+      "<returned_object>[[]][, ",
+      spatial_run_receipt_quote(cluster_colname, "cluster_colname"),
+      ", drop = FALSE]"
+    )
+  } else {
+    NULL
+  }
+  spatial_run_receipt(
+    done = paste0(
+      "{.pkg BayesSpace} completed: {.val {n_spots}} spots, ",
+      "{.val {n_domains}} domains, domain size ",
+      "{.val {domain_size_min}}-{.val {domain_size_max}}"
+    ),
+    scope = scope,
+    saved = paste0(
+      "metadata column {.var {cluster_colname}} and ",
+      "returned object tool bundle {.var BayesSpace}"
+    ),
+    plot = plot_call,
+    inspect = inspect_call,
+    verbose = verbose,
+    .envir = environment()
   )
   srt
 }
