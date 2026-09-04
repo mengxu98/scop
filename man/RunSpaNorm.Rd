@@ -58,9 +58,13 @@ cells, and optional backend output are stored in \code{srt@tools[[tool_name]]}.
 \description{
 Normalize spatial transcriptomics counts with the optional Bioconductor
 \code{SpaNorm} backend and store the normalized expression in a new Seurat assay.
+The example is a non-executing template because the optional backend and its
+platform-specific numerical requirements are not part of a standard SCOP
+installation.
 }
 \examples{
 \dontrun{
+thisutils::check_r("SpaNorm", verbose = FALSE)
 data(visium_human_pancreas_sub)
 keep_spots <- unique(round(seq(
   1,
@@ -78,7 +82,6 @@ spatial <- RunSpaNorm(
   sample.p = 0.25,
   verbose = FALSE
 )
-
 SpatialSpotPlot(
   spatial,
   features = rownames(spatial[["SpaNorm"]])[1],

@@ -93,10 +93,13 @@ are also stored in \code{srt@tools[[tool_name]]}.
 }
 \description{
 Estimate spot-level cell type proportions from a spatial \code{Seurat} object
-using a single-cell \code{Seurat} reference and \code{spacexr} RCTD.
+using a single-cell \code{Seurat} reference and the optional \code{spacexr} RCTD
+backend. The example is a non-executing template so pkgdown does not need
+to install or run this heavy optional dependency.
 }
 \examples{
 \dontrun{
+thisutils::check_r("dmcable/spacexr", verbose = FALSE)
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(
@@ -112,7 +115,6 @@ features_use <- head(intersect(
   SeuratObject::VariableFeatures(reference),
   rownames(spatial)
 ), 300)
-
 spatial <- RunRCTD(
   srt = spatial,
   reference = reference,

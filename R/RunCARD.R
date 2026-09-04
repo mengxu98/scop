@@ -3,7 +3,8 @@
 #' @description
 #' Estimate spot-level cell-type proportions from a spatial `Seurat` object
 #' using a single-cell `Seurat` reference and the optional `CARD`/`CARDspa`
-#' backend.
+#' backend. The example is a non-executing template because CARD installation
+#' and execution are optional.
 #'
 #' @md
 #' @inheritParams RunRCTD
@@ -25,6 +26,7 @@
 #'
 #' @examples
 #' \dontrun{
+#' thisutils::check_r("YingMa0107/CARD", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
 #' data(panc8_sub)
 #' keep_spots <- unique(round(seq(

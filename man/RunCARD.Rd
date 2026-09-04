@@ -95,10 +95,12 @@ are stored in \code{srt@tools[[tool_name]]}.
 \description{
 Estimate spot-level cell-type proportions from a spatial \code{Seurat} object
 using a single-cell \code{Seurat} reference and the optional \code{CARD}/\code{CARDspa}
-backend.
+backend. The example is a non-executing template because CARD installation
+and execution are optional.
 }
 \examples{
 \dontrun{
+thisutils::check_r("YingMa0107/CARD", verbose = FALSE)
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(

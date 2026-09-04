@@ -2,7 +2,9 @@
 #'
 #' @description
 #' Estimate spot-level cell type proportions from a spatial `Seurat` object
-#' using a single-cell `Seurat` reference and `spacexr` RCTD.
+#' using a single-cell `Seurat` reference and the optional `spacexr` RCTD
+#' backend. The example is a non-executing template so pkgdown does not need
+#' to install or run this heavy optional dependency.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -47,6 +49,7 @@
 #'
 #' @examples
 #' \dontrun{
+#' thisutils::check_r("dmcable/spacexr", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
 #' data(panc8_sub)
 #' keep_spots <- unique(round(seq(

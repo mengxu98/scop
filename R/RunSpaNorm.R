@@ -3,6 +3,9 @@
 #' @description
 #' Normalize spatial transcriptomics counts with the optional Bioconductor
 #' `SpaNorm` backend and store the normalized expression in a new Seurat assay.
+#' The example is a non-executing template because the optional backend and its
+#' platform-specific numerical requirements are not part of a standard SCOP
+#' installation.
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
@@ -24,6 +27,7 @@
 #'
 #' @examples
 #' \dontrun{
+#' thisutils::check_r("SpaNorm", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
 #' keep_spots <- unique(round(seq(
 #'   1,
