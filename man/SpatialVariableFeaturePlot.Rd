@@ -29,8 +29,8 @@ SpatialVariableFeaturePlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  image.scale = c("lowres", "hires"),
-  object = NULL
+  object = NULL,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{
