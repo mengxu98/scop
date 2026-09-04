@@ -64,7 +64,7 @@ installation.
 }
 \examples{
 \dontrun{
-check_r("SpaNorm", verbose = FALSE)
+thisutils::check_r("SpaNorm", verbose = FALSE)
 data(visium_human_pancreas_sub)
 keep_spots <- unique(round(seq(
   1,

@@ -85,7 +85,7 @@ may require additional Bioconductor dependencies.
 }
 \examples{
 \dontrun{
-check_r("SPOTlight", verbose = FALSE)
+thisutils::check_r("SPOTlight", verbose = FALSE)
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(

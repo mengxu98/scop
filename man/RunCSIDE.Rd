@@ -93,7 +93,7 @@ requires a completed optional RCTD result.
 }
 \examples{
 \dontrun{
-check_r("dmcable/spacexr", verbose = FALSE)
+thisutils::check_r("dmcable/spacexr", verbose = FALSE)
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(
