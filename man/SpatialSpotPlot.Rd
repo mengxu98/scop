@@ -46,8 +46,8 @@ SpatialSpotPlot(
   ncol = NULL,
   byrow = TRUE,
   verbose = TRUE,
-  image.scale = c("lowres", "hires"),
-  object = NULL
+  object = NULL,
+  image.scale = c("lowres", "hires")
 )
 }
 \arguments{

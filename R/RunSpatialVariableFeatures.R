@@ -663,8 +663,8 @@ SpatialVariableFeaturePlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  image.scale = c("lowres", "hires"),
-  object = NULL
+  object = NULL,
+  image.scale = c("lowres", "hires")
 ) {
   srt <- spatial_resolve_srt(srt = srt, object = object)
   plot_type <- match.arg(plot_type)
