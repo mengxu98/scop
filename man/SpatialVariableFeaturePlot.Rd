@@ -5,7 +5,7 @@
 \title{Plot spatial variable feature results}
 \usage{
 SpatialVariableFeaturePlot(
-  srt,
+  srt = NULL,
   plot_type = c("summary", "surface", "combined"),
   features = NULL,
   nfeatures = 10,
@@ -29,11 +29,16 @@ SpatialVariableFeaturePlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
+  object = NULL,
   image.scale = c("lowres", "hires")
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{srt}{A \code{Seurat} object. The same object may be supplied as
+\code{object =} for consistency with spatial plotting APIs.}
+
+\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
+\code{object}.}
 
 \item{plot_type}{Plot type: \code{"summary"}, \code{"surface"}, or \code{"combined"}.}
 

@@ -31,6 +31,10 @@
 #' @param seed Random seed used for permutation tests.
 #' @param backend Backend used by the package `"moran"` and `"geary"` methods.
 #' `"cpp"` is the default; use `"r"` for the reference implementation.
+#' @param srt A `Seurat` object. The same object may be supplied as
+#' `object =` for consistency with spatial plotting APIs.
+#' @param object Optional alias for `srt`. Supply exactly one of `srt` or
+#' `object`.
 #' @param ... Additional arguments passed to external backends.
 #'
 #' @return A `Seurat` object with spatial variable feature results stored in
@@ -53,18 +57,18 @@
 #' )
 #'
 #' SpatialSpotPlot(
-#'   spatial,
+#'   object = spatial,
 #'   features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:2]
 #' )
 #'
 #' spatial <- RunSpatialVariableFeatures(
-#'   spatial,
+#'   object = spatial,
 #'   assay = "Spatial",
 #'   nfeatures = 50
 #' )
-#' SpatialVariableFeaturePlot(spatial, plot_type = "combined", nfeatures = 2)
+#' SpatialVariableFeaturePlot(object = spatial, plot_type = "combined", nfeatures = 2)
 RunSpatialVariableFeatures <- function(
-  srt,
+  srt = NULL,
   assay = NULL,
   layer = "data",
   features = NULL,
@@ -81,8 +85,10 @@ RunSpatialVariableFeatures <- function(
   seed = 11,
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
-  ...
+  ...,
+  object = NULL
 ) {
+  srt <- spatial_resolve_srt(srt = srt, object = object)
   backend_missing <- missing(backend)
   coordinate_space <- match.arg(coordinate_space)
   log_message(
@@ -90,12 +96,6 @@ RunSpatialVariableFeatures <- function(
     message_type = "running",
     verbose = verbose
   )
-  if (!inherits(srt, "Seurat")) {
-    log_message(
-      "{.arg srt} must be a {.cls Seurat} object",
-      message_type = "error"
-    )
-  }
   validate_scalar_flag(set_variable_features, "set_variable_features")
   validate_scalar_flag(store_results, "store_results")
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -610,6 +610,10 @@ spatial_variable_result_features <- function(df, fallback) {
 #'
 #' @md
 #' @inheritParams SpatialSpotPlot
+#' @param srt A `Seurat` object. The same object may be supplied as
+#' `object =` for consistency with spatial plotting APIs.
+#' @param object Optional alias for `srt`. Supply exactly one of `srt` or
+#' `object`.
 #' @param plot_type Plot type: `"summary"`, `"surface"`, or `"combined"`.
 #' @param features Features to plot. If `NULL`, top features from the stored
 #' spatial variable feature result are used.
@@ -628,14 +632,14 @@ spatial_variable_result_features <- function(df, fallback) {
 #'   verbose = FALSE
 #' )
 #' spatial <- RunSpatialVariableFeatures(
-#'   spatial,
+#'   object = spatial,
 #'   assay = "Spatial",
 #'   nfeatures = 10,
 #'   verbose = FALSE
 #' )
-#' SpatialVariableFeaturePlot(spatial, plot_type = "summary")
+#' SpatialVariableFeaturePlot(object = spatial, plot_type = "summary")
 SpatialVariableFeaturePlot <- function(
-  srt,
+  srt = NULL,
   plot_type = c("summary", "surface", "combined"),
   features = NULL,
   nfeatures = 10,
@@ -659,11 +663,10 @@ SpatialVariableFeaturePlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
+  object = NULL,
   image.scale = c("lowres", "hires")
 ) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
+  srt <- spatial_resolve_srt(srt = srt, object = object)
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)
   stored <- spatial_variable_get_stored_result(srt)

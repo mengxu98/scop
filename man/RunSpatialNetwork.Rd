@@ -5,7 +5,7 @@
 \title{Build a native spatial network}
 \usage{
 RunSpatialNetwork(
-  srt,
+  srt = NULL,
   method = c("knn", "radius"),
   image = NULL,
   coord.cols = c("col", "row"),
@@ -13,11 +13,16 @@ RunSpatialNetwork(
   radius = NULL,
   graph.name = NULL,
   overwrite = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  object = NULL
 )
 }
 \arguments{
-\item{srt}{A `Seurat` object.}
+\item{srt}{A `Seurat` object. The same object may be supplied as
+\code{object =} for consistency with spatial plotting APIs.}
+
+\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
+\code{object}.}
 
 \item{method}{Network method, either `"knn"` or `"radius"`.}
 
