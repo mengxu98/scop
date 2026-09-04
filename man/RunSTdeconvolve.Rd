@@ -77,10 +77,13 @@ results stored in \code{srt@tools[[tool_name]]} when \code{store_results = TRUE}
 }
 \description{
 Estimate spot-level topic proportions from a spatial \code{Seurat} object using
-the optional \code{STdeconvolve} package.
+the optional \code{STdeconvolve} package. The producer example is a
+non-executing template; \code{\link[=STdeconvolvePlot]{STdeconvolvePlot()}} demonstrates a validated stored
+result without rerunning the backend.
 }
 \examples{
 \dontrun{
+thisutils::check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
 data(visium_human_pancreas_sub)
 keep_spots <- unique(round(seq(
   1,

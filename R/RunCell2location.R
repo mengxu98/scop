@@ -4,7 +4,8 @@
 #' Estimate spot-level absolute cell abundance and proportions with the official
 #' Python `cell2location` backend. The Python model runs in an isolated
 #' subprocess while inputs, models, posterior outputs, logs, and a reproducible
-#' manifest are persisted under `result_dir`.
+#' manifest are persisted under `result_dir`. The example uses the official
+#' Human Lymph Node tutorial files; those input files are not bundled with SCOP.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -437,6 +438,7 @@ RunCell2location <- function(
 #' @examples
 #' \dontrun{
 #' # Result from the official Human Lymph Node example in RunCell2location().
+#' # The tutorial result is an external file and is not downloaded by pkgdown.
 #' spatial <- readRDS("human_lymph_node_cell2location/official_human_lymph_node.rds")
 #' selected <- names(sort(
 #'   colMeans(spatial@tools$Cell2location$proportions),

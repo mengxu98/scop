@@ -2,7 +2,9 @@
 #'
 #' @description
 #' Estimate spot-level topic proportions from a spatial `Seurat` object using
-#' the optional `STdeconvolve` package.
+#' the optional `STdeconvolve` package. The producer example is a
+#' non-executing template; [STdeconvolvePlot()] demonstrates a validated stored
+#' result without rerunning the backend.
 #'
 #' @md
 #' @inheritParams RunRCTD
@@ -30,6 +32,7 @@
 #'
 #' @examples
 #' \dontrun{
+#' thisutils::check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
 #' keep_spots <- unique(round(seq(
 #'   1,

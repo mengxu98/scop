@@ -88,7 +88,7 @@ differential neighborhood statistics.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{seed}{Random seed used by layouts and jittered plot layers.}
@@ -110,21 +110,9 @@ Visualize results produced by \code{\link[=RunSpatialNeighborhood]{RunSpatialNei
 statistical, and network plotting conventions.
 }
 \examples{
-data(visium_human_pancreas_sub)
-spatial <- visium_human_pancreas_sub
-spatial <- RunSpatialNeighborhood(
-  spatial,
-  group.by = "coda_label",
-  coord.cols = c("x", "y"),
-  k = 4,
-  verbose = FALSE
-)
-
-SpatialNeighborhoodPlot(spatial, plot_type = "heatmap")
-SpatialNeighborhoodPlot(spatial, plot_type = "network", top_n = 12)
-SpatialNeighborhoodPlot(spatial, plot_type = "stat", top_n = 12)
+data(visium_human_pancreas_results_sub)
 SpatialNeighborhoodPlot(
-  spatial,
+  visium_human_pancreas_results_sub,
   plot_type = "spatial",
   overlay_image = FALSE,
   coord.cols = c("x", "y")
