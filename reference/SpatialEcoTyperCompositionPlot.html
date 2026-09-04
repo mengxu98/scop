@@ -138,13 +138,16 @@ Default is <code>TRUE</code>.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_pair_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># This fixture stores real PRECAST domains for a fast plot demonstration;</span></span></span>
+<span class="r-in"><span><span class="co"># use `se.by = "domain"` explicitly because it is not a new SE inference.</span></span></span>
 <span class="r-in"><span><span class="fu">SpatialEcoTyperCompositionPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">visium_human_pancreas_pair_sub</span>,</span></span>
+<span class="r-in"><span>  se.by <span class="op">=</span> <span class="st">"domain"</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span>,</span></span>
 <span class="r-in"><span>  sample.by <span class="op">=</span> <span class="st">"sample"</span>,</span></span>
 <span class="r-in"><span>  position <span class="op">=</span> <span class="st">"fill"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in SpatialEcoTyperCompositionPlot(visium_human_pancreas_pair_sub,     group.by = "coda_label", sample.by = "sample", position = "fill"):</span> Missing metadata column: <span style="color: #0000BB;">"SpatialEcoTyper_SE"</span></span>
+<span class="r-plt img"><img src="SpatialEcoTyperCompositionPlot-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
