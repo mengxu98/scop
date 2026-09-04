@@ -6,7 +6,10 @@
 #' `srt@tools$SpatialNetwork`.
 #'
 #' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object.
+#' @param srt A `Seurat` object. The same object may be supplied as
+#' `object =` for consistency with spatial plotting APIs.
+#' @param object Optional alias for `srt`. Supply exactly one of `srt` or
+#' `object`.
 #' @param method Network method, either `"knn"` or `"radius"`.
 #' @param image Seurat image name. A single image is selected automatically;
 #'   multi-image objects require an explicit value.
@@ -25,12 +28,12 @@
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' spatial <- visium_human_pancreas_sub
-#' spatial <- RunSpatialNetwork(spatial, k = 6, verbose = FALSE)
-#' SpatialNetworkPlot(spatial, group.by = "coda_label")
+#' spatial <- RunSpatialNetwork(object = spatial, k = 6, verbose = FALSE)
+#' SpatialNetworkPlot(object = spatial, group.by = "coda_label")
 #'
 #' @export
 RunSpatialNetwork <- function(
-  srt,
+  srt = NULL,
   method = c("knn", "radius"),
   image = NULL,
   coord.cols = c("col", "row"),
@@ -38,11 +41,10 @@ RunSpatialNetwork <- function(
   radius = NULL,
   graph.name = NULL,
   overwrite = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  object = NULL
 ) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
-  }
+  srt <- spatial_resolve_srt(srt = srt, object = object)
   if (!is.null(image) && (!is.character(image) || length(image) != 1L || is.na(image) || !nzchar(image))) {
     log_message("{.arg image} must be one non-empty image name", message_type = "error")
   }
