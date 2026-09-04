@@ -100,7 +100,7 @@ and execution are optional.
 }
 \examples{
 \dontrun{
-check_r("YingMa0107/CARD", verbose = FALSE)
+thisutils::check_r("YingMa0107/CARD", verbose = FALSE)
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(
