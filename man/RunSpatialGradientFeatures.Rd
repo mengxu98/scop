@@ -114,7 +114,8 @@ the \code{"cpp"} backend.}
 \code{top_variables} and optionally set as Seurat variable features.}
 
 \item{set_variable_features}{Whether to set top gradient variables as Seurat
-variable features.}
+variable features independently of \code{store_results}. If explicitly \code{TRUE},
+an empty selection clears the target assay's variable features.}
 
 \item{store_results}{Whether to store the normalized result in \code{srt@tools}.}
 
@@ -132,8 +133,10 @@ backend.}
 backend ignores them and does not store them as effective parameters.}
 }
 \value{
-A \code{Seurat} object with spatial gradient screening results stored in
-\code{srt@tools[["SpatialGradientFeatures"]]}.
+A \code{Seurat} object. When \code{store_results = TRUE}, spatial gradient
+screening results are stored in \code{srt@tools[["SpatialGradientFeatures"]]}.
+Otherwise existing stored results are unchanged. Variable features are
+independently updated only when \code{set_variable_features = TRUE}.
 }
 \description{
 Run native spatial trajectory or annotation gradient screening for Seurat
