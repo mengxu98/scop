@@ -1,8 +1,9 @@
 # scop 0.9.1
 
-* **fix**: C-SIDE completion messages respect result storage and document compatibility metadata as run-level significant record counts.
+* **fix**: Gradient result storage and VariableFeatures updates are independent; explicit empty updates clear VariableFeatures and completion messages describe actual actions.
 
 * **feat**:
+  * `SpatialNeighborhoodProfile()` returns observed per-cell neighbor counts and fractions at multiple raw-coordinate distances, retaining the full selected tissue context for target cells without modifying the Seurat object or storing an edge table.
   * `RunDEtest()` sample-level methods gain `min.cells.sample` (default `10`) to drop pseudobulk samples whose cell count in the current `group.by` level is below a threshold, which can reverse DE direction relative to cell-level tests. Set `min.cells.sample = 1` to keep the previous unfiltered behavior.
   * Internal preprocessing and integration workflows now use scop's Seurat-compatible entry points, enabling validated native acceleration for normalization, variable-feature selection, scaling, PCA, and neighbor search while retaining transparent Seurat fallback for unsupported paths.
   * The native `SCTransform(vst.flavor = "v2")` path now supports validated numeric and factor `vars.to.regress` designs and `latent.data`; unsupported regression designs continue to delegate to Seurat.
@@ -20,6 +21,7 @@
   * `RunIntegrationBenchmark()` compares integration methods with scIB-style iLISI/cLISI, ASW, graph connectivity, and ARI/NMI scores and returns a `Seurat` object. Tables live in `srt@tools$IntegrationBenchmark` and are printed with `thisplot::print_colored_table()`. `IntegrationBenchmarkPlot()` draws `box` (per-cell LISI), heatmap, scatter, and UMAP views. `LISIPlot()` is removed; use `IntegrationBenchmarkPlot(plot_type = "box")`.
   * `SCENICPlot()` / `SCENICPlusPlot()`: `heatmap_dotplot`, `eregulon_dim`, `coverage`, `network`, `network_graph`, `egrn`, `overlap`. `"network"` draws one hub per TF. Network plots have no title. Networks use `"Chinese"` when `palette = "RdYlBu"`. Multi-TF legends show the top RSS cell type.
 * **fixed**:
+  * C-SIDE completion messages respect result storage and document compatibility metadata as run-level significant record counts.
   * `presto` is now a runtime-optional GitHub backend instead of a suggested check dependency. Marker fast paths use an existing installation without installing it, while `RunCellChat(do.fast = TRUE)` can resolve the backend from `immunogenomics/presto` before execution.
   * `RunCellRank()` now disables PETSc explicitly when retrying fate probabilities with SciPy's direct solver, preventing CellRank 2.0.7 from silently reverting the retry to GMRES and rejecting harmless floating-point negative probabilities (#380).
   * `RunCellRank()` defaults to the dependency-free `brandts` Schur method again, so the standard `scop_env` no longer fails because the optional `petsc4py` and `slepc4py` packages are absent. Users can still request `schur_method = "krylov"` when those packages are installed (#380).

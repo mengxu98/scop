@@ -16,11 +16,12 @@
 #' @param border Draw borders. Kept for compatibility; more specific
 #' `*_border` arguments inherit this when `NULL`.
 #' @param heatmap_border,cell_annotation_border,feature_annotation_border
-#' Borders for the heatmap body and annotations. `NULL` inherits `border`.
+#' Borders for the heatmap body, annotations, and their matching legends.
+#' `NULL` inherits `border`.
 #' @param heatmap_border_palcolor,cell_annotation_border_palcolor,feature_annotation_border_palcolor
-#' Border colors when the matching border argument is `TRUE`.
+#' Border colors for the matching body, annotation, and legend.
 #' @param heatmap_border_size,cell_annotation_border_size,feature_annotation_border_size
-#' Border line widths when the matching border argument is `TRUE`.
+#' Border line widths for the matching body, annotation, and legend.
 #' @param flip Flip rows and columns.
 #' @param layer Assay layer to use.
 #' @param exp_method Expression transform: `"zscore"`, `"raw"`, `"fc"`, `"log2fc"`,
@@ -1259,14 +1260,20 @@ GroupHeatmap <- function(
       lgd[[cell_group]] <- ComplexHeatmap::Legend(
         title = cell_group,
         labels = levels(srt@meta.data[[cell_group]]),
-        legend_gp = grid::gpar(
+        legend_gp = heatmap_discrete_legend_gp(
           fill = palette_colors(
             levels(srt@meta.data[[cell_group]]),
             palette = raw_group_palette[i],
             palcolor = group_palcolor[[i]]
-          )
+          ),
+          border = cell_annotation_border,
+          border_color = cell_annotation_border_color,
+          border_size = cell_annotation_border_size
         ),
-        border = TRUE
+        border = heatmap_legend_border(
+          cell_annotation_border,
+          cell_annotation_border_color
+        )
       )
     }
   }
@@ -1275,14 +1282,20 @@ GroupHeatmap <- function(
     lgd[[split.by]] <- ComplexHeatmap::Legend(
       title = split.by,
       labels = levels(srt@meta.data[[split.by]]),
-      legend_gp = grid::gpar(
+      legend_gp = heatmap_discrete_legend_gp(
         fill = palette_colors(
           levels(srt@meta.data[[split.by]]),
           palette = cell_split_palette,
           palcolor = cell_split_palcolor
-        )
+        ),
+        border = cell_annotation_border,
+        border_color = cell_annotation_border_color,
+        border_size = cell_annotation_border_size
       ),
-      border = TRUE
+      border = heatmap_legend_border(
+        cell_annotation_border,
+        cell_annotation_border_color
+      )
     )
   }
 
@@ -1375,14 +1388,20 @@ GroupHeatmap <- function(
           lgd[[cellan]] <- ComplexHeatmap::Legend(
             title = cellan,
             labels = cell_levels,
-            legend_gp = grid::gpar(
+            legend_gp = heatmap_discrete_legend_gp(
               fill = palette_colors(
                 cell_levels,
                 palette = palette,
                 palcolor = palcolor
-              )
+              ),
+              border = cell_annotation_border,
+              border_color = cell_annotation_border_color,
+              border_size = cell_annotation_border_size
             ),
-            border = TRUE
+            border = heatmap_legend_border(
+              cell_annotation_border,
+              cell_annotation_border_color
+            )
           )
         } else {
           lgd[[cellan]] <- NULL
@@ -1622,16 +1641,22 @@ GroupHeatmap <- function(
     lgd[["Cluster"]] <- ComplexHeatmap::Legend(
       title = "Cluster",
       labels = intersect(levels(row_split_raw), row_split_raw),
-      legend_gp = grid::gpar(
+      legend_gp = heatmap_discrete_legend_gp(
         fill = palette_colors(
           intersect(levels(row_split_raw), row_split_raw),
           type = "discrete",
           palette = feature_split_palette,
           palcolor = feature_split_palcolor,
           matched = TRUE
-        )
+        ),
+        border = feature_annotation_border,
+        border_color = feature_annotation_border_color,
+        border_size = feature_annotation_border_size
       ),
-      border = TRUE
+      border = heatmap_legend_border(
+        feature_annotation_border,
+        feature_annotation_border_color
+      )
     )
   }
 
@@ -1764,6 +1789,10 @@ GroupHeatmap <- function(
         border = feature_annotation_border,
         border_color = feature_annotation_border_color,
         border_size = feature_annotation_border_size,
+        discrete_legend_border = heatmap_legend_border(
+          feature_annotation_border,
+          feature_annotation_border_color
+        ),
         params = feature_annotation_params
       )
       ha_right <- if (is.null(ha_right)) {
