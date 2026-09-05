@@ -1,5 +1,7 @@
 # scop 0.9.1
 
+* **fix**: C-SIDE completion messages respect result storage and document compatibility metadata as run-level significant record counts.
+
 * **feat**:
   * `RunDEtest()` sample-level methods gain `min.cells.sample` (default `10`) to drop pseudobulk samples whose cell count in the current `group.by` level is below a threshold, which can reverse DE direction relative to cell-level tests. Set `min.cells.sample = 1` to keep the previous unfiltered behavior.
   * Internal preprocessing and integration workflows now use scop's Seurat-compatible entry points, enabling validated native acceleration for normalization, variable-feature selection, scaling, PCA, and neighbor search while retaining transparent Seurat fallback for unsupported paths.

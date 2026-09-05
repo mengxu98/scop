@@ -67,7 +67,9 @@ parameters such as \code{gene_threshold}.}
 
 \item{tool_name}{Name used to store detailed C-SIDE results in \code{srt@tools}.}
 
-\item{store_results}{Whether to store detailed RCTD results in \code{srt@tools}.}
+\item{store_results}{Whether to store detailed results in \code{srt@tools}.
+Compatibility summary metadata is updated regardless; existing detailed
+results are retained when \code{FALSE} and do not represent the current run.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -87,8 +89,10 @@ Run \code{spacexr} C-SIDE after RCTD to test cell type-specific spatial or
 condition-aware differential expression. C-SIDE stores effect and
 significance results, not spot-level cell-type proportions, so it has no
 recommended proportion plot. Inspect its stored
-tables in \code{srt@tools[[tool_name]]} or plot an explicit summary column with
-\code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}. The example is a non-executing template because C-SIDE
+tables in \code{srt@tools[[tool_name]]}. The metadata columns \verb{<prefix>_n_sig}
+and \verb{<prefix>_mode} repeat run-level summaries across spots. The former counts
+significant result records, not unique genes or spot-level effects.
+The example is a non-executing template because C-SIDE
 requires a completed optional RCTD result.
 }
 \examples{
