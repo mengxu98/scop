@@ -1,6 +1,7 @@
 # scop 0.9.1
 
 * **fix**: Gradient result storage and VariableFeatures updates are independent; explicit empty updates clear VariableFeatures and completion messages describe actual actions.
+* **fix**: Neighborhood spatial counts respect saved analysis scope and condition, distinguish zero from unevaluated cells, reject unsupported plot arguments, and support valid empty observed results.
 
 * **feat**:
   * `SpatialNeighborhoodProfile()` returns observed per-cell neighbor counts and fractions at multiple raw-coordinate distances, retaining the full selected tissue context for target cells without modifying the Seurat object or storing an edge table.

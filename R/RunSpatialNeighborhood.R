@@ -121,6 +121,12 @@ RunSpatialNeighborhood <- function(
     subject.by = subject.by,
     features = features
   )
+  for (labels in list(from, to)) {
+    if (!is.null(labels) && (!is.character(labels) || anyNA(labels) ||
+        any(!labels %in% input$cells$group))) {
+      stop("from/to must contain labels present in the analysis input", call. = FALSE)
+    }
+  }
   observed <- spatial_neighborhood_observed_pairs(
     cells = input$cells,
     radius = radius,
@@ -236,7 +242,11 @@ RunSpatialNeighborhood <- function(
 #' @param plot_type Plot type. One of `"heatmap"`, `"network"`, `"stat"`, or
 #' `"spatial"`.
 #' @param comparison,condition Optional filters for stored result tables.
-#' @param value Column used as the plotted effect value.
+#' Spatial plots support `condition` using saved source-cell conditions, but
+#' reject `comparison`; use statistical plots for differential comparisons.
+#' @param value Column used as the plotted effect value. Spatial plots default
+#' to and only support `"count"`: saved observed outgoing edges to the target
+#' type, not a spicyR effect. Other plot types retain the `"estimate"` default.
 #' @param FDR_threshold FDR cutoff used to mark significant pairs.
 #' @param top_n Number of pairs to show for network and statistic plots.
 #' @param layout Network layout.
@@ -244,6 +254,10 @@ RunSpatialNeighborhood <- function(
 #' @param cols.enriched,cols.depleted,cols.ns Colors for direction categories.
 #' @param pair Pair to visualize for `plot_type = "spatial"`, either
 #' `"from|to"` or a length-2 character vector.
+#' Names must belong to the saved analysis and its `from`/`to` scope. Evaluated
+#' source cells without matching edges have zero counts; other cells have `NA`.
+#' Subsetting the object does not recompute saved counts. Valid empty edge
+#' results require an explicit pair; incomplete old results require rerunning.
 #' @param overlay_image Whether to draw the selected spatial image for
 #' `plot_type = "spatial"`.
 #' @param seed Random seed used by layouts and jittered plot layers.
@@ -302,16 +316,23 @@ SpatialNeighborhoodPlot <- function(
   }
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)
-  value <- match.arg(value)
+  value <- if (identical(plot_type, "spatial") && missing(value)) "count" else match.arg(value)
   layout <- match.arg(layout)
   bundle <- spatial_neighborhood_get_bundle(srt = srt, method = method)
   spatial_require_coordinate_contract(bundle, "RunSpatialNeighborhood()")
 
   if (identical(plot_type, "spatial")) {
+    if (!identical(value, "count")) {
+      stop("Spatial neighborhood plots support only value = 'count'", call. = FALSE)
+    }
+    if (!is.null(comparison)) {
+      stop("comparison is not supported for spatial plots; use a statistical plot", call. = FALSE)
+    }
     return(spatial_neighborhood_spatial_plot(
       srt = srt,
       bundle = bundle,
       pair = pair,
+      condition = condition,
       image = image,
       image.scale = image.scale,
       overlay_image = overlay_image,
@@ -484,12 +505,6 @@ spatial_neighborhood_filter_pairs <- function(df, from = NULL, to = NULL) {
   if (!is.null(to)) {
     df <- df[df$to %in% to, , drop = FALSE]
   }
-  if (nrow(df) == 0L) {
-    log_message(
-      "No spatial neighborhood pairs remain after {.arg from}/{.arg to} filtering",
-      message_type = "error"
-    )
-  }
   df
 }
 
@@ -575,10 +590,15 @@ spatial_neighborhood_observed_pairs <- function(
   })
   edge_table <- do.call(rbind, edge_list)
   if (is.null(edge_table) || nrow(edge_table) == 0L) {
-    log_message(
-      "No spatial neighbor pairs were found with the selected {.arg radius}/{.arg k}",
-      message_type = "error"
-    )
+    edge_table <- data.frame(cell = character(), neighbor = character(),
+      from = character(), to = character(), sample = character(),
+      condition = character(), subject = character(), distance = numeric())
+    pair_table <- data.frame(method = character(), comparison = character(),
+      condition = character(), from = character(), to = character(), estimate = numeric(),
+      statistic = numeric(), pval = numeric(), FDR = numeric(), direction = character(),
+      sample = character(), subject = character(), count = integer(), total = integer(),
+      fraction = numeric())
+    return(list(pair_table = pair_table, edge_table = edge_table))
   }
   rownames(edge_table) <- NULL
 
@@ -728,7 +748,7 @@ spatial_neighborhood_standardize_pair_table <- function(backend, observed, metho
 
 spatial_neighborhood_long_table <- function(pair_table, observed, method) {
   pair_table$pair <- paste(pair_table$from, pair_table$to, sep = "|")
-  pair_table$record_type <- "pair"
+  pair_table$record_type <- rep("pair", nrow(pair_table))
   pair_table
 }
 
@@ -990,6 +1010,7 @@ spatial_neighborhood_spatial_plot <- function(
   srt,
   bundle,
   pair = NULL,
+  condition = NULL,
   image = NULL,
   image.scale = c("lowres", "hires"),
   overlay_image = TRUE,
@@ -1011,16 +1032,35 @@ spatial_neighborhood_spatial_plot <- function(
 ) {
   image.scale <- match.arg(image.scale)
   edges <- bundle$edge_table
-  if (is.null(edges) || nrow(edges) == 0L) {
-    log_message(
-      "Spatial edge table is not available for spatial neighborhood plotting",
-      message_type = "error"
-    )
+  input <- bundle$input
+  if (!is.data.frame(input) || !all(c("cell", "group", "condition") %in% names(input)) ||
+      !is.data.frame(edges) || !all(c("cell", "neighbor", "from", "to", "condition") %in% names(edges))) {
+    stop("Saved analysis input or edge table is incomplete; rerun RunSpatialNeighborhood()", call. = FALSE)
+  }
+  if (anyNA(input$cell) || anyDuplicated(input$cell) || anyNA(input$group) ||
+      anyNA(input$condition) || anyNA(edges$cell) || any(!edges$cell %in% input$cell)) {
+    stop("Saved neighborhood identifiers are invalid; rerun RunSpatialNeighborhood()", call. = FALSE)
+  }
+  if (!is.null(condition)) {
+    if (!is.character(condition) || anyNA(condition) || any(!condition %in% input$condition)) {
+      stop("condition must name a condition in the saved analysis input", call. = FALSE)
+    }
+    input <- input[input$condition %in% condition, , drop = FALSE]
+    edges <- edges[edges$cell %in% input$cell, , drop = FALSE]
+  }
+  if (is.null(pair) && nrow(edges) == 0L) {
+    stop("No observed edges remain; specify pair explicitly", call. = FALSE)
   }
   pair_use <- spatial_neighborhood_resolve_pair(pair, edges)
+  if (anyNA(pair_use) || any(!nzchar(pair_use)) || any(!pair_use %in% bundle$input$group) ||
+      (!is.null(bundle$parameters$from) && !pair_use[1L] %in% bundle$parameters$from) ||
+      (!is.null(bundle$parameters$to) && !pair_use[2L] %in% bundle$parameters$to)) {
+    stop("pair must contain known labels within the saved from/to scope", call. = FALSE)
+  }
   hit <- edges$from == pair_use[1L] & edges$to == pair_use[2L]
-  score <- tabulate(match(edges$cell[hit], colnames(srt)), nbins = ncol(srt))
-  names(score) <- colnames(srt)
+  score <- stats::setNames(rep(NA_real_, ncol(srt)), colnames(srt))
+  eligible <- intersect(input$cell[input$group == pair_use[1L]], colnames(srt))
+  score[eligible] <- tabulate(match(edges$cell[hit], eligible), nbins = length(eligible))
   theme_use <- theme_use %||% "theme_scop"
   SpatialSpotPlot(
     srt = srt,
@@ -1034,7 +1074,7 @@ spatial_neighborhood_spatial_plot <- function(
     palcolor = palcolor,
     legend.position = legend.position,
     legend.direction = legend.direction,
-    legend.title = legend.title %||% paste(pair_use, collapse = " -> "),
+    legend.title = legend.title %||% paste("Observed count:", paste(pair_use, collapse = " -> ")),
     theme_use = theme_use,
     theme_args = theme_args,
     combine = combine,
