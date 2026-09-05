@@ -45,6 +45,7 @@ test_that("active variable feature helper supports legacy assays and ranked Assa
   for (assay in list(SeuratObject::CreateAssayObject(counts = counts),
                      SeuratObject::CreateAssay5Object(counts = counts))) {
     srt <- Seurat::CreateSeuratObject(assay)
+    expect_error(spatial_set_active_variable_features(srt, "RNA", "absent"), "None of the features")
     srt <- spatial_set_active_variable_features(srt, "RNA", c("g2", "g1", "g2"))
     expect_identical(SeuratObject::VariableFeatures(srt), c("g2", "g1"))
     srt <- spatial_set_active_variable_features(srt, "RNA", character())

@@ -304,7 +304,15 @@ spatial_set_active_variable_features <- function(srt, assay, features) {
   features <- features[!is.na(features) & nzchar(features)]
   assay_object <- srt[[assay]]
 
+  if (length(features) > 0L) {
+    features <- intersect(features, rownames(assay_object))
+    if (length(features) == 0L) {
+      stop("None of the features specified are present in this assay", call. = FALSE)
+    }
+  }
   if (inherits(assay_object, "StdAssay")) {
+    # Write full, ID-aligned metadata: some Assay5 setters recycle short
+    # character selections and treat an empty assignment as a no-op.
     feature_names <- rownames(assay_object)
     empty_labels <- feature_names %in% features
     empty_ranks <- match(feature_names, features)
