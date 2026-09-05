@@ -52,8 +52,9 @@
 #' This can be used to avoid conflicts with other tools in the Seurat object.
 #' @param exp_legend_title The title for the color legend in the heatmap.
 #' If not provided, a default title based on the similarity metric will be used.
-#' @param border Whether to add a border around each heatmap cell.
-#' The
+#' @param border Default border switch for the similarity heatmap,
+#' query/reference annotations, and their legends. More specific `*_border`
+#' arguments inherit this value when `NULL`.
 #' @param flip Whether to flip the orientation of the heatmap.
 #' If set to TRUE, the rows and columns of the heatmap will be swapped.
 #' This can be useful for visualizing large datasets in a more compact form.
@@ -812,14 +813,20 @@ CellCorHeatmap <- function(
       lgd[[query_group_name]] <- ComplexHeatmap::Legend(
         title = query_group_name,
         labels = levels(srt_query[[query_group, drop = TRUE]]),
-        legend_gp = grid::gpar(
+        legend_gp = heatmap_discrete_legend_gp(
           fill = palette_colors(
             levels(srt_query[[query_group, drop = TRUE]]),
             palette = query_group_palette,
             palcolor = query_group_palcolor
-          )
+          ),
+          border = cell_annotation_border,
+          border_color = cell_annotation_border_color,
+          border_size = cell_annotation_border_size
         ),
-        border = TRUE
+        border = heatmap_legend_border(
+          cell_annotation_border,
+          cell_annotation_border_color
+        )
       )
     }
   }
@@ -888,14 +895,20 @@ CellCorHeatmap <- function(
       lgd[[ref_group_name]] <- ComplexHeatmap::Legend(
         title = ref_group_name,
         labels = levels(srt_ref[[ref_group, drop = TRUE]]),
-        legend_gp = grid::gpar(
+        legend_gp = heatmap_discrete_legend_gp(
           fill = palette_colors(
             levels(srt_ref[[ref_group, drop = TRUE]]),
             palette = ref_group_palette,
             palcolor = ref_group_palcolor
-          )
+          ),
+          border = cell_annotation_border,
+          border_color = cell_annotation_border_color,
+          border_size = cell_annotation_border_size
         ),
-        border = TRUE
+        border = heatmap_legend_border(
+          cell_annotation_border,
+          cell_annotation_border_color
+        )
       )
     }
   }
@@ -1004,14 +1017,20 @@ CellCorHeatmap <- function(
         lgd[[query_cell_name]] <- ComplexHeatmap::Legend(
           title = query_cell_name,
           labels = levels(cell_anno),
-          legend_gp = grid::gpar(
+          legend_gp = heatmap_discrete_legend_gp(
             fill = palette_colors(
               cell_anno,
               palette = palette,
               palcolor = palcolor
-            )
+            ),
+            border = cell_annotation_border,
+            border_color = cell_annotation_border_color,
+            border_size = cell_annotation_border_size
           ),
-          border = TRUE
+          border = heatmap_legend_border(
+            cell_annotation_border,
+            cell_annotation_border_color
+          )
         )
       } else {
         if (isTRUE(query_collapsing)) {
@@ -1248,14 +1267,20 @@ CellCorHeatmap <- function(
         lgd[[ref_cell_name]] <- ComplexHeatmap::Legend(
           title = ref_cell_name,
           labels = levels(cell_anno),
-          legend_gp = grid::gpar(
+          legend_gp = heatmap_discrete_legend_gp(
             fill = palette_colors(
               cell_anno,
               palette = palette,
               palcolor = palcolor
-            )
+            ),
+            border = cell_annotation_border,
+            border_color = cell_annotation_border_color,
+            border_size = cell_annotation_border_size
           ),
-          border = TRUE
+          border = heatmap_legend_border(
+            cell_annotation_border,
+            cell_annotation_border_color
+          )
         )
       } else {
         if (isTRUE(ref_collapsing)) {

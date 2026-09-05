@@ -137,8 +137,7 @@ test_that("spatial gradient storage keeps only plain data frames", {
     srt = srt,
     result_name = "mock",
     result = result,
-    assay = "RNA",
-    set_variable_features = FALSE
+    assay = "RNA"
   )
 
   stored <- srt@tools[["SpatialGradientFeatures"]][["mock"]]
@@ -171,6 +170,7 @@ test_that("cpp backend stores annotation gradient result tables", {
     reference = "annotation",
     backend = "cpp",
     result_name = "cpp_annotation",
+    set_variable_features = TRUE,
     variables = c("Gene1", "Gene2"),
     annotation.variable = "source_score",
     annotation.threshold = 0,
@@ -193,6 +193,8 @@ test_that("cpp backend stores annotation gradient result tables", {
   expect_false(any(vapply(stored, methods::is, logical(1), class2 = "SPATA2")))
   expect_true(nrow(stored$screening) > 0)
   expect_true(nrow(stored$top_variables) > 0)
+  expect_identical(SeuratObject::VariableFeatures(srt, assay = "RNA"),
+    unique(stored$top_variables$variable))
   expect_equal(stored$parameters$value[match("backend", stored$parameters$key)], "cpp")
   expect_false("spata2_version" %in% stored$parameters$key)
   expect_true(all(c("norm_var", "rel_var", "linear_r2") %in% colnames(stored$significance)))
@@ -273,7 +275,7 @@ test_that("cpp backend stores trajectory gradient result tables", {
 test_that("SpatialGradientPlot handles stored results and missing tables clearly", {
   srt <- make_spatial_gradient_seurat()
   result <- make_spatial_gradient_result()
-  srt <- sgf_store_result(srt, "mock", result, assay = "RNA", set_variable_features = FALSE)
+  srt <- sgf_store_result(srt, "mock", result, assay = "RNA")
 
   expect_s3_class(
     SpatialGradientPlot(srt, result_name = "mock", plot_type = "line", theme_use = NULL),
@@ -321,7 +323,7 @@ test_that("SpatialGradientPlot handles stored results and missing tables clearly
 
   no_screening <- result
   no_screening$screening <- data.frame()
-  srt <- sgf_store_result(srt, "no_screening", no_screening, assay = "RNA", set_variable_features = FALSE)
+  srt <- sgf_store_result(srt, "no_screening", no_screening, assay = "RNA")
   expect_error(
     SpatialGradientPlot(srt, result_name = "no_screening", plot_type = "line", theme_use = NULL),
     "screening data"
@@ -329,7 +331,7 @@ test_that("SpatialGradientPlot handles stored results and missing tables clearly
 
   empty_top <- result
   empty_top$top_variables <- empty_top$top_variables[0, , drop = FALSE]
-  srt <- sgf_store_result(srt, "empty_top", empty_top, assay = "RNA", set_variable_features = FALSE)
+  srt <- sgf_store_result(srt, "empty_top", empty_top, assay = "RNA")
   expect_error(
     SpatialGradientPlot(srt, result_name = "empty_top", plot_type = "summary", theme_use = NULL),
     "No top spatial gradient variables"
@@ -340,7 +342,7 @@ test_that("SpatialGradientPlot combined returns patchwork when available", {
   testthat::skip_if_not_installed("patchwork")
   srt <- make_spatial_gradient_seurat()
   result <- make_spatial_gradient_result()
-  srt <- sgf_store_result(srt, "mock", result, assay = "RNA", set_variable_features = FALSE)
+  srt <- sgf_store_result(srt, "mock", result, assay = "RNA")
 
   p <- SpatialGradientPlot(
     srt,
@@ -364,7 +366,7 @@ test_that("SpatialGradientPlot reuses stored assay layer for surface plots", {
     value = c("RNA", "counts"),
     stringsAsFactors = FALSE
   )
-  srt <- sgf_store_result(srt, "mock_counts", result, assay = "RNA", set_variable_features = FALSE)
+  srt <- sgf_store_result(srt, "mock_counts", result, assay = "RNA")
 
   p <- expect_warning(
     SpatialGradientPlot(

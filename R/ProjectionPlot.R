@@ -117,7 +117,22 @@ ProjectionPlot <- function(
   ) +
     scale_x_continuous(limits = xlim) +
     scale_y_continuous(limits = ylim)
-  p2data <- ggplot_build(p2)$data[[1]]
+  p2layers <- ggplot_build(p2)$data
+  point_layer <- which(vapply(
+    p2layers,
+    function(layer) {
+      nrow(layer) == nrow(p2$data) &&
+        all(c("x", "y", "colour") %in% colnames(layer))
+    },
+    logical(1L)
+  ))
+  if (length(point_layer) == 0L) {
+    log_message(
+      "No query point layer was found in the CellDimPlot output.",
+      message_type = "error"
+    )
+  }
+  p2data <- p2layers[[point_layer[[1L]]]]
   color <- p2data$colour
   names(color) <- p2$data$group.by
   p2 <- p2 +
