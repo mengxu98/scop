@@ -214,7 +214,7 @@ omics data. <em>Bioinformatics Advances</em>, 2, vbac016.
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 14:00:45] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-05 16:33:07] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDorothea</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -224,9 +224,9 @@ omics data. <em>Bioinformatics Advances</em>, 2, vbac016.
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"ulm"</span>,</span></span>
 <span class="r-in"><span>  minsize <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 14:00:53] Run <span style="color: #0000BB;">"DoRothEA"</span>/<span style="color: #0000BB;">decoupleR</span> with <span style="color: #0000BB;">12895</span> regulon edges</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 14:01:04] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in assay <span style="color: #0000BB;">"dorothea"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 14:01:04] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in <span style="color: #0000BB;">&lt;Seurat&gt;</span> metadata</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-05 16:33:16] Run <span style="color: #0000BB;">"DoRothEA"</span>/<span style="color: #0000BB;">decoupleR</span> with <span style="color: #0000BB;">12895</span> regulon edges</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-05 16:33:29] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in assay <span style="color: #0000BB;">"dorothea"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-05 16:33:29] <span style="color: #0000BB;">"DoRothEA"</span> TF activity scores stored in <span style="color: #0000BB;">&lt;Seurat&gt;</span> metadata</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">regulon_summary</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   n_tfs n_targets n_edges confidence</span>
@@ -266,7 +266,7 @@ omics data. <em>Bioinformatics Advances</em>, 2, vbac016.
 <span class="r-in"><span>  features <span class="op">=</span> <span class="st">"Sox9"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"dim"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 14:01:06] Draw <span style="color: #0000BB;">"DoRothEA"</span> embedding plots for <span style="color: #0000BB;">1</span> TFs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-05 16:33:31] Draw <span style="color: #0000BB;">"DoRothEA"</span> embedding plots for <span style="color: #0000BB;">1</span> TFs</span>
 <span class="r-plt img"><img src="RunDorothea-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="DorotheaPlot.html">DorotheaPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -276,7 +276,7 @@ omics data. <em>Bioinformatics Advances</em>, 2, vbac016.
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"bar"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 14:01:06] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-05 16:33:31] Compare <span style="color: #0000BB;">"DoRothEA"</span> TF activity: <span style="color: #0000BB;">"Endocrine"</span> vs <span style="color: #0000BB;">"Ductal"</span></span>
 <span class="r-plt img"><img src="RunDorothea-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="DorotheaPlot.html">DorotheaPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -284,7 +284,7 @@ omics data. <em>Bioinformatics Advances</em>, 2, vbac016.
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"heatmap"</span>,</span></span>
 <span class="r-in"><span>  top_n <span class="op">=</span> <span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 14:01:07] Draw <span style="color: #0000BB;">"DoRothEA"</span> TF activity heatmap for <span style="color: #0000BB;">20</span> TFs</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-05 16:33:32] Draw <span style="color: #0000BB;">"DoRothEA"</span> TF activity heatmap for <span style="color: #0000BB;">20</span> TFs</span>
 <span class="r-in"><span><span class="va">ht</span><span class="op">$</span><span class="va">plot</span></span></span>
 <span class="r-plt img"><img src="RunDorothea-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="DorotheaPlot.html">DorotheaPlot</a></span><span class="op">(</span></span></span>
@@ -295,8 +295,8 @@ omics data. <em>Bioinformatics Advances</em>, 2, vbac016.
 <span class="r-in"><span>  features <span class="op">=</span> <span class="st">"Sox9"</span>,</span></span>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"targets"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-03 14:01:08] Dropping <span style="color: #0000BB;">3</span> <span style="color: #0000BB;">"Sox9"</span> targets missing from assay <span style="color: #0000BB;">"RNA"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 14:01:08] Draw <span style="color: #0000BB;">"DoRothEA"</span> regulon-target volcano for <span style="color: #0000BB;">"Sox9"</span> (<span style="color: #0000BB;">10</span> targets)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-05 16:33:32] Dropping <span style="color: #0000BB;">3</span> <span style="color: #0000BB;">"Sox9"</span> targets missing from assay <span style="color: #0000BB;">"RNA"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-05 16:33:33] Draw <span style="color: #0000BB;">"DoRothEA"</span> regulon-target volcano for <span style="color: #0000BB;">"Sox9"</span> (<span style="color: #0000BB;">10</span> targets)</span>
 <span class="r-plt img"><img src="RunDorothea-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># A RunGRN-compatible unsigned network can be passed directly.</span></span></span>
@@ -315,7 +315,7 @@ omics data. <em>Bioinformatics Advances</em>, 2, vbac016.
 <span class="r-in"><span>  add_meta <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-03 14:01:08] The supplied network is unsigned; <span style="color: #0000BB;">"importance"</span> is used as positive edge weight. Scores represent target-program activity, not signed TF activation or repression.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-05 16:33:33] The supplied network is unsigned; <span style="color: #0000BB;">"importance"</span> is used as positive edge weight. Scores represent target-program activity, not signed TF activation or repression.</span>
 <span class="r-in"><span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">Dorothea</span><span class="op">$</span><span class="va">network_info</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $source</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "custom"</span>
