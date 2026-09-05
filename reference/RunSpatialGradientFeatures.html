@@ -227,7 +227,8 @@ the <code>"cpp"</code> backend.</p></dd>
 
 <dt id="arg-set-variable-features">set_variable_features<a class="anchor" aria-label="anchor" href="#arg-set-variable-features"></a></dt>
 <dd><p>Whether to set top gradient variables as Seurat
-variable features.</p></dd>
+variable features independently of <code>store_results</code>. If explicitly <code>TRUE</code>,
+an empty selection clears the target assay's variable features.</p></dd>
 
 
 <dt id="arg-store-results">store_results<a class="anchor" aria-label="anchor" href="#arg-store-results"></a></dt>
@@ -255,8 +256,10 @@ backend ignores them and does not store them as effective parameters.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>Seurat</code> object with spatial gradient screening results stored in
-<code>srt@tools[["SpatialGradientFeatures"]]</code>.</p>
+    <p>A <code>Seurat</code> object. When <code>store_results = TRUE</code>, spatial gradient
+screening results are stored in <code>srt@tools[["SpatialGradientFeatures"]]</code>.
+Otherwise existing stored results are unchanged. Variable features are
+independently updated only when <code>set_variable_features = TRUE</code>.</p>
     </div>
 
     <div class="section level2">

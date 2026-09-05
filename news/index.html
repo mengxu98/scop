@@ -61,8 +61,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.1" id="scop-091">scop 0.9.1<a class="anchor" aria-label="anchor" href="#scop-091"></a></h2>
-<ul><li>
-<strong>feat</strong>:
+<ul><li><p><strong>fix</strong>: Gradient result storage and VariableFeatures updates are independent; explicit empty updates clear VariableFeatures and completion messages describe actual actions.</p></li>
+<li>
+<p><strong>feat</strong>:</p>
 <ul><li>
 <code><a href="../reference/SpatialNeighborhoodProfile.html">SpatialNeighborhoodProfile()</a></code> returns observed per-cell neighbor counts and fractions at multiple raw-coordinate distances, retaining the full selected tissue context for target cells without modifying the Seurat object or storing an edge table.</li>
 <li>
@@ -89,7 +90,7 @@
 <code><a href="../reference/SCENICPlot.html">SCENICPlot()</a></code> / <code><a href="../reference/SCENICPlusPlot.html">SCENICPlusPlot()</a></code>: <code>heatmap_dotplot</code>, <code>eregulon_dim</code>, <code>coverage</code>, <code>network</code>, <code>network_graph</code>, <code>egrn</code>, <code>overlap</code>. <code>"network"</code> draws one hub per TF. Network plots have no title. Networks use <code>"Chinese"</code> when <code>palette = "RdYlBu"</code>. Multi-TF legends show the top RSS cell type.</li>
 </ul></li>
 <li>
-<strong>fixed</strong>:
+<p><strong>fixed</strong>:</p>
 <ul><li>
 <code>presto</code> is now a runtime-optional GitHub backend instead of a suggested check dependency. Marker fast paths use an existing installation without installing it, while <code>RunCellChat(do.fast = TRUE)</code> can resolve the backend from <code>immunogenomics/presto</code> before execution.</li>
 <li>
@@ -129,13 +130,13 @@
 <code>DorotheaPlot(plot_type = "volcano")</code> plots every tested TF, caps Wilcoxon underflow on the y-axis, colors points by direction, and labels significant TFs. <code>"targets"</code> labels only significant genes so leader lines no longer pile at x = 0.</li>
 </ul></li>
 <li>
-<strong>removed</strong>:
+<p><strong>removed</strong>:</p>
 <ul><li>Removed wrappers whose upstream dependencies are unavailable or uncompilable: <code>RunSpatialQM()</code>, the <code>RunSemla*()</code> wrappers, the <code>BASS</code>/<code>SpatialMNN</code> branches of <code><a href="../reference/RunSpatialIntegration.html">RunSpatialIntegration()</a></code> (PRECAST unaffected), and the SPATA2 <code>backend = "r"</code> path of <code><a href="../reference/RunSpatialGradientFeatures.html">RunSpatialGradientFeatures()</a></code> (C++ backend only; <code>srt_to_spata2()</code>/<code>spata2_to_srt()</code> removed as well).</li>
 <li>Removed the legacy spatial registry and result-discovery APIs (<code>GetSpatialResult()</code>, <code>ListSpatialMethods()</code>, <code>SpatialBackendStatus()</code>, and <code>SpatialResultInfo()</code>). Use each producer’s documented <code>srt@tools</code> entry and, where provided, its dedicated result accessor or plotting function.</li>
 <li>The <code>CaSpER</code> branch of <code><a href="../reference/RunCNV.html">RunCNV()</a></code> is removed: <code>runCaSpER()</code> segfaults deterministically on R &gt;= 4.5 (HMM <code>manualSegment</code>, even on 50 cells), upstream is unmaintained since 2019, and its Bioconductor dependency set is archived. <code><a href="../reference/RunCNV.html">RunCNV()</a></code> now supports <code>copykat</code>, <code>fastCNV</code>, <code>scevan</code>, <code>infercnv</code>, and <code>numbat</code>.</li>
 </ul></li>
 <li>
-<strong>changed</strong>:
+<p><strong>changed</strong>:</p>
 <ul><li>
 <code>RunBenchmark()</code> / <code>BenchmarkPlot()</code> are replaced by <code><a href="../reference/RunSpatialBenchmark.html">RunSpatialBenchmark()</a></code> / <code><a href="../reference/SpatialBenchmarkPlot.html">SpatialBenchmarkPlot()</a></code>. The old names are removed.</li>
 <li>
@@ -252,7 +253,7 @@
 <li>
 <code><a href="../reference/CheckDataList.html">CheckDataList()</a></code> / <code><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow()</a></code>: Removed an unnecessary all-feature <code><a href="../reference/ScaleData.html">ScaleData()</a></code> call immediately after <code>LogNormalize</code>. Downstream workflows still scale the selected HVFs before PCA, but large raw-count inputs no longer create a dense all-gene <code>scale.data</code> intermediate during checking.</li>
 <li>
-<code><a href="../reference/srt_reorder.html">srt_reorder()</a></code>: Replaced per-cluster repeated sparse subsetting and <code><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">rowMeans()</a></code> with a single sparse group-membership matrix multiplication, speeding the cluster-reordering step used by <code><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow()</a></code> while preserving average expression values.</li>
+<code><a href="../reference/srt_reorder.html">srt_reorder()</a></code>: Replaced per-cluster repeated sparse subsetting and <code><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans()</a></code> with a single sparse group-membership matrix multiplication, speeding the cluster-reordering step used by <code><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow()</a></code> while preserving average expression values.</li>
 <li>
 <code><a href="../reference/FindExpressedMarkers.html">FindExpressedMarkers()</a></code>: Added a sparse fold-change and detection-rate prefilter path for common sparse RNA inputs, avoiding dense all-feature expression materialization before marker filtering while preserving default results. Supplied features are now intersected with the active layer before dense fallback scoring, which also keeps <code>scale.data</code> and partial-feature layers from passing absent rows into fold-change calculation.</li>
 <li>C++-accelerated backends are now the default where available: <code><a href="../reference/RunMetabolism.html">RunMetabolism()</a></code>, <code><a href="../reference/RunGSVA.html">RunGSVA()</a></code>, <code><a href="../reference/CellScoring.html">CellScoring()</a></code>, <code><a href="../reference/RunDynamicEnrichment.html">RunDynamicEnrichment()</a></code>, and <code><a href="../reference/RunEnrichment.html">RunEnrichment()</a></code> now prefer <code>backend = "cpp"</code> while retaining <code>backend = "r"</code> for exact legacy/package behavior. <code><a href="../reference/RunPermutation.html">RunPermutation()</a></code> now uses its validated C++ implementation directly.</li>
