@@ -2838,6 +2838,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// spatial_neighborhood_profile_cpp
+Rcpp::IntegerVector spatial_neighborhood_profile_cpp(Rcpp::NumericMatrix xy, Rcpp::IntegerVector group, Rcpp::IntegerVector query, Rcpp::NumericVector radii, int ng);
+RcppExport SEXP _scop_spatial_neighborhood_profile_cpp(SEXP xySEXP, SEXP groupSEXP, SEXP querySEXP, SEXP radiiSEXP, SEXP ngSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type xy(xySEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type group(groupSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type query(querySEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type radii(radiiSEXP);
+    Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
+    rcpp_result_gen = Rcpp::wrap(spatial_neighborhood_profile_cpp(xy, group, query, radii, ng));
+    return rcpp_result_gen;
+END_RCPP
+}
 // tage_elastic_net_predict_cpp
 NumericVector tage_elastic_net_predict_cpp(NumericMatrix expr, IntegerVector feature_match, NumericVector imputer, NumericVector center, NumericVector scale, NumericVector coef, double intercept);
 RcppExport SEXP _scop_tage_elastic_net_predict_cpp(SEXP exprSEXP, SEXP feature_matchSEXP, SEXP imputerSEXP, SEXP centerSEXP, SEXP scaleSEXP, SEXP coefSEXP, SEXP interceptSEXP) {
@@ -3095,6 +3109,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_csc_to_csr", (DL_FUNC) &_scop_csc_to_csr, 5},
     {"_scop_sct_stats_correct_sparse", (DL_FUNC) &_scop_sct_stats_correct_sparse, 13},
     {"_scop_sct_fused_resid_center_sparse", (DL_FUNC) &_scop_sct_fused_resid_center_sparse, 15},
+    {"_scop_spatial_neighborhood_profile_cpp", (DL_FUNC) &_scop_spatial_neighborhood_profile_cpp, 5},
     {"_scop_tage_elastic_net_predict_cpp", (DL_FUNC) &_scop_tage_elastic_net_predict_cpp, 7},
     {"_scop_sparse_row_mean_var", (DL_FUNC) &_scop_sparse_row_mean_var, 5},
     {"_scop_sparse_row_mean_var_dgc_list", (DL_FUNC) &_scop_sparse_row_mean_var_dgc_list, 2},

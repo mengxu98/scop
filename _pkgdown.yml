@@ -250,6 +250,7 @@ reference:
   - MistyRPlot
   - StatialKontextualPlot
   - RunSpatialNeighborhood
+  - SpatialNeighborhoodProfile
   - RunStatialKontextual
   - RunSpatialIntegration
   - RunMistyR

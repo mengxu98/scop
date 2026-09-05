@@ -1,6 +1,7 @@
 # scop 0.9.1
 
 * **feat**:
+  * `SpatialNeighborhoodProfile()` returns observed per-cell neighbor counts and fractions at multiple raw-coordinate distances, retaining the full selected tissue context for target cells without modifying the Seurat object or storing an edge table.
   * `RunDEtest()` sample-level methods gain `min.cells.sample` (default `10`) to drop pseudobulk samples whose cell count in the current `group.by` level is below a threshold, which can reverse DE direction relative to cell-level tests. Set `min.cells.sample = 1` to keep the previous unfiltered behavior.
   * Internal preprocessing and integration workflows now use scop's Seurat-compatible entry points, enabling validated native acceleration for normalization, variable-feature selection, scaling, PCA, and neighbor search while retaining transparent Seurat fallback for unsupported paths.
   * The native `SCTransform(vst.flavor = "v2")` path now supports validated numeric and factor `vars.to.regress` designs and `latent.data`; unsupported regression designs continue to delegate to Seurat.

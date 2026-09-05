@@ -713,6 +713,10 @@ sct_fused_resid_center_sparse <- function(intercepts, cell_mu_base, csr_row_ptr,
     .Call(`_scop_sct_fused_resid_center_sparse`, intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi, do_center, do_scale, cores)
 }
 
+spatial_neighborhood_profile_cpp <- function(xy, group, query, radii, ng) {
+    .Call(`_scop_spatial_neighborhood_profile_cpp`, xy, group, query, radii, ng)
+}
+
 tage_elastic_net_predict_cpp <- function(expr, feature_match, imputer, center, scale, coef, intercept) {
     .Call(`_scop_tage_elastic_net_predict_cpp`, expr, feature_match, imputer, center, scale, coef, intercept)
 }
