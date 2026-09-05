@@ -62,6 +62,21 @@ heatmap_row_labels_max_width <- function(labels, gp = NULL) {
   ComplexHeatmap::max_text_width(lines, gp = gp) + grid::unit(2, "mm")
 }
 
+heatmap_discrete_legend_gp <- function(
+  fill,
+  border,
+  border_color,
+  border_size
+) {
+  do.call(
+    grid::gpar,
+    c(
+      list(fill = fill),
+      heatmap_border_gp(border, border_color, border_size)
+    )
+  )
+}
+
 build_heatmap_feature_annotation <- function(
   annotation_name,
   values,
@@ -72,8 +87,8 @@ build_heatmap_feature_annotation <- function(
   annotation_border = border,
   border_color = "black",
   border_size = 1,
-  discrete_legend_border = TRUE,
-  discrete_legend_gp_border = FALSE,
+  discrete_legend_border = heatmap_legend_border(border, border_color),
+  discrete_legend_gp_border = TRUE,
   params = list()
 ) {
   values <- compact_heatmap_feature_annotation(values, annotation_name)
@@ -102,7 +117,7 @@ build_heatmap_feature_annotation <- function(
       if (isTRUE(discrete_legend_gp_border)) {
         legend_gp <- c(
           legend_gp,
-          col = border_color,
+          col = heatmap_border_color(border, border_color),
           lwd = border_size
         )
       }

@@ -172,14 +172,16 @@ This can be used to avoid conflicts with other tools in the Seurat object.}
 \item{exp_legend_title}{The title for the color legend in the heatmap.
 If not provided, a default title based on the similarity metric will be used.}
 
-\item{border}{Whether to add a border around each heatmap cell.
-The}
+\item{border}{Default border switch for the similarity heatmap,
+query/reference annotations, and their legends. More specific \verb{*_border}
+arguments inherit this value when \code{NULL}.}
 
-\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Borders for the heatmap body and annotations. \code{NULL} inherits \code{border}.}
+\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Borders for the heatmap body, annotations, and their matching legends.
+\code{NULL} inherits \code{border}.}
 
-\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors when the matching border argument is \code{TRUE}.}
+\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors for the matching body, annotation, and legend.}
 
-\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths when the matching border argument is \code{TRUE}.}
+\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths for the matching body, annotation, and legend.}
 
 \item{flip}{Whether to flip the orientation of the heatmap.
 If set to TRUE, the rows and columns of the heatmap will be swapped.

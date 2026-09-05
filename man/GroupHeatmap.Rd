@@ -185,11 +185,12 @@ the level used as numerator.}
 \item{border}{Draw borders. Kept for compatibility; more specific
 \verb{*_border} arguments inherit this when \code{NULL}.}
 
-\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Borders for the heatmap body and annotations. \code{NULL} inherits \code{border}.}
+\item{heatmap_border, cell_annotation_border, feature_annotation_border}{Borders for the heatmap body, annotations, and their matching legends.
+\code{NULL} inherits \code{border}.}
 
-\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors when the matching border argument is \code{TRUE}.}
+\item{heatmap_border_palcolor, cell_annotation_border_palcolor, feature_annotation_border_palcolor}{Border colors for the matching body, annotation, and legend.}
 
-\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths when the matching border argument is \code{TRUE}.}
+\item{heatmap_border_size, cell_annotation_border_size, feature_annotation_border_size}{Border line widths for the matching body, annotation, and legend.}
 
 \item{flip}{Flip rows and columns.}
 
