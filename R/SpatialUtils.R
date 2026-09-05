@@ -304,17 +304,15 @@ spatial_set_active_variable_features <- function(srt, assay, features) {
   features <- features[!is.na(features) & nzchar(features)]
   assay_object <- srt[[assay]]
 
-  if (length(features) > 0L) {
-    SeuratObject::VariableFeatures(assay_object) <- features
-  } else if (inherits(assay_object, "StdAssay")) {
+  if (inherits(assay_object, "StdAssay")) {
     feature_names <- rownames(assay_object)
-    empty_labels <- rep(FALSE, length(feature_names))
-    empty_ranks <- rep(NA_integer_, length(feature_names))
+    empty_labels <- feature_names %in% features
+    empty_ranks <- match(feature_names, features)
     names(empty_labels) <- names(empty_ranks) <- feature_names
     assay_object[["var.features"]] <- empty_labels
     assay_object[["var.features.rank"]] <- empty_ranks
   } else {
-    SeuratObject::VariableFeatures(assay_object) <- character()
+    SeuratObject::VariableFeatures(assay_object) <- features
   }
 
   marker_key <- spatial_svf_selection_marker_key()
