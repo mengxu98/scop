@@ -1,4 +1,21 @@
 test_that("neighborhood counts preserve saved scope, zero and unknown values", {
+  # Exercise the producer and plot semantics without optional neighbor search.
+  # This tiny all-pairs fixture is test-only, not a production fallback.
+  local_mocked_bindings(
+    spatial_graph_compute = function(coords, method, radius, directed, weight) {
+      expect_identical(method, "radius")
+      expect_true(directed)
+      expect_identical(weight, "binary")
+      distances <- as.matrix(stats::dist(coords[, c("x", "y")]))
+      hit <- which(distances <= radius & row(distances) != col(distances), arr.ind = TRUE)
+      list(edges = data.frame(from = hit[, 1L], to = hit[, 2L],
+        distance = distances[hit]))
+    },
+    get_namespace_fun = function(pkg, fun, ...) {
+      stop(paste("Unexpected optional namespace lookup:", pkg, fun))
+    },
+    .package = "scop"
+  )
   srt <- Seurat::CreateSeuratObject(matrix(1:12, 2,
     dimnames = list(c("g1", "g2"), paste0("s", 1:6))))
   srt$x <- c(0, 1, 20, 30, 31, 90)
@@ -40,6 +57,7 @@ test_that("neighborhood counts preserve saved scope, zero and unknown values", {
 })
 
 test_that("empty native neighborhoods render and aggregation backends agree", {
+  testthat::skip_if_not_installed("BiocNeighbors")
   srt <- Seurat::CreateSeuratObject(Matrix::Matrix(matrix(1:8, 2,
     dimnames = list(c("g1", "g2"), paste0("s", 1:4))), sparse = TRUE))
   srt$x <- c(0, 1, 0, 1)
