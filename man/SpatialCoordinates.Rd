@@ -14,7 +14,7 @@ SpatialCoordinates(
 )
 }
 \arguments{
-\item{object}{A `Seurat` object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{image}{Optional Seurat image name.}
 
@@ -25,21 +25,29 @@ SpatialCoordinates(
 \item{image_policy}{Multi-image selection policy. The default requires an
 explicit image when more than one image is available.}
 
-\item{image.scale}{Image scale factor used only when `space = "display"`.
-Choose `"hires"` when the image slot contains a hires raster. Raw
+\item{image.scale}{Image scale factor used only when \code{space = "display"}.
+Choose \code{"hires"} when the image slot contains a hires raster. Raw
 coordinates are always returned in full-resolution units.}
 }
 \value{
-A plain list with `data`, `source`, and `transform` entries.
+A plain list with \code{data}, \code{source}, and \code{transform} entries.
 }
 \description{
 Return raw analysis coordinates or display coordinates together with their
 source and reversible transform. Image-backed coordinates are normalized to
-horizontal `x` and vertical `y`. Seurat's standard `VisiumV2` loader stores
-source `imagerow`/`imagecol` values positionally as centroid `x`/`y`; SCOP
+horizontal \code{x} and vertical \code{y}. Seurat's standard \code{VisiumV2} loader stores
+source \code{imagerow}/\code{imagecol} values positionally as centroid \code{x}/\code{y}; SCOP
 restores horizontal image-column and vertical image-row order. Generic FOV
-centroid tables with explicit `x`/`y` retain their order. SCOP then applies
+centroid tables with explicit \code{x}/\code{y} retain their order. SCOP then applies
 only the selected scale and display-axis flip.
+Custom VisiumV2 loaders storing horizontal centroid \code{x} must call
+\code{\link[=SetSpatialImageAxes]{SetSpatialImageAxes()}} with \code{x_orientation = "horizontal"} once. This
+persists the convention in the Seurat misc slot through subsetting
+and renaming; \code{"vertical"} (or no marker) uses the standard Seurat loader
+convention. Legacy \code{coords_x_orientation} image attributes are readable but
+should be migrated with \code{\link[=SetSpatialImageAxes]{SetSpatialImageAxes()}} before subsetting.
+Cell metadata never determines image axis order. Metadata-only coordinates
+retain their numerical orientation in both raw and display space.
 This function does not modify the object.
 }
 \examples{

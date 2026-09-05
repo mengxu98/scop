@@ -1,5 +1,9 @@
 # scop 0.9.1
 
+* **fix**: Spatial coordinate contract v3 uses persistent image axis provenance instead of guessing from mutable metadata, parses numeric factor coordinates correctly, and records the resolved coordinate columns. `SetSpatialImageAxes()` preserves custom VisiumV2 conventions through subsetting and renaming; the bundled Visium object is migrated without changing its measurements. Coordinate-dependent results from contract v2 must be rerun.
+* **fix**: Spatial point and pie plots default to the same FOV/metadata y orientation as network and boundary plots (`flip.y = FALSE`). SpatialExperiment exports default to raw coordinates and retain transforms for reversible display-coordinate round trips.
+* **fix**: Spatial integration and SpatialEcoTyper multi discovery resolve each sample's image independently and reject incomplete image coverage. SpatialEcoTyper single discovery requires a single selected image and stores its raw coordinate source. SpotSweeper local outlier results with verified sample-prefixed IDs are restored to input order without accepting changed coordinates or expression.
+
 * **fix**: Gradient result storage and VariableFeatures updates are independent; explicit empty updates clear VariableFeatures and completion messages describe actual actions.
 
 * **feat**:

@@ -11,6 +11,9 @@
 #' @inheritParams scop-params
 #' @param object A merged spatial `Seurat` object or a list of spatial `Seurat`
 #' objects.
+#' @param image Optional image name or named character vector mapping sample
+#' names to image names. By default, resolve the unique image covering each
+#' sample independently. Every input sample must remain represented.
 #' @param method Spatial integration backend.
 #' @param sample.by Metadata column identifying samples for a merged `Seurat`
 #' object. For list input, list names are copied into this column.
@@ -114,6 +117,7 @@ RunSpatialIntegration <- function(
     image = image,
     coord.cols = coord.cols,
     coordinate_space = coordinate_space,
+    coordinate_sources = input$coordinate_sources,
     reduction.name = reduction.name,
     cluster_colname = cluster_colname,
     tool_name = tool_name,
@@ -354,12 +358,14 @@ spatial_integration_prepare_input <- function(
       assay = assay
     )
   }
-  coords <- spatial_analysis_coords(
+  coordinate_input <- spatial_sample_coords(
     srt = srt,
+    sample.by = sample.by,
     image = image,
     coord.cols = coord.cols,
     coordinate_space = coordinate_space
-  )$data
+  )
+  coords <- coordinate_input$data
   cells <- intersect(colnames(srt), colnames(expr))
   cells <- intersect(cells, rownames(coords))
   coords <- coords[cells, , drop = FALSE]
@@ -386,6 +392,9 @@ spatial_integration_prepare_input <- function(
   }
   expr <- spatial_integration_sparse_matrix(expr)
   split_cells <- split(cells, srt@meta.data[cells, sample.by, drop = TRUE])
+  if (!setequal(names(split_cells)[lengths(split_cells) > 0L], unique(as.character(srt[[sample.by, drop = TRUE]])))) {
+    log_message("Spatial integration filtering removed an entire input sample", message_type = "error")
+  }
   list(
     srt = srt,
     srt_list = {
@@ -398,6 +407,7 @@ spatial_integration_prepare_input <- function(
     expr = expr,
     expr_list = lapply(split_cells, function(x) expr[, x, drop = FALSE]),
     coords = coords,
+    coordinate_sources = coordinate_input$sources,
     coords_list = lapply(split_cells, function(x) coords[x, , drop = FALSE]),
     samples = names(split_cells),
     cells = cells,
@@ -457,12 +467,28 @@ spatial_integration_merge_list <- function(srt_list, sample.by) {
     srt@meta.data[[sample.by]] <- names(srt_list)[1L]
     return(srt)
   }
-  merge(
+  merged <- merge(
     x = srt_list[[1L]],
     y = srt_list[-1L],
     add.cell.ids = names(srt_list),
     merge.data = TRUE
   )
+  # Seurat merge does not carry object misc; map image provenance by exact
+  # renamed cell sets, including when merge has renamed duplicate image keys.
+  for (sample in names(srt_list)) {
+    original <- srt_list[[sample]]
+    for (image in SeuratObject::Images(original)) {
+      if (!inherits(original[[image]], "VisiumV2")) next
+      orientation <- original@misc$spatial_image_axes[[image]] %||%
+        attr(original[[image]], "coords_x_orientation", exact = TRUE) %||% "vertical"
+      cells <- paste(sample, SeuratObject::Cells(original[[image]]), sep = "_")
+      matches <- SeuratObject::Images(merged)[vapply(merged@images, function(img) {
+        setequal(SeuratObject::Cells(img), cells)
+      }, logical(1))]
+      for (target in matches) merged@misc$spatial_image_axes[[target]] <- orientation
+    }
+  }
+  merged
 }
 
 
@@ -747,7 +773,8 @@ spatial_integration_apply_result <- function(
   reduction.name,
   cluster_colname,
   tool_name,
-  store_results
+  store_results,
+  coordinate_sources = NULL
 ) {
   all_cells <- colnames(srt)
   if (!is.null(result$domains)) {
@@ -793,6 +820,7 @@ spatial_integration_apply_result <- function(
     image = image,
     coord.cols = coord.cols,
     coordinate_space = coordinate_space,
+    coordinate_sources = coordinate_sources,
     reduction.name = reduction.name,
     cluster_colname = cluster_colname,
     aligned_coord_cols = aligned_coord_cols,

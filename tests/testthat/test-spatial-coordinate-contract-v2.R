@@ -76,7 +76,7 @@ test_that("VisiumV1 and VisiumV2 share full-resolution raw coordinates", {
     expect_equal(low_raw$data$x, fixture$raw$x, info = image_class)
     expect_equal(low_raw$data$y, fixture$raw$y, info = image_class)
     expect_equal(high_raw$data[, c("x", "y")], low_raw$data[, c("x", "y")])
-    expect_identical(low_raw$source$coordinate_contract_version, 2L)
+    expect_identical(low_raw$source$coordinate_contract_version, .spatial_coordinate_contract_version)
     expect_identical(low_raw$source$image_class[[1L]], image_class)
   }
 })

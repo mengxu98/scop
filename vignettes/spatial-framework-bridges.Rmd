@@ -16,6 +16,15 @@ analysis or plotting workflow and it does not merge slices implicitly.
 
 ## Choose the interface
 
+`srt_to_spe()` exports raw coordinates by default. For an explicit
+`coordinate_space = "legacy_display"` export, the source and affine transform
+are retained in `S4Vectors::metadata(spe)$scop_spatial_coordinates`.
+`spe_to_srt()` inverts that transform, including after subsetting/reordering
+spots, so subsequent analysis uses raw units. Preserve this metadata during
+external processing; external SPE objects without it are interpreted as raw
+coordinates in their supplied units. These guarantees apply to the
+SpatialExperiment bridge, not to Giotto's independently implemented converter.
+
 | Goal | Interface | Returned object | Plotting |
 |---|---|---|---|
 | Move one Seurat image into Giotto | `srt_to_giotto()` | Native Giotto object | Giotto's native plotting API |

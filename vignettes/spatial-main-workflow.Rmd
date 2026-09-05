@@ -59,6 +59,27 @@ retain their order. Legacy Visium pixel coordinates are normalized only when
 explicit image row/column names are available, before the selected display
 transform is applied.
 
+Custom VisiumV2 objects with horizontal centroid `x` should record that convention
+once with `SetSpatialImageAxes(spatial, image = "slice1", x_orientation = "horizontal")`.
+Standard Seurat `Read10X_Image()` objects use the vertical centroid-x convention.
+The marker is stored in `spatial@misc$spatial_image_axes`, survives subsetting and
+cell renaming, and is carried by `RunSpatialIntegration()` when it merges a list.
+Migrate older custom objects before subsetting: a legacy image attribute may be
+lost by Seurat. Editing ordinary metadata `x/y` never changes image axes.
+Reapply the marker if an image is replaced or copied under another name.
+
+Coordinate contract v3 rejects older coordinate-dependent stored results; rerun
+their producers. Metadata/FOV plots now default to `flip.y = FALSE`, matching
+network and boundary plots; `flip.y = TRUE` remains an explicit display override.
+Numeric text and factor coordinates are parsed as their values, not level codes.
+
+For multi-sample integration and SpatialEcoTyper `mode = "multi"`, SCOP resolves
+one image covering all cells in each sample. If several images cover the same
+sample, pass a named map such as `image = c(S1 = "slice1", S2 = "slice2")`.
+A scalar image cannot silently discard other samples. SpatialEcoTyper single
+discovery uses the selected image's raw coordinates and requires explicit image
+selection when multiple images are present. Its radius is in those raw units.
+
 ```{r inspect-spatial}
 SpatialSpotPlot(
   spatial,

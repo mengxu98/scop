@@ -40,8 +40,9 @@ object. For list input, list names are copied into this column.}
 \item{features}{Features to score. If \code{NULL}, current variable features are
 used; if no variable features are present, all assay features are used.}
 
-\item{image}{Spatial image name. Required when multiple images are present;
-a single image is selected automatically when \code{NULL}.}
+\item{image}{Optional image name or named character vector mapping sample
+names to image names. By default, resolve the unique image covering each
+sample independently. Every input sample must remain represented.}
 
 \item{reduction.name}{Name of the integrated embedding reduction. If \code{NULL},
 a method-specific name is used.}

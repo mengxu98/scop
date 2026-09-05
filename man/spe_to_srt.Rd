@@ -30,4 +30,8 @@ A \code{Seurat} object.
 \description{
 Create a Seurat object from a \code{SpatialExperiment}, preserving \code{colData} and
 spatial coordinates as metadata columns.
+SCOP display exports are inverted to raw coordinates using their saved
+transform. External SpatialExperiment coordinates without SCOP provenance
+are treated as raw coordinates in their supplied units. Original import
+provenance is retained in \code{object@misc$spatial_coordinate_import}.
 }

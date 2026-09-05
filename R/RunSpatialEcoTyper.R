@@ -23,6 +23,10 @@
 #' `"recover"`.
 #' @param sample.by Metadata column identifying samples for `mode = "multi"`.
 #' @param x.by,y.by Metadata columns containing single-cell spatial coordinates.
+#'   Used only when no image is present; image-backed discovery uses raw image
+#'   coordinates through [SpatialCoordinates()].
+#' @param image Optional image name for single discovery, or named sample-to-image
+#'   map for multi discovery. Multi discovery resolves each sample independently.
 #' @param dat Optional expression matrix used by `"recover"` or
 #' `"deconvolute"`. If `NULL`, expression is extracted from `srt`.
 #' @param celltypes Optional named vector of cell types passed to
@@ -166,10 +170,10 @@ RunSpatialEcoTyper <- function(
   store_results = TRUE,
   allow_partial = FALSE,
   verbose = TRUE,
-  ...
+  ...,
+  image = NULL
 ) {
   mode <- match.arg(mode)
-  check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE)
 
   has_seurat <- inherits(srt, "Seurat")
   if (!has_seurat && !identical(mode, "deconvolute")) {
@@ -190,6 +194,30 @@ RunSpatialEcoTyper <- function(
     features = features,
     require_seurat = !identical(mode, "deconvolute")
   )
+
+  coordinate_input <- NULL
+  if (identical(mode, "single")) {
+    coordinate_input <- SpatialCoordinates(srt, image = image, coord.cols = c(x.by, y.by))
+    cells <- intersect(colnames(normdata), coordinate_input$data$cell_id)
+    if (length(cells) == 0L) {
+      log_message("No expression cells match the selected image", message_type = "error")
+    }
+    if (!is.null(sample.by)) {
+      spatialecotyper_check_meta_columns(srt[[]], sample.by)
+      samples <- as.character(srt[[]][cells, sample.by])
+      if (anyNA(samples) || any(!nzchar(samples)) || length(unique(samples)) != 1L) {
+        log_message("Single discovery requires one sample; use mode = 'multi'", message_type = "error")
+      }
+    }
+    normdata <- normdata[, cells, drop = FALSE]
+    coordinate_input$data <- coordinate_input$data[cells, , drop = FALSE]
+    coordinate_input$sources <- list(single = c(coordinate_input$source, list(transform = coordinate_input$transform)))
+  } else if (identical(mode, "multi")) {
+    validate_scalar_string(sample.by, "sample.by", require_character = FALSE)
+    coordinate_input <- spatial_sample_coords(srt, sample.by = sample.by, image = image,
+                                              coord.cols = c(x.by, y.by))
+  }
+  check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE)
 
   if (identical(mode, "single")) {
     return(spatialecotyper_run_single(
@@ -222,6 +250,7 @@ RunSpatialEcoTyper <- function(
       store_results = store_results,
       allow_partial = allow_partial,
       verbose = verbose,
+      coordinate_input = coordinate_input,
       ...
     ))
   }
@@ -265,6 +294,7 @@ RunSpatialEcoTyper <- function(
       store_results = store_results,
       allow_partial = allow_partial,
       verbose = verbose,
+      coordinate_input = coordinate_input,
       ...
     ))
   }
@@ -519,14 +549,14 @@ spatialecotyper_run_single <- function(
   store_results,
   allow_partial,
   verbose,
+  coordinate_input,
   ...
 ) {
-  metadata <- spatialecotyper_seurat_metadata(
+  metadata <- spatialecotyper_coordinate_metadata(
     srt = srt,
     cells = colnames(normdata),
     celltype.by = celltype.by,
-    x.by = x.by,
-    y.by = y.by
+    coords = coordinate_input$data
   )
   log_message(
     "Run {.pkg SpatialEcoTyper} single-sample discovery on {.val {ncol(normdata)}} cells and {.val {nrow(normdata)}} features",
@@ -579,7 +609,7 @@ spatialecotyper_run_single <- function(
   result_metadata <- spatialecotyper_extract_result_metadata(result)
   add_meta <- spatialecotyper_match_result_columns(
     result_metadata = result_metadata,
-    cells = colnames(srt),
+    cells = colnames(normdata),
     columns = "SE",
     names_out = paste0(prefix, "_SE"),
     allow_partial = allow_partial,
@@ -593,6 +623,7 @@ spatialecotyper_run_single <- function(
     store_results = store_results,
     result = result,
     metadata = result_metadata,
+    coordinate_input = coordinate_input,
     parameters = list(
       mode = "single",
       assay = assay,
@@ -668,6 +699,7 @@ spatialecotyper_run_multi <- function(
   store_results,
   allow_partial,
   verbose,
+  coordinate_input,
   ...
 ) {
   validate_scalar_string(sample.by, "sample.by", require_character = FALSE)
@@ -677,7 +709,7 @@ spatialecotyper_run_multi <- function(
   meta <- srt[[]]
   spatialecotyper_check_meta_columns(
     meta = meta,
-    cols = c(celltype.by, sample.by, x.by, y.by, Region)
+    cols = c(celltype.by, sample.by, Region)
   )
   samples <- as.character(meta[colnames(normdata), sample.by, drop = TRUE])
   if (any(is.na(samples) | !nzchar(samples))) {
@@ -694,11 +726,11 @@ spatialecotyper_run_multi <- function(
   for (sample_name in sample_levels) {
     sample_cells <- colnames(normdata)[samples == sample_name]
     data_list[[sample_name]] <- normdata[, sample_cells, drop = FALSE]
-    metadata_list[[sample_name]] <- spatialecotyper_build_metadata(
-      meta = meta[sample_cells, , drop = FALSE],
+    metadata_list[[sample_name]] <- spatialecotyper_coordinate_metadata(
+      srt = srt,
+      cells = sample_cells,
       celltype.by = celltype.by,
-      x.by = x.by,
-      y.by = y.by
+      coords = coordinate_input$data
     )
     if (!is.null(Region)) {
       metadata_list[[sample_name]][[Region]] <- meta[sample_cells, Region, drop = TRUE]
@@ -764,6 +796,7 @@ spatialecotyper_run_multi <- function(
     store_results = store_results,
     result = result,
     metadata = result_metadata,
+    coordinate_input = coordinate_input,
     parameters = list(
       mode = "multi",
       assay = assay,
@@ -1014,34 +1047,6 @@ spatialecotyper_get_data <- function(
   dat
 }
 
-spatialecotyper_seurat_metadata <- function(
-  srt,
-  cells,
-  celltype.by,
-  x.by,
-  y.by
-) {
-  validate_scalar_string(celltype.by, "celltype.by", require_character = FALSE)
-  validate_scalar_string(x.by, "x.by", require_character = FALSE)
-  validate_scalar_string(y.by, "y.by", require_character = FALSE)
-  meta <- srt[[]]
-  spatialecotyper_check_meta_columns(meta = meta, cols = c(celltype.by, x.by, y.by))
-  missing_cells <- setdiff(cells, rownames(meta))
-  if (length(missing_cells) > 0L) {
-    log_message(
-      "Metadata is missing {.val {length(missing_cells)}} cell{?s} from the selected assay/layer",
-      message_type = "error"
-    )
-  }
-  spatialecotyper_build_metadata(
-    meta = meta[cells, , drop = FALSE],
-    celltype.by = celltype.by,
-    x.by = x.by,
-    y.by = y.by
-  )
-}
-
-
 spatialecotyper_check_meta_columns <- function(meta, cols) {
   missing_cols <- setdiff(cols, colnames(meta))
   if (length(missing_cols) > 0L) {
@@ -1070,8 +1075,8 @@ spatialecotyper_build_metadata <- function(meta, celltype.by, x.by, y.by) {
     row.names = rownames(meta),
     stringsAsFactors = FALSE
   )
-  invalid <- is.na(metadata$X) |
-    is.na(metadata$Y) |
+  invalid <- !is.finite(metadata$X) |
+    !is.finite(metadata$Y) |
     is.na(metadata$CellType) |
     !nzchar(metadata$CellType)
   if (any(invalid)) {
@@ -1081,6 +1086,17 @@ spatialecotyper_build_metadata <- function(meta, celltype.by, x.by, y.by) {
     )
   }
   metadata
+}
+
+spatialecotyper_coordinate_metadata <- function(srt, cells, celltype.by, coords) {
+  validate_scalar_string(celltype.by, "celltype.by", require_character = FALSE)
+  spatialecotyper_check_meta_columns(srt[[]], celltype.by)
+  if (!all(cells %in% rownames(coords))) {
+    log_message("SpatialEcoTyper coordinates are missing expression cells", message_type = "error")
+  }
+  meta <- data.frame(X = coords[cells, "x"], Y = coords[cells, "y"],
+                     CellType = srt[[]][cells, celltype.by], row.names = cells)
+  spatialecotyper_build_metadata(meta, "CellType", "X", "Y")
 }
 
 spatialecotyper_extract_result_metadata <- function(result) {
@@ -1292,7 +1308,8 @@ spatialecotyper_store_tool <- function(
   store_results,
   result,
   metadata,
-  parameters
+  parameters,
+  coordinate_input = NULL
 ) {
   if (isTRUE(store_results)) {
     srt@tools[[tool_name]] <- list(
@@ -1300,6 +1317,14 @@ spatialecotyper_store_tool <- function(
       metadata = metadata,
       parameters = parameters
     )
+    if (!is.null(coordinate_input)) {
+      srt@tools[[tool_name]]$coordinates <- coordinate_input$data
+      srt@tools[[tool_name]]$source <- list(
+        coordinate_space = "raw", samples = coordinate_input$sources,
+        coordinate_contract_version = .spatial_coordinate_contract_version
+      )
+      srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
+    }
   }
   srt
 }
