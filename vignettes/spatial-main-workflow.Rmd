@@ -226,6 +226,23 @@ Neighborhood methods answer a different question from domain clustering. Use
 them after labels are stable, either from metadata, clustering, or
 deconvolution.
 
+For a small observed distance profile, `SpatialNeighborhoodProfile()` returns
+a plain table without modifying the object. Selecting target cells does not
+remove their surrounding tissue from the calculation:
+
+```{r spatial-neighborhood-profile}
+profile <- SpatialNeighborhoodProfile(
+  spatial, group.by = "coda_label", radii = c(100, 200, 400),
+  cells = head(colnames(spatial), 20), cumulative = TRUE, verbose = FALSE
+)
+head(profile)
+```
+
+Distances above are illustrative raw coordinate units, not automatically
+micrometers. Supply `sample.by` for pooled metadata coordinates and `image`
+when multiple images are present. Fractions describe labelled neighbors; an
+empty neighborhood has undefined composition (`NA`), not evidence of depletion.
+
 ```{r spatial-neighborhood}
 spatial <- RunSpatialNeighborhood(
   spatial,
