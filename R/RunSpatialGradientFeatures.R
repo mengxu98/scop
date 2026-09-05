@@ -52,13 +52,16 @@
 #' @param nfeatures Number of top gradient variables retained in
 #' `top_variables` and optionally set as Seurat variable features.
 #' @param set_variable_features Whether to set top gradient variables as Seurat
-#' variable features.
+#' variable features independently of `store_results`. If explicitly `TRUE`,
+#' an empty selection clears the target assay's variable features.
 #' @param store_results Whether to store the normalized result in `srt@tools`.
 #' @param ... Additional named arguments accepted for compatibility. The native
 #' backend ignores them and does not store them as effective parameters.
 #'
-#' @return A `Seurat` object with spatial gradient screening results stored in
-#' `srt@tools[["SpatialGradientFeatures"]]`.
+#' @return A `Seurat` object. When `store_results = TRUE`, spatial gradient
+#' screening results are stored in `srt@tools[["SpatialGradientFeatures"]]`.
+#' Otherwise existing stored results are unchanged. Variable features are
+#' independently updated only when `set_variable_features = TRUE`.
 #' @export
 #'
 #' @examples
@@ -137,6 +140,12 @@ RunSpatialGradientFeatures <- function(
   coordinate_space = c("raw", "legacy_display"),
   ...
 ) {
+  for (flag in c("store_results", "set_variable_features")) {
+    value <- get(flag)
+    if (!is.logical(value) || length(value) != 1L || is.na(value)) {
+      stop(paste0(flag, " must be a single non-missing logical value"), call. = FALSE)
+    }
+  }
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
@@ -232,6 +241,10 @@ RunSpatialGradientFeatures <- function(
     )
   }
 
+  vars <- sgf_validate_result(result)
+  if (isTRUE(set_variable_features) && any(!vars %in% rownames(srt[[assay]]))) {
+    stop("Spatial gradient result contains variables absent from the target assay", call. = FALSE)
+  }
   if (isTRUE(store_results)) {
     source <- result$source %||% list(
       image = image,
@@ -254,12 +267,16 @@ RunSpatialGradientFeatures <- function(
       result = result,
       assay = assay,
       backend = backend,
-      source = source,
-      set_variable_features = set_variable_features
+      source = source
     )
   }
+  if (isTRUE(set_variable_features)) {
+    srt <- spatial_set_active_variable_features(srt, assay, vars)
+  }
+  saved_message <- if (store_results) "results stored" else "this run's results were not stored"
+  feature_message <- if (!set_variable_features) "VariableFeatures unchanged" else if (length(vars)) "VariableFeatures updated" else "VariableFeatures cleared"
   log_message(
-    "Stored {.val {nrow(result$top_variables)}} spatial gradient features",
+    "Completed spatial gradient screening: {.val {length(vars)}} features; {saved_message}; {feature_message}",
     message_type = "success",
     verbose = verbose
   )
@@ -858,15 +875,7 @@ sgf_best_model_fits <- function(model_fits) {
   do.call(rbind, best)
 }
 
-sgf_store_result <- function(
-  srt,
-  result_name,
-  result,
-  assay,
-  backend = "cpp",
-  source = NULL,
-  set_variable_features
-) {
+sgf_validate_result <- function(result) {
   expected <- c("screening", "significance", "model_fits", "top_variables", "parameters")
   missing <- setdiff(expected, names(result))
   if (length(missing) > 0L) {
@@ -884,7 +893,18 @@ sgf_store_result <- function(
     }
   }
   vars <- result$top_variables$variable
-  vars <- vars[!is.na(vars) & nzchar(vars)]
+  if (!is.character(vars) || anyNA(vars) || any(!nzchar(vars))) {
+    stop("Spatial gradient top_variables must contain a character variable column without missing or empty names", call. = FALSE)
+  }
+  if (!is.null(result$source) && !is.list(result$source)) {
+    stop("Spatial gradient result source must be a list", call. = FALSE)
+  }
+  unique(vars)
+}
+
+sgf_store_result <- function(srt, result_name, result, assay, backend = "cpp", source = NULL) {
+  vars <- sgf_validate_result(result)
+  expected <- c("screening", "significance", "model_fits", "top_variables", "parameters")
   if (is.null(srt@tools[["SpatialGradientFeatures"]])) {
     srt@tools[["SpatialGradientFeatures"]] <- list()
   }
@@ -913,9 +933,6 @@ sgf_store_result <- function(
       c("parameters", "summary")
     ))
   )
-  if (isTRUE(set_variable_features) && length(vars) > 0L) {
-    SeuratObject::VariableFeatures(srt, assay = assay) <- vars
-  }
   srt
 }
 

@@ -1,5 +1,7 @@
 # scop 0.9.1
 
+* **fix**: Gradient result storage and VariableFeatures updates are independent; explicit empty updates clear VariableFeatures and completion messages describe actual actions.
+
 * **feat**:
   * `SpatialNeighborhoodProfile()` returns observed per-cell neighbor counts and fractions at multiple raw-coordinate distances, retaining the full selected tissue context for target cells without modifying the Seurat object or storing an edge table.
   * `RunDEtest()` sample-level methods gain `min.cells.sample` (default `10`) to drop pseudobulk samples whose cell count in the current `group.by` level is below a threshold, which can reverse DE direction relative to cell-level tests. Set `min.cells.sample = 1` to keep the previous unfiltered behavior.

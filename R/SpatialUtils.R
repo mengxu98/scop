@@ -305,16 +305,22 @@ spatial_set_active_variable_features <- function(srt, assay, features) {
   assay_object <- srt[[assay]]
 
   if (length(features) > 0L) {
-    SeuratObject::VariableFeatures(assay_object) <- features
-  } else if (inherits(assay_object, "StdAssay")) {
+    features <- intersect(features, rownames(assay_object))
+    if (length(features) == 0L) {
+      stop("None of the features specified are present in this assay", call. = FALSE)
+    }
+  }
+  if (inherits(assay_object, "StdAssay")) {
+    # Write full, ID-aligned metadata: some Assay5 setters recycle short
+    # character selections and treat an empty assignment as a no-op.
     feature_names <- rownames(assay_object)
-    empty_labels <- rep(FALSE, length(feature_names))
-    empty_ranks <- rep(NA_integer_, length(feature_names))
+    empty_labels <- feature_names %in% features
+    empty_ranks <- match(feature_names, features)
     names(empty_labels) <- names(empty_ranks) <- feature_names
     assay_object[["var.features"]] <- empty_labels
     assay_object[["var.features.rank"]] <- empty_ranks
   } else {
-    SeuratObject::VariableFeatures(assay_object) <- character()
+    SeuratObject::VariableFeatures(assay_object) <- features
   }
 
   marker_key <- spatial_svf_selection_marker_key()
