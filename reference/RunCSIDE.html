@@ -3,14 +3,18 @@
 condition-aware differential expression. C-SIDE stores effect and
 significance results, not spot-level cell-type proportions, so it has no
 recommended proportion plot. Inspect its stored
-tables in srt@tools[[tool_name]] or plot an explicit summary column with
-SpatialSpotPlot(). The example is a non-executing template because C-SIDE
+tables in srt@tools[[tool_name]]. The metadata columns &amp;lt;prefix&amp;gt;_n_sig
+and &amp;lt;prefix&amp;gt;_mode repeat run-level summaries across spots. The former counts
+significant result records, not unique genes or spot-level effects.
+The example is a non-executing template because C-SIDE
 requires a completed optional RCTD result."><meta property="og:description" content="Run spacexr C-SIDE after RCTD to test cell type-specific spatial or
 condition-aware differential expression. C-SIDE stores effect and
 significance results, not spot-level cell-type proportions, so it has no
 recommended proportion plot. Inspect its stored
-tables in srt@tools[[tool_name]] or plot an explicit summary column with
-SpatialSpotPlot(). The example is a non-executing template because C-SIDE
+tables in srt@tools[[tool_name]]. The metadata columns &amp;lt;prefix&amp;gt;_n_sig
+and &amp;lt;prefix&amp;gt;_mode repeat run-level summaries across spots. The former counts
+significant result records, not unique genes or spot-level effects.
+The example is a non-executing template because C-SIDE
 requires a completed optional RCTD result."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -77,8 +81,10 @@ requires a completed optional RCTD result."></head><body>
 condition-aware differential expression. C-SIDE stores effect and
 significance results, not spot-level cell-type proportions, so it has no
 recommended proportion plot. Inspect its stored
-tables in <code>srt@tools[[tool_name]]</code> or plot an explicit summary column with
-<code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code>. The example is a non-executing template because C-SIDE
+tables in <code>srt@tools[[tool_name]]</code>. The metadata columns <code>&lt;prefix&gt;_n_sig</code>
+and <code>&lt;prefix&gt;_mode</code> repeat run-level summaries across spots. The former counts
+significant result records, not unique genes or spot-level effects.
+The example is a non-executing template because C-SIDE
 requires a completed optional RCTD result.</p>
     </div>
 
@@ -182,7 +188,9 @@ parameters such as <code>gene_threshold</code>.</p></dd>
 
 
 <dt id="arg-store-results">store_results<a class="anchor" aria-label="anchor" href="#arg-store-results"></a></dt>
-<dd><p>Whether to store detailed RCTD results in <code>srt@tools</code>.</p></dd>
+<dd><p>Whether to store detailed results in <code>srt@tools</code>.
+Compatibility summary metadata is updated regardless; existing detailed
+results are retained when <code>FALSE</code> and do not represent the current run.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

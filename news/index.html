@@ -92,7 +92,8 @@
 </ul></li>
 <li>
 <p><strong>fixed</strong>:</p>
-<ul><li>
+<ul><li>C-SIDE completion messages respect result storage and document compatibility metadata as run-level significant record counts.</li>
+<li>
 <code>presto</code> is now a runtime-optional GitHub backend instead of a suggested check dependency. Marker fast paths use an existing installation without installing it, while <code>RunCellChat(do.fast = TRUE)</code> can resolve the backend from <code>immunogenomics/presto</code> before execution.</li>
 <li>
 <code><a href="../reference/RunCellRank.html">RunCellRank()</a></code> now disables PETSc explicitly when retrying fate probabilities with SciPy’s direct solver, preventing CellRank 2.0.7 from silently reverting the retry to GMRES and rejecting harmless floating-point negative probabilities (<a href="https://github.com/mengxu98/scop/issues/380" class="external-link">#380</a>).</li>
