@@ -29,6 +29,36 @@ make_cside_seurat <- function() {
   srt
 }
 
+test_cside_truthful_storage <- function() {
+  srt <- make_cside_seurat()
+  srt@tools$custom <- list(old = TRUE)
+  before <- srt
+  messages <- character()
+  local_mocked_bindings(log_message = function(message, verbose = TRUE, ...) {
+    if (isTRUE(verbose)) messages <<- c(messages, message)
+  }, .package = "scop")
+  with_mock_cside(list("run.CSIDE.single" = function(...) mock_cside_result()), {
+    out <- RunCSIDE(srt, condition.by = "condition", store_results = FALSE,
+      tool_name = "custom", prefix = "custom")
+    expect_identical(out@tools$custom, srt@tools$custom)
+    expect_equal(unique(out$custom_n_sig), 1)
+    expect_true(any(grepl("not stored", messages)))
+    messages <- character()
+    out <- RunCSIDE(srt, condition.by = "condition", tool_name = "custom", prefix = "custom")
+    expect_true("result_table" %in% names(out@tools$custom))
+    expect_true(any(grepl("results stored", messages)))
+    messages <- character()
+    out <- RunCSIDE(srt, condition.by = "condition", verbose = FALSE)
+    expect_length(messages, 0L)
+  })
+  with_mock_cside(list("run.CSIDE.single" = function(...) stop("backend failed")), {
+    messages <- character()
+    expect_error(RunCSIDE(srt, condition.by = "condition"), "backend failed")
+    expect_false(any(grepl("results stored|completed", messages)))
+  })
+  expect_identical(srt, before)
+}
+
 mock_cside_result <- function() {
   list(
     de_results = list(
@@ -76,6 +106,10 @@ with_mock_cside <- function(funs, code) {
   )
   force(code)
 }
+
+test_that("C-SIDE storage messages describe this run and retain metadata", {
+  test_cside_truthful_storage()
+})
 
 test_that("RunCSIDE validates Seurat and stored RCTD inputs", {
   expect_error(
