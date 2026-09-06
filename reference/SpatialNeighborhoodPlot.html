@@ -125,11 +125,15 @@ method is used.</p></dd>
 
 
 <dt id="arg-comparison-condition">comparison, condition<a class="anchor" aria-label="anchor" href="#arg-comparison-condition"></a></dt>
-<dd><p>Optional filters for stored result tables.</p></dd>
+<dd><p>Optional filters for stored result tables.
+Spatial plots support <code>condition</code> using saved source-cell conditions, but
+reject <code>comparison</code>; use statistical plots for differential comparisons.</p></dd>
 
 
 <dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
-<dd><p>Column used as the plotted effect value.</p></dd>
+<dd><p>Column used as the plotted effect value. Spatial plots default
+to and only support <code>"count"</code>: saved observed outgoing edges to the target
+type, not a spicyR effect. Other plot types retain the <code>"estimate"</code> default.</p></dd>
 
 
 <dt id="arg-fdr-threshold">FDR_threshold<a class="anchor" aria-label="anchor" href="#arg-fdr-threshold"></a></dt>
@@ -154,7 +158,11 @@ method is used.</p></dd>
 
 <dt id="arg-pair">pair<a class="anchor" aria-label="anchor" href="#arg-pair"></a></dt>
 <dd><p>Pair to visualize for <code>plot_type = "spatial"</code>, either
-<code>"from|to"</code> or a length-2 character vector.</p></dd>
+<code>"from|to"</code> or a length-2 character vector.
+Names must belong to the saved analysis and its <code>from</code>/<code>to</code> scope. Evaluated
+source cells without matching edges have zero counts; other cells have <code>NA</code>.
+Subsetting the object does not recompute saved counts. Valid empty edge
+results require an explicit pair; incomplete old results require rerunning.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
