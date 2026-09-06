@@ -49,9 +49,13 @@ method is used.}
 \item{plot_type}{Plot type. One of \code{"heatmap"}, \code{"network"}, \code{"stat"}, or
 \code{"spatial"}.}
 
-\item{comparison, condition}{Optional filters for stored result tables.}
+\item{comparison, condition}{Optional filters for stored result tables.
+Spatial plots support \code{condition} using saved source-cell conditions, but
+reject \code{comparison}; use statistical plots for differential comparisons.}
 
-\item{value}{Column used as the plotted effect value.}
+\item{value}{Column used as the plotted effect value. Spatial plots default
+to and only support \code{"count"}: saved observed outgoing edges to the target
+type, not a spicyR effect. Other plot types retain the \code{"estimate"} default.}
 
 \item{FDR_threshold}{FDR cutoff used to mark significant pairs.}
 
@@ -64,7 +68,11 @@ method is used.}
 \item{cols.enriched, cols.depleted, cols.ns}{Colors for direction categories.}
 
 \item{pair}{Pair to visualize for \code{plot_type = "spatial"}, either
-\code{"from|to"} or a length-2 character vector.}
+\code{"from|to"} or a length-2 character vector.
+Names must belong to the saved analysis and its \code{from}/\code{to} scope. Evaluated
+source cells without matching edges have zero counts; other cells have \code{NA}.
+Subsetting the object does not recompute saved counts. Valid empty edge
+results require an explicit pair; incomplete old results require rerunning.}
 
 \item{image}{Name of the Seurat spatial image. Required when multiple images
 are present; a single image is selected automatically when \code{NULL}.}
