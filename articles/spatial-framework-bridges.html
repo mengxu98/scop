@@ -97,6 +97,16 @@ slices implicitly.</p>
 <div class="section level2">
 <h2 id="choose-the-interface">Choose the interface<a class="anchor" aria-label="anchor" href="#choose-the-interface"></a>
 </h2>
+<p><code><a href="../reference/srt_to_spe.html">srt_to_spe()</a></code> exports raw coordinates by default. For an
+explicit <code>coordinate_space = "legacy_display"</code> export, the
+source and affine transform are retained in
+<code>S4Vectors::metadata(spe)$scop_spatial_coordinates</code>.
+<code><a href="../reference/spe_to_srt.html">spe_to_srt()</a></code> inverts that transform, including after
+subsetting/reordering spots, so subsequent analysis uses raw units.
+Preserve this metadata during external processing; external SPE objects
+without it are interpreted as raw coordinates in their supplied units.
+These guarantees apply to the SpatialExperiment bridge, not to Giotto’s
+independently implemented converter.</p>
 <table class="table">
 <colgroup>
 <col width="25%">
