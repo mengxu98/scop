@@ -127,8 +127,11 @@ used; if no variable features are present, all assay features are used.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
-<dd><p>Spatial image name. Required when multiple images are present;
-a single image is selected automatically when <code>NULL</code>.</p></dd>
+<dd><p>Optional image name or named character vector mapping sample
+names to image names. By default, resolve the unique image covering each
+sample independently. Every input sample must remain represented.
+For list input, image names refer to each original list element, before
+Seurat renames duplicate image keys during merging.</p></dd>
 
 
 <dt id="arg-reduction-name">reduction.name<a class="anchor" aria-label="anchor" href="#arg-reduction-name"></a></dt>
