@@ -1,0 +1,281 @@
+# Run Spatial CellChat analysis
+
+Run the SpatialCellChat v3 backend with explicit micron-scale
+coordinates and sample isolation. Cell-, spot-, and composition-level
+results retain distinct interpretations.
+
+## Usage
+
+``` r
+RunSpatialCellChat(
+  srt,
+  group.by,
+  sample.by = NULL,
+  assay = NULL,
+  layer = "data",
+  image = NULL,
+  coord.cols = c("col", "row"),
+  species = c("Homo_sapiens", "Mus_musculus"),
+  database = c("protein", "all", "custom"),
+  custom.db = NULL,
+  technology = c("auto", "visium", "visium_hd", "xenium", "cosmx", "merfish", "generic"),
+  analysis.level = c("auto", "cell", "spot", "composition"),
+  composition = NULL,
+  composition.normalize = TRUE,
+  coordinate.unit = c("auto", "pixel", "micron"),
+  ratio = NULL,
+  tol = NULL,
+  interaction.range = 250,
+  contact.dependent = FALSE,
+  contact.range = NULL,
+  scale.distance = 0.2,
+  min.cells = 10,
+  min.links = 10,
+  avg.type = c("avg", "sum"),
+  do.permutation = TRUE,
+  nboot = 100,
+  seed.use = 1L,
+  result.name = "default",
+  store.object = c("minimal", "full"),
+  overwrite = FALSE,
+  backend = c("cpp", "r"),
+  verbose = TRUE
+)
+```
+
+## Arguments
+
+- srt:
+
+  A \`Seurat\` object with normalized, non-negative expression and
+  spatial coordinates.
+
+- group.by:
+
+  One metadata column defining cell types for cell-level runs, or
+  spot/domain labels for spot- and composition-level runs. Values must
+  be complete and non-empty.
+
+- sample.by:
+
+  Optional metadata column defining independent spatial samples. Samples
+  are processed separately. When omitted, all observations are treated
+  as one sample.
+
+- assay, layer:
+
+  Assay and normalized expression layer. \`assay = NULL\` uses the
+  default assay.
+
+- image:
+
+  Spatial image name, or a named character vector mapping samples to
+  images, for example \`c(section1 = "slice1", section2 = "slice2")\`.
+  Multi-image objects never silently select the first image.
+
+- coord.cols:
+
+  Two metadata coordinate columns used when image coordinates are
+  unavailable.
+
+- species:
+
+  Species used to select the human or mouse signaling database.
+
+- database:
+
+  Signaling database scope: protein interactions, the complete database,
+  or a user-supplied custom database.
+
+- custom.db:
+
+  Custom SpatialCellChat database used only with \`database =
+  "custom"\`.
+
+- technology:
+
+  Spatial technology. \`"auto"\` requires exactly one unambiguous
+  technology inferred from the selected image or metadata.
+
+- analysis.level:
+
+  Scientific interpretation of each observation. \`"auto"\` uses
+  segmentation, technology, and \`composition\` evidence and errors when
+  the result is ambiguous.
+
+- composition:
+
+  Numeric spot-by-cell-type matrix for composition mode. Row names must
+  match selected spots and columns must match \`group.by\` labels.
+
+- composition.normalize:
+
+  Whether to normalize positive composition rows to sum to one. When
+  \`FALSE\`, rows must already sum to one.
+
+- coordinate.unit:
+
+  Unit of the raw input coordinates. Automatic unit selection uses
+  technology-specific rules.
+
+- ratio:
+
+  Positive raw-coordinate-to-micron multiplier. It must be \`1\` for
+  micron coordinates. For Visium pixels, it may be omitted when one
+  trusted \`spot_diameter_fullres\` value is available.
+
+- tol:
+
+  Positive spatial tolerance in microns. Visium defaults to \`32.5\`;
+  cell-resolved and generic technologies require an explicit value.
+
+- interaction.range:
+
+  Maximum signaling range in microns.
+
+- contact.dependent:
+
+  Whether to infer contact-dependent signaling. This is rejected for
+  spot-level analysis.
+
+- contact.range:
+
+  Contact range in microns. Required when contact signaling is enabled
+  for cell-level data.
+
+- scale.distance:
+
+  Positive SpatialCellChat distance scaling parameter.
+
+- min.cells, min.links:
+
+  Positive minimum group size and individual-link count used by backend
+  filtering.
+
+- avg.type:
+
+  Group-level probability aggregation method.
+
+- do.permutation:
+
+  Whether to run the spatial permutation procedure.
+
+- nboot:
+
+  Number of permutation replicates.
+
+- seed.use:
+
+  Random seed passed to the backend.
+
+- result.name:
+
+  Name used within the stored SpatialCellChat result bundle.
+
+- store.object:
+
+  \`"minimal"\` stores normalized tables, coordinates, and diagnostics.
+  \`"full"\` additionally stores each upstream backend object.
+
+- overwrite:
+
+  Whether an existing result with the same \`result.name\` may be
+  replaced.
+
+- backend:
+
+  Backend for unified CCC post-processing only; it does not change the
+  SpatialCellChat inference engine.
+
+- verbose:
+
+  Whether to print progress messages.
+
+## Value
+
+The input \`Seurat\` object with a plain SpatialCellChat result bundle
+in \`srt@tools\$SpatialCellChat\` and standardized CCC results under the
+distinct method name \`"SpatialCellChat"\`.
+
+## Details
+
+\`RunSpatialCellChat()\` keeps spatial and non-spatial communication
+results separate. The normalized SpatialCellChat interaction table is
+stored under the CCC method name \`"SpatialCellChat"\`; it does not
+replace a result from \[RunCellChat()\]. Each spatial sample is analyzed
+independently so that distances are never calculated across tissue
+sections.
+
+The analysis level describes what one expression column represents:
+
+\- \`"cell"\` is for segmented cells, including Xenium, CosMx, and
+MERFISH; - \`"spot"\` is for capture spots or spatial domains and must
+not be interpreted as direct cell-to-cell communication; -
+\`"composition"\` combines spot expression with a spot-by-cell-type
+composition matrix.
+
+Distance-sensitive calculations use raw coordinates converted to
+microns. Micron coordinates use \`ratio = 1\`. Pixel coordinates require
+a positive raw-unit-to-micron \`ratio\`; for Visium data, the function
+can derive this as \`65 / spot_diameter_fullres\` when exactly one
+trusted full-resolution spot diameter is available. \`tol\`,
+\`interaction.range\`, and \`contact.range\` are always expressed in
+microns. Display coordinates are retained only for plotting stored
+results.
+
+Objects with multiple images require an explicit \`image\` selection.
+When \`sample.by\` contains multiple samples, supply a named character
+vector that maps every sample to one image. Upstream backend objects are
+omitted by default because they can be large; use \`store.object =
+"full"\` only if subsequent additional analysis with the upstream
+SpatialCellChat object is needed.
+
+## References
+
+\[SpatialCellChat\](https://github.com/jinworks/SpatialCellChat)
+
+## See also
+
+\[GetCCCObject\], \[SpatialCellChatPlot\], \[CCCNetworkPlot\],
+\[CCCHeatmap\], \[CCCStatPlot\]
+
+## Examples
+
+``` r
+data(visium_human_pancreas_results_sub)
+chat <- visium_human_pancreas_results_sub@tools$SpatialCellChat
+chat$summary
+#> $result_name
+#> [1] "default"
+#> 
+#> $samples
+#> [1] "ALL"
+#> 
+#> $analysis_level
+#> [1] "spot"
+#> 
+#> $n_interactions
+#> [1] 959
+#> 
+#> $store_object
+#> [1] "minimal"
+#> 
+SpatialCellChatPlot(
+  visium_human_pancreas_results_sub,
+  plot_type = "incoming",
+  sample = "ALL"
+)
+
+
+if (FALSE) { # \dontrun{
+check_r("jinworks/SpatialCellChat", verbose = FALSE)
+spatial <- RunSpatialCellChat(
+  visium_human_pancreas_results_sub,
+  group.by = "coda_label", assay = "Spatial", image = NULL,
+  coord.cols = c("x", "y"),
+  technology = "visium", analysis.level = "spot",
+  coordinate.unit = "pixel", species = "Homo_sapiens",
+  store.object = "minimal", verbose = FALSE
+)
+} # }
+```

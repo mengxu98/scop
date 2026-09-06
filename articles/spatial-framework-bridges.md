@@ -1,0 +1,68 @@
+# Spatial framework bridges
+
+This article documents SCOP’s lightweight bridge to Giotto. The bridge
+moves a single spatial image between Seurat and Giotto; it does not wrap
+Giotto’s analysis or plotting workflow and it does not merge slices
+implicitly.
+
+## Choose the interface
+
+[`srt_to_spe()`](https://mengxu98.github.io/scop/reference/srt_to_spe.md)
+exports raw coordinates by default. For an explicit
+`coordinate_space = "legacy_display"` export, the source and affine
+transform are retained in
+`S4Vectors::metadata(spe)$scop_spatial_coordinates`.
+[`spe_to_srt()`](https://mengxu98.github.io/scop/reference/spe_to_srt.md)
+inverts that transform, including after subsetting/reordering spots, so
+subsequent analysis uses raw units. Preserve this metadata during
+external processing; external SPE objects without it are interpreted as
+raw coordinates in their supplied units. These guarantees apply to the
+SpatialExperiment bridge, not to Giotto’s independently implemented
+converter.
+
+| Goal | Interface | Returned object | Plotting |
+|----|----|----|----|
+| Move one Seurat image into Giotto | [`srt_to_giotto()`](https://mengxu98.github.io/scop/reference/srt_to_giotto.md) | Native Giotto object | Giotto’s native plotting API |
+| Move a native Giotto object into Seurat | [`giotto_to_srt()`](https://mengxu98.github.io/scop/reference/giotto_to_srt.md) | New Seurat object | scop or Seurat plotting |
+
+## Giotto version boundary
+
+Current Giotto Suite releases split analysis functions and
+object/conversion helpers across the `Giotto` and `GiottoClass`
+namespaces. scop resolves these optional functions at runtime and does
+not add Giotto to Imports, Depends, or Suggests.
+
+The forward bridge selects `seuratToGiottoV5()` for Seurat 5 and
+`seuratToGiottoV4()` for Seurat 4. The reverse bridge selects
+`giottoToSeuratV5()` for Seurat 5 and `giottoToSeuratV4()` for Seurat 4.
+These converters are expected from a current GiottoClass installation.
+If an older Giotto installation does not provide them, update Giotto
+before using the bridges.
+
+## Single-image conversion
+
+The bridges process exactly one image at a time:
+
+- a single image is selected automatically;
+- a multi-image object requires an explicit `image`;
+- an unknown image name is rejected;
+- slices are never merged implicitly.
+
+``` r
+
+data(visium_human_pancreas_sub)
+
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  verbose = FALSE
+)
+
+gobject <- srt_to_giotto(spatial, image = "slice1")
+spatial_roundtrip <- giotto_to_srt(gobject)
+```
+
+After conversion, inspect the returned object with the target
+framework’s own accessors. SCOP retains responsibility for Seurat-side
+analysis and plotting; Giotto retains responsibility for Giotto-side
+analysis and plotting.

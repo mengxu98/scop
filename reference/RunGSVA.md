@@ -1,0 +1,370 @@
+# Perform Gene Set Variation Analysis (GSVA)
+
+Perform Gene Set Variation Analysis (GSVA)
+
+## Usage
+
+``` r
+RunGSVA(
+  srt = NULL,
+  assay = NULL,
+  group.by = NULL,
+  layer = "data",
+  assay_name = "GSVA",
+  new_assay = TRUE,
+  store_metadata = NULL,
+  db = "GO_BP",
+  species = "Homo_sapiens",
+  IDtype = "symbol",
+  db_update = FALSE,
+  db_version = "latest",
+  db_combine = FALSE,
+  convert_species = TRUE,
+  Ensembl_version = NULL,
+  mirror = NULL,
+  features = NULL,
+  TERM2GENE = NULL,
+  TERM2NAME = NULL,
+  minGSSize = 10,
+  maxGSSize = 500,
+  unlimited_db = c("Chromosome", "GeneType", "TF", "Enzyme", "CSPA"),
+  method = c("gsva", "ssgsea", "zscore", "plage"),
+  backend = c("cpp", "r"),
+  cpp_chunk_size = NULL,
+  kcdf = c("Gaussian", "Poisson", "none"),
+  abs.ranking = FALSE,
+  min.sz = 10,
+  max.sz = Inf,
+  mx.diff = TRUE,
+  tau = 1,
+  ssgsea.norm = TRUE,
+  verbose = TRUE,
+  ...
+)
+```
+
+## Arguments
+
+- srt:
+
+  A `Seurat` object or `SummarizedExperiment` object containing the
+  results of differential expression analysis
+  ([`RunDEtest()`](https://mengxu98.github.io/scop/reference/RunDEtest.md)).
+  If specified, the genes and groups will be extracted from the object
+  automatically. If not specified, the `geneID` and `geneID_groups`
+  arguments must be provided.
+
+- assay:
+
+  Assay to use. `NULL` uses the default assay.
+
+- group.by:
+
+  Name of metadata column to group cells by for averaging expression. If
+  provided, expression will be averaged within each group before GSVA
+  analysis (cell-type level). If `NULL`, GSVA is performed on each cell
+  individually (single-cell level).
+
+- layer:
+
+  Data layer to use when `group.by = NULL`. Usually `"data"` for
+  normalized or `"counts"` for count matrix.
+
+- assay_name:
+
+  Name of the assay to store GSVA scores when `group.by = NULL` and
+  `new_assay = TRUE`.
+
+- new_assay:
+
+  Whether to create a new assay for GSVA scores when `group.by = NULL`.
+  Default is `TRUE`.
+
+- store_metadata:
+
+  Whether to also store single-cell GSVA scores in `meta.data`. When
+  `NULL`, custom `features` or `TERM2GENE` input is stored in
+  `meta.data` by default, while database-derived results stay assay-only
+  when `new_assay = TRUE`.
+
+- db:
+
+  Annotation sources. One or more of `"GO"`, `"GO_BP"`, `"GO_CC"`,
+  `"GO_MF"`, `"KEGG"`, `"WikiPathway"`, `"Reactome"`, `"CORUM"`, `"MP"`,
+  `"DO"`, `"HPO"`, `"PFAM"`, `"CSPA"`, `"Surfaceome"`, `"SPRomeDB"`,
+  `"VerSeDa"`, `"TFLink"`, `"hTFtarget"`, `"TRRUST"`, `"JASPAR"`,
+  `"ENCODE"`, `"MSigDB"`, `"CellTalk"`, `"CellChat"`, `"Chromosome"`,
+  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CytoTRACE2"`. MSigDB
+  subcollections use `"MSigDB_<collection>"` (e.g. `"MSigDB_H"`).
+  `"CytoTRACE2"` is species-independent and is required by
+  [RunCytoTRACE](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md).
+
+- species:
+
+  `"Homo_sapiens"` or `"Mus_musculus"`.
+
+- IDtype:
+
+  Type of gene IDs in the `srt` object or `geneID` argument. This
+  argument is used to convert the gene IDs to a different type if
+  `IDtype` is different from `result_IDtype`.
+
+- db_update:
+
+  Force a refresh. `FALSE` loads the cache when available.
+
+- db_version:
+
+  Database version to retrieve.
+
+- db_combine:
+
+  Whether to combine multiple databases into one. If `TRUE`, all
+  database specified by `db` will be combined as one named "Combined".
+
+- convert_species:
+
+  Use a species-converted database when the annotation is missing for
+  `species`.
+
+- Ensembl_version:
+
+  Ensembl version. `NULL` uses the latest.
+
+- mirror:
+
+  Specify an Ensembl mirror to connect to. The valid options here are
+  `"www"`, `"uswest"`, `"useast"`, `"asia"`.
+
+- features:
+
+  A named list of feature lists for custom enrichment gene sets. If
+  provided, it takes precedence over `TERM2GENE` and `db`.
+
+- TERM2GENE:
+
+  A data frame specifying the gene-term mapping for a custom database.
+  The first column should contain the term IDs, and the second column
+  should contain the gene IDs.
+
+- TERM2NAME:
+
+  A data frame specifying the term-name mapping for a custom database.
+  The first column should contain the term IDs, and the second column
+  should contain the corresponding term names.
+
+- minGSSize:
+
+  The minimum size of a gene set to be considered in the enrichment
+  analysis.
+
+- maxGSSize:
+
+  The maximum size of a gene set to be considered in the enrichment
+  analysis.
+
+- unlimited_db:
+
+  Names of databases that do not have size restrictions.
+
+- method:
+
+  The method to use for GSVA. Options are `"gsva"`, `"ssgsea"`,
+  `"zscore"`, or `"plage"`. Multiple methods can be supplied at once; in
+  single-cell mode they will be stored in method-suffixed assays such as
+  `"GSVA_gsva"` and `"GSVA_ssgsea"`.
+
+- backend:
+
+  Scoring backend. `"cpp"` is the default and supports all current
+  `method` values. `"r"` uses the original
+  [`GSVA::gsva()`](https://rdrr.io/pkg/GSVA/man/gsva.html)
+  implementation. `"cpp"` supports `method = "ssgsea"`,
+  `method = "zscore"`, `method = "plage"`, and `method = "gsva"` with
+  `kcdf = "Gaussian"`, `kcdf = "Poisson"`, or `kcdf = "none"`. Gaussian
+  GSVA uses the native C++ KDE/ranking kernel; the other GSVA kernels
+  retain the validated GSVA implementation. PLAGE scores are oriented to
+  have non-negative dot product with the gene set mean z-score so SVD
+  signs are deterministic.
+
+- cpp_chunk_size:
+
+  Optional cell chunk size for C++ GSVA kernels. `NULL` or `"auto"`
+  automatically chunks large matrices to reduce peak dense intermediate
+  memory; positive values set the chunk size manually.
+
+- kcdf:
+
+  The kernel cumulative distribution function used for GSVA. Options are
+  `"Gaussian"` (for continuous data), `"Poisson"` (for count data), or
+  `"none"` (skip kernel estimation and use ranks directly). When
+  omitted, `backend = "cpp"` with `method = "gsva"` uses `"none"` for
+  faster single-cell scoring; explicit `"Gaussian"` or `"Poisson"`
+  values are still honored. Other backends and methods default to
+  `"Gaussian"`.
+
+- abs.ranking:
+
+  Whether to use absolute ranking for GSVA.
+
+- min.sz:
+
+  Minimum size of gene sets to be included in the analysis.
+
+- max.sz:
+
+  Maximum size of gene sets to be included in the analysis.
+
+- mx.diff:
+
+  Whether to use the maximum difference method.
+
+- tau:
+
+  Exponent for the GSVA method.
+
+- ssgsea.norm:
+
+  Whether to normalize SSGSEA scores.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
+- ...:
+
+  Passed to helper functions.
+
+## Value
+
+Returns the modified `Seurat` object. When `group.by` is provided, GSVA
+scores are stored in the `tools` slot. When `group.by = NULL`, scores
+are stored in the `tools` slot, optionally in a new assay, and
+optionally in `meta.data` for direct use with
+[`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
+and
+[`FeatureStatPlot()`](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md).
+
+## Examples
+
+``` r
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#> ℹ [2026-09-06 22:09:03] Start standard processing workflow...
+#> ℹ [2026-09-06 22:09:04] Checking a list of <Seurat>...
+#> ! [2026-09-06 22:09:04] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-06 22:09:04] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-06 22:09:04] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-06 22:09:04] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-06 22:09:04] Number of available HVF: 2000
+#> ℹ [2026-09-06 22:09:04] Finished check
+#> ℹ [2026-09-06 22:09:04] Perform `ScaleData()`
+#> ℹ [2026-09-06 22:09:04] Perform pca linear dimension reduction
+#> ℹ [2026-09-06 22:09:04] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-06 22:09:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-06 22:09:05] Reorder clusters...
+#> ℹ [2026-09-06 22:09:05] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-06 22:09:05] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-06 22:09:12] Standard processing workflow completed
+
+pancreas_sub <- RunGSVA(
+  pancreas_sub,
+  group.by = "CellType",
+  species = "Mus_musculus"
+)
+#> ℹ [2026-09-06 22:09:12] Start GSVA analysis
+#> ℹ [2026-09-06 22:09:12] Start GSVA analysis
+#> ℹ [2026-09-06 22:09:12] Species: "Mus_musculus"
+#> ℹ [2026-09-06 22:09:12] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-06 21:27:14
+#> ℹ [2026-09-06 22:09:13] Averaging expression by "CellType" ...
+#> ℹ [2026-09-06 22:09:13] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-09-06 22:09:13] Processing database: "GO_BP" ...
+#> ℹ [2026-09-06 22:09:14] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-09-06 22:09:14] Running GSVA for 5633 gene sets ...
+#> ℹ 45447 nonzeros (less than 2^31) and 7.96% sparsity
+#> ℹ [2026-09-06 22:09:18] GSVA results stored in `tools` slot: "GSVA_CellType_gsva"
+#> ✔ [2026-09-06 22:09:18] GSVA analysis done
+#> ℹ [2026-09-06 22:09:18] Start GSVA analysis
+#> ℹ [2026-09-06 22:09:18] Species: "Mus_musculus"
+#> ℹ [2026-09-06 22:09:18] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-06 21:27:14
+#> ℹ [2026-09-06 22:09:19] Averaging expression by "CellType" ...
+#> ℹ [2026-09-06 22:09:19] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-09-06 22:09:19] Processing database: "GO_BP" ...
+#> ℹ [2026-09-06 22:09:21] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-09-06 22:09:21] Running GSVA for 5633 gene sets ...
+#> ℹ [2026-09-06 22:09:22] GSVA results stored in `tools` slot: "GSVA_CellType_ssgsea"
+#> ✔ [2026-09-06 22:09:22] GSVA analysis done
+#> ℹ [2026-09-06 22:09:22] Start GSVA analysis
+#> ℹ [2026-09-06 22:09:22] Species: "Mus_musculus"
+#> ℹ [2026-09-06 22:09:22] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-06 21:27:14
+#> ℹ [2026-09-06 22:09:24] Averaging expression by "CellType" ...
+#> ℹ [2026-09-06 22:09:24] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-09-06 22:09:24] Processing database: "GO_BP" ...
+#> ℹ [2026-09-06 22:09:25] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-09-06 22:09:25] Running GSVA for 5633 gene sets ...
+#> ℹ [2026-09-06 22:09:26] GSVA results stored in `tools` slot: "GSVA_CellType_zscore"
+#> ✔ [2026-09-06 22:09:26] GSVA analysis done
+#> ℹ [2026-09-06 22:09:26] Start GSVA analysis
+#> ℹ [2026-09-06 22:09:26] Species: "Mus_musculus"
+#> ℹ [2026-09-06 22:09:26] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-06 21:27:14
+#> ℹ [2026-09-06 22:09:28] Averaging expression by "CellType" ...
+#> ℹ [2026-09-06 22:09:28] Aggregated expression matrix: 15998 genes x 5 groups
+#> ℹ [2026-09-06 22:09:28] Processing database: "GO_BP" ...
+#> ℹ [2026-09-06 22:09:29] Initial overlap: 11277 genes out of 15998 expression genes and 16594 genes in gene sets
+#> ℹ [2026-09-06 22:09:29] Running GSVA for 5633 gene sets ...
+#> ℹ [2026-09-06 22:09:30] GSVA results stored in `tools` slot: "GSVA_CellType_plage"
+#> ✔ [2026-09-06 22:09:31] GSVA analysis done
+ht <- GSVAPlot(
+  pancreas_sub,
+  group.by = "CellType",
+  plot_type = "heatmap",
+  topTerm = 10,
+  width = 1,
+  height = 2
+)
+#> ! [2026-09-06 22:09:31] Multiple GSVA results found for "CellType". Using "GSVA_CellType_gsva"
+
+features_all <- rownames(pancreas_sub)
+pancreas_sub <- RunGSVA(
+  pancreas_sub,
+  features = list(
+    A = features_all[1:20],
+    B = features_all[21:40]
+  ),
+  method = c("gsva", "ssgsea")
+)
+#> ℹ [2026-09-06 22:09:31] Start GSVA analysis
+#> ℹ [2026-09-06 22:09:31] Start GSVA analysis
+#> ℹ [2026-09-06 22:09:31] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-09-06 22:09:31] Expression matrix: 15998 genes x 1000 cells
+#> ℹ [2026-09-06 22:09:31] Processing database: "custom" ...
+#> ℹ [2026-09-06 22:09:31] Initial overlap: 40 genes out of 15998 expression genes and 40 genes in gene sets
+#> ℹ [2026-09-06 22:09:31] Running GSVA for 2 gene sets ...
+#> ℹ 6826 nonzeros (less than 2^31) and 81.04% sparsity
+#> ℹ [2026-09-06 22:09:31] GSVA results stored in assay "GSVA_gsva", meta.data, and tools slot "GSVA_cell_gsva"
+#> ✔ [2026-09-06 22:09:31] GSVA analysis done
+#> ℹ [2026-09-06 22:09:31] Start GSVA analysis
+#> ℹ [2026-09-06 22:09:31] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-09-06 22:09:31] Expression matrix: 15998 genes x 1000 cells
+#> ℹ [2026-09-06 22:09:31] Processing database: "custom" ...
+#> ℹ [2026-09-06 22:09:31] Initial overlap: 40 genes out of 15998 expression genes and 40 genes in gene sets
+#> ℹ [2026-09-06 22:09:31] Running GSVA for 2 gene sets ...
+#> ℹ [2026-09-06 22:09:31] GSVA results stored in assay "GSVA_ssgsea", meta.data, and tools slot "GSVA_cell_ssgsea"
+#> ✔ [2026-09-06 22:09:31] GSVA analysis done
+FeatureDimPlot(
+  pancreas_sub,
+  features = "GSVA_gsva_A",
+  add_density = TRUE
+)
+
+FeatureStatPlot(
+  pancreas_sub,
+  stat.by = c("GSVA_gsva_A", "GSVA_ssgsea_A"),
+  group.by = "CellType",
+  plot.by = "feature",
+  plot_type = "violin",
+  stack = TRUE,
+  flip = TRUE
+)
+#> ℹ [2026-09-06 22:09:32] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+```
