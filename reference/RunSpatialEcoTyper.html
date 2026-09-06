@@ -121,7 +121,8 @@ object when possible.</p>
 <span>  store_results <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  allow_partial <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  image <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -161,7 +162,9 @@ for <code>"single"</code>, <code>"multi"</code>, and <code>"recover"</code> unle
 
 
 <dt id="arg-x-by-y-by">x.by, y.by<a class="anchor" aria-label="anchor" href="#arg-x-by-y-by"></a></dt>
-<dd><p>Metadata columns containing single-cell spatial coordinates.</p></dd>
+<dd><p>Metadata columns containing single-cell spatial coordinates.
+Used only when no image is present; image-backed discovery uses raw image
+coordinates through <code><a href="SpatialCoordinates.html">SpatialCoordinates()</a></code>.</p></dd>
 
 
 <dt id="arg-dat">dat<a class="anchor" aria-label="anchor" href="#arg-dat"></a></dt>
@@ -318,6 +321,11 @@ Default is <code>TRUE</code>.</p></dd>
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to the selected SpatialEcoTyper
 function.</p></dd>
+
+
+<dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
+<dd><p>Optional image name for single discovery, or named sample-to-image
+map for multi discovery. Multi discovery resolves each sample independently.</p></dd>
 
 </dl></div>
     <div class="section level2">
