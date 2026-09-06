@@ -55,5 +55,5 @@ Multi-topic point maps use one shared proportion scale and reserve title
 space above the automatic layout.
 }
 \seealso{
-\code{\link[=RunSTdeconvolve]{RunSTdeconvolve()}} for a complete analysis and plotting example.
+\code{\link[=RunSTdeconvolve]{RunSTdeconvolve()}}
 }

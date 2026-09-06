@@ -70,18 +70,10 @@ A \code{Seurat} object with spatial integration results stored in
 metadata, reductions, and \code{srt@tools[[tool_name]]}.
 }
 \description{
-Integrate multi-slice or multi-sample spatial transcriptomics data with an
-optional spatial backend and store standardized embeddings, domains, and
-aligned coordinates in a \code{Seurat} object.
+Integrate spatial transcriptomics samples and identify shared domains
+using PRECAST, BASS, or SpatialMNN.
 }
 \details{
-Supply either a named list of spatial Seurat objects from distinct samples,
-or a merged object with a \code{sample.by} column identifying those samples.
-Inputs need compatible expression features and raw coordinates. For
-image-backed inputs, select the appropriate image for each sample; an image
-mapping for a list refers to image names within each original object.
-
-The bundled Visium example contains one section and is not a multi-sample
-integration dataset. Use independent samples for integration. Plot the
-returned domains or embedding with \code{\link[=SpatialIntegrationPlot]{SpatialIntegrationPlot()}}.
+Provide spatial samples with shared genes and raw coordinates. Use
+\code{sample.by} to identify samples and \code{image} to select their spatial images.
 }

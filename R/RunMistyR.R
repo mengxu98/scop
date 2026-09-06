@@ -1,12 +1,8 @@
 #' @title Run mistyR multiview spatial modeling
 #'
 #' @description
-#' Build a small `mistyR` view composition from a spatial `Seurat` object,
-#' train MISTy models, collect results, and store a standardized result bundle in
-#' `srt@tools`. The intraview is always created from the selected assay layer;
-#' optional juxtaview and paraview components describe local and broader spatial
-#' context. `mistyR` is an optional Bioconductor dependency installable with
-#' `BiocManager::install("mistyR")`.
+#' Model feature expression using MISTy intraview and spatial predictors.
+#' Juxtaview and paraview predictors describe local and broader neighborhoods.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -49,7 +45,7 @@
 #' check_r("saezlab/mistyR", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
 #' spatial <- Seurat::NormalizeData(visium_human_pancreas_sub, verbose = FALSE)
-#' # Example bandwidth in full-resolution image pixels; choose it for your data.
+#' # Paraview bandwidth: 1000 full-resolution image pixels.
 #' spatial <- RunMistyR(
 #'   spatial, assay = "Spatial", features = rownames(spatial)[1:5],
 #'   image = "slice1", views = "para", para_l = 1000,
@@ -330,7 +326,7 @@ mistyr_summary <- function(results, views = character()) {
 #' @param top_n Maximum number of records shown after ranking by absolute value.
 #' @param target Optional target feature filter.
 #' @return A `ggplot` object.
-#' @seealso [RunMistyR()] for a complete analysis and plotting example.
+#' @seealso [RunMistyR()]
 #' @export
 MistyRPlot <- function(
   object = NULL,

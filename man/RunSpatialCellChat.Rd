@@ -172,7 +172,7 @@ data(visium_human_pancreas_sub)
 visium_human_pancreas_sub <- Seurat::NormalizeData(
   visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
 )
-# CODA tissue labels define spot groups, not single-cell sender/receiver types.
+# Group Visium spots by their CODA tissue labels.
 check_r("jinworks/SpatialCellChat", verbose = FALSE)
 spatial <- RunSpatialCellChat(
   visium_human_pancreas_sub,

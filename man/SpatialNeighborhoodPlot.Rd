@@ -136,5 +136,5 @@ SpatialNeighborhoodPlot(
 )
 }
 \seealso{
-\code{\link[=RunSpatialNeighborhood]{RunSpatialNeighborhood()}} for a complete analysis and plotting example.
+\code{\link[=RunSpatialNeighborhood]{RunSpatialNeighborhood()}}
 }

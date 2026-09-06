@@ -1,10 +1,8 @@
 #' @title Run cell2location spatial deconvolution
 #'
 #' @description
-#' Estimate spot-level absolute cell abundance and proportions with the official
-#' Python `cell2location` backend. The Python model runs in an isolated
-#' subprocess while inputs, models, posterior outputs, logs, and a reproducible
-#' manifest are persisted under `result_dir`.
+#' Estimate cell-type abundances and proportions in spatial transcriptomics
+#' data using cell2location.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -48,19 +46,14 @@
 #' `srt@tools`.
 #'
 #' @details
-#' Supply spatial raw counts together with either an annotated single-cell
-#' reference or a gene-by-cell-type signature matrix. Gene identifiers must
-#' match across the spatial and reference inputs. Choose batch columns,
-#' training settings, and `N_cells_per_location` for the experiment.
-#'
-#' The [official cell2location tutorial](https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_tutorial.html)
-#' describes data preparation and model diagnostics. Its prepared input files
-#' and fitted models are not distributed with SCOP. After a successful call,
-#' pass the returned object to [Cell2locationPlot()].
+#' Requires raw spatial counts and an annotated single-cell reference or
+#' gene-by-cell-type signatures with matching gene identifiers.
 #'
 #' @return A `Seurat` object with cell2location abundance, proportion, dominant
 #' cell type, and maximum-proportion metadata.
 #'
+#' @seealso [Cell2locationPlot()],
+#' [cell2location tutorial](https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_tutorial.html)
 #' @export
 #'
 RunCell2location <- function(
@@ -413,11 +406,8 @@ RunCell2location <- function(
 #' @param ... Additional arguments passed to [SpatialSpotPlot()].
 #'
 #' @details
-#' Use an object returned by [RunCell2location()] with `store_results = TRUE`.
-#' The selected `tool_name` must contain its fitted posterior results.
-#' Abundance plots use q05 posterior abundance; proportion plots use the
-#' stored row-normalized proportions. An input-only Visium object has neither
-#' result, so run the model before plotting.
+#' Abundance plots use posterior q05 values. Proportion plots normalize
+#' these values across cell types within each spot.
 #'
 #' @return A `ggplot`, `patchwork`, or list of plots.
 #' @export

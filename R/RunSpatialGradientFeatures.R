@@ -1,9 +1,8 @@
 #' @title Run spatial gradient feature screening
 #'
 #' @description
-#' Run native spatial trajectory or annotation gradient screening for Seurat
-#' objects. The compiled C++ backend computes distance-based screening and
-#' stores validated result tables in `srt@tools` when requested.
+#' Screen features for expression trends along a spatial trajectory or
+#' with distance from annotated regions.
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
@@ -67,8 +66,7 @@
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' spatial <- visium_human_pancreas_sub
-#' # A constructed diagonal axis illustrates the API, not an inferred trajectory.
-#' # No permutation test is requested in this short example (n_random = 0).
+#' # Use a diagonal example axis without permutation testing.
 #' spatial <- RunSpatialGradientFeatures(
 #'   spatial,
 #'   reference = "trajectory",
@@ -312,7 +310,7 @@ RunSpatialGradientFeatures <- function(
 #'
 #' @return A `ggplot` or `patchwork` object.
 #'
-#' @seealso [RunSpatialGradientFeatures()] for a complete analysis and plotting example.
+#' @seealso [RunSpatialGradientFeatures()]
 #' @inherit RunSpatialGradientFeatures examples
 #' @export
 SpatialGradientPlot <- function(

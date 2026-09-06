@@ -1,9 +1,7 @@
 #' @title Run SpatialEcoTyper spatial ecotype analysis
 #'
 #' @description
-#' Run SpatialEcoTyper workflows through the optional `SpatialEcoTyper`
-#' package and write spatial ecotype labels or abundances back to a `Seurat`
-#' object when possible.
+#' Discover, recover, or deconvolve spatial ecotypes using SpatialEcoTyper.
 #'
 #' @md
 #' @inheritParams RunStandardWorkflow
@@ -82,22 +80,17 @@
 #' function.
 #'
 #' @details
-#' De novo discovery (`mode = "single"` or `"multi"`) requires annotated
-#' single-cell spatial expression and matching cell coordinates. Multi-sample
-#' discovery additionally requires sample identities. The bundled Visium
-#' `coda_label` describes spot-level tissue components; it is not a segmented
-#' cell-type annotation and is not used here as a discovery example.
-#'
-#' Recovery and deconvolution require the corresponding pretrained basis
-#' matrices (`Ws` or `W`). See the
-#' [SpatialEcoTyper tutorials](https://digitalcytometry.github.io/spatialecotyper/)
-#' for the input and model preparation specific to each mode. Plot spatial
-#' ecotypes only after the requested workflow has produced them.
+#' Discovery requires cell-resolved spatial expression, cell-type labels,
+#' and coordinates; multi-sample discovery also requires sample labels.
+#' Recovery and deconvolution require the pretrained basis matrices `Ws`
+#' and `W`, respectively.
 #'
 #' @return A `Seurat` object with SpatialEcoTyper results in metadata and raw
 #' results stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
 #' For matrix input with `mode = "deconvolute"`, the abundance matrix is
 #' returned.
+#' @seealso [SpatialEcoTyperSpatialPlot()], [SpatialEcoTyperCompositionPlot()],
+#' [SpatialEcoTyper tutorials](https://digitalcytometry.github.io/spatialecotyper/)
 #' @export
 #'
 RunSpatialEcoTyper <- function(
@@ -336,15 +329,9 @@ RunSpatialEcoTyper <- function(
 #' @param palette,palcolor Palette passed to `palette_colors()`.
 #' @param ... Additional arguments passed to [SpatialSpotPlot()].
 #'
-#' @details
-#' The default grouping expects ecotype labels returned by [RunSpatialEcoTyper()].
-#' If another metadata column is selected explicitly, the plot describes those
-#' supplied labels; it does not turn PRECAST domains or tissue labels into
-#' SpatialEcoTyper-inferred ecotypes.
-#'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #'
-#' @seealso [RunSpatialEcoTyper()] for ecotype input requirements and result generation.
+#' @seealso [RunSpatialEcoTyper()]
 #' @export
 SpatialEcoTyperSpatialPlot <- function(
   srt,
@@ -395,15 +382,9 @@ SpatialEcoTyperSpatialPlot <- function(
 #' @param theme_use Theme function name.
 #' @param theme_args Additional arguments passed to the theme function.
 #'
-#' @details
-#' The default grouping expects ecotype labels returned by [RunSpatialEcoTyper()].
-#' If another metadata column is selected explicitly, the plot describes those
-#' supplied labels; it does not turn PRECAST domains or tissue labels into
-#' SpatialEcoTyper-inferred ecotypes.
-#'
 #' @return A `ggplot` object.
 #'
-#' @seealso [RunSpatialEcoTyper()] for ecotype input requirements and result generation.
+#' @seealso [RunSpatialEcoTyper()]
 #' @export
 SpatialEcoTyperCompositionPlot <- function(
   srt,

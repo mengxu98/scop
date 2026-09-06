@@ -99,8 +99,7 @@ Visualize normalized results produced by \code{RunSpatialGradientFeatures()}
 \examples{
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
-# A constructed diagonal axis illustrates the API, not an inferred trajectory.
-# No permutation test is requested in this short example (n_random = 0).
+# Use a diagonal example axis without permutation testing.
 spatial <- RunSpatialGradientFeatures(
   spatial,
   reference = "trajectory",
@@ -129,5 +128,5 @@ SpatialGradientPlot(
 )
 }
 \seealso{
-\code{\link[=RunSpatialGradientFeatures]{RunSpatialGradientFeatures()}} for a complete analysis and plotting example.
+\code{\link[=RunSpatialGradientFeatures]{RunSpatialGradientFeatures()}}
 }

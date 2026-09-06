@@ -74,12 +74,6 @@ A \code{ggplot}, patchwork object, or list of plots.
 \description{
 Visualize standardized results produced by \code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}.
 }
-\details{
-Requires a successful \code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}} result on the supplied
-object. Use the spatial view for its stored domains and the embedding view
-for its learned joint representation. A sample label or an unrelated domain
-column alone does not supply an integration result.
-}
 \seealso{
-\code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}} for input requirements and stored integration results.
+\code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}
 }

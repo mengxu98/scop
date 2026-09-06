@@ -1,15 +1,8 @@
 #' @title Run C-SIDE spatial differential expression
 #'
 #' @description
-#' Run `spacexr` C-SIDE after RCTD to test cell type-specific spatial or
-#' condition-aware differential expression. C-SIDE stores effect and
-#' significance results, not spot-level cell-type proportions, so it has no
-#' recommended proportion plot. Inspect its stored
-#' tables in `srt@tools[[tool_name]]`. The metadata columns `<prefix>_n_sig`
-#' and `<prefix>_mode` repeat run-level summaries across spots. The former counts
-#' significant result records, not unique genes or spot-level effects.
-#' The example is a non-executing template because C-SIDE
-#' requires a completed optional RCTD result.
+#' Run C-SIDE after RCTD to test cell-type-specific differential expression
+#' associated with spatial regions or covariates.
 #'
 #' @md
 #' @inheritParams RunRCTD
@@ -45,8 +38,12 @@
 #' stored result from [RunRCTD()] with `rctd_mode = "full"`, `doublet_mode`
 #' defaults to `FALSE` unless explicitly supplied.
 #'
-#' @return A `Seurat` object with C-SIDE summary metadata and detailed results
-#' stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
+#' @return
+#' A `Seurat` object with run-level summaries in metadata. When
+#' `store_results = TRUE`, cell-type-specific effects and significance values
+#' are stored in `srt@tools[[tool_name]]$result_table`. `<prefix>_n_sig` counts
+#' significant result records and is repeated across spots.
+#'
 #' @export
 #'
 #' @examples
@@ -60,15 +57,14 @@
 #'   length.out = 120
 #' )))
 #' spatial <- visium_human_pancreas_sub[, keep_spots]
-#' # Constructed coordinate bands demonstrate the interface, not biological groups.
+#' # Define three coordinate-based regions for this example.
 #' spatial$region <- cut(
 #'   spatial$x,
 #'   breaks = stats::quantile(spatial$x, probs = seq(0, 1, length.out = 4)),
 #'   include.lowest = TRUE,
 #'   labels = c("left", "middle", "right")
 #' )
-#' # This small reference covers only three types; estimates are conditional
-#' # on those types and do not describe the tissue's complete cell composition.
+#' # Results are conditional on the three reference cell types used here.
 #' reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
 #'   c("ductal", "alpha", "beta")]
 #' reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
@@ -101,7 +97,7 @@
 #'   cell_type_threshold = 5,
 #'   verbose = FALSE
 #' )
-#' # Inspect gene/cell-type effects; CSIDE_n_sig is a run-level summary.
+#' # Inspect cell-type-specific differential expression.
 #' head(spatial@tools$CSIDE$result_table)
 #' }
 RunCSIDE <- function(

@@ -31,5 +31,5 @@ Plot model improvements or view contributions from a result
 produced by [RunMistyR()] without rerunning the backend.
 }
 \seealso{
-[RunMistyR()] for a complete analysis and plotting example.
+[RunMistyR()]
 }

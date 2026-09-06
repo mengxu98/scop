@@ -192,10 +192,8 @@ NULL
 #'
 #' @md
 #' @details
-#' This feature-filtered object supports compact API examples. For biological
-#' analysis, compute feature-dependent QC and expression summaries from the
-#' complete assay. `coda_label` identifies tissue components at Visium spots,
-#' not cell types of individually segmented cells.
+#' `coda_label` describes tissue components at Visium spots. Feature-dependent
+#' QC requires the full expression assay.
 #'
 #' @format A `Seurat` object with 5000 genes, 1986 spots, and one Visium image
 #' named `slice1`.

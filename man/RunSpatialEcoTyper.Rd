@@ -179,20 +179,15 @@ For matrix input with \code{mode = "deconvolute"}, the abundance matrix is
 returned.
 }
 \description{
-Run SpatialEcoTyper workflows through the optional \code{SpatialEcoTyper}
-package and write spatial ecotype labels or abundances back to a \code{Seurat}
-object when possible.
+Discover, recover, or deconvolve spatial ecotypes using SpatialEcoTyper.
 }
 \details{
-De novo discovery (\code{mode = "single"} or \code{"multi"}) requires annotated
-single-cell spatial expression and matching cell coordinates. Multi-sample
-discovery additionally requires sample identities. The bundled Visium
-\code{coda_label} describes spot-level tissue components; it is not a segmented
-cell-type annotation and is not used here as a discovery example.
-
-Recovery and deconvolution require the corresponding pretrained basis
-matrices (\code{Ws} or \code{W}). See the
+Discovery requires cell-resolved spatial expression, cell-type labels,
+and coordinates; multi-sample discovery also requires sample labels.
+Recovery and deconvolution require the pretrained basis matrices \code{Ws}
+and \code{W}, respectively.
+}
+\seealso{
+\code{\link[=SpatialEcoTyperSpatialPlot]{SpatialEcoTyperSpatialPlot()}}, \code{\link[=SpatialEcoTyperCompositionPlot]{SpatialEcoTyperCompositionPlot()}},
 \href{https://digitalcytometry.github.io/spatialecotyper/}{SpatialEcoTyper tutorials}
-for the input and model preparation specific to each mode. Plot spatial
-ecotypes only after the requested workflow has produced them.
 }

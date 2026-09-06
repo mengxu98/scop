@@ -48,12 +48,6 @@ A \code{ggplot} object.
 Plot SpatialEcoTyper composition across cell types, samples, or other
 metadata groups using the default plotting theme and palettes.
 }
-\details{
-The default grouping expects ecotype labels returned by \code{\link[=RunSpatialEcoTyper]{RunSpatialEcoTyper()}}.
-If another metadata column is selected explicitly, the plot describes those
-supplied labels; it does not turn PRECAST domains or tissue labels into
-SpatialEcoTyper-inferred ecotypes.
-}
 \seealso{
-\code{\link[=RunSpatialEcoTyper]{RunSpatialEcoTyper()}} for ecotype input requirements and result generation.
+\code{\link[=RunSpatialEcoTyper]{RunSpatialEcoTyper()}}
 }

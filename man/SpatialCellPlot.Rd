@@ -55,14 +55,9 @@ SpatialCellPlot(
 A `ggplot` or patchwork object.
 }
 \description{
-Plot real cell segmentation polygons supplied directly, stored in a result
-object, or extracted from a Seurat spatial image. Spot centers are never
-converted into synthetic polygons.
+Plot cell segmentation polygons from a boundary table or Seurat spatial image.
 }
 \details{
-Provide real segmentation vertices with `cell_id`, `x`, and `y` columns,
-ordered along each polygon, or a Seurat image containing a segmentation
-boundary. `group.by` may select a column in the boundary table or object
-metadata. Visium spot centers do not contain cell outlines, so the bundled
-spot-level dataset cannot demonstrate cell-boundary plotting.
+Boundary tables require `cell_id`, `x`, and `y` columns in polygon vertex
+order. Seurat images must contain segmentation boundaries.
 }

@@ -1,9 +1,8 @@
 #' @title Run multi-sample spatial integration
 #'
 #' @description
-#' Integrate multi-slice or multi-sample spatial transcriptomics data with an
-#' optional spatial backend and store standardized embeddings, domains, and
-#' aligned coordinates in a `Seurat` object.
+#' Integrate spatial transcriptomics samples and identify shared domains
+#' using PRECAST, BASS, or SpatialMNN.
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
@@ -30,15 +29,8 @@
 #' @param ... Additional backend-specific arguments.
 #'
 #' @details
-#' Supply either a named list of spatial Seurat objects from distinct samples,
-#' or a merged object with a `sample.by` column identifying those samples.
-#' Inputs need compatible expression features and raw coordinates. For
-#' image-backed inputs, select the appropriate image for each sample; an image
-#' mapping for a list refers to image names within each original object.
-#'
-#' The bundled Visium example contains one section and is not a multi-sample
-#' integration dataset. Use independent samples for integration. Plot the
-#' returned domains or embedding with [SpatialIntegrationPlot()].
+#' Provide spatial samples with shared genes and raw coordinates. Use
+#' `sample.by` to identify samples and `image` to select their spatial images.
 #'
 #' @return A `Seurat` object with spatial integration results stored in
 #' metadata, reductions, and `srt@tools[[tool_name]]`.
@@ -149,14 +141,8 @@ RunSpatialIntegration <- function(
 #' @param ... Additional arguments passed to [SpatialSpotPlot()] or
 #' [CellDimPlot()].
 #'
-#' @details
-#' Requires a successful [RunSpatialIntegration()] result on the supplied
-#' object. Use the spatial view for its stored domains and the embedding view
-#' for its learned joint representation. A sample label or an unrelated domain
-#' column alone does not supply an integration result.
-#'
 #' @return A `ggplot`, patchwork object, or list of plots.
-#' @seealso [RunSpatialIntegration()] for input requirements and stored integration results.
+#' @seealso [RunSpatialIntegration()]
 #' @export
 #'
 SpatialIntegrationPlot <- function(

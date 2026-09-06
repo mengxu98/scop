@@ -51,5 +51,5 @@ network view is a group-aggregated network over group centroids, not a
 materialized individual cell-by-cell edge table.
 }
 \seealso{
-[RunSpatialCellChat()] for a complete analysis and plotting example.
+[RunSpatialCellChat()]
 }

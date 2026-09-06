@@ -1,11 +1,8 @@
 #' @title Run Statial Kontextual spatial relationships
 #'
 #' @description
-#' Run `Statial::Kontextual()` on a spatial `Seurat` object to quantify
-#' pairwise cell or spot label relationships relative to a parent context.
-#' Results are stored as a compact SCOP bundle with raw Statial output,
-#' standardized summary, and parameters. `Statial` is an optional Bioconductor
-#' dependency installable with `BiocManager::install("Statial")`.
+#' Compute spatial relationships between cell or spot labels relative to a
+#' parent context using Statial Kontextual.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -47,8 +44,7 @@
 #' \dontrun{
 #' check_r("sydney-informatics-hub/Statial", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
-#' # Relationships between tissue-labelled spots, not individual cell types.
-#' # Example radii are expressed in full-resolution image pixels.
+#' # Compare tissue-labelled spots at two radii (full-resolution image pixels).
 #' spatial <- RunStatialKontextual(
 #'   visium_human_pancreas_sub, group.by = "coda_label", image = "slice1",
 #'   r = c(500, 1000), from = "collagen", to = "acini", parent = c("collagen", "acini"),
@@ -325,7 +321,7 @@ statial_kontextual_summary <- function(table, top_n = 10L) {
 #' @param tests Optional relationship names to retain.
 #' @param images Optional image identifiers to retain.
 #' @return A `ggplot` object.
-#' @seealso [RunStatialKontextual()] for a complete analysis and plotting example.
+#' @seealso [RunStatialKontextual()]
 #' @export
 StatialKontextualPlot <- function(object = NULL, res = NULL, tests = NULL, images = NULL) {
   if (is.null(res)) {

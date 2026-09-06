@@ -904,7 +904,7 @@ spatialcellchat_run_one <- function(
 #' visium_human_pancreas_sub <- Seurat::NormalizeData(
 #'   visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
 #' )
-#' # CODA tissue labels define spot groups, not single-cell sender/receiver types.
+#' # Group Visium spots by their CODA tissue labels.
 #' check_r("jinworks/SpatialCellChat", verbose = FALSE)
 #' spatial <- RunSpatialCellChat(
 #'   visium_human_pancreas_sub,
@@ -1341,7 +1341,7 @@ spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample
 #' @param title Optional title.
 #'
 #' @return A `ggplot` object.
-#' @seealso [RunSpatialCellChat()] for a complete analysis and plotting example.
+#' @seealso [RunSpatialCellChat()]
 #' @export
 SpatialCellChatPlot <- function(
   object,

@@ -24,5 +24,5 @@ Plot contextual relationship scores across radii from a result
 produced by [RunStatialKontextual()] without rerunning Statial.
 }
 \seealso{
-[RunStatialKontextual()] for a complete analysis and plotting example.
+[RunStatialKontextual()]
 }

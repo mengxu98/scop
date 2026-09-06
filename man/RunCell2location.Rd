@@ -107,19 +107,14 @@ A \code{Seurat} object with cell2location abundance, proportion, dominant
 cell type, and maximum-proportion metadata.
 }
 \description{
-Estimate spot-level absolute cell abundance and proportions with the official
-Python \code{cell2location} backend. The Python model runs in an isolated
-subprocess while inputs, models, posterior outputs, logs, and a reproducible
-manifest are persisted under \code{result_dir}.
+Estimate cell-type abundances and proportions in spatial transcriptomics
+data using cell2location.
 }
 \details{
-Supply spatial raw counts together with either an annotated single-cell
-reference or a gene-by-cell-type signature matrix. Gene identifiers must
-match across the spatial and reference inputs. Choose batch columns,
-training settings, and \code{N_cells_per_location} for the experiment.
-
-The \href{https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_tutorial.html}{official cell2location tutorial}
-describes data preparation and model diagnostics. Its prepared input files
-and fitted models are not distributed with SCOP. After a successful call,
-pass the returned object to \code{\link[=Cell2locationPlot]{Cell2locationPlot()}}.
+Requires raw spatial counts and an annotated single-cell reference or
+gene-by-cell-type signatures with matching gene identifiers.
+}
+\seealso{
+\code{\link[=Cell2locationPlot]{Cell2locationPlot()}},
+\href{https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_tutorial.html}{cell2location tutorial}
 }

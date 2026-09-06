@@ -88,19 +88,15 @@ A \code{Seurat} object with results stored in \code{srt@tools[[tool_name]]}
 when \code{store_results = TRUE}.
 }
 \description{
-Build a small \code{mistyR} view composition from a spatial \code{Seurat} object,
-train MISTy models, collect results, and store a standardized result bundle in
-\code{srt@tools}. The intraview is always created from the selected assay layer;
-optional juxtaview and paraview components describe local and broader spatial
-context. \code{mistyR} is an optional Bioconductor dependency installable with
-\code{BiocManager::install("mistyR")}.
+Model feature expression using MISTy intraview and spatial predictors.
+Juxtaview and paraview predictors describe local and broader neighborhoods.
 }
 \examples{
 \dontrun{
 check_r("saezlab/mistyR", verbose = FALSE)
 data(visium_human_pancreas_sub)
 spatial <- Seurat::NormalizeData(visium_human_pancreas_sub, verbose = FALSE)
-# Example bandwidth in full-resolution image pixels; choose it for your data.
+# Paraview bandwidth: 1000 full-resolution image pixels.
 spatial <- RunMistyR(
   spatial, assay = "Spatial", features = rownames(spatial)[1:5],
   image = "slice1", views = "para", para_l = 1000,

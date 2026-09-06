@@ -140,7 +140,7 @@ spatial <- RunSpotSweeper(
   directions = c("lower", "lower"), n_neighbors = 12,
   run_artifact = FALSE, verbose = FALSE
 )
-# These are the fitted local-outlier calls; artifact detection was not run.
+# Plot local-outlier calls.
 SpatialSpotPlot(spatial, group.by = "SpotSweeper_local_outlier_qc", image = "slice1")
 }
 }

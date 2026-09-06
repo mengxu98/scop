@@ -50,9 +50,6 @@ A \code{ggplot}, \code{patchwork}, or list of plots.
 Plot cell2location spatial results
 }
 \details{
-Use an object returned by \code{\link[=RunCell2location]{RunCell2location()}} with \code{store_results = TRUE}.
-The selected \code{tool_name} must contain its fitted posterior results.
-Abundance plots use q05 posterior abundance; proportion plots use the
-stored row-normalized proportions. An input-only Visium object has neither
-result, so run the model before plotting.
+Abundance plots use posterior q05 values. Proportion plots normalize
+these values across cell types within each spot.
 }
