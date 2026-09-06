@@ -76,9 +76,11 @@ results in \code{srt@tools[["BayesSpace"]]}.
 Run BayesSpace spatial clustering
 }
 \examples{
-data(visium_human_pancreas_results_sub)
+data(visium_human_pancreas_sub)
+keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
+spatial <- visium_human_pancreas_sub[, keep_spots]
 spatial <- RunBayesSpace(
-  visium_human_pancreas_results_sub,
+  spatial,
   q = 3,
   n.PCs = 5,
   n.HVGs = 200,

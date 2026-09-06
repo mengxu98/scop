@@ -67,11 +67,13 @@
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' spatial <- visium_human_pancreas_sub
+#' # A constructed diagonal axis illustrates the API, not an inferred trajectory.
+#' # No permutation test is requested in this short example (n_random = 0).
 #' spatial <- RunSpatialGradientFeatures(
 #'   spatial,
 #'   reference = "trajectory",
 #'   backend = "cpp",
-#'   result_name = "ductal_axis",
+#'   result_name = "example_axis",
 #'   variables = rownames(spatial)[1:8],
 #'   start = c(min(spatial$x), min(spatial$y)),
 #'   end = c(max(spatial$x), max(spatial$y)),
@@ -310,17 +312,8 @@ RunSpatialGradientFeatures <- function(
 #'
 #' @return A `ggplot` or `patchwork` object.
 #'
-#' @examples
-#' data(visium_human_pancreas_results_sub)
-#' SpatialGradientPlot(
-#'   visium_human_pancreas_results_sub,
-#'   result_name = "scop_gradient_fixture",
-#'   plot_type = "surface",
-#'   features = rownames(visium_human_pancreas_results_sub)[1:2],
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y"),
-#'   pt.size = 1.2
-#' )
+#' @seealso [RunSpatialGradientFeatures()] for a complete analysis and plotting example.
+#' @inherit RunSpatialGradientFeatures examples
 #' @export
 SpatialGradientPlot <- function(
   srt,

@@ -74,28 +74,14 @@ Integrate multi-slice or multi-sample spatial transcriptomics data with an
 optional spatial backend and store standardized embeddings, domains, and
 aligned coordinates in a \code{Seurat} object.
 }
-\examples{
-data(visium_human_pancreas_pair_sub)
-SpatialIntegrationPlot(
-  visium_human_pancreas_pair_sub,
-  plot_type = "spatial",
-  group.by = "domain",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-SpatialIntegrationPlot(
-  visium_human_pancreas_pair_sub,
-  plot_type = "embedding"
-)
+\details{
+Supply either a named list of spatial Seurat objects from distinct samples,
+or a merged object with a \code{sample.by} column identifying those samples.
+Inputs need compatible expression features and raw coordinates. For
+image-backed inputs, select the appropriate image for each sample; an image
+mapping for a list refers to image names within each original object.
 
-\dontrun{
-check_r("PRECAST", verbose = FALSE)
-spatial <- RunSpatialIntegration(
-  visium_human_pancreas_pair_sub,
-  method = "PRECAST", sample.by = "sample", assay = "Spatial",
-  coord.cols = c("x", "y"),
-  features = rownames(visium_human_pancreas_pair_sub)[1:100],
-  verbose = FALSE
-)
-}
+The bundled Visium example contains one section and is not a multi-sample
+integration dataset. Use independent samples for integration. Plot the
+returned domains or embedding with \code{\link[=SpatialIntegrationPlot]{SpatialIntegrationPlot()}}.
 }

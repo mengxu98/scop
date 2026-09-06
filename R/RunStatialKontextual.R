@@ -44,18 +44,17 @@
 #' @export
 #'
 #' @examples
-#' data(visium_human_pancreas_results_sub)
-#' statial <- visium_human_pancreas_results_sub@tools$StatialKontextual
-#' statial$summary
-#' StatialKontextualPlot(res = statial)
-#'
 #' \dontrun{
 #' check_r("sydney-informatics-hub/Statial", verbose = FALSE)
+#' data(visium_human_pancreas_sub)
+#' # Relationships between tissue-labelled spots, not individual cell types.
+#' # Example radii are expressed in full-resolution image pixels.
 #' spatial <- RunStatialKontextual(
-#'   visium_human_pancreas_results_sub, group.by = "coda_label", r = 50,
-#'   from = "collagen", to = "acini", parent = c("collagen", "acini"),
-#'   coord.cols = c("x", "y"), verbose = FALSE
+#'   visium_human_pancreas_sub, group.by = "coda_label", image = "slice1",
+#'   r = c(500, 1000), from = "collagen", to = "acini", parent = c("collagen", "acini"),
+#'   verbose = FALSE
 #' )
+#' StatialKontextualPlot(spatial)
 #' }
 RunStatialKontextual <- function(
   srt,
@@ -326,12 +325,8 @@ statial_kontextual_summary <- function(table, top_n = 10L) {
 #' @param tests Optional relationship names to retain.
 #' @param images Optional image identifiers to retain.
 #' @return A `ggplot` object.
+#' @seealso [RunStatialKontextual()] for a complete analysis and plotting example.
 #' @export
-#' @examples
-#' data(visium_human_pancreas_results_sub)
-#' StatialKontextualPlot(
-#'   res = visium_human_pancreas_results_sub@tools$StatialKontextual
-#' )
 StatialKontextualPlot <- function(object = NULL, res = NULL, tests = NULL, images = NULL) {
   if (is.null(res)) {
     if (is.null(object) || !inherits(object, "Seurat")) {

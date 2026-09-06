@@ -96,18 +96,16 @@ context. \code{mistyR} is an optional Bioconductor dependency installable with
 \code{BiocManager::install("mistyR")}.
 }
 \examples{
-data(visium_human_pancreas_results_sub)
-misty <- visium_human_pancreas_results_sub@tools$MistyR
-misty$summary
-MistyRPlot(res = misty, type = "improvements", top_n = 10)
-
 \dontrun{
 check_r("saezlab/mistyR", verbose = FALSE)
+data(visium_human_pancreas_sub)
+spatial <- Seurat::NormalizeData(visium_human_pancreas_sub, verbose = FALSE)
+# Example bandwidth in full-resolution image pixels; choose it for your data.
 spatial <- RunMistyR(
-  visium_human_pancreas_results_sub,
-  assay = "Spatial", features = rownames(visium_human_pancreas_results_sub)[1:5],
-  coord.cols = c("x", "y"), views = "para", para_l = 5,
+  spatial, assay = "Spatial", features = rownames(spatial)[1:5],
+  image = "slice1", views = "para", para_l = 1000,
   cv_folds = 3, verbose = FALSE
 )
+MistyRPlot(spatial, type = "improvements", top_n = 5)
 }
 }

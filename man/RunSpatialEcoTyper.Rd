@@ -183,38 +183,16 @@ Run SpatialEcoTyper workflows through the optional \code{SpatialEcoTyper}
 package and write spatial ecotype labels or abundances back to a \code{Seurat}
 object when possible.
 }
-\examples{
-data(visium_human_pancreas_pair_sub)
-# Plot the stored spatial grouping from the real two-sample object. This
-# compact fixture keeps the real spatial grouping for a fast layout demo;
-# rerun SpatialEcoTyper in the dontrun block for a new SE result.
-SpatialEcoTyperSpatialPlot(
-  visium_human_pancreas_pair_sub,
-  group.by = "domain",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  pt.size = 1.5
-)
-SpatialEcoTyperCompositionPlot(
-  visium_human_pancreas_pair_sub,
-  se.by = "domain",
-  group.by = "coda_label",
-  sample.by = "sample",
-  position = "fill"
-)
+\details{
+De novo discovery (\code{mode = "single"} or \code{"multi"}) requires annotated
+single-cell spatial expression and matching cell coordinates. Multi-sample
+discovery additionally requires sample identities. The bundled Visium
+\code{coda_label} describes spot-level tissue components; it is not a segmented
+cell-type annotation and is not used here as a discovery example.
 
-\dontrun{
-check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE)
-  srt <- RunSpatialEcoTyper(
-    visium_human_pancreas_pair_sub,
-    mode = "multi",
-    celltype.by = "coda_label",
-    sample.by = "sample",
-    x.by = "x",
-    y.by = "y",
-    nfeatures = 50,
-    ncores = 1,
-    verbose = FALSE
-  )
-}
+Recovery and deconvolution require the corresponding pretrained basis
+matrices (\code{Ws} or \code{W}). See the
+\href{https://digitalcytometry.github.io/spatialecotyper/}{SpatialEcoTyper tutorials}
+for the input and model preparation specific to each mode. Plot spatial
+ecotypes only after the requested workflow has produced them.
 }

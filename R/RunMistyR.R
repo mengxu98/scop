@@ -45,19 +45,17 @@
 #' @export
 #'
 #' @examples
-#' data(visium_human_pancreas_results_sub)
-#' misty <- visium_human_pancreas_results_sub@tools$MistyR
-#' misty$summary
-#' MistyRPlot(res = misty, type = "improvements", top_n = 10)
-#'
 #' \dontrun{
 #' check_r("saezlab/mistyR", verbose = FALSE)
+#' data(visium_human_pancreas_sub)
+#' spatial <- Seurat::NormalizeData(visium_human_pancreas_sub, verbose = FALSE)
+#' # Example bandwidth in full-resolution image pixels; choose it for your data.
 #' spatial <- RunMistyR(
-#'   visium_human_pancreas_results_sub,
-#'   assay = "Spatial", features = rownames(visium_human_pancreas_results_sub)[1:5],
-#'   coord.cols = c("x", "y"), views = "para", para_l = 5,
+#'   spatial, assay = "Spatial", features = rownames(spatial)[1:5],
+#'   image = "slice1", views = "para", para_l = 1000,
 #'   cv_folds = 3, verbose = FALSE
 #' )
+#' MistyRPlot(spatial, type = "improvements", top_n = 5)
 #' }
 RunMistyR <- function(
   srt,
@@ -332,14 +330,8 @@ mistyr_summary <- function(results, views = character()) {
 #' @param top_n Maximum number of records shown after ranking by absolute value.
 #' @param target Optional target feature filter.
 #' @return A `ggplot` object.
+#' @seealso [RunMistyR()] for a complete analysis and plotting example.
 #' @export
-#' @examples
-#' data(visium_human_pancreas_results_sub)
-#' MistyRPlot(
-#'   res = visium_human_pancreas_results_sub@tools$MistyR,
-#'   type = "improvements",
-#'   top_n = 10
-#' )
 MistyRPlot <- function(
   object = NULL,
   res = NULL,

@@ -118,11 +118,23 @@ Visualize results produced by \code{\link[=RunSpatialNeighborhood]{RunSpatialNei
 statistical, and network plotting conventions.
 }
 \examples{
-data(visium_human_pancreas_results_sub)
+data(visium_human_pancreas_sub)
+spatial <- visium_human_pancreas_sub
+spatial <- RunSpatialNeighborhood(
+  spatial,
+  group.by = "coda_label",
+  coord.cols = c("x", "y"),
+  k = 4,
+  verbose = FALSE
+)
+
 SpatialNeighborhoodPlot(
-  visium_human_pancreas_results_sub,
+  spatial,
   plot_type = "spatial",
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
+}
+\seealso{
+\code{\link[=RunSpatialNeighborhood]{RunSpatialNeighborhood()}} for a complete analysis and plotting example.
 }

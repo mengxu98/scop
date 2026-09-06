@@ -94,17 +94,16 @@ standardized summary, and parameters. \code{Statial} is an optional Bioconductor
 dependency installable with \code{BiocManager::install("Statial")}.
 }
 \examples{
-data(visium_human_pancreas_results_sub)
-statial <- visium_human_pancreas_results_sub@tools$StatialKontextual
-statial$summary
-StatialKontextualPlot(res = statial)
-
 \dontrun{
 check_r("sydney-informatics-hub/Statial", verbose = FALSE)
+data(visium_human_pancreas_sub)
+# Relationships between tissue-labelled spots, not individual cell types.
+# Example radii are expressed in full-resolution image pixels.
 spatial <- RunStatialKontextual(
-  visium_human_pancreas_results_sub, group.by = "coda_label", r = 50,
-  from = "collagen", to = "acini", parent = c("collagen", "acini"),
-  coord.cols = c("x", "y"), verbose = FALSE
+  visium_human_pancreas_sub, group.by = "coda_label", image = "slice1",
+  r = c(500, 1000), from = "collagen", to = "acini", parent = c("collagen", "acini"),
+  verbose = FALSE
 )
+StatialKontextualPlot(spatial)
 }
 }

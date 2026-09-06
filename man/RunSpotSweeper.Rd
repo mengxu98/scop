@@ -130,40 +130,17 @@ completed, skipped, failed, or not requested; an artifact that was not
 evaluated is never reported as a negative artifact call.
 }
 \examples{
-data(visium_human_pancreas_sub)
-keep_spots <- unique(round(seq(
-  1,
-  ncol(visium_human_pancreas_sub),
-  length.out = 120
-)))
-spatial <- visium_human_pancreas_sub[, keep_spots]
-
-# Plot a real input QC metric before running the optional backend.
-SpatialSpotPlot(
-  spatial,
-  group.by = "nCount_Spatial",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-
-# Template only: the current runtime still raises its known spot
-# identity/order validation error. This documentation change leaves that
-# backend issue unresolved and does not fabricate a successful result.
 \dontrun{
+check_r("SpotSweeper", verbose = FALSE)
 data(visium_human_pancreas_sub)
-keep_spots <- unique(round(seq(
-  1,
-  ncol(visium_human_pancreas_sub),
-  length.out = 120
-)))
-spatial <- visium_human_pancreas_sub[, keep_spots]
 spatial <- RunSpotSweeper(
-  spatial,
-  assay = "Spatial",
-  coord.cols = c("x", "y"),
-  n_neighbors = 12,
-  run_artifact = FALSE,
-  verbose = FALSE
+  visium_human_pancreas_sub,
+  assay = "Spatial", image = "slice1",
+  metrics = c("nCount_Spatial", "nFeature_Spatial"),
+  directions = c("lower", "lower"), n_neighbors = 12,
+  run_artifact = FALSE, verbose = FALSE
 )
+# These are the fitted local-outlier calls; artifact detection was not run.
+SpatialSpotPlot(spatial, group.by = "SpotSweeper_local_outlier_qc", image = "slice1")
 }
 }

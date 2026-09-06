@@ -49,28 +49,10 @@ A \code{ggplot}, \code{patchwork}, or list of plots.
 \description{
 Plot cell2location spatial results
 }
-\examples{
-\dontrun{
-# Result from the official Human Lymph Node example in RunCell2location().
-# The tutorial result is an external file and is not downloaded by pkgdown.
-spatial <- readRDS("human_lymph_node_cell2location/official_human_lymph_node.rds")
-selected <- names(sort(
-  colMeans(spatial@tools$Cell2location$proportions),
-  decreasing = TRUE
-))[1:6]
-Cell2locationPlot(
-  spatial,
-  plot_type = "proportion",
-  cell_types = selected,
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  ncol = 3
-)
-Cell2locationPlot(
-  spatial,
-  plot_type = "dominant",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-}
+\details{
+Use an object returned by \code{\link[=RunCell2location]{RunCell2location()}} with \code{store_results = TRUE}.
+The selected \code{tool_name} must contain its fitted posterior results.
+Abundance plots use q05 posterior abundance; proportion plots use the
+stored row-normalized proportions. An input-only Visium object has neither
+result, so run the model before plotting.
 }

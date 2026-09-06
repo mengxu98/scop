@@ -104,3 +104,9 @@ if (interactive()) {
 }
 
 }
+\details{
+This feature-filtered object supports compact API examples. For biological
+analysis, compute feature-dependent QC and expression summaries from the
+complete assay. \code{coda_label} identifies tissue components at Visium spots,
+not cell types of individually segmented cells.
+}

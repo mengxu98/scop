@@ -60,12 +60,15 @@
 #'   length.out = 120
 #' )))
 #' spatial <- visium_human_pancreas_sub[, keep_spots]
+#' # Constructed coordinate bands demonstrate the interface, not biological groups.
 #' spatial$region <- cut(
 #'   spatial$x,
 #'   breaks = stats::quantile(spatial$x, probs = seq(0, 1, length.out = 4)),
 #'   include.lowest = TRUE,
 #'   labels = c("left", "middle", "right")
 #' )
+#' # This small reference covers only three types; estimates are conditional
+#' # on those types and do not describe the tissue's complete cell composition.
 #' reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
 #'   c("ductal", "alpha", "beta")]
 #' reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
@@ -98,12 +101,8 @@
 #'   cell_type_threshold = 5,
 #'   verbose = FALSE
 #' )
-#' SpatialSpotPlot(
-#'   spatial,
-#'   group.by = "CSIDE_n_sig",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
+#' # Inspect gene/cell-type effects; CSIDE_n_sig is a run-level summary.
+#' head(spatial@tools$CSIDE$result_table)
 #' }
 RunCSIDE <- function(
   srt,

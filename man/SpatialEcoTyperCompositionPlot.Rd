@@ -48,15 +48,12 @@ A \code{ggplot} object.
 Plot SpatialEcoTyper composition across cell types, samples, or other
 metadata groups using the default plotting theme and palettes.
 }
-\examples{
-data(visium_human_pancreas_pair_sub)
-# This fixture stores real PRECAST domains for a fast plot demonstration;
-# use `se.by = "domain"` explicitly because it is not a new SE inference.
-SpatialEcoTyperCompositionPlot(
-  visium_human_pancreas_pair_sub,
-  se.by = "domain",
-  group.by = "coda_label",
-  sample.by = "sample",
-  position = "fill"
-)
+\details{
+The default grouping expects ecotype labels returned by \code{\link[=RunSpatialEcoTyper]{RunSpatialEcoTyper()}}.
+If another metadata column is selected explicitly, the plot describes those
+supplied labels; it does not turn PRECAST domains or tissue labels into
+SpatialEcoTyper-inferred ecotypes.
+}
+\seealso{
+\code{\link[=RunSpatialEcoTyper]{RunSpatialEcoTyper()}} for ecotype input requirements and result generation.
 }

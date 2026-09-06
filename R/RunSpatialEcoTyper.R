@@ -81,46 +81,25 @@
 #' @param ... Additional arguments passed to the selected SpatialEcoTyper
 #' function.
 #'
+#' @details
+#' De novo discovery (`mode = "single"` or `"multi"`) requires annotated
+#' single-cell spatial expression and matching cell coordinates. Multi-sample
+#' discovery additionally requires sample identities. The bundled Visium
+#' `coda_label` describes spot-level tissue components; it is not a segmented
+#' cell-type annotation and is not used here as a discovery example.
+#'
+#' Recovery and deconvolution require the corresponding pretrained basis
+#' matrices (`Ws` or `W`). See the
+#' [SpatialEcoTyper tutorials](https://digitalcytometry.github.io/spatialecotyper/)
+#' for the input and model preparation specific to each mode. Plot spatial
+#' ecotypes only after the requested workflow has produced them.
+#'
 #' @return A `Seurat` object with SpatialEcoTyper results in metadata and raw
 #' results stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
 #' For matrix input with `mode = "deconvolute"`, the abundance matrix is
 #' returned.
 #' @export
 #'
-#' @examples
-#' data(visium_human_pancreas_pair_sub)
-#' # Plot the stored spatial grouping from the real two-sample object. This
-#' # compact fixture keeps the real spatial grouping for a fast layout demo;
-#' # rerun SpatialEcoTyper in the dontrun block for a new SE result.
-#' SpatialEcoTyperSpatialPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   group.by = "domain",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y"),
-#'   pt.size = 1.5
-#' )
-#' SpatialEcoTyperCompositionPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   se.by = "domain",
-#'   group.by = "coda_label",
-#'   sample.by = "sample",
-#'   position = "fill"
-#' )
-#'
-#' \dontrun{
-#' check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE)
-#'   srt <- RunSpatialEcoTyper(
-#'     visium_human_pancreas_pair_sub,
-#'     mode = "multi",
-#'     celltype.by = "coda_label",
-#'     sample.by = "sample",
-#'     x.by = "x",
-#'     y.by = "y",
-#'     nfeatures = 50,
-#'     ncores = 1,
-#'     verbose = FALSE
-#'   )
-#' }
 RunSpatialEcoTyper <- function(
   srt,
   mode = c("single", "multi", "recover", "deconvolute"),
@@ -357,19 +336,15 @@ RunSpatialEcoTyper <- function(
 #' @param palette,palcolor Palette passed to `palette_colors()`.
 #' @param ... Additional arguments passed to [SpatialSpotPlot()].
 #'
+#' @details
+#' The default grouping expects ecotype labels returned by [RunSpatialEcoTyper()].
+#' If another metadata column is selected explicitly, the plot describes those
+#' supplied labels; it does not turn PRECAST domains or tissue labels into
+#' SpatialEcoTyper-inferred ecotypes.
+#'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #'
-#' @examples
-#' data(visium_human_pancreas_pair_sub)
-#' # The stored `domain` column is a real PRECAST grouping used only for this
-#' # fast spatial plotting example; it is not a new SpatialEcoTyper inference.
-#' SpatialEcoTyperSpatialPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   group.by = "domain",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y"),
-#'   pt.size = 1.5
-#' )
+#' @seealso [RunSpatialEcoTyper()] for ecotype input requirements and result generation.
 #' @export
 SpatialEcoTyperSpatialPlot <- function(
   srt,
@@ -420,19 +395,15 @@ SpatialEcoTyperSpatialPlot <- function(
 #' @param theme_use Theme function name.
 #' @param theme_args Additional arguments passed to the theme function.
 #'
+#' @details
+#' The default grouping expects ecotype labels returned by [RunSpatialEcoTyper()].
+#' If another metadata column is selected explicitly, the plot describes those
+#' supplied labels; it does not turn PRECAST domains or tissue labels into
+#' SpatialEcoTyper-inferred ecotypes.
+#'
 #' @return A `ggplot` object.
 #'
-#' @examples
-#' data(visium_human_pancreas_pair_sub)
-#' # This fixture stores real PRECAST domains for a fast plot demonstration;
-#' # use `se.by = "domain"` explicitly because it is not a new SE inference.
-#' SpatialEcoTyperCompositionPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   se.by = "domain",
-#'   group.by = "coda_label",
-#'   sample.by = "sample",
-#'   position = "fill"
-#' )
+#' @seealso [RunSpatialEcoTyper()] for ecotype input requirements and result generation.
 #' @export
 SpatialEcoTyperCompositionPlot <- function(
   srt,

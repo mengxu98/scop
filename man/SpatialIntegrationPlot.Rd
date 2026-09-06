@@ -74,17 +74,12 @@ A \code{ggplot}, patchwork object, or list of plots.
 \description{
 Visualize standardized results produced by \code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}.
 }
-\examples{
-data(visium_human_pancreas_pair_sub)
-SpatialIntegrationPlot(
-  visium_human_pancreas_pair_sub,
-  plot_type = "spatial",
-  group.by = "domain",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-SpatialIntegrationPlot(
-  visium_human_pancreas_pair_sub,
-  plot_type = "embedding"
-)
+\details{
+Requires a successful \code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}} result on the supplied
+object. Use the spatial view for its stored domains and the embedding view
+for its learned joint representation. A sample label or an unrelated domain
+column alone does not supply an integration result.
+}
+\seealso{
+\code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}} for input requirements and stored integration results.
 }

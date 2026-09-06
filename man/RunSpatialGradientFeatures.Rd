@@ -146,11 +146,13 @@ stores validated result tables in \code{srt@tools} when requested.
 \examples{
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
+# A constructed diagonal axis illustrates the API, not an inferred trajectory.
+# No permutation test is requested in this short example (n_random = 0).
 spatial <- RunSpatialGradientFeatures(
   spatial,
   reference = "trajectory",
   backend = "cpp",
-  result_name = "ductal_axis",
+  result_name = "example_axis",
   variables = rownames(spatial)[1:8],
   start = c(min(spatial$x), min(spatial$y)),
   end = c(max(spatial$x), max(spatial$y)),

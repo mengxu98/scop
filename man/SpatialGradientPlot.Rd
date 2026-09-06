@@ -97,14 +97,37 @@ A \code{ggplot} or \code{patchwork} object.
 Visualize normalized results produced by \code{RunSpatialGradientFeatures()}
 }
 \examples{
-data(visium_human_pancreas_results_sub)
+data(visium_human_pancreas_sub)
+spatial <- visium_human_pancreas_sub
+# A constructed diagonal axis illustrates the API, not an inferred trajectory.
+# No permutation test is requested in this short example (n_random = 0).
+spatial <- RunSpatialGradientFeatures(
+  spatial,
+  reference = "trajectory",
+  backend = "cpp",
+  result_name = "example_axis",
+  variables = rownames(spatial)[1:8],
+  start = c(min(spatial$x), min(spatial$y)),
+  end = c(max(spatial$x), max(spatial$y)),
+  layer = "counts",
+  coord.cols = c("x", "y"),
+  n_random = 0,
+  n_bins = 5,
+  min_spots = 3,
+  sign_threshold = 1,
+  nfeatures = 4,
+  verbose = FALSE
+)
+
 SpatialGradientPlot(
-  visium_human_pancreas_results_sub,
-  result_name = "scop_gradient_fixture",
+  spatial,
   plot_type = "surface",
-  features = rownames(visium_human_pancreas_results_sub)[1:2],
+  features = rownames(spatial)[1:2],
   overlay_image = FALSE,
   coord.cols = c("x", "y"),
   pt.size = 1.2
 )
+}
+\seealso{
+\code{\link[=RunSpatialGradientFeatures]{RunSpatialGradientFeatures()}} for a complete analysis and plotting example.
 }

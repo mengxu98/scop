@@ -29,34 +29,21 @@
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param ... Additional backend-specific arguments.
 #'
+#' @details
+#' Supply either a named list of spatial Seurat objects from distinct samples,
+#' or a merged object with a `sample.by` column identifying those samples.
+#' Inputs need compatible expression features and raw coordinates. For
+#' image-backed inputs, select the appropriate image for each sample; an image
+#' mapping for a list refers to image names within each original object.
+#'
+#' The bundled Visium example contains one section and is not a multi-sample
+#' integration dataset. Use independent samples for integration. Plot the
+#' returned domains or embedding with [SpatialIntegrationPlot()].
+#'
 #' @return A `Seurat` object with spatial integration results stored in
 #' metadata, reductions, and `srt@tools[[tool_name]]`.
 #' @export
 #'
-#' @examples
-#' data(visium_human_pancreas_pair_sub)
-#' SpatialIntegrationPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   plot_type = "spatial",
-#'   group.by = "domain",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
-#' SpatialIntegrationPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   plot_type = "embedding"
-#' )
-#'
-#' \dontrun{
-#' check_r("PRECAST", verbose = FALSE)
-#' spatial <- RunSpatialIntegration(
-#'   visium_human_pancreas_pair_sub,
-#'   method = "PRECAST", sample.by = "sample", assay = "Spatial",
-#'   coord.cols = c("x", "y"),
-#'   features = rownames(visium_human_pancreas_pair_sub)[1:100],
-#'   verbose = FALSE
-#' )
-#' }
 RunSpatialIntegration <- function(
   object,
   method = "PRECAST",
@@ -162,22 +149,16 @@ RunSpatialIntegration <- function(
 #' @param ... Additional arguments passed to [SpatialSpotPlot()] or
 #' [CellDimPlot()].
 #'
+#' @details
+#' Requires a successful [RunSpatialIntegration()] result on the supplied
+#' object. Use the spatial view for its stored domains and the embedding view
+#' for its learned joint representation. A sample label or an unrelated domain
+#' column alone does not supply an integration result.
+#'
 #' @return A `ggplot`, patchwork object, or list of plots.
+#' @seealso [RunSpatialIntegration()] for input requirements and stored integration results.
 #' @export
 #'
-#' @examples
-#' data(visium_human_pancreas_pair_sub)
-#' SpatialIntegrationPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   plot_type = "spatial",
-#'   group.by = "domain",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
-#' SpatialIntegrationPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   plot_type = "embedding"
-#' )
 SpatialIntegrationPlot <- function(
   srt,
   method = NULL,

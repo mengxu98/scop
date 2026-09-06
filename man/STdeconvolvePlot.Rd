@@ -54,12 +54,6 @@ Plot stored topic proportions without rerunning the optional backend.
 Multi-topic point maps use one shared proportion scale and reserve title
 space above the automatic layout.
 }
-\examples{
-data(visium_human_pancreas_results_sub)
-STdeconvolvePlot(
-  visium_human_pancreas_results_sub,
-  topics = 1:2,
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
+\seealso{
+\code{\link[=RunSTdeconvolve]{RunSTdeconvolve()}} for a complete analysis and plotting example.
 }

@@ -107,6 +107,8 @@ keep_spots <- unique(round(seq(
   length.out = 120
 )))
 spatial <- visium_human_pancreas_sub[, keep_spots]
+# This small reference covers only three types; estimates are conditional
+# on those types and do not describe the tissue's complete cell composition.
 reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] \%in\%
   c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
@@ -127,6 +129,7 @@ spatial <- RunCytoSPACE(
   coord.cols = c("x", "y"),
   verbose = FALSE
 )
+
 SpatialSpotPlot(
   spatial,
   group.by = "CytoSPACE_dominant_type",

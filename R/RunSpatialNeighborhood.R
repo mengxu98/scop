@@ -263,16 +263,10 @@ RunSpatialNeighborhood <- function(
 #' @param seed Random seed used by layouts and jittered plot layers.
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
+#' @seealso [RunSpatialNeighborhood()] for a complete analysis and plotting example.
+#' @inherit RunSpatialNeighborhood examples
 #' @export
 #'
-#' @examples
-#' data(visium_human_pancreas_results_sub)
-#' SpatialNeighborhoodPlot(
-#'   visium_human_pancreas_results_sub,
-#'   plot_type = "spatial",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
 SpatialNeighborhoodPlot <- function(
   srt,
   method = NULL,

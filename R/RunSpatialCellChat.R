@@ -899,25 +899,22 @@ spatialcellchat_run_one <- function(
 #'   distinct method name `"SpatialCellChat"`.
 #'
 #' @examples
-#' data(visium_human_pancreas_results_sub)
-#' chat <- visium_human_pancreas_results_sub@tools$SpatialCellChat
-#' chat$summary
-#' SpatialCellChatPlot(
-#'   visium_human_pancreas_results_sub,
-#'   plot_type = "incoming",
-#'   sample = "ALL"
-#' )
-#'
 #' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' visium_human_pancreas_sub <- Seurat::NormalizeData(
+#'   visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
+#' )
+#' # CODA tissue labels define spot groups, not single-cell sender/receiver types.
 #' check_r("jinworks/SpatialCellChat", verbose = FALSE)
 #' spatial <- RunSpatialCellChat(
-#'   visium_human_pancreas_results_sub,
-#'   group.by = "coda_label", assay = "Spatial", image = NULL,
+#'   visium_human_pancreas_sub,
+#'   group.by = "coda_label", assay = "Spatial", image = "slice1",
 #'   coord.cols = c("x", "y"),
 #'   technology = "visium", analysis.level = "spot",
 #'   coordinate.unit = "pixel", species = "Homo_sapiens",
 #'   store.object = "minimal", verbose = FALSE
 #' )
+#' SpatialCellChatPlot(spatial, plot_type = "incoming")
 #' }
 #'
 #' @references
@@ -1344,15 +1341,8 @@ spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample
 #' @param title Optional title.
 #'
 #' @return A `ggplot` object.
+#' @seealso [RunSpatialCellChat()] for a complete analysis and plotting example.
 #' @export
-#' @examples
-#' data(visium_human_pancreas_results_sub)
-#' SpatialCellChatPlot(
-#'   visium_human_pancreas_results_sub,
-#'   plot_type = "incoming",
-#'   sample = "ALL",
-#'   top_n = 10
-#' )
 SpatialCellChatPlot <- function(
   object,
   result.name = NULL,
