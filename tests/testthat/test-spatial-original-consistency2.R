@@ -322,14 +322,21 @@ test_that("RunSpotSweeper local outliers match the original SpotSweeper pipeline
     colData = S4Vectors::DataFrame(coldata),
     spatialCoords = as.matrix(coords[, c("x", "y")])
   )
-  spe <- SpotSweeper::localOutliers(spe,
-    metric = "nCount_Spatial", direction = "lower",
-    n_neighbors = 20, samples = ".SpotSweeper_sample", log = TRUE, cutoff = 3, workers = 1
-  )
-  spe <- SpotSweeper::localOutliers(spe,
-    metric = "nFeature_Spatial", direction = "lower",
-    n_neighbors = 20, samples = ".SpotSweeper_sample", log = TRUE, cutoff = 3, workers = 1
-  )
+  for (metric in c("nCount_Spatial", "nFeature_Spatial")) {
+    spe <- SpotSweeper::localOutliers(spe,
+      metric = metric, direction = "lower",
+      n_neighbors = 20, samples = ".SpotSweeper_sample", log = TRUE, cutoff = 3, workers = 1
+    )
+    # Independently align the original backend's named rbind output. Do not
+    # call the SCOP adapter under test or index unverified names (yielding NA).
+    expected_ids <- if (setequal(colnames(spe), spots)) spots else paste0("sample1.", spots)
+    expect_setequal(colnames(spe), expected_ids)
+    stopifnot(!anyDuplicated(colnames(spe)), all(expected_ids %in% colnames(spe)))
+    spe <- spe[, match(expected_ids, colnames(spe))]
+    colnames(spe) <- spots
+    expect_equal(unname(SpatialExperiment::spatialCoords(spe)),
+      unname(as.matrix(coords[, c("x", "y")])) )
+  }
 
   wrapped_cd <- wrapped@tools$SpotSweeper$colData
   original_cd <- as.data.frame(SummarizedExperiment::colData(spe))
