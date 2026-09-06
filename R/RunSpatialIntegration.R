@@ -14,6 +14,8 @@
 #' @param image Optional image name or named character vector mapping sample
 #' names to image names. By default, resolve the unique image covering each
 #' sample independently. Every input sample must remain represented.
+#' For list input, image names refer to each original list element, before
+#' Seurat renames duplicate image keys during merging.
 #' @param method Spatial integration backend.
 #' @param sample.by Metadata column identifying samples for a merged `Seurat`
 #' object. For list input, list names are copied into this column.
@@ -315,6 +317,7 @@ spatial_integration_prepare_input <- function(
   coord.cols,
   coordinate_space = "raw"
 ) {
+  list_coordinates <- NULL
   if (inherits(object, "Seurat")) {
     if (!sample.by %in% colnames(object@meta.data)) {
       log_message(
@@ -333,6 +336,8 @@ spatial_integration_prepare_input <- function(
     srt_list <- NULL
   } else {
     srt_list <- spatial_integration_as_list(object, sample.by = sample.by)
+    list_coordinates <- spatial_integration_list_coords(srt_list, sample.by, image,
+                                                       coord.cols, coordinate_space)
     srt <- spatial_integration_merge_list(srt_list, sample.by = sample.by)
   }
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -358,7 +363,7 @@ spatial_integration_prepare_input <- function(
       assay = assay
     )
   }
-  coordinate_input <- spatial_sample_coords(
+  coordinate_input <- list_coordinates %||% spatial_sample_coords(
     srt = srt,
     sample.by = sample.by,
     image = image,
@@ -479,8 +484,7 @@ spatial_integration_merge_list <- function(srt_list, sample.by) {
     original <- srt_list[[sample]]
     for (image in SeuratObject::Images(original)) {
       if (!inherits(original[[image]], "VisiumV2")) next
-      orientation <- original@misc$spatial_image_axes[[image]] %||%
-        attr(original[[image]], "coords_x_orientation", exact = TRUE) %||% "vertical"
+      orientation <- spatial_image_x_orientation(original, image)
       cells <- paste(sample, SeuratObject::Cells(original[[image]]), sep = "_")
       matches <- SeuratObject::Images(merged)[vapply(merged@images, function(img) {
         setequal(SeuratObject::Cells(img), cells)
@@ -489,6 +493,30 @@ spatial_integration_merge_list <- function(srt_list, sample.by) {
     }
   }
   merged
+}
+
+spatial_integration_list_coords <- function(objects, sample.by, image, coord.cols, space) {
+  samples <- names(objects)
+  if (!is.null(image) && (length(image) > 1L || !is.null(names(image)))) {
+    if (is.null(names(image)) || anyDuplicated(names(image)) || !setequal(names(image), samples)) {
+      log_message("The named {.arg image} map must cover every sample exactly once", message_type = "error")
+    }
+  }
+  data <- sources <- stats::setNames(vector("list", length(samples)), samples)
+  for (sample in samples) {
+    local_image <- if (is.null(image) || is.null(names(image))) image else unname(image[[sample]])
+    resolved <- spatial_sample_coords(objects[[sample]], sample.by, local_image, coord.cols, space)
+    data[[sample]] <- resolved$data
+    if (length(objects) > 1L) {
+      data[[sample]]$cell_id <- paste(sample, data[[sample]]$cell_id, sep = "_")
+    }
+    sources[[sample]] <- resolved$sources[[sample]]
+    sources[[sample]]$input_image <- sources[[sample]]$image
+    sources[[sample]]$selection_namespace <- "input_sample"
+  }
+  data <- do.call(rbind, unname(data))
+  rownames(data) <- data$cell_id
+  list(data = data, sources = sources)
 }
 
 

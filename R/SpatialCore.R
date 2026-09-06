@@ -196,12 +196,7 @@ spatial_coords_raw <- function(
       # Read10X_Image stores imagerow/imagecol positionally as x/y. Custom
       # loaders can persist the opposite convention on the image itself.
       # Ordinary cell metadata is not coordinate-system provenance.
-      orientation <- srt@misc$spatial_image_axes[[selected_image]] %||%
-        attr(spatial_image, "coords_x_orientation", exact = TRUE) %||% "vertical"
-      if (length(orientation) != 1L || is.na(orientation) ||
-          !orientation %in% c("horizontal", "vertical")) {
-        log_message("Image coords_x_orientation must be horizontal or vertical", message_type = "error")
-      }
+      orientation <- spatial_image_x_orientation(srt, selected_image)
       x_col <- spatial_dim_pick_col(raw, if (orientation == "horizontal") "x" else "y")
       y_col <- spatial_dim_pick_col(raw, if (orientation == "horizontal") "y" else "x")
     } else {
@@ -284,6 +279,21 @@ spatial_coords_raw <- function(
   attr(result$data, "spatial_source") <- result$source
   attr(result$data, "spatial_transform") <- result$transform
   result
+}
+
+spatial_image_x_orientation <- function(object, image) {
+  orientation <- object@misc$spatial_image_axes[[image]]
+  if (is.null(orientation)) {
+    orientation <- attr(object[[image]], "coords_x_orientation", exact = TRUE)
+    # SeuratObject's newer FOV class initializes this slot to character(0).
+    # An unset native slot has the same meaning as an absent legacy attribute.
+    if (length(orientation) == 0L) orientation <- "vertical"
+  }
+  if (length(orientation) != 1L || is.na(orientation) ||
+      !orientation %in% c("horizontal", "vertical")) {
+    log_message("Image coords_x_orientation must be horizontal or vertical", message_type = "error")
+  }
+  orientation
 }
 
 spatial_coords_to_display <- function(raw, transform) {

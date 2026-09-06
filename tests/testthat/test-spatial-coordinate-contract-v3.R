@@ -185,3 +185,31 @@ test_that("SpotSweeper sample prefixes are restored only with a verified mapping
 test_that("v2 coordinate results are rejected after the semantic repair", {
   expect_error(spatial_require_coordinate_contract(list(coordinate_contract_version = 2L), "producer"), "rerun")
 })
+
+test_that("list image maps refer to each input object's local image names", {
+  srt <- coordinate_v3_fixture()
+  objects <- Seurat::SplitObject(srt, split.by = "sample")
+  objects$S2@images <- list(slice1 = objects$S2@images$slice2)
+  testthat::local_mocked_bindings(spatial_integration_run_backend = function(method, input, ...) {
+    expect_length(input$cells, 8)
+    expect_equal(input$coords$x, rep(c(10, 20, 30, 40), 2))
+    list(domains = stats::setNames(rep("D1", 8), input$cells), raw_result = list())
+  })
+  for (map in list(c(S1 = "slice1", S2 = "slice1"), "slice1")) {
+    expect_no_error(out <- RunSpatialIntegration(objects, sample.by = "sample", image = map, verbose = FALSE))
+    expect_false(anyNA(out$SpatialIntegration_PRECAST_domain))
+    expect_identical(out@tools$SpatialIntegration$parameters$coordinate_sources$S2$input_image, "slice1")
+  }
+})
+
+test_that("bundled raw-coordinate results remain plottable under v3", {
+  data(visium_human_pancreas_results_sub)
+  data(visium_human_pancreas_pair_sub)
+  single <- visium_human_pancreas_results_sub
+  pair <- visium_human_pancreas_pair_sub
+  expect_s3_class(MistyRPlot(single), "ggplot")
+  expect_s3_class(StatialKontextualPlot(single), "ggplot")
+  expect_s3_class(SpatialIntegrationPlot(pair, plot_type = "embedding"), "ggplot")
+  expect_s3_class(SpatialNetworkPlot(single), "ggplot")
+  expect_identical(single@tools$SCOPExamples$coordinate_contract_migration$backend_rerun, FALSE)
+})

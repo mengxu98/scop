@@ -129,6 +129,17 @@ test_that("VisiumV2 restores Read10X row/column order", {
   expect_equal(display$y, dim(image@image)[1L] - seurat_coords$x)
 })
 
+test_that("unset native orientation slots use the standard Seurat convention", {
+  fixture <- make_coordinate_contract_object("VisiumV2")
+  attr(fixture$object@images$slice, "coords_x_orientation") <- character(0)
+  raw <- SpatialCoordinates(fixture$object)
+  expect_equal(raw$data$x, fixture$raw$x)
+  expect_equal(raw$data$y, fixture$raw$y)
+  expect_identical(raw$source$coord.cols, c("y", "x"))
+  fixture$object@misc$spatial_image_axes$slice <- character(0)
+  expect_error(SpatialCoordinates(fixture$object), "coords_x_orientation")
+})
+
 test_that("VisiumV2 objects with explicit metadata coordinates overlay their image", {
   data("visium_human_pancreas_sub", package = "scop")
   srt <- visium_human_pancreas_sub
