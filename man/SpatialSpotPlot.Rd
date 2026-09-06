@@ -21,7 +21,7 @@ SpatialSpotPlot(
   image.alpha = 1,
   crop = TRUE,
   coord.cols = c("col", "row"),
-  flip.y = TRUE,
+  flip.y = FALSE,
   show_axes = FALSE,
   split.by = NULL,
   cells = NULL,
@@ -52,10 +52,7 @@ SpatialSpotPlot(
 }
 \arguments{
 \item{srt}{A \code{Seurat} object. The same object may be supplied as
-\code{object =} for consistency with spatial plotting APIs.}
-
-\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
-\code{object}.}
+\verb{object =} for consistency with spatial plotting APIs.}
 
 \item{group.by}{Metadata columns to color spots by.}
 
@@ -85,7 +82,9 @@ a single image is selected automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
-\item{flip.y}{Reverse the y axis for metadata coordinates.}
+\item{flip.y}{Reverse the y axis for metadata or FOV coordinates without a
+raster image. The default \code{FALSE} agrees with spatial networks and cell
+boundaries. Raster-backed display coordinates already include their flip.}
 
 \item{show_axes}{Keep axis text, ticks, and grid when \code{theme_use} is
 \code{"theme_spatial"}.}
@@ -119,10 +118,13 @@ spacing, then multiplies by \code{pie.radius.scale}.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
+\code{object}.}
 
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
@@ -137,12 +139,12 @@ Spatial spot plot
 \examples{
 data(visium_human_pancreas_sub)
 SpatialSpotPlot(
-  visium_human_pancreas_sub,
+  object = visium_human_pancreas_sub,
   group.by = "coda_label"
 )
 
 SpatialSpotPlot(
-  visium_human_pancreas_sub,
+  object = visium_human_pancreas_sub,
   features = rownames(visium_human_pancreas_sub)[1:2],
   layer = "counts"
 )

@@ -11,7 +11,7 @@ srt_to_spe(
   coord.cols = c("col", "row"),
   image = NULL,
   include_meta = TRUE,
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 )
 }
 \arguments{
@@ -31,7 +31,9 @@ coordinates are used.}
 
 \item{coordinate_space}{Coordinate space exported to \code{spatialCoords}.
 \code{"legacy_display"} preserves the historical scaled/y-flipped behavior;
-\code{"raw"} preserves analysis distances.}
+\code{"raw"} (the default) preserves analysis distances. The source and
+transform are stored in \code{metadata(spe)$scop_spatial_coordinates} so that
+an explicit display export can be inverted by \code{\link[=spe_to_srt]{spe_to_srt()}}.}
 }
 \value{
 A \code{SpatialExperiment}.

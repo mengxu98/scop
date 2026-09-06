@@ -76,11 +76,69 @@ spatial_resolve_coord_cols <- function(srt, coord.cols = c("col", "row")) {
 spatial_metadata_coords <- function(srt, coord.cols = c("col", "row")) {
   coord.cols <- spatial_resolve_coord_cols(srt, coord.cols = coord.cols)
   data.frame(
-    x = suppressWarnings(as.numeric(srt@meta.data[[coord.cols[1L]]])),
-    y = suppressWarnings(as.numeric(srt@meta.data[[coord.cols[2L]]])),
+    x = spatial_coordinate_numeric(srt@meta.data[[coord.cols[1L]]]),
+    y = spatial_coordinate_numeric(srt@meta.data[[coord.cols[2L]]]),
     row.names = rownames(srt@meta.data),
     stringsAsFactors = FALSE
   )
+}
+
+spatial_coordinate_numeric <- function(x) {
+  if (is.factor(x)) x <- as.character(x)
+  if (!is.numeric(x) && !is.character(x)) {
+    log_message("Spatial coordinates must be numeric or numeric text", message_type = "error")
+  }
+  suppressWarnings(as.numeric(x))
+}
+
+# Resolve every sample independently. A scalar image must cover every sample;
+# a named image map must cover exactly the requested sample names.
+spatial_sample_coords <- function(srt, sample.by, image = NULL,
+                                  coord.cols = c("col", "row"), coordinate_space = "raw") {
+  labels <- as.character(srt[[]][[sample.by]])
+  if (length(labels) != ncol(srt) || anyNA(labels) || any(!nzchar(labels))) {
+    log_message("{.arg sample.by} must identify every cell or spot", message_type = "error")
+  }
+  samples <- unique(labels)
+  if (!is.null(image)) {
+    if (!is.character(image) || length(image) == 0L || anyNA(image) || any(!nzchar(image))) {
+      log_message("{.arg image} must be an image name or a named image map", message_type = "error")
+    }
+    if (length(image) > 1L || !is.null(names(image))) {
+      if (is.null(names(image)) || anyDuplicated(names(image)) || !setequal(names(image), samples)) {
+        log_message("The named {.arg image} map must cover every sample exactly once", message_type = "error")
+      }
+    }
+  }
+  images <- SeuratObject::Images(srt)
+  image_cells <- lapply(images, function(nm) SeuratObject::Cells(srt[[nm]]))
+  names(image_cells) <- images
+  data <- sources <- vector("list", length(samples))
+  names(data) <- names(sources) <- samples
+  for (sample in samples) {
+    cells <- colnames(srt)[labels == sample]
+    selected <- if (is.null(image)) NULL else if (is.null(names(image))) image else unname(image[[sample]])
+    if (is.null(selected) && length(images) > 0L) {
+      candidates <- images[vapply(image_cells, function(ids) all(cells %in% ids), logical(1))]
+      if (length(candidates) != 1L) {
+        log_message(
+          "Sample {.val {sample}} requires one image covering all its cells; supply a named {.arg image} map when ambiguous",
+          message_type = "error"
+        )
+      }
+      selected <- candidates[[1L]]
+    }
+    resolved <- spatial_analysis_coords(srt, image = selected, coord.cols = coord.cols,
+                                        coordinate_space = coordinate_space)
+    if (!all(cells %in% resolved$data$cell_id)) {
+      log_message("Selected image does not cover every cell in sample {.val {sample}}", message_type = "error")
+    }
+    data[[sample]] <- resolved$data[match(cells, resolved$data$cell_id), , drop = FALSE]
+    sources[[sample]] <- c(resolved$source, list(transform = resolved$transform))
+  }
+  coords <- do.call(rbind, unname(data))
+  rownames(coords) <- coords$cell_id
+  list(data = coords[colnames(srt), , drop = FALSE], sources = sources)
 }
 
 spatial_empty_plot <- function(

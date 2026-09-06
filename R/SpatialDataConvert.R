@@ -14,7 +14,9 @@
 #' coordinates are used.
 #' @param coordinate_space Coordinate space exported to `spatialCoords`.
 #'   `"legacy_display"` preserves the historical scaled/y-flipped behavior;
-#'   `"raw"` preserves analysis distances.
+#'   `"raw"` (the default) preserves analysis distances. The source and
+#'   transform are stored in `metadata(spe)$scop_spatial_coordinates` so that
+#'   an explicit display export can be inverted by [spe_to_srt()].
 #' @param include_meta Whether to include Seurat metadata as `colData`.
 #'
 #' @return A `SpatialExperiment`.
@@ -26,7 +28,7 @@ srt_to_spe <- function(
   coord.cols = c("col", "row"),
   image = NULL,
   include_meta = TRUE,
-  coordinate_space = c("legacy_display", "raw")
+  coordinate_space = c("raw", "legacy_display")
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
@@ -38,12 +40,13 @@ srt_to_spe <- function(
   }
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
   coordinate_space <- match.arg(coordinate_space)
-  coords <- spatial_analysis_coords(
+  resolved <- spatial_analysis_coords(
     srt = srt,
     image = image,
     coord.cols = coord.cols,
     coordinate_space = coordinate_space
-  )$data
+  )
+  coords <- resolved$data
   cells <- intersect(colnames(expr), rownames(coords))
   if (length(cells) == 0L) {
     log_message("No assay cells match spatial coordinates", message_type = "error")
@@ -58,7 +61,11 @@ srt_to_spe <- function(
   SpatialExperiment::SpatialExperiment(
     assays = list(scop_input = expr),
     colData = coldata,
-    spatialCoords = as.matrix(coords)
+    spatialCoords = as.matrix(coords),
+    metadata = list(scop_spatial_coordinates = list(
+      source = resolved$source,
+      transform = resolved$transform
+    ))
   )
 }
 
@@ -67,6 +74,10 @@ srt_to_spe <- function(
 #' @description
 #' Create a Seurat object from a `SpatialExperiment`, preserving `colData` and
 #' spatial coordinates as metadata columns.
+#' SCOP display exports are inverted to raw coordinates using their saved
+#' transform. External SpatialExperiment coordinates without SCOP provenance
+#' are treated as raw coordinates in their supplied units. Original import
+#' provenance is retained in `object@misc$spatial_coordinate_import`.
 #'
 #' @md
 #' @param spe A `SpatialExperiment` or `SummarizedExperiment`.
@@ -98,19 +109,63 @@ spe_to_srt <- function(
     log_message("{.arg layer} {.val {layer}} is not an assay in {.arg spe}", message_type = "error")
   }
   counts <- SummarizedExperiment::assay(spe, layer)
+  if (length(coord.cols) != 2L || anyNA(coord.cols) ||
+      any(!nzchar(coord.cols)) || anyDuplicated(coord.cols)) {
+    log_message("{.arg coord.cols} must contain two unique non-empty names", message_type = "error")
+  }
   meta <- as.data.frame(SummarizedExperiment::colData(spe), optional = TRUE)
   if (nrow(meta) == 0L) {
     meta <- data.frame(row.names = colnames(counts))
   }
   coords <- tryCatch(SpatialExperiment::spatialCoords(spe), error = function(e) NULL)
+  provenance <- S4Vectors::metadata(spe)$scop_spatial_coordinates
   if (!is.null(coords) && ncol(coords) >= 2L) {
-    meta[[coord.cols[1L]]] <- as.numeric(coords[, 1L])
-    meta[[coord.cols[2L]]] <- as.numeric(coords[, 2L])
+    if (nrow(coords) != ncol(counts)) {
+      log_message("SpatialExperiment coordinates must match all assay columns", message_type = "error")
+    }
+    if (!is.null(rownames(coords))) {
+      if (anyDuplicated(rownames(coords)) || !setequal(rownames(coords), colnames(counts))) {
+        log_message("SpatialExperiment coordinate IDs do not match assay columns", message_type = "error")
+      }
+      coords <- coords[colnames(counts), , drop = FALSE]
+    }
+    x <- spatial_coordinate_numeric(coords[, 1L])
+    y <- spatial_coordinate_numeric(coords[, 2L])
+    if (!is.null(provenance)) {
+      space <- provenance$source$coordinate_space
+      if (!is.character(space) || length(space) != 1L || is.na(space) ||
+          !space %in% c("raw", "display", "legacy_display")) {
+        log_message("Invalid SCOP SpatialExperiment coordinate provenance", message_type = "error")
+      }
+      if (space != "raw") {
+        transform <- provenance$transform
+        scale <- transform$scale
+        if (length(scale) != 1L || !is.finite(scale) || scale <= 0) {
+          log_message("Display import requires a positive finite saved scale", message_type = "error")
+        }
+        if (isTRUE(transform$y_flip)) {
+          if (length(transform$image_height) != 1L || !is.finite(transform$image_height)) {
+            log_message("Display import requires a finite saved image height", message_type = "error")
+          }
+          y <- transform$image_height - y
+        }
+        x <- x / scale
+        y <- y / scale
+      }
+    }
+    if (any(!is.finite(x) | !is.finite(y))) {
+      log_message("SpatialExperiment coordinates must be finite", message_type = "error")
+    }
+    meta <- meta[colnames(counts), , drop = FALSE]
+    meta[[coord.cols[1L]]] <- x
+    meta[[coord.cols[2L]]] <- y
   }
-  Seurat::CreateSeuratObject(
+  out <- Seurat::CreateSeuratObject(
     counts = counts,
     assay = assay,
     meta.data = meta,
     project = project
   )
+  if (!is.null(provenance)) out@misc$spatial_coordinate_import <- provenance
+  out
 }

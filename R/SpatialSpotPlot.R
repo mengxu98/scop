@@ -21,7 +21,9 @@
 #'   selected image. Use `"hires"` for a hires raster; do not modify Seurat
 #'   scale-factor slots.
 #' @param crop Crop the panel to plotted spots.
-#' @param flip.y Reverse the y axis for metadata coordinates.
+#' @param flip.y Reverse the y axis for metadata or FOV coordinates without a
+#'   raster image. The default `FALSE` agrees with spatial networks and cell
+#'   boundaries. Raster-backed display coordinates already include their flip.
 #' @param show_axes Keep axis text, ticks, and grid when `theme_use` is
 #' `"theme_spatial"`.
 #' @param theme_use Theme name or function.
@@ -63,7 +65,7 @@ SpatialSpotPlot <- function(
   image.alpha = 1,
   crop = TRUE,
   coord.cols = c("col", "row"),
-  flip.y = TRUE,
+  flip.y = FALSE,
   show_axes = FALSE,
   split.by = NULL,
   cells = NULL,
@@ -273,7 +275,7 @@ spatial_dim_long_plot <- function(
   image.alpha = 1,
   crop = TRUE,
   coord.cols = c("col", "row"),
-  flip.y = TRUE,
+  flip.y = FALSE,
   show_axes = FALSE,
   split.by = NULL,
   cells = NULL,
@@ -457,7 +459,7 @@ spatial_dim_pie_plot <- function(
   image.alpha = 1,
   crop = TRUE,
   coord.cols = c("col", "row"),
-  flip.y = TRUE,
+  flip.y = FALSE,
   show_axes = FALSE,
   split.by = NULL,
   cells = NULL,

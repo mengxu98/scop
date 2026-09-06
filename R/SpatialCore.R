@@ -1,6 +1,6 @@
 # Pure coordinate and graph primitives for spatial analyses.
 
-.spatial_coordinate_contract_version <- 2L
+.spatial_coordinate_contract_version <- 3L
 
 spatial_coordinate_contract_version <- function(result) {
   candidates <- list(
@@ -145,6 +145,7 @@ spatial_coords_raw <- function(
   image_policy <- resolved_image$image_policy
   selected_image <- resolved_image$image
   if (is.null(selected_image)) {
+    coord.cols <- spatial_resolve_coord_cols(srt, coord.cols = coord.cols)
     coords <- spatial_metadata_coords(srt, coord.cols = coord.cols)
     cells <- rownames(coords)
     source_coord_cols <- coord.cols[1:2]
@@ -192,43 +193,20 @@ spatial_coords_raw <- function(
       inherits(spatial_image, "VisiumV2") &&
         all(c("x", "y") %in% raw_names)
     ) {
-      # VisiumV2 objects created by different Seurat loaders disagree about
-      # whether CreateFOV()'s positional x/y columns represent image-column /
-      # image-row or the original imagerow / imagecol order. Prefer the
-      # object's explicit metadata coordinates when they match the image;
-      # retain the historical swap only for objects without that evidence.
-      x_col <- spatial_dim_pick_col(raw, "x")
-      y_col <- spatial_dim_pick_col(raw, "y")
-      metadata <- tryCatch(as.data.frame(srt[[]]), error = function(e) NULL)
-      metadata_match <- !is.null(metadata) &&
-        all(c("x", "y") %in% colnames(metadata)) &&
-        all(rownames(raw) %in% rownames(metadata))
-      if (isTRUE(metadata_match)) {
-        metadata <- metadata[rownames(raw), c("x", "y"), drop = FALSE]
-        metadata_match <- all(is.finite(as.numeric(metadata$x))) &&
-          all(is.finite(as.numeric(metadata$y)))
-      }
-      if (isTRUE(metadata_match)) {
-        direct_error <- sum(abs(as.numeric(metadata$x) - as.numeric(raw[[x_col]])), na.rm = TRUE) +
-          sum(abs(as.numeric(metadata$y) - as.numeric(raw[[y_col]])), na.rm = TRUE)
-        swapped_error <- sum(abs(as.numeric(metadata$x) - as.numeric(raw[[y_col]])), na.rm = TRUE) +
-          sum(abs(as.numeric(metadata$y) - as.numeric(raw[[x_col]])), na.rm = TRUE)
-        if (is.finite(swapped_error) && swapped_error < direct_error) {
-          x_col <- spatial_dim_pick_col(raw, "y")
-          y_col <- spatial_dim_pick_col(raw, "x")
-        }
-      } else {
-        x_col <- spatial_dim_pick_col(raw, "y")
-        y_col <- spatial_dim_pick_col(raw, "x")
-      }
+      # Read10X_Image stores imagerow/imagecol positionally as x/y. Custom
+      # loaders can persist the opposite convention on the image itself.
+      # Ordinary cell metadata is not coordinate-system provenance.
+      orientation <- spatial_image_x_orientation(srt, selected_image)
+      x_col <- spatial_dim_pick_col(raw, if (orientation == "horizontal") "x" else "y")
+      y_col <- spatial_dim_pick_col(raw, if (orientation == "horizontal") "y" else "x")
     } else {
       x_col <- spatial_dim_pick_col(raw, c("x", "pxl_col_in_fullres", "imagecol"))
       y_col <- spatial_dim_pick_col(raw, c("y", "pxl_row_in_fullres", "imagerow"))
     }
     source_coord_cols <- c(x_col, y_col)
     coords <- data.frame(
-      x = suppressWarnings(as.numeric(raw[[x_col]])),
-      y = suppressWarnings(as.numeric(raw[[y_col]])),
+      x = spatial_coordinate_numeric(raw[[x_col]]),
+      y = spatial_coordinate_numeric(raw[[y_col]]),
       row.names = cells,
       stringsAsFactors = FALSE
     )
@@ -301,6 +279,21 @@ spatial_coords_raw <- function(
   attr(result$data, "spatial_source") <- result$source
   attr(result$data, "spatial_transform") <- result$transform
   result
+}
+
+spatial_image_x_orientation <- function(object, image) {
+  orientation <- object@misc$spatial_image_axes[[image]]
+  if (is.null(orientation)) {
+    orientation <- attr(object[[image]], "coords_x_orientation", exact = TRUE)
+    # SeuratObject's newer FOV class initializes this slot to character(0).
+    # An unset native slot has the same meaning as an absent legacy attribute.
+    if (length(orientation) == 0L) orientation <- "vertical"
+  }
+  if (length(orientation) != 1L || is.na(orientation) ||
+      !orientation %in% c("horizontal", "vertical")) {
+    log_message("Image coords_x_orientation must be horizontal or vertical", message_type = "error")
+  }
+  orientation
 }
 
 spatial_coords_to_display <- function(raw, transform) {
@@ -425,6 +418,7 @@ spatial_analysis_coords <- function(
 }
 
 #' @title Read spatial coordinates with an explicit coordinate contract
+#' @md
 #'
 #' @description
 #' Return raw analysis coordinates or display coordinates together with their
@@ -434,6 +428,14 @@ spatial_analysis_coords <- function(
 #' restores horizontal image-column and vertical image-row order. Generic FOV
 #' centroid tables with explicit `x`/`y` retain their order. SCOP then applies
 #' only the selected scale and display-axis flip.
+#' Custom VisiumV2 loaders storing horizontal centroid `x` must call
+#' [SetSpatialImageAxes()] with `x_orientation = "horizontal"` once. This
+#' persists the convention in the Seurat misc slot through subsetting
+#' and renaming; `"vertical"` (or no marker) uses the standard Seurat loader
+#' convention. Legacy `coords_x_orientation` image attributes are readable but
+#' should be migrated with [SetSpatialImageAxes()] before subsetting.
+#' Cell metadata never determines image axis order. Metadata-only coordinates
+#' retain their numerical orientation in both raw and display space.
 #' This function does not modify the object.
 #'
 #' @param object A `Seurat` object.
@@ -491,6 +493,37 @@ SpatialCoordinates <- function(
     result$source$coordinate_space <- "display"
   }
   result
+}
+
+#' @title Persist the coordinate axis convention of a VisiumV2 image
+#' @md
+#' @description Record whether the centroid column named `x` represents the
+#' horizontal image-column axis or the vertical image-row axis. This does not
+#' move coordinates or change the raster. It replaces metadata-based guessing
+#' and survives Seurat subsetting and cell renaming. Stored spatial
+#' analyses must be rerun after changing the convention.
+#' @param object A Seurat object.
+#' @param image Image name. Required when several images are present.
+#' @param x_orientation `"horizontal"` for custom images whose centroid x is
+#' image-column, or `"vertical"` for Seurat Read10X_Image's positional
+#' imagerow/imagecol convention.
+#' @return A Seurat object with an explicit image coordinate convention.
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' spatial <- SetSpatialImageAxes(
+#'   visium_human_pancreas_sub, image = "slice1", x_orientation = "horizontal"
+#' )
+#' SpatialCoordinates(spatial, image = "slice1")$source$coord.cols
+#' @export
+SetSpatialImageAxes <- function(object, image = NULL,
+                                x_orientation = c("horizontal", "vertical")) {
+  image <- spatial_image_resolve(object, image = image)$image
+  x_orientation <- match.arg(x_orientation)
+  if (is.null(image) || !inherits(object[[image]], "VisiumV2")) {
+    log_message("{.fn SetSpatialImageAxes} requires a VisiumV2 image", message_type = "error")
+  }
+  object@misc$spatial_image_axes[[image]] <- x_orientation
+  object
 }
 
 spatial_graph_weights <- function(distance, method, sigma = NULL) {

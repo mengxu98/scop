@@ -6,6 +6,7 @@
 ^reasonix\.toml$
 ^scopWorkbench$
 ^vignettes$
+^data-raw$
 ^docs$
 ^pkgdown$
 ^\.github$

@@ -210,6 +210,7 @@ reference:
 - subtitle: "Spatial Result Access"
 - contents:
   - SpatialCoordinates
+  - SetSpatialImageAxes
   - GetSpatialGraph
 
 - subtitle: "Spatial QC and Normalization"

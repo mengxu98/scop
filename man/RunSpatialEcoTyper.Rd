@@ -53,7 +53,8 @@ RunSpatialEcoTyper(
   store_results = TRUE,
   allow_partial = FALSE,
   verbose = TRUE,
-  ...
+  ...,
+  image = NULL
 )
 }
 \arguments{
@@ -76,7 +77,9 @@ for \code{"single"}, \code{"multi"}, and \code{"recover"} unless \code{celltypes
 
 \item{sample.by}{Metadata column identifying samples for \code{mode = "multi"}.}
 
-\item{x.by, y.by}{Metadata columns containing single-cell spatial coordinates.}
+\item{x.by, y.by}{Metadata columns containing single-cell spatial coordinates.
+Used only when no image is present; image-backed discovery uses raw image
+coordinates through \code{\link[=SpatialCoordinates]{SpatialCoordinates()}}.}
 
 \item{dat}{Optional expression matrix used by \code{"recover"} or
 \code{"deconvolute"}. If \code{NULL}, expression is extracted from \code{srt}.}
@@ -165,6 +168,9 @@ Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to the selected SpatialEcoTyper
 function.}
+
+\item{image}{Optional image name for single discovery, or named sample-to-image
+map for multi discovery. Multi discovery resolves each sample independently.}
 }
 \value{
 A \code{Seurat} object with SpatialEcoTyper results in metadata and raw

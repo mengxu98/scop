@@ -215,8 +215,8 @@ spatialcellchat_image_map <- function(srt, sample_names, image = NULL) {
 spatialcellchat_visium_spot_diameter <- function(srt, image) {
   candidates <- list(
     srt@misc$scalefactors_json[[image]]$spot_diameter_fullres,
-    srt@misc$spatial[[image]]$scalefactors$spot_diameter_fullres,
-    srt@misc$spatial[[image]]$spot_diameter_fullres
+    srt@misc[["spatial"]][[image]]$scalefactors$spot_diameter_fullres,
+    srt@misc[["spatial"]][[image]]$spot_diameter_fullres
   )
   image_misc <- if (!is.null(image) && image %in% tryCatch(SeuratObject::Images(srt), error = function(e) character())) {
     tryCatch(srt[[image]]@misc, error = function(e) list())

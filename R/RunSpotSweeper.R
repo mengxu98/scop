@@ -595,7 +595,6 @@ spot_sweeper_run_local_outliers <- function(
     )
     outlier_col <- paste0(metric, "_outliers")
     z_col <- paste0(metric, "_z")
-    input_spots <- colnames(spe)
     input_coldata <- spot_sweeper_coldata(spe)
     input_coldata[[outlier_col]] <- NULL
     input_coldata[[z_col]] <- NULL
@@ -613,16 +612,37 @@ spot_sweeper_run_local_outliers <- function(
       ),
       spot_sweeper_filter_args(local_fun, extra_args)
     )
-    spe <- do.call(local_fun, args)
-    if (!identical(colnames(spe), input_spots)) {
-      log_message(
-        "{.pkg SpotSweeper} {.fn localOutliers} changed spot identities or order for metric {.val {metric}}",
-        message_type = "error"
-      )
-    }
+    spe <- spot_sweeper_align_local_output(do.call(local_fun, args), spe, sample_col, metric)
     result[[metric]] <- spot_sweeper_coldata(spe)
   }
   list(spe = spe, result = result)
+}
+
+spot_sweeper_align_local_output <- function(output, input, sample_col, metric) {
+  input_ids <- colnames(input)
+  output_ids <- colnames(output)
+  fail <- function() log_message(
+    "{.pkg SpotSweeper} {.fn localOutliers} changed spot identities or data for metric {.val {metric}}",
+    message_type = "error"
+  )
+  if (is.null(output_ids) || length(output_ids) != length(input_ids) ||
+      anyNA(output_ids) || anyDuplicated(output_ids)) fail()
+  # localOutliers 1.5.0 rbinds named per-sample results, prefixing their IDs.
+  # Match the complete expected names; never strip an arbitrary prefix.
+  prefixed <- paste(as.character(SummarizedExperiment::colData(input)[[sample_col]]), input_ids, sep = ".")
+  candidates <- list(input_ids, prefixed)
+  valid <- vapply(candidates, function(ids) !anyDuplicated(ids) && setequal(ids, output_ids), logical(1))
+  mappings <- lapply(candidates[valid], function(ids) match(ids, output_ids))
+  if (length(mappings) == 0L ||
+      any(!vapply(mappings, identical, logical(1), mappings[[1L]]))) fail()
+  output <- output[, mappings[[1L]], drop = FALSE]
+  colnames(output) <- input_ids
+  same <- function(a, b) isTRUE(all.equal(unname(a), unname(b), check.attributes = FALSE))
+  if (!same(SpatialExperiment::spatialCoords(output), SpatialExperiment::spatialCoords(input)) ||
+      !same(SummarizedExperiment::assay(output), SummarizedExperiment::assay(input)) ||
+      !identical(as.character(SummarizedExperiment::colData(output)[[sample_col]]),
+                 as.character(SummarizedExperiment::colData(input)[[sample_col]]))) fail()
+  output
 }
 
 spot_sweeper_run_artifacts <- function(
