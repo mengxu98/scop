@@ -5,6 +5,7 @@
 * **fix**: Spatial integration and SpatialEcoTyper multi discovery resolve each sample's image independently and reject incomplete image coverage. SpatialEcoTyper single discovery requires a single selected image and stores its raw coordinate source. SpotSweeper local outlier results with verified sample-prefixed IDs are restored to input order without accepting changed coordinates or expression.
 
 * **fix**: Gradient result storage and VariableFeatures updates are independent; explicit empty updates clear VariableFeatures and completion messages describe actual actions.
+* **fix**: Neighborhood spatial counts respect saved analysis scope and condition, distinguish zero from unevaluated cells, reject unsupported plot arguments, and support valid empty observed results.
 
 * **feat**:
   * `SpatialNeighborhoodProfile()` returns observed per-cell neighbor counts and fractions at multiple raw-coordinate distances, retaining the full selected tissue context for target cells without modifying the Seurat object or storing an edge table.
@@ -25,6 +26,7 @@
   * `RunIntegrationBenchmark()` compares integration methods with scIB-style iLISI/cLISI, ASW, graph connectivity, and ARI/NMI scores and returns a `Seurat` object. Tables live in `srt@tools$IntegrationBenchmark` and are printed with `thisplot::print_colored_table()`. `IntegrationBenchmarkPlot()` draws `box` (per-cell LISI), heatmap, scatter, and UMAP views. `LISIPlot()` is removed; use `IntegrationBenchmarkPlot(plot_type = "box")`.
   * `SCENICPlot()` / `SCENICPlusPlot()`: `heatmap_dotplot`, `eregulon_dim`, `coverage`, `network`, `network_graph`, `egrn`, `overlap`. `"network"` draws one hub per TF. Network plots have no title. Networks use `"Chinese"` when `palette = "RdYlBu"`. Multi-TF legends show the top RSS cell type.
 * **fixed**:
+  * C-SIDE completion messages respect result storage and document compatibility metadata as run-level significant record counts.
   * `presto` is now a runtime-optional GitHub backend instead of a suggested check dependency. Marker fast paths use an existing installation without installing it, while `RunCellChat(do.fast = TRUE)` can resolve the backend from `immunogenomics/presto` before execution.
   * `RunCellRank()` now disables PETSc explicitly when retrying fate probabilities with SciPy's direct solver, preventing CellRank 2.0.7 from silently reverting the retry to GMRES and rejecting harmless floating-point negative probabilities (#380).
   * `RunCellRank()` defaults to the dependency-free `brandts` Schur method again, so the standard `scop_env` no longer fails because the optional `petsc4py` and `slepc4py` packages are absent. Users can still request `schur_method = "krylov"` when those packages are installed (#380).

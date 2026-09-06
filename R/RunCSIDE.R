@@ -5,8 +5,10 @@
 #' condition-aware differential expression. C-SIDE stores effect and
 #' significance results, not spot-level cell-type proportions, so it has no
 #' recommended proportion plot. Inspect its stored
-#' tables in `srt@tools[[tool_name]]` or plot an explicit summary column with
-#' [SpatialSpotPlot()]. The example is a non-executing template because C-SIDE
+#' tables in `srt@tools[[tool_name]]`. The metadata columns `<prefix>_n_sig`
+#' and `<prefix>_mode` repeat run-level summaries across spots. The former counts
+#' significant result records, not unique genes or spot-level effects.
+#' The example is a non-executing template because C-SIDE
 #' requires a completed optional RCTD result.
 #'
 #' @md
@@ -34,6 +36,9 @@
 #' C-SIDE itself still applies its own gene filtering through backend
 #' parameters such as `gene_threshold`.
 #' @param tool_name Name used to store detailed C-SIDE results in `srt@tools`.
+#' @param store_results Whether to store detailed results in `srt@tools`.
+#' Compatibility summary metadata is updated regardless; existing detailed
+#' results are retained when `FALSE` and do not represent the current run.
 #' @param ... Additional named parameters passed to the selected C-SIDE
 #' backend, such as `cell_type_threshold`, `gene_threshold`,
 #' `doublet_mode`, `cell_type_specific`, or `params_to_test`. When using the
@@ -229,7 +234,11 @@ RunCSIDE <- function(
   }
 
   log_message(
-    "{.pkg C-SIDE} results stored in {.code srt@tools[[{tool_name}]]}",
+    if (isTRUE(store_results)) {
+      "{.pkg C-SIDE} results stored in {.code srt@tools[[{tool_name}]]}; metadata contains run-level significant record counts"
+    } else {
+      "{.pkg C-SIDE} completed; this run's detailed results were not stored; metadata contains run-level significant record counts"
+    },
     verbose = verbose
   )
   srt
