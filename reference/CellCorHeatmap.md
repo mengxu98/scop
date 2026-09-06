@@ -1,0 +1,854 @@
+# Cell Correlation Heatmap
+
+Generates a heatmap to visualize the similarity between different cell
+types or conditions. It takes in Seurat objects or expression matrices
+as input and calculates pairwise similarities or distance.
+
+## Usage
+
+``` r
+CellCorHeatmap(
+  srt_query,
+  srt_ref = NULL,
+  bulk_ref = NULL,
+  query_group = NULL,
+  ref_group = NULL,
+  query_assay = NULL,
+  ref_assay = NULL,
+  query_reduction = NULL,
+  ref_reduction = NULL,
+  query_dims = 1:30,
+  ref_dims = 1:30,
+  query_collapsing = !is.null(query_group),
+  ref_collapsing = TRUE,
+  features = NULL,
+  features_type = c("HVF", "DE"),
+  feature_source = "both",
+  nfeatures = 2000,
+  DEtest_param = list(max.cells.per.ident = 200, test.use = "wilcox"),
+  DE_threshold = "p_val_adj < 0.05",
+  distance_metric = "cosine",
+  k = 30,
+  filter_lowfreq = 0,
+  prefix = "KNNPredict",
+  exp_legend_title = NULL,
+  border = TRUE,
+  heatmap_border = NULL,
+  cell_annotation_border = NULL,
+  feature_annotation_border = NULL,
+  heatmap_border_palcolor = "black",
+  cell_annotation_border_palcolor = "black",
+  feature_annotation_border_palcolor = "black",
+  heatmap_border_size = 1,
+  cell_annotation_border_size = 1,
+  feature_annotation_border_size = 1,
+  flip = FALSE,
+  limits = NULL,
+  cluster_rows = FALSE,
+  cluster_columns = FALSE,
+  show_row_names = FALSE,
+  show_column_names = FALSE,
+  row_names_side = "left",
+  column_names_side = "top",
+  row_names_rot = 0,
+  column_names_rot = 90,
+  row_title = NULL,
+  column_title = NULL,
+  row_title_side = "left",
+  column_title_side = "top",
+  row_title_rot = 90,
+  column_title_rot = 0,
+  nlabel = 0,
+  label_cutoff = 0,
+  label_by = "row",
+  label_size = 10,
+  heatmap_palette = "RdBu",
+  heatmap_palcolor = NULL,
+  query_group_palette = "Chinese",
+  query_group_palcolor = NULL,
+  ref_group_palette = "simspec",
+  ref_group_palcolor = NULL,
+  query_annotation = NULL,
+  query_annotation_palette = "Chinese",
+  query_annotation_palcolor = NULL,
+  query_cell_annotation_params = if (flip) {
+     list(height = grid::unit(10, "mm"))
+ }
+    else {
+     list(width = grid::unit(10, "mm"))
+ },
+  ref_annotation = NULL,
+  ref_annotation_palette = "Chinese",
+  ref_annotation_palcolor = NULL,
+  ref_cell_annotation_params = if (flip) {
+     list(width = grid::unit(10, "mm"))
+ }
+    else {
+     list(height = grid::unit(10, "mm"))
+ },
+  use_raster = NULL,
+  raster_device = "png",
+  raster_by_magick = FALSE,
+  height = NULL,
+  width = NULL,
+  units = "inch",
+  seed = 11,
+  legend.position = "right",
+  ht_params = list(),
+  verbose = TRUE
+)
+```
+
+## Arguments
+
+- srt_query:
+
+  An object of class Seurat to be annotated with cell types.
+
+- srt_ref:
+
+  A Seurat object or count matrix representing the reference object. If
+  provided, the similarities will be calculated between cells from the
+  query and reference objects. If not provided, the similarities will be
+  calculated within the query object.
+
+- bulk_ref:
+
+  A count matrix representing bulk data. If provided, the similarities
+  will be calculated between cells from the query object and bulk data.
+
+- query_group:
+
+  The grouping variable in the query object. This variable will be used
+  to group cells in the heatmap rows. If not provided, all cells will be
+  treated as one group.
+
+- ref_group:
+
+  The grouping variable in the reference object. This variable will be
+  used to group cells in the heatmap columns. If not provided, all cells
+  will be treated as one group.
+
+- query_assay:
+
+  The assay to use for the query object. If not provided, the default
+  assay of the query object will be used.
+
+- ref_assay:
+
+  The assay to use for the reference object. If not provided, the
+  default assay of the reference object will be used.
+
+- query_reduction:
+
+  The dimensionality reduction method to use for the query object. If
+  not provided, no dimensionality reduction will be applied to the query
+  object.
+
+- ref_reduction:
+
+  The dimensionality reduction method to use for the reference object.
+  If not provided, no dimensionality reduction will be applied to the
+  reference object.
+
+- query_dims:
+
+  The dimensions to use for the query object. If not provided, the first
+  30 dimensions will be used.
+
+- ref_dims:
+
+  The dimensions to use for the reference object. If not provided, the
+  first 30 dimensions will be used.
+
+- query_collapsing:
+
+  Whether to collapse cells within each query group before calculating
+  similarities. If set to TRUE, the similarities will be calculated
+  between query groups rather than individual cells.
+
+- ref_collapsing:
+
+  Detail description of the `query_collapsing` argument.
+
+- features:
+
+  A vector of feature names to include in the heatmap. If not provided,
+  highly variable features (HVF) will be used.
+
+- features_type:
+
+  Type of features to be used for the KNN prediction. Must be one of
+  "HVF" (highly variable features) or "DE" (differentially expressed
+  features).
+
+- feature_source:
+
+  The source of the features to be used. Must be one of "both", "query",
+  or "ref".
+
+- nfeatures:
+
+  The maximum number of features to include in the heatmap.
+
+- DEtest_param:
+
+  The parameters to use for differential expression testing. This should
+  be a list with two elements: `"max.cells.per.ident"` specifying the
+  maximum number of cells per group for differential expression testing,
+  and `"test.use"` specifying the statistical test to use for
+  differential expression testing. Default parameters will be used.
+
+- DE_threshold:
+
+  The threshold for differential expression. Only features with adjusted
+  p-values below this threshold will be considered differentially
+  expressed.
+
+- distance_metric:
+
+  The distance metric to use for calculating the pairwise distances
+  between cells. Options include: "pearson", "spearman", "cosine",
+  "correlation", "jaccard", "ejaccard", "dice", "edice", "hamman",
+  "simple matching", and "faith". Additional distance metrics can also
+  be used, such as "euclidean", "manhattan", "hamming", etc.
+
+- k:
+
+  The number of nearest neighbors to use for calculating similarities.
+
+- filter_lowfreq:
+
+  The minimum frequency threshold for selecting query dataset features.
+  Features with a frequency below this threshold will be excluded from
+  the heatmap.
+
+- prefix:
+
+  The prefix to use for the KNNPredict tool layer in the query object.
+  This can be used to avoid conflicts with other tools in the Seurat
+  object.
+
+- exp_legend_title:
+
+  The title for the color legend in the heatmap. If not provided, a
+  default title based on the similarity metric will be used.
+
+- border:
+
+  Default border switch for the similarity heatmap, query/reference
+  annotations, and their legends. More specific `*_border` arguments
+  inherit this value when `NULL`.
+
+- heatmap_border, cell_annotation_border, feature_annotation_border:
+
+  Borders for the heatmap body, annotations, and their matching legends.
+  `NULL` inherits `border`.
+
+- heatmap_border_palcolor, cell_annotation_border_palcolor,
+  feature_annotation_border_palcolor:
+
+  Border colors for the matching body, annotation, and legend.
+
+- heatmap_border_size, cell_annotation_border_size,
+  feature_annotation_border_size:
+
+  Border line widths for the matching body, annotation, and legend.
+
+- flip:
+
+  Whether to flip the orientation of the heatmap. If set to TRUE, the
+  rows and columns of the heatmap will be swapped. This can be useful
+  for visualizing large datasets in a more compact form. The
+
+- limits:
+
+  The limits for the color scale in the heatmap. If not provided, the
+  default is to use the range of similarity values.
+
+- cluster_rows:
+
+  Whether to cluster the rows of the heatmap. If set to TRUE, the rows
+  will be rearranged based on hierarchical clustering. The
+
+- cluster_columns:
+
+  Whether to cluster the columns of the heatmap. If set to TRUE, the
+  columns will be rearranged based on hierarchical clustering. The
+
+- show_row_names:
+
+  Whether to show the row names in the heatmap. The
+
+- show_column_names:
+
+  Whether to show the column names in the heatmap. The
+
+- row_names_side:
+
+  The side of the heatmap to show the row names. Options are `"left"` or
+  `"right"`.
+
+- column_names_side:
+
+  The side of the heatmap to show the column names. Options are `"top"`
+  or `"bottom"`. If not provided, Default is `"top"`.
+
+- row_names_rot:
+
+  The rotation angle of the row names. If not provided, Default is `0`
+  degrees.
+
+- column_names_rot:
+
+  The rotation angle of the column names. If not provided, the default
+  is 90 degrees.
+
+- row_title:
+
+  The title for the row names in the heatmap. If not provided, the
+  default is to use the query grouping variable.
+
+- column_title:
+
+  The title for the column names in the heatmap. Default is to use the
+  reference grouping variable.
+
+- row_title_side:
+
+  The side of the heatmap to show the row title. Options are `"top"` or
+  `"bottom"`.
+
+- column_title_side:
+
+  The side of the heatmap to show the column title. Options are `"left"`
+  or `"right"`.
+
+- row_title_rot:
+
+  The rotation angle of the row title. Default is `90` degrees.
+
+- column_title_rot:
+
+  The rotation angle of the column title. Default is `0` degrees.
+
+- nlabel:
+
+  The maximum number of labels to show on each side of the heatmap. If
+  set to 0, no labels will be shown. This can be useful for reducing
+  clutter in large heatmaps.
+
+- label_cutoff:
+
+  The similarity cutoff for showing labels. Only cells with similarity
+  values above this cutoff will have labels.
+
+- label_by:
+
+  The dimension to use for labeling cells. Options are `"row"` to label
+  cells by row, `"column"` to label cells by column, or `"both"` to
+  label cells by both row and column.
+
+- label_size:
+
+  The size of the labels.
+
+- heatmap_palette:
+
+  The color palette to use for the heatmap. This can be any of the
+  palettes available in the circlize package.
+
+- heatmap_palcolor:
+
+  The specific colors to use for the heatmap palette. This should be a
+  vector of color names or RGB values.
+
+- query_group_palette:
+
+  The color palette to use for the query group legend. This can be any
+  of the palettes available in the circlize package.
+
+- query_group_palcolor:
+
+  The specific colors to use for the query group palette. This should be
+  a vector of color names or RGB values.
+
+- ref_group_palette:
+
+  The color palette to use for the reference group legend. This can be
+  any of the palettes available in the circlize package.
+
+- ref_group_palcolor:
+
+  The specific colors to use for the reference group palette. This
+  should be a vector of color names or RGB values.
+
+- query_annotation:
+
+  A vector of cell metadata column names or assay feature names to use
+  for highlighting specific cells in the heatmap. Each element of the
+  vector will create a separate cell annotation track in the heatmap. If
+  not provided, no cell annotations will be shown.
+
+- query_annotation_palette:
+
+  The color palette to use for the query cell annotation tracks. This
+  can be any of the palettes available in the circlize package. If a
+  single color palette is provided, it will be used for all cell
+  annotation tracks. If multiple color palettes are provided, each track
+  will be assigned a separate palette.
+
+- query_annotation_palcolor:
+
+  The specific colors to use for the query cell annotation palettes.
+  This should be a list of vectors, where each vector contains the
+  colors for a specific cell annotation track. If a single color vector
+  is provided, it will be used for all cell annotation tracks.
+
+- query_cell_annotation_params:
+
+  Additional parameters to customize the appearance of the query cell
+  annotation tracks. This should be a list with named elements, where
+  the names correspond to parameter names in the
+  [ComplexHeatmap::Heatmap](https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html)
+  function. Any conflicting parameters will override the defaults set by
+  this function.
+
+- ref_annotation:
+
+  A vector of cell metadata column names or assay feature names to use
+  for highlighting specific cells in the heatmap. Each element of the
+  vector will create a separate cell annotation track in the heatmap. If
+  not provided, no cell annotations will be shown.
+
+- ref_annotation_palette:
+
+  The color palette to use for the reference cell annotation tracks.
+  This can be any of the palettes available in the circlize package. If
+  a single color palette is provided, it will be used for all cell
+  annotation tracks. If multiple color palettes are provided, each track
+  will be assigned a separate palette.
+
+- ref_annotation_palcolor:
+
+  The specific colors to use for the reference cell annotation palettes.
+  This should be a list of vectors, where each vector contains the
+  colors for a specific cell annotation track. If a single color vector
+  is provided, it will be used for all cell annotation tracks. If
+  multiple color vectors are provided, each track will be assigned a
+  separate color vector.
+
+- ref_cell_annotation_params:
+
+  Detail description of the `query_cell_annotation_params` argument.
+
+- use_raster:
+
+  Whether to use raster images for rendering the heatmap. If set to
+  `TRUE`, the heatmap will be rendered as a raster image using the
+  raster_device argument. Default is determined based on the number of
+  rows and columns in the heatmap.
+
+- raster_device:
+
+  The raster device to use for rendering the heatmap. This should be a
+  character string specifying the device name, such as `"png"`,
+  `"jpeg"`, or `"pdf"`.
+
+- raster_by_magick:
+
+  Whether to use the `magick` package for rendering rasters. If set to
+  `TRUE`, the `magick` package will be used instead of the raster
+  package. This can be useful for rendering large heatmaps more
+  efficiently. The `magick` package will automatically be installed if
+  it is not installed.
+
+- width, height, units:
+
+  Heatmap size. `NULL` sizes from matrix dimensions.
+
+- seed:
+
+  Random seed.
+
+- legend.position:
+
+  Legend side (`"right"`, `"left"`, `"top"`, `"bottom"`). Gap to the
+  heatmap grows automatically when long row names are on the right.
+
+- ht_params:
+
+  Extra arguments passed to
+  [ComplexHeatmap::Heatmap](https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html),
+  overriding defaults.
+
+- verbose:
+
+  Whether to print the message. Default is `TRUE`.
+
+## Value
+
+A list with the following elements:
+
+- `plot`: The heatmap plot as a ggplot object.
+
+- `features`: The features used in the heatmap.
+
+- `simil_matrix`: The similarity matrix used to generate the heatmap.
+
+- `simil_name`: The name of the similarity metric used to generate the
+  heatmap.
+
+- `cell_metadata`: The cell metadata used to generate the heatmap.
+
+## See also
+
+[RunKNNMap](https://mengxu98.github.io/scop/reference/RunKNNMap.md),
+[RunKNNPredict](https://mengxu98.github.io/scop/reference/RunKNNPredict.md)
+
+## Examples
+
+``` r
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#> ℹ [2026-09-06 21:00:08] Start standard processing workflow...
+#> ℹ [2026-09-06 21:00:09] Checking a list of <Seurat>...
+#> ! [2026-09-06 21:00:09] Data 1/1 of the `srt_list` is "unknown"
+#> Warning: Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-06 21:00:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-06 21:00:09] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-06 21:00:10] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-06 21:00:10] Number of available HVF: 2000
+#> ℹ [2026-09-06 21:00:10] Finished check
+#> ℹ [2026-09-06 21:00:10] Perform `ScaleData()`
+#> ℹ [2026-09-06 21:00:10] Perform pca linear dimension reduction
+#> ℹ [2026-09-06 21:00:10] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-06 21:00:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-06 21:00:10] Reorder clusters...
+#> ℹ [2026-09-06 21:00:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-06 21:00:10] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-06 21:00:14] Standard processing workflow completed
+ht1 <- CellCorHeatmap(
+  srt_query = pancreas_sub,
+  query_group = "SubCellType"
+)
+#> ℹ [2026-09-06 21:00:14] Use the HVF to calculate distance metric
+#> ℹ [2026-09-06 21:00:14] Use [1] 2000 features to calculate distance.
+#> As of Seurat v5, we recommend using AggregateExpression to perform pseudo-bulk analysis.
+#> This message is displayed once per session.
+#> ℹ [2026-09-06 21:00:14] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-09-06 21:00:14] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-09-06 21:00:14] Calculate similarity...
+#> ℹ [2026-09-06 21:00:14] Use raw method to find neighbors
+#> ℹ [2026-09-06 21:00:14] Predict cell type...
+ht1$plot
+
+
+data(panc8_sub)
+# Simply convert genes from human to mouse and preprocess the data
+genenames <- make.unique(
+  thisutils::capitalize(
+    rownames(panc8_sub),
+    force_tolower = TRUE
+  )
+)
+names(genenames) <- rownames(panc8_sub)
+panc8_sub <- RenameFeatures(
+  panc8_sub,
+  newnames = genenames
+)
+#> ℹ [2026-09-06 21:00:15] Rename features for the assay: RNA
+panc8_sub <- RunStandardWorkflow(panc8_sub)
+#> ℹ [2026-09-06 21:00:16] Start standard processing workflow...
+#> ℹ [2026-09-06 21:00:16] Checking a list of <Seurat>...
+#> ! [2026-09-06 21:00:16] Data 1/1 of the `srt_list` is "unknown"
+#> Warning: Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-06 21:00:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-06 21:00:16] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-06 21:00:16] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-06 21:00:16] Number of available HVF: 2000
+#> ℹ [2026-09-06 21:00:16] Finished check
+#> ℹ [2026-09-06 21:00:16] Perform `ScaleData()`
+#> ℹ [2026-09-06 21:00:16] Perform pca linear dimension reduction
+#> ℹ [2026-09-06 21:00:16] Use stored estimated dimensions 1:26 for Standardpca
+#> ℹ [2026-09-06 21:00:17] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-06 21:00:17] Reorder clusters...
+#> ℹ [2026-09-06 21:00:17] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-06 21:00:17] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-06 21:00:22] Standard processing workflow completed
+
+ht2 <- CellCorHeatmap(
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
+  nlabel = 3,
+  label_cutoff = 0.6,
+  query_group = "SubCellType",
+  ref_group = "celltype",
+  query_annotation = "Phase",
+  query_annotation_palette = "Set2",
+  ref_annotation = "tech",
+  ref_annotation_palette = "Set3"
+)
+#> ℹ [2026-09-06 21:00:22] Use the HVF to calculate distance metric
+#> ℹ [2026-09-06 21:00:22] Use [1] 374 features to calculate distance.
+#> ℹ [2026-09-06 21:00:22] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-09-06 21:00:22] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-09-06 21:00:22] Calculate similarity...
+#> ℹ [2026-09-06 21:00:22] Use raw method to find neighbors
+#> ℹ [2026-09-06 21:00:22] Predict cell type...
+ht2$plot
+
+
+ht3 <- CellCorHeatmap(
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
+  query_group = "SubCellType",
+  query_collapsing = FALSE,
+  cluster_rows = TRUE,
+  ref_group = "celltype",
+  ref_collapsing = FALSE,
+  cluster_columns = TRUE
+)
+#> ℹ [2026-09-06 21:00:26] Use the HVF to calculate distance metric
+#> ℹ [2026-09-06 21:00:26] Use [1] 374 features to calculate distance.
+#> ℹ [2026-09-06 21:00:26] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-09-06 21:00:26] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-09-06 21:00:26] Calculate similarity...
+#> ℹ [2026-09-06 21:00:26] Use raw method to find neighbors
+#> ℹ [2026-09-06 21:00:26] Predict cell type...
+ht3$plot
+
+
+ht4 <- CellCorHeatmap(
+  srt_query = pancreas_sub,
+  srt_ref = panc8_sub,
+  show_row_names = TRUE,
+  show_column_names = TRUE,
+  query_group = "SubCellType",
+  ref_group = "celltype",
+  query_annotation = c(
+    "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
+  ),
+  ref_annotation = c(
+    "Sox9", "Rbp4", "Gcg", "Nap1l2", "Xist"
+  )
+)
+#> ℹ [2026-09-06 21:00:36] Use the HVF to calculate distance metric
+#> ℹ [2026-09-06 21:00:37] Use [1] 374 features to calculate distance.
+#> ℹ [2026-09-06 21:00:37] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-09-06 21:00:37] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-09-06 21:00:37] Calculate similarity...
+#> ℹ [2026-09-06 21:00:37] Use raw method to find neighbors
+#> ℹ [2026-09-06 21:00:37] Predict cell type...
+#> ! [2026-09-06 21:00:40] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> Warning: Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-09-06 21:00:40] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> Warning: Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-09-06 21:00:41] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> Warning: Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-09-06 21:00:42] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> Warning: Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> ! [2026-09-06 21:00:42] Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> Warning: Removed 1 group with < 2 observations for violin plot: "sp--gp-schwann"
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+ht4$plot
+```
