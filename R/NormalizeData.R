@@ -1,4 +1,4 @@
-sct_norm_sparse <- function(counts, normalization.method, scale.factor, margin) {
+sct_norm_sparse <- function(counts, normalization.method, scale.factor, margin, n_threads = NULL) {
   if (identical(normalization.method, "RC")) {
     counts@x <- counts@x + 0
     sizes <- Matrix::colSums(counts)
@@ -21,7 +21,7 @@ sct_norm_sparse <- function(counts, normalization.method, scale.factor, margin) 
   }
   norm <- counts
   norm@x <- counts@x + 0
-  log_normalize_dgc(norm, scale.factor, 100L)
+  log_normalize_dgc(norm, scale.factor, 100L, scop_n_threads(n_threads))
   norm
 }
 
@@ -37,6 +37,9 @@ NormalizeData.Seurat <- function(
   ...
 ) {
   dots <- list(...)
+  n_threads <- dots$n_threads %||% dots$cores
+  dots$n_threads <- NULL
+  dots$cores <- NULL
   delegate <- function() {
     do.call(
       utils::getFromNamespace("NormalizeData.Seurat", "Seurat"),
@@ -112,7 +115,7 @@ NormalizeData.Seurat <- function(
         log_message("NormalizeData.Seurat requires counts convertible to dgCMatrix.", message_type = "error")
       }
     }
-    data_mat <- sct_norm_sparse(counts, normalization.method, scale.factor, margin)
+    data_mat <- sct_norm_sparse(counts, normalization.method, scale.factor, margin, n_threads)
     methods::slot(assay_obj, "data") <- data_mat
     object[[assay]] <- assay_obj
     return(SeuratObject::LogSeuratCommand(object))
@@ -158,7 +161,7 @@ NormalizeData.Seurat <- function(
       }
     }
 
-    data_mat <- sct_norm_sparse(counts, normalization.method, scale.factor, margin)
+    data_mat <- sct_norm_sparse(counts, normalization.method, scale.factor, margin, n_threads)
     layers[[save_layer]] <- data_mat
   }
   methods::slot(assay_obj, "layers") <- layers
@@ -220,6 +223,10 @@ NormalizeData.default <- function(
   verbose = TRUE,
   ...
 ) {
+  dots <- list(...)
+  n_threads <- dots$n_threads %||% dots$cores
+  dots$n_threads <- NULL
+  dots$cores <- NULL
   method <- normalization.method[[1L]]
   native <- inherits(object, "dgCMatrix") &&
     method %in% c("LogNormalize", "CLR", "RC") &&
@@ -228,7 +235,7 @@ NormalizeData.default <- function(
     is.numeric(margin) && length(margin) == 1L && margin %in% c(1, 2) &&
     (!identical(method, "LogNormalize") || identical(as.integer(cmargin), 2L))
   if (native) {
-    return(sct_norm_sparse(object, method, scale.factor, margin))
+    return(sct_norm_sparse(object, method, scale.factor, margin, n_threads))
   }
   do.call(
     utils::getFromNamespace("NormalizeData.default", "Seurat"),
@@ -241,7 +248,7 @@ NormalizeData.default <- function(
         margin = margin,
         verbose = verbose
       ),
-      list(...)
+      dots
     )
   )
 }

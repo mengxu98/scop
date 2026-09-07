@@ -1,9 +1,13 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <Rcpp.h>
 #include <thisutils/log_message.h>
+#include "thread_utils.h"
 #include <algorithm>
 #include <cmath>
 #include <vector>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 using namespace Rcpp;
 
@@ -242,7 +246,8 @@ static double sparse_wilcox_two_sided_p_all_cells(
 NumericVector wilcox_rank_sum_sparse(
   S4 mat,
   int n_group1,
-  double min_expression = 0.0
+  double min_expression = 0.0,
+  int n_threads = 0
 ) {
   IntegerVector dims = mat.slot("Dim");
   const int n_rows = dims[0];
@@ -268,6 +273,10 @@ NumericVector wilcox_rank_sum_sparse(
   }
 
   NumericVector p_values(n_rows);
+  const int threads = omp_thread_count(n_threads, n_rows);
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(dynamic, 64)
+#endif
   for (int row = 0; row < n_rows; ++row) {
     p_values[row] = sparse_wilcox_two_sided_p_all_cells(rows[row], n_group1, n_cols - n_group1);
   }
@@ -277,7 +286,8 @@ NumericVector wilcox_rank_sum_sparse(
 // [[Rcpp::export]]
 NumericVector wilcox_rank_sum_sparse_all_cells(
   S4 mat,
-  int n_group1
+  int n_group1,
+  int n_threads = 0
 ) {
   IntegerVector dims = mat.slot("Dim");
   const int n_rows = dims[0];
@@ -304,6 +314,10 @@ NumericVector wilcox_rank_sum_sparse_all_cells(
 
   NumericVector p_values(n_rows);
   const int n_group2 = n_cols - n_group1;
+  const int threads = omp_thread_count(n_threads, n_rows);
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(dynamic, 64)
+#endif
   for (int row = 0; row < n_rows; ++row) {
     p_values[row] = sparse_wilcox_two_sided_p_all_cells(
       rows[row],

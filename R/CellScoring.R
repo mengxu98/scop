@@ -378,7 +378,8 @@ CellScoring <- function(
           pool = dots[["pool"]] %||% NULL,
           nbin = dots[["nbin"]] %||% 24,
           ctrl = dots[["ctrl"]] %||% 100,
-          seed = seed
+          seed = seed,
+          n_threads = scop_inner_n_threads(cores)
         )
         filtered <- names(features)[
           !names(features) %in% colnames(module_scores)
@@ -431,7 +432,8 @@ CellScoring <- function(
           max_rank = dots[["maxRank"]] %||% 1500,
           negative_weight = dots[["w_neg"]] %||% 1,
           missing_genes = dots[["missing_genes"]] %||% "impute",
-          ties_method = ties_method
+          ties_method = ties_method,
+          n_threads = scop_inner_n_threads(cores)
         )
         filtered <- names(features)[
           !names(features) %in% colnames(ucell_scores)
@@ -508,7 +510,8 @@ CellScoring <- function(
           # The C++ top-k path preserves those ranks exactly while avoiding
           # a full n_features sort for every cell.
           strategy = "topk",
-          tie_method = "first"
+          tie_method = "first",
+          n_threads = scop_inner_n_threads(cores)
         )
         filtered <- names(features)[
           !names(features) %in% colnames(auc_scores)
@@ -557,7 +560,7 @@ CellScoring <- function(
             abs_ranking = abs.ranking,
             tau = tau,
             chunk_size = cpp_chunk_size,
-            sparse = FALSE
+            n_threads = scop_inner_n_threads(cores)
           )
         } else if (method == "ssGSEA") {
           gs_scores <- run_ssgsea_scores(
@@ -589,8 +592,13 @@ CellScoring <- function(
         ]
       } else {
         check_r("GSVA", verbose = FALSE)
-        expr_mat <- as_matrix(expr_sp)
-        expr_mat <- expr_mat[rowSums(expr_mat) > 0, , drop = FALSE]
+        if (identical(method, "GSVA") && inherits(expr_sp, "sparseMatrix")) {
+          expr_mat <- gene_set_scoring_to_dgC(expr_sp)
+          expr_mat <- expr_mat[Matrix::rowSums(expr_mat) > 0, , drop = FALSE]
+        } else {
+          expr_mat <- as_matrix(expr_sp)
+          expr_mat <- expr_mat[rowSums(expr_mat) > 0, , drop = FALSE]
+        }
         gene_sets_filtered <- lapply(features, function(gs) {
           intersect(gs, rownames(expr_mat))
         })

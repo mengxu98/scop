@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <thisutils/log_message.h>
+#include "thread_utils.h"
 #include <cmath>
 #include <algorithm>
 #include <numeric>
@@ -19,7 +20,8 @@ IntegerVector scanpy_filter_genes_cpp(
     NumericMatrix spliced,     // genes × cells
     NumericMatrix unspliced,
     int min_counts = 3,
-    int min_counts_u = 3)
+    int min_counts_u = 3,
+    int n_threads = 0)
 {
   const int n_genes = spliced.nrow();
   const int n_cells = spliced.ncol();
@@ -27,8 +29,9 @@ IntegerVector scanpy_filter_genes_cpp(
     thisutils::log_message("spliced and unspliced must have identical dimensions", "error");
 
   IntegerVector keep(n_genes, 1);
+  const int threads = omp_thread_count(n_threads, n_genes);
   #ifdef _OPENMP
-  #pragma omp parallel for schedule(dynamic, 16)
+  #pragma omp parallel for num_threads(threads) schedule(dynamic, 16)
   #endif
   for (int g = 0; g < n_genes; ++g) {
     double sum_s = 0.0, sum_u = 0.0;
@@ -105,20 +108,23 @@ List scanpy_normalize_cpp(
 
 // [[Rcpp::export]]
 List scanpy_knn_cpp(
-    NumericMatrix coords,      // cells × dims
+    NumericMatrix coords,
     int n_neighbors = 10,
-    bool exclude_self = true)
+    bool exclude_self = true,
+    int n_threads = 0)
 {
   int n_cells = coords.nrow();
   int n_dims = coords.ncol();
-  int k_actual = n_neighbors + (exclude_self ? 1 : 0);
-  if (k_actual > n_cells) k_actual = n_cells;
+  if (n_neighbors > n_cells) n_neighbors = n_cells;
+  const int threads = omp_thread_count(n_threads, n_cells);
 
   IntegerMatrix idx(n_cells, n_neighbors);
   NumericMatrix dist(n_cells, n_neighbors);
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int i = 0; i < n_cells; ++i) {
-    // Compute distances to all other cells
     std::vector<std::pair<double, int>> dists;
     dists.reserve(n_cells);
 
@@ -132,21 +138,27 @@ List scanpy_knn_cpp(
       dists.push_back({d, j});
     }
 
-    // Sort by distance (ascending), tie-break by index for determinism
-    std::sort(dists.begin(), dists.end(),
-      [](const std::pair<double,int>& a, const std::pair<double,int>& b) {
-        if (a.first < b.first) return true;
-        if (a.first > b.first) return false;
-        return a.second < b.second;  // tie-break by index
-      });
+    auto dist_less = [](const std::pair<double, int>& a,
+                        const std::pair<double, int>& b) {
+      if (a.first < b.first) return true;
+      if (a.first > b.first) return false;
+      return a.second < b.second;
+    };
+    const int keep = std::min(n_neighbors, static_cast<int>(dists.size()));
+    if (keep > 0) {
+      std::partial_sort(
+        dists.begin(),
+        dists.begin() + keep,
+        dists.end(),
+        dist_less
+      );
+    }
 
-    // Store top k
-    for (int k = 0; k < n_neighbors && k < (int)dists.size(); ++k) {
-      idx(i, k) = dists[k].second + 1;  // 1-based
+    for (int k = 0; k < keep; ++k) {
+      idx(i, k) = dists[k].second + 1;
       dist(i, k) = std::sqrt(dists[k].first);
     }
-    // Fill remaining with NA
-    for (int k = dists.size(); k < n_neighbors; ++k) {
+    for (int k = keep; k < n_neighbors; ++k) {
       idx(i, k) = NA_INTEGER;
       dist(i, k) = NA_REAL;
     }

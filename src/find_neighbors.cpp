@@ -8,8 +8,9 @@
 #include <cstring>
 #include <thread>
 #include <vector>
-#ifdef __APPLE__
-#include <dlfcn.h>
+#include "dynload.h"
+#ifdef _OPENMP
+#include <omp.h>
 #endif
 
 static int core_count(int requested, int jobs) {
@@ -39,25 +40,69 @@ static bool worse_candidate(const Candidate& a, const Candidate& b) {
   return a.distance < b.distance;
 }
 
-#ifdef __APPLE__
 typedef void (*matrix_multiply_f32)(int, int, int, int, int, int, float,
                                     const float*, int, const float*, int,
                                     float, float*, int);
 
-static matrix_multiply_f32 accelerate_sgemm() {
+static matrix_multiply_f32 runtime_sgemm() {
   static matrix_multiply_f32 fn = NULL;
   static bool loaded = false;
   if (!loaded) {
     loaded = true;
-    void* handle = dlopen(
+    // A cblas already linked into the process (Accelerate on macOS, the
+    // OpenBLAS/MKL/BLIS that R itself links on Linux) is the reliable hit.
+    void* self = scop_dlopen(NULL);
+    if (self != NULL) {
+      fn = reinterpret_cast<matrix_multiply_f32>(scop_dlsym(self, "cblas_sgemm"));
+    }
+    const char* candidates[] = {
       "/System/Library/Frameworks/Accelerate.framework/Accelerate",
-      RTLD_LAZY | RTLD_LOCAL
-    );
-    if (handle != NULL) {
-      fn = reinterpret_cast<matrix_multiply_f32>(dlsym(handle, "cblas_sgemm"));
+      "libopenblas.so.0", "libopenblas.so", "libmkl_rt.so",
+      "libblis.so.4", "libblis.so.3", "libblis.so",
+      "libblas.so.3", "libblas.so",
+      "Rblas.dll", "libopenblas.dll", "openblas.dll", "mkl_rt.dll", NULL
+    };
+    for (int i = 0; fn == NULL && candidates[i] != NULL; ++i) {
+      void* handle = scop_dlopen(candidates[i]);
+      if (handle != NULL) {
+        fn = reinterpret_cast<matrix_multiply_f32>(scop_dlsym(handle, "cblas_sgemm"));
+      }
     }
   }
   return fn;
+}
+
+static void blas_set_num_threads(int n) {
+  typedef void (*set_fn)(int);
+  static set_fn fn = NULL;
+  static bool loaded = false;
+  if (!loaded) {
+    loaded = true;
+    void* self = scop_dlopen(NULL);
+    if (self != NULL) {
+      fn = reinterpret_cast<set_fn>(scop_dlsym(self, "openblas_set_num_threads"));
+      if (fn == NULL) {
+        fn = reinterpret_cast<set_fn>(scop_dlsym(self, "MKL_Set_Num_Threads"));
+      }
+    }
+  }
+  if (fn != NULL && n > 0) {
+    fn(n);
+  }
+}
+
+static int blas_get_num_threads() {
+  typedef int (*get_fn)();
+  static get_fn fn = NULL;
+  static bool loaded = false;
+  if (!loaded) {
+    loaded = true;
+    void* self = scop_dlopen(NULL);
+    if (self != NULL) {
+      fn = reinterpret_cast<get_fn>(scop_dlsym(self, "openblas_get_num_threads"));
+    }
+  }
+  return fn == NULL ? 0 : fn();
 }
 
 static void sorted_from_heap(std::vector<Candidate>& heap,
@@ -83,7 +128,7 @@ static bool exact_blas(const std::vector<float>& data,
                        int cores,
                        int* idx_out,
                        float* dist_out) {
-  matrix_multiply_f32 sgemm = accelerate_sgemm();
+  matrix_multiply_f32 sgemm = runtime_sgemm();
   if (sgemm == NULL) return false;
 
   const int workers = core_count(cores, rows);
@@ -106,6 +151,13 @@ static bool exact_blas(const std::vector<float>& data,
   std::vector<float> scores(static_cast<size_t>(tile_rows) * rows);
   enum { row_major = 101, no_trans = 111, trans = 112 };
 
+  // Skinny GEMMs (kNN on 20–50 PCs) lose time with 48 BLAS threads. Cap the
+  // GEMM pool; the heap search still uses `workers` OpenMP threads after each
+  // tile, when BLAS is idle.
+  const int gemm_threads = std::max(1, std::min(workers, std::max(1, (cols + 7) / 8)));
+  const int previous_blas = blas_get_num_threads();
+  blas_set_num_threads(gemm_threads);
+
   for (int first = 0; first < rows; first += tile_rows) {
     const int count = std::min(tile_rows, rows - first);
     sgemm(
@@ -125,6 +177,33 @@ static bool exact_blas(const std::vector<float>& data,
       rows
     );
 
+#ifdef _OPENMP
+#pragma omp parallel num_threads(workers)
+    {
+      std::vector<Candidate> heap(static_cast<size_t>(neighbors));
+#pragma omp for schedule(static)
+      for (int local = 0; local < count; ++local) {
+        const int query = first + local;
+        const float* score_row = scores.data() + static_cast<size_t>(local) * rows;
+        for (int ref = 0; ref < neighbors; ++ref) {
+          heap[ref] = Candidate{
+            norms[ref] - 2.0f * score_row[ref],
+            ref
+          };
+        }
+        std::make_heap(heap.begin(), heap.end(), worse_candidate);
+        for (int ref = neighbors; ref < rows; ++ref) {
+          float value = norms[ref] - 2.0f * score_row[ref];
+          if (value < heap.front().distance) {
+            std::pop_heap(heap.begin(), heap.end(), worse_candidate);
+            heap.back() = Candidate{value, ref};
+            std::push_heap(heap.begin(), heap.end(), worse_candidate);
+          }
+        }
+        sorted_from_heap(heap, idx_out, query, norms, dist_out, rows);
+      }
+    }
+#else
     std::vector<std::thread> workers_pool;
     workers_pool.reserve(static_cast<size_t>(workers));
     for (int worker = 0; worker < workers; ++worker) {
@@ -153,10 +232,13 @@ static bool exact_blas(const std::vector<float>& data,
       });
     }
     for (std::thread& worker : workers_pool) worker.join();
+#endif
+  }
+  if (previous_blas > 0) {
+    blas_set_num_threads(previous_blas);
   }
   return true;
 }
-#endif
 
 static void insert_candidate(std::vector<Candidate>& heap, Candidate candidate) {
   if (candidate.distance < heap.front().distance ||
@@ -269,12 +351,10 @@ Rcpp::IntegerMatrix exact_knn_f32(Rcpp::NumericMatrix data,
   std::vector<float> packed = matrix_as_row_float(data);
   Rcpp::IntegerMatrix neighbors(rows, k);
   int* out = INTEGER(neighbors);
-#ifdef __APPLE__
   std::vector<float> distances(static_cast<size_t>(rows) * k);
   if (exact_blas(packed, rows, dims, k, cores, out, distances.data())) {
     return neighbors;
   }
-#endif
   const int workers = core_count(cores, rows);
   std::vector<std::thread> pool;
   pool.reserve(static_cast<size_t>(workers));
