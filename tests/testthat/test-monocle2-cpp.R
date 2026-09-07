@@ -391,3 +391,10 @@ test_that("RunMonocle2 cpp backend preserves root_state error behavior", {
     "no cells for State"
   )
 })
+
+test_that("monocle2_needs_dispersion is required only for Disp or ordering-gene plots", {
+  expect_false(monocle2_needs_dispersion(NULL, "HVF", FALSE))
+  expect_true(monocle2_needs_dispersion(NULL, "Disp", FALSE))
+  expect_true(monocle2_needs_dispersion(NULL, "HVF", TRUE))
+  expect_false(monocle2_needs_dispersion("g1", "Disp", FALSE))
+})
