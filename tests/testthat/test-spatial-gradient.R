@@ -306,21 +306,11 @@ test_that("SpatialGradientPlot handles stored results and missing tables clearly
     theme_use = NULL
   )
   expect_s3_class(p_model, "ggplot")
-  expect_s3_class(p_model$layers[[2]]$geom, "GeomText")
-  expect_s3_class(
-    SpatialGradientPlot(
-      srt,
-      result_name = "mock",
-      plot_type = "surface",
-      features = "Gene1",
-      layer = "counts",
-      coord.cols = c("x", "y"),
-      overlay_image = FALSE,
-      theme_use = NULL
-    ),
-    "ggplot"
+  expect_error(
+    SpatialGradientPlot(srt, result_name = "mock", plot_type = "surface"),
+    "one of.*summary.*line.*model"
   )
-
+  expect_s3_class(p_model$layers[[2]]$geom, "GeomText")
   no_screening <- result
   no_screening$screening <- data.frame()
   srt <- sgf_store_result(srt, "no_screening", no_screening, assay = "RNA")
@@ -336,49 +326,4 @@ test_that("SpatialGradientPlot handles stored results and missing tables clearly
     SpatialGradientPlot(srt, result_name = "empty_top", plot_type = "summary", theme_use = NULL),
     "No top spatial gradient variables"
   )
-})
-
-test_that("SpatialGradientPlot combined returns patchwork when available", {
-  testthat::skip_if_not_installed("patchwork")
-  srt <- make_spatial_gradient_seurat()
-  result <- make_spatial_gradient_result()
-  srt <- sgf_store_result(srt, "mock", result, assay = "RNA")
-
-  p <- SpatialGradientPlot(
-    srt,
-    result_name = "mock",
-    plot_type = "combined",
-    features = "Gene1",
-    layer = "counts",
-    coord.cols = c("x", "y"),
-    overlay_image = FALSE,
-    theme_use = NULL
-  )
-  expect_s3_class(p, "patchwork")
-})
-
-test_that("SpatialGradientPlot reuses stored assay layer for surface plots", {
-  testthat::skip_if_not_installed("patchwork")
-  srt <- make_spatial_gradient_seurat()
-  result <- make_spatial_gradient_result()
-  result$parameters <- data.frame(
-    key = c("assay", "layer"),
-    value = c("RNA", "counts"),
-    stringsAsFactors = FALSE
-  )
-  srt <- sgf_store_result(srt, "mock_counts", result, assay = "RNA")
-
-  p <- expect_warning(
-    SpatialGradientPlot(
-      srt,
-      result_name = "mock_counts",
-      plot_type = "combined",
-      features = "Gene1",
-      coord.cols = c("x", "y"),
-      overlay_image = FALSE,
-      theme_use = NULL
-    ),
-    regexp = NA
-  )
-  expect_s3_class(p, "patchwork")
 })

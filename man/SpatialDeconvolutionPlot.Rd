@@ -43,43 +43,33 @@ A \code{ggplot}, \code{patchwork}, or named list of \code{ggplot} objects.
 }
 \description{
 Plot spot-by-cell-type proportions stored by \code{\link[=RunRCTD]{RunRCTD()}}, \code{\link[=RunCARD]{RunCARD()}},
-\code{\link[=RunSPOTlight]{RunSPOTlight()}}, or \code{\link[=RunSpatialDWLS]{RunSpatialDWLS()}}. The plot reads the stored result
+\code{\link[=RunSPOTlight]{RunSPOTlight()}}. The plot reads the stored result
 directly from \code{srt@tools[[tool_name]]} and never reruns a deconvolution
 backend. \code{\link[=RunCSIDE]{RunCSIDE()}} is intentionally excluded because its output
 represents differential or context effects rather than cell-type
 proportions.
 }
 \examples{
+\dontrun{
 data(visium_human_pancreas_sub)
 data(panc8_sub)
-keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 120)))
-spatial <- visium_human_pancreas_sub[, keep_spots]
-# Results are conditional on the three reference cell types used here.
-reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] \%in\%
-  c("ductal", "alpha", "beta")]
+reference <- panc8_sub[, panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
-shared <- head(intersect(
-  SeuratObject::VariableFeatures(reference),
-  rownames(spatial)
-), 300)
-spatial <- RunSpatialDWLS(
-  srt = spatial,
+features <- head(intersect(SeuratObject::VariableFeatures(reference),
+  rownames(visium_human_pancreas_sub)), 300)
+spatial <- RunRCTD(
+  visium_human_pancreas_sub,
   reference = reference,
   reference_label = "celltype",
+  features = features,
   assay = "Spatial",
   reference_assay = "RNA",
   layer = "counts",
   reference_layer = "counts",
-  features = shared,
-  coord.cols = c("x", "y"),
-  min_cells = 2,
+  rctd_mode = "full",
+  max_cores = 1,
   verbose = FALSE
 )
-SpatialDeconvolutionPlot(
-  spatial,
-  tool_name = "SpatialDWLS",
-  plot_type = "dominant",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
+SpatialDeconvolutionPlot(spatial, tool_name = "RCTD", plot_type = "dominant")
+}
 }

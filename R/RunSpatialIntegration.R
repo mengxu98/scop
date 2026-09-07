@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Integrate spatial transcriptomics samples and identify shared domains
-#' using PRECAST, BASS, or SpatialMNN.
+#' using PRECAST.
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
@@ -15,7 +15,8 @@
 #' sample independently. Every input sample must remain represented.
 #' For list input, image names refer to each original list element, before
 #' Seurat renames duplicate image keys during merging.
-#' @param method Spatial integration backend.
+#' @param method Spatial integration backend. The current stable backend is
+#' `"PRECAST"`.
 #' @param sample.by Metadata column identifying samples for a merged `Seurat`
 #' object. For list input, list names are copied into this column.
 #' @param reduction.name Name of the integrated embedding reduction. If `NULL`,
@@ -31,6 +32,8 @@
 #' @details
 #' Provide spatial samples with shared genes and raw coordinates. Use
 #' `sample.by` to identify samples and `image` to select their spatial images.
+#' PRECAST integrates expression and domain representations; it is not a
+#' physical image-registration method.
 #'
 #' @return A `Seurat` object with spatial integration results stored in
 #' metadata, reductions, and `srt@tools[[tool_name]]`.
@@ -678,6 +681,15 @@ spatial_integration_standardize_embedding <- function(embedding, cells) {
       )
     }
     rownames(embedding) <- cells
+  } else {
+    ids <- rownames(embedding)
+    if (anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids) ||
+        !setequal(ids, cells)) {
+      log_message(
+        "Backend embedding row IDs must match Seurat cells exactly",
+        message_type = "error"
+      )
+    }
   }
   cells_use <- cells[cells %in% rownames(embedding)]
   if (length(cells_use) == 0L) {
@@ -698,20 +710,37 @@ spatial_integration_standardize_named_vector <- function(x, cells) {
   if (is.null(x)) {
     return(NULL)
   }
+  source_names <- names(x)
   if (is.data.frame(x) || is.matrix(x)) {
     x <- x[, 1L, drop = TRUE]
+    source_names <- names(x) %||% rownames(x)
   }
   x <- as.character(x)
-  if (is.null(names(x))) {
+  if (is.null(source_names) || !length(source_names)) {
     if (length(x) != length(cells)) {
       log_message(
         "Backend domain labels must be named or have one value per Seurat cell",
         message_type = "error"
       )
     }
-    names(x) <- cells
+    source_names <- cells
   }
-  cells_use <- cells[cells %in% names(x)]
+  if (length(source_names) != length(x) || anyNA(source_names) || any(!nzchar(source_names)) || anyDuplicated(source_names)) {
+    log_message(
+      "Backend domain labels must have one unique non-empty identifier per value",
+      message_type = "error"
+    )
+  }
+  names(x) <- source_names
+  extra <- setdiff(source_names, cells)
+  missing <- setdiff(cells, source_names)
+  if (length(extra) || length(missing)) {
+    log_message(
+      "Backend domain labels do not match Seurat cells; missing: {.val {missing}}, extra: {.val {extra}}",
+      message_type = "error"
+    )
+  }
+  cells_use <- cells
   if (length(cells_use) == 0L) {
     log_message(
       "Backend domain labels could not be matched to Seurat cells",
@@ -740,6 +769,15 @@ spatial_integration_standardize_coords <- function(coords, cells) {
       )
     }
     rownames(coords) <- cells
+  } else {
+    ids <- rownames(coords)
+    if (anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids) ||
+        !setequal(ids, cells)) {
+      log_message(
+        "Backend aligned-coordinate row IDs must match Seurat cells exactly",
+        message_type = "error"
+      )
+    }
   }
   cells_use <- cells[cells %in% rownames(coords)]
   if (length(cells_use) == 0L) {

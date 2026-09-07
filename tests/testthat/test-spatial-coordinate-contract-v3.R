@@ -216,3 +216,25 @@ test_that("the shared Visium input produces plottable raw-coordinate results", {
   expect_s3_class(SpatialNetworkPlot(spatial), "ggplot")
   expect_s3_class(SpatialNeighborhoodPlot(spatial, plot_type = "spatial"), "ggplot")
 })
+
+test_that("spatial integration preserves named backend domains by cell identity", {
+  standardize <- getFromNamespace(
+    "spatial_integration_standardize_named_vector",
+    "scop"
+  )
+  cells <- c("cell1", "cell2", "cell3")
+  domains <- c(cell3 = "D3", cell1 = "D1", cell2 = "D2")
+  expect_identical(
+    unname(standardize(domains, cells)),
+    c("D1", "D2", "D3")
+  )
+  expect_named(standardize(domains, cells), cells)
+  expect_error(
+    standardize(c(cell1 = "D1", cell2 = "D2"), cells),
+    "missing.*cell3"
+  )
+  expect_error(
+    standardize(c(cell1 = "D1", cell1 = "D2", cell3 = "D3"), cells),
+    "unique"
+  )
+})

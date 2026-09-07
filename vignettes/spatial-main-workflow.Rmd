@@ -155,7 +155,7 @@ SpatialVariableFeaturePlot(
 
 SpatialVariableFeaturePlot(
   spatial,
-  plot_type = "surface",
+  plot_type = "summary",
   nfeatures = 4
 )
 ```
@@ -210,27 +210,28 @@ wrapper choice. Use a matched single-cell reference, then inspect dominant cell
 types and maximum proportions before interpreting spatial biology.
 
 ```r
-spatial <- RunSpatialDWLS(
+spatial <- RunRCTD(
   spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",
   reference_assay = "RNA",
+  layer = "counts",
+  reference_layer = "counts",
   coord.cols = c("x", "y"),
-  prefix = "SpatialDWLS"
+  rctd_mode = "full",
+  max_cores = 1,
+  verbose = FALSE
 )
 
-spatial@tools$SpatialDWLS$summary
+spatial@tools$RCTD$summary
 
-SpatialSpotPlot(
+SpatialDeconvolutionPlot(
   spatial,
-  group.by = "SpatialDWLS_dominant_type"
-)
-
-SpatialSpotPlot(
-  spatial,
-  group.by = "SpatialDWLS_dominant_type",
-  plot_type = "pie"
+  tool_name = "RCTD",
+  plot_type = "dominant",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
 )
 ```
 
@@ -344,7 +345,8 @@ spatial <- RunMistyR(
   layer = "data",
   features = head(spatial@tools$SpatialVariableFeatures$summary$top_features, 20),
   coord.cols = c("x", "y"),
-  views = "para"
+  views = "para",
+  para_l = 1000
 )
 spatial@tools$MistyR$summary
 MistyRPlot(spatial, type = "improvements")
@@ -450,9 +452,12 @@ spatial <- RunSpatialDM(
   local.threshold = 0.1
 )
 
-SpatialDMPlot(spatial, plot_type = "weights", spot = "spot_001")
-SpatialDMPlot(spatial, plot_type = "global", highlight = "SPP1_CD44")
-SpatialDMPlot(spatial, plot_type = "local", pair = "SPP1_CD44")
+spatialdm_global <- GetSpatialDMResult(spatial, type = "global")
+spatialdm_pair <- spatialdm_global$interaction[[1L]]
+spatialdm_spot <- spatial@tools$SpatialDM$coordinates$cell_id[[1L]]
+SpatialDMPlot(spatial, plot_type = "global")
+SpatialDMPlot(spatial, plot_type = "local", pair = spatialdm_pair)
+SpatialDMPlot(spatial, plot_type = "weights", spot = spatialdm_spot)
 GetSpatialDMResult(spatial, type = "global")
 ```
 

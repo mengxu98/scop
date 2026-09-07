@@ -343,10 +343,13 @@ StatialKontextualPlot <- function(object = NULL, res = NULL, tests = NULL, image
     ggplot2::aes(x = .data$r, y = .data$kontextual, color = .data$test, group = interaction(.data$imageID, .data$test))
   ) +
     ggplot2::geom_hline(yintercept = 0, color = "grey75", linewidth = 0.3) +
-    ggplot2::geom_line() +
     ggplot2::geom_point() +
     ggplot2::labs(x = "Radius", y = "Kontextual score", color = "Relationship") +
     theme_scop()
+  line_data <- tab[ave(tab$r, interaction(tab$imageID, tab$test), FUN = length) > 1L, , drop = FALSE]
+  if (nrow(line_data) > 0L) {
+    p <- p + ggplot2::geom_line(data = line_data)
+  }
   if (length(unique(tab$imageID)) > 1L) p <- p + ggplot2::facet_wrap(~imageID)
   p
 }

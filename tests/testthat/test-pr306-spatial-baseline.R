@@ -94,3 +94,36 @@ test_that("spatial boundary plots use the shared axis-free spatial theme", {
   expect_s3_class(p, "ggplot")
   expect_s3_class(ggplot2::calc_element("axis.text.x", p$theme), "element_blank")
 })
+
+test_that("spatial boundary feature values use the requested assay layer", {
+  counts <- matrix(
+    c(1, 2, 3, 4, 4, 3, 2, 1),
+    nrow = 2,
+    dimnames = list(c("Gene1", "Gene2"), paste0("cell", 1:4))
+  )
+  srt <- SeuratObject::CreateSeuratObject(counts)
+  srt[["RNA"]] <- SeuratObject::CreateAssay5Object(
+    counts = counts,
+    data = counts * 10
+  )
+  boundaries <- data.frame(
+    cell_id = rep(paste0("cell", 1:4), each = 4),
+    polygon_id = rep(paste0("p", 1:4), each = 4),
+    ring_id = 1,
+    vertex_order = rep(1:4, 4),
+    x = rep(c(0, 1, 1, 0), 4) + rep(0:3, each = 4),
+    y = rep(c(0, 0, 1, 1), 4)
+  )
+  p <- SpatialCellPlot(
+    object = srt,
+    boundaries = boundaries,
+    features = "Gene1",
+    assay = "RNA",
+    layer = "data"
+  )
+  plotted <- p$layers[[1L]]$data
+  expect_equal(
+    sort(unique(plotted$.value)),
+    sort(as.numeric(c(10, 20, 30, 40)))
+  )
+})
