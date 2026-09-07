@@ -58,7 +58,12 @@ CoverageTrackPlot <- function(
 
   cols <- NULL
   if (!is.null(group.by)) {
-    groups <- unique(as.character(stats::na.omit(srt[[group.by, drop = TRUE]])))
+    group_val <- stats::na.omit(srt[[group.by, drop = TRUE]])
+    groups <- if (is.factor(group_val)) {
+      levels(group_val)[levels(group_val) %in% group_val]
+    } else {
+      unique(as.character(group_val))
+    }
     if (length(groups) > 0) {
       cols <- palette_colors(
         groups,

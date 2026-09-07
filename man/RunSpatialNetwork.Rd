@@ -19,10 +19,7 @@ RunSpatialNetwork(
 }
 \arguments{
 \item{srt}{A `Seurat` object. The same object may be supplied as
-\code{object =} for consistency with spatial plotting APIs.}
-
-\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
-\code{object}.}
+`object =` for consistency with spatial plotting APIs.}
 
 \item{method}{Network method, either `"knn"` or `"radius"`.}
 
@@ -44,6 +41,9 @@ replaced.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{object}{Optional alias for `srt`. Supply exactly one of `srt` or
+`object`.}
 }
 \value{
 The input `Seurat` object with a `SpatialNetwork` result in
@@ -57,7 +57,7 @@ coordinates. Results are stored as named graphs in
 \examples{
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
-spatial <- RunSpatialNetwork(spatial, k = 6, verbose = FALSE)
-SpatialNetworkPlot(spatial, group.by = "coda_label")
+spatial <- RunSpatialNetwork(object = spatial, k = 6, verbose = FALSE)
+SpatialNetworkPlot(object = spatial, group.by = "coda_label")
 
 }

@@ -35,10 +35,7 @@ SpatialVariableFeaturePlot(
 }
 \arguments{
 \item{srt}{A \code{Seurat} object. The same object may be supplied as
-\code{object =} for consistency with spatial plotting APIs.}
-
-\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
-\code{object}.}
+\verb{object =} for consistency with spatial plotting APIs.}
 
 \item{plot_type}{Plot type: \code{"summary"}, \code{"surface"}, or \code{"combined"}.}
 
@@ -60,7 +57,9 @@ a single image is selected automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
-\item{flip.y}{Reverse the y axis for metadata coordinates.}
+\item{flip.y}{Reverse the y axis for metadata or FOV coordinates without a
+raster image. The default \code{FALSE} agrees with spatial networks and cell
+boundaries. Raster-backed display coordinates already include their flip.}
 
 \item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
 with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
@@ -78,6 +77,9 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
+
+\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
+\code{object}.}
 
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
@@ -101,10 +103,10 @@ spatial <- Seurat::NormalizeData(
   verbose = FALSE
 )
 spatial <- RunSpatialVariableFeatures(
-  spatial,
+  object = spatial,
   assay = "Spatial",
   nfeatures = 10,
   verbose = FALSE
 )
-SpatialVariableFeaturePlot(spatial, plot_type = "summary")
+SpatialVariableFeaturePlot(object = spatial, plot_type = "summary")
 }

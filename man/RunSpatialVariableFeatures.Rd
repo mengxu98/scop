@@ -28,10 +28,7 @@ RunSpatialVariableFeatures(
 }
 \arguments{
 \item{srt}{A \code{Seurat} object. The same object may be supplied as
-\code{object =} for consistency with spatial plotting APIs.}
-
-\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
-\code{object}.}
+\verb{object =} for consistency with spatial plotting APIs.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -78,6 +75,9 @@ coordinate units; \code{k} is a unitless neighbor count.}
 \code{"cpp"} is the default; use \code{"r"} for the reference implementation.}
 
 \item{...}{Additional arguments passed to external backends.}
+
+\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
+\code{object}.}
 }
 \value{
 A \code{Seurat} object with spatial variable feature results stored in
@@ -104,14 +104,14 @@ spatial <- Seurat::FindVariableFeatures(
 )
 
 SpatialSpotPlot(
-  spatial,
+  object = spatial,
   features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:2]
 )
 
 spatial <- RunSpatialVariableFeatures(
-  spatial,
+  object = spatial,
   assay = "Spatial",
   nfeatures = 50
 )
-SpatialVariableFeaturePlot(spatial, plot_type = "combined", nfeatures = 2)
+SpatialVariableFeaturePlot(object = spatial, plot_type = "combined", nfeatures = 2)
 }
