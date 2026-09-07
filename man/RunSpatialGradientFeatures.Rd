@@ -146,13 +146,17 @@ with distance from annotated regions.
 \examples{
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
+counts <- GetAssayData5(spatial, assay = "Spatial", layer = "counts")
+gradient_features <- names(sort(Matrix::rowSums(counts), decreasing = TRUE))[
+  seq_len(min(8L, nrow(counts)))
+]
 # Use a diagonal example axis without permutation testing.
 spatial <- RunSpatialGradientFeatures(
   spatial,
   reference = "trajectory",
   backend = "cpp",
   result_name = "example_axis",
-  variables = rownames(spatial)[1:8],
+  variables = gradient_features,
   start = c(min(spatial$x), min(spatial$y)),
   end = c(max(spatial$x), max(spatial$y)),
   layer = "counts",
@@ -165,12 +169,6 @@ spatial <- RunSpatialGradientFeatures(
   verbose = FALSE
 )
 
-SpatialGradientPlot(
-  spatial,
-  plot_type = "surface",
-  features = rownames(spatial)[1:2],
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  pt.size = 1.2
-)
+SpatialGradientPlot(spatial, plot_type = "line")
+SpatialGradientPlot(spatial, plot_type = "model")
 }

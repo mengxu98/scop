@@ -1,5 +1,13 @@
 # scop 0.9.1
 
+* **breaking**: Remove unverified `RunSpatialDWLS()` and its plotting path rather than presenting clipped least-squares output as SpatialDWLS. Use `RunRCTD()`, `RunCARD()`, or `RunSPOTlight()` with `SpatialDeconvolutionPlot()`.
+* **breaking**: Remove `SpatialEcoTyperCompositionPlot()` and `SpatialEcoTyperSpatialPlot()`. Use `CellStatPlot()` and `SpatialSpotPlot()`.
+* **breaking**: `SpatialGradientPlot()` now reads only stored `summary`, `line`, and `model` views. `surface`/`combined` plot types and current-assay/layer refetch are removed.
+* **fix**: `MistyRPlot(measure =)` selects the numeric result column explicitly (`gain.R2`/`gain.RMSE` or `contribution`/`importance`).
+* **fix**: Spatial integration (PRECAST) domain, embedding, and coordinate results must match Seurat cell identities exactly, including named, reordered, missing, extra, and duplicate IDs.
+* **fix**: `SpatialCellPlot()` fetches feature values through `GetAssayData5()` with explicit `assay`/`layer`.
+* **fix**: `StatialKontextualPlot()` draws connecting lines only when a relationship has multiple radii.
+
 * **data**: Remove the derivative `pbmc_celltypist_sub`, `visium_human_pancreas_results_sub`, `visium_human_pancreas_pair_sub`, and `xenium_human_pancreas_boundaries_sub` datasets and one-off data migration scripts. Examples reuse `pbmcmultiome_sub` and `visium_human_pancreas_sub`, computing results when needed; specialized workflows document their required inputs without placeholder files. Existing scripts using the removed `data()` names must be updated.
 
 * **fix**: Coordinate v3 accepts the empty native orientation slot introduced by newer SeuratObject versions. List integration resolves explicit image maps before merging duplicate image names. Existing coordinate-contract v2 results still require rerunning.

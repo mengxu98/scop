@@ -63,10 +63,9 @@ type. Old \code{spacexr} RCTD requires at least 25 cells per type.}
 
 \item{store_results}{Whether to store detailed RCTD results in \code{srt@tools}.}
 
-\item{round_counts}{Whether to round non-integer counts to the nearest
-integer before passing data to \code{spacexr}. RCTD requires integer count
-matrices; this defaults to \code{TRUE} so bundled example data with scaled
-non-integer reference counts can run directly.}
+\item{round_counts}{Whether to round non-integer values before passing data
+to \code{spacexr}. RCTD requires integer count matrices; rounding is a
+compatibility option and does not recover original counts.}
 
 \item{create_rctd_params}{Additional parameters passed to
 \code{spacexr::createRctd()} or \code{spacexr::create.RCTD()}.}

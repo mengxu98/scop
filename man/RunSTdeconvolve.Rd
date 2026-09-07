@@ -27,13 +27,15 @@ RunSTdeconvolve(
 )
 }
 \arguments{
-\item{srt}{Spatial \code{Seurat} object used as the RCTD query.}
+\item{srt}{A \code{Seurat} object containing spatial expression data.}
 
-\item{assay}{Assay used in \code{srt}. If \code{NULL}, the default assay is used.}
+\item{assay}{Assay used as STdeconvolve input. If \code{NULL}, the default assay
+is used.}
 
 \item{layer}{Assay layer used as STdeconvolve input.}
 
-\item{features}{Features used for RCTD. If \code{NULL}, shared features are used.}
+\item{features}{Features passed to the topic model. If \code{NULL}, all features
+in the selected assay are used.}
 
 \item{k}{Number of topics. If \code{NULL}, models are fit over \code{k_candidates} and
 \code{STdeconvolve::optimalModel()} is used to choose a model.}
@@ -58,18 +60,18 @@ RunSTdeconvolve(
 \item{get_beta_theta_params}{Additional parameters passed to
 \code{STdeconvolve::getBetaTheta()}.}
 
-\item{prefix}{Prefix for metadata columns.}
-
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
-\item{store_results}{Whether to store detailed RCTD results in \code{srt@tools}.}
+\item{prefix}{Prefix for topic proportion metadata columns.}
 
-\item{round_counts}{Whether to round non-integer counts before model fitting.}
+\item{store_results}{Whether to store detailed topic matrices in \code{srt@tools}.}
 
-\item{verbose}{Whether to print the message.
-Default is \code{TRUE}.}
+\item{round_counts}{Whether to round non-integer counts before model fitting.
+This is a preprocessing choice and does not recover original counts.}
 
-\item{...}{Additional parameters passed to the RCTD run step.}
+\item{...}{Additional arguments passed to the STdeconvolve fit steps.}
+
+\item{verbose}{Whether to print messages.}
 }
 \value{
 A \code{Seurat} object with topic proportions in metadata and detailed
@@ -82,17 +84,16 @@ Infer expression topics and their spot-level proportions using STdeconvolve.
 \dontrun{
 thisutils::check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
 data(visium_human_pancreas_sub)
-keep_spots <- unique(round(seq(
-  1,
-  ncol(visium_human_pancreas_sub),
-  length.out = 120
-)))
-spatial <- visium_human_pancreas_sub[, keep_spots]
+spatial <- visium_human_pancreas_sub
+counts <- GetAssayData5(spatial, assay = "Spatial", layer = "counts")
+features <- names(sort(Matrix::rowSums(counts), decreasing = TRUE))[
+  seq_len(min(300L, nrow(counts)))
+]
 spatial <- RunSTdeconvolve(
   spatial,
   assay = "Spatial",
   layer = "counts",
-  features = head(rownames(spatial), 300),
+  features = features,
   k = 3,
   verbose = FALSE
 )

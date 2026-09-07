@@ -40,9 +40,10 @@
 #' @param cols.highlight Cells to highlight and their appearance. `TRUE` highlights all cells.
 #' @param column_title The title for the column names in the heatmap. Default is to use the reference grouping variable.
 #' @param combine Combine plots with [patchwork]. `combine = FALSE` returns a list of ggplots.
-#' @param complex.mean Whether to use a modified mean test statistic in complex heatmaps.
+#' @param complex.mean Method-specific complex ligand-receptor mean. Methods
+#' that do not expose it should document their own alternative.
 #' @param coordinate.unit Unit of the raw input coordinates. Automatic unit selection uses technology-specific rules.
-#' @param cutoff Maximum selected-cell fraction used by Scissor's alpha search.
+#' @param cutoff Method-specific cutoff; methods should document its scale.
 #' @param decreasing Order groups decreasingly.
 #' @param envname Conda-compatible Python environment. If `NULL`, the environment name will be set to `"scop_env"`.
 #' @param feature_annotation_palcolor Custom colors for feature annotations.
@@ -50,7 +51,7 @@
 #' @param feature_split Feature splitting. `split_method` is `"kmeans"`, `"hclust"`, or `"mfuzz"`.
 #' @param feature_split_palcolor Custom colors for feature-split annotation labels.
 #' @param feature_split_palette Split colors.
-#' @param global.fdr Global FDR threshold.
+#' @param global.fdr Method-specific global FDR selection switch or threshold.
 #' @param global.threshold Global threshold.
 #' @param graph Neighbor-graph edges.
 #' @param group_palcolor Custom colors for cell types (groups) in Manhattan plot.
@@ -71,7 +72,7 @@
 #' @param lineages Pseudotime columns to use. If `NULL`, lineage-like pseudotime columns such as `Lineage1`, `Lineage2`, `prefix_Lineage1`, or `pseudotime` are detected and merged into one global pseudotime for a single panel. Use `"all"` to plot each detected lineage in separate panels.
 #' @param lineages_palette Color palette used for lineage groups.
 #' @param linear_reduction Linear reduction (`"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`, `"glmpca"`). `linear_reduction_dims_use = NULL` uses estimated dimensions, else the first 50.
-#' @param local.fdr Local FDR threshold.
+#' @param local.fdr Method-specific local FDR selection switch or threshold.
 #' @param local.threshold Local threshold.
 #' @param min_cell Minimum number of cells required.
 #' @param n_neighbor_layers Number of neighbor layers to use.

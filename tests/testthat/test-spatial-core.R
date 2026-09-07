@@ -83,14 +83,19 @@ test_that("dedicated spatial result plots accept result-only input", {
     improvements = data.frame(target = c("A", "B"), measure = "gain.R2", value = c(0.1, 0.4)),
     contributions = data.frame(target = "A", view = "paraview.3", value = 0.3)
   ), coordinate_contract_version = .spatial_coordinate_contract_version)
-  expect_s3_class(MistyRPlot(res = misty), "ggplot")
-  expect_s3_class(MistyRPlot(res = misty, type = "contributions"), "ggplot")
+  expect_s3_class(MistyRPlot(res = misty, measure = "value"), "ggplot")
+  expect_s3_class(MistyRPlot(res = misty, type = "contributions", measure = "value"), "ggplot")
+  expect_error(MistyRPlot(res = misty, measure = "missing"), "measure")
 
   statial <- list(table = data.frame(
     imageID = rep(c("s1", "s2"), each = 2), test = rep(c("A:B", "B:A"), 2),
     r = rep(c(10, 20), 2), kontextual = c(-1, 0.5, 0.2, 1)
   ), coordinate_contract_version = .spatial_coordinate_contract_version)
   expect_s3_class(StatialKontextualPlot(res = statial), "ggplot")
+
+  single_radius <- statial
+  single_radius$table <- single_radius$table[1, , drop = FALSE]
+  expect_s3_class(StatialKontextualPlot(res = single_radius), "ggplot")
 })
 
 test_that("SpatialCoordinates returns ordered raw and display contracts", {
