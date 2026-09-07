@@ -287,7 +287,7 @@ TACSPlot <- function(
 
   p <- p +
     labs(title = title, subtitle = subtitle, x = xlab_use, y = ylab_use) +
-    do.call(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args) +
     theme(
       aspect.ratio = aspect.ratio,
       legend.position = legend.position,

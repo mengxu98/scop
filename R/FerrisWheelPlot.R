@@ -512,7 +512,7 @@ FerrisWheelPlot <- function(
   }
 
   p +
-    do.call(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
       panel.grid = ggplot2::element_blank(),
       panel.border = ggplot2::element_blank(),

@@ -323,7 +323,7 @@ potency_boxplot <- function(
       x = "Phenotype",
       y = ylab
     ) +
-    do.call(theme_use, boxplot_theme_args)
+    apply_plot_theme(theme_use, boxplot_theme_args)
 
   return(p)
 }

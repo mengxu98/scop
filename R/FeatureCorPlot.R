@@ -263,9 +263,11 @@ FeatureCorPlot <- function(
       message_type = "warning",
       verbose = verbose
     )
-    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (isFALSE(answer)) {
-      return(invisible(NULL))
+    if (interactive()) {
+      answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
+      if (isFALSE(answer)) {
+        return(invisible(NULL))
+      }
     }
   }
   dat_use <- srt@meta.data[, unique(c(split.by, group.by)), drop = FALSE]
@@ -345,7 +347,7 @@ FeatureCorPlot <- function(
         f1_index <- as.numeric(x)
         f2_index <- as.numeric(y)
         p <- ggplot(data = dat) +
-          do.call(theme_use, theme_args) +
+          apply_plot_theme(theme_use, theme_args) +
           theme(
             aspect.ratio = aspect.ratio,
             axis.title = element_blank(),
@@ -614,7 +616,7 @@ FeatureCorPlot <- function(
               title.hjust = 0
             )
           ) +
-          do.call(theme_use, theme_args) +
+          apply_plot_theme(theme_use, theme_args) +
           theme(
             aspect.ratio = aspect.ratio,
             legend.position = "bottom",
@@ -633,7 +635,7 @@ FeatureCorPlot <- function(
                 override.aes = list(size = 4, color = "black", alpha = 1)
               )
             ) +
-            do.call(theme_use, theme_args) +
+            apply_plot_theme(theme_use, theme_args) +
             theme(
               aspect.ratio = aspect.ratio,
               legend.position = "bottom",

@@ -701,9 +701,11 @@ CellDimPlot <- function(
       message_type = "warning",
       verbose = verbose
     )
-    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (isFALSE(answer)) {
-      return(invisible(NULL))
+    if (interactive()) {
+      answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
+      if (isFALSE(answer)) {
+        return(invisible(NULL))
+      }
     }
   }
 
@@ -1079,7 +1081,7 @@ CellDimPlot <- function(
             max(dat_dim[, paste0(reduction_key, dims[2])], na.rm = TRUE)
           )
         ) +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,
@@ -2101,9 +2103,11 @@ CellDimPlot3D <- function(
       message_type = "warning",
       verbose = verbose
     )
-    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (isFALSE(answer)) {
-      return(invisible(NULL))
+    if (interactive()) {
+      answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
+      if (isFALSE(answer)) {
+        return(invisible(NULL))
+      }
     }
   }
   if (!is.null(lineages)) {
@@ -2650,7 +2654,7 @@ CellDimPlot3D <- function(
       widget = plotly::as_widget(p),
       file = save
     )
-    unlink(gsub("\\.html", "_files", save), recursive = TRUE)
+    unlink(paste0(tools::file_path_sans_ext(save), "_files"), recursive = TRUE)
   }
 
   return(p)
