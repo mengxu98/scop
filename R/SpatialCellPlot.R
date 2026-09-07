@@ -99,23 +99,34 @@ SpatialCellPlot <- function(
     if (group.by %in% colnames(boundaries)) {
       value_tables[[group.by]] <- boundaries[[group.by]]
     } else if (!is.null(object) && group.by %in% colnames(object@meta.data)) {
-      value_tables[[group.by]] <- object@meta.data[boundaries$cell_id, group.by]
+      cell_idx <- match(boundaries$cell_id, rownames(object@meta.data))
+      value_tables[[group.by]] <- object@meta.data[[group.by]][cell_idx]
     } else {
       log_message("{.arg group.by} {.val {group.by}} was not found", message_type = "error")
     }
   } else if (length(features) > 0L) {
+    needed_features <- setdiff(unique(features), colnames(boundaries))
+    fetched <- if (length(needed_features) > 0L) {
+      if (is.null(object)) {
+        log_message("A Seurat {.arg object} is required to fetch features", message_type = "error")
+      }
+      tryCatch(
+        SeuratObject::FetchData(object, vars = needed_features, layer = "data"),
+        error = function(e) SeuratObject::FetchData(object, vars = needed_features)
+      )
+    } else {
+      NULL
+    }
+    cell_idx <- if (!is.null(fetched)) {
+      match(boundaries$cell_id, rownames(fetched))
+    } else {
+      NULL
+    }
     for (feature in unique(features)) {
       if (feature %in% colnames(boundaries)) {
         value_tables[[feature]] <- boundaries[[feature]]
       } else {
-        if (is.null(object)) {
-          log_message("A Seurat {.arg object} is required to fetch feature {.val {feature}}", message_type = "error")
-        }
-        fetched <- tryCatch(
-          SeuratObject::FetchData(object, vars = feature, layer = "data"),
-          error = function(e) SeuratObject::FetchData(object, vars = feature)
-        )
-        value_tables[[feature]] <- fetched[boundaries$cell_id, feature]
+        value_tables[[feature]] <- fetched[[feature]][cell_idx]
       }
     }
   } else {
