@@ -98,6 +98,26 @@ test_that("ProjectionPlot finds query points after annotation layers", {
   ))
 })
 
+test_that("ProjectionPlot rasterizes the final query overlay when requested", {
+  query <- make_projection_test_srt("query")
+  reference <- make_projection_test_srt("reference")
+  raster_calls <- 0L
+  original <- ggrastr::geom_point_rast
+  testthat::local_mocked_bindings(
+    geom_point_rast = function(...) {
+      raster_calls <<- raster_calls + 1L
+      original(...)
+    }, .package = "ggrastr"
+  )
+  expect_no_error(ProjectionPlot(
+    query, reference, query_group = "group", ref_group = "group",
+    query_reduction = "umap", ref_reduction = "umap",
+    query_param = list(raster = TRUE, label = FALSE),
+    ref_param = list(raster = TRUE, label = FALSE), verbose = FALSE
+  ))
+  expect_identical(raster_calls, 2L)
+})
+
 test_that("GroupHeatmap border settings also control discrete legends", {
   srt <- make_heatmap_test_srt()
   legends <- capture_heatmap_legends(GroupHeatmap(
@@ -108,8 +128,9 @@ test_that("GroupHeatmap border settings also control discrete legends", {
     feature_split = factor(c("M1", "M1", "M2", "M2")),
     exp_method = "raw",
     lib_normalize = FALSE,
-    border = FALSE,
-    heatmap_border = FALSE,
+    border = TRUE,
+    heatmap_border = TRUE,
+    heatmap_border_palcolor = "grey",
     cell_annotation_border = FALSE,
     feature_annotation_border = FALSE,
     cell_annotation_border_size = 2.5,
@@ -164,8 +185,9 @@ test_that("CellCorHeatmap border settings also control group legends", {
     ref_reduction = "umap",
     query_dims = 1:2,
     ref_dims = 1:2,
-    border = FALSE,
-    heatmap_border = FALSE,
+    border = TRUE,
+    heatmap_border = TRUE,
+    heatmap_border_palcolor = "grey",
     cell_annotation_border = FALSE,
     feature_annotation_border = FALSE,
     cell_annotation_border_size = 2.5,

@@ -157,16 +157,21 @@ ProjectionPlot <- function(
     legend <- p1legend %||% p2legend
   }
 
+  query_point <- if (isTRUE(query_param[["raster"]])) {
+    ggrastr::geom_point_rast
+  } else {
+    ggplot2::geom_point
+  }
   p3 <- p1 +
     ggnewscale::new_scale_fill() +
     ggnewscale::new_scale_color() +
-    geom_point(
+    query_point(
       data = p2data,
       aes(x = x, y = y),
       color = "black",
       size = pt.size + stroke.highlight
     ) +
-    geom_point(
+    query_point(
       data = p2data,
       aes(x = x, y = y, color = colour),
       size = pt.size
