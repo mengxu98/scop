@@ -206,10 +206,17 @@ RunMonocle2 <- function(
       args = list()
     )
   )
+  need_dispersion <- monocle2_needs_dispersion(
+    features = features,
+    feature_type = feature_type,
+    show_plot = show_plot
+  )
   uses_negbinomial <- any(c("negbinomial", "negbinomial.size") %in% expressionFamily)
   if (isTRUE(uses_negbinomial)) {
     cds <- get_namespace_fun("BiocGenerics", "estimateSizeFactors")(cds)
-    cds <- get_namespace_fun("BiocGenerics", "estimateDispersions")(cds)
+    if (isTRUE(need_dispersion)) {
+      cds <- get_namespace_fun("BiocGenerics", "estimateDispersions")(cds)
+    }
   }
   dispersion_table <- NULL
   if (is.null(features)) {
@@ -336,6 +343,10 @@ RunMonocle2 <- function(
   return(srt)
 }
 
+monocle2_needs_dispersion <- function(features, feature_type, show_plot) {
+  isTRUE(show_plot) || (is.null(features) && identical(feature_type, "Disp"))
+}
+
 monocle2_reduce_dimension_args <- function(
   cds,
   max_components = 2,
@@ -440,7 +451,11 @@ run_monocle2_cpp <- function(
       args = list()
     )
   )
-  need_dispersion <- isTRUE(show_plot) || (is.null(features) && identical(feature_type, "Disp"))
+  need_dispersion <- monocle2_needs_dispersion(
+    features = features,
+    feature_type = feature_type,
+    show_plot = show_plot
+  )
   uses_negbinomial <- any(c("negbinomial", "negbinomial.size") %in% expressionFamily)
   if (isTRUE(uses_negbinomial)) {
     cds <- get_namespace_fun("BiocGenerics", "estimateSizeFactors")(cds)

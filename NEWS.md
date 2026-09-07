@@ -10,6 +10,7 @@
 
 * **fix**: Gradient result storage and VariableFeatures updates are independent; explicit empty updates clear VariableFeatures and completion messages describe actual actions.
 * **fix**: Neighborhood spatial counts respect saved analysis scope and condition, distinguish zero from unevaluated cells, reject unsupported plot arguments, and support valid empty observed results.
+* **fix**: `RunMonocle2(backend = "r")` skips `estimateDispersions()` unless `feature_type = "Disp"` or `show_plot = TRUE`, matching the C++ backend. The sparse-matrix `2^31-1` crash in dispersion fitting is fixed in [mengxu98/monocle](https://github.com/mengxu98/monocle) 2.9.3.
 
 * **feat**:
   * `SpatialNeighborhoodProfile()` returns observed per-cell neighbor counts and fractions at multiple raw-coordinate distances, retaining the full selected tissue context for target cells without modifying the Seurat object or storing an edge table.
