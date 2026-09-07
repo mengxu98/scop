@@ -219,29 +219,18 @@ ignored with a warning because the compiled kernel has no extra arguments.</p></
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_results_sub</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">mer_result</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_results_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">MERINGUE</span></span></span>
-<span class="r-in"><span><span class="va">mer_result</span><span class="op">$</span><span class="va">summary</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $top_features</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "CELA3A" "TTR"    "GCG"    "COL1A1" "COL3A1" "SPARC"  "DCN"    "FOS"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "COL1A2" "B2M"    "IGFBP7" "TMSB4X" "S100A6" "VIM"    "EEF2"   "UBC"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [17] "FTH1"   "ACTB"   "PABPC1" "UBA52" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span><span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">visium_human_pancreas_results_sub</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="va">mer_result</span><span class="op">$</span><span class="va">autocorrelation</span><span class="op">$</span><span class="va">feature</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">visium_human_pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunMERINGUE-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="fu">check_r</span><span class="op">(</span><span class="st">"JEFworks-Lab/MERINGUE"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunMERINGUE</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">visium_human_pancreas_results_sub</span>,</span></span>
+<span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>, coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"autocorrelation"</span>, nfeatures <span class="op">=</span> <span class="fl">20</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">MERINGUE</span><span class="op">$</span><span class="va">summary</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
