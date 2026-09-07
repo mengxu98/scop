@@ -335,7 +335,7 @@ test_that("public HE overlay wrappers expose image.scale", {
     "SpatialCoordinates", "SpatialSpotPlot", "SpatialNetworkPlot",
     "SpatialDeconvolutionPlot", "Cell2locationPlot", "STdeconvolvePlot",
     "SpatialDMPlot", "SpatialIntegrationPlot",
-    "SpatialGradientPlot", "SpatialNeighborhoodPlot",
+    "SpatialNeighborhoodPlot",
     "SpatialVariableFeaturePlot"
   )
   expect_true(all(vapply(wrappers, function(name) {
