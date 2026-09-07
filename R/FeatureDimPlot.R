@@ -498,7 +498,12 @@ FeatureDimPlot <- function(
 
   assay_data <- NULL
   if (isTRUE(calculate_coexp) && length(features_gene) > 0) {
-    assay_data <- GetAssayData5(srt, assay = assay, layer = layer)
+    assay_data <- GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer,
+      features = features_gene
+    )
     if (length(features_meta) > 0) {
       log_message(
         "{.val {features_meta}} is not used when calculating co-expression",
@@ -533,7 +538,8 @@ FeatureDimPlot <- function(
     assay_data <- assay_data %||% GetAssayData5(
       srt,
       assay = assay,
-      layer = layer
+      layer = layer,
+      features = features_gene
     )
     if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
       dat_gene <- Matrix::t(
@@ -588,9 +594,11 @@ FeatureDimPlot <- function(
       message_type = "warning",
       verbose = verbose
     )
-    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (isFALSE(answer)) {
-      return(invisible(NULL))
+    if (interactive()) {
+      answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
+      if (isFALSE(answer)) {
+        return(invisible(NULL))
+      }
     }
   }
 
@@ -791,7 +799,7 @@ FeatureDimPlot <- function(
           legend_list[[i]] <- get_legend(
             ggplot(dat, aes(x = .data[["x"]], y = .data[["y"]])) +
               temp_geom[[i]] +
-              do.call(theme_use, theme_args) +
+              apply_plot_theme(theme_use, theme_args) +
               theme(
                 aspect.ratio = aspect.ratio,
                 legend.position = "bottom",
@@ -859,7 +867,7 @@ FeatureDimPlot <- function(
           p <- p + facet_grid(split.by ~ features)
         }
         p <- p +
-          do.call(theme_use, theme_args) +
+          apply_plot_theme(theme_use, theme_args) +
           theme(
             aspect.ratio = aspect.ratio,
             legend.position = "none",
@@ -1110,7 +1118,7 @@ FeatureDimPlot <- function(
               theme(legend.position = "none")
             legend2 <- get_legend(
               p +
-                do.call(theme_use, theme_args) +
+                apply_plot_theme(theme_use, theme_args) +
                 theme(
                   aspect.ratio = aspect.ratio,
                   legend.position = "bottom",
@@ -1340,7 +1348,7 @@ FeatureDimPlot <- function(
               max(dat_use[, paste0(reduction_key, dims[2])], na.rm = TRUE)
             )
           ) +
-          do.call(theme_use, theme_args) +
+          apply_plot_theme(theme_use, theme_args) +
           theme(
             aspect.ratio = aspect.ratio,
             legend.position = legend.position,
@@ -1801,7 +1809,12 @@ FeatureDimPlot3D <- function(
 
   assay_data <- NULL
   if (isTRUE(calculate_coexp) && length(features_gene) > 0) {
-    assay_data <- GetAssayData5(srt, assay = assay, layer = layer)
+    assay_data <- GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer,
+      features = features_gene
+    )
     if (length(features_meta) > 0) {
       log_message(
         paste(features_meta, collapse = ","),
@@ -1836,7 +1849,8 @@ FeatureDimPlot3D <- function(
     assay_data <- assay_data %||% GetAssayData5(
       srt,
       assay = assay,
-      layer = layer
+      layer = layer,
+      features = features_gene
     )
     if (all(rownames(srt@assays[[assay]]) %in% features_gene)) {
       dat_gene <- Matrix::t(
@@ -1889,9 +1903,11 @@ FeatureDimPlot3D <- function(
       message_type = "warning",
       verbose = verbose
     )
-    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (isFALSE(answer)) {
-      return(invisible(NULL))
+    if (interactive()) {
+      answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
+      if (isFALSE(answer)) {
+        return(invisible(NULL))
+      }
     }
   }
 

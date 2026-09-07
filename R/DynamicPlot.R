@@ -288,11 +288,16 @@ DynamicPlot <- function(
         verbose = verbose
       )
     }
-    raw_feature_matrix <- GetAssayData5(
-      srt,
-      assay = assay,
-      layer = layer
-    )[gene, , drop = FALSE]
+    raw_feature_matrix <- if (length(gene) > 0) {
+      GetAssayData5(
+        srt,
+        assay = assay,
+        layer = layer,
+        features = gene
+      )[gene, , drop = FALSE]
+    } else {
+      matrix(0, nrow = 0, ncol = ncol(srt), dimnames = list(character(0), colnames(srt)))
+    }
     if (length(meta) > 0) {
       raw_feature_matrix <- rbind(
         raw_feature_matrix,
@@ -372,10 +377,15 @@ DynamicPlot <- function(
     feature_uses_libsize[gene] <- family_all[gene] != "gaussian"
     if (any(feature_uses_libsize)) {
       if (is.null(libsize)) {
+        count_col <- paste0("nCount_", assay)
         fit_libsize_all <- if (counts_status == "raw_counts") {
-          Matrix::colSums(
-            GetAssayData5(srt, assay = assay, layer = "counts")
-          )
+          if (count_col %in% colnames(srt@meta.data)) {
+            stats::setNames(srt@meta.data[[count_col]], rownames(srt@meta.data))
+          } else {
+            Matrix::colSums(
+              GetAssayData5(srt, assay = assay, layer = "counts")
+            )
+          }
         } else {
           stats::setNames(rep(1, ncol(srt)), colnames(srt))
         }
@@ -663,13 +673,18 @@ DynamicPlot <- function(
   }
 
   df_list <- list()
-  y_libsize <- Matrix::colSums(
-    GetAssayData5(
-      srt,
-      assay = assay,
-      layer = "counts"
+  count_col <- paste0("nCount_", assay)
+  y_libsize <- if (count_col %in% colnames(srt@meta.data)) {
+    stats::setNames(srt@meta.data[[count_col]], rownames(srt@meta.data))
+  } else {
+    Matrix::colSums(
+      GetAssayData5(
+        srt,
+        assay = assay,
+        layer = "counts"
+      )
     )
-  )
+  }
   if (!is.null(libsize)) {
     if (!length(libsize) %in% c(1, ncol(srt))) {
       log_message(
@@ -1457,7 +1472,7 @@ DynamicPlot <- function(
           stats::formula(formula),
           scales = "free"
         ) +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,

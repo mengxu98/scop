@@ -153,7 +153,8 @@ CellDensityPlot <- function(
       GetAssayData5(
         srt,
         assay = assay,
-        layer = layer
+        layer = layer,
+        features = features_gene
       )[features_gene, , drop = FALSE]
     )
   } else {
@@ -179,9 +180,11 @@ CellDensityPlot <- function(
       message_type = "warning",
       verbose = verbose
     )
-    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (isFALSE(answer)) {
-      return(invisible(NULL))
+    if (interactive()) {
+      answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
+      if (isFALSE(answer)) {
+        return(invisible(NULL))
+      }
     }
   }
 
@@ -314,7 +317,7 @@ CellDensityPlot <- function(
         p <- p + labs(title = title, subtitle = subtitle, x = f, y = g)
         if (isTRUE(flip)) {
           p <- p +
-            do.call(theme_use, theme_args) +
+            apply_plot_theme(theme_use, theme_args) +
             theme(
               aspect.ratio = aspect.ratio,
               strip.text.x = element_text(angle = 0),
@@ -327,7 +330,7 @@ CellDensityPlot <- function(
             coord_flip()
         } else {
           p <- p +
-            do.call(theme_use, theme_args) +
+            apply_plot_theme(theme_use, theme_args) +
             theme(
               aspect.ratio = aspect.ratio,
               strip.text.y = element_text(angle = 0),

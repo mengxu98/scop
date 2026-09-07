@@ -680,28 +680,41 @@ FeatureHeatmap <- function(
   ))]
   meta <- features[features %in% colnames(srt@meta.data)]
   all_cells <- unique(unlist(lapply(cell_groups, names)))
-  mat_raw <- as_matrix(
-    rbind(
-      GetAssayData5(
-        srt,
-        assay = assay,
-        layer = layer
-      )[gene, all_cells, drop = FALSE],
-      Matrix::t(srt@meta.data[all_cells, meta, drop = FALSE])
-    )
-  )[features, , drop = FALSE]
+  gene_mat <- if (length(gene) > 0) {
+    GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer,
+      features = gene,
+      cells = all_cells
+    )[gene, all_cells, drop = FALSE]
+  } else {
+    matrix(0, nrow = 0, ncol = length(all_cells), dimnames = list(character(0), all_cells))
+  }
+  meta_mat <- if (length(meta) > 0) {
+    Matrix::t(srt@meta.data[all_cells, meta, drop = FALSE])
+  } else {
+    matrix(0, nrow = 0, ncol = length(all_cells), dimnames = list(character(0), all_cells))
+  }
+  mat_raw <- as_matrix(rbind(gene_mat, meta_mat))[features, , drop = FALSE]
   rownames(mat_raw) <- features_unique
   if (isTRUE(lib_normalize) && min(mat_raw, na.rm = TRUE) >= 0) {
     if (!is.null(libsize)) {
       libsize_use <- libsize
     } else {
-      libsize_use <- Matrix::colSums(
-        GetAssayData5(
-          srt,
-          assay = assay,
-          layer = "counts"
-        )[, colnames(mat_raw), drop = FALSE]
-      )
+      count_col <- paste0("nCount_", assay)
+      if (count_col %in% colnames(srt@meta.data)) {
+        libsize_use <- srt@meta.data[colnames(mat_raw), count_col]
+      } else {
+        libsize_use <- Matrix::colSums(
+          GetAssayData5(
+            srt,
+            assay = assay,
+            layer = "counts",
+            cells = colnames(mat_raw)
+          )
+        )
+      }
       isfloat <- any(libsize_use %% 1 != 0, na.rm = TRUE)
       if (isTRUE(isfloat)) {
         libsize_use <- rep(1, length(libsize_use))
@@ -780,6 +793,10 @@ FeatureHeatmap <- function(
     )
   }
 
+  ann_use <- intersect(
+    cell_annotation,
+    rownames(Seurat::GetAssay(srt, assay = assay))
+  )
   cell_metadata <- cbind.data.frame(
     data.frame(
       row.names = colnames(mat_raw),
@@ -795,23 +812,22 @@ FeatureHeatmap <- function(
         drop = FALSE
       ],
       Matrix::t(
-        GetAssayData5(
-          srt,
-          assay = assay,
-          layer = "data"
-        )[
-          intersect(
-            cell_annotation,
-            rownames(
-              Seurat::GetAssay(
-                srt,
-                assay = assay
-              )
-            )
-          ),
-          colnames(mat_raw),
-          drop = FALSE
-        ]
+        if (length(ann_use) > 0) {
+          GetAssayData5(
+            srt,
+            assay = assay,
+            layer = "data",
+            features = ann_use,
+            cells = colnames(mat_raw)
+          )[ann_use, colnames(mat_raw), drop = FALSE]
+        } else {
+          matrix(
+            0,
+            nrow = 0,
+            ncol = ncol(mat_raw),
+            dimnames = list(character(0), colnames(mat_raw))
+          )
+        }
       )
     )
   )

@@ -32,6 +32,9 @@
 #' @param stroke Point border width.
 #' @param bg_color Point border color.
 #' @param jitter_width,jitter_height Jitter when `geom = "jitter"`.
+#' @param lower_quantile,upper_quantile,lower_cutoff,upper_cutoff Limits for
+#' continuous feature scales. Non-`NULL` cutoffs take precedence over the
+#' quantiles.
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #' @export
@@ -80,6 +83,10 @@ SpatialSpotPlot <- function(
   palette = "Spectral",
   palcolor = NULL,
   bg_color = "grey20",
+  lower_quantile = 0,
+  upper_quantile = 0.99,
+  lower_cutoff = NULL,
+  upper_cutoff = NULL,
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = NULL,
@@ -213,6 +220,19 @@ SpatialSpotPlot <- function(
     rep("values", length(value_items))
   )
   names(value_type) <- plot_items
+  features_expr <- if (length(features) > 0) {
+    assay_use <- assay %||% SeuratObject::DefaultAssay(srt)
+    GetAssayData5(
+      srt,
+      assay = assay_use,
+      layer = layer,
+      features = features,
+      cells = rownames(dat)
+    )
+  } else {
+    NULL
+  }
+
   plots <- lapply(plot_items, function(item) {
     plot_dat <- dat
     plot_dat[[".value"]] <- spatial_dim_values(
@@ -223,7 +243,8 @@ SpatialSpotPlot <- function(
       layer = layer,
       values = values,
       cells = rownames(plot_dat),
-      show_na = show_na
+      show_na = show_na,
+      expr_cache = features_expr
     )
     if (isFALSE(show_na)) {
       plot_dat <- plot_dat[!is.na(plot_dat[[".value"]]), , drop = FALSE]
@@ -245,6 +266,10 @@ SpatialSpotPlot <- function(
       palette = palette,
       palcolor = palcolor,
       bg_color = bg_color,
+      lower_quantile = lower_quantile,
+      upper_quantile = upper_quantile,
+      lower_cutoff = lower_cutoff,
+      upper_cutoff = upper_cutoff,
       legend.position = legend.position,
       legend.direction = legend.direction,
       legend.title = legend.title %||% item,
@@ -860,7 +885,8 @@ spatial_dim_values <- function(
   layer = "data",
   values = NULL,
   cells,
-  show_na = FALSE
+  show_na = FALSE,
+  expr_cache = NULL
 ) {
   type <- match.arg(type)
   if (type == "metadata") {
@@ -885,8 +911,12 @@ spatial_dim_values <- function(
     return(spatial_dim_values_from_input(values, item, cells, show_na))
   }
 
+  if (!is.null(expr_cache) && item %in% rownames(expr_cache)) {
+    return(as.numeric(expr_cache[item, cells, drop = TRUE]))
+  }
+
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
-  expr <- GetAssayData5(srt, assay = assay, layer = layer)
+  expr <- GetAssayData5(srt, assay = assay, layer = layer, features = item, cells = cells)
   if (!item %in% rownames(expr)) {
     log_message(
       "{.arg features} {.val {item}} is not in assay {.val {assay}}",
@@ -912,6 +942,10 @@ spatial_dim_single_plot <- function(
   palette = "Chinese",
   palcolor = NULL,
   bg_color = "grey20",
+  lower_quantile = 0,
+  upper_quantile = 1,
+  lower_cutoff = NULL,
+  upper_cutoff = NULL,
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = value_name,
@@ -957,7 +991,15 @@ spatial_dim_single_plot <- function(
         size = pt.size,
         alpha = pt.alpha
       ) +
-      spatial_dim_continuous_scale(values, aesthetic = "color", colors = cols)
+      spatial_dim_continuous_scale(
+        values,
+        aesthetic = "color",
+        colors = cols,
+        lower_quantile = lower_quantile,
+        upper_quantile = upper_quantile,
+        lower_cutoff = lower_cutoff,
+        upper_cutoff = upper_cutoff
+      )
   } else {
     lvls <- levels(factor(values))
     cols <- palette_colors(lvls, palette = palette, palcolor = palcolor)
@@ -970,32 +1012,39 @@ spatial_dim_single_plot <- function(
         size = pt.size,
         alpha = pt.alpha
       ) +
-      ggplot2::scale_fill_manual(values = cols, na.value = "grey80")
+      ggplot2::scale_fill_manual(
+        values = cols,
+        na.value = "grey80",
+        drop = FALSE
+      )
   }
 
-  legend_labs <- if (is.numeric(values)) {
-    ggplot2::labs(x = NULL, y = NULL, color = legend.title)
-  } else {
-    ggplot2::labs(x = NULL, y = NULL, fill = legend.title)
-  }
   p <- p +
-    legend_labs +
+    theme_obj +
+    ggplot2::labs(
+      title = value_name,
+      x = NULL,
+      y = NULL,
+      color = legend.title,
+      fill = legend.title
+    ) +
     ggplot2::theme(
       legend.position = legend.position,
       legend.direction = legend.direction
-    ) +
-    theme_obj
+    )
 
   if (isTRUE(flip.y)) {
     p <- p + ggplot2::scale_y_reverse()
   }
   if (isTRUE(crop)) {
-    limits <- spatial_crop_limits(plot_dat$x, plot_dat$y)
-    p <- p +
-      ggplot2::coord_equal(
-        xlim = limits$xlim,
-        ylim = limits$ylim
-      )
+    crop_xlim <- range(plot_dat$x, na.rm = TRUE)
+    crop_ylim <- range(plot_dat$y, na.rm = TRUE)
+    x_pad <- max(diff(crop_xlim) * 0.02, 1)
+    y_pad <- max(diff(crop_ylim) * 0.02, 1)
+    p <- p + ggplot2::coord_equal(
+      xlim = crop_xlim + c(-x_pad, x_pad),
+      ylim = crop_ylim + c(-y_pad, y_pad)
+    )
   } else {
     p <- p + ggplot2::coord_equal()
   }
@@ -1005,7 +1054,15 @@ spatial_dim_single_plot <- function(
   p
 }
 
-spatial_dim_continuous_scale <- function(values, aesthetic = c("color", "fill"), colors) {
+spatial_dim_continuous_scale <- function(
+  values,
+  aesthetic = c("color", "fill"),
+  colors,
+  lower_quantile = 0,
+  upper_quantile = 1,
+  lower_cutoff = NULL,
+  upper_cutoff = NULL
+) {
   aesthetic <- match.arg(aesthetic)
   finite <- values[is.finite(values)]
   limits <- NULL
@@ -1015,20 +1072,28 @@ spatial_dim_continuous_scale <- function(values, aesthetic = c("color", "fill"),
     span <- max(abs(center) * 0.1, 0.5)
     limits <- center + c(-span, span)
     breaks <- center
+  } else if (length(finite) > 1L) {
+    min_v <- lower_cutoff %||% stats::quantile(finite, probs = lower_quantile %||% 0, na.rm = TRUE)
+    max_v <- upper_cutoff %||% stats::quantile(finite, probs = upper_quantile %||% 1, na.rm = TRUE)
+    if (is.finite(min_v) && is.finite(max_v) && min_v < max_v) {
+      limits <- c(min_v, max_v)
+    }
   }
   if (identical(aesthetic, "color")) {
     return(ggplot2::scale_color_gradientn(
       colors = colors,
       na.value = "grey80",
       limits = limits,
-      breaks = breaks
+      breaks = breaks,
+      oob = scales::squish
     ))
   }
   ggplot2::scale_fill_gradientn(
     colors = colors,
     na.value = "grey80",
     limits = limits,
-    breaks = breaks
+    breaks = breaks,
+    oob = scales::squish
   )
 }
 

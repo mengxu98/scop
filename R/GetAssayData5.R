@@ -5,6 +5,8 @@
 #'
 #' @md
 #' @inheritParams SeuratObject::GetAssayData
+#' @param features Optional vector of feature names to extract.
+#' @param cells Optional vector of cell names to extract.
 #' @param ... Additional arguments passed to [SeuratObject::GetAssayData].
 #'
 #' @return A matrix or data frame containing the assay data.
@@ -36,6 +38,8 @@ GetAssayData5.Seurat <- function(
   object,
   layer = "counts",
   assay = NULL,
+  features = NULL,
+  cells = NULL,
   ...
 ) {
   assay <- assay %||% SeuratObject::DefaultAssay(object = object)
@@ -49,6 +53,8 @@ GetAssayData5.Seurat <- function(
   data <- GetAssayData5(
     object = assay_obj,
     layer = layer,
+    features = features,
+    cells = cells,
     ...
   )
   return(data)
@@ -60,23 +66,33 @@ GetAssayData5.Seurat <- function(
 GetAssayData5.Assay5 <- function(
   object,
   layer = "counts",
+  features = NULL,
+  cells = NULL,
   ...
 ) {
   matching_layers <- SeuratObject::Layers(object, search = layer)
-  if (length(matching_layers) == 1L && identical(matching_layers, layer)) {
-    return(SeuratObject::GetAssayData(
+  data <- if (length(matching_layers) == 1L && identical(matching_layers, layer)) {
+    SeuratObject::GetAssayData(
       object,
       layer = layer,
       ...
-    ))
+    )
+  } else {
+    object <- SeuratObject::JoinLayers(object)
+    SeuratObject::GetAssayData(
+      object,
+      layer = layer,
+      ...
+    )
   }
-  object <- SeuratObject::JoinLayers(object)
-  data <- SeuratObject::GetAssayData(
-    object,
-    layer = layer,
-    ...
-  )
-
+  if (!is.null(features)) {
+    features_use <- features[features %in% rownames(data)]
+    data <- data[features_use, , drop = FALSE]
+  }
+  if (!is.null(cells)) {
+    cells_use <- cells[cells %in% colnames(data)]
+    data <- data[, cells_use, drop = FALSE]
+  }
   return(data)
 }
 
@@ -86,11 +102,22 @@ GetAssayData5.Assay5 <- function(
 GetAssayData5.Assay <- function(
   object,
   layer = "counts",
+  features = NULL,
+  cells = NULL,
   ...
 ) {
-  SeuratObject::GetAssayData(
+  data <- SeuratObject::GetAssayData(
     object = object,
     layer = layer,
     ...
   )
+  if (!is.null(features)) {
+    features_use <- features[features %in% rownames(data)]
+    data <- data[features_use, , drop = FALSE]
+  }
+  if (!is.null(cells)) {
+    cells_use <- cells[cells %in% colnames(data)]
+    data <- data[, cells_use, drop = FALSE]
+  }
+  return(data)
 }

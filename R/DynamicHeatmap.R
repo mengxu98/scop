@@ -735,15 +735,21 @@ DynamicHeatmap <- function(
           drop = FALSE
         ],
         Matrix::t(
-          GetAssayData5(
-            srt,
-            assay = assay,
-            layer = "data"
-          )[
-            cell_annotation_feature %||% integer(),
-            rownames(cell_metadata),
-            drop = FALSE
-          ]
+          if (length(cell_annotation_feature) > 0) {
+            GetAssayData5(
+              srt,
+              assay = assay,
+              layer = "data",
+              features = cell_annotation_feature,
+              cells = rownames(cell_metadata)
+            )[
+              cell_annotation_feature,
+              rownames(cell_metadata),
+              drop = FALSE
+            ]
+          } else {
+            matrix(0, nrow = 0, ncol = nrow(cell_metadata), dimnames = list(character(0), rownames(cell_metadata)))
+          }
         )
       )
     )
@@ -949,13 +955,29 @@ DynamicHeatmap <- function(
     mat_raw <- do.call(cbind, mat_list)
   } else {
     mat_list <- list()
-    y_libsize <- Matrix::colSums(
+    count_col <- paste0("nCount_", assay)
+    y_libsize <- if (count_col %in% colnames(srt@meta.data)) {
+      stats::setNames(srt@meta.data[[count_col]], rownames(srt@meta.data))
+    } else {
+      Matrix::colSums(
+        GetAssayData5(
+          srt,
+          assay = assay,
+          layer = "counts"
+        )
+      )
+    }
+
+    gene_mat_all <- if (length(gene) > 0) {
       GetAssayData5(
         srt,
         assay = assay,
-        layer = "counts"
+        layer = layer,
+        features = gene
       )
-    )
+    } else {
+      matrix(0, nrow = 0, ncol = ncol(srt), dimnames = list(character(0), colnames(srt)))
+    }
 
     for (l in lineages) {
       cells <- dynamic_heatmap_lineage_cells(
@@ -965,11 +987,7 @@ DynamicHeatmap <- function(
       )
       mat_tmp <- as_matrix(
         rbind(
-          GetAssayData5(
-            srt,
-            assay = assay,
-            layer = layer
-          )[gene, cells, drop = FALSE],
+          gene_mat_all[gene, cells, drop = FALSE],
           Matrix::t(
             srt@meta.data[cells, meta, drop = FALSE]
           )
