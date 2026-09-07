@@ -122,6 +122,7 @@ RunGSVA <- function(
   mx.diff = TRUE,
   tau = 1,
   ssgsea.norm = TRUE,
+  cores = NULL,
   verbose = TRUE,
   ...
 ) {
@@ -191,6 +192,7 @@ RunGSVA <- function(
         mx.diff = mx.diff,
         tau = tau,
         ssgsea.norm = ssgsea.norm,
+        cores = cores,
         verbose = verbose,
         ...
       )
@@ -486,7 +488,8 @@ RunGSVA <- function(
           max_diff = mx.diff,
           abs_ranking = abs.ranking,
           tau = tau,
-          chunk_size = cpp_chunk_size
+          chunk_size = cpp_chunk_size,
+          n_threads = cores
         ))
       } else if (identical(method, "ssgsea")) {
         gsva_scores <- t(run_ssgsea_scores(

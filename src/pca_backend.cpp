@@ -1,8 +1,6 @@
 #include <RcppArmadillo.h>
 #include <thisutils/log_message.h>
-#ifdef __APPLE__
-#include <dlfcn.h>
-#endif
+#include "dynload.h"
 
 static int component_count(int requested, int features, int cells) {
   int limit = std::min(features, cells - 1);
@@ -10,7 +8,6 @@ static int component_count(int requested, int features, int cells) {
   return std::max(1, std::min(requested, limit));
 }
 
-#ifdef __APPLE__
 namespace {
 enum {
   scop_cblas_col_major = 102,
@@ -45,17 +42,33 @@ static PcaBlas* resolve_pca_blas() {
     return (scop_pca_blas.dsyrk && scop_pca_blas.dgemm) ? &scop_pca_blas : nullptr;
   }
   scop_pca_blas_checked = true;
-  void* handle = dlopen(
+  // The process itself usually carries the right BLAS (Accelerate on macOS,
+  // the OpenBLAS/MKL that R links on Linux); named candidates cover the rest.
+  const char* candidates[] = {
+    NULL,
     "/System/Library/Frameworks/Accelerate.framework/Accelerate",
-    RTLD_LAZY | RTLD_LOCAL
-  );
-  if (handle == nullptr) {
-    return nullptr;
+    "libopenblas.so.0", "libopenblas.so", "libmkl_rt.so",
+    "libblis.so.4", "libblis.so.3", "libblis.so",
+    "libblas.so.3", "libblas.so",
+    "Rblas.dll", "libopenblas.dll", "openblas.dll", "mkl_rt.dll", NULL
+  };
+  for (int i = 0; candidates[i] != NULL || i == 0; ++i) {
+    void* handle = scop_dlopen(candidates[i]);
+    if (handle == nullptr) {
+      continue;
+    }
+    auto dsyrk = reinterpret_cast<scop_dsyrk_ptr>(scop_dlsym(handle, "cblas_dsyrk"));
+    auto dgemm = reinterpret_cast<scop_dgemm_ptr>(scop_dlsym(handle, "cblas_dgemm"));
+    if (dsyrk == nullptr || dgemm == nullptr) {
+      continue;
+    }
+    scop_pca_blas.handle = handle;
+    scop_pca_blas.dsyrk = dsyrk;
+    scop_pca_blas.dgemm = dgemm;
+    scop_pca_blas.dsyevr =
+      reinterpret_cast<scop_dsyevr_ptr>(scop_dlsym(handle, "dsyevr_"));
+    break;
   }
-  scop_pca_blas.handle = handle;
-  scop_pca_blas.dsyrk = reinterpret_cast<scop_dsyrk_ptr>(dlsym(handle, "cblas_dsyrk"));
-  scop_pca_blas.dgemm = reinterpret_cast<scop_dgemm_ptr>(dlsym(handle, "cblas_dgemm"));
-  scop_pca_blas.dsyevr = reinterpret_cast<scop_dsyevr_ptr>(dlsym(handle, "dsyevr_"));
   return (scop_pca_blas.dsyrk && scop_pca_blas.dgemm) ? &scop_pca_blas : nullptr;
 }
 
@@ -215,7 +228,6 @@ static bool fast_top_eigen(arma::mat& gram,
   return true;
 }
 }
-#endif
 
 // [[Rcpp::export]]
 Rcpp::List pca_backend_run(const arma::mat& X,
@@ -229,18 +241,13 @@ Rcpp::List pca_backend_run(const arma::mat& X,
   }
 
   arma::mat gram;
-#ifdef __APPLE__
   if (!fast_gram(X, gram)) {
     gram = X * X.t();
   }
-#else
-  gram = X * X.t();
-#endif
   arma::vec values;
   arma::mat vectors;
   arma::mat loadings(features, keep);
   arma::vec eigvals(keep);
-#ifdef __APPLE__
   arma::mat gram_for_eigen = gram;
   if (!fast_top_eigen(gram_for_eigen, keep, eigvals, loadings)) {
     if (!arma::eig_sym(values, vectors, gram)) {
@@ -252,25 +259,11 @@ Rcpp::List pca_backend_run(const arma::mat& X,
       loadings.col(j) = vectors.col(source);
     }
   }
-#else
-  if (!arma::eig_sym(values, vectors, gram)) {
-    thisutils::log_message("pca_backend_run: eigensolver failed", "error");
-  }
-  for (int j = 0; j < keep; ++j) {
-    const arma::uword source = static_cast<arma::uword>(values.n_elem - 1 - j);
-    eigvals[j] = values[source];
-    loadings.col(j) = vectors.col(source);
-  }
-#endif
 
   arma::mat embeddings;
-#ifdef __APPLE__
   if (!fast_embeddings(X, loadings, embeddings)) {
     embeddings = X.t() * loadings;
   }
-#else
-  embeddings = X.t() * loadings;
-#endif
   arma::vec singular = arma::sqrt(arma::clamp(eigvals, 0.0, arma::datum::inf));
   arma::vec sdev = singular / std::sqrt(static_cast<double>(std::max(1, cells - 1)));
   if (!weight_by_var) {

@@ -445,7 +445,8 @@ RunSCENICPlus <- function(
       expr_counts = auc_counts,
       gene_sets = eregulons,
       strategy = "full",
-      algorithm = "ctxcore"
+      algorithm = "ctxcore",
+      n_threads = scop_inner_n_threads(cores)
     )
   }
   auc <- as.data.frame(auc, check.names = FALSE)[
@@ -1256,15 +1257,21 @@ scenicplus_tf_gene_native <- function(
   }
   adjacency <- scenicplus_add_tfg_cor(
     adjacency,
-    rna_counts = rna_counts
+    rna_counts = rna_counts,
+    n_threads = scop_inner_n_threads(cores)
   )
-  scenicplus_inject_tf_self(adjacency, rna_counts = rna_counts)
+  scenicplus_inject_tf_self(
+    adjacency,
+    rna_counts = rna_counts,
+    n_threads = scop_inner_n_threads(cores)
+  )
 }
 
 scenicplus_add_tfg_cor <- function(
   adjacency,
   rna_counts,
-  rho_threshold = 0.03
+  rho_threshold = 0.03,
+  n_threads = NULL
 ) {
   if (nrow(adjacency) == 0L) {
     return(adjacency)
@@ -1287,7 +1294,8 @@ scenicplus_add_tfg_cor <- function(
     rho[matched] <- scenic_edge_correlation_cpp(
       expr = t(expr),
       tf_index = tf_index[matched],
-      target_index = target_index[matched]
+      target_index = target_index[matched],
+      n_threads = scop_n_threads(n_threads)
     )
   } else {
     corr <- suppressWarnings(stats::cor(
@@ -1313,7 +1321,8 @@ scenicplus_add_tfg_cor <- function(
 scenicplus_inject_tf_self <- function(
   adjacency,
   rna_counts,
-  increase_importance_by = 0.00001
+  increase_importance_by = 0.00001,
+  n_threads = NULL
 ) {
   if (nrow(adjacency) == 0L) {
     return(adjacency)
@@ -1334,7 +1343,11 @@ scenicplus_inject_tf_self <- function(
     importance = as.numeric(max_importance[tfs]) + increase_importance_by,
     stringsAsFactors = FALSE
   )
-  self <- scenicplus_add_tfg_cor(self, rna_counts = rna_counts)
+  self <- scenicplus_add_tfg_cor(
+    self,
+    rna_counts = rna_counts,
+    n_threads = n_threads
+  )
   out <- rbind(adjacency, self[, colnames(adjacency), drop = FALSE])
   rownames(out) <- NULL
   out

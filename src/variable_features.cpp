@@ -90,7 +90,8 @@ List sparse_row_mean_var(IntegerVector p, IntegerVector i, NumericVector x,
   std::vector<int> nzero(nrow, ncol);
   for (int k = 0; k < nnz_total; ++k) {
     const int row = ip[k];
-    rowvar[row] += std::pow(xp[k] - mu[row], 2);
+    const double diff = xp[k] - mu[row];
+    rowvar[row] += diff * diff;
     nzero[row] -= 1;
   }
   for (int row = 0; row < nrow; ++row) {
@@ -193,7 +194,7 @@ NumericVector sparse_row_var_std(IntegerVector p, IntegerVector i, NumericVector
       if (sdp[row] == 0.0) continue;
       double z = (xp[pos] - mup[row]) / sdp[row];
       if (z > vmax) z = vmax;
-      sumSq[row] += std::pow(z, 2);
+      sumSq[row] += z * z;
     }
   }
 
@@ -206,7 +207,7 @@ NumericVector sparse_row_var_std(IntegerVector p, IntegerVector i, NumericVector
     }
     const int nZero = ncol - nnz[row];
     const double zeroVal = (0.0 - mup[row]) / sdp[row];
-    const double total = sumSq[row] + std::pow(zeroVal, 2) * nZero;
+    const double total = sumSq[row] + zeroVal * zeroVal * nZero;
     result[row] = total / denom;
   }
   return result;
@@ -245,7 +246,7 @@ NumericVector sparse_row_var_std_dgc_list(List mats, int nrow,
         if (sdp[row] == 0.0) continue;
         double z = (xp[pos] - mup[row]) / sdp[row];
         if (z > vmax) z = vmax;
-        sumSq[row] += std::pow(z, 2);
+        sumSq[row] += z * z;
       }
     }
   }
@@ -259,7 +260,7 @@ NumericVector sparse_row_var_std_dgc_list(List mats, int nrow,
     }
     const int nZero = ncol_total - nnz[row];
     const double zeroVal = (0.0 - mup[row]) / sdp[row];
-    const double total = sumSq[row] + std::pow(zeroVal, 2) * nZero;
+    const double total = sumSq[row] + zeroVal * zeroVal * nZero;
     result[row] = total / denom;
   }
   return result;

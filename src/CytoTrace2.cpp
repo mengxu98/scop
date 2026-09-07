@@ -10,26 +10,43 @@
 #include <thread>
 #include <atomic>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 using namespace Rcpp;
+
+static int cytotrace_worker_count(int requested, int n_tasks) {
+  int n = requested;
+  if (n <= 0) {
+    n = static_cast<int>(std::thread::hardware_concurrency());
+    if (n < 1) {
+      n = 1;
+    }
+  }
+  return worker_count(n, n_tasks);
+}
 
 // ============================================================================
 // Utility functions
 // ============================================================================
 
 // [[Rcpp::export]]
-List cytotrace2_preprocess_numeric(const arma::mat& expression_mapped) {
+List cytotrace2_preprocess_numeric(const arma::mat& expression_mapped, int n_threads = 0) {
   int n_genes = expression_mapped.n_rows;
   int n_cells = expression_mapped.n_cols;
 
   arma::mat ranked_data(n_cells, n_genes);
   arma::mat log2_data(n_cells, n_genes);
   int count_cells_few_genes = 0;
+  const int threads = omp_thread_count(n_threads, n_cells);
 
-  std::vector<std::pair<double, int>> values;
-  values.reserve(n_genes);
-
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) reduction(+:count_cells_few_genes) schedule(dynamic, 32)
+#endif
   for (int cell = 0; cell < n_cells; cell++) {
-    values.clear();
+    std::vector<std::pair<double, int>> values;
+    values.reserve(n_genes);
     double col_sum = 0.0;
     int expressed = 0;
     for (int gene = 0; gene < n_genes; gene++) {
@@ -85,35 +102,41 @@ List cytotrace2_preprocess_numeric(const arma::mat& expression_mapped) {
 }
 
 // [[Rcpp::export]]
-List cytotrace2_preprocess_sparse_numeric(const S4& expression_mapped) {
+List cytotrace2_preprocess_sparse_numeric(const S4& expression_mapped, int n_threads = 0) {
   IntegerVector dims = expression_mapped.slot("Dim");
   IntegerVector row_idx = expression_mapped.slot("i");
   IntegerVector col_ptr = expression_mapped.slot("p");
   NumericVector values_x = expression_mapped.slot("x");
 
-  int n_genes = dims[0];
-  int n_cells = dims[1];
+  const int n_genes = dims[0];
+  const int n_cells = dims[1];
+  const int* p_ptr = INTEGER(col_ptr);
+  const int* i_ptr = INTEGER(row_idx);
+  const double* x_ptr = REAL(values_x);
 
   arma::mat ranked_data(n_cells, n_genes);
   arma::mat log2_data(n_cells, n_genes);
   int count_cells_few_genes = 0;
+  const int threads = omp_thread_count(n_threads, n_cells);
 
-  std::vector<double> cell_values(n_genes, 0.0);
-  std::vector<std::pair<double, int>> values;
-  values.reserve(n_genes);
-
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) reduction(+:count_cells_few_genes) schedule(dynamic, 64)
+#endif
   for (int cell = 0; cell < n_cells; cell++) {
-    std::fill(cell_values.begin(), cell_values.end(), 0.0);
-    values.clear();
+    const int p_start = p_ptr[cell];
+    const int p_end = p_ptr[cell + 1];
+    const int nnz_cell = p_end - p_start;
 
+    std::vector<std::pair<double, int>> positive_values;
+    positive_values.reserve(nnz_cell);
     double col_sum = 0.0;
     int expressed = 0;
-    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ptr++) {
-      int gene = row_idx[ptr];
-      double value = values_x[ptr];
-      cell_values[gene] = value;
-      col_sum += value;
+
+    for (int ptr = p_start; ptr < p_end; ptr++) {
+      const double value = x_ptr[ptr];
       if (value > 0.0) {
+        positive_values.push_back(std::make_pair(value, i_ptr[ptr]));
+        col_sum += value;
         expressed++;
       }
     }
@@ -121,40 +144,43 @@ List cytotrace2_preprocess_sparse_numeric(const S4& expression_mapped) {
       count_cells_few_genes++;
     }
 
-    for (int gene = 0; gene < n_genes; gene++) {
-      values.push_back(std::make_pair(cell_values[gene], gene));
+    const int n_pos = static_cast<int>(positive_values.size());
+    const double zero_avg_rank = (static_cast<double>(n_pos + 1) + static_cast<double>(n_genes)) / 2.0;
+
+    ranked_data.row(cell).fill(zero_avg_rank);
+
+    if (n_pos > 0) {
+      std::sort(
+        positive_values.begin(),
+        positive_values.end(),
+        [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
+          if (a.first > b.first) return true;
+          if (a.first < b.first) return false;
+          return a.second < b.second;
+        }
+      );
+
+      int start = 0;
+      while (start < n_pos) {
+        int end = start + 1;
+        while (end < n_pos && positive_values[end].first == positive_values[start].first) {
+          end++;
+        }
+        double avg_rank = (static_cast<double>(start + 1) + static_cast<double>(end)) / 2.0;
+        for (int pos = start; pos < end; pos++) {
+          ranked_data(cell, positive_values[pos].second) = avg_rank;
+        }
+        start = end;
+      }
     }
 
-    std::sort(
-      values.begin(),
-      values.end(),
-      [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
-        if (a.first > b.first) return true;
-        if (a.first < b.first) return false;
-        return a.second < b.second;
+    log2_data.row(cell).zeros();
+    if (col_sum > 0.0 && n_pos > 0) {
+      const double scale = 1000000.0 / col_sum;
+      for (int pos = 0; pos < n_pos; pos++) {
+        log2_data(cell, positive_values[pos].second) =
+          std::log2(positive_values[pos].first * scale + 1.0);
       }
-    );
-
-    int start = 0;
-    while (start < n_genes) {
-      int end = start + 1;
-      while (end < n_genes && values[end].first == values[start].first) {
-        end++;
-      }
-      double avg_rank = (static_cast<double>(start + 1) + static_cast<double>(end)) / 2.0;
-      for (int pos = start; pos < end; pos++) {
-        ranked_data(cell, values[pos].second) = avg_rank;
-      }
-      start = end;
-    }
-
-    if (col_sum > 0.0) {
-      double scale = 1000000.0 / col_sum;
-      for (int gene = 0; gene < n_genes; gene++) {
-        log2_data(cell, gene) = std::log2(cell_values[gene] * scale + 1.0);
-      }
-    } else {
-      log2_data.row(cell).zeros();
     }
   }
 
@@ -321,7 +347,7 @@ List cytotrace2_ensemble_predict(
 ) {
   int n_models = parameter_dict.size();
   int n_cells = rank_data.n_rows;
-  int n_workers = worker_count(cores, n_models);
+  int n_workers = cytotrace_worker_count(cores, n_models);
 
   arma::mat sum_probs(n_cells, 6, arma::fill::zeros);
   arma::vec sum_order(n_cells, arma::fill::zeros);
@@ -699,7 +725,7 @@ List cytotrace2_knn_smooth(
     }
   };
 
-  int n_workers = worker_count(cores, n_cells);
+  int n_workers = cytotrace_worker_count(cores, n_cells);
   if (n_workers == 1) {
     for (int i = 0; i < n_cells; i++) {
       smooth_one_cell(i);

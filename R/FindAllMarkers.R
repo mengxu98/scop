@@ -149,7 +149,16 @@ marker_context <- function(
 
 marker_bind <- function(pieces) {
   pieces <- pieces[!vapply(pieces, is.null, logical(1))]
-  out <- if (length(pieces) == 0L) data.frame() else do.call(rbind, pieces)
+  if (length(pieces) == 0L) {
+    return(data.frame())
+  }
+  out <- if (length(pieces) == 1L) {
+    pieces[[1L]]
+  } else if (requireNamespace("data.table", quietly = TRUE)) {
+    as.data.frame(data.table::rbindlist(pieces, use.names = TRUE))
+  } else {
+    do.call(rbind, pieces)
+  }
   if (nrow(out) > 0L && "gene" %in% colnames(out)) {
     rownames(out) <- make.unique(as.character(out$gene))
   }

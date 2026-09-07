@@ -427,3 +427,38 @@ test_that("RunGSVA selects the native Gaussian kernel through backend", {
 
   expect_true(all(c("GSVA_a", "GSVA_b") %in% colnames(out[[]])))
 })
+
+test_that("OpenMP kernels honour n_threads and match across thread counts", {
+  set.seed(7)
+  n_genes <- 40L
+  n_cells <- 25L
+  mat <- Matrix::rsparsematrix(n_genes, n_cells, density = 0.3)
+  mat@x <- abs(mat@x)
+  rownames(mat) <- paste0("g", seq_len(n_genes))
+  colnames(mat) <- paste0("c", seq_len(n_cells))
+  sets <- list(
+    a = as.integer(sample(n_genes, 8L)),
+    b = as.integer(sample(n_genes, 8L))
+  )
+
+  auc1 <- aucell_auc_sparse(mat, sets, 8L, TRUE, 1L, 1L, 0L, 1L)
+  auc2 <- aucell_auc_sparse(mat, sets, 8L, TRUE, 1L, 1L, 0L, 2L)
+  expect_equal(auc1, auc2, tolerance = 1e-12)
+
+  poisson1 <- gsva_poisson_dense(mat, sets, TRUE, FALSE, 1, 0L, 1L)
+  poisson2 <- gsva_poisson_dense(mat, sets, TRUE, FALSE, 1, 0L, 2L)
+  expect_equal(poisson1, poisson2, tolerance = 1e-12)
+
+  gaussian1 <- gsva_gaussian_dense(mat, sets, TRUE, FALSE, 1, 0L, 1L)
+  gaussian2 <- gsva_gaussian_dense(mat, sets, TRUE, FALSE, 1, 0L, 2L)
+  expect_equal(gaussian1, gaussian2, tolerance = 1e-12)
+
+  dgc <- mat
+  dgc@x <- dgc@x + 0
+  log_normalize_dgc(dgc, 1e4, 100L, 1L)
+  one <- dgc@x
+  dgc <- mat
+  dgc@x <- dgc@x + 0
+  log_normalize_dgc(dgc, 1e4, 100L, 2L)
+  expect_equal(one, dgc@x, tolerance = 1e-12)
+})

@@ -1382,7 +1382,8 @@ cistarget2 <- function(
       min_genes = 20,
       top_n_targets = module_top_n_targets,
       keep_only_activating = !isTRUE(include_negative_regulons),
-      verbose = verbose
+      verbose = verbose,
+      n_threads = scop_inner_n_threads(cores)
     )
   })
   modules <- profiled[["value"]]
@@ -1724,7 +1725,8 @@ scenic_modules_from_adjacencies <- function(
   min_genes = 20,
   rho_threshold = 0.03,
   keep_only_activating = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  n_threads = NULL
 ) {
   if (!all(c("TF", "target", "importance") %in% colnames(adjacency))) {
     log_message(
@@ -1746,7 +1748,8 @@ scenic_modules_from_adjacencies <- function(
     adjacency <- scenic_add_correlation(
       adjacency = adjacency,
       expr_mtx = expr_mtx,
-      rho_threshold = rho_threshold
+      rho_threshold = rho_threshold,
+      n_threads = n_threads
     )
     if (isTRUE(keep_only_activating)) {
       adjacency <- adjacency[adjacency[["regulation"]] == 1L, , drop = FALSE]
@@ -1860,7 +1863,8 @@ scenic_filter_module_regulation <- function(adjacency, regulation) {
 scenic_add_correlation <- function(
   adjacency,
   expr_mtx,
-  rho_threshold = 0.03
+  rho_threshold = 0.03,
+  n_threads = NULL
 ) {
   tfs <- intersect(unique(adjacency[["TF"]]), colnames(expr_mtx))
   targets <- intersect(unique(adjacency[["target"]]), colnames(expr_mtx))
@@ -1882,7 +1886,8 @@ scenic_add_correlation <- function(
     scenic_edge_correlation_cpp(
       expr = expr_mtx,
       tf_index = tf_index,
-      target_index = target_index
+      target_index = target_index,
+      n_threads = scop_n_threads(n_threads)
     ),
     error = function(e) NULL
   )
@@ -2556,7 +2561,8 @@ scenic_compute_aucell_score <- function(
       gene_sets = regulon_list,
       strategy = "full",
       algorithm = cpp_algorithm,
-      seed = if (!is.null(seed)) -1L else 0L
+      seed = if (!is.null(seed)) -1L else 0L,
+      n_threads = scop_inner_n_threads(cores)
     )
     return(as.data.frame(scores, check.names = FALSE)[
       colnames(counts), ,

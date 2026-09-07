@@ -22,6 +22,7 @@ RunMetabolism(
   use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
+  cores = NULL,
   cpp_chunk_size = NULL,
   minGSSize = 10,
   maxGSSize = 500,
@@ -85,6 +86,9 @@ supplementation when \code{convert_species = TRUE}.}
 \code{"r"} uses the original R package implementation. \code{"cpp"} currently supports
 \code{method = "AUCell"}, \code{method = "GSVA"}, and \code{method = "ssGSEA"}.
 \code{method = "VISION"} falls back to \code{"r"} when \code{backend} is not explicitly set.}
+
+\item{cores}{Number of OpenMP threads for C++ scoring. \code{NULL} uses the
+process OpenMP default.}
 
 \item{cpp_chunk_size}{Optional cell chunk size for C++ GSVA kernels. \code{NULL}
 or \code{"auto"} automatically chunks large matrices to reduce peak dense

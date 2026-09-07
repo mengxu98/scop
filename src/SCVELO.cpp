@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include <thisutils/log_message.h>
 #include "velocity_utils.h"
+#include "thread_utils.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -18,7 +19,8 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 List scanpy_normalize_log_cpp(
     NumericMatrix spliced,
-    NumericMatrix unspliced)
+    NumericMatrix unspliced,
+    int n_threads = 0)
 {
   const int n_genes = spliced.nrow();
   const int n_cells = spliced.ncol();
@@ -27,7 +29,11 @@ List scanpy_normalize_log_cpp(
 
   NumericMatrix ns(n_genes, n_cells);
   NumericMatrix nu(n_genes, n_cells);
+  const int threads = omp_thread_count(n_threads, n_cells);
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int c = 0; c < n_cells; ++c) {
     double cell_sum = 0.0;
     for (int g = 0; g < n_genes; ++g)
@@ -48,7 +54,8 @@ List scanpy_normalize_log_cpp(
 List scanpy_moments_cpp(
     NumericMatrix spliced,
     NumericMatrix unspliced,
-    IntegerMatrix knn_idx)
+    IntegerMatrix knn_idx,
+    int n_threads = 0)
 {
   const int n_genes = spliced.nrow();
   const int n_cells = spliced.ncol();
@@ -61,7 +68,11 @@ List scanpy_moments_cpp(
 
   NumericMatrix Ms(n_genes, n_cells);
   NumericMatrix Mu(n_genes, n_cells);
+  const int threads = omp_thread_count(n_threads, n_cells);
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int cell = 0; cell < n_cells; ++cell) {
     int count = 1;
     for (int gene = 0; gene < n_genes; ++gene) {
@@ -93,7 +104,8 @@ List scanpy_moments_connectivities_cpp(
     NumericMatrix spliced,
     NumericMatrix unspliced,
     IntegerMatrix knn_idx,
-    bool compute_second_order = true)
+    bool compute_second_order = true,
+    int n_threads = 0)
 {
   const int n_genes = spliced.nrow();
   const int n_cells = spliced.ncol();
@@ -143,7 +155,11 @@ List scanpy_moments_connectivities_cpp(
   double* Mu_ptr = REAL(Mu);
   double* Mss_ptr = compute_second_order ? REAL(Mss) : nullptr;
   double* Mus_ptr = compute_second_order ? REAL(Mus) : nullptr;
+  const int threads = omp_thread_count(n_threads, n_cells);
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int cell = 0; cell < n_cells; ++cell) {
     const int start = offsets[cell];
     const int end = offsets[cell + 1];
@@ -187,7 +203,8 @@ List scanpy_moments_connectivities_cpp(
 List scanpy_second_order_moments_cpp(
     NumericMatrix spliced,
     NumericMatrix unspliced,
-    IntegerMatrix knn_idx)
+    IntegerMatrix knn_idx,
+    int n_threads = 0)
 {
   const int n_genes = spliced.nrow();
   const int n_cells = spliced.ncol();
@@ -219,6 +236,10 @@ List scanpy_second_order_moments_cpp(
 
   NumericMatrix Mss(n_genes, n_cells);
   NumericMatrix Mus(n_genes, n_cells);
+  const int threads = omp_thread_count(n_threads, n_cells);
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int cell = 0; cell < n_cells; ++cell) {
     const double inv = adj[cell].empty() ? 1.0 : 1.0 / static_cast<double>(adj[cell].size());
     for (int nb : adj[cell]) {
@@ -237,28 +258,29 @@ List scanpy_second_order_moments_cpp(
 // ── 4. Deterministic velocity + embedding ─────────────────────────────────────
 
 static double scanpy_quantile_linear(
-    std::vector<double> values,
+    const std::vector<double>& values,
     double probability)
 {
   if (values.empty()) return 0.0;
+  // nth_element reorders its range. Copy so callers can keep indexing the
+  // original vector by cell/gene after the cutoff is computed.
+  std::vector<double> scratch = values;
   probability = std::max(0.0, std::min(1.0, probability));
   const double position =
-    probability * static_cast<double>(values.size() - 1);
+    probability * static_cast<double>(scratch.size() - 1);
   const std::size_t lower = static_cast<std::size_t>(std::floor(position));
   const std::size_t upper = static_cast<std::size_t>(std::ceil(position));
   // Match numpy.percentile(..., method="linear").
-  std::nth_element(values.begin(), values.begin() + lower, values.end());
-  const double lower_value = values[lower];
+  std::nth_element(scratch.begin(), scratch.begin() + lower, scratch.end());
+  const double lower_value = scratch[lower];
   if (upper == lower) return lower_value;
-  // The upper order statistic lies in [lower, end); the first nth_element
-  // only fixed values[lower], so search the tail for values[upper].
   std::nth_element(
-    values.begin() + lower,
-    values.begin() + upper,
-    values.end()
+    scratch.begin() + lower,
+    scratch.begin() + upper,
+    scratch.end()
   );
   const double fraction = position - static_cast<double>(lower);
-  return lower_value + fraction * (values[upper] - lower_value);
+  return lower_value + fraction * (scratch[upper] - lower_value);
 }
 
 // [[Rcpp::export]]
@@ -268,7 +290,8 @@ List scanpy_deterministic_cpp(
     IntegerMatrix knn_idx,
     NumericMatrix embedding,
     bool fit_offset = false,
-    double perc = 0.0)
+    double perc = 0.0,
+    int n_threads = 0)
 {
   const int n_genes = Ms.nrow();
   const int n_cells = Ms.ncol();
@@ -286,9 +309,10 @@ List scanpy_deterministic_cpp(
   NumericVector offset(n_genes);
   NumericVector gamma_r2(n_genes);
   IntegerVector velocity_genes(n_genes);
+  const int threads = omp_thread_count(n_threads, n_genes);
 
   #ifdef _OPENMP
-  #pragma omp parallel for schedule(dynamic, 16)
+  #pragma omp parallel for num_threads(threads) schedule(dynamic, 16)
   #endif
   for (int g = 0; g < n_genes; ++g) {
     // scVelo includes zero-valued moments when it finds the per-gene extreme
@@ -313,9 +337,10 @@ List scanpy_deterministic_cpp(
         : -std::numeric_limits<double>::infinity();
     }
     const bool trim = perc > 0.0 && perc < 100.0;
-    const double cutoff = trim
-      ? scanpy_quantile_linear(normalized, perc / 100.0)
-      : -std::numeric_limits<double>::infinity();
+    double cutoff = -std::numeric_limits<double>::infinity();
+    if (trim) {
+      cutoff = scanpy_quantile_linear(normalized, perc / 100.0);
+    }
 
     // Extreme-quantile regression used for the actual velocity residual.
     double sx = 0.0, sy = 0.0, sxx = 0.0, sxy = 0.0;
@@ -437,7 +462,8 @@ List scanpy_stochastic_cpp(
     NumericMatrix Mss,
     NumericMatrix Mus,
     IntegerMatrix knn_idx,
-    NumericMatrix embedding)
+    NumericMatrix embedding,
+    int n_threads = 0)
 {
   const int n_genes = Ms.nrow();
   const int n_cells = Ms.ncol();
@@ -464,13 +490,14 @@ List scanpy_stochastic_cpp(
   IntegerVector velocity_genes(n_genes, 1);
   std::vector<double> deterministic_res_std(n_genes, 1.0);
   std::vector<char> stochastic_update_gene(n_genes, 1);
+  const int threads = omp_thread_count(n_threads, n_genes);
   // scVelo stochastic mode first runs compute_deterministic(perc=[5, 95])
   // with fit_offset=False: an upper-quantile (95th percentile) regression
   // supplies the initial gamma, and its residual supplies the R2 used for
   // velocity-gene selection. Mirror that here; the stochastic generalized
   // fit below then refits gamma for the selected velocity genes only.
   #ifdef _OPENMP
-  #pragma omp parallel for schedule(dynamic, 16)
+  #pragma omp parallel for num_threads(threads) schedule(dynamic, 16)
   #endif
   for (int g = 0; g < n_genes; ++g) {
     double s_max = 0.0, u_max = 0.0;
@@ -594,7 +621,7 @@ List scanpy_stochastic_cpp(
   // Match scvelo: stochastic generalized fit updates gamma only for
   // deterministic velocity genes; non-selected genes keep deterministic gamma.
   #ifdef _OPENMP
-  #pragma omp parallel for schedule(dynamic, 16)
+  #pragma omp parallel for num_threads(threads) schedule(dynamic, 16)
   #endif
   for (int g = 0; g < n_genes; ++g) {
     if (velocity_genes[g] == 0 || !stochastic_update_gene[g]) continue;
@@ -660,7 +687,7 @@ List scanpy_stochastic_cpp(
   NumericMatrix residual(n_genes, n_cells);
   double* residual_ptr = REAL(residual);
   #ifdef _OPENMP
-  #pragma omp parallel for schedule(static)
+  #pragma omp parallel for num_threads(threads) schedule(static)
   #endif
   for (int g = 0; g < n_genes; ++g) {
     for (int c = 0; c < n_cells; ++c) {
@@ -694,12 +721,13 @@ List scanpy_stochastic_cpp(
 List scanpy_velocity_graph_cpp(
     NumericMatrix Ms,
     NumericMatrix Mu,
-    NumericMatrix residual,    // gene × cell velocity residuals
-    IntegerMatrix knn_idx,     // cells × k (1-based)
+    NumericMatrix residual,
+    IntegerMatrix knn_idx,
     int n_neighbors_velo = -1,
     double softmax_scale = 4.0,
     bool sqrt_transform = false,
-    int n_recurse_neighbors = 1)
+    int n_recurse_neighbors = 1,
+    int n_threads = 0)
 {
   (void)softmax_scale;
   (void)Mu;
@@ -708,12 +736,14 @@ List scanpy_velocity_graph_cpp(
   const int n_neighbors = knn_idx.ncol();
   if (n_neighbors_velo <= 0) n_neighbors_velo = n_neighbors;
   if (n_recurse_neighbors < 1) n_recurse_neighbors = 1;
+  const int threads = omp_thread_count(n_threads, n_cells);
 
-  std::vector<int> rows, cols, rows_neg, cols_neg;
-  std::vector<double> vals, vals_neg;
   NumericMatrix velocity(n_genes, n_cells);
   std::vector<double> velocity_norm(n_cells, 0.0);
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int cell = 0; cell < n_cells; ++cell) {
     double mean_v = 0.0;
     for (int g = 0; g < n_genes; ++g) {
@@ -739,76 +769,106 @@ List scanpy_velocity_graph_cpp(
     out.push_back(nb);
   };
 
-  // Reusable buffers for neighbor collection to avoid per-cell allocations
-  std::vector<char> seen_buf(n_cells, 0);
-  std::vector<int> current_buf, all_buf;
-  current_buf.reserve(n_cells);
-  all_buf.reserve(n_cells);
+  std::vector<std::vector<int> > cell_rows(n_cells);
+  std::vector<std::vector<int> > cell_cols(n_cells);
+  std::vector<std::vector<double> > cell_vals(n_cells);
+  std::vector<std::vector<int> > cell_rows_neg(n_cells);
+  std::vector<std::vector<int> > cell_cols_neg(n_cells);
+  std::vector<std::vector<double> > cell_vals_neg(n_cells);
 
-  auto collect_neighbors = [&](int cell) -> const std::vector<int>& {
-    current_buf.clear();
-    all_buf.clear();
-    std::fill(seen_buf.begin(), seen_buf.end(), 0);
-    seen_buf[cell] = 1;
-    for (int col = 0; col < n_neighbors_velo && col < n_neighbors; ++col) {
-      int before = static_cast<int>(all_buf.size());
-      add_neighbor(all_buf, seen_buf, knn_idx(cell, col));
-      if (static_cast<int>(all_buf.size()) > before) current_buf.push_back(all_buf.back());
-    }
-    for (int depth = 1; depth < n_recurse_neighbors; ++depth) {
-      std::vector<int> next;
-      for (int parent : current_buf) {
-        for (int col = 0; col < n_neighbors_velo && col < n_neighbors; ++col) {
-          int before = static_cast<int>(all_buf.size());
-          add_neighbor(all_buf, seen_buf, knn_idx(parent, col));
-          if (static_cast<int>(all_buf.size()) > before) next.push_back(all_buf.back());
+#ifdef _OPENMP
+#pragma omp parallel num_threads(threads)
+#endif
+  {
+    std::vector<char> seen_buf(n_cells, 0);
+    std::vector<int> current_buf;
+    std::vector<int> all_buf;
+    std::vector<double> delta(n_genes, 0.0);
+    current_buf.reserve(n_cells);
+    all_buf.reserve(n_cells);
+
+#ifdef _OPENMP
+#pragma omp for schedule(dynamic, 16)
+#endif
+    for (int cell = 0; cell < n_cells; ++cell) {
+      double vn = velocity_norm[cell];
+      if (vn < 1e-10) continue;
+
+      current_buf.clear();
+      all_buf.clear();
+      std::fill(seen_buf.begin(), seen_buf.end(), 0);
+      seen_buf[cell] = 1;
+      for (int col = 0; col < n_neighbors_velo && col < n_neighbors; ++col) {
+        int before = static_cast<int>(all_buf.size());
+        add_neighbor(all_buf, seen_buf, knn_idx(cell, col));
+        if (static_cast<int>(all_buf.size()) > before) {
+          current_buf.push_back(all_buf.back());
         }
       }
-      current_buf.swap(next);
-      if (current_buf.empty()) break;
-    }
-    return all_buf;
-  };
+      for (int depth = 1; depth < n_recurse_neighbors; ++depth) {
+        std::vector<int> next;
+        for (int parent : current_buf) {
+          for (int col = 0; col < n_neighbors_velo && col < n_neighbors; ++col) {
+            int before = static_cast<int>(all_buf.size());
+            add_neighbor(all_buf, seen_buf, knn_idx(parent, col));
+            if (static_cast<int>(all_buf.size()) > before) {
+              next.push_back(all_buf.back());
+            }
+          }
+        }
+        current_buf.swap(next);
+        if (current_buf.empty()) break;
+      }
 
+      std::vector<int>& rows = cell_rows[cell];
+      std::vector<int>& cols = cell_cols[cell];
+      std::vector<double>& vals = cell_vals[cell];
+      std::vector<int>& rows_neg = cell_rows_neg[cell];
+      std::vector<int>& cols_neg = cell_cols_neg[cell];
+      std::vector<double>& vals_neg = cell_vals_neg[cell];
+
+      for (int nb : all_buf) {
+        double mean_delta = 0.0;
+        for (int g = 0; g < n_genes; ++g) {
+          double d = Ms(g, nb) - Ms(g, cell);
+          if (sqrt_transform) d = std::sqrt(std::abs(d)) * (d < 0.0 ? -1.0 : 1.0);
+          delta[g] = d;
+          mean_delta += d;
+        }
+        mean_delta /= static_cast<double>(n_genes);
+
+        double dot = 0.0, dn = 0.0;
+        for (int g = 0; g < n_genes; ++g) {
+          double d = delta[g] - mean_delta;
+          dot += velocity(g, cell) * d;
+          dn += d * d;
+        }
+        dn = std::sqrt(dn);
+        if (dn < 1e-10) continue;
+
+        double cosine = dot / (vn * dn);
+        if (cosine > 0 && std::isfinite(cosine)) {
+          rows.push_back(cell);
+          cols.push_back(nb);
+          vals.push_back(std::min(1.0, cosine));
+        } else if (cosine < 0 && std::isfinite(cosine)) {
+          rows_neg.push_back(cell);
+          cols_neg.push_back(nb);
+          vals_neg.push_back(std::max(-1.0, cosine));
+        }
+      }
+    }
+  }
+
+  std::vector<int> rows, cols, rows_neg, cols_neg;
+  std::vector<double> vals, vals_neg;
   for (int cell = 0; cell < n_cells; ++cell) {
-    double vn = velocity_norm[cell];
-    if (vn < 1e-10) continue;
-
-    const std::vector<int>& neighs = collect_neighbors(cell);
-    static thread_local std::vector<double> delta;
-    if (delta.size() != static_cast<size_t>(n_genes)) delta.resize(n_genes);
-    for (int nb : neighs) {
-      double mean_delta = 0.0;
-      for (int g = 0; g < n_genes; ++g) {
-        double d = Ms(g, nb) - Ms(g, cell);
-        if (sqrt_transform) d = std::sqrt(std::abs(d)) * (d < 0.0 ? -1.0 : 1.0);
-        delta[g] = d;
-        mean_delta += d;
-      }
-      mean_delta /= static_cast<double>(n_genes);
-
-      double dot = 0.0, dn = 0.0;
-      for (int g = 0; g < n_genes; ++g) {
-        double d = delta[g] - mean_delta;
-        dot += velocity(g, cell) * d;
-        dn += d * d;
-      }
-      dn = std::sqrt(dn);
-      if (dn < 1e-10) continue;
-
-      double cosine = dot / (vn * dn);
-      if (cosine > 0 && std::isfinite(cosine)) {
-        double value = std::min(1.0, cosine);
-        rows.push_back(cell);
-        cols.push_back(nb);
-        vals.push_back(value);
-      } else if (cosine < 0 && std::isfinite(cosine)) {
-        double value = std::max(-1.0, cosine);
-        rows_neg.push_back(cell);
-        cols_neg.push_back(nb);
-        vals_neg.push_back(value);
-      }
-    }
+    rows.insert(rows.end(), cell_rows[cell].begin(), cell_rows[cell].end());
+    cols.insert(cols.end(), cell_cols[cell].begin(), cell_cols[cell].end());
+    vals.insert(vals.end(), cell_vals[cell].begin(), cell_vals[cell].end());
+    rows_neg.insert(rows_neg.end(), cell_rows_neg[cell].begin(), cell_rows_neg[cell].end());
+    cols_neg.insert(cols_neg.end(), cell_cols_neg[cell].begin(), cell_cols_neg[cell].end());
+    vals_neg.insert(vals_neg.end(), cell_vals_neg[cell].begin(), cell_vals_neg[cell].end());
   }
 
   return List::create(

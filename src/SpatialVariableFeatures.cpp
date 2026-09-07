@@ -1,10 +1,15 @@
 #include <Rcpp.h>
 #include <thisutils/log_message.h>
+#include "thread_utils.h"
 #include <R_ext/Random.h>
 
 #include <algorithm>
 #include <cmath>
 #include <vector>
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 namespace {
 
@@ -18,40 +23,40 @@ inline void score_row(
     double& statistic,
     double& score) {
   int n_finite = 0;
-  long double sum = 0.0L;
+  double sum = 0.0;
   for (int j = 0; j < n_values; ++j) {
     if (std::isfinite(values[j])) {
       ++n_finite;
-      sum += static_cast<long double>(values[j]);
+      sum += values[j];
     }
   }
   if (n_finite < 3) {
     return;
   }
 
-  long double mean_extended = sum / static_cast<long double>(n_finite);
-  long double mean_correction = 0.0L;
+  double mean_extended = sum / static_cast<double>(n_finite);
+  double mean_correction = 0.0;
   for (int j = 0; j < n_values; ++j) {
     if (std::isfinite(values[j])) {
-      mean_correction += static_cast<long double>(values[j]) - mean_extended;
+      mean_correction += values[j] - mean_extended;
     }
   }
-  mean_extended += mean_correction / static_cast<long double>(n_finite);
-  const double mean = static_cast<double>(mean_extended);
-  long double denominator_sum = 0.0L;
+  mean_extended += mean_correction / static_cast<double>(n_finite);
+  const double mean = mean_extended;
+  double denominator_sum = 0.0;
   for (int j = 0; j < n_values; ++j) {
     if (std::isfinite(values[j])) {
       const double centered = values[j] - mean;
-      denominator_sum += static_cast<long double>(centered * centered);
+      denominator_sum += centered * centered;
     }
   }
-  const double denominator = static_cast<double>(denominator_sum);
+  const double denominator = denominator_sum;
   if (!std::isfinite(denominator) || denominator <= 0.0) {
     return;
   }
 
   int finite_edges = 0;
-  long double numerator_sum = 0.0L;
+  double numerator_sum = 0.0;
   for (int edge = 0; edge < n_edges; ++edge) {
     const double from_value = values[edge_from[edge]];
     const double to_value = values[edge_to[edge]];
@@ -60,19 +65,17 @@ inline void score_row(
     }
     ++finite_edges;
     if (method == 1) {
-      numerator_sum += static_cast<long double>(
-        (from_value - mean) * (to_value - mean)
-      );
+      numerator_sum += (from_value - mean) * (to_value - mean);
     } else {
       const double difference = from_value - to_value;
-      numerator_sum += static_cast<long double>(difference * difference);
+      numerator_sum += difference * difference;
     }
   }
   if (finite_edges == 0) {
     return;
   }
 
-  const double numerator = static_cast<double>(numerator_sum);
+  const double numerator = numerator_sum;
   if (method == 1) {
     statistic = static_cast<double>(n_finite) /
       static_cast<double>(finite_edges) * numerator / denominator;
@@ -163,7 +166,8 @@ Rcpp::List spatial_variable_score_cpp(
     Rcpp::IntegerVector edge_from,
     Rcpp::IntegerVector edge_to,
     int method,
-    int n_permutations = 0) {
+    int n_permutations = 0,
+    int n_threads = 0) {
   if (edge_from.size() != edge_to.size()) {
     thisutils::log_message("`edge_from` and `edge_to` must have the same length.", "error");
   }
@@ -209,13 +213,14 @@ Rcpp::List spatial_variable_score_cpp(
   double* p_value_ptr = p_value.begin();
   const int* edge_from_ptr = edge_from.begin();
   const int* edge_to_ptr = edge_to.begin();
+  const int threads = omp_thread_count(n_threads, n_features);
 
   if (!is_sparse) {
     Rcpp::NumericMatrix dense(expr);
     const double* dense_ptr = dense.begin();
 
 #ifdef _OPENMP
-#pragma omp parallel if(n_permutations == 0)
+#pragma omp parallel if(n_permutations == 0) num_threads(threads)
 #endif
     {
       std::vector<double> row(n_spots);
@@ -272,7 +277,7 @@ Rcpp::List spatial_variable_score_cpp(
     }
 
 #ifdef _OPENMP
-#pragma omp parallel if(n_permutations == 0)
+#pragma omp parallel if(n_permutations == 0) num_threads(threads)
 #endif
     {
       std::vector<double> row(n_spots, 0.0);
@@ -282,8 +287,9 @@ Rcpp::List spatial_variable_score_cpp(
 #pragma omp for schedule(static)
 #endif
       for (int feature = 0; feature < n_features; ++feature) {
-        std::fill(row.begin(), row.end(), 0.0);
-        for (int index = row_ptr[feature]; index < row_ptr[feature + 1]; ++index) {
+        const int row_start = row_ptr[feature];
+        const int row_end = row_ptr[feature + 1];
+        for (int index = row_start; index < row_end; ++index) {
           row[spot_index[index]] += values[index];
         }
         score_row_with_permutations(
@@ -300,6 +306,9 @@ Rcpp::List spatial_variable_score_cpp(
           pool,
           permuted
         );
+        for (int index = row_start; index < row_end; ++index) {
+          row[spot_index[index]] = 0.0;
+        }
       }
     }
   }

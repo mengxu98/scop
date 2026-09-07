@@ -1,6 +1,10 @@
 #include <Rcpp.h>
 #include <thisutils/log_message.h>
 #include "velocity_utils.h"
+#include "thread_utils.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 using namespace Rcpp;
 
@@ -326,7 +330,8 @@ List scanpy_dynamical_nm_cpp(
     int max_iter = 10,
     double init_alpha = -1.0,
     double init_beta  = -1.0,
-    double init_gamma = -1.0)
+    double init_gamma = -1.0,
+    int n_threads = 0)
 {
   int n_genes = Ms.nrow();
   int n_cells = Ms.ncol();
@@ -350,8 +355,11 @@ List scanpy_dynamical_nm_cpp(
   NumericVector t_out(n_genes);
   NumericVector loss_out(n_genes);
   IntegerVector converged(n_genes, 0);
+  const int threads = omp_thread_count(n_threads, n_genes);
 
-  int n_fit = 0;
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(dynamic, 4)
+#endif
   for (int g = 0; g < n_genes; ++g) {
     if (!do_fit[g]) {
       alpha_out[g] = 0; beta_out[g] = 0; gamma_out[g] = 0;
@@ -407,10 +415,11 @@ List scanpy_dynamical_nm_cpp(
     t_out[g]     = par.t_;
     loss_out[g]  = par.loss;
     converged[g] = par.loss < 1e9 ? 1 : 0;
-    ++n_fit;
+  }
 
-    // Progress callback for R
-    if (n_fit % 50 == 0) Rcpp::checkUserInterrupt();
+  int n_fit = 0;
+  for (int g = 0; g < n_genes; ++g) {
+    if (do_fit[g] && converged[g] == 1) ++n_fit;
   }
 
   return List::create(
@@ -433,7 +442,8 @@ List scanpy_dynamical_velocity_cpp(
     NumericVector gamma,
     NumericVector t_,
     IntegerMatrix knn_idx,
-    NumericMatrix embedding)
+    NumericMatrix embedding,
+    int n_threads = 0)
 {
   int n_genes = Ms.nrow();
   int n_cells = Ms.ncol();
@@ -447,6 +457,10 @@ List scanpy_dynamical_velocity_cpp(
   // Compute per-cell velocity from fitted parameters
   // v = du/dt = alpha - beta*u  (unspliced velocity)
   NumericMatrix velocity(n_genes, n_cells);
+  const int threads = omp_thread_count(n_threads, n_genes);
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int g = 0; g < n_genes; ++g) {
     double a = alpha[g], b = beta[g];
     for (int c = 0; c < n_cells; ++c) {
