@@ -48,8 +48,7 @@ CellRankPlot <- function(
   if (!inherits(srt, "Seurat")) log_message("{.arg srt} must be a Seurat object", message_type = "error")
   if (is.null(srt@tools$CellRank)) log_message("CellRank results are missing", message_type = "error")
   fate <- tryCatch(cellrank_fate_matrix(srt), error = function(e) NULL)
-  theme_fun <- resolve_plot_theme_use(theme_use)
-  theme_layer <- do.call(theme_fun, theme_args)
+  theme_layer <- apply_plot_theme(theme_use, theme_args)
   continuous_colors <- unname(palette_colors(
     n = 11L,
     palette = feature_palette,

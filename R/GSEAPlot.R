@@ -92,7 +92,8 @@ GSEAPlot <- function(
   enrichmap_cluster = "fast_greedy",
   enrichmap_label = c("term", "feature"),
   enrichmap_labelsize = 5,
-  enrlichmap_nlabel = 4,
+  enrichmap_nlabel = 4,
+  enrlichmap_nlabel = NULL,
   enrichmap_show_keyword = FALSE,
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
@@ -113,6 +114,9 @@ GSEAPlot <- function(
   verbose = TRUE
 ) {
   set.seed(seed)
+  if (!is.null(enrlichmap_nlabel)) {
+    enrichmap_nlabel <- enrlichmap_nlabel
+  }
   plot_type <- match.arg(plot_type)
   word_type <- match.arg(word_type)
   direction <- match.arg(direction)
@@ -355,7 +359,7 @@ GSEAPlot <- function(
         guide = if (isTRUE(compare_only_sig)) guide_none() else guide_legend()
       ) +
       facet_grid(Database ~ ., scales = "free") +
-      do.call(theme_use, theme_args) +
+      apply_plot_theme(theme_use, theme_args) +
       theme(
         aspect.ratio = aspect.ratio,
         legend.position = legend.position,
@@ -771,7 +775,7 @@ GSEAPlot <- function(
       legend <- get_legend(
         p1 +
           guides(color = guide_legend(title = "Term:", byrow = TRUE)) +
-          do.call(theme_use, theme_args) +
+          apply_plot_theme(theme_use, theme_args) +
           theme(
             legend.position = "bottom",
             legend.direction = legend.direction
@@ -919,7 +923,7 @@ GSEAPlot <- function(
         coord_cartesian(
           xlim = c(-max(abs(stat[["NES"]])), max(abs(stat[["NES"]])))
         ) +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,
@@ -1159,7 +1163,7 @@ GSEAPlot <- function(
         guides(fill = guide_legend(title = "Term:", byrow = TRUE)) +
         labs(x = "", y = "") +
         facet_grid(Database ~ Groups, scales = "free") +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,
@@ -1268,7 +1272,7 @@ GSEAPlot <- function(
           dplyr::distinct() %>%
           dplyr::group_by(Database, Groups, clusters) %>%
           dplyr::arrange(dplyr::desc(score)) %>%
-          dplyr::slice_head(n = enrlichmap_nlabel) %>%
+          dplyr::slice_head(n = enrichmap_nlabel) %>%
           dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
           as.data.frame()
         rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
@@ -1294,7 +1298,7 @@ GSEAPlot <- function(
           dplyr::reframe(keyword = Description) %>%
           dplyr::distinct() %>%
           dplyr::group_by(Database, Groups, clusters) %>%
-          dplyr::slice_head(n = enrlichmap_nlabel) %>%
+          dplyr::slice_head(n = enrichmap_nlabel) %>%
           dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = "\n")) %>%
           as.data.frame()
         rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
@@ -1320,7 +1324,7 @@ GSEAPlot <- function(
         dplyr::distinct() %>%
         dplyr::group_by(Database, Groups, clusters) %>%
         dplyr::arrange(dplyr::desc(score)) %>%
-        dplyr::slice_head(n = enrlichmap_nlabel) %>%
+        dplyr::slice_head(n = enrichmap_nlabel) %>%
         dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) %>%
         as.data.frame()
       rownames(df_keyword2) <- as.character(df_keyword2[["clusters"]])
@@ -1455,7 +1459,7 @@ GSEAPlot <- function(
           expand = expansion(c(enrichmap_expand[2], enrichmap_expand[2]), 0)
         ) +
         facet_grid(Database ~ Groups, scales = "free") +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,
@@ -1649,7 +1653,7 @@ GSEAPlot <- function(
         ) +
         facet_grid(Database ~ Groups, scales = "free") +
         coord_flip() +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,

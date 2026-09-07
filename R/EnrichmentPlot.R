@@ -57,7 +57,8 @@
 #' @param enrichmap_label The label type for enrichmap plot.
 #' Options are `"term"` and `"feature"`.
 #' @param enrichmap_labelsize The label size for enrichmap plot.
-#' @param enrlichmap_nlabel The number of labels to display for each cluster in enrichmap plot.
+#' @param enrichmap_nlabel The number of labels to display for each cluster in enrichmap plot.
+#' @param enrlichmap_nlabel Deprecated. Please use \code{enrichmap_nlabel} instead.
 #' @param enrichmap_show_keyword Whether to show the keyword of terms or features in enrichmap plot.
 #' @param enrichmap_mark The mark shape for enrichmap plot.
 #' Options are `"ellipse"` and `"hull"`.
@@ -305,7 +306,7 @@
 #'   topTerm = 200,
 #'   enrichmap_mark = "hull",
 #'   enrichmap_label = "feature",
-#'   enrlichmap_nlabel = 3,
+#'   enrichmap_nlabel = 3,
 #'   character_width = 10,
 #'   theme_use = "theme_blank",
 #'   theme_args = list(add_coord = FALSE)
@@ -366,7 +367,8 @@ EnrichmentPlot <- function(
   enrichmap_cluster = "fast_greedy",
   enrichmap_label = c("term", "feature"),
   enrichmap_labelsize = 5,
-  enrlichmap_nlabel = 4,
+  enrichmap_nlabel = 4,
+  enrlichmap_nlabel = NULL,
   enrichmap_show_keyword = FALSE,
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
@@ -387,6 +389,9 @@ EnrichmentPlot <- function(
   verbose = TRUE
 ) {
   set.seed(seed)
+  if (!is.null(enrlichmap_nlabel)) {
+    enrichmap_nlabel <- enrlichmap_nlabel
+  }
   plot_type <- match.arg(plot_type)
   word_type <- match.arg(word_type)
   enrichmap_label <- match.arg(enrichmap_label)
@@ -696,7 +701,7 @@ EnrichmentPlot <- function(
         }
       ) +
       facet_grid(Database ~ ., scales = "free") +
-      do.call(theme_use, theme_args) +
+      apply_plot_theme(theme_use, theme_args) +
       theme(
         aspect.ratio = aspect.ratio,
         legend.position = legend.position,
@@ -769,7 +774,7 @@ EnrichmentPlot <- function(
         ) +
         facet_grid(facet, scales = "free") +
         coord_flip() +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,
@@ -855,7 +860,7 @@ EnrichmentPlot <- function(
         ) +
         facet_grid(facet, scales = "free") +
         coord_flip() +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,
@@ -969,7 +974,7 @@ EnrichmentPlot <- function(
         ) +
         facet_grid(facet, scales = "free") +
         coord_flip() +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,
@@ -1190,7 +1195,7 @@ EnrichmentPlot <- function(
         ) +
         labs(x = "", y = "") +
         facet_grid(facet, scales = "free") +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,
@@ -1279,7 +1284,7 @@ EnrichmentPlot <- function(
           dplyr::distinct() |>
           dplyr::group_by(Database, Groups, clusters) |>
           dplyr::arrange(dplyr::desc(score)) |>
-          dplyr::slice_head(n = enrlichmap_nlabel) |>
+          dplyr::slice_head(n = enrichmap_nlabel) |>
           dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) |>
           as.data.frame()
         rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
@@ -1305,7 +1310,7 @@ EnrichmentPlot <- function(
           dplyr::reframe(keyword = Description) |>
           dplyr::distinct() |>
           dplyr::group_by(Database, Groups, clusters) |>
-          dplyr::slice_head(n = enrlichmap_nlabel) |>
+          dplyr::slice_head(n = enrichmap_nlabel) |>
           dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = "\n")) |>
           as.data.frame()
         rownames(df_keyword1) <- as.character(df_keyword1[["clusters"]])
@@ -1331,7 +1336,7 @@ EnrichmentPlot <- function(
         dplyr::distinct() |>
         dplyr::group_by(Database, Groups, clusters) |>
         dplyr::arrange(dplyr::desc(score)) |>
-        dplyr::slice_head(n = enrlichmap_nlabel) |>
+        dplyr::slice_head(n = enrichmap_nlabel) |>
         dplyr::reframe(keyword = paste0(.data[["keyword"]], collapse = " ")) |>
         as.data.frame()
       rownames(df_keyword2) <- as.character(df_keyword2[["clusters"]])
@@ -1466,7 +1471,7 @@ EnrichmentPlot <- function(
           expand = expansion(c(enrichmap_expand[2], enrichmap_expand[2]), 0)
         ) +
         facet_grid(facet, scales = "free") +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,
@@ -1632,7 +1637,7 @@ EnrichmentPlot <- function(
         ) +
         facet_grid(facet, scales = "free") +
         coord_flip() +
-        do.call(theme_use, theme_args) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           aspect.ratio = aspect.ratio,
           legend.position = legend.position,

@@ -37,7 +37,8 @@ EnrichmentPlot(
   enrichmap_cluster = "fast_greedy",
   enrichmap_label = c("term", "feature"),
   enrichmap_labelsize = 5,
-  enrlichmap_nlabel = 4,
+  enrichmap_nlabel = 4,
+  enrlichmap_nlabel = NULL,
   enrichmap_show_keyword = FALSE,
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
@@ -140,7 +141,9 @@ Options are \code{"term"} and \code{"feature"}.}
 
 \item{enrichmap_labelsize}{The label size for enrichmap plot.}
 
-\item{enrlichmap_nlabel}{The number of labels to display for each cluster in enrichmap plot.}
+\item{enrichmap_nlabel}{The number of labels to display for each cluster in enrichmap plot.}
+
+\item{enrlichmap_nlabel}{Deprecated. Please use \code{enrichmap_nlabel} instead.}
 
 \item{enrichmap_show_keyword}{Whether to show the keyword of terms or features in enrichmap plot.}
 
@@ -410,7 +413,7 @@ EnrichmentPlot(
   topTerm = 200,
   enrichmap_mark = "hull",
   enrichmap_label = "feature",
-  enrlichmap_nlabel = 3,
+  enrichmap_nlabel = 3,
   character_width = 10,
   theme_use = "theme_blank",
   theme_args = list(add_coord = FALSE)
