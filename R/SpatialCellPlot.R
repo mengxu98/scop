@@ -1,9 +1,7 @@
 #' @title Plot spatial cell boundaries
 #'
 #' @description
-#' Plot real cell segmentation polygons supplied directly, stored in a result
-#' object, or extracted from a Seurat spatial image. Spot centers are never
-#' converted into synthetic polygons.
+#' Plot cell segmentation polygons from a boundary table or Seurat spatial image.
 #'
 #' @param object Optional `Seurat` object used to extract boundaries or values.
 #' @param res Optional result list containing a `boundaries` data frame.
@@ -20,15 +18,11 @@
 #' `"theme_spatial"`.
 #' @param ... Additional arguments passed to `ggplot2::geom_polygon()`.
 #'
-#' @return A `ggplot` or patchwork object.
+#' @details
+#' Boundary tables require `cell_id`, `x`, and `y` columns in polygon vertex
+#' order. Seurat images must contain segmentation boundaries.
 #'
-#' @examples
-#' data(xenium_human_pancreas_boundaries_sub)
-#' SpatialCellPlot(
-#'   boundaries = xenium_human_pancreas_boundaries_sub,
-#'   group.by = "cell_area",
-#'   crop = TRUE
-#' )
+#' @return A `ggplot` or patchwork object.
 #'
 #' @export
 SpatialCellPlot <- function(

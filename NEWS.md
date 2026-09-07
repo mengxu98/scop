@@ -1,6 +1,8 @@
 # scop 0.9.1
 
-* **fix**: Coordinate v3 accepts the empty native orientation slot introduced by newer SeuratObject versions. List integration resolves explicit image maps before merging duplicate image names. Bundled metadata-only result fixtures are migrated only after pinned-input coordinate-equivalence and payload-preservation checks; arbitrary user v2 results still require rerunning.
+* **data**: Remove the derivative `pbmc_celltypist_sub`, `visium_human_pancreas_results_sub`, `visium_human_pancreas_pair_sub`, and `xenium_human_pancreas_boundaries_sub` datasets and one-off data migration scripts. Examples reuse `pbmcmultiome_sub` and `visium_human_pancreas_sub`, computing results when needed; specialized workflows document their required inputs without placeholder files. Existing scripts using the removed `data()` names must be updated.
+
+* **fix**: Coordinate v3 accepts the empty native orientation slot introduced by newer SeuratObject versions. List integration resolves explicit image maps before merging duplicate image names. Existing coordinate-contract v2 results still require rerunning.
 
 * **fix**: Spatial coordinate contract v3 uses persistent image axis provenance instead of guessing from mutable metadata, parses numeric factor coordinates correctly, and records the resolved coordinate columns. `SetSpatialImageAxes()` preserves custom VisiumV2 conventions through subsetting and renaming; the bundled Visium object is migrated without changing its measurements. Coordinate-dependent results from contract v2 must be rerun.
 * **fix**: Spatial point and pie plots default to the same FOV/metadata y orientation as network and boundary plots (`flip.y = FALSE`). SpatialExperiment exports default to raw coordinates and retain transforms for reversible display-coordinate round trips.

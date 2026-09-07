@@ -167,25 +167,22 @@ because they can be large; use `store.object = "full"` only if subsequent
 additional analysis with the upstream SpatialCellChat object is needed.
 }
 \examples{
-data(visium_human_pancreas_results_sub)
-chat <- visium_human_pancreas_results_sub@tools$SpatialCellChat
-chat$summary
-SpatialCellChatPlot(
-  visium_human_pancreas_results_sub,
-  plot_type = "incoming",
-  sample = "ALL"
-)
-
 \dontrun{
+data(visium_human_pancreas_sub)
+visium_human_pancreas_sub <- Seurat::NormalizeData(
+  visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
+)
+# Group Visium spots by their CODA tissue labels.
 check_r("jinworks/SpatialCellChat", verbose = FALSE)
 spatial <- RunSpatialCellChat(
-  visium_human_pancreas_results_sub,
-  group.by = "coda_label", assay = "Spatial", image = NULL,
+  visium_human_pancreas_sub,
+  group.by = "coda_label", assay = "Spatial", image = "slice1",
   coord.cols = c("x", "y"),
   technology = "visium", analysis.level = "spot",
   coordinate.unit = "pixel", species = "Homo_sapiens",
   store.object = "minimal", verbose = FALSE
 )
+SpatialCellChatPlot(spatial, plot_type = "incoming")
 }
 
 }

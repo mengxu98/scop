@@ -55,16 +55,9 @@ SpatialCellPlot(
 A `ggplot` or patchwork object.
 }
 \description{
-Plot real cell segmentation polygons supplied directly, stored in a result
-object, or extracted from a Seurat spatial image. Spot centers are never
-converted into synthetic polygons.
+Plot cell segmentation polygons from a boundary table or Seurat spatial image.
 }
-\examples{
-data(xenium_human_pancreas_boundaries_sub)
-SpatialCellPlot(
-  boundaries = xenium_human_pancreas_boundaries_sub,
-  group.by = "cell_area",
-  crop = TRUE
-)
-
+\details{
+Boundary tables require `cell_id`, `x`, and `y` columns in polygon vertex
+order. Seurat images must contain segmentation boundaries.
 }

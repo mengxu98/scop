@@ -107,22 +107,17 @@ Run \code{MERINGUE} spatial autocorrelation, spatial cross-correlation, and
 spatial module analysis for a spatial \code{Seurat} object.
 }
 \examples{
-data(visium_human_pancreas_results_sub)
-mer_result <- visium_human_pancreas_results_sub@tools$MERINGUE
-mer_result$summary
-SpatialSpotPlot(
-  visium_human_pancreas_results_sub,
-  features = mer_result$autocorrelation$feature[1],
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-
 \dontrun{
+data(visium_human_pancreas_sub)
+visium_human_pancreas_sub <- Seurat::NormalizeData(
+  visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
+)
 check_r("JEFworks-Lab/MERINGUE", verbose = FALSE)
 spatial <- RunMERINGUE(
-  visium_human_pancreas_results_sub,
+  visium_human_pancreas_sub,
   assay = "Spatial", coord.cols = c("x", "y"),
   mode = "autocorrelation", nfeatures = 20, verbose = FALSE
 )
+spatial@tools$MERINGUE$summary
 }
 }

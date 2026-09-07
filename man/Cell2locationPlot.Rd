@@ -49,28 +49,7 @@ A \code{ggplot}, \code{patchwork}, or list of plots.
 \description{
 Plot cell2location spatial results
 }
-\examples{
-\dontrun{
-# Result from the official Human Lymph Node example in RunCell2location().
-# The tutorial result is an external file and is not downloaded by pkgdown.
-spatial <- readRDS("human_lymph_node_cell2location/official_human_lymph_node.rds")
-selected <- names(sort(
-  colMeans(spatial@tools$Cell2location$proportions),
-  decreasing = TRUE
-))[1:6]
-Cell2locationPlot(
-  spatial,
-  plot_type = "proportion",
-  cell_types = selected,
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  ncol = 3
-)
-Cell2locationPlot(
-  spatial,
-  plot_type = "dominant",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-}
+\details{
+Abundance plots use posterior q05 values. Proportion plots normalize
+these values across cell types within each spot.
 }

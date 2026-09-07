@@ -1,11 +1,8 @@
 #' @title Run SpaNorm spatial normalization
 #'
 #' @description
-#' Normalize spatial transcriptomics counts with the optional Bioconductor
-#' `SpaNorm` backend and store the normalized expression in a new Seurat assay.
-#' The example is a non-executing template because the optional backend and its
-#' platform-specific numerical requirements are not part of a standard SCOP
-#' installation.
+#' Normalize spatial transcriptomics counts using SpaNorm and store the
+#' normalized expression in a Seurat assay.
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures

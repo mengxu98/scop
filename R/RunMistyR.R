@@ -1,12 +1,8 @@
 #' @title Run mistyR multiview spatial modeling
 #'
 #' @description
-#' Build a small `mistyR` view composition from a spatial `Seurat` object,
-#' train MISTy models, collect results, and store a standardized result bundle in
-#' `srt@tools`. The intraview is always created from the selected assay layer;
-#' optional juxtaview and paraview components describe local and broader spatial
-#' context. `mistyR` is an optional Bioconductor dependency installable with
-#' `BiocManager::install("mistyR")`.
+#' Model feature expression using MISTy intraview and spatial predictors.
+#' Juxtaview and paraview predictors describe local and broader neighborhoods.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -45,19 +41,17 @@
 #' @export
 #'
 #' @examples
-#' data(visium_human_pancreas_results_sub)
-#' misty <- visium_human_pancreas_results_sub@tools$MistyR
-#' misty$summary
-#' MistyRPlot(res = misty, type = "improvements", top_n = 10)
-#'
 #' \dontrun{
 #' check_r("saezlab/mistyR", verbose = FALSE)
+#' data(visium_human_pancreas_sub)
+#' spatial <- Seurat::NormalizeData(visium_human_pancreas_sub, verbose = FALSE)
+#' # Paraview bandwidth: 1000 full-resolution image pixels.
 #' spatial <- RunMistyR(
-#'   visium_human_pancreas_results_sub,
-#'   assay = "Spatial", features = rownames(visium_human_pancreas_results_sub)[1:5],
-#'   coord.cols = c("x", "y"), views = "para", para_l = 5,
+#'   spatial, assay = "Spatial", features = rownames(spatial)[1:5],
+#'   image = "slice1", views = "para", para_l = 1000,
 #'   cv_folds = 3, verbose = FALSE
 #' )
+#' MistyRPlot(spatial, type = "improvements", top_n = 5)
 #' }
 RunMistyR <- function(
   srt,
@@ -332,14 +326,8 @@ mistyr_summary <- function(results, views = character()) {
 #' @param top_n Maximum number of records shown after ranking by absolute value.
 #' @param target Optional target feature filter.
 #' @return A `ggplot` object.
+#' @seealso [RunMistyR()]
 #' @export
-#' @examples
-#' data(visium_human_pancreas_results_sub)
-#' MistyRPlot(
-#'   res = visium_human_pancreas_results_sub@tools$MistyR,
-#'   type = "improvements",
-#'   top_n = 10
-#' )
 MistyRPlot <- function(
   object = NULL,
   res = NULL,

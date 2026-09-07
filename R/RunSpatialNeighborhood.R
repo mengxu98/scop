@@ -1,8 +1,8 @@
 #' @title Run spatial neighborhood statistics
 #'
 #' @description
-#' Build a standardized spatial neighborhood result bundle and optionally dispatch
-#' to a supported backend for colocalization or local-effect statistics.
+#' Summarize observed spatial neighborhoods or test differential spatial
+#' associations between conditions using spicyR.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -263,16 +263,10 @@ RunSpatialNeighborhood <- function(
 #' @param seed Random seed used by layouts and jittered plot layers.
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
+#' @seealso [RunSpatialNeighborhood()]
+#' @inherit RunSpatialNeighborhood examples
 #' @export
 #'
-#' @examples
-#' data(visium_human_pancreas_results_sub)
-#' SpatialNeighborhoodPlot(
-#'   visium_human_pancreas_results_sub,
-#'   plot_type = "spatial",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
 SpatialNeighborhoodPlot <- function(
   srt,
   method = NULL,

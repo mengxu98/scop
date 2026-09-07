@@ -78,10 +78,8 @@ dominant cell type summaries. When \code{store_results = TRUE}, detailed results
 are stored in \code{srt@tools[[tool_name]]}.
 }
 \description{
-Estimate spot-level cell type proportions from a spatial \code{Seurat} object
-using a single-cell \code{Seurat} reference and the optional \code{SPOTlight} package.
-The example is a non-executing template because the backend is optional and
-may require additional Bioconductor dependencies.
+Estimate spot-level cell-type proportions using SPOTlight and an
+annotated single-cell reference.
 }
 \examples{
 \dontrun{
@@ -94,6 +92,7 @@ keep_spots <- unique(round(seq(
   length.out = 120
 )))
 spatial <- visium_human_pancreas_sub[, keep_spots]
+# Results are conditional on the three reference cell types used here.
 reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] \%in\%
   c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
