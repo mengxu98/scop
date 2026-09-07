@@ -323,6 +323,11 @@ mistyr_summary <- function(results, views = character()) {
 #' @param object Optional `Seurat` object containing `MistyR` results.
 #' @param res Optional result list, usually `object@tools$MistyR`.
 #' @param type Result table to plot.
+#' @param measure Numeric result column to display. For `type = "improvements"`
+#' use `"gain.R2"` or `"gain.RMSE"`; for `type = "contributions"`, use
+#' `"contribution"` or `"importance"` as provided by the backend. `NULL`
+#' defaults to `"gain.R2"` for improvements and `"contribution"` for
+#' contributions, and errors if that column is not present.
 #' @param top_n Maximum number of records shown after ranking by absolute value.
 #' @param target Optional target feature filter.
 #' @return A `ggplot` object.
@@ -333,7 +338,8 @@ MistyRPlot <- function(
   res = NULL,
   type = c("improvements", "contributions"),
   top_n = 20,
-  target = NULL
+  target = NULL,
+  measure = NULL
 ) {
   type <- match.arg(type)
   if (is.null(res)) {
@@ -360,13 +366,17 @@ MistyRPlot <- function(
     }
     tab <- tab[as.character(tab$target) %in% target_backend, , drop = FALSE]
   }
-  value_col <- intersect(c("value", "gain.R2", "contribution", "importance"), colnames(tab))[1L]
-  if (is.na(value_col)) {
-    numeric_cols <- colnames(tab)[vapply(tab, is.numeric, logical(1))]
-    value_col <- if (length(numeric_cols)) numeric_cols[[1L]] else NA_character_
+  allowed <- if (identical(type, "improvements")) {
+    c("gain.R2", "gain.RMSE", "value")
+  } else {
+    c("contribution", "importance", "value")
   }
-  if (is.na(value_col) || nrow(tab) == 0L) {
-    log_message("MistyR {.val {type}} has no plottable numeric records", message_type = "error")
+  value_col <- measure %||% allowed[[1L]]
+  if (length(value_col) != 1L || !value_col %in% allowed || !value_col %in% colnames(tab)) {
+    log_message(
+      "{.arg measure} must identify an available {.val {allowed}} column for {.arg type = '{type}'}",
+      message_type = "error"
+    )
   }
   tab$.value <- as.numeric(tab[[value_col]])
   tab <- tab[is.finite(tab$.value), , drop = FALSE]

@@ -325,30 +325,3 @@ test_that("RunSpatialEcoTyper returns deconvolution matrix for matrix input", {
   expect_equal(dim(out), c(2, 2))
   expect_equal(rownames(out), c("SE1", "SE2"))
 })
-
-test_that("SpatialEcoTyper plotting helpers return ggplot objects", {
-  srt <- make_spatialecotyper_seurat()
-  srt$SpatialEcoTyper_SE <- c("SE1", "SE1", "SE2", "SE2")
-  srt@tools$SpatialEcoTyper <- list(parameters = list())
-  p1 <- SpatialEcoTyperSpatialPlot(
-    srt,
-    group.by = "SpatialEcoTyper_SE",
-    overlay_image = FALSE
-  )
-  p2 <- SpatialEcoTyperCompositionPlot(
-    srt,
-    se.by = "SpatialEcoTyper_SE",
-    verbose = FALSE
-  )
-  expect_s3_class(p1, "ggplot")
-  expect_s3_class(p2, "ggplot")
-  expect_false(inherits(p2$coordinates, "CoordFlip"))
-  srt$sample <- c("slice1", "slice1", "slice2", "slice2")
-  p3 <- SpatialEcoTyperCompositionPlot(
-    srt,
-    se.by = "SpatialEcoTyper_SE",
-    sample.by = "sample",
-    verbose = FALSE
-  )
-  expect_true(p3$facet$params$free$x)
-})

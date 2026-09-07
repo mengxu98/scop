@@ -3,7 +3,6 @@ raw_default_spatial_methods <- c(
   "RunSpotSweeper",
   "RunRCTD",
   "RunCARD",
-  "RunSpatialDWLS",
   "RunBANKSY",
   "RunCytoSPACE",
   "RunSmoothClust",
@@ -15,6 +14,13 @@ raw_default_spatial_methods <- c(
   "RunSpatialIntegration",
   "RunMistyR"
 )
+
+test_that("unverified spatial entry points are not exported", {
+  exports <- getNamespaceExports("scop")
+  expect_false("RunSpatialDWLS" %in% exports)
+  expect_false("SpatialEcoTyperSpatialPlot" %in% exports)
+  expect_false("SpatialEcoTyperCompositionPlot" %in% exports)
+})
 
 test_that("distance-sensitive spatial producers default to raw coordinates", {
   defaults <- vapply(raw_default_spatial_methods, function(method) {

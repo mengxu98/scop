@@ -11,6 +11,8 @@
 #' @param crop Whether to crop the plot to the selected boundaries.
 #' @param group.by Boundary column or Seurat metadata column used for filling.
 #' @param features Features to display. Multiple features return a patchwork.
+#' @param assay Assay used when `features` are fetched from `object`.
+#' @param layer Layer used when `features` are fetched from `object`.
 #' @param palette,palcolor Palette name or explicit colors.
 #' @param fill.alpha Polygon fill opacity.
 #' @param boundary.color,boundary.linewidth Boundary appearance.
@@ -41,6 +43,8 @@ SpatialCellPlot <- function(
   boundary.linewidth = 0.1,
   theme_use = "theme_spatial",
   theme_args = list(),
+  assay = NULL,
+  layer = "data",
   ...
 ) {
   if (!is.null(object) && !inherits(object, "Seurat")) {
@@ -83,6 +87,11 @@ SpatialCellPlot <- function(
     log_message("Provide real segmentation data through {.arg boundaries}, {.arg res}, or a Seurat image", message_type = "error")
   }
 
+  assay <- assay %||% if (!is.null(object)) SeuratObject::DefaultAssay(object) else NULL
+  if (!is.null(features) && !is.null(object) && is.null(assay)) {
+    log_message("An {.arg assay} is required when fetching features from {.arg object}", message_type = "error")
+  }
+
   boundaries <- spatial_boundary_validate(boundaries, image = image)
   if (!is.null(cells)) {
     boundaries <- boundaries[boundaries$cell_id %in% cells, , drop = FALSE]
@@ -111,11 +120,20 @@ SpatialCellPlot <- function(
         if (is.null(object)) {
           log_message("A Seurat {.arg object} is required to fetch feature {.val {feature}}", message_type = "error")
         }
-        fetched <- tryCatch(
-          SeuratObject::FetchData(object, vars = feature, layer = "data"),
-          error = function(e) SeuratObject::FetchData(object, vars = feature)
+        expr <- tryCatch(
+          GetAssayData5(object, assay = assay, layer = layer),
+          error = function(e) NULL
         )
-        value_tables[[feature]] <- fetched[boundaries$cell_id, feature]
+        if (is.null(expr) || !feature %in% rownames(expr)) {
+          log_message(
+            "Feature {.val {feature}} is not available in assay {.val {assay}} layer {.val {layer}}",
+            message_type = "error"
+          )
+        }
+        if (!all(boundaries$cell_id %in% colnames(expr))) {
+          log_message("Boundary cell IDs do not match the selected Seurat object", message_type = "error")
+        }
+        value_tables[[feature]] <- as.numeric(expr[feature, boundaries$cell_id, drop = TRUE])
       }
     }
   } else {
