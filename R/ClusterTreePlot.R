@@ -504,6 +504,24 @@ clustertree_feature_values <- function(
   assay_features <- rownames(srt[[assay]])
   metadata_features <- colnames(srt@meta.data)
 
+  all_assay_features <- unique(unlist(
+    lapply(feature_sets, function(fs) {
+      fs <- unique(fs[nzchar(fs)])
+      fs[fs %in% assay_features]
+    }),
+    use.names = FALSE
+  ))
+  expr_all <- if (length(all_assay_features) > 0L) {
+    GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer,
+      features = all_assay_features
+    )[all_assay_features, , drop = FALSE]
+  } else {
+    NULL
+  }
+
   out <- lapply(names(feature_sets), function(feature_name) {
     feature_set <- unique(feature_sets[[feature_name]])
     feature_set <- feature_set[nzchar(feature_set)]
@@ -530,7 +548,8 @@ clustertree_feature_values <- function(
       assay = assay,
       layer = layer,
       assay_features = assay_found,
-      metadata_features = metadata_found
+      metadata_features = metadata_found,
+      expr = expr_all
     )
     clustertree_aggregate_feature_values(
       values = values,
@@ -586,11 +605,13 @@ clustertree_get_feature_set_values <- function(
   assay,
   layer,
   assay_features,
-  metadata_features
+  metadata_features,
+  expr = NULL
 ) {
   value_list <- list()
   if (length(assay_features) > 0L) {
-    expr <- GetAssayData5(srt, assay = assay, layer = layer)[assay_features, , drop = FALSE]
+    expr <- expr %||% GetAssayData5(srt, assay = assay, layer = layer)
+    expr <- expr[assay_features, , drop = FALSE]
     if (length(assay_features) == 1L) {
       assay_values <- as.numeric(expr[assay_features, ])
     } else {
@@ -909,7 +930,7 @@ clustertree_single_plot <- function(
     }
   }
   p +
-    do.call(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args) +
     clustertree_legend_theme(
       legend.position,
       family = family,

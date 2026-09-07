@@ -36,6 +36,10 @@ SpatialSpotPlot(
   palette = "Spectral",
   palcolor = NULL,
   bg_color = "grey20",
+  lower_quantile = 0,
+  upper_quantile = 0.99,
+  lower_cutoff = NULL,
+  upper_cutoff = NULL,
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = NULL,
@@ -110,6 +114,10 @@ spacing, then multiplies by \code{pie.radius.scale}.}
 
 \item{bg_color}{Point border color.}
 
+\item{lower_quantile, upper_quantile, lower_cutoff, upper_cutoff}{Limits for
+continuous feature scales. Non-\code{NULL} cutoffs take precedence over the
+quantiles.}
+
 \item{legend.position, legend.direction, legend.title}{Legend placement
 (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title.
 \code{legend.title = NULL} uses the group name.}
@@ -118,7 +126,7 @@ spacing, then multiplies by \code{pie.radius.scale}.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{verbose}{Whether to print messages.}
