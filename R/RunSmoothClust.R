@@ -51,9 +51,12 @@
 #' @export
 #'
 #' @examples
-#' data(visium_human_pancreas_results_sub)
+#' data(visium_human_pancreas_sub)
+#' keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
+#' spatial <- visium_human_pancreas_sub[, keep_spots]
+#' spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 #' spatial <- RunSmoothClust(
-#'   visium_human_pancreas_results_sub,
+#'   spatial,
 #'   assay = "Spatial",
 #'   n_clusters = 3,
 #'   smooth_method = "knn",

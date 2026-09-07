@@ -76,10 +76,7 @@ A \code{Seurat} object with topic proportions in metadata and detailed
 results stored in \code{srt@tools[[tool_name]]} when \code{store_results = TRUE}.
 }
 \description{
-Estimate spot-level topic proportions from a spatial \code{Seurat} object using
-the optional \code{STdeconvolve} package. The producer example is a
-non-executing template; \code{\link[=STdeconvolvePlot]{STdeconvolvePlot()}} demonstrates a validated stored
-result without rerunning the backend.
+Infer expression topics and their spot-level proportions using STdeconvolve.
 }
 \examples{
 \dontrun{

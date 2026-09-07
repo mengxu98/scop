@@ -70,32 +70,10 @@ A \code{Seurat} object with spatial integration results stored in
 metadata, reductions, and \code{srt@tools[[tool_name]]}.
 }
 \description{
-Integrate multi-slice or multi-sample spatial transcriptomics data with an
-optional spatial backend and store standardized embeddings, domains, and
-aligned coordinates in a \code{Seurat} object.
+Integrate spatial transcriptomics samples and identify shared domains
+using PRECAST, BASS, or SpatialMNN.
 }
-\examples{
-data(visium_human_pancreas_pair_sub)
-SpatialIntegrationPlot(
-  visium_human_pancreas_pair_sub,
-  plot_type = "spatial",
-  group.by = "domain",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-SpatialIntegrationPlot(
-  visium_human_pancreas_pair_sub,
-  plot_type = "embedding"
-)
-
-\dontrun{
-check_r("PRECAST", verbose = FALSE)
-spatial <- RunSpatialIntegration(
-  visium_human_pancreas_pair_sub,
-  method = "PRECAST", sample.by = "sample", assay = "Spatial",
-  coord.cols = c("x", "y"),
-  features = rownames(visium_human_pancreas_pair_sub)[1:100],
-  verbose = FALSE
-)
-}
+\details{
+Provide spatial samples with shared genes and raw coordinates. Use
+\code{sample.by} to identify samples and \code{image} to select their spatial images.
 }

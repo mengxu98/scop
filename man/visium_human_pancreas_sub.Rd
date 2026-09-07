@@ -104,3 +104,7 @@ if (interactive()) {
 }
 
 }
+\details{
+\code{coda_label} describes tissue components at Visium spots. Feature-dependent
+QC requires the full expression assay.
+}

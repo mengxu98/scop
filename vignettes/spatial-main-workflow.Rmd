@@ -332,7 +332,7 @@ compatibility option only. Plot functions map results to display coordinates by
 cell or spot ID and `image.scale` never changes raw distances or neighborhoods.
 Objects with multiple spatial images must always select one explicitly with
 `image`; analysis, plotting, and framework conversion never silently use the
-first image. Coordinate-dependent results created before contract v2 are not
+first image. Coordinate-dependent results created before contract v3 are not
 silently migrated; rerun their producer. Metadata passed directly to
 `SpatialSpotPlot()` cannot be traced to its producer, so users upgrading an old
 analysis should rerun that analysis before plotting its metadata.

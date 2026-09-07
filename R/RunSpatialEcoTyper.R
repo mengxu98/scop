@@ -1,9 +1,7 @@
 #' @title Run SpatialEcoTyper spatial ecotype analysis
 #'
 #' @description
-#' Run SpatialEcoTyper workflows through the optional `SpatialEcoTyper`
-#' package and write spatial ecotype labels or abundances back to a `Seurat`
-#' object when possible.
+#' Discover, recover, or deconvolve spatial ecotypes using SpatialEcoTyper.
 #'
 #' @md
 #' @inheritParams RunStandardWorkflow
@@ -81,46 +79,20 @@
 #' @param ... Additional arguments passed to the selected SpatialEcoTyper
 #' function.
 #'
+#' @details
+#' Discovery requires cell-resolved spatial expression, cell-type labels,
+#' and coordinates; multi-sample discovery also requires sample labels.
+#' Recovery and deconvolution require the pretrained basis matrices `Ws`
+#' and `W`, respectively.
+#'
 #' @return A `Seurat` object with SpatialEcoTyper results in metadata and raw
 #' results stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
 #' For matrix input with `mode = "deconvolute"`, the abundance matrix is
 #' returned.
+#' @seealso [SpatialEcoTyperSpatialPlot()], [SpatialEcoTyperCompositionPlot()],
+#' [SpatialEcoTyper tutorials](https://digitalcytometry.github.io/spatialecotyper/)
 #' @export
 #'
-#' @examples
-#' data(visium_human_pancreas_pair_sub)
-#' # Plot the stored spatial grouping from the real two-sample object. This
-#' # compact fixture keeps the real spatial grouping for a fast layout demo;
-#' # rerun SpatialEcoTyper in the dontrun block for a new SE result.
-#' SpatialEcoTyperSpatialPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   group.by = "domain",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y"),
-#'   pt.size = 1.5
-#' )
-#' SpatialEcoTyperCompositionPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   se.by = "domain",
-#'   group.by = "coda_label",
-#'   sample.by = "sample",
-#'   position = "fill"
-#' )
-#'
-#' \dontrun{
-#' check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE)
-#'   srt <- RunSpatialEcoTyper(
-#'     visium_human_pancreas_pair_sub,
-#'     mode = "multi",
-#'     celltype.by = "coda_label",
-#'     sample.by = "sample",
-#'     x.by = "x",
-#'     y.by = "y",
-#'     nfeatures = 50,
-#'     ncores = 1,
-#'     verbose = FALSE
-#'   )
-#' }
 RunSpatialEcoTyper <- function(
   srt,
   mode = c("single", "multi", "recover", "deconvolute"),
@@ -359,17 +331,7 @@ RunSpatialEcoTyper <- function(
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #'
-#' @examples
-#' data(visium_human_pancreas_pair_sub)
-#' # The stored `domain` column is a real PRECAST grouping used only for this
-#' # fast spatial plotting example; it is not a new SpatialEcoTyper inference.
-#' SpatialEcoTyperSpatialPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   group.by = "domain",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y"),
-#'   pt.size = 1.5
-#' )
+#' @seealso [RunSpatialEcoTyper()]
 #' @export
 SpatialEcoTyperSpatialPlot <- function(
   srt,
@@ -422,17 +384,7 @@ SpatialEcoTyperSpatialPlot <- function(
 #'
 #' @return A `ggplot` object.
 #'
-#' @examples
-#' data(visium_human_pancreas_pair_sub)
-#' # This fixture stores real PRECAST domains for a fast plot demonstration;
-#' # use `se.by = "domain"` explicitly because it is not a new SE inference.
-#' SpatialEcoTyperCompositionPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   se.by = "domain",
-#'   group.by = "coda_label",
-#'   sample.by = "sample",
-#'   position = "fill"
-#' )
+#' @seealso [RunSpatialEcoTyper()]
 #' @export
 SpatialEcoTyperCompositionPlot <- function(
   srt,

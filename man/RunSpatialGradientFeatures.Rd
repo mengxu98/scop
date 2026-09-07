@@ -139,18 +139,18 @@ Otherwise existing stored results are unchanged. Variable features are
 independently updated only when \code{set_variable_features = TRUE}.
 }
 \description{
-Run native spatial trajectory or annotation gradient screening for Seurat
-objects. The compiled C++ backend computes distance-based screening and
-stores validated result tables in \code{srt@tools} when requested.
+Screen features for expression trends along a spatial trajectory or
+with distance from annotated regions.
 }
 \examples{
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
+# Use a diagonal example axis without permutation testing.
 spatial <- RunSpatialGradientFeatures(
   spatial,
   reference = "trajectory",
   backend = "cpp",
-  result_name = "ductal_axis",
+  result_name = "example_axis",
   variables = rownames(spatial)[1:8],
   start = c(min(spatial$x), min(spatial$y)),
   end = c(max(spatial$x), max(spatial$y)),

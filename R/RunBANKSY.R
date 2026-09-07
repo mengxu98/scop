@@ -46,13 +46,15 @@
 #' @export
 #'
 #' @examples
-#' data(visium_human_pancreas_results_sub)
+#' data(visium_human_pancreas_sub)
+#' keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
+#' spatial <- visium_human_pancreas_sub[, keep_spots]
 #' spatial <- RunBANKSY(
-#'   visium_human_pancreas_results_sub,
+#'   spatial,
 #'   assay = "Spatial",
 #'   layer = "counts",
 #'   coord.cols = c("x", "y"),
-#'   features = rownames(visium_human_pancreas_results_sub)[1:200],
+#'   features = rownames(spatial)[1:200],
 #'   lambda = 0.2,
 #'   k_geom = 8,
 #'   resolution = 0.6,

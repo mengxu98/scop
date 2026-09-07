@@ -179,42 +179,15 @@ For matrix input with \code{mode = "deconvolute"}, the abundance matrix is
 returned.
 }
 \description{
-Run SpatialEcoTyper workflows through the optional \code{SpatialEcoTyper}
-package and write spatial ecotype labels or abundances back to a \code{Seurat}
-object when possible.
+Discover, recover, or deconvolve spatial ecotypes using SpatialEcoTyper.
 }
-\examples{
-data(visium_human_pancreas_pair_sub)
-# Plot the stored spatial grouping from the real two-sample object. This
-# compact fixture keeps the real spatial grouping for a fast layout demo;
-# rerun SpatialEcoTyper in the dontrun block for a new SE result.
-SpatialEcoTyperSpatialPlot(
-  visium_human_pancreas_pair_sub,
-  group.by = "domain",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  pt.size = 1.5
-)
-SpatialEcoTyperCompositionPlot(
-  visium_human_pancreas_pair_sub,
-  se.by = "domain",
-  group.by = "coda_label",
-  sample.by = "sample",
-  position = "fill"
-)
-
-\dontrun{
-check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE)
-  srt <- RunSpatialEcoTyper(
-    visium_human_pancreas_pair_sub,
-    mode = "multi",
-    celltype.by = "coda_label",
-    sample.by = "sample",
-    x.by = "x",
-    y.by = "y",
-    nfeatures = 50,
-    ncores = 1,
-    verbose = FALSE
-  )
+\details{
+Discovery requires cell-resolved spatial expression, cell-type labels,
+and coordinates; multi-sample discovery also requires sample labels.
+Recovery and deconvolution require the pretrained basis matrices \code{Ws}
+and \code{W}, respectively.
 }
+\seealso{
+\code{\link[=SpatialEcoTyperSpatialPlot]{SpatialEcoTyperSpatialPlot()}}, \code{\link[=SpatialEcoTyperCompositionPlot]{SpatialEcoTyperCompositionPlot()}},
+\href{https://digitalcytometry.github.io/spatialecotyper/}{SpatialEcoTyper tutorials}
 }

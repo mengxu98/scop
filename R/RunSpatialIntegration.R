@@ -1,9 +1,8 @@
 #' @title Run multi-sample spatial integration
 #'
 #' @description
-#' Integrate multi-slice or multi-sample spatial transcriptomics data with an
-#' optional spatial backend and store standardized embeddings, domains, and
-#' aligned coordinates in a `Seurat` object.
+#' Integrate spatial transcriptomics samples and identify shared domains
+#' using PRECAST, BASS, or SpatialMNN.
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
@@ -29,34 +28,14 @@
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param ... Additional backend-specific arguments.
 #'
+#' @details
+#' Provide spatial samples with shared genes and raw coordinates. Use
+#' `sample.by` to identify samples and `image` to select their spatial images.
+#'
 #' @return A `Seurat` object with spatial integration results stored in
 #' metadata, reductions, and `srt@tools[[tool_name]]`.
 #' @export
 #'
-#' @examples
-#' data(visium_human_pancreas_pair_sub)
-#' SpatialIntegrationPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   plot_type = "spatial",
-#'   group.by = "domain",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
-#' SpatialIntegrationPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   plot_type = "embedding"
-#' )
-#'
-#' \dontrun{
-#' check_r("PRECAST", verbose = FALSE)
-#' spatial <- RunSpatialIntegration(
-#'   visium_human_pancreas_pair_sub,
-#'   method = "PRECAST", sample.by = "sample", assay = "Spatial",
-#'   coord.cols = c("x", "y"),
-#'   features = rownames(visium_human_pancreas_pair_sub)[1:100],
-#'   verbose = FALSE
-#' )
-#' }
 RunSpatialIntegration <- function(
   object,
   method = "PRECAST",
@@ -163,21 +142,9 @@ RunSpatialIntegration <- function(
 #' [CellDimPlot()].
 #'
 #' @return A `ggplot`, patchwork object, or list of plots.
+#' @seealso [RunSpatialIntegration()]
 #' @export
 #'
-#' @examples
-#' data(visium_human_pancreas_pair_sub)
-#' SpatialIntegrationPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   plot_type = "spatial",
-#'   group.by = "domain",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
-#' SpatialIntegrationPlot(
-#'   visium_human_pancreas_pair_sub,
-#'   plot_type = "embedding"
-#' )
 SpatialIntegrationPlot <- function(
   srt,
   method = NULL,

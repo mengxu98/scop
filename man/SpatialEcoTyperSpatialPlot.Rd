@@ -52,15 +52,6 @@ A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.
 Plot SpatialEcoTyper labels on spatial coordinates using the spatial
 plotting style.
 }
-\examples{
-data(visium_human_pancreas_pair_sub)
-# The stored `domain` column is a real PRECAST grouping used only for this
-# fast spatial plotting example; it is not a new SpatialEcoTyper inference.
-SpatialEcoTyperSpatialPlot(
-  visium_human_pancreas_pair_sub,
-  group.by = "domain",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  pt.size = 1.5
-)
+\seealso{
+\code{\link[=RunSpatialEcoTyper]{RunSpatialEcoTyper()}}
 }

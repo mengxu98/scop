@@ -107,42 +107,14 @@ A \code{Seurat} object with cell2location abundance, proportion, dominant
 cell type, and maximum-proportion metadata.
 }
 \description{
-Estimate spot-level absolute cell abundance and proportions with the official
-Python \code{cell2location} backend. The Python model runs in an isolated
-subprocess while inputs, models, posterior outputs, logs, and a reproducible
-manifest are persisted under \code{result_dir}. The example uses the official
-Human Lymph Node tutorial files; those input files are not bundled with SCOP.
+Estimate cell-type abundances and proportions in spatial transcriptomics
+data using cell2location.
 }
-\section{Official human lymph node result}{
-
-The figure below was generated from the official cell2location Human Lymph
-Node tutorial data using 600 genuine Visium locations, 1,600 genuine
-reference cells across 20 annotated cell types, and the complete two-stage
-model implemented by this function.
+\details{
+Requires raw spatial counts and an annotated single-cell reference or
+gene-by-cell-type signatures with matching gene identifiers.
 }
-
-\examples{
-\dontrun{
-# Official cell2location Human Lymph Node tutorial data:
-# https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_tutorial.html
-reference <- h5ad_to_srt("reference_subset.h5ad")
-spatial <- h5ad_to_srt("spatial_subset.h5ad")
-spatial <- RunCell2location(
-  srt = spatial,
-  result_dir = "human_lymph_node_cell2location",
-  reference = reference,
-  reference_label = "Subset",
-  reference_batch = "Sample",
-  spatial_batch = "sample",
-  N_cells_per_location = 30,
-  detection_alpha = 20
-)
-Cell2locationPlot(
-  spatial,
-  plot_type = "proportion",
-  cell_types = c("B_naive", "T_CD4+_naive", "FDC"),
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-}
+\seealso{
+\code{\link[=Cell2locationPlot]{Cell2locationPlot()}},
+\href{https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_tutorial.html}{cell2location tutorial}
 }

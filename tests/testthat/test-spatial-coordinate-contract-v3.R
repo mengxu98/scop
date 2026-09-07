@@ -202,14 +202,17 @@ test_that("list image maps refer to each input object's local image names", {
   }
 })
 
-test_that("bundled raw-coordinate results remain plottable under v3", {
-  data(visium_human_pancreas_results_sub)
-  data(visium_human_pancreas_pair_sub)
-  single <- visium_human_pancreas_results_sub
-  pair <- visium_human_pancreas_pair_sub
-  expect_s3_class(MistyRPlot(single), "ggplot")
-  expect_s3_class(StatialKontextualPlot(single), "ggplot")
-  expect_s3_class(SpatialIntegrationPlot(pair, plot_type = "embedding"), "ggplot")
-  expect_s3_class(SpatialNetworkPlot(single), "ggplot")
-  expect_identical(single@tools$SCOPExamples$coordinate_contract_migration$backend_rerun, FALSE)
+test_that("the shared Visium input produces plottable raw-coordinate results", {
+  skip_if_not_installed("BiocNeighbors")
+  data(visium_human_pancreas_sub, package = "scop")
+  spatial <- suppressWarnings(visium_human_pancreas_sub[, 1:40])
+  expected <- SpatialCoordinates(spatial, image = "slice1")$data
+  spatial <- RunSpatialNetwork(spatial, image = "slice1", k = 4, verbose = FALSE)
+  spatial <- RunSpatialNeighborhood(
+    spatial, group.by = "coda_label", method = "observed",
+    image = "slice1", k = 4, backend = "r", verbose = FALSE
+  )
+  expect_equal(SpatialCoordinates(spatial, image = "slice1")$data, expected)
+  expect_s3_class(SpatialNetworkPlot(spatial), "ggplot")
+  expect_s3_class(SpatialNeighborhoodPlot(spatial, plot_type = "spatial"), "ggplot")
 })

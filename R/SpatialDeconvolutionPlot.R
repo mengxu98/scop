@@ -30,6 +30,7 @@
 #' data(panc8_sub)
 #' keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 120)))
 #' spatial <- visium_human_pancreas_sub[, keep_spots]
+#' # Results are conditional on the three reference cell types used here.
 #' reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
 #'   c("ductal", "alpha", "beta")]
 #' reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)

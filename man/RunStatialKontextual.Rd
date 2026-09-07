@@ -87,24 +87,19 @@ A \code{Seurat} object with Statial results stored in
 \code{srt@tools[[tool_name]]} when \code{store_results = TRUE}.
 }
 \description{
-Run \code{Statial::Kontextual()} on a spatial \code{Seurat} object to quantify
-pairwise cell or spot label relationships relative to a parent context.
-Results are stored as a compact SCOP bundle with raw Statial output,
-standardized summary, and parameters. \code{Statial} is an optional Bioconductor
-dependency installable with \code{BiocManager::install("Statial")}.
+Compute spatial relationships between cell or spot labels relative to a
+parent context using Statial Kontextual.
 }
 \examples{
-data(visium_human_pancreas_results_sub)
-statial <- visium_human_pancreas_results_sub@tools$StatialKontextual
-statial$summary
-StatialKontextualPlot(res = statial)
-
 \dontrun{
 check_r("sydney-informatics-hub/Statial", verbose = FALSE)
+data(visium_human_pancreas_sub)
+# Compare tissue-labelled spots at two radii (full-resolution image pixels).
 spatial <- RunStatialKontextual(
-  visium_human_pancreas_results_sub, group.by = "coda_label", r = 50,
-  from = "collagen", to = "acini", parent = c("collagen", "acini"),
-  coord.cols = c("x", "y"), verbose = FALSE
+  visium_human_pancreas_sub, group.by = "coda_label", image = "slice1",
+  r = c(500, 1000), from = "collagen", to = "acini", parent = c("collagen", "acini"),
+  verbose = FALSE
 )
+StatialKontextualPlot(spatial)
 }
 }

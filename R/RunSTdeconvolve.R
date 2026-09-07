@@ -1,10 +1,7 @@
 #' @title Run STdeconvolve reference-free spatial deconvolution
 #'
 #' @description
-#' Estimate spot-level topic proportions from a spatial `Seurat` object using
-#' the optional `STdeconvolve` package. The producer example is a
-#' non-executing template; [STdeconvolvePlot()] demonstrates a validated stored
-#' result without rerunning the backend.
+#' Infer expression topics and their spot-level proportions using STdeconvolve.
 #'
 #' @md
 #' @inheritParams RunRCTD
@@ -213,16 +210,9 @@ RunSTdeconvolve <- function(
 #' @param ... Additional arguments passed to `SpatialSpotPlot()`.
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
+#' @seealso [RunSTdeconvolve()]
 #' @export
 #'
-#' @examples
-#' data(visium_human_pancreas_results_sub)
-#' STdeconvolvePlot(
-#'   visium_human_pancreas_results_sub,
-#'   topics = 1:2,
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y")
-#' )
 STdeconvolvePlot <- function(
   srt,
   tool_name = "STdeconvolve",

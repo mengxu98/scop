@@ -74,17 +74,6 @@ A \code{ggplot}, patchwork object, or list of plots.
 \description{
 Visualize standardized results produced by \code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}.
 }
-\examples{
-data(visium_human_pancreas_pair_sub)
-SpatialIntegrationPlot(
-  visium_human_pancreas_pair_sub,
-  plot_type = "spatial",
-  group.by = "domain",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-SpatialIntegrationPlot(
-  visium_human_pancreas_pair_sub,
-  plot_type = "embedding"
-)
+\seealso{
+\code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}
 }
