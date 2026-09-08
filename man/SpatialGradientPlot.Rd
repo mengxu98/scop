@@ -35,7 +35,8 @@ SpatialGradientPlot(
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{srt}{A \code{Seurat} object. The same object may be supplied as
+\verb{object =} for consistency with spatial plotting APIs.}
 
 \item{result_name}{Stored spatial gradient result name. If \code{NULL}, the latest
 stored result is used.}
@@ -59,7 +60,9 @@ a single image is selected automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
-\item{flip.y}{Reverse the y axis for metadata coordinates.}
+\item{flip.y}{Reverse the y axis for metadata or FOV coordinates without a
+raster image. The default \code{FALSE} agrees with spatial networks and cell
+boundaries. Raster-backed display coordinates already include their flip.}
 
 \item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
 with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel

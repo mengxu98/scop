@@ -9,6 +9,7 @@
 #' @param bg.by Metadata column used as background color.
 #' @param fill.by `"group"`, `"feature"`, or `"expression"`.
 #' @param cells Cell names to include.
+#' @param force Draw even when more than 50 `stat.by` features are requested.
 #' @param keep_empty Keep empty factor levels.
 #' @param individual One plot per group.
 #' @param plot_type `"violin"`, `"box"`, `"bar"`, `"dot"`, or `"col"`.
@@ -419,14 +420,43 @@ FeatureStatPlot <- function(
     srt[[group.by]] <- factor("All groups")
   }
 
+  if (length(stat.by) > 50 && isFALSE(force)) {
+    log_message(
+      "More than 50 {.arg stat.by} features to be plotted",
+      message_type = "warning",
+      verbose = verbose
+    )
+    if (interactive()) {
+      answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
+      if (isFALSE(answer)) {
+        return(invisible(NULL))
+      }
+    }
+  }
+
   meta.data <- srt@meta.data
   meta.data[["cells"]] <- rownames(meta.data)
+  if (!is.null(cells)) {
+    meta.data <- meta.data[intersect(cells, rownames(meta.data)), , drop = FALSE]
+  }
   assay <- assay %||% DefaultAssay(srt)
-  exp.data <- GetAssayData5(
-    srt,
-    assay = assay,
-    layer = layer
-  )
+  genes_in_stat <- intersect(stat.by, rownames(srt[[assay]]))
+  exp.data <- if (length(genes_in_stat) > 0) {
+    GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer,
+      features = genes_in_stat,
+      cells = cells
+    )
+  } else {
+    matrix(
+      0,
+      nrow = 0,
+      ncol = length(cells %||% colnames(srt)),
+      dimnames = list(character(0), cells %||% colnames(srt))
+    )
+  }
   plot.by <- match.arg(plot.by)
   expression_stat_args <- list(
     split.by = split.by,
@@ -591,9 +621,10 @@ FeatureStatPlot <- function(
 
   plist_stack <- list()
   if (isTRUE(stack) && length(stat.by) > 1 && isFALSE(individual)) {
-    theme_stack <- tryCatch(
-      do.call(theme_use, theme_args),
-      error = function(e) NULL
+    theme_stack <- apply_plot_theme(
+      theme_use,
+      theme_args,
+      allow_null = TRUE
     )
     `%||%` <- function(x, y) if (is.null(x)) y else x
     element_text_to_gpar <- function(el) {

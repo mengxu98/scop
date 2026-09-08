@@ -1218,7 +1218,7 @@ DEtestManhattanPlot <- function(
       x = xlab_use,
       y = ylab %||% "Average log2FoldChange"
     ) +
-    do.call(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args) +
     theme(
       panel.grid = element_blank(),
       panel.border = element_blank(),
@@ -1457,7 +1457,7 @@ DEtestRingPlot <- function(
       force = 5
     ) +
     labs(x = NULL, y = NULL, title = NULL, subtitle = NULL, caption = NULL) +
-    do.call(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args) +
     theme(
       aspect.ratio = 1,
       panel.grid = element_blank(),
@@ -1933,7 +1933,7 @@ VolcanoPlot <- function(
     }
 
     p <- p +
-      do.call(theme_use, theme_args) +
+      apply_plot_theme(theme_use, theme_args) +
       theme(aspect.ratio = aspect.ratio)
 
     if (length(levels(de_df[["group1"]])) > 1) {

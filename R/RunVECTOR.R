@@ -255,7 +255,7 @@ VECTORPlot <- function(
         x = xlab,
         y = ylab
       ) +
-      do.call(theme_use, theme_args) +
+      apply_plot_theme(theme_use, theme_args) +
       ggplot2::theme(
         aspect.ratio = aspect.ratio,
         legend.position = legend.position,

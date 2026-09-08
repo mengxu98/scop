@@ -31,6 +31,8 @@
 #' @param seed Random seed used for permutation tests.
 #' @param backend Backend used by the package `"moran"` and `"geary"` methods.
 #' `"cpp"` is the default; use `"r"` for the reference implementation.
+#' @param cores Number of OpenMP threads for C++ Moran/Geary scoring. `NULL`
+#' uses the process OpenMP default.
 #' @param srt A `Seurat` object. The same object may be supplied as
 #' `object =` for consistency with spatial plotting APIs.
 #' @param object Optional alias for `srt`. Supply exactly one of `srt` or
@@ -85,6 +87,7 @@ RunSpatialVariableFeatures <- function(
   seed = 11,
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
+  cores = NULL,
   ...,
   object = NULL
 ) {
@@ -231,7 +234,8 @@ RunSpatialVariableFeatures <- function(
       edges = edges,
       method = method,
       nperm = nperm,
-      backend = backend
+      backend = backend,
+      n_threads = cores
     )
   } else if (identical(method, "SPARKX")) {
     result <- spatial_variable_run_sparkx(
@@ -408,7 +412,8 @@ spatial_variable_run_knn <- function(
   edges,
   method,
   nperm = 0,
-  backend = c("cpp", "r")
+  backend = c("cpp", "r"),
+  n_threads = NULL
 ) {
   backend <- match.arg(backend)
   scores <- if (identical(backend, "cpp")) {
@@ -417,7 +422,8 @@ spatial_variable_run_knn <- function(
       edge_from = as.integer(edges$from) - 1L,
       edge_to = as.integer(edges$to) - 1L,
       method = match(method, c("moran", "geary")),
-      n_permutations = as.integer(nperm)
+      n_permutations = as.integer(nperm),
+      n_threads = scop_n_threads(n_threads)
     )
   } else {
     spatial_variable_score_matrix(

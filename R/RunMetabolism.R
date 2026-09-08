@@ -24,6 +24,8 @@
 #' @param cpp_chunk_size Optional cell chunk size for C++ GSVA kernels. `NULL`
 #' or `"auto"` automatically chunks large matrices to reduce peak dense
 #' intermediate memory; positive values set the chunk size manually.
+#' @param cores Number of OpenMP threads for C++ scoring. `NULL` uses the
+#' process OpenMP default.
 #' @param group.by Name of metadata column to group cells by. If `NULL`, single-cell scoring.
 #' If provided, expression is averaged by group before scoring (cell-type level).
 #' @param assay_name Name of the assay to store metabolism scores when `new_assay = TRUE`.
@@ -85,6 +87,7 @@ RunMetabolism <- function(
   use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
+  cores = NULL,
   cpp_chunk_size = NULL,
   minGSSize = 10,
   maxGSSize = 500,
@@ -406,7 +409,8 @@ RunMetabolism <- function(
         expr_counts = expr_counts,
         gene_sets = gene_sets,
         strategy = "topk",
-        tie_method = "first"
+        tie_method = "first",
+        n_threads = scop_n_threads(cores)
       )
     } else {
       scores_mat <- run_aucell_official_scores(
@@ -423,7 +427,8 @@ RunMetabolism <- function(
           gene_sets = gene_sets,
           min_gs_size = minGSSize,
           max_gs_size = maxGSSize,
-          chunk_size = cpp_chunk_size
+          chunk_size = cpp_chunk_size,
+          n_threads = scop_n_threads(cores)
         )
       } else {
         scores_mat <- run_ssgsea_scores(

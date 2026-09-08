@@ -9,11 +9,18 @@
 \usage{
 GetAssayData5(object, ...)
 
-\method{GetAssayData5}{Seurat}(object, layer = "counts", assay = NULL, ...)
+\method{GetAssayData5}{Seurat}(
+  object,
+  layer = "counts",
+  assay = NULL,
+  features = NULL,
+  cells = NULL,
+  ...
+)
 
-\method{GetAssayData5}{Assay5}(object, layer = "counts", ...)
+\method{GetAssayData5}{Assay5}(object, layer = "counts", features = NULL, cells = NULL, ...)
 
-\method{GetAssayData5}{Assay}(object, layer = "counts", ...)
+\method{GetAssayData5}{Assay}(object, layer = "counts", features = NULL, cells = NULL, ...)
 }
 \arguments{
 \item{object}{An object}
@@ -24,6 +31,10 @@ GetAssayData5(object, ...)
 
 \item{assay}{Specific assay to get data from or set data for;
 defaults to the \link[SeuratObject:DefaultAssay]{default assay}}
+
+\item{features}{Optional vector of feature names to extract.}
+
+\item{cells}{Optional vector of cell names to extract.}
 }
 \value{
 A matrix or data frame containing the assay data.

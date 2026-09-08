@@ -883,28 +883,41 @@ GroupHeatmap <- function(
   gene_unique <- features_unique[features %in% rownames(assay_use)]
   meta <- features[features %in% colnames(srt@meta.data)]
 
-  mat_raw <- as_matrix(
-    rbind(
-      GetAssayData5(
-        srt,
-        assay = assay,
-        layer = layer
-      )[gene, cells, drop = FALSE],
-      Matrix::t(srt@meta.data[cells, meta, drop = FALSE])
-    )
-  )[features, , drop = FALSE]
+  gene_mat <- if (length(gene) > 0) {
+    GetAssayData5(
+      srt,
+      assay = assay,
+      layer = layer,
+      features = gene,
+      cells = cells
+    )[gene, cells, drop = FALSE]
+  } else {
+    matrix(0, nrow = 0, ncol = length(cells), dimnames = list(character(0), cells))
+  }
+  meta_mat <- if (length(meta) > 0) {
+    Matrix::t(srt@meta.data[cells, meta, drop = FALSE])
+  } else {
+    matrix(0, nrow = 0, ncol = length(cells), dimnames = list(character(0), cells))
+  }
+  mat_raw <- as_matrix(rbind(gene_mat, meta_mat))[features, , drop = FALSE]
   rownames(mat_raw) <- features_unique
   if (isTRUE(lib_normalize) && min(mat_raw, na.rm = TRUE) >= 0) {
     if (!is.null(libsize)) {
       libsize_use <- libsize
     } else {
-      libsize_use <- Matrix::colSums(
-        GetAssayData5(
-          srt,
-          assay = assay,
-          layer = "counts"
-        )[, colnames(mat_raw), drop = FALSE]
-      )
+      count_col <- paste0("nCount_", assay)
+      if (count_col %in% colnames(srt@meta.data)) {
+        libsize_use <- srt@meta.data[colnames(mat_raw), count_col]
+      } else {
+        libsize_use <- Matrix::colSums(
+          GetAssayData5(
+            srt,
+            assay = assay,
+            layer = "counts",
+            cells = colnames(mat_raw)
+          )
+        )
+      }
       isfloat <- any(libsize_use %% 1 != 0, na.rm = TRUE)
       if (isTRUE(isfloat)) {
         libsize_use <- rep(1, length(libsize_use))
@@ -1082,15 +1095,21 @@ GroupHeatmap <- function(
         drop = FALSE
       ],
       Matrix::t(
-        GetAssayData5(
-          srt,
-          assay = assay,
-          layer = "data"
-        )[
-          intersect(cell_annotation, rownames(assay_use)) %||% integer(),
-          cells,
-          drop = FALSE
-        ]
+        if (length(intersect(cell_annotation, rownames(assay_use))) > 0) {
+          GetAssayData5(
+            srt,
+            assay = assay,
+            layer = "data",
+            features = intersect(cell_annotation, rownames(assay_use)),
+            cells = cells
+          )[
+            intersect(cell_annotation, rownames(assay_use)),
+            cells,
+            drop = FALSE
+          ]
+        } else {
+          matrix(0, nrow = 0, ncol = length(cells), dimnames = list(character(0), cells))
+        }
       )
     )
   )

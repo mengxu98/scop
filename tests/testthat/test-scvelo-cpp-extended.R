@@ -307,6 +307,46 @@ test_that("deterministic scVelo fit matches extreme-quantile semantics", {
   )
 })
 
+test_that("stochastic first-stage gamma keeps cell order after the 95th percentile", {
+  set.seed(20260810)
+  n_genes <- 24L
+  n_cells <- 80L
+  Ms <- matrix(stats::rgamma(n_genes * n_cells, shape = 1.5), n_genes)
+  Ms[matrix(stats::runif(length(Ms)), n_genes) < 0.55] <- 0
+  Mu <- matrix(pmax(
+    0,
+    Ms * stats::runif(n_genes, 0.25, 0.9) +
+      matrix(stats::rnorm(length(Ms), sd = 0.18), n_genes)
+  ), nrow = n_genes)
+  knn_idx <- t(vapply(seq_len(n_cells), function(cell) {
+    sample(setdiff(seq_len(n_cells), cell), 8L)
+  }, integer(8L)))
+  embedding <- matrix(stats::rnorm(n_cells * 2L), n_cells, 2L)
+  Mss <- Ms * Ms
+  Mus <- matrix(stats::rexp(n_genes * n_cells), n_genes, n_cells)
+
+  det <- scanpy_deterministic_cpp(
+    Ms, Mu, knn_idx, embedding,
+    fit_offset = FALSE, perc = 95
+  )
+  st <- scanpy_stochastic_cpp(Ms, Mu, Mss, Mus, knn_idx, embedding)
+  # r2 is computed from the first-stage (quantile-trimmed) gamma and is not
+  # overwritten by the later stochastic update of gamma.
+  expect_equal(
+    unname(as.numeric(st$r2)),
+    unname(as.numeric(det$r2)),
+    tolerance = 1e-10
+  )
+  keep <- as.integer(st$velocity_genes) == 0L
+  if (sum(keep) > 0L) {
+    expect_equal(
+      unname(as.numeric(st$gamma)[keep]),
+      unname(as.numeric(det$gamma)[keep]),
+      tolerance = 1e-10
+    )
+  }
+})
+
 # ---------------------------------------------------------------------------
 # 4. Input validation
 # ---------------------------------------------------------------------------
@@ -331,4 +371,29 @@ test_that("scanpy_moments_cpp rejects mismatched knn_idx rows", {
     "knn_idx",
     ignore.case = TRUE
   )
+})
+
+test_that("scanpy_knn_cpp matches across thread counts", {
+  set.seed(11)
+  coords <- matrix(rnorm(40 * 4), nrow = 40, ncol = 4)
+  knn1 <- scanpy_knn_cpp(coords, 8L, TRUE, 1L)
+  knn2 <- scanpy_knn_cpp(coords, 8L, TRUE, 2L)
+  expect_identical(knn1[["idx"]], knn2[["idx"]])
+  expect_equal(knn1[["dist"]], knn2[["dist"]], tolerance = 1e-12)
+})
+
+test_that("scanpy_velocity_graph_cpp matches across thread counts", {
+  dat <- make_scanpy_data(n_genes = 12, n_cells = 20, n_neighbors = 5, seed = 3)
+  residual <- dat$unspliced - dat$spliced
+  vg1 <- scanpy_velocity_graph_cpp(
+    dat$spliced, dat$unspliced, residual, dat$knn_idx,
+    n_neighbors_velo = -1L, softmax_scale = 4.0, sqrt_transform = TRUE,
+    n_recurse_neighbors = 1L, n_threads = 1L
+  )
+  vg2 <- scanpy_velocity_graph_cpp(
+    dat$spliced, dat$unspliced, residual, dat$knn_idx,
+    n_neighbors_velo = -1L, softmax_scale = 4.0, sqrt_transform = TRUE,
+    n_recurse_neighbors = 1L, n_threads = 2L
+  )
+  expect_identical(vg1, vg2)
 })

@@ -327,7 +327,7 @@ branch_stream_single_plot <- function(
   )
 
   colors <- palette_colors(labels, palette = palette, palcolor = palcolor)
-  theme_obj <- do.call(theme_use, theme_args)
+  theme_obj <- apply_plot_theme(theme_use, theme_args)
 
   p <- ggplot2::ggplot() +
     ggplot2::geom_ribbon(

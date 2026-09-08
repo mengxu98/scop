@@ -167,7 +167,8 @@ run_aucell_scores <- function(
   seed = 0L,
   tie_method = c("first", "hash", "numpy"),
   auc_threshold = 0.05,
-  normalize_by_signature_max = FALSE
+  normalize_by_signature_max = FALSE,
+  n_threads = NULL
 ) {
   strategy <- match.arg(strategy)
   algorithm <- match.arg(algorithm)
@@ -208,7 +209,8 @@ run_aucell_scores <- function(
     norm_auc = TRUE,
     strategy = strategy_id,
     algorithm = algorithm_id,
-    seed = rank_seed
+    seed = rank_seed,
+    n_threads = scop_n_threads(n_threads)
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
   names(dimnames(scores)) <- c("cells", "gene sets")
@@ -233,7 +235,8 @@ run_ucell_scores <- function(
   max_rank = 1500,
   negative_weight = 1,
   missing_genes = c("impute", "skip"),
-  ties_method = c("average", "min", "max", "dense", "first", "last")
+  ties_method = c("average", "min", "max", "dense", "first", "last"),
+  n_threads = NULL
 ) {
   missing_genes <- match.arg(missing_genes)
   ties_method <- match.arg(ties_method)
@@ -303,7 +306,8 @@ run_ucell_scores <- function(
     tie_method = match(
       ties_method,
       c("average", "min", "max", "dense", "first", "last")
-    )
+    ),
+    n_threads = scop_n_threads(n_threads)
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_sets))
   names(dimnames(scores)) <- c("cells", "gene sets")
@@ -317,26 +321,39 @@ run_aucell_official_scores <- function(
   ...
 ) {
   check_r("AUCell", verbose = FALSE)
-  calc_auc <- get_namespace_fun("AUCell", "AUCell_calcAUC")
   tie_method <- match.arg(tie_method)
-  expr_rank <- if (identical(tie_method, "first")) {
-    expr_mat <- as_matrix(expr_counts)
-    n_cells <- ncol(expr_mat)
-    rankings <- matrix(0L, nrow = nrow(expr_mat), ncol = n_cells)
-    for (cell in seq_len(n_cells)) {
-      rankings[, cell] <- as.integer(rank(-expr_mat[, cell], ties.method = "first"))
+
+  # For tie_method = "first", route directly to the native C++ path
+  # (aucell_auc_sparse with seed = -1L), which avoids converting the
+  # sparse matrix to dense and eliminates the R-level per-cell rank() loop.
+  if (identical(tie_method, "first")) {
+    dots <- list(...)
+    # Callers may pass auc_max_rank (integer) or auc_threshold (fraction).
+    # run_aucell_scores uses auc_threshold, so convert if needed.
+    n_genes <- nrow(expr_counts)
+    if (!is.null(dots[["auc_max_rank"]])) {
+      auc_thr <- dots[["auc_max_rank"]] / max(n_genes, 1L)
+    } else if (!is.null(dots[["auc_threshold"]])) {
+      auc_thr <- dots[["auc_threshold"]]
+    } else {
+      auc_thr <- 0.05
     }
-    dimnames(rankings) <- dimnames(expr_mat)
-    methods::new(
-      "aucellResults",
-      SummarizedExperiment::SummarizedExperiment(assays = list(ranking = rankings))
-    )
-  } else {
-    AUCell::AUCell_buildRankings(
-      as_matrix(expr_counts),
-      plotStats = FALSE
-    )
+    return(run_aucell_scores(
+      expr_counts = expr_counts,
+      gene_sets = gene_sets,
+      strategy = "topk",
+      tie_method = "first",
+      auc_threshold = auc_thr,
+      n_threads = dots[["n_threads"]] %||% dots[["cores"]]
+    ))
   }
+
+  # tie_method = "random": delegate to AUCell_buildRankings (original path)
+  calc_auc <- get_namespace_fun("AUCell", "AUCell_calcAUC")
+  expr_rank <- AUCell::AUCell_buildRankings(
+    as_matrix(expr_counts),
+    plotStats = FALSE
+  )
   cells_auc <- calc_auc(
     geneSets = gene_sets,
     rankings = expr_rank,
@@ -437,7 +454,8 @@ run_seurat_module_scores <- function(
   pool = NULL,
   nbin = 24,
   ctrl = 100,
-  seed = 11
+  seed = 11,
+  n_threads = NULL
 ) {
   set.seed(seed = seed)
   expr_data <- gene_set_scoring_to_dgC(expr_data)
@@ -497,22 +515,12 @@ run_seurat_module_scores <- function(
     as.integer(idx[!is.na(idx)])
   })
 
-  feature_membership <- Matrix::sparseMatrix(
-    i = unlist(feature_idx, use.names = FALSE),
-    j = rep.int(seq_along(feature_idx), lengths(feature_idx)),
-    x = 1 / rep.int(lengths(feature_idx), lengths(feature_idx)),
-    dims = c(nrow(expr_data), length(feature_idx))
+  scores <- module_score_sparse(
+    expr = expr_data,
+    feature_sets = feature_idx,
+    control_sets = control_idx,
+    n_threads = scop_n_threads(n_threads)
   )
-  control_membership <- Matrix::sparseMatrix(
-    i = unlist(control_idx, use.names = FALSE),
-    j = rep.int(seq_along(control_idx), lengths(control_idx)),
-    x = 1 / rep.int(lengths(control_idx), lengths(control_idx)),
-    dims = c(nrow(expr_data), length(control_idx))
-  )
-  scores <- Matrix::t(feature_membership) %*%
-    expr_data -
-    Matrix::t(control_membership) %*% expr_data
-  scores <- Matrix::t(scores)
   dimnames(scores) <- list(colnames(expr_data), names(features))
   scores
 }
@@ -528,7 +536,8 @@ run_gsva_scores <- function(
   tau = 1,
   chunk_size = NULL,
   sparse = NULL,
-  kernel = c("auto", "delegated", "native")
+  kernel = c("auto", "delegated", "native"),
+  n_threads = NULL
 ) {
   kcdf <- match.arg(kcdf)
   kernel <- match.arg(kernel)
@@ -596,7 +605,8 @@ run_gsva_scores <- function(
       max_diff = max_diff,
       abs_ranking = abs_ranking,
       tau = tau,
-      chunk_size = chunk_size
+      chunk_size = chunk_size,
+      n_threads = scop_n_threads(n_threads)
     )
     dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
     return(scores)

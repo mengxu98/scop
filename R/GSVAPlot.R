@@ -134,7 +134,8 @@ GSVAPlot <- function(
   enrichmap_cluster = "fast_greedy",
   enrichmap_label = c("term", "feature"),
   enrichmap_labelsize = 5,
-  enrlichmap_nlabel = 4,
+  enrichmap_nlabel = 4,
+  enrlichmap_nlabel = NULL,
   enrichmap_show_keyword = FALSE,
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
@@ -186,6 +187,9 @@ GSVAPlot <- function(
   verbose = TRUE
 ) {
   set.seed(seed)
+  if (!is.null(enrlichmap_nlabel)) {
+    enrichmap_nlabel <- enrlichmap_nlabel
+  }
   if (isTRUE(raster_by_magick)) {
     check_r("magick", verbose = FALSE)
   }
@@ -676,7 +680,7 @@ GSVAPlot <- function(
         enrichmap_cluster = enrichmap_cluster,
         enrichmap_label = enrichmap_label,
         enrichmap_labelsize = enrichmap_labelsize,
-        enrlichmap_nlabel = enrlichmap_nlabel,
+        enrichmap_nlabel = enrichmap_nlabel,
         enrichmap_show_keyword = enrichmap_show_keyword,
         enrichmap_mark = enrichmap_mark,
         enrichmap_expand = enrichmap_expand,

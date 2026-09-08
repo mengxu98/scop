@@ -16,6 +16,9 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 using namespace Rcpp;
 
@@ -23,18 +26,33 @@ using namespace Rcpp;
 NumericVector scenic_edge_correlation_cpp(
     NumericMatrix expr,
     IntegerVector tf_index,
-    IntegerVector target_index) {
+    IntegerVector target_index,
+    int n_threads = 0) {
   const int n_cells = expr.nrow();
   const int n_genes = expr.ncol();
-  if (tf_index.size() != target_index.size()) {
+  const int n_edges = tf_index.size();
+  if (n_edges != target_index.size()) {
     thisutils::log_message("SCENIC edge index vectors must have the same length", "error");
   }
-  NumericVector rho(tf_index.size(), NA_REAL);
+  NumericVector rho(n_edges, NA_REAL);
   if (n_cells < 2) return rho;
+
+  for (int edge = 0; edge < n_edges; ++edge) {
+    const int tf = tf_index[edge] - 1;
+    const int target = target_index[edge] - 1;
+    if (tf < 0 || tf >= n_genes || target < 0 || target >= n_genes) {
+      thisutils::log_message("SCENIC edge index is out of bounds", "error");
+    }
+  }
 
   std::vector<double> means(n_genes, 0.0);
   std::vector<double> sumsq(n_genes, 0.0);
   std::vector<bool> valid(n_genes, true);
+  const int threads = omp_thread_count(n_threads, std::max(n_genes, n_edges));
+
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int gene = 0; gene < n_genes; ++gene) {
     double sum = 0.0;
     for (int cell = 0; cell < n_cells; ++cell) {
@@ -49,6 +67,10 @@ NumericVector scenic_edge_correlation_cpp(
       means[gene] = sum / static_cast<double>(n_cells);
     }
   }
+
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int gene = 0; gene < n_genes; ++gene) {
     if (!valid[gene]) continue;
     double sumsq_gene = 0.0;
@@ -59,12 +81,12 @@ NumericVector scenic_edge_correlation_cpp(
     sumsq[gene] = sumsq_gene;
   }
 
-  for (int edge = 0; edge < tf_index.size(); ++edge) {
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
+  for (int edge = 0; edge < n_edges; ++edge) {
     const int tf = tf_index[edge] - 1;
     const int target = target_index[edge] - 1;
-    if (tf < 0 || tf >= n_genes || target < 0 || target >= n_genes) {
-      thisutils::log_message("SCENIC edge index is out of bounds", "error");
-    }
     if (!valid[tf] || !valid[target]) continue;
     double cross = 0.0;
     for (int cell = 0; cell < n_cells; ++cell) {

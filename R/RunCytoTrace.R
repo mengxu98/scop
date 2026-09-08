@@ -350,6 +350,11 @@ RunCytoTRACE.default <- function(
 
     outer_cores <- min(cores, length(subsamples))
     inner_cores <- max(1L, floor(cores / outer_cores))
+    cpp_threads <- if (outer_cores > 1L) {
+      inner_cores
+    } else {
+      scop_inner_n_threads(cores)
+    }
 
     process_subsample <- function(subsample) {
       dt <- expression[, subsample, drop = FALSE]
@@ -361,7 +366,8 @@ RunCytoTRACE.default <- function(
         ortho_dict = model_data$ortho_dict,
         alias_dict = model_data$alias_dict,
         mouse_alias_dict = model_data$mouse_alias_dict,
-        verbose = verbose
+        verbose = verbose,
+        n_threads = cpp_threads
       )
 
       ranked_data <- preprocessed$ranked_data
@@ -401,7 +407,7 @@ RunCytoTRACE.default <- function(
         log2_data = as.matrix(log2_data),
         parameter_dict = model_data$parameter_dict,
         smooth_groups = smooth_groups,
-        cores = inner_cores,
+        cores = cpp_threads,
         seed = seed,
         pca_coords = pca_coords
       )
@@ -642,7 +648,8 @@ cytotrace2_preprocess <- function(
   ortho_dict,
   alias_dict,
   mouse_alias_dict,
-  verbose
+  verbose,
+  n_threads = NULL
 ) {
   gene_names <- rownames(data)
   expression <- data
@@ -756,9 +763,15 @@ cytotrace2_preprocess <- function(
   expression_mapped <- expression_mapped[features, , drop = FALSE]
 
   preprocessed_numeric <- if (inherits(expression_mapped, "sparseMatrix")) {
-    cytotrace2_preprocess_sparse_numeric(expression_mapped)
+    cytotrace2_preprocess_sparse_numeric(
+      expression_mapped,
+      scop_n_threads(n_threads)
+    )
   } else {
-    cytotrace2_preprocess_numeric(as.matrix(expression_mapped))
+    cytotrace2_preprocess_numeric(
+      as.matrix(expression_mapped),
+      scop_n_threads(n_threads)
+    )
   }
   ranked_data <- preprocessed_numeric$ranked_data
   log2_data <- preprocessed_numeric$log2_data

@@ -188,7 +188,7 @@ the others. Requires \code{split.by = NULL}.}
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
-\item{force}{Draw even when a grouping has more than 100 levels.}
+\item{force}{Draw even when more than 50 \code{stat.by} features are requested.}
 
 \item{seed}{Random seed.}
 
