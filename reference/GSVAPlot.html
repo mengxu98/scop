@@ -101,7 +101,8 @@
 <span>  enrichmap_cluster <span class="op">=</span> <span class="st">"fast_greedy"</span>,</span>
 <span>  enrichmap_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"term"</span>, <span class="st">"feature"</span><span class="op">)</span>,</span>
 <span>  enrichmap_labelsize <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  enrlichmap_nlabel <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  enrichmap_nlabel <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  enrlichmap_nlabel <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  enrichmap_show_keyword <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  enrichmap_mark <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ellipse"</span>, <span class="st">"hull"</span><span class="op">)</span>,</span>
 <span>  enrichmap_expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
@@ -316,8 +317,12 @@ Options are <code>"term"</code> and <code>"feature"</code>.</p></dd>
 <dd><p>The label size for enrichmap plot.</p></dd>
 
 
-<dt id="arg-enrlichmap-nlabel">enrlichmap_nlabel<a class="anchor" aria-label="anchor" href="#arg-enrlichmap-nlabel"></a></dt>
+<dt id="arg-enrichmap-nlabel">enrichmap_nlabel<a class="anchor" aria-label="anchor" href="#arg-enrichmap-nlabel"></a></dt>
 <dd><p>The number of labels to display for each cluster in enrichmap plot.</p></dd>
+
+
+<dt id="arg-enrlichmap-nlabel">enrlichmap_nlabel<a class="anchor" aria-label="anchor" href="#arg-enrlichmap-nlabel"></a></dt>
+<dd><p>Deprecated. Please use <code>enrichmap_nlabel</code> instead.</p></dd>
 
 
 <dt id="arg-enrichmap-show-keyword">enrichmap_show_keyword<a class="anchor" aria-label="anchor" href="#arg-enrichmap-show-keyword"></a></dt>
@@ -490,14 +495,14 @@ sample-level statistical tests and adjusted p-values on GSVA scores.</p>
 <span class="r-in"><span>  minGSSize <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  min.sz <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-07 01:15:34] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-07 01:15:34] Single-cell GSVA mode: using expression matrix directly ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-07 01:15:34] Expression matrix: <span style="color: #0000BB;">12238</span> genes x <span style="color: #0000BB;">80</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-07 01:15:34] Processing database: <span style="color: #0000BB;">"custom"</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-07 01:15:34] Initial overlap: <span style="color: #0000BB;">6</span> genes out of <span style="color: #0000BB;">12238</span> expression genes and <span style="color: #0000BB;">10</span> genes in gene sets</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-07 01:15:34] Running GSVA for <span style="color: #0000BB;">2</span> gene sets ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-07 01:15:34] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA"</span>, meta.data, and tools slot <span style="color: #0000BB;">"GSVA_cell_zscore"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-07 01:15:34] <span style="color: #0000BB;">GSVA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-08 06:31:34] Start <span style="color: #0000BB;">GSVA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-08 06:31:34] Single-cell GSVA mode: using expression matrix directly ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-08 06:31:34] Expression matrix: <span style="color: #0000BB;">12238</span> genes x <span style="color: #0000BB;">80</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-08 06:31:34] Processing database: <span style="color: #0000BB;">"custom"</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-08 06:31:34] Initial overlap: <span style="color: #0000BB;">6</span> genes out of <span style="color: #0000BB;">12238</span> expression genes and <span style="color: #0000BB;">10</span> genes in gene sets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-08 06:31:34] Running GSVA for <span style="color: #0000BB;">2</span> gene sets ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-08 06:31:34] <span style="color: #0000BB;">GSVA</span> results stored in assay <span style="color: #0000BB;">"GSVA"</span>, meta.data, and tools slot <span style="color: #0000BB;">"GSVA_cell_zscore"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-08 06:31:34] <span style="color: #0000BB;">GSVA</span> analysis done</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu">GSVAPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

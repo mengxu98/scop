@@ -102,7 +102,8 @@
 
 
 <dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
-<dd><p>A <code>Seurat</code> object.</p></dd>
+<dd><p>A <code>Seurat</code> object. The same object may be supplied as
+<code>object =</code> for consistency with spatial plotting APIs.</p></dd>
 
 
 <dt id="arg-result-name">result_name<a class="anchor" aria-label="anchor" href="#arg-result-name"></a></dt>
@@ -146,7 +147,9 @@ a single image is selected automatically when <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-flip-y">flip.y<a class="anchor" aria-label="anchor" href="#arg-flip-y"></a></dt>
-<dd><p>Reverse the y axis for metadata coordinates.</p></dd>
+<dd><p>Reverse the y axis for metadata or FOV coordinates without a
+raster image. The default <code>FALSE</code> agrees with spatial networks and cell
+boundaries. Raster-backed display coordinates already include their flip.</p></dd>
 
 
 <dt id="arg-pt-size-pt-alpha">pt.size, pt.alpha<a class="anchor" aria-label="anchor" href="#arg-pt-size-pt-alpha"></a></dt>
@@ -240,6 +243,10 @@ scale-factor slots.</p></dd>
 <span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  pt.size <span class="op">=</span> <span class="fl">1.2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ignoring unknown labels:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">fill</span> : <span style="color: #0000BB;">"TMSB4X"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Ignoring unknown labels:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">fill</span> : <span style="color: #0000BB;">"UBC"</span></span>
 <span class="r-plt img"><img src="SpatialGradientPlot-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
