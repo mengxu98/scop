@@ -126,4 +126,34 @@ test_that("spatial boundary feature values use the requested assay layer", {
     sort(unique(plotted$.value)),
     sort(as.numeric(c(10, 20, 30, 40)))
   )
+  expect_error(
+    SpatialCellPlot(
+      object = srt,
+      boundaries = boundaries,
+      features = "Gene1",
+      assay = "RNA",
+      layer = "scale.data"
+    ),
+    "not available"
+  )
+  bad_boundaries <- boundaries
+  bad_boundaries$cell_id[1L] <- "missing-cell"
+  expect_error(
+    SpatialCellPlot(
+      object = srt,
+      boundaries = bad_boundaries,
+      features = "Gene1",
+      assay = "RNA",
+      layer = "data"
+    ),
+    "Boundary cell IDs"
+  )
+  p2 <- SpatialCellPlot(
+    object = srt,
+    boundaries = boundaries,
+    features = c("Gene1", "Gene2"),
+    assay = "RNA",
+    layer = "counts"
+  )
+  expect_s3_class(p2, "patchwork")
 })
