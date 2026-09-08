@@ -5,14 +5,14 @@
 \title{Access stored SpatialDM results}
 \usage{
 GetSpatialDMResult(
-  object,
+  srt,
   result.name = NULL,
   type = c("global", "local", "weights"),
   pair = NULL
 )
 }
 \arguments{
-\item{object}{A Seurat object with SpatialDM results.}
+\item{srt}{A Seurat object with SpatialDM results.}
 
 \item{result.name}{Stored result name.}
 

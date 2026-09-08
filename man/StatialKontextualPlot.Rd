@@ -4,13 +4,13 @@
 \alias{StatialKontextualPlot}
 \title{Plot stored Statial Kontextual results}
 \usage{
-StatialKontextualPlot(object = NULL, res = NULL, tests = NULL, images = NULL)
+StatialKontextualPlot(srt = NULL, res = NULL, tests = NULL, images = NULL)
 }
 \arguments{
-\item{object}{Optional `Seurat` object containing the result.}
+\item{srt}{Optional `Seurat` object containing the result.}
 
 \item{res}{Optional result list, usually
-`object@tools$StatialKontextual`.}
+`srt@tools$StatialKontextual`.}
 
 \item{tests}{Optional relationship names to retain.}
 

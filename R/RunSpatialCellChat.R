@@ -256,7 +256,7 @@ spatialcellchat_metric_coordinates <- function(
   tol
 ) {
   raw <- SpatialCoordinates(
-    object = srt,
+    srt = srt,
     image = image,
     coord.cols = coord.cols,
     space = "raw",
@@ -1256,7 +1256,7 @@ RunSpatialCellChat <- function(
 
 #' @title Get an upstream CellChat-family object
 #'
-#' @param object A `Seurat` object.
+#' @param srt A `Seurat` object.
 #' @param method Either `"CellChat"` or `"SpatialCellChat"`.
 #' @param result.name A CellChat condition or SpatialCellChat named result.
 #' @param sample Spatial sample for SpatialCellChat results.
@@ -1264,20 +1264,20 @@ RunSpatialCellChat <- function(
 #' @return An upstream backend object.
 #' @export
 GetCCCObject <- function(
-  object,
+  srt,
   method = c("CellChat", "SpatialCellChat"),
   result.name = NULL,
   sample = NULL
 ) {
-  if (!inherits(object, "Seurat")) {
-    log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
+  if (!inherits(srt, "Seurat")) {
+    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   method <- match.arg(method)
   if (identical(method, "CellChat")) {
     if (!is.null(sample)) log_message("{.arg sample} is only used for SpatialCellChat", message_type = "error")
-    return(get_single_cc_obj(object, condition = result.name))
+    return(get_single_cc_obj(srt, condition = result.name))
   }
-  bundle <- object@tools[["SpatialCellChat"]]
+  bundle <- srt@tools[["SpatialCellChat"]]
   if (is.null(bundle)) log_message("SpatialCellChat results are absent", message_type = "error")
   result.name <- result.name %||% bundle$active_result
   result <- bundle$results[[result.name]]
@@ -1301,8 +1301,8 @@ GetCCCObject <- function(
   native
 }
 
-spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample = NULL) {
-  bundle <- object@tools[["SpatialCellChat"]]
+spatialcellchat_get_stored_sample <- function(srt, result.name = NULL, sample = NULL) {
+  bundle <- srt@tools[["SpatialCellChat"]]
   if (is.null(bundle)) {
     log_message("SpatialCellChat results are absent", message_type = "error")
   }
@@ -1328,7 +1328,7 @@ spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample
 #' network view is a group-aggregated network over group centroids, not a
 #' materialized individual cell-by-cell edge table.
 #'
-#' @param object A `Seurat` object with SpatialCellChat results.
+#' @param srt A `Seurat` object with SpatialCellChat results.
 #' @param result.name Stored result name.
 #' @param sample Spatial sample. Required when multiple samples are stored.
 #' @param plot_type Spatial result view.
@@ -1344,7 +1344,7 @@ spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample
 #' @seealso [RunSpatialCellChat()]
 #' @export
 SpatialCellChatPlot <- function(
-  object,
+  srt,
   result.name = NULL,
   sample = NULL,
   plot_type = c("spatial_network", "lr_spatial", "pathway", "incoming", "outgoing"),
@@ -1359,7 +1359,7 @@ SpatialCellChatPlot <- function(
 ) {
   plot_type <- match.arg(plot_type)
   direction <- match.arg(direction)
-  stored <- spatialcellchat_get_stored_sample(object, result.name, sample)
+  stored <- spatialcellchat_get_stored_sample(srt, result.name, sample)
   result <- stored$result
   table <- result$interactions
   coords <- result$coordinates
