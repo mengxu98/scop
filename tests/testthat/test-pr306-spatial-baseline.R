@@ -137,7 +137,7 @@ test_that("spatial boundary feature values use the requested assay layer", {
     "not available"
   )
   bad_boundaries <- boundaries
-  bad_boundaries$cell_id[1L] <- "missing-cell"
+  bad_boundaries$cell_id[bad_boundaries$cell_id == "cell1"] <- "missing-cell"
   expect_error(
     SpatialCellPlot(
       object = srt,
