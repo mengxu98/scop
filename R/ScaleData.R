@@ -72,6 +72,9 @@ ScaleData.Seurat <- function(
   ...
 ) {
   dots <- list(...)
+  n_threads <- dots$n_threads %||% dots$cores
+  dots$n_threads <- NULL
+  dots$cores <- NULL
   if (
     !identical(model.use, "linear") ||
       !all(vapply(
@@ -284,7 +287,7 @@ ScaleData.Seurat <- function(
       isTRUE(do.scale) &&
       isTRUE(do.center)
   if (fast_path) {
-    result <- scale_sparse_full(data_mat, idx, scale.max)
+    result <- scale_sparse_full(data_mat, idx, scale.max, scop_n_threads(n_threads))
     dimnames(result) <- list(features, colnames(object))
   } else {
     sub <- data_mat[idx + 1L, , drop = FALSE]
@@ -369,22 +372,31 @@ ScaleData.default <- function(
   verbose = TRUE,
   ...
 ) {
+  dots <- list(...)
+  n_threads <- dots$n_threads %||% dots$cores
+  dots$n_threads <- NULL
+  dots$cores <- NULL
   fallback <- function() {
-    utils::getFromNamespace("ScaleData.default", "Seurat")(
-      object = object,
-      features = features,
-      vars.to.regress = vars.to.regress,
-      latent.data = latent.data,
-      split.by = split.by,
-      model.use = model.use,
-      use.umi = use.umi,
-      do.scale = do.scale,
-      do.center = do.center,
-      scale.max = scale.max,
-      block.size = block.size,
-      min.cells.to.block = min.cells.to.block,
-      verbose = verbose,
-      ...
+    do.call(
+      utils::getFromNamespace("ScaleData.default", "Seurat"),
+      c(
+        list(
+          object = object,
+          features = features,
+          vars.to.regress = vars.to.regress,
+          latent.data = latent.data,
+          split.by = split.by,
+          model.use = model.use,
+          use.umi = use.umi,
+          do.scale = do.scale,
+          do.center = do.center,
+          scale.max = scale.max,
+          block.size = block.size,
+          min.cells.to.block = min.cells.to.block,
+          verbose = verbose
+        ),
+        dots
+      )
     )
   }
   if (
@@ -395,7 +407,7 @@ ScaleData.default <- function(
         function(x) is.logical(x) && length(x) == 1L && !is.na(x),
         logical(1)
       )) ||
-      length(list(...)) > 0L
+      length(dots) > 0L
   ) {
     return(fallback())
   }
@@ -430,7 +442,12 @@ ScaleData.default <- function(
     is.null(latent) && is.null(split_levels) &&
       isTRUE(do.scale) && isTRUE(do.center)
   ) {
-    out <- scale_sparse_full(data, seq_len(nrow(data)) - 1L, scale.max)
+    out <- scale_sparse_full(
+      data,
+      seq_len(nrow(data)) - 1L,
+      scale.max,
+      scop_n_threads(n_threads)
+    )
     dimnames(out) <- dimnames(data)
     return(out)
   }

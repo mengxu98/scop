@@ -1081,6 +1081,7 @@ WilcoxDETest <- function(
   cells.2,
   min.expression = 0,
   verbose = TRUE,
+  n_threads = NULL,
   ...
 ) {
   data.use <- data.use[, c(cells.1, cells.2), drop = FALSE]
@@ -1091,7 +1092,8 @@ WilcoxDETest <- function(
     p_val <- run_sparse_wilcox(
       x = data.use,
       n_group1 = length(cells.1),
-      min.expression = min.expression
+      min.expression = min.expression,
+      n_threads = n_threads
     )
     return(data.frame(
       p_val = p_val,

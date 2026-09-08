@@ -1313,7 +1313,6 @@ dorothea_plot_targets <- function(
       layer = "counts"
     )
   }
-  expr <- as.matrix(expr)
   target_map <- vapply(
     as.character(net$target),
     function(gene) dorothea_match_feature(gene, rownames(expr)),
@@ -1335,7 +1334,7 @@ dorothea_plot_targets <- function(
   }
   net <- net[keep, , drop = FALSE]
   net$target_expr <- unname(target_map[keep])
-  target_mat <- expr[unique(net$target_expr), , drop = FALSE]
+  target_mat <- as.matrix(expr[unique(net$target_expr), , drop = FALSE])
   log_message(
     "Draw {.val {network_label}} regulon-target volcano for {.val {tf_use}} ({.val {nrow(net)}} targets)",
     verbose = verbose

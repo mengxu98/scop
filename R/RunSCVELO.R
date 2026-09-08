@@ -610,13 +610,15 @@ run_scanpy_cpp <- function(
     1L,
     min(as.integer(n_neighbors) - 1L, nrow(linear_embedding) - 1L)
   )
-  knn <- scanpy_knn_cpp(linear_embedding, knn_nonself, TRUE)
+  omp_threads <- scop_inner_n_threads(cores)
+  knn <- scanpy_knn_cpp(linear_embedding, knn_nonself, TRUE, omp_threads)
   knn_k <- ncol(knn[["idx"]])
   moments <- scanpy_moments_connectivities_cpp(
     spliced = spliced_n,
     unspliced = unspliced_n,
     knn_idx = knn[["idx"]],
-    compute_second_order = "stochastic" %in% mode_use
+    compute_second_order = "stochastic" %in% mode_use,
+    n_threads = omp_threads
   )
   Ms <- moments[["Ms"]]
   Mu <- moments[["Mu"]]
@@ -681,7 +683,8 @@ run_scanpy_cpp <- function(
         Mss = Mss,
         Mus = Mus,
         knn_idx = knn[["idx"]],
-        embedding = nonlinear_embedding
+        embedding = nonlinear_embedding,
+        n_threads = omp_threads
       )
     } else if (identical(m, "deterministic")) {
       velocity <- scanpy_deterministic_cpp(
@@ -690,7 +693,8 @@ run_scanpy_cpp <- function(
         knn_idx = knn[["idx"]],
         embedding = nonlinear_embedding,
         fit_offset = FALSE,
-        perc = 95.0
+        perc = 95.0,
+        n_threads = omp_threads
       )
     } else if (identical(m, "dynamical")) {
       # First fit the dynamical model per gene
@@ -715,7 +719,8 @@ run_scanpy_cpp <- function(
           Ms = Ms,
           Mu = Mu,
           use_genes = as.integer(dyn_genes),
-          max_iter = 20L
+          max_iter = 20L,
+          n_threads = omp_threads
         )
       }
       # Compute velocity from fitted dynamical parameters
@@ -727,7 +732,8 @@ run_scanpy_cpp <- function(
         gamma = dyn_fit[["gamma"]],
         t_ = dyn_fit[["t_"]],
         knn_idx = knn[["idx"]],
-        embedding = nonlinear_embedding
+        embedding = nonlinear_embedding,
+        n_threads = omp_threads
       )
     } else {
       log_message("Unknown mode {.val {m}}", message_type = "error")
@@ -824,7 +830,8 @@ run_scanpy_cpp <- function(
       residual = vg_residual[graph_gene_idx, , drop = FALSE],
       knn_idx = knn[["idx"]],
       sqrt_transform = identical(m, "stochastic"),
-      n_recurse_neighbors = 1L
+      n_recurse_neighbors = 1L,
+      n_threads = omp_threads
     )
     if (isTRUE(compute_velocity_graph)) {
       srt@tools[["SCVELO"]][[m]]$velocity_graph <- list(

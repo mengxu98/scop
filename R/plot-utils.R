@@ -34,6 +34,9 @@ resolve_plot_theme_use <- function(theme_use) {
   if (identical(theme_use, "theme_scop")) {
     return(thisplot::theme_this)
   }
+  if (identical(theme_use, "theme_this")) {
+    return(thisplot::theme_this)
+  }
   if (identical(theme_use, "theme_spatial")) {
     return(theme_spatial)
   }

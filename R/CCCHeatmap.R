@@ -1794,7 +1794,7 @@ ccc_heatmap_full_plot <- function(
   if (!is.null(title) || !is.null(subtitle)) {
     p <- p +
       ggplot2::labs(title = title, subtitle = subtitle) +
-      do.call(theme_use, theme_args) +
+      apply_plot_theme(theme_use, theme_args) +
       ggplot2::theme(
         plot.title = ggplot2::element_text(size = font.size * 1.2, hjust = 0.5),
         plot.subtitle = ggplot2::element_text(size = font.size, hjust = 0.5)
@@ -2399,7 +2399,7 @@ ccc_ligand_target_heatmap <- function(
   if (!is.null(title) || !is.null(subtitle)) {
     p <- p +
       ggplot2::labs(title = title, subtitle = subtitle) +
-      do.call(theme_use, theme_args) +
+      apply_plot_theme(theme_use, theme_args) +
       ggplot2::theme(
         plot.title = ggplot2::element_text(size = font.size * 1.2, hjust = 0.5),
         plot.subtitle = ggplot2::element_text(size = font.size, hjust = 0.5)
@@ -3051,7 +3051,7 @@ ccc_matrix_heatmap_plot <- function(
   if (!is.null(title) || !is.null(subtitle)) {
     p <- p +
       ggplot2::labs(title = title, subtitle = subtitle) +
-      do.call(theme_use, theme_args) +
+      apply_plot_theme(theme_use, theme_args) +
       ggplot2::theme(
         plot.title = ggplot2::element_text(size = font.size * 1.2, hjust = 0.5),
         plot.subtitle = ggplot2::element_text(size = font.size, hjust = 0.5)

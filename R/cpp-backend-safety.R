@@ -1,3 +1,33 @@
+# Map an R `cores` / `n_threads` argument onto C++ OpenMP `n_threads`.
+# `NULL` or a non-positive value becomes 0, which means "use the process
+# OpenMP default" (`omp_get_max_threads()`, i.e. OMP_NUM_THREADS).
+scop_n_threads <- function(cores = NULL) {
+  if (is.null(cores) || length(cores) < 1L) {
+    return(0L)
+  }
+  n <- suppressWarnings(as.integer(cores[[1L]]))
+  if (length(n) != 1L || is.na(n) || n < 0L) {
+    return(0L)
+  }
+  n
+}
+
+# OpenMP team for a C++ kernel that is the only parallel region in the call
+# (one R worker). Public `cores = 1` means "one R worker", not "one OpenMP
+# thread": NULL or cores <= 1 uses the process OpenMP default. cores >= 2
+# caps the team. Nested R workers must pass the inner budget through
+# scop_n_threads() instead, so cores = 1 stays serial inside each worker.
+scop_inner_n_threads <- function(cores = NULL) {
+  if (is.null(cores) || length(cores) < 1L) {
+    return(0L)
+  }
+  n <- suppressWarnings(as.integer(cores[[1L]]))
+  if (length(n) != 1L || is.na(n) || n <= 1L) {
+    return(0L)
+  }
+  n
+}
+
 cpp_dense_gib <- function(n_rows, n_cols, copies = 1) {
   values <- c(n_rows, n_cols, copies)
   if (

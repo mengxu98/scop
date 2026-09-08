@@ -40,6 +40,8 @@
 #' @param mx.diff Whether to use the maximum difference method.
 #' @param tau Exponent for the GSVA method.
 #' @param ssgsea.norm Whether to normalize SSGSEA scores.
+#' @param cores Number of OpenMP threads for C++ scoring. `NULL` uses the
+#' process OpenMP default.
 #'
 #' @return
 #' Returns the modified `Seurat` object. When `group.by` is provided, GSVA scores are stored in the `tools` slot.
@@ -122,6 +124,7 @@ RunGSVA <- function(
   mx.diff = TRUE,
   tau = 1,
   ssgsea.norm = TRUE,
+  cores = NULL,
   verbose = TRUE,
   ...
 ) {
@@ -191,6 +194,7 @@ RunGSVA <- function(
         mx.diff = mx.diff,
         tau = tau,
         ssgsea.norm = ssgsea.norm,
+        cores = cores,
         verbose = verbose,
         ...
       )
@@ -486,7 +490,8 @@ RunGSVA <- function(
           max_diff = mx.diff,
           abs_ranking = abs.ranking,
           tau = tau,
-          chunk_size = cpp_chunk_size
+          chunk_size = cpp_chunk_size,
+          n_threads = cores
         ))
       } else if (identical(method, "ssgsea")) {
         gsva_scores <- t(run_ssgsea_scores(

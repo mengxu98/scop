@@ -483,28 +483,13 @@ CellCorHeatmap <- function(
       levels = unique(srt_query[[query_group, drop = TRUE]])
     )
   }
-  cell_groups[["query_group"]] <- unlist(
-    lapply(
-      levels(
-        srt_query[[query_group, drop = TRUE]]
-      ),
-      function(x) {
-        cells_sub <- colnames(srt_query)[which(
-          srt_query[[query_group, drop = TRUE]] == x
-        )]
-        stats::setNames(
-          object = rep(x, length(cells_sub)),
-          nm = cells_sub
-        )
-      }
-    ),
-    use.names = TRUE
-  )
-
-  levels <- levels(srt_query[[query_group, drop = TRUE]])
+  ord_q <- order(srt_query[[query_group, drop = TRUE]])
+  q_vals <- as.character(srt_query[[query_group, drop = TRUE]][ord_q])
+  names(q_vals) <- colnames(srt_query)[ord_q]
+  levels_q <- levels(srt_query[[query_group, drop = TRUE]])
   cell_groups[["query_group"]] <- factor(
-    cell_groups[["query_group"]],
-    levels = levels[levels %in% cell_groups[["query_group"]]]
+    q_vals,
+    levels = levels_q[levels_q %in% q_vals]
   )
 
   if (!is.factor(srt_ref[[ref_group, drop = TRUE]])) {
@@ -513,23 +498,13 @@ CellCorHeatmap <- function(
       levels = unique(srt_ref[[ref_group, drop = TRUE]])
     )
   }
-  cell_groups[["ref_group"]] <- unlist(
-    lapply(levels(srt_ref[[ref_group, drop = TRUE]]), function(x) {
-      cells_sub <- colnames(srt_ref)[which(
-        srt_ref[[ref_group, drop = TRUE]] == x
-      )]
-      stats::setNames(
-        object = rep(x, length(cells_sub)),
-        nm = cells_sub
-      )
-    }),
-    use.names = TRUE
-  )
-
-  levels <- levels(srt_ref[[ref_group, drop = TRUE]])
+  ord_r <- order(srt_ref[[ref_group, drop = TRUE]])
+  r_vals <- as.character(srt_ref[[ref_group, drop = TRUE]][ord_r])
+  names(r_vals) <- colnames(srt_ref)[ord_r]
+  levels_r <- levels(srt_ref[[ref_group, drop = TRUE]])
   cell_groups[["ref_group"]] <- factor(
-    cell_groups[["ref_group"]],
-    levels = levels[levels %in% cell_groups[["ref_group"]]]
+    r_vals,
+    levels = levels_r[levels_r %in% r_vals]
   )
 
   if (isTRUE(query_collapsing)) {

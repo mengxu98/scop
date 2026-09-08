@@ -189,35 +189,16 @@ std::vector<double> row_standardize_weight(const NumericMatrix& weight, int n) {
   return row_std;
 }
 
-// Normal-approximation Moran test (MERINGUE::moranTest / moranTest_C).
-void moran_test_statistics(
-    const double* z,
-    const std::vector<double>& row_std,
-    int n,
-    const std::string& alt_norm,
-    double& observed,
-    double& expected,
-    double& sd,
-    double& p_value
-) {
-  std::vector<double> zc(n);
-  long double sum_l = 0.0L;
-  for (int i = 0; i < n; ++i) {
-    sum_l += static_cast<long double>(z[i]);
-  }
-  const double mean_z = static_cast<double>(sum_l / static_cast<long double>(n));
-  for (int i = 0; i < n; ++i) {
-    zc[i] = z[i] - mean_z;
-  }
+struct MoranWeightStats {
+  double S0;
+  double s1;
+  double s2;
+};
 
-  observed = moran_i_centered(zc.data(), 0.0, n, row_std);
-  expected = -1.0 / static_cast<double>(n - 1);
-
+inline MoranWeightStats compute_moran_weight_stats(const std::vector<double>& row_std, int n) {
   long double s1_l = 0.0L;
   long double s2_l = 0.0L;
   long double S0_l = 0.0L;
-  long double z2_l = 0.0L;
-  long double z4_l = 0.0L;
   for (int j = 0; j < n; ++j) {
     for (int i = 0; i < n; ++i) {
       double wn = row_std[static_cast<std::size_t>(i) * n + j];
@@ -237,15 +218,48 @@ void moran_test_statistics(
     double t = rs_i + cs_i;
     s2_l += static_cast<long double>(t) * t;
   }
+  return MoranWeightStats{
+    static_cast<double>(S0_l),
+    0.5 * static_cast<double>(s1_l),
+    static_cast<double>(s2_l)
+  };
+}
+
+inline void moran_test_statistics_fast(
+    const double* z,
+    const std::vector<double>& row_std,
+    int n,
+    const std::string& alt_norm,
+    const MoranWeightStats& ws,
+    double& observed,
+    double& expected,
+    double& sd,
+    double& p_value
+) {
+  std::vector<double> zc(n);
+  long double sum_l = 0.0L;
+  for (int i = 0; i < n; ++i) {
+    sum_l += static_cast<long double>(z[i]);
+  }
+  const double mean_z = static_cast<double>(sum_l / static_cast<long double>(n));
+  for (int i = 0; i < n; ++i) {
+    zc[i] = z[i] - mean_z;
+  }
+
+  observed = moran_i_centered(zc.data(), 0.0, n, row_std);
+  expected = -1.0 / static_cast<double>(n - 1);
+
+  long double z2_l = 0.0L;
+  long double z4_l = 0.0L;
   for (int i = 0; i < n; ++i) {
     z2_l += static_cast<long double>(zc[i]) * zc[i];
     long double z4 = static_cast<long double>(zc[i]) * zc[i];
     z4_l += z4 * z4;
   }
 
-  const double S0 = static_cast<double>(S0_l);
-  const double s1 = 0.5 * static_cast<double>(s1_l);
-  const double s2 = static_cast<double>(s2_l);
+  const double S0 = ws.S0;
+  const double s1 = ws.s1;
+  const double s2 = ws.s2;
   const double n_d = static_cast<double>(n);
   const double k = (static_cast<double>(z4_l) / n_d) /
     std::pow(static_cast<double>(z2_l) / n_d, 2.0);
@@ -264,6 +278,21 @@ void moran_test_statistics(
   } else {
     p_value = pv;
   }
+}
+
+// Normal-approximation Moran test (MERINGUE::moranTest / moranTest_C).
+void moran_test_statistics(
+    const double* z,
+    const std::vector<double>& row_std,
+    int n,
+    const std::string& alt_norm,
+    double& observed,
+    double& expected,
+    double& sd,
+    double& p_value
+) {
+  MoranWeightStats ws = compute_moran_weight_stats(row_std, n);
+  moran_test_statistics_fast(z, row_std, n, alt_norm, ws, observed, expected, sd, p_value);
 }
 
 // Batch normal-approximation Moran test over an expression matrix with one
@@ -304,17 +333,27 @@ NumericMatrix meringue_moran_matrix_cpp(
     colnames(out) = CharacterVector::create("observed", "expected", "sd", "p_value");
     rownames(out) = rownames(expr);
 
-    std::vector<double> z(n);
-    for (int g = 0; g < n_genes; ++g) {
-      for (int j = 0; j < n; ++j) {
-        z[j] = expr(g, j);
+    MoranWeightStats ws = compute_moran_weight_stats(row_std, n);
+
+#ifdef _OPENMP
+#pragma omp parallel num_threads(n_threads)
+#endif
+    {
+      std::vector<double> z(n);
+#ifdef _OPENMP
+#pragma omp for schedule(static)
+#endif
+      for (int g = 0; g < n_genes; ++g) {
+        for (int j = 0; j < n; ++j) {
+          z[j] = expr(g, j);
+        }
+        double observed, expected, sd, p_value;
+        moran_test_statistics_fast(z.data(), row_std, n, alt_norm, ws, observed, expected, sd, p_value);
+        out(g, 0) = observed;
+        out(g, 1) = expected;
+        out(g, 2) = sd;
+        out(g, 3) = p_value;
       }
-      double observed, expected, sd, p_value;
-      moran_test_statistics(z.data(), row_std, n, alt_norm, observed, expected, sd, p_value);
-      out(g, 0) = observed;
-      out(g, 1) = expected;
-      out(g, 2) = sd;
-      out(g, 3) = p_value;
     }
     return out;
   }

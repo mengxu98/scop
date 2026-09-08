@@ -361,9 +361,11 @@ ExpressionStatPlot <- function(
       "{.val {names(nlev)}} have more than 100 levels",
       message_type = "warning"
     )
-    answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
-    if (isFALSE(answer)) {
-      return(invisible(NULL))
+    if (interactive()) {
+      answer <- utils::askYesNo("Are you sure to continue?", default = FALSE)
+      if (isFALSE(answer)) {
+        return(invisible(NULL))
+      }
     }
   }
 
@@ -1225,7 +1227,7 @@ ExpressionStatPlot <- function(
       if (isTRUE(flip)) {
         if (isTRUE(stack)) {
           p <- p +
-            do.call(theme_use, theme_args) +
+            apply_plot_theme(theme_use, theme_args) +
             theme(
               aspect.ratio = aspect.ratio,
               axis.text.x = element_text(angle = 90, hjust = 1),
@@ -1238,7 +1240,7 @@ ExpressionStatPlot <- function(
             coord_flip(ylim = c(y_min_use, y_max_use))
         } else {
           p <- p +
-            do.call(theme_use, theme_args) +
+            apply_plot_theme(theme_use, theme_args) +
             theme(
               aspect.ratio = aspect.ratio,
               axis.text.x = element_text(angle = x_text_angle, hjust = 1, vjust = 1),
@@ -1252,7 +1254,7 @@ ExpressionStatPlot <- function(
         }
       } else {
         p <- p +
-          do.call(theme_use, theme_args) +
+          apply_plot_theme(theme_use, theme_args) +
           theme(
             aspect.ratio = aspect.ratio,
             axis.text.x = element_text(angle = x_text_angle, hjust = 1, vjust = 1),

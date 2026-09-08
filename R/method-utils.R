@@ -241,7 +241,8 @@ scale_feature_matrix <- function(mat) {
   x <- scale_sparse_rows_from_stats(
     mat,
     center = as.numeric(mu),
-    scale = as.numeric(sd)
+    scale = as.numeric(sd),
+    n_threads = 0L
   )
   dimnames(x) <- dimnames(mat)
   x

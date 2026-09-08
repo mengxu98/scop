@@ -97,7 +97,8 @@ module_score_native <- function(
   nbin,
   ctrl,
   name,
-  seed
+  seed,
+  n_threads = NULL
 ) {
   if (!is.null(seed)) {
     set.seed(seed = seed)
@@ -115,21 +116,21 @@ module_score_native <- function(
     )
     names(data_cut) <- names(data_avg)
 
-    control_sets <- vector("list", length(features))
-    for (i in seq_along(features)) {
-      for (feature in features[[i]]) {
+    # Build control sets in O(k) time: sample candidates per feature, then
+    # combine with unlist + unique. The original c()-in-a-loop grew the vector
+    # by copying on every iteration (O(k²) total); lapply avoids those copies.
+    control_sets <- lapply(seq_along(features), function(i) {
+      sampled <- unlist(lapply(features[[i]], function(feature) {
         candidates <- data_cut[data_cut == data_cut[[feature]]]
-        control_sets[[i]] <- c(
-          control_sets[[i]],
-          names(sample(candidates, size = ctrl, replace = FALSE))
-        )
-      }
-      control_sets[[i]] <- unique(control_sets[[i]])
-    }
+        names(sample(candidates, size = ctrl, replace = FALSE))
+      }), use.names = FALSE)
+      unique(sampled)
+    })
     scores <- module_score_sparse(
       expr = data,
       feature_sets = lapply(features, match, table = rownames(data)),
-      control_sets = lapply(control_sets, match, table = rownames(data))
+      control_sets = lapply(control_sets, match, table = rownames(data)),
+      n_threads = scop_n_threads(n_threads)
     )
     rownames(scores) <- colnames(data)
     scores
@@ -172,6 +173,9 @@ AddModuleScore <- function(
   ...
 ) {
   dots <- list(...)
+  n_threads <- dots$n_threads %||% dots$cores
+  dots$n_threads <- NULL
+  dots$cores <- NULL
   fallback <- function() {
     do.call(
       Seurat::AddModuleScore,
@@ -217,7 +221,8 @@ AddModuleScore <- function(
     nbin = as.integer(nbin),
     ctrl = as.integer(ctrl),
     name = name,
-    seed = seed
+    seed = seed,
+    n_threads = n_threads
   )
 }
 

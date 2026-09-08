@@ -37,6 +37,7 @@ RunGSVA(
   mx.diff = TRUE,
   tau = 1,
   ssgsea.norm = TRUE,
+  cores = NULL,
   verbose = TRUE,
   ...
 )
@@ -142,6 +143,9 @@ still honored. Other backends and methods default to \code{"Gaussian"}.}
 \item{tau}{Exponent for the GSVA method.}
 
 \item{ssgsea.norm}{Whether to normalize SSGSEA scores.}
+
+\item{cores}{Number of OpenMP threads for C++ scoring. \code{NULL} uses the
+process OpenMP default.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

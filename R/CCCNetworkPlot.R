@@ -1722,7 +1722,7 @@ bipartite_plot <- function(
   }
 
   p <- p +
-    do.call(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
       legend.position = legend.position,
       legend.direction = legend.direction,

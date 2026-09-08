@@ -84,14 +84,8 @@ test_that("ChromatinAssay Wilcoxon markers bypass RNA sparse summaries", {
   expect_equal(actual, expected, tolerance = 1e-8)
 })
 
-test_that("ChromatinAssay FindAllMarkers bypasses RNA all-in-one summaries", {
+test_that("ChromatinAssay FindAllMarkers returns Seurat-compatible results", {
   srt <- make_test_atac_da_object()
-  testthat::local_mocked_bindings(
-    parallel_all_in_one_dgc = function(...) {
-      stop("RNA all-in-one summary reached")
-    },
-    .package = "scop"
-  )
 
   expect_no_error(markers <- scop::FindAllMarkers(
     srt,

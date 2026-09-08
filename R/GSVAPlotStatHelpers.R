@@ -360,7 +360,7 @@ gsva_plot_diff_bar <- function(
       name = "Mean diff"
     ) +
     ggplot2::labs(x = NULL, y = paste0(unique(df[["group1"]]), " - ", unique(df[["group2"]]))) +
-    do.call(theme_use, theme_args) +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(panel.grid.major.y = ggplot2::element_blank())
 }
 
@@ -398,5 +398,5 @@ gsva_plot_diff_volcano <- function(
       y = "-log10(adjusted p-value)",
       color = NULL
     ) +
-    do.call(theme_use, theme_args)
+    apply_plot_theme(theme_use, theme_args)
 }

@@ -1,8 +1,12 @@
 #include <Rcpp.h>
 #include <thisutils/log_message.h>
+#include "thread_utils.h"
 #include <vector>
 #include <cmath>
 #include <cstring>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 using namespace Rcpp;
 
 static double clipped(double value, double limit) {
@@ -11,7 +15,8 @@ static double clipped(double value, double limit) {
 
 // [[Rcpp::export]]
 NumericMatrix scale_sparse_full(S4 sparse_mat,
-                                       IntegerVector gene_indices, double scale_max) {
+                                       IntegerVector gene_indices, double scale_max,
+                                       int n_threads = 0) {
   IntegerVector i_vec = sparse_mat.slot("i");
   IntegerVector p_vec = sparse_mat.slot("p");
   NumericVector x_vec = sparse_mat.slot("x");
@@ -33,7 +38,38 @@ NumericMatrix scale_sparse_full(S4 sparse_mat,
   std::vector<double> zero_score(n_sel, 0.0);
   std::vector<double> sum(n_sel, 0.0);
   std::vector<double> sumsq(n_sel, 0.0);
+  const int threads = omp_thread_count(n_threads, n_cells);
 
+#ifdef _OPENMP
+  std::vector<std::vector<double> > thread_sums(threads, std::vector<double>(n_sel, 0.0));
+  std::vector<std::vector<double> > thread_sumsqs(threads, std::vector<double>(n_sel, 0.0));
+
+#pragma omp parallel num_threads(threads)
+  {
+    const int tid = omp_get_thread_num();
+    std::vector<double>& local_sum = thread_sums[tid];
+    std::vector<double>& local_sumsq = thread_sumsqs[tid];
+
+#pragma omp for schedule(static)
+    for (int col = 0; col < n_cells; ++col) {
+      for (int pos = pp[col]; pos < pp[col + 1]; ++pos) {
+        const int mapped = selected_lookup[ip[pos]];
+        if (mapped >= 0) {
+          const double value = xp[pos];
+          local_sum[mapped] += value;
+          local_sumsq[mapped] += value * value;
+        }
+      }
+    }
+  }
+
+  for (int t = 0; t < threads; ++t) {
+    for (int row = 0; row < n_sel; ++row) {
+      sum[row] += thread_sums[t][row];
+      sumsq[row] += thread_sumsqs[t][row];
+    }
+  }
+#else
   for (int col = 0; col < n_cells; ++col) {
     for (int pos = pp[col]; pos < pp[col + 1]; ++pos) {
       const int mapped = selected_lookup[ip[pos]];
@@ -44,6 +80,7 @@ NumericMatrix scale_sparse_full(S4 sparse_mat,
       }
     }
   }
+#endif
   for (int row = 0; row < n_sel; ++row) {
     center[row] = sum[row] / n_cells;
     double variance = (sumsq[row] / n_cells - center[row] * center[row]) *
@@ -57,6 +94,9 @@ NumericMatrix scale_sparse_full(S4 sparse_mat,
   NumericMatrix result = Rcpp::no_init_matrix(n_sel, n_cells);
   double* out = REAL(result);
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int col = 0; col < n_cells; ++col) {
     const size_t col_offset = static_cast<size_t>(col) * n_sel;
     std::memcpy(out + col_offset, zero_score.data(), n_sel * sizeof(double));
@@ -79,7 +119,8 @@ NumericMatrix scale_sparse_full(S4 sparse_mat,
 NumericMatrix scale_sparse_rows_from_stats(
     S4 sparse_mat,
     NumericVector center,
-    NumericVector scale) {
+    NumericVector scale,
+    int n_threads = 0) {
   IntegerVector i_vec = sparse_mat.slot("i");
   IntegerVector p_vec = sparse_mat.slot("p");
   NumericVector x_vec = sparse_mat.slot("x");
@@ -101,6 +142,11 @@ NumericMatrix scale_sparse_rows_from_stats(
   const int* ip = INTEGER(i_vec);
   const int* pp = INTEGER(p_vec);
   const double* xp = REAL(x_vec);
+  const int threads = omp_thread_count(n_threads, n_cols);
+
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int col = 0; col < n_cols; ++col) {
     const size_t offset = static_cast<size_t>(col) * n_rows;
     std::memcpy(out + offset, zero_score.data(), n_rows * sizeof(double));

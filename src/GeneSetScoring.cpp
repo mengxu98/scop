@@ -2,6 +2,10 @@
 #include <RcppArmadillo.h>
 #include <thisutils/log_message.h>
 #include <thisutils/cli_progress.h>
+#include "thread_utils.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 #include <Spectra/MatOp/DenseSymMatProd.h>
 #include <Spectra/SymEigsSolver.h>
 #include <algorithm>
@@ -293,7 +297,8 @@ NumericMatrix aucell_auc_sparse(
   bool norm_auc = true,
   int strategy = 1,
   int algorithm = 1,
-  int seed = 0
+  int seed = 0,
+  int n_threads = 0
 ) {
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -329,13 +334,7 @@ NumericMatrix aucell_auc_sparse(
   set_gene_union.erase(std::unique(set_gene_union.begin(), set_gene_union.end()), set_gene_union.end());
 
   NumericMatrix scores(n_cells, n_sets);
-  std::vector<int> rank_by_gene(n_genes, 0);
-  std::vector<double> value_by_gene(n_genes, 0.0);
-  std::vector<int> touched_values;
-  std::vector<int> touched_ranks;
-  std::vector<AucEntry> entries;
   const std::vector<double> tie_by_gene = aucell_tiebreaks(n_genes, seed);
-  entries.reserve(n_genes);
   const int top_n = std::max(0, std::min(n_genes, auc_threshold - 1));
   if ((strategy == 1 || strategy == 2) && top_n > 0) {
     zero_order.resize(n_genes);
@@ -345,109 +344,135 @@ NumericMatrix aucell_auc_sparse(
     });
   }
 
-  for (int cell = 0; cell < n_cells; ++cell) {
-    touched_values.clear();
-    touched_ranks.clear();
-    entries.clear();
+  // Each cell's computation is fully independent: it reads only its own
+  // column from the CSC matrix (row_idx/col_ptr/values, all read-only)
+  // and writes to a distinct row of `scores`.  All mutable buffers are
+  // declared inside the parallel region so they are thread-local.
+  // zero_order / sets / max_auc / tie_by_gene / set_gene_union are read-only.
+  const int threads = omp_thread_count(n_threads, n_cells);
+#ifdef _OPENMP
+#pragma omp parallel num_threads(threads)
+#endif
+  {
+    // Thread-local mutable buffers reused across cells owned by this thread.
+    std::vector<int> rank_by_gene(n_genes, 0);
+    std::vector<double> value_by_gene(n_genes, 0.0);
+    std::vector<int> touched_values;
+    std::vector<int> touched_ranks;
+    std::vector<AucEntry> entries;
+    std::vector<int> ranks;  // reused across gene sets (Fix 3)
+    entries.reserve(n_genes);
+    touched_values.reserve(n_genes);
+    touched_ranks.reserve(n_genes);
+    ranks.reserve(128);
 
-    for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
-      const int gene = row_idx[ptr];
-      const double value = values[ptr];
-      if (!R_finite(value) || value == 0.0) {
-        continue;
-      }
-      if (strategy == 2) {
-        entries.push_back(AucEntry{gene, value, tie_by_gene[gene]});
-      } else {
-        value_by_gene[gene] = value;
-        touched_values.push_back(gene);
-      }
-    }
+#ifdef _OPENMP
+#pragma omp for schedule(static)
+#endif
+    for (int cell = 0; cell < n_cells; ++cell) {
+      touched_values.clear();
+      touched_ranks.clear();
+      entries.clear();
 
-    if (strategy == 2) {
-      std::sort(entries.begin(), entries.end(), aucell_entry_before);
-
-      for (std::size_t rank_i = 0; rank_i < entries.size(); ++rank_i) {
-        const int gene = entries[rank_i].gene;
-        rank_by_gene[gene] = static_cast<int>(rank_i) + 1;
-        touched_ranks.push_back(gene);
-      }
-
-      if (static_cast<int>(entries.size()) < auc_threshold) {
-        int zero_rank = static_cast<int>(entries.size()) + 1;
-        for (std::vector<int>::const_iterator it = zero_order.begin();
-             it != zero_order.end() && zero_rank < auc_threshold; ++it) {
-          const int gene = *it;
-          if (rank_by_gene[gene] == 0) {
-            if (std::binary_search(
-                  set_gene_union.begin(), set_gene_union.end(), gene)) {
-              rank_by_gene[gene] = zero_rank;
-              touched_ranks.push_back(gene);
-            }
-            ++zero_rank;
-          }
+      for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
+        const int gene = row_idx[ptr];
+        const double value = values[ptr];
+        if (!R_finite(value) || value == 0.0) {
+          continue;
+        }
+        if (strategy == 2) {
+          entries.push_back(AucEntry{gene, value, tie_by_gene[gene]});
+        } else {
+          value_by_gene[gene] = value;
+          touched_values.push_back(gene);
         }
       }
-    } else {
-      if (strategy == 1) {
-        if (top_n > 0) {
-          entries.reserve(touched_values.size() + top_n);
-          for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
+
+      if (strategy == 2) {
+        std::sort(entries.begin(), entries.end(), aucell_entry_before);
+
+        for (std::size_t rank_i = 0; rank_i < entries.size(); ++rank_i) {
+          const int gene = entries[rank_i].gene;
+          rank_by_gene[gene] = static_cast<int>(rank_i) + 1;
+          touched_ranks.push_back(gene);
+        }
+
+        if (static_cast<int>(entries.size()) < auc_threshold) {
+          int zero_rank = static_cast<int>(entries.size()) + 1;
+          for (std::vector<int>::const_iterator it = zero_order.begin();
+               it != zero_order.end() && zero_rank < auc_threshold; ++it) {
             const int gene = *it;
-            entries.push_back(AucEntry{gene, value_by_gene[gene], tie_by_gene[gene]});
+            if (rank_by_gene[gene] == 0) {
+              if (std::binary_search(
+                    set_gene_union.begin(), set_gene_union.end(), gene)) {
+                rank_by_gene[gene] = zero_rank;
+                touched_ranks.push_back(gene);
+              }
+              ++zero_rank;
+            }
           }
-          if (top_n < static_cast<int>(entries.size())) {
-            std::nth_element(entries.begin(), entries.begin() + top_n, entries.end(), aucell_entry_before);
-            entries.resize(top_n);
-          } else if (static_cast<int>(entries.size()) < top_n) {
-            for (std::vector<int>::const_iterator it = zero_order.begin(); it != zero_order.end() && static_cast<int>(entries.size()) < top_n; ++it) {
+        }
+      } else {
+        if (strategy == 1) {
+          if (top_n > 0) {
+            entries.reserve(touched_values.size() + top_n);
+            for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
               const int gene = *it;
-              if (value_by_gene[gene] == 0.0) {
-                entries.push_back(AucEntry{gene, 0.0, tie_by_gene[gene]});
+              entries.push_back(AucEntry{gene, value_by_gene[gene], tie_by_gene[gene]});
+            }
+            if (top_n < static_cast<int>(entries.size())) {
+              std::nth_element(entries.begin(), entries.begin() + top_n, entries.end(), aucell_entry_before);
+              entries.resize(top_n);
+            } else if (static_cast<int>(entries.size()) < top_n) {
+              for (std::vector<int>::const_iterator it = zero_order.begin(); it != zero_order.end() && static_cast<int>(entries.size()) < top_n; ++it) {
+                const int gene = *it;
+                if (value_by_gene[gene] == 0.0) {
+                  entries.push_back(AucEntry{gene, 0.0, tie_by_gene[gene]});
+                }
               }
             }
+            std::sort(entries.begin(), entries.end(), aucell_entry_before);
+          }
+        } else {
+          for (int gene = 0; gene < n_genes; ++gene) {
+            entries.push_back(AucEntry{gene, value_by_gene[gene], tie_by_gene[gene]});
           }
           std::sort(entries.begin(), entries.end(), aucell_entry_before);
         }
-      } else {
-        for (int gene = 0; gene < n_genes; ++gene) {
-          entries.push_back(AucEntry{gene, value_by_gene[gene], tie_by_gene[gene]});
-        }
-        std::sort(entries.begin(), entries.end(), aucell_entry_before);
-      }
 
-      for (std::size_t rank_i = 0; rank_i < entries.size(); ++rank_i) {
-        const int gene = entries[rank_i].gene;
-        rank_by_gene[gene] = static_cast<int>(rank_i) + 1;
-        touched_ranks.push_back(gene);
-      }
-    }
-
-    for (int set_i = 0; set_i < n_sets; ++set_i) {
-      std::vector<int> ranks;
-      ranks.reserve(sets[set_i].size());
-      for (std::vector<int>::const_iterator it = sets[set_i].begin(); it != sets[set_i].end(); ++it) {
-        const int rank = rank_by_gene[*it];
-        if (rank > 0) {
-          ranks.push_back(rank);
+        for (std::size_t rank_i = 0; rank_i < entries.size(); ++rank_i) {
+          const int gene = entries[rank_i].gene;
+          rank_by_gene[gene] = static_cast<int>(rank_i) + 1;
+          touched_ranks.push_back(gene);
         }
       }
-      if (algorithm == 2) {
-        scores(cell, set_i) = ctxcore_auc_from_ranks(
-          ranks,
-          auc_threshold,
-          static_cast<int>(sets[set_i].size())
-        );
-      } else {
-        scores(cell, set_i) = aucell_auc_from_ranks(ranks, auc_threshold, max_auc[set_i]);
-      }
-    }
 
-    for (std::vector<int>::const_iterator it = touched_ranks.begin(); it != touched_ranks.end(); ++it) {
-      rank_by_gene[*it] = 0;
-    }
-    for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
-      value_by_gene[*it] = 0.0;
+      // Hoist `ranks` out of gene-set loop: reuse buffer across sets (Fix 3).
+      for (int set_i = 0; set_i < n_sets; ++set_i) {
+        ranks.clear();
+        for (std::vector<int>::const_iterator it = sets[set_i].begin(); it != sets[set_i].end(); ++it) {
+          const int rank = rank_by_gene[*it];
+          if (rank > 0) {
+            ranks.push_back(rank);
+          }
+        }
+        if (algorithm == 2) {
+          scores(cell, set_i) = ctxcore_auc_from_ranks(
+            ranks,
+            auc_threshold,
+            static_cast<int>(sets[set_i].size())
+          );
+        } else {
+          scores(cell, set_i) = aucell_auc_from_ranks(ranks, auc_threshold, max_auc[set_i]);
+        }
+      }
+
+      for (std::vector<int>::const_iterator it = touched_ranks.begin(); it != touched_ranks.end(); ++it) {
+        rank_by_gene[*it] = 0;
+      }
+      for (std::vector<int>::const_iterator it = touched_values.begin(); it != touched_values.end(); ++it) {
+        value_by_gene[*it] = 0.0;
+      }
     }
   }
 
@@ -463,7 +488,8 @@ NumericMatrix ucell_scores_sparse(
   IntegerVector negative_missing,
   int max_rank = 1500,
   double negative_weight = 1.0,
-  int tie_method = 1
+  int tie_method = 1,
+  int n_threads = 0
 ) {
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -513,8 +539,9 @@ NumericMatrix ucell_scores_sparse(
   const int* col_ptr = column_ptr.begin();
   const double* value_ptr = sparse_value.begin();
 
+  const int threads = omp_thread_count(n_threads, n_cells);
 #ifdef _OPENMP
-#pragma omp parallel
+#pragma omp parallel num_threads(threads)
 #endif
   {
     std::vector<double> ranks(n_genes, 0.0);
@@ -703,10 +730,12 @@ NumericMatrix aucell_auc_ranked(
   }
 
   NumericMatrix scores(n_cells, n_sets);
+  // Hoist `ranks` outside both loops to avoid n_cells × n_sets heap allocations.
+  std::vector<int> ranks;
+  ranks.reserve(128);
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int set_i = 0; set_i < n_sets; ++set_i) {
-      std::vector<int> ranks;
-      ranks.reserve(sets[set_i].size());
+      ranks.clear();
       for (std::vector<int>::const_iterator it = sets[set_i].begin(); it != sets[set_i].end(); ++it) {
         const double rank0 = rankings(cell, *it);
         if (R_finite(rank0)) {
@@ -757,10 +786,12 @@ NumericMatrix aucell_auc_ranked_full(
   }
 
   NumericMatrix scores(n_cells, n_sets);
+  // Hoist `ranks` outside both loops to avoid n_cells × n_sets heap allocations.
+  std::vector<int> ranks;
+  ranks.reserve(128);
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int set_i = 0; set_i < n_sets; ++set_i) {
-      std::vector<int> ranks;
-      ranks.reserve(sets[set_i].size());
+      ranks.clear();
       for (std::vector<int>::const_iterator it = sets[set_i].begin(); it != sets[set_i].end(); ++it) {
         const double rank = rankings(*it, cell);
         if (R_finite(rank)) {
@@ -928,7 +959,8 @@ DataFrame ora_hypergeom(
 NumericMatrix module_score_sparse(
   S4 expr,
   List feature_sets,
-  List control_sets
+  List control_sets,
+  int n_threads = 0
 ) {
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -986,6 +1018,10 @@ NumericMatrix module_score_sparse(
     }
   }
 
+  const int threads = omp_thread_count(n_threads, n_cells);
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(static)
+#endif
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
       const int gene = row_idx[ptr];
@@ -2301,13 +2337,22 @@ static void gsva_score_z_chunk(
   bool max_diff,
   bool abs_ranking,
   double tau,
-  NumericMatrix& scores
+  NumericMatrix& scores,
+  int n_threads
 ) {
-  std::vector<int> order(n_genes);
-  std::vector<int> gene_at_desc_pos(n_genes);
-  std::vector<double> sym_rank_stat(n_genes);
-  std::vector<int> in_set(n_genes, 0);
+  const int threads = omp_thread_count(n_threads, chunk_len);
+#ifdef _OPENMP
+#pragma omp parallel num_threads(threads)
+#endif
+  {
+    std::vector<int> order(n_genes);
+    std::vector<int> gene_at_desc_pos(n_genes);
+    std::vector<double> sym_rank_stat(n_genes);
+    std::vector<int> in_set(n_genes, 0);
 
+#ifdef _OPENMP
+#pragma omp for schedule(static)
+#endif
   for (int local_cell = 0; local_cell < chunk_len; ++local_cell) {
     std::iota(order.begin(), order.end(), 0);
     const std::size_t col_offset = static_cast<std::size_t>(local_cell) * n_genes;
@@ -2386,6 +2431,7 @@ static void gsva_score_z_chunk(
       }
     }
   }
+  }
 }
 
 static NumericMatrix gsva_score_transformed_rows(
@@ -2399,7 +2445,8 @@ static NumericMatrix gsva_score_transformed_rows(
   bool max_diff,
   bool abs_ranking,
   double tau,
-  int chunk_size
+  int chunk_size,
+  int n_threads
 ) {
   NumericMatrix scores(n_cells, sets.size());
   const int chunk_n = (chunk_size > 0 && chunk_size < n_cells) ? chunk_size : n_cells;
@@ -2408,7 +2455,12 @@ static NumericMatrix gsva_score_transformed_rows(
   for (int chunk_start = 0; chunk_start < n_cells; chunk_start += chunk_n) {
     const int chunk_end = std::min(chunk_start + chunk_n, n_cells);
     const int chunk_len = chunk_end - chunk_start;
+    const int fill_threads = omp_thread_count(n_threads, chunk_len);
+    const int gene_threads = omp_thread_count(n_threads, n_genes);
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(fill_threads) schedule(static)
+#endif
     for (int local_cell = 0; local_cell < chunk_len; ++local_cell) {
       const std::size_t col_offset = static_cast<std::size_t>(local_cell) * n_genes;
       for (int gene = 0; gene < n_genes; ++gene) {
@@ -2416,6 +2468,9 @@ static NumericMatrix gsva_score_transformed_rows(
       }
     }
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(gene_threads) schedule(dynamic, 32)
+#endif
     for (int gene = 0; gene < n_genes; ++gene) {
       const int row_start = row_ptr[gene];
       const int row_end = row_ptr[gene + 1];
@@ -2441,7 +2496,8 @@ static NumericMatrix gsva_score_transformed_rows(
       max_diff,
       abs_ranking,
       tau,
-      scores
+      scores,
+      n_threads
     );
   }
 
@@ -2517,7 +2573,8 @@ NumericMatrix gsva_gaussian_dense(
   bool max_diff = true,
   bool abs_ranking = false,
   double tau = 1.0,
-  int chunk_size = 0
+  int chunk_size = 0,
+  int n_threads = 0
 ) {
   // Exact replica of GSVA::gsva(kcdf = "Gaussian") with the default sparse
   // algorithm (gsvaParam(sparse = TRUE), the default for dgCMatrix input):
@@ -2598,6 +2655,10 @@ NumericMatrix gsva_gaussian_dense(
   // the step-function CDF evaluated at each unique value, and the bandwidth.
   std::vector<std::vector<double> > gene_values(n_genes);
   std::vector<std::vector<double> > gene_cdfs(n_genes);
+  const int kde_threads = omp_thread_count(n_threads, n_genes);
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(kde_threads) schedule(dynamic, 16)
+#endif
   for (int gene = 0; gene < n_genes; ++gene) {
     const int row_start = row_ptr[gene];
     const int row_end = row_ptr[gene + 1];
@@ -2638,17 +2699,25 @@ NumericMatrix gsva_gaussian_dense(
   }
 
   NumericMatrix scores(n_cells, n_sets);
+  const int cell_threads = omp_thread_count(n_threads, n_cells);
 
-  std::vector<std::pair<double, int> > rank_entries;
-  rank_entries.reserve(n_genes);
-  std::vector<int> decordstat(n_genes, 0);
-  std::vector<double> symrnkstat(n_genes, 0.0);
-  std::vector<double> stepcdfin(n_genes, 0.0);
-  std::vector<int> stepcdfout(n_genes, 1);
-  std::vector<int> touched;
-  touched.reserve(n_genes);
+#ifdef _OPENMP
+#pragma omp parallel num_threads(cell_threads)
+#endif
+  {
+    std::vector<std::pair<double, int> > rank_entries;
+    rank_entries.reserve(n_genes);
+    std::vector<int> decordstat(n_genes, 0);
+    std::vector<double> symrnkstat(n_genes, 0.0);
+    std::vector<double> stepcdfin(n_genes, 0.0);
+    std::vector<int> stepcdfout(n_genes, 1);
+    std::vector<int> zero_prefix(n_genes, 0);
+    std::vector<char> expressed(n_genes, 0);
 
-  for (int cell = 0; cell < n_cells; ++cell) {
+#ifdef _OPENMP
+#pragma omp for schedule(static)
+#endif
+    for (int cell = 0; cell < n_cells; ++cell) {
     rank_entries.clear();
     for (int ptr = col_ptr[cell]; ptr < col_ptr[cell + 1]; ++ptr) {
       const int gene = row_idx[ptr];
@@ -2703,19 +2772,16 @@ NumericMatrix gsva_gaussian_dense(
     // set gene with k zero genes at or before it (gene order) gets the dense
     // rank k and decreasing order statistic p - k + 1, matching GSVA 2.0.7's
     // .ranks2stats dense remap of the sparse ranks.
-    std::vector<int> zero_prefix(n_genes, 0);
-    {
-      std::vector<char> expressed(n_genes, 0);
-      for (int rank_i = 0; rank_i < nnz; ++rank_i) {
-        expressed[rank_entries[rank_i].second] = 1;
+    std::fill(expressed.begin(), expressed.end(), 0);
+    for (int rank_i = 0; rank_i < nnz; ++rank_i) {
+      expressed[rank_entries[rank_i].second] = 1;
+    }
+    int zero_run = 0;
+    for (int gene = 0; gene < n_genes; ++gene) {
+      if (!expressed[gene]) {
+        ++zero_run;
       }
-      int zero_run = 0;
-      for (int gene = 0; gene < n_genes; ++gene) {
-        if (!expressed[gene]) {
-          ++zero_run;
-        }
-        zero_prefix[gene] = zero_run;
-      }
+      zero_prefix[gene] = zero_run;
     }
     // The cumulative sums below mutate every position of stepcdfin/stepcdfout,
     // so the arrays are fully reset before each set's placement.
@@ -2782,6 +2848,7 @@ NumericMatrix gsva_gaussian_dense(
 
     }
   }
+  }
 
   return scores;
 }
@@ -2793,7 +2860,8 @@ NumericMatrix gsva_poisson_dense(
   bool max_diff = true,
   bool abs_ranking = false,
   double tau = 1.0,
-  int chunk_size = 0
+  int chunk_size = 0,
+  int n_threads = 0
 ) {
   // Enable z-score KDE path (frequency-based with zeros, log-odds transform,
   // unified gene ranking) — same rationale as gsva_gaussian_dense.
@@ -2865,6 +2933,10 @@ NumericMatrix gsva_poisson_dense(
 
   std::vector<double> row_z_zero(n_genes, R_NaN);
   std::vector<double> row_z_values(nnz, R_NaN);
+  const int threads = omp_thread_count(n_threads, n_genes);
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads) schedule(dynamic, 16)
+#endif
   for (int gene = 0; gene < n_genes; ++gene) {
     std::map<double, int> freq;
     const int row_start = row_ptr[gene];
@@ -2903,7 +2975,8 @@ NumericMatrix gsva_poisson_dense(
     max_diff,
     abs_ranking,
     tau,
-    chunk_size
+    chunk_size,
+    n_threads
   );
 }
 
