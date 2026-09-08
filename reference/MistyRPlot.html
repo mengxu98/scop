@@ -74,7 +74,8 @@ produced by [RunMistyR()] without rerunning the backend.</p>
 <span>  res <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"improvements"</span>, <span class="st">"contributions"</span><span class="op">)</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  target <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  target <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  measure <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -100,6 +101,15 @@ produced by [RunMistyR()] without rerunning the backend.</p>
 
 <dt id="arg-target">target<a class="anchor" aria-label="anchor" href="#arg-target"></a></dt>
 <dd><p>Optional target feature filter.</p></dd>
+
+
+<dt id="arg-measure">measure<a class="anchor" aria-label="anchor" href="#arg-measure"></a></dt>
+<dd><p>Numeric result column to display. For
+<code>type = "improvements"</code> use <code>"gain.R2"</code>, <code>"gain.RMSE"</code>, or
+<code>"value"</code>; for <code>type = "contributions"</code>, use an available
+contribution, importance, or value column. <code>NULL</code> defaults to
+<code>"gain.R2"</code> for improvements and <code>"contribution"</code> for contributions,
+and errors if that column is not present.</p></dd>
 
 </dl></div>
     <div class="section level2">

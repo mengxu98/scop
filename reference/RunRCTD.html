@@ -161,10 +161,9 @@ type. Old <code>spacexr</code> RCTD requires at least 25 cells per type.</p></dd
 
 
 <dt id="arg-round-counts">round_counts<a class="anchor" aria-label="anchor" href="#arg-round-counts"></a></dt>
-<dd><p>Whether to round non-integer counts to the nearest
-integer before passing data to <code>spacexr</code>. RCTD requires integer count
-matrices; this defaults to <code>TRUE</code> so bundled example data with scaled
-non-integer reference counts can run directly.</p></dd>
+<dd><p>Whether to round non-integer values before passing data
+to <code>spacexr</code>. RCTD requires integer count matrices; rounding is a
+compatibility option and does not recover original counts.</p></dd>
 
 
 <dt id="arg-create-rctd-params">create_rctd_params<a class="anchor" aria-label="anchor" href="#arg-create-rctd-params"></a></dt>
