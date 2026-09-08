@@ -308,9 +308,22 @@ test_that("VST aligns Assay5 layers with partially overlapping features", {
   seurat_meta <- methods::slot(seurat_assay, "meta.data")
   hvf_columns <- grep("^vf_vst_", colnames(scop_meta), value = TRUE)
   expect_identical(rownames(scop_meta), rownames(seurat_meta))
-  expect_identical(
-    unname(scop_meta[, hvf_columns, drop = FALSE]),
-    unname(seurat_meta[, hvf_columns, drop = FALSE])
+  scop_hvf <- scop_meta[, hvf_columns, drop = FALSE]
+  seurat_hvf <- seurat_meta[, hvf_columns, drop = FALSE]
+  logical_cols <- hvf_columns[vapply(scop_hvf, is.logical, logical(1L))]
+  numeric_cols <- hvf_columns[vapply(scop_hvf, is.numeric, logical(1L))]
+  if (length(logical_cols) > 0L) {
+    expect_identical(
+      scop_hvf[, logical_cols, drop = FALSE],
+      seurat_hvf[, logical_cols, drop = FALSE]
+    )
+  }
+  # Selected HVFs stay identical (asserted above). Per-layer VST doubles can
+  # differ by a few ULPs across libm/BLAS; macOS CI reported waldo "equal but
+  # not identical" while Linux/Windows stayed bit-identical.
+  expect_equal(
+    scop_hvf[, numeric_cols, drop = FALSE],
+    seurat_hvf[, numeric_cols, drop = FALSE]
   )
   expect_true(isTRUE(methods::validObject(scop_assay, test = TRUE)))
 

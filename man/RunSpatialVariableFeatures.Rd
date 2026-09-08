@@ -22,6 +22,7 @@ RunSpatialVariableFeatures(
   seed = 11,
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
+  cores = NULL,
   ...,
   object = NULL
 )
@@ -73,6 +74,9 @@ coordinate units; \code{k} is a unitless neighbor count.}
 
 \item{backend}{Backend used by the package \code{"moran"} and \code{"geary"} methods.
 \code{"cpp"} is the default; use \code{"r"} for the reference implementation.}
+
+\item{cores}{Number of OpenMP threads for C++ Moran/Geary scoring. \code{NULL}
+uses the process OpenMP default.}
 
 \item{...}{Additional arguments passed to external backends.}
 

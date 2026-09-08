@@ -99,6 +99,7 @@ test_that("ProjectionPlot finds query points after annotation layers", {
 })
 
 test_that("ProjectionPlot rasterizes the final query overlay when requested", {
+  skip_if_not_installed("ggrastr")
   query <- make_projection_test_srt("query")
   reference <- make_projection_test_srt("reference")
   raster_calls <- 0L

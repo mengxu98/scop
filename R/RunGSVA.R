@@ -40,6 +40,8 @@
 #' @param mx.diff Whether to use the maximum difference method.
 #' @param tau Exponent for the GSVA method.
 #' @param ssgsea.norm Whether to normalize SSGSEA scores.
+#' @param cores Number of OpenMP threads for C++ scoring. `NULL` uses the
+#' process OpenMP default.
 #'
 #' @return
 #' Returns the modified `Seurat` object. When `group.by` is provided, GSVA scores are stored in the `tools` slot.
