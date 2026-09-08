@@ -214,7 +214,10 @@ ScaleData.Seurat <- function(
         ]
       )
     }
-    data_mat <- data_mat[features, colnames(object), drop = FALSE]
+    # Assay5 sketch/HD assays may contain only a subset of the object's cells.
+    # Preserve that assay's order instead of indexing absent object-wide cells.
+    cells_use <- colnames(assay_obj)[colnames(assay_obj) %in% colnames(data_mat)]
+    data_mat <- data_mat[features, cells_use, drop = FALSE]
     idx <- seq_along(features) - 1L
   }
 
@@ -223,7 +226,7 @@ ScaleData.Seurat <- function(
   if (length(regress_vars) > 0L) {
     meta <- methods::slot(object, "meta.data")
     found_meta <- intersect(regress_vars, colnames(meta))
-    cell_order <- colnames(object)
+    cell_order <- colnames(data_mat)
     sct_latent_df <- if (length(found_meta)) {
       meta[match(cell_order, rownames(meta)), found_meta, drop = FALSE]
     } else {
@@ -288,12 +291,12 @@ ScaleData.Seurat <- function(
       isTRUE(do.center)
   if (fast_path) {
     result <- scale_sparse_full(data_mat, idx, scale.max, scop_n_threads(n_threads))
-    dimnames(result) <- list(features, colnames(object))
+    dimnames(result) <- list(features, colnames(data_mat))
   } else {
     sub <- data_mat[idx + 1L, , drop = FALSE]
     split_levels <- if (!is.null(split.by)) {
       meta <- methods::slot(object, "meta.data")
-      factor(meta[match(colnames(object), rownames(meta)), split.by[1]])
+      factor(meta[match(colnames(data_mat), rownames(meta)), split.by[1]])
     } else {
       NULL
     }
@@ -306,7 +309,7 @@ ScaleData.Seurat <- function(
       scale.max,
       use.umi = want_counts
     )
-    dimnames(general) <- list(features, colnames(object))
+    dimnames(general) <- list(features, colnames(data_mat))
     result <- general
   }
 
@@ -316,29 +319,7 @@ ScaleData.Seurat <- function(
     assay <- assay_name
     return(SeuratObject::LogSeuratCommand(object))
   }
-  assay_obj@layers[["scale.data"]] <- result
-  if (!"scale.data" %in% colnames(assay_obj@cells)) {
-    cm <- assay_obj@cells
-    methods::slot(assay_obj@cells, ".Data") <- cbind(
-      cm,
-      matrix(
-        TRUE,
-        nrow = nrow(cm),
-        ncol = 1,
-        dimnames = list(rownames(cm), "scale.data")
-      )
-    )
-    fm <- assay_obj@features
-    methods::slot(assay_obj@features, ".Data") <- cbind(
-      fm,
-      matrix(
-        rownames(fm) %in% features,
-        nrow = nrow(fm),
-        ncol = 1,
-        dimnames = list(rownames(fm), "scale.data")
-      )
-    )
-  }
+  SeuratObject::LayerData(assay_obj, layer = "scale.data") <- result
   methods::slot(object, "assays")[[assay_name]] <- assay_obj
   assay <- assay_name
   SeuratObject::LogSeuratCommand(object)

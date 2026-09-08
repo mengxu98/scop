@@ -52,6 +52,8 @@ articles:
   navbar: Spatial Analysis
   contents:
   - spatial-main-workflow
+  - spatial-platform-workflows
+  - spatial-sample-comparisons
   - spatial-framework-bridges
 
 reference:
@@ -210,6 +212,10 @@ reference:
 - subtitle: "Spatial Result Access"
 - contents:
   - SpatialCoordinates
+  - ReadSpatialData
+  - SpatialDataInfo
+  - SpatialSegmentationQC
+  - RunSpatialSketch
   - SetSpatialImageAxes
   - GetSpatialGraph
 
@@ -251,6 +257,9 @@ reference:
   - StatialKontextualPlot
   - RunSpatialNeighborhood
   - SpatialNeighborhoodProfile
+  - SpatialSampleSummary
+  - SpatialSampleComparison
+  - SpatialSamplePlot
   - RunStatialKontextual
   - RunSpatialIntegration
   - RunMistyR

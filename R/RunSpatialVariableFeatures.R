@@ -33,6 +33,9 @@
 #' `"cpp"` is the default; use `"r"` for the reference implementation.
 #' @param cores Number of OpenMP threads for C++ Moran/Geary scoring. `NULL`
 #' uses the process OpenMP default.
+#' @param max_dense_gb Maximum estimated GB for an expression matrix conversion
+#'   in the R-reference or nnSVG path. The C++ and SPARK-X paths retain sparse
+#'   input. This guard bounds one conversion, not total backend memory.
 #' @param object A `Seurat` object.
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
@@ -87,6 +90,7 @@ RunSpatialVariableFeatures <- function(
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
   cores = NULL,
+  max_dense_gb = 2,
   ...,
   srt = NULL
 ) {
@@ -109,6 +113,10 @@ RunSpatialVariableFeatures <- function(
   }
   method <- match.arg(method)
   backend <- match.arg(backend)
+  if (!is.numeric(max_dense_gb) || length(max_dense_gb) != 1L ||
+      !is.finite(max_dense_gb) || max_dense_gb <= 0) {
+    stop("max_dense_gb must be positive and finite", call. = FALSE)
+  }
   native_method <- method %in% c("moran", "geary")
   backend_name <- if (isTRUE(native_method)) {
     backend
@@ -216,13 +224,16 @@ RunSpatialVariableFeatures <- function(
   expr <- expr[keep_features, , drop = FALSE]
   expressed_spots <- expressed_spots[keep_features]
 
-  expr_input <- if (native_method && identical(backend, "cpp")) {
+  expr_input <- if ((native_method && identical(backend, "cpp")) || identical(method, "SPARKX")) {
     if (inherits(expr, "sparseMatrix") && !inherits(expr, "dgCMatrix")) {
       methods::as(expr, "dgCMatrix")
     } else {
       expr
     }
   } else {
+    if (8 * as.double(nrow(expr)) * ncol(expr) / 1024^3 > max_dense_gb) {
+      stop("Expression conversion exceeds max_dense_gb; select fewer features or a sparse backend", call. = FALSE)
+    }
     as.matrix(expr)
   }
   edges <- NULL

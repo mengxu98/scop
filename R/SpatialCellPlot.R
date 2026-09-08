@@ -68,11 +68,7 @@ SpatialCellPlot <- function(
     if (is.null(image)) {
       log_message("No Seurat spatial image is available for boundary extraction", message_type = "error")
     }
-    boundary_names <- tryCatch(SeuratObject::Boundaries(object[[image]]), error = function(e) character())
-    if (!"segmentation" %in% boundary_names) {
-      log_message("The selected image does not contain segmentation boundaries", message_type = "error")
-    }
-    boundary_name <- "segmentation"
+    boundary_name <- spatial_segmentation_name(object[[image]], required = TRUE)
     boundaries <- tryCatch(
       as.data.frame(SeuratObject::GetTissueCoordinates(object[[image]][[boundary_name]])),
       error = function(e) {

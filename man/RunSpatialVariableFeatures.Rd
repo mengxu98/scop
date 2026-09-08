@@ -23,6 +23,7 @@ RunSpatialVariableFeatures(
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
   cores = NULL,
+  max_dense_gb = 2,
   ...,
   srt = NULL
 )
@@ -76,6 +77,10 @@ coordinate units; \code{k} is a unitless neighbor count.}
 
 \item{cores}{Number of OpenMP threads for C++ Moran/Geary scoring. \code{NULL}
 uses the process OpenMP default.}
+
+\item{max_dense_gb}{Maximum estimated GB for an expression matrix conversion
+in the R-reference or nnSVG path. The C++ and SPARK-X paths retain sparse
+input. This guard bounds one conversion, not total backend memory.}
 
 \item{...}{Additional arguments passed to external backends.}
 
