@@ -198,13 +198,10 @@ SpatialCellPlot <- function(
       ggplot2::labs(x = NULL, y = NULL, fill = value_name) +
       apply_plot_theme(theme_use = theme_use, theme_args = theme_args)
     if (isTRUE(crop)) {
-      xr <- range(dat$x, na.rm = TRUE)
-      yr <- range(dat$y, na.rm = TRUE)
-      xp <- max(diff(xr) * 0.04, .Machine$double.eps)
-      yp <- max(diff(yr) * 0.04, .Machine$double.eps)
+      limits <- spatial_crop_limits(dat$x, dat$y)
       p <- p + ggplot2::coord_equal(
-        xlim = xr + c(-xp, xp),
-        ylim = yr + c(-yp, yp)
+        xlim = limits$xlim,
+        ylim = limits$ylim
       )
     } else {
       p <- p + ggplot2::coord_equal()

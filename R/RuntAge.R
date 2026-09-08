@@ -3,7 +3,7 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
-#' @param object A `Seurat` object, `ExpressionSet`, or expression matrix-like
+#' @param srt A `Seurat` object, `ExpressionSet`, or expression matrix-like
 #' object with genes in rows and pseudobulk/bulk samples in columns.
 #' @param model_paths Named list or character vector of local tAge model files
 #' (`.rds` for `backend = "cpp"`, `.pkl` for `backend = "python"`).
@@ -28,7 +28,7 @@
 #' automatic download. Increase this or use `Inf` for large Bayesian Ridge
 #' models.
 #' @param metadata Sample metadata for matrix input. Row names must match
-#' columns of `object`. If `NULL`, minimal `sample_id` metadata is created.
+#' columns of `srt`. If `NULL`, minimal `sample_id` metadata is created.
 #' @param group.by Metadata columns used to form pseudobulk groups for `Seurat`
 #' input. If `NULL`, cells are aggregated sequentially across the whole object.
 #' `split.by` and `control_group_column` are automatically included in the
@@ -65,7 +65,7 @@
 #' `ExpressionSet` and processed tAge `ExpressionSet` list in the returned
 #' Seurat tool entry or list result.
 #'
-#' @return A `Seurat` object with tAge results stored in `object@tools`, or a
+#' @return A `Seurat` object with tAge results stored in `srt@tools`, or a
 #' list with `predictions`, metadata, and parameters for non-Seurat input.
 #' @export
 #'
@@ -86,7 +86,7 @@
 #' head(pancreas_sub@tools$tAge$predictions)
 #' }
 RuntAge <- function(
-  object,
+  srt,
   model_paths = NULL,
   backend = c("python", "cpp"),
   clock = c("Chronoage", "NormalizedAge", "Mortality"),
@@ -162,7 +162,7 @@ RuntAge <- function(
     }
   }
 
-  is_seurat <- inherits(object, "Seurat")
+  is_seurat <- inherits(srt, "Seurat")
   if (is.null(model_paths)) {
     model_paths <- if (identical(backend, "cpp")) {
       fetch_tage_r_model_paths(
@@ -201,7 +201,7 @@ RuntAge <- function(
   )
 
   eset <- make_tage_eset(
-    object = object,
+    object = srt,
     metadata = metadata,
     group.by = group.by,
     split.by = split.by,
@@ -279,7 +279,7 @@ RuntAge <- function(
   parameters <- list(
     group.by = group.by,
     split.by = split.by,
-    assay = assay %||% if (is_seurat) SeuratObject::DefaultAssay(object) else NULL,
+    assay = assay %||% if (is_seurat) SeuratObject::DefaultAssay(srt) else NULL,
     layer = layer,
     species = species,
     mode = mode,
@@ -316,14 +316,14 @@ RuntAge <- function(
   }
 
   if (is_seurat) {
-    object@tools[[tool_name]] <- result
-    object <- Seurat::LogSeuratCommand(object = object)
+    srt@tools[[tool_name]] <- result
+    srt <- Seurat::LogSeuratCommand(object = srt)
     log_message(
-      "{.pkg tAge} predictions stored in {.code object@tools[[{tool_name}]]}",
+      "{.pkg tAge} predictions stored in {.code srt@tools[[{tool_name}]]}",
       message_type = "success",
       verbose = verbose
     )
-    return(object)
+    return(srt)
   }
 
   result

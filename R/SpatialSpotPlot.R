@@ -1092,13 +1092,6 @@ spatial_dim_continuous_scale <- function(
   )
 }
 
-spatial_dim_image_scale <- function(
-  image,
-  image.scale = c("lowres", "hires")
-) {
-  spatial_image_scale_info(image, image.scale = image.scale)$scale
-}
-
 spatial_dim_raster <- function(image, alpha = 1) {
   alpha <- max(min(alpha, 1), 0)
   if (alpha < 1) {

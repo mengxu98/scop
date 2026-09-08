@@ -5,7 +5,7 @@
 \title{Run tAge transcriptomic aging-clock prediction}
 \usage{
 RuntAge(
-  object,
+  srt,
   model_paths = NULL,
   backend = c("python", "cpp"),
   clock = c("Chronoage", "NormalizedAge", "Mortality"),
@@ -45,7 +45,7 @@ RuntAge(
 )
 }
 \arguments{
-\item{object}{A \code{Seurat} object, \code{ExpressionSet}, or expression matrix-like
+\item{srt}{A \code{Seurat} object, \code{ExpressionSet}, or expression matrix-like
 object with genes in rows and pseudobulk/bulk samples in columns.}
 
 \item{model_paths}{Named list or character vector of local tAge model files
@@ -81,7 +81,7 @@ automatic download. Increase this or use \code{Inf} for large Bayesian Ridge
 models.}
 
 \item{metadata}{Sample metadata for matrix input. Row names must match
-columns of \code{object}. If \code{NULL}, minimal \code{sample_id} metadata is created.}
+columns of \code{srt}. If \code{NULL}, minimal \code{sample_id} metadata is created.}
 
 \item{group.by}{Metadata columns used to form pseudobulk groups for \code{Seurat}
 input. If \code{NULL}, cells are aggregated sequentially across the whole object.
@@ -138,7 +138,7 @@ Seurat tool entry or list result.}
 Default is \code{TRUE}.}
 }
 \value{
-A \code{Seurat} object with tAge results stored in \code{object@tools}, or a
+A \code{Seurat} object with tAge results stored in \code{srt@tools}, or a
 list with \code{predictions}, metadata, and parameters for non-Seurat input.
 }
 \description{

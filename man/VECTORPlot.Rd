@@ -5,7 +5,7 @@
 \title{Plot VECTOR results}
 \usage{
 VECTORPlot(
-  object,
+  srt,
   plot_type = c("grid", "raw"),
   tool_name = "VECTOR",
   score.name = "VECTOR_Score",
@@ -31,7 +31,7 @@ VECTORPlot(
 )
 }
 \arguments{
-\item{object}{A \code{Seurat} object processed by \code{\link[=RunVECTOR]{RunVECTOR()}}.}
+\item{srt}{A \code{Seurat} object processed by \code{\link[=RunVECTOR]{RunVECTOR()}}.}
 
 \item{plot_type}{Plot type. \code{"grid"} colors occupied grid centers by grid
 score, and \code{"raw"} draws VelocityPlot-style grid arrows.}
