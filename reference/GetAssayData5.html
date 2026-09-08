@@ -69,13 +69,20 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">GetAssayData5</span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'Seurat'</span></span>
-<span><span class="fu">GetAssayData5</span><span class="op">(</span><span class="va">object</span>, layer <span class="op">=</span> <span class="st">"counts"</span>, assay <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">GetAssayData5</span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  features <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cells <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'Assay5'</span></span>
-<span><span class="fu">GetAssayData5</span><span class="op">(</span><span class="va">object</span>, layer <span class="op">=</span> <span class="st">"counts"</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">GetAssayData5</span><span class="op">(</span><span class="va">object</span>, layer <span class="op">=</span> <span class="st">"counts"</span>, features <span class="op">=</span> <span class="cn">NULL</span>, cells <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'Assay'</span></span>
-<span><span class="fu">GetAssayData5</span><span class="op">(</span><span class="va">object</span>, layer <span class="op">=</span> <span class="st">"counts"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">GetAssayData5</span><span class="op">(</span><span class="va">object</span>, layer <span class="op">=</span> <span class="st">"counts"</span>, features <span class="op">=</span> <span class="cn">NULL</span>, cells <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -97,6 +104,14 @@
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
 <dd><p>Specific assay to get data from or set data for;
 defaults to the <a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">default assay</a></p></dd>
+
+
+<dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
+<dd><p>Optional vector of feature names to extract.</p></dd>
+
+
+<dt id="arg-cells">cells<a class="anchor" aria-label="anchor" href="#arg-cells"></a></dt>
+<dd><p>Optional vector of cell names to extract.</p></dd>
 
 </dl></div>
     <div class="section level2">
