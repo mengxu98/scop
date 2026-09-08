@@ -189,7 +189,9 @@ in those raw units.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Ignoring unknown labels:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">colour</span> : <span style="color: #0000BB;">"coda_label"</span></span></span></code></pre></div>
 <p><img src="spatial-main-workflow_files/figure-html/inspect-spatial-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
@@ -198,7 +200,11 @@ in those raw units.</p>
 <span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
 <span>  layer <span class="op">=</span> <span class="st">"counts"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Ignoring unknown labels:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">fill</span> : <span style="color: #0000BB;">"TMSB4X"</span></span></span>
+<span><span class="co">#&gt; Ignoring unknown labels:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">fill</span> : <span style="color: #0000BB;">"UBC"</span></span></span></code></pre></div>
 <p><img src="spatial-main-workflow_files/figure-html/inspect-spatial-2.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
@@ -229,35 +235,35 @@ heavier backends.</p>
 <span>  do_spatial_cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:22] <span style="color: #0000BB;">Start standard spot-level spatial workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-09-07 00:45:22] Running spot-level quality control</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-07 00:45:22] Spot QC completed: <span style="color: #0000BB;">1986</span> evaluated, <span style="color: #0000BB;">1907</span> Pass, <span style="color: #0000BB;">79</span> Fail</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:33] <span style="color: #0000BB;">Start standard spot-level spatial workflow...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-09-08 13:25:33] Running spot-level quality control</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-08 13:25:33] Spot QC completed: <span style="color: #0000BB;">1986</span> evaluated, <span style="color: #0000BB;">1907</span> Pass, <span style="color: #0000BB;">79</span> Fail</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Scope</span> assay <span style="color: #0000BB;">"Spatial"</span>, layer <span style="color: #0000BB;">"counts"</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Saved</span> metadata column `SpotQC`</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Plot returned object</span> `SpatialSpotPlot(&lt;returned_object&gt;, group.by = "SpotQC")`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:22] <span style="color: #0000BB;">Start standard processing workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:22] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-09-07 00:45:22] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:33] <span style="color: #0000BB;">Start standard processing workflow...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:33] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-09-08 13:25:33] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
 <span><span class="co">#&gt; Warning: Data 1/1 of the `srt_list` is "unknown"</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:23] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:23] Use the separate HVF from `srt_list`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:23] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:23] Finished check</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:23] Perform `ScaleData()`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:23] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:24] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">30</span> for <span style="color: #0000BB;">Standardpca</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:25] Reorder clusters...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:25] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-07 00:45:25] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-07 00:45:30] <span style="color: #00BB00;">Standard processing workflow completed</span></span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-09-07 00:45:30] Running spatial variable feature detection</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-07 00:45:30] Spatial variable features completed: <span style="color: #0000BB;">2000</span> tested, <span style="color: #0000BB;">50</span> ranked in the top set</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Use the separate HVF from `srt_list`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Finished check</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Perform `ScaleData()`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:35] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">30</span> for <span style="color: #0000BB;">Standardpca</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:36] Reorder clusters...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:36] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:36] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-08 13:25:41] <span style="color: #00BB00;">Standard processing workflow completed</span></span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-09-08 13:25:41] Running spatial variable feature detection</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-08 13:25:41] Spatial variable features completed: <span style="color: #0000BB;">2000</span> tested, <span style="color: #0000BB;">50</span> ranked in the top set</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Scope</span> method <span style="color: #0000BB;">"moran"</span> (<span style="color: #0000BB;">"cpp"</span> backend); assay <span style="color: #0000BB;">"Spatial"</span>, layer <span style="color: #0000BB;">"data"</span>; <span style="color: #0000BB;">1986</span> spots; coordinates <span style="color: #0000BB;">"raw"</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Saved</span> full result in returned object tool bundle `SpatialVariableFeatures`</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Plot returned object</span> `SpatialVariableFeaturePlot(&lt;returned_object&gt;, plot_type = "combined", assay = "Spatial", image = "slice1", coord.cols = c("x", "y"))`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-07 00:45:30] <span style="color: #00BB00;">Standard spot-level spatial workflow completed</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-08 13:25:41] <span style="color: #00BB00;">Standard spot-level spatial workflow completed</span></span></span></code></pre></div>
 <p>After the run, look at the stable result locations before making more
 plots. Most spatial wrappers write method parameters and summaries under
 <code>srt@tools</code>. Spatial variable features are genes whose
@@ -321,7 +327,9 @@ is.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"SpotQC"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Ignoring unknown labels:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">colour</span> : <span style="color: #0000BB;">"SpotQC"</span></span></span></code></pre></div>
 <p><img src="spatial-main-workflow_files/figure-html/plot-results-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
@@ -334,7 +342,7 @@ is.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/SpatialVariableFeaturePlot.html">SpatialVariableFeaturePlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"surface"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"summary"</span>,</span>
 <span>  nfeatures <span class="op">=</span> <span class="fl">4</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="spatial-main-workflow_files/figure-html/plot-results-3.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
@@ -388,27 +396,28 @@ than on the wrapper choice. Use a matched single-cell reference, then
 inspect dominant cell types and maximum proportions before interpreting
 spatial biology.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunSpatialDWLS.html">RunSpatialDWLS</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunRCTD.html">RunRCTD</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
 <span>  reference <span class="op">=</span> <span class="va">reference</span>,</span>
 <span>  reference_label <span class="op">=</span> <span class="st">"celltype"</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
 <span>  reference_assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  reference_layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
 <span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
-<span>  prefix <span class="op">=</span> <span class="st">"SpatialDWLS"</span></span>
+<span>  rctd_mode <span class="op">=</span> <span class="st">"full"</span>,</span>
+<span>  max_cores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialDWLS</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">RCTD</span><span class="op">$</span><span class="va">summary</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"SpatialDWLS_dominant_type"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"SpatialDWLS_dominant_type"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"pie"</span></span>
+<span>  tool_name <span class="op">=</span> <span class="st">"RCTD"</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"dominant"</span>,</span>
+<span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><code>RCTD</code>, <code>SPOTlight</code>, <code>CARD</code>, and
 <code>STdeconvolve</code> follow the same practical rule: first check
@@ -453,7 +462,7 @@ depletion.</p>
 <span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">6</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-07 00:45:34] Spatial neighborhood analysis completed (<span style="color: #0000BB;">"observed"</span>)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-08 13:25:43] Spatial neighborhood analysis completed (<span style="color: #0000BB;">"observed"</span>)</span></span>
 <span></span>
 <span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialNeighborhood</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="co">#&gt; $n_pairs</span></span>
@@ -553,7 +562,8 @@ that analysis before plotting its metadata.</p>
 <span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span>
 <span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialVariableFeatures</span><span class="op">$</span><span class="va">summary</span><span class="op">$</span><span class="va">top_features</span>, <span class="fl">20</span><span class="op">)</span>,</span>
 <span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
-<span>  views <span class="op">=</span> <span class="st">"para"</span></span>
+<span>  views <span class="op">=</span> <span class="st">"para"</span>,</span>
+<span>  para_l <span class="op">=</span> <span class="fl">1000</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">MistyR</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="fu"><a href="../reference/MistyRPlot.html">MistyRPlot</a></span><span class="op">(</span><span class="va">spatial</span>, type <span class="op">=</span> <span class="st">"improvements"</span><span class="op">)</span></span></code></pre></div>
@@ -668,9 +678,12 @@ the selected image.</p>
 <span>  local.threshold <span class="op">=</span> <span class="fl">0.1</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/SpatialDMPlot.html">SpatialDMPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"weights"</span>, spot <span class="op">=</span> <span class="st">"spot_001"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/SpatialDMPlot.html">SpatialDMPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"global"</span>, highlight <span class="op">=</span> <span class="st">"SPP1_CD44"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/SpatialDMPlot.html">SpatialDMPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"local"</span>, pair <span class="op">=</span> <span class="st">"SPP1_CD44"</span><span class="op">)</span></span>
+<span><span class="va">spatialdm_global</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GetSpatialDMResult.html">GetSpatialDMResult</a></span><span class="op">(</span><span class="va">spatial</span>, type <span class="op">=</span> <span class="st">"global"</span><span class="op">)</span></span>
+<span><span class="va">spatialdm_pair</span> <span class="op">&lt;-</span> <span class="va">spatialdm_global</span><span class="op">$</span><span class="va">interaction</span><span class="op">[[</span><span class="fl">1L</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">spatialdm_spot</span> <span class="op">&lt;-</span> <span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialDM</span><span class="op">$</span><span class="va">coordinates</span><span class="op">$</span><span class="va">cell_id</span><span class="op">[[</span><span class="fl">1L</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="fu"><a href="../reference/SpatialDMPlot.html">SpatialDMPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"global"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialDMPlot.html">SpatialDMPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"local"</span>, pair <span class="op">=</span> <span class="va">spatialdm_pair</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialDMPlot.html">SpatialDMPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"weights"</span>, spot <span class="op">=</span> <span class="va">spatialdm_spot</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/GetSpatialDMResult.html">GetSpatialDMResult</a></span><span class="op">(</span><span class="va">spatial</span>, type <span class="op">=</span> <span class="st">"global"</span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="../reference/SpatialDMPlot.html">SpatialDMPlot()</a></code> follows the information content of the
 official melanoma tutorial while returning SCOP

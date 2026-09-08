@@ -102,9 +102,10 @@ separate from scRNA batch integration benchmarking
 <div class="section level2">
 <h2 id="load-data-and-define-a-gold-standard">Load data and define a gold standard<a class="anchor" aria-label="anchor" href="#load-data-and-define-a-gold-standard"></a>
 </h2>
-<p>The bundled Visium pancreas subset is used here. For demonstration, a
-simple cyclic domain label is assigned as the gold standard. Replace
-this with manual annotations or reference domains for real analyses.</p>
+<p>This workflow uses a small simulated spatial object with three
+regions and region-specific expression signals. It demonstrates the
+benchmark interface; replace the simulated labels with tissue
+annotations for real analyses.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #0000BB;">          </span><span style="color: #BB0000;">⬢</span><span style="color: #0000BB;">          </span><span style="color: #BBBB00;">.</span><span style="color: #0000BB;">        </span><span style="color: #00BB00;">⬡</span><span style="color: #0000BB;">             </span><span style="color: #BB00BB;">⬢</span><span style="color: #0000BB;">     </span><span style="color: #00BBBB;">.</span></span></span>
@@ -126,16 +127,25 @@ this with manual annotations or reference domains for real analyses.</p>
 <span><span class="co">#&gt; <span style="color: #555555;">  or options(log_message.verbose = FALSE)</span></span></span>
 <span><span class="co">#&gt; <span style="color: #555555;">------------------------------------------------------------</span></span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span>
-<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span>
-<span></span>
-<span><span class="va">spatial</span><span class="op">$</span><span class="va">gold_domain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"domain_"</span>, <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">3</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
+<span><span class="va">n_spots</span> <span class="op">&lt;-</span> <span class="fl">36L</span></span>
+<span><span class="va">n_genes</span> <span class="op">&lt;-</span> <span class="fl">60L</span></span>
+<span><span class="va">grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, y <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span></span>
+<span><span class="va">spatial_domain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">grid</span><span class="op">$</span><span class="va">x</span> <span class="op">&lt;=</span> <span class="fl">2</span>, <span class="st">"left"</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">grid</span><span class="op">$</span><span class="va">x</span> <span class="op">&lt;=</span> <span class="fl">4</span>, <span class="st">"middle"</span>, <span class="st">"right"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="va">n_genes</span> <span class="op">*</span> <span class="va">n_spots</span>, <span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">n_genes</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Gene"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n_genes</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"spot"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n_spots</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">signal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n_genes</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"left"</span>, <span class="st">"middle"</span>, <span class="st">"right"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">label</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">signal</span><span class="op">)</span><span class="op">)</span> <span class="va">counts</span><span class="op">[</span><span class="va">signal</span><span class="op">[[</span><span class="va">label</span><span class="op">]</span><span class="op">]</span>, <span class="va">spatial_domain</span> <span class="op">==</span> <span class="va">label</span><span class="op">]</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">counts</span><span class="op">[</span><span class="va">signal</span><span class="op">[[</span><span class="va">label</span><span class="op">]</span><span class="op">]</span>, <span class="va">spatial_domain</span> <span class="op">==</span> <span class="va">label</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">spatial_domain</span> <span class="op">==</span> <span class="va">label</span><span class="op">)</span> <span class="op">*</span> <span class="fl">20</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Data is of class matrix. Coercing to dgCMatrix.</span></span>
+<span><span class="va">spatial</span><span class="op">$</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">grid</span><span class="op">$</span><span class="va">x</span></span>
+<span><span class="va">spatial</span><span class="op">$</span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">grid</span><span class="op">$</span><span class="va">y</span></span>
+<span><span class="va">spatial</span><span class="op">$</span><span class="va">gold_domain</span> <span class="op">&lt;-</span> <span class="va">spatial_domain</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">$</span><span class="va">gold_domain</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; domain_1 domain_2 domain_3 </span></span>
-<span><span class="co">#&gt;      662      662      662</span></span></code></pre></div>
+<span><span class="co">#&gt;   left middle  right </span></span>
+<span><span class="co">#&gt;     12     12     12</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="run-the-benchmark">Run the benchmark<a class="anchor" aria-label="anchor" href="#run-the-benchmark"></a>
@@ -148,26 +158,26 @@ layers.</p>
 <span>  <span class="va">spatial</span>,</span>
 <span>  gold_standard <span class="op">=</span> <span class="st">"gold_domain"</span>,</span>
 <span>  method_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    BayesSpace <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n.PCs <span class="op">=</span> <span class="fl">5</span>, n.HVGs <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>,</span>
-<span>    BANKSY <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span>,</span>
-<span>    SmoothClust <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>layer <span class="op">=</span> <span class="st">"counts"</span>, min_spots <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>    BayesSpace <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n.PCs <span class="op">=</span> <span class="fl">5</span>, n.HVGs <span class="op">=</span> <span class="fl">20</span>, coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    BANKSY <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>layer <span class="op">=</span> <span class="st">"counts"</span>, coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    SmoothClust <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>layer <span class="op">=</span> <span class="st">"counts"</span>, min_spots <span class="op">=</span> <span class="fl">1</span>, coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">bench</span><span class="op">$</span><span class="va">summary</span></span>
-<span><span class="co">#&gt;        method      workflow           ARI          NMI    purity runtime_s</span></span>
-<span><span class="co">#&gt; 1  BayesSpace SpatialDomain -0.0007844788 1.295315e-04 0.3398792   274.722</span></span>
-<span><span class="co">#&gt; 2      BANKSY SpatialDomain -0.0010452685 4.916507e-04 0.3449144    16.713</span></span>
-<span><span class="co">#&gt; 3 SmoothClust SpatialDomain -0.0009201495 3.559811e-05 0.3358510     8.728</span></span>
-<span><span class="co">#&gt;   baseline_memory_mb peak_memory_mb memory_delta_mb n_evaluated n_clusters</span></span>
-<span><span class="co">#&gt; 1           659.9062       1470.707        810.8008        1986          3</span></span>
-<span><span class="co">#&gt; 2           659.9805       2020.625       1360.6445        1986          6</span></span>
-<span><span class="co">#&gt; 3           660.0352       1446.555        786.5195        1986          3</span></span>
-<span><span class="co">#&gt;    status error</span></span>
-<span><span class="co">#&gt; 1 success      </span></span>
-<span><span class="co">#&gt; 2 success      </span></span>
-<span><span class="co">#&gt; 3 success</span></span></code></pre></div>
+<span><span class="co">#&gt;        method      workflow ARI NMI purity runtime_s baseline_memory_mb</span></span>
+<span><span class="co">#&gt; 1  BayesSpace SpatialDomain   1   1      1    11.791           616.1484</span></span>
+<span><span class="co">#&gt; 2      BANKSY SpatialDomain  NA  NA     NA     3.708           616.1484</span></span>
+<span><span class="co">#&gt; 3 SmoothClust SpatialDomain   1   1      1    29.977           616.0195</span></span>
+<span><span class="co">#&gt;   peak_memory_mb memory_delta_mb n_evaluated n_clusters  status</span></span>
+<span><span class="co">#&gt; 1      1326.0547        709.9062          36          3 success</span></span>
+<span><span class="co">#&gt; 2       918.4141        302.2656           0         NA  failed</span></span>
+<span><span class="co">#&gt; 3      1792.5352       1176.5156          36          3 success</span></span>
+<span><span class="co">#&gt;                               error</span></span>
+<span><span class="co">#&gt; 1                                  </span></span>
+<span><span class="co">#&gt; 2 Not enough neighbors in data set!</span></span>
+<span><span class="co">#&gt; 3</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="inspect-the-result-object">Inspect the result object<a class="anchor" aria-label="anchor" href="#inspect-the-result-object"></a>
@@ -187,25 +197,25 @@ layers.</p>
 <span><span class="co">#&gt; 'data.frame':    3 obs. of  13 variables:</span></span>
 <span><span class="co">#&gt;  $ method            : chr  "BayesSpace" "BANKSY" "SmoothClust"</span></span>
 <span><span class="co">#&gt;  $ workflow          : chr  "SpatialDomain" "SpatialDomain" "SpatialDomain"</span></span>
-<span><span class="co">#&gt;  $ ARI               : num  -0.000784 -0.001045 -0.00092</span></span>
-<span><span class="co">#&gt;  $ NMI               : num  1.30e-04 4.92e-04 3.56e-05</span></span>
-<span><span class="co">#&gt;  $ purity            : num  0.34 0.345 0.336</span></span>
-<span><span class="co">#&gt;  $ runtime_s         : num  274.72 16.71 8.73</span></span>
-<span><span class="co">#&gt;  $ baseline_memory_mb: num  660 660 660</span></span>
-<span><span class="co">#&gt;  $ peak_memory_mb    : num  1471 2021 1447</span></span>
-<span><span class="co">#&gt;  $ memory_delta_mb   : num  811 1361 787</span></span>
-<span><span class="co">#&gt;  $ n_evaluated       : int  1986 1986 1986</span></span>
-<span><span class="co">#&gt;  $ n_clusters        : int  3 6 3</span></span>
-<span><span class="co">#&gt;  $ status            : chr  "success" "success" "success"</span></span>
-<span><span class="co">#&gt;  $ error             : chr  "" "" ""</span></span>
+<span><span class="co">#&gt;  $ ARI               : num  1 NA 1</span></span>
+<span><span class="co">#&gt;  $ NMI               : num  1 NA 1</span></span>
+<span><span class="co">#&gt;  $ purity            : num  1 NA 1</span></span>
+<span><span class="co">#&gt;  $ runtime_s         : num  11.79 3.71 29.98</span></span>
+<span><span class="co">#&gt;  $ baseline_memory_mb: num  616 616 616</span></span>
+<span><span class="co">#&gt;  $ peak_memory_mb    : num  1326 918 1793</span></span>
+<span><span class="co">#&gt;  $ memory_delta_mb   : num  710 302 1177</span></span>
+<span><span class="co">#&gt;  $ n_evaluated       : int  36 0 36</span></span>
+<span><span class="co">#&gt;  $ n_clusters        : int  3 NA 3</span></span>
+<span><span class="co">#&gt;  $ status            : chr  "success" "failed" "success"</span></span>
+<span><span class="co">#&gt;  $ error             : chr  "" "Not enough neighbors in data set!" ""</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bench</span><span class="op">$</span><span class="va">predictions</span><span class="op">)</span></span>
-<span><span class="co">#&gt;              spot_id gold_standard     method prediction</span></span>
-<span><span class="co">#&gt; 1 TGGTATCGGTCTGTAT-1      domain_1 BayesSpace          1</span></span>
-<span><span class="co">#&gt; 2 ATTATCTCGACAGATC-1      domain_2 BayesSpace          1</span></span>
-<span><span class="co">#&gt; 3 TGAGATCAAATACTCA-1      domain_3 BayesSpace          2</span></span>
-<span><span class="co">#&gt; 4 CTGGTCCTAACTTGGC-1      domain_1 BayesSpace          1</span></span>
-<span><span class="co">#&gt; 5 ATAGTCTTTGACGTGC-1      domain_2 BayesSpace          1</span></span>
-<span><span class="co">#&gt; 6 GGGTGGTCCAGCCTGT-1      domain_3 BayesSpace          2</span></span></code></pre></div>
+<span><span class="co">#&gt;   spot_id gold_standard     method prediction</span></span>
+<span><span class="co">#&gt; 1   spot1          left BayesSpace          1</span></span>
+<span><span class="co">#&gt; 2   spot2          left BayesSpace          1</span></span>
+<span><span class="co">#&gt; 3   spot3        middle BayesSpace          3</span></span>
+<span><span class="co">#&gt; 4   spot4        middle BayesSpace          3</span></span>
+<span><span class="co">#&gt; 5   spot5         right BayesSpace          2</span></span>
+<span><span class="co">#&gt; 6   spot6         right BayesSpace          2</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="plot-benchmark-views">Plot benchmark views<a class="anchor" aria-label="anchor" href="#plot-benchmark-views"></a>
