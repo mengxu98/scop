@@ -650,6 +650,23 @@ spatial_graph_compute <- function(
   )
 }
 
+spatial_segmentation_name <- function(image, required = FALSE) {
+  available <- tryCatch(SeuratObject::Boundaries(image), error = function(e) character())
+  candidates <- available[vapply(available, function(name) inherits(image[[name]], "Segmentation"), logical(1))]
+  conventional <- intersect(c("segmentation", "segmentations"), candidates)
+  if (length(conventional) == 1L) return(conventional)
+  if (length(candidates) == 1L) return(candidates)
+  if (length(candidates) > 1L) stop("Multiple segmentation boundaries; supply an explicit boundaries table", call. = FALSE)
+  if (isTRUE(required)) stop("The selected image does not contain segmentation boundaries", call. = FALSE)
+  NULL
+}
+
+spatial_segmentation_table <- function(image, required = FALSE) {
+  name <- spatial_segmentation_name(image, required = required)
+  if (is.null(name)) return(NULL)
+  as.data.frame(SeuratObject::GetTissueCoordinates(image[[name]]))
+}
+
 spatial_boundary_validate <- function(boundaries, image = NULL) {
   if (!is.data.frame(boundaries) || nrow(boundaries) == 0L) {
     log_message("{.arg boundaries} must be a non-empty data frame", message_type = "error")
@@ -677,8 +694,8 @@ spatial_boundary_validate <- function(boundaries, image = NULL) {
   image_col <- pick_col(c("image", "image_id", "slice"))
   out <- boundaries
   out$cell_id <- as.character(boundaries[[cell_col]])
-  out$x <- suppressWarnings(as.numeric(boundaries[[x_col]]))
-  out$y <- suppressWarnings(as.numeric(boundaries[[y_col]]))
+  out$x <- spatial_coordinate_numeric(boundaries[[x_col]])
+  out$y <- spatial_coordinate_numeric(boundaries[[y_col]])
   out$polygon_id <- if (is.null(polygon_col)) out$cell_id else as.character(boundaries[[polygon_col]])
   out$ring_id <- if (is.null(ring_col)) "1" else as.character(boundaries[[ring_col]])
   out$vertex_order <- if (is.null(order_col)) seq_len(nrow(out)) else suppressWarnings(as.numeric(boundaries[[order_col]]))

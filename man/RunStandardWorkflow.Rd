@@ -50,6 +50,11 @@ RunStandardWorkflow(
   cores = 1L,
   verbose = TRUE,
   seed = 11,
+  spatial_cluster_params = list(),
+  do_spatial_qc = FALSE,
+  spatial_qc_params = list(),
+  spanorm_params = list(),
+  spatial_data_type = "auto",
   ...,
   srt = NULL
 )
@@ -59,7 +64,7 @@ RunStandardWorkflow(
 
 \item{prefix}{Prefix for intermediate object names.}
 
-\item{workflow}{\code{"single_cell"} or \code{"spatial"} (basic single-image Visium-style).}
+\item{workflow}{\code{"single_cell"} or \code{"spatial"} (one explicitly selected spatial context).}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -73,8 +78,9 @@ a single image is selected automatically when \code{NULL}.}
 \item{do_spatial_variable_features, spatial_variable_features_params}{Run \code{\link[=RunSpatialVariableFeatures]{RunSpatialVariableFeatures()}}. The workflow defaults
 \code{set_variable_features = FALSE} so expression HVFs are kept.}
 
-\item{do_spatial_cluster, spatial_cluster_method, spatial_q, bayesspace_params}{Spatial clustering. Only \code{"BayesSpace"} is supported. \code{spatial_q = NULL}
-uses the number of ordinary spot clusters.}
+\item{do_spatial_cluster, spatial_cluster_method, spatial_q, bayesspace_params}{Spatial clustering with \code{"BayesSpace"}, \code{"BANKSY"}, or \code{"SmoothClust"}.
+\code{spatial_q = NULL} uses ordinary clusters for BayesSpace/SmoothClust.
+BANKSY uses its resolution parameter and rejects a supplied \code{spatial_q}.}
 
 \item{reference, reference_label, reference_assay}{Optional single-cell reference
 for deconvolution.}
@@ -114,6 +120,20 @@ Default is \code{TRUE}.}
 
 \item{seed}{Random seed.}
 
+\item{spatial_cluster_params}{Named method-specific arguments. For BayesSpace,
+use either this list or the retained \code{bayesspace_params}, not both.}
+
+\item{do_spatial_qc, spatial_qc_params}{Run spatially aware \code{\link[=RunSpotSweeper]{RunSpotSweeper()}}
+before preprocessing. Filtering is disabled; inspect its QC labels first.}
+
+\item{spanorm_params}{Arguments for \code{\link[=RunSpaNorm]{RunSpaNorm()}} when
+\code{normalization_method = "SpaNorm"}. Creates a separate normalized assay;
+count-based backends continue to use the original assay.}
+
+\item{spatial_data_type}{Observation type: \code{"auto"}, \code{"spot"}, \code{"bin"}, or
+\code{"cell"}. Auto uses import provenance or image evidence, otherwise unknown.
+Cell observations cannot use BayesSpace or spot deconvolution in this workflow.}
+
 \item{...}{Additional arguments passed to reduction methods.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
@@ -129,7 +149,7 @@ attribute \code{standard_spatial_stages}.
 \description{
 Normalize, find variable features, scale, reduce dimensions, and cluster a
 \code{Seurat} object. \code{workflow = "spatial"} adds spot QC, spatial variable
-features, optional BayesSpace clustering, and optional deconvolution. It is
+features, optional spatial clustering, and optional deconvolution. It is
 not a multi-slice integration orchestrator.
 
 Objects that also contain a \code{ChromatinAssay} are preprocessed sequentially

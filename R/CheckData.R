@@ -162,6 +162,7 @@ CheckDataList <- function(
     "Checking a list of {.cls Seurat}...",
     verbose = verbose
   )
+  normalization_disabled <- identical(do_normalization, FALSE)
   set.seed(seed)
 
   if (!inherits(srt_list, "list") || any(sapply(srt_list, function(x) !inherits(x, "Seurat")))) {
@@ -385,7 +386,7 @@ CheckDataList <- function(
         message_type = "warning",
         verbose = verbose
       )
-      do_normalization <- TRUE
+      if (!normalization_disabled) do_normalization <- TRUE
     }
     if (isTRUE(do_normalization)) {
       if (normalization_method == "LogNormalize") {
