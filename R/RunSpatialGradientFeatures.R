@@ -6,7 +6,7 @@
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
-#' @inheritParams SpatialSpotPlot
+#' @param srt A `Seurat` object.
 #' @inheritParams scop-params
 #' @param reference Spatial reference type: `"trajectory"` for STS or
 #' `"annotation"` for SAS.
@@ -66,13 +66,17 @@
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' spatial <- visium_human_pancreas_sub
+#' counts <- GetAssayData5(spatial, assay = "Spatial", layer = "counts")
+#' gradient_features <- names(sort(Matrix::rowSums(counts), decreasing = TRUE))[
+#'   seq_len(min(8L, nrow(counts)))
+#' ]
 #' # Use a diagonal example axis without permutation testing.
 #' spatial <- RunSpatialGradientFeatures(
 #'   spatial,
 #'   reference = "trajectory",
 #'   backend = "cpp",
 #'   result_name = "example_axis",
-#'   variables = rownames(spatial)[1:8],
+#'   variables = gradient_features,
 #'   start = c(min(spatial$x), min(spatial$y)),
 #'   end = c(max(spatial$x), max(spatial$y)),
 #'   layer = "counts",
@@ -85,14 +89,8 @@
 #'   verbose = FALSE
 #' )
 #'
-#' SpatialGradientPlot(
-#'   spatial,
-#'   plot_type = "surface",
-#'   features = rownames(spatial)[1:2],
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y"),
-#'   pt.size = 1.2
-#' )
+#' SpatialGradientPlot(spatial, plot_type = "line")
+#' SpatialGradientPlot(spatial, plot_type = "model")
 RunSpatialGradientFeatures <- function(
   srt,
   reference = c("trajectory", "annotation"),
@@ -287,20 +285,24 @@ RunSpatialGradientFeatures <- function(
 #' @title Plot spatial gradient screening results
 #'
 #' @description
-#' Visualize normalized results produced by `RunSpatialGradientFeatures()`
+#' Visualize normalized results produced by `RunSpatialGradientFeatures()`. The
+#' plot reads only the stored screening, summary, and model-fit tables; it does
+#' not refetch expression from the object's current assay or layer. The model
+#' view displays the stored model-matching error (RMSE) for each feature.
 #'
 #' @md
-#' @inheritParams SpatialSpotPlot
+#' @param srt A `Seurat` object containing stored gradient results.
 #' @param result_name Stored spatial gradient result name. If `NULL`, the latest
 #' stored result is used.
-#' @param plot_type Plot type: `"summary"`, `"surface"`, `"line"`, `"model"`, or
-#' `"combined"`.
+#' @param plot_type Plot type: `"summary"`, `"line"`, or `"model"`.
 #' @param features Variables to plot. If `NULL`, top variables from the stored
 #' result are used.
 #' @param nfeatures Number of top variables used when `features = NULL`.
 #' @param palette,palcolor Color palette passed to SCOP plotting helpers.
-#' @param legend.position Legend position for surface, line, and model plots.
-#' @param nrow,ncol,byrow Layout controls for multi-feature plots.
+#' @param legend.position Legend position for line, summary, and model plots.
+#' @param theme_use Theme name or function.
+#' @param theme_args Additional theme arguments.
+#' @param nrow,ncol Layout controls for multi-feature plots.
 #' @param line_size Size of fitted gradient lines.
 #' @param line_alpha Alpha for raw value points.
 #' @param line_fit Gradient line source. `"stored"` uses the saved
@@ -316,19 +318,9 @@ RunSpatialGradientFeatures <- function(
 SpatialGradientPlot <- function(
   srt,
   result_name = NULL,
-  plot_type = c("summary", "surface", "line", "model", "combined"),
+  plot_type = c("summary", "line", "model"),
   features = NULL,
   nfeatures = 4,
-  assay = NULL,
-  layer = "data",
-  image = NULL,
-  overlay_image = TRUE,
-  image.alpha = 1,
-  coord.cols = c("col", "row"),
-  flip.y = TRUE,
-  pt.size = NULL,
-  pt.alpha = 0.9,
-  stroke = 0.1,
   palette = "Spectral",
   palcolor = NULL,
   legend.position = "right",
@@ -338,47 +330,16 @@ SpatialGradientPlot <- function(
   line_alpha = 0.35,
   line_fit = c("stored", "lm"),
   nrow = NULL,
-  ncol = NULL,
-  byrow = TRUE,
-  image.scale = c("lowres", "hires")
+  ncol = NULL
 ) {
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   plot_type <- match.arg(plot_type)
-  image.scale <- match.arg(image.scale)
   line_fit <- match.arg(line_fit)
   result <- sgf_get_result(srt, result_name = result_name)
   spatial_require_coordinate_contract(result, "RunSpatialGradientFeatures()")
   features <- sgf_plot_features(result, features = features, nfeatures = nfeatures)
-  layer <- sgf_plot_layer(srt = srt, result = result, assay = assay, layer = layer, features = features)
-
-  if (identical(plot_type, "surface")) {
-    return(sgf_surface_plot(
-      srt = srt,
-      result = result,
-      features = features,
-      assay = assay,
-      layer = layer,
-      image = image,
-      image.scale = image.scale,
-      overlay_image = overlay_image,
-      image.alpha = image.alpha,
-      coord.cols = coord.cols,
-      flip.y = flip.y,
-      pt.size = pt.size,
-      pt.alpha = pt.alpha,
-      stroke = stroke,
-      palette = palette,
-      palcolor = palcolor,
-      legend.position = legend.position,
-      theme_use = theme_use,
-      theme_args = theme_args,
-      nrow = nrow,
-      ncol = ncol,
-      byrow = byrow
-    ))
-  }
   if (identical(plot_type, "line")) {
     return(sgf_line_plot(
       result = result,
@@ -418,48 +379,6 @@ SpatialGradientPlot <- function(
     ))
   }
 
-  check_r("patchwork", verbose = FALSE)
-  surface <- sgf_surface_plot(
-    srt = srt,
-    result = result,
-    features = features,
-    assay = assay,
-    layer = layer,
-    image = image,
-    image.scale = image.scale,
-    overlay_image = overlay_image,
-    image.alpha = image.alpha,
-    coord.cols = coord.cols,
-    flip.y = flip.y,
-    pt.size = pt.size,
-    pt.alpha = pt.alpha,
-    stroke = stroke,
-    palette = palette,
-    palcolor = palcolor,
-    legend.position = legend.position,
-    theme_use = theme_use,
-    theme_args = theme_args,
-    nrow = nrow,
-    ncol = ncol,
-    byrow = byrow
-  )
-  line <- sgf_line_plot(
-    result = result,
-    features = features,
-    palette = palette,
-    palcolor = palcolor,
-    legend.position = legend.position,
-    theme_use = theme_use,
-    theme_args = theme_args,
-    line_size = line_size,
-    line_alpha = line_alpha,
-    line_fit = line_fit,
-    nrow = nrow,
-    ncol = ncol
-  )
-  check_r("patchwork", verbose = FALSE)
-  wrap_plots <- get_namespace_fun("patchwork", "wrap_plots")
-  wrap_plots(surface, line, ncol = 1)
 }
 
 
@@ -964,101 +883,6 @@ sgf_plot_features <- function(result, features = NULL, nfeatures = 4) {
   features
 }
 
-sgf_plot_layer <- function(srt, result, assay, layer, features) {
-  stored_layer <- sgf_parameter_value(result, "layer")
-  if (is.null(layer) || identical(layer, "") || identical(layer, NA_character_)) {
-    return(stored_layer %||% "data")
-  }
-  if (!identical(layer, "data") || is.null(stored_layer) || identical(stored_layer, layer)) {
-    return(layer)
-  }
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
-  expr <- tryCatch(
-    suppressWarnings(GetAssayData5(srt, assay = assay, layer = layer)),
-    error = function(e) NULL
-  )
-  has_features <- !is.null(expr) && all(features %in% rownames(expr))
-  if (isTRUE(has_features)) {
-    return(layer)
-  }
-  stored_expr <- tryCatch(
-    suppressWarnings(GetAssayData5(srt, assay = assay, layer = stored_layer)),
-    error = function(e) NULL
-  )
-  if (!is.null(stored_expr) && all(features %in% rownames(stored_expr))) {
-    return(stored_layer)
-  }
-  layer
-}
-
-sgf_parameter_value <- function(result, key) {
-  params <- result$parameters
-  if (!is.data.frame(params) || !"key" %in% colnames(params) || !"value" %in% colnames(params)) {
-    return(NULL)
-  }
-  idx <- which(params$key %in% key)
-  if (length(idx) == 0L) {
-    return(NULL)
-  }
-  val <- params$value[[idx[[1L]]]]
-  if (is.na(val) || !nzchar(val)) {
-    return(NULL)
-  }
-  as.character(val)
-}
-
-sgf_surface_plot <- function(
-  srt,
-  result,
-  features,
-  assay,
-  layer,
-  image,
-  image.scale,
-  overlay_image,
-  image.alpha,
-  coord.cols,
-  flip.y,
-  pt.size,
-  pt.alpha,
-  stroke,
-  palette,
-  palcolor,
-  legend.position,
-  theme_use,
-  theme_args,
-  nrow,
-  ncol,
-  byrow
-) {
-  if (is.null(theme_use)) {
-    theme_use <- ggplot2::theme_minimal
-  }
-  SpatialSpotPlot(
-    srt = srt,
-    features = features,
-    assay = assay,
-    layer = layer,
-    image = image,
-    image.scale = image.scale,
-    overlay_image = overlay_image,
-    image.alpha = image.alpha,
-    coord.cols = coord.cols,
-    flip.y = flip.y,
-    pt.size = pt.size,
-    pt.alpha = pt.alpha,
-    stroke = stroke,
-    palette = palette,
-    palcolor = palcolor,
-    legend.position = legend.position,
-    theme_use = theme_use,
-    theme_args = theme_args,
-    nrow = nrow,
-    ncol = ncol,
-    byrow = byrow
-  )
-}
-
 sgf_line_plot <- function(
   result,
   features,
@@ -1116,7 +940,7 @@ sgf_line_plot <- function(
   p <- p +
     ggplot2::facet_wrap(~variable, scales = "free_y", nrow = nrow, ncol = ncol) +
     ggplot2::scale_color_manual(values = cols, guide = "none") +
-    ggplot2::labs(x = "Gradient distance", y = "Expression") +
+    ggplot2::labs(x = "Gradient distance", y = "Stored normalized expression") +
     apply_plot_theme(theme_use = theme_use, theme_args = theme_args, fallback = ggplot2::theme_minimal) +
     ggplot2::theme(legend.position = legend.position)
   p

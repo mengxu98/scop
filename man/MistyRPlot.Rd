@@ -9,7 +9,8 @@ MistyRPlot(
   res = NULL,
   type = c("improvements", "contributions"),
   top_n = 20,
-  target = NULL
+  target = NULL,
+  measure = NULL
 )
 }
 \arguments{
@@ -22,6 +23,13 @@ MistyRPlot(
 \item{top_n}{Maximum number of records shown after ranking by absolute value.}
 
 \item{target}{Optional target feature filter.}
+
+\item{measure}{Numeric result column to display. For
+\code{type = "improvements"} use \code{"gain.R2"}, \code{"gain.RMSE"}, or
+\code{"value"}; for \code{type = "contributions"}, use an available
+contribution, importance, or value column. \code{NULL} defaults to
+\code{"gain.R2"} for improvements and \code{"contribution"} for contributions,
+and errors if that column is not present.}
 }
 \value{
 A `ggplot` object.

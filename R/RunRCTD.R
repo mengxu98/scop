@@ -30,10 +30,9 @@
 #' @param prefix Prefix for metadata columns.
 #' @param tool_name Name used to store the plain result bundle in `srt@tools`.
 #' @param store_results Whether to store detailed RCTD results in `srt@tools`.
-#' @param round_counts Whether to round non-integer counts to the nearest
-#' integer before passing data to `spacexr`. RCTD requires integer count
-#' matrices; this defaults to `TRUE` so bundled example data with scaled
-#' non-integer reference counts can run directly.
+#' @param round_counts Whether to round non-integer values before passing data
+#' to `spacexr`. RCTD requires integer count matrices; rounding is a
+#' compatibility option and does not recover original counts.
 #' @param create_rctd_params Additional parameters passed to
 #' `spacexr::createRctd()` or `spacexr::create.RCTD()`.
 #' @param run_rctd_params Additional parameters passed to

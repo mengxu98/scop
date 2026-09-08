@@ -57,15 +57,19 @@ RunSpatialDM(
 
 \item{l, eff_dist}{SpatialDM RBF scale; one must be supplied.}
 
-\item{cutoff}{Maximum selected-cell fraction used by Scissor's alpha search.}
+\item{cutoff}{RBF weight cutoff used by SpatialDM to retain local spatial
+weights. This is a fraction between zero and one; it is not a Scissor
+alpha-search parameter.}
 
 \item{n_neighbors}{Number of neighbors to use for constructing the KNN graph.}
 
 \item{n_neighbor_layers}{Number of neighbor layers to use.}
 
-\item{single_cell}{Whether the input is a single-cell (rather than spatial) dataset.}
+\item{single_cell}{Whether to use the single-cell spatial mode supported by
+SpatialDM. This is not a generic "single-cell rather than spatial" switch.}
 
-\item{complex.mean}{Whether to use a modified mean test statistic in complex heatmaps.}
+\item{complex.mean}{Mean used for complex ligand-receptor expression:
+\code{"algebra"} or \code{"geometric"}.}
 
 \item{min_cell}{Minimum number of cells required.}
 
@@ -75,13 +79,11 @@ RunSpatialDM(
 
 \item{seed}{Random seed.}
 
-\item{global.fdr}{Global FDR threshold.}
+\item{global.fdr, local.fdr}{Whether the corresponding p-value table uses FDR
+values for selection. These are logical switches, not numeric thresholds.}
 
-\item{global.threshold}{Global threshold.}
-
-\item{local.fdr}{Local FDR threshold.}
-
-\item{local.threshold}{Local threshold.}
+\item{global.threshold, local.threshold}{Selection thresholds for global and
+local results.}
 
 \item{result.name}{Stored result name.}
 
