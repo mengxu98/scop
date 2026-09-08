@@ -31,6 +31,8 @@
 #' @param seed Random seed used for permutation tests.
 #' @param backend Backend used by the package `"moran"` and `"geary"` methods.
 #' `"cpp"` is the default; use `"r"` for the reference implementation.
+#' @param cores Number of OpenMP threads for C++ Moran/Geary scoring. `NULL`
+#' uses the process OpenMP default.
 #' @param srt A `Seurat` object. The same object may be supplied as
 #' `object =` for consistency with spatial plotting APIs.
 #' @param object Optional alias for `srt`. Supply exactly one of `srt` or
