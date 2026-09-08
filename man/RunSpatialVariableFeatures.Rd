@@ -5,7 +5,7 @@
 \title{Run spatial variable feature detection}
 \usage{
 RunSpatialVariableFeatures(
-  srt = NULL,
+  srt,
   assay = NULL,
   layer = "data",
   features = NULL,
@@ -23,13 +23,11 @@ RunSpatialVariableFeatures(
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
   cores = NULL,
-  ...,
-  object = NULL
+  ...
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object. The same object may be supplied as
-\verb{object =} for consistency with spatial plotting APIs.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -80,8 +78,6 @@ uses the process OpenMP default.}
 
 \item{...}{Additional arguments passed to external backends.}
 
-\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
-\code{object}.}
 }
 \value{
 A \code{Seurat} object with spatial variable feature results stored in
@@ -108,14 +104,14 @@ spatial <- Seurat::FindVariableFeatures(
 )
 
 SpatialSpotPlot(
-  object = spatial,
+  srt = spatial,
   features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:2]
 )
 
 spatial <- RunSpatialVariableFeatures(
-  object = spatial,
+  srt = spatial,
   assay = "Spatial",
   nfeatures = 50
 )
-SpatialVariableFeaturePlot(object = spatial, plot_type = "combined", nfeatures = 2)
+SpatialVariableFeaturePlot(srt = spatial, plot_type = "combined", nfeatures = 2)
 }

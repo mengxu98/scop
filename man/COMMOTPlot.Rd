@@ -5,7 +5,7 @@
 \title{Plot stored COMMOT results}
 \usage{
 COMMOTPlot(
-  object,
+  srt,
   result.name = NULL,
   plot_type = c("network", "matrix", "direction"),
   key = NULL,
@@ -13,7 +13,7 @@ COMMOTPlot(
 )
 }
 \arguments{
-\item{object}{A `Seurat` object with COMMOT results.}
+\item{srt}{A `Seurat` object with COMMOT results.}
 
 \item{result.name}{Stored COMMOT result name.}
 

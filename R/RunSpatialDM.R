@@ -33,7 +33,7 @@ spatialdm_input <- function(
     log_message("SpatialDM expects normalized/log-transformed expression, not {.val scale.data}", message_type = "error")
   }
   coords <- SpatialCoordinates(
-    object = srt, image = image, coord.cols = coord.cols,
+    srt = srt, image = image, coord.cols = coord.cols,
     space = "raw", image_policy = "strict"
   )
   cells <- as.character(coords$data$cell_id)
@@ -358,9 +358,9 @@ RunSpatialDM <- function(
   srt
 }
 
-spatialdm_get_result <- function(object, result.name = NULL) {
-  if (!inherits(object, "Seurat")) log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
-  bundle <- object@tools[["SpatialDM"]]
+spatialdm_get_result <- function(srt, result.name = NULL) {
+  if (!inherits(srt, "Seurat")) log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
+  bundle <- srt@tools[["SpatialDM"]]
   if (is.null(bundle)) log_message("SpatialDM results are absent", message_type = "error")
   if (is.null(result.name) && length(bundle$results) > 1L) log_message("Multiple SpatialDM results are stored; select {.arg result.name}", message_type = "error")
   result.name <- result.name %||% bundle$active_result
@@ -372,15 +372,15 @@ spatialdm_get_result <- function(object, result.name = NULL) {
 
 
 #' @title Access stored SpatialDM results
-#' @param object A Seurat object with SpatialDM results.
+#' @param srt A Seurat object with SpatialDM results.
 #' @param result.name Stored result name.
 #' @param type Result type to return (`"global"`, `"local"`, or `"weights"`).
 #' @param pair Optional LR interaction name for local results.
 #' @return The requested stored SpatialDM result payload.
 #' @export
-GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "local", "weights"), pair = NULL) {
+GetSpatialDMResult <- function(srt, result.name = NULL, type = c("global", "local", "weights"), pair = NULL) {
   type <- match.arg(type)
-  result <- spatialdm_get_result(object, result.name)
+  result <- spatialdm_get_result(srt, result.name)
   if (identical(type, "global")) {
     return(result$global)
   }
@@ -396,7 +396,7 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 
 
 #' @title Plot stored SpatialDM results
-#' @param object A Seurat object with SpatialDM results.
+#' @param srt A Seurat object with SpatialDM results.
 #' @param result.name Stored result name.
 #' @param plot_type Plot type (`"weights"`, `"global"`, or `"local"`).
 #' @param pair LR interaction name for local plotting.
@@ -409,7 +409,7 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 #' @return A `ggplot` or `patchwork` object.
 #' @export
 SpatialDMPlot <- function(
-  object, result.name = NULL, plot_type = c("weights", "global", "local"),
+  srt, result.name = NULL, plot_type = c("weights", "global", "local"),
   pair = NULL, spot = NULL, signaling = c("secreted", "contact"),
   highlight = NULL, palette = "RdBu", palcolor = NULL,
   theme_use = "theme_scop", theme_args = list(),
@@ -418,13 +418,13 @@ SpatialDMPlot <- function(
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)
   signaling <- match.arg(signaling)
-  result <- spatialdm_get_result(object, result.name)
+  result <- spatialdm_get_result(srt, result.name)
   spatial_require_coordinate_contract(result, "RunSpatialDM()")
   if (identical(plot_type, "weights")) {
     if (is.null(spot) || length(spot) != 1L || !spot %in% as.character(result$coordinates$cell_id)) log_message("{.arg spot} must identify one stored SpatialDM spot", message_type = "error")
     values <- as.numeric(result$weights[[signaling]][spot, , drop = TRUE])
     names(values) <- colnames(result$weights[[signaling]])
-    return(SpatialSpotPlot(object,
+    return(SpatialSpotPlot(srt,
       values = values, image = result$parameters$image,
       image.scale = image.scale,
       coord.cols = result$parameters$coord.cols, palette = palette, palcolor = palcolor,
@@ -453,15 +453,15 @@ SpatialDMPlot <- function(
   ligands <- ligands[!is.na(ligands) & nzchar(ligands)]
   receptors <- receptors[!is.na(receptors) & nzchar(receptors)]
   local_label <- if (isTRUE(result$parameters$local.fdr)) "1 - local FDR" else "1 - local p"
-  plots <- list(SpatialSpotPlot(object,
+  plots <- list(SpatialSpotPlot(srt,
     values = 1 - pvalue, image = result$parameters$image,
     image.scale = image.scale,
     coord.cols = result$parameters$coord.cols, palette = "Reds", theme_use = theme_use,
     theme_args = theme_args, legend.title = local_label, ...
   ))
   for (gene in c(ligands, receptors)) {
-    if (gene %in% rownames(object)) {
-      plots[[length(plots) + 1L]] <- SpatialSpotPlot(object,
+    if (gene %in% rownames(srt)) {
+      plots[[length(plots) + 1L]] <- SpatialSpotPlot(srt,
         features = gene,
         assay = result$parameters$assay, layer = result$parameters$layer, image = result$parameters$image,
         image.scale = image.scale,

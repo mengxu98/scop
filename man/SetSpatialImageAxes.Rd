@@ -5,13 +5,13 @@
 \title{Persist the coordinate axis convention of a VisiumV2 image}
 \usage{
 SetSpatialImageAxes(
-  object,
+  srt,
   image = NULL,
   x_orientation = c("horizontal", "vertical")
 )
 }
 \arguments{
-\item{object}{A Seurat object.}
+\item{srt}{A Seurat object.}
 
 \item{image}{Image name. Required when several images are present.}
 

@@ -5,7 +5,7 @@
 #' no cell-cell edge table is stored. This is an observed composition summary,
 #' not a colocalization test, an optimal-radius selector, or a communication model.
 #'
-#' @param object A Seurat object. The object is not modified.
+#' @param srt A Seurat object. The object is not modified.
 #' @param group.by Metadata column containing nonmissing cell or spot labels.
 #' @param radii Positive, strictly increasing distances in raw coordinate units.
 #'   These are not necessarily micrometers. For spot-based assays, counts refer
@@ -33,19 +33,19 @@
 #' @examples
 #' # Constructed coordinates and labels, not a biological example.
 #' counts <- matrix(1L, 2, 4, dimnames = list(c("g1", "g2"), letters[1:4]))
-#' object <- SeuratObject::CreateSeuratObject(counts)
-#' object$col <- c(0, 1, 3, 5)
-#' object$row <- c(0, 0, 0, 0)
-#' object$celltype <- c("T", "M", "M", "T")
+#' srt <- SeuratObject::CreateSeuratObject(counts)
+#' srt$col <- c(0, 1, 3, 5)
+#' srt$row <- c(0, 0, 0, 0)
+#' srt$celltype <- c("T", "M", "M", "T")
 #' profile <- SpatialNeighborhoodProfile(
-#'   object, "celltype", radii = c(1, 3), cells = "a", verbose = FALSE
+#'   srt, "celltype", radii = c(1, 3), cells = "a", verbose = FALSE
 #' )
 #' profile
 SpatialNeighborhoodProfile <- function(
-  object, group.by, radii, cells = NULL, sample.by = NULL, image = NULL,
+  srt, group.by, radii, cells = NULL, sample.by = NULL, image = NULL,
   coord.cols = c("col", "row"), cumulative = FALSE, verbose = TRUE
 ) {
-  if (!inherits(object, "Seurat")) stop("object must be a Seurat object", call. = FALSE)
+  if (!inherits(srt, "Seurat")) stop("srt must be a Seurat object", call. = FALSE)
   validate_scalar_string(group.by, "group.by")
   if (!is.null(sample.by)) validate_scalar_string(sample.by, "sample.by")
   if (!is.numeric(radii) || !length(radii) || any(!is.finite(radii)) ||
@@ -56,11 +56,11 @@ SpatialNeighborhoodProfile <- function(
     stop("cumulative must be one nonmissing logical value", call. = FALSE)
   }
   verbose <- thisutils::get_verbose(verbose)
-  meta <- object[[]]
+  meta <- srt[[]]
   if (!all(c(group.by, sample.by) %in% names(meta))) {
     stop("group.by and sample.by must identify metadata columns", call. = FALSE)
   }
-  resolved <- SpatialCoordinates(object, image = image, coord.cols = coord.cols, space = "raw")
+  resolved <- SpatialCoordinates(srt, image = image, coord.cols = coord.cols, space = "raw")
   co <- resolved$data
   idx <- match(co$cell_id, rownames(meta))
   if (!nrow(co) || anyNA(idx) || anyNA(co$cell_id) || any(!nzchar(co$cell_id)) ||
@@ -115,7 +115,7 @@ SpatialNeighborhoodProfile <- function(
     done = "Spatial neighborhood profile completed",
     scope = sprintf("%s target cells; %s context cells; %s samples; %s distances (raw coordinate units).",
                     nq, nrow(co), length(unique(samples)), nr),
-    inspect = "Returned data.frame: count, total and fraction; input object unchanged.",
+    inspect = "Returned data.frame: count, total and fraction; input Seurat object unchanged.",
     verbose = verbose
   )
   out

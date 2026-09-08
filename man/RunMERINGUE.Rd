@@ -33,8 +33,7 @@ RunMERINGUE(
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object. The same object may be supplied as
-\verb{object =} for consistency with spatial plotting APIs.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 

@@ -438,7 +438,7 @@ spatial_analysis_coords <- function(
 #' retain their numerical orientation in both raw and display space.
 #' This function does not modify the object.
 #'
-#' @param object A `Seurat` object.
+#' @param srt A `Seurat` object.
 #' @param image Optional Seurat image name.
 #' @param coord.cols Metadata columns used when no image is available.
 #' @param space Coordinate space to return.
@@ -470,7 +470,7 @@ spatial_analysis_coords <- function(
 #'
 #' @export
 SpatialCoordinates <- function(
-  object,
+  srt,
   image = NULL,
   coord.cols = c("col", "row"),
   space = c("raw", "display"),
@@ -481,7 +481,7 @@ SpatialCoordinates <- function(
   image.scale <- match.arg(image.scale)
   image_policy <- match.arg(image_policy, "strict")
   result <- spatial_coords_raw(
-    srt = object,
+    srt = srt,
     image = image,
     coord.cols = coord.cols,
     image.scale = image.scale,
@@ -502,7 +502,7 @@ SpatialCoordinates <- function(
 #' move coordinates or change the raster. It replaces metadata-based guessing
 #' and survives Seurat subsetting and cell renaming. Stored spatial
 #' analyses must be rerun after changing the convention.
-#' @param object A Seurat object.
+#' @param srt A Seurat object.
 #' @param image Image name. Required when several images are present.
 #' @param x_orientation `"horizontal"` for custom images whose centroid x is
 #' image-column, or `"vertical"` for Seurat Read10X_Image's positional
@@ -515,15 +515,15 @@ SpatialCoordinates <- function(
 #' )
 #' SpatialCoordinates(spatial, image = "slice1")$source$coord.cols
 #' @export
-SetSpatialImageAxes <- function(object, image = NULL,
+SetSpatialImageAxes <- function(srt, image = NULL,
                                 x_orientation = c("horizontal", "vertical")) {
-  image <- spatial_image_resolve(object, image = image)$image
+  image <- spatial_image_resolve(srt, image = image)$image
   x_orientation <- match.arg(x_orientation)
-  if (is.null(image) || !inherits(object[[image]], "VisiumV2")) {
+  if (is.null(image) || !inherits(srt[[image]], "VisiumV2")) {
     log_message("{.fn SetSpatialImageAxes} requires a VisiumV2 image", message_type = "error")
   }
-  object@misc$spatial_image_axes[[image]] <- x_orientation
-  object
+  srt@misc$spatial_image_axes[[image]] <- x_orientation
+  srt
 }
 
 spatial_graph_weights <- function(distance, method, sigma = NULL) {
