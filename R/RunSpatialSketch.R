@@ -38,9 +38,9 @@ RunSpatialSketch <- function(object, assay = NULL, image = NULL,
   method <- match.arg(method)
   validate_scalar_string(prefix, "prefix")
   if (!grepl("^[A-Za-z][A-Za-z0-9]*$", prefix)) stop("prefix must be alphanumeric and start with a letter", call. = FALSE)
-  ncells <- validate_scalar_integer(ncells, "ncells", min = 3L)
-  nfeatures <- validate_scalar_integer(nfeatures, "nfeatures", min = 2L)
-  npcs <- validate_scalar_integer(npcs, "npcs", min = 1L)
+  ncells <- validate_scalar_integer(ncells, "ncells", minimum = 3L)
+  nfeatures <- validate_scalar_integer(nfeatures, "nfeatures", minimum = 2L)
+  npcs <- validate_scalar_integer(npcs, "npcs", minimum = 1L)
   if (length(max_dense_gb) != 1L || !is.numeric(max_dense_gb) || !is.finite(max_dense_gb) || max_dense_gb <= 0) {
     stop("max_dense_gb must be positive and finite", call. = FALSE)
   }
