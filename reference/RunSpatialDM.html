@@ -142,7 +142,9 @@
 
 
 <dt id="arg-cutoff">cutoff<a class="anchor" aria-label="anchor" href="#arg-cutoff"></a></dt>
-<dd><p>Maximum selected-cell fraction used by Scissor's alpha search.</p></dd>
+<dd><p>RBF weight cutoff used by SpatialDM to retain local spatial
+weights. This is a fraction between zero and one; it is not a Scissor
+alpha-search parameter.</p></dd>
 
 
 <dt id="arg-n-neighbors">n_neighbors<a class="anchor" aria-label="anchor" href="#arg-n-neighbors"></a></dt>
@@ -154,11 +156,13 @@
 
 
 <dt id="arg-single-cell">single_cell<a class="anchor" aria-label="anchor" href="#arg-single-cell"></a></dt>
-<dd><p>Whether the input is a single-cell (rather than spatial) dataset.</p></dd>
+<dd><p>Whether to use the single-cell spatial mode supported by
+SpatialDM. This is not a generic "single-cell rather than spatial" switch.</p></dd>
 
 
 <dt id="arg-complex-mean">complex.mean<a class="anchor" aria-label="anchor" href="#arg-complex-mean"></a></dt>
-<dd><p>Whether to use a modified mean test statistic in complex heatmaps.</p></dd>
+<dd><p>Mean used for complex ligand-receptor expression:
+<code>"algebra"</code> or <code>"geometric"</code>.</p></dd>
 
 
 <dt id="arg-min-cell">min_cell<a class="anchor" aria-label="anchor" href="#arg-min-cell"></a></dt>
@@ -177,20 +181,14 @@
 <dd><p>Random seed.</p></dd>
 
 
-<dt id="arg-global-fdr">global.fdr<a class="anchor" aria-label="anchor" href="#arg-global-fdr"></a></dt>
-<dd><p>Global FDR threshold.</p></dd>
+<dt id="arg-global-fdr-local-fdr">global.fdr, local.fdr<a class="anchor" aria-label="anchor" href="#arg-global-fdr-local-fdr"></a></dt>
+<dd><p>Whether the corresponding p-value table uses FDR
+values for selection. These are logical switches, not numeric thresholds.</p></dd>
 
 
-<dt id="arg-global-threshold">global.threshold<a class="anchor" aria-label="anchor" href="#arg-global-threshold"></a></dt>
-<dd><p>Global threshold.</p></dd>
-
-
-<dt id="arg-local-fdr">local.fdr<a class="anchor" aria-label="anchor" href="#arg-local-fdr"></a></dt>
-<dd><p>Local FDR threshold.</p></dd>
-
-
-<dt id="arg-local-threshold">local.threshold<a class="anchor" aria-label="anchor" href="#arg-local-threshold"></a></dt>
-<dd><p>Local threshold.</p></dd>
+<dt id="arg-global-threshold-local-threshold">global.threshold, local.threshold<a class="anchor" aria-label="anchor" href="#arg-global-threshold-local-threshold"></a></dt>
+<dd><p>Selection thresholds for global and
+local results.</p></dd>
 
 
 <dt id="arg-result-name">result.name<a class="anchor" aria-label="anchor" href="#arg-result-name"></a></dt>
