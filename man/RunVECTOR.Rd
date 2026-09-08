@@ -5,7 +5,7 @@
 \title{Run VECTOR developmental direction inference}
 \usage{
 RunVECTOR(
-  object,
+  srt,
   reduction = NULL,
   pca.reduction = "pca",
   dims = 1:2,
@@ -20,8 +20,7 @@ RunVECTOR(
 )
 }
 \arguments{
-\item{object}{A \code{Seurat} object or expression matrix with genes in rows and
-cells in columns.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{reduction}{Embedding reduction used for the direction field.}
 

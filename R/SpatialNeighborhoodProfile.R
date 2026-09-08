@@ -45,44 +45,71 @@ SpatialNeighborhoodProfile <- function(
   srt, group.by, radii, cells = NULL, sample.by = NULL, image = NULL,
   coord.cols = c("col", "row"), cumulative = FALSE, verbose = TRUE
 ) {
-  if (!inherits(srt, "Seurat")) stop("srt must be a Seurat object", call. = FALSE)
+  if (!inherits(srt, "Seurat")) {
+    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
+  }
   validate_scalar_string(group.by, "group.by")
   if (!is.null(sample.by)) validate_scalar_string(sample.by, "sample.by")
   if (!is.numeric(radii) || !length(radii) || any(!is.finite(radii)) ||
       any(radii <= 0) || any(diff(radii) <= 0)) {
-    stop("radii must be positive, finite and strictly increasing", call. = FALSE)
+    log_message(
+      "{.arg radii} must be positive, finite and strictly increasing",
+      message_type = "error"
+    )
   }
   if (!is.logical(cumulative) || length(cumulative) != 1L || is.na(cumulative)) {
-    stop("cumulative must be one nonmissing logical value", call. = FALSE)
+    log_message(
+      "{.arg cumulative} must be one nonmissing logical value",
+      message_type = "error"
+    )
   }
   verbose <- thisutils::get_verbose(verbose)
   meta <- srt[[]]
   if (!all(c(group.by, sample.by) %in% names(meta))) {
-    stop("group.by and sample.by must identify metadata columns", call. = FALSE)
+    log_message(
+      "{.arg group.by} and {.arg sample.by} must identify metadata columns",
+      message_type = "error"
+    )
   }
   resolved <- SpatialCoordinates(srt, image = image, coord.cols = coord.cols, space = "raw")
   co <- resolved$data
   idx <- match(co$cell_id, rownames(meta))
   if (!nrow(co) || anyNA(idx) || anyNA(co$cell_id) || any(!nzchar(co$cell_id)) ||
-      anyDuplicated(co$cell_id)) stop("invalid context cell IDs", call. = FALSE)
+      anyDuplicated(co$cell_id)) {
+    log_message("invalid context cell IDs", message_type = "error")
+  }
   labels <- as.character(meta[[group.by]][idx])
   samples <- if (is.null(sample.by)) rep("all", nrow(co)) else as.character(meta[[sample.by]][idx])
   if (anyNA(labels) || anyNA(samples) || any(!nzchar(labels)) || any(!nzchar(samples))) {
-    stop("context labels and sample IDs must be nonmissing and nonempty", call. = FALSE)
+    log_message(
+      "context labels and sample IDs must be nonmissing and nonempty",
+      message_type = "error"
+    )
   }
   if (is.null(cells)) cells <- co$cell_id
   if (!is.character(cells) || anyNA(cells) || anyDuplicated(cells) ||
-      !all(cells %in% co$cell_id)) stop("cells must be unique IDs in the resolved context", call. = FALSE)
+      !all(cells %in% co$cell_id)) {
+    log_message(
+      "{.arg cells} must be unique IDs in the resolved context",
+      message_type = "error"
+    )
+  }
   xy <- as.matrix(co[, c("x", "y")])
   if (any(!is.finite(xy)) || min(radii) < sqrt(.Machine$double.xmin) ||
       max(radii) > sqrt(.Machine$double.xmax) / 4 ||
       max(abs(xy)) > sqrt(.Machine$double.xmax) / 4 || max(abs(xy)) / max(radii) > 1e12) {
-    stop("unsupported coordinate/radius magnitude; recenter or rescale", call. = FALSE)
+    log_message(
+      "unsupported coordinate/radius magnitude; recenter or rescale",
+      message_type = "error"
+    )
   }
   groups <- sort(unique(labels))
   nq <- length(cells); ng <- length(groups); nr <- length(radii)
   if (as.double(nq) * ng * nr > .Machine$integer.max) {
-    stop("output too large; select fewer cells, groups or radii", call. = FALSE)
+    log_message(
+      "output too large; select fewer cells, groups or radii",
+      message_type = "error"
+    )
   }
   target <- match(cells, co$cell_id)
   counts <- array(0L, c(nq, ng, nr))

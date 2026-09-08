@@ -94,3 +94,23 @@ test_that("spatial APIs reject object= and invalid srt input", {
     "srt.*Seurat"
   )
 })
+
+test_that("non-spatial wrappers take srt and reject object=", {
+  srt <- make_spatial_srt_fixture()
+  expect_error(
+    RunVECTOR(object = srt, verbose = FALSE),
+    "unused argument"
+  )
+  expect_error(
+    VECTORPlot(object = srt),
+    "srt"
+  )
+  expect_error(
+    RunDEtest(object = srt, verbose = FALSE),
+    "srt"
+  )
+  expect_error(
+    PrepareSCExplorer(object = srt, verbose = FALSE),
+    "unused argument"
+  )
+})
