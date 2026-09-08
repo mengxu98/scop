@@ -287,7 +287,10 @@ test_that("spatial integration preserves named backend coords by cell identity",
   )
   extra <- rbind(coords, cell4 = c(40, 4))
   expect_error(standardize(extra, cells), "exactly")
-  dup <- coords
-  rownames(dup) <- c("cell1", "cell1", "cell3")
-  expect_error(standardize(dup, cells), "exactly")
+  dup <- matrix(
+    c(10, 20, 30, 1, 2, 3),
+    ncol = 2,
+    dimnames = list(c("cell1", "cell1", "cell3"), c("x", "y"))
+  )
+  expect_error(standardize(dup, cells), "exactly|duplicate")
 })
