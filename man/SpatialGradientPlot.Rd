@@ -7,19 +7,9 @@
 SpatialGradientPlot(
   srt,
   result_name = NULL,
-  plot_type = c("summary", "surface", "line", "model", "combined"),
+  plot_type = c("summary", "line", "model"),
   features = NULL,
   nfeatures = 4,
-  assay = NULL,
-  layer = "data",
-  image = NULL,
-  overlay_image = TRUE,
-  image.alpha = 1,
-  coord.cols = c("col", "row"),
-  flip.y = TRUE,
-  pt.size = NULL,
-  pt.alpha = 0.9,
-  stroke = 0.1,
   palette = "Spectral",
   palcolor = NULL,
   legend.position = "right",
@@ -29,54 +19,29 @@ SpatialGradientPlot(
   line_alpha = 0.35,
   line_fit = c("stored", "lm"),
   nrow = NULL,
-  ncol = NULL,
-  byrow = TRUE,
-  image.scale = c("lowres", "hires")
+  ncol = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object. The same object may be supplied as
-\verb{object =} for consistency with spatial plotting APIs.}
+\item{srt}{A \code{Seurat} object containing stored gradient results.}
 
 \item{result_name}{Stored spatial gradient result name. If \code{NULL}, the latest
 stored result is used.}
 
-\item{plot_type}{Plot type: \code{"summary"}, \code{"surface"}, \code{"line"}, \code{"model"}, or
-\code{"combined"}.}
+\item{plot_type}{Plot type: \code{"summary"}, \code{"line"}, or \code{"model"}.}
 
 \item{features}{Variables to plot. If \code{NULL}, top variables from the stored
 result are used.}
 
 \item{nfeatures}{Number of top variables used when \code{features = NULL}.}
 
-\item{assay}{Assay to use. \code{NULL} uses the default assay.}
-
-\item{layer}{Assay layer to use.}
-
-\item{image}{Spatial image name. Required when multiple images are present;
-a single image is selected automatically when \code{NULL}.}
-
-\item{overlay_image, image.alpha}{Draw the spatial image beneath spots.}
-
-\item{coord.cols}{Metadata coordinate columns used when no image is available.}
-
-\item{flip.y}{Reverse the y axis for metadata or FOV coordinates without a
-raster image. The default \code{FALSE} agrees with spatial networks and cell
-boundaries. Raster-backed display coordinates already include their flip.}
-
-\item{pt.size, pt.alpha}{Point size and transparency. \code{pt.size = NULL} scales
-with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel
-radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
-
-\item{stroke}{Point border width.}
-
 \item{palette, palcolor}{Color palette passed to SCOP plotting helpers.}
 
-\item{legend.position}{Legend position for surface, line, and model plots.}
+\item{legend.position}{Legend position for line, summary, and model plots.}
 
 \item{theme_use}{Theme name or function.}
 
-\item{theme_args}{Theme name or function, plus extra theme arguments.}
+\item{theme_args}{Additional theme arguments.}
 
 \item{line_size}{Size of fitted gradient lines.}
 
@@ -87,28 +52,31 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 fresh linear fit from \code{screening$value}, which is useful for showing a simple
 monotonic trend even when the backend stores a smoothed curve.}
 
-\item{nrow, ncol, byrow}{Layout controls for multi-feature plots.}
-
-\item{image.scale}{Image scale factor matching the raster stored in the
-selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
-scale-factor slots.}
+\item{nrow, ncol}{Layout controls for multi-feature plots.}
 }
 \value{
 A \code{ggplot} or \code{patchwork} object.
 }
 \description{
-Visualize normalized results produced by \code{RunSpatialGradientFeatures()}
+Visualize normalized results produced by \code{RunSpatialGradientFeatures()}.
+The plot reads only the stored screening, summary, and model-fit tables; it does
+not refetch expression from the object's current assay or layer. The model
+view displays the stored model-matching error (RMSE) for each feature.
 }
 \examples{
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
+counts <- GetAssayData5(spatial, assay = "Spatial", layer = "counts")
+gradient_features <- names(sort(Matrix::rowSums(counts), decreasing = TRUE))[
+  seq_len(min(8L, nrow(counts)))
+]
 # Use a diagonal example axis without permutation testing.
 spatial <- RunSpatialGradientFeatures(
   spatial,
   reference = "trajectory",
   backend = "cpp",
   result_name = "example_axis",
-  variables = rownames(spatial)[1:8],
+  variables = gradient_features,
   start = c(min(spatial$x), min(spatial$y)),
   end = c(max(spatial$x), max(spatial$y)),
   layer = "counts",
@@ -121,14 +89,8 @@ spatial <- RunSpatialGradientFeatures(
   verbose = FALSE
 )
 
-SpatialGradientPlot(
-  spatial,
-  plot_type = "surface",
-  features = rownames(spatial)[1:2],
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  pt.size = 1.2
-)
+SpatialGradientPlot(spatial, plot_type = "line")
+SpatialGradientPlot(spatial, plot_type = "model")
 }
 \seealso{
 \code{\link[=RunSpatialGradientFeatures]{RunSpatialGradientFeatures()}}

@@ -26,7 +26,8 @@ RunSpatialIntegration(
 \item{object}{A merged spatial \code{Seurat} object or a list of spatial \code{Seurat}
 objects.}
 
-\item{method}{Spatial integration backend.}
+\item{method}{Spatial integration backend. The current stable backend is
+\code{"PRECAST"}.}
 
 \item{sample.by}{Metadata column identifying samples for a merged \code{Seurat}
 object. For list input, list names are copied into this column.}
@@ -71,9 +72,11 @@ metadata, reductions, and \code{srt@tools[[tool_name]]}.
 }
 \description{
 Integrate spatial transcriptomics samples and identify shared domains
-using PRECAST, BASS, or SpatialMNN.
+using PRECAST.
 }
 \details{
 Provide spatial samples with shared genes and raw coordinates. Use
 \code{sample.by} to identify samples and \code{image} to select their spatial images.
+PRECAST integrates expression and domain representations; it is not a
+physical image-registration method.
 }

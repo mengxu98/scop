@@ -4,8 +4,12 @@
 #' Infer expression topics and their spot-level proportions using STdeconvolve.
 #'
 #' @md
-#' @inheritParams RunRCTD
+#' @param srt A `Seurat` object containing spatial expression data.
+#' @param assay Assay used as STdeconvolve input. If `NULL`, the default assay
+#' is used.
 #' @param layer Assay layer used as STdeconvolve input.
+#' @param features Features passed to the topic model. If `NULL`, all features
+#' in the selected assay are used.
 #' @param k Number of topics. If `NULL`, models are fit over `k_candidates` and
 #' `STdeconvolve::optimalModel()` is used to choose a model.
 #' @param k_candidates Candidate topic numbers used when `k = NULL`.
@@ -21,7 +25,11 @@
 #' @param get_beta_theta_params Additional parameters passed to
 #' `STdeconvolve::getBetaTheta()`.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
+#' @param prefix Prefix for topic proportion metadata columns.
+#' @param store_results Whether to store detailed topic matrices in `srt@tools`.
 #' @param round_counts Whether to round non-integer counts before model fitting.
+#' This is a preprocessing choice and does not recover original counts.
+#' @param ... Additional arguments passed to the STdeconvolve fit steps.
 #'
 #' @return A `Seurat` object with topic proportions in metadata and detailed
 #' results stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
@@ -31,17 +39,16 @@
 #' \dontrun{
 #' thisutils::check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
-#' keep_spots <- unique(round(seq(
-#'   1,
-#'   ncol(visium_human_pancreas_sub),
-#'   length.out = 120
-#' )))
-#' spatial <- visium_human_pancreas_sub[, keep_spots]
+#' spatial <- visium_human_pancreas_sub
+#' counts <- GetAssayData5(spatial, assay = "Spatial", layer = "counts")
+#' features <- names(sort(Matrix::rowSums(counts), decreasing = TRUE))[
+#'   seq_len(min(300L, nrow(counts)))
+#' ]
 #' spatial <- RunSTdeconvolve(
 #'   spatial,
 #'   assay = "Spatial",
 #'   layer = "counts",
-#'   features = head(rownames(spatial), 300),
+#'   features = features,
 #'   k = 3,
 #'   verbose = FALSE
 #' )

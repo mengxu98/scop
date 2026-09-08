@@ -273,6 +273,17 @@ spatialdm_bundle <- function(input, executed, parameters, result.name) {
 #' @param image,coord.cols Spatial image or metadata coordinate columns.
 #' @param method Official global/local test mode.
 #' @param l,eff_dist SpatialDM RBF scale; one must be supplied.
+#' @param cutoff RBF weight cutoff used by SpatialDM to retain local spatial
+#' weights. This is a fraction between zero and one; it is not a Scissor
+#' alpha-search parameter.
+#' @param complex.mean Mean used for complex ligand-receptor expression:
+#' `"algebra"` or `"geometric"`.
+#' @param single_cell Whether to use the single-cell spatial mode supported by
+#' SpatialDM. This is not a generic "single-cell rather than spatial" switch.
+#' @param global.fdr,local.fdr Whether the corresponding p-value table uses FDR
+#' values for selection. These are logical switches, not numeric thresholds.
+#' @param global.threshold,local.threshold Selection thresholds for global and
+#' local results.
 #' @return A Seurat object with a schema-v1 `SpatialDM` result bundle.
 #' @export
 RunSpatialDM <- function(

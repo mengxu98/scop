@@ -231,7 +231,6 @@ reference:
   - RunCARD
   - RunSTdeconvolve
   - RunSPOTlight
-  - RunSpatialDWLS
   - RunSpatialEcoTyper
 
 - subtitle: "Spatial Domains and Feature Patterns"
@@ -258,8 +257,6 @@ reference:
 
 - subtitle: "Spatial Visualization"
 - contents:
-  - SpatialEcoTyperCompositionPlot
-  - SpatialEcoTyperSpatialPlot
   - SpatialGradientPlot
   - SpatialIntegrationPlot
   - SpatialNeighborhoodPlot

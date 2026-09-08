@@ -188,6 +188,6 @@ Recovery and deconvolution require the pretrained basis matrices \code{Ws}
 and \code{W}, respectively.
 }
 \seealso{
-\code{\link[=SpatialEcoTyperSpatialPlot]{SpatialEcoTyperSpatialPlot()}}, \code{\link[=SpatialEcoTyperCompositionPlot]{SpatialEcoTyperCompositionPlot()}},
+\code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}, \code{\link[=CellStatPlot]{CellStatPlot()}},
 \href{https://digitalcytometry.github.io/spatialecotyper/}{SpatialEcoTyper tutorials}
 }

@@ -62,13 +62,14 @@ the default; \code{"legacy_display"} remains available for compatibility.}
 
 \item{column_title}{The title for the column names in the heatmap. Default is to use the reference grouping variable.}
 
-\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{combine}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE} returns a list of ggplots.}
 
-\item{complex.mean}{Whether to use a modified mean test statistic in complex heatmaps.}
+\item{complex.mean}{Method-specific complex ligand-receptor mean. Methods
+that do not expose it should document their own alternative.}
 
 \item{coordinate.unit}{Unit of the raw input coordinates. Automatic unit selection uses technology-specific rules.}
 
-\item{cutoff}{Maximum selected-cell fraction used by Scissor's alpha search.}
+\item{cutoff}{Method-specific cutoff; methods should document its scale.}
 
 \item{decreasing}{Order groups decreasingly.}
 
@@ -84,7 +85,7 @@ the default; \code{"legacy_display"} remains available for compatibility.}
 
 \item{feature_split_palette}{Split colors.}
 
-\item{global.fdr}{Global FDR threshold.}
+\item{global.fdr}{Method-specific global FDR selection switch or threshold.}
 
 \item{global.threshold}{Global threshold.}
 
@@ -126,7 +127,7 @@ the default; \code{"legacy_display"} remains available for compatibility.}
 
 \item{linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}). \code{linear_reduction_dims_use = NULL} uses estimated dimensions, else the first 50.}
 
-\item{local.fdr}{Local FDR threshold.}
+\item{local.fdr}{Method-specific local FDR selection switch or threshold.}
 
 \item{local.threshold}{Local threshold.}
 
@@ -148,7 +149,7 @@ the default; \code{"legacy_display"} remains available for compatibility.}
 
 \item{nproc}{Number of parallel processes.}
 
-\item{nrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{nrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{overlay_image}{Draw the spatial image beneath spots.}
 

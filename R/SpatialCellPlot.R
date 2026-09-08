@@ -11,6 +11,8 @@
 #' @param crop Whether to crop the plot to the selected boundaries.
 #' @param group.by Boundary column or Seurat metadata column used for filling.
 #' @param features Features to display. Multiple features return a patchwork.
+#' @param assay Assay used when `features` are fetched from `object`.
+#' @param layer Layer used when `features` are fetched from `object`.
 #' @param palette,palcolor Palette name or explicit colors.
 #' @param fill.alpha Polygon fill opacity.
 #' @param boundary.color,boundary.linewidth Boundary appearance.
@@ -41,6 +43,8 @@ SpatialCellPlot <- function(
   boundary.linewidth = 0.1,
   theme_use = "theme_spatial",
   theme_args = list(),
+  assay = NULL,
+  layer = "data",
   ...
 ) {
   if (!is.null(object) && !inherits(object, "Seurat")) {
@@ -83,6 +87,11 @@ SpatialCellPlot <- function(
     log_message("Provide real segmentation data through {.arg boundaries}, {.arg res}, or a Seurat image", message_type = "error")
   }
 
+  assay <- assay %||% if (!is.null(object)) SeuratObject::DefaultAssay(object) else NULL
+  if (!is.null(features) && !is.null(object) && is.null(assay)) {
+    log_message("An {.arg assay} is required when fetching features from {.arg object}", message_type = "error")
+  }
+
   boundaries <- spatial_boundary_validate(boundaries, image = image)
   if (!is.null(cells)) {
     boundaries <- boundaries[boundaries$cell_id %in% cells, , drop = FALSE]
@@ -106,27 +115,41 @@ SpatialCellPlot <- function(
     }
   } else if (length(features) > 0L) {
     needed_features <- setdiff(unique(features), colnames(boundaries))
-    fetched <- if (length(needed_features) > 0L) {
+    expr <- NULL
+    if (length(needed_features) > 0L) {
       if (is.null(object)) {
         log_message("A Seurat {.arg object} is required to fetch features", message_type = "error")
       }
-      tryCatch(
-        SeuratObject::FetchData(object, vars = needed_features, layer = "data"),
-        error = function(e) SeuratObject::FetchData(object, vars = needed_features)
+      expr <- tryCatch(
+        GetAssayData5(
+          object,
+          assay = assay,
+          layer = layer,
+          features = needed_features,
+          cells = unique(boundaries$cell_id)
+        ),
+        error = function(e) NULL
       )
-    } else {
-      NULL
-    }
-    cell_idx <- if (!is.null(fetched)) {
-      match(boundaries$cell_id, rownames(fetched))
-    } else {
-      NULL
+      missing_features <- if (is.null(expr)) {
+        needed_features
+      } else {
+        needed_features[!needed_features %in% rownames(expr)]
+      }
+      if (length(missing_features) > 0L) {
+        log_message(
+          "Feature {.val {missing_features[[1L]]}} is not available in assay {.val {assay}} layer {.val {layer}}",
+          message_type = "error"
+        )
+      }
+      if (!all(boundaries$cell_id %in% colnames(expr))) {
+        log_message("Boundary cell IDs do not match the selected Seurat object", message_type = "error")
+      }
     }
     for (feature in unique(features)) {
       if (feature %in% colnames(boundaries)) {
         value_tables[[feature]] <- boundaries[[feature]]
       } else {
-        value_tables[[feature]] <- fetched[[feature]][cell_idx]
+        value_tables[[feature]] <- as.numeric(expr[feature, boundaries$cell_id, drop = TRUE])
       }
     }
   } else {
@@ -144,7 +167,7 @@ SpatialCellPlot <- function(
       subgroup = .data$ring_id,
       fill = .data$.value
     )
-    layer <- do.call(
+    polygon_layer <- do.call(
       ggplot2::geom_polygon,
       c(
         list(
@@ -158,7 +181,7 @@ SpatialCellPlot <- function(
         polygon_args
       )
     )
-    p <- ggplot2::ggplot() + layer
+    p <- ggplot2::ggplot() + polygon_layer
     if (is.numeric(dat$.value)) {
       p <- p + ggplot2::scale_fill_gradientn(
         colors = palette_colors(type = "continuous", palette = palette, palcolor = palcolor),

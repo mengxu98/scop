@@ -20,6 +20,8 @@ SpatialCellPlot(
   boundary.linewidth = 0.1,
   theme_use = "theme_spatial",
   theme_args = list(),
+  assay = NULL,
+  layer = "data",
   ...
 )
 }
@@ -48,6 +50,10 @@ SpatialCellPlot(
 
 \item{theme_use, theme_args}{Theme used to style the plot. Default is
 `"theme_spatial"`.}
+
+\item{assay}{Assay used when `features` are fetched from `object`.}
+
+\item{layer}{Layer used when `features` are fetched from `object`.}
 
 \item{...}{Additional arguments passed to `ggplot2::geom_polygon()`.}
 }

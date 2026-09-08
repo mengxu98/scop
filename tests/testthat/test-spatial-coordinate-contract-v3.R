@@ -216,3 +216,81 @@ test_that("the shared Visium input produces plottable raw-coordinate results", {
   expect_s3_class(SpatialNetworkPlot(spatial), "ggplot")
   expect_s3_class(SpatialNeighborhoodPlot(spatial, plot_type = "spatial"), "ggplot")
 })
+
+test_that("spatial integration preserves named backend domains by cell identity", {
+  standardize <- getFromNamespace(
+    "spatial_integration_standardize_named_vector",
+    "scop"
+  )
+  cells <- c("cell1", "cell2", "cell3")
+  domains <- c(cell3 = "D3", cell1 = "D1", cell2 = "D2")
+  expect_identical(
+    unname(standardize(domains, cells)),
+    c("D1", "D2", "D3")
+  )
+  expect_named(standardize(domains, cells), cells)
+  expect_error(
+    standardize(c(cell1 = "D1", cell2 = "D2"), cells),
+    "missing.*cell3"
+  )
+  expect_error(
+    standardize(c(cell1 = "D1", cell1 = "D2", cell3 = "D3"), cells),
+    "unique"
+  )
+})
+
+test_that("spatial integration preserves named backend embeddings by cell identity", {
+  standardize <- getFromNamespace(
+    "spatial_integration_standardize_embedding",
+    "scop"
+  )
+  cells <- c("cell1", "cell2", "cell3")
+  embedding <- matrix(
+    1:6,
+    ncol = 2,
+    dimnames = list(c("cell3", "cell1", "cell2"), c("d1", "d2"))
+  )
+  out <- standardize(embedding, cells)
+  expect_identical(rownames(out), cells)
+  expect_equal(unname(out[, 1L]), unname(embedding[cells, 1L]))
+  expect_error(
+    standardize(embedding[c("cell1", "cell2"), , drop = FALSE], cells),
+    "exactly"
+  )
+  extra <- rbind(embedding, cell4 = c(7, 8))
+  expect_error(standardize(extra, cells), "exactly")
+  dup <- embedding
+  rownames(dup) <- c("cell1", "cell1", "cell3")
+  expect_error(standardize(dup, cells), "exactly")
+  na_ids <- embedding
+  rownames(na_ids)[1L] <- NA_character_
+  expect_error(standardize(na_ids, cells), "exactly")
+})
+
+test_that("spatial integration preserves named backend coords by cell identity", {
+  standardize <- getFromNamespace(
+    "spatial_integration_standardize_coords",
+    "scop"
+  )
+  cells <- c("cell1", "cell2", "cell3")
+  coords <- data.frame(
+    x = c(30, 10, 20),
+    y = c(3, 1, 2),
+    row.names = c("cell3", "cell1", "cell2")
+  )
+  out <- standardize(coords, cells)
+  expect_identical(rownames(out), cells)
+  expect_equal(out$x, c(10, 20, 30))
+  expect_error(
+    standardize(coords[c("cell1", "cell2"), , drop = FALSE], cells),
+    "exactly"
+  )
+  extra <- rbind(coords, cell4 = c(40, 4))
+  expect_error(standardize(extra, cells), "exactly")
+  dup <- matrix(
+    c(10, 20, 30, 1, 2, 3),
+    ncol = 2,
+    dimnames = list(c("cell1", "cell1", "cell3"), c("x", "y"))
+  )
+  expect_error(standardize(dup, cells), "exactly|duplicate")
+})

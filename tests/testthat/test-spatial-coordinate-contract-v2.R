@@ -334,8 +334,8 @@ test_that("public HE overlay wrappers expose image.scale", {
   wrappers <- c(
     "SpatialCoordinates", "SpatialSpotPlot", "SpatialNetworkPlot",
     "SpatialDeconvolutionPlot", "Cell2locationPlot", "STdeconvolvePlot",
-    "SpatialEcoTyperSpatialPlot", "SpatialDMPlot", "SpatialIntegrationPlot",
-    "SpatialGradientPlot", "SpatialNeighborhoodPlot",
+    "SpatialDMPlot", "SpatialIntegrationPlot",
+    "SpatialNeighborhoodPlot",
     "SpatialVariableFeaturePlot"
   )
   expect_true(all(vapply(wrappers, function(name) {
