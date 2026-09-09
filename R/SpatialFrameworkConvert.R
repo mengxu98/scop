@@ -18,16 +18,15 @@
 #'
 #' @examples
 #' \dontrun{
+#' thisutils::check_r("drieslab/Giotto", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
 #' spatial <- Seurat::NormalizeData(
 #'   visium_human_pancreas_sub,
 #'   assay = "Spatial",
 #'   verbose = FALSE
 #' )
-#' if (requireNamespace("GiottoClass", quietly = TRUE)) {
-#'   giotto <- srt_to_giotto(spatial, image = "slice1")
-#'   print(giotto)
-#' }
+#' giotto <- srt_to_giotto(spatial, image = "slice1")
+#' print(giotto)
 #' }
 #'
 #' @export
@@ -99,17 +98,16 @@ seurat_major_version <- function() {
 #'
 #' @examples
 #' \dontrun{
+#' thisutils::check_r("drieslab/Giotto", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
 #' spatial <- Seurat::NormalizeData(
 #'   visium_human_pancreas_sub,
 #'   assay = "Spatial",
 #'   verbose = FALSE
 #' )
-#' if (requireNamespace("GiottoClass", quietly = TRUE)) {
-#'   giotto <- srt_to_giotto(spatial, image = "slice1")
-#'   roundtrip <- giotto_to_srt(giotto)
-#'   print(roundtrip)
-#' }
+#' giotto <- srt_to_giotto(spatial, image = "slice1")
+#' roundtrip <- giotto_to_srt(giotto)
+#' print(roundtrip)
 #' }
 #'
 #' @export
@@ -134,15 +132,12 @@ giotto_to_srt <- function(giotto, ...) {
   )
 }
 
-giotto_class_available <- function() {
-  requireNamespace("GiottoClass", quietly = TRUE)
-}
-
 ensure_giotto_bridge_backend <- function() {
-  # Converters live in GiottoClass. check_r("drieslab/Giotto") treats a different
-  # GitHub remote (for example giotto-suite/Giotto) as missing and reinstalls.
-  if (isTRUE(giotto_class_available())) {
-    check_r("GiottoClass", install = FALSE, verbose = FALSE)
+  # Prefer already-installed GiottoClass from any source. check_r("drieslab/Giotto")
+  # alone reinstalls when the GitHub remote differs (e.g. optional CI pin giotto-suite/Giotto).
+  giotto_class <- check_r("GiottoClass", install = FALSE, verbose = FALSE)
+  if (isTRUE(all(unlist(giotto_class, use.names = FALSE)))) {
+    invisible(TRUE)
   } else {
     check_r("drieslab/Giotto", verbose = FALSE)
   }

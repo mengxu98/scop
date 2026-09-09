@@ -138,9 +138,11 @@ test_that("giotto bridges run check_r before resolving the converter", {
 test_that("installed GiottoClass is reused instead of reinstalling drieslab/Giotto", {
   seen <- list()
   testthat::local_mocked_bindings(
-    giotto_class_available = function() TRUE,
     check_r = function(packages, install = TRUE, ...) {
       seen <<- c(seen, list(list(packages = packages, install = install)))
+      if (identical(packages, "GiottoClass") && !isTRUE(install)) {
+        return(TRUE)
+      }
       invisible(TRUE)
     },
     get_namespace_fun = function(...) {
@@ -150,16 +152,21 @@ test_that("installed GiottoClass is reused instead of reinstalling drieslab/Giot
   )
   expect_identical(srt_to_giotto(make_framework_seurat()), "converted")
   expect_identical(giotto_to_srt(structure(list(), class = "giotto")), "converted")
-  expect_identical(vapply(seen, `[[`, character(1), "packages"), c("GiottoClass", "GiottoClass"))
+  expect_identical(
+    vapply(seen, `[[`, character(1), "packages"),
+    c("GiottoClass", "GiottoClass")
+  )
   expect_false(any(vapply(seen, function(x) isTRUE(x$install), logical(1))))
 })
 
 test_that("missing GiottoClass requests drieslab/Giotto", {
-  seen <- character(0)
+  seen <- list()
   testthat::local_mocked_bindings(
-    giotto_class_available = function() FALSE,
-    check_r = function(packages, ...) {
-      seen <<- c(seen, packages)
+    check_r = function(packages, install = TRUE, ...) {
+      seen <<- c(seen, list(list(packages = packages, install = install)))
+      if (identical(packages, "GiottoClass") && !isTRUE(install)) {
+        return(FALSE)
+      }
       invisible(TRUE)
     },
     get_namespace_fun = function(...) {
@@ -168,7 +175,12 @@ test_that("missing GiottoClass requests drieslab/Giotto", {
     .package = "scop"
   )
   expect_identical(srt_to_giotto(make_framework_seurat()), "converted")
-  expect_identical(seen, "drieslab/Giotto")
+  expect_identical(
+    vapply(seen, `[[`, character(1), "packages"),
+    c("GiottoClass", "drieslab/Giotto")
+  )
+  expect_false(isTRUE(seen[[1]]$install))
+  expect_true(isTRUE(seen[[2]]$install))
 })
 
 make_live_giotto_seurat <- function() {
