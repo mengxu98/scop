@@ -1392,7 +1392,7 @@ RunCellQC <- function(
           srt <- do.call(
             what = RunDoubletCalling,
             args = list(
-              srt = srt,
+              object = srt,
               db_method = dbm,
               db_rate = db_rate_use,
               data_type = status

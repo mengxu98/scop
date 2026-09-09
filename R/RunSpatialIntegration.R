@@ -235,7 +235,7 @@ SpatialIntegrationPlot <- function(
       CellDimPlot,
       c(
         list(
-          srt = srt,
+          object = srt,
           group.by = group.by,
           reduction = reduction,
           split.by = sample.by,
