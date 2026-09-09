@@ -19,9 +19,8 @@ main path short: inspect the object, run the spatial workflow, check summaries,
 plot spatial features, and branch into optional backends only when the question
 requires them.
 
-For HD bins, segmented cells, optional spatial normalization and new method
-routing, see [platform workflows](spatial-platform-workflows.html). For biological
-replicates, see [sample comparisons](spatial-sample-comparisons.html).
+For platform import, optional spatial normalization and method routing, see
+[platform workflows](spatial-platform-workflows.html).
 
 It is not a catalogue of every spatial backend. Use method pages for backend
 specific parameters and dependency notes.

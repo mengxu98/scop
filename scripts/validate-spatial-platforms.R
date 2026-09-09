@@ -82,45 +82,19 @@ cases <- list(
   },
   hd = function(data_root) {
     x <- ReadSpatialData(file.path(data_root, "hd"), "visium_hd", sample_id = "tiny_mouse")
-    counts <- GetAssayData5(x, assay = "Spatial.008um")
-    out <- RunSpatialSketch(x, assay = "Spatial.008um", image = "slice1.008um",
-      ncells = 300, nfeatures = 150, npcs = 8, method = "Uniform", verbose = FALSE)
-    stopifnot(identical(counts, GetAssayData5(out, assay = "Spatial.008um")),
-      length(out@tools$SpatialSketch$projected_cells) == ncol(counts),
-      identical(out@misc$scop_spatial_input[["slice1.016um"]]$resolution_um, 16))
-    list(object = out, plot = SpatialSpotPlot(out, group.by = "SpatialSketch_projected", image = "slice1.008um"),
-      detail = sprintf("10x developer HD fixture: 300 sampled, %s full bins; both 8/16 um assays retained", ncol(counts)))
+    info <- SpatialDataInfo(x, assay = "Spatial.008um", image = "slice1.008um")
+    stopifnot(info$data_type == "bin", info$resolution_um == 8,
+      identical(x@misc$scop_spatial_input[["slice1.016um"]]$resolution_um, 16))
+    list(object = x, plot = SpatialSpotPlot(x, features = rownames(x)[1], assay = "Spatial.008um",
+      layer = "counts", image = "slice1.008um"),
+      detail = sprintf("10x developer HD fixture: %s bins; 8/16 um assay/image identity and import provenance", length(info$cells)))
   },
   xenium = function(data_root) {
     x <- ReadSpatialData(file.path(data_root, "xenium"), "xenium", sample_id = "tiny_ileum")
-    qc <- SpatialSegmentationQC(x, assay = "Xenium", image = "fov", min_counts = 1)
-    stopifnot(identical(qc$cell_id, colnames(x)), all(is.finite(qc$area)), all(qc$area > 0),
-      identical(SpatialDataInfo(x, assay = "Xenium", image = "fov")$coordinate_units, "micron"))
-    x$segmentation_qc <- stats::setNames(qc$status, qc$cell_id)
-    x@misc$segmentation_qc <- qc
-    list(object = x, plot = SpatialCellPlot(x, image = "fov", group.by = "segmentation_qc"),
-      detail = sprintf("%s real Xenium cells; vendor loader, true polygons and count/area QC", ncol(x)))
-  },
-  xenium_analysis = function(data_root) {
-    x <- readRDS(file.path(data_root, "xenium_human_pancreas_sub.rds"))
-    counts <- GetAssayData5(x, assay = "Xenium")
-    out <- RunSpatialSketch(x, assay = "Xenium", ncells = 300, nfeatures = 100,
-      npcs = 8, method = "LeverageScore", resolution = 1, verbose = FALSE)
-    stopifnot(identical(counts, GetAssayData5(out, assay = "Xenium")), !anyNA(out$SpatialSketch_projected))
-    list(object = out, plot = SpatialSpotPlot(out, group.by = "SpatialSketch_projected", overlay_image = FALSE),
-      detail = sprintf("%s real Xenium pancreas cells; LeverageScore sketch/full annotation; centroid-only fixture", ncol(x)))
-  },
-  subjects = function(data_root) {
-    env <- new.env()
-    load(file.path(data_root, "diabetesData.rda"), envir = env)
-    meta <- as.data.frame(SummarizedExperiment::colData(env$diabetesData))
-    rownames(meta) <- meta$imageCellID
-    summary <- SpatialSampleSummary(meta, "cellType", "imageID", "stage", "case")
-    out <- SpatialSampleComparison(summary, c("Non-diabetic", "Onset"))
-    stopifnot(all(out$comparisons$n_reference == 4), all(out$comparisons$n_treatment == 4),
-      all(out$comparisons$status %in% c("tested", "not_tested")))
-    list(object = out, plot = SpatialSamplePlot(out),
-      detail = sprintf("Real Damond IMC design; %s source subjects; contrast uses 4+4 patients, not cells or images as replicates", length(unique(meta$case))))
+    info <- SpatialDataInfo(x, assay = "Xenium", image = "fov")
+    stopifnot(info$data_type == "cell", info$coordinate_units == "micron")
+    list(object = x, plot = SpatialCellPlot(x, image = "fov"),
+      detail = sprintf("%s real Xenium cells; vendor loader, provenance and existing polygon renderer", ncol(x)))
   }
 )
 

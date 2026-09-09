@@ -35,5 +35,5 @@ record observation type, resolution and coordinate units. This function does
 not download data, normalize counts, segment cells, or install packages.
 }
 \seealso{
-SpatialDataInfo, SpatialSegmentationQC, RunSpatialSketch
+SpatialDataInfo, SpatialCellPlot
 }

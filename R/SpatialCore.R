@@ -661,12 +661,6 @@ spatial_segmentation_name <- function(image, required = FALSE) {
   NULL
 }
 
-spatial_segmentation_table <- function(image, required = FALSE) {
-  name <- spatial_segmentation_name(image, required = required)
-  if (is.null(name)) return(NULL)
-  as.data.frame(SeuratObject::GetTissueCoordinates(image[[name]]))
-}
-
 spatial_boundary_validate <- function(boundaries, image = NULL) {
   if (!is.data.frame(boundaries) || nrow(boundaries) == 0L) {
     log_message("{.arg boundaries} must be a non-empty data frame", message_type = "error")

@@ -26,24 +26,6 @@ test_that("spatial context is explicit and units are never guessed from metadata
   expect_error(SpatialDataInfo(object, assay = "small", image = "fov2"), "absent from assay")
 })
 
-test_that("segmentation QC uses real polygons, preserves missing boundaries and holes", {
-  object <- make_platform_object()
-  b <- data.frame(cell_id = rep(colnames(object)[1:2], each = 4),
-    x = rep(c(0, 2, 2, 0), 2), y = rep(c(0, 0, 2, 2), 2))
-  qc <- SpatialSegmentationQC(object, boundaries = b, area_range = c(1, 6))
-  expect_equal(qc$area[1:2], c(4, 4))
-  expect_true(all(qc$status[3:12] == "not_evaluated"))
-  expect_identical(qc$cell_id, colnames(object))
-  expect_equal(qc$counts, as.numeric(Matrix::colSums(GetAssayData5(object))))
-  hole <- data.frame(cell_id = colnames(object)[1], x = c(.5, 1.5, 1.5, .5), y = c(.5, .5, 1.5, 1.5), ring_id = "2", hole = TRUE)
-  b$ring_id <- "1"; b$hole <- FALSE
-  qc <- SpatialSegmentationQC(object, boundaries = rbind(b, hole))
-  expect_equal(qc$area[1], 3)
-  expect_error(SpatialSegmentationQC(object, boundaries = rbind(b, hole)[, setdiff(names(b), "hole")]), "hole column")
-  b$x <- factor(b$x); b$y <- factor(b$y)
-  expect_equal(SpatialSegmentationQC(object, boundaries = b)$area[1:2], c(4, 4))
-})
-
 test_that("Seurat plural segmentations are read as real cell polygons", {
   object <- make_platform_object()
   b <- data.frame(cell = rep(colnames(object), each = 4),
@@ -52,7 +34,6 @@ test_that("Seurat plural segmentations are read as real cell polygons", {
   fov[["segmentations"]] <- SeuratObject::CreateSegmentation(b)
   object[["fov"]] <- fov
   expect_identical(SpatialDataInfo(object, image = "fov")$data_type, "cell")
-  expect_equal(SpatialSegmentationQC(object, image = "fov")$area, rep(4, ncol(object)))
   expect_s3_class(SpatialCellPlot(object, image = "fov"), "ggplot")
 })
 
@@ -148,57 +129,6 @@ test_that("an explicit normalization refusal preserves externally normalized dat
   expect_equal(GetAssayData5(out$srt_list[[1]], layer = "data"), before)
 })
 
-test_that("sample comparisons use subjects, retain zeros and match analytical t tests", {
-  x <- make_platform_object(48)
-  x$sample <- rep(paste0("s", 1:8), each = 6)
-  x$subject <- rep(paste0("p", rep(1:4, each = 2)), each = 6)
-  x$condition <- rep(c("control", "treated"), each = 24)
-  x$label <- rep(c("A", "A", "B", "B", "B", "B"), 8)
-  x$label[1:6] <- "A"
-  summary <- SpatialSampleSummary(x, "label", "sample", "condition", "subject")
-  expect_equal(summary$count[summary$sample == "s1" & summary$group == "B"], 0)
-  result <- SpatialSampleComparison(summary, c("control", "treated"))
-  expect_true(all(result$comparisons$n_reference == 2L))
-  expect_true(all(result$comparisons$n_treatment == 2L))
-  units <- result$subject_values
-  a <- units[units$group == "A", ]
-  direct <- stats::t.test(a$estimate[a$condition == "treated"], a$estimate[a$condition == "control"])
-  expect_equal(result$comparisons$p_value[result$comparisons$group == "A"], direct$p.value)
-  # Adding a repeated section does not increase the number of independent units.
-  extra <- summary[summary$sample == "s2", ]; extra$sample <- "s9"
-  r2 <- SpatialSampleComparison(rbind(summary, extra), c("control", "treated"))
-  expect_equal(r2$comparisons$n_reference, result$comparisons$n_reference)
-  insufficient <- summary[summary$subject %in% c("p1", "p3"), ]
-  r3 <- SpatialSampleComparison(insufficient, c("control", "treated"))
-  expect_true(all(r3$comparisons$status == "not_tested"))
-  expect_true(all(is.na(r3$comparisons$p_value)))
-  expect_s3_class(SpatialSamplePlot(result), "ggplot")
-})
-
-test_that("pairing and empty neighborhoods are handled at the subject level", {
-  tab <- expand.grid(subject = paste0("p", 1:4), condition = c("C", "T"), stringsAsFactors = FALSE)
-  tab$sample <- paste0("s", seq_len(nrow(tab)))
-  tab$group <- "A"; tab$lower <- tab$radius <- NA_real_
-  tab$estimate <- c(.1, .2, .3, .4, .2, .4, .35, .55)
-  expect_error(SpatialSampleComparison(tab, c("C", "T")), "paired")
-  out <- SpatialSampleComparison(tab, c("C", "T"), paired = TRUE)
-  ref <- stats::t.test(tab$estimate[5:8], tab$estimate[1:4], paired = TRUE)
-  expect_equal(out$comparisons$effect, unname(ref$estimate))
-  expect_equal(out$comparisons$conf_low, ref$conf.int[1])
-  missing <- SpatialSampleComparison(tab[-8, ], c("C", "T"), paired = TRUE)
-  expect_equal(missing$comparisons$n_unpaired_excluded, 1)
-  expect_false(missing$subject_values$included_in_contrast[missing$subject_values$subject == "p4"])
-  x <- make_platform_object()
-  x$sample <- rep(c("s1", "s2"), each = 6); x$condition <- rep(c("C", "T"), each = 6)
-  profile <- data.frame(cell_id = colnames(x), sample = x$sample, group = "A",
-    lower = 0, radius = 1, fraction = NA_real_, total = 0)
-  sm <- SpatialSampleSummary(x, "label", "sample", "condition", profile = profile)
-  expect_true(all(is.na(sm$estimate)))
-  expect_true(all(sm$n_observations == 0))
-  profile$sample[1] <- "s2"
-  expect_error(SpatialSampleSummary(x, "label", "sample", "condition", profile = profile), "do not match")
-})
-
 test_that("SPARKX keeps sparse inputs and dense paths have a preflight bound", {
   x <- make_platform_object()
   testthat::local_mocked_bindings(.package = "scop",
@@ -210,14 +140,6 @@ test_that("SPARKX keeps sparse inputs and dense paths have a preflight bound", {
   expect_true(length(out@tools$SpatialVariableFeatures$result$feature) > 0)
   expect_error(RunSpatialVariableFeatures(x, layer = "counts", backend = "r",
     max_dense_gb = 1e-12, verbose = FALSE), "max_dense_gb")
-})
-
-test_that("sketch preflight prevents excessive allocations and ambiguous contexts", {
-  x <- make_platform_object()
-  expect_error(RunSpatialSketch(x, npcs = 3, max_dense_gb = 1e-12), "max_dense_gb")
-  expect_error(RunSpatialSketch(x, ncells = 4, npcs = 4), "npcs")
-  x$SpatialSketch_projected <- "old"
-  expect_error(RunSpatialSketch(x, npcs = 3), "already exist")
 })
 
 test_that("Assay5 scaling matches Seurat for sketch cells and repeated scaling", {
