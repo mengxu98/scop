@@ -5,7 +5,7 @@
 \title{Prepare Seurat objects for the SCExplorer}
 \usage{
 PrepareSCExplorer(
-  srt,
+  object,
   base_dir = "SCExplorer",
   data_file = "data.hdf5",
   meta_file = "meta.hdf5",
@@ -20,7 +20,7 @@ PrepareSCExplorer(
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object or a list of \code{Seurat} objects.}
+\item{object}{A \code{Seurat} object or a list of \code{Seurat} objects.}
 
 \item{base_dir}{The base directory where the SCExplorer hdf5 files will be written.}
 

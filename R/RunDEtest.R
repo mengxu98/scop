@@ -2057,7 +2057,8 @@ RunDEtest_pseudobulk <- function(
 #' @inheritParams Seurat::FindMarkers
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams FeatureDimPlot
-#' @param srt A `Seurat` object or a `SummarizedExperiment` object.
+#' @param object A `Seurat` object or a `SummarizedExperiment` object.
+#' @param srt Compatibility alias for `object`.
 #' @param group.by A grouping variable in the dataset to define the groups or conditions for the differential test.
 #' If not provided, the function uses the "active.ident" variable in the Seurat object.
 #' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group.
@@ -2343,14 +2344,30 @@ RunDEtest_pseudobulk <- function(
 #'   x_metric = "avg_log2FC",
 #'   y_metric = "p_val"
 #' )
-RunDEtest <- function(srt, ...) {
-  UseMethod(generic = "RunDEtest", object = srt)
+RunDEtest <- function(
+  object = NULL,
+  ...,
+  srt = NULL
+) {
+  if (is.null(object)) {
+    object <- srt
+    if (methods::is(object, "SummarizedExperiment")) {
+      return(RunDEtest.SummarizedExperiment(object, ...))
+    }
+    if (methods::is(object, "Seurat")) {
+      return(RunDEtest.Seurat(object, ...))
+    }
+  }
+  if (methods::is(object, "SummarizedExperiment")) {
+    return(RunDEtest.SummarizedExperiment(object, ...))
+  }
+  UseMethod(generic = "RunDEtest", object = object)
 }
 
 #' @rdname RunDEtest
 #' @export
 RunDEtest.Seurat <- function(
-  srt,
+  object,
   group.by = NULL,
   group1 = NULL,
   group2 = NULL,
@@ -2403,6 +2420,7 @@ RunDEtest.Seurat <- function(
   cores = 1,
   ...
 ) {
+  srt <- object
   set.seed(seed)
   feature_type <- match.arg(feature_type)
   markers_type <- match.arg(markers_type)
@@ -2814,7 +2832,7 @@ RunDEtest.Seurat <- function(
         cells1
       )] <- NA
       srt_tmp <- RunDEtest(
-        srt = srt_tmp,
+        object = srt_tmp,
         assay = assay,
         layer = layer,
         group.by = grouping.var,
@@ -3307,7 +3325,7 @@ RunDEtest.Seurat <- function(
             return(NULL)
           } else {
             srt_tmp <- run_detest_fun(
-              srt = srt_tmp,
+              object = srt_tmp,
               assay = assay,
               layer = layer,
               group.by = grouping.var,
@@ -3407,7 +3425,7 @@ RunDEtest.Seurat <- function(
 #' @rdname RunDEtest
 #' @export
 RunDEtest.SummarizedExperiment <- function(
-  srt,
+  object,
   group.by = NULL,
   group1 = NULL,
   group2 = NULL,
@@ -3459,7 +3477,7 @@ RunDEtest.SummarizedExperiment <- function(
   feature_type <- match.arg(feature_type)
   markers_type <- match.arg(markers_type)
   meta.method <- match.arg(meta.method)
-  bulk_se <- srt
+  bulk_se <- object
 
   if (!identical(feature_type, "gene")) {
     log_message(

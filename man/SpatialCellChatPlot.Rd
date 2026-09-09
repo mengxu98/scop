@@ -5,7 +5,7 @@
 \title{Plot stored SpatialCellChat results}
 \usage{
 SpatialCellChatPlot(
-  srt,
+  object,
   result.name = NULL,
   sample = NULL,
   plot_type = c("spatial_network", "lr_spatial", "pathway", "incoming", "outgoing"),
@@ -20,7 +20,7 @@ SpatialCellChatPlot(
 )
 }
 \arguments{
-\item{srt}{A `Seurat` object with SpatialCellChat results.}
+\item{object}{A `Seurat` object with SpatialCellChat results.}
 
 \item{result.name}{Stored result name.}
 

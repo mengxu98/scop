@@ -319,8 +319,8 @@ mistyr_summary <- function(results, views = character()) {
 #' @description Plot model improvements or view contributions from a result
 #' produced by [RunMistyR()] without rerunning the backend.
 #'
-#' @param srt Optional `Seurat` object containing `MistyR` results.
-#' @param res Optional result list, usually `srt@tools$MistyR`.
+#' @param object Optional `Seurat` object containing `MistyR` results.
+#' @param res Optional result list, usually `object@tools$MistyR`.
 #' @param type Result table to plot.
 #' @param measure Numeric result column to display. For `type = "improvements"`
 #' use `"gain.R2"` or `"gain.RMSE"`; for `type = "contributions"`, use
@@ -333,7 +333,7 @@ mistyr_summary <- function(results, views = character()) {
 #' @seealso [RunMistyR()]
 #' @export
 MistyRPlot <- function(
-  srt = NULL,
+  object = NULL,
   res = NULL,
   type = c("improvements", "contributions"),
   top_n = 20,
@@ -342,10 +342,10 @@ MistyRPlot <- function(
 ) {
   type <- match.arg(type)
   if (is.null(res)) {
-    if (is.null(srt) || !inherits(srt, "Seurat")) {
-      log_message("Provide a {.cls Seurat} {.arg srt} or a MistyR {.arg res}", message_type = "error")
+    if (is.null(object) || !inherits(object, "Seurat")) {
+      log_message("Provide a {.cls Seurat} {.arg object} or a MistyR {.arg res}", message_type = "error")
     }
-    res <- srt@tools[["MistyR"]]
+    res <- object@tools[["MistyR"]]
   }
   spatial_require_coordinate_contract(res, "RunMistyR()")
   tab <- res$results[[type]] %||% NULL

@@ -60,9 +60,9 @@ in the selected assay are used.}
 \item{get_beta_theta_params}{Additional parameters passed to
 \code{STdeconvolve::getBetaTheta()}.}
 
-\item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
-
 \item{prefix}{Prefix for topic proportion metadata columns.}
+
+\item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
 \item{store_results}{Whether to store detailed topic matrices in \code{srt@tools}.}
 
@@ -70,8 +70,6 @@ in the selected assay are used.}
 This is a preprocessing choice and does not recover original counts.}
 
 \item{...}{Additional arguments passed to the STdeconvolve fit steps.}
-
-\item{verbose}{Whether to print messages.}
 }
 \value{
 A \code{Seurat} object with topic proportions in metadata and detailed

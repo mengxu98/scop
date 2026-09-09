@@ -318,7 +318,7 @@ cnv_plot_spatial <- function(
     palcolor <- cnv_discrete_colors(value_data, palette = palette, palcolor = palcolor)
   }
   p <- SpatialSpotPlot(
-    srt = srt,
+    object = srt,
     group.by = value,
     palette = palette,
     palcolor = palcolor,

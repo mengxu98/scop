@@ -1057,7 +1057,7 @@ spatial_neighborhood_spatial_plot <- function(
   score[eligible] <- tabulate(match(edges$cell[hit], eligible), nbins = length(eligible))
   theme_use <- theme_use %||% "theme_scop"
   SpatialSpotPlot(
-    srt = srt,
+    object = srt,
     values = score,
     image = image,
     image.scale = image.scale,

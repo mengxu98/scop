@@ -208,7 +208,7 @@ test_that("supported RunDEtest Wilcoxon branches stay on the scop backend", {
 
   for (markers_type in c("all", "paired", "conserved", "disturbed")) {
     args <- list(
-      srt = srt,
+      object = srt,
       group.by = "group",
       markers_type = markers_type,
       features = features,

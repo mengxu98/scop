@@ -112,7 +112,7 @@ spatalk_input <- function(srt, group.by, assay, layer, image, coord.cols) {
     log_message("Assay {.val {assay}} is absent from {.arg srt}", message_type = "error")
   }
   coords <- SpatialCoordinates(
-    srt = srt, image = image, coord.cols = coord.cols,
+    object = srt, image = image, coord.cols = coord.cols,
     space = "raw", image_policy = "strict"
   )
   cells <- as.character(coords$data$cell_id)
@@ -567,7 +567,7 @@ spatalk_plot_object <- function(object, stored) {
 #' @description Plot a stored SpaTalk communication result without rerunning
 #' the optional backend.
 #'
-#' @param srt A `Seurat` object with SpaTalk results.
+#' @param object A `Seurat` object with SpaTalk results.
 #' @param result.name Stored SpaTalk result name.
 #' @param plot_type Network, ligand-receptor bubble, pathway bubble, or
 #'   receptor-TF view.
@@ -576,24 +576,24 @@ spatalk_plot_object <- function(object, stored) {
 #' @return A `ggplot` or compatible plot object.
 #' @export
 SpaTalkPlot <- function(
-  srt,
+  object,
   result.name = NULL,
   plot_type = c("network", "bubble", "pathway", "tf"),
   ...
 ) {
   plot_type <- match.arg(plot_type)
-  stored <- tool_bundle_get_result(srt, "SpaTalk", result.name)
+  stored <- tool_bundle_get_result(object, "SpaTalk", result.name)
   spatial_require_coordinate_contract(stored$result, "RunSpaTalk()")
   if (identical(plot_type, "network")) {
-    plot_object <- spatalk_plot_object(srt, stored)
+    plot_object <- spatalk_plot_object(object, stored)
     return(do.call(CCCNetworkPlot, c(list(srt = plot_object, method = "SpaTalk", plot_type = "circle"), list(...))))
   }
   if (identical(plot_type, "bubble")) {
-    plot_object <- spatalk_plot_object(srt, stored)
+    plot_object <- spatalk_plot_object(object, stored)
     return(do.call(CCCHeatmap, c(list(srt = plot_object, method = "SpaTalk", plot_type = "bubble"), list(...))))
   }
   if (identical(plot_type, "pathway")) {
-    plot_object <- spatalk_plot_object(srt, stored)
+    plot_object <- spatalk_plot_object(object, stored)
     pathway <- plot_object@tools$SpaTalk$long_table$pathway_name
     if (all(is.na(pathway)) || all(!nzchar(pathway[!is.na(pathway)]))) {
       log_message("The stored SpaTalk result has no pathway labels", message_type = "error")

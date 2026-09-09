@@ -33,6 +33,9 @@
 #' `"cpp"` is the default; use `"r"` for the reference implementation.
 #' @param cores Number of OpenMP threads for C++ Moran/Geary scoring. `NULL`
 #' uses the process OpenMP default.
+#' @param object A `Seurat` object.
+#' @param srt Compatibility alias for `object`. Supply exactly one of `object`
+#' or `srt`.
 #' @param ... Additional arguments passed to external backends.
 #'
 #' @return A `Seurat` object with spatial variable feature results stored in
@@ -55,18 +58,18 @@
 #' )
 #'
 #' SpatialSpotPlot(
-#'   srt = spatial,
+#'   object = spatial,
 #'   features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:2]
 #' )
 #'
 #' spatial <- RunSpatialVariableFeatures(
-#'   srt = spatial,
+#'   object = spatial,
 #'   assay = "Spatial",
 #'   nfeatures = 50
 #' )
-#' SpatialVariableFeaturePlot(srt = spatial, plot_type = "combined", nfeatures = 2)
+#' SpatialVariableFeaturePlot(object = spatial, plot_type = "combined", nfeatures = 2)
 RunSpatialVariableFeatures <- function(
-  srt,
+  object = NULL,
   assay = NULL,
   layer = "data",
   features = NULL,
@@ -84,9 +87,10 @@ RunSpatialVariableFeatures <- function(
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
   cores = NULL,
-  ...
+  ...,
+  srt = NULL
 ) {
-  spatial_require_srt(srt)
+  srt <- spatial_resolve_object(object = object, srt = srt)
   backend_missing <- missing(backend)
   coordinate_space <- match.arg(coordinate_space)
   log_message(
@@ -611,6 +615,9 @@ spatial_variable_result_features <- function(df, fallback) {
 #'
 #' @md
 #' @inheritParams SpatialSpotPlot
+#' @param object A `Seurat` object.
+#' @param srt Compatibility alias for `object`. Supply exactly one of `object`
+#' or `srt`.
 #' @param plot_type Plot type: `"summary"`, `"surface"`, or `"combined"`.
 #' @param features Features to plot. If `NULL`, top features from the stored
 #' spatial variable feature result are used.
@@ -629,14 +636,14 @@ spatial_variable_result_features <- function(df, fallback) {
 #'   verbose = FALSE
 #' )
 #' spatial <- RunSpatialVariableFeatures(
-#'   srt = spatial,
+#'   object = spatial,
 #'   assay = "Spatial",
 #'   nfeatures = 10,
 #'   verbose = FALSE
 #' )
-#' SpatialVariableFeaturePlot(srt = spatial, plot_type = "summary")
+#' SpatialVariableFeaturePlot(object = spatial, plot_type = "summary")
 SpatialVariableFeaturePlot <- function(
-  srt,
+  object = NULL,
   plot_type = c("summary", "surface", "combined"),
   features = NULL,
   nfeatures = 10,
@@ -660,9 +667,10 @@ SpatialVariableFeaturePlot <- function(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
+  srt = NULL,
   image.scale = c("lowres", "hires")
 ) {
-  spatial_require_srt(srt)
+  srt <- spatial_resolve_object(object = object, srt = srt)
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)
   stored <- spatial_variable_get_stored_result(srt)
@@ -870,7 +878,7 @@ spatial_variable_surface_plot <- function(
     theme_use <- ggplot2::theme_minimal
   }
   SpatialSpotPlot(
-    srt = srt,
+    object = srt,
     features = features,
     assay = assay,
     layer = layer,

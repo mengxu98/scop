@@ -8,7 +8,7 @@
 #' @inheritParams RunSpatialVariableFeatures
 #' @inheritParams SpatialSpotPlot
 #' @inheritParams scop-params
-#' @param srt A merged spatial `Seurat` object or a list of spatial `Seurat`
+#' @param object A merged spatial `Seurat` object or a list of spatial `Seurat`
 #' objects.
 #' @param image Optional image name or named character vector mapping sample
 #' names to image names. By default, resolve the unique image covering each
@@ -40,7 +40,7 @@
 #' @export
 #'
 RunSpatialIntegration <- function(
-  srt,
+  object,
   method = "PRECAST",
   sample.by = NULL,
   assay = NULL,
@@ -59,14 +59,14 @@ RunSpatialIntegration <- function(
   method <- match.arg(method)
   coordinate_space <- match.arg(coordinate_space)
   validate_scalar_string(tool_name, "tool_name")
-  sample.by <- spatial_integration_resolve_sample_by(srt, sample.by)
+  sample.by <- spatial_integration_resolve_sample_by(object, sample.by)
   reduction.name <- reduction.name %||% paste0("SpatialIntegration_", method)
   cluster_colname <- cluster_colname %||% paste0("SpatialIntegration_", method, "_domain")
   validate_scalar_string(reduction.name, "reduction.name")
   validate_scalar_string(cluster_colname, "cluster_colname")
 
   input <- spatial_integration_prepare_input(
-    srt = srt,
+    object = object,
     sample.by = sample.by,
     assay = assay,
     layer = layer,
@@ -202,7 +202,7 @@ SpatialIntegrationPlot <- function(
       }
     }
     return(SpatialSpotPlot(
-      srt = srt,
+      object = srt,
       group.by = group.by,
       split.by = sample.by,
       coord.cols = coord_use,
@@ -278,7 +278,7 @@ SpatialIntegrationPlot <- function(
 }
 
 spatial_integration_prepare_input <- function(
-  srt,
+  object,
   sample.by,
   assay,
   layer,
@@ -288,23 +288,24 @@ spatial_integration_prepare_input <- function(
   coordinate_space = "raw"
 ) {
   list_coordinates <- NULL
-  if (inherits(srt, "Seurat")) {
-    if (!sample.by %in% colnames(srt@meta.data)) {
+  if (inherits(object, "Seurat")) {
+    if (!sample.by %in% colnames(object@meta.data)) {
       log_message(
-        "{.arg sample.by} {.val {sample.by}} is not present in {.arg srt}",
+        "{.arg sample.by} {.val {sample.by}} is not present in {.arg object}",
         message_type = "error"
       )
     }
-    samples <- as.character(srt@meta.data[[sample.by]])
+    samples <- as.character(object@meta.data[[sample.by]])
     if (any(is.na(samples) | !nzchar(samples))) {
       log_message(
         "{.arg sample.by} contains missing sample labels",
         message_type = "error"
       )
     }
+    srt <- object
     srt_list <- NULL
   } else {
-    srt_list <- spatial_integration_as_list(srt, sample.by = sample.by)
+    srt_list <- spatial_integration_as_list(object, sample.by = sample.by)
     list_coordinates <- spatial_integration_list_coords(srt_list, sample.by, image,
                                                        coord.cols, coordinate_space)
     srt <- spatial_integration_merge_list(srt_list, sample.by = sample.by)
@@ -391,48 +392,48 @@ spatial_integration_prepare_input <- function(
   )
 }
 
-spatial_integration_as_list <- function(srt, sample.by) {
-  if (inherits(srt, "Seurat")) {
-    if (!sample.by %in% colnames(srt@meta.data)) {
+spatial_integration_as_list <- function(object, sample.by) {
+  if (inherits(object, "Seurat")) {
+    if (!sample.by %in% colnames(object@meta.data)) {
       log_message(
-        "{.arg sample.by} {.val {sample.by}} is not present in {.arg srt}",
+        "{.arg sample.by} {.val {sample.by}} is not present in {.arg object}",
         message_type = "error"
       )
     }
-    samples <- as.character(srt@meta.data[[sample.by]])
+    samples <- as.character(object@meta.data[[sample.by]])
     if (any(is.na(samples) | !nzchar(samples))) {
       log_message(
         "{.arg sample.by} contains missing sample labels",
         message_type = "error"
       )
     }
-    out <- Seurat::SplitObject(srt, split.by = sample.by)
+    out <- Seurat::SplitObject(object, split.by = sample.by)
     names(out) <- names(out) %||% unique(samples)
     return(out)
   }
-  if (!is.list(srt) || length(srt) == 0L) {
+  if (!is.list(object) || length(object) == 0L) {
     log_message(
-      "{.arg srt} must be a {.cls Seurat} object or a non-empty list of {.cls Seurat} objects",
+      "{.arg object} must be a {.cls Seurat} object or a non-empty list of {.cls Seurat} objects",
       message_type = "error"
     )
   }
-  is_seurat <- vapply(srt, inherits, logical(1), what = "Seurat")
+  is_seurat <- vapply(object, inherits, logical(1), what = "Seurat")
   if (!all(is_seurat)) {
     log_message(
-      "Every element of {.arg srt} must be a {.cls Seurat} object",
+      "Every element of {.arg object} must be a {.cls Seurat} object",
       message_type = "error"
     )
   }
-  nms <- names(srt)
+  nms <- names(object)
   if (is.null(nms) || any(is.na(nms) | !nzchar(nms))) {
-    nms <- paste0("sample", seq_along(srt))
+    nms <- paste0("sample", seq_along(object))
   }
   nms <- make.unique(as.character(nms), sep = "_")
-  names(srt) <- nms
+  names(object) <- nms
   for (nm in nms) {
-    srt[[nm]]@meta.data[[sample.by]] <- nm
+    object[[nm]]@meta.data[[sample.by]] <- nm
   }
-  srt
+  object
 }
 
 spatial_integration_merge_list <- function(srt_list, sample.by) {
@@ -1021,14 +1022,14 @@ spatial_integration_call <- function(fun, args) {
   do.call(fun, args)
 }
 
-spatial_integration_resolve_sample_by <- function(srt, sample.by) {
+spatial_integration_resolve_sample_by <- function(object, sample.by) {
   if (!is.null(sample.by)) {
     validate_scalar_string(sample.by, "sample.by")
     return(sample.by)
   }
-  if (inherits(srt, "Seurat")) {
+  if (inherits(object, "Seurat")) {
     log_message(
-      "{.arg sample.by} is required when {.arg srt} is a merged {.cls Seurat} object",
+      "{.arg sample.by} is required when {.arg object} is a merged {.cls Seurat} object",
       message_type = "error"
     )
   }

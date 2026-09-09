@@ -5,14 +5,14 @@
 \title{Plot stored SpaTalk results}
 \usage{
 SpaTalkPlot(
-  srt,
+  object,
   result.name = NULL,
   plot_type = c("network", "bubble", "pathway", "tf"),
   ...
 )
 }
 \arguments{
-\item{srt}{A `Seurat` object with SpaTalk results.}
+\item{object}{A `Seurat` object with SpaTalk results.}
 
 \item{result.name}{Stored SpaTalk result name.}
 

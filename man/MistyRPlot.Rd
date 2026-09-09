@@ -5,7 +5,7 @@
 \title{Plot stored MISTy results}
 \usage{
 MistyRPlot(
-  srt = NULL,
+  object = NULL,
   res = NULL,
   type = c("improvements", "contributions"),
   top_n = 20,
@@ -14,9 +14,9 @@ MistyRPlot(
 )
 }
 \arguments{
-\item{srt}{Optional `Seurat` object containing `MistyR` results.}
+\item{object}{Optional `Seurat` object containing `MistyR` results.}
 
-\item{res}{Optional result list, usually `srt@tools$MistyR`.}
+\item{res}{Optional result list, usually `object@tools$MistyR`.}
 
 \item{type}{Result table to plot.}
 
@@ -24,12 +24,11 @@ MistyRPlot(
 
 \item{target}{Optional target feature filter.}
 
-\item{measure}{Numeric result column to display. For
-\code{type = "improvements"} use \code{"gain.R2"}, \code{"gain.RMSE"}, or
-\code{"value"}; for \code{type = "contributions"}, use an available
-contribution, importance, or value column. \code{NULL} defaults to
-\code{"gain.R2"} for improvements and \code{"contribution"} for contributions,
-and errors if that column is not present.}
+\item{measure}{Numeric result column to display. For `type = "improvements"`
+use `"gain.R2"` or `"gain.RMSE"`; for `type = "contributions"`, use
+`"contribution"` or `"importance"` as provided by the backend. `NULL`
+defaults to `"gain.R2"` for improvements and `"contribution"` for
+contributions, and errors if that column is not present.}
 }
 \value{
 A `ggplot` object.

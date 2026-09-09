@@ -6,6 +6,7 @@
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
+#' @param srt A `Seurat` object.
 #' @inheritParams thisutils::log_message
 #' @param new_assay Name of the assay used to store SpaNorm-normalized data.
 #' @param tool_name Name used to store detailed SpaNorm results in `srt@tools`.
