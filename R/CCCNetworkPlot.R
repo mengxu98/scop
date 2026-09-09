@@ -433,7 +433,7 @@ CCCNetworkPlot <- function(
       }
       check_r(.spatialcellchat_repository, verbose = FALSE)
       native <- GetCCCObject(
-        object = srt,
+        srt = srt,
         method = "SpatialCellChat",
         result.name = condition,
         sample = sample

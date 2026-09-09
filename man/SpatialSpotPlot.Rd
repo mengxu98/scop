@@ -5,7 +5,7 @@
 \title{Spatial spot plot}
 \usage{
 SpatialSpotPlot(
-  srt = NULL,
+  srt,
   group.by = NULL,
   features = NULL,
   assay = NULL,
@@ -50,13 +50,11 @@ SpatialSpotPlot(
   ncol = NULL,
   byrow = TRUE,
   verbose = TRUE,
-  object = NULL,
   image.scale = c("lowres", "hires")
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object. The same object may be supplied as
-\verb{object =} for consistency with spatial plotting APIs.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata columns to color spots by.}
 
@@ -131,9 +129,6 @@ returns a list of ggplots.}
 
 \item{verbose}{Whether to print messages.}
 
-\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
-\code{object}.}
-
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
@@ -147,12 +142,12 @@ Spatial spot plot
 \examples{
 data(visium_human_pancreas_sub)
 SpatialSpotPlot(
-  object = visium_human_pancreas_sub,
+  srt = visium_human_pancreas_sub,
   group.by = "coda_label"
 )
 
 SpatialSpotPlot(
-  object = visium_human_pancreas_sub,
+  srt = visium_human_pancreas_sub,
   features = rownames(visium_human_pancreas_sub)[1:2],
   layer = "counts"
 )

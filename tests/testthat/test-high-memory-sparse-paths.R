@@ -71,7 +71,7 @@ test_that("spatial integration prepares merged objects without SplitObject", {
   )
 
   input <- spatial_integration_prepare_input(
-    object = srt,
+    srt = srt,
     sample.by = "sample",
     assay = "RNA",
     layer = "counts",

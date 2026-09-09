@@ -6,10 +6,7 @@
 #' `srt@tools$SpatialNetwork`.
 #'
 #' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object. The same object may be supplied as
-#' `object =` for consistency with spatial plotting APIs.
-#' @param object Optional alias for `srt`. Supply exactly one of `srt` or
-#' `object`.
+#' @param srt A `Seurat` object.
 #' @param method Network method, either `"knn"` or `"radius"`.
 #' @param image Seurat image name. A single image is selected automatically;
 #'   multi-image objects require an explicit value.
@@ -28,12 +25,12 @@
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' spatial <- visium_human_pancreas_sub
-#' spatial <- RunSpatialNetwork(object = spatial, k = 6, verbose = FALSE)
-#' SpatialNetworkPlot(object = spatial, group.by = "coda_label")
+#' spatial <- RunSpatialNetwork(srt = spatial, k = 6, verbose = FALSE)
+#' SpatialNetworkPlot(srt = spatial, group.by = "coda_label")
 #'
 #' @export
 RunSpatialNetwork <- function(
-  srt = NULL,
+  srt,
   method = c("knn", "radius"),
   image = NULL,
   coord.cols = c("col", "row"),
@@ -41,10 +38,9 @@ RunSpatialNetwork <- function(
   radius = NULL,
   graph.name = NULL,
   overwrite = FALSE,
-  verbose = TRUE,
-  object = NULL
+  verbose = TRUE
 ) {
-  srt <- spatial_resolve_srt(srt = srt, object = object)
+  spatial_require_srt(srt)
   if (!is.null(image) && (!is.character(image) || length(image) != 1L || is.na(image) || !nzchar(image))) {
     log_message("{.arg image} must be one non-empty image name", message_type = "error")
   }
@@ -243,7 +239,7 @@ spatial_graph_validate <- function(graph) {
 #' object. Graphs can be returned as their complete list representation, a
 #' sparse matrix, or a Seurat `Graph` object.
 #'
-#' @param object Optional `Seurat` object containing `SpatialNetwork` results.
+#' @param srt Optional `Seurat` object containing `SpatialNetwork` results.
 #' @param res Optional `SpatialNetwork` result list.
 #' @param graph.name Stored graph name. The active graph is used when `NULL`.
 #' @param format Output representation.
@@ -269,7 +265,7 @@ spatial_graph_validate <- function(graph) {
 #'
 #' @export
 GetSpatialGraph <- function(
-  object = NULL,
+  srt = NULL,
   res = NULL,
   graph.name = NULL,
   format = c("list", "sparse", "seurat"),
@@ -277,14 +273,14 @@ GetSpatialGraph <- function(
 ) {
   format <- match.arg(format)
   value <- match.arg(value)
-  if (!is.null(object) && !inherits(object, "Seurat")) {
-    log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
+  if (!is.null(srt) && !inherits(srt, "Seurat")) {
+    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   if (is.null(res)) {
-    if (is.null(object)) {
-      log_message("Provide {.arg object} or {.arg res}", message_type = "error")
+    if (is.null(srt)) {
+      log_message("Provide {.arg srt} or {.arg res}", message_type = "error")
     }
-    res <- object@tools[["SpatialNetwork"]]
+    res <- srt@tools[["SpatialNetwork"]]
   }
   if (!is.list(res) || is.null(res$graphs)) {
     log_message("{.arg res} must contain SpatialNetwork graphs", message_type = "error")
@@ -337,11 +333,11 @@ GetSpatialGraph <- function(
 #' Plot a graph produced by [RunSpatialNetwork()]. The graph can be read from a
 #' Seurat object or supplied directly as `srt@tools$SpatialNetwork`.
 #'
-#' @param object Optional `Seurat` object containing the graph and metadata.
-#' @param res Optional plain result list from `object@tools$SpatialNetwork`.
+#' @param srt Optional `Seurat` object containing the graph and metadata.
+#' @param res Optional plain result list from `srt@tools$SpatialNetwork`.
 #' @param graph.name Stored graph name. The active graph is used when `NULL`.
 #' @param group.by Node column or Seurat metadata column used for coloring.
-#' @param image.scale Image scale factor matching the raster in `object`.
+#' @param image.scale Image scale factor matching the raster in `srt`.
 #' @param edge.color,edge.linewidth Edge appearance.
 #' @param pt.size,pt.alpha Node appearance.
 #' @param palette,palcolor Palette name or explicit colors.
@@ -369,7 +365,7 @@ GetSpatialGraph <- function(
 #'
 #' @export
 SpatialNetworkPlot <- function(
-  object = NULL,
+  srt = NULL,
   res = NULL,
   graph.name = NULL,
   group.by = NULL,
@@ -386,8 +382,8 @@ SpatialNetworkPlot <- function(
   image.scale = c("lowres", "hires")
 ) {
   image.scale <- match.arg(image.scale)
-  if (!is.null(object) && !inherits(object, "Seurat")) {
-    log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
+  if (!is.null(srt) && !inherits(srt, "Seurat")) {
+    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   if (!is.null(graph.name) && (!is.character(graph.name) || length(graph.name) != 1L || is.na(graph.name) || !nzchar(graph.name))) {
     log_message("{.arg graph.name} must be one non-empty string", message_type = "error")
@@ -396,10 +392,10 @@ SpatialNetworkPlot <- function(
     log_message("{.arg group.by} must be one non-empty column name", message_type = "error")
   }
   if (is.null(res)) {
-    if (is.null(object)) {
-      log_message("Provide either {.arg object} or {.arg res}", message_type = "error")
+    if (is.null(srt)) {
+      log_message("Provide either {.arg srt} or {.arg res}", message_type = "error")
     }
-    res <- object@tools[["SpatialNetwork"]]
+    res <- srt@tools[["SpatialNetwork"]]
   }
   if (!is.list(res) || is.null(res$graphs)) {
     log_message("{.arg res} must be a SpatialNetwork result list", message_type = "error")
@@ -418,7 +414,7 @@ SpatialNetworkPlot <- function(
 
   image_info <- NULL
   plot_space <- "raw"
-  if (is.null(object) && !is.null(graph$source$transform)) {
+  if (is.null(srt) && !is.null(graph$source$transform)) {
     stored_scale <- graph$source$transform$scale %||% NA_real_
     if (
       length(stored_scale) == 1L && is.finite(stored_scale) &&
@@ -428,20 +424,20 @@ SpatialNetworkPlot <- function(
       plot_space <- "display"
     }
   }
-  if (!is.null(object)) {
-    keep <- nodes$cell_id %in% colnames(object)
+  if (!is.null(srt)) {
+    keep <- nodes$cell_id %in% colnames(srt)
     if (any(!keep)) {
       log_message(
-        "Drop {.val {sum(!keep)}} graph nodes that are absent from {.arg object}",
+        "Drop {.val {sum(!keep)}} graph nodes that are absent from {.arg srt}",
         message_type = "warning"
       )
     }
     nodes <- nodes[keep, , drop = FALSE]
     source_image <- graph$source$image %||% NULL
-    object_images <- tryCatch(SeuratObject::Images(object), error = function(e) character())
-    if (!is.null(source_image) && source_image %in% object_images) {
+    srt_images <- tryCatch(SeuratObject::Images(srt), error = function(e) character())
+    if (!is.null(source_image) && source_image %in% srt_images) {
       display <- spatial_dim_coords(
-        object,
+        srt,
         image = source_image,
         image.scale = image.scale,
         overlay_image = TRUE
@@ -463,8 +459,8 @@ SpatialNetworkPlot <- function(
   if (!is.null(group.by)) {
     if (group.by %in% colnames(nodes)) {
       nodes$.group <- nodes[[group.by]]
-    } else if (!is.null(object) && group.by %in% colnames(object@meta.data)) {
-      nodes$.group <- object@meta.data[nodes$cell_id, group.by]
+    } else if (!is.null(srt) && group.by %in% colnames(srt@meta.data)) {
+      nodes$.group <- srt@meta.data[nodes$cell_id, group.by]
     } else {
       log_message(
         "{.arg group.by} {.val {group.by}} was not found in graph nodes or Seurat metadata",

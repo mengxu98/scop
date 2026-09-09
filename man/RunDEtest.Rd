@@ -6,10 +6,10 @@
 \alias{RunDEtest.SummarizedExperiment}
 \title{Differential gene test}
 \usage{
-RunDEtest(object = NULL, ..., srt = NULL)
+RunDEtest(srt, ...)
 
 \method{RunDEtest}{Seurat}(
-  object,
+  srt,
   group.by = NULL,
   group1 = NULL,
   group2 = NULL,
@@ -52,7 +52,7 @@ RunDEtest(object = NULL, ..., srt = NULL)
 )
 
 \method{RunDEtest}{SummarizedExperiment}(
-  object,
+  srt,
   group.by = NULL,
   group1 = NULL,
   group2 = NULL,
@@ -90,13 +90,11 @@ RunDEtest(object = NULL, ..., srt = NULL)
 )
 }
 \arguments{
-\item{object}{A \code{Seurat} object or a \code{SummarizedExperiment} object.}
+\item{srt}{A \code{Seurat} object or a \code{SummarizedExperiment} object.}
 
 \item{...}{Additional arguments passed to the marker backend. Arguments not
 supported by scop's sparse Wilcoxon path are delegated to
 \link[Seurat:FindMarkers]{Seurat::FindMarkers}.}
-
-\item{srt}{Compatibility alias for \code{object}.}
 
 \item{group.by}{A grouping variable in the dataset to define the groups or conditions for the differential test.
 If not provided, the function uses the "active.ident" variable in the Seurat object.}

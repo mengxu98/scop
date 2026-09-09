@@ -5,7 +5,7 @@
 \title{Run scTenifoldNet network comparison}
 \usage{
 RunscTenifoldNet(
-  object,
+  srt,
   y = NULL,
   group.by = NULL,
   condition1 = NULL,
@@ -37,11 +37,11 @@ RunscTenifoldNet(
 )
 }
 \arguments{
-\item{object}{A \code{Seurat} object or a raw count matrix with genes in rows and
+\item{srt}{A \code{Seurat} object or a raw count matrix with genes in rows and
 cells in columns.}
 
-\item{y}{A second raw count matrix. Required when \code{object} is a matrix and
-ignored when \code{object} is a \code{Seurat} object.}
+\item{y}{A second raw count matrix. Required when \code{srt} is a matrix and
+ignored when \code{srt} is a \code{Seurat} object.}
 
 \item{group.by}{Metadata column used to split a \code{Seurat} object into the two
 conditions being compared.}
@@ -49,7 +49,7 @@ conditions being compared.}
 \item{condition1, condition2}{Condition labels from \code{group.by}. If omitted,
 the first two group levels are used.}
 
-\item{assay, layer}{Assay and layer used as the count matrix when \code{object} is
+\item{assay, layer}{Assay and layer used as the count matrix when \code{srt} is
 a \code{Seurat} object.}
 
 \item{features}{Optional genes to retain before running the comparison.}
@@ -70,12 +70,12 @@ parameters forwarded to \code{scTenifoldNet::tensorDecomposition()}.}
 \item{cores}{Number of cores forwarded to \code{scTenifoldNet::scTenifoldNet()}.}
 
 \item{store_networks}{Whether to keep tensor networks in the stored result
-when \code{object} is a \code{Seurat} object.}
+when \code{srt} is a \code{Seurat} object.}
 
 \item{store_manifold}{Whether to keep manifold-alignment coordinates in the
-stored result when \code{object} is a \code{Seurat} object.}
+stored result when \code{srt} is a \code{Seurat} object.}
 
-\item{tool_name}{Name of the \code{object@tools} entry when \code{object} is a \code{Seurat}
+\item{tool_name}{Name of the \code{srt@tools} entry when \code{srt} is a \code{Seurat}
 object.}
 
 \item{verbose}{Whether to print the message.
@@ -83,7 +83,7 @@ Default is \code{TRUE}.}
 }
 \value{
 A scTenifoldNet result list for matrix input, or a \code{Seurat} object
-with results stored in \code{object@tools[[tool_name]]}.
+with results stored in \code{srt@tools[[tool_name]]}.
 }
 \description{
 Run scTenifoldNet network comparison

@@ -5,7 +5,7 @@
 \title{Read or convert a stored spatial graph}
 \usage{
 GetSpatialGraph(
-  object = NULL,
+  srt = NULL,
   res = NULL,
   graph.name = NULL,
   format = c("list", "sparse", "seurat"),
@@ -13,7 +13,7 @@ GetSpatialGraph(
 )
 }
 \arguments{
-\item{object}{Optional `Seurat` object containing `SpatialNetwork` results.}
+\item{srt}{Optional `Seurat` object containing `SpatialNetwork` results.}
 
 \item{res}{Optional `SpatialNetwork` result list.}
 

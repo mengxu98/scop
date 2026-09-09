@@ -19,8 +19,7 @@ STdeconvolvePlot(
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object. The same object may be supplied as
-\verb{object =} for consistency with spatial plotting APIs.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{tool_name}{Result key written to \code{srt@tools} by
 \code{RunSTdeconvolve()}.}

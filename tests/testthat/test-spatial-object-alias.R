@@ -1,4 +1,4 @@
-make_spatial_object_alias_fixture <- function() {
+make_spatial_srt_fixture <- function() {
   counts <- matrix(
     c(
       5, 4, 0, 1, 5, 4, 0, 1, 5,
@@ -19,12 +19,12 @@ make_spatial_object_alias_fixture <- function() {
   srt
 }
 
-test_that("native spatial APIs accept object as an input alias", {
+test_that("native spatial APIs take srt as the Seurat argument", {
   skip_if_not_installed("BiocNeighbors")
-  srt <- make_spatial_object_alias_fixture()
+  srt <- make_spatial_srt_fixture()
 
   qc <- suppressWarnings(RunSpotQC(
-    object = srt,
+    srt = srt,
     assay = "RNA",
     qc_metrics = c("umi", "gene"),
     UMI_threshold = 0,
@@ -34,7 +34,7 @@ test_that("native spatial APIs accept object as an input alias", {
   expect_s4_class(qc, "Seurat")
   expect_s3_class(
     SpatialSpotPlot(
-      object = qc,
+      srt = qc,
       group.by = "SpotQC",
       overlay_image = FALSE,
       theme_use = NULL
@@ -43,14 +43,14 @@ test_that("native spatial APIs accept object as an input alias", {
   )
 
   network <- RunSpatialNetwork(
-    object = qc,
+    srt = qc,
     k = 1,
     verbose = FALSE
   )
   expect_s4_class(network, "Seurat")
   expect_s3_class(
     SpatialNetworkPlot(
-      object = network,
+      srt = network,
       graph.name = "knn_k1",
       theme_use = NULL
     ),
@@ -58,7 +58,7 @@ test_that("native spatial APIs accept object as an input alias", {
   )
 
   svf <- RunSpatialVariableFeatures(
-    object = network,
+    srt = network,
     assay = "RNA",
     layer = "counts",
     method = "moran",
@@ -71,7 +71,7 @@ test_that("native spatial APIs accept object as an input alias", {
   expect_s4_class(svf, "Seurat")
   expect_s3_class(
     SpatialVariableFeaturePlot(
-      object = svf,
+      srt = svf,
       plot_type = "summary",
       theme_use = NULL
     ),
@@ -79,18 +79,38 @@ test_that("native spatial APIs accept object as an input alias", {
   )
 })
 
-test_that("spatial object aliases reject ambiguous or missing input", {
-  srt <- make_spatial_object_alias_fixture()
+test_that("spatial APIs reject object= and invalid srt input", {
+  srt <- make_spatial_srt_fixture()
   expect_error(
-    RunSpotQC(srt = srt, object = srt, verbose = FALSE),
-    "only one of.*srt.*object"
+    RunSpotQC(object = srt, verbose = FALSE),
+    "unused argument"
   )
   expect_error(
     SpatialSpotPlot(verbose = FALSE),
-    "through.*srt.*object"
+    "srt"
   )
   expect_error(
-    RunSpatialNetwork(object = list(), verbose = FALSE),
-    "object.*Seurat"
+    RunSpatialNetwork(srt = list(), verbose = FALSE),
+    "srt.*Seurat"
+  )
+})
+
+test_that("non-spatial wrappers take srt and reject object=", {
+  srt <- make_spatial_srt_fixture()
+  expect_error(
+    RunVECTOR(object = srt, verbose = FALSE),
+    "unused argument"
+  )
+  expect_error(
+    VECTORPlot(object = srt),
+    "srt"
+  )
+  expect_error(
+    RunDEtest(object = srt, verbose = FALSE),
+    "srt"
+  )
+  expect_error(
+    PrepareSCExplorer(object = srt, verbose = FALSE),
+    "unused argument"
   )
 })

@@ -627,15 +627,15 @@ sctenifold_dregulation <- function(manifold_output, gko) {
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
-#' @param object A `Seurat` object or a raw count matrix with genes in rows and
+#' @param srt A `Seurat` object or a raw count matrix with genes in rows and
 #' cells in columns.
-#' @param y A second raw count matrix. Required when `object` is a matrix and
-#' ignored when `object` is a `Seurat` object.
+#' @param y A second raw count matrix. Required when `srt` is a matrix and
+#' ignored when `srt` is a `Seurat` object.
 #' @param group.by Metadata column used to split a `Seurat` object into the two
 #' conditions being compared.
 #' @param condition1,condition2 Condition labels from `group.by`. If omitted,
 #' the first two group levels are used.
-#' @param assay,layer Assay and layer used as the count matrix when `object` is
+#' @param assay,layer Assay and layer used as the count matrix when `srt` is
 #' a `Seurat` object.
 #' @param features Optional genes to retain before running the comparison.
 #' @param qc Whether to apply scTenifoldNet-style quality control.
@@ -649,14 +649,14 @@ sctenifold_dregulation <- function(manifold_output, gko) {
 #' `scTenifoldNet::manifoldAlignment()`.
 #' @param cores Number of cores forwarded to `scTenifoldNet::scTenifoldNet()`.
 #' @param store_networks Whether to keep tensor networks in the stored result
-#' when `object` is a `Seurat` object.
+#' when `srt` is a `Seurat` object.
 #' @param store_manifold Whether to keep manifold-alignment coordinates in the
-#' stored result when `object` is a `Seurat` object.
-#' @param tool_name Name of the `object@tools` entry when `object` is a `Seurat`
+#' stored result when `srt` is a `Seurat` object.
+#' @param tool_name Name of the `srt@tools` entry when `srt` is a `Seurat`
 #' object.
 #'
 #' @return A scTenifoldNet result list for matrix input, or a `Seurat` object
-#' with results stored in `object@tools[[tool_name]]`.
+#' with results stored in `srt@tools[[tool_name]]`.
 #' @export
 #'
 #' @examples
@@ -685,7 +685,7 @@ sctenifold_dregulation <- function(manifold_output, gko) {
 #'
 #' scTenifoldNetPlot(pancreas_sub, plot_type = "effect")
 RunscTenifoldNet <- function(
-  object,
+  srt,
   y = NULL,
   group.by = NULL,
   condition1 = NULL,
@@ -762,18 +762,18 @@ RunscTenifoldNet <- function(
     }
   }
 
-  is_seurat <- inherits(object, "Seurat")
-  assay <- assay %||% if (is_seurat) SeuratObject::DefaultAssay(object) else NULL
-  input_summary <- list(type = if (is_seurat) "Seurat" else class(object)[[1]])
+  is_seurat <- inherits(srt, "Seurat")
+  assay <- assay %||% if (is_seurat) SeuratObject::DefaultAssay(srt) else NULL
+  input_summary <- list(type = if (is_seurat) "Seurat" else class(srt)[[1]])
 
   if (is_seurat) {
-    if (is.null(group.by) || !group.by %in% colnames(object[[]])) {
+    if (is.null(group.by) || !group.by %in% colnames(srt[[]])) {
       log_message(
-        "{.arg group.by} must identify a metadata column when {.arg object} is a {.cls Seurat} object",
+        "{.arg group.by} must identify a metadata column when {.arg srt} is a {.cls Seurat} object",
         message_type = "error"
       )
     }
-    groups <- object[[group.by]][, 1]
+    groups <- srt[[group.by]][, 1]
     condition_levels <- levels(groups) %||% unique(as.character(groups))
     condition1 <- condition1 %||% condition_levels[[1]]
     condition2 <- condition2 %||% condition_levels[[2]]
@@ -787,15 +787,15 @@ RunscTenifoldNet <- function(
         message_type = "error"
       )
     }
-    cells_x <- rownames(object[[]])[as.character(groups) == condition1]
-    cells_y <- rownames(object[[]])[as.character(groups) == condition2]
+    cells_x <- rownames(srt[[]])[as.character(groups) == condition1]
+    cells_y <- rownames(srt[[]])[as.character(groups) == condition2]
     if (length(cells_x) == 0L || length(cells_y) == 0L) {
       log_message(
         "Both selected conditions must contain cells",
         message_type = "error"
       )
     }
-    count_matrix <- GetAssayData5(object, assay = assay, layer = layer)
+    count_matrix <- GetAssayData5(srt, assay = assay, layer = layer)
     x <- count_matrix[, cells_x, drop = FALSE]
     y <- count_matrix[, cells_y, drop = FALSE]
     input_summary$group.by <- group.by
@@ -806,10 +806,10 @@ RunscTenifoldNet <- function(
       c(condition1, condition2)
     )
   } else {
-    x <- object
+    x <- srt
     if (is.null(y)) {
       log_message(
-        "{.arg y} is required when {.arg object} is a matrix",
+        "{.arg y} is required when {.arg srt} is a matrix",
         message_type = "error"
       )
     }
@@ -943,7 +943,7 @@ RunscTenifoldNet <- function(
   if (!isTRUE(store_manifold)) {
     stored_result$manifoldAlignment <- NULL
   }
-  object@tools[[tool_name]] <- list(
+  srt@tools[[tool_name]] <- list(
     diffRegulation = result$diffRegulation,
     result = stored_result,
     qc_summary = result$qc_summary %||% list(applied = qc),
@@ -958,9 +958,9 @@ RunscTenifoldNet <- function(
   )
 
   log_message(
-    "{.pkg scTenifoldNet} results stored in {.code object@tools[[{tool_name}]]}",
+    "{.pkg scTenifoldNet} results stored in {.code srt@tools[[{tool_name}]]}",
     message_type = "success",
     verbose = verbose
   )
-  object
+  srt
 }
