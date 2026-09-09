@@ -309,7 +309,6 @@ additional analysis with the upstream SpatialCellChat object is needed.</p>
 <span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Group Visium spots by their CODA tissue labels.</span></span></span>
-<span class="r-in"><span><span class="fu">check_r</span><span class="op">(</span><span class="st">"jinworks/SpatialCellChat"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunSpatialCellChat</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, image <span class="op">=</span> <span class="st">"slice1"</span>,</span></span>
