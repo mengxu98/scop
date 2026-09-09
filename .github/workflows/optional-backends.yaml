@@ -26,7 +26,7 @@ jobs:
               monocle
               DDRTree
           - suite: giotto
-            filter: giotto
+            filter: framework-bridges|param-list-utils|pr306-spatial-baseline
             packages: giotto-suite/Giotto@080d2e206c2f8b567a9ec2527297b6abd463ee64
             required: Giotto
           - suite: tage
