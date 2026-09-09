@@ -1,7 +1,5 @@
 pkgload::load_all(".", quiet = TRUE, compile = FALSE)
-topics <- c("ReadSpatialData", "SpatialDataInfo", "SpatialSegmentationQC", "RunSpatialSketch",
-  "SpatialSampleSummary", "SpatialSampleComparison", "SpatialSamplePlot",
-  "RunStandardWorkflow", "RunSpatialVariableFeatures")
+topics <- c("ReadSpatialData", "SpatialDataInfo", "RunStandardWorkflow", "RunSpatialVariableFeatures")
 stopifnot(all(topics %in% getNamespaceExports("scop")))
 for (topic in topics) {
   path <- file.path("man", paste0(topic, ".Rd"))
@@ -13,6 +11,6 @@ for (topic in topics) {
   unlink(examples)
 }
 pkgdown::build_reference(topics = topics, examples = FALSE)
-for (article in c("spatial-platform-workflows", "spatial-sample-comparisons")) {
+for (article in "spatial-platform-workflows") {
   pkgdown::build_article(article)
 }

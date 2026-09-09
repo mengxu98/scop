@@ -1,23 +1,11 @@
 ---
-title: "Visium, HD bins and segmented-cell workflows"
+title: "Spatial imports and standard workflow methods"
 ---
 
-SCOP uses Seurat as the user-facing container. Choose a workflow according to
-the observation unit and the biological question. A bin is not automatically a
-cell, and expression clusters do not automatically define anatomical domains.
-
-| Input | Recommended entry | Additional decisions |
-|---|---|---|
-| Visium spots | `ReadSpatialData(..., "visium")` and `RunStandardWorkflow()` | Spatial QC, domains, reference-dependent deconvolution |
-| Visium HD bins | `ReadSpatialData(..., "visium_hd")` and `RunSpatialSketch()` | Explicit resolution; sampling and projection; bin-level interpretation |
-| Xenium cells | `ReadSpatialData(..., "xenium")`, `SpatialSegmentationQC()` | Segmentation quality, annotation and cell neighborhoods |
-
-These examples use real vendor output directories that the user supplies. They
-are not executed during a documentation build. No loader installs dependencies
-or downloads data. Seurat's supported file formats and version remain the
-loader boundary; CosMx/MERSCOPE import is not implemented by this new loader.
-Existing Seurat objects from other supported loaders can use the downstream
-functions with explicit observation types and units.
+Use Seurat as the container and select an explicit assay and image. SCOP
+records the observation unit and validates assay/image identity. The loader
+supports Visium, Visium HD bins and Xenium; it does not download data or install
+dependencies. Other platforms can use their existing Seurat loaders.
 
 ## Visium: choose the existing methods through one workflow
 
@@ -75,90 +63,40 @@ an appropriate original assay/layer explicitly. Selecting SpaNorm with
 `do_normalization = FALSE` is rejected; a preexisting destination assay also
 requires choosing a new name.
 
-## Visium HD: preserve resolutions and full-data identity
-
-Seurat's [HD workflow](https://satijalab.org/seurat/articles/visiumhd_analysis_vignette)
-stores multiple resolutions in separate assays/images. SCOP preserves this
-structure and records bin size separately from coordinate units: an 8-micron
-bin can still have image coordinates expressed in full-resolution pixels.
+## Platform import and existing plots
 
 ```r
 hd <- ReadSpatialData("path/to/hd/outs", "visium_hd",
                       bin.size = c(8, 16), sample_id = "HD1")
 SpatialDataInfo(hd, assay = "Spatial.008um", image = "slice1.008um")
-hd <- RunSpatialSketch(
-  hd, assay = "Spatial.008um", image = "slice1.008um",
-  ncells = 50000, nfeatures = 2000, npcs = 30,
-  method = "LeverageScore", prefix = "HD8"
-)
-hd@tools$HD8$summary
-SpatialSpotPlot(hd, image = "slice1.008um", group.by = "HD8_projected")
-saveRDS(hd, "hd-analysis.rds")
-reloaded <- readRDS("hd-analysis.rds")
-SpatialDataInfo(reloaded, assay = "Spatial.008um", image = "slice1.008um")
-```
+SpatialSpotPlot(hd, assay = "Spatial.008um", image = "slice1.008um",
+                features = rownames(hd)[1], layer = "counts")
 
-The full count matrix remains sparse if it was sparse on input. Only sampled
-cells are scaled. The memory guard estimates the sketch's scaled matrix; it
-does not promise a bound on total memory, and arbitrary on-disk matrix backends
-have not all been certified. The workflow records sampled and projected cells
-separately and rejects conflicting output names. A single observed sketch
-cluster receives a constant full-data label, explicitly recorded in provenance.
-This case does not support claims about multiple tissue populations.
-
-An assay spanning multiple independent images must be subset to the intended
-image context before sketching. This prevents accidentally sampling an unrelated
-section. Physical image registration and cross-section 3D reconstruction are
-separate analyses, not implied by expression projection or PRECAST integration.
-
-For spatial feature detection, the C++ Moran/Geary and SPARK-X paths retain
-sparse input. R-reference and nnSVG conversions check `max_dense_gb` before
-materializing a dense expression matrix. Reduce the requested features instead
-of increasing this limit blindly. Inspect the exact input assay/layer.
-
-## Xenium: audit real segmentation and retain full neighborhood context
-
-```r
 cells <- ReadSpatialData("path/to/xenium/outs", "xenium", sample_id = "X1")
-info <- SpatialDataInfo(cells, assay = "Xenium", image = "fov")
-qc <- SpatialSegmentationQC(cells, assay = "Xenium", image = "fov")
-head(qc)
-SpatialCellPlot(cells, image = "fov", features = rownames(cells)[1],
-                assay = "Xenium", layer = "counts")
+SpatialDataInfo(cells, assay = "Xenium", image = "fov")
+SpatialCellPlot(cells, image = "fov")
 ```
 
-Polygon area is an area of the supplied boundary representation, not a new
-segmentation or a claim to recover the original pixel mask. Vendor polygons
-can simplify the underlying segmentation. Missing polygons produce missing
-area and `not_evaluated`, never a synthetic circle or an automatic pass. Supply
-`min_counts` and/or `area_range` only after inspecting the tissue and acquisition.
-Multi-ring tables require explicit logical `hole` values for area calculation.
-No threshold filters the object automatically.
+HD resolutions remain separate assays/images. An 8-micron bin may have
+full-resolution pixel coordinates; bin size and coordinate units are distinct.
+Xenium imports retain vendor segmentation boundaries and micron coordinates.
+The existing cell plot recognizes Seurat's `segmentations` boundary name.
+Boundary display is not segmentation QC or a new segmentation algorithm.
 
-After annotating cell types in `celltype`, profile target cells while preserving
-surrounding tissue:
+## Sparse expression and assay compatibility
 
-```r
-profile <- SpatialNeighborhoodProfile(
-  cells, group.by = "celltype", image = "fov",
-  radii = c(25, 50, 100), sample.by = "spatial_sample",
-  cells = colnames(cells)[cells$celltype == "T cell"]
-)
-```
+SPARK-X and C++ Moran/Geary retain sparse input. R-reference and nnSVG
+conversions check `max_dense_gb` before creating a dense expression matrix.
+This bounds a single conversion, not the total backend memory. `ScaleData()`
+uses the selected assay/layer's cell set and updates layer membership on
+rescaling, including assays containing only a subset of the object's cells.
 
-Radii here are microns only because the Xenium loader's provenance records
-micron coordinates. A metadata-only Seurat object otherwise has unknown units.
-The profile measures observed neighborhood composition, without a tissue-edge
-correction or a contact/communication claim. See [sample comparisons](spatial-sample-comparisons.html)
-for aggregation across independent subjects.
+## Validation
 
-## Reproducible validation
-
-`scripts/validate-spatial-platforms.R` runs public fixtures in isolated R
-processes, records errors and sampled process-tree peak memory, saves results,
-reloads them, and renders their stored outputs. Optional backends are recorded
-as unavailable instead of being installed automatically. The companion
-`scripts/spatial-platform-data.md` records download sources and intended scope.
-Mock adapter tests are separate from these live integration runs. Small
-developer fixtures validate formats and computation, not biological performance
-on complete production slides.
+`scripts/validate-spatial-platforms.R` runs seven public-data cases in isolated
+R processes: Visium baseline, BANKSY, SmoothClust, SpaNorm, local SpotSweeper,
+HD import, and Xenium import/rendering. It saves results, timings, sampled
+process-tree memory and logs. `scripts/verify-spatial-artifacts.R` reloads and
+plots those results. See `scripts/spatial-platform-data.md` for sources.
+Developer fixtures validate format and computation, not biological performance
+on full production slides. Mock tests are separate from live backend runs.
