@@ -246,7 +246,7 @@ test_that("srt_to_giotto and giotto_to_srt round-trip with a real GiottoClass", 
   expect_true(all(c("counts", "data") %in% layers))
 })
 
-test_that("documented giotto examples probe GiottoClass without reinstalling", {
+test_that("documented giotto examples do not call check_r", {
   rd_examples <- vapply(
     c("srt_to_giotto.Rd", "giotto_to_srt.Rd"),
     function(file) {
@@ -256,7 +256,7 @@ test_that("documented giotto examples probe GiottoClass without reinstalling", {
     },
     character(1)
   )
-  expect_false(any(grepl("drieslab/Giotto", rd_examples, fixed = TRUE)))
-  expect_true(all(grepl("GiottoClass", rd_examples, fixed = TRUE)))
-  expect_true(all(grepl("install = FALSE", rd_examples, fixed = TRUE)))
+  expect_false(any(grepl("check_r", rd_examples, fixed = TRUE)))
+  expect_false(any(grepl("requireNamespace", rd_examples, fixed = TRUE)))
+  expect_true(all(grepl("srt_to_giotto", rd_examples, fixed = TRUE)))
 })
