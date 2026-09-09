@@ -35,7 +35,9 @@ jobs:
             required: tAge
           - suite: cibersort
             filter: cibersort-cpp
-            packages: Moonerss/CIBERSORT@583877726927327fad6417be49abe4eb8c3d02f6
+            packages: |-
+              bioc::preprocessCore
+              Moonerss/CIBERSORT@583877726927327fad6417be49abe4eb8c3d02f6
             required: CIBERSORT
 
     name: optional (${{ matrix.suite }})
@@ -77,6 +79,14 @@ jobs:
         with:
           path: ${{ steps.r-info.outputs.r-lib }}
           key: r-hard-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Install system libraries for optional backends 🧰
+        if: matrix.suite == 'giotto'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libproj-dev libgdal-dev libgeos-dev libudunits2-dev
 
       - name: Install optional backend 📦
         uses: ./.github/actions/install-external-r-packages
