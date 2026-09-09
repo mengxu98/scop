@@ -283,11 +283,9 @@ test_that("RunDEtest all-in-one fallback never installs missing Presto", {
       context_materialized <<- TRUE
       stop("marker context should not be materialized without Presto")
     },
-    presto_get_fun = function(
-      fun = "wilcoxauc",
-      install = FALSE,
-      error_on_missing = TRUE
-    ) {
+    presto_get_fun = function(fun = "wilcoxauc",
+                              install = FALSE,
+                              error_on_missing = TRUE) {
       install_requested <<- install
       NULL
     },

@@ -131,24 +131,20 @@ test_that("min.cells.sample drops low-cell samples and restores DE direction", {
   tools_out <- sample_out@tools$DEtest_subcelltype
   sample_markers <- tools_out$AllMarkers_edgeR
   typea <- sample_markers[
-    sample_markers$gene == "marker" & as.character(sample_markers$group1) == "TypeA",
-    ,
+    sample_markers$gene == "marker" & as.character(sample_markers$group1) == "TypeA", ,
     drop = FALSE
   ]
   typeb <- sample_markers[
-    sample_markers$gene == "marker" & as.character(sample_markers$group1) == "TypeB",
-    ,
+    sample_markers$gene == "marker" & as.character(sample_markers$group1) == "TypeB", ,
     drop = FALSE
   ]
   inventory <- tools_out$sample_inventory
   typea_tiny <- inventory[
-    inventory$group == "TypeA" & inventory$sample == "Rp_tiny",
-    ,
+    inventory$group == "TypeA" & inventory$sample == "Rp_tiny", ,
     drop = FALSE
   ]
   typeb_tiny <- inventory[
-    inventory$group == "TypeB" & inventory$sample == "Rp_tiny",
-    ,
+    inventory$group == "TypeB" & inventory$sample == "Rp_tiny", ,
     drop = FALSE
   ]
 

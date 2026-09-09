@@ -969,8 +969,7 @@ clustertree_resolve_legend_position <- function(
   if (!identical(legend.position, "auto")) {
     return(legend.position)
   }
-  switch(
-    direction,
+  switch(direction,
     "left-to-right" = "top-left",
     "right-to-left" = "top-right",
     "top-to-bottom" = "right",
@@ -980,8 +979,7 @@ clustertree_resolve_legend_position <- function(
 }
 
 clustertree_legend_anchor <- function(direction = "left-to-right") {
-  switch(
-    direction,
+  switch(direction,
     "left-to-right" = list(
       position = c(0.022, 0.978),
       justification = c(0, 1)

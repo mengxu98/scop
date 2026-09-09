@@ -101,11 +101,13 @@ query <- RunSingleR(
 )
 query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
 CellDimPlot(
-  query, group.by = "singler_annotation",
+  query,
+  group.by = "singler_annotation",
   label = TRUE, legend.position = "bottom"
 )
 FeatureStatPlot(
-  query, stat.by = "singler_score",
+  query,
+  stat.by = "singler_score",
   group.by = "singler_annotation"
 )
 }

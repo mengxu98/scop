@@ -131,7 +131,8 @@ test_that("PAGA C++ keeps embedded_with_PAGA native", {
   skip_if_not_installed("BiocNeighbors")
   srt <- make_cpp_backend_safety_object()
   out <- RunPAGA(
-    srt, group.by = "group", linear_reduction = "pca",
+    srt,
+    group.by = "group", linear_reduction = "pca",
     nonlinear_reduction = "umap", n_neighbors = 5L,
     embedded_with_PAGA = TRUE, backend = "cpp",
     show_plot = FALSE, verbose = FALSE
@@ -146,7 +147,8 @@ test_that("PHATE C++ handles gamma, native distance, MDS, and clustering", {
   data <- matrix(stats::rnorm(180), nrow = 30L)
   rownames(data) <- paste0("cell", seq_len(nrow(data)))
   out <- RunPHATE(
-    data, assay = "RNA", backend = "cpp", n_pca = NULL, n_landmark = 30L,
+    data,
+    assay = "RNA", backend = "cpp", n_pca = NULL, n_landmark = 30L,
     knn = 5L, t = 3L, gamma = 0, knn_dist = "cosine",
     mds = "metric", do_cluster = TRUE, n_clusters = 3L
   )
@@ -158,7 +160,8 @@ test_that("PHATE C++ handles gamma, native distance, MDS, and clustering", {
 test_that("scVelo C++ handles native postprocessing parameters", {
   srt <- make_cpp_backend_safety_object()
   out <- RunSCVELO(
-    srt, assay_y = c("spliced", "unspliced"), group.by = "group",
+    srt,
+    assay_y = c("spliced", "unspliced"), group.by = "group",
     linear_reduction = "pca", nonlinear_reduction = "umap",
     n_neighbors = 5L, backend = "cpp", filter_genes = FALSE,
     magic_impute = TRUE, knn = 3L, t = 2L,
@@ -176,7 +179,8 @@ test_that("CellRank C++ accepts Schur, terminal, lineage, and graph controls", {
   srt <- make_cpp_backend_safety_object()
   srt$custom_time <- seq(0, 1, length.out = ncol(srt))
   out <- RunCellRank(
-    srt, group.by = "group", linear_reduction = "pca",
+    srt,
+    group.by = "group", linear_reduction = "pca",
     nonlinear_reduction = "umap", kernel_type = "pseudotime",
     time_key = "custom_time", n_neighbors = 5L, n_macrostates = 3L,
     schur_method = "krylov", schur_n_components = 6L,

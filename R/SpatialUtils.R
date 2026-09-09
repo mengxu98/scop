@@ -126,8 +126,10 @@ spatial_sample_coords <- function(srt, sample.by, image = NULL,
       }
       selected <- candidates[[1L]]
     }
-    resolved <- spatial_analysis_coords(srt, image = selected, coord.cols = coord.cols,
-                                        coordinate_space = coordinate_space)
+    resolved <- spatial_analysis_coords(srt,
+      image = selected, coord.cols = coord.cols,
+      coordinate_space = coordinate_space
+    )
     if (!all(cells %in% resolved$data$cell_id)) {
       log_message("Selected image does not cover every cell in sample {.val {sample}}", message_type = "error")
     }

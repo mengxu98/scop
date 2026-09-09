@@ -702,7 +702,9 @@ run_palantir_cpp <- function(
     if (isTRUE(adjust_early_cell)) {
       candidates <- if (!is.null(early_group)) {
         which(srt@meta.data[[group.by]] == early_group)
-      } else seq_len(n_cells)
+      } else {
+        seq_len(n_cells)
+      }
       adjusted_early <- candidates[which.min(pseudotime[candidates])]
     }
     adjusted_terminal <- terminal_state_cells

@@ -38,8 +38,10 @@ test_cside_truthful_storage <- function() {
     if (isTRUE(verbose)) messages <<- c(messages, message)
   }, .package = "scop")
   with_mock_cside(list("run.CSIDE.single" = function(...) mock_cside_result()), {
-    out <- RunCSIDE(srt, condition.by = "condition", store_results = FALSE,
-      tool_name = "custom", prefix = "custom")
+    out <- RunCSIDE(srt,
+      condition.by = "condition", store_results = FALSE,
+      tool_name = "custom", prefix = "custom"
+    )
     expect_identical(out@tools$custom, srt@tools$custom)
     expect_equal(unique(out$custom_n_sig), 1)
     expect_true(any(grepl("not stored", messages)))

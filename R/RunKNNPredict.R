@@ -76,13 +76,15 @@
 #' )
 #' genes <- head(intersect(rownames(reference), rownames(query)), 200)
 #' query <- RunKNNPredict(
-#'   query, srt_ref = reference, ref_group = "celltype",
+#'   query,
+#'   srt_ref = reference, ref_group = "celltype",
 #'   features = genes, nfeatures = length(genes),
 #'   ref_collapsing = FALSE, k = 10, verbose = FALSE
 #' )
 #' query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
 #' CellDimPlot(
-#'   query, group.by = "KNNPredict_classification",
+#'   query,
+#'   group.by = "KNNPredict_classification",
 #'   label = TRUE, legend.position = "bottom"
 #' )
 #' FeatureStatPlot(

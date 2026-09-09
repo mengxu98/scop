@@ -193,8 +193,10 @@ test_that("cpp backend stores annotation gradient result tables", {
   expect_false(any(vapply(stored, methods::is, logical(1), class2 = "SPATA2")))
   expect_true(nrow(stored$screening) > 0)
   expect_true(nrow(stored$top_variables) > 0)
-  expect_identical(SeuratObject::VariableFeatures(srt, assay = "RNA"),
-    unique(stored$top_variables$variable))
+  expect_identical(
+    SeuratObject::VariableFeatures(srt, assay = "RNA"),
+    unique(stored$top_variables$variable)
+  )
   expect_equal(stored$parameters$value[match("backend", stored$parameters$key)], "cpp")
   expect_false("spata2_version" %in% stored$parameters$key)
   expect_true(all(c("norm_var", "rel_var", "linear_r2") %in% colnames(stored$significance)))

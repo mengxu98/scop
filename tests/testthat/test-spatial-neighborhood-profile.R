@@ -17,8 +17,8 @@ profile_oracle <- function(object, result, cumulative = FALSE) {
     q <- match(result$cell_id[i], rownames(meta))
     d <- sqrt((meta$col - meta$col[q])^2 + (meta$row - meta$row[q])^2)
     sum(seq_len(nrow(meta)) != q & meta$sample == result$sample[i] &
-          meta$label == result$group[i] & d <= result$radius[i] &
-          (cumulative | result$lower[i] == 0 | d > result$lower[i]))
+      meta$label == result$group[i] & d <= result$radius[i] &
+      (cumulative | result$lower[i] == 0 | d > result$lower[i]))
   }, integer(1))
 }
 
@@ -103,7 +103,8 @@ test_that("invalid input errors rather than returning a partial profile", {
   expect_identical(serialize(object, NULL), before)
   object$label[2] <- NA_character_
   expect_error(profile_quiet(object, "label", 1, "c1"), "nonmissing")
-  object$label[2] <- "M"; object$sample[2] <- ""
+  object$label[2] <- "M"
+  object$sample[2] <- ""
   expect_error(profile_quiet(object, "label", 1, "c1", "sample"), "nonempty")
   object$col[2] <- NA_real_
   expect_error(profile_quiet(object, "label", 1), "non-finite")

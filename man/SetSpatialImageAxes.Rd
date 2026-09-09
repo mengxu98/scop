@@ -32,7 +32,8 @@ analyses must be rerun after changing the convention.
 \examples{
 data(visium_human_pancreas_sub)
 spatial <- SetSpatialImageAxes(
-  visium_human_pancreas_sub, image = "slice1", x_orientation = "horizontal"
+  visium_human_pancreas_sub,
+  image = "slice1", x_orientation = "horizontal"
 )
 SpatialCoordinates(spatial, image = "slice1")$source$coord.cols
 }

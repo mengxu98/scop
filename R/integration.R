@@ -3138,8 +3138,7 @@ BBKNN_integrate <- function(
 }
 
 bbknn_seurat_annoy_cross <- function(reference, query, k, n_trees, metric) {
-  seurat_metric <- switch(
-    metric,
+  seurat_metric <- switch(metric,
     angular = "cosine",
     euclidean = "euclidean",
     manhattan = "manhattan",

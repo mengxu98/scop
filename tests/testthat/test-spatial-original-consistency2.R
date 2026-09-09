@@ -334,8 +334,10 @@ test_that("RunSpotSweeper local outliers match the original SpotSweeper pipeline
     stopifnot(!anyDuplicated(colnames(spe)), all(expected_ids %in% colnames(spe)))
     spe <- spe[, match(expected_ids, colnames(spe))]
     colnames(spe) <- spots
-    expect_equal(unname(SpatialExperiment::spatialCoords(spe)),
-      unname(as.matrix(coords[, c("x", "y")])) )
+    expect_equal(
+      unname(SpatialExperiment::spatialCoords(spe)),
+      unname(as.matrix(coords[, c("x", "y")]))
+    )
   }
 
   wrapped_cd <- wrapped@tools$SpotSweeper$colData

@@ -1890,16 +1890,15 @@ env_requirements <- function(
     spatialdm_core_python_requirements()
   } else if ("scmalignantfinder" %in% modules) {
     scmalignantfinder_core_python_requirements()
-  } else if (any(c("scenic", "cell2fate") %in% modules)) {{
-    list(
-      packages = c(
-        "setuptools" = "setuptools<81"
-      ),
-      install_methods = c(
-        "setuptools" = "pip"
-      ),
-      package_aliases = list()
-    ) }} else {
+  } else if (any(c("scenic", "cell2fate") %in% modules)) {{ list(
+    packages = c(
+      "setuptools" = "setuptools<81"
+    ),
+    install_methods = c(
+      "setuptools" = "pip"
+    ),
+    package_aliases = list()
+  ) }} else {
     core_python_requirements()
   }
   package_install_methods <- base_requirements$install_methods

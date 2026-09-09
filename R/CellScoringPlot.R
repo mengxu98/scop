@@ -767,8 +767,7 @@ scoreplot_umap <- function(
   plot$data$Dim2 <- plot$data$y
   plot$data$group.by <- plot$data$score
   plot$data <- plot$data[
-    order(plot$data$score, na.last = TRUE),
-    ,
+    order(plot$data$score, na.last = TRUE), ,
     drop = FALSE
   ]
   for (i in seq_along(plot$layers)) {
@@ -780,8 +779,7 @@ scoreplot_umap <- function(
     ) {
       layer_data$group.by <- unname(score_by_cell[rownames(layer_data)])
       layer_data <- layer_data[
-        order(layer_data$group.by, na.last = TRUE),
-        ,
+        order(layer_data$group.by, na.last = TRUE), ,
         drop = FALSE
       ]
       plot$layers[[i]]$data <- layer_data
@@ -827,14 +825,12 @@ scoreplot_umap <- function(
     scoreplot_legend_theme(if (show.legend) legend.position else "none")
 
   highlighted <- plot$data[
-    as.character(plot$data$group) %in% highlight.group,
-    ,
+    as.character(plot$data$group) %in% highlight.group, ,
     drop = FALSE
   ]
   for (highlight in highlight.group) {
     subset <- highlighted[
-      as.character(highlighted$group) == highlight,
-      ,
+      as.character(highlighted$group) == highlight, ,
       drop = FALSE
     ]
     if (
@@ -983,8 +979,7 @@ scoreplot_stat <- function(
       set.seed(seed)
       count <- max(1L, floor(nrow(data) * point.fraction))
       point_data <- data[
-        sample.int(nrow(data), min(count, nrow(data))),
-        ,
+        sample.int(nrow(data), min(count, nrow(data))), ,
         drop = FALSE
       ]
       box <- box +
@@ -1089,8 +1084,7 @@ scoreplot_stat <- function(
       ggplot2::geom_col(width = 0.9, position = "stack") +
       ggplot2::geom_text(
         data = threshold_data[
-          threshold_data$status == status_levels[[1]],
-          ,
+          threshold_data$status == status_levels[[1]], ,
           drop = FALSE
         ],
         ggplot2::aes(y = 0.5, label = label),
