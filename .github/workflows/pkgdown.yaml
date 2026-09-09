@@ -311,8 +311,10 @@ jobs:
       - name: Build reference index
         if: github.event_name == 'pull_request' || steps.scope.outputs.full_build == 'false'
         run: |
-          if (!requireNamespace("future", quietly = TRUE) ||
-                !requireNamespace("future.apply", quietly = TRUE)) {
+          # thisutils/scop are not loaded here. find.package(..., quiet = TRUE)
+          # returns character(0) when missing, without loading the package.
+          if (length(find.package("future", quiet = TRUE)) == 0L ||
+                length(find.package("future.apply", quiet = TRUE)) == 0L) {
             install.packages(c("future", "future.apply"), quiet = TRUE)
           }
           future::plan("sequential", gc = TRUE)
@@ -322,8 +324,10 @@ jobs:
       - name: Build changed reference topics
         if: steps.scope.outputs.full_build != 'true' && (steps.scope.outputs.topics != '' || steps.missing.outputs.reference_topics != '')
         run: |
-          if (!requireNamespace("future", quietly = TRUE) ||
-                !requireNamespace("future.apply", quietly = TRUE)) {
+          # thisutils/scop are not loaded here. find.package(..., quiet = TRUE)
+          # returns character(0) when missing, without loading the package.
+          if (length(find.package("future", quiet = TRUE)) == 0L ||
+                length(find.package("future.apply", quiet = TRUE)) == 0L) {
             install.packages(c("future", "future.apply"), quiet = TRUE)
           }
           future::plan("sequential", gc = TRUE)
@@ -355,8 +359,10 @@ jobs:
       - name: Build site
         if: github.event_name != 'pull_request' && steps.scope.outputs.full_build == 'true'
         run: |
-          if (!requireNamespace("future", quietly = TRUE) ||
-                !requireNamespace("future.apply", quietly = TRUE)) {
+          # thisutils/scop are not loaded here. find.package(..., quiet = TRUE)
+          # returns character(0) when missing, without loading the package.
+          if (length(find.package("future", quiet = TRUE)) == 0L ||
+                length(find.package("future.apply", quiet = TRUE)) == 0L) {
             install.packages(c("future", "future.apply"), quiet = TRUE)
           }
           future::plan("sequential", gc = TRUE)

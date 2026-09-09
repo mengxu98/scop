@@ -83,8 +83,8 @@ runumap_embedding <- function(
   # slower for the standard Seurat workflow.
   umap_fun <- get("umap", envir = asNamespace("uwot"))
   workers <- if (is.null(cores)) {
-    if (requireNamespace("future", quietly = TRUE)) {
-      future::nbrOfWorkers()
+    if (isTRUE(check_r("future", install = FALSE, verbose = FALSE))) {
+      get_namespace_fun("future", "nbrOfWorkers")()
     } else {
       1L
     }

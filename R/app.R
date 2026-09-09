@@ -2663,8 +2663,10 @@ server <- function(input, output, session) {
   }
   app_code <- c(
     "# !/usr/bin/env Rscript",
-    "if (!requireNamespace('thisutils', quietly = TRUE)) {
-      if (!requireNamespace('pak', quietly = TRUE)) {
+    "# Bootstrap thisutils before check_r exists. find.package(..., quiet = TRUE)",
+    "# returns character(0) when a package is missing, without loading it.",
+    "if (length(find.package('thisutils', quiet = TRUE)) == 0L) {
+      if (length(find.package('pak', quiet = TRUE)) == 0L) {
         install.packages('pak')
       }
       pak::pak('thisutils')
