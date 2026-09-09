@@ -1,5 +1,5 @@
 pkgload::load_all(".", quiet = TRUE, compile = FALSE)
-topics <- c("ReadSpatialData", "SpatialDataInfo", "RunStandardWorkflow", "RunSpatialVariableFeatures")
+topics <- c("ReadSpatialData", "RunStandardWorkflow", "RunSpatialVariableFeatures")
 stopifnot(all(topics %in% getNamespaceExports("scop")))
 for (topic in topics) {
   path <- file.path("man", paste0(topic, ".Rd"))

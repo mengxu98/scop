@@ -1053,7 +1053,7 @@ run_standard_spatial_workflow <- function(
     Cell2location = RunCell2location
   )
 
-  input_info <- SpatialDataInfo(srt, assay = assay, image = image,
+  input_info <- spatial_input_info(srt, assay = assay, image = image,
     coord.cols = if (identical(coord.cols, c("x", "y")) &&
       !all(coord.cols %in% names(srt[[]]))) NULL else coord.cols,
     data_type = spatial_data_type)

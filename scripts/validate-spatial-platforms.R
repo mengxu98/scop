@@ -82,7 +82,7 @@ cases <- list(
   },
   hd = function(data_root) {
     x <- ReadSpatialData(file.path(data_root, "hd"), "visium_hd", sample_id = "tiny_mouse")
-    info <- SpatialDataInfo(x, assay = "Spatial.008um", image = "slice1.008um")
+    info <- x@misc$scop_spatial_input[["slice1.008um"]]
     stopifnot(info$data_type == "bin", info$resolution_um == 8,
       identical(x@misc$scop_spatial_input[["slice1.016um"]]$resolution_um, 16))
     list(object = x, plot = SpatialSpotPlot(x, features = rownames(x)[1], assay = "Spatial.008um",
@@ -91,7 +91,7 @@ cases <- list(
   },
   xenium = function(data_root) {
     x <- ReadSpatialData(file.path(data_root, "xenium"), "xenium", sample_id = "tiny_ileum")
-    info <- SpatialDataInfo(x, assay = "Xenium", image = "fov")
+    info <- x@misc$scop_spatial_input[["fov"]]
     stopifnot(info$data_type == "cell", info$coordinate_units == "micron")
     list(object = x, plot = SpatialCellPlot(x, image = "fov"),
       detail = sprintf("%s real Xenium cells; vendor loader, provenance and existing polygon renderer", ncol(x)))

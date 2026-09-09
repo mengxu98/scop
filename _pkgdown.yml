@@ -212,7 +212,6 @@ reference:
 - contents:
   - SpatialCoordinates
   - ReadSpatialData
-  - SpatialDataInfo
   - SetSpatialImageAxes
   - GetSpatialGraph
 
