@@ -403,7 +403,7 @@ PrepareDB <- function(
       )
       if (any(orgdb_dependent %in% db)) {
         check_r(c(org_sp, "GO.db", "GOSemSim"), verbose = FALSE)
-        if (!requireNamespace(org_sp, quietly = TRUE)) {
+        if (!isTRUE(check_r(org_sp, install = FALSE, verbose = FALSE))) {
           log_message(
             "Annotation package {.pkg {org_sp}} does not exist",
             message_type = "warning"
@@ -3006,7 +3006,7 @@ preparedb_local_orgdb_id_map <- function(
   org_key,
   verbose = TRUE
 ) {
-  if (is.null(org_sp) || !requireNamespace(org_sp, quietly = TRUE)) {
+  if (is.null(org_sp) || !isTRUE(check_r(org_sp, install = FALSE, verbose = FALSE))) {
     return(NULL)
   }
   idtype_to_orgdb_column <- function(idtype) {

@@ -1494,20 +1494,18 @@ scoreplot_thresholds <- function(
 }
 
 scoreplot_auto_thresholds <- function(scores, labels, seed, verbose) {
-  if (!requireNamespace("AUCell", quietly = TRUE)) {
-    log_message(
-      "Package {.pkg AUCell} is required to infer automatic thresholds",
-      message_type = "error"
-    )
-  }
-  threshold_results <- AUCell::aucellResults(
+  check_r("AUCell", verbose = FALSE)
+  aucell_results <- get_namespace_fun("AUCell", "aucellResults")
+  get_threshold_selected <- get_namespace_fun("AUCell", "getThresholdSelected")
+  explore_thresholds <- get_namespace_fun("AUCell", "AUCell_exploreThresholds")
+  threshold_results <- aucell_results(
     SummarizedExperiment::SummarizedExperiment(
       assays = list(AUC = t(scores))
     )
   )
   set.seed(seed)
-  thresholds <- AUCell::getThresholdSelected(
-    AUCell::AUCell_exploreThresholds(
+  thresholds <- get_threshold_selected(
+    explore_thresholds(
       threshold_results,
       nCores = 1,
       plotHist = FALSE,

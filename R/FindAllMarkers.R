@@ -154,8 +154,10 @@ marker_bind <- function(pieces) {
   }
   out <- if (length(pieces) == 1L) {
     pieces[[1L]]
-  } else if (requireNamespace("data.table", quietly = TRUE)) {
-    as.data.frame(data.table::rbindlist(pieces, use.names = TRUE))
+  } else if (isTRUE(check_r("data.table", install = FALSE, verbose = FALSE))) {
+    as.data.frame(
+      get_namespace_fun("data.table", "rbindlist")(pieces, use.names = TRUE)
+    )
   } else {
     do.call(rbind, pieces)
   }

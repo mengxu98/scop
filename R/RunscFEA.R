@@ -1430,8 +1430,8 @@ resolve_scfea_dir <- function(data_dir = NULL, verbose = TRUE) {
   }
 
   cache_key <- list("scFEA", "M168", "2026-06-01")
-  if (requireNamespace("R.cache", quietly = TRUE)) {
-    cached <- R.cache::loadCache(key = cache_key)
+  if (isTRUE(check_r("R.cache", install = FALSE, verbose = FALSE))) {
+    cached <- get_namespace_fun("R.cache", "loadCache")(key = cache_key)
     cached_dir <- if (!is.null(cached$data_dir)) {
       normalizePath(cached$data_dir, mustWork = FALSE)
     } else {
@@ -1482,8 +1482,8 @@ resolve_scfea_dir <- function(data_dir = NULL, verbose = TRUE) {
     }
   }
 
-  if (requireNamespace("R.cache", quietly = TRUE)) {
-    R.cache::saveCache(
+  if (isTRUE(check_r("R.cache", install = FALSE, verbose = FALSE))) {
+    get_namespace_fun("R.cache", "saveCache")(
       list(
         data_dir = cache_dir,
         files = scfea_files,
