@@ -120,17 +120,15 @@ summary to \code{srt@tools[[tool_name]]}.
 }
 \examples{
 \dontrun{
-if (check_r("corceslab/CHOIR", verbose = FALSE)) {
-  data(pancreas_sub)
-  pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
-  pancreas_sub <- RunCHOIR(
-    pancreas_sub,
-    assay = "RNA",
-    n_cores = 2,
-    verbose = FALSE
-  )
-  CellDimPlot(pancreas_sub, group.by = "CHOIR_cluster")
-}
+data(pancreas_sub)
+pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
+pancreas_sub <- RunCHOIR(
+  pancreas_sub,
+  assay = "RNA",
+  n_cores = 2,
+  verbose = FALSE
+)
+CellDimPlot(pancreas_sub, group.by = "CHOIR_cluster")
 }
 }
 \references{

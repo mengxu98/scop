@@ -37,7 +37,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' thisutils::check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
 #' spatial <- visium_human_pancreas_sub
 #' counts <- GetAssayData5(spatial, assay = "Spatial", layer = "counts")
