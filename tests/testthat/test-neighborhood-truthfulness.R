@@ -8,8 +8,10 @@ test_that("neighborhood counts preserve saved scope, zero and unknown values", {
       expect_identical(weight, "binary")
       distances <- as.matrix(stats::dist(coords[, c("x", "y")]))
       hit <- which(distances <= radius & row(distances) != col(distances), arr.ind = TRUE)
-      list(edges = data.frame(from = hit[, 1L], to = hit[, 2L],
-        distance = distances[hit]))
+      list(edges = data.frame(
+        from = hit[, 1L], to = hit[, 2L],
+        distance = distances[hit]
+      ))
     },
     get_namespace_fun = function(pkg, fun, ...) {
       stop(paste("Unexpected optional namespace lookup:", pkg, fun))
@@ -17,15 +19,20 @@ test_that("neighborhood counts preserve saved scope, zero and unknown values", {
     .package = "scop"
   )
   srt <- Seurat::CreateSeuratObject(matrix(1:12, 2,
-    dimnames = list(c("g1", "g2"), paste0("s", 1:6))))
+    dimnames = list(c("g1", "g2"), paste0("s", 1:6))
+  ))
   srt$x <- c(0, 1, 20, 30, 31, 90)
   srt$y <- rep(0, 6)
   srt$label <- c("A", "B", "A", "A", "B", NA)
   srt$condition <- c("one", "one", "one", "two", "two", "one")
   srt$sample <- c("x", "x", "x", "y", "y", "x")
-  run <- function(radius = 2, ...) RunSpatialNeighborhood(srt, group.by = "label",
-    method = "observed", sample.by = "sample", split.by = "condition",
-    coord.cols = c("x", "y"), radius = radius, verbose = FALSE, ...)
+  run <- function(radius = 2, ...) {
+    RunSpatialNeighborhood(srt,
+      group.by = "label",
+      method = "observed", sample.by = "sample", split.by = "condition",
+      coord.cols = c("x", "y"), radius = radius, verbose = FALSE, ...
+    )
+  }
   out <- run(backend = "r")
   local_mocked_bindings(SpatialSpotPlot = function(srt, values, ...) values, .package = "scop")
   plot <- function(object = out, ...) SpatialNeighborhoodPlot(object, plot_type = "spatial", ...)
@@ -59,14 +66,19 @@ test_that("neighborhood counts preserve saved scope, zero and unknown values", {
 test_that("empty native neighborhoods render and aggregation backends agree", {
   testthat::skip_if_not_installed("BiocNeighbors")
   srt <- Seurat::CreateSeuratObject(Matrix::Matrix(matrix(1:8, 2,
-    dimnames = list(c("g1", "g2"), paste0("s", 1:4))), sparse = TRUE))
+    dimnames = list(c("g1", "g2"), paste0("s", 1:4))
+  ), sparse = TRUE))
   srt$x <- c(0, 1, 0, 1)
   srt$y <- rep(0, 4)
   srt$label <- c("A", "B", "A", "B")
   srt$sample <- c("x", "x", "y", "y")
-  run <- function(backend, radius) RunSpatialNeighborhood(srt, group.by = "label",
-    sample.by = "sample", coord.cols = c("x", "y"), radius = radius,
-    backend = backend, verbose = FALSE)
+  run <- function(backend, radius) {
+    RunSpatialNeighborhood(srt,
+      group.by = "label",
+      sample.by = "sample", coord.cols = c("x", "y"), radius = radius,
+      backend = backend, verbose = FALSE
+    )
+  }
   for (radius in c(0.01, 2)) {
     r <- run("r", radius)
     cpp <- run("cpp", radius)
@@ -80,7 +92,9 @@ test_that("empty native neighborhoods render and aggregation backends agree", {
     expect_equal(canonical(rb$pair_table), canonical(cb$pair_table))
     expect_equal(rb$edge_table, cb$edge_table)
     expect_equal(nrow(cb$edge_table), if (radius < 1) 0 else 4)
-    expect_s3_class(SpatialNeighborhoodPlot(cpp, plot_type = "spatial", pair = "A|B",
-      coord.cols = c("x", "y"), overlay_image = FALSE, theme_use = NULL), "ggplot")
+    expect_s3_class(SpatialNeighborhoodPlot(cpp,
+      plot_type = "spatial", pair = "A|B",
+      coord.cols = c("x", "y"), overlay_image = FALSE, theme_use = NULL
+    ), "ggplot")
   }
 })

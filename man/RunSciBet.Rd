@@ -89,7 +89,8 @@ query <- RunSciBet(
 )
 query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
 CellDimPlot(
-  query, group.by = "scibet_annotation",
+  query,
+  group.by = "scibet_annotation",
   label = TRUE, legend.position = "bottom"
 )
 }

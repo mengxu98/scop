@@ -186,8 +186,10 @@ RunSpatialEcoTyper <- function(
     coordinate_input$sources <- list(single = c(coordinate_input$source, list(transform = coordinate_input$transform)))
   } else if (identical(mode, "multi")) {
     validate_scalar_string(sample.by, "sample.by", require_character = FALSE)
-    coordinate_input <- spatial_sample_coords(srt, sample.by = sample.by, image = image,
-                                              coord.cols = c(x.by, y.by))
+    coordinate_input <- spatial_sample_coords(srt,
+      sample.by = sample.by, image = image,
+      coord.cols = c(x.by, y.by)
+    )
   }
   check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE)
 
@@ -889,8 +891,10 @@ spatialecotyper_coordinate_metadata <- function(srt, cells, celltype.by, coords)
   if (!all(cells %in% rownames(coords))) {
     log_message("SpatialEcoTyper coordinates are missing expression cells", message_type = "error")
   }
-  meta <- data.frame(X = coords[cells, "x"], Y = coords[cells, "y"],
-                     CellType = srt[[]][cells, celltype.by], row.names = cells)
+  meta <- data.frame(
+    X = coords[cells, "x"], Y = coords[cells, "y"],
+    CellType = srt[[]][cells, celltype.by], row.names = cells
+  )
   spatialecotyper_build_metadata(meta, "CellType", "X", "Y")
 }
 

@@ -276,8 +276,7 @@ marker_all_from_context <- function(
         verbose = FALSE
       )
       block <- presto_result[
-        as.character(presto_result$group) == "Group1",
-        ,
+        as.character(presto_result$group) == "Group1", ,
         drop = FALSE
       ]
       block$pval[match(ctx$features, block$feature)]

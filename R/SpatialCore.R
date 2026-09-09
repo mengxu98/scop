@@ -290,7 +290,7 @@ spatial_image_x_orientation <- function(object, image) {
     if (length(orientation) == 0L) orientation <- "vertical"
   }
   if (length(orientation) != 1L || is.na(orientation) ||
-      !orientation %in% c("horizontal", "vertical")) {
+    !orientation %in% c("horizontal", "vertical")) {
     log_message("Image coords_x_orientation must be horizontal or vertical", message_type = "error")
   }
   orientation
@@ -511,7 +511,8 @@ SpatialCoordinates <- function(
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' spatial <- SetSpatialImageAxes(
-#'   visium_human_pancreas_sub, image = "slice1", x_orientation = "horizontal"
+#'   visium_human_pancreas_sub,
+#'   image = "slice1", x_orientation = "horizontal"
 #' )
 #' SpatialCoordinates(spatial, image = "slice1")$source$coord.cols
 #' @export

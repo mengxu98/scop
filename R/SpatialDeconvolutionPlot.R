@@ -31,8 +31,10 @@
 #' data(panc8_sub)
 #' reference <- panc8_sub[, panc8_sub$celltype %in% c("ductal", "alpha", "beta")]
 #' reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
-#' features <- head(intersect(SeuratObject::VariableFeatures(reference),
-#'   rownames(visium_human_pancreas_sub)), 300)
+#' features <- head(intersect(
+#'   SeuratObject::VariableFeatures(reference),
+#'   rownames(visium_human_pancreas_sub)
+#' ), 300)
 #' spatial <- RunRCTD(
 #'   visium_human_pancreas_sub,
 #'   reference = reference,

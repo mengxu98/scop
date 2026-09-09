@@ -38,7 +38,8 @@
 #' object$row <- c(0, 0, 0, 0)
 #' object$celltype <- c("T", "M", "M", "T")
 #' profile <- SpatialNeighborhoodProfile(
-#'   object, "celltype", radii = c(1, 3), cells = "a", verbose = FALSE
+#'   object, "celltype",
+#'   radii = c(1, 3), cells = "a", verbose = FALSE
 #' )
 #' profile
 SpatialNeighborhoodProfile <- function(
@@ -51,7 +52,7 @@ SpatialNeighborhoodProfile <- function(
   validate_scalar_string(group.by, "group.by")
   if (!is.null(sample.by)) validate_scalar_string(sample.by, "sample.by")
   if (!is.numeric(radii) || !length(radii) || any(!is.finite(radii)) ||
-      any(radii <= 0) || any(diff(radii) <= 0)) {
+    any(radii <= 0) || any(diff(radii) <= 0)) {
     log_message(
       "{.arg radii} must be positive, finite and strictly increasing",
       message_type = "error"
@@ -75,7 +76,7 @@ SpatialNeighborhoodProfile <- function(
   co <- resolved$data
   idx <- match(co$cell_id, rownames(meta))
   if (!nrow(co) || anyNA(idx) || anyNA(co$cell_id) || any(!nzchar(co$cell_id)) ||
-      anyDuplicated(co$cell_id)) {
+    anyDuplicated(co$cell_id)) {
     log_message("invalid context cell IDs", message_type = "error")
   }
   labels <- as.character(meta[[group.by]][idx])
@@ -88,7 +89,7 @@ SpatialNeighborhoodProfile <- function(
   }
   if (is.null(cells)) cells <- co$cell_id
   if (!is.character(cells) || anyNA(cells) || anyDuplicated(cells) ||
-      !all(cells %in% co$cell_id)) {
+    !all(cells %in% co$cell_id)) {
     log_message(
       "{.arg cells} must be unique IDs in the resolved context",
       message_type = "error"
@@ -96,15 +97,17 @@ SpatialNeighborhoodProfile <- function(
   }
   xy <- as.matrix(co[, c("x", "y")])
   if (any(!is.finite(xy)) || min(radii) < sqrt(.Machine$double.xmin) ||
-      max(radii) > sqrt(.Machine$double.xmax) / 4 ||
-      max(abs(xy)) > sqrt(.Machine$double.xmax) / 4 || max(abs(xy)) / max(radii) > 1e12) {
+    max(radii) > sqrt(.Machine$double.xmax) / 4 ||
+    max(abs(xy)) > sqrt(.Machine$double.xmax) / 4 || max(abs(xy)) / max(radii) > 1e12) {
     log_message(
       "unsupported coordinate/radius magnitude; recenter or rescale",
       message_type = "error"
     )
   }
   groups <- sort(unique(labels))
-  nq <- length(cells); ng <- length(groups); nr <- length(radii)
+  nq <- length(cells)
+  ng <- length(groups)
+  nr <- length(radii)
   if (as.double(nq) * ng * nr > .Machine$integer.max) {
     log_message(
       "output too large; select fewer cells, groups or radii",
@@ -124,8 +127,10 @@ SpatialNeighborhoodProfile <- function(
   if (cumulative && nr > 1L) {
     for (b in 2:nr) counts[, , b] <- counts[, , b] + counts[, , b - 1L]
   }
-  out <- expand.grid(cell_id = cells, group = groups, radius = radii,
-                     KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE)
+  out <- expand.grid(
+    cell_id = cells, group = groups, radius = radii,
+    KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE
+  )
   out$sample <- rep(samples[target], ng * nr)
   out$lower <- rep(if (cumulative) rep(0, nr) else c(0, head(radii, -1L)), each = nq * ng)
   out$count <- as.vector(counts)
@@ -136,12 +141,16 @@ SpatialNeighborhoodProfile <- function(
   out$fraction[out$total == 0] <- NA_real_
   out <- out[, c("cell_id", "sample", "group", "lower", "radius", "count", "total", "fraction")]
   attr(out, "source") <- resolved$source
-  attr(out, "parameters") <- list(group.by = group.by, sample.by = sample.by,
-    radii = radii, cumulative = cumulative, context_n = nrow(co), backend = "native")
+  attr(out, "parameters") <- list(
+    group.by = group.by, sample.by = sample.by,
+    radii = radii, cumulative = cumulative, context_n = nrow(co), backend = "native"
+  )
   spatial_run_receipt(
     done = "Spatial neighborhood profile completed",
-    scope = sprintf("%s target cells; %s context cells; %s samples; %s distances (raw coordinate units).",
-                    nq, nrow(co), length(unique(samples)), nr),
+    scope = sprintf(
+      "%s target cells; %s context cells; %s samples; %s distances (raw coordinate units).",
+      nq, nrow(co), length(unique(samples)), nr
+    ),
     inspect = "Returned data.frame: count, total and fraction; input object unchanged.",
     verbose = verbose
   )

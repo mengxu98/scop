@@ -168,11 +168,9 @@ capture_spotsweeper_logs <- function(code) {
   events <- list()
   testthat::local_mocked_bindings(
     .package = "scop",
-    log_message = function(
-      ...,
-      verbose = NULL,
-      message_type = c("info", "success", "warning", "error", "running", "ask")
-    ) {
+    log_message = function(...,
+                           verbose = NULL,
+                           message_type = c("info", "success", "warning", "error", "running", "ask")) {
       message_type <- match.arg(message_type)
       text <- paste(vapply(
         list(...),
@@ -272,17 +270,20 @@ test_that("RunSpotSweeper skips artifact detection when mitochondrial signal is 
 test_that("RunSpotSweeper marks artifact backend failures as partial", {
   skip_if_no_spotsweeper_infra()
   srt <- make_spotsweeper_seurat()
-  out <- suppressWarnings(with_mock_spotsweeper({
-    RunSpotSweeper(
-      srt,
-      layer = "counts",
-      coord.cols = c("x", "y"),
-      sample.by = "sample",
-      n_neighbors = 2,
-      n_order = 2,
-      verbose = FALSE
-    )
-  }, artifact_mode = "error"))
+  out <- suppressWarnings(with_mock_spotsweeper(
+    {
+      RunSpotSweeper(
+        srt,
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        n_neighbors = 2,
+        n_order = 2,
+        verbose = FALSE
+      )
+    },
+    artifact_mode = "error"
+  ))
 
   expect_identical(out@tools$SpotSweeper$status, "partial")
   expect_true(all(out@tools$SpotSweeper$artifact_status$status == "failed"))
@@ -301,17 +302,20 @@ test_that("RunSpotSweeper rejects missing or invalid artifact backend output tru
   )
   for (artifact_mode in names(expected_reason)) {
     srt <- make_spotsweeper_seurat()
-    out <- suppressWarnings(with_mock_spotsweeper({
-      RunSpotSweeper(
-        srt,
-        layer = "counts",
-        coord.cols = c("x", "y"),
-        sample.by = "sample",
-        n_neighbors = 2,
-        n_order = 2,
-        verbose = FALSE
-      )
-    }, artifact_mode = artifact_mode))
+    out <- suppressWarnings(with_mock_spotsweeper(
+      {
+        RunSpotSweeper(
+          srt,
+          layer = "counts",
+          coord.cols = c("x", "y"),
+          sample.by = "sample",
+          n_neighbors = 2,
+          n_order = 2,
+          verbose = FALSE
+        )
+      },
+      artifact_mode = artifact_mode
+    ))
 
     status <- out@tools$SpotSweeper$artifact_status
     expect_identical(out@tools$SpotSweeper$status, "partial")
@@ -326,17 +330,20 @@ test_that("RunSpotSweeper rejects missing or invalid artifact backend output tru
 test_that("RunSpotSweeper rejects artifact output with changed spot alignment", {
   skip_if_no_spotsweeper_infra()
   for (artifact_mode in c("drop", "rename", "reorder")) {
-    out <- suppressWarnings(with_mock_spotsweeper({
-      RunSpotSweeper(
-        make_spotsweeper_seurat(),
-        layer = "counts",
-        coord.cols = c("x", "y"),
-        sample.by = "sample",
-        n_neighbors = 2,
-        n_order = 2,
-        verbose = FALSE
-      )
-    }, artifact_mode = artifact_mode))
+    out <- suppressWarnings(with_mock_spotsweeper(
+      {
+        RunSpotSweeper(
+          make_spotsweeper_seurat(),
+          layer = "counts",
+          coord.cols = c("x", "y"),
+          sample.by = "sample",
+          n_neighbors = 2,
+          n_order = 2,
+          verbose = FALSE
+        )
+      },
+      artifact_mode = artifact_mode
+    ))
 
     status <- out@tools$SpotSweeper$artifact_status
     expect_identical(out@tools$SpotSweeper$status, "partial", info = artifact_mode)
@@ -357,17 +364,20 @@ test_that("RunSpotSweeper rejects artifact output with changed spot alignment", 
 test_that("RunSpotSweeper marks incomplete local-outlier output partial", {
   skip_if_no_spotsweeper_infra()
   for (local_mode in c("missing", "partial", "invalid")) {
-    out <- suppressMessages(with_mock_spotsweeper({
-      RunSpotSweeper(
-        make_spotsweeper_seurat(),
-        layer = "counts",
-        coord.cols = c("x", "y"),
-        sample.by = "sample",
-        n_neighbors = 2,
-        run_artifact = FALSE,
-        verbose = TRUE
-      )
-    }, local_mode = local_mode))
+    out <- suppressMessages(with_mock_spotsweeper(
+      {
+        RunSpotSweeper(
+          make_spotsweeper_seurat(),
+          layer = "counts",
+          coord.cols = c("x", "y"),
+          sample.by = "sample",
+          n_neighbors = 2,
+          run_artifact = FALSE,
+          verbose = TRUE
+        )
+      },
+      local_mode = local_mode
+    ))
 
     expect_identical(out@tools$SpotSweeper$status, "partial", info = local_mode)
     expect_true(any(
@@ -377,18 +387,21 @@ test_that("RunSpotSweeper marks incomplete local-outlier output partial", {
   }
 
   expect_error(
-    with_mock_spotsweeper({
-      RunSpotSweeper(
-        make_spotsweeper_seurat(),
-        layer = "counts",
-        coord.cols = c("x", "y"),
-        sample.by = "sample",
-        n_neighbors = 2,
-        run_artifact = FALSE,
-        return_filtered = TRUE,
-        verbose = FALSE
-      )
-    }, local_mode = "missing"),
+    with_mock_spotsweeper(
+      {
+        RunSpotSweeper(
+          make_spotsweeper_seurat(),
+          layer = "counts",
+          coord.cols = c("x", "y"),
+          sample.by = "sample",
+          n_neighbors = 2,
+          run_artifact = FALSE,
+          return_filtered = TRUE,
+          verbose = FALSE
+        )
+      },
+      local_mode = "missing"
+    ),
     "completed for every spot"
   )
 })
@@ -402,17 +415,20 @@ test_that("RunSpotSweeper does not reuse stale local-outlier metadata", {
     srt[[paste0(metric, "_z")]] <- 0
   }
 
-  out <- suppressMessages(with_mock_spotsweeper({
-    RunSpotSweeper(
-      srt,
-      layer = "counts",
-      coord.cols = c("x", "y"),
-      sample.by = "sample",
-      n_neighbors = 2,
-      run_artifact = FALSE,
-      verbose = TRUE
-    )
-  }, local_mode = "missing"))
+  out <- suppressMessages(with_mock_spotsweeper(
+    {
+      RunSpotSweeper(
+        srt,
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        n_neighbors = 2,
+        run_artifact = FALSE,
+        verbose = TRUE
+      )
+    },
+    local_mode = "missing"
+  ))
 
   expect_identical(out@tools$SpotSweeper$status, "partial")
   expect_true(all(as.character(out$SpotSweeper_local_outlier_qc) == "NotEvaluated"))
@@ -457,16 +473,19 @@ test_that("RunSpotSweeper does not reuse a stale artifact metadata column", {
   srt$artifact <- rep(c(TRUE, FALSE), length.out = ncol(srt))
   artifact_before <- srt$artifact
 
-  out <- suppressMessages(with_mock_spotsweeper({
-    RunSpotSweeper(
-      srt,
-      layer = "counts",
-      coord.cols = c("x", "y"),
-      sample.by = "sample",
-      n_neighbors = 2,
-      verbose = TRUE
-    )
-  }, artifact_mode = "missing"))
+  out <- suppressMessages(with_mock_spotsweeper(
+    {
+      RunSpotSweeper(
+        srt,
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        n_neighbors = 2,
+        verbose = TRUE
+      )
+    },
+    artifact_mode = "missing"
+  ))
 
   expect_identical(out@tools$SpotSweeper$status, "partial")
   expect_true(all(out@tools$SpotSweeper$artifact_status$status == "failed"))
@@ -729,18 +748,21 @@ test_that("RunSpotSweeper refuses filtered output when artifact detection is par
     tools = srt@tools
   )
   condition <- tryCatch(
-    suppressWarnings(with_mock_spotsweeper({
-      RunSpotSweeper(
-        srt,
-        layer = "counts",
-        coord.cols = c("x", "y"),
-        sample.by = "sample",
-        n_neighbors = 2,
-        n_order = 2,
-        return_filtered = TRUE,
-        verbose = FALSE
-      )
-    }, artifact_mode = "error")),
+    suppressWarnings(with_mock_spotsweeper(
+      {
+        RunSpotSweeper(
+          srt,
+          layer = "counts",
+          coord.cols = c("x", "y"),
+          sample.by = "sample",
+          n_neighbors = 2,
+          n_order = 2,
+          return_filtered = TRUE,
+          verbose = FALSE
+        )
+      },
+      artifact_mode = "error"
+    )),
     error = identity
   )
   expect_s3_class(condition, "error")
@@ -823,16 +845,19 @@ test_that("RunSpotSweeper console status is truthful and respects verbose", {
     logical(1)
   )))
 
-  silent_events <- capture_spotsweeper_logs(with_mock_spotsweeper({
-    RunSpotSweeper(
-      make_spotsweeper_seurat(),
-      layer = "counts",
-      coord.cols = c("x", "y"),
-      sample.by = "sample",
-      n_neighbors = 2,
-      verbose = FALSE
-    )
-  }, artifact_mode = "error"))
+  silent_events <- capture_spotsweeper_logs(with_mock_spotsweeper(
+    {
+      RunSpotSweeper(
+        make_spotsweeper_seurat(),
+        layer = "counts",
+        coord.cols = c("x", "y"),
+        sample.by = "sample",
+        n_neighbors = 2,
+        verbose = FALSE
+      )
+    },
+    artifact_mode = "error"
+  ))
   expect_length(silent_events, 0L)
 })
 
@@ -856,16 +881,19 @@ test_that("RunSpotSweeper partial completion survives warning escalation", {
     case <- cases[[case_name]]
     out <- NULL
     expect_no_error(
-      out <- suppressMessages(with_mock_spotsweeper({
-        RunSpotSweeper(
-          make_spotsweeper_seurat(include_mito = case$include_mito),
-          layer = "counts",
-          coord.cols = c("x", "y"),
-          sample.by = "sample",
-          n_neighbors = 2,
-          verbose = TRUE
-        )
-      }, artifact_mode = case$artifact_mode)),
+      out <- suppressMessages(with_mock_spotsweeper(
+        {
+          RunSpotSweeper(
+            make_spotsweeper_seurat(include_mito = case$include_mito),
+            layer = "counts",
+            coord.cols = c("x", "y"),
+            sample.by = "sample",
+            n_neighbors = 2,
+            verbose = TRUE
+          )
+        },
+        artifact_mode = case$artifact_mode
+      )),
       message = case_name
     )
     expect_s4_class(out, "Seurat")

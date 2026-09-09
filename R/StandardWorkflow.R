@@ -1434,15 +1434,15 @@ run_standard_spatial_workflow <- function(
       preserve_empty_selection <-
         length(standard_spatial_variable_features(srt, assay = svf_assay)) ==
           0L &&
-        spatial_has_explicit_empty_variable_features(
-          srt,
-          assay = svf_assay,
-          expected_token = svf_selection_marker$token %||% NULL
-        ) &&
-        (
-          !svf_store_results ||
-            standard_spatial_svf_has_valid_empty_selection(srt)
-        )
+          spatial_has_explicit_empty_variable_features(
+            srt,
+            assay = svf_assay,
+            expected_token = svf_selection_marker$token %||% NULL
+          ) &&
+          (
+            !svf_store_results ||
+              standard_spatial_svf_has_valid_empty_selection(srt)
+          )
       srt <- standard_spatial_restore_variable_feature_info(
         srt,
         assay = svf_assay,

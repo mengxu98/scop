@@ -429,11 +429,14 @@ run_phate_cpp_reduction <- function(
       )
     )
     if (isTRUE(do_cluster)) {
-      cluster_count <- if (is.numeric(n_clusters)) as.integer(n_clusters) else {
+      cluster_count <- if (is.numeric(n_clusters)) {
+        as.integer(n_clusters)
+      } else {
         min(as.integer(max_clusters), max(2L, round(sqrt(n_cells / 2))))
       }
       clusters <- factor(stats::kmeans(
-        embedding, centers = min(max(1L, cluster_count), n_cells)
+        embedding,
+        centers = min(max(1L, cluster_count), n_cells)
       )$cluster)
       names(clusters) <- rownames(embedding)
       SeuratObject::Misc(reduction, slot = "clusters") <- clusters
@@ -532,7 +535,8 @@ phate_native_affinity <- function(data, k, decay, metric) {
   diag(distance) <- Inf
   idx <- t(apply(distance, 1L, order))[, seq_len(k), drop = FALSE]
   d <- matrix(distance[cbind(rep(seq_len(nrow(data)), each = k), as.vector(t(idx)))],
-    nrow = nrow(data), byrow = TRUE)
+    nrow = nrow(data), byrow = TRUE
+  )
   bandwidth <- pmax(d[, min(k, ncol(d))], .Machine$double.eps)
   weight <- exp(-(d / bandwidth)^as.numeric(decay))
   list(

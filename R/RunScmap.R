@@ -28,7 +28,8 @@
 #' )
 #' query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
 #' CellDimPlot(
-#'   query, group.by = "scmap_annotation",
+#'   query,
+#'   group.by = "scmap_annotation",
 #'   label = TRUE, legend.position = "bottom"
 #' )
 RunScmap <- function(

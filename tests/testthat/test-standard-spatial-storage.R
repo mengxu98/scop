@@ -123,12 +123,10 @@ make_valid_empty_svf_tool <- function() {
 test_that("stored spatial variable feature results are reported", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(
-      srt,
-      set_variable_features,
-      store_results,
-      ...
-    ) {
+    RunSpatialVariableFeatures = function(srt,
+                                          set_variable_features,
+                                          store_results,
+                                          ...) {
       expect_false(set_variable_features)
       expect_true(store_results)
       expect_null(srt@tools[["SpatialVariableFeatures"]])
@@ -157,12 +155,10 @@ test_that("stored spatial variable feature results are reported", {
 test_that("storage-off SVF ignores and preserves an older tool result", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(
-      srt,
-      set_variable_features,
-      store_results,
-      ...
-    ) {
+    RunSpatialVariableFeatures = function(srt,
+                                          set_variable_features,
+                                          store_results,
+                                          ...) {
       expect_false(set_variable_features)
       expect_false(store_results)
       srt
@@ -195,13 +191,11 @@ test_that("storage-off SVF ignores and preserves an older tool result", {
 test_that("variable-feature-only output is certified without a tool", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(
-      srt,
-      assay,
-      set_variable_features,
-      store_results,
-      ...
-    ) {
+    RunSpatialVariableFeatures = function(srt,
+                                          assay,
+                                          set_variable_features,
+                                          store_results,
+                                          ...) {
       expect_true(set_variable_features)
       expect_false(store_results)
       top_features <- c("gene1", "gene2")
@@ -245,14 +239,12 @@ test_that("SVF bookkeeping follows the effective assay override", {
 
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(
-      srt,
-      assay,
-      features,
-      set_variable_features,
-      store_results,
-      ...
-    ) {
+    RunSpatialVariableFeatures = function(srt,
+                                          assay,
+                                          features,
+                                          set_variable_features,
+                                          store_results,
+                                          ...) {
       expect_identical(assay, "ALT")
       expect_identical(features, c("gene2", "gene3"))
       expect_length(
@@ -366,8 +358,7 @@ test_that("invalid effective SVF assays fail through the stage wrapper", {
     )
     stages <- attr(condition, "standard_spatial_stages")
     svf <- stages[
-      stages$stage == "spatial_variable_features",
-      ,
+      stages$stage == "spatial_variable_features", ,
       drop = FALSE
     ]
 
@@ -407,14 +398,12 @@ test_that("SVF output replaces stale selection and preserves HVF metadata", {
 
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(
-      srt,
-      assay,
-      features,
-      set_variable_features,
-      store_results,
-      ...
-    ) {
+    RunSpatialVariableFeatures = function(srt,
+                                          assay,
+                                          features,
+                                          set_variable_features,
+                                          store_results,
+                                          ...) {
       expect_identical(features, c("gene1", "gene2"))
       expect_true(set_variable_features)
       expect_false(store_results)
@@ -454,13 +443,11 @@ test_that("SVF output replaces stale selection and preserves HVF metadata", {
 test_that("stale variable features do not satisfy a quiet producer", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(
-      srt,
-      assay,
-      features,
-      store_results,
-      ...
-    ) {
+    RunSpatialVariableFeatures = function(srt,
+                                          assay,
+                                          features,
+                                          store_results,
+                                          ...) {
       expect_false(store_results)
       expect_null(srt@tools[["SpatialVariableFeatures"]])
       expect_identical(features, "gene1")
@@ -537,8 +524,7 @@ test_that("malformed explicit-empty sentinels do not satisfy the workflow", {
     )
     stages <- attr(condition, "standard_spatial_stages")
     svf <- stages[
-      stages$stage == "spatial_variable_features",
-      ,
+      stages$stage == "spatial_variable_features", ,
       drop = FALSE
     ]
 
@@ -789,13 +775,11 @@ test_that("classic Assay empty-selection handshake preserves misc state", {
 test_that("NULL SVF controls resolve to producer defaults", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(
-      srt,
-      assay,
-      set_variable_features = TRUE,
-      store_results = TRUE,
-      ...
-    ) {
+    RunSpatialVariableFeatures = function(srt,
+                                          assay,
+                                          set_variable_features = TRUE,
+                                          store_results = TRUE,
+                                          ...) {
       expect_true(set_variable_features)
       expect_true(store_results)
       SeuratObject::VariableFeatures(srt, assay = assay) <- "gene1"
@@ -828,13 +812,11 @@ test_that("NULL SVF controls resolve to producer defaults", {
 test_that("fresh non-finite SVF scores certify a valid empty selection", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(
-      srt,
-      assay,
-      set_variable_features,
-      store_results,
-      ...
-    ) {
+    RunSpatialVariableFeatures = function(srt,
+                                          assay,
+                                          set_variable_features,
+                                          store_results,
+                                          ...) {
       expect_true(set_variable_features)
       expect_true(store_results)
       expect_null(srt@tools[["SpatialVariableFeatures"]])
@@ -1764,8 +1746,7 @@ test_that("all preprocessing cluster outputs are protected before producers run"
   )
   tfidf_stages <- tfidf_out@tools$run_standard_spatial_workflow$stages
   tfidf_domain <- tfidf_stages[
-    tfidf_stages$stage == "spatial_clustering",
-    ,
+    tfidf_stages$stage == "spatial_clustering", ,
     drop = FALSE
   ]
 
@@ -1972,13 +1953,11 @@ test_that("SpotQC dispatch reuses the effective parameters used for planning", {
   called <- FALSE
   custom_rules <- c("custom score:upper:2", "nCount_RNA:lower:3")
   testthat::local_mocked_bindings(
-    RunSpotQC = function(
-      srt,
-      assay,
-      qc_metrics,
-      outlier_threshold,
-      ...
-    ) {
+    RunSpotQC = function(srt,
+                         assay,
+                         qc_metrics,
+                         outlier_threshold,
+                         ...) {
       called <<- TRUE
       expect_identical(assay, "ALT")
       expect_identical(qc_metrics, c("outlier", "gene"))
@@ -2185,12 +2164,10 @@ test_that("explicit NULL BayesSpace init is preserved through dispatch", {
   producer_calls <- 0L
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunBayesSpace = function(
-      srt,
-      cluster_colname,
-      init_colname = "unexpected default",
-      ...
-    ) {
+    RunBayesSpace = function(srt,
+                             cluster_colname,
+                             init_colname = "unexpected default",
+                             ...) {
       producer_calls <<- producer_calls + 1L
       expect_null(init_colname)
       if (identical(cluster_colname, "BayesSpace_init")) {
@@ -2239,13 +2216,11 @@ test_that("explicit NULL BayesSpace init is preserved through dispatch", {
   first_stage <- first_receipt$stages
   second_stage <- cluster_elsewhere@tools$run_standard_spatial_workflow$stages
   first_domain <- first_stage[
-    first_stage$stage == "spatial_clustering",
-    ,
+    first_stage$stage == "spatial_clustering", ,
     drop = FALSE
   ]
   second_domain <- second_stage[
-    second_stage$stage == "spatial_clustering",
-    ,
+    second_stage$stage == "spatial_clustering", ,
     drop = FALSE
   ]
 
@@ -2360,15 +2335,13 @@ test_that("unrequested stage names do not create metadata collisions", {
 test_that("SPOTlight dispatch satisfies the normalized storage contract", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunSPOTlight = function(
-      srt,
-      reference,
-      reference_label,
-      prefix,
-      tool_name,
-      store_results,
-      ...
-    ) {
+    RunSPOTlight = function(srt,
+                            reference,
+                            reference_label,
+                            prefix,
+                            tool_name,
+                            store_results,
+                            ...) {
       expect_s4_class(reference, "Seurat")
       expect_identical(reference_label, "label")
       expect_identical(prefix, "SPOTlight")
@@ -2451,13 +2424,11 @@ test_that("stale deconvolution metadata does not satisfy a quiet producer", {
 test_that("NULL deconvolution controls resolve to producer defaults", {
   testthat::local_mocked_bindings(
     RunStandardWorkflow = function(srt, ...) srt,
-    RunRCTD = function(
-      srt,
-      prefix = "RCTD",
-      tool_name = "RCTD",
-      store_results = TRUE,
-      ...
-    ) {
+    RunRCTD = function(srt,
+                       prefix = "RCTD",
+                       tool_name = "RCTD",
+                       store_results = TRUE,
+                       ...) {
       expect_identical(prefix, "RCTD")
       expect_identical(tool_name, "RCTD")
       expect_true(store_results)
@@ -2615,12 +2586,10 @@ test_that("quality control and BayesSpace probes replace stale outputs", {
       srt$SpotQC <- factor(rep("Pass", ncol(srt)), levels = c("Pass", "Fail"))
       srt
     },
-    RunBayesSpace = function(
-      srt,
-      cluster_colname = "BayesSpace_cluster",
-      init_colname = "BayesSpace_init",
-      ...
-    ) {
+    RunBayesSpace = function(srt,
+                             cluster_colname = "BayesSpace_cluster",
+                             init_colname = "BayesSpace_init",
+                             ...) {
       expect_false(cluster_colname %in% colnames(srt@meta.data))
       expect_false(init_colname %in% colnames(srt@meta.data))
       expect_null(srt@tools[["BayesSpace"]])

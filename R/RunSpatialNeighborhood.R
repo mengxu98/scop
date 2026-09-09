@@ -123,7 +123,7 @@ RunSpatialNeighborhood <- function(
   )
   for (labels in list(from, to)) {
     if (!is.null(labels) && (!is.character(labels) || anyNA(labels) ||
-        any(!labels %in% input$cells$group))) {
+      any(!labels %in% input$cells$group))) {
       stop("from/to must contain labels present in the analysis input", call. = FALSE)
     }
   }
@@ -584,14 +584,18 @@ spatial_neighborhood_observed_pairs <- function(
   })
   edge_table <- do.call(rbind, edge_list)
   if (is.null(edge_table) || nrow(edge_table) == 0L) {
-    edge_table <- data.frame(cell = character(), neighbor = character(),
+    edge_table <- data.frame(
+      cell = character(), neighbor = character(),
       from = character(), to = character(), sample = character(),
-      condition = character(), subject = character(), distance = numeric())
-    pair_table <- data.frame(method = character(), comparison = character(),
+      condition = character(), subject = character(), distance = numeric()
+    )
+    pair_table <- data.frame(
+      method = character(), comparison = character(),
       condition = character(), from = character(), to = character(), estimate = numeric(),
       statistic = numeric(), pval = numeric(), FDR = numeric(), direction = character(),
       sample = character(), subject = character(), count = integer(), total = integer(),
-      fraction = numeric())
+      fraction = numeric()
+    )
     return(list(pair_table = pair_table, edge_table = edge_table))
   }
   rownames(edge_table) <- NULL
@@ -1028,11 +1032,11 @@ spatial_neighborhood_spatial_plot <- function(
   edges <- bundle$edge_table
   input <- bundle$input
   if (!is.data.frame(input) || !all(c("cell", "group", "condition") %in% names(input)) ||
-      !is.data.frame(edges) || !all(c("cell", "neighbor", "from", "to", "condition") %in% names(edges))) {
+    !is.data.frame(edges) || !all(c("cell", "neighbor", "from", "to", "condition") %in% names(edges))) {
     stop("Saved analysis input or edge table is incomplete; rerun RunSpatialNeighborhood()", call. = FALSE)
   }
   if (anyNA(input$cell) || anyDuplicated(input$cell) || anyNA(input$group) ||
-      anyNA(input$condition) || anyNA(edges$cell) || any(!edges$cell %in% input$cell)) {
+    anyNA(input$condition) || anyNA(edges$cell) || any(!edges$cell %in% input$cell)) {
     stop("Saved neighborhood identifiers are invalid; rerun RunSpatialNeighborhood()", call. = FALSE)
   }
   if (!is.null(condition)) {
@@ -1047,8 +1051,8 @@ spatial_neighborhood_spatial_plot <- function(
   }
   pair_use <- spatial_neighborhood_resolve_pair(pair, edges)
   if (anyNA(pair_use) || any(!nzchar(pair_use)) || any(!pair_use %in% bundle$input$group) ||
-      (!is.null(bundle$parameters$from) && !pair_use[1L] %in% bundle$parameters$from) ||
-      (!is.null(bundle$parameters$to) && !pair_use[2L] %in% bundle$parameters$to)) {
+    (!is.null(bundle$parameters$from) && !pair_use[1L] %in% bundle$parameters$from) ||
+    (!is.null(bundle$parameters$to) && !pair_use[2L] %in% bundle$parameters$to)) {
     stop("pair must contain known labels within the saved from/to scope", call. = FALSE)
   }
   hit <- edges$from == pair_use[1L] & edges$to == pair_use[2L]

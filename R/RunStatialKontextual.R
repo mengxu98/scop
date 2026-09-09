@@ -45,7 +45,8 @@
 #' data(visium_human_pancreas_sub)
 #' # Compare tissue-labelled spots at two radii (full-resolution image pixels).
 #' spatial <- RunStatialKontextual(
-#'   visium_human_pancreas_sub, group.by = "coda_label", image = "slice1",
+#'   visium_human_pancreas_sub,
+#'   group.by = "coda_label", image = "slice1",
 #'   r = c(500, 1000), from = "collagen", to = "acini", parent = c("collagen", "acini"),
 #'   verbose = FALSE
 #' )

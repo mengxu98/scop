@@ -232,39 +232,39 @@ RunCellRank <- function(
       )
     }
     srt <- run_cellrank_cpp(
-        srt = srt, assay_y = assay_y, layer_y = layer_y,
-        group.by = group.by, linear_reduction = linear_reduction,
-        nonlinear_reduction = nonlinear_reduction,
-        n_pcs = n_pcs, n_neighbors = n_neighbors,
-        mode = mode, kernel_type = kernel_type, time_key = time_key,
-        velocity_weight = velocity_weight,
-        connectivity_weight = connectivity_weight,
-        use_connectivity_kernel = use_connectivity_kernel,
-        softmax_scale = softmax_scale,
-        n_macrostates = n_macrostates,
-        schur_n_components = schur_n_components,
-        n_cells_terminal = n_cells_terminal,
-        terminal_states = terminal_states,
-        terminal_state_agg = terminal_state_agg,
-        driver_lineages = driver_lineages,
-        estimator_type = tolower(estimator_type_upper),
-        backward = backward,
-        schur_method = schur_method,
-        recompute_neighbors = recompute_neighbors,
-        time_field = time_field,
-        fitting_by = fitting_by,
-        magic_impute = magic_impute,
-        magic_knn = knn,
-        magic_t = t,
-        min_shared_counts = min_shared_counts,
-        denoise = denoise,
-        kinetics = kinetics,
-        calculate_velocity_genes = calculate_velocity_genes,
-        compute_lineage_drivers = compute_lineage_drivers,
-        max_dense_gib = max_dense_gib,
-        cores = cores, return_seurat = return_seurat,
-        verbose = verbose
-      )
+      srt = srt, assay_y = assay_y, layer_y = layer_y,
+      group.by = group.by, linear_reduction = linear_reduction,
+      nonlinear_reduction = nonlinear_reduction,
+      n_pcs = n_pcs, n_neighbors = n_neighbors,
+      mode = mode, kernel_type = kernel_type, time_key = time_key,
+      velocity_weight = velocity_weight,
+      connectivity_weight = connectivity_weight,
+      use_connectivity_kernel = use_connectivity_kernel,
+      softmax_scale = softmax_scale,
+      n_macrostates = n_macrostates,
+      schur_n_components = schur_n_components,
+      n_cells_terminal = n_cells_terminal,
+      terminal_states = terminal_states,
+      terminal_state_agg = terminal_state_agg,
+      driver_lineages = driver_lineages,
+      estimator_type = tolower(estimator_type_upper),
+      backward = backward,
+      schur_method = schur_method,
+      recompute_neighbors = recompute_neighbors,
+      time_field = time_field,
+      fitting_by = fitting_by,
+      magic_impute = magic_impute,
+      magic_knn = knn,
+      magic_t = t,
+      min_shared_counts = min_shared_counts,
+      denoise = denoise,
+      kinetics = kinetics,
+      calculate_velocity_genes = calculate_velocity_genes,
+      compute_lineage_drivers = compute_lineage_drivers,
+      max_dense_gib = max_dense_gib,
+      cores = cores, return_seurat = return_seurat,
+      verbose = verbose
+    )
     if (isTRUE(show_plot) || isTRUE(save_plot)) {
       plot <- CellRankPlot(srt, plot_type = "fate", reduction = nonlinear_reduction)
       if (isTRUE(show_plot)) print(plot)
@@ -817,7 +817,8 @@ cellrank_knn_from_connectivities <- function(connectivities, k) {
   k <- min(as.integer(k), nrow(graph) - 1L)
   idx <- t(apply(graph, 1L, function(x) order(x, decreasing = TRUE)[seq_len(k)]))
   weight <- matrix(graph[cbind(rep(seq_len(nrow(graph)), each = k), as.vector(t(idx)))],
-    nrow = nrow(graph), byrow = TRUE)
+    nrow = nrow(graph), byrow = TRUE
+  )
   list(idx = idx, dist = 1 - pmax(weight, 0))
 }
 
@@ -1194,7 +1195,9 @@ run_cellrank_cpp <- function(
         assay = assay_y[[1L]],
         layer = layer_y
       ))[, cells, drop = FALSE]
-      lineage_idx <- if (is.null(driver_lineages)) integer() else {
+      lineage_idx <- if (is.null(driver_lineages)) {
+        integer()
+      } else {
         idx <- suppressWarnings(as.integer(driver_lineages))
         idx[is.finite(idx) & idx >= 1L & idx <= ncol(ap)]
       }

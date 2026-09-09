@@ -45,13 +45,11 @@ test_that("ATAC defaults are applied before spatial output planning", {
       captured$nested <- list(...)
       add_standard_spatial_atac_reduction(srt, "ATACsvd")
     },
-    RunBayesSpace = function(
-      srt,
-      cluster_colname,
-      init_colname,
-      use_reduction = NULL,
-      ...
-    ) {
+    RunBayesSpace = function(srt,
+                             cluster_colname,
+                             init_colname,
+                             use_reduction = NULL,
+                             ...) {
       captured$bayes <- list(
         cluster_colname = cluster_colname,
         init_colname = init_colname,
@@ -154,13 +152,11 @@ test_that("custom ATAC workflow values retain atac_defaults semantics", {
       captured$nested <- list(...)
       add_standard_spatial_atac_reduction(srt, "Customsvd")
     },
-    RunBayesSpace = function(
-      srt,
-      cluster_colname,
-      init_colname,
-      use_reduction = NULL,
-      ...
-    ) {
+    RunBayesSpace = function(srt,
+                             cluster_colname,
+                             init_colname,
+                             use_reduction = NULL,
+                             ...) {
       captured$bayes_use_reduction <- use_reduction
       srt[[cluster_colname]] <- rep("domain1", ncol(srt))
       srt@tools[["BayesSpace"]] <- list(result = "fresh")
