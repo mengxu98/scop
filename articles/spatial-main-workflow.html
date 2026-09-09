@@ -235,35 +235,35 @@ heavier backends.</p>
 <span>  do_spatial_cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:33] <span style="color: #0000BB;">Start standard spot-level spatial workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-09-08 13:25:33] Running spot-level quality control</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-08 13:25:33] Spot QC completed: <span style="color: #0000BB;">1986</span> evaluated, <span style="color: #0000BB;">1907</span> Pass, <span style="color: #0000BB;">79</span> Fail</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:29] <span style="color: #0000BB;">Start standard spot-level spatial workflow...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-09-09 14:35:29] Running spot-level quality control</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-09 14:35:30] Spot QC completed: <span style="color: #0000BB;">1986</span> evaluated, <span style="color: #0000BB;">1907</span> Pass, <span style="color: #0000BB;">79</span> Fail</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Scope</span> assay <span style="color: #0000BB;">"Spatial"</span>, layer <span style="color: #0000BB;">"counts"</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Saved</span> metadata column `SpotQC`</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Plot returned object</span> `SpatialSpotPlot(&lt;returned_object&gt;, group.by = "SpotQC")`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:33] <span style="color: #0000BB;">Start standard processing workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:33] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-09-08 13:25:33] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:30] <span style="color: #0000BB;">Start standard processing workflow...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:30] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-09-09 14:35:30] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
 <span><span class="co">#&gt; Warning: Data 1/1 of the `srt_list` is "unknown"</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:33] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Use the separate HVF from `srt_list`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Finished check</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Perform `ScaleData()`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:34] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:35] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">30</span> for <span style="color: #0000BB;">Standardpca</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:36] Reorder clusters...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:36] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-08 13:25:36] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-08 13:25:41] <span style="color: #00BB00;">Standard processing workflow completed</span></span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-09-08 13:25:41] Running spatial variable feature detection</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-08 13:25:41] Spatial variable features completed: <span style="color: #0000BB;">2000</span> tested, <span style="color: #0000BB;">50</span> ranked in the top set</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:30] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:30] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:31] Use the separate HVF from `srt_list`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:31] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:31] Finished check</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:31] Perform `ScaleData()`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:31] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:32] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">30</span> for <span style="color: #0000BB;">Standardpca</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:33] Reorder clusters...</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:33] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-09 14:35:33] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-09 14:35:38] <span style="color: #00BB00;">Standard processing workflow completed</span></span></span>
+<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-09-09 14:35:38] Running spatial variable feature detection</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-09 14:35:38] Spatial variable features completed: <span style="color: #0000BB;">2000</span> tested, <span style="color: #0000BB;">50</span> ranked in the top set</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Scope</span> method <span style="color: #0000BB;">"moran"</span> (<span style="color: #0000BB;">"cpp"</span> backend); assay <span style="color: #0000BB;">"Spatial"</span>, layer <span style="color: #0000BB;">"data"</span>; <span style="color: #0000BB;">1986</span> spots; coordinates <span style="color: #0000BB;">"raw"</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Saved</span> full result in returned object tool bundle `SpatialVariableFeatures`</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Plot returned object</span> `SpatialVariableFeaturePlot(&lt;returned_object&gt;, plot_type = "combined", assay = "Spatial", image = "slice1", coord.cols = c("x", "y"))`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-08 13:25:41] <span style="color: #00BB00;">Standard spot-level spatial workflow completed</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-09 14:35:38] <span style="color: #00BB00;">Standard spot-level spatial workflow completed</span></span></span></code></pre></div>
 <p>After the run, look at the stable result locations before making more
 plots. Most spatial wrappers write method parameters and summaries under
 <code>srt@tools</code>. Spatial variable features are genes whose
@@ -438,7 +438,8 @@ modifying the object. Selecting target cells does not remove their
 surrounding tissue from the calculation:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">profile</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SpatialNeighborhoodProfile.html">SpatialNeighborhoodProfile</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>, group.by <span class="op">=</span> <span class="st">"coda_label"</span>, radii <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">400</span><span class="op">)</span>,</span>
+<span>  <span class="va">spatial</span>,</span>
+<span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span>, radii <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">400</span><span class="op">)</span>,</span>
 <span>  cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span>, <span class="fl">20</span><span class="op">)</span>, cumulative <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">profile</span><span class="op">)</span></span>
@@ -462,7 +463,7 @@ depletion.</p>
 <span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">6</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-08 13:25:43] Spatial neighborhood analysis completed (<span style="color: #0000BB;">"observed"</span>)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-09 14:35:40] Spatial neighborhood analysis completed (<span style="color: #0000BB;">"observed"</span>)</span></span>
 <span></span>
 <span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialNeighborhood</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="co">#&gt; $n_pairs</span></span>
