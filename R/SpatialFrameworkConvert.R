@@ -24,10 +24,7 @@
 #'   assay = "Spatial",
 #'   verbose = FALSE
 #' )
-#' if (all(unlist(
-#'   thisutils::check_r("drieslab/Giotto", verbose = FALSE),
-#'   use.names = FALSE
-#' ))) {
+#' if (requireNamespace("GiottoClass", quietly = TRUE)) {
 #'   giotto <- srt_to_giotto(spatial, image = "slice1")
 #'   print(giotto)
 #' }
@@ -108,10 +105,7 @@ seurat_major_version <- function() {
 #'   assay = "Spatial",
 #'   verbose = FALSE
 #' )
-#' if (all(unlist(
-#'   thisutils::check_r("drieslab/Giotto", verbose = FALSE),
-#'   use.names = FALSE
-#' ))) {
+#' if (requireNamespace("GiottoClass", quietly = TRUE)) {
 #'   giotto <- srt_to_giotto(spatial, image = "slice1")
 #'   roundtrip <- giotto_to_srt(giotto)
 #'   print(roundtrip)
