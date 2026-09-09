@@ -2,7 +2,7 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object returned by [RuntAge()] or a data frame with
+#' @param object A `Seurat` object returned by [RuntAge()] or a data frame with
 #' tAge prediction columns.
 #' @param score_col Prediction column to plot. If `NULL`, the first column
 #' ending in `"_tAge"` is used.
@@ -42,7 +42,7 @@
 #' tAgePlot(pancreas_sub, group.by = "CellType")
 #' }
 tAgePlot <- function(
-  srt,
+  object,
   score_col = NULL,
   group.by = NULL,
   split.by = NULL,
@@ -74,7 +74,7 @@ tAgePlot <- function(
 ) {
   plot_type <- match.arg(plot_type)
   plot_df <- tage_plot_data(
-    srt = srt,
+    object = object,
     tool_name = tool_name,
     verbose = verbose
   )
@@ -177,12 +177,12 @@ tAgePlot <- function(
   )
 }
 
-tage_plot_data <- function(srt, tool_name = "tAge", verbose = TRUE) {
-  if (inherits(srt, "Seurat")) {
-    result <- srt@tools[[tool_name]]
+tage_plot_data <- function(object, tool_name = "tAge", verbose = TRUE) {
+  if (inherits(object, "Seurat")) {
+    result <- object@tools[[tool_name]]
     if (is.null(result) || is.null(result$predictions)) {
       log_message(
-        "{.arg srt} does not contain tAge predictions in {.code srt@tools[[{tool_name}]]}",
+        "{.arg object} does not contain tAge predictions in {.code object@tools[[{tool_name}]]}",
         message_type = "error"
       )
     }
@@ -203,13 +203,13 @@ tage_plot_data <- function(srt, tool_name = "tAge", verbose = TRUE) {
     }
     return(plot_df)
   }
-  if (!is.data.frame(srt)) {
+  if (!is.data.frame(object)) {
     log_message(
-      "{.arg srt} must be a {.cls Seurat} object or data frame",
+      "{.arg object} must be a {.cls Seurat} object or data frame",
       message_type = "error"
     )
   }
-  srt
+  object
 }
 
 infer_tage_plot_group <- function(plot_df) {

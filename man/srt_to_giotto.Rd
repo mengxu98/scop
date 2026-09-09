@@ -22,7 +22,7 @@ a Giotto workflow or changing the input object.
 }
 \details{
 Converters live in GiottoClass. If that package is already installed from
-any source, the bridge reuses it and does not reinstall \code{drieslab/Giotto}.
+any source, the bridge reuses it and does not reinstall `drieslab/Giotto`.
 A GitHub reinstall is requested only when GiottoClass is missing. Conversion
 does not initialize Giotto's optional Python/conda environment.
 }

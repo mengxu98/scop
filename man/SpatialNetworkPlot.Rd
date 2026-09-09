@@ -5,7 +5,7 @@
 \title{Plot a native spatial network}
 \usage{
 SpatialNetworkPlot(
-  srt = NULL,
+  object = NULL,
   res = NULL,
   graph.name = NULL,
   group.by = NULL,
@@ -23,9 +23,9 @@ SpatialNetworkPlot(
 )
 }
 \arguments{
-\item{srt}{Optional `Seurat` object containing the graph and metadata.}
+\item{object}{Optional `Seurat` object containing the graph and metadata.}
 
-\item{res}{Optional plain result list from `srt@tools$SpatialNetwork`.}
+\item{res}{Optional plain result list from `object@tools$SpatialNetwork`.}
 
 \item{graph.name}{Stored graph name. The active graph is used when `NULL`.}
 
@@ -44,7 +44,7 @@ SpatialNetworkPlot(
 \item{theme_use, theme_args}{Theme used to style the plot. Default is
 `"theme_spatial"`.}
 
-\item{image.scale}{Image scale factor matching the raster in `srt`.}
+\item{image.scale}{Image scale factor matching the raster in `object`.}
 }
 \value{
 A `ggplot` object.
