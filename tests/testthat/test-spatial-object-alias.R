@@ -79,28 +79,33 @@ test_that("native spatial APIs take the Seurat object as object", {
   )
 })
 
-test_that("srt remains a compatibility alias for object", {
+test_that("srt remains a deprecated alias for object", {
   skip_if_not_installed("BiocNeighbors")
   srt <- make_spatial_object_alias_fixture()
 
-  qc <- suppressWarnings(RunSpotQC(
-    srt = srt,
-    assay = "RNA",
-    qc_metrics = c("umi", "gene"),
-    UMI_threshold = 0,
-    gene_threshold = 0,
-    verbose = FALSE
-  ))
+  expect_warning(
+    qc <- RunSpotQC(
+      srt = srt,
+      assay = "RNA",
+      qc_metrics = c("umi", "gene"),
+      UMI_threshold = 0,
+      gene_threshold = 0,
+      verbose = FALSE
+    ),
+    class = "deprecatedWarning"
+  )
   expect_s4_class(qc, "Seurat")
-  expect_s3_class(
-    SpatialSpotPlot(
+  plot <- NULL
+  expect_warning(
+    plot <- SpatialSpotPlot(
       srt = qc,
       group.by = "SpotQC",
       overlay_image = FALSE,
       theme_use = NULL
     ),
-    "ggplot"
+    "`srt` is deprecated"
   )
+  expect_s3_class(plot, "ggplot")
 })
 
 test_that("spatial object input rejects ambiguous or missing input", {

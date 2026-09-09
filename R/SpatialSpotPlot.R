@@ -4,8 +4,8 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams scop-params
 #' @param object A `Seurat` object.
-#' @param srt Compatibility alias for `object`. Supply exactly one of `object`
-#' or `srt`.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param group.by Metadata columns to color spots by.
 #' @param features Features to color spots by (from `assay`/`layer`).
 #' @param values Spot-level values (named vector, matrix, or data.frame).
