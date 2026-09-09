@@ -445,7 +445,7 @@ Cell2locationPlot <- function(
   }
 
   defaults <- list(
-    srt = srt,
+    object = srt,
     image = image,
     image.scale = image.scale,
     overlay_image = overlay_image,

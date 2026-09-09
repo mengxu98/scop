@@ -354,23 +354,23 @@ ccc_method_specs <- function() {
   list(
     CellChat = list(
       runner = "RunCellChat", aliases = "cellchat", required_params = character(),
-      object_arg = "srt", pass_backend = TRUE, pass_thresh = TRUE,
+      object_arg = "object", pass_backend = TRUE, pass_thresh = TRUE,
       requires_spatial = FALSE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     CellphoneDB = list(
       runner = "RunCellphoneDB",
       aliases = c("cellphonedb", "cellphone_db", "cellphone db"),
-      required_params = character(), object_arg = "srt", pass_backend = TRUE,
+      required_params = character(), object_arg = "object", pass_backend = TRUE,
       pass_thresh = FALSE, requires_spatial = FALSE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     LIANA = list(
       runner = "RunLIANA", aliases = "liana", required_params = character(),
-      object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
+      object_arg = "object", pass_backend = TRUE, pass_thresh = FALSE,
       requires_spatial = FALSE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     Nichenetr = list(
       runner = "RunNichenetr", aliases = c("nichenet", "nichenetr"),
-      required_params = "receiver", object_arg = "srt", pass_backend = TRUE,
+      required_params = "receiver", object_arg = "object", pass_backend = TRUE,
       pass_thresh = FALSE, requires_spatial = FALSE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     MultiNichenetr = list(
@@ -380,28 +380,28 @@ ccc_method_specs <- function() {
         "sample.by", "condition.by", "condition_oi",
         "condition_reference", "receiver_celltypes"
       ),
-      object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
+      object_arg = "object", pass_backend = TRUE, pass_thresh = FALSE,
       requires_spatial = FALSE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     SpatialCellChat = list(
       runner = "RunSpatialCellChat",
       aliases = c("spatialcellchat", "spatial_cellchat", "spatial cellchat"),
-      required_params = character(), object_arg = "srt", pass_backend = TRUE,
+      required_params = character(), object_arg = "object", pass_backend = TRUE,
       pass_thresh = FALSE, requires_spatial = TRUE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     SpaTalk = list(
       runner = "RunSpaTalk", aliases = "spatalk", required_params = character(),
-      object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
+      object_arg = "object", pass_backend = TRUE, pass_thresh = FALSE,
       requires_spatial = TRUE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     COMMOT = list(
       runner = "RunCOMMOT", aliases = "commot", required_params = character(),
-      object_arg = "srt", pass_backend = TRUE, pass_thresh = FALSE,
+      object_arg = "object", pass_backend = TRUE, pass_thresh = FALSE,
       requires_spatial = TRUE, requires_group = TRUE, supports_unified_edges = TRUE
     ),
     SpatialDM = list(
       runner = "RunSpatialDM", aliases = c("spatialdm", "spatial dm"),
-      required_params = character(), object_arg = "srt", pass_backend = FALSE,
+      required_params = character(), object_arg = "object", pass_backend = FALSE,
       pass_thresh = FALSE, requires_spatial = TRUE, requires_group = FALSE,
       supports_unified_edges = FALSE
     ),

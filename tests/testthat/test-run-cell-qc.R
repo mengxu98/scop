@@ -296,7 +296,7 @@ test_that("RunCellQC appends feature-QC arguments after legacy arguments", {
     match("hb_range", arguments)
   )
   expect_identical(
-    tail(arguments, 4),
+    tail(setdiff(arguments, "srt"), 4),
     c("hb_range", "hb_pattern", "hb_gene", "qc_features")
   )
 })
@@ -446,7 +446,8 @@ test_that("RunDoubletCalling dispatches to Run-prefixed backends", {
   observed <- new.env(parent = emptyenv())
 
   testthat::local_mocked_bindings(
-    RunScrublet = function(srt, db_rate, data_type, ...) {
+    RunScrublet = function(object, db_rate, data_type, ...) {
+      srt <- object
       observed$db_rate <- db_rate
       observed$data_type <- data_type
       srt$dispatch <- "RunScrublet"

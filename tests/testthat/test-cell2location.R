@@ -191,7 +191,8 @@ test_that("RunCell2location writes abundance, proportions, and reproducible tool
     runner_script_path = function(...) "cell2location.py",
     runner_write_json = function(...) invisible(NULL),
     runner_read_json = function(...) list(status = "complete"),
-    srt_to_h5ad = function(srt, path, ...) {
+    srt_to_h5ad = function(object, path, ...) {
+      srt <- object
       file.create(path)
       invisible(path)
     },
@@ -264,7 +265,8 @@ test_that("RunCell2location does not mutate Seurat when Python fails", {
     resolve_conda = function(...) "mamba",
     runner_script_path = function(...) "cell2location.py",
     runner_write_json = function(...) invisible(NULL),
-    srt_to_h5ad = function(srt, path, ...) {
+    srt_to_h5ad = function(object, path, ...) {
+      srt <- object
       file.create(path)
       invisible(path)
     },
@@ -300,14 +302,15 @@ test_that("standard spatial workflow dispatches cell2location signatures", {
   called <- FALSE
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunCell2location = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunCell2location = function(object,
                                 result_dir,
                                 reference_signatures,
                                 prefix,
                                 tool_name,
                                 store_results,
                                 ...) {
+      srt <- object
       called <<- TRUE
       expect_identical(result_dir, "c2l")
       expect_identical(reference_signatures, signatures)

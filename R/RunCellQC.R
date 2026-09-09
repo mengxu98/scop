@@ -1426,7 +1426,7 @@ RunCellQC <- function(
         atac_args_use[["min_TSS_enrichment"]] <- NULL
         atac_args_use[["max_nucleosome_signal"]] <- NULL
         atac_args_use[["max_blacklist_ratio"]] <- NULL
-        atac_args_use[["srt"]] <- srt
+        atac_args_use[["object"]] <- srt
         atac_args_use[["assay"]] <- assay
         if (is.null(atac_args_use[["verbose"]])) {
           atac_args_use[["verbose"]] <- TRUE
@@ -1507,7 +1507,7 @@ RunCellQC <- function(
       if (is.null(decontX_args_use[["seed"]])) {
         decontX_args_use[["seed"]] <- seed
       }
-      decontX_args_use[["srt"]] <- srt
+      decontX_args_use[["object"]] <- srt
       decontX_args_use[["assay"]] <- assay
       decontX_args_use[["data_type"]] <- status
       srt <- do.call(

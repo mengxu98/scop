@@ -122,11 +122,12 @@ make_valid_empty_svf_tool <- function() {
 
 test_that("stored spatial variable feature results are reported", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object,
                                           set_variable_features,
                                           store_results,
                                           ...) {
+      srt <- object
       expect_false(set_variable_features)
       expect_true(store_results)
       expect_null(srt@tools[["SpatialVariableFeatures"]])
@@ -154,11 +155,12 @@ test_that("stored spatial variable feature results are reported", {
 
 test_that("storage-off SVF ignores and preserves an older tool result", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object,
                                           set_variable_features,
                                           store_results,
                                           ...) {
+      srt <- object
       expect_false(set_variable_features)
       expect_false(store_results)
       srt
@@ -190,12 +192,13 @@ test_that("storage-off SVF ignores and preserves an older tool result", {
 
 test_that("variable-feature-only output is certified without a tool", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object,
                                           assay,
                                           set_variable_features,
                                           store_results,
                                           ...) {
+      srt <- object
       expect_true(set_variable_features)
       expect_false(store_results)
       top_features <- c("gene1", "gene2")
@@ -238,13 +241,14 @@ test_that("SVF bookkeeping follows the effective assay override", {
   SeuratObject::VariableFeatures(srt, assay = "ALT") <- c("gene2", "gene3")
 
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object,
                                           assay,
                                           features,
                                           set_variable_features,
                                           store_results,
                                           ...) {
+      srt <- object
       expect_identical(assay, "ALT")
       expect_identical(features, c("gene2", "gene3"))
       expect_length(
@@ -297,8 +301,9 @@ test_that("NULL SVF assay resolves to the producer default assay", {
   SeuratObject::VariableFeatures(srt, assay = "ALT") <- "gene2"
 
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt, assay, features, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object, assay, features, ...) {
+      srt <- object
       expect_identical(assay, "ALT")
       expect_identical(features, "gene2")
       SeuratObject::VariableFeatures(srt, assay = assay) <- "gene3"
@@ -327,7 +332,7 @@ test_that("NULL SVF assay resolves to the producer default assay", {
 test_that("invalid effective SVF assays fail through the stage wrapper", {
   producer_calls <- 0L
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
+    RunStandardWorkflow = function(object, ...) object,
     RunSpatialVariableFeatures = function(...) {
       producer_calls <<- producer_calls + 1L
       stop("SVF producer was reached")
@@ -397,13 +402,14 @@ test_that("SVF output replaces stale selection and preserves HVF metadata", {
   ]
 
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object,
                                           assay,
                                           features,
                                           set_variable_features,
                                           store_results,
                                           ...) {
+      srt <- object
       expect_identical(features, c("gene1", "gene2"))
       expect_true(set_variable_features)
       expect_false(store_results)
@@ -442,12 +448,13 @@ test_that("SVF output replaces stale selection and preserves HVF metadata", {
 
 test_that("stale variable features do not satisfy a quiet producer", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object,
                                           assay,
                                           features,
                                           store_results,
                                           ...) {
+      srt <- object
       expect_false(store_results)
       expect_null(srt@tools[["SpatialVariableFeatures"]])
       expect_identical(features, "gene1")
@@ -494,8 +501,9 @@ test_that("malformed explicit-empty sentinels do not satisfy the workflow", {
 
   for (case_name in malformed_cases) {
     testthat::local_mocked_bindings(
-      RunStandardWorkflow = function(srt, ...) srt,
-      RunSpatialVariableFeatures = function(srt, assay, ...) {
+      RunStandardWorkflow = function(object, ...) object,
+      RunSpatialVariableFeatures = function(object, assay, ...) {
+      srt <- object
         assay_object <- srt[[assay]]
         labels <- rep(FALSE, nrow(assay_object))
         names(labels) <- rownames(assay_object)
@@ -540,7 +548,7 @@ test_that("native spatial variable feature workflow can be rerun unchanged", {
   skip_if_not_installed("BiocNeighbors")
   public_workflow <- RunStandardWorkflow
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
+    RunStandardWorkflow = function(object, ...) object,
     .package = "scop"
   )
   args <- list(
@@ -585,7 +593,7 @@ test_that("native spatial variable feature workflow can be rerun unchanged", {
 test_that("native variable-feature-only output is verified without a tool", {
   skip_if_not_installed("BiocNeighbors")
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
+    RunStandardWorkflow = function(object, ...) object,
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
@@ -629,7 +637,7 @@ test_that("native variable-feature-only output is verified without a tool", {
 test_that("storage-off native SVF certifies a fresh explicit empty selection", {
   skip_if_not_installed("BiocNeighbors")
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
+    RunStandardWorkflow = function(object, ...) object,
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
@@ -678,7 +686,7 @@ test_that("storage-off native SVF certifies a fresh explicit empty selection", {
 test_that("classic Assay empty-selection handshake preserves misc state", {
   skip_if_not_installed("BiocNeighbors")
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
+    RunStandardWorkflow = function(object, ...) object,
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
@@ -745,7 +753,7 @@ test_that("classic Assay empty-selection handshake preserves misc state", {
   quiet_srt[["Classic"]] <- quiet_assay
   quiet_before <- quiet_srt
   testthat::local_mocked_bindings(
-    RunSpatialVariableFeatures = function(srt, ...) srt,
+    RunSpatialVariableFeatures = function(object, ...) object,
     .package = "scop"
   )
   condition <- tryCatch(
@@ -774,12 +782,13 @@ test_that("classic Assay empty-selection handshake preserves misc state", {
 
 test_that("NULL SVF controls resolve to producer defaults", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object,
                                           assay,
                                           set_variable_features = TRUE,
                                           store_results = TRUE,
                                           ...) {
+      srt <- object
       expect_true(set_variable_features)
       expect_true(store_results)
       SeuratObject::VariableFeatures(srt, assay = assay) <- "gene1"
@@ -811,12 +820,13 @@ test_that("NULL SVF controls resolve to producer defaults", {
 
 test_that("fresh non-finite SVF scores certify a valid empty selection", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object,
                                           assay,
                                           set_variable_features,
                                           store_results,
                                           ...) {
+      srt <- object
       expect_true(set_variable_features)
       expect_true(store_results)
       expect_null(srt@tools[["SpatialVariableFeatures"]])
@@ -872,8 +882,9 @@ test_that("restored HVF statistics do not revive a valid empty SVF selection", {
   ]
 
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt, assay, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object, assay, ...) {
+      srt <- object
       expect_false(any(startsWith(colnames(srt[[assay]][[]]), "vf_")))
       srt <- spatial_set_active_variable_features(
         srt,
@@ -947,8 +958,9 @@ test_that("malformed SVF tools cannot certify an empty selection", {
   for (case_name in names(malformed_tools)) {
     candidate <- malformed_tools[[case_name]]
     testthat::local_mocked_bindings(
-      RunStandardWorkflow = function(srt, ...) srt,
-      RunSpatialVariableFeatures = function(srt, assay, ...) {
+      RunStandardWorkflow = function(object, ...) object,
+      RunSpatialVariableFeatures = function(object, assay, ...) {
+      srt <- object
         expect_null(srt@tools[["SpatialVariableFeatures"]])
         expect_length(
           suppressWarnings(SeuratObject::VariableFeatures(srt, assay = assay)),
@@ -982,8 +994,9 @@ test_that("malformed SVF tools cannot certify an empty selection", {
 
 test_that("a stale empty SVF tool cannot certify an empty selection", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt, assay, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object, assay, ...) {
+      srt <- object
       expect_null(srt@tools[["SpatialVariableFeatures"]])
       expect_length(
         suppressWarnings(SeuratObject::VariableFeatures(srt, assay = assay)),
@@ -1023,8 +1036,9 @@ test_that("a stale empty SVF tool cannot certify an empty selection", {
 
 test_that("a stale SVF tool does not satisfy a quiet stored producer", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpatialVariableFeatures = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpatialVariableFeatures = function(object, ...) {
+      srt <- object
       expect_null(srt@tools[["SpatialVariableFeatures"]])
       srt
     },
@@ -1053,8 +1067,9 @@ test_that("a stale SVF tool does not satisfy a quiet stored producer", {
 
 test_that("metadata-only deconvolution records actual output columns", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunRCTD = function(srt, prefix, tool_name, store_results, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunRCTD = function(object, prefix, tool_name, store_results, ...) {
+      srt <- object
       expect_identical(prefix, "Custom")
       expect_identical(tool_name, "CustomTool")
       expect_false(store_results)
@@ -1088,7 +1103,8 @@ test_that("metadata-only deconvolution records actual output columns", {
 })
 
 test_that("non-cell2location methods preserve same-prefix abundance annotations", {
-  producer <- function(srt, prefix, store_results, ...) {
+  producer <- function(object, prefix, store_results, ...) {
+    srt <- object
     expect_false(store_results)
     expect_true(paste0(prefix, "_abundance_annotation") %in%
       colnames(srt@meta.data))
@@ -1103,7 +1119,7 @@ test_that("non-cell2location methods preserve same-prefix abundance annotations"
     add_mock_deconv_outputs(srt, prefix = prefix)
   }
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
+    RunStandardWorkflow = function(object, ...) object,
     RunRCTD = producer,
     RunSPOTlight = producer,
     .package = "scop"
@@ -1140,8 +1156,9 @@ test_that("non-cell2location methods preserve same-prefix abundance annotations"
 
 test_that("Cell2location clears and replaces stale abundance metadata", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunCell2location = function(srt, prefix, store_results, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunCell2location = function(object, prefix, store_results, ...) {
+      srt <- object
       expect_false(store_results)
       expect_false(any(startsWith(
         colnames(srt@meta.data),
@@ -1183,8 +1200,9 @@ test_that("Cell2location clears and replaces stale abundance metadata", {
 
 test_that("Cell2location cannot complete without fresh abundance metadata", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunCell2location = function(srt, prefix, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunCell2location = function(object, prefix, ...) {
+      srt <- object
       expect_false(any(startsWith(
         colnames(srt@meta.data),
         paste0(prefix, "_abundance_")
@@ -1223,8 +1241,9 @@ test_that("Cell2location cannot complete without fresh abundance metadata", {
 
 test_that("stored deconvolution records a custom tool and metadata", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunRCTD = function(srt, prefix, tool_name, store_results, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunRCTD = function(object, prefix, tool_name, store_results, ...) {
+      srt <- object
       expect_true(store_results)
       add_mock_deconv_outputs(
         srt,
@@ -1263,7 +1282,8 @@ test_that("stored deconvolution records a custom tool and metadata", {
 test_that("deconvolution rejects workflow-owned result keys before execution", {
   calls <- character()
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       calls <<- c(calls, "RunStandardWorkflow")
       srt
     },
@@ -1315,7 +1335,8 @@ test_that("deconvolution rejects workflow-owned result keys before execution", {
 test_that("deconvolution setup validation fails with stage diagnostics before producers", {
   calls <- character()
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       calls <<- c(calls, "RunStandardWorkflow")
       srt
     },
@@ -1387,8 +1408,9 @@ test_that("deconvolution setup validation fails with stage diagnostics before pr
 test_that("metadata-only deconvolution allows workflow-owned tool names", {
   called <- FALSE
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunRCTD = function(srt, prefix, tool_name, store_results, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunRCTD = function(object, prefix, tool_name, store_results, ...) {
+      srt <- object
       called <<- TRUE
       expect_identical(tool_name, "BayesSpace")
       expect_false(store_results)
@@ -1426,23 +1448,28 @@ test_that("metadata-only deconvolution allows workflow-owned tool names", {
 test_that("planned spatial metadata collisions fail before any producer", {
   calls <- character()
   testthat::local_mocked_bindings(
-    RunSpotQC = function(srt, ...) {
+    RunSpotQC = function(object, ...) {
+      srt <- object
       calls <<- c(calls, "RunSpotQC")
       srt
     },
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       calls <<- c(calls, "RunStandardWorkflow")
       srt
     },
-    RunBayesSpace = function(srt, ...) {
+    RunBayesSpace = function(object, ...) {
+      srt <- object
       calls <<- c(calls, "RunBayesSpace")
       srt
     },
-    RunRCTD = function(srt, ...) {
+    RunRCTD = function(object, ...) {
+      srt <- object
       calls <<- c(calls, "RunRCTD")
       srt
     },
-    RunCell2location = function(srt, ...) {
+    RunCell2location = function(object, ...) {
+      srt <- object
       calls <<- c(calls, "RunCell2location")
       srt
     },
@@ -1636,11 +1663,13 @@ test_that("planned spatial metadata collisions fail before any producer", {
 test_that("all preprocessing cluster outputs are protected before producers run", {
   producer_calls <- character()
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunStandardWorkflow")
       srt
     },
-    RunBayesSpace = function(srt, cluster_colname, init_colname, ...) {
+    RunBayesSpace = function(object, cluster_colname, init_colname, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunBayesSpace")
       srt[[cluster_colname]] <- rep("domain1", ncol(srt))
       if (!is.null(init_colname)) {
@@ -1760,11 +1789,13 @@ test_that("all preprocessing cluster outputs are protected before producers run"
 test_that("resolution cluster outputs are protected from deconvolution", {
   producer_calls <- character()
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunStandardWorkflow")
       srt
     },
-    RunRCTD = function(srt, ...) {
+    RunRCTD = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunRCTD")
       srt
     },
@@ -1810,15 +1841,18 @@ test_that("resolution cluster outputs are protected from deconvolution", {
 test_that("all default SpotQC outputs are protected before producers run", {
   producer_calls <- character()
   testthat::local_mocked_bindings(
-    RunSpotQC = function(srt, ...) {
+    RunSpotQC = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunSpotQC")
       srt
     },
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunStandardWorkflow")
       srt
     },
-    RunBayesSpace = function(srt, ...) {
+    RunBayesSpace = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunBayesSpace")
       srt
     },
@@ -1876,15 +1910,18 @@ test_that("all default SpotQC outputs are protected before producers run", {
 test_that("effective SpotQC parameters define planned metadata targets", {
   producer_calls <- character()
   testthat::local_mocked_bindings(
-    RunSpotQC = function(srt, ...) {
+    RunSpotQC = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunSpotQC")
       srt
     },
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunStandardWorkflow")
       srt
     },
-    RunBayesSpace = function(srt, ...) {
+    RunBayesSpace = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunBayesSpace")
       srt
     },
@@ -1953,11 +1990,12 @@ test_that("SpotQC dispatch reuses the effective parameters used for planning", {
   called <- FALSE
   custom_rules <- c("custom score:upper:2", "nCount_RNA:lower:3")
   testthat::local_mocked_bindings(
-    RunSpotQC = function(srt,
+    RunSpotQC = function(object,
                          assay,
                          qc_metrics,
                          outlier_threshold,
                          ...) {
+      srt <- object
       called <<- TRUE
       expect_identical(assay, "ALT")
       expect_identical(qc_metrics, c("outlier", "gene"))
@@ -1965,7 +2003,7 @@ test_that("SpotQC dispatch reuses the effective parameters used for planning", {
       srt$SpotQC <- rep("Pass", ncol(srt))
       srt
     },
-    RunStandardWorkflow = function(srt, ...) srt,
+    RunStandardWorkflow = function(object, ...) object,
     .package = "scop"
   )
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
@@ -2002,15 +2040,18 @@ test_that("SpotQC dispatch reuses the effective parameters used for planning", {
 test_that("deconvolution cannot clear a planned SpotQC outlier flag", {
   producer_calls <- character()
   testthat::local_mocked_bindings(
-    RunSpotQC = function(srt, ...) {
+    RunSpotQC = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunSpotQC")
       srt
     },
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunStandardWorkflow")
       srt
     },
-    RunRCTD = function(srt, ...) {
+    RunRCTD = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunRCTD")
       srt
     },
@@ -2059,11 +2100,13 @@ test_that("deconvolution cannot clear a planned SpotQC outlier flag", {
 test_that("malformed SpotQC planning parameters fail without producer work", {
   producer_calls <- character()
   testthat::local_mocked_bindings(
-    RunSpotQC = function(srt, ...) {
+    RunSpotQC = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunSpotQC")
       srt
     },
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunStandardWorkflow")
       srt
     },
@@ -2112,14 +2155,16 @@ test_that("malformed SpotQC planning parameters fail without producer work", {
 
 test_that("RCTD preserves an abundance-named BayesSpace init output", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunBayesSpace = function(srt, cluster_colname, init_colname, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunBayesSpace = function(object, cluster_colname, init_colname, ...) {
+      srt <- object
       srt[[cluster_colname]] <- rep("domain1", ncol(srt))
       srt[[init_colname]] <- rep("initial1", ncol(srt))
       srt@tools[["BayesSpace"]] <- list(result = "fresh")
       srt
     },
-    RunRCTD = function(srt, prefix, store_results, ...) {
+    RunRCTD = function(object, prefix, store_results, ...) {
+      srt <- object
       expect_false(store_results)
       expect_true("Custom_abundance_annotation" %in% colnames(srt@meta.data))
       add_mock_deconv_outputs(srt, prefix = prefix)
@@ -2163,11 +2208,12 @@ test_that("RCTD preserves an abundance-named BayesSpace init output", {
 test_that("explicit NULL BayesSpace init is preserved through dispatch", {
   producer_calls <- 0L
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunBayesSpace = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunBayesSpace = function(object,
                              cluster_colname,
                              init_colname = "unexpected default",
                              ...) {
+      srt <- object
       producer_calls <<- producer_calls + 1L
       expect_null(init_colname)
       if (identical(cluster_colname, "BayesSpace_init")) {
@@ -2241,12 +2287,14 @@ test_that("explicit NULL BayesSpace init is preserved through dispatch", {
 
 test_that("unrequested stage names do not create metadata collisions", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpotQC = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpotQC = function(object, ...) {
+      srt <- object
       srt$SpotQC <- rep("Pass", ncol(srt))
       srt
     },
-    RunBayesSpace = function(srt, cluster_colname, init_colname, ...) {
+    RunBayesSpace = function(object, cluster_colname, init_colname, ...) {
+      srt <- object
       expect_identical(cluster_colname, "SpotQC")
       expect_null(init_colname)
       srt[[cluster_colname]] <- rep("domain1", ncol(srt))
@@ -2334,14 +2382,15 @@ test_that("unrequested stage names do not create metadata collisions", {
 
 test_that("SPOTlight dispatch satisfies the normalized storage contract", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSPOTlight = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunSPOTlight = function(object,
                             reference,
                             reference_label,
                             prefix,
                             tool_name,
                             store_results,
                             ...) {
+      srt <- object
       expect_s4_class(reference, "Seurat")
       expect_identical(reference_label, "label")
       expect_identical(prefix, "SPOTlight")
@@ -2376,8 +2425,9 @@ test_that("SPOTlight dispatch satisfies the normalized storage contract", {
 
 test_that("stale deconvolution metadata does not satisfy a quiet producer", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunRCTD = function(srt, prefix, store_results, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunRCTD = function(object, prefix, store_results, ...) {
+      srt <- object
       expect_false(store_results)
       expect_false(any(startsWith(
         colnames(srt@meta.data),
@@ -2423,12 +2473,13 @@ test_that("stale deconvolution metadata does not satisfy a quiet producer", {
 
 test_that("NULL deconvolution controls resolve to producer defaults", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunRCTD = function(srt,
+    RunStandardWorkflow = function(object, ...) object,
+    RunRCTD = function(object,
                        prefix = "RCTD",
                        tool_name = "RCTD",
                        store_results = TRUE,
                        ...) {
+      srt <- object
       expect_identical(prefix, "RCTD")
       expect_identical(tool_name, "RCTD")
       expect_true(store_results)
@@ -2466,8 +2517,9 @@ test_that("NULL deconvolution controls resolve to producer defaults", {
 
 test_that("partial postconditions retain stored metadata diagnostics", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunRCTD = function(srt, prefix, store_results, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunRCTD = function(object, prefix, store_results, ...) {
+      srt <- object
       expect_true(store_results)
       add_mock_deconv_outputs(srt, prefix = prefix)
     },
@@ -2499,8 +2551,9 @@ test_that("partial postconditions retain stored metadata diagnostics", {
 
 test_that("incomplete metadata remains visible when a tool was stored", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunRCTD = function(srt, prefix, tool_name, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunRCTD = function(object, prefix, tool_name, ...) {
+      srt <- object
       srt[[paste0(prefix, "_dominant_type")]] <- rep("typeA", ncol(srt))
       srt@tools[[tool_name]] <- list(proportions = matrix(0.5, ncol(srt), 1))
       srt
@@ -2532,8 +2585,9 @@ test_that("incomplete metadata remains visible when a tool was stored", {
 
 test_that("a stale BayesSpace init is removed when fresh init is absent", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunBayesSpace = function(srt, cluster_colname, init_colname, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunBayesSpace = function(object, cluster_colname, init_colname, ...) {
+      srt <- object
       expect_false(cluster_colname %in% colnames(srt@meta.data))
       expect_false(init_colname %in% colnames(srt@meta.data))
       expect_null(srt@tools[["BayesSpace"]])
@@ -2580,16 +2634,18 @@ test_that("a stale BayesSpace init is removed when fresh init is absent", {
 
 test_that("quality control and BayesSpace probes replace stale outputs", {
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpotQC = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpotQC = function(object, ...) {
+      srt <- object
       expect_false("SpotQC" %in% colnames(srt@meta.data))
       srt$SpotQC <- factor(rep("Pass", ncol(srt)), levels = c("Pass", "Fail"))
       srt
     },
-    RunBayesSpace = function(srt,
+    RunBayesSpace = function(object,
                              cluster_colname = "BayesSpace_cluster",
                              init_colname = "BayesSpace_init",
                              ...) {
+      srt <- object
       expect_false(cluster_colname %in% colnames(srt@meta.data))
       expect_false(init_colname %in% colnames(srt@meta.data))
       expect_null(srt@tools[["BayesSpace"]])

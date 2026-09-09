@@ -624,7 +624,7 @@ scoreplot_group_umap <- function(
     )
   }
   defaults <- list(
-    srt = plot_srt,
+    object = plot_srt,
     group.by = group_column,
     reduction = reduction,
     dims = dims,
@@ -733,7 +733,7 @@ scoreplot_umap <- function(
     )
   }
   defaults <- list(
-    srt = plot_srt,
+    object = plot_srt,
     group.by = group_column,
     reduction = reduction,
     dims = dims,

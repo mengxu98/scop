@@ -5947,7 +5947,8 @@ ccc_plot_methods_separately <- function(call, srt, env) {
     method_object <- srt
     method_object@tools[[method]] <- bundle
     next_call <- call
-    next_call$srt <- method_object
+    next_call$srt <- NULL
+    next_call$object <- method_object
     next_call$method <- method
     next_call$combine_methods <- "legacy"
     next_call$resource <- NULL

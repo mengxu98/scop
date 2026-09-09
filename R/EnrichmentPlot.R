@@ -1825,7 +1825,7 @@ EnrichmentHeatmap <- function(
   )
 
   base_args <- list(
-    srt = srt_tmp,
+    object = srt_tmp,
     matrix = NULL,
     matrix_group.by = matrix_group_name,
     features = rownames(scores),

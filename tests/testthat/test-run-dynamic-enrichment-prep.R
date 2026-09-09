@@ -21,11 +21,13 @@ test_that("RunDynamicEnrichment avoids unused raw matrices and layer retrieval",
   observed_features <- NULL
 
   testthat::local_mocked_bindings(
-    CellScoring = function(srt, name, ...) {
+    CellScoring = function(object, name, ...) {
+      srt <- object
       srt[[name]] <- SeuratObject::CreateAssayObject(counts = counts)
       srt
     },
-    RunDynamicFeatures = function(srt, features, ...) {
+    RunDynamicFeatures = function(object, features, ...) {
+      srt <- object
       observed_features <<- features
       srt
     },

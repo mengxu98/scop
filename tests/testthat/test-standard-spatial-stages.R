@@ -14,12 +14,14 @@ test_that("standard spatial workflow records completed and skipped stages truthf
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpotQC = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpotQC = function(object, ...) {
+      srt <- object
       srt$SpotQC <- "Pass"
       srt
     },
-    RunSpatialVariableFeatures = function(srt, set_variable_features, ...) {
+    RunSpatialVariableFeatures = function(object, set_variable_features, ...) {
+      srt <- object
       expect_false(set_variable_features)
       srt@tools$SpatialVariableFeatures <- list(result = data.frame(feature = rownames(srt)))
       srt
@@ -242,7 +244,8 @@ test_that("parameters for unrequested spatial stages are ignored", {
   preprocessing_calls <- 0L
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       preprocessing_calls <<- preprocessing_calls + 1L
       srt
     }
@@ -307,7 +310,8 @@ test_that("empty and NULL spatial prefixes normalize to the empty string", {
   nested_prefixes <- character()
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunStandardWorkflow = function(srt, prefix, ...) {
+    RunStandardWorkflow = function(object, prefix, ...) {
+      srt <- object
       nested_prefixes <<- c(nested_prefixes, prefix)
       srt
     }
@@ -340,8 +344,9 @@ test_that("duplicate SpotQC rules do not create a planning collision", {
   captured <- NULL
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunStandardWorkflow = function(srt, ...) srt,
-    RunSpotQC = function(srt, outlier_threshold, outlier_n, ...) {
+    RunStandardWorkflow = function(object, ...) object,
+    RunSpotQC = function(object, outlier_threshold, outlier_n, ...) {
+      srt <- object
       captured <<- list(
         outlier_threshold = outlier_threshold,
         outlier_n = outlier_n
@@ -428,7 +433,7 @@ test_that("effective SVF storage controls require logical scalars", {
   producer_called <- FALSE
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunStandardWorkflow = function(srt, ...) srt,
+    RunStandardWorkflow = function(object, ...) object,
     RunSpatialVariableFeatures = function(...) {
       producer_called <<- TRUE
       stop("SVF producer was reached")
@@ -479,7 +484,7 @@ test_that("standard spatial workflow exposes failed stage diagnostics on errors"
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunStandardWorkflow = function(srt, ...) srt,
+    RunStandardWorkflow = function(object, ...) object,
     RunSpatialVariableFeatures = function(...) stop("synthetic SVF failure")
   )
   condition <- tryCatch(
@@ -508,11 +513,13 @@ test_that("SpotQC planning collisions carry quality-control diagnostics", {
   producer_calls <- character()
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunSpotQC = function(srt, ...) {
+    RunSpotQC = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunSpotQC")
       srt
     },
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunStandardWorkflow")
       srt
     }
@@ -555,7 +562,8 @@ test_that("BayesSpace planning failures carry clustering stage diagnostics", {
   producer_calls <- character()
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunStandardWorkflow")
       srt
     },
@@ -637,7 +645,8 @@ test_that("BayesSpace q inference failures retain clustering stage diagnostics",
   bayesspace_called <- FALSE
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       preprocessing_called <<- TRUE
       srt
     },
@@ -688,7 +697,8 @@ test_that("standard spatial workflow marks deconvolution preflight failures", {
   producer_calls <- character()
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunStandardWorkflow")
       srt
     },
@@ -728,7 +738,7 @@ test_that("deconvolution runtime setup failures retain stage diagnostics", {
   backend_called <- FALSE
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunStandardWorkflow = function(srt, ...) srt,
+    RunStandardWorkflow = function(object, ...) object,
     RunRCTD = function(...) {
       backend_called <<- TRUE
       stop("deconvolution backend was reached")

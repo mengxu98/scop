@@ -45,7 +45,7 @@ test_that("RunLIANA keeps legacy positional arguments and accepts custom resourc
   expect_equal(
     names(formals(scop::RunLIANA))[1:9],
     c(
-      "srt", "group.by", "method", "resource", "assay", "min_cells",
+      "object", "group.by", "method", "resource", "assay", "min_cells",
       "return_all", "backend", "verbose"
     )
   )
@@ -579,7 +579,8 @@ test_that("RunCCC skip_failed records preflight failures and continues", {
   srt$celltype <- c("A", "B")
 
   testthat::local_mocked_bindings(
-    RunCellChat = function(srt, ...) {
+    RunCellChat = function(object, ...) {
+      srt <- object
       srt@tools$CellChat <- list(primary_table = data.frame(
         sender = "A", receiver = "B", ligand = "L1", receptor = "R1",
         score = 1, pvalue = 0.01, method = "CellChat"
@@ -615,7 +616,8 @@ test_that("RunCCC dispatches all four design-specific supported methods", {
 
   seen <- list()
   mock_srt_method <- function(method) {
-    function(srt, group.by, backend = "r", verbose = TRUE, ...) {
+    function(object, group.by, backend = "r", verbose = TRUE, ...) {
+      srt <- object
       seen[[method]] <<- list(group.by = group.by, backend = backend, args = list(...))
       long <- data.frame(
         sender = "A", receiver = "B", ligand = paste0("L_", method),
