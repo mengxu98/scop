@@ -5,7 +5,7 @@
 \title{Run CellphoneDB analysis}
 \usage{
 RunCellphoneDB(
-  srt,
+  object,
   group.by,
   species = c("Homo_sapiens", "Mus_musculus"),
   assay = NULL,
@@ -35,11 +35,12 @@ RunCellphoneDB(
   output_suffix = NULL,
   keep_output = FALSE,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
 
@@ -115,6 +116,9 @@ aggregation. Upstream CellphoneDB inference is unchanged.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object with results stored in \code{srt@tools[["CellphoneDB"]]}.

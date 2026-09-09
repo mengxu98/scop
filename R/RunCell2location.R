@@ -7,7 +7,9 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams scop-params
-#' @param srt Spatial `Seurat` object containing raw counts.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object Spatial `Seurat` object containing raw counts.
 #' @param result_dir Directory used to persist inputs, models, posterior results,
 #' tables, logs, and the run manifest.
 #' @param reference Optional single-cell `Seurat` reference. Required when
@@ -57,7 +59,7 @@
 #' @export
 #'
 RunCell2location <- function(
-  srt,
+  object,
   result_dir,
   reference = NULL,
   reference_label = "celltype",
@@ -73,41 +75,21 @@ RunCell2location <- function(
   min_cells = 5L,
   N_cells_per_location = 30,
   detection_alpha = 20,
-  gene_filter_params = list(
-    cell_count_cutoff = 5,
-    cell_percentage_cutoff2 = 0.03,
-    nonz_mean_cutoff = 1.12
-  ),
-  reference_train_params = list(
-    max_epochs = 250L,
-    batch_size = 2500L,
-    train_size = 1,
-    lr = 0.002,
-    accelerator = "auto",
-    device = "auto"
-  ),
-  spatial_train_params = list(
-    max_epochs = 30000L,
-    batch_size = NULL,
-    train_size = 1,
-    accelerator = "auto",
-    device = "auto"
-  ),
-  reference_posterior_params = list(
-    num_samples = 1000L,
-    batch_size = 2500L
-  ),
-  spatial_posterior_params = list(
-    batch_size = 2500L
-  ),
+  gene_filter_params = list(cell_count_cutoff = 5, cell_percentage_cutoff2 = 0.03, nonz_mean_cutoff = 1.12),
+  reference_train_params = list(max_epochs = 250L, batch_size = 2500L, train_size = 1, lr = 0.002, accelerator = "auto", device = "auto"),
+  spatial_train_params = list(max_epochs = 30000L, batch_size = NULL, train_size = 1, accelerator = "auto", device = "auto"),
+  reference_posterior_params = list(num_samples = 1000L, batch_size = 2500L),
+  spatial_posterior_params = list(batch_size = 2500L),
   envname = NULL,
   resume = TRUE,
   overwrite = FALSE,
   prefix = "Cell2location",
   tool_name = "Cell2location",
   store_results = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   validate_scalar_flag(resume, "resume")
   validate_scalar_flag(overwrite, "overwrite")
   validate_scalar_flag(store_results, "store_results")
@@ -395,7 +377,9 @@ RunCell2location <- function(
 #'
 #' @md
 #' @inheritParams SpatialSpotPlot
-#' @param srt A `Seurat` object returned by [RunCell2location()].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object returned by [RunCell2location()].
 #' @param plot_type Result to draw: normalized proportion, q05 absolute
 #' abundance, dominant cell type, or a spot-level proportion pie.
 #' @param cell_types Optional cell types to display for abundance, proportion,
@@ -413,7 +397,7 @@ RunCell2location <- function(
 #' @export
 #'
 Cell2locationPlot <- function(
-  srt,
+  object,
   plot_type = c("proportion", "abundance", "dominant", "pie"),
   cell_types = NULL,
   prefix = "Cell2location",
@@ -422,8 +406,10 @@ Cell2locationPlot <- function(
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
@@ -459,7 +445,7 @@ Cell2locationPlot <- function(
   }
 
   defaults <- list(
-    srt = srt,
+    object = srt,
     image = image,
     image.scale = image.scale,
     overlay_image = overlay_image,

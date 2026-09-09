@@ -56,7 +56,7 @@
 #'   plot_type = "comparison"
 #' )
 RunGSEA <- function(
-  srt = NULL,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   DE_threshold = "p_val_adj < 0.05",
@@ -87,8 +87,10 @@ RunGSEA <- function(
   simplify_similarityCutoff = 0.7,
   cores = 1,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Start {.pkg GSEA} analysis", verbose = verbose)
   species <- normalize_species_name(species)
 

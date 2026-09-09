@@ -50,7 +50,7 @@
 #' @return A Seurat object with results stored in `srt@tools[["CellphoneDB"]]`.
 #' @export
 RunCellphoneDB <- function(
-  srt,
+  object,
   group.by,
   species = c("Homo_sapiens", "Mus_musculus"),
   assay = NULL,
@@ -80,8 +80,10 @@ RunCellphoneDB <- function(
   output_suffix = NULL,
   keep_output = FALSE,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   PrepareEnv(modules = "cellphonedb")
   check_python(c("cellphonedb==5.0.1", "scanpy"), verbose = verbose)

@@ -5,7 +5,7 @@
 \title{Plots for GSVA (Gene Set Variation Analysis)}
 \usage{
 GSVAPlot(
-  srt = NULL,
+  object = NULL,
   res = NULL,
   group.by = NULL,
   sample.by = NULL,
@@ -89,11 +89,12 @@ GSVAPlot(
   border = TRUE,
   nlabel = 0,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing the results of RunGSVA.
+\item{object}{A Seurat object containing the results of RunGSVA.
 If specified, GSVA results will be extracted from the \code{Seurat} object automatically.
 If not specified, the \code{res} argument must be provided.}
 
@@ -262,6 +263,9 @@ a plot.}
 \item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Plots for GSVA (Gene Set Variation Analysis)
@@ -299,14 +303,14 @@ ht <- GSVAPlot(
 ht$plot
 
 GSVAPlot(
-  srt = pancreas_sub,
+  object = pancreas_sub,
   group.by = "CellType",
   plot_type = "comparison",
   topTerm = 1
 )
 
 GSVAPlot(
-  srt = pancreas_sub,
+  object = pancreas_sub,
   group.by = "CellType",
   plot_type = "bar",
   topTerm = 2

@@ -378,7 +378,8 @@ test_that("RunCCC dispatches methods, forwards backend, and rebuilds unified CCC
 
   seen <- list()
   mock_method <- function(method_name, score) {
-    function(srt, group.by, backend = c("cpp", "r"), verbose = TRUE, ...) {
+    function(object, group.by, backend = c("cpp", "r"), verbose = TRUE, ...) {
+      srt <- object
       backend <- match.arg(backend)
       seen[[method_name]] <<- list(
         group.by = group.by,
@@ -443,7 +444,7 @@ test_that("RunCCC dispatches methods, forwards backend, and rebuilds unified CCC
   )
 
   out <- scop::RunCCC(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     methods = c("CellChat", "CellphoneDB", "LIANA"),
     method_params = list(CellChat = list(thresh = 0.2)),
@@ -482,7 +483,8 @@ test_that("RunCCC with r backend dispatches correctly", {
   srt$celltype <- c("TypeA", "TypeA")
 
   seen_backend <- character(0)
-  mock_simple <- function(srt, group.by, backend = c("cpp", "r"), verbose = TRUE, ...) {
+  mock_simple <- function(object, group.by, backend = c("cpp", "r"), verbose = TRUE, ...) {
+    srt <- object
     backend <- match.arg(backend)
     seen_backend <<- c(seen_backend, backend)
     long_table <- data.frame(
@@ -512,7 +514,7 @@ test_that("RunCCC with r backend dispatches correctly", {
   )
 
   out <- scop::RunCCC(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     methods = "CellphoneDB",
     backend = "r",
@@ -567,7 +569,7 @@ test_that("RunNichenetr aggregate_cluster_de maps receivers to upstream argument
   )
 
   out <- scop::RunNichenetr(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     receiver = "Receiver",
     sender = "Sender",
@@ -634,7 +636,7 @@ test_that("RunNichenetr aggregate_cluster_de keeps distinct receiver fields", {
   )
 
   out <- scop::RunNichenetr(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     receiver = "ReceiverA",
     receiver_affected = "ReceiverA",
@@ -768,7 +770,7 @@ test_that("RunMultiNichenetr preserves user contrast table semantics", {
 
   out <- suppressWarnings(
     scop::RunMultiNichenetr(
-      srt = srt,
+      object = srt,
       group.by = "celltype",
       sample.by = "sample",
       condition.by = "condition",
@@ -820,7 +822,7 @@ test_that("RunMultiNichenetr rejects unreplicated contrasts before inference", {
 
   expect_error(
     scop::RunMultiNichenetr(
-      srt = srt,
+      object = srt,
       group.by = "celltype",
       sample.by = "sample",
       condition.by = "condition",
@@ -856,7 +858,7 @@ test_that("RunMultiNichenetr rejects missing sample identifiers", {
   )
   expect_error(
     scop::RunMultiNichenetr(
-      srt = srt, group.by = "celltype", sample.by = "sample",
+      object = srt, group.by = "celltype", sample.by = "sample",
       condition.by = "condition", condition_oi = "A",
       condition_reference = "B", receiver_celltypes = "receiver",
       verbose = FALSE

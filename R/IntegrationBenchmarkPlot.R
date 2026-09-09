@@ -10,7 +10,9 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
-#' @param srt A `Seurat` object from [RunIntegrationBenchmark()]. `"box"` can
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object from [RunIntegrationBenchmark()]. `"box"` can
 #'   also plot any metadata columns ending in `"_LISI"`.
 #' @param plot_type Plot type, or `"auto"` for a named list of all views.
 #' @param tool_name `srt@tools` entry created by [RunIntegrationBenchmark()].
@@ -72,7 +74,7 @@
 #' IntegrationBenchmarkPlot(srt, plot_type = "heatmap")
 #' IntegrationBenchmarkPlot(srt, plot_type = "scatter")
 IntegrationBenchmarkPlot <- function(
-  srt,
+  object,
   plot_type = c("auto", "box", "heatmap", "scatter", "umap"),
   tool_name = "IntegrationBenchmark",
   metrics = NULL,
@@ -87,8 +89,10 @@ IntegrationBenchmarkPlot <- function(
   nrow = NULL,
   ncol = NULL,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

@@ -3,7 +3,9 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams scop-params
-#' @param srt A `Seurat` object or `SummarizedExperiment` object containing the
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object or `SummarizedExperiment` object containing the
 #' results of differential expression analysis.
 #' @param res A `data.frame` or `data.table` with differential expression results.
 #' When `res` is provided, `srt` will be ignored.
@@ -185,7 +187,7 @@
 #'   ncol = 2
 #' )
 DEtestPlot <- function(
-  srt,
+  object,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -242,8 +244,10 @@ DEtestPlot <- function(
   enrich_padj_cutoff = 0.05,
   enrich_gsva_score_cutoff = NULL,
   gsva_method = NULL,
-  enrich_nlabel = 15
+  enrich_nlabel = 15,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   DE_threshold_missing <- missing(DE_threshold)
   y_metric_missing <- missing(y_metric)
   plot_type <- match.arg(plot_type)
@@ -276,7 +280,7 @@ DEtestPlot <- function(
     }
     return(
       VolcanoPlot(
-        srt = srt,
+        object = srt,
         group.by = group.by,
         test.use = test.use,
         res = res,
@@ -336,7 +340,7 @@ DEtestPlot <- function(
   if (plot_type == "manhattan") {
     return(
       DEtestManhattanPlot(
-        srt = srt,
+        object = srt,
         group.by = group.by,
         test.use = test.use,
         res = res,
@@ -377,7 +381,7 @@ DEtestPlot <- function(
   if (plot_type == "ring") {
     return(
       DEtestRingPlot(
-        srt = srt,
+        object = srt,
         group.by = group.by,
         test.use = test.use,
         res = res,
@@ -1035,7 +1039,7 @@ collect_volcano_enrichment_annotations <- function(
 #'   group.by = "CellType"
 #' )
 DEtestManhattanPlot <- function(
-  srt,
+  object,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -1070,8 +1074,10 @@ DEtestManhattanPlot <- function(
   aspect.ratio = NULL,
   xlab = NULL,
   ylab = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   label.by <- match.arg(label.by)
   if (is.null(group.by)) {
     group.by <- "custom"
@@ -1302,7 +1308,7 @@ DEtestManhattanPlot <- function(
 #'   group.by = "CellType"
 #' )
 DEtestRingPlot <- function(
-  srt,
+  object,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -1332,8 +1338,10 @@ DEtestRingPlot <- function(
   tile_gap = 0.1,
   jitter_width = 0.5,
   ring_segments = TRUE,
-  seed = 11
+  seed = 11,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   label.by <- match.arg(label.by)
   check_r("geomtextpath", verbose = FALSE)
   if (is.null(group.by)) {
@@ -1570,7 +1578,7 @@ DEtestRingPlot <- function(
 #'   ncol = 2
 #' )
 VolcanoPlot <- function(
-  srt,
+  object,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -1615,8 +1623,10 @@ VolcanoPlot <- function(
   enrich_gsva_score_cutoff = NULL,
   gsva_method = NULL,
   enrich_nlabel = 15,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   DE_threshold_missing <- missing(DE_threshold)
   threshold_method <- match.arg(threshold_method)
   label.by <- match.arg(label.by)

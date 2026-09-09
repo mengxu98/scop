@@ -79,7 +79,7 @@
 #'   pseudotime_interval = c(0, 0.9)
 #' )
 RunPalantir <- function(
-  srt = NULL,
+  object = NULL,
   assay_x = "RNA",
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
@@ -122,8 +122,10 @@ RunPalantir <- function(
   backend = c("python", "cpp"),
   allow_approximate = FALSE,
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   plot_format <- match.arg(plot_format)
 
@@ -324,7 +326,7 @@ RunPalantir <- function(
     }
 
     args[["adata"]] <- srt_to_adata(
-      srt = srt,
+      object = srt,
       assay_x = assay_x,
       layer_x = layer_x,
       assay_y = assay_y,

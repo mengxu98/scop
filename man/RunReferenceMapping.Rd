@@ -5,7 +5,7 @@
 \title{Map query cells into a reference space}
 \usage{
 RunReferenceMapping(
-  srt,
+  object,
   reference,
   assay = NULL,
   prefix = "ATAC",
@@ -39,11 +39,12 @@ RunReferenceMapping(
   scomm_batch_size = 32,
   scomm_threshold = 0.5,
   scomm_seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reference}{RNA reference \code{Seurat} object used for mapping.}
 
@@ -100,6 +101,9 @@ otherwise.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A query \code{Seurat} object mapped into the RNA reference space.
@@ -129,7 +133,7 @@ query <- RunStandardWorkflow(
   verbose = FALSE
 )
 query <- RunReferenceMapping(
-  srt = query,
+  object = query,
   reference = reference,
   assay = "peaks",
   reference_assay = "RNA",

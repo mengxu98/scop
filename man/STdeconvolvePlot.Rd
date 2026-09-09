@@ -5,7 +5,7 @@
 \title{Plot STdeconvolve topic proportions}
 \usage{
 STdeconvolvePlot(
-  srt,
+  object,
   tool_name = "STdeconvolve",
   topics = NULL,
   prefix = NULL,
@@ -15,11 +15,12 @@ STdeconvolvePlot(
   ncol = NULL,
   byrow = TRUE,
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{tool_name}{Result key written to \code{srt@tools} by
 \code{RunSTdeconvolve()}.}
@@ -45,6 +46,9 @@ plots is returned.}
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

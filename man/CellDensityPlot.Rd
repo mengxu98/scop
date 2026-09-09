@@ -5,7 +5,7 @@
 \title{Cell density plot}
 \usage{
 CellDensityPlot(
-  srt,
+  object,
   features,
   group.by = NULL,
   split.by = NULL,
@@ -35,11 +35,12 @@ CellDensityPlot(
   ncol = NULL,
   byrow = TRUE,
   force = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{features}{Features to plot.}
 
@@ -85,6 +86,9 @@ returns a list of ggplots.}
 \item{force}{Draw even when there are more than 50 features.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Feature density by group.

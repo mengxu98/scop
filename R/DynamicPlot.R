@@ -99,7 +99,7 @@
 #'   compare_features = FALSE
 #' )
 DynamicPlot <- function(
-  srt,
+  object,
   lineages,
   features,
   group.by = NULL,
@@ -108,13 +108,7 @@ DynamicPlot <- function(
   layer = "counts",
   assay = NULL,
   family = NULL,
-  exp_method = c(
-    "log1p",
-    "raw",
-    "zscore",
-    "fc",
-    "log2fc"
-  ),
+  exp_method = c("log1p", "raw", "zscore", "fc", "log2fc"),
   lib_normalize = identical(layer, "counts"),
   libsize = NULL,
   compare_lineages = TRUE,
@@ -144,8 +138,10 @@ DynamicPlot <- function(
   cores = 1,
   verbose = TRUE,
   seed = 11,
-  fit.by = NULL
+  fit.by = NULL,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
 
   check_r("MatrixGenerics", verbose = FALSE)

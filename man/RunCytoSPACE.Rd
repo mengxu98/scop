@@ -5,7 +5,7 @@
 \title{Run CytoSPACE spatial assignment}
 \usage{
 RunCytoSPACE(
-  srt,
+  object,
   reference,
   reference_label,
   assay = NULL,
@@ -26,11 +26,12 @@ RunCytoSPACE(
   coord.cols = c("col", "row"),
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
-  max_dense_gib = 8
+  max_dense_gib = 8,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reference}{Reference \code{Seurat} object containing annotated single cells.}
 
@@ -90,6 +91,9 @@ the reference implementation. Spot assignment uses C++ in both cases.}
 
 \item{max_dense_gib}{Maximum estimated GiB allowed for dense expression
 working matrices.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with CytoSPACE metadata columns and detailed
@@ -116,7 +120,7 @@ features_use <- head(intersect(
   rownames(spatial)
 ), 300)
 spatial <- RunCytoSPACE(
-  srt = spatial,
+  object = spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",

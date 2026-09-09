@@ -18,7 +18,7 @@
 #'
 #' @export
 RunscCODA <- function(
-  srt,
+  object,
   group.by,
   split.by,
   sample.by,
@@ -30,8 +30,10 @@ RunscCODA <- function(
   envname = "sccoda_env",
   conda = "auto",
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (
     !is.logical(reuse_reverse_comparisons) ||
       length(reuse_reverse_comparisons) != 1L ||

@@ -5,7 +5,7 @@
 \title{Proportion Test}
 \usage{
 RunProportionTest(
-  srt,
+  object,
   group.by,
   split.by = NULL,
   comparison = NULL,
@@ -18,11 +18,12 @@ RunProportionTest(
   include_all_cells = FALSE,
   seed = 11,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
 
@@ -66,6 +67,9 @@ for permutation mode.}
 Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to the selected method function.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 \link{RunProportionTest} performs differential abundance testing for cell proportions.

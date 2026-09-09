@@ -5,17 +5,18 @@
 \title{Doublet calling}
 \usage{
 RunDoubletCalling(
-  srt,
+  object,
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   db_method = "scDblFinder",
   data_type = NULL,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay used for doublet calling.}
 
@@ -30,6 +31,9 @@ rescanning the count matrix.}
 \item{...}{Passed to the selected doublet method.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with doublet class and score columns in \code{meta.data}.

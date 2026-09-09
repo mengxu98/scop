@@ -4853,7 +4853,7 @@ ccc_dim_network_plot <- function(
     CellDimPlot,
     c(
       list(
-        srt = srt,
+        object = srt,
         group.by = group.by,
         reduction = reduction,
         dims = dims,
@@ -5098,7 +5098,7 @@ ccc_dim_network_lineage_layer <- function(
   whiskers_alpha = 0.5
 ) {
   lineages_layers <- LineagePlot(
-    srt = srt,
+    object = srt,
     lineages = lineages,
     reduction = reduction,
     dims = dims,
@@ -5947,7 +5947,8 @@ ccc_plot_methods_separately <- function(call, srt, env) {
     method_object <- srt
     method_object@tools[[method]] <- bundle
     next_call <- call
-    next_call$srt <- method_object
+    next_call$srt <- NULL
+    next_call$object <- method_object
     next_call$method <- method
     next_call$combine_methods <- "legacy"
     next_call$resource <- NULL

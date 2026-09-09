@@ -86,7 +86,7 @@ test_that("approximate public backends require explicit opt-in", {
 
   expect_error(
     RunCellRank(
-      srt = srt,
+      object = srt,
       backend = "cpp",
       show_plot = FALSE,
       verbose = FALSE
@@ -95,7 +95,7 @@ test_that("approximate public backends require explicit opt-in", {
   )
   expect_error(
     RunPalantir(
-      srt = srt,
+      object = srt,
       backend = "cpp",
       linear_reduction = "pca",
       early_cell = colnames(srt)[[1L]],
@@ -104,7 +104,7 @@ test_that("approximate public backends require explicit opt-in", {
     "allow_approximate = TRUE"
   )
   expect_error(
-    RunSCENICPlus(srt = srt, backend = "cpp", verbose = FALSE),
+    RunSCENICPlus(object = srt, backend = "cpp", verbose = FALSE),
     "allow_approximate = TRUE"
   )
 })
@@ -113,7 +113,7 @@ test_that("Palantir C++ supports dm_n_eigs", {
   skip_if_not_installed("BiocNeighbors")
   srt <- make_cpp_backend_safety_object()
   out <- RunPalantir(
-    srt = srt,
+    object = srt,
     backend = "cpp",
     allow_approximate = TRUE,
     linear_reduction = "pca",
@@ -203,7 +203,7 @@ test_that("CellRank blocks an unsafe dense cell-by-cell allocation", {
   srt <- make_cpp_backend_safety_object(n_cells = 30L)
   expect_error(
     RunCellRank(
-      srt = srt,
+      object = srt,
       backend = "cpp",
       allow_approximate = TRUE,
       kernel_type = "cytotrace",
@@ -219,7 +219,7 @@ test_that("scVelo blocks dense expression work before matrix coercion", {
   srt <- make_cpp_backend_safety_object()
   expect_error(
     RunSCVELO(
-      srt = srt,
+      object = srt,
       assay_y = c("spliced", "unspliced"),
       linear_reduction = "pca",
       nonlinear_reduction = "umap",
@@ -285,7 +285,7 @@ test_that("PAGA public C++ path records its limited implementation scope", {
 
   srt <- make_cpp_backend_safety_object()
   out <- RunPAGA(
-    srt = srt,
+    object = srt,
     group.by = "group",
     linear_reduction = "pca",
     nonlinear_reduction = "umap",
@@ -303,7 +303,7 @@ test_that("PAGA public C++ path records its limited implementation scope", {
 test_that("scVelo public C++ path records memory and result semantics", {
   srt <- make_cpp_backend_safety_object()
   out <- RunSCVELO(
-    srt = srt,
+    object = srt,
     assay_y = c("spliced", "unspliced"),
     linear_reduction = "pca",
     nonlinear_reduction = "umap",
@@ -330,7 +330,7 @@ test_that("scVelo public C++ path records memory and result semantics", {
 test_that("scVelo C++ honors disabled per-cell normalization", {
   srt <- make_cpp_backend_safety_object()
   out <- RunSCVELO(
-    srt = srt,
+    object = srt,
     assay_y = c("spliced", "unspliced"),
     linear_reduction = "pca",
     nonlinear_reduction = "umap",
@@ -355,7 +355,7 @@ test_that("CellRank public C++ path records approximation and memory scope", {
 
   srt <- make_cpp_backend_safety_object()
   out <- RunCellRank(
-    srt = srt,
+    object = srt,
     group.by = "group",
     linear_reduction = "pca",
     nonlinear_reduction = "umap",
@@ -384,7 +384,7 @@ test_that("CellRank C++ pseudotime path preserves direction before connectivity 
   srt <- make_cpp_backend_safety_object()
   srt$dpt_pseudotime <- seq(0, 1, length.out = ncol(srt))
   out <- RunCellRank(
-    srt = srt,
+    object = srt,
     group.by = "group",
     linear_reduction = "pca",
     nonlinear_reduction = "umap",
@@ -409,7 +409,7 @@ test_that("CellRank C++ honors a custom pseudotime key and computes drivers", {
   srt <- make_cpp_backend_safety_object()
   srt$custom_time <- seq(0, 1, length.out = ncol(srt))
   out <- RunCellRank(
-    srt = srt,
+    object = srt,
     group.by = "group",
     linear_reduction = "pca",
     nonlinear_reduction = "umap",

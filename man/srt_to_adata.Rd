@@ -5,7 +5,7 @@
 \title{Convert a Seurat object to an AnnData object}
 \usage{
 srt_to_adata(
-  srt,
+  object,
   features = NULL,
   assay_x = "RNA",
   layer_x = "counts",
@@ -17,11 +17,12 @@ srt_to_adata(
   convert_tools = FALSE,
   convert_misc = FALSE,
   prepare_env = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{features}{Optional vector of features to include in the anndata object.
 Default is all features in \code{assay_x}.}
@@ -55,6 +56,9 @@ environment should pass \code{FALSE} to keep one reticulate binding.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{anndata} object.

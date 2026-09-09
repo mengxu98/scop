@@ -73,7 +73,7 @@ prepare_adata_feature_metadata <- function(metadata,
 #' )
 #' }
 srt_to_adata <- function(
-  srt,
+  object,
   features = NULL,
   assay_x = "RNA",
   layer_x = "counts",
@@ -85,8 +85,10 @@ srt_to_adata <- function(
   convert_tools = FALSE,
   convert_misc = FALSE,
   prepare_env = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (isTRUE(prepare_env) && !isTRUE(getOption("scop_skip_python_prepare", FALSE))) {
     old_log_verbose <- getOption("log_message.verbose", TRUE)
     if (!isTRUE(verbose)) {
@@ -383,7 +385,7 @@ get_adata_sparse_assay_layer <- function(
 #' srt_to_h5ad(pancreas_sub, "pancreas_sub.h5ad")
 #' }
 srt_to_h5ad <- function(
-  srt,
+  object,
   path,
   features = NULL,
   assay_x = "RNA",
@@ -396,8 +398,10 @@ srt_to_h5ad <- function(
   convert_tools = FALSE,
   convert_misc = FALSE,
   overwrite = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   old_log_verbose <- getOption("log_message.verbose", TRUE)
   if (!isTRUE(verbose)) {
     options(log_message.verbose = FALSE)
@@ -421,7 +425,7 @@ srt_to_h5ad <- function(
   )
 
   adata <- srt_to_adata(
-    srt = srt,
+    object = srt,
     features = features,
     assay_x = assay_x,
     layer_x = layer_x,

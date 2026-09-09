@@ -184,30 +184,12 @@
 #'   measure = "count"
 #' )
 CCCNetworkPlot <- function(
-  srt,
+  object,
   method = NULL,
   condition = NULL,
   dataset = 1,
   comparison = c(1, 2),
-  plot_type = c(
-    "circle",
-    "circle_focused",
-    "chord",
-    "lr_chord",
-    "gene_chord",
-    "pathway",
-    "individual_lr",
-    "individual",
-    "individual_outgoing",
-    "individual_incoming",
-    "arrow",
-    "sigmoid",
-    "bipartite",
-    "embedding_network",
-    "diff_network",
-    "spatial",
-    "diffusion"
-  ),
+  plot_type = c("circle", "circle_focused", "chord", "lr_chord", "gene_chord", "pathway", "individual_lr", "individual", "individual_outgoing", "individual_incoming", "arrow", "sigmoid", "bipartite", "embedding_network", "diff_network", "spatial", "diffusion"),
   display_by = c("aggregation", "interaction"),
   sender.use = NULL,
   receiver.use = NULL,
@@ -230,17 +212,7 @@ CCCNetworkPlot <- function(
   reg_palette = "Set1",
   reg_palcolor = NULL,
   expr.by = NULL,
-  layout = c(
-    "circle",
-    "hierarchy",
-    "chord",
-    "kk",
-    "fr",
-    "nicely",
-    "lgl",
-    "mds",
-    "graphopt"
-  ),
+  layout = c("circle", "hierarchy", "chord", "kk", "fr", "nicely", "lgl", "mds", "graphopt"),
   link_curvature = 0.2,
   link_alpha = 0.6,
   edge_value = c("sum", "mean", "max", "count"),
@@ -278,8 +250,10 @@ CCCNetworkPlot <- function(
   spot_alpha = 0.35,
   composition_display = c("pie", "dominant", "none"),
   composition_radius = NULL,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

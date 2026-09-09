@@ -70,7 +70,7 @@
 #'   height = 2
 #' )
 RunMetabolism <- function(
-  srt,
+  object,
   assay = NULL,
   group.by = NULL,
   layer = "counts",
@@ -82,8 +82,8 @@ RunMetabolism <- function(
   convert_species = TRUE,
   Ensembl_version = NULL,
   mirror = NULL,
-  biomart = NULL, # deprecated, kept for compat
-  max_tries = 5, # deprecated, kept for compat
+  biomart = NULL,
+  max_tries = 5,
   use_preparedb = TRUE,
   method = c("AUCell", "GSVA", "ssGSEA", "VISION"),
   backend = c("cpp", "r"),
@@ -94,8 +94,10 @@ RunMetabolism <- function(
   assay_name = "METABOLISM",
   new_assay = TRUE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message(
     "Start {.pkg metabolism pathway} scoring",
     verbose = verbose

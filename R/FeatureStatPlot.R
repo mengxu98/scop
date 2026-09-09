@@ -327,7 +327,7 @@
 #'   y.max = 4
 #' )
 FeatureStatPlot <- function(
-  srt,
+  object,
   stat.by,
   group.by = NULL,
   split.by = NULL,
@@ -412,8 +412,10 @@ FeatureStatPlot <- function(
   seed = 11,
   ...,
   x_text_angle = 45,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (is.null(group.by)) {
     group.by <- "All.groups"
     xlab <- "All groups"

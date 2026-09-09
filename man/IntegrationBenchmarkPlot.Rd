@@ -5,7 +5,7 @@
 \title{Plot integration benchmark results}
 \usage{
 IntegrationBenchmarkPlot(
-  srt,
+  object,
   plot_type = c("auto", "box", "heatmap", "scatter", "umap"),
   tool_name = "IntegrationBenchmark",
   metrics = NULL,
@@ -20,11 +20,12 @@ IntegrationBenchmarkPlot(
   nrow = NULL,
   ncol = NULL,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object from \code{\link[=RunIntegrationBenchmark]{RunIntegrationBenchmark()}}. \code{"box"} can
+\item{object}{A \code{Seurat} object from \code{\link[=RunIntegrationBenchmark]{RunIntegrationBenchmark()}}. \code{"box"} can
 also plot any metadata columns ending in \code{"_LISI"}.}
 
 \item{plot_type}{Plot type, or \code{"auto"} for a named list of all views.}
@@ -47,6 +48,9 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 Default is \code{TRUE}.}
 
 \item{...}{The message to print.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A ggplot, patchwork, or a named list of plots when

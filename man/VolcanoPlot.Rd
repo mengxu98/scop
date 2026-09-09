@@ -5,7 +5,7 @@
 \title{Volcano Plot}
 \usage{
 VolcanoPlot(
-  srt,
+  object,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -50,11 +50,12 @@ VolcanoPlot(
   enrich_gsva_score_cutoff = NULL,
   gsva_method = NULL,
   enrich_nlabel = 15,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
+\item{object}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
 results of differential expression analysis.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
@@ -160,6 +161,9 @@ Labels from \code{features_label} are always retained.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Generate a volcano plot based on differential expression analysis results.

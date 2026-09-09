@@ -6,7 +6,9 @@
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @inheritParams thisutils::log_message
 #' @param new_assay Name of the assay used to store SpaNorm-normalized data.
 #' @param tool_name Name used to store detailed SpaNorm results in `srt@tools`.
@@ -52,7 +54,7 @@
 #' )
 #' }
 RunSpaNorm <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   image = NULL,
@@ -63,8 +65,10 @@ RunSpaNorm <- function(
   store_spe = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   coordinate_space <- match.arg(coordinate_space)
   log_message(
     "Running SpaNorm spatial normalization",

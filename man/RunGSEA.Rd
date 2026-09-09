@@ -5,7 +5,7 @@
 \title{Perform the enrichment analysis (GSEA) on the genes}
 \usage{
 RunGSEA(
-  srt = NULL,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   DE_threshold = "p_val_adj < 0.05",
@@ -36,11 +36,12 @@ RunGSEA(
   simplify_similarityCutoff = 0.7,
   cores = 1,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
+\item{object}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
 results of differential expression analysis (\code{\link[=RunDEtest]{RunDEtest()}}).
 If specified, the genes and groups will be extracted from the object automatically.
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
@@ -133,6 +134,9 @@ Default is \code{1}.}
 Default is \code{TRUE}.}
 
 \item{...}{Passed to helper functions.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.

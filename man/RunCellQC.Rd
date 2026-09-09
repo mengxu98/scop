@@ -5,7 +5,7 @@
 \title{Cell-level quality control}
 \usage{
 RunCellQC(
-  srt,
+  object,
   assay = "RNA",
   split.by = NULL,
   group.by = NULL,
@@ -46,11 +46,12 @@ RunCellQC(
   hb_range = c(0, 5),
   hb_pattern = c("HB[^P]", "Hb[^p]", "hb[^p]"),
   hb_gene = NULL,
-  qc_features = list()
+  qc_features = list(),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay used for doublet calling.}
 
@@ -111,6 +112,9 @@ percentage. \code{ribo_gene} overrides \code{ribo_pattern}.}
 \item{qc_features}{Named list of extra feature-percentage rules. Each rule needs
 exactly one of \code{features} or \code{pattern}, plus a length-2 \code{range}. Computes
 \verb{percent.<name>}; filtering/\verb{<name>_qc} only when \verb{<name>} is in \code{qc_metrics}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with QC results in \code{meta.data}.

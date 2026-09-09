@@ -20,15 +20,17 @@
 #'   layer = "data"
 #' )
 srt_reorder <- function(
-  srt,
+  object,
   features = NULL,
   reorder_by = NULL,
   layer = "data",
   assay = NULL,
   log = TRUE,
   distance_metric = "euclidean",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (is.null(features)) {
     srt <- FindVariableFeatures(

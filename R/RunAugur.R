@@ -66,7 +66,7 @@
 #'   bg_cutoff = -Inf
 #' )
 RunAugur <- function(
-  srt,
+  object,
   celltype.by,
   label.by,
   assay = NULL,
@@ -83,22 +83,16 @@ RunAugur <- function(
   select_var = TRUE,
   augur_mode = c("default", "velocity", "permute"),
   classifier = c("rf", "lr"),
-  rf_params = list(
-    trees = 100,
-    mtry = 2,
-    min_n = NULL,
-    importance = "accuracy"
-  ),
-  lr_params = list(
-    mixture = 1,
-    penalty = "auto"
-  ),
+  rf_params = list(trees = 100, mtry = 2, min_n = NULL, importance = "accuracy"),
+  lr_params = list(mixture = 1, penalty = "auto"),
   prefix = "augur",
   tool_name = "Augur",
   add_meta = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

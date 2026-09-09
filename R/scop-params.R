@@ -3,7 +3,9 @@
 #' @title Shared parameters
 #'
 #' @md
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param assay Assay to use. `NULL` uses the default assay.
 #' @param layer Assay layer to use.
 #' @param verbose Print progress messages.

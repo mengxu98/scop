@@ -5,16 +5,17 @@
 \title{Run doublet-calling with Scrublet}
 \usage{
 RunScrublet(
-  srt,
+  object,
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   data_type = NULL,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay used for doublet calling.}
 
@@ -26,6 +27,9 @@ rescanning the count matrix.}
 \item{...}{Additional arguments to be passed to \href{https://github.com/swolock/scrublet}{scrublet.Scrublet}.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Run doublet-calling with Scrublet

@@ -43,7 +43,7 @@
 #' )
 #' plots$Boxplot
 CytoTRACEPlot <- function(
-  srt,
+  object,
   reduction = NULL,
   group.by = NULL,
   combine = TRUE,
@@ -57,8 +57,10 @@ CytoTRACEPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat}",

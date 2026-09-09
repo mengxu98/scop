@@ -5,7 +5,7 @@
 \title{Run MultiNicheNet analysis}
 \usage{
 RunMultiNichenetr(
-  srt,
+  object,
   group.by,
   sample.by,
   condition.by,
@@ -26,11 +26,12 @@ RunMultiNichenetr(
   empirical_pval = TRUE,
   top_n_interactions = 250,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column defining cell types.}
 
@@ -79,6 +80,9 @@ MultiNicheNet inference is unchanged.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object with standardized MultiNicheNet results stored in

@@ -5,7 +5,7 @@
 \title{Run transcription factor activity inference}
 \usage{
 RunDorothea(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   species = c("Homo_sapiens", "Mus_musculus"),
@@ -21,11 +21,12 @@ RunDorothea(
   assay_name = "dorothea",
   new_assay = TRUE,
   add_meta = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -76,6 +77,9 @@ with the \code{assay_name} prefix for direct plotting with \code{\link[=FeatureD
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with TF activity results stored in

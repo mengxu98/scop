@@ -71,7 +71,7 @@
 #' )
 #' }
 PalantirTrajectoryPlot <- function(
-  srt,
+  object,
   reduction = NULL,
   dims = c(1, 2),
   cells = NULL,
@@ -97,10 +97,7 @@ PalantirTrajectoryPlot <- function(
   trajectory_linewidth = 1.2,
   trajectory_bg = "black",
   trajectory_bg_stroke = 0.7,
-  trajectory_arrow = grid::arrow(
-    length = grid::unit(0.12, "inches"),
-    type = "closed"
-  ),
+  trajectory_arrow = grid::arrow(length = grid::unit(0.12, "inches"), type = "closed"),
   aspect.ratio = 1,
   title = "Palantir",
   subtitle = NULL,
@@ -112,8 +109,10 @@ PalantirTrajectoryPlot <- function(
   theme_args = list(),
   return_layer = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   trajectory_method <- match.arg(trajectory_method)
 

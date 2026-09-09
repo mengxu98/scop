@@ -5,7 +5,7 @@
 \title{Prioritize perturbed cell types using Augur}
 \usage{
 RunAugur(
-  srt,
+  object,
   celltype.by,
   label.by,
   assay = NULL,
@@ -28,11 +28,12 @@ RunAugur(
   tool_name = "Augur",
   add_meta = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{celltype.by}{Metadata column or vector defining the cell types used by
 Augur.}
@@ -68,6 +69,9 @@ columns back to each cell by matching \code{celltype.by}.}
 Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to \code{Augur::calculate_auc}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with native Augur results stored in

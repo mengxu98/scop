@@ -114,7 +114,7 @@
 #'   arrow_color = "red"
 #' )
 VelocityPlot <- function(
-  srt,
+  object,
   reduction,
   dims = c(1, 2),
   cells = NULL,
@@ -153,8 +153,10 @@ VelocityPlot <- function(
   theme_args = list(),
   return_layer = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
 
   plot_type <- match.arg(plot_type)

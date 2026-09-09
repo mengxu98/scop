@@ -5,7 +5,7 @@
 \title{Co-embed reference and query cells}
 \usage{
 RunCoEmbedding(
-  srt,
+  object,
   reference,
   assay = NULL,
   reference_assay = NULL,
@@ -22,11 +22,12 @@ RunCoEmbedding(
   umap_dims = 1:30,
   k.weight = 100,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reference}{RNA reference \code{Seurat} object used for label transfer.}
 
@@ -66,6 +67,9 @@ If \code{NULL}, reference variable features are used.}
 Default is \code{TRUE}.}
 
 \item{seed}{Random seed used for UMAP.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A merged \code{Seurat} object containing RNA reference and ATAC query cells.
@@ -86,7 +90,7 @@ pbmcmultiome_sub <- RunStandardWorkflow(
   verbose = FALSE
 )
 coembed <- RunCoEmbedding(
-  srt = pbmcmultiome_sub,
+  object = pbmcmultiome_sub,
   reference = pbmcmultiome_sub,
   assay = "peaks",
   reference_assay = "RNA",

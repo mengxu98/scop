@@ -4,7 +4,9 @@
 #' Run over-representation analysis for each stored CellRank trend module and
 #' keep complete tables and an execution manifest in the Seurat object.
 #'
-#' @param srt A Seurat object returned by [RunCellRankTrends].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object returned by [RunCellRankTrends].
 #' @param lineage CellRank lineage whose trend modules should be enriched.
 #' @param db Annotation databases accepted by [PrepareDB].
 #' @param species Species passed to [PrepareDB].
@@ -25,7 +27,7 @@
 #' `srt@tools$CellRank$enrichment[[lineage]]`.
 #' @export
 RunCellRankEnrichment <- function(
-  srt,
+  object,
   lineage,
   db = c("MSigDB_C2", "GO_BP", "GO_CC", "GO_MF", "MSigDB_H"),
   species = "Mus_musculus",
@@ -38,8 +40,10 @@ RunCellRankEnrichment <- function(
   show_category = 8L,
   output_dir = NULL,
   continue_on_error = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a Seurat object", message_type = "error")
   }

@@ -5,7 +5,7 @@
 \title{Plot scPagwas Scores}
 \usage{
 PlotscPagwas(
-  srt,
+  object,
   reduction = c("umap", "tsne"),
   features = NULL,
   p_threshold = 0.05,
@@ -17,11 +17,12 @@ PlotscPagwas(
   palcolor = NULL,
   significance_palette = "Chinese",
   significance_palcolor = NULL,
-  do_plot = TRUE
+  do_plot = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object returned by \code{\link[=RunscPagwas]{RunscPagwas()}}.}
+\item{object}{A Seurat object returned by \code{\link[=RunscPagwas]{RunscPagwas()}}.}
 
 \item{reduction}{Reduction used for plotting, either \code{"umap"} or \code{"tsne"}.}
 
@@ -44,6 +45,9 @@ to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}}.}
 significance groups, passed to \code{\link[=CellDimPlot]{CellDimPlot()}}.}
 
 \item{do_plot}{Whether to print each plot.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A named list of ggplot objects.

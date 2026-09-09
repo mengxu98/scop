@@ -5,7 +5,7 @@
 \title{Run CellRank analysis}
 \usage{
 RunCellRank(
-  srt = NULL,
+  object = NULL,
   assay_x = "RNA",
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
@@ -68,11 +68,12 @@ RunCellRank(
   conda = "auto",
   recompute_neighbors = TRUE,
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.
+\item{object}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
 \item{assay_x}{Assay to convert as the main data matrix in the anndata object.}
@@ -228,6 +229,9 @@ match the current AnnData cell order.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 Returns a Seurat object if \code{return_seurat = TRUE} or an anndata object with CellRank results stored in \code{obsm}, \code{obs}, and \code{varm} slots.
@@ -241,7 +245,7 @@ CellRank is a toolkit for studying cellular dynamics using Markov state modeling
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunCellRank(
-  srt = pancreas_sub,
+  object = pancreas_sub,
   group.by = "SubCellType"
 )
 

@@ -11,7 +11,9 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunIntegration
-#' @param srt A `Seurat` object containing a batch column.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object containing a batch column.
 #' @param batch Metadata column used as the technical batch.
 #' @param celltype Optional metadata column used as biological labels.
 #' @param methods Integration methods passed to [RunIntegration()].
@@ -57,7 +59,7 @@
 #' IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 #' }
 RunIntegrationBenchmark <- function(
-  srt,
+  object,
   batch,
   celltype = NULL,
   methods = c("Uncorrected", "Harmony"),
@@ -73,8 +75,10 @@ RunIntegrationBenchmark <- function(
   skip_failed = TRUE,
   tool_name = "IntegrationBenchmark",
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

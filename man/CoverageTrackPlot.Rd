@@ -5,7 +5,7 @@
 \title{Coverage track plot for ATAC data}
 \usage{
 CoverageTrackPlot(
-  srt,
+  object,
   region,
   assay = NULL,
   group.by = NULL,
@@ -21,11 +21,12 @@ CoverageTrackPlot(
   ranges.group.by = NULL,
   region.highlight = NULL,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{region}{Genomic region passed to \code{Signac::CoveragePlot}.}
 
@@ -50,6 +51,9 @@ CoverageTrackPlot(
 \item{verbose}{Whether to print progress messages.}
 
 \item{...}{Additional parameters passed to \code{Signac::CoveragePlot}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A coverage plot object.

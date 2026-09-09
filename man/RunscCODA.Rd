@@ -5,7 +5,7 @@
 \title{scCODA differential abundance}
 \usage{
 RunscCODA(
-  srt,
+  object,
   group.by,
   split.by,
   sample.by,
@@ -17,11 +17,12 @@ RunscCODA(
   envname = "sccoda_env",
   conda = "auto",
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
 
@@ -62,6 +63,9 @@ from the default Python environment.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A method result bundle used internally by \link{RunProportionTest}.

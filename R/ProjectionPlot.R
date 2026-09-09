@@ -90,7 +90,7 @@ ProjectionPlot <- function(
   p1 <- do.call(
     CellDimPlot,
     args = c(
-      srt = srt_ref,
+      object = srt_ref,
       reduction = ref_reduction,
       group.by = ref_group,
       ref_param
@@ -109,7 +109,7 @@ ProjectionPlot <- function(
   p2 <- do.call(
     CellDimPlot,
     args = c(
-      srt = srt_query,
+      object = srt_query,
       reduction = query_reduction,
       group.by = query_group,
       query_param

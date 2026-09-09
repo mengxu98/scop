@@ -83,7 +83,8 @@ test_that("SpatialDM stores spatial association semantics without fake edges", {
 
 test_that("SpatialDM method does not require group.by in RunCCC", {
   srt <- make_spatialdm_test_object()
-  mock_runner <- function(srt, verbose = TRUE, ...) {
+  mock_runner <- function(object, verbose = TRUE, ...) {
+    srt <- object
     srt@tools$SpatialDM <- list(
       method = "SpatialDM", results = list(default = list()),
       active_result = "default", result = list(),

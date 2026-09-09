@@ -5,7 +5,7 @@
 \title{Run scPagwas}
 \usage{
 RunscPagwas(
-  srt = NULL,
+  object = NULL,
   single_data = NULL,
   gwas_data,
   group.by = NULL,
@@ -17,11 +17,12 @@ RunscPagwas(
   cleanup_soar = TRUE,
   return_seurat = !is.null(srt) || inherits(single_data, "Seurat"),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{Optional Seurat object used as single-cell input.}
+\item{object}{Optional Seurat object used as single-cell input.}
 
 \item{single_data}{Optional Seurat object or path to a Seurat \code{.rds} file.}
 
@@ -52,6 +53,9 @@ Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to the upstream \code{scPagwas} function
 after filtering by its formal arguments.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object or upstream result list.

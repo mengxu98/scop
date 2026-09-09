@@ -5,17 +5,18 @@
 \title{Run doublet-calling with scds}
 \usage{
 Runscds(
-  srt,
+  object,
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   method = c("hybrid", "cxds", "bcds"),
   data_type = NULL,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay used for doublet calling.}
 
@@ -30,6 +31,9 @@ rescanning the count matrix.}
 \item{...}{Additional arguments passed to the selected \code{scds} method.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Run doublet-calling with scds

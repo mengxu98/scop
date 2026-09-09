@@ -14,7 +14,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object containing raw spliced and unspliced counts.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object containing raw spliced and unspliced counts.
 #' @param result_dir Empty directory, or a directory owned by an earlier
 #' `RunCell2fate()` run, used to persist inputs, model files, posterior output,
 #' per-attempt logs, and the run manifest.
@@ -89,7 +91,7 @@
 #' CellDimPlot(pancreas_sub, group.by = "Cell2fate_module_0_state")
 #' }
 RunCell2fate <- function(
-  srt,
+  object,
   result_dir,
   spliced_assay = "spliced",
   unspliced_assay = "unspliced",
@@ -103,19 +105,8 @@ RunCell2fate <- function(
   n_var_genes = 2000L,
   n_modules = NULL,
   model_params = list(),
-  train_params = list(
-    max_epochs = 500L,
-    batch_size = 1000L,
-    train_size = 1,
-    lr = 0.01,
-    accelerator = "auto"
-  ),
-  posterior_params = list(
-    num_samples = 30L,
-    batch_size = NULL,
-    use_gpu = FALSE,
-    return_samples = FALSE
-  ),
+  train_params = list(max_epochs = 500L, batch_size = 1000L, train_size = 1, lr = 0.01, accelerator = "auto"),
+  posterior_params = list(num_samples = 30L, batch_size = NULL, use_gpu = FALSE, return_samples = FALSE),
   seed = 1L,
   envname = NULL,
   resume = TRUE,
@@ -123,8 +114,10 @@ RunCell2fate <- function(
   prefix = "Cell2fate",
   tool_name = "Cell2fate",
   store_velocity = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   validate_scalar_flag(resume, "resume")
   validate_scalar_flag(overwrite, "overwrite")
   validate_scalar_flag(store_velocity, "store_velocity")

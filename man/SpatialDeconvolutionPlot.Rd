@@ -5,7 +5,7 @@
 \title{Plot stored spatial deconvolution proportions}
 \usage{
 SpatialDeconvolutionPlot(
-  srt,
+  object,
   tool_name = NULL,
   cell_types = NULL,
   plot_type = c("point", "dominant", "pie"),
@@ -14,11 +14,12 @@ SpatialDeconvolutionPlot(
   ncol = NULL,
   byrow = TRUE,
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A spatial \code{Seurat} object containing a stored deconvolution result.}
+\item{object}{A spatial \code{Seurat} object containing a stored deconvolution result.}
 
 \item{tool_name}{Explicit non-empty key in \code{srt@tools}. Results are never
 discovered implicitly.}
@@ -37,6 +38,9 @@ map derived from the stored proportions, or one spot-level pie map.}
 \item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}.}
 
 \item{image.scale}{Image scale factor matching the selected raster.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or named list of \code{ggplot} objects.

@@ -5,7 +5,7 @@
 \title{Run BayesSpace spatial clustering}
 \usage{
 RunBayesSpace(
-  srt,
+  object,
   q,
   assay = NULL,
   platform = c("Visium", "VisiumHD", "ST"),
@@ -22,11 +22,12 @@ RunBayesSpace(
   init_colname = "BayesSpace_init",
   store_sce = TRUE,
   verbose = TRUE,
-  coord.cols = c("col", "row")
+  coord.cols = c("col", "row"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{q}{Number of BayesSpace clusters.}
 
@@ -67,6 +68,9 @@ Default is \code{TRUE}.}
 
 \item{coord.cols}{Two metadata columns containing raw x/y coordinates when
 no spatial image is available.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with BayesSpace clusters in metadata and raw

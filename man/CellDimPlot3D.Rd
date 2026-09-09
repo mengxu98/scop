@@ -5,7 +5,7 @@
 \title{3D-Dimensional reduction plot for cell classification visualization.}
 \usage{
 CellDimPlot3D(
-  srt,
+  object,
   group.by,
   plot_type = c("scatter", "density_surface"),
   reduction = NULL,
@@ -41,11 +41,12 @@ CellDimPlot3D(
   height = NULL,
   save = NULL,
   force = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
 
@@ -112,6 +113,9 @@ show axes, colorbar, and title for \code{plot_type = "density_surface"}.}
 \item{force}{Draw even when a grouping has more than 100 levels.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Color cells in 3D reduction space, or draw an interactive density surface.

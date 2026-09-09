@@ -53,7 +53,7 @@
 #'   features = "Tricycle_tricyclePosition"
 #' )
 RunCellCycle <- function(
-  srt,
+  object,
   method = c("Seurat", "cyclone", "tricycle"),
   assay = NULL,
   layer = "counts",
@@ -62,8 +62,10 @@ RunCellCycle <- function(
   phase_col = NULL,
   overwrite = FALSE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message(
     "Start cell cycle scoring",
     verbose = verbose

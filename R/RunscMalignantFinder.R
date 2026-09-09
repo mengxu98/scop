@@ -8,7 +8,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object.
 #' @param adata Optional Python AnnData object.
 #' @param h5ad Optional path to an `.h5ad` file.
 #' @param assay Assay used when `srt` is supplied. Default is `"RNA"`.
@@ -55,7 +57,7 @@
 #' )
 #' CellDimPlot(pancreas_sub, group.by = "malignancy_probability")
 RunscMalignantFinder <- function(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -70,8 +72,10 @@ RunscMalignantFinder <- function(
   n_thread = 1,
   prefix = "",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   model_method <- match.arg(model_method)
   scmf_check_one_input(srt = srt, adata = adata, h5ad = h5ad)
   norm_type <- scmf_resolve_norm_type(norm_type, srt = srt, layer = layer)
@@ -117,7 +121,7 @@ RunscMalignantFinder <- function(
     }
     adata <- if (isTRUE(use_raw)) {
       srt_to_adata(
-        srt = srt_input,
+        object = srt_input,
         assay_x = assay,
         layer_x = layer,
         assay_y = character(0),
@@ -234,7 +238,7 @@ RunscMalignantFinder <- function(
 #'   spatial.cols = c("x", "y")
 #' )
 RunscMalignantRegion <- function(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -252,8 +256,10 @@ RunscMalignantRegion <- function(
   prefix = "scMalignantFinder_",
   return_seurat = !is.null(srt),
   verbose = TRUE,
-  backend = c("cpp", "python")
+  backend = c("cpp", "python"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend_missing <- missing(backend)
   scmf_check_one_input(srt = srt, adata = adata, h5ad = h5ad)
   backend <- match.arg(backend)
@@ -350,7 +356,7 @@ RunscMalignantRegion <- function(
     scmf_prepare_python(verbose = verbose)
     if (!is.null(srt)) {
       adata <- srt_to_adata(
-        srt = srt_input,
+        object = srt_input,
         assay_x = assay,
         layer_x = layer,
         assay_y = character(0),
@@ -447,7 +453,7 @@ RunscMalignantRegion <- function(
 #'   gene_sets = "path/to/Malignant_MPs.Gavish_2023.gmt"
 #' )
 RunscMalignantStates <- function(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -458,8 +464,10 @@ RunscMalignantStates <- function(
   prefix = "scMalignantState_",
   return_seurat = !is.null(srt),
   verbose = TRUE,
-  backend = c("cpp", "python")
+  backend = c("cpp", "python"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend_missing <- missing(backend)
   scmf_check_one_input(srt = srt, adata = adata, h5ad = h5ad)
   backend <- match.arg(backend)
@@ -533,7 +541,7 @@ RunscMalignantStates <- function(
         subset(srt, cells = cells)
       }
       adata <- srt_to_adata(
-        srt = srt_input,
+        object = srt_input,
         assay_x = assay,
         layer_x = layer,
         assay_y = character(0),

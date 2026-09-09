@@ -5,7 +5,7 @@
 \title{Plot spatial domain clustering benchmarks}
 \usage{
 SpatialBenchmarkPlot(
-  srt = NULL,
+  object = NULL,
   data = NULL,
   features = NULL,
   metrics = NULL,
@@ -30,11 +30,12 @@ SpatialBenchmarkPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{data}{Optional \code{spatial_benchmark_result} / \code{benchmark_result} object
 or summary \code{data.frame} containing at least \code{metric} and \code{value}, and
@@ -91,6 +92,9 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 Default is \code{TRUE}.}
 
 \item{...}{The message to print.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A ggplot, patchwork plot, or \code{funkyheatmap} object depending on the selected

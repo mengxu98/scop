@@ -5,7 +5,7 @@
 \title{Benchmark single-cell integration methods}
 \usage{
 RunIntegrationBenchmark(
-  srt,
+  object,
   batch,
   celltype = NULL,
   methods = c("Uncorrected", "Harmony"),
@@ -21,11 +21,12 @@ RunIntegrationBenchmark(
   skip_failed = TRUE,
   tool_name = "IntegrationBenchmark",
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object containing a batch column.}
+\item{object}{A \code{Seurat} object containing a batch column.}
 
 \item{batch}{Metadata column used as the technical batch.}
 
@@ -48,6 +49,9 @@ Defaults follow scIB (\code{0.6} bio conservation, \code{0.4} batch correction).
 Default is \code{TRUE}.}
 
 \item{...}{The message to print.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 The input \code{Seurat} object with integration reductions, per-cell

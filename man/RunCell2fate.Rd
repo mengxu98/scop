@@ -5,7 +5,7 @@
 \title{Run Cell2fate RNA velocity analysis}
 \usage{
 RunCell2fate(
-  srt,
+  object,
   result_dir,
   spliced_assay = "spliced",
   unspliced_assay = "unspliced",
@@ -30,11 +30,12 @@ RunCell2fate(
   prefix = "Cell2fate",
   tool_name = "Cell2fate",
   store_velocity = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object containing raw spliced and unspliced counts.}
+\item{object}{A \code{Seurat} object containing raw spliced and unspliced counts.}
 
 \item{result_dir}{Empty directory, or a directory owned by an earlier
 \code{RunCell2fate()} run, used to persist inputs, model files, posterior output,
@@ -97,6 +98,9 @@ velocity layer, is always retained on disk.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with Cell2fate time, uncertainty, module activation,

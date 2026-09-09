@@ -43,7 +43,7 @@
 #'   whiskers = TRUE
 #' )
 LineagePlot <- function(
-  srt,
+  object,
   lineages,
   reduction = NULL,
   dims = c(1, 2),
@@ -70,8 +70,10 @@ LineagePlot <- function(
   theme_args = list(),
   return_layer = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
 
   if (is.null(reduction)) {

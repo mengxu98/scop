@@ -23,7 +23,7 @@
 #' )
 #' }
 RunATACQC <- function(
-  srt,
+  object,
   assay = NULL,
   tss.positions = NULL,
   blacklist = NULL,
@@ -32,8 +32,10 @@ RunATACQC <- function(
   min_TSS_enrichment = NULL,
   max_nucleosome_signal = NULL,
   max_blacklist_ratio = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a {.cls Seurat}",

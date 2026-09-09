@@ -7,7 +7,9 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams scop-params
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param group.by Metadata column containing spatial cell or spot labels.
 #' @param method Neighborhood calculation. `NULL` preserves compatibility by
 #' choosing `"observed"` when `split.by` is absent and `"spicyR"` when it is
@@ -63,7 +65,7 @@
 #'   coord.cols = c("x", "y")
 #' )
 RunSpatialNeighborhood <- function(
-  srt,
+  object,
   group.by,
   method = NULL,
   assay = NULL,
@@ -83,8 +85,10 @@ RunSpatialNeighborhood <- function(
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   aggregation_backend <- backend
   method <- if (is.null(method)) {
@@ -268,7 +272,7 @@ RunSpatialNeighborhood <- function(
 #' @export
 #'
 SpatialNeighborhoodPlot <- function(
-  srt,
+  object,
   method = NULL,
   plot_type = c("heatmap", "network", "stat", "spatial"),
   comparison = NULL,
@@ -300,8 +304,10 @@ SpatialNeighborhoodPlot <- function(
   seed = 11,
   verbose = TRUE,
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

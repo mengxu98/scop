@@ -4,7 +4,9 @@
 #' Convert one Seurat spatial image into a native Giotto object without running
 #' a Giotto workflow or changing the input object.
 #'
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param image Seurat image name. Multi-image objects require an explicit name.
 #' @param ... Additional arguments passed to the Giotto converter.
 #'
@@ -29,7 +31,13 @@
 #' }
 #'
 #' @export
-srt_to_giotto <- function(srt, image = NULL, ...) {
+srt_to_giotto <- function(
+  object,
+  image = NULL,
+  ...,
+  srt = NULL
+) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   image <- {
     .img_resolved <- spatial_image_resolve(srt = srt, image = image, image_policy = "strict")
     .img_resolved$image

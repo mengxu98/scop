@@ -123,7 +123,9 @@ RunSpatialIntegration <- function(
 #'
 #' @md
 #' @inheritParams SpatialSpotPlot
-#' @param srt A `Seurat` object containing spatial integration results.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object containing spatial integration results.
 #' @param method Stored integration method. If `NULL`, the active method stored
 #' in `srt@tools[[tool_name]]` is used.
 #' @param plot_type Plot type: `"spatial"`, `"embedding"`, `"alignment"`, or
@@ -149,7 +151,7 @@ RunSpatialIntegration <- function(
 #' @export
 #'
 SpatialIntegrationPlot <- function(
-  srt,
+  object,
   method = NULL,
   plot_type = c("spatial", "embedding", "alignment", "composition"),
   group.by = NULL,
@@ -165,8 +167,10 @@ SpatialIntegrationPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -231,7 +235,7 @@ SpatialIntegrationPlot <- function(
       CellDimPlot,
       c(
         list(
-          srt = srt,
+          object = srt,
           group.by = group.by,
           reduction = reduction,
           split.by = sample.by,
