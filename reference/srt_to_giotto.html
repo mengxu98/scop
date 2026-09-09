@@ -92,6 +92,13 @@ a Giotto workflow or changing the input object.</p>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A native Giotto object.</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Converters live in GiottoClass. If that package is already installed from
+any source, the bridge reuses it and does not reinstall <code>drieslab/Giotto</code>.
+A GitHub reinstall is requested only when GiottoClass is missing. Conversion
+does not initialize Giotto's optional Python/conda environment.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -102,13 +109,8 @@ a Giotto workflow or changing the input object.</p>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/check_r.html" class="external-link">check_r</a></span><span class="op">(</span><span class="st">"drieslab/Giotto"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  use.names <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">giotto</span> <span class="op">&lt;-</span> <span class="fu">srt_to_giotto</span><span class="op">(</span><span class="va">spatial</span>, image <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">giotto</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">giotto</span> <span class="op">&lt;-</span> <span class="fu">srt_to_giotto</span><span class="op">(</span><span class="va">spatial</span>, image <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">giotto</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
