@@ -34,7 +34,8 @@ test_that("public spatial workflow forwards cores to its helper", {
 test_that("spatial helper forwards cores to nested single-cell preprocessing", {
   captured <- new.env(parent = emptyenv())
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       captured$args <- list(...)
       srt
     },

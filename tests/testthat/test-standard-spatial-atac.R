@@ -41,15 +41,17 @@ test_that("ATAC defaults are applied before spatial output planning", {
   srt <- make_standard_spatial_atac_object()
   captured <- new.env(parent = emptyenv())
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       captured$nested <- list(...)
       add_standard_spatial_atac_reduction(srt, "ATACsvd")
     },
-    RunBayesSpace = function(srt,
+    RunBayesSpace = function(object,
                              cluster_colname,
                              init_colname,
                              use_reduction = NULL,
                              ...) {
+      srt <- object
       captured$bayes <- list(
         cluster_colname = cluster_colname,
         init_colname = init_colname,
@@ -105,11 +107,13 @@ test_that("ATAC preprocessing cluster targets reject BayesSpace collisions", {
   caller_before <- srt
   producer_calls <- character()
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunStandardWorkflow")
       srt
     },
-    RunBayesSpace = function(srt, ...) {
+    RunBayesSpace = function(object, ...) {
+      srt <- object
       producer_calls <<- c(producer_calls, "RunBayesSpace")
       srt
     },
@@ -148,15 +152,17 @@ test_that("custom ATAC workflow values retain atac_defaults semantics", {
   srt <- make_standard_spatial_atac_object()
   captured <- new.env(parent = emptyenv())
   testthat::local_mocked_bindings(
-    RunStandardWorkflow = function(srt, ...) {
+    RunStandardWorkflow = function(object, ...) {
+      srt <- object
       captured$nested <- list(...)
       add_standard_spatial_atac_reduction(srt, "Customsvd")
     },
-    RunBayesSpace = function(srt,
+    RunBayesSpace = function(object,
                              cluster_colname,
                              init_colname,
                              use_reduction = NULL,
                              ...) {
+      srt <- object
       captured$bayes_use_reduction <- use_reduction
       srt[[cluster_colname]] <- rep("domain1", ncol(srt))
       srt@tools[["BayesSpace"]] <- list(result = "fresh")

@@ -378,7 +378,8 @@ test_that("RunCCC dispatches methods, forwards backend, and rebuilds unified CCC
 
   seen <- list()
   mock_method <- function(method_name, score) {
-    function(srt, group.by, backend = c("cpp", "r"), verbose = TRUE, ...) {
+    function(object, group.by, backend = c("cpp", "r"), verbose = TRUE, ...) {
+      srt <- object
       backend <- match.arg(backend)
       seen[[method_name]] <<- list(
         group.by = group.by,
@@ -482,7 +483,8 @@ test_that("RunCCC with r backend dispatches correctly", {
   srt$celltype <- c("TypeA", "TypeA")
 
   seen_backend <- character(0)
-  mock_simple <- function(srt, group.by, backend = c("cpp", "r"), verbose = TRUE, ...) {
+  mock_simple <- function(object, group.by, backend = c("cpp", "r"), verbose = TRUE, ...) {
+    srt <- object
     backend <- match.arg(backend)
     seen_backend <<- c(seen_backend, backend)
     long_table <- data.frame(

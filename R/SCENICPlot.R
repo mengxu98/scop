@@ -1438,7 +1438,7 @@ scenic_plot_activity_dim <- function(
         error = function(...) character()
       )
       region_args <- act_args
-      region_args$srt <- srt_region
+      region_args$object <- srt_region
       region_args$features <- scenic_assay_feature(regulon, region_features)
       region_args$assay <- region_assay
       region_args$title <- paste(regulon, "region AUC")
