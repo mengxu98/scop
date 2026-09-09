@@ -201,11 +201,9 @@ make_live_giotto_seurat <- function() {
     assay = "Spatial",
     key = "slice1_",
     image = array(0.5, dim = c(8L, 8L, 3L)),
-    scale.factors = SeuratObject::scalefactors(
-      spot = 1,
-      fiducial = 1,
-      hires = 1,
-      lowres = 1
+    scale.factors = structure(
+      list(spot = 1, fiducial = 1, hires = 1, lowres = 1),
+      class = "scalefactors"
     ),
     coordinates = data.frame(
       tissue = 1L,
