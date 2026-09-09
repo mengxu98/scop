@@ -374,18 +374,12 @@ spatalk_pathway_table <- function(object, lr_table) {
 #'
 #' @examples
 #' \dontrun{
-#' available <- unname(unlist(thisutils::check_r(
-#'   c("linxihui/NNLM", "ZJUFanLab/SpaTalk"),
-#'   verbose = FALSE
-#' )))
-#' if (length(available) == 2L && all(available)) {
-#'   spatial <- RunSpaTalk(
-#'     spatial,
-#'     group.by = "celltype",
-#'     mode = "single_cell",
-#'     image = "slice1"
-#'   )
-#' }
+#' spatial <- RunSpaTalk(
+#'   spatial,
+#'   group.by = "celltype",
+#'   mode = "single_cell",
+#'   image = "slice1"
+#' )
 #' }
 RunSpaTalk <- function(
   srt,

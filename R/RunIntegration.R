@@ -1240,11 +1240,13 @@ graph_conn_edges_from_index <- function(
 }
 
 graph_conn_edges_r <- function(embeddings, k) {
-  if (requireNamespace("BiocNeighbors", quietly = TRUE)) {
-    knn <- BiocNeighbors::findKNN(
+  if (isTRUE(all(unlist(check_r("BiocNeighbors", install = FALSE, verbose = FALSE), use.names = FALSE)))) {
+    find_knn <- get_namespace_fun("BiocNeighbors", "findKNN")
+    kmknn_param <- get_namespace_fun("BiocNeighbors", "KmknnParam")
+    knn <- find_knn(
       embeddings,
       k = k,
-      BNPARAM = BiocNeighbors::KmknnParam(distance = "Euclidean"),
+      BNPARAM = kmknn_param(distance = "Euclidean"),
       num.threads = 1L
     )
     return(graph_conn_edges_from_index(

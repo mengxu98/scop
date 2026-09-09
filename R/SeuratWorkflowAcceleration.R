@@ -329,7 +329,7 @@ SelectIntegrationFeatures <- function(
       !is.numeric(nfeatures) || length(nfeatures) != 1L ||
       !is.finite(nfeatures) || nfeatures < 1 ||
       nfeatures != as.integer(nfeatures) ||
-      !requireNamespace("matrixStats", quietly = TRUE)
+      !isTRUE(all(unlist(check_r("matrixStats", install = FALSE, verbose = FALSE), use.names = FALSE)))
   ) {
     return(fallback())
   }
@@ -388,7 +388,10 @@ SelectIntegrationFeatures <- function(
     integer(length(candidates))
   )
   ranks <- matrix(ranks, nrow = length(candidates), ncol = length(vf.list))
-  median.rank <- matrixStats::rowMedians(ranks, na.rm = TRUE)
+  median.rank <- get_namespace_fun("matrixStats", "rowMedians")(
+    ranks,
+    na.rm = TRUE
+  )
   if (length(above)) {
     above <- above[order(median.rank[seq_along(above)])]
   }

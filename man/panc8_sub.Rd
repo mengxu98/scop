@@ -21,7 +21,6 @@ For each data set in \code{panc8}, 200 cells were downsampled to form the \code{
 \examples{
 if (interactive()) {
   data(pancreas_sub)
-  thisutils::check_r("satijalab/seurat-data")
 
   InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
   InstallData("panc8")

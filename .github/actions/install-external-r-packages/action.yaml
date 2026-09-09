@@ -86,7 +86,9 @@ runs:
           fixed = TRUE
         )[[1]])
         packages <- packages[nzchar(packages)]
-        if (!requireNamespace("renv", quietly = TRUE)) {
+        # thisutils is not available in this isolated install step.
+        # find.package(..., quiet = TRUE) returns character(0) when missing.
+        if (length(find.package("renv", quiet = TRUE)) == 0L) {
           utils::install.packages("renv", quiet = TRUE)
         }
         install_project <- file.path(

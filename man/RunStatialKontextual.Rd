@@ -92,7 +92,6 @@ parent context using Statial Kontextual.
 }
 \examples{
 \dontrun{
-check_r("sydney-informatics-hub/Statial", verbose = FALSE)
 data(visium_human_pancreas_sub)
 # Compare tissue-labelled spots at two radii (full-resolution image pixels).
 spatial <- RunStatialKontextual(

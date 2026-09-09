@@ -81,7 +81,6 @@ NULL
 #' @examples
 #' if (interactive()) {
 #'   data(pancreas_sub)
-#'   thisutils::check_r("satijalab/seurat-data")
 #'
 #'   InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
 #'   InstallData("panc8")
@@ -142,7 +141,6 @@ NULL
 #'
 #' @examples
 #' if (interactive()) {
-#'   thisutils::check_r("satijalab/seurat-data")
 #'   InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
 #'   InstallData("pbmcMultiome")
 #'   data(pbmcMultiome)
@@ -378,7 +376,6 @@ NULL
 #' \href{https://github.com/ggjlab/scMCA}{scMCA}
 #' @examples
 #' if (interactive()) {
-#'   thisutils::check_r(c("ggjlab/scMCA"))
 #'   ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
 #'   Encoding(colnames(ref_scMCA)) <- "latin1"
 #'   colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")
