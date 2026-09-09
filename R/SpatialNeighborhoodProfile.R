@@ -5,7 +5,7 @@
 #' no cell-cell edge table is stored. This is an observed composition summary,
 #' not a colocalization test, an optimal-radius selector, or a communication model.
 #'
-#' @param object A Seurat object. The object is not modified.
+#' @param srt A Seurat object. The object is not modified.
 #' @param group.by Metadata column containing nonmissing cell or spot labels.
 #' @param radii Positive, strictly increasing distances in raw coordinate units.
 #'   These are not necessarily micrometers. For spot-based assays, counts refer
@@ -33,56 +33,83 @@
 #' @examples
 #' # Constructed coordinates and labels, not a biological example.
 #' counts <- matrix(1L, 2, 4, dimnames = list(c("g1", "g2"), letters[1:4]))
-#' object <- SeuratObject::CreateSeuratObject(counts)
-#' object$col <- c(0, 1, 3, 5)
-#' object$row <- c(0, 0, 0, 0)
-#' object$celltype <- c("T", "M", "M", "T")
+#' srt <- SeuratObject::CreateSeuratObject(counts)
+#' srt$col <- c(0, 1, 3, 5)
+#' srt$row <- c(0, 0, 0, 0)
+#' srt$celltype <- c("T", "M", "M", "T")
 #' profile <- SpatialNeighborhoodProfile(
-#'   object, "celltype", radii = c(1, 3), cells = "a", verbose = FALSE
+#'   srt, "celltype", radii = c(1, 3), cells = "a", verbose = FALSE
 #' )
 #' profile
 SpatialNeighborhoodProfile <- function(
-  object, group.by, radii, cells = NULL, sample.by = NULL, image = NULL,
+  srt, group.by, radii, cells = NULL, sample.by = NULL, image = NULL,
   coord.cols = c("col", "row"), cumulative = FALSE, verbose = TRUE
 ) {
-  if (!inherits(object, "Seurat")) stop("object must be a Seurat object", call. = FALSE)
+  if (!inherits(srt, "Seurat")) {
+    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
+  }
   validate_scalar_string(group.by, "group.by")
   if (!is.null(sample.by)) validate_scalar_string(sample.by, "sample.by")
   if (!is.numeric(radii) || !length(radii) || any(!is.finite(radii)) ||
       any(radii <= 0) || any(diff(radii) <= 0)) {
-    stop("radii must be positive, finite and strictly increasing", call. = FALSE)
+    log_message(
+      "{.arg radii} must be positive, finite and strictly increasing",
+      message_type = "error"
+    )
   }
   if (!is.logical(cumulative) || length(cumulative) != 1L || is.na(cumulative)) {
-    stop("cumulative must be one nonmissing logical value", call. = FALSE)
+    log_message(
+      "{.arg cumulative} must be one nonmissing logical value",
+      message_type = "error"
+    )
   }
   verbose <- thisutils::get_verbose(verbose)
-  meta <- object[[]]
+  meta <- srt[[]]
   if (!all(c(group.by, sample.by) %in% names(meta))) {
-    stop("group.by and sample.by must identify metadata columns", call. = FALSE)
+    log_message(
+      "{.arg group.by} and {.arg sample.by} must identify metadata columns",
+      message_type = "error"
+    )
   }
-  resolved <- SpatialCoordinates(object, image = image, coord.cols = coord.cols, space = "raw")
+  resolved <- SpatialCoordinates(srt, image = image, coord.cols = coord.cols, space = "raw")
   co <- resolved$data
   idx <- match(co$cell_id, rownames(meta))
   if (!nrow(co) || anyNA(idx) || anyNA(co$cell_id) || any(!nzchar(co$cell_id)) ||
-      anyDuplicated(co$cell_id)) stop("invalid context cell IDs", call. = FALSE)
+      anyDuplicated(co$cell_id)) {
+    log_message("invalid context cell IDs", message_type = "error")
+  }
   labels <- as.character(meta[[group.by]][idx])
   samples <- if (is.null(sample.by)) rep("all", nrow(co)) else as.character(meta[[sample.by]][idx])
   if (anyNA(labels) || anyNA(samples) || any(!nzchar(labels)) || any(!nzchar(samples))) {
-    stop("context labels and sample IDs must be nonmissing and nonempty", call. = FALSE)
+    log_message(
+      "context labels and sample IDs must be nonmissing and nonempty",
+      message_type = "error"
+    )
   }
   if (is.null(cells)) cells <- co$cell_id
   if (!is.character(cells) || anyNA(cells) || anyDuplicated(cells) ||
-      !all(cells %in% co$cell_id)) stop("cells must be unique IDs in the resolved context", call. = FALSE)
+      !all(cells %in% co$cell_id)) {
+    log_message(
+      "{.arg cells} must be unique IDs in the resolved context",
+      message_type = "error"
+    )
+  }
   xy <- as.matrix(co[, c("x", "y")])
   if (any(!is.finite(xy)) || min(radii) < sqrt(.Machine$double.xmin) ||
       max(radii) > sqrt(.Machine$double.xmax) / 4 ||
       max(abs(xy)) > sqrt(.Machine$double.xmax) / 4 || max(abs(xy)) / max(radii) > 1e12) {
-    stop("unsupported coordinate/radius magnitude; recenter or rescale", call. = FALSE)
+    log_message(
+      "unsupported coordinate/radius magnitude; recenter or rescale",
+      message_type = "error"
+    )
   }
   groups <- sort(unique(labels))
   nq <- length(cells); ng <- length(groups); nr <- length(radii)
   if (as.double(nq) * ng * nr > .Machine$integer.max) {
-    stop("output too large; select fewer cells, groups or radii", call. = FALSE)
+    log_message(
+      "output too large; select fewer cells, groups or radii",
+      message_type = "error"
+    )
   }
   target <- match(cells, co$cell_id)
   counts <- array(0L, c(nq, ng, nr))
@@ -115,7 +142,7 @@ SpatialNeighborhoodProfile <- function(
     done = "Spatial neighborhood profile completed",
     scope = sprintf("%s target cells; %s context cells; %s samples; %s distances (raw coordinate units).",
                     nq, nrow(co), length(unique(samples)), nr),
-    inspect = "Returned data.frame: count, total and fraction; input object unchanged.",
+    inspect = "Returned data.frame: count, total and fraction; input Seurat object unchanged.",
     verbose = verbose
   )
   out

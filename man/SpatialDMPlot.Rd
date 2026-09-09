@@ -5,7 +5,7 @@
 \title{Plot stored SpatialDM results}
 \usage{
 SpatialDMPlot(
-  object,
+  srt,
   result.name = NULL,
   plot_type = c("weights", "global", "local"),
   pair = NULL,
@@ -21,7 +21,7 @@ SpatialDMPlot(
 )
 }
 \arguments{
-\item{object}{A Seurat object with SpatialDM results.}
+\item{srt}{A Seurat object with SpatialDM results.}
 
 \item{result.name}{Stored result name.}
 

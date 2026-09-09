@@ -3,7 +3,7 @@
 #' @description
 #' Plot cell segmentation polygons from a boundary table or Seurat spatial image.
 #'
-#' @param object Optional `Seurat` object used to extract boundaries or values.
+#' @param srt Optional `Seurat` object used to extract boundaries or values.
 #' @param res Optional result list containing a `boundaries` data frame.
 #' @param boundaries Optional boundary data frame.
 #' @param cells Optional cell or spot identifiers to retain.
@@ -11,8 +11,8 @@
 #' @param crop Whether to crop the plot to the selected boundaries.
 #' @param group.by Boundary column or Seurat metadata column used for filling.
 #' @param features Features to display. Multiple features return a patchwork.
-#' @param assay Assay used when `features` are fetched from `object`.
-#' @param layer Layer used when `features` are fetched from `object`.
+#' @param assay Assay used when `features` are fetched from `srt`.
+#' @param layer Layer used when `features` are fetched from `srt`.
 #' @param palette,palcolor Palette name or explicit colors.
 #' @param fill.alpha Polygon fill opacity.
 #' @param boundary.color,boundary.linewidth Boundary appearance.
@@ -28,7 +28,7 @@
 #'
 #' @export
 SpatialCellPlot <- function(
-  object = NULL,
+  srt = NULL,
   res = NULL,
   boundaries = NULL,
   cells = NULL,
@@ -47,8 +47,8 @@ SpatialCellPlot <- function(
   layer = "data",
   ...
 ) {
-  if (!is.null(object) && !inherits(object, "Seurat")) {
-    log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
+  if (!is.null(srt) && !inherits(srt, "Seurat")) {
+    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   if (!is.null(image) && (!is.character(image) || length(image) != 1L || is.na(image) || !nzchar(image))) {
     log_message("{.arg image} must be one non-empty image name", message_type = "error")
@@ -59,25 +59,25 @@ SpatialCellPlot <- function(
   if (is.null(boundaries) && !is.null(res)) {
     boundaries <- if (is.data.frame(res)) res else res$boundaries
   }
-  if (is.null(boundaries) && !is.null(object)) {
+  if (is.null(boundaries) && !is.null(srt)) {
     image <- spatial_image_resolve(
-      srt = object,
+      srt = srt,
       image = image,
       image_policy = "strict"
     )$image
     if (is.null(image)) {
       log_message("No Seurat spatial image is available for boundary extraction", message_type = "error")
     }
-    boundary_names <- tryCatch(SeuratObject::Boundaries(object[[image]]), error = function(e) character())
+    boundary_names <- tryCatch(SeuratObject::Boundaries(srt[[image]]), error = function(e) character())
     if (!"segmentation" %in% boundary_names) {
       log_message("The selected image does not contain segmentation boundaries", message_type = "error")
     }
     boundary_name <- "segmentation"
     boundaries <- tryCatch(
-      as.data.frame(SeuratObject::GetTissueCoordinates(object[[image]][[boundary_name]])),
+      as.data.frame(SeuratObject::GetTissueCoordinates(srt[[image]][[boundary_name]])),
       error = function(e) {
         tryCatch(
-          as.data.frame(SeuratObject::GetTissueCoordinates(object[[image]], which = boundary_name)),
+          as.data.frame(SeuratObject::GetTissueCoordinates(srt[[image]], which = boundary_name)),
           error = function(e2) NULL
         )
       }
@@ -87,9 +87,9 @@ SpatialCellPlot <- function(
     log_message("Provide real segmentation data through {.arg boundaries}, {.arg res}, or a Seurat image", message_type = "error")
   }
 
-  assay <- assay %||% if (!is.null(object)) SeuratObject::DefaultAssay(object) else NULL
-  if (!is.null(features) && !is.null(object) && is.null(assay)) {
-    log_message("An {.arg assay} is required when fetching features from {.arg object}", message_type = "error")
+  assay <- assay %||% if (!is.null(srt)) SeuratObject::DefaultAssay(srt) else NULL
+  if (!is.null(features) && !is.null(srt) && is.null(assay)) {
+    log_message("An {.arg assay} is required when fetching features from {.arg srt}", message_type = "error")
   }
 
   boundaries <- spatial_boundary_validate(boundaries, image = image)
@@ -107,9 +107,9 @@ SpatialCellPlot <- function(
   if (!is.null(group.by)) {
     if (group.by %in% colnames(boundaries)) {
       value_tables[[group.by]] <- boundaries[[group.by]]
-    } else if (!is.null(object) && group.by %in% colnames(object@meta.data)) {
-      cell_idx <- match(boundaries$cell_id, rownames(object@meta.data))
-      value_tables[[group.by]] <- object@meta.data[[group.by]][cell_idx]
+    } else if (!is.null(srt) && group.by %in% colnames(srt@meta.data)) {
+      cell_idx <- match(boundaries$cell_id, rownames(srt@meta.data))
+      value_tables[[group.by]] <- srt@meta.data[[group.by]][cell_idx]
     } else {
       log_message("{.arg group.by} {.val {group.by}} was not found", message_type = "error")
     }
@@ -117,12 +117,12 @@ SpatialCellPlot <- function(
     needed_features <- setdiff(unique(features), colnames(boundaries))
     expr <- NULL
     if (length(needed_features) > 0L) {
-      if (is.null(object)) {
-        log_message("A Seurat {.arg object} is required to fetch features", message_type = "error")
+      if (is.null(srt)) {
+        log_message("A Seurat {.arg srt} is required to fetch features", message_type = "error")
       }
       expr <- tryCatch(
         GetAssayData5(
-          object,
+          srt,
           assay = assay,
           layer = layer,
           features = needed_features,
@@ -198,13 +198,10 @@ SpatialCellPlot <- function(
       ggplot2::labs(x = NULL, y = NULL, fill = value_name) +
       apply_plot_theme(theme_use = theme_use, theme_args = theme_args)
     if (isTRUE(crop)) {
-      xr <- range(dat$x, na.rm = TRUE)
-      yr <- range(dat$y, na.rm = TRUE)
-      xp <- max(diff(xr) * 0.04, .Machine$double.eps)
-      yp <- max(diff(yr) * 0.04, .Machine$double.eps)
+      limits <- spatial_crop_limits(dat$x, dat$y)
       p <- p + ggplot2::coord_equal(
-        xlim = xr + c(-xp, xp),
-        ylim = yr + c(-yp, yp)
+        xlim = limits$xlim,
+        ylim = limits$ylim
       )
     } else {
       p <- p + ggplot2::coord_equal()

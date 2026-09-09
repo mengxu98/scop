@@ -5,7 +5,7 @@
 \title{Plot spatial variable feature results}
 \usage{
 SpatialVariableFeaturePlot(
-  srt = NULL,
+  srt,
   plot_type = c("summary", "surface", "combined"),
   features = NULL,
   nfeatures = 10,
@@ -29,13 +29,11 @@ SpatialVariableFeaturePlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  object = NULL,
   image.scale = c("lowres", "hires")
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object. The same object may be supplied as
-\verb{object =} for consistency with spatial plotting APIs.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{plot_type}{Plot type: \code{"summary"}, \code{"surface"}, or \code{"combined"}.}
 
@@ -78,9 +76,6 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
-\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
-\code{object}.}
-
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
@@ -103,10 +98,10 @@ spatial <- Seurat::NormalizeData(
   verbose = FALSE
 )
 spatial <- RunSpatialVariableFeatures(
-  object = spatial,
+  srt = spatial,
   assay = "Spatial",
   nfeatures = 10,
   verbose = FALSE
 )
-SpatialVariableFeaturePlot(object = spatial, plot_type = "summary")
+SpatialVariableFeaturePlot(srt = spatial, plot_type = "summary")
 }

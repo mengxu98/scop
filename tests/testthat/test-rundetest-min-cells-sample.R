@@ -59,7 +59,7 @@ marker_logfc <- function(markers, group = NULL) {
 
 run_sample_de <- function(srt, min.cells.sample = NULL) {
   args <- list(
-    object = srt,
+    srt = srt,
     assay = "RNA",
     layer = "counts",
     group.by = "subcelltype",

@@ -2,6 +2,7 @@
 #'
 #' @md
 #' @inheritParams RunFitDevo
+#' @param srt A `Seurat` object.
 #' @param reduction Embedding reduction used for the direction field.
 #' @param pca.reduction PCA-like reduction used to score local polarization.
 #' @param dims Dimensions from `reduction`.
@@ -44,7 +45,7 @@
 #'   background = "none"
 #' )
 RunVECTOR <- function(
-  object,
+  srt,
   reduction = NULL,
   pca.reduction = "pca",
   dims = 1:2,
@@ -58,20 +59,20 @@ RunVECTOR <- function(
   backend = c("cpp", "r")
 ) {
   backend <- match.arg(backend)
-  if (!inherits(object, "Seurat")) {
-    log_message("{.arg object} must be a {.cls Seurat} object.", message_type = "error")
+  if (!inherits(srt, "Seurat")) {
+    log_message("{.arg srt} must be a {.cls Seurat} object.", message_type = "error")
   }
-  reduction <- reduction %||% DefaultReduction(object, min_dim = 2, verbose = FALSE)
-  reduction <- resolve_reduction_name(object, reduction)
-  pca.reduction <- resolve_reduction_name(object, pca.reduction)
+  reduction <- reduction %||% DefaultReduction(srt, min_dim = 2, verbose = FALSE)
+  reduction <- resolve_reduction_name(srt, reduction)
+  pca.reduction <- resolve_reduction_name(srt, pca.reduction)
   if (is.null(reduction)) {
-    log_message("{.arg reduction} is not available in the object.", message_type = "error")
+    log_message("{.arg reduction} is not available in {.arg srt}.", message_type = "error")
   }
   if (is.null(pca.reduction)) {
-    log_message("{.arg pca.reduction} is not available in the object.", message_type = "error")
+    log_message("{.arg pca.reduction} is not available in {.arg srt}.", message_type = "error")
   }
-  emb <- SeuratObject::Embeddings(object, reduction = reduction)[, dims, drop = FALSE]
-  pca <- SeuratObject::Embeddings(object, reduction = pca.reduction)
+  emb <- SeuratObject::Embeddings(srt, reduction = reduction)[, dims, drop = FALSE]
+  pca <- SeuratObject::Embeddings(srt, reduction = pca.reduction)
   pca.dims <- intersect(pca.dims, seq_len(ncol(pca)))
   pca <- pca[, pca.dims, drop = FALSE]
   log_message(
@@ -86,12 +87,12 @@ RunVECTOR <- function(
     arrow.ol = arrow.ol,
     backend = backend
   )
-  object <- Seurat::AddMetaData(
-    object,
-    data.frame(VECTOR_Score = bundle$score[colnames(object)], row.names = colnames(object))
+  srt <- Seurat::AddMetaData(
+    srt,
+    data.frame(VECTOR_Score = bundle$score[colnames(srt)], row.names = colnames(srt))
   )
   if (!identical(score.name, "VECTOR_Score")) {
-    object[[score.name]] <- object[["VECTOR_Score", drop = TRUE]]
+    srt[[score.name]] <- srt[["VECTOR_Score", drop = TRUE]]
   }
   bundle$parameters <- list(
     reduction = reduction,
@@ -103,9 +104,9 @@ RunVECTOR <- function(
     arrow.ol = arrow.ol,
     backend = backend
   )
-  object@tools[[tool_name]] <- bundle
-  object <- suppressWarnings(Seurat::LogSeuratCommand(object))
-  object
+  srt@tools[[tool_name]] <- bundle
+  srt <- suppressWarnings(Seurat::LogSeuratCommand(srt))
+  srt
 }
 
 #' @title Plot VECTOR results
@@ -115,7 +116,7 @@ RunVECTOR <- function(
 #' by [RunVECTOR()].
 #'
 #' @md
-#' @param object A `Seurat` object processed by [RunVECTOR()].
+#' @param srt A `Seurat` object processed by [RunVECTOR()].
 #' @param plot_type Plot type. `"grid"` colors occupied grid centers by grid
 #' score, and `"raw"` draws VelocityPlot-style grid arrows.
 #' @param tool_name Name used in `srt@tools`.
@@ -150,7 +151,7 @@ RunVECTOR <- function(
 #' VECTORPlot(pancreas_sub, plot_type = "grid")
 #' VECTORPlot(pancreas_sub, plot_type = "raw", group.by = "SubCellType")
 VECTORPlot <- function(
-  object,
+  srt,
   plot_type = c("grid", "raw"),
   tool_name = "VECTOR",
   score.name = "VECTOR_Score",
@@ -177,12 +178,12 @@ VECTORPlot <- function(
   plot_type <- match.arg(plot_type)
   background <- match.arg(background)
   draw_raw <- identical(plot_type, "raw")
-  if (!inherits(object, "Seurat")) {
-    log_message("{.arg object} must be a {.cls Seurat} object.", message_type = "error")
+  if (!inherits(srt, "Seurat")) {
+    log_message("{.arg srt} must be a {.cls Seurat} object.", message_type = "error")
   }
-  bundle <- object@tools[[tool_name]]
+  bundle <- srt@tools[[tool_name]]
   if (is.null(bundle)) {
-    log_message("Cannot find VECTOR results in {.code object@tools[[{tool_name}]]}.", message_type = "error")
+    log_message("Cannot find VECTOR results in {.code srt@tools[[{tool_name}]]}.", message_type = "error")
   }
   emb <- as.data.frame(bundle$embedding)
   colnames(emb) <- c("x", "y")
@@ -191,7 +192,7 @@ VECTORPlot <- function(
   arrows <- bundle$arrows
   reduction <- bundle$parameters$reduction %||% NULL
   dims <- bundle$parameters$dims %||% c(1, 2)
-  reduction_key <- object@reductions[[reduction]]@key %||% paste0(reduction, "_")
+  reduction_key <- srt@reductions[[reduction]]@key %||% paste0(reduction, "_")
   xlab <- xlab %||% paste0(reduction_key, dims[1])
   ylab <- ylab %||% paste0(reduction_key, dims[2])
 
@@ -205,7 +206,7 @@ VECTORPlot <- function(
 
   if (identical(background, "score")) {
     p <- FeatureDimPlot(
-      object,
+      srt,
       features = score.name,
       reduction = reduction,
       dims = dims,
@@ -227,7 +228,7 @@ VECTORPlot <- function(
       log_message("{.arg group.by} is required when {.arg background = 'group'}.", message_type = "error")
     }
     p <- CellDimPlot(
-      object,
+      srt,
       group.by = group.by,
       reduction = reduction,
       dims = dims,
@@ -267,7 +268,7 @@ VECTORPlot <- function(
     raw_df <- arrows
     if (!is.null(group.by)) {
       cell_grid <- bundle$cell_grid
-      cell_group <- object@meta.data[names(cell_grid), group.by, drop = TRUE]
+      cell_group <- srt@meta.data[names(cell_grid), group.by, drop = TRUE]
       grid_group <- vapply(unique(cell_grid), function(g) {
         vals <- cell_group[cell_grid == g]
         vals <- vals[!is.na(vals)]

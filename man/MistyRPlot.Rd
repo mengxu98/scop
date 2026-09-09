@@ -5,7 +5,7 @@
 \title{Plot stored MISTy results}
 \usage{
 MistyRPlot(
-  object = NULL,
+  srt = NULL,
   res = NULL,
   type = c("improvements", "contributions"),
   top_n = 20,
@@ -14,9 +14,9 @@ MistyRPlot(
 )
 }
 \arguments{
-\item{object}{Optional `Seurat` object containing `MistyR` results.}
+\item{srt}{Optional `Seurat` object containing `MistyR` results.}
 
-\item{res}{Optional result list, usually `object@tools$MistyR`.}
+\item{res}{Optional result list, usually `srt@tools$MistyR`.}
 
 \item{type}{Result table to plot.}
 

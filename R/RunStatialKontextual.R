@@ -315,20 +315,20 @@ statial_kontextual_summary <- function(table, top_n = 10L) {
 #' @description Plot contextual relationship scores across radii from a result
 #' produced by [RunStatialKontextual()] without rerunning Statial.
 #'
-#' @param object Optional `Seurat` object containing the result.
+#' @param srt Optional `Seurat` object containing the result.
 #' @param res Optional result list, usually
-#'   `object@tools$StatialKontextual`.
+#'   `srt@tools$StatialKontextual`.
 #' @param tests Optional relationship names to retain.
 #' @param images Optional image identifiers to retain.
 #' @return A `ggplot` object.
 #' @seealso [RunStatialKontextual()]
 #' @export
-StatialKontextualPlot <- function(object = NULL, res = NULL, tests = NULL, images = NULL) {
+StatialKontextualPlot <- function(srt = NULL, res = NULL, tests = NULL, images = NULL) {
   if (is.null(res)) {
-    if (is.null(object) || !inherits(object, "Seurat")) {
-      log_message("Provide a {.cls Seurat} {.arg object} or a Statial {.arg res}", message_type = "error")
+    if (is.null(srt) || !inherits(srt, "Seurat")) {
+      log_message("Provide a {.cls Seurat} {.arg srt} or a Statial {.arg res}", message_type = "error")
     }
-    res <- object@tools[["StatialKontextual"]]
+    res <- srt@tools[["StatialKontextual"]]
   }
   spatial_require_coordinate_contract(res, "RunStatialKontextual()")
   tab <- res$table %||% NULL

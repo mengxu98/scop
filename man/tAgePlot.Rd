@@ -5,7 +5,7 @@
 \title{Plot tAge transcriptomic aging-clock predictions}
 \usage{
 tAgePlot(
-  object,
+  srt,
   score_col = NULL,
   group.by = NULL,
   split.by = NULL,
@@ -37,7 +37,7 @@ tAgePlot(
 )
 }
 \arguments{
-\item{object}{A \code{Seurat} object returned by \code{\link[=RuntAge]{RuntAge()}} or a data frame with
+\item{srt}{A \code{Seurat} object returned by \code{\link[=RuntAge]{RuntAge()}} or a data frame with
 tAge prediction columns.}
 
 \item{score_col}{Prediction column to plot. If \code{NULL}, the first column

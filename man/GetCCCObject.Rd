@@ -5,14 +5,14 @@
 \title{Get an upstream CellChat-family object}
 \usage{
 GetCCCObject(
-  object,
+  srt,
   method = c("CellChat", "SpatialCellChat"),
   result.name = NULL,
   sample = NULL
 )
 }
 \arguments{
-\item{object}{A `Seurat` object.}
+\item{srt}{A `Seurat` object.}
 
 \item{method}{Either `"CellChat"` or `"SpatialCellChat"`.}
 

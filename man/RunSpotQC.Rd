@@ -5,7 +5,7 @@
 \title{Run spot-level quality control}
 \usage{
 RunSpotQC(
-  srt = NULL,
+  srt,
   assay = NULL,
   return_filtered = FALSE,
   qc_metrics = c("outlier", "umi", "gene", "mito"),
@@ -18,13 +18,11 @@ RunSpotQC(
   mito_pattern = c("MT-", "Mt-", "mt-"),
   mito_gene = NULL,
   verbose = TRUE,
-  seed = 11,
-  object = NULL
+  seed = 11
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object. The same object may be supplied as
-\verb{object =} for consistency with spatial plotting APIs.}
+\item{srt}{A \code{Seurat} object.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -60,8 +58,6 @@ Default is \code{TRUE}.}
 
 \item{seed}{Random seed for reproducibility.}
 
-\item{object}{Optional alias for \code{srt}. Supply exactly one of \code{srt} or
-\code{object}.}
 }
 \value{
 A \code{Seurat} object with spot QC metadata columns. Cells that are not
@@ -78,8 +74,8 @@ doublet calling or ambient RNA decontamination.
 \examples{
 data(visium_human_pancreas_sub)
 spatial <- RunSpotQC(
-  object = visium_human_pancreas_sub,
+  srt = visium_human_pancreas_sub,
   assay = "Spatial"
 )
-SpatialSpotPlot(object = spatial, group.by = "SpotQC")
+SpatialSpotPlot(srt = spatial, group.by = "SpotQC")
 }
