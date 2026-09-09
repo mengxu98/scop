@@ -228,7 +228,7 @@ RunDynamicEnrichment <- function(
         term
       }
       srt <- do.call(CellScoring, c(list(
-        srt = srt,
+        object = srt,
         features = feature_list,
         method = method_i,
         classification = FALSE,

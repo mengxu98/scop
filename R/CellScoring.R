@@ -137,7 +137,7 @@ CellScoring <- function(
         method_i
       }
       srt <- do.call(CellScoring, c(list(
-        srt = srt,
+        object = srt,
         features = features,
         layer = layer,
         assay = assay,
