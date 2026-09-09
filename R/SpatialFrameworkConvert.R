@@ -8,6 +8,12 @@
 #' @param image Seurat image name. Multi-image objects require an explicit name.
 #' @param ... Additional arguments passed to the Giotto converter.
 #'
+#' @details
+#' Converters live in GiottoClass. If that package is already installed from
+#' any source, the bridge reuses it and does not reinstall `drieslab/Giotto`.
+#' A GitHub reinstall is requested only when GiottoClass is missing. Conversion
+#' does not initialize Giotto's optional Python/conda environment.
+#'
 #' @return A native Giotto object.
 #'
 #' @examples
@@ -34,7 +40,7 @@ srt_to_giotto <- function(srt, image = NULL, ...) {
     .img_resolved$image
   }
   srt_use <- spatial_framework_subset_image(srt, image = image)
-  check_r("drieslab/Giotto", verbose = FALSE)
+  ensure_giotto_bridge_backend()
   converter_name <- if (seurat_major_version() >= 5L) {
     "seuratToGiottoV5"
   } else {
@@ -66,7 +72,7 @@ srt_to_giotto <- function(srt, image = NULL, ...) {
       error = function(e) SeuratObject::DefaultAssay(srt_use)
     )
   }
-  do.call(converter, c(args, extra))
+  with_giotto_bridge_options(do.call(converter, c(args, extra)))
 }
 
 seurat_major_version <- function() {
@@ -81,11 +87,13 @@ seurat_major_version <- function() {
 #'
 #' @details
 #' The bridge selects the GiottoClass v4 or v5 converter according to the
-#' installed Seurat major version. For round trips produced by
+#' installed Seurat major version. If GiottoClass is already installed, it is
+#' reused instead of reinstalling `drieslab/Giotto`. For round trips produced by
 #' [srt_to_giotto()], normalize the Seurat input first (for example with
 #' [Seurat::NormalizeData()]); the official GiottoClass converter records an
 #' empty normalized layer otherwise, which its reverse converter cannot read
-#' back.
+#' back. Conversion does not initialize Giotto's optional Python/conda
+#' environment.
 #'
 #' @param giotto A native Giotto object.
 #' @param ... Additional arguments passed to the Giotto converter.
@@ -112,7 +120,7 @@ seurat_major_version <- function() {
 #'
 #' @export
 giotto_to_srt <- function(giotto, ...) {
-  check_r("drieslab/Giotto", verbose = FALSE)
+  ensure_giotto_bridge_backend()
   converter_name <- if (seurat_major_version() >= 5L) {
     "giottoToSeuratV5"
   } else {
@@ -127,7 +135,32 @@ giotto_to_srt <- function(giotto, ...) {
       )
     }
   )
-  do.call(converter, c(list(gobject = giotto), list(...)))
+  with_giotto_bridge_options(
+    do.call(converter, c(list(gobject = giotto), list(...)))
+  )
+}
+
+giotto_class_available <- function() {
+  requireNamespace("GiottoClass", quietly = TRUE)
+}
+
+ensure_giotto_bridge_backend <- function() {
+  # Converters live in GiottoClass. check_r("drieslab/Giotto") treats a different
+  # GitHub remote (for example giotto-suite/Giotto) as missing and reinstalls.
+  if (isTRUE(giotto_class_available())) {
+    check_r("GiottoClass", install = FALSE, verbose = FALSE)
+  } else {
+    check_r("drieslab/Giotto", verbose = FALSE)
+  }
+}
+
+with_giotto_bridge_options <- function(expr) {
+  old <- options(
+    giotto.use_conda = FALSE,
+    giotto.check_version = FALSE
+  )
+  on.exit(options(old), add = TRUE)
+  force(expr)
 }
 
 spatial_framework_subset_image <- function(srt, image = NULL) {
