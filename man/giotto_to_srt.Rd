@@ -29,17 +29,16 @@ environment.
 }
 \examples{
 \dontrun{
+thisutils::check_r("drieslab/Giotto", verbose = FALSE)
 data(visium_human_pancreas_sub)
 spatial <- Seurat::NormalizeData(
   visium_human_pancreas_sub,
   assay = "Spatial",
   verbose = FALSE
 )
-if (requireNamespace("GiottoClass", quietly = TRUE)) {
-  giotto <- srt_to_giotto(spatial, image = "slice1")
-  roundtrip <- giotto_to_srt(giotto)
-  print(roundtrip)
-}
+giotto <- srt_to_giotto(spatial, image = "slice1")
+roundtrip <- giotto_to_srt(giotto)
+print(roundtrip)
 }
 
 }
