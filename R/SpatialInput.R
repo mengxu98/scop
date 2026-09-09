@@ -1,21 +1,20 @@
-#' Inspect the analysis unit and coordinates of spatial data
-#'
-#' Resolve one spatial context without changing the object or materializing its
-#' expression matrix. Import provenance takes precedence over image-class
-#' evidence. Metadata-only coordinates have unknown physical units unless
-#' explicitly supplied. Selecting an image never implies that pixels are microns.
-#'
-#' @param object A Seurat object.
-#' @param assay Assay to inspect; NULL uses the default assay.
-#' @param image Image name. Multiple images require an explicit selection.
-#' @param coord.cols Coordinate columns for metadata-only input.
-#' @param data_type Observation type: auto, spot, bin, or cell. Auto returns
-#'   unknown when no reliable evidence is available.
-#' @param coordinate_units Optional explicit units: pixel, micron, or unknown.
-#' @return A list containing the assay, image, observation type, units, selected
-#'   cell IDs, dimensions, estimated dense matrix bytes, and coordinate source.
-#' @export
-SpatialDataInfo <- function(object, assay = NULL, image = NULL,
+# Inspect the analysis unit and coordinates of spatial data
+#
+# Resolve one spatial context without changing the object or materializing its
+# expression matrix. Import provenance takes precedence over image-class
+# evidence. Metadata-only coordinates have unknown physical units unless
+# explicitly supplied. Selecting an image never implies that pixels are microns.
+#
+# @param object A Seurat object.
+# @param assay Assay to inspect; NULL uses the default assay.
+# @param image Image name. Multiple images require an explicit selection.
+# @param coord.cols Coordinate columns for metadata-only input.
+# @param data_type Observation type: auto, spot, bin, or cell. Auto returns
+#   unknown when no reliable evidence is available.
+# @param coordinate_units Optional explicit units: pixel, micron, or unknown.
+# @return A list containing the assay, image, observation type, units, selected
+#   cell IDs, dimensions, estimated dense matrix bytes, and coordinate source.
+spatial_input_info <- function(object, assay = NULL, image = NULL,
                             coord.cols = c("col", "row"), data_type = "auto",
                             coordinate_units = NULL) {
   if (!inherits(object, "Seurat")) stop("object must be a Seurat object", call. = FALSE)
@@ -86,7 +85,7 @@ SpatialDataInfo <- function(object, assay = NULL, image = NULL,
 #'   defaults to cell segmentation and does not load molecule coordinates unless
 #'   requested; cell segmentation must already exist in the vendor output.
 #' @return A validated Seurat object with misc$scop_spatial_input provenance.
-#' @seealso SpatialDataInfo, SpatialCellPlot
+#' @seealso SpatialCellPlot
 #' @export
 ReadSpatialData <- function(data.dir, technology = c("visium", "visium_hd", "xenium"),
                             bin.size = c(8L, 16L), sample_id = "sample1", ...) {
@@ -115,7 +114,7 @@ ReadSpatialData <- function(data.dir, technology = c("visium", "visium_hd", "xen
   records <- stats::setNames(vector("list", length(images)), images)
   for (image in images) {
     assay <- SeuratObject::DefaultAssay(out[[image]])
-    info <- SpatialDataInfo(out, assay = assay, image = image)
+    info <- spatial_input_info(out, assay = assay, image = image)
     resolution <- if (technology == "visium_hd") {
       if (!grepl("[.]\\d+um$", assay)) stop("HD assay has no explicit bin resolution", call. = FALSE)
       as.numeric(sub(".*[.](\\d+)um$", "\\1", assay))

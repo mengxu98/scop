@@ -10,20 +10,22 @@ make_platform_object <- function(n = 12L) {
 }
 
 test_that("spatial context is explicit and units are never guessed from metadata", {
+  expect_false("SpatialDataInfo" %in% getNamespaceExports("scop"))
+  expect_false("spatial_input_info" %in% getNamespaceExports("scop"))
   object <- make_platform_object()
   before <- object
-  info <- SpatialDataInfo(object)
+  info <- spatial_input_info(object)
   expect_identical(info$data_type, "unknown")
   expect_identical(info$coordinate_units, "unknown")
   expect_equal(info$estimated_dense_bytes, 8 * 40 * 12)
-  expect_identical(SpatialDataInfo(object, data_type = "cell", coordinate_units = "micron")$data_type, "cell")
+  expect_identical(spatial_input_info(object, data_type = "cell", coordinate_units = "micron")$data_type, "cell")
   expect_identical(object, before)
   object[["fov1"]] <- SeuratObject::CreateFOV(object[[]][1:6, c("x", "y")], type = "centroids", assay = "RNA")
   object[["fov2"]] <- SeuratObject::CreateFOV(object[[]][7:12, c("x", "y")], type = "centroids", assay = "RNA", key = "second_")
-  expect_error(SpatialDataInfo(object), "Multiple spatial images")
-  expect_identical(SpatialDataInfo(object, image = "fov2")$cells, colnames(object)[7:12])
+  expect_error(spatial_input_info(object), "Multiple spatial images")
+  expect_identical(spatial_input_info(object, image = "fov2")$cells, colnames(object)[7:12])
   object[["small"]] <- SeuratObject::CreateAssayObject(counts = GetAssayData5(object)[, 1:6])
-  expect_error(SpatialDataInfo(object, assay = "small", image = "fov2"), "absent from assay")
+  expect_error(spatial_input_info(object, assay = "small", image = "fov2"), "absent from assay")
 })
 
 test_that("Seurat plural segmentations are read as real cell polygons", {
@@ -33,7 +35,7 @@ test_that("Seurat plural segmentations are read as real cell polygons", {
   fov <- SeuratObject::CreateFOV(object[[]][, c("x", "y")], type = "centroids", assay = "RNA")
   fov[["segmentations"]] <- SeuratObject::CreateSegmentation(b)
   object[["fov"]] <- fov
-  expect_identical(SpatialDataInfo(object, image = "fov")$data_type, "cell")
+  expect_identical(spatial_input_info(object, image = "fov")$data_type, "cell")
   expect_s3_class(SpatialCellPlot(object, image = "fov"), "ggplot")
 })
 
@@ -43,9 +45,9 @@ test_that("loaders validate provenance without installing or synthesizing data",
   testthat::local_mocked_bindings(.package = "Seurat", LoadXenium = function(data.dir, ...) x)
   out <- ReadSpatialData(tempdir(), "xenium", sample_id = "S1")
   expect_identical(out@misc$scop_spatial_input$fov$data_type, "cell")
-  expect_identical(SpatialDataInfo(out, image = "fov")$coordinate_units, "micron")
-  expect_error(SpatialDataInfo(out, image = "fov", coordinate_units = "pixel"), "conflicts")
-  expect_identical(SpatialDataInfo(subset(out, cells = colnames(out)[1:4]), image = "fov")$data_type, "cell")
+  expect_identical(spatial_input_info(out, image = "fov")$coordinate_units, "micron")
+  expect_error(spatial_input_info(out, image = "fov", coordinate_units = "pixel"), "conflicts")
+  expect_identical(spatial_input_info(subset(out, cells = colnames(out)[1:4]), image = "fov")$data_type, "cell")
   expect_error(ReadSpatialData(tempdir(), "visium_hd", bin.size = c(8, 8)), "unique positive")
   testthat::local_mocked_bindings(.package = "Seurat", LoadXenium = function(...) stop("vendor read failed"))
   expect_error(ReadSpatialData(tempdir(), "xenium"), "vendor read failed")

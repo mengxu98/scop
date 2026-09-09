@@ -11,7 +11,6 @@ dependencies. Other platforms can use their existing Seurat loaders.
 
 ```r
 spatial <- ReadSpatialData("path/to/visium/outs", "visium", sample_id = "S1")
-SpatialDataInfo(spatial, assay = "Spatial", image = "slice1")
 
 spatial <- RunStandardWorkflow(
   spatial, workflow = "spatial", assay = "Spatial", image = "slice1",
@@ -68,12 +67,10 @@ requires choosing a new name.
 ```r
 hd <- ReadSpatialData("path/to/hd/outs", "visium_hd",
                       bin.size = c(8, 16), sample_id = "HD1")
-SpatialDataInfo(hd, assay = "Spatial.008um", image = "slice1.008um")
 SpatialSpotPlot(hd, assay = "Spatial.008um", image = "slice1.008um",
                 features = rownames(hd)[1], layer = "counts")
 
 cells <- ReadSpatialData("path/to/xenium/outs", "xenium", sample_id = "X1")
-SpatialDataInfo(cells, assay = "Xenium", image = "fov")
 SpatialCellPlot(cells, image = "fov")
 ```
 
