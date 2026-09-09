@@ -72,7 +72,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' check_r("SpotSweeper", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
 #' spatial <- RunSpotSweeper(
 #'   visium_human_pancreas_sub,

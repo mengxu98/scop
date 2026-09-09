@@ -42,7 +42,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' check_r("saezlab/mistyR", verbose = FALSE)
 #' data(visium_human_pancreas_sub)
 #' spatial <- Seurat::NormalizeData(visium_human_pancreas_sub, verbose = FALSE)
 #' # Paraview bandwidth: 1000 full-resolution image pixels.

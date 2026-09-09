@@ -40,7 +40,6 @@
 #' visium_human_pancreas_sub <- Seurat::NormalizeData(
 #'   visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
 #' )
-#' check_r("JEFworks-Lab/MERINGUE", verbose = FALSE)
 #' spatial <- RunMERINGUE(
 #'   visium_human_pancreas_sub,
 #'   assay = "Spatial", coord.cols = c("x", "y"),
