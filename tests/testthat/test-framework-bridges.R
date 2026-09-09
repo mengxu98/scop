@@ -223,6 +223,9 @@ test_that("srt_to_giotto and giotto_to_srt round-trip with a real GiottoClass", 
   if (!isTRUE(all(unlist(giotto_class, use.names = FALSE)))) {
     skip("GiottoClass is not installed")
   }
+  # The Visium path estimates scale factors through a Delaunay network that
+  # GiottoClass builds with the optional `geometry` package.
+  skip_if_not_installed("geometry")
 
   # In-process tiny fixture: callr+load_all of the source tree exceeds 120s in
   # optional CI before conversion starts, and visium_human_pancreas_sub is far
