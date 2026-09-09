@@ -5,7 +5,7 @@
 \title{Run SpotSweeper spatial quality control}
 \usage{
 RunSpotSweeper(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   coord.cols = c("col", "row"),
@@ -31,11 +31,12 @@ RunSpotSweeper(
   workers = NULL,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay used for expression. If \code{NULL}, the default assay is used.}
 
@@ -109,6 +110,9 @@ backend distance calculation uses the selected coordinate units.}
 
 \item{...}{Additional named arguments passed to matching SpotSweeper backend
 functions when those arguments are supported by the installed version.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with SpotSweeper QC metadata. When

@@ -5,7 +5,7 @@
 \title{Run copy-number alteration inference}
 \usage{
 RunCNV(
-  srt,
+  object,
   method = c("copykat", "fastCNV", "scevan", "infercnv", "numbat"),
   assay = NULL,
   layer = "counts",
@@ -22,11 +22,12 @@ RunCNV(
   tool_name = "CNV",
   store_matrix = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{method}{CNA/CNV backend. Supported backends are \code{"copykat"},
 \code{"fastCNV"}, \code{"scevan"}, \code{"infercnv"}, and \code{"numbat"}.}
@@ -70,6 +71,9 @@ is forwarded to \code{numbat::run_numbat()} as \code{lambdas_ref}.}
 Default is \code{TRUE}.}
 
 \item{...}{Additional parameters forwarded to the selected backend.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with CNV metadata columns and a result bundle in

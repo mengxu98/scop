@@ -13,7 +13,9 @@
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
 #' @inheritParams scop-params
-#' @param srt A `Seurat` object containing results from [RunDorothea()].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object containing results from [RunDorothea()].
 #' @param group.by Metadata column used to define groups.
 #' @param group1,group2 Two group labels to compare. Required for `"bar"`,
 #' `"lollipop"`, `"volcano"`, and `"targets"`. Positive logFC means higher
@@ -155,19 +157,11 @@
 #'   plot_type = "targets"
 #' )
 DorotheaPlot <- function(
-  srt,
+  object,
   group.by,
   group1 = NULL,
   group2 = NULL,
-  plot_type = c(
-    "bar",
-    "lollipop",
-    "heatmap",
-    "volcano",
-    "dim",
-    "stat",
-    "targets"
-  ),
+  plot_type = c("bar", "lollipop", "heatmap", "volcano", "dim", "stat", "targets"),
   tool_name = "Dorothea",
   assay_name = NULL,
   features = NULL,
@@ -209,8 +203,10 @@ DorotheaPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   return_data = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -961,7 +957,7 @@ dorothea_plot_heatmap <- function(
     verbose = verbose
   )
   args <- list(
-    srt = srt,
+    object = srt,
     features = features,
     group.by = group.by,
     assay = assay_name,
@@ -1115,7 +1111,7 @@ dorothea_plot_dim <- function(
 
   tf_plots <- lapply(features, function(tf) {
     act_args <- list(
-      srt = srt,
+      object = srt,
       features = tf,
       assay = assay_name,
       layer = "data",
@@ -1207,7 +1203,7 @@ dorothea_plot_stat <- function(
     verbose = verbose
   )
   args <- list(
-    srt = srt,
+    object = srt,
     stat.by = features,
     group.by = group.by,
     assay = assay_name,

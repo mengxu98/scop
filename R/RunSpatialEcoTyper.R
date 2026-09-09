@@ -7,7 +7,9 @@
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
 #' @inheritParams scop-params
-#' @param srt A `Seurat` object. For `mode = "deconvolute"`, a numeric
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object. For `mode = "deconvolute"`, a numeric
 #' expression matrix can also be supplied.
 #' @param mode SpatialEcoTyper workflow. `"single"` runs single-sample de novo
 #' discovery, `"multi"` runs conserved ecotype discovery across samples,
@@ -94,7 +96,7 @@
 #' @export
 #'
 RunSpatialEcoTyper <- function(
-  srt,
+  object,
   mode = c("single", "multi", "recover", "deconvolute"),
   assay = NULL,
   layer = "data",
@@ -143,8 +145,10 @@ RunSpatialEcoTyper <- function(
   allow_partial = FALSE,
   verbose = TRUE,
   ...,
-  image = NULL
+  image = NULL,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   mode <- match.arg(mode)
 
   has_seurat <- inherits(srt, "Seurat")

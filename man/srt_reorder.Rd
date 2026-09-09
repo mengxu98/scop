@@ -5,18 +5,19 @@
 \title{Reorder idents by the gene expression}
 \usage{
 srt_reorder(
-  srt,
+  object,
   features = NULL,
   reorder_by = NULL,
   layer = "data",
   assay = NULL,
   log = TRUE,
   distance_metric = "euclidean",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{features}{Features to plot: a character vector or a named list of
 assay gene names or numeric metadata columns.}
@@ -33,6 +34,9 @@ assay gene names or numeric metadata columns.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Reorder idents by the gene expression

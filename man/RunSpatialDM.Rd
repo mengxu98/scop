@@ -5,7 +5,7 @@
 \title{Run official SpatialDM spatial ligand-receptor association analysis}
 \usage{
 RunSpatialDM(
-  srt,
+  object,
   species = c("human", "mouse"),
   lr.database = NULL,
   assay = NULL,
@@ -34,11 +34,12 @@ RunSpatialDM(
   result.name = "default",
   envname = "spatialdm_env",
   overwrite = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} spatial object.}
+\item{object}{A \code{Seurat} spatial object.}
 
 \item{species}{Built-in SpatialDM species (\code{"human"} or \code{"mouse"}).}
 
@@ -92,6 +93,9 @@ local results.}
 \item{overwrite}{Whether to overwrite existing metadata.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object with a schema-v1 \code{SpatialDM} result bundle.

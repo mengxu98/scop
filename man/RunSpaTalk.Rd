@@ -5,7 +5,7 @@
 \title{Run official SpaTalk spatial communication analysis}
 \usage{
 RunSpaTalk(
-  srt,
+  object,
   group.by,
   mode = c("auto", "single_cell", "spot"),
   reference = NULL,
@@ -24,11 +24,12 @@ RunSpaTalk(
   overwrite = FALSE,
   backend = c("cpp", "r"),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A `Seurat` spatial object.}
+\item{object}{A `Seurat` spatial object.}
 
 \item{group.by}{Metadata column containing cell labels for single-cell mode.}
 
@@ -68,6 +69,9 @@ explicitly supplied `dec_result`); `"none"` requires a named external
 \item{verbose}{Whether to print progress messages.}
 
 \item{...}{Named arguments forwarded to compatible official SpaTalk steps.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 The input `Seurat` object with `srt@tools$SpaTalk` and unified CCC

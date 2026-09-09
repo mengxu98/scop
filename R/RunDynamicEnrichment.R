@@ -55,7 +55,7 @@
 #'   split_method = "kmeans-peaktime"
 #' )
 RunDynamicEnrichment <- function(
-  srt,
+  object,
   lineages,
   score_method = "AUCell",
   layer = "data",
@@ -81,8 +81,10 @@ RunDynamicEnrichment <- function(
   cores = 1,
   verbose = TRUE,
   seed = 11,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   dots <- list(...)
   backend_missing <- missing(backend)
@@ -226,7 +228,7 @@ RunDynamicEnrichment <- function(
         term
       }
       srt <- do.call(CellScoring, c(list(
-        srt = srt,
+        object = srt,
         features = feature_list,
         method = method_i,
         classification = FALSE,
@@ -239,7 +241,7 @@ RunDynamicEnrichment <- function(
         verbose = verbose
       ), dots))
       srt <- RunDynamicFeatures(
-        srt = srt,
+        object = srt,
         lineages = lineages,
         features = rownames(srt[[assay_name_i]]),
         suffix = paste(lineages, assay_name_i, sep = "_"),

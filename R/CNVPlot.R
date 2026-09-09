@@ -42,7 +42,7 @@
 #' CNVPlot(srt, plot_type = "tree", cluster_tree_by = "cell")
 #' }
 CNVPlot <- function(
-  srt,
+  object,
   plot_type = c("heatmap", "dim", "spatial", "bar", "tree"),
   tool_name = "CNV",
   method = NULL,
@@ -58,8 +58,10 @@ CNVPlot <- function(
   subtitle = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -269,7 +271,7 @@ cnv_plot_dim <- function(
   value_data <- srt@meta.data[[value]]
   if (is.numeric(value_data) || is.integer(value_data)) {
     FeatureDimPlot(
-      srt = srt,
+      object = srt,
       features = value,
       reduction = reduction,
       palette = palette,
@@ -283,7 +285,7 @@ cnv_plot_dim <- function(
   } else {
     palcolor <- cnv_discrete_colors(value_data, palette = palette, palcolor = palcolor)
     CellDimPlot(
-      srt = srt,
+      object = srt,
       group.by = value,
       reduction = reduction,
       palette = palette,

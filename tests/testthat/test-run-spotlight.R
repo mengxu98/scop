@@ -69,7 +69,7 @@ test_that("RunSPOTlight validates result names and storage before backend work",
     store_results = list(1L, NA)
   )
   base_args <- list(
-    srt = pair$spatial,
+    object = pair$spatial,
     reference = pair$reference,
     reference_label = "celltype",
     verbose = FALSE
@@ -261,8 +261,8 @@ test_that("standard spatial workflow dispatches to RunSPOTlight", {
   original_RunStandardWorkflow <- getFromNamespace("RunStandardWorkflow", "scop")
   testthat::local_mocked_bindings(
     .package = "scop",
-    RunSpotQC = function(srt, ...) srt,
-    RunSPOTlight = function(srt,
+    RunSpotQC = function(object, ...) object,
+    RunSPOTlight = function(object,
                             reference,
                             reference_label,
                             assay,
@@ -271,6 +271,7 @@ test_that("standard spatial workflow dispatches to RunSPOTlight", {
                             tool_name,
                             store_results,
                             ...) {
+      srt <- object
       expect_identical(reference, pair$reference)
       expect_identical(reference_label, "celltype")
       expect_identical(assay, "RNA")

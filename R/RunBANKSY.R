@@ -68,7 +68,7 @@
 #'   pt.size = 1.5
 #' )
 RunBANKSY <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   features = NULL,
@@ -92,8 +92,10 @@ RunBANKSY <- function(
   tool_name = "BANKSY",
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

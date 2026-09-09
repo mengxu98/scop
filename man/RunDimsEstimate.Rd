@@ -5,7 +5,7 @@
 \title{Estimate useful dimensions from a reduction}
 \usage{
 RunDimsEstimate(
-  srt,
+  object,
   reduction = NULL,
   reduction_method = NULL,
   k = 30L,
@@ -15,11 +15,12 @@ RunDimsEstimate(
   marginal_gain_threshold = 0.5,
   skip_first = FALSE,
   use_stored = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reduction}{Name of the dimensional reduction to inspect.
 Default is \code{NULL}, which automatically selects a PCA-like reduction via
@@ -51,6 +52,9 @@ Useful for \code{TFIDF/LSI} workflows.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 An integer vector of dimensions to use.

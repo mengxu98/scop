@@ -5,7 +5,7 @@
 \title{Feature values on a 3D reduction}
 \usage{
 FeatureDimPlot3D(
-  srt,
+  object,
   features,
   reduction = NULL,
   dims = c(1, 2, 3),
@@ -23,11 +23,12 @@ FeatureDimPlot3D(
   height = NULL,
   save = NULL,
   force = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{features}{Features to plot: a character vector or a named list of
 assay gene names or numeric metadata columns.}
@@ -66,6 +67,9 @@ See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{sca
 \item{force}{Draw even when more than 100 features are requested.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Feature values on a 3D reduction

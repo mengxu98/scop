@@ -5,7 +5,7 @@
 \title{Run SCENIC gene regulatory network analysis}
 \usage{
 RunSCENIC(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   ranking_dbs = NULL,
@@ -37,11 +37,12 @@ RunSCENIC(
   return_seurat = TRUE,
   envname = NULL,
   conda = "auto",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{object}{A Seurat object.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -137,6 +138,9 @@ available on Windows.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object with SCENIC results, or a result list when

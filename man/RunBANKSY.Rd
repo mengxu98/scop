@@ -5,7 +5,7 @@
 \title{Run BANKSY spatial clustering}
 \usage{
 RunBANKSY(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   features = NULL,
@@ -29,11 +29,12 @@ RunBANKSY(
   tool_name = "BANKSY",
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -98,6 +99,9 @@ Default is \code{TRUE}.}
 The default is raw acquisition coordinates, so geometry and distance
 weighting use raw coordinate units. Use \code{"legacy_display"} explicitly to
 reproduce the display-scaled coordinates used before scop 0.9.0.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with BANKSY clusters in metadata. When

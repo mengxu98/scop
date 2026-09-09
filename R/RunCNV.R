@@ -7,7 +7,9 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param method CNA/CNV backend. Supported backends are `"copykat"`,
 #' `"fastCNV"`, `"scevan"`, `"infercnv"`, and `"numbat"`.
 #' @param layer Assay layer used as the expression matrix.
@@ -77,7 +79,7 @@
 #' CNVPlot(srt, plot_type = "dim", value = "CNV_prediction")
 #' }
 RunCNV <- function(
-  srt,
+  object,
   method = c("copykat", "fastCNV", "scevan", "infercnv", "numbat"),
   assay = NULL,
   layer = "counts",
@@ -94,8 +96,10 @@ RunCNV <- function(
   tool_name = "CNV",
   store_matrix = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

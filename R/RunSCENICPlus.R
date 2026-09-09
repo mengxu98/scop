@@ -7,7 +7,9 @@
 #'
 #' @md
 #' @inheritParams RunStandardWorkflow
-#' @param srt A Seurat object containing RNA and chromatin assays.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object containing RNA and chromatin assays.
 #' @param rna_assay RNA assay name.
 #' @param atac_assay Chromatin assay name.
 #' @param rna_layer RNA count layer used for TF-gene inference and AUC scoring.
@@ -142,7 +144,7 @@
 #' )
 #' }
 RunSCENICPlus <- function(
-  srt,
+  object,
   rna_assay = "RNA",
   atac_assay = "peaks",
   rna_layer = "counts",
@@ -168,7 +170,7 @@ RunSCENICPlus <- function(
   max_tf_region = 500,
   min_eregulon_size = 5,
   egrn_rho_threshold = 0.05,
-  egrn_quantiles = c(0.85, 0.90, 0.95),
+  egrn_quantiles = c(0.85, 0.9, 0.95),
   egrn_top_n_region_gene = c(5L, 10L, 15L),
   egrn_min_target_genes = 10L,
   group.by = NULL,
@@ -189,8 +191,10 @@ RunSCENICPlus <- function(
   scplus_object = NULL,
   envname = "scenicplus_env",
   conda = "auto",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

@@ -76,7 +76,7 @@
 #'   velocity = "stochastic"
 #' )
 RunSCVELO <- function(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   assay_x = "RNA",
   layer_x = "counts",
@@ -130,8 +130,10 @@ RunSCVELO <- function(
   backend = c("python", "cpp"),
   max_dense_gib = 8,
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   plot_format <- match.arg(plot_format)
 
@@ -304,7 +306,7 @@ RunSCVELO <- function(
 
   if (!is.null(srt)) {
     args[["adata"]] <- srt_to_adata(
-      srt = srt,
+      object = srt,
       assay_x = assay_x,
       layer_x = layer_x,
       assay_y = assay_y,

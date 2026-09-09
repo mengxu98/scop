@@ -4,14 +4,17 @@
 \alias{srt_to_giotto}
 \title{Convert Seurat to a native Giotto object}
 \usage{
-srt_to_giotto(srt, image = NULL, ...)
+srt_to_giotto(object, image = NULL, ..., srt = NULL)
 }
 \arguments{
-\item{srt}{A `Seurat` object.}
+\item{object}{A `Seurat` object.}
 
 \item{image}{Seurat image name. Multi-image objects require an explicit name.}
 
 \item{...}{Additional arguments passed to the Giotto converter.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A native Giotto object.

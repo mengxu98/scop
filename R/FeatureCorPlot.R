@@ -60,7 +60,7 @@
 #'   add_equation = TRUE
 #' )
 FeatureCorPlot <- function(
-  srt,
+  object,
   features,
   group.by = NULL,
   split.by = NULL,
@@ -103,8 +103,10 @@ FeatureCorPlot <- function(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
 
   if (is.null(features)) {

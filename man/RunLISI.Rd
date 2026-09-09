@@ -5,7 +5,7 @@
 \title{Compute LISI scores on a Seurat object}
 \usage{
 RunLISI(
-  srt,
+  object,
   reductions = NULL,
   reduction = NULL,
   dims = NULL,
@@ -19,11 +19,12 @@ RunLISI(
   cores = NULL,
   max_dense_bytes = Inf,
   overwrite = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reductions}{Character vector of dimensional reductions used to compute LISI.
 If \code{NULL}, \code{\link[=DefaultReduction]{DefaultReduction()}} is used.}
@@ -62,6 +63,9 @@ input and C++ copy. Default is \code{Inf}, which preserves unrestricted behavior
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A modified \code{Seurat} object.

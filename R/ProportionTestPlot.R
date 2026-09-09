@@ -8,7 +8,9 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams scop-params
-#' @param srt A Seurat object containing proportion-test results.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object containing proportion-test results.
 #' @param comparison Which comparison to plot.
 #' If `NULL`, plots all comparisons.
 #' @param proportion_method Optional method to select from
@@ -81,7 +83,7 @@
 #'   ylab = "UMAP_2"
 #' )
 ProportionTestPlot <- function(
-  srt,
+  object,
   comparison = NULL,
   proportion_method = NULL,
   result_level = c("group"),
@@ -123,8 +125,10 @@ ProportionTestPlot <- function(
   ncol = NULL,
   byrow = TRUE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   order_by <- match.arg(order_by)
   plot_type <- match.arg(plot_type)
   umap_mode <- match.arg(umap_mode)

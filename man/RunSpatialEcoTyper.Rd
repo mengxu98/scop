@@ -5,7 +5,7 @@
 \title{Run SpatialEcoTyper spatial ecotype analysis}
 \usage{
 RunSpatialEcoTyper(
-  srt,
+  object,
   mode = c("single", "multi", "recover", "deconvolute"),
   assay = NULL,
   layer = "data",
@@ -54,11 +54,12 @@ RunSpatialEcoTyper(
   allow_partial = FALSE,
   verbose = TRUE,
   ...,
-  image = NULL
+  image = NULL,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object. For \code{mode = "deconvolute"}, a numeric
+\item{object}{A \code{Seurat} object. For \code{mode = "deconvolute"}, a numeric
 expression matrix can also be supplied.}
 
 \item{mode}{SpatialEcoTyper workflow. \code{"single"} runs single-sample de novo
@@ -171,6 +172,9 @@ function.}
 
 \item{image}{Optional image name for single discovery, or named sample-to-image
 map for multi discovery. Multi discovery resolves each sample independently.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with SpatialEcoTyper results in metadata and raw

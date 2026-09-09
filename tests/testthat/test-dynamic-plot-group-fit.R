@@ -93,7 +93,8 @@ test_that("DynamicPlot fits each fit.by group independently", {
   fitted_cells <- list()
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       cells <- rownames(srt@meta.data)[is.finite(srt@meta.data[[lineages]])]
       fitted_cells[[length(fitted_cells) + 1L]] <<- cells
       mock_dynamic_fit_result(srt, lineages, features)
@@ -132,7 +133,8 @@ test_that("DynamicPlot group_use limits independently fitted groups", {
   fitted_cells <- list()
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       cells <- rownames(srt@meta.data)[is.finite(srt@meta.data[[lineages]])]
       fitted_cells[[length(fitted_cells) + 1L]] <<- cells
       mock_dynamic_fit_result(srt, lineages, features)
@@ -224,7 +226,8 @@ test_that("DynamicPlot keeps raw points when a group lacks enough GAM support", 
   fitted_groups <- character()
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       cells <- rownames(srt@meta.data)[is.finite(srt@meta.data[[lineages]])]
       fitted_groups <<- c(fitted_groups, as.character(srt$condition[cells][1]))
       mock_dynamic_fit_result(srt, lineages, features)
@@ -258,7 +261,8 @@ test_that("DynamicPlot subsets custom library sizes for grouped raw points", {
   custom_libsize[24] <- NA_real_
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -293,7 +297,8 @@ test_that("DynamicPlot masks zero library sizes before shared transforms", {
   custom_libsize[24] <- 0
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -329,7 +334,8 @@ test_that("DynamicPlot uses shared expression transforms across fit groups", {
   )
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(
         srt,
         lineages,
@@ -370,7 +376,8 @@ test_that("DynamicPlot shared transforms ignore partial missing values", {
   srt$score[3] <- NA_real_
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -399,7 +406,8 @@ test_that("DynamicPlot retains series identity in grouped combined panels", {
   srt <- make_dynamic_plot_test_object()
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -430,7 +438,8 @@ test_that("DynamicPlot keeps a grouped interval legend without fitted lines", {
   captured_plot <- NULL
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     get_legend = function(plot) {
@@ -474,7 +483,8 @@ test_that("DynamicPlot uses factor levels for matching point and line colors", {
   )
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -515,7 +525,8 @@ test_that("DynamicPlot preserves metadata named FitGroup", {
   srt$FitGroup <- rep(c("meta-A", "meta-B"), times = 12)
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -545,7 +556,8 @@ test_that("DynamicPlot applies custom transforms over the shared lineage", {
   )
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(
         srt,
         lineages,
@@ -585,7 +597,8 @@ test_that("DynamicPlot caps log2fc infinities over the shared lineage", {
   srt <- make_dynamic_plot_test_object(gene1_values = values)
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -615,7 +628,8 @@ test_that("DynamicPlot distinguishes interval-only combined series", {
   srt <- make_dynamic_plot_test_object()
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -654,7 +668,8 @@ test_that("DynamicPlot rejects more than six grouped combined series", {
   }
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -685,7 +700,8 @@ test_that("DynamicPlot builds grouped legends from every panel", {
   srt$Lineage2[paste0("cell", 1:12)] <- NA_real_
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -737,7 +753,8 @@ test_that("DynamicPlot keeps a point guide for globally raw-only fit groups", {
   legend_plot <- NULL
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(
         srt,
         lineages,
@@ -793,7 +810,8 @@ test_that("DynamicPlot keeps a rug guide for globally raw-only fit groups", {
   legend_plot <- NULL
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(
         srt,
         lineages,
@@ -844,7 +862,8 @@ test_that("DynamicPlot disambiguates combined series legend labels", {
   srt@meta.data[["B - C"]] <- rev(seq_len(ncol(srt)))
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -887,7 +906,8 @@ test_that("DynamicPlot deduplicates points across compared lineages", {
   srt <- make_dynamic_plot_test_object()
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -918,7 +938,8 @@ test_that("DynamicPlot keeps cells with missing fit groups as raw points", {
   srt$condition[c("cell1", "cell13")] <- c(NA_character_, "")
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -950,7 +971,8 @@ test_that("DynamicPlot checks finite support for each fitted feature", {
   fitted_features <- list()
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       group <- as.character(srt$condition[
         is.finite(srt@meta.data[[lineages]])
       ][1])
@@ -984,14 +1006,15 @@ test_that("DynamicPlot appends fit.by after the positional API", {
   srt <- make_dynamic_plot_test_object()
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
   )
 
   expect_identical(names(formals(DynamicPlot))[[6]], "cells")
-  expect_identical(tail(names(formals(DynamicPlot)), 1), "fit.by")
+  expect_identical(tail(setdiff(names(formals(DynamicPlot)), "srt"), 1), "fit.by")
   expect_no_error(do.call(
     DynamicPlot,
     list(
@@ -1017,7 +1040,8 @@ test_that("DynamicPlot keeps grouped series keys collision safe", {
   srt$condition <- rep(c("C", "B-C"), each = 12)
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(
         srt,
         lineages,
@@ -1051,7 +1075,8 @@ test_that("DynamicPlot keeps feature linetypes stable across lineage panels", {
   srt <- make_dynamic_plot_test_object()
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(
         srt,
         lineages,
@@ -1096,7 +1121,8 @@ test_that("DynamicPlot includes usable library sizes in feature support", {
   fitted_groups <- character()
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       cells <- rownames(srt@meta.data)[is.finite(srt@meta.data[[lineages]])]
       fitted_groups <<- c(fitted_groups, as.character(srt$condition[cells][1]))
       mock_dynamic_fit_result(srt, lineages, features)
@@ -1127,7 +1153,8 @@ test_that("DynamicPlot preserves metadata named LineagesFeaturesFitGroups", {
   srt$LineagesFeaturesFitGroups <- rep(c("meta-A", "meta-B"), times = 12)
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(srt, lineages, features)
     },
     .package = "scop"
@@ -1161,7 +1188,8 @@ test_that("DynamicPlot keeps global linetypes when panel fits differ", {
   srt$score2 <- rev(seq_len(ncol(srt)))
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, ...) {
+    RunDynamicFeatures = function(object, lineages, features, ...) {
+      srt <- object
       mock_dynamic_fit_result(
         srt,
         lineages,
@@ -1220,7 +1248,8 @@ test_that("DynamicPlot preserves unnamed family order before feature regrouping"
   fitted_families <- list()
 
   testthat::local_mocked_bindings(
-    RunDynamicFeatures = function(srt, lineages, features, family, ...) {
+    RunDynamicFeatures = function(object, lineages, features, family, ...) {
+      srt <- object
       cells <- rownames(srt@meta.data)[is.finite(srt@meta.data[[lineages]])]
       group <- as.character(srt$condition[cells][1])
       fitted_families[[group]] <<- family

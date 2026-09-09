@@ -5,7 +5,7 @@
 \title{DEtest Ring Plot}
 \usage{
 DEtestRingPlot(
-  srt,
+  object,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -35,11 +35,12 @@ DEtestRingPlot(
   tile_gap = 0.1,
   jitter_width = 0.5,
   ring_segments = TRUE,
-  seed = 11
+  seed = 11,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
+\item{object}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
 results of differential expression analysis.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
@@ -111,6 +112,9 @@ Available palettes can be found in \link[thisplot:show_palettes]{thisplot::show_
 \item{ring_segments}{Whether to draw segment lines between cell types in ring plot.}
 
 \item{seed}{Random seed for jitter in Manhattan and ring plots.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Draw a circular (ring) plot of differential expression results by cell type.

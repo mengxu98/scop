@@ -74,7 +74,7 @@ test_that("RunSpatialVariableFeatures validates storage flags before backend wor
     store_results = list(1L, NA, c(TRUE, FALSE))
   )
   base_args <- list(
-    srt = make_spatial_variable_seurat(),
+    object = make_spatial_variable_seurat(),
     method = "SPARKX",
     layer = "counts",
     coord.cols = c("x", "y"),
@@ -209,7 +209,7 @@ test_that("C++ spatial scores agree with the R reference", {
 test_that("native backend selection is explicit and reproducible", {
   skip_if_not_installed("BiocNeighbors")
   args <- list(
-    srt = make_spatial_variable_seurat(),
+    object = make_spatial_variable_seurat(),
     method = "geary",
     layer = "counts",
     coord.cols = c("x", "y"),

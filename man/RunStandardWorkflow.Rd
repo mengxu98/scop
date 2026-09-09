@@ -5,7 +5,7 @@
 \title{Standard single-cell and spatial workflow}
 \usage{
 RunStandardWorkflow(
-  srt,
+  object,
   prefix = "Standard",
   workflow = c("single_cell", "spatial"),
   assay = NULL,
@@ -50,11 +50,12 @@ RunStandardWorkflow(
   cores = 1L,
   verbose = TRUE,
   seed = 11,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{prefix}{Prefix for intermediate object names.}
 
@@ -114,6 +115,9 @@ Default is \code{TRUE}.}
 \item{seed}{Random seed.}
 
 \item{...}{Additional arguments passed to reduction methods.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object. Spatial workflows store per-stage execution and

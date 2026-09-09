@@ -5,7 +5,7 @@
 \title{Plot CytoTRACE 2 Results}
 \usage{
 CytoTRACEPlot(
-  srt,
+  object,
   reduction = NULL,
   group.by = NULL,
   combine = TRUE,
@@ -19,11 +19,12 @@ CytoTRACEPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
@@ -44,6 +45,9 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 Default is \code{TRUE}.}
 
 \item{...}{Passed to \link{CellDimPlot} and \link{FeatureDimPlot}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 If \code{combine = TRUE}, returns a \code{patchwork} object combining all plots.

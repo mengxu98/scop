@@ -66,7 +66,7 @@ cellchat_check_presto <- function(do.fast, identify_formals) {
 #'   top_n = 50
 #' )
 RunCellChat <- function(
-  srt,
+  object,
   group.by,
   species = c("Homo_sapiens", "Mus_musculus", "zebrafish"),
   split.by = NULL,
@@ -79,8 +79,10 @@ RunCellChat <- function(
   backend = c("cpp", "r"),
   assay = NULL,
   layer = "data",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   log_message(
     "Start {.pkg CellChat} analysis",

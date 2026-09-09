@@ -5,7 +5,7 @@
 \title{Run C-SIDE spatial differential expression}
 \usage{
 RunCSIDE(
-  srt,
+  object,
   rctd_result = NULL,
   explanatory.variable = NULL,
   group.by = NULL,
@@ -22,11 +22,12 @@ RunCSIDE(
   tool_name = "CSIDE",
   store_results = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{Spatial \code{Seurat} object used as the RCTD query.}
+\item{object}{Spatial \code{Seurat} object used as the RCTD query.}
 
 \item{rctd_result}{Optional old-api \code{spacexr} RCTD object. If \code{NULL},
 \code{srt@tools[["RCTD"]]$object} from \code{\link[=RunRCTD]{RunRCTD()}} is used.}
@@ -79,6 +80,9 @@ backend, such as \code{cell_type_threshold}, \code{gene_threshold},
 \code{doublet_mode}, \code{cell_type_specific}, or \code{params_to_test}. When using the
 stored result from \code{\link[=RunRCTD]{RunRCTD()}} with \code{rctd_mode = "full"}, \code{doublet_mode}
 defaults to \code{FALSE} unless explicitly supplied.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with run-level summaries in metadata. When
@@ -116,7 +120,7 @@ features_use <- head(intersect(
   rownames(spatial)
 ), 300)
 spatial <- RunRCTD(
-  srt = spatial,
+  object = spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",
@@ -132,7 +136,7 @@ spatial <- RunRCTD(
 )
 spatial <- spatial[, rownames(spatial@tools$RCTD$weights)]
 spatial <- RunCSIDE(
-  srt = spatial,
+  object = spatial,
   group.by = "region",
   celltypes = c("ductal", "alpha"),
   features = features_use,

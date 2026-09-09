@@ -305,7 +305,7 @@ WNN_integrate <- function(
   atac_prefix <- resolve_assay_prefix(srt = srt_merge, assay = atac_assay)
 
   srt_merge <- RunStandardWorkflow(
-    srt = srt_merge,
+    object = srt_merge,
     prefix = "Standard",
     assay = c(rna_assay, atac_assay),
     do_normalization = do_normalization,
@@ -573,7 +573,7 @@ MultiMAP_integrate <- function(
   )
 
   srt_merge <- RunStandardWorkflow(
-    srt = srt_merge,
+    object = srt_merge,
     prefix = "Standard",
     assay = c(rna_assay, atac_assay),
     do_normalization = do_normalization,
@@ -633,7 +633,7 @@ MultiMAP_integrate <- function(
   }
 
   rna_adata <- srt_to_adata(
-    srt = srt_merge,
+    object = srt_merge,
     features = shared_features,
     assay_x = rna_assay,
     layer_x = "counts",
@@ -644,7 +644,7 @@ MultiMAP_integrate <- function(
     verbose = FALSE
   )
   atac_adata <- srt_to_adata(
-    srt = srt_merge,
+    object = srt_merge,
     features = shared_features,
     assay_x = gene_activity_assay,
     layer_x = "counts",
@@ -1025,7 +1025,7 @@ run_wnn_reduction <- function(
     for (n in nonlinear_reduction_dims) {
       if (identical(nr, "fr")) {
         srt <- RunDimsReduction(
-          srt = srt,
+          object = srt,
           prefix = "WNN",
           graph_use = "WNNSNN",
           nonlinear_reduction = nr,
@@ -1037,7 +1037,7 @@ run_wnn_reduction <- function(
         )
       } else {
         srt <- RunDimsReduction(
-          srt = srt,
+          object = srt,
           prefix = "WNN",
           neighbor_use = "WNN",
           nonlinear_reduction = nr,
@@ -4103,7 +4103,7 @@ Conos_integrate <- function(
       srt_list,
       function(srt) {
         max(RunDimsEstimate(
-          srt = srt,
+          object = srt,
           reduction = paste0("Conos", linear_reduction),
           reduction_method = linear_reduction,
           skip_first = normalization_method == "TFIDF",

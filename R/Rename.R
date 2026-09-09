@@ -23,11 +23,13 @@
 #' )
 #' head(rownames(panc8_rename))
 RenameFeatures <- function(
-  srt,
+  object,
   newnames = NULL,
   assays = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   assays <- assays[assays %in% SeuratObject::Assays(srt)] %||% SeuratObject::Assays(srt)
   if (is.null(names(newnames))) {
     if (length(newnames) == nrow(srt)) {
@@ -137,13 +139,15 @@ RenameFeatures <- function(
 #' )
 #' CellDimPlot(pancreas_sub, "Merged")
 RenameClusters <- function(
-  srt,
+  object,
   group.by,
   nameslist = list(),
   name = "newclusters",
   keep_levels = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (missing(group.by)) {
     log_message(
       "group.by must be provided",

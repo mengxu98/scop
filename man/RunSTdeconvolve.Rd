@@ -5,7 +5,7 @@
 \title{Run STdeconvolve reference-free spatial deconvolution}
 \usage{
 RunSTdeconvolve(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   features = NULL,
@@ -23,11 +23,12 @@ RunSTdeconvolve(
   store_results = TRUE,
   round_counts = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object containing spatial expression data.}
+\item{object}{A \code{Seurat} object containing spatial expression data.}
 
 \item{assay}{Assay used as STdeconvolve input. If \code{NULL}, the default assay
 is used.}
@@ -70,6 +71,9 @@ in the selected assay are used.}
 This is a preprocessing choice and does not recover original counts.}
 
 \item{...}{Additional arguments passed to the STdeconvolve fit steps.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with topic proportions in metadata and detailed

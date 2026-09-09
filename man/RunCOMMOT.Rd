@@ -5,7 +5,7 @@
 \title{Run official COMMOT spatial communication analysis}
 \usage{
 RunCOMMOT(
-  srt,
+  object,
   group.by,
   species = c("human", "mouse"),
   database = "CellChat",
@@ -25,11 +25,12 @@ RunCOMMOT(
   store.h5ad = FALSE,
   overwrite = FALSE,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A `Seurat` spatial object.}
+\item{object}{A `Seurat` spatial object.}
 
 \item{group.by}{Metadata column used to aggregate communication by group.}
 
@@ -70,6 +71,9 @@ nested `filter_args`.}
 \item{backend}{Backend used only for SCOP CCC result aggregation.}
 
 \item{verbose}{Whether to print progress messages.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 The input `Seurat` object with `srt@tools$COMMOT` and unified CCC

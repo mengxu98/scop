@@ -55,7 +55,7 @@
 #' )
 #' }
 RunWOT <- function(
-  srt = NULL,
+  object = NULL,
   assay_x = "RNA",
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
@@ -78,8 +78,10 @@ RunWOT <- function(
   plot_prefix = "wot",
   dirpath = "./",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   PrepareEnv(modules = "wot")
   check_python("wot")
   if (all(is.null(srt), is.null(adata))) {
@@ -161,7 +163,7 @@ RunWOT <- function(
 
   if (!is.null(srt)) {
     args[["adata"]] <- srt_to_adata(
-      srt = srt,
+      object = srt,
       assay_x = assay_x,
       layer_x = layer_x,
       assay_y = assay_y,

@@ -5,7 +5,7 @@
 \title{Features correlation plot}
 \usage{
 FeatureCorPlot(
-  srt,
+  object,
   features,
   group.by = NULL,
   split.by = NULL,
@@ -48,11 +48,12 @@ FeatureCorPlot(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{features}{Features to compare.
 Should be present in both the assay data and the metadata of the Seurat object.}
@@ -122,6 +123,9 @@ returns a list of ggplots.}
 \item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Pairwise feature correlations in a \code{Seurat} object.

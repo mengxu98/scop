@@ -5,7 +5,7 @@
 \title{Plot scFEA flux Cohen's d volcano plots}
 \usage{
 scFEAVolcanoPlot(
-  srt,
+  object,
   group.by,
   ident.1 = NULL,
   ident.2 = NULL,
@@ -18,11 +18,12 @@ scFEAVolcanoPlot(
   combine = TRUE,
   width = 12,
   height = 10.4,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object returned by [RunscFEA()].}
+\item{object}{A Seurat object returned by [RunscFEA()].}
 
 \item{group.by}{Metadata column defining groups. If `ident.1` and `ident.2`
 are both `NULL`, each group is compared against all remaining cells.}
@@ -52,6 +53,9 @@ If `FALSE`, returns one plot per pathway.}
 returned plot object.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 For a single contrast, a paged list of `ggplot` objects when

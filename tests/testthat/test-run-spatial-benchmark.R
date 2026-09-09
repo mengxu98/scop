@@ -433,26 +433,26 @@ test_that("method execution requires exact spot identity and expected output", {
   valid <- object[, rev(colnames(object))]
   valid$SmoothClust_cluster <- rev(c("1", "1", "2", "2", "3", "3"))
   testthat::local_mocked_bindings(
-    RunSmoothClust = function(srt, ...) valid
+    RunSmoothClust = function(object, ...) valid
   )
   aligned <- benchmark_execute_method(object, "SmoothClust", list())
   expect_identical(names(aligned$prediction), colnames(object))
 
   testthat::local_mocked_bindings(
-    RunSmoothClust = function(srt, ...) "not Seurat"
+    RunSmoothClust = function(object, ...) "not Seurat"
   )
   expect_error(benchmark_execute_method(object, "SmoothClust", list()), "did not return a Seurat")
 
   missing_column <- object
   testthat::local_mocked_bindings(
-    RunSmoothClust = function(srt, ...) missing_column
+    RunSmoothClust = function(object, ...) missing_column
   )
   expect_error(benchmark_execute_method(object, "SmoothClust", list()), "did not create cluster column")
 
   missing_spot <- object[, -1]
   missing_spot$SmoothClust_cluster <- "1"
   testthat::local_mocked_bindings(
-    RunSmoothClust = function(srt, ...) missing_spot
+    RunSmoothClust = function(object, ...) missing_spot
   )
   expect_error(benchmark_execute_method(object, "SmoothClust", list()), "non-identical set")
 })

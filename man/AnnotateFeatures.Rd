@@ -5,7 +5,7 @@
 \title{Annotate Features}
 \usage{
 AnnotateFeatures(
-  srt,
+  object,
   species = "Homo_sapiens",
   IDtype = c("symbol", "ensembl_id", "entrez_id"),
   db = NULL,
@@ -21,11 +21,12 @@ AnnotateFeatures(
   assays = "RNA",
   overwrite = FALSE,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{Seurat object to be annotated.}
+\item{object}{Seurat object to be annotated.}
 
 \item{species}{\code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
@@ -68,6 +69,9 @@ Default is \code{"seqname"}, \code{"feature"}, \code{"start"}, \code{"end"},
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Annotate features in a Seurat object with additional metadata from databases or a GTF file.

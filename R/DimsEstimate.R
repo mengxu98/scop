@@ -2,7 +2,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param reduction Name of the dimensional reduction to inspect.
 #' Default is `NULL`, which automatically selects a PCA-like reduction via
 #' [DefaultReduction()] with `pattern = "pca"`.
@@ -35,7 +37,7 @@
 #'
 #' DimsEstimatePlot(pancreas_sub)
 RunDimsEstimate <- function(
-  srt,
+  object,
   reduction = NULL,
   reduction_method = NULL,
   k = 30L,
@@ -45,8 +47,10 @@ RunDimsEstimate <- function(
   marginal_gain_threshold = 0.5,
   skip_first = FALSE,
   use_stored = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a {.cls Seurat}",
@@ -56,7 +60,7 @@ RunDimsEstimate <- function(
   method <- match.arg(method)
   if (is.null(reduction)) {
     reduction <- DefaultReduction(
-      srt = srt,
+      object = srt,
       pattern = "pca",
       min_dim = 2L
     )
@@ -68,7 +72,7 @@ RunDimsEstimate <- function(
       )
     }
     reduction <- DefaultReduction(
-      srt = srt,
+      object = srt,
       pattern = reduction,
       min_dim = 2L
     )
@@ -403,7 +407,7 @@ pc_selection_stats <- function(
   }
   if (is.null(reduction)) {
     reduction <- DefaultReduction(
-      srt = srt,
+      object = srt,
       pattern = "pca",
       min_dim = 2L
     )
@@ -415,7 +419,7 @@ pc_selection_stats <- function(
       )
     }
     reduction <- DefaultReduction(
-      srt = srt,
+      object = srt,
       pattern = reduction,
       min_dim = 2L
     )
@@ -480,7 +484,9 @@ pc_selection_stats <- function(
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object with a PCA-like reduction computed.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object with a PCA-like reduction computed.
 #' @param max_pcs Maximum number of PCs to visualize.
 #' @param variance_thresholds Numeric vector of variance thresholds to mark.
 #' @param reduction Reduction name to inspect. Default is `NULL`, which
@@ -510,9 +516,9 @@ pc_selection_stats <- function(
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' DimsEstimatePlot(pancreas_sub)
 DimsEstimatePlot <- function(
-  srt,
+  object,
   max_pcs = 50,
-  variance_thresholds = c(0.60, 0.70, 0.80, 0.90),
+  variance_thresholds = c(0.6, 0.7, 0.8, 0.9),
   reduction = NULL,
   palcolor = c("#D70440", "#0AA344", "#1772B4"),
   aspect.ratio = NULL,
@@ -522,12 +528,14 @@ DimsEstimatePlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   if (is.null(reduction)) {
     reduction <- DefaultReduction(
-      srt = srt,
+      object = srt,
       pattern = "pca",
       min_dim = 2L
     )
@@ -539,7 +547,7 @@ DimsEstimatePlot <- function(
       )
     }
     reduction <- DefaultReduction(
-      srt = srt,
+      object = srt,
       pattern = reduction,
       min_dim = 2L
     )
@@ -553,7 +561,7 @@ DimsEstimatePlot <- function(
   plot_data <- stats_use[["plot_data"]]
 
   recommended_dims <- RunDimsEstimate(
-    srt = srt,
+    object = srt,
     reduction = reduction,
     reduction_method = reduction,
     use_stored = TRUE,

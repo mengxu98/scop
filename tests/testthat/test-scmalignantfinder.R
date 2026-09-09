@@ -31,7 +31,8 @@ with_mock_scmalignantfinder <- function(funs, code) {
     scmf_python_classifier_available = function() {
       TRUE
     },
-    srt_to_adata = function(srt, layer_x, ...) {
+    srt_to_adata = function(object, layer_x, ...) {
+      srt <- object
       expect_identical(layer_x, "counts")
       list(cells = colnames(srt))
     },

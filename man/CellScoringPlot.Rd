@@ -5,7 +5,7 @@
 \title{Plot CellScoring results from a Seurat object}
 \usage{
 CellScoringPlot(
-  srt,
+  object,
   method = "AUCell",
   features = NULL,
   scores = NULL,
@@ -49,11 +49,12 @@ CellScoringPlot(
   ...,
   combine = TRUE,
   seed = 42,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A `Seurat` object.}
+\item{object}{A `Seurat` object.}
 
 \item{method}{Cell-scoring method to retrieve and label. Accepts the same
 values as the `method` argument of [CellScoring()].}
@@ -175,6 +176,9 @@ components before layout spacers are inserted.}
 sampling.}
 
 \item{verbose}{Whether to report plotting progress.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A `patchwork` object, or a named list of `ggplot`/`patchwork`

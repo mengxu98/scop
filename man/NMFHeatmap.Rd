@@ -5,7 +5,7 @@
 \title{NMF similarity heatmap}
 \usage{
 NMFHeatmap(
-  srt,
+  object,
   plot_type = c("cells", "features"),
   reduction = "nmf",
   dims = NULL,
@@ -103,11 +103,12 @@ NMFHeatmap(
   seed = 11,
   legend.position = "right",
   ht_params = list(),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing an NMF dimensional reduction.}
+\item{object}{A Seurat object containing an NMF dimensional reduction.}
 
 \item{plot_type}{Plot type. \code{"cells"} plots cell/spot similarity from NMF
 embeddings. \code{"features"} plots feature similarity from NMF loadings.}
@@ -229,6 +230,9 @@ Gap to the heatmap grows automatically when long row names are on the right.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A list with the following elements:

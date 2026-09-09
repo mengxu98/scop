@@ -5,7 +5,7 @@
 \title{Feature statistical plots}
 \usage{
 FeatureStatPlot(
-  srt,
+  object,
   stat.by,
   group.by = NULL,
   split.by = NULL,
@@ -90,11 +90,12 @@ FeatureStatPlot(
   seed = 11,
   ...,
   x_text_angle = 45,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{stat.by}{Features to plot.}
 
@@ -197,6 +198,9 @@ returns a list of ggplots.}
 \item{x_text_angle}{Rotation of x-axis labels.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Feature statistical plots

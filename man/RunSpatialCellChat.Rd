@@ -5,7 +5,7 @@
 \title{Run Spatial CellChat analysis}
 \usage{
 RunSpatialCellChat(
-  srt,
+  object,
   group.by,
   sample.by = NULL,
   assay = NULL,
@@ -36,11 +36,12 @@ RunSpatialCellChat(
   store.object = c("minimal", "full"),
   overwrite = FALSE,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A `Seurat` object with normalized, non-negative expression and
+\item{object}{A `Seurat` object with normalized, non-negative expression and
 spatial coordinates.}
 
 \item{group.by}{One metadata column defining cell types for cell-level runs,
@@ -126,6 +127,9 @@ be replaced.}
 not change the SpatialCellChat inference engine.}
 
 \item{verbose}{Whether to print progress messages.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 The input `Seurat` object with a plain SpatialCellChat result bundle

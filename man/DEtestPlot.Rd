@@ -5,7 +5,7 @@
 \title{Differential Expression Test Plot}
 \usage{
 DEtestPlot(
-  srt,
+  object,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -62,11 +62,12 @@ DEtestPlot(
   enrich_padj_cutoff = 0.05,
   enrich_gsva_score_cutoff = NULL,
   gsva_method = NULL,
-  enrich_nlabel = 15
+  enrich_nlabel = 15,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
+\item{object}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
 results of differential expression analysis.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
@@ -198,6 +199,9 @@ Options are \code{"Enrichment"}, \code{"GSEA"}, \code{"GSVA"}.}
 
 \item{enrich_nlabel}{Maximum number of enrichment-derived labels added per group.
 Labels from \code{features_label} are always retained.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Differential Expression Test Plot

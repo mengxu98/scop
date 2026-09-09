@@ -5,7 +5,7 @@
 \title{Plot FitDevo results}
 \usage{
 FitDevoPlot(
-  srt,
+  object,
   reduction = NULL,
   group.by = NULL,
   score.name = "FitDevo_Score",
@@ -20,11 +20,12 @@ FitDevoPlot(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object processed by \code{\link[=RunFitDevo]{RunFitDevo()}}.}
+\item{object}{A \code{Seurat} object processed by \code{\link[=RunFitDevo]{RunFitDevo()}}.}
 
 \item{reduction}{Reduction used by \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} and \code{\link[=CellDimPlot]{CellDimPlot()}}.}
 
@@ -47,6 +48,9 @@ distribution plots.}
 
 \item{...}{Additional arguments passed to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} and
 \code{\link[=CellDimPlot]{CellDimPlot()}}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A patchwork object or a named list of \code{ggplot} objects.

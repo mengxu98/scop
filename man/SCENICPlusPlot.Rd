@@ -5,7 +5,7 @@
 \title{Plot SCENIC+ eRegulon activity}
 \usage{
 SCENICPlusPlot(
-  srt,
+  object,
   group.by,
   tool_name = "SCENICPlus",
   assay = "scenicplus",
@@ -13,11 +13,12 @@ SCENICPlusPlot(
     "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim",
     "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "egrn",
     "overlap", "target_bar", "coverage"),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object from \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}.}
+\item{object}{A Seurat object from \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}.}
 
 \item{group.by}{Metadata column for cell groups.}
 
@@ -28,6 +29,9 @@ SCENICPlusPlot(
 \item{plot_type}{Plot type. Default \code{"heatmap_dotplot"}.}
 
 \item{...}{Passed to \code{\link[=SCENICPlot]{SCENICPlot()}}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 Same as \code{\link[=SCENICPlot]{SCENICPlot()}}.

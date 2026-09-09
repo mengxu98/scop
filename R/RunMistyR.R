@@ -6,7 +6,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param assay Assay used for expression. If `NULL`, the default assay is used.
 #' @param layer Assay layer used for expression values.
 #' @param features Features used by MISTy. If `NULL`, variable features are used
@@ -54,7 +56,7 @@
 #' MistyRPlot(spatial, type = "improvements", top_n = 5)
 #' }
 RunMistyR <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   features = NULL,
@@ -80,8 +82,10 @@ RunMistyR <- function(
   store_views = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   coordinate_space <- match.arg(coordinate_space)
   log_message(
     "Running mistyR multiview spatial modeling",

@@ -5,7 +5,7 @@
 \title{Run common cell-cell communication analyses}
 \usage{
 RunCCC(
-  srt,
+  object,
   group.by = NULL,
   methods = c("CellChat", "CellphoneDB", "LIANA"),
   method_params = list(),
@@ -13,11 +13,12 @@ RunCCC(
   skip_failed = FALSE,
   rebuild_unified = TRUE,
   thresh = 0.05,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
 
@@ -48,6 +49,9 @@ and passed to \code{RunCellChat()} unless overridden in \code{method_params$Cell
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with method-specific results and a unified

@@ -117,7 +117,7 @@
 #' )
 #' ht6$plot
 FeatureHeatmap <- function(
-  srt,
+  object,
   features = NULL,
   cells = NULL,
   group.by = NULL,
@@ -257,8 +257,10 @@ FeatureHeatmap <- function(
   legend.position = "right",
   ht_params = list(),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   heatmap_border <- heatmap_border %||% border
   cell_annotation_border <- cell_annotation_border %||% border

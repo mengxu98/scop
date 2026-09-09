@@ -81,7 +81,7 @@
 #'   plot_type = "raw"
 #' )
 PseudotimeProjectionPlot <- function(
-  srt,
+  object,
   reduction,
   time_key,
   dims = c(1, 2),
@@ -133,8 +133,10 @@ PseudotimeProjectionPlot <- function(
   label.bg = "white",
   label.bg.r = 0.1,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
 
   plot_type <- match.arg(plot_type)

@@ -5,7 +5,7 @@
 \title{Plot scFEA module flux heatmap}
 \usage{
 scFEAHeatmap(
-  srt,
+  object,
   assay = "scFEAflux",
   layer = "data",
   group.by = NULL,
@@ -57,11 +57,12 @@ scFEAHeatmap(
   ht_params = list(),
   width = NULL,
   height = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object returned by [RunscFEA()].}
+\item{object}{A Seurat object returned by [RunscFEA()].}
 
 \item{assay}{Flux assay name.}
 
@@ -158,6 +159,9 @@ values are interpreted as millimeters.}
 returned heatmap object.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A `ComplexHeatmap` heatmap object.

@@ -34,7 +34,7 @@ test_that("neighborhood counts preserve saved scope, zero and unknown values", {
     )
   }
   out <- run(backend = "r")
-  local_mocked_bindings(SpatialSpotPlot = function(srt, values, ...) values, .package = "scop")
+  local_mocked_bindings(SpatialSpotPlot = function(object, values, ...) values, .package = "scop")
   plot <- function(object = out, ...) SpatialNeighborhoodPlot(object, plot_type = "spatial", ...)
   expected <- stats::setNames(c(1, NA, 0, 1, NA, NA), colnames(srt))
   expect_identical(plot(pair = c("A", "B")), expected)

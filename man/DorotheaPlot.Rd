@@ -5,7 +5,7 @@
 \title{Plot transcription factor activity}
 \usage{
 DorotheaPlot(
-  srt,
+  object,
   group.by,
   group1 = NULL,
   group2 = NULL,
@@ -51,11 +51,12 @@ DorotheaPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   return_data = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object containing results from \code{\link[=RunDorothea]{RunDorothea()}}.}
+\item{object}{A \code{Seurat} object containing results from \code{\link[=RunDorothea]{RunDorothea()}}.}
 
 \item{group.by}{Metadata column used to define groups.}
 
@@ -161,6 +162,9 @@ diverging comparison scales. Kept for backward compatibility.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 For \code{"bar"}, \code{"lollipop"}, \code{"volcano"}, \code{"dim"}, \code{"stat"}, and

@@ -5,7 +5,7 @@
 \title{Pseudotime Projection Plot}
 \usage{
 PseudotimeProjectionPlot(
-  srt,
+  object,
   reduction,
   time_key,
   dims = c(1, 2),
@@ -57,11 +57,12 @@ PseudotimeProjectionPlot(
   label.bg = "white",
   label.bg.r = 0.1,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
@@ -165,6 +166,9 @@ Defaults is \code{"white"}.}
 \item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Creates a projection plot similar to \link{VelocityPlot},

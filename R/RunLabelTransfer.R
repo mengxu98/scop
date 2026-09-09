@@ -60,7 +60,7 @@
 #'   verbose = FALSE
 #' )
 #' query <- RunLabelTransfer(
-#'   srt = query,
+#'   object = query,
 #'   reference = reference,
 #'   assay = "peaks",
 #'   reference_assay = "RNA",
@@ -72,7 +72,7 @@
 #' )
 #' head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = FALSE])
 RunLabelTransfer <- function(
-  srt,
+  object,
   reference,
   assay = NULL,
   method = c("Seurat", "scOMM"),
@@ -98,8 +98,10 @@ RunLabelTransfer <- function(
   scomm_batch_size = 32,
   scomm_threshold = 0.5,
   scomm_seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   method <- match.arg(method)
   prediction_prefix <- prediction_prefix %||%
     if (identical(method, "scOMM")) {
@@ -175,7 +177,7 @@ RunLabelTransfer <- function(
       assay
     }
     srt <- RunscOMM(
-      srt = srt,
+      object = srt,
       reference = reference,
       reference_assay = reference_assay,
       query_assay = query_assay,

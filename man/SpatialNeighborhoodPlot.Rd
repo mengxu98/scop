@@ -5,7 +5,7 @@
 \title{Spatial neighborhood plot}
 \usage{
 SpatialNeighborhoodPlot(
-  srt,
+  object,
   method = NULL,
   plot_type = c("heatmap", "network", "stat", "spatial"),
   comparison = NULL,
@@ -37,11 +37,12 @@ SpatialNeighborhoodPlot(
   seed = 11,
   verbose = TRUE,
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{method}{Stored neighborhood method to plot. If \code{NULL}, the active
 method is used.}
@@ -109,6 +110,9 @@ Default is \code{TRUE}.}
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

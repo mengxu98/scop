@@ -274,7 +274,9 @@ commot_execute <- function(
 #' metadata, and raw coordinates are exchanged through files; AnnData is not
 #' placed inside the Seurat object.
 #'
-#' @param srt A `Seurat` spatial object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` spatial object.
 #' @param group.by Metadata column used to aggregate communication by group.
 #' @param species COMMOT ligand-receptor database species.
 #' @param database Official COMMOT ligand-receptor database name.
@@ -302,7 +304,7 @@ commot_execute <- function(
 #' @references <https://github.com/zcang/COMMOT>
 #' @export
 RunCOMMOT <- function(
-  srt,
+  object,
   group.by,
   species = c("human", "mouse"),
   database = "CellChat",
@@ -322,8 +324,10 @@ RunCOMMOT <- function(
   store.h5ad = FALSE,
   overwrite = FALSE,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   species <- match.arg(species)
   backend <- match.arg(backend)
   validate_scalar_flag(cluster, "cluster")
@@ -468,7 +472,7 @@ COMMOTPlot <- function(
   spatial_require_coordinate_contract(stored$result, "RunCOMMOT()")
   if (identical(plot_type, "network")) {
     plot_object <- commot_plot_object(object, stored)
-    return(do.call(CCCNetworkPlot, c(list(srt = plot_object, method = "COMMOT", plot_type = "circle"), list(...))))
+    return(do.call(CCCNetworkPlot, c(list(object = plot_object, method = "COMMOT", plot_type = "circle"), list(...))))
   }
   if (identical(plot_type, "matrix")) {
     table <- stored$result$cluster_table

@@ -3,7 +3,9 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams PrepareEnv
-#' @param srt A Seurat object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object.
 #' @param layer Assay layer used as the count matrix.
 #' @param ranking_dbs Character vector of cisTarget ranking feather files. If
 #' `NULL`, the gene-based v10 cisTarget ranking databases are prepared from
@@ -102,7 +104,7 @@
 #' )
 #' }
 RunSCENIC <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   ranking_dbs = NULL,
@@ -134,8 +136,10 @@ RunSCENIC <- function(
   return_seurat = TRUE,
   envname = NULL,
   conda = "auto",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

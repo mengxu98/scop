@@ -22,7 +22,7 @@
 #'
 #' @export
 RunDimsReduction <- function(
-  srt,
+  object,
   prefix = "",
   features = NULL,
   assay = NULL,
@@ -40,8 +40,10 @@ RunDimsReduction <- function(
   nonlinear_reduction_params = list(),
   force_nonlinear_reduction = TRUE,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (inherits(srt[[assay]], "ChromatinAssay")) {
@@ -195,7 +197,7 @@ RunDimsReduction <- function(
           srt@reductions[[paste0(prefix, linear_reduction)]]@misc[[
             "dims_estimate"
           ]] <- RunDimsEstimate(
-            srt = srt,
+            object = srt,
             reduction = paste0(prefix, linear_reduction),
             reduction_method = linear_reduction,
             use_stored = TRUE,
@@ -328,7 +330,7 @@ RunDimsReduction <- function(
       ]] <- model
     }
     dims_estimate <- RunDimsEstimate(
-      srt = srt,
+      object = srt,
       reduction = paste0(prefix, linear_reduction),
       reduction_method = linear_reduction,
       use_stored = FALSE,

@@ -282,7 +282,7 @@
 #'   label_insitu = TRUE
 #' )
 FeatureDimPlot <- function(
-  srt,
+  object,
   features,
   reduction = NULL,
   dims = c(1, 2),
@@ -365,8 +365,10 @@ FeatureDimPlot <- function(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   color_blend_mode <- match.arg(color_blend_mode)
   if (!is.null(keep_scale)) {
@@ -1658,7 +1660,7 @@ FeatureDimPlot <- function(
 #'   reduction = "StandardpcaUMAP3D"
 #' )
 FeatureDimPlot3D <- function(
-  srt,
+  object,
   features,
   reduction = NULL,
   dims = c(1, 2, 3),
@@ -1676,8 +1678,10 @@ FeatureDimPlot3D <- function(
   height = NULL,
   save = NULL,
   force = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   cols.highlight <- col2hex(cols.highlight)
 
   if (is.list(features)) {

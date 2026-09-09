@@ -122,7 +122,7 @@ test_that("RunBayesSpace validates output names and storage before backend work"
     store_sce = list(1L, NA)
   )
   base_args <- list(
-    srt = make_bayesspace_object(),
+    object = make_bayesspace_object(),
     q = 2,
     preprocess = FALSE,
     verbose = FALSE

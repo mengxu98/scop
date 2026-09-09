@@ -6,7 +6,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param group.by Metadata column containing cell or spot labels.
 #' @param r Numeric radius or radii used by `Statial::Kontextual()`, expressed
 #' in the selected coordinate units.
@@ -53,7 +55,7 @@
 #' StatialKontextualPlot(spatial)
 #' }
 RunStatialKontextual <- function(
-  srt,
+  object,
   group.by,
   r,
   from = NULL,
@@ -75,8 +77,10 @@ RunStatialKontextual <- function(
   store_input = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   coordinate_space <- match.arg(coordinate_space)
   log_message(
     "Running Statial Kontextual spatial relationships",

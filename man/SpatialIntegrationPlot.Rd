@@ -5,7 +5,7 @@
 \title{Plot spatial integration results}
 \usage{
 SpatialIntegrationPlot(
-  srt,
+  object,
   method = NULL,
   plot_type = c("spatial", "embedding", "alignment", "composition"),
   group.by = NULL,
@@ -21,11 +21,12 @@ SpatialIntegrationPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object containing spatial integration results.}
+\item{object}{A \code{Seurat} object containing spatial integration results.}
 
 \item{method}{Stored integration method. If \code{NULL}, the active method stored
 in \code{srt@tools[[tool_name]]} is used.}
@@ -67,6 +68,9 @@ list.}
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{ggplot}, patchwork object, or list of plots.

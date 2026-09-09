@@ -5,7 +5,7 @@
 \title{Run an approximate SCENICPlus-compatible eGRN analysis}
 \usage{
 RunSCENICPlus(
-  srt,
+  object,
   rna_assay = "RNA",
   atac_assay = "peaks",
   rna_layer = "counts",
@@ -52,11 +52,12 @@ RunSCENICPlus(
   scplus_object = NULL,
   envname = "scenicplus_env",
   conda = "auto",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing RNA and chromatin assays.}
+\item{object}{A Seurat object containing RNA and chromatin assays.}
 
 \item{rna_assay}{RNA assay name.}
 
@@ -208,6 +209,9 @@ standardization. Used only for \code{backend = "python"}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object with SCENICPlus-style results.

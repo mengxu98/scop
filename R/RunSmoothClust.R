@@ -6,7 +6,9 @@
 #' domains with PCA and k-means.
 #'
 #' @md
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param assay Assay used for expression. If `NULL`, the default assay is used.
 #' @param layer Assay layer used for expression values.
 #' @param image Name of the Seurat spatial image. Required when multiple images
@@ -74,7 +76,7 @@
 #'   pt.size = 1.5
 #' )
 RunSmoothClust <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   image = NULL,
@@ -102,8 +104,10 @@ RunSmoothClust <- function(
   seed = 11,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   coordinate_space <- match.arg(coordinate_space)
   log_message(
     "Running smoothclust spatial domain clustering",

@@ -34,7 +34,7 @@ FindExpressedMarkers(
 )
 }
 \arguments{
-\item{object}{An object}
+\item{object}{A \code{Seurat} object.}
 
 \item{ident.1}{Identity class to define markers for; pass an object of class
 \code{phylo} or 'clustertree' to find markers for a node in a cluster tree;

@@ -5,7 +5,7 @@
 \title{CCC statistical distribution and summary plots}
 \usage{
 CCCStatPlot(
-  srt,
+  object,
   method = NULL,
   condition = NULL,
   dataset = 1,
@@ -59,11 +59,12 @@ CCCStatPlot(
   combine_methods = c("separate", "support", "rank", "legacy"),
   resource = NULL,
   sample = NULL,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{method}{Communication result type to use.}
 
@@ -184,6 +185,9 @@ retains the deprecated raw-score aggregation.}
 unified CCC results.}
 
 \item{...}{Additional plot-specific options.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A ggplot or recorded base plot object.

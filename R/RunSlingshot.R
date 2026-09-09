@@ -53,7 +53,7 @@
 #'   lineages_trim = c(0.05, 0.95)
 #' )
 RunSlingshot <- function(
-  srt,
+  object,
   group.by,
   reduction = NULL,
   dims = NULL,
@@ -66,8 +66,10 @@ RunSlingshot <- function(
   lineage_palette = "Dark2",
   seed = 11,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   check_r("slingshot", verbose = FALSE)
   if (missing(group.by)) {
     log_message(

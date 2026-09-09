@@ -180,29 +180,12 @@
 #'   height = 3.5
 #' )
 CCCHeatmap <- function(
-  srt,
+  object,
   method = NULL,
   condition = NULL,
   dataset = 1,
   comparison = c(1, 2),
-  plot_type = c(
-    "heatmap",
-    "focused_heatmap",
-    "dot",
-    "matrix_dot",
-    "tile",
-    "source_target_dot",
-    "source_target_tile",
-    "sample_dot",
-    "bubble",
-    "bubble_lr",
-    "pathway_bubble",
-    "ligand_target",
-    "role_heatmap",
-    "role_network",
-    "role_network_marsilea",
-    "diff_heatmap"
-  ),
+  plot_type = c("heatmap", "focused_heatmap", "dot", "matrix_dot", "tile", "source_target_dot", "source_target_tile", "sample_dot", "bubble", "bubble_lr", "pathway_bubble", "ligand_target", "role_heatmap", "role_network", "role_network_marsilea", "diff_heatmap"),
   display_by = c("aggregation", "interaction"),
   sender.use = NULL,
   receiver.use = NULL,
@@ -252,8 +235,10 @@ CCCHeatmap <- function(
   combine_methods = c("separate", "support", "rank", "legacy"),
   resource = NULL,
   sample = NULL,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   value_supplied <- !missing(value)
   edge_value_supplied <- !missing(edge_value)
   bar_value_supplied <- !missing(bar_value)

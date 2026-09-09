@@ -5,7 +5,7 @@
 \title{scTenifoldNet Plot}
 \usage{
 scTenifoldNetPlot(
-  srt,
+  object,
   tool_name = "scTenifoldNet",
   plot_type = c("qq", "effect", "network", "manifold"),
   network = c("X", "Y"),
@@ -33,11 +33,12 @@ scTenifoldNetPlot(
   title = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing a scTenifoldNet result in \code{srt@tools}.}
+\item{object}{A Seurat object containing a scTenifoldNet result in \code{srt@tools}.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry created by
 \link{RunscTenifoldNet}.}
@@ -105,6 +106,9 @@ Set \code{NULL} to use the device aspect ratio.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{ggplot} object.

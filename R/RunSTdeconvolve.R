@@ -4,7 +4,9 @@
 #' Infer expression topics and their spot-level proportions using STdeconvolve.
 #'
 #' @md
-#' @param srt A `Seurat` object containing spatial expression data.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object containing spatial expression data.
 #' @param assay Assay used as STdeconvolve input. If `NULL`, the default assay
 #' is used.
 #' @param layer Assay layer used as STdeconvolve input.
@@ -59,7 +61,7 @@
 #' )
 #' }
 RunSTdeconvolve <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   features = NULL,
@@ -77,8 +79,10 @@ RunSTdeconvolve <- function(
   store_results = TRUE,
   round_counts = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -203,7 +207,9 @@ RunSTdeconvolve <- function(
 #'
 #' @md
 #' @inheritParams SpatialSpotPlot
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param topics Topic names, topic numbers, or metadata columns to plot. If
 #' `NULL`, all topics in the stored result are used.
 #' @param tool_name Result key written to `srt@tools` by
@@ -221,7 +227,7 @@ RunSTdeconvolve <- function(
 #' @export
 #'
 STdeconvolvePlot <- function(
-  srt,
+  object,
   tool_name = "STdeconvolve",
   topics = NULL,
   prefix = NULL,
@@ -231,8 +237,10 @@ STdeconvolvePlot <- function(
   ncol = NULL,
   byrow = TRUE,
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }

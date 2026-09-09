@@ -5,7 +5,7 @@
 \title{Run SecAct cell-cell communication analysis}
 \usage{
 RunSecActCCC(
-  srt = NULL,
+  object = NULL,
   inputProfile = NULL,
   mode = c("scRNAseq", "scST"),
   cellType_meta,
@@ -28,11 +28,12 @@ RunSecActCCC(
   coreNo = 6,
   tool_name = "SecAct_CCC",
   store_results = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{Optional Seurat object. When \code{mode = "scRNAseq"}, this is passed
+\item{object}{Optional Seurat object. When \code{mode = "scRNAseq"}, this is passed
 to \code{SecAct.activity.inference.scRNAseq}. When \code{mode = "matrix"}, expression
 is extracted from \code{srt} if \code{inputProfile} is not supplied.}
 
@@ -68,6 +69,9 @@ signature grouping and randomization routines.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat or SpaCET object with SecAct CCC results.

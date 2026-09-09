@@ -87,7 +87,7 @@
 #'   group.by = "CellType"
 #' )
 CellScoring <- function(
-  srt,
+  object,
   features = NULL,
   layer = "data",
   assay = NULL,
@@ -112,8 +112,10 @@ CellScoring <- function(
   seed = 11,
   cores = 1,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message(
     "Start cell scoring",
     verbose = verbose
@@ -135,7 +137,7 @@ CellScoring <- function(
         method_i
       }
       srt <- do.call(CellScoring, c(list(
-        srt = srt,
+        object = srt,
         features = features,
         layer = layer,
         assay = assay,

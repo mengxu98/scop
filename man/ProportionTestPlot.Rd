@@ -5,7 +5,7 @@
 \title{Proportion Test Plot}
 \usage{
 ProportionTestPlot(
-  srt,
+  object,
   comparison = NULL,
   proportion_method = NULL,
   result_level = c("group"),
@@ -47,11 +47,12 @@ ProportionTestPlot(
   ncol = NULL,
   byrow = TRUE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing proportion-test results.}
+\item{object}{A Seurat object containing proportion-test results.}
 
 \item{comparison}{Which comparison to plot.
 If \code{NULL}, plots all comparisons.}
@@ -143,6 +144,9 @@ returns a list of ggplots.}
 \item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Generate differential-abundance plots based on results from \link{RunProportionTest}.

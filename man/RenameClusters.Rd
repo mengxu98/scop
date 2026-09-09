@@ -5,16 +5,17 @@
 \title{Rename clusters for the Seurat object}
 \usage{
 RenameClusters(
-  srt,
+  object,
   group.by,
   nameslist = list(),
   name = "newclusters",
   keep_levels = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{The old group used to rename cells.}
 
@@ -26,6 +27,9 @@ RenameClusters(
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Rename clusters for the Seurat object

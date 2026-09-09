@@ -5,7 +5,7 @@
 \title{PAGA plot}
 \usage{
 PAGAPlot(
-  srt,
+  object,
   paga = NULL,
   type = "connectivities",
   reduction = NULL,
@@ -64,11 +64,12 @@ PAGAPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{paga}{The PAGA result from the Seurat object.
 Default is \code{srt@tools[["PAGA"]]}, falling back to \code{srt@misc[["paga"]]}
@@ -171,6 +172,9 @@ Possible values are \code{"connectivities"} (default) and \code{"connectivities_
 Defaults is \code{FALSE}.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Generates a PAGA plot based on the given Seurat object and PAGA result.

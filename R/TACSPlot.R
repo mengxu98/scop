@@ -83,7 +83,7 @@
 #'   density = TRUE
 #' )
 TACSPlot <- function(
-  srt,
+  object,
   ref_srt = NULL,
   assay = "RNA",
   layer = "data",
@@ -119,8 +119,10 @@ TACSPlot <- function(
   nrow = NULL,
   ncol = NULL,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (is.null(ref_srt)) {
     ref_srt <- srt
   }
@@ -332,7 +334,7 @@ TACSPlot <- function(
 #' @return character vector.
 #' @export
 GetSimilarFeatures <- function(
-  srt,
+  object,
   features,
   n,
   features_use = rownames(srt),
@@ -340,8 +342,10 @@ GetSimilarFeatures <- function(
   aggregator = "sum",
   assay = "RNA",
   layer = "data",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!all(features %in% rownames(srt))) {
     log_message(
       "Some of your features have no data available.",
@@ -405,13 +409,15 @@ GetSimilarFeatures <- function(
 #'
 #' @export
 FetchDataZero <- function(
-  srt,
+  object,
   features,
   assay = "RNA",
   layer = "data",
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   features <- features[stats::complete.cases(features)]
   avail <- intersect(features, rownames(srt))
   unavail <- setdiff(features, rownames(srt))

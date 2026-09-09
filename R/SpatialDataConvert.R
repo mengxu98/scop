@@ -5,7 +5,9 @@
 #' one assay layer, metadata, and resolved spatial coordinates.
 #'
 #' @md
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param assay Assay to export. If `NULL`, the default assay is used.
 #' @param layer Assay layer to export.
 #' @param coord.cols Metadata coordinate columns. By default, SCOP resolves
@@ -22,14 +24,16 @@
 #' @return A `SpatialExperiment`.
 #' @export
 srt_to_spe <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   coord.cols = c("col", "row"),
   image = NULL,
   include_meta = TRUE,
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }

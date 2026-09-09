@@ -5,17 +5,18 @@
 \title{Attempt to recover raw counts from the normalized matrix}
 \usage{
 RecoverCounts(
-  srt,
+  object,
   assay = NULL,
   trans = c("expm1", "exp", "none"),
   min_count = c(1, 2, 3),
   tolerance = 0.1,
   sf = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -32,6 +33,9 @@ The tolerance is its difference from the integer.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Attempt to recover raw counts from the normalized matrix

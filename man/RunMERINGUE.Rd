@@ -5,7 +5,7 @@
 \title{Run MERINGUE spatial autocorrelation analysis}
 \usage{
 RunMERINGUE(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   image = NULL,
@@ -29,11 +29,12 @@ RunMERINGUE(
   cross_cor_params = list(),
   module_params = list(),
   coordinate_space = c("raw", "legacy_display"),
-  backend = c("cpp", "r")
+  backend = c("cpp", "r"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -96,6 +97,9 @@ explicit compatibility option.}
 substantially faster for permutation tests; \code{"r"} calls the original
 MERINGUE functions directly. When \code{"cpp"} is selected, \code{moran_params} are
 ignored with a warning because the compiled kernel has no extra arguments.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with MERINGUE results stored in

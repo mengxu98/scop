@@ -4,7 +4,9 @@
 #' Refit CellRank GAM trends for a selected lineage and store the normalized
 #' trend matrix and gene modules in `srt@tools$CellRank$trends`.
 #'
-#' @param srt A Seurat object returned by [RunCellRank].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object returned by [RunCellRank].
 #' @param lineage A lineage name in the stored fate-probability matrix.
 #' @param features Optional genes. If `NULL`, positive lineage drivers are used.
 #' @param top_n Maximum number of driver genes used for clustering.
@@ -34,7 +36,7 @@
 #' @return The Seurat object with a `CellRank$trends[[lineage]]` result bundle.
 #' @export
 RunCellRankTrends <- function(
-  srt,
+  object,
   lineage,
   features = NULL,
   top_n = 500L,
@@ -57,8 +59,10 @@ RunCellRankTrends <- function(
   distribution = "gamma",
   link = "log",
   fallback_distribution = "normal",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a Seurat object", message_type = "error")
   }
@@ -121,7 +125,7 @@ RunCellRankTrends <- function(
   )
   check_python("cellrank", envname = envname, conda = conda, verbose = verbose)
   adata <- srt_to_adata(
-    srt = srt,
+    object = srt,
     assay_x = assay,
     layer_x = layer,
     prepare_env = FALSE

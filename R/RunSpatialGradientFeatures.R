@@ -6,7 +6,9 @@
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @inheritParams scop-params
 #' @param reference Spatial reference type: `"trajectory"` for STS or
 #' `"annotation"` for SAS.
@@ -92,7 +94,7 @@
 #' SpatialGradientPlot(spatial, plot_type = "line")
 #' SpatialGradientPlot(spatial, plot_type = "model")
 RunSpatialGradientFeatures <- function(
-  srt,
+  object,
   reference = c("trajectory", "annotation"),
   backend = "cpp",
   result_name = NULL,
@@ -136,8 +138,10 @@ RunSpatialGradientFeatures <- function(
   store_results = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   for (flag in c("store_results", "set_variable_features")) {
     value <- get(flag)
     if (!is.logical(value) || length(value) != 1L || is.na(value)) {
@@ -291,7 +295,9 @@ RunSpatialGradientFeatures <- function(
 #' view displays the stored model-matching error (RMSE) for each feature.
 #'
 #' @md
-#' @param srt A `Seurat` object containing stored gradient results.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object containing stored gradient results.
 #' @param result_name Stored spatial gradient result name. If `NULL`, the latest
 #' stored result is used.
 #' @param plot_type Plot type: `"summary"`, `"line"`, or `"model"`.
@@ -316,7 +322,7 @@ RunSpatialGradientFeatures <- function(
 #' @inherit RunSpatialGradientFeatures examples
 #' @export
 SpatialGradientPlot <- function(
-  srt,
+  object,
   result_name = NULL,
   plot_type = c("summary", "line", "model"),
   features = NULL,
@@ -330,8 +336,10 @@ SpatialGradientPlot <- function(
   line_alpha = 0.35,
   line_fit = c("stored", "lm"),
   nrow = NULL,
-  ncol = NULL
+  ncol = NULL,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }

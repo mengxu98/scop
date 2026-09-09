@@ -9,7 +9,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A spatial `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A spatial `Seurat` object.
 #' @param gold_standard Either one metadata column in `srt` or a named vector
 #' whose names match the spot names in `srt`.
 #' @param methods Spatial domain methods to benchmark. `NULL` uses every
@@ -76,7 +78,7 @@
 #' SpatialBenchmarkPlot(data = bench)
 #' }
 RunSpatialBenchmark <- function(
-  srt,
+  object,
   gold_standard,
   methods = NULL,
   method_params = list(),
@@ -87,8 +89,10 @@ RunSpatialBenchmark <- function(
   seed = 1,
   timeout = Inf,
   poll_interval = 0.1,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   benchmark_validate_input(srt)
   validate_scalar_flag(keep_objects, "keep_objects")
   validate_scalar_flag(install_missing, "install_missing")
@@ -795,7 +799,7 @@ benchmark_child_entry <- function(
 benchmark_execute_method <- function(srt, method, params) {
   function_name <- paste0("Run", method)
   fun <- benchmark_method_runner(method)
-  args <- c(list(srt = srt), params)
+  args <- c(list(object = srt), params)
   output <- do.call(fun, args)
   if (!inherits(output, "Seurat")) {
     log_message(function_name, " did not return a Seurat object",

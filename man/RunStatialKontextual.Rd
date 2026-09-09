@@ -5,7 +5,7 @@
 \title{Run Statial Kontextual spatial relationships}
 \usage{
 RunStatialKontextual(
-  srt,
+  object,
   group.by,
   r,
   from = NULL,
@@ -27,11 +27,12 @@ RunStatialKontextual(
   store_input = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column containing cell or spot labels.}
 
@@ -81,6 +82,9 @@ The default is raw acquisition coordinates; \code{"legacy_display"} remains an
 explicit compatibility option.}
 
 \item{...}{Additional named arguments passed to \code{Statial::Kontextual()}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with Statial results stored in

@@ -43,7 +43,7 @@ test_that("RunRCTD validates result names and storage before backend work", {
     store_results = list(1L, NA)
   )
   base_args <- list(
-    srt = pair$spatial,
+    object = pair$spatial,
     reference = pair$reference,
     reference_label = "celltype",
     verbose = FALSE

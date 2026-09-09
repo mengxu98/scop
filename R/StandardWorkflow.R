@@ -158,7 +158,7 @@
 #' )
 #' SpatialSpotPlot(spatial_bayes, group.by = "BayesSpace_cluster")
 RunStandardWorkflow <- function(
-  srt,
+  object,
   prefix = "Standard",
   workflow = c("single_cell", "spatial"),
   assay = NULL,
@@ -203,8 +203,10 @@ RunStandardWorkflow <- function(
   cores = 1L,
   verbose = TRUE,
   seed = 11,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   workflow <- match.arg(workflow)
   if (identical(workflow, "spatial")) {
     return(run_standard_spatial_workflow(
@@ -289,7 +291,7 @@ RunStandardWorkflow <- function(
         primary_assay = assays_to_run[[1]]
       )
       srt <- RunStandardWorkflow(
-        srt = srt,
+        object = srt,
         prefix = prefix_i,
         assay = assay_i,
         do_normalization = do_normalization,
@@ -498,7 +500,7 @@ RunStandardWorkflow <- function(
 
     if (is.null(linear_reduction_dims_use)) {
       linear_reduction_dims_use_current <- RunDimsEstimate(
-        srt = srt,
+        object = srt,
         reduction = paste0(prefix, lr),
         reduction_method = lr,
         skip_first = normalization_method == "TFIDF",
@@ -1105,7 +1107,7 @@ run_standard_spatial_workflow <- function(
   if (isTRUE(do_spot_qc)) {
     spot_qc_args <- merge_call_args(
       list(
-        srt = srt,
+        object = srt,
         assay = assay,
         qc_metrics = c("outlier", "umi", "gene", "mito"),
         outlier_threshold = c(
@@ -1203,7 +1205,7 @@ run_standard_spatial_workflow <- function(
           deconvolution_params
         }
         defaults <- list(
-          srt = srt,
+          object = srt,
           reference = reference,
           reference_label = reference_label,
           assay = assay,
@@ -1246,7 +1248,7 @@ run_standard_spatial_workflow <- function(
         spot_qc_args
       }
     )
-    spot_qc_args$srt <- standard_spatial_clear_outputs(
+    spot_qc_args$object <- standard_spatial_clear_outputs(
       srt,
       metadata_keys = "SpotQC"
     )
@@ -1266,7 +1268,7 @@ run_standard_spatial_workflow <- function(
   }
 
   srt <- RunStandardWorkflow(
-    srt = srt,
+    object = srt,
     prefix = prefix,
     workflow = "single_cell",
     assay = assay,
@@ -1305,7 +1307,7 @@ run_standard_spatial_workflow <- function(
       expr = {
         svf_args <- merge_call_args(
           list(
-            srt = srt,
+            object = srt,
             assay = assay,
             image = image,
             coord.cols = coord.cols,
@@ -1359,7 +1361,7 @@ run_standard_spatial_workflow <- function(
         } else {
           list(srt = srt, restore_metadata = NULL)
         }
-        svf_args$srt <- standard_spatial_clear_outputs(
+        svf_args$object <- standard_spatial_clear_outputs(
           svf_input$srt,
           tool_keys = if (svf_store_results) {
             "SpatialVariableFeatures"
@@ -1490,7 +1492,7 @@ run_standard_spatial_workflow <- function(
           }
         }
         bayesspace_args <- list(
-          srt = srt,
+          object = srt,
           q = spatial_q_use,
           assay = assay,
           image = image,
@@ -1535,7 +1537,7 @@ run_standard_spatial_workflow <- function(
           bayesspace_cluster_colname,
           if (!is.null(bayesspace_init_colname)) bayesspace_init_colname
         )
-        bayesspace_args$srt <- standard_spatial_clear_outputs(
+        bayesspace_args$object <- standard_spatial_clear_outputs(
           srt,
           tool_keys = "BayesSpace",
           metadata_keys = bayesspace_metadata_keys
@@ -1590,7 +1592,7 @@ run_standard_spatial_workflow <- function(
         actual_method = deconv_producer,
         expr = {
           deconv_args <- deconv_plan$args
-          deconv_args$srt <- standard_spatial_clear_outputs(
+          deconv_args$object <- standard_spatial_clear_outputs(
             srt,
             tool_keys = if (deconv_plan$store_results) {
               deconv_plan$tool_name
