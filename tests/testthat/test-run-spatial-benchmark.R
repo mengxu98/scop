@@ -60,6 +60,11 @@ mock_benchmark_runs <- function(code) {
   force(code)
 }
 
+skip_without_benchmark_runtime <- function() {
+  testthat::skip_if_not_installed("callr")
+  testthat::skip_if_not_installed("ps")
+}
+
 test_that("benchmark methods resolve by alias and stable defaults", {
   expect_identical(
     benchmark_resolve_methods(),
@@ -258,6 +263,7 @@ test_that("numeric controls reject overflow and non-finite values", {
 })
 
 test_that("RunSpatialBenchmark aligns spots and retains metrics and resource measurements", {
+  skip_without_benchmark_runtime()
   object <- make_benchmark_seurat()
   mock_benchmark_runs({
     result <- RunSpatialBenchmark(
@@ -287,6 +293,7 @@ test_that("RunSpatialBenchmark aligns spots and retains metrics and resource mea
 })
 
 test_that("benchmark execution never mutates the caller's Seurat object", {
+  skip_without_benchmark_runtime()
   object <- make_benchmark_seurat()
   original <- object
   mock_benchmark_runs({
@@ -299,6 +306,7 @@ test_that("benchmark execution never mutates the caller's Seurat object", {
 })
 
 test_that("custom producer result keys are recorded truthfully", {
+  skip_without_benchmark_runtime()
   object <- make_benchmark_seurat()
   mock_benchmark_runs({
     result <- RunSpatialBenchmark(
@@ -346,6 +354,7 @@ test_that("gold-standard vectors require exact unique spot identifiers", {
 })
 
 test_that("failed and unavailable methods do not receive pseudo metrics", {
+  skip_without_benchmark_runtime()
   object <- make_benchmark_seurat()
   testthat::local_mocked_bindings(
     benchmark_method_availability = function(method) {
@@ -380,6 +389,7 @@ test_that("failed and unavailable methods do not receive pseudo metrics", {
 })
 
 test_that("timeout status remains method-local in a mixed batch", {
+  skip_without_benchmark_runtime()
   object <- make_benchmark_seurat()
   testthat::local_mocked_bindings(
     benchmark_method_availability = function(method) {
