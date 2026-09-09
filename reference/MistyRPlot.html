@@ -70,7 +70,7 @@ produced by [RunMistyR()] without rerunning the backend.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">MistyRPlot</span><span class="op">(</span></span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  object <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  res <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"improvements"</span>, <span class="st">"contributions"</span><span class="op">)</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">20</span>,</span>
@@ -83,12 +83,12 @@ produced by [RunMistyR()] without rerunning the backend.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>Optional `Seurat` object containing `MistyR` results.</p></dd>
 
 
 <dt id="arg-res">res<a class="anchor" aria-label="anchor" href="#arg-res"></a></dt>
-<dd><p>Optional result list, usually `srt@tools$MistyR`.</p></dd>
+<dd><p>Optional result list, usually `object@tools$MistyR`.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
@@ -104,12 +104,11 @@ produced by [RunMistyR()] without rerunning the backend.</p>
 
 
 <dt id="arg-measure">measure<a class="anchor" aria-label="anchor" href="#arg-measure"></a></dt>
-<dd><p>Numeric result column to display. For
-<code>type = "improvements"</code> use <code>"gain.R2"</code>, <code>"gain.RMSE"</code>, or
-<code>"value"</code>; for <code>type = "contributions"</code>, use an available
-contribution, importance, or value column. <code>NULL</code> defaults to
-<code>"gain.R2"</code> for improvements and <code>"contribution"</code> for contributions,
-and errors if that column is not present.</p></dd>
+<dd><p>Numeric result column to display. For `type = "improvements"`
+use `"gain.R2"` or `"gain.RMSE"`; for `type = "contributions"`, use
+`"contribution"` or `"importance"` as provided by the backend. `NULL`
+defaults to `"gain.R2"` for improvements and `"contribution"` for
+contributions, and errors if that column is not present.</p></dd>
 
 </dl></div>
     <div class="section level2">
