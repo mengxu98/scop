@@ -203,6 +203,7 @@ RunSTdeconvolve <- function(
 #'
 #' @md
 #' @inheritParams SpatialSpotPlot
+#' @param srt A `Seurat` object.
 #' @param topics Topic names, topic numbers, or metadata columns to plot. If
 #' `NULL`, all topics in the stored result are used.
 #' @param tool_name Result key written to `srt@tools` by

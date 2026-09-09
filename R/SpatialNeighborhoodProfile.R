@@ -5,7 +5,7 @@
 #' no cell-cell edge table is stored. This is an observed composition summary,
 #' not a colocalization test, an optimal-radius selector, or a communication model.
 #'
-#' @param srt A Seurat object. The object is not modified.
+#' @param object A Seurat object. The object is not modified.
 #' @param group.by Metadata column containing nonmissing cell or spot labels.
 #' @param radii Positive, strictly increasing distances in raw coordinate units.
 #'   These are not necessarily micrometers. For spot-based assays, counts refer
@@ -33,20 +33,20 @@
 #' @examples
 #' # Constructed coordinates and labels, not a biological example.
 #' counts <- matrix(1L, 2, 4, dimnames = list(c("g1", "g2"), letters[1:4]))
-#' srt <- SeuratObject::CreateSeuratObject(counts)
-#' srt$col <- c(0, 1, 3, 5)
-#' srt$row <- c(0, 0, 0, 0)
-#' srt$celltype <- c("T", "M", "M", "T")
+#' object <- SeuratObject::CreateSeuratObject(counts)
+#' object$col <- c(0, 1, 3, 5)
+#' object$row <- c(0, 0, 0, 0)
+#' object$celltype <- c("T", "M", "M", "T")
 #' profile <- SpatialNeighborhoodProfile(
-#'   srt, "celltype", radii = c(1, 3), cells = "a", verbose = FALSE
+#'   object, "celltype", radii = c(1, 3), cells = "a", verbose = FALSE
 #' )
 #' profile
 SpatialNeighborhoodProfile <- function(
-  srt, group.by, radii, cells = NULL, sample.by = NULL, image = NULL,
+  object, group.by, radii, cells = NULL, sample.by = NULL, image = NULL,
   coord.cols = c("col", "row"), cumulative = FALSE, verbose = TRUE
 ) {
-  if (!inherits(srt, "Seurat")) {
-    log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
+  if (!inherits(object, "Seurat")) {
+    log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
   }
   validate_scalar_string(group.by, "group.by")
   if (!is.null(sample.by)) validate_scalar_string(sample.by, "sample.by")
@@ -64,14 +64,14 @@ SpatialNeighborhoodProfile <- function(
     )
   }
   verbose <- thisutils::get_verbose(verbose)
-  meta <- srt[[]]
+  meta <- object[[]]
   if (!all(c(group.by, sample.by) %in% names(meta))) {
     log_message(
       "{.arg group.by} and {.arg sample.by} must identify metadata columns",
       message_type = "error"
     )
   }
-  resolved <- SpatialCoordinates(srt, image = image, coord.cols = coord.cols, space = "raw")
+  resolved <- SpatialCoordinates(object, image = image, coord.cols = coord.cols, space = "raw")
   co <- resolved$data
   idx <- match(co$cell_id, rownames(meta))
   if (!nrow(co) || anyNA(idx) || anyNA(co$cell_id) || any(!nzchar(co$cell_id)) ||
@@ -142,7 +142,7 @@ SpatialNeighborhoodProfile <- function(
     done = "Spatial neighborhood profile completed",
     scope = sprintf("%s target cells; %s context cells; %s samples; %s distances (raw coordinate units).",
                     nq, nrow(co), length(unique(samples)), nr),
-    inspect = "Returned data.frame: count, total and fraction; input Seurat object unchanged.",
+    inspect = "Returned data.frame: count, total and fraction; input object unchanged.",
     verbose = verbose
   )
   out

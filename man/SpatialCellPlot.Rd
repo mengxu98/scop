@@ -5,7 +5,7 @@
 \title{Plot spatial cell boundaries}
 \usage{
 SpatialCellPlot(
-  srt = NULL,
+  object = NULL,
   res = NULL,
   boundaries = NULL,
   cells = NULL,
@@ -26,7 +26,7 @@ SpatialCellPlot(
 )
 }
 \arguments{
-\item{srt}{Optional `Seurat` object used to extract boundaries or values.}
+\item{object}{Optional `Seurat` object used to extract boundaries or values.}
 
 \item{res}{Optional result list containing a `boundaries` data frame.}
 
@@ -51,9 +51,9 @@ SpatialCellPlot(
 \item{theme_use, theme_args}{Theme used to style the plot. Default is
 `"theme_spatial"`.}
 
-\item{assay}{Assay used when `features` are fetched from `srt`.}
+\item{assay}{Assay used when `features` are fetched from `object`.}
 
-\item{layer}{Layer used when `features` are fetched from `srt`.}
+\item{layer}{Layer used when `features` are fetched from `object`.}
 
 \item{...}{Additional arguments passed to `ggplot2::geom_polygon()`.}
 }

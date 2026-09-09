@@ -5,7 +5,7 @@
 \title{Read spatial coordinates with an explicit coordinate contract}
 \usage{
 SpatialCoordinates(
-  srt,
+  object,
   image = NULL,
   coord.cols = c("col", "row"),
   space = c("raw", "display"),
@@ -14,7 +14,7 @@ SpatialCoordinates(
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{image}{Optional Seurat image name.}
 

@@ -51,13 +51,13 @@ test_that("PR 306 spatial graph plotting supports all result input modes", {
   srt <- RunSpatialNetwork(make_pr306_spatial_object(), k = 1, verbose = FALSE)
   res <- srt@tools$SpatialNetwork
 
-  p <- SpatialNetworkPlot(srt = srt)
+  p <- SpatialNetworkPlot(object = srt)
   expect_s3_class(p, "ggplot")
   expect_null(p$labels$subtitle)
   expect_equal(p$layers[[2]]$aes_params$size, 6)
   expect_s3_class(ggplot2::calc_element("axis.text.x", p$theme), "element_blank")
   expect_s3_class(SpatialNetworkPlot(res = res), "ggplot")
-  expect_s3_class(SpatialNetworkPlot(srt = srt, res = res), "ggplot")
+  expect_s3_class(SpatialNetworkPlot(object = srt, res = res), "ggplot")
 })
 
 test_that("PR 306 new spatial entry points require explicit multi-image selection", {
@@ -65,7 +65,7 @@ test_that("PR 306 new spatial entry points require explicit multi-image selectio
 
   expect_error(RunSpatialNetwork(srt, k = 1, verbose = FALSE), "Multiple spatial images")
   expect_error(srt_to_giotto(srt), "Multiple spatial images")
-  expect_error(SpatialCellPlot(srt = srt), "Multiple spatial images")
+  expect_error(SpatialCellPlot(object = srt), "Multiple spatial images")
 })
 
 test_that("PR 306 cell plotting rejects spot centers as polygons", {
@@ -115,7 +115,7 @@ test_that("spatial boundary feature values use the requested assay layer", {
     y = rep(c(0, 0, 1, 1), 4)
   )
   p <- SpatialCellPlot(
-    srt = srt,
+    object = srt,
     boundaries = boundaries,
     features = "Gene1",
     assay = "RNA",
@@ -128,7 +128,7 @@ test_that("spatial boundary feature values use the requested assay layer", {
   )
   expect_error(
     SpatialCellPlot(
-      srt = srt,
+      object = srt,
       boundaries = boundaries,
       features = "Gene1",
       assay = "RNA",
@@ -140,7 +140,7 @@ test_that("spatial boundary feature values use the requested assay layer", {
   bad_boundaries$cell_id[bad_boundaries$cell_id == "cell1"] <- "missing-cell"
   expect_error(
     SpatialCellPlot(
-      srt = srt,
+      object = srt,
       boundaries = bad_boundaries,
       features = "Gene1",
       assay = "RNA",
@@ -149,7 +149,7 @@ test_that("spatial boundary feature values use the requested assay layer", {
     "Boundary cell IDs"
   )
   p2 <- SpatialCellPlot(
-    srt = srt,
+    object = srt,
     boundaries = boundaries,
     features = c("Gene1", "Gene2"),
     assay = "RNA",

@@ -58,8 +58,8 @@ monotonic trend even when the backend stores a smoothed curve.}
 A \code{ggplot} or \code{patchwork} object.
 }
 \description{
-Visualize normalized results produced by \code{RunSpatialGradientFeatures()}.
-The plot reads only the stored screening, summary, and model-fit tables; it does
+Visualize normalized results produced by \code{RunSpatialGradientFeatures()}. The
+plot reads only the stored screening, summary, and model-fit tables; it does
 not refetch expression from the object's current assay or layer. The model
 view displays the stored model-matching error (RMSE) for each feature.
 }

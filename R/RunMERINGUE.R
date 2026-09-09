@@ -6,6 +6,7 @@
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
+#' @param srt A `Seurat` object.
 #' @param mode MERINGUE analysis modes to run. `"autocorrelation"` computes
 #' spatial autocorrelation, `"cross_correlation"` computes pairwise spatial
 #' cross-correlation, and `"modules"` detects spatial gene modules.

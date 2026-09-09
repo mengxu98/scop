@@ -28,6 +28,10 @@ keep the package data small and directly usable with the bundled \code{panc8_sub
 reference, the object retains the top 5000 genes shared with \code{panc8_sub},
 ranked by total spatial counts.
 }
+\details{
+\code{coda_label} describes tissue components at Visium spots. Feature-dependent
+QC requires the full expression assay.
+}
 \examples{
 if (interactive()) {
   download.file(
@@ -103,8 +107,4 @@ if (interactive()) {
   )
 }
 
-}
-\details{
-\code{coda_label} describes tissue components at Visium spots. Feature-dependent
-QC requires the full expression assay.
 }

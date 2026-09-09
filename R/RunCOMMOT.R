@@ -37,7 +37,7 @@ commot_input <- function(srt, group.by, assay, layer, image, coord.cols) {
     log_message("Assay {.val {assay}} is absent from {.arg srt}", message_type = "error")
   }
   coords <- SpatialCoordinates(
-    srt = srt, image = image, coord.cols = coord.cols,
+    object = srt, image = image, coord.cols = coord.cols,
     space = "raw", image_policy = "strict"
   )
   cells <- as.character(coords$data$cell_id)
@@ -448,7 +448,7 @@ commot_select_key <- function(table, key, label) {
 #' @description Plot stored COMMOT group communication, cluster matrices, or
 #' raw-coordinate direction vectors without rerunning Python.
 #'
-#' @param srt A `Seurat` object with COMMOT results.
+#' @param object A `Seurat` object with COMMOT results.
 #' @param result.name Stored COMMOT result name.
 #' @param plot_type Network, cluster matrix, or direction-vector view.
 #' @param key Stored cluster or direction selection key.
@@ -457,17 +457,17 @@ commot_select_key <- function(table, key, label) {
 #' @return A `ggplot` or compatible plot object.
 #' @export
 COMMOTPlot <- function(
-  srt,
+  object,
   result.name = NULL,
   plot_type = c("network", "matrix", "direction"),
   key = NULL,
   ...
 ) {
   plot_type <- match.arg(plot_type)
-  stored <- tool_bundle_get_result(srt, "COMMOT", result.name)
+  stored <- tool_bundle_get_result(object, "COMMOT", result.name)
   spatial_require_coordinate_contract(stored$result, "RunCOMMOT()")
   if (identical(plot_type, "network")) {
-    plot_object <- commot_plot_object(srt, stored)
+    plot_object <- commot_plot_object(object, stored)
     return(do.call(CCCNetworkPlot, c(list(srt = plot_object, method = "COMMOT", plot_type = "circle"), list(...))))
   }
   if (identical(plot_type, "matrix")) {

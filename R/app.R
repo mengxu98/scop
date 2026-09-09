@@ -450,7 +450,7 @@ CreateMetaFile <- function(
 #' @md
 #' @inheritParams CreateDataFile
 #' @inheritParams CreateMetaFile
-#' @param srt A `Seurat` object or a list of `Seurat` objects.
+#' @param object A `Seurat` object or a list of `Seurat` objects.
 #' @param base_dir The base directory where the SCExplorer hdf5 files will be written.
 #'
 #' @seealso
@@ -464,7 +464,7 @@ CreateMetaFile <- function(
 #' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
 #' }
 PrepareSCExplorer <- function(
-  srt,
+  object,
   base_dir = "SCExplorer",
   data_file = "data.hdf5",
   meta_file = "meta.hdf5",
@@ -485,60 +485,60 @@ PrepareSCExplorer <- function(
   DataFile_full <- paste0(base_dir, "/", data_file)
   MetaFile_full <- paste0(base_dir, "/", meta_file)
 
-  if (!is.list(srt)) {
-    srt <- list(srt)
+  if (!is.list(object)) {
+    object <- list(object)
   }
-  if (any(sapply(srt, function(x) !inherits(x, "Seurat")))) {
+  if (any(sapply(object, function(x) !inherits(x, "Seurat")))) {
     log_message(
-      "{.arg srt} must be one {.cls Seurat} or a list of {.cls Seurat}",
+      "{.arg object} must be one {.cls Seurat} or a list of {.cls Seurat}",
       message_type = "error"
     )
   }
-  if (length(names(srt)) > 0 && length(names(srt)) != length(srt)) {
+  if (length(names(object)) > 0 && length(names(object)) != length(object)) {
     log_message(
       "The object is named, but the name length is not equal to the number of elements",
       message_type = "error"
     )
   }
-  if (length(names(srt)) == 0) {
-    names(srt) <- make.names(sapply(srt, function(x) x@project.name), unique = TRUE)
+  if (length(names(object)) == 0) {
+    names(object) <- make.names(sapply(object, function(x) x@project.name), unique = TRUE)
     log_message(
       "Set the project name of each {.cls Seurat} to their dataset name",
       verbose = verbose
     )
   }
 
-  for (i in seq_along(srt)) {
-    nm <- names(srt)[i]
-    srt_i <- srt[[nm]]
+  for (i in seq_along(object)) {
+    nm <- names(object)[i]
+    srt <- object[[nm]]
     log_message("Prepare data for object: {.val {nm}}", verbose = verbose)
-    if (length(SeuratObject::Reductions(srt_i)) == 0) {
+    if (length(SeuratObject::Reductions(srt)) == 0) {
       log_message(
         "No reduction found in {.cls Seurat} {.val {nm}}",
         message_type = "error"
       )
     }
-    if (!any(assays %in% SeuratObject::Assays(srt_i))) {
+    if (!any(assays %in% SeuratObject::Assays(srt))) {
       log_message(
-        "Assay: {.val {assays[!assays %in% SeuratObject::Assays(srt_i)]}} is not in {.cls Seurat} {.val {nm}}",
+        "Assay: {.val {assays[!assays %in% SeuratObject::Assays(srt)]}} is not in {.cls Seurat} {.val {nm}}",
         message_type = "warning",
         verbose = verbose
       )
-      assays <- assays[assays %in% SeuratObject::Assays(srt_i)]
+      assays <- assays[assays %in% SeuratObject::Assays(srt)]
       if (length(assays) == 0) {
         log_message(
           "No assays found in {.cls Seurat} {.val {nm}}. Use the default assay to create data file",
           message_type = "warning",
           verbose = verbose
         )
-        assays <- SeuratObject::DefaultAssay(srt_i)
+        assays <- SeuratObject::DefaultAssay(srt)
       }
     }
-    if (!"orig.ident" %in% colnames(srt_i[[]])) {
-      srt_i[["orig.ident"]] <- "SeuratObject"
+    if (!"orig.ident" %in% colnames(srt[[]])) {
+      srt[["orig.ident"]] <- "SeuratObject"
     }
     CreateDataFile(
-      srt = srt_i,
+      srt = srt,
       data_file = DataFile_full,
       name = nm,
       assays = assays,
@@ -547,7 +547,7 @@ PrepareSCExplorer <- function(
       overwrite = overwrite
     )
     CreateMetaFile(
-      srt = srt_i,
+      srt = srt,
       meta_file = MetaFile_full,
       name = nm,
       ignore_nlevel = ignore_nlevel,

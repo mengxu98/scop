@@ -5,7 +5,7 @@
 \title{Run multi-sample spatial integration}
 \usage{
 RunSpatialIntegration(
-  srt,
+  object,
   method = "PRECAST",
   sample.by = NULL,
   assay = NULL,
@@ -23,7 +23,7 @@ RunSpatialIntegration(
 )
 }
 \arguments{
-\item{srt}{A merged spatial \code{Seurat} object or a list of spatial \code{Seurat}
+\item{object}{A merged spatial \code{Seurat} object or a list of spatial \code{Seurat}
 objects.}
 
 \item{method}{Spatial integration backend. The current stable backend is

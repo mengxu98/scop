@@ -3,6 +3,9 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams scop-params
+#' @param object A `Seurat` object.
+#' @param srt Compatibility alias for `object`. Supply exactly one of `object`
+#' or `srt`.
 #' @param group.by Metadata columns to color spots by.
 #' @param features Features to color spots by (from `assay`/`layer`).
 #' @param values Spot-level values (named vector, matrix, or data.frame).
@@ -38,17 +41,17 @@
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' SpatialSpotPlot(
-#'   srt = visium_human_pancreas_sub,
+#'   object = visium_human_pancreas_sub,
 #'   group.by = "coda_label"
 #' )
 #'
 #' SpatialSpotPlot(
-#'   srt = visium_human_pancreas_sub,
+#'   object = visium_human_pancreas_sub,
 #'   features = rownames(visium_human_pancreas_sub)[1:2],
 #'   layer = "counts"
 #' )
 SpatialSpotPlot <- function(
-  srt,
+  object = NULL,
   group.by = NULL,
   features = NULL,
   assay = NULL,
@@ -93,9 +96,10 @@ SpatialSpotPlot <- function(
   ncol = NULL,
   byrow = TRUE,
   verbose = TRUE,
+  srt = NULL,
   image.scale = c("lowres", "hires")
 ) {
-  spatial_require_srt(srt)
+  srt <- spatial_resolve_object(object = object, srt = srt)
   plot_type <- match.arg(plot_type)
   geom <- match.arg(geom)
   image.scale <- match.arg(image.scale)
