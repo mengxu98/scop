@@ -135,63 +135,141 @@ test_that("giotto bridges run check_r before resolving the converter", {
   expect_error(giotto_to_srt(structure(list(), class = "giotto")), "installation declined")
 })
 
-test_that("srt_to_giotto and giotto_to_srt round-trip with a real GiottoClass", {
-  skip_if_not_installed("GiottoClass")
-  skip_if_not_installed("callr")
-
-  package_path <- getNamespaceInfo(asNamespace("scop"), "path")
-  source_tree <- file.exists(file.path(package_path, ".Rbuildignore"))
-  timeout_seconds <- 120
-  result <- tryCatch(
-    callr::r(
-      function(package_path, source_tree, libpath) {
-        if (!source_tree) {
-          libpath <- unique(c(dirname(package_path), libpath))
-        }
-        .libPaths(libpath)
-        if (source_tree) {
-          pkgload::load_all(package_path, quiet = TRUE, compile = FALSE)
-        }
-
-        data_env <- new.env(parent = emptyenv())
-        utils::data(
-          list = "visium_human_pancreas_sub",
-          package = "scop",
-          envir = data_env
-        )
-        srt <- Seurat::NormalizeData(
-          data_env$visium_human_pancreas_sub,
-          assay = "Spatial",
-          verbose = FALSE
-        )
-        to_giotto <- getExportedValue("scop", "srt_to_giotto")
-        to_seurat <- getExportedValue("scop", "giotto_to_srt")
-        g <- suppressWarnings(suppressMessages(to_giotto(srt)))
-        srt2 <- suppressWarnings(suppressMessages(to_seurat(g)))
-
-        list(
-          is_giotto = methods::is(g, "giotto"),
-          is_seurat = methods::is(srt2, "Seurat"),
-          cells = ncol(srt2),
-          layers = SeuratObject::Layers(srt2, assay = "rna")
-        )
-      },
-      args = list(package_path, source_tree, .libPaths()),
-      timeout = timeout_seconds
-    ),
-    error = function(e) {
-      stop(
-        paste0(
-          "Giotto live round-trip failed in the isolated runner within ",
-          timeout_seconds, " seconds: ", conditionMessage(e)
-        ),
-        call. = FALSE
-      )
-    }
+test_that("installed GiottoClass is reused instead of reinstalling drieslab/Giotto", {
+  seen <- list()
+  testthat::local_mocked_bindings(
+    check_r = function(packages, install = TRUE, ...) {
+      seen <<- c(seen, list(list(packages = packages, install = install)))
+      if (identical(packages, "GiottoClass") && !isTRUE(install)) {
+        return(TRUE)
+      }
+      invisible(TRUE)
+    },
+    get_namespace_fun = function(...) {
+      function(...) "converted"
+    },
+    .package = "scop"
   )
+  expect_identical(srt_to_giotto(make_framework_seurat()), "converted")
+  expect_identical(giotto_to_srt(structure(list(), class = "giotto")), "converted")
+  expect_identical(
+    vapply(seen, `[[`, character(1), "packages"),
+    c("GiottoClass", "GiottoClass")
+  )
+  expect_false(any(vapply(seen, function(x) isTRUE(x$install), logical(1))))
+})
 
-  expect_true(result$is_giotto)
-  expect_true(result$is_seurat)
-  expect_true(result$cells > 0)
-  expect_true(all(c("counts", "data") %in% result$layers))
+test_that("missing GiottoClass requests drieslab/Giotto", {
+  seen <- list()
+  testthat::local_mocked_bindings(
+    check_r = function(packages, install = TRUE, ...) {
+      seen <<- c(seen, list(list(packages = packages, install = install)))
+      if (identical(packages, "GiottoClass") && !isTRUE(install)) {
+        return(FALSE)
+      }
+      invisible(TRUE)
+    },
+    get_namespace_fun = function(...) {
+      function(...) "converted"
+    },
+    .package = "scop"
+  )
+  expect_identical(srt_to_giotto(make_framework_seurat()), "converted")
+  expect_identical(
+    vapply(seen, `[[`, character(1), "packages"),
+    c("GiottoClass", "drieslab/Giotto")
+  )
+  expect_false(isTRUE(seen[[1]]$install))
+  expect_true(isTRUE(seen[[2]]$install))
+})
+
+make_live_giotto_seurat <- function() {
+  counts <- Matrix::sparseMatrix(
+    i = c(1L, 2L, 3L, 1L, 2L, 3L, 1L, 3L),
+    j = c(1L, 1L, 1L, 2L, 2L, 2L, 3L, 3L),
+    x = c(4, 1, 2, 3, 5, 1, 2, 6),
+    dims = c(3L, 3L),
+    dimnames = list(paste0("Gene", 1:3), paste0("Spot", 1:3))
+  )
+  srt <- suppressMessages(Seurat::CreateSeuratObject(counts = counts, assay = "Spatial"))
+  spots <- colnames(srt)
+  # VisiumV1 matches the official GiottoClass converter's image/coordinate path.
+  # A centroids FOV is not a reliable live fixture: seuratToGiottoV5 assigns
+  # imagerow/imagecol names onto GetTissueCoordinates() output.
+  srt[["slice1"]] <- methods::new(
+    "VisiumV1",
+    assay = "Spatial",
+    key = "slice1_",
+    image = array(0.5, dim = c(8L, 8L, 3L)),
+    scale.factors = SeuratObject::scalefactors(
+      spot = 1,
+      fiducial = 1,
+      hires = 1,
+      lowres = 1
+    ),
+    coordinates = data.frame(
+      tissue = 1L,
+      row = c(0L, 0L, 1L),
+      col = c(0L, 1L, 0L),
+      imagerow = c(1, 1, 2),
+      imagecol = c(1, 2, 1),
+      row.names = spots
+    ),
+    spot.radius = 0.1
+  )
+  Seurat::NormalizeData(srt, assay = "Spatial", verbose = FALSE)
+}
+
+test_that("srt_to_giotto and giotto_to_srt round-trip with a real GiottoClass", {
+  giotto_class <- thisutils::check_r("GiottoClass", install = FALSE, verbose = FALSE)
+  if (!isTRUE(all(unlist(giotto_class, use.names = FALSE)))) {
+    skip("GiottoClass is not installed")
+  }
+
+  # In-process tiny fixture: callr+load_all of the source tree exceeds 120s in
+  # optional CI before conversion starts, and visium_human_pancreas_sub is far
+  # larger than needed to exercise the official GiottoClass converters.
+  old <- options(giotto.use_conda = FALSE, giotto.check_version = FALSE)
+  on.exit(options(old), add = TRUE)
+
+  srt <- make_live_giotto_seurat()
+  g <- suppressWarnings(suppressMessages(srt_to_giotto(srt)))
+  srt2 <- suppressWarnings(suppressMessages(giotto_to_srt(g)))
+
+  expect_true(methods::is(g, "giotto"))
+  expect_true(methods::is(srt2, "Seurat"))
+  expect_true(ncol(srt2) > 0)
+  layers <- tryCatch(
+    SeuratObject::Layers(srt2, assay = "rna"),
+    error = function(e) SeuratObject::Layers(srt2)
+  )
+  expect_true(all(c("counts", "data") %in% layers))
+})
+
+test_that("documented giotto examples do not call check_r", {
+  pkg_path <- getNamespaceInfo(asNamespace("scop"), "path")
+  rd_db <- if (dir.exists(file.path(pkg_path, "man"))) {
+    tools::Rd_db(dir = pkg_path)
+  } else {
+    tools::Rd_db("scop")
+  }
+  rd_examples <- vapply(
+    c("srt_to_giotto.Rd", "giotto_to_srt.Rd"),
+    function(topic) {
+      rd <- rd_db[[topic]]
+      if (is.null(rd)) {
+        return("")
+      }
+      tags <- vapply(rd, function(block) {
+        tag <- attr(block, "Rd_tag")
+        if (is.null(tag)) "" else as.character(tag)
+      }, character(1))
+      paste(unlist(rd[tags == "\\examples"]), collapse = "")
+    },
+    character(1)
+  )
+  expect_true(all(nzchar(rd_examples)))
+  expect_false(any(grepl("check_r", rd_examples, fixed = TRUE)))
+  expect_false(any(grepl("requireNamespace", rd_examples, fixed = TRUE)))
+  expect_true(all(grepl("srt_to_giotto", rd_examples, fixed = TRUE)))
 })

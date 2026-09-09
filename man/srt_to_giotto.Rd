@@ -20,6 +20,12 @@ A native Giotto object.
 Convert one Seurat spatial image into a native Giotto object without running
 a Giotto workflow or changing the input object.
 }
+\details{
+Converters live in GiottoClass. If that package is already installed from
+any source, the bridge reuses it and does not reinstall \code{drieslab/Giotto}.
+A GitHub reinstall is requested only when GiottoClass is missing. Conversion
+does not initialize Giotto's optional Python/conda environment.
+}
 \examples{
 \dontrun{
 data(visium_human_pancreas_sub)
@@ -28,13 +34,8 @@ spatial <- Seurat::NormalizeData(
   assay = "Spatial",
   verbose = FALSE
 )
-if (all(unlist(
-  thisutils::check_r("drieslab/Giotto", verbose = FALSE),
-  use.names = FALSE
-))) {
-  giotto <- srt_to_giotto(spatial, image = "slice1")
-  print(giotto)
-}
+giotto <- srt_to_giotto(spatial, image = "slice1")
+print(giotto)
 }
 
 }
