@@ -1822,7 +1822,7 @@ ccc_feature_plot <- function(
       FeatureStatPlot,
       c(
         list(
-          srt = srt,
+          object = srt,
           stat.by = genes,
           group.by = group.by,
           plot.by = "feature",

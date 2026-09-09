@@ -255,7 +255,7 @@ MetaCellPlot <- function(
 
   cell_args <- utils::modifyList(
     list(
-      srt = embedding_plot,
+      object = embedding_plot,
       group.by = cell_group,
       reduction = reduction,
       dims = dims,
@@ -280,7 +280,7 @@ MetaCellPlot <- function(
   )
   metacell_args <- utils::modifyList(
     list(
-      srt = centroid_srt,
+      object = centroid_srt,
       group.by = centroid_group,
       reduction = "MetaCellPlot",
       dims = c(1, 2),

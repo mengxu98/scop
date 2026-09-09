@@ -4853,7 +4853,7 @@ ccc_dim_network_plot <- function(
     CellDimPlot,
     c(
       list(
-        srt = srt,
+        object = srt,
         group.by = group.by,
         reduction = reduction,
         dims = dims,
