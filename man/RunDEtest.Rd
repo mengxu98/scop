@@ -96,7 +96,8 @@ RunDEtest(object = NULL, ..., srt = NULL)
 supported by scop's sparse Wilcoxon path are delegated to
 \link[Seurat:FindMarkers]{Seurat::FindMarkers}.}
 
-\item{srt}{Compatibility alias for \code{object}.}
+\item{srt}{Deprecated alias for \code{object}; it will be removed in scop
+1.0.0.}
 
 \item{group.by}{A grouping variable in the dataset to define the groups or conditions for the differential test.
 If not provided, the function uses the "active.ident" variable in the Seurat object.}
@@ -289,7 +290,7 @@ CellDimPlot(
 )
 
 panc8_sub <- RunDEtest(
-  srt = panc8_sub,
+  object = panc8_sub,
   group.by = "celltype",
   grouping.var = "tech",
   markers_type = "conserved",
@@ -311,7 +312,7 @@ ht4 <- GroupHeatmap(
 ht4$plot
 
 panc8_sub <- RunDEtest(
-  srt = panc8_sub,
+  object = panc8_sub,
   group.by = "tech",
   grouping.var = "celltype",
   markers_type = "conserved",
@@ -322,7 +323,7 @@ ConservedMarkers2 <- dplyr::filter(
   p_val_adj < 0.05 & avg_log2FC > 1
 )
 ht4 <- GroupHeatmap(
-  srt = panc8_sub,
+  object = panc8_sub,
   layer = "data",
   features = ConservedMarkers2$gene,
   feature_split = ConservedMarkers2$group1,
@@ -332,7 +333,7 @@ ht4 <- GroupHeatmap(
 ht4$plot
 
 panc8_sub <- RunDEtest(
-  srt = panc8_sub,
+  object = panc8_sub,
   group.by = "celltype",
   grouping.var = "tech",
   markers_type = "disturbed",
@@ -343,7 +344,7 @@ DisturbedMarkers <- dplyr::filter(
   p_val_adj < 0.05 & avg_log2FC > 1 & var1 == "smartseq2"
 )
 ht5 <- GroupHeatmap(
-  srt = panc8_sub,
+  object = panc8_sub,
   layer = "data",
   features = DisturbedMarkers$gene,
   feature_split = DisturbedMarkers$group1,
@@ -357,7 +358,7 @@ DisturbedMarkers_specific <- DisturbedMarkers[
   DisturbedMarkers$gene \%in\% gene_specific,
 ]
 ht6 <- GroupHeatmap(
-  srt = panc8_sub,
+  object = panc8_sub,
   layer = "data",
   features = DisturbedMarkers_specific$gene,
   feature_split = DisturbedMarkers_specific$group1,
@@ -367,7 +368,7 @@ ht6 <- GroupHeatmap(
 ht6$plot
 
 ht7 <- GroupHeatmap(
-  srt = panc8_sub,
+  object = panc8_sub,
   layer = "data",
   aggregate_fun = function(x) mean(expm1(x)) + 1,
   features = DisturbedMarkers_specific$gene,

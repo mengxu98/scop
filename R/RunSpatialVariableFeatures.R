@@ -34,8 +34,8 @@
 #' @param cores Number of OpenMP threads for C++ Moran/Geary scoring. `NULL`
 #' uses the process OpenMP default.
 #' @param object A `Seurat` object.
-#' @param srt Compatibility alias for `object`. Supply exactly one of `object`
-#' or `srt`.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param ... Additional arguments passed to external backends.
 #'
 #' @return A `Seurat` object with spatial variable feature results stored in
@@ -616,8 +616,8 @@ spatial_variable_result_features <- function(df, fallback) {
 #' @md
 #' @inheritParams SpatialSpotPlot
 #' @param object A `Seurat` object.
-#' @param srt Compatibility alias for `object`. Supply exactly one of `object`
-#' or `srt`.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param plot_type Plot type: `"summary"`, `"surface"`, or `"combined"`.
 #' @param features Features to plot. If `NULL`, top features from the stored
 #' spatial variable feature result are used.

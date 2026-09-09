@@ -7,8 +7,8 @@
 #'
 #' @inheritParams thisutils::log_message
 #' @param object A `Seurat` object.
-#' @param srt Compatibility alias for `object`. Supply exactly one of `object`
-#' or `srt`.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param method Network method, either `"knn"` or `"radius"`.
 #' @param image Seurat image name. A single image is selected automatically;
 #'   multi-image objects require an explicit value.

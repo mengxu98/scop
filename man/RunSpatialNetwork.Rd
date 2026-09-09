@@ -41,8 +41,8 @@ replaced.}
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{srt}{Compatibility alias for `object`. Supply exactly one of `object`
-or `srt`.}
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 The input `Seurat` object with a `SpatialNetwork` result in
