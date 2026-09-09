@@ -173,7 +173,6 @@ visium_human_pancreas_sub <- Seurat::NormalizeData(
   visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
 )
 # Group Visium spots by their CODA tissue labels.
-check_r("jinworks/SpatialCellChat", verbose = FALSE)
 spatial <- RunSpatialCellChat(
   visium_human_pancreas_sub,
   group.by = "coda_label", assay = "Spatial", image = "slice1",

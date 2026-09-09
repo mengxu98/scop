@@ -934,8 +934,7 @@ CreateSeuratObject2 <- function(
 #' list.files("./SCExplorer")
 #'
 #' # Run shiny app
-#' thisutils::check_r("shiny", verbose = FALSE)
-#' thisutils::get_namespace_fun("shiny", "runApp")(app)
+#' shiny::runApp(app)
 #' # Note: If scop installed in the isolated environment using renv,
 #' # add `renv::activate(project = "path/to/scop_env")` to the app.R script.
 #'
@@ -2663,8 +2662,10 @@ server <- function(input, output, session) {
   }
   app_code <- c(
     "# !/usr/bin/env Rscript",
-    "if (!requireNamespace('thisutils', quietly = TRUE)) {
-      if (!requireNamespace('pak', quietly = TRUE)) {
+    "# Bootstrap thisutils before check_r exists. find.package(..., quiet = TRUE)",
+    "# returns character(0) when a package is missing, without loading it.",
+    "if (length(find.package('thisutils', quiet = TRUE)) == 0L) {
+      if (length(find.package('pak', quiet = TRUE)) == 0L) {
         install.packages('pak')
       }
       pak::pak('thisutils')
