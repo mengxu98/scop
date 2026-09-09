@@ -62,7 +62,7 @@ the default; \code{"legacy_display"} remains available for compatibility.}
 
 \item{column_title}{The title for the column names in the heatmap. Default is to use the reference grouping variable.}
 
-\item{combine}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{complex.mean}{Method-specific complex ligand-receptor mean. Methods
 that do not expose it should document their own alternative.}
@@ -149,7 +149,7 @@ that do not expose it should document their own alternative.}
 
 \item{nproc}{Number of parallel processes.}
 
-\item{nrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+\item{nrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
 
 \item{overlay_image}{Draw the spatial image beneath spots.}
 

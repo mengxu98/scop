@@ -8,6 +8,9 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
+#' @param object A `Seurat` object.
+#' @param srt Compatibility alias for `object`. Supply exactly one of `object`
+#' or `srt`.
 #' @param return_filtered Whether to return a spot-filtered
 #' Seurat object.
 #' @param qc_metrics QC metrics to apply. Available metrics are `"outlier"`,
@@ -38,12 +41,12 @@
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' spatial <- RunSpotQC(
-#'   srt = visium_human_pancreas_sub,
+#'   object = visium_human_pancreas_sub,
 #'   assay = "Spatial"
 #' )
-#' SpatialSpotPlot(srt = spatial, group.by = "SpotQC")
+#' SpatialSpotPlot(object = spatial, group.by = "SpotQC")
 RunSpotQC <- function(
-  srt,
+  object = NULL,
   assay = NULL,
   return_filtered = FALSE,
   qc_metrics = c("outlier", "umi", "gene", "mito"),
@@ -59,9 +62,10 @@ RunSpotQC <- function(
   mito_pattern = c("MT-", "Mt-", "mt-"),
   mito_gene = NULL,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  srt = NULL
 ) {
-  spatial_require_srt(srt)
+  srt <- spatial_resolve_object(object = object, srt = srt)
   log_message(
     "Running spot-level quality control",
     message_type = "running",

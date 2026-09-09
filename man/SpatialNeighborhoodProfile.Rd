@@ -5,7 +5,7 @@
 \title{Profile cell neighborhoods at several distances}
 \usage{
 SpatialNeighborhoodProfile(
-  srt,
+  object,
   group.by,
   radii,
   cells = NULL,
@@ -17,7 +17,7 @@ SpatialNeighborhoodProfile(
 )
 }
 \arguments{
-\item{srt}{A Seurat object. The object is not modified.}
+\item{object}{A Seurat object. The object is not modified.}
 
 \item{group.by}{Metadata column containing nonmissing cell or spot labels.}
 
@@ -61,12 +61,12 @@ not a colocalization test, an optimal-radius selector, or a communication model.
 \examples{
 # Constructed coordinates and labels, not a biological example.
 counts <- matrix(1L, 2, 4, dimnames = list(c("g1", "g2"), letters[1:4]))
-srt <- SeuratObject::CreateSeuratObject(counts)
-srt$col <- c(0, 1, 3, 5)
-srt$row <- c(0, 0, 0, 0)
-srt$celltype <- c("T", "M", "M", "T")
+object <- SeuratObject::CreateSeuratObject(counts)
+object$col <- c(0, 1, 3, 5)
+object$row <- c(0, 0, 0, 0)
+object$celltype <- c("T", "M", "M", "T")
 profile <- SpatialNeighborhoodProfile(
-  srt, "celltype", radii = c(1, 3), cells = "a", verbose = FALSE
+  object, "celltype", radii = c(1, 3), cells = "a", verbose = FALSE
 )
 profile
 }

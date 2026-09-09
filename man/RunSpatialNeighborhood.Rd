@@ -89,8 +89,8 @@ implementation. This does not alter the external \code{"spicyR"} method.}
 A \code{Seurat} object with results stored in \code{srt@tools[[tool_name]]}.
 }
 \description{
-Build a standardized spatial neighborhood result bundle and optionally dispatch
-to a supported backend for colocalization or local-effect statistics.
+Summarize observed spatial neighborhoods or test differential spatial
+associations between conditions using spicyR.
 }
 \examples{
 data(visium_human_pancreas_sub)

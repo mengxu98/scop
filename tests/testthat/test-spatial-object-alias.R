@@ -1,4 +1,4 @@
-make_spatial_srt_fixture <- function() {
+make_spatial_object_alias_fixture <- function() {
   counts <- matrix(
     c(
       5, 4, 0, 1, 5, 4, 0, 1, 5,
@@ -19,9 +19,69 @@ make_spatial_srt_fixture <- function() {
   srt
 }
 
-test_that("native spatial APIs take srt as the Seurat argument", {
+test_that("native spatial APIs take the Seurat object as object", {
   skip_if_not_installed("BiocNeighbors")
-  srt <- make_spatial_srt_fixture()
+  srt <- make_spatial_object_alias_fixture()
+
+  qc <- suppressWarnings(RunSpotQC(
+    object = srt,
+    assay = "RNA",
+    qc_metrics = c("umi", "gene"),
+    UMI_threshold = 0,
+    gene_threshold = 0,
+    verbose = FALSE
+  ))
+  expect_s4_class(qc, "Seurat")
+  expect_s3_class(
+    SpatialSpotPlot(
+      object = qc,
+      group.by = "SpotQC",
+      overlay_image = FALSE,
+      theme_use = NULL
+    ),
+    "ggplot"
+  )
+
+  network <- RunSpatialNetwork(
+    object = qc,
+    k = 1,
+    verbose = FALSE
+  )
+  expect_s4_class(network, "Seurat")
+  expect_s3_class(
+    SpatialNetworkPlot(
+      object = network,
+      graph.name = "knn_k1",
+      theme_use = NULL
+    ),
+    "ggplot"
+  )
+
+  svf <- RunSpatialVariableFeatures(
+    object = network,
+    assay = "RNA",
+    layer = "counts",
+    method = "moran",
+    backend = "r",
+    coord.cols = c("x", "y"),
+    nfeatures = 2,
+    min_spots = 1,
+    verbose = FALSE
+  )
+  expect_s4_class(svf, "Seurat")
+  expect_s3_class(
+    SpatialVariableFeaturePlot(
+      object = svf,
+      plot_type = "summary",
+      theme_use = NULL
+    ),
+    "ggplot"
+  )
+})
+
+test_that("srt remains a compatibility alias for object", {
+  skip_if_not_installed("BiocNeighbors")
+  srt <- make_spatial_object_alias_fixture()
 
   qc <- suppressWarnings(RunSpotQC(
     srt = srt,
@@ -41,76 +101,20 @@ test_that("native spatial APIs take srt as the Seurat argument", {
     ),
     "ggplot"
   )
-
-  network <- RunSpatialNetwork(
-    srt = qc,
-    k = 1,
-    verbose = FALSE
-  )
-  expect_s4_class(network, "Seurat")
-  expect_s3_class(
-    SpatialNetworkPlot(
-      srt = network,
-      graph.name = "knn_k1",
-      theme_use = NULL
-    ),
-    "ggplot"
-  )
-
-  svf <- RunSpatialVariableFeatures(
-    srt = network,
-    assay = "RNA",
-    layer = "counts",
-    method = "moran",
-    backend = "r",
-    coord.cols = c("x", "y"),
-    nfeatures = 2,
-    min_spots = 1,
-    verbose = FALSE
-  )
-  expect_s4_class(svf, "Seurat")
-  expect_s3_class(
-    SpatialVariableFeaturePlot(
-      srt = svf,
-      plot_type = "summary",
-      theme_use = NULL
-    ),
-    "ggplot"
-  )
 })
 
-test_that("spatial APIs reject object= and invalid srt input", {
-  srt <- make_spatial_srt_fixture()
+test_that("spatial object input rejects ambiguous or missing input", {
+  srt <- make_spatial_object_alias_fixture()
   expect_error(
-    RunSpotQC(object = srt, verbose = FALSE),
-    "unused argument"
+    RunSpotQC(srt = srt, object = srt, verbose = FALSE),
+    "only one of.*object.*srt"
   )
   expect_error(
     SpatialSpotPlot(verbose = FALSE),
-    "srt"
+    "through.*object.*srt"
   )
   expect_error(
-    RunSpatialNetwork(srt = list(), verbose = FALSE),
-    "srt.*Seurat"
-  )
-})
-
-test_that("non-spatial wrappers take srt and reject object=", {
-  srt <- make_spatial_srt_fixture()
-  expect_error(
-    RunVECTOR(object = srt, verbose = FALSE),
-    "unused argument"
-  )
-  expect_error(
-    VECTORPlot(object = srt),
-    "srt"
-  )
-  expect_error(
-    RunDEtest(object = srt, verbose = FALSE),
-    "srt"
-  )
-  expect_error(
-    PrepareSCExplorer(object = srt, verbose = FALSE),
-    "unused argument"
+    RunSpatialNetwork(object = list(), verbose = FALSE),
+    "object.*Seurat"
   )
 })
