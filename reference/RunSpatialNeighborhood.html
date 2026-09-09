@@ -70,7 +70,7 @@ associations between conditions using spicyR.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RunSpatialNeighborhood</span><span class="op">(</span></span>
-<span>  <span class="va">srt</span>,</span>
+<span>  <span class="va">object</span>,</span>
 <span>  <span class="va">group.by</span>,</span>
 <span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -90,7 +90,8 @@ associations between conditions using spicyR.</p>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  coordinate_space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw"</span>, <span class="st">"legacy_display"</span><span class="op">)</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -98,7 +99,7 @@ associations between conditions using spicyR.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>A <code>Seurat</code> object.</p></dd>
 
 
@@ -192,6 +193,11 @@ implementation. This does not alter the external <code>"spicyR"</code> method.</
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to the selected backend.</p></dd>
+
+
+<dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
+will be removed in scop 1.0.0.</p></dd>
 
 </dl></div>
     <div class="section level2">

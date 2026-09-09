@@ -67,7 +67,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RunATACQC</span><span class="op">(</span></span>
-<span>  <span class="va">srt</span>,</span>
+<span>  <span class="va">object</span>,</span>
 <span>  assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tss.positions <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  blacklist <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -76,7 +76,8 @@
 <span>  min_TSS_enrichment <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_nucleosome_signal <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_blacklist_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -84,7 +85,7 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>A <code>Seurat</code> object.</p></dd>
 
 
@@ -112,6 +113,11 @@
 <dd><p>Whether to print the message.
 Default is <code>TRUE</code>.</p></dd>
 
+
+<dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
+will be removed in scop 1.0.0.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -127,10 +133,10 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"peaks"</span>,</span></span>
 <span class="r-in"><span>  fast <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 12:51:35] Calculating ATAC QC metrics...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-09 12:51:35] Skip nucleosome signal: <span style="color: #0000BB;">"No fragment files present in assay"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-09 12:51:35] Skip FRiP calculation: no total fragment count column or local fragments available</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-09 12:51:35] <span style="color: #00BB00;">ATAC QC completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 20:36:58] Calculating ATAC QC metrics...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-09 20:36:58] Skip nucleosome signal: <span style="color: #0000BB;">"No fragment files present in assay"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-09 20:36:58] Skip FRiP calculation: no total fragment count column or local fragments available</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-09 20:36:58] <span style="color: #00BB00;">ATAC QC completed</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

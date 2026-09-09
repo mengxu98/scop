@@ -67,7 +67,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ScissorPlot</span><span class="op">(</span></span>
-<span>  <span class="va">srt</span>,</span>
+<span>  <span class="va">object</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"umap"</span>, <span class="st">"heatmap"</span>, <span class="st">"bar"</span>, <span class="st">"upset"</span>, <span class="st">"rose"</span>, <span class="st">"ring"</span>, <span class="st">"pie"</span>, <span class="st">"dot"</span><span class="op">)</span>,</span>
 <span>  reduction <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  prefix <span class="op">=</span> <span class="st">"Scissor"</span>,</span>
@@ -108,7 +108,8 @@
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_scop"</span>,</span>
 <span>  theme_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -116,7 +117,7 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>A <code>Seurat</code> object after <a href="RunScissor.html">RunScissor</a>.</p></dd>
 
 
@@ -282,6 +283,11 @@ radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi<
 <dd><p>Additional arguments passed to <a href="CellDimPlot.html">CellDimPlot</a>, <a href="FeatureDimPlot.html">FeatureDimPlot</a>,
 <a href="FeatureHeatmap.html">FeatureHeatmap</a>, or <a href="https://mengxu98.github.io/thisplot/reference/StatPlot.html" class="external-link">thisplot::StatPlot</a>, depending on <code>plot_type</code>.</p></dd>
 
+
+<dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
+will be removed in scop 1.0.0.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -310,11 +316,11 @@ list returned by <a href="FeatureHeatmap.html">FeatureHeatmap</a> for <code>plot
 <span class="r-in"><span>  alpha <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
 <span class="r-in"><span>  cutoff <span class="op">=</span> <span class="fl">0.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 13:32:52] Build a temporary Scissor-style SNN graph</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 13:34:06] Scissor alpha <span style="color: #0000BB;">0.2</span> selected <span style="color: #0000BB;">1</span> positive and <span style="color: #0000BB;">501</span> negative cells (<span style="color: #0000BB;">31.375</span>%)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-09 13:34:06] <span style="color: #0000BB;">Scissor</span> stored <span style="color: #0000BB;">1</span> Scissor+ and <span style="color: #0000BB;">501</span> Scissor- cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 20:52:05] Build a temporary Scissor-style SNN graph</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 20:53:10] Scissor alpha <span style="color: #0000BB;">0.2</span> selected <span style="color: #0000BB;">1</span> positive and <span style="color: #0000BB;">501</span> negative cells (<span style="color: #0000BB;">31.375</span>%)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-09 20:53:10] <span style="color: #0000BB;">Scissor</span> stored <span style="color: #0000BB;">1</span> Scissor+ and <span style="color: #0000BB;">501</span> Scissor- cells</span>
 <span class="r-in"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">panc8_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 13:34:08] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 20:53:11] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">ScissorPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">panc8_sub</span>,</span></span>

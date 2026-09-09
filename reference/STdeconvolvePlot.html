@@ -73,7 +73,7 @@ space above the automatic layout.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">STdeconvolvePlot</span><span class="op">(</span></span>
-<span>  <span class="va">srt</span>,</span>
+<span>  <span class="va">object</span>,</span>
 <span>  tool_name <span class="op">=</span> <span class="st">"STdeconvolve"</span>,</span>
 <span>  topics <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  prefix <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -83,7 +83,8 @@ space above the automatic layout.</p>
 <span>  ncol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  byrow <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span>,</span>
-<span>  image.scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lowres"</span>, <span class="st">"hires"</span><span class="op">)</span></span>
+<span>  image.scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lowres"</span>, <span class="st">"hires"</span><span class="op">)</span>,</span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -91,7 +92,7 @@ space above the automatic layout.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>A <code>Seurat</code> object.</p></dd>
 
 
@@ -134,6 +135,11 @@ plots is returned.</p></dd>
 <dd><p>Image scale factor matching the raster stored in the
 selected image. Use <code>"hires"</code> for a hires raster; do not modify Seurat
 scale-factor slots.</p></dd>
+
+
+<dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
+will be removed in scop 1.0.0.</p></dd>
 
 </dl></div>
     <div class="section level2">

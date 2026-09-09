@@ -67,7 +67,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">scFEABalanceBarPlot</span><span class="op">(</span></span>
-<span>  <span class="va">srt</span>,</span>
+<span>  <span class="va">object</span>,</span>
 <span>  <span class="va">group.by</span>,</span>
 <span>  ident.1 <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ident.2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -75,7 +75,8 @@
 <span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  p_adj_cutoff <span class="op">=</span> <span class="fl">0.01</span>,</span>
-<span>  title <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -83,7 +84,7 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>A Seurat object returned by [RunscFEA()].</p></dd>
 
 
@@ -118,6 +119,11 @@ adjusted-p-value filter.</p></dd>
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
 <dd><p>Optional plot title.</p></dd>
+
+
+<dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dd><p>Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.</p></dd>
 
 </dl></div>
     <div class="section level2">
