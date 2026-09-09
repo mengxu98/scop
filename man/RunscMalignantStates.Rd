@@ -5,7 +5,7 @@
 \title{Run scMalignantFinder cancer cell state scoring}
 \usage{
 RunscMalignantStates(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -16,11 +16,12 @@ RunscMalignantStates(
   prefix = "scMalignantState_",
   return_seurat = !is.null(srt),
   verbose = TRUE,
-  backend = c("cpp", "python")
+  backend = c("cpp", "python"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{object}{A Seurat object.}
 
 \item{adata}{Optional Python AnnData object.}
 
@@ -53,6 +54,9 @@ Default is \code{TRUE}.}
 \item{backend}{State-scoring backend. \code{"cpp"} uses a compiled sparse
 AUCell implementation for Seurat input. \code{"python"} retains the official
 scMalignantFinder path and is used for AnnData or h5ad input.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object with cancer-state AUCell scores, or a data frame when

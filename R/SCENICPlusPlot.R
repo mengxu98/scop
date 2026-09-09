@@ -6,7 +6,9 @@
 #'
 #' @md
 #' @inheritParams SCENICPlot
-#' @param srt A Seurat object from [RunSCENICPlus()].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object from [RunSCENICPlus()].
 #' @param tool_name Tools slot. Default `"SCENICPlus"`.
 #' @param assay ERegulon AUC assay. Default `"scenicplus"`.
 #' @param plot_type Plot type. Default `"heatmap_dotplot"`.
@@ -33,35 +35,20 @@
 #' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "network_graph", features = example_tfs)
 #' }
 SCENICPlusPlot <- function(
-  srt,
+  object,
   group.by,
   tool_name = "SCENICPlus",
   assay = "scenicplus",
-  plot_type = c(
-    "heatmap_dotplot",
-    "rss_rank",
-    "rss_heatmap",
-    "rss_dotplot",
-    "activity_heatmap",
-    "activity_violin",
-    "activity_dim",
-    "eregulon_dim",
-    "activity_cor_dumbbell",
-    "regulon_size",
-    "network_graph",
-    "network",
-    "egrn",
-    "overlap",
-    "target_bar",
-    "coverage"
-  ),
-  ...
+  plot_type = c("heatmap_dotplot", "rss_rank", "rss_heatmap", "rss_dotplot", "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim", "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "egrn", "overlap", "target_bar", "coverage"),
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   plot_type <- match.arg(plot_type)
   extra <- list(...)
   args <- c(
     list(
-      srt = srt,
+      object = srt,
       group.by = group.by,
       tool_name = tool_name,
       assay = assay,

@@ -368,7 +368,7 @@ scenic_try_coverage_track_plot <- function(
   }
   locus <- paste0(window[["seqnames"]], "-", window[["start"]], "-", window[["end"]])
   args <- list(
-    srt = srt,
+    object = srt,
     region = locus,
     assay = atac_assay,
     group.by = group.by,

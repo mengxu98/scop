@@ -1,6 +1,8 @@
 #' @title Run scFEA flux estimation for a Seurat object
 #'
-#' @param srt A Seurat object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object.
 #' @param assay Assay to use as expression matrix. Default is
 #' `DefaultAssay(srt)`.
 #' @param layer Assay layer to use.
@@ -39,7 +41,7 @@
 #'
 #' @export
 RunscFEA <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   species = c("human", "mouse"),
@@ -51,8 +53,10 @@ RunscFEA <- function(
   data_dir = NULL,
   seed = 16,
   max_cells = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   species <- match.arg(species)
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -314,7 +318,9 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
 
 #' Plot scFEA module flux heatmap
 #'
-#' @param srt A Seurat object returned by [RunscFEA()].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object returned by [RunscFEA()].
 #' @param assay Flux assay name.
 #' @param layer Flux assay layer.
 #' @param group.by Metadata column used to aggregate cells.
@@ -381,7 +387,7 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
 #' @return A `ComplexHeatmap` heatmap object.
 #' @export
 scFEAHeatmap <- function(
-  srt,
+  object,
   assay = "scFEAflux",
   layer = "data",
   group.by = NULL,
@@ -433,8 +439,10 @@ scFEAHeatmap <- function(
   ht_params = list(),
   width = NULL,
   height = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   heatmap_border <- heatmap_border %||% border
   cell_annotation_border <- cell_annotation_border %||% border
   feature_annotation_border <- feature_annotation_border %||% border
@@ -681,7 +689,9 @@ scFEAHeatmap <- function(
 
 #' Plot scFEA flux Cohen's d volcano plots
 #'
-#' @param srt A Seurat object returned by [RunscFEA()].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object returned by [RunscFEA()].
 #' @param group.by Metadata column defining groups. If `ident.1` and `ident.2`
 #' are both `NULL`, each group is compared against all remaining cells.
 #' @param ident.1,ident.2 Group names to compare. Cohen's d is
@@ -708,7 +718,7 @@ scFEAHeatmap <- function(
 #' statistics are stored in the outer `"data"` attribute.
 #' @export
 scFEAVolcanoPlot <- function(
-  srt,
+  object,
   group.by,
   ident.1 = NULL,
   ident.2 = NULL,
@@ -716,13 +726,15 @@ scFEAVolcanoPlot <- function(
   layer = "data",
   label_by = c("reaction", "module", "module_reaction"),
   pathways = NULL,
-  p_adj_cutoff = 1e-3,
+  p_adj_cutoff = 0.001,
   cohen_cutoff = 0.2,
   combine = TRUE,
   width = 12,
   height = 10.4,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   label_by <- match.arg(label_by)
   mat <- scfea_get_assay_matrix(srt, assay = assay, layer = layer)
   module_info <- scfea_get_module_info(srt, assay = assay)
@@ -1026,7 +1038,9 @@ scfea_volcano_plot_one <- function(
 
 #' Plot scFEA metabolite balance changes
 #'
-#' @param srt A Seurat object returned by [RunscFEA()].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object returned by [RunscFEA()].
 #' @param group.by Metadata column defining groups. If `ident.1` and `ident.2`
 #' are both `NULL`, each group is compared against all remaining cells.
 #' @param ident.1,ident.2 Group names to compare. Difference is
@@ -1045,7 +1059,7 @@ scfea_volcano_plot_one <- function(
 #' returned and combined statistics are stored in the outer `"data"` attribute.
 #' @export
 scFEABalanceBarPlot <- function(
-  srt,
+  object,
   group.by,
   ident.1 = NULL,
   ident.2 = NULL,
@@ -1053,8 +1067,10 @@ scFEABalanceBarPlot <- function(
   layer = "data",
   top_n = NULL,
   p_adj_cutoff = 0.01,
-  title = NULL
+  title = NULL,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   mat <- scfea_get_assay_matrix(srt, assay = assay, layer = layer)
   contrasts <- scfea_prepare_contrasts(
     srt = srt,

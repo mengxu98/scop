@@ -2,7 +2,9 @@
 #'
 #' @inheritParams CellDimPlot
 #'
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param method Cell-scoring method to retrieve and label. Accepts the same
 #'   values as the `method` argument of [CellScoring()].
 #' @param features Score names to plot. For metadata input these are metadata
@@ -105,7 +107,7 @@
 #'   group.by = "SubCellType"
 #' )
 CellScoringPlot <- function(
-  srt,
+  object,
   method = "AUCell",
   features = NULL,
   scores = NULL,
@@ -145,15 +147,14 @@ CellScoringPlot <- function(
   show.score.legend = TRUE,
   legend.position = "bottom",
   group.title = NULL,
-  threshold.colors = c(
-    "Above AUC threshold" = "black",
-    "Below AUC threshold" = "grey50"
-  ),
+  threshold.colors = c(`Above AUC threshold` = "black", `Below AUC threshold` = "grey50"),
   ...,
   combine = TRUE,
   seed = 42,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (length(method) != 1L || is.na(method)) {
     log_message(
       "{.arg method} must name one CellScoring method",

@@ -10,7 +10,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt Optional Seurat object used as single-cell input.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object Optional Seurat object used as single-cell input.
 #' @param single_data Optional Seurat object or path to a Seurat `.rds` file.
 #' @param gwas_data GWAS summary statistics as a data frame or delimited text
 #' file. Required columns are `chrom`, `pos`, `rsid`, `se`, `beta`, and `maf`.
@@ -32,7 +34,7 @@
 #' @seealso [PlotscPagwas()]
 #' @export
 RunscPagwas <- function(
-  srt = NULL,
+  object = NULL,
   single_data = NULL,
   gwas_data,
   group.by = NULL,
@@ -44,8 +46,10 @@ RunscPagwas <- function(
   cleanup_soar = TRUE,
   return_seurat = !is.null(srt) || inherits(single_data, "Seurat"),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   block_annotation <- scpagwas_validate_block_annotation_selector(block_annotation)
   if (missing(gwas_data) || is.null(gwas_data)) {
     log_message("{.arg gwas_data} is required", message_type = "error")
@@ -136,7 +140,9 @@ RunscPagwas <- function(
 #' saved as PDF files.
 #'
 #' @md
-#' @param srt A Seurat object returned by [RunscPagwas()].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object returned by [RunscPagwas()].
 #' @param reduction Reduction used for plotting, either `"umap"` or `"tsne"`.
 #' @param features Numeric scPagwas metadata columns to plot. By default,
 #' available gPAS, TRS, and down-TRS score columns are used.
@@ -154,7 +160,7 @@ RunscPagwas <- function(
 #' @return A named list of ggplot objects.
 #' @export
 PlotscPagwas <- function(
-  srt,
+  object,
   reduction = c("umap", "tsne"),
   features = NULL,
   p_threshold = 0.05,
@@ -166,8 +172,10 @@ PlotscPagwas <- function(
   palcolor = NULL,
   significance_palette = "Chinese",
   significance_palcolor = NULL,
-  do_plot = TRUE
+  do_plot = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a Seurat object", message_type = "error")
   }

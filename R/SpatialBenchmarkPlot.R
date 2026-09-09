@@ -10,7 +10,9 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param data Optional `spatial_benchmark_result` / `benchmark_result` object
 #' or summary `data.frame` containing at least `metric` and `value`, and
 #' optionally `method`, `workflow`, and `direction`.
@@ -70,16 +72,13 @@
 #' @seealso [RunSpatialBenchmark], [IntegrationBenchmarkPlot]
 #' @export
 SpatialBenchmarkPlot <- function(
-  srt = NULL,
+  object = NULL,
   data = NULL,
   features = NULL,
   metrics = NULL,
   tool_name = NULL,
   reduction = NULL,
-  plot_type = c(
-    "auto", "overview", "quality", "efficiency", "heatmap",
-    "feature", "boxplot", "bar", "funkyheatmap"
-  ),
+  plot_type = c("auto", "overview", "quality", "efficiency", "heatmap", "feature", "boxplot", "bar", "funkyheatmap"),
   sort_by = c("quality", "method", "runtime", "memory"),
   show_values = TRUE,
   show_status = TRUE,
@@ -97,8 +96,10 @@ SpatialBenchmarkPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   plot_type <- match.arg(plot_type)
   sort_by <- match.arg(sort_by)
   resource_scale <- match.arg(resource_scale)

@@ -5,7 +5,7 @@
 \title{Convert a Seurat object to an \code{.h5ad} file}
 \usage{
 srt_to_h5ad(
-  srt,
+  object,
   path,
   features = NULL,
   assay_x = "RNA",
@@ -18,11 +18,12 @@ srt_to_h5ad(
   convert_tools = FALSE,
   convert_misc = FALSE,
   overwrite = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{path}{Path to the output \code{.h5ad} file.}
 
@@ -56,6 +57,9 @@ objects.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 Invisibly returns the normalized \code{path} of the written file.

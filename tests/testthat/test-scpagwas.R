@@ -88,7 +88,7 @@ test_that("RunscPagwas passes Seurat input and stores tools metadata", {
 
   with_mock_scpagwas(runner, {
     out <- RunscPagwas(
-      srt = srt,
+      object = srt,
       gwas_data = gwas,
       group.by = "celltype",
       singlecell = FALSE,
@@ -227,7 +227,7 @@ test_that("RunscPagwas supplies upstream default package data explicitly", {
   )
   with_mock_scpagwas(runner, {
     res <- RunscPagwas(
-      srt = srt,
+      object = srt,
       gwas_data = gwas,
       block_annotation = block,
       output.dirs = "relative-output",
@@ -320,7 +320,7 @@ test_that("RunscPagwas restores R_LOCAL_CACHE after backend errors", {
   with_mock_scpagwas(runner, {
     expect_error(
       RunscPagwas(
-        srt = srt,
+        object = srt,
         gwas_data = gwas,
         block_annotation = block,
         output.dirs = tempfile("scpagwas-output-"),
@@ -337,7 +337,7 @@ test_that("RunscPagwas restores R_LOCAL_CACHE after backend errors", {
   with_mock_scpagwas(runner, {
     expect_error(
       RunscPagwas(
-        srt = srt,
+        object = srt,
         gwas_data = gwas,
         block_annotation = block,
         output.dirs = tempfile("scpagwas-output-"),

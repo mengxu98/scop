@@ -836,7 +836,9 @@ spatialcellchat_run_one <- function(
 #' because they can be large; use `store.object = "full"` only if subsequent
 #' additional analysis with the upstream SpatialCellChat object is needed.
 #'
-#' @param srt A `Seurat` object with normalized, non-negative expression and
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object with normalized, non-negative expression and
 #'   spatial coordinates.
 #' @param group.by One metadata column defining cell types for cell-level runs,
 #'   or spot/domain labels for spot- and composition-level runs. Values must be
@@ -925,7 +927,7 @@ spatialcellchat_run_one <- function(
 #'
 #' @export
 RunSpatialCellChat <- function(
-  srt,
+  object,
   group.by,
   sample.by = NULL,
   assay = NULL,
@@ -956,8 +958,10 @@ RunSpatialCellChat <- function(
   store.object = c("minimal", "full"),
   overwrite = FALSE,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   assay <- assay %||% DefaultAssay(srt)
   species <- match.arg(species)
   database <- match.arg(database)

@@ -5,7 +5,7 @@
 \title{Benchmark spatial domain clustering methods}
 \usage{
 RunSpatialBenchmark(
-  srt,
+  object,
   gold_standard,
   methods = NULL,
   method_params = list(),
@@ -16,11 +16,12 @@ RunSpatialBenchmark(
   seed = 1,
   timeout = Inf,
   poll_interval = 0.1,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A spatial \code{Seurat} object.}
+\item{object}{A spatial \code{Seurat} object.}
 
 \item{gold_standard}{Either one metadata column in \code{srt} or a named vector
 whose names match the spot names in \code{srt}.}
@@ -58,6 +59,9 @@ process start and result serialization. \code{Inf} disables the timeout.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{spatial_benchmark_result} object (also inherits

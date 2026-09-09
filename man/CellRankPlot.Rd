@@ -5,7 +5,7 @@
 \title{Plot stored CellRank results}
 \usage{
 CellRankPlot(
-  srt,
+  object,
   plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters",
     "enrichment", "projection", "random_walks"),
   lineage = NULL,
@@ -22,11 +22,12 @@ CellRankPlot(
   feature_palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object returned by [RunCellRank].}
+\item{object}{A Seurat object returned by [RunCellRank].}
 
 \item{plot_type}{One of `"fate"`, `"states"`, `"circular"`, `"drivers"`,
 `"trends"`, `"clusters"`, `"enrichment"`, `"projection"`, or
@@ -58,6 +59,9 @@ trends, pseudotime, and enrichment strength.}
 \item{theme_use, theme_args}{SCOP plot theme and arguments passed to it.}
 
 \item{...}{Arguments passed to the underlying SCOP plotting function.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A ggplot object or a SCOP plot object.

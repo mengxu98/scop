@@ -5,7 +5,7 @@
 \title{Run scMalignantFinder malignant cell identification}
 \usage{
 RunscMalignantFinder(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -20,11 +20,12 @@ RunscMalignantFinder(
   n_thread = 1,
   prefix = "",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{object}{A Seurat object.}
 
 \item{adata}{Optional Python AnnData object.}
 
@@ -65,6 +66,9 @@ supplied. If \code{FALSE}, returns a data frame of predictions.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object with \code{scMalignantFinder_prediction} and

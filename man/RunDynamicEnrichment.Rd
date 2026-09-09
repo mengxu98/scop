@@ -5,7 +5,7 @@
 \title{RunDynamicEnrichment}
 \usage{
 RunDynamicEnrichment(
-  srt,
+  object,
   lineages,
   score_method = "AUCell",
   layer = "data",
@@ -31,11 +31,12 @@ RunDynamicEnrichment(
   cores = 1,
   verbose = TRUE,
   seed = 11,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
+\item{object}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
 results of differential expression analysis (\code{\link[=RunDEtest]{RunDEtest()}}).
 If specified, the genes and groups will be extracted from the object automatically.
 If not specified, the \code{geneID} and \code{geneID_groups} arguments must be provided.}
@@ -115,6 +116,9 @@ reproducible across worker counts and scheduling order. The caller's random
 number state is restored when the call finishes.}
 
 \item{...}{Passed to helper functions.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Calculates gene-set scores from the specified database (\code{db}) for each lineage using the specified scoring method (\code{score_method}).

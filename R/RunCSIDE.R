@@ -72,7 +72,7 @@
 #'   rownames(spatial)
 #' ), 300)
 #' spatial <- RunRCTD(
-#'   srt = spatial,
+#'   object = spatial,
 #'   reference = reference,
 #'   reference_label = "celltype",
 #'   assay = "Spatial",
@@ -88,7 +88,7 @@
 #' )
 #' spatial <- spatial[, rownames(spatial@tools$RCTD$weights)]
 #' spatial <- RunCSIDE(
-#'   srt = spatial,
+#'   object = spatial,
 #'   group.by = "region",
 #'   celltypes = c("ductal", "alpha"),
 #'   features = features_use,
@@ -100,7 +100,7 @@
 #' head(spatial@tools$CSIDE$result_table)
 #' }
 RunCSIDE <- function(
-  srt,
+  object,
   rctd_result = NULL,
   explanatory.variable = NULL,
   group.by = NULL,
@@ -117,8 +117,10 @@ RunCSIDE <- function(
   tool_name = "CSIDE",
   store_results = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

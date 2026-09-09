@@ -5,7 +5,7 @@
 \title{Run RCTD spatial deconvolution}
 \usage{
 RunRCTD(
-  srt,
+  object,
   reference,
   reference_label = "celltype",
   assay = NULL,
@@ -26,11 +26,12 @@ RunRCTD(
   verbose = TRUE,
   ...,
   coordinate_space = c("raw", "legacy_display"),
-  tool_name = "RCTD"
+  tool_name = "RCTD",
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{Spatial \code{Seurat} object used as the RCTD query.}
+\item{object}{Spatial \code{Seurat} object used as the RCTD query.}
 
 \item{reference}{Reference \code{Seurat} object containing annotated single cells.}
 
@@ -84,6 +85,9 @@ coordinate units. Use \code{"legacy_display"} explicitly to reproduce the
 display-scaled coordinates used before scop 0.9.0.}
 
 \item{tool_name}{Name used to store the plain result bundle in \code{srt@tools}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with RCTD proportion columns in metadata and
@@ -113,7 +117,7 @@ features_use <- head(intersect(
   rownames(spatial)
 ), 300)
 spatial <- RunRCTD(
-  srt = spatial,
+  object = spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",

@@ -253,7 +253,7 @@
 #' )
 #' ht8$plot
 GroupHeatmap <- function(
-  srt,
+  object,
   features = NULL,
   group.by = NULL,
   split.by = NULL,
@@ -405,8 +405,10 @@ GroupHeatmap <- function(
   legend.position = "right",
   ht_params = list(),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   heatmap_border <- heatmap_border %||% border
   cell_annotation_border <- cell_annotation_border %||% border

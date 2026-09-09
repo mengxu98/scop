@@ -4,7 +4,9 @@
 #' @inheritParams GeneConvert
 #' @inheritParams PrepareDB
 #' @inheritParams CellDimPlot
-#' @param srt A `Seurat` object or `SummarizedExperiment` object containing the
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object or `SummarizedExperiment` object containing the
 #' results of differential expression analysis ([RunDEtest()]).
 #' If specified, the genes and groups will be extracted from the object automatically.
 #' If not specified, the `geneID` and `geneID_groups` arguments must be provided.
@@ -92,7 +94,7 @@
 #'   plot_type = "comparison"
 #' )
 RunEnrichment <- function(
-  srt = NULL,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
@@ -122,8 +124,10 @@ RunEnrichment <- function(
   simplify_similarityCutoff = 0.7,
   cores = 1,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Start {.pkg Enrichment} analysis", verbose = verbose)
   species <- normalize_species_name(species)
   backend <- match.arg(backend)

@@ -5,7 +5,7 @@
 \title{Run CellChat analysis}
 \usage{
 RunCellChat(
-  srt,
+  object,
   group.by,
   species = c("Homo_sapiens", "Mus_musculus", "zebrafish"),
   split.by = NULL,
@@ -18,11 +18,12 @@ RunCellChat(
   backend = c("cpp", "r"),
   assay = NULL,
   layer = "data",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
 
@@ -51,6 +52,9 @@ upstream CellChat inference.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with \code{CellChat} results stored in \code{srt@tools[["CellChat"]]}.

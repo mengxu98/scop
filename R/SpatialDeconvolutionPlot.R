@@ -9,7 +9,9 @@
 #' proportions.
 #'
 #' @md
-#' @param srt A spatial `Seurat` object containing a stored deconvolution result.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A spatial `Seurat` object containing a stored deconvolution result.
 #' @param tool_name Explicit non-empty key in `srt@tools`. Results are never
 #' discovered implicitly.
 #' @param cell_types Optional cell types to display. The default uses all stored
@@ -51,7 +53,7 @@
 #' SpatialDeconvolutionPlot(spatial, tool_name = "RCTD", plot_type = "dominant")
 #' }
 SpatialDeconvolutionPlot <- function(
-  srt,
+  object,
   tool_name = NULL,
   cell_types = NULL,
   plot_type = c("point", "dominant", "pie"),
@@ -60,8 +62,10 @@ SpatialDeconvolutionPlot <- function(
   ncol = NULL,
   byrow = TRUE,
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }

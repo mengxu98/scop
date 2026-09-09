@@ -9,7 +9,9 @@
 #' @inheritParams srt_to_adata
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams scop-params
-#' @param srt A Seurat object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object.
 #' If provided, `adata` will be ignored.
 #' @param adata An anndata object.
 #' @param basis The basis to use for reduction, e.g., `"UMAP"`.
@@ -92,7 +94,7 @@
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunCellRank(
-#'   srt = pancreas_sub,
+#'   object = pancreas_sub,
 #'   group.by = "SubCellType"
 #' )
 #'
@@ -148,7 +150,7 @@
 #' pseudotime kernel. If `FALSE`, the existing graph must be complete and
 #' match the current AnnData cell order.
 RunCellRank <- function(
-  srt = NULL,
+  object = NULL,
   assay_x = "RNA",
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
@@ -211,8 +213,10 @@ RunCellRank <- function(
   conda = "auto",
   recompute_neighbors = TRUE,
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   kernel_type <- match.arg(kernel_type)
   backend <- match.arg(backend)
   estimator_type_upper <- toupper(match.arg(estimator_type))
@@ -389,7 +393,7 @@ RunCellRank <- function(
 
   if (!is.null(srt)) {
     args[["adata"]] <- srt_to_adata(
-      srt = srt,
+      object = srt,
       assay_x = assay_x,
       layer_x = layer_x,
       assay_y = assay_y,

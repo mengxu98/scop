@@ -5,17 +5,18 @@
 \title{Convert Seurat to SpatialExperiment}
 \usage{
 srt_to_spe(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   coord.cols = c("col", "row"),
   image = NULL,
   include_meta = TRUE,
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay to export. If \code{NULL}, the default assay is used.}
 
@@ -34,6 +35,9 @@ coordinates are used.}
 \code{"raw"} (the default) preserves analysis distances. The source and
 transform are stored in \code{metadata(spe)$scop_spatial_coordinates} so that
 an explicit display export can be inverted by \code{\link[=spe_to_srt]{spe_to_srt()}}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{SpatialExperiment}.

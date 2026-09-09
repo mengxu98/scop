@@ -5,7 +5,7 @@
 \title{Create Meta File in HDF5 format from Seurat object}
 \usage{
 CreateMetaFile(
-  srt,
+  object,
   meta_file,
   name = NULL,
   write_tools = FALSE,
@@ -13,11 +13,12 @@ CreateMetaFile(
   ignore_nlevel = 100,
   compression_level = 6,
   overwrite = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{meta_file}{Path to the output meta file.
 If not provided, the file will be named \code{"meta.hdf5"} in the current directory.}
@@ -37,6 +38,9 @@ If not provided, the name will default to the Seurat object's project name.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Create Meta File in HDF5 format from Seurat object

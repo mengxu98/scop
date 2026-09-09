@@ -5,7 +5,7 @@
 \title{Plot SCOP CNV results}
 \usage{
 CNVPlot(
-  srt,
+  object,
   plot_type = c("heatmap", "dim", "spatial", "bar", "tree"),
   tool_name = "CNV",
   method = NULL,
@@ -21,11 +21,12 @@ CNVPlot(
   subtitle = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{plot_type}{Plot type. \code{"heatmap"} draws a chromosome-ordered CNV
 heatmap, \code{"dim"} shows CNV metadata on a reduction, \code{"spatial"} shows CNV
@@ -58,6 +59,9 @@ annotations.}
 
 \item{...}{Additional parameters forwarded to the underlying plotting
 function.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A plot object. For \code{"heatmap"}, returns a \code{ComplexHeatmap} object;

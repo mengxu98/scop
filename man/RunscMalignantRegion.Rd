@@ -5,7 +5,7 @@
 \title{Run scMalignantFinder malignant spatial region identification}
 \usage{
 RunscMalignantRegion(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -23,11 +23,12 @@ RunscMalignantRegion(
   prefix = "scMalignantFinder_",
   return_seurat = !is.null(srt),
   verbose = TRUE,
-  backend = c("cpp", "python")
+  backend = c("cpp", "python"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{object}{A Seurat object.}
 
 \item{adata}{Optional Python AnnData object.}
 
@@ -80,6 +81,9 @@ AUCell scorer, Ward clustering, and spatial-neighbor refinement for Seurat
 input when \code{image = FALSE}. \code{"python"} retains the official
 scMalignantFinder/Squidpy path and is required for image features, AnnData,
 and h5ad input.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object with malignant region metadata, or a data frame when

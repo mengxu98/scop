@@ -55,7 +55,7 @@
 #' )
 #' }
 RunCellTypist <- function(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   assay = "RNA",
   layer = "data",
@@ -73,8 +73,10 @@ RunCellTypist <- function(
   insert_decision = FALSE,
   prefix = "celltypist_",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message(
     "Running {.pkg CellTypist} annotation...",
     verbose = verbose
@@ -271,12 +273,12 @@ RunCellTypist <- function(
 #'   assay = "RNA", linear_reduction_dims = 10
 #' )
 #' model_info <- TrainCellTypist(
-#'   srt = pbmcmultiome_sub, labels = "CellType",
+#'   object = pbmcmultiome_sub, labels = "CellType",
 #'   model_path = tempfile(fileext = ".pkl")
 #' )
 #' }
 TrainCellTypist <- function(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -307,8 +309,10 @@ TrainCellTypist <- function(
   version = "",
   model_path = NULL,
   return = c("summary", "path", "model"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   return <- match.arg(return)
   log_message(
     "Training {.pkg CellTypist} model...",
@@ -352,7 +356,7 @@ TrainCellTypist <- function(
 
   if (!is.null(srt)) {
     adata <- srt_to_adata(
-      srt = srt,
+      object = srt,
       assay_x = assay,
       layer_x = layer
     )

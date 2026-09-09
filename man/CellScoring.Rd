@@ -5,7 +5,7 @@
 \title{Cell scoring}
 \usage{
 CellScoring(
-  srt,
+  object,
   features = NULL,
   layer = "data",
   assay = NULL,
@@ -30,11 +30,12 @@ CellScoring(
   seed = 11,
   cores = 1,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{features}{A named list of gene sets for scoring. Every gene set is
 scored in every cell; list names are program labels and do not need to be
@@ -113,6 +114,9 @@ Default is \code{1}.}
 Default is \code{TRUE}.}
 
 \item{...}{Passed to the scoring methods.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Performs cell scoring on a Seurat object.

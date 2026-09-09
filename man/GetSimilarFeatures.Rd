@@ -5,7 +5,7 @@
 \title{Find features with expression patterns similar to provided features}
 \usage{
 GetSimilarFeatures(
-  srt,
+  object,
   features,
   n,
   features_use = rownames(srt),
@@ -13,11 +13,12 @@ GetSimilarFeatures(
   aggregator = "sum",
   assay = "RNA",
   layer = "data",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{features}{Feature names.}
 
@@ -36,6 +37,9 @@ Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"ma
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 character vector.

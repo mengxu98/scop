@@ -5,7 +5,7 @@
 \title{Run PAGA analysis}
 \usage{
 RunPAGA(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   assay_x = "RNA",
   layer_x = "counts",
@@ -41,11 +41,12 @@ RunPAGA(
   dirpath = "./paga",
   backend = c("python", "cpp"),
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.
+\item{object}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
 \item{adata}{An anndata object.}
@@ -133,6 +134,9 @@ to Python implicitly.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Graph-based inference of cellular trajectories.

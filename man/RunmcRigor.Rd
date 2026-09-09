@@ -5,7 +5,7 @@
 \title{Run mcRigor metacell partition assessment}
 \usage{
 RunmcRigor(
-  srt,
+  object,
   cell_membership = NULL,
   metacell.by = NULL,
   mode = c("detect", "optimize"),
@@ -34,11 +34,12 @@ RunmcRigor(
   step_save = FALSE,
   prefix = "mcRigor",
   tool_name = "mcRigor",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object containing the original single-cell data.}
+\item{object}{A \code{Seurat} object containing the original single-cell data.}
 
 \item{cell_membership}{A data frame or matrix with cells in rows and one or
 more metacell partitions in columns. Row names should be cell names. If row
@@ -87,6 +88,9 @@ intermediate-save parameters forwarded to mcRigor.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with mcRigor metadata and a result list stored in

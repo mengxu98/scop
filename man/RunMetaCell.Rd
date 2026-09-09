@@ -5,7 +5,7 @@
 \title{Run metacell partitioning for single-cell data}
 \usage{
 RunMetaCell(
-  srt,
+  object,
   method = c("supercell", "seacells", "metacell"),
   assay = NULL,
   layer = "counts",
@@ -16,11 +16,12 @@ RunMetaCell(
   prefix = "Metacell",
   tool_name = "Metacell",
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{method}{Metacell construction method. One of \code{"supercell"},
 \code{"seacells"}, or \code{"metacell"}.}
@@ -51,6 +52,9 @@ metacells from crossing group boundaries.}
 Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to the underlying metacell method.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A metacell-level \code{Seurat} object. The original single-cell Seurat

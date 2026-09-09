@@ -533,7 +533,7 @@ test_that("RunPAGA cpp infer_pseudotime writes dpt_pseudotime to meta.data", {
   )
 
   out <- RunPAGA(
-    srt = srt,
+    object = srt,
     group.by = "group",
     linear_reduction = "pca",
     nonlinear_reduction = "umap",
@@ -585,7 +585,7 @@ test_that("RunPAGA skips dense cell-level DPT on large inputs", {
 
   expect_warning(
     out <- RunPAGA(
-      srt = srt,
+      object = srt,
       group.by = "group",
       linear_reduction = "pca",
       nonlinear_reduction = "umap",

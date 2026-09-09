@@ -26,14 +26,16 @@
 #'   "db.scDblFinder_class", "db.scDblFinder_score"
 #' )])
 RunDoubletCalling <- function(
-  srt,
+  object,
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
   db_method = "scDblFinder",
   data_type = NULL,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a {.cls Seurat}",
@@ -104,13 +106,15 @@ RunDoubletCalling <- function(
 #'
 #' @export
 RunscDblFinder <- function(
-  srt,
+  object,
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
   data_type = NULL,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Running {.pkg scDblFinder}", verbose = verbose)
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -158,14 +162,16 @@ RunscDblFinder <- function(
 #'   features = "db.scds_hybrid_score"
 #' )
 Runscds <- function(
-  srt,
+  object,
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
   method = c("hybrid", "cxds", "bcds"),
   data_type = NULL,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Running {.pkg scds} with method {.val {method}}", verbose = verbose)
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -405,13 +411,15 @@ scds_hybrid_xgboost_compat <- function(
 #'   features = "db.Scrublet_score"
 #' )
 RunScrublet <- function(
-  srt,
+  object,
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
   data_type = NULL,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   user_args <- list(...)
   log_message("Running {.pkg Scrublet}", verbose = verbose)
   PrepareEnv(modules = "scrublet")
@@ -530,14 +538,16 @@ RunScrublet <- function(
 #'   features = "db.DoubletDetection_score"
 #' )
 RunDoubletDetection <- function(
-  srt,
+  object,
   assay = "RNA",
   db_rate = ncol(srt) / 1000 * 0.01,
   cores = 1,
   data_type = NULL,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Running {.pkg DoubletDetection}", verbose = verbose)
   # Sys.setenv(NUMBA_NUM_THREADS = "1")
   # Sys.setenv(NUMBA_DISABLE_JIT = "0")
@@ -681,7 +691,7 @@ RunDoubletDetection <- function(
 #'   features = "decontX_contamination"
 #' )
 RunDecontX <- function(
-  srt,
+  object,
   assay = "RNA",
   group.by = NULL,
   batch = NULL,
@@ -694,8 +704,10 @@ RunDecontX <- function(
   data_type = NULL,
   seed = 11,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Running {.pkg decontX}", verbose = verbose)
 
   .decontx_get_meta <- function(object) {
@@ -977,23 +989,12 @@ RunDecontX <- function(
 #'   stat_level = "Fail"
 #' )
 RunCellQC <- function(
-  srt,
+  object,
   assay = "RNA",
   split.by = NULL,
   group.by = NULL,
   return_filtered = FALSE,
-  qc_metrics = c(
-    "doublets",
-    "decontX",
-    "atac",
-    "outlier",
-    "umi",
-    "gene",
-    "mito",
-    "ribo",
-    "ribo_mito_ratio",
-    "species"
-  ),
+  qc_metrics = c("doublets", "decontX", "atac", "outlier", "umi", "gene", "mito", "ribo", "ribo_mito_ratio", "species"),
   db_method = "scDblFinder",
   db_rate = NULL,
   db_coefficient = 0.01,
@@ -1007,13 +1008,7 @@ RunCellQC <- function(
   decontX_round_counts = TRUE,
   decontX_args = list(),
   atac_args = list(),
-  outlier_threshold = c(
-    "log10_nCount:lower:2.5",
-    "log10_nCount:higher:5",
-    "log10_nFeature:lower:2.5",
-    "log10_nFeature:higher:5",
-    "featurecount_dist:lower:2.5"
-  ),
+  outlier_threshold = c("log10_nCount:lower:2.5", "log10_nCount:higher:5", "log10_nFeature:lower:2.5", "log10_nFeature:higher:5", "featurecount_dist:lower:2.5"),
   outlier_n = 1,
   UMI_threshold = 3000,
   gene_threshold = 1000,
@@ -1021,11 +1016,7 @@ RunCellQC <- function(
   mito_pattern = c("MT-", "Mt-", "mt-"),
   mito_gene = NULL,
   ribo_threshold = 50,
-  ribo_pattern = c(
-    "RP[SL]\\d+\\w{0,1}\\d*$",
-    "Rp[sl]\\d+\\w{0,1}\\d*$",
-    "rp[sl]\\d+\\w{0,1}\\d*$"
-  ),
+  ribo_pattern = c("RP[SL]\\d+\\w{0,1}\\d*$", "Rp[sl]\\d+\\w{0,1}\\d*$", "rp[sl]\\d+\\w{0,1}\\d*$"),
   ribo_gene = NULL,
   ribo_mito_ratio_range = c(1, Inf),
   species = NULL,
@@ -1036,8 +1027,10 @@ RunCellQC <- function(
   hb_range = c(0, 5),
   hb_pattern = c("HB[^P]", "Hb[^p]", "hb[^p]"),
   hb_gene = NULL,
-  qc_features = list()
+  qc_features = list(),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message(
     "Running cell-level quality control",
     message_type = "running",

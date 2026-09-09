@@ -290,7 +290,7 @@
 #'     pancreas_sub$Dlg3_Expressed == "FALSE"
 #' )
 CellStatPlot <- function(
-  srt,
+  object,
   stat.by,
   group.by = NULL,
   split.by = NULL,
@@ -302,20 +302,7 @@ CellStatPlot <- function(
   keep_empty = FALSE,
   individual = FALSE,
   stat_level = NULL,
-  plot_type = c(
-    "bar",
-    "rose",
-    "ring",
-    "pie",
-    "trend",
-    "trend_alluvial",
-    "area",
-    "dot",
-    "sankey",
-    "chord",
-    "venn",
-    "upset"
-  ),
+  plot_type = c("bar", "rose", "ring", "pie", "trend", "trend_alluvial", "area", "dot", "sankey", "chord", "venn", "upset"),
   stat_type = c("percent", "count"),
   position = c("stack", "dodge"),
   palette = "Chinese",
@@ -349,8 +336,10 @@ CellStatPlot <- function(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   cells <- cells %||% colnames(srt@assays[[1]])
   meta_data <- srt@meta.data[cells, , drop = FALSE]
   plot_type <- match.arg(plot_type)

@@ -20,12 +20,14 @@
 #'
 #' DefaultReduction(pancreas_sub, pattern = "umap")
 DefaultReduction <- function(
-  srt,
+  object,
   pattern = NULL,
   min_dim = 2,
   max_distance = 0.1,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (length(srt@reductions) == 0) {
     log_message(
       "Unable to find any reductions",

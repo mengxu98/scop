@@ -4,10 +4,16 @@
 \alias{RenameFeatures}
 \title{Rename features for the Seurat object}
 \usage{
-RenameFeatures(srt, newnames = NULL, assays = NULL, verbose = TRUE)
+RenameFeatures(
+  object,
+  newnames = NULL,
+  assays = NULL,
+  verbose = TRUE,
+  srt = NULL
+)
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{newnames}{A vector with the same length of features in Seurat object,
 or characters named with old features.}
@@ -16,6 +22,9 @@ or characters named with old features.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Rename features for the Seurat object

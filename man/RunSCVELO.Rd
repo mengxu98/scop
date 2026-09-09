@@ -5,7 +5,7 @@
 \title{Run scVelo workflow}
 \usage{
 RunSCVELO(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   assay_x = "RNA",
   layer_x = "counts",
@@ -59,11 +59,12 @@ RunSCVELO(
   backend = c("python", "cpp"),
   max_dense_gib = 8,
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.
+\item{object}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
 \item{adata}{An anndata object.}
@@ -190,6 +191,9 @@ working matrices used by the C++ path.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 scVelo is a scalable toolkit for RNA velocity analysis in single cells.

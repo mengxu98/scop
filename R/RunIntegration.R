@@ -624,7 +624,7 @@ RunIntegration <- function(
     baseline_nr_dim <- 2L
     baseline_prefix <- pca_reduction
     srt_integrated <- RunDimsReduction(
-      srt = srt_integrated,
+      object = srt_integrated,
       prefix = baseline_prefix,
       reduction_use = pca_reduction,
       reduction_dims = pca_dims_use,
@@ -679,7 +679,7 @@ RunIntegration <- function(
     lisi_prefix_map <- stats::setNames(lisi_prefix_use, lisi_reductions)
 
     srt_integrated <- RunLISI(
-      srt = srt_integrated,
+      object = srt_integrated,
       reductions = lisi_reductions,
       dims = lisi_dims,
       label_colnames = lisi_label_colnames,
@@ -1096,7 +1096,7 @@ resolve_linear_dims_use <- function(
     return(linear_reduction_dims_use)
   }
   RunDimsEstimate(
-    srt = srt,
+    object = srt,
     reduction = reduction,
     reduction_method = reduction_method,
     skip_first = normalization_method == "TFIDF",

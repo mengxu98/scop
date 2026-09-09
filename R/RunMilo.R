@@ -21,7 +21,7 @@
 #'
 #' @export
 RunMilo <- function(
-  srt,
+  object,
   group.by,
   split.by,
   sample.by,
@@ -32,8 +32,10 @@ RunMilo <- function(
   backend = c("r", "cpp"),
   n_bootstrap = 500,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   if (identical(backend, "r")) {
     check_r(

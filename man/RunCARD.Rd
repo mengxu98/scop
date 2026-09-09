@@ -5,7 +5,7 @@
 \title{Run CARD spatial deconvolution}
 \usage{
 RunCARD(
-  srt,
+  object,
   reference,
   reference_label,
   assay = NULL,
@@ -27,11 +27,12 @@ RunCARD(
   card_deconvolution_params = list(),
   verbose = TRUE,
   ...,
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{Spatial \code{Seurat} object used as the RCTD query.}
+\item{object}{Spatial \code{Seurat} object used as the RCTD query.}
 
 \item{reference}{Reference \code{Seurat} object containing annotated single cells.}
 
@@ -85,6 +86,9 @@ Default is \code{TRUE}.}
 The default is raw acquisition coordinates, so backend distances use raw
 coordinate units. Use \code{"legacy_display"} explicitly to reproduce the
 display-scaled coordinates used before scop 0.9.0.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with CARD proportion columns in metadata and
@@ -110,7 +114,7 @@ reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] \%in\%
   c("ductal", "alpha", "beta")]
 features_use <- head(intersect(rownames(spatial), rownames(reference)), 300)
 spatial <- RunCARD(
-  srt = spatial,
+  object = spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",

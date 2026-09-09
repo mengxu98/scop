@@ -5,7 +5,7 @@
 \title{Plot Scissor results}
 \usage{
 ScissorPlot(
-  srt,
+  object,
   plot_type = c("umap", "heatmap", "bar", "upset", "rose", "ring", "pie", "dot"),
   reduction = NULL,
   prefix = "Scissor",
@@ -46,11 +46,12 @@ ScissorPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object after \link{RunScissor}.}
+\item{object}{A \code{Seurat} object after \link{RunScissor}.}
 
 \item{plot_type}{Plot type. \code{"umap"} shows embedding panels, \code{"heatmap"}
 shows a \code{FeatureHeatmap}, and statistical views such as \code{"bar"} and
@@ -142,6 +143,9 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{...}{Additional arguments passed to \link{CellDimPlot}, \link{FeatureDimPlot},
 \link{FeatureHeatmap}, or \link[thisplot:StatPlot]{thisplot::StatPlot}, depending on \code{plot_type}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A ggplot/patchwork object for embedding and statistical plots, or a

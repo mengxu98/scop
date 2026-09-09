@@ -5,7 +5,7 @@
 \title{Transfer reference labels to query cells}
 \usage{
 RunLabelTransfer(
-  srt,
+  object,
   reference,
   assay = NULL,
   method = c("Seurat", "scOMM"),
@@ -31,11 +31,12 @@ RunLabelTransfer(
   scomm_batch_size = 32,
   scomm_threshold = 0.5,
   scomm_seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reference}{RNA reference \code{Seurat} object used for label transfer.}
 
@@ -91,6 +92,9 @@ otherwise.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with prediction metadata added.
@@ -119,7 +123,7 @@ query <- RunStandardWorkflow(
   verbose = FALSE
 )
 query <- RunLabelTransfer(
-  srt = query,
+  object = query,
   reference = reference,
   assay = "peaks",
   reference_assay = "RNA",

@@ -437,7 +437,7 @@ test_that("cell, spot, and composition routes stay semantically distinct", {
   local_mock_spatialcellchat_backend()
   srt <- make_spatialcellchat_test_object()
   common <- list(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     technology = "generic",
     coordinate.unit = "micron",
@@ -613,11 +613,11 @@ test_that("appended SpatialCellChat results retain per-result coordinate contrac
     backend = "r",
     verbose = FALSE
   )
-  out <- do.call(RunSpatialCellChat, c(list(srt = srt), common, list(
+  out <- do.call(RunSpatialCellChat, c(list(object = srt), common, list(
     result.name = "first"
   )))
   out@tools$SpatialCellChat$results$first$ALL$source$coordinate_contract_version <- NULL
-  out <- do.call(RunSpatialCellChat, c(list(srt = out), common, list(
+  out <- do.call(RunSpatialCellChat, c(list(object = out), common, list(
     result.name = "second"
   )))
   expect_setequal(names(out@tools$SpatialCellChat$results), c("first", "second"))

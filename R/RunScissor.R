@@ -3,7 +3,9 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object containing single-cell expression data.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object containing single-cell expression data.
 #' @param bulk_dataset A bulk expression matrix-like object or a
 #' `SummarizedExperiment`. Rows are genes and columns are bulk samples.
 #' @param phenotype Phenotype annotation for bulk samples. For
@@ -76,7 +78,7 @@
 #'   ylab = "UMAP_2"
 #' )
 RunScissor <- function(
-  srt,
+  object,
   bulk_dataset,
   phenotype = NULL,
   condition.by = NULL,
@@ -97,8 +99,10 @@ RunScissor <- function(
   prefix = "Scissor",
   tool_name = "Scissor",
   store_inputs = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

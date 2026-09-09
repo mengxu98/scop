@@ -5,7 +5,7 @@
 \title{Run scFEA flux estimation for a Seurat object}
 \usage{
 RunscFEA(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   species = c("human", "mouse"),
@@ -17,11 +17,12 @@ RunscFEA(
   data_dir = NULL,
   seed = 16,
   max_cells = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.}
+\item{object}{A Seurat object.}
 
 \item{assay}{Assay to use as expression matrix. Default is
 `DefaultAssay(srt)`.}
@@ -56,6 +57,9 @@ all cells, matching the original upstream behaviour. A value such as
 `20000` can be useful on machines with 16-32 GiB RAM.}
 
 \item{verbose}{Whether to print progress messages.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object with `assay_flux`, `assay_balance`, and

@@ -103,7 +103,9 @@ RunFitDevo <- function(
 #' grouped summary plots.
 #'
 #' @md
-#' @param srt A `Seurat` object processed by [RunFitDevo()].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object processed by [RunFitDevo()].
 #' @param reduction Reduction used by [FeatureDimPlot()] and [CellDimPlot()].
 #' @param group.by Optional metadata column used for phenotype and score
 #' distribution plots.
@@ -126,7 +128,7 @@ RunFitDevo <- function(
 #' pancreas_sub <- RunFitDevo(pancreas_sub, verbose = FALSE)
 #' FitDevoPlot(pancreas_sub)
 FitDevoPlot <- function(
-  srt,
+  object,
   reduction = NULL,
   group.by = NULL,
   score.name = "FitDevo_Score",
@@ -141,8 +143,10 @@ FitDevoPlot <- function(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   required_cols <- c(score.name, relative.name)
   missing_cols <- required_cols[!required_cols %in% colnames(srt@meta.data)]
   if (length(missing_cols) > 0L) {

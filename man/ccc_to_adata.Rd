@@ -5,7 +5,7 @@
 \title{Convert CCC results to OmicVerse communication AnnData}
 \usage{
 ccc_to_adata(
-  srt = NULL,
+  object = NULL,
   method = NULL,
   condition = NULL,
   dataset = 1,
@@ -25,11 +25,12 @@ ccc_to_adata(
   inverse_pvalue = FALSE,
   sample_col = NULL,
   h5ad_path = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{method}{Communication result type to use.}
 
@@ -76,6 +77,9 @@ before writing to \code{layers[["pvalues"]]}.}
 written to this file before being returned.}
 
 \item{verbose}{Whether to print progress messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Python \code{anndata.AnnData} communication object compatible with

@@ -5,7 +5,7 @@
 \title{Run Scissor phenotype-associated cell selection}
 \usage{
 RunScissor(
-  srt,
+  object,
   bulk_dataset,
   phenotype = NULL,
   condition.by = NULL,
@@ -26,11 +26,12 @@ RunScissor(
   prefix = "Scissor",
   tool_name = "Scissor",
   store_inputs = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object containing single-cell expression data.}
+\item{object}{A \code{Seurat} object containing single-cell expression data.}
 
 \item{bulk_dataset}{A bulk expression matrix-like object or a
 \code{SummarizedExperiment}. Rows are genes and columns are bulk samples.}
@@ -89,6 +90,9 @@ built.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with Scissor status and coefficient columns in

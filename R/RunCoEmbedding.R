@@ -29,7 +29,7 @@
 #'   verbose = FALSE
 #' )
 #' coembed <- RunCoEmbedding(
-#'   srt = pbmcmultiome_sub,
+#'   object = pbmcmultiome_sub,
 #'   reference = pbmcmultiome_sub,
 #'   assay = "peaks",
 #'   reference_assay = "RNA",
@@ -48,7 +48,7 @@
 #'   ylab = "CoEmbedUMAP_2"
 #' )
 RunCoEmbedding <- function(
-  srt,
+  object,
   reference,
   assay = NULL,
   reference_assay = NULL,
@@ -65,8 +65,10 @@ RunCoEmbedding <- function(
   umap_dims = 1:30,
   k.weight = 100,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!inherits(srt[[assay]], "ChromatinAssay")) {
     log_message(

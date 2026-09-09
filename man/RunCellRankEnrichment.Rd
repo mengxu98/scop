@@ -5,7 +5,7 @@
 \title{Enrich CellRank trend modules}
 \usage{
 RunCellRankEnrichment(
-  srt,
+  object,
   lineage,
   db = c("MSigDB_C2", "GO_BP", "GO_CC", "GO_MF", "MSigDB_H"),
   species = "Mus_musculus",
@@ -18,11 +18,12 @@ RunCellRankEnrichment(
   show_category = 8L,
   output_dir = NULL,
   continue_on_error = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object returned by [RunCellRankTrends].}
+\item{object}{A Seurat object returned by [RunCellRankTrends].}
 
 \item{lineage}{CellRank lineage whose trend modules should be enriched.}
 
@@ -51,6 +52,9 @@ lineage drivers.}
 call fails. Failures are recorded in the manifest.}
 
 \item{verbose}{Whether to print progress messages.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 The Seurat object with results under

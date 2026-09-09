@@ -5,7 +5,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt A Seurat object containing a scTenifoldKnk result in
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object containing a scTenifoldKnk result in
 #' `srt@tools`.
 #' @param tool_name Name of the `srt@tools` entry created by
 #' [RunscTenifoldKnk].
@@ -76,7 +78,7 @@
 #'
 #' scTenifoldKnkPlot(pancreas_sub, plot_type = "manifold")
 scTenifoldKnkPlot <- function(
-  srt,
+  object,
   tool_name = "scTenifoldKnk",
   plot_type = c("qq", "effect", "network", "manifold"),
   top_n = 20,
@@ -104,8 +106,10 @@ scTenifoldKnkPlot <- function(
   title = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   plot_type <- match.arg(plot_type)
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -217,7 +221,9 @@ scTenifoldKnkPlot <- function(
 #'
 #' @md
 #' @inheritParams scTenifoldKnkPlot
-#' @param srt A Seurat object containing a scTenifoldNet result in `srt@tools`.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object containing a scTenifoldNet result in `srt@tools`.
 #' @param tool_name Name of the `srt@tools` entry created by
 #' [RunscTenifoldNet].
 #' @param plot_type Plot type. `"qq"` shows the common `FC` versus theoretical
@@ -261,7 +267,7 @@ scTenifoldKnkPlot <- function(
 #'
 #' scTenifoldNetPlot(pancreas_sub, plot_type = "manifold")
 scTenifoldNetPlot <- function(
-  srt,
+  object,
   tool_name = "scTenifoldNet",
   plot_type = c("qq", "effect", "network", "manifold"),
   network = c("X", "Y"),
@@ -289,8 +295,10 @@ scTenifoldNetPlot <- function(
   title = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   plot_type <- match.arg(plot_type)
   network <- match.arg(network)
   if (!inherits(srt, "Seurat")) {

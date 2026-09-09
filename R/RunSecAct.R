@@ -8,7 +8,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt Optional Seurat object. When `mode = "scRNAseq"`, this is passed
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object Optional Seurat object. When `mode = "scRNAseq"`, this is passed
 #' to `SecAct.activity.inference.scRNAseq`. When `mode = "matrix"`, expression
 #' is extracted from `srt` if `inputProfile` is not supplied.
 #' @param inputProfile Expression matrix, Seurat object, or SpaCET object.
@@ -64,7 +66,7 @@
 #' )
 #' }
 RunSecAct <- function(
-  srt = NULL,
+  object = NULL,
   inputProfile = NULL,
   inputProfile_control = NULL,
   mode = c("auto", "matrix", "scRNAseq", "ST"),
@@ -80,7 +82,7 @@ RunSecAct <- function(
   is.filter.sig = FALSE,
   is.group.sig = TRUE,
   is.group.cor = 0.9,
-  lambda = 5e5,
+  lambda = 5e+05,
   nrand = 1000,
   cores = 1L,
   ncores = NULL,
@@ -94,8 +96,10 @@ RunSecAct <- function(
   store_results = TRUE,
   tool_name = "SecAct",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   mode <- match.arg(mode)
   activity <- match.arg(activity)
   if (!is.null(ncores)) {
@@ -210,7 +214,7 @@ RunSecAct <- function(
 #' @return A Seurat or SpaCET object with SecAct CCC results.
 #' @export
 RunSecActCCC <- function(
-  srt = NULL,
+  object = NULL,
   inputProfile = NULL,
   mode = c("scRNAseq", "scST"),
   cellType_meta,
@@ -226,15 +230,17 @@ RunSecActCCC <- function(
   sigMatrix = "SecAct",
   is.group.sig = TRUE,
   is.group.cor = 0.9,
-  lambda = 5e5,
+  lambda = 5e+05,
   nrand = 1000,
   radius = 20,
   ratio_cutoff = 0.2,
   coreNo = 6,
   tool_name = "SecAct_CCC",
   store_results = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   mode <- match.arg(mode)
   check_r("data2intelligence/SecAct", dependencies = NA, verbose = verbose)
   if (!is.function(get_namespace_fun("SecAct", "SecAct.activity.inference"))) {

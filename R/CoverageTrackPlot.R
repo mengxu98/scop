@@ -30,7 +30,7 @@
 #'   )
 #' }
 CoverageTrackPlot <- function(
-  srt,
+  object,
   region,
   assay = NULL,
   group.by = NULL,
@@ -46,8 +46,10 @@ CoverageTrackPlot <- function(
   ranges.group.by = NULL,
   region.highlight = NULL,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   if (!inherits(srt[[assay]], "ChromatinAssay")) {
     log_message(

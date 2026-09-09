@@ -8,7 +8,9 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams CellDimPlot
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param reductions Character vector of dimensional reductions used to compute LISI.
 #' If `NULL`, [DefaultReduction()] is used.
 #' @param reduction Deprecated alias of `reductions`.
@@ -61,7 +63,7 @@
 #' )
 #' IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 RunLISI <- function(
-  srt,
+  object,
   reductions = NULL,
   reduction = NULL,
   dims = NULL,
@@ -69,14 +71,16 @@ RunLISI <- function(
   prefix = NULL,
   tool_name = NULL,
   perplexity = 30,
-  tol = 1e-5,
+  tol = 1e-05,
   max_iter = 50,
   knn_algorithm = c("auto", "brute_force", "clustered"),
   cores = NULL,
   max_dense_bytes = Inf,
   overwrite = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat}",

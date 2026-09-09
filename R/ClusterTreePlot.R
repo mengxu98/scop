@@ -67,7 +67,7 @@
 #' )
 #' }
 ClusterTreePlot <- function(
-  srt,
+  object,
   cluster_cols = NULL,
   prefix = NULL,
   resolutions = NULL,
@@ -96,13 +96,10 @@ ClusterTreePlot <- function(
   return_data = FALSE,
   verbose = TRUE,
   family = "Arial",
-  direction = c(
-    "left-to-right",
-    "right-to-left",
-    "top-to-bottom",
-    "bottom-to-top"
-  )
+  direction = c("left-to-right", "right-to-left", "top-to-bottom", "bottom-to-top"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

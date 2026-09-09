@@ -5,7 +5,7 @@
 \title{Run smoothclust spatial domain clustering}
 \usage{
 RunSmoothClust(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   image = NULL,
@@ -33,11 +33,12 @@ RunSmoothClust(
   seed = 11,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay used for expression. If \code{NULL}, the default assay is used.}
 
@@ -98,6 +99,9 @@ coordinates. Use \code{"legacy_display"} explicitly to reproduce the
 display-scaled behavior used before scop 0.9.0.}
 
 \item{...}{Additional arguments passed to \code{smoothclust::smoothclust()}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with smoothclust clusters in metadata. When

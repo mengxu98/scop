@@ -105,7 +105,7 @@
 #'   )
 #' }
 RunMonocle2 <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   group.by = NULL,
@@ -128,8 +128,10 @@ RunMonocle2 <- function(
   xlab = NULL,
   ylab = NULL,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   if (identical(backend, "cpp")) {
     return(run_monocle2_cpp(
@@ -1053,7 +1055,7 @@ monocle2_cpp_resolve_root_state <- function(srt, root_state = NULL, group.by = N
 #'   ) + trajectory
 #' }
 RunMonocle3 <- function(
-  srt,
+  object,
   group.by = NULL,
   assay = NULL,
   layer = "counts",
@@ -1073,8 +1075,10 @@ RunMonocle3 <- function(
   xlab = NULL,
   ylab = NULL,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Run {.pkg monocle3}...", verbose = verbose)
   set.seed(seed)
   check_r("cole-trapnell-lab/monocle3", verbose = FALSE)

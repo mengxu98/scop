@@ -11,7 +11,9 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams scop-params
-#' @param srt A Seurat object with SCENIC or SCENIC+ results.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object with SCENIC or SCENIC+ results.
 #' @param group.by Metadata column for cell groups.
 #' @param tool_name `srt@tools` entry. Default `"SCENIC"`.
 #' @param assay Fallback assay for regulon activity.
@@ -108,29 +110,12 @@
 #' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "coverage", features = example_tfs)
 #' }
 SCENICPlot <- function(
-  srt,
+  object,
   group.by,
   tool_name = "SCENIC",
   assay = "scenic",
   layer = "data",
-  plot_type = c(
-    "rss_rank",
-    "rss_heatmap",
-    "rss_dotplot",
-    "heatmap_dotplot",
-    "activity_heatmap",
-    "activity_violin",
-    "activity_dim",
-    "eregulon_dim",
-    "activity_cor_dumbbell",
-    "regulon_size",
-    "network_graph",
-    "network",
-    "egrn",
-    "overlap",
-    "target_bar",
-    "coverage"
-  ),
+  plot_type = c("rss_rank", "rss_heatmap", "rss_dotplot", "heatmap_dotplot", "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim", "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "egrn", "overlap", "target_bar", "coverage"),
   features = NULL,
   reduction = NULL,
   dims = c(1, 2),
@@ -177,14 +162,7 @@ SCENICPlot <- function(
   coverage_args = list(),
   max_targets = 20,
   max_edges = Inf,
-  network_layout = c(
-    "auto",
-    "star",
-    "hub",
-    "tripartite",
-    "kk",
-    "fr"
-  ),
+  network_layout = c("auto", "star", "hub", "tripartite", "kk", "fr"),
   network_tf = NULL,
   network_include_regions = TRUE,
   label_nodes = c("auto", "tfs", "all", "none"),
@@ -204,8 +182,10 @@ SCENICPlot <- function(
   label_size = 3,
   label_max_overlaps = Inf,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   plot_type <- match.arg(plot_type)
   network_layout <- match.arg(network_layout)
   label_nodes <- match.arg(label_nodes)
@@ -1358,7 +1338,7 @@ scenic_plot_activity_dim <- function(
   }
   if (!isTRUE(compare_expression) && is.null(region_auc)) {
     plots <- FeatureDimPlot(
-      srt = srt_use,
+      object = srt_use,
       features = scenic_assay_features(regulons, assay_features),
       assay = assay,
       layer = layer,
@@ -1401,7 +1381,7 @@ scenic_plot_activity_dim <- function(
       )
     }
     act_args <- list(
-      srt = srt_use,
+      object = srt_use,
       features = assay_feature,
       assay = assay,
       layer = layer,
@@ -1999,6 +1979,12 @@ scenic_call_with_args <- function(fun, args, extra_args = list()) {
     )
   }
   args[names(extra_args)] <- extra_args
+  # The internal arg builders keep the historical `srt` name; the public
+  # plotting functions take the data object as `object`.
+  if (!is.null(args[["srt"]])) {
+    args[["object"]] <- args[["object"]] %||% args[["srt"]]
+    args[["srt"]] <- NULL
+  }
   do.call(fun, args)
 }
 

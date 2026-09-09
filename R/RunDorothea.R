@@ -160,7 +160,7 @@
 #' )
 #' }
 RunDorothea <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   species = c("Homo_sapiens", "Mus_musculus"),
@@ -176,8 +176,10 @@ RunDorothea <- function(
   assay_name = "dorothea",
   new_assay = TRUE,
   add_meta = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

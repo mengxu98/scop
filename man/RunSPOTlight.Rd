@@ -5,7 +5,7 @@
 \title{Run SPOTlight spatial deconvolution}
 \usage{
 RunSPOTlight(
-  srt,
+  object,
   reference,
   reference_label = "celltype",
   assay = NULL,
@@ -25,11 +25,12 @@ RunSPOTlight(
   tool_name = "SPOTlight",
   store_results = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{Spatial \code{Seurat} object used as the RCTD query.}
+\item{object}{Spatial \code{Seurat} object used as the RCTD query.}
 
 \item{reference}{Reference \code{Seurat} object containing annotated single cells.}
 
@@ -71,6 +72,9 @@ type labels, and marker weights.}
 Default is \code{TRUE}.}
 
 \item{...}{Additional parameters passed to \code{SPOTlight::SPOTlight()}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with \code{SPOTlight} proportion columns in metadata and
@@ -100,7 +104,7 @@ features_use <- head(intersect(
   rownames(spatial)
 ), 300)
 spatial <- RunSPOTlight(
-  srt = spatial,
+  object = spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",

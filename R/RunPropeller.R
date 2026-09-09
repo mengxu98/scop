@@ -14,15 +14,17 @@
 #'
 #' @export
 RunPropeller <- function(
-  srt,
+  object,
   group.by,
   split.by,
   sample.by,
   comparison = NULL,
   n_bootstrap = 1000,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   meta_data <- validate_proportion_inputs(
     srt = srt,
     group.by = group.by,

@@ -95,7 +95,7 @@ test_that("RunReferenceMapping transfers labels in the ATAC reduction", {
   )
 
   out <- RunReferenceMapping(
-    srt = query,
+    object = query,
     reference = reference,
     assay = "peaks",
     reference_assay = "RNA",

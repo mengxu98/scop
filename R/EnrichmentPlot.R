@@ -7,7 +7,9 @@
 #' @inheritParams CellDimPlot
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams scop-params
-#' @param srt A Seurat object containing the results of RunDEtest and RunEnrichment.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object containing the results of RunDEtest and RunEnrichment.
 #' If specified, enrichment results will be extracted from the `Seurat` object automatically.
 #' If not specified, the `res` arguments must be provided.
 #' @param group.by Grouping variable in the `Seurat` object.
@@ -328,20 +330,12 @@
 #'   ncol = 1
 #' )
 EnrichmentPlot <- function(
-  srt,
+  object,
   db = "GO_BP",
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
-  plot_type = c(
-    "bar",
-    "dot",
-    "lollipop",
-    "network",
-    "enrichmap",
-    "wordcloud",
-    "comparison"
-  ),
+  plot_type = c("bar", "dot", "lollipop", "network", "enrichmap", "wordcloud", "comparison"),
   split_by = c("Database", "Groups"),
   color_by = "Database",
   group_use = NULL,
@@ -386,8 +380,10 @@ EnrichmentPlot <- function(
   ncol = NULL,
   byrow = TRUE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   if (!is.null(enrlichmap_nlabel)) {
     enrichmap_nlabel <- enrlichmap_nlabel

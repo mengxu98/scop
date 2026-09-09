@@ -5,7 +5,7 @@
 \title{Dimension estimate diagnostic plot}
 \usage{
 DimsEstimatePlot(
-  srt,
+  object,
   max_pcs = 50,
   variance_thresholds = c(0.6, 0.7, 0.8, 0.9),
   reduction = NULL,
@@ -17,11 +17,12 @@ DimsEstimatePlot(
   theme_use = "theme_scop",
   theme_args = list(),
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object with a PCA-like reduction computed.}
+\item{object}{A \code{Seurat} object with a PCA-like reduction computed.}
 
 \item{max_pcs}{Maximum number of PCs to visualize.}
 
@@ -52,6 +53,9 @@ reports the selected number of PCs.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{ggplot} object showing per-PC explained variance (bars, left

@@ -64,7 +64,7 @@
 #'
 #' MetaCellPlot(mc2, group.by = "CellType")
 RunMetaCell <- function(
-  srt,
+  object,
   method = c("supercell", "seacells", "metacell"),
   assay = NULL,
   layer = "counts",
@@ -75,8 +75,10 @@ RunMetaCell <- function(
   prefix = "Metacell",
   tool_name = "Metacell",
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

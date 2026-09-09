@@ -257,8 +257,8 @@ test_that("RunMonocle2 cpp backend matches R with Disp feature selection", {
     verbose = FALSE
   )
 
-  out_r <- do.call(RunMonocle2, c(list(srt = srt, backend = "r"), run_args))
-  out_cpp <- do.call(RunMonocle2, c(list(srt = srt, backend = "cpp"), run_args))
+  out_r <- do.call(RunMonocle2, c(list(object = srt, backend = "r"), run_args))
+  out_cpp <- do.call(RunMonocle2, c(list(object = srt, backend = "cpp"), run_args))
 
   expect_equal(out_cpp@tools$Monocle2$features, out_r@tools$Monocle2$features)
   expect_monocle2_cpp_matches_r(out_r, out_cpp)
@@ -320,8 +320,8 @@ test_that("RunMonocle2 cpp backend matches R ordering on a multi-state trajector
     verbose = FALSE
   )
 
-  out_r <- do.call(RunMonocle2, c(list(srt = srt, backend = "r"), run_args))
-  out_cpp <- do.call(RunMonocle2, c(list(srt = srt, backend = "cpp"), run_args))
+  out_r <- do.call(RunMonocle2, c(list(object = srt, backend = "r"), run_args))
+  out_cpp <- do.call(RunMonocle2, c(list(object = srt, backend = "cpp"), run_args))
 
   expect_gte(length(unique(as.character(out_r$Monocle2_State))), 2)
   expect_equal(length(unique(as.character(out_cpp$Monocle2_State))), length(unique(as.character(out_r$Monocle2_State))))
@@ -344,11 +344,11 @@ test_that("RunMonocle2 cpp backend covers feature selection and root parameter v
 
   explicit_out <- do.call(
     RunMonocle2,
-    c(list(srt = srt, backend = "cpp", features = rownames(srt)[1:80]), common_args)
+    c(list(object = srt, backend = "cpp", features = rownames(srt)[1:80]), common_args)
   )
   hvf_out <- do.call(
     RunMonocle2,
-    c(list(srt = srt, backend = "cpp", features = NULL, feature_type = "HVF"), common_args)
+    c(list(object = srt, backend = "cpp", features = NULL, feature_type = "HVF"), common_args)
   )
   group_root_out <- RunMonocle2(
     srt,

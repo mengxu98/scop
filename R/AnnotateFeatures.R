@@ -5,7 +5,9 @@
 #'
 #' @md
 #' @inheritParams PrepareDB
-#' @param srt Seurat object to be annotated.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object Seurat object to be annotated.
 #' @param IDtype Type of identifier to use for annotation.
 #' Options are `"symbol"`, `"ensembl_id"`, or `"entrez_id"`.
 #' @param mirror URL of the mirror to use for Ensembl database.
@@ -49,7 +51,7 @@
 #'   )
 #' }
 AnnotateFeatures <- function(
-  srt,
+  object,
   species = "Homo_sapiens",
   IDtype = c("symbol", "ensembl_id", "entrez_id"),
   db = NULL,
@@ -60,21 +62,14 @@ AnnotateFeatures <- function(
   mirror = NULL,
   gtf = NULL,
   merge_gtf_by = "gene_name",
-  columns = c(
-    "seqname",
-    "feature",
-    "start",
-    "end",
-    "strand",
-    "gene_id",
-    "gene_name",
-    "gene_type"
-  ),
+  columns = c("seqname", "feature", "start", "end", "strand", "gene_id", "gene_name", "gene_type"),
   assays = "RNA",
   overwrite = FALSE,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   IDtype <- match.arg(IDtype)
   if (is.null(db) && is.null(gtf)) {
     log_message(

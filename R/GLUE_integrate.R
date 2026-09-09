@@ -113,7 +113,7 @@ GLUE_integrate <- function(
 
   t_standard <- Sys.time()
   srt_merge <- RunStandardWorkflow(
-    srt = srt_merge,
+    object = srt_merge,
     prefix = "Standard",
     assay = c(rna_assay, atac_assay),
     do_normalization = do_normalization,
@@ -190,7 +190,7 @@ GLUE_integrate <- function(
     add = TRUE
   )
   rna_adata <- srt_to_adata(
-    srt = srt_glue,
+    object = srt_glue,
     features = rna_features_use,
     assay_x = rna_assay,
     layer_x = "counts",
@@ -200,7 +200,7 @@ GLUE_integrate <- function(
     verbose = FALSE
   )
   atac_adata <- srt_to_adata(
-    srt = srt_glue,
+    object = srt_glue,
     assay_x = atac_assay,
     layer_x = "counts",
     reductions = atac_reduction,

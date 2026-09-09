@@ -38,7 +38,7 @@
 #' `srt@tools[["Nichenetr"]]`.
 #' @export
 RunNichenetr <- function(
-  srt,
+  object,
   group.by,
   receiver,
   sender = "all",
@@ -49,7 +49,7 @@ RunNichenetr <- function(
   receiver_reference = NULL,
   mode = c("aggregate", "aggregate_cluster_de", "custom"),
   assay = NULL,
-  expression_pct = 0.10,
+  expression_pct = 0.1,
   geneset = NULL,
   background_expressed_genes = NULL,
   top_n_ligands = 30,
@@ -62,8 +62,10 @@ RunNichenetr <- function(
   lfc_cutoff = 0.25,
   use_sender_agnostic_background = TRUE,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   mode <- match.arg(mode)
   species <- match.arg(species)
@@ -404,7 +406,7 @@ RunNichenetr <- function(
 #' `srt@tools[["MultiNichenetr"]]`.
 #' @export
 RunMultiNichenetr <- function(
-  srt,
+  object,
   group.by,
   sample.by,
   condition.by,
@@ -425,8 +427,10 @@ RunMultiNichenetr <- function(
   empirical_pval = TRUE,
   top_n_interactions = 250,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   check_r(
     c("saeyslab/multinichenetr", "SingleCellExperiment", "muscat"),
