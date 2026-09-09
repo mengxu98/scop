@@ -67,7 +67,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RuntAge</span><span class="op">(</span></span>
-<span>  <span class="va">object</span>,</span>
+<span>  <span class="va">srt</span>,</span>
 <span>  model_paths <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"python"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
 <span>  clock <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Chronoage"</span>, <span class="st">"NormalizedAge"</span>, <span class="st">"Mortality"</span><span class="op">)</span>,</span>
@@ -111,7 +111,7 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
+<dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
 <dd><p>A <code>Seurat</code> object, <code>ExpressionSet</code>, or expression matrix-like
 object with genes in rows and pseudobulk/bulk samples in columns.</p></dd>
 
@@ -170,7 +170,7 @@ models.</p></dd>
 
 <dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
 <dd><p>Sample metadata for matrix input. Row names must match
-columns of <code>object</code>. If <code>NULL</code>, minimal <code>sample_id</code> metadata is created.</p></dd>
+columns of <code>srt</code>. If <code>NULL</code>, minimal <code>sample_id</code> metadata is created.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>
@@ -265,7 +265,7 @@ Default is <code>TRUE</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>Seurat</code> object with tAge results stored in <code>object@tools</code>, or a
+    <p>A <code>Seurat</code> object with tAge results stored in <code>srt@tools</code>, or a
 list with <code>predictions</code>, metadata, and parameters for non-Seurat input.</p>
     </div>
     <div class="section level2">
