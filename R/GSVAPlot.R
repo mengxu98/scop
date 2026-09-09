@@ -5,7 +5,9 @@
 #' @inheritParams GroupHeatmap
 #' @inheritParams EnrichmentPlot
 #' @inheritParams scop-params
-#' @param srt A Seurat object containing the results of RunGSVA.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object containing the results of RunGSVA.
 #' If specified, GSVA results will be extracted from the `Seurat` object automatically.
 #' If not specified, the `res` argument must be provided.
 #' @param group.by Grouping variable used in RunGSVA.
@@ -80,35 +82,27 @@
 #' ht$plot
 #'
 #' GSVAPlot(
-#'   srt = pancreas_sub,
+#'   object = pancreas_sub,
 #'   group.by = "CellType",
 #'   plot_type = "comparison",
 #'   topTerm = 1
 #' )
 #'
 #' GSVAPlot(
-#'   srt = pancreas_sub,
+#'   object = pancreas_sub,
 #'   group.by = "CellType",
 #'   plot_type = "bar",
 #'   topTerm = 2
 #' )
 GSVAPlot <- function(
-  srt = NULL,
+  object = NULL,
   res = NULL,
   group.by = NULL,
   sample.by = NULL,
   assay_name = "GSVA",
   db = NULL,
   mode = c("score", "diff"),
-  plot_type = c(
-    "heatmap",
-    "bar",
-    "network",
-    "enrichmap",
-    "wordcloud",
-    "comparison",
-    "volcano"
-  ),
+  plot_type = c("heatmap", "bar", "network", "enrichmap", "wordcloud", "comparison", "volcano"),
   split_by = c("Database", "Groups"),
   color_by = "Database",
   group_use = NULL,
@@ -184,8 +178,10 @@ GSVAPlot <- function(
   border = TRUE,
   nlabel = 0,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   if (!is.null(enrlichmap_nlabel)) {
     enrichmap_nlabel <- enrlichmap_nlabel
@@ -648,7 +644,7 @@ GSVAPlot <- function(
 
     return(
       EnrichmentPlot(
-        srt = NULL,
+        object = NULL,
         res = list(enrichment = enrichment),
         db = gsva_db,
         plot_type = plot_type,

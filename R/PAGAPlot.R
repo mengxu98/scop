@@ -95,7 +95,7 @@
 #'   )
 #' )
 PAGAPlot <- function(
-  srt,
+  object,
   paga = NULL,
   type = "connectivities",
   reduction = NULL,
@@ -154,8 +154,10 @@ PAGAPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (is.null(paga)) {
     paga <- srt@tools[["PAGA"]] %||% srt@misc[["paga"]]
   }

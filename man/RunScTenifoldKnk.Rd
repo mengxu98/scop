@@ -6,7 +6,7 @@
 \title{Run scTenifoldKnk in-silico knockout analysis}
 \usage{
 RunscTenifoldKnk(
-  srt,
+  object,
   gKO,
   assay = NULL,
   layer = "counts",
@@ -32,11 +32,12 @@ RunscTenifoldKnk(
   store_networks = TRUE,
   store_manifold = TRUE,
   tool_name = "scTenifoldKnk",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{gKO}{Gene symbol or symbols to knock out. All genes must be present
 after optional feature and QC filtering.}
@@ -83,6 +84,9 @@ handling and result storage inside \code{scop}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with scTenifoldKnk results stored in

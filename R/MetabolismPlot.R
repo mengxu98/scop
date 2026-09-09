@@ -2,7 +2,9 @@
 #'
 #' @md
 #' @inheritParams GSVAPlot
-#' @param srt A Seurat object containing the results of RunMetabolism.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object containing the results of RunMetabolism.
 #' @param group.by Grouping variable used in RunMetabolism.
 #' @param assay_name Assay or tools slot containing metabolism results.
 #' @param ... Additional arguments passed to [GSVAPlot].
@@ -121,13 +123,15 @@
 #'   height = 2
 #' )
 MetabolismPlot <- function(
-  srt = NULL,
+  object = NULL,
   res = NULL,
   group.by = NULL,
   assay_name = "METABOLISM",
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!is.null(res)) {
     return(GSVAPlot(res = res, assay_name = assay_name, ...))
   }

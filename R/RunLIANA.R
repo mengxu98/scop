@@ -28,7 +28,7 @@
 #' `srt@tools[["LIANA"]]`.
 #' @export
 RunLIANA <- function(
-  srt,
+  object,
   group.by,
   method = c("natmi", "connectome", "logfc", "sca", "cellphonedb"),
   resource = NULL,
@@ -40,8 +40,10 @@ RunLIANA <- function(
   species = c("human", "mouse"),
   consensus = c("auto", "rank", "aggregate", "none"),
   consensus_args = list(),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   species <- match.arg(species)
   consensus <- match.arg(consensus)
@@ -596,7 +598,7 @@ liana_build_consensus <- function(
 #' `pvalue`, plus scop/OV-friendly metadata.
 #' @export
 ccc_to_liana <- function(
-  srt,
+  object,
   method = NULL,
   condition = NULL,
   dataset = 1,
@@ -613,8 +615,10 @@ ccc_to_liana <- function(
   aggregate = TRUE,
   sample_col = NULL,
   score_col = "score",
-  pvalue_col = "pvalue"
+  pvalue_col = "pvalue",
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   result <- match.arg(result)
   method <- detect_method(srt = srt, method = method)
   if (identical(method, "LIANA") && !identical(result, "primary")) {
@@ -694,7 +698,7 @@ ccc_to_liana <- function(
 #' `ov.pl.ccc_*` plotting functions.
 #' @export
 ccc_to_adata <- function(
-  srt = NULL,
+  object = NULL,
   method = NULL,
   condition = NULL,
   dataset = 1,
@@ -714,8 +718,10 @@ ccc_to_adata <- function(
   inverse_pvalue = FALSE,
   sample_col = NULL,
   h5ad_path = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (is.null(liana_res)) {
     if (is.null(srt)) {
       log_message(
@@ -724,7 +730,7 @@ ccc_to_adata <- function(
       )
     }
     liana_res <- ccc_to_liana(
-      srt = srt,
+      object = srt,
       method = method,
       condition = condition,
       dataset = dataset,

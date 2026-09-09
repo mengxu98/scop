@@ -5,7 +5,7 @@
 \title{Plot dynamic features across pseudotime}
 \usage{
 DynamicPlot(
-  srt,
+  object,
   lineages,
   features,
   group.by = NULL,
@@ -44,11 +44,12 @@ DynamicPlot(
   cores = 1,
   verbose = TRUE,
   seed = 11,
-  fit.by = NULL
+  fit.by = NULL,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{lineages}{Lineages to plot.}
 
@@ -115,6 +116,9 @@ for each group over that group's observed pseudotime range. The fit is not
 extrapolated beyond observed cells. This does not change the existing
 point-coloring behavior of \code{group.by}. Groups with fewer than 10 cells or 10
 unique pseudotime values are shown as raw points or rugs but are not fitted.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Plot dynamic features across pseudotime

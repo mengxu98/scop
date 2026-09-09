@@ -5,7 +5,7 @@
 \title{Plot cell2location spatial results}
 \usage{
 Cell2locationPlot(
-  srt,
+  object,
   plot_type = c("proportion", "abundance", "dominant", "pie"),
   cell_types = NULL,
   prefix = "Cell2location",
@@ -14,11 +14,12 @@ Cell2locationPlot(
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object returned by \code{\link[=RunCell2location]{RunCell2location()}}.}
+\item{object}{A \code{Seurat} object returned by \code{\link[=RunCell2location]{RunCell2location()}}.}
 
 \item{plot_type}{Result to draw: normalized proportion, q05 absolute
 abundance, dominant cell type, or a spot-level proportion pie.}
@@ -42,6 +43,9 @@ a single image is selected automatically when \code{NULL}.}
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
 scale-factor slots.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of plots.

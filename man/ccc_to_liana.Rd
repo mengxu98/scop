@@ -5,7 +5,7 @@
 \title{Convert CCC results to a LIANA-like table}
 \usage{
 ccc_to_liana(
-  srt,
+  object,
   method = NULL,
   condition = NULL,
   dataset = 1,
@@ -22,11 +22,12 @@ ccc_to_liana(
   aggregate = TRUE,
   sample_col = NULL,
   score_col = "score",
-  pvalue_col = "pvalue"
+  pvalue_col = "pvalue",
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{method}{Communication result type to use.}
 
@@ -67,6 +68,9 @@ OmicVerse compatibility.}
 \item{score_col}{Column used as the exported communication score.}
 
 \item{pvalue_col}{Column used as the exported p-value/rank-like support.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A data frame with LIANA/LIANA+ compatible columns:

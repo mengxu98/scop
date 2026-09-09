@@ -52,7 +52,7 @@
 #'   flip = TRUE
 #' )
 CellDensityPlot <- function(
-  srt,
+  object,
   features,
   group.by = NULL,
   split.by = NULL,
@@ -82,8 +82,10 @@ CellDensityPlot <- function(
   ncol = NULL,
   byrow = TRUE,
   force = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   check_r("ggridges", verbose = FALSE)
   assay <- assay %||% DefaultAssay(srt)
   x_order <- match.arg(x_order)

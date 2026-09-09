@@ -5,7 +5,7 @@
 \title{Visualize metacell partitions on a dimensionality reduction}
 \usage{
 MetaCellPlot(
-  srt,
+  object,
   reduction = NULL,
   show_cells = FALSE,
   group.by = NULL,
@@ -30,11 +30,12 @@ MetaCellPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object with metacell results from \code{RunMetaCell()}.}
+\item{object}{A \code{Seurat} object with metacell results from \code{RunMetaCell()}.}
 
 \item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
@@ -89,6 +90,9 @@ layers/scales (\code{cells}, \code{fill_scale}, \code{centroids}, \code{scale_fi
 
 \item{...}{Additional arguments passed to \code{\link[ggplot2:geom_point]{geom_point()}} for metacell
 centroids.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{ggplot} object, or a named list of ggplot2 layers when

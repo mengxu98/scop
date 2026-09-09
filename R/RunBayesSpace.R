@@ -51,7 +51,7 @@
 #'   pt.size = 1.5
 #' )
 RunBayesSpace <- function(
-  srt,
+  object,
   q,
   assay = NULL,
   platform = c("Visium", "VisiumHD", "ST"),
@@ -68,8 +68,10 @@ RunBayesSpace <- function(
   init_colname = "BayesSpace_init",
   store_sce = TRUE,
   verbose = TRUE,
-  coord.cols = c("col", "row")
+  coord.cols = c("col", "row"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

@@ -5,7 +5,7 @@
 \title{Cell Dimensional Plot}
 \usage{
 CellDimPlot(
-  srt,
+  object,
   group.by,
   label.by = NULL,
   mark.by = NULL,
@@ -138,11 +138,12 @@ CellDimPlot(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
 
@@ -224,6 +225,9 @@ returns a list of ggplots.}
 \item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.

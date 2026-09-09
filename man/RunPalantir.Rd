@@ -5,7 +5,7 @@
 \title{Run Palantir analysis}
 \usage{
 RunPalantir(
-  srt = NULL,
+  object = NULL,
   assay_x = "RNA",
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
@@ -48,11 +48,12 @@ RunPalantir(
   backend = c("python", "cpp"),
   allow_approximate = FALSE,
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.
+\item{object}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
 \item{assay_x}{Assay to convert as the main data matrix in the anndata object.}
@@ -146,6 +147,9 @@ must be \code{TRUE} when \code{backend = "cpp"}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Run Palantir analysis

@@ -5,7 +5,7 @@
 \title{Run cell2location spatial deconvolution}
 \usage{
 RunCell2location(
-  srt,
+  object,
   result_dir,
   reference = NULL,
   reference_label = "celltype",
@@ -35,11 +35,12 @@ RunCell2location(
   prefix = "Cell2location",
   tool_name = "Cell2location",
   store_results = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{Spatial \code{Seurat} object containing raw counts.}
+\item{object}{Spatial \code{Seurat} object containing raw counts.}
 
 \item{result_dir}{Directory used to persist inputs, models, posterior results,
 tables, logs, and the run manifest.}
@@ -101,6 +102,9 @@ current inputs and parameters.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with cell2location abundance, proportion, dominant

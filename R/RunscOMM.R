@@ -39,7 +39,7 @@
 #' reference <- subset(pbmcmultiome_sub, cells = ref_cells)
 #' query <- subset(pbmcmultiome_sub, cells = query_cells)
 #' query <- RunscOMM(
-#'   srt = query,
+#'   object = query,
 #'   reference = reference,
 #'   reference_assay = "RNA",
 #'   query_assay = "RNA",
@@ -67,7 +67,7 @@
 #' )
 #' }
 RunscOMM <- function(
-  srt,
+  object,
   reference,
   reference_assay = NULL,
   query_assay = NULL,
@@ -84,8 +84,10 @@ RunscOMM <- function(
   scomm_batch_size = 32,
   scomm_threshold = 0.5,
   scomm_seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} is not a {.cls Seurat}",

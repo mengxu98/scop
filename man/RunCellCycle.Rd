@@ -5,7 +5,7 @@
 \title{Run cell cycle scoring}
 \usage{
 RunCellCycle(
-  srt,
+  object,
   method = c("Seurat", "cyclone", "tricycle"),
   assay = NULL,
   layer = "counts",
@@ -14,11 +14,12 @@ RunCellCycle(
   phase_col = NULL,
   overwrite = FALSE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{method}{Cell cycle estimation method. One of \code{"Seurat"}, \code{"cyclone"},
 or \code{"tricycle"}.}
@@ -41,6 +42,9 @@ phase column.}
 Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to the selected method.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with cell cycle metadata and, for \code{tricycle},

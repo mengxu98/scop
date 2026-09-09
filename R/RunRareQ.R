@@ -66,7 +66,7 @@
 #'   features = "RareQ_Q"
 #' )
 RunRareQ <- function(
-  srt,
+  object,
   assay = NULL,
   reduction = "pca",
   dims = 1:30,
@@ -86,8 +86,10 @@ RunRareQ <- function(
   size_colname = paste0(prefix, "_cluster_size"),
   rare_colname = paste0(prefix, "_is_rare"),
   tool_name = "RareQ",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

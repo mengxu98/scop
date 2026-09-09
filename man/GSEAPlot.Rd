@@ -5,7 +5,7 @@
 \title{GSEA Plot}
 \usage{
 GSEAPlot(
-  srt,
+  object,
   db = "GO_BP",
   group.by = NULL,
   test.use = "wilcox",
@@ -61,11 +61,12 @@ GSEAPlot(
   ncol = NULL,
   byrow = TRUE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object containing the results of RunDEtest and RunGSEA.
+\item{object}{A \code{Seurat} object containing the results of RunDEtest and RunGSEA.
 If specified, GSEA results will be extracted from the Seurat object automatically.
 If not specified, the \code{res} arguments must be provided.}
 
@@ -189,6 +190,9 @@ returns a list of ggplots.}
 \item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Generates various types of plots for Gene Set Enrichment Analysis (GSEA) results.

@@ -26,7 +26,7 @@
 #' `srt@tools[["CCC"]]` bundle.
 #' @export
 RunCCC <- function(
-  srt,
+  object,
   group.by = NULL,
   methods = c("CellChat", "CellphoneDB", "LIANA"),
   method_params = list(),
@@ -34,8 +34,10 @@ RunCCC <- function(
   skip_failed = FALSE,
   rebuild_unified = TRUE,
   thresh = 0.05,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   if (!inherits(srt, "Seurat")) {
     log_message(

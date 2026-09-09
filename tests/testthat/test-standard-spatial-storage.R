@@ -569,10 +569,10 @@ test_that("native spatial variable feature workflow can be rerun unchanged", {
 
   first <- do.call(
     public_workflow,
-    c(list(srt = make_standard_spatial_rerun_object()), args)
+    c(list(object = make_standard_spatial_rerun_object()), args)
   )
   first_tool <- first@tools[["SpatialVariableFeatures"]]
-  second <- do.call(public_workflow, c(list(srt = first), args))
+  second <- do.call(public_workflow, c(list(object = first), args))
   second_tool <- second@tools[["SpatialVariableFeatures"]]
 
   expect_identical(first_tool, second_tool)

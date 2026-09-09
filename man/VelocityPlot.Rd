@@ -5,7 +5,7 @@
 \title{Velocity Plot}
 \usage{
 VelocityPlot(
-  srt,
+  object,
   reduction,
   dims = c(1, 2),
   cells = NULL,
@@ -44,11 +44,12 @@ VelocityPlot(
   theme_args = list(),
   return_layer = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
@@ -153,6 +154,9 @@ Defaults is \code{FALSE}.}
 \item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Creates a velocity plot for a given Seurat object.

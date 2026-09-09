@@ -5,7 +5,7 @@
 \title{Plot Palantir trajectories}
 \usage{
 PalantirTrajectoryPlot(
-  srt,
+  object,
   reduction = NULL,
   dims = c(1, 2),
   cells = NULL,
@@ -43,11 +43,12 @@ PalantirTrajectoryPlot(
   theme_args = list(),
   return_layer = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reduction}{Reduction to plot. \code{NULL} uses \link{DefaultReduction}.}
 
@@ -127,6 +128,9 @@ complete plot.}
 \item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Plot branch-aware Palantir trajectories on a two-dimensional embedding.

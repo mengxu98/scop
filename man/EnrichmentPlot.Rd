@@ -5,7 +5,7 @@
 \title{Enrichment Plot}
 \usage{
 EnrichmentPlot(
-  srt,
+  object,
   db = "GO_BP",
   group.by = NULL,
   test.use = "wilcox",
@@ -56,11 +56,12 @@ EnrichmentPlot(
   ncol = NULL,
   byrow = TRUE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object containing the results of RunDEtest and RunEnrichment.
+\item{object}{A Seurat object containing the results of RunDEtest and RunEnrichment.
 If specified, enrichment results will be extracted from the \code{Seurat} object automatically.
 If not specified, the \code{res} arguments must be provided.}
 
@@ -175,6 +176,9 @@ returns a list of ggplots.}
 \item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Generates various types of plots for enrichment (over-representation) analysis.

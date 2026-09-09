@@ -62,7 +62,7 @@
 #'   rownames(spatial)
 #' ), 300)
 #' spatial <- RunCytoSPACE(
-#'   srt = spatial,
+#'   object = spatial,
 #'   reference = reference,
 #'   reference_label = "celltype",
 #'   assay = "Spatial",
@@ -82,7 +82,7 @@
 #'   coord.cols = c("x", "y")
 #' )
 RunCytoSPACE <- function(
-  srt,
+  object,
   reference,
   reference_label,
   assay = NULL,
@@ -103,8 +103,10 @@ RunCytoSPACE <- function(
   coord.cols = c("col", "row"),
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
-  max_dense_gib = 8
+  max_dense_gib = 8,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   if (!inherits(srt, "Seurat")) {
     log_message(

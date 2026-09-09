@@ -5,7 +5,7 @@
 \title{Heatmap plot for dynamic features along lineages}
 \usage{
 DynamicHeatmap(
-  srt,
+  object,
   lineages,
   features = NULL,
   use_fitted = FALSE,
@@ -170,11 +170,12 @@ DynamicHeatmap(
   seed = 11,
   legend.position = "right",
   ht_params = list(),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{lineages}{Lineage names for which dynamic features should be calculated.}
 
@@ -358,6 +359,9 @@ Gap to the heatmap grows automatically when long row names are on the right.}
 \item{ht_params}{Extra arguments passed to \link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap}, overriding defaults.}
 
 \item{...}{Additional arguments passed to helper functions.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Heatmap plot for dynamic features along lineages

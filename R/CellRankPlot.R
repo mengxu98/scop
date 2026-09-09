@@ -3,7 +3,9 @@
 #' @description
 #' Plot CellRank outputs without rerunning a Python backend.
 #'
-#' @param srt A Seurat object returned by [RunCellRank].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object returned by [RunCellRank].
 #' @param plot_type One of `"fate"`, `"states"`, `"circular"`, `"drivers"`,
 #' `"trends"`, `"clusters"`, `"enrichment"`, `"projection"`, or
 #' `"random_walks"`.
@@ -26,7 +28,7 @@
 #' @return A ggplot object or a SCOP plot object.
 #' @export
 CellRankPlot <- function(
-  srt,
+  object,
   plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters", "enrichment", "projection", "random_walks"),
   lineage = NULL,
   database = NULL,
@@ -42,8 +44,10 @@ CellRankPlot <- function(
   feature_palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   plot_type <- match.arg(plot_type)
   if (!inherits(srt, "Seurat")) log_message("{.arg srt} must be a Seurat object", message_type = "error")
   if (is.null(srt@tools$CellRank)) log_message("CellRank results are missing", message_type = "error")

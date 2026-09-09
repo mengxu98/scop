@@ -5,7 +5,7 @@
 \title{Run mistyR multiview spatial modeling}
 \usage{
 RunMistyR(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   features = NULL,
@@ -31,11 +31,12 @@ RunMistyR(
   store_views = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay used for expression. If \code{NULL}, the default assay is used.}
 
@@ -82,6 +83,9 @@ default is raw acquisition coordinates; \code{"legacy_display"} remains an
 explicit compatibility option.}
 
 \item{...}{Additional named arguments passed to \code{mistyR::run_misty()}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with results stored in \code{srt@tools[[tool_name]]}

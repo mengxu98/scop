@@ -5,7 +5,7 @@
 \title{Run spatial gradient feature screening}
 \usage{
 RunSpatialGradientFeatures(
-  srt,
+  object,
   reference = c("trajectory", "annotation"),
   backend = "cpp",
   result_name = NULL,
@@ -49,11 +49,12 @@ RunSpatialGradientFeatures(
   store_results = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reference}{Spatial reference type: \code{"trajectory"} for STS or
 \code{"annotation"} for SAS.}
@@ -131,6 +132,9 @@ backend.}
 
 \item{...}{Additional named arguments accepted for compatibility. The native
 backend ignores them and does not store them as effective parameters.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object. When \code{store_results = TRUE}, spatial gradient

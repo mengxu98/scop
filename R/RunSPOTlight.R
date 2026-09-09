@@ -44,7 +44,7 @@
 #'   rownames(spatial)
 #' ), 300)
 #' spatial <- RunSPOTlight(
-#'   srt = spatial,
+#'   object = spatial,
 #'   reference = reference,
 #'   reference_label = "celltype",
 #'   assay = "Spatial",
@@ -62,7 +62,7 @@
 #' )
 #' }
 RunSPOTlight <- function(
-  srt,
+  object,
   reference,
   reference_label = "celltype",
   assay = NULL,
@@ -82,8 +82,10 @@ RunSPOTlight <- function(
   tool_name = "SPOTlight",
   store_results = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

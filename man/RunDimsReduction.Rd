@@ -5,7 +5,7 @@
 \title{Run dimension reduction}
 \usage{
 RunDimsReduction(
-  srt,
+  object,
   prefix = "",
   features = NULL,
   assay = NULL,
@@ -23,11 +23,12 @@ RunDimsReduction(
   nonlinear_reduction_params = list(),
   force_nonlinear_reduction = TRUE,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{prefix}{The prefix used to name the result.}
 
@@ -68,6 +69,9 @@ Default is \code{TRUE}.}
 deterministic independent L'Ecuyer-CMRG random-number stream, making results
 reproducible across worker counts and scheduling order. The caller's random
 number state is restored when the call finishes.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Run dimension reduction

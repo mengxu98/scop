@@ -92,7 +92,7 @@
 #'   flip = TRUE
 #' )
 RunGSVA <- function(
-  srt = NULL,
+  object = NULL,
   assay = NULL,
   group.by = NULL,
   layer = "data",
@@ -126,8 +126,10 @@ RunGSVA <- function(
   ssgsea.norm = TRUE,
   cores = NULL,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Start {.pkg GSVA} analysis", verbose = verbose)
 
   dots <- list(...)
@@ -162,7 +164,7 @@ RunGSVA <- function(
         assay_name
       }
       srt <- RunGSVA(
-        srt = srt,
+        object = srt,
         assay = assay,
         group.by = group.by,
         layer = layer,

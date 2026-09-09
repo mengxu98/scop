@@ -5,7 +5,7 @@
 \title{Fit and cluster CellRank lineage trends}
 \usage{
 RunCellRankTrends(
-  srt,
+  object,
   lineage,
   features = NULL,
   top_n = 500L,
@@ -28,11 +28,12 @@ RunCellRankTrends(
   distribution = "gamma",
   link = "log",
   fallback_distribution = "normal",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object returned by [RunCellRank].}
+\item{object}{A Seurat object returned by [RunCellRank].}
 
 \item{lineage}{A lineage name in the stored fate-probability matrix.}
 
@@ -81,6 +82,9 @@ required for a GAM feature.}
 model has a fatal fit failure; the selected distribution is recorded.}
 
 \item{verbose}{Whether to print progress messages.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 The Seurat object with a `CellRank$trends[[lineage]]` result bundle.

@@ -5,7 +5,7 @@
 \title{DEtest Manhattan Plot}
 \usage{
 DEtestManhattanPlot(
-  srt,
+  object,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -40,11 +40,12 @@ DEtestManhattanPlot(
   aspect.ratio = NULL,
   xlab = NULL,
   ylab = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
+\item{object}{A \code{Seurat} object or \code{SummarizedExperiment} object containing the
 results of differential expression analysis.}
 
 \item{group.by}{Metadata column(s) used to color cells.}
@@ -129,6 +130,9 @@ Default is \code{NULL}, which uses the current automatic height.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Draw a Manhattan-style plot of differential expression results by cell type.

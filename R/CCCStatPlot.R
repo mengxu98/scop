@@ -3,7 +3,9 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams scop-params
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param method Communication result type to use.
 #' @param combine_methods Behavior when `method = "CCC"`. `"separate"` returns
 #' one panel per backend, `"support"` counts supporting backends, `"rank"`
@@ -193,27 +195,12 @@
 #'   plot_type = "role_change"
 #' )
 CCCStatPlot <- function(
-  srt,
+  object,
   method = NULL,
   condition = NULL,
   dataset = 1,
   comparison = c(1, 2),
-  plot_type = c(
-    "bar",
-    "sankey",
-    "box",
-    "violin",
-    "role_scatter",
-    "role_network",
-    "role_network_marsilea",
-    "pathway_summary",
-    "comparison",
-    "lr_contribution",
-    "gene",
-    "ranknet",
-    "scatter",
-    "role_change"
-  ),
+  plot_type = c("bar", "sankey", "box", "violin", "role_scatter", "role_network", "role_network_marsilea", "pathway_summary", "comparison", "lr_contribution", "gene", "ranknet", "scatter", "role_change"),
   display_by = c("aggregation", "interaction"),
   sender.use = NULL,
   receiver.use = NULL,
@@ -260,8 +247,10 @@ CCCStatPlot <- function(
   combine_methods = c("separate", "support", "rank", "legacy"),
   resource = NULL,
   sample = NULL,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",
@@ -331,7 +320,7 @@ CCCStatPlot <- function(
   }
   if (plot_type %in% c("role_network", "role_network_marsilea")) {
     return(finish_plot(CCCHeatmap(
-      srt = srt,
+      object = srt,
       method = method,
       condition = condition,
       dataset = dataset,

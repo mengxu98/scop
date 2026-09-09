@@ -63,7 +63,7 @@
 #'   pancreas_sub
 #' )
 RunProportionTest <- function(
-  srt,
+  object,
   group.by,
   split.by = NULL,
   comparison = NULL,
@@ -76,8 +76,10 @@ RunProportionTest <- function(
   include_all_cells = FALSE,
   seed = 11,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   proportion_method <- normalize_proportion_method(proportion_method)
 
   pseudo_sample_info <- list(enabled = FALSE)
@@ -136,7 +138,7 @@ RunProportionTest <- function(
 
   method_args <- utils::modifyList(
     list(
-      srt = srt,
+      object = srt,
       group.by = group.by,
       split.by = split.by,
       comparison = comparison,
@@ -231,14 +233,16 @@ RunProportionTest <- function(
 #'
 #' @export
 RunPermutation <- function(
-  srt,
+  object,
   group.by,
   split.by,
   comparison = NULL,
   n_permutations = 1000,
   include_all_cells = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   meta_data <- validate_proportion_inputs(
     srt = srt,
     group.by = group.by,

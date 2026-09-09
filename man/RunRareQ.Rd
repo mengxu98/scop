@@ -5,7 +5,7 @@
 \title{RareQ rare-cell population detection}
 \usage{
 RunRareQ(
-  srt,
+  object,
   assay = NULL,
   reduction = "pca",
   dims = 1:30,
@@ -25,11 +25,12 @@ RunRareQ(
   size_colname = paste0(prefix, "_cluster_size"),
   rare_colname = paste0(prefix, "_is_rare"),
   tool_name = "RareQ",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -77,6 +78,9 @@ names for RareQ clusters, Q values, cluster sizes, and rare-cluster flags.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with RareQ results in metadata and

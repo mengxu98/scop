@@ -10,7 +10,9 @@
 #' evaluated is never reported as a negative artifact call.
 #'
 #' @md
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param assay Assay used for expression. If `NULL`, the default assay is used.
 #' @param layer Assay layer used for expression values.
 #' @param coord.cols Metadata coordinate columns used when no Seurat image is
@@ -84,7 +86,7 @@
 #' SpatialSpotPlot(spatial, group.by = "SpotSweeper_local_outlier_qc", image = "slice1")
 #' }
 RunSpotSweeper <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   coord.cols = c("col", "row"),
@@ -110,8 +112,10 @@ RunSpotSweeper <- function(
   workers = NULL,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   coordinate_space <- match.arg(coordinate_space)
   if (!is.null(workers)) {
     .Deprecated(msg = "'workers' is deprecated; use 'cores' instead")

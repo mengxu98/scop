@@ -21,7 +21,7 @@ test_that("public spatial workflow forwards cores to its helper", {
   )
 
   out <- RunStandardWorkflow(
-    srt = NULL,
+    object = NULL,
     workflow = "spatial",
     cores = 3L,
     verbose = FALSE

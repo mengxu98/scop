@@ -5,7 +5,7 @@
 \title{Train a CellTypist model}
 \usage{
 TrainCellTypist(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -36,11 +36,12 @@ TrainCellTypist(
   version = "",
   model_path = NULL,
   return = c("summary", "path", "model"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.
+\item{object}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
 \item{adata}{Optional AnnData object used as input.}
@@ -98,6 +99,9 @@ If provided, \code{adata} will be ignored.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 Depends on \code{return}: a summary list, the model path, or a Python model object.
@@ -114,7 +118,7 @@ pbmcmultiome_sub <- RunStandardWorkflow(
   assay = "RNA", linear_reduction_dims = 10
 )
 model_info <- TrainCellTypist(
-  srt = pbmcmultiome_sub, labels = "CellType",
+  object = pbmcmultiome_sub, labels = "CellType",
   model_path = tempfile(fileext = ".pkl")
 )
 }

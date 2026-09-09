@@ -60,7 +60,7 @@
 #'   paga = pancreas_sub@tools[["PAGA"]]
 #' )
 RunPAGA <- function(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   assay_x = "RNA",
   layer_x = "counts",
@@ -96,8 +96,10 @@ RunPAGA <- function(
   dirpath = "./paga",
   backend = c("python", "cpp"),
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   plot_format <- match.arg(plot_format)
 
@@ -238,7 +240,7 @@ RunPAGA <- function(
 
   if (!is.null(srt)) {
     args[["adata"]] <- srt_to_adata(
-      srt = srt,
+      object = srt,
       assay_x = assay_x,
       layer_x = layer_x,
       assay_y = assay_y,

@@ -77,7 +77,7 @@ test_that("CellDimPlot keeps colour scale guides as characters for ggnewscale", 
   srt <- make_cell_dim_plot_srt()
 
   plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     raster = FALSE,
@@ -94,7 +94,7 @@ test_that("CellDimPlot can overlay lineages without ggplot2 guide comparison err
   srt$Lineage1 <- seq(0, 1, length.out = ncol(srt))
 
   plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     lineages = "Lineage1",
@@ -110,7 +110,7 @@ test_that("CellDimPlot supports atlas-style grid and marked groups", {
   srt <- make_cell_dim_plot_srt()
 
   plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     add_grid = TRUE,
@@ -139,7 +139,7 @@ test_that("CellDimPlot keeps synthetic split metadata local", {
   original_meta <- srt@meta.data
 
   plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     raster = FALSE,
@@ -155,7 +155,7 @@ test_that("CellDimPlot can color subgroups while labeling major groups", {
   srt <- make_cell_dim_plot_srt()
 
   plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     label.by = "major_type",
     mark.by = "major_type",
@@ -181,7 +181,7 @@ test_that("CellDimPlot can color subgroups with major-group nested legend", {
   srt <- make_cell_dim_plot_srt()
 
   plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     label.by = "major_type",
     mark.by = "major_type",
@@ -203,7 +203,7 @@ test_that("CellDimPlot nested bottom legend is horizontal by default", {
   srt <- make_cell_dim_plot_srt()
 
   plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     legend.by = "major_type",
     reduction = "umap",
@@ -220,7 +220,7 @@ test_that("CellDimPlot nested right legend stacks grouped subtypes", {
   srt <- make_cell_dim_plot_srt()
 
   plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     legend.by = "major_type",
     reduction = "umap",
@@ -294,7 +294,7 @@ test_that("CellDimPlot disables default point stroke for small point sizes", {
   srt <- make_cell_dim_plot_srt()
 
   plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     pt.size = 0.0001,
@@ -316,7 +316,7 @@ test_that("CellDimPlot uses readable default point size", {
   srt <- make_cell_dim_plot_srt()
 
   plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     raster = FALSE,
@@ -396,7 +396,7 @@ test_that("CellDimPlot applies continuous resolution-aware raster point sizes", 
   srt <- make_cell_dim_plot_srt()
 
   default_plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     raster = TRUE,
@@ -404,7 +404,7 @@ test_that("CellDimPlot applies continuous resolution-aware raster point sizes", 
     force = TRUE
   )
   explicit_plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     pt.size = 0.3,
@@ -488,14 +488,14 @@ test_that("CellDimPlot applies scaled and explicit point sizes", {
   srt <- make_cell_dim_plot_srt(n_cells = 5000L)
 
   default_plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     raster = FALSE,
     force = TRUE
   )
   explicit_plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     pt.size = 1,
@@ -518,7 +518,7 @@ test_that("CellDimPlot scales large non-raster plots consistently", {
   srt <- make_cell_dim_plot_srt(n_cells = 50000L)
 
   plot <- CellDimPlot(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     raster = FALSE,
@@ -539,7 +539,7 @@ test_that("CellDimPlot scales raster points with resolution", {
   skip_if_not_installed("scattermore")
   srt <- make_cell_dim_plot_srt()
   plot_args <- list(
-    srt = srt,
+    object = srt,
     group.by = "celltype",
     reduction = "umap",
     raster = TRUE,
@@ -572,7 +572,7 @@ test_that("CellDimPlot validates atlas grid density", {
 
   expect_error(
     CellDimPlot(
-      srt = srt,
+      object = srt,
       group.by = "celltype",
       reduction = "umap",
       add_grid = TRUE,

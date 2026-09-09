@@ -49,14 +49,16 @@
 #' )
 #' identical(raw_counts, new_counts)
 RecoverCounts <- function(
-  srt,
+  object,
   assay = NULL,
   trans = c("expm1", "exp", "none"),
   min_count = c(1, 2, 3),
   tolerance = 0.1,
   sf = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   counts <- GetAssayData5(
     srt,

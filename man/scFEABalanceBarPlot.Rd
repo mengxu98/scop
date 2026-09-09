@@ -5,7 +5,7 @@
 \title{Plot scFEA metabolite balance changes}
 \usage{
 scFEABalanceBarPlot(
-  srt,
+  object,
   group.by,
   ident.1 = NULL,
   ident.2 = NULL,
@@ -13,11 +13,12 @@ scFEABalanceBarPlot(
   layer = "data",
   top_n = NULL,
   p_adj_cutoff = 0.01,
-  title = NULL
+  title = NULL,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object returned by [RunscFEA()].}
+\item{object}{A Seurat object returned by [RunscFEA()].}
 
 \item{group.by}{Metadata column defining groups. If `ident.1` and `ident.2`
 are both `NULL`, each group is compared against all remaining cells.}
@@ -37,6 +38,9 @@ adjusted-p-value filter.}
 \item{p_adj_cutoff}{Adjusted p-value cutoff used when `top_n` is not `NULL`.}
 
 \item{title}{Optional plot title.}
+
+\item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 For a single contrast, a list with `plot` and plotted `data`. For

@@ -265,7 +265,9 @@ spatialdm_bundle <- function(input, executed, parameters, result.name) {
 #' @title Run official SpatialDM spatial ligand-receptor association analysis
 #' @md
 #' @inheritParams scop-params
-#' @param srt A `Seurat` spatial object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` spatial object.
 #' @param species Built-in SpatialDM species (`"human"` or `"mouse"`).
 #' @param lr.database Optional custom LR table with `ligand`, `receptor`, and
 #'   `annotation` columns.
@@ -287,17 +289,39 @@ spatialdm_bundle <- function(input, executed, parameters, result.name) {
 #' @return A Seurat object with a schema-v1 `SpatialDM` result bundle.
 #' @export
 RunSpatialDM <- function(
-  srt, species = c("human", "mouse"), lr.database = NULL, assay = NULL,
-  layer = "data", counts.layer = "counts", image = NULL,
-  coord.cols = c("col", "row"), coordinate.unit = NULL,
-  method = c("z-score", "permutation"), run.local = TRUE, l = NULL,
-  eff_dist = NULL, cutoff = 0.1, n_neighbors = NULL, n_neighbor_layers = 6,
-  single_cell = FALSE, complex.mean = c("algebra", "geometric"), min_cell = 3,
-  n_perm = 1000, nproc = 1, seed = 1, global.fdr = TRUE,
-  global.threshold = 0.1, local.fdr = FALSE, local.threshold = 0.1,
-  result.name = "default", envname = "spatialdm_env",
-  overwrite = FALSE, verbose = TRUE
+  object,
+  species = c("human", "mouse"),
+  lr.database = NULL,
+  assay = NULL,
+  layer = "data",
+  counts.layer = "counts",
+  image = NULL,
+  coord.cols = c("col", "row"),
+  coordinate.unit = NULL,
+  method = c("z-score", "permutation"),
+  run.local = TRUE,
+  l = NULL,
+  eff_dist = NULL,
+  cutoff = 0.1,
+  n_neighbors = NULL,
+  n_neighbor_layers = 6,
+  single_cell = FALSE,
+  complex.mean = c("algebra", "geometric"),
+  min_cell = 3,
+  n_perm = 1000,
+  nproc = 1,
+  seed = 1,
+  global.fdr = TRUE,
+  global.threshold = 0.1,
+  local.fdr = FALSE,
+  local.threshold = 0.1,
+  result.name = "default",
+  envname = "spatialdm_env",
+  overwrite = FALSE,
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   species <- match.arg(species)
   method <- match.arg(method)
   complex.mean <- match.arg(complex.mean)

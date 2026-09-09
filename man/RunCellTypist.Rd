@@ -5,7 +5,7 @@
 \title{Run CellTypist cell type annotation}
 \usage{
 RunCellTypist(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   assay = "RNA",
   layer = "data",
@@ -23,11 +23,12 @@ RunCellTypist(
   insert_decision = FALSE,
   prefix = "celltypist_",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.
+\item{object}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
 \item{adata}{Optional AnnData object used as input.}
@@ -78,6 +79,9 @@ Supports three formats:
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 An AnnData object or a Seurat object depending on the \code{return_seurat} argument.

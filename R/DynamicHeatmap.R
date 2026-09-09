@@ -216,7 +216,7 @@
 #'   height = 1
 #' )
 DynamicHeatmap <- function(
-  srt,
+  object,
   lineages,
   features = NULL,
   use_fitted = FALSE,
@@ -275,13 +275,7 @@ DynamicHeatmap <- function(
   feature_split_by = NULL,
   n_split = NULL,
   split_order = NULL,
-  split_method = c(
-    "mfuzz",
-    "kmeans",
-    "kmeans-peaktime",
-    "hclust",
-    "hclust-peaktime"
-  ),
+  split_method = c("mfuzz", "kmeans", "kmeans-peaktime", "hclust", "hclust-peaktime"),
   decreasing = FALSE,
   fuzzification = NULL,
   anno_terms = FALSE,
@@ -384,8 +378,10 @@ DynamicHeatmap <- function(
   seed = 11,
   legend.position = "right",
   ht_params = list(),
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   heatmap_border <- heatmap_border %||% border
   cell_annotation_border <- cell_annotation_border %||% border
@@ -1296,7 +1292,7 @@ DynamicHeatmap <- function(
             available = colnames(srt)
           )
           subplots <- CellDensityPlot(
-            srt = srt_anno,
+            object = srt_anno,
             cells = lineage_cells,
             group.by = cellan,
             features = l,
@@ -1368,7 +1364,7 @@ DynamicHeatmap <- function(
             available = colnames(srt)
           )
           subplots <- DynamicPlot(
-            srt = srt,
+            object = srt,
             cells = lineage_cells,
             lineages = l,
             group.by = NULL,

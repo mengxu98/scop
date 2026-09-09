@@ -42,7 +42,7 @@ test_that("GSVAPlot score mode ranks without placeholder p-values", {
   srt <- make_gsva_stat_srt()
 
   out <- GSVAPlot(
-    srt = srt,
+    object = srt,
     mode = "score",
     group.by = "condition",
     topTerm = 2,
@@ -59,7 +59,7 @@ test_that("GSVAPlot score bar uses the public score plotting contract", {
   srt <- make_gsva_stat_srt()
 
   p <- GSVAPlot(
-    srt = srt,
+    object = srt,
     mode = "score",
     plot_type = "bar",
     group.by = "condition",
@@ -105,7 +105,7 @@ test_that("GSVAPlot score mode rejects significance cutoffs", {
 
   expect_error(
     GSVAPlot(
-      srt = srt,
+      object = srt,
       mode = "score",
       plot_type = "bar",
       group.by = "condition",
@@ -165,7 +165,7 @@ test_that("GSVAPlot diff mode aggregates by sample and tests pathways", {
   srt <- make_gsva_stat_srt()
 
   out <- suppressWarnings(GSVAPlot(
-    srt = srt,
+    object = srt,
     mode = "diff",
     group.by = "condition",
     sample.by = "sample",
@@ -202,7 +202,7 @@ test_that("GSVAPlot diff mode accepts sample-level score matrices", {
   )
 
   out <- suppressWarnings(GSVAPlot(
-    srt = srt,
+    object = srt,
     res = sample_scores,
     mode = "diff",
     group.by = "condition",
@@ -221,12 +221,12 @@ test_that("GSVAPlot diff mode validates grouping inputs", {
   srt <- make_gsva_stat_srt()
 
   expect_error(
-    GSVAPlot(srt = srt, mode = "diff", group.by = "condition"),
+    GSVAPlot(object = srt, mode = "diff", group.by = "condition"),
     "sample.by"
   )
   expect_error(
     GSVAPlot(
-      srt = srt,
+      object = srt,
       mode = "diff",
       group.by = "missing",
       sample.by = "sample"
@@ -235,7 +235,7 @@ test_that("GSVAPlot diff mode validates grouping inputs", {
   )
   expect_error(
     GSVAPlot(
-      srt = srt,
+      object = srt,
       mode = "diff",
       group.by = "condition",
       sample.by = "sample",
@@ -256,7 +256,7 @@ test_that("GSVAPlot diff mode rejects group-level RunGSVA results", {
 
   expect_error(
     GSVAPlot(
-      srt = srt,
+      object = srt,
       res = res,
       mode = "diff",
       group.by = "condition",

@@ -3,7 +3,9 @@
 #' @md
 #' @inheritParams CellDimPlot
 #' @inheritParams scop-params
-#' @param srt A `Seurat` object with metacell results from `RunMetaCell()`.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object with metacell results from `RunMetaCell()`.
 #' @param show_cells Logical. If `TRUE`, the original single-cell points are
 #' drawn as a semi-transparent background layer behind the metacell centroids.
 #' @param color.by Metadata column in the metacell Seurat used to color
@@ -64,7 +66,7 @@
 #'     palette_metacell = "ChineseSet8"
 #'   )
 MetaCellPlot <- function(
-  srt,
+  object,
   reduction = NULL,
   show_cells = FALSE,
   group.by = NULL,
@@ -89,8 +91,10 @@ MetaCellPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   original_srt <- srt@misc[["original_srt"]]
   membership <- srt@misc[["cell_membership"]]
 

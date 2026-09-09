@@ -5,7 +5,7 @@
 \title{Group heatmap}
 \usage{
 GroupHeatmap(
-  srt,
+  object,
   features = NULL,
   group.by = NULL,
   split.by = NULL,
@@ -159,11 +159,12 @@ GroupHeatmap(
   legend.position = "right",
   ht_params = list(),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{features}{Features to plot.}
 
@@ -294,6 +295,9 @@ Gap to the heatmap grows automatically when long row names are on the right.}
 Default is \code{TRUE}.}
 
 \item{...}{Additional arguments passed to helper functions.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A list with \code{plot}, \code{matrix_list}, \code{feature_split}, \code{cell_metadata},

@@ -503,7 +503,7 @@ test_that("RunSpotSweeper rejects reserved artifact input columns atomically", {
   for (input_arg in c("sample.by", "mito_percent", "mito_sum")) {
     check_called <- FALSE
     args <- list(
-      srt = srt,
+      object = srt,
       layer = "counts",
       coord.cols = c("x", "y"),
       sample.by = "sample",

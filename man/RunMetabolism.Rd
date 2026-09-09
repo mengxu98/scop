@@ -5,7 +5,7 @@
 \title{Run metabolism pathway scoring}
 \usage{
 RunMetabolism(
-  srt,
+  object,
   assay = NULL,
   group.by = NULL,
   layer = "counts",
@@ -29,11 +29,12 @@ RunMetabolism(
   assay_name = "METABOLISM",
   new_assay = TRUE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay to use as expression matrix.}
 
@@ -106,6 +107,9 @@ intermediate memory; positive values set the chunk size manually.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 Returns a \code{Seurat} object. When \code{group.by = NULL}, stores scores in assay \code{assay_name} and tools.

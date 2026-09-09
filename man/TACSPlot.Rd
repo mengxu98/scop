@@ -5,7 +5,7 @@
 \title{Transcript-averaged cell scoring (TACS)}
 \usage{
 TACSPlot(
-  srt,
+  object,
   ref_srt = NULL,
   assay = "RNA",
   layer = "data",
@@ -41,11 +41,12 @@ TACSPlot(
   nrow = NULL,
   ncol = NULL,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{ref_srt}{A Seurat object.
 If your dataset is perturbed in a way that would substantially alter feature-feature correlations,
@@ -119,6 +120,9 @@ Options: \code{"sum"} (default), \code{"min"} (for "and"-like filter), \code{"ma
 Default is \code{TRUE}.}
 
 \item{...}{Additional parameters passed to \link[ggplot2:stat_density2d]{ggplot2::stat_density2d}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 TACS is a method for plotting a FACS-like plot for two features based on sc-RNA-seq data.

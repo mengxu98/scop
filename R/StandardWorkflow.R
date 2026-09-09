@@ -158,7 +158,7 @@
 #' )
 #' SpatialSpotPlot(spatial_bayes, group.by = "BayesSpace_cluster")
 RunStandardWorkflow <- function(
-  srt,
+  object,
   prefix = "Standard",
   workflow = c("single_cell", "spatial"),
   assay = NULL,
@@ -203,8 +203,10 @@ RunStandardWorkflow <- function(
   cores = 1L,
   verbose = TRUE,
   seed = 11,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   workflow <- match.arg(workflow)
   if (identical(workflow, "spatial")) {
     return(run_standard_spatial_workflow(
@@ -289,7 +291,7 @@ RunStandardWorkflow <- function(
         primary_assay = assays_to_run[[1]]
       )
       srt <- RunStandardWorkflow(
-        srt = srt,
+        object = srt,
         prefix = prefix_i,
         assay = assay_i,
         do_normalization = do_normalization,
@@ -498,7 +500,7 @@ RunStandardWorkflow <- function(
 
     if (is.null(linear_reduction_dims_use)) {
       linear_reduction_dims_use_current <- RunDimsEstimate(
-        srt = srt,
+        object = srt,
         reduction = paste0(prefix, lr),
         reduction_method = lr,
         skip_first = normalization_method == "TFIDF",
@@ -1266,7 +1268,7 @@ run_standard_spatial_workflow <- function(
   }
 
   srt <- RunStandardWorkflow(
-    srt = srt,
+    object = srt,
     prefix = prefix,
     workflow = "single_cell",
     assay = assay,
@@ -1490,7 +1492,7 @@ run_standard_spatial_workflow <- function(
           }
         }
         bayesspace_args <- list(
-          srt = srt,
+          object = srt,
           q = spatial_q_use,
           assay = assay,
           image = image,

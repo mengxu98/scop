@@ -454,7 +454,7 @@
 #'   theme_use = "theme_blank"
 #' )
 CellDimPlot <- function(
-  srt,
+  object,
   group.by,
   label.by = NULL,
   mark.by = NULL,
@@ -587,8 +587,10 @@ CellDimPlot <- function(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   mark_type <- match.arg(mark_type)
   if (!is.null(label.by) && length(label.by) != 1L) {
@@ -1932,7 +1934,7 @@ cell_dim_nested_legend_data <- function(
 #'   lineages = "Lineage1"
 #' )
 CellDimPlot3D <- function(
-  srt,
+  object,
   group.by,
   plot_type = c("scatter", "density_surface"),
   reduction = NULL,
@@ -1952,16 +1954,7 @@ CellDimPlot3D <- function(
   density_bandwidth = 1,
   density_threshold = 0.018,
   density_power = 0.52,
-  density_colors = c(
-    "#ffffff",
-    "#edf9fa",
-    "#c7e6ed",
-    "#7faac2",
-    "#294a74",
-    "#11162f",
-    "#7f1025",
-    "#ef3b2c"
-  ),
+  density_colors = c("#ffffff", "#edf9fa", "#c7e6ed", "#7faac2", "#294a74", "#11162f", "#7f1025", "#ef3b2c"),
   density_color_stops = c(0, 0.02, 0.12, 0.35, 0.62, 0.82, 0.93, 1),
   density_surface_opacity = 0.78,
   density_label = FALSE,
@@ -1976,8 +1969,10 @@ CellDimPlot3D <- function(
   height = NULL,
   save = NULL,
   force = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   plot_type <- match.arg(plot_type)
   if (identical(plot_type, "density_surface") && length(dims) < 2L) {
     log_message(

@@ -6,7 +6,9 @@
 #'
 #' @md
 #' @inheritParams RunSpatialVariableFeatures
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param mode MERINGUE analysis modes to run. `"autocorrelation"` computes
 #' spatial autocorrelation, `"cross_correlation"` computes pairwise spatial
 #' cross-correlation, and `"modules"` detects spatial gene modules.
@@ -50,7 +52,7 @@
 #' spatial@tools$MERINGUE$summary
 #' }
 RunMERINGUE <- function(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   image = NULL,
@@ -74,8 +76,10 @@ RunMERINGUE <- function(
   cross_cor_params = list(),
   module_params = list(),
   coordinate_space = c("raw", "legacy_display"),
-  backend = c("cpp", "r")
+  backend = c("cpp", "r"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   coordinate_space <- match.arg(coordinate_space)
   backend <- match.arg(backend)
   if (!inherits(srt, "Seurat")) {

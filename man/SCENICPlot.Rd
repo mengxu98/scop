@@ -5,7 +5,7 @@
 \title{Plot SCENIC or SCENIC+ regulon activity}
 \usage{
 SCENICPlot(
-  srt,
+  object,
   group.by,
   tool_name = "SCENIC",
   assay = "scenic",
@@ -80,11 +80,12 @@ SCENICPlot(
   label_size = 3,
   label_max_overlaps = Inf,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object with SCENIC or SCENIC+ results.}
+\item{object}{A Seurat object with SCENIC or SCENIC+ results.}
 
 \item{group.by}{Metadata column for cell groups.}
 
@@ -220,6 +221,9 @@ direct score comparison, or \code{"free"} for the legacy per-panel scale.}
 \item{verbose}{Print messages.}
 
 \item{...}{Extra heatmap arguments such as \code{width} and \code{height}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 Plot, or a list with \code{rss_matrix}, \code{rank_table}, \code{top_table}, \code{plots}, and \code{plot} when \code{return_data = TRUE}.

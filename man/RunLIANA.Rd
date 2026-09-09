@@ -5,7 +5,7 @@
 \title{Run LIANA cell-cell communication analysis}
 \usage{
 RunLIANA(
-  srt,
+  object,
   group.by,
   method = c("natmi", "connectome", "logfc", "sca", "cellphonedb"),
   resource = NULL,
@@ -17,11 +17,12 @@ RunLIANA(
   species = c("human", "mouse"),
   consensus = c("auto", "rank", "aggregate", "none"),
   consensus_args = list(),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column defining cell groups. Passed to
 \code{liana::liana_wrap()} as \code{idents_col}.}
@@ -56,6 +57,9 @@ specificity consensus ranks, \code{"aggregate"} uses \code{liana_aggregate()}, a
 aggregation function.}
 
 \item{...}{Additional arguments passed to \code{liana::liana_wrap()}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with LIANA results stored in

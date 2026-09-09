@@ -245,7 +245,7 @@ test_that("RunCellRank stores named fate and driver payloads", {
     adata_to_srt = function(...) adata_out
   )
   out <- RunCellRank(
-    srt = srt,
+    object = srt,
     group.by = "cluster",
     linear_reduction = "pca",
     nonlinear_reduction = "pca",

@@ -5,7 +5,7 @@
 \title{Run SecAct secreted protein activity inference}
 \usage{
 RunSecAct(
-  srt = NULL,
+  object = NULL,
   inputProfile = NULL,
   inputProfile_control = NULL,
   mode = c("auto", "matrix", "scRNAseq", "ST"),
@@ -35,11 +35,12 @@ RunSecAct(
   store_results = TRUE,
   tool_name = "SecAct",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{Optional Seurat object. When \code{mode = "scRNAseq"}, this is passed
+\item{object}{Optional Seurat object. When \code{mode = "scRNAseq"}, this is passed
 to \code{SecAct.activity.inference.scRNAseq}. When \code{mode = "matrix"}, expression
 is extracted from \code{srt} if \code{inputProfile} is not supplied.}
 
@@ -96,6 +97,9 @@ supplied.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object, SpaCET object, or SecAct result list depending on

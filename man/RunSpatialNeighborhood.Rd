@@ -5,7 +5,7 @@
 \title{Run spatial neighborhood statistics}
 \usage{
 RunSpatialNeighborhood(
-  srt,
+  object,
   group.by,
   method = NULL,
   assay = NULL,
@@ -25,11 +25,12 @@ RunSpatialNeighborhood(
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{group.by}{Metadata column containing spatial cell or spot labels.}
 
@@ -84,6 +85,9 @@ explicit compatibility option.}
 implementation. This does not alter the external \code{"spicyR"} method.}
 
 \item{...}{Additional arguments passed to the selected backend.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with results stored in \code{srt@tools[[tool_name]]}.

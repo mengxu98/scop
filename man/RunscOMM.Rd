@@ -5,7 +5,7 @@
 \title{Run scOMM label prediction}
 \usage{
 RunscOMM(
-  srt,
+  object,
   reference,
   reference_assay = NULL,
   query_assay = NULL,
@@ -22,11 +22,12 @@ RunscOMM(
   scomm_batch_size = 32,
   scomm_threshold = 0.5,
   scomm_seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{reference}{Reference \code{Seurat} object used for supervision.}
 
@@ -61,6 +62,9 @@ otherwise.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with \code{scOMM} predictions stored in metadata and \code{tools}.
@@ -79,7 +83,7 @@ query_cells <- colnames(pbmcmultiome_sub)[251:500]
 reference <- subset(pbmcmultiome_sub, cells = ref_cells)
 query <- subset(pbmcmultiome_sub, cells = query_cells)
 query <- RunscOMM(
-  srt = query,
+  object = query,
   reference = reference,
   reference_assay = "RNA",
   query_assay = "RNA",

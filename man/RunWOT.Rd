@@ -5,7 +5,7 @@
 \title{Run WOT analysis}
 \usage{
 RunWOT(
-  srt = NULL,
+  object = NULL,
   assay_x = "RNA",
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
@@ -28,11 +28,12 @@ RunWOT(
   plot_prefix = "wot",
   dirpath = "./",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A Seurat object.
+\item{object}{A Seurat object.
 If provided, \code{adata} will be ignored.}
 
 \item{assay_x}{Assay to convert as the main data matrix in the anndata object.}
@@ -80,6 +81,9 @@ If not provided, only trajectory and fate analysis for the specified \code{time_
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Run WOT analysis

@@ -5,7 +5,7 @@
 \title{Ambient RNA decontamination with decontX}
 \usage{
 RunDecontX(
-  srt,
+  object,
   assay = "RNA",
   group.by = NULL,
   batch = NULL,
@@ -18,11 +18,12 @@ RunDecontX(
   data_type = NULL,
   seed = 11,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay to decontaminate.}
 
@@ -48,6 +49,9 @@ rescanning the count matrix.}
 \item{...}{Passed to \code{\link[decontX:decontX]{decontX::decontX()}}.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with decontX contamination in \code{meta.data} and

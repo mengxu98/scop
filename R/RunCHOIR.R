@@ -11,7 +11,9 @@
 #' summary to `srt@tools[[tool_name]]`.
 #'
 #' @md
-#' @param srt A `Seurat` object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object.
 #' @param assay Assay used by CHOIR. If `NULL`, the default assay is used.
 #' @param layer Assay layer used by CHOIR. If `NULL`, `"data"` is used for
 #'   `RNA` and `sketch` assays, and `"scale.data"` is used for `SCT` and
@@ -79,7 +81,7 @@
 #' CellDimPlot(pancreas_sub, group.by = "CHOIR_cluster")
 #' }
 RunCHOIR <- function(
-  srt,
+  object,
   assay = NULL,
   layer = NULL,
   key = "CHOIR",
@@ -104,8 +106,10 @@ RunCHOIR <- function(
   store_tool = TRUE,
   verbose = TRUE,
   overwrite = FALSE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

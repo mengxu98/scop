@@ -5,7 +5,7 @@
 \title{Feature values on a 2D reduction}
 \usage{
 FeatureDimPlot(
-  srt,
+  object,
   features,
   reduction = NULL,
   dims = c(1, 2),
@@ -88,11 +88,12 @@ FeatureDimPlot(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{features}{Features to plot: a character vector or a named list of
 assay gene names or numeric metadata columns.}
@@ -210,6 +211,9 @@ there are more than 100,000 cells.}
 \item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Color cells on a dimensionality reduction by feature values (assay genes or

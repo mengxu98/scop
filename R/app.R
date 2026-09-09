@@ -16,15 +16,17 @@
 #'
 #' @export
 CreateDataFile <- function(
-  srt,
+  object,
   data_file,
   name = NULL,
   assays = "RNA",
   layers = "data",
   compression_level = 6,
   overwrite = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (missing(data_file) || is.null(data_file)) {
     data_file <- "data.hdf5"
   }
@@ -185,7 +187,7 @@ CreateDataFile <- function(
 #'
 #' @export
 CreateMetaFile <- function(
-  srt,
+  object,
   meta_file,
   name = NULL,
   write_tools = FALSE,
@@ -193,8 +195,10 @@ CreateMetaFile <- function(
   ignore_nlevel = 100,
   compression_level = 6,
   overwrite = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (missing(meta_file) || is.null(meta_file)) {
     meta_file <- "meta.hdf5"
   }
@@ -538,7 +542,7 @@ PrepareSCExplorer <- function(
       srt[["orig.ident"]] <- "SeuratObject"
     }
     CreateDataFile(
-      srt = srt,
+      object = srt,
       data_file = DataFile_full,
       name = nm,
       assays = assays,
@@ -547,7 +551,7 @@ PrepareSCExplorer <- function(
       overwrite = overwrite
     )
     CreateMetaFile(
-      srt = srt,
+      object = srt,
       meta_file = MetaFile_full,
       name = nm,
       ignore_nlevel = ignore_nlevel,
@@ -2273,7 +2277,7 @@ server <- function(input, output, session) {
         theme2 <- get(theme2, envir = asNamespace(themes[theme2]))
 
         p2_dim <- scop::FeatureDimPlot(
-          srt = srt_tmp, features = features2, split.by = split2, reduction = reduction2, layer = "data", raster = raster2, pt.size = pt_size2,
+          object = srt_tmp, features = features2, split.by = split2, reduction = reduction2, layer = "data", raster = raster2, pt.size = pt_size2,
           calculate_coexp = coExp2, keep_scale = scale2, palette = palette2, theme_use = theme2,
           ncol = ncol2, byrow = byrow2, force = TRUE
         )
@@ -2283,7 +2287,7 @@ server <- function(input, output, session) {
         plot3d <- max(sapply(names(srt_tmp@reductions), function(r) dim(srt_tmp[[r]])[2])) >= 3
         if (isTRUE(plot3d)) {
           p2_3d <- scop::FeatureDimPlot3D(
-            srt = srt_tmp, features = features2, reduction = reduction2, pt.size = pt_size2 * 2,
+            object = srt_tmp, features = features2, reduction = reduction2, pt.size = pt_size2 * 2,
             calculate_coexp = coExp2, force = TRUE
           )
         } else {
@@ -2422,7 +2426,7 @@ server <- function(input, output, session) {
         }
 
         p3 <- scop::CellStatPlot(
-          srt = srt_tmp, stat.by = stat3, group.by = group3, split.by = split3, cells = cells,
+          object = srt_tmp, stat.by = stat3, group.by = group3, split.by = split3, cells = cells,
           plot_type = plottype3, stat_type = stattype3, position = position3,
           label = label3, label.size = labelsize3, flip = flip3, palette = palette3, theme_use = theme3,
           aspect.ratio = as.numeric(aspect.ratio), # must be class of numeric instead of integer
@@ -2572,7 +2576,7 @@ server <- function(input, output, session) {
         }
 
         p4 <- scop::FeatureStatPlot(
-          srt = srt_tmp, stat.by = features4, group.by = group4, split.by = split4, cells = cells, layer = "data", plot_type = plottype4,
+          object = srt_tmp, stat.by = features4, group.by = group4, split.by = split4, cells = cells, layer = "data", plot_type = plottype4,
           calculate_coexp = coExp4, stack = stack4, flip = flip4,
           add_box = addbox4, add_point = addpoint4, add_trend = addtrend4,
           plot.by = plotby4, fill.by = fillby4, palette = palette4, theme_use = theme4, same.y.lims = sameylims4,

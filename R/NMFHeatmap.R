@@ -3,7 +3,9 @@
 #' @md
 #' @inheritParams GroupHeatmap
 #' @inheritParams scop-params
-#' @param srt A Seurat object containing an NMF dimensional reduction.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A Seurat object containing an NMF dimensional reduction.
 #' @param plot_type Plot type. `"cells"` plots cell/spot similarity from NMF
 #' embeddings. `"features"` plots feature similarity from NMF loadings.
 #' @param reduction Name of the NMF reduction.
@@ -71,7 +73,7 @@
 #' )
 #' ht_features$plot
 NMFHeatmap <- function(
-  srt,
+  object,
   plot_type = c("cells", "features"),
   reduction = "nmf",
   dims = NULL,
@@ -169,8 +171,10 @@ NMFHeatmap <- function(
   seed = 11,
   legend.position = "right",
   ht_params = list(),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   heatmap_border <- heatmap_border %||% border
   cell_annotation_border <- cell_annotation_border %||% border

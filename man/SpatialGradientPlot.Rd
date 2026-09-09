@@ -5,7 +5,7 @@
 \title{Plot spatial gradient screening results}
 \usage{
 SpatialGradientPlot(
-  srt,
+  object,
   result_name = NULL,
   plot_type = c("summary", "line", "model"),
   features = NULL,
@@ -19,11 +19,12 @@ SpatialGradientPlot(
   line_alpha = 0.35,
   line_fit = c("stored", "lm"),
   nrow = NULL,
-  ncol = NULL
+  ncol = NULL,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object containing stored gradient results.}
+\item{object}{A \code{Seurat} object containing stored gradient results.}
 
 \item{result_name}{Stored spatial gradient result name. If \code{NULL}, the latest
 stored result is used.}
@@ -53,6 +54,9 @@ fresh linear fit from \code{screening$value}, which is useful for showing a simp
 monotonic trend even when the backend stores a smoothed curve.}
 
 \item{nrow, ncol}{Layout controls for multi-feature plots.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{ggplot} or \code{patchwork} object.

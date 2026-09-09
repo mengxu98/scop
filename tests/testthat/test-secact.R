@@ -60,7 +60,7 @@ test_that("RunSecAct stores matrix activity as a Seurat assay", {
 
   with_mock_secact(funs, {
     out <- RunSecAct(
-      srt = srt,
+      object = srt,
       inputProfile = expr,
       mode = "matrix",
       is.differential = TRUE,
@@ -89,7 +89,7 @@ test_that("RunSecAct does not store non-matrix activity as an assay", {
 
   with_mock_secact(funs, {
     out <- suppressWarnings(RunSecAct(
-      srt = srt,
+      object = srt,
       inputProfile = expr,
       mode = "matrix",
       verbose = FALSE
@@ -127,7 +127,7 @@ test_that("RunSecAct scRNAseq dispatches to SecAct and stores single-cell assay"
 
   with_mock_secact(funs, {
     out <- RunSecAct(
-      srt = srt,
+      object = srt,
       mode = "scRNAseq",
       is.singleCellLevel = TRUE,
       verbose = FALSE
@@ -159,7 +159,7 @@ test_that("RunSecAct scRNAseq return_seurat = FALSE returns activity only", {
 
   with_mock_secact(funs, {
     out <- RunSecAct(
-      srt = srt,
+      object = srt,
       mode = "scRNAseq",
       is.singleCellLevel = TRUE,
       return_seurat = FALSE,
@@ -179,7 +179,7 @@ test_that("RunSecAct rejects non-RNA Seurat assays explicitly", {
   with_mock_secact(list(), {
     expect_error(
       RunSecAct(
-        srt = srt,
+        object = srt,
         mode = "scRNAseq",
         is.singleCellLevel = TRUE,
         verbose = FALSE
@@ -208,7 +208,7 @@ test_that("RunSecActCCC records scRNAseq CCC runs", {
 
   with_mock_secact(funs, {
     out <- RunSecActCCC(
-      srt = srt,
+      object = srt,
       mode = "scRNAseq",
       cellType_meta = "celltype",
       condition_meta = "condition",
@@ -248,7 +248,7 @@ test_that("RunSecActCCC allows condition_meta NULL and ignores case labels", {
   )
   with_mock_secact(funs, {
     out <- RunSecActCCC(
-      srt = srt,
+      object = srt,
       mode = "scRNAseq",
       cellType_meta = "celltype",
       conditionCase = "case",

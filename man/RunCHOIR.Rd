@@ -5,7 +5,7 @@
 \title{Run CHOIR clustering}
 \usage{
 RunCHOIR(
-  srt,
+  object,
   assay = NULL,
   layer = NULL,
   key = "CHOIR",
@@ -30,11 +30,12 @@ RunCHOIR(
   store_tool = TRUE,
   verbose = TRUE,
   overwrite = FALSE,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay used by CHOIR. If \code{NULL}, the default assay is used.}
 
@@ -102,6 +103,9 @@ macOS and Linux; Windows execution is rejected before installation.}
 \item{...}{Additional named arguments passed to the installed CHOIR entry
 point. Unsupported arguments produce an error rather than being silently
 ignored.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object containing CHOIR clusters in \code{cluster_colname},

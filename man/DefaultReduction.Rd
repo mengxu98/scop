@@ -5,15 +5,16 @@
 \title{Find the default reduction name in a Seurat object}
 \usage{
 DefaultReduction(
-  srt,
+  object,
   pattern = NULL,
   min_dim = 2,
   max_distance = 0.1,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{pattern}{Character string containing a regular expression to search for.}
 
@@ -23,6 +24,9 @@ DefaultReduction(
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 Default reduction name.

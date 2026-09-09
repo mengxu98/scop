@@ -5,18 +5,19 @@
 \title{Create HDF5 data file from Seurat object}
 \usage{
 CreateDataFile(
-  srt,
+  object,
   data_file,
   name = NULL,
   assays = "RNA",
   layers = "data",
   compression_level = 6,
   overwrite = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{data_file}{Path to the output data file.
 If not provided, the file will be named \code{"data.hdf5"} in the current directory.}
@@ -34,6 +35,9 @@ If not provided, the name will default to the Seurat object's project name.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Create HDF5 data file from Seurat object

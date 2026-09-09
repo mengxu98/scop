@@ -6,7 +6,9 @@
 #' @inheritParams thisplot::StatPlot
 #' @inheritParams thisutils::log_message
 #' @inheritParams scop-params
-#' @param srt A `Seurat` object after [RunScissor].
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object after [RunScissor].
 #' @param plot_type Plot type. `"umap"` shows embedding panels, `"heatmap"`
 #' shows a `FeatureHeatmap`, and statistical views such as `"bar"` and
 #' `"upset"` are drawn with [thisplot::StatPlot].
@@ -114,17 +116,8 @@
 #'   label = TRUE
 #' )
 ScissorPlot <- function(
-  srt,
-  plot_type = c(
-    "umap",
-    "heatmap",
-    "bar",
-    "upset",
-    "rose",
-    "ring",
-    "pie",
-    "dot"
-  ),
+  object,
+  plot_type = c("umap", "heatmap", "bar", "upset", "rose", "ring", "pie", "dot"),
   reduction = NULL,
   prefix = "Scissor",
   group.by = NULL,
@@ -164,8 +157,10 @@ ScissorPlot <- function(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   context <- scissor_plot_context(srt = srt, prefix = prefix)
   srt <- context$srt
   coef_col <- context$coef_col
@@ -650,7 +645,7 @@ scissor_heatmap_plot <- function(
   }
 
   FeatureHeatmap(
-    srt = srt,
+    object = srt,
     features = features,
     cells = cells,
     group.by = group.by,

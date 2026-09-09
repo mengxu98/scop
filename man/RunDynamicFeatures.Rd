@@ -5,7 +5,7 @@
 \title{Calculates dynamic features for lineages}
 \usage{
 RunDynamicFeatures(
-  srt,
+  object,
   lineages,
   features = NULL,
   suffix = lineages,
@@ -22,11 +22,12 @@ RunDynamicFeatures(
   padjust_method = "fdr",
   cores = 1,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{lineages}{Lineage names for which dynamic features should be calculated.}
 
@@ -77,6 +78,9 @@ Default is \code{TRUE}.}
 deterministic independent L'Ecuyer-CMRG random-number stream, making results
 reproducible across worker counts and scheduling order. The caller's random
 number state is restored when the call finishes.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 Returns the modified Seurat object with the calculated dynamic features stored in the tools slot.

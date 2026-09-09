@@ -68,7 +68,7 @@
 #'
 #' scTenifoldKnkPlot(pancreas_sub, plot_type = "effect")
 RunscTenifoldKnk <- function(
-  srt,
+  object,
   gKO,
   assay = NULL,
   layer = "counts",
@@ -94,8 +94,10 @@ RunscTenifoldKnk <- function(
   store_networks = TRUE,
   store_manifold = TRUE,
   tool_name = "scTenifoldKnk",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

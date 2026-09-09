@@ -5098,7 +5098,7 @@ ccc_dim_network_lineage_layer <- function(
   whiskers_alpha = 0.5
 ) {
   lineages_layers <- LineagePlot(
-    srt = srt,
+    object = srt,
     lineages = lineages,
     reduction = reduction,
     dims = dims,

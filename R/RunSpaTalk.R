@@ -343,7 +343,9 @@ spatalk_pathway_table <- function(object, lr_table) {
 #' with a single-cell reference. Results are stored as a compact method bundle
 #' and added to SCOP's unified CCC table.
 #'
-#' @param srt A `Seurat` spatial object.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` spatial object.
 #' @param group.by Metadata column containing cell labels for single-cell mode.
 #' @param mode Analysis mode. `"auto"` selects spot mode when `reference` is
 #'   supplied and single-cell mode otherwise.
@@ -382,7 +384,7 @@ spatalk_pathway_table <- function(object, lr_table) {
 #' )
 #' }
 RunSpaTalk <- function(
-  srt,
+  object,
   group.by,
   mode = c("auto", "single_cell", "spot"),
   reference = NULL,
@@ -401,8 +403,10 @@ RunSpaTalk <- function(
   overwrite = FALSE,
   backend = c("cpp", "r"),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   mode <- match.arg(mode)
   species <- match.arg(species)
   deconvolution <- match.arg(deconvolution)
@@ -586,11 +590,11 @@ SpaTalkPlot <- function(
   spatial_require_coordinate_contract(stored$result, "RunSpaTalk()")
   if (identical(plot_type, "network")) {
     plot_object <- spatalk_plot_object(object, stored)
-    return(do.call(CCCNetworkPlot, c(list(srt = plot_object, method = "SpaTalk", plot_type = "circle"), list(...))))
+    return(do.call(CCCNetworkPlot, c(list(object = plot_object, method = "SpaTalk", plot_type = "circle"), list(...))))
   }
   if (identical(plot_type, "bubble")) {
     plot_object <- spatalk_plot_object(object, stored)
-    return(do.call(CCCHeatmap, c(list(srt = plot_object, method = "SpaTalk", plot_type = "bubble"), list(...))))
+    return(do.call(CCCHeatmap, c(list(object = plot_object, method = "SpaTalk", plot_type = "bubble"), list(...))))
   }
   if (identical(plot_type, "pathway")) {
     plot_object <- spatalk_plot_object(object, stored)
@@ -598,7 +602,7 @@ SpaTalkPlot <- function(
     if (all(is.na(pathway)) || all(!nzchar(pathway[!is.na(pathway)]))) {
       log_message("The stored SpaTalk result has no pathway labels", message_type = "error")
     }
-    return(do.call(CCCHeatmap, c(list(srt = plot_object, method = "SpaTalk", plot_type = "pathway_bubble"), list(...))))
+    return(do.call(CCCHeatmap, c(list(object = plot_object, method = "SpaTalk", plot_type = "pathway_bubble"), list(...))))
   }
   tf <- stored$result$tf_table
   if (!is.data.frame(tf) || nrow(tf) == 0L) {

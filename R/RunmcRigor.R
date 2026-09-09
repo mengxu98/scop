@@ -3,7 +3,9 @@
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams thisutils::log_message
-#' @param srt A `Seurat` object containing the original single-cell data.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object A `Seurat` object containing the original single-cell data.
 #' @param cell_membership A data frame or matrix with cells in rows and one or
 #' more metacell partitions in columns. Row names should be cell names. If row
 #' names are missing and the row count equals `ncol(srt)`, cells are matched in
@@ -86,7 +88,7 @@
 #'   group.by = "mcRigor_status"
 #' )
 RunmcRigor <- function(
-  srt,
+  object,
   cell_membership = NULL,
   metacell.by = NULL,
   mode = c("detect", "optimize"),
@@ -115,8 +117,10 @@ RunmcRigor <- function(
   step_save = FALSE,
   prefix = "mcRigor",
   tool_name = "mcRigor",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

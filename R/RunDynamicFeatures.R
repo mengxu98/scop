@@ -107,7 +107,7 @@
 #'   compare_features = FALSE
 #' )
 RunDynamicFeatures <- function(
-  srt,
+  object,
   lineages,
   features = NULL,
   suffix = lineages,
@@ -124,8 +124,10 @@ RunDynamicFeatures <- function(
   padjust_method = "fdr",
   cores = 1,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
   assay <- assay %||% DefaultAssay(srt)
   fit_method <- match.arg(fit_method)

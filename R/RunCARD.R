@@ -37,7 +37,7 @@
 #'   c("ductal", "alpha", "beta")]
 #' features_use <- head(intersect(rownames(spatial), rownames(reference)), 300)
 #' spatial <- RunCARD(
-#'   srt = spatial,
+#'   object = spatial,
 #'   reference = reference,
 #'   reference_label = "celltype",
 #'   assay = "Spatial",
@@ -57,7 +57,7 @@
 #' )
 #' }
 RunCARD <- function(
-  srt,
+  object,
   reference,
   reference_label,
   assay = NULL,
@@ -79,8 +79,10 @@ RunCARD <- function(
   card_deconvolution_params = list(),
   verbose = TRUE,
   ...,
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

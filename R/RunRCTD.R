@@ -6,7 +6,9 @@
 #'
 #' @md
 #' @inheritParams thisutils::log_message
-#' @param srt Spatial `Seurat` object used as the RCTD query.
+#' @param srt Deprecated alias for `object`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param object Spatial `Seurat` object used as the RCTD query.
 #' @param reference Reference `Seurat` object containing annotated single cells.
 #' @param reference_label Metadata column in `reference` with cell type labels.
 #' @param assay Assay used in `srt`. If `NULL`, the default assay is used.
@@ -63,7 +65,7 @@
 #'   rownames(spatial)
 #' ), 300)
 #' spatial <- RunRCTD(
-#'   srt = spatial,
+#'   object = spatial,
 #'   reference = reference,
 #'   reference_label = "celltype",
 #'   assay = "Spatial",
@@ -87,7 +89,7 @@
 #' )
 #' }
 RunRCTD <- function(
-  srt,
+  object,
   reference,
   reference_label = "celltype",
   assay = NULL,
@@ -108,8 +110,10 @@ RunRCTD <- function(
   verbose = TRUE,
   ...,
   coordinate_space = c("raw", "legacy_display"),
-  tool_name = "RCTD"
+  tool_name = "RCTD",
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

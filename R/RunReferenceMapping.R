@@ -47,7 +47,7 @@
 #'   verbose = FALSE
 #' )
 #' query <- RunReferenceMapping(
-#'   srt = query,
+#'   object = query,
 #'   reference = reference,
 #'   assay = "peaks",
 #'   reference_assay = "RNA",
@@ -60,7 +60,7 @@
 #' )
 #' head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = FALSE])
 RunReferenceMapping <- function(
-  srt,
+  object,
   reference,
   assay = NULL,
   prefix = "ATAC",
@@ -94,8 +94,10 @@ RunReferenceMapping <- function(
   scomm_batch_size = 32,
   scomm_threshold = 0.5,
   scomm_seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 ) {
+  srt <- resolve_deprecated_srt(object, srt, missing(object))
   label_method <- match.arg(label_method)
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
@@ -282,7 +284,7 @@ RunReferenceMapping <- function(
       )
     } else {
       srt <- RunscOMM(
-        srt = srt,
+        object = srt,
         reference = reference,
         reference_assay = reference_assay,
         query_assay = query_assay,

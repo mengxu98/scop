@@ -5,7 +5,7 @@
 \title{Lineage Plot}
 \usage{
 LineagePlot(
-  srt,
+  object,
   lineages,
   reduction = NULL,
   dims = c(1, 2),
@@ -32,11 +32,12 @@ LineagePlot(
   theme_args = list(),
   return_layer = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{lineages}{A character vector that specifies the lineages to be included. Typically, use the pseudotime of cells.}
 
@@ -85,6 +86,9 @@ Defaults is \code{FALSE}.}
 \item{seed}{Random seed.}
 
 \item{verbose}{Whether to print messages.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \description{
 Generate a lineage plot based on the pseudotime.

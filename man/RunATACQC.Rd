@@ -5,7 +5,7 @@
 \title{Run scATAC quality control metrics}
 \usage{
 RunATACQC(
-  srt,
+  object,
   assay = NULL,
   tss.positions = NULL,
   blacklist = NULL,
@@ -14,11 +14,12 @@ RunATACQC(
   min_TSS_enrichment = NULL,
   max_nucleosome_signal = NULL,
   max_blacklist_ratio = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -32,6 +33,9 @@ RunATACQC(
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with QC metadata added.

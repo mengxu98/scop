@@ -5,7 +5,7 @@
 \title{CCC network and flow plots}
 \usage{
 CCCNetworkPlot(
-  srt,
+  object,
   method = NULL,
   condition = NULL,
   dataset = 1,
@@ -74,11 +74,12 @@ CCCNetworkPlot(
   spot_alpha = 0.35,
   composition_display = c("pie", "dominant", "none"),
   composition_radius = NULL,
-  ...
+  ...,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{method}{Communication result type to use.}
 
@@ -232,6 +233,9 @@ units. \code{NULL} derives a density-aware default.}
 \item{...}{Additional plot-specific options. For chord plots, \code{reduce},
 \code{max.groups}, \code{small.gap}, \code{big.gap}, and \code{lab.cex} can be used to adjust
 the CellChat-like chord layout.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A ggplot, patchwork, or recorded plot object.

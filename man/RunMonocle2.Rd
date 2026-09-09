@@ -5,7 +5,7 @@
 \title{Run Monocle2 analysis}
 \usage{
 RunMonocle2(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   group.by = NULL,
@@ -28,11 +28,12 @@ RunMonocle2(
   xlab = NULL,
   ylab = NULL,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 }
 \arguments{
-\item{srt}{A \code{Seurat} object.}
+\item{object}{A \code{Seurat} object.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
@@ -99,6 +100,9 @@ trajectory topology and is intended for advanced exploratory use.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
+
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A Seurat object with the Monocle2 analysis results added to the @tools slot.
