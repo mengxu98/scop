@@ -369,6 +369,8 @@ jobs:
           pkgdown::build_reference()
           pkgdown::build_news(preview = FALSE)
           pkgdown::build_search()
+          # Disable Jekyll so GitHub Pages serves the pkgdown output as-is.
+          file.create("docs/.nojekyll")
         shell: Rscript {0}
 
       - name: Audit configured pkgdown pages
