@@ -247,15 +247,28 @@ test_that("srt_to_giotto and giotto_to_srt round-trip with a real GiottoClass", 
 })
 
 test_that("documented giotto examples do not call check_r", {
+  pkg_path <- getNamespaceInfo(asNamespace("scop"), "path")
+  rd_db <- if (dir.exists(file.path(pkg_path, "man"))) {
+    tools::Rd_db(dir = pkg_path)
+  } else {
+    tools::Rd_db("scop")
+  }
   rd_examples <- vapply(
     c("srt_to_giotto.Rd", "giotto_to_srt.Rd"),
-    function(file) {
-      lines <- readLines(testthat::test_path("../../man", file))
-      start <- grep("^\\\\examples\\{", lines)[1]
-      paste(lines[start:length(lines)], collapse = "\n")
+    function(topic) {
+      rd <- rd_db[[topic]]
+      if (is.null(rd)) {
+        return("")
+      }
+      tags <- vapply(rd, function(block) {
+        tag <- attr(block, "Rd_tag")
+        if (is.null(tag)) "" else as.character(tag)
+      }, character(1))
+      paste(unlist(rd[tags == "\\examples"]), collapse = "")
     },
     character(1)
   )
+  expect_true(all(nzchar(rd_examples)))
   expect_false(any(grepl("check_r", rd_examples, fixed = TRUE)))
   expect_false(any(grepl("requireNamespace", rd_examples, fixed = TRUE)))
   expect_true(all(grepl("srt_to_giotto", rd_examples, fixed = TRUE)))
