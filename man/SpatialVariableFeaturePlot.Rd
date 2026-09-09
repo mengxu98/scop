@@ -77,8 +77,8 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
-\item{srt}{Compatibility alias for \code{object}. Supply exactly one of \code{object}
-or \code{srt}.}
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat

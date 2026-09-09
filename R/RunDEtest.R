@@ -2057,7 +2057,8 @@ RunDEtest_pseudobulk <- function(
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams FeatureDimPlot
 #' @param object A `Seurat` object or a `SummarizedExperiment` object.
-#' @param srt Compatibility alias for `object`.
+#' @param srt Deprecated alias for `object`; it will be removed in scop
+#' 1.0.0.
 #' @param group.by A grouping variable in the dataset to define the groups or conditions for the differential test.
 #' If not provided, the function uses the "active.ident" variable in the Seurat object.
 #' @param group1 A vector of cell IDs or a character vector specifying the cells that belong to the first group.
@@ -2181,7 +2182,7 @@ RunDEtest_pseudobulk <- function(
 #' )
 #'
 #' panc8_sub <- RunDEtest(
-#'   srt = panc8_sub,
+#'   object = panc8_sub,
 #'   group.by = "celltype",
 #'   grouping.var = "tech",
 #'   markers_type = "conserved",
@@ -2203,7 +2204,7 @@ RunDEtest_pseudobulk <- function(
 #' ht4$plot
 #'
 #' panc8_sub <- RunDEtest(
-#'   srt = panc8_sub,
+#'   object = panc8_sub,
 #'   group.by = "tech",
 #'   grouping.var = "celltype",
 #'   markers_type = "conserved",
@@ -2214,7 +2215,7 @@ RunDEtest_pseudobulk <- function(
 #'   p_val_adj < 0.05 & avg_log2FC > 1
 #' )
 #' ht4 <- GroupHeatmap(
-#'   srt = panc8_sub,
+#'   object = panc8_sub,
 #'   layer = "data",
 #'   features = ConservedMarkers2$gene,
 #'   feature_split = ConservedMarkers2$group1,
@@ -2224,7 +2225,7 @@ RunDEtest_pseudobulk <- function(
 #' ht4$plot
 #'
 #' panc8_sub <- RunDEtest(
-#'   srt = panc8_sub,
+#'   object = panc8_sub,
 #'   group.by = "celltype",
 #'   grouping.var = "tech",
 #'   markers_type = "disturbed",
@@ -2235,7 +2236,7 @@ RunDEtest_pseudobulk <- function(
 #'   p_val_adj < 0.05 & avg_log2FC > 1 & var1 == "smartseq2"
 #' )
 #' ht5 <- GroupHeatmap(
-#'   srt = panc8_sub,
+#'   object = panc8_sub,
 #'   layer = "data",
 #'   features = DisturbedMarkers$gene,
 #'   feature_split = DisturbedMarkers$group1,
@@ -2249,7 +2250,7 @@ RunDEtest_pseudobulk <- function(
 #'   DisturbedMarkers$gene %in% gene_specific,
 #' ]
 #' ht6 <- GroupHeatmap(
-#'   srt = panc8_sub,
+#'   object = panc8_sub,
 #'   layer = "data",
 #'   features = DisturbedMarkers_specific$gene,
 #'   feature_split = DisturbedMarkers_specific$group1,
@@ -2259,7 +2260,7 @@ RunDEtest_pseudobulk <- function(
 #' ht6$plot
 #'
 #' ht7 <- GroupHeatmap(
-#'   srt = panc8_sub,
+#'   object = panc8_sub,
 #'   layer = "data",
 #'   aggregate_fun = function(x) mean(expm1(x)) + 1,
 #'   features = DisturbedMarkers_specific$gene,
@@ -2348,17 +2349,13 @@ RunDEtest <- function(
   ...,
   srt = NULL
 ) {
-  if (is.null(object)) {
-    object <- srt
-    if (methods::is(object, "SummarizedExperiment")) {
-      return(RunDEtest.SummarizedExperiment(object, ...))
-    }
-    if (methods::is(object, "Seurat")) {
-      return(RunDEtest.Seurat(object, ...))
-    }
-  }
+  object_missing <- is.null(object)
+  object <- resolve_deprecated_srt(object, srt, object_missing)
   if (methods::is(object, "SummarizedExperiment")) {
     return(RunDEtest.SummarizedExperiment(object, ...))
+  }
+  if (object_missing && methods::is(object, "Seurat")) {
+    return(RunDEtest.Seurat(object, ...))
   }
   UseMethod(generic = "RunDEtest", object = object)
 }
