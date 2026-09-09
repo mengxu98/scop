@@ -18,15 +18,21 @@
 #'
 #' @examples
 #' \dontrun{
-#' thisutils::check_r("drieslab/Giotto", verbose = FALSE)
-#' data(visium_human_pancreas_sub)
-#' spatial <- Seurat::NormalizeData(
-#'   visium_human_pancreas_sub,
-#'   assay = "Spatial",
+#' giotto_class <- thisutils::check_r(
+#'   "GiottoClass",
+#'   install = FALSE,
 #'   verbose = FALSE
 #' )
-#' giotto <- srt_to_giotto(spatial, image = "slice1")
-#' print(giotto)
+#' if (isTRUE(all(unlist(giotto_class, use.names = FALSE)))) {
+#'   data(visium_human_pancreas_sub)
+#'   spatial <- Seurat::NormalizeData(
+#'     visium_human_pancreas_sub,
+#'     assay = "Spatial",
+#'     verbose = FALSE
+#'   )
+#'   giotto <- srt_to_giotto(spatial, image = "slice1")
+#'   print(giotto)
+#' }
 #' }
 #'
 #' @export
@@ -98,16 +104,22 @@ seurat_major_version <- function() {
 #'
 #' @examples
 #' \dontrun{
-#' thisutils::check_r("drieslab/Giotto", verbose = FALSE)
-#' data(visium_human_pancreas_sub)
-#' spatial <- Seurat::NormalizeData(
-#'   visium_human_pancreas_sub,
-#'   assay = "Spatial",
+#' giotto_class <- thisutils::check_r(
+#'   "GiottoClass",
+#'   install = FALSE,
 #'   verbose = FALSE
 #' )
-#' giotto <- srt_to_giotto(spatial, image = "slice1")
-#' roundtrip <- giotto_to_srt(giotto)
-#' print(roundtrip)
+#' if (isTRUE(all(unlist(giotto_class, use.names = FALSE)))) {
+#'   data(visium_human_pancreas_sub)
+#'   spatial <- Seurat::NormalizeData(
+#'     visium_human_pancreas_sub,
+#'     assay = "Spatial",
+#'     verbose = FALSE
+#'   )
+#'   giotto <- srt_to_giotto(spatial, image = "slice1")
+#'   roundtrip <- giotto_to_srt(giotto)
+#'   print(roundtrip)
+#' }
 #' }
 #'
 #' @export

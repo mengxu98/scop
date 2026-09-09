@@ -245,3 +245,18 @@ test_that("srt_to_giotto and giotto_to_srt round-trip with a real GiottoClass", 
   )
   expect_true(all(c("counts", "data") %in% layers))
 })
+
+test_that("documented giotto examples probe GiottoClass without reinstalling", {
+  rd_examples <- vapply(
+    c("srt_to_giotto.Rd", "giotto_to_srt.Rd"),
+    function(file) {
+      lines <- readLines(testthat::test_path("../../man", file))
+      start <- grep("^\\\\examples\\{", lines)[1]
+      paste(lines[start:length(lines)], collapse = "\n")
+    },
+    character(1)
+  )
+  expect_false(any(grepl("drieslab/Giotto", rd_examples, fixed = TRUE)))
+  expect_true(all(grepl("GiottoClass", rd_examples, fixed = TRUE)))
+  expect_true(all(grepl("install = FALSE", rd_examples, fixed = TRUE)))
+})
