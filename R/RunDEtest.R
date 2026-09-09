@@ -1905,8 +1905,7 @@ RunDEtest_pseudobulk <- function(
         return(list(markers = NULL, inventory = inventory))
       }
       meta_use <- meta_use[
-        as.character(meta_use[[sample_col]]) %in% keep_samples,
-        ,
+        as.character(meta_use[[sample_col]]) %in% keep_samples, ,
         drop = FALSE
       ]
       cells_use <- rownames(meta_use)

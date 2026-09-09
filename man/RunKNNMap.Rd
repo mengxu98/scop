@@ -101,7 +101,8 @@ data(panc8_sub)
 keep <- panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")
 panc8_sub <- panc8_sub[, keep]
 panc8_sub <- RunStandardWorkflow(
-  panc8_sub, verbose = FALSE, linear_reduction_dims = 10
+  panc8_sub,
+  verbose = FALSE, linear_reduction_dims = 10
 )
 srt_ref <- panc8_sub[, panc8_sub$tech != "fluidigmc1"]
 srt_query <- panc8_sub[, panc8_sub$tech == "fluidigmc1"]

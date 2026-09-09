@@ -50,11 +50,15 @@
 #' n_genes <- 60L
 #' grid <- expand.grid(x = 1:6, y = 1:6)
 #' domain <- factor(ifelse(grid$x <= 2, "left", ifelse(grid$x <= 4, "middle", "right")))
-#' counts <- matrix(rpois(n_genes * n_spots, 2), nrow = n_genes,
-#'   dimnames = list(paste0("Gene", seq_len(n_genes)), paste0("spot", seq_len(n_spots))))
+#' counts <- matrix(rpois(n_genes * n_spots, 2),
+#'   nrow = n_genes,
+#'   dimnames = list(paste0("Gene", seq_len(n_genes)), paste0("spot", seq_len(n_spots)))
+#' )
 #' signal <- split(seq_len(n_genes), rep(c("left", "middle", "right"), each = 20))
-#' for (label in names(signal)) counts[signal[[label]], domain == label] <-
-#'   counts[signal[[label]], domain == label] + rpois(sum(domain == label) * 20, 5)
+#' for (label in names(signal)) {
+#'   counts[signal[[label]], domain == label] <-
+#'     counts[signal[[label]], domain == label] + rpois(sum(domain == label) * 20, 5)
+#' }
 #' spatial <- SeuratObject::CreateSeuratObject(counts)
 #' spatial$x <- grid$x
 #' spatial$y <- grid$y

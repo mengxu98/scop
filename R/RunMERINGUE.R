@@ -39,7 +39,8 @@
 #' \dontrun{
 #' data(visium_human_pancreas_sub)
 #' visium_human_pancreas_sub <- Seurat::NormalizeData(
-#'   visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
+#'   visium_human_pancreas_sub,
+#'   assay = "Spatial", verbose = FALSE
 #' )
 #' spatial <- RunMERINGUE(
 #'   visium_human_pancreas_sub,

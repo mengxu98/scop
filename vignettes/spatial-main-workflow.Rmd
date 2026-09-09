@@ -254,7 +254,8 @@ remove their surrounding tissue from the calculation:
 
 ```{r spatial-neighborhood-profile}
 profile <- SpatialNeighborhoodProfile(
-  spatial, group.by = "coda_label", radii = c(100, 200, 400),
+  spatial,
+  group.by = "coda_label", radii = c(100, 200, 400),
   cells = head(colnames(spatial), 20), cumulative = TRUE, verbose = FALSE
 )
 head(profile)

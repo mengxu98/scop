@@ -186,7 +186,8 @@ RunSCVELO <- function(
     }
     if (isTRUE(show_plot) || isTRUE(save_plot)) {
       plot <- VelocityPlot(
-        srt, reduction = nonlinear_reduction, velocity = unlist(mode)[[1L]],
+        srt,
+        reduction = nonlinear_reduction, velocity = unlist(mode)[[1L]],
         plot_type = "stream", group.by = group.by,
         density = stream_density, smooth = stream_smooth %||% 0.5,
         streamline_width = c(0, arrow_size / 5)

@@ -1,16 +1,21 @@
 coordinate_v3_fixture <- function(images = TRUE) {
-  counts <- matrix(seq_len(24), nrow = 3,
-    dimnames = list(paste0("g", 1:3), paste0("c", 1:8)))
+  counts <- matrix(seq_len(24),
+    nrow = 3,
+    dimnames = list(paste0("g", 1:3), paste0("c", 1:8))
+  )
   srt <- suppressWarnings(SeuratObject::CreateSeuratObject(counts))
   srt$sample <- rep(c("S1", "S2"), each = 4)
   srt$type <- rep(c("A", "B"), 4)
   srt$x <- seq_len(8)
   srt$y <- seq_len(8) * 2
-  if (images) for (i in 1:2) {
-    cells <- colnames(srt)[srt$sample == paste0("S", i)]
-    srt[[paste0("slice", i)]] <- SeuratObject::CreateFOV(
-      data.frame(x = c(10, 20, 30, 40), y = c(30, 40, 60, 50), row.names = cells),
-      type = "centroids", assay = "RNA", key = paste0("v", i, "_"))
+  if (images) {
+    for (i in 1:2) {
+      cells <- colnames(srt)[srt$sample == paste0("S", i)]
+      srt[[paste0("slice", i)]] <- SeuratObject::CreateFOV(
+        data.frame(x = c(10, 20, 30, 40), y = c(30, 40, 60, 50), row.names = cells),
+        type = "centroids", assay = "RNA", key = paste0("v", i, "_")
+      )
+    }
   }
   srt
 }
@@ -19,9 +24,11 @@ test_that("VisiumV2 image provenance survives metadata edits and cell operations
   data(visium_human_pancreas_sub, package = "scop")
   srt <- visium_human_pancreas_sub
   expected <- SpatialCoordinates(srt, image = "slice1")$data
-  srt$x <- NULL; srt$y <- NULL
+  srt$x <- NULL
+  srt$y <- NULL
   expect_equal(SpatialCoordinates(srt, image = "slice1")$data, expected)
-  srt$x <- rev(expected$y); srt$y <- rev(expected$x)
+  srt$x <- rev(expected$y)
+  srt$y <- rev(expected$x)
   expect_equal(SpatialCoordinates(srt, image = "slice1")$data, expected)
   cells <- expected$cell_id[c(5, 2, 1)]
   smaller <- suppressWarnings(srt[, cells])
@@ -72,8 +79,10 @@ test_that("FOV point pie and network final axes agree", {
   skip_if_not_installed("scatterpie")
   srt <- coordinate_v3_fixture()
   point <- SpatialSpotPlot(srt, image = "slice1", group.by = "type", crop = FALSE)
-  pie <- SpatialSpotPlot(srt, image = "slice1", plot_type = "pie",
-    values = matrix(1, nrow = 8, ncol = 2, dimnames = list(colnames(srt), c("A", "B"))))
+  pie <- SpatialSpotPlot(srt,
+    image = "slice1", plot_type = "pie",
+    values = matrix(1, nrow = 8, ncol = 2, dimnames = list(colnames(srt), c("A", "B")))
+  )
   graph <- RunSpatialNetwork(srt, image = "slice1", k = 1, verbose = FALSE)
   network <- SpatialNetworkPlot(graph)
   point_built <- ggplot2::ggplot_build(point)
@@ -126,8 +135,10 @@ test_that("integration covers all image-backed samples and records their sources
   expect_error(RunSpatialIntegration(srt, sample.by = "sample", image = "slice1", verbose = FALSE), "cover every cell")
   srt[["duplicate"]] <- srt[["slice1"]]
   expect_error(RunSpatialIntegration(srt, sample.by = "sample", verbose = FALSE), "one image covering")
-  expect_no_error(RunSpatialIntegration(srt, sample.by = "sample",
-    image = c(S1 = "slice1", S2 = "slice2"), verbose = FALSE))
+  expect_no_error(RunSpatialIntegration(srt,
+    sample.by = "sample",
+    image = c(S1 = "slice1", S2 = "slice2"), verbose = FALSE
+  ))
 })
 
 test_that("SpatialEcoTyper analysis uses the same selected raw image coordinates", {
@@ -136,18 +147,27 @@ test_that("SpatialEcoTyper analysis uses the same selected raw image coordinates
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
     get_namespace_fun = function(package, name) {
-      if (package != "SpatialEcoTyper") return(get(name, asNamespace(package)))
-      if (name %in% c("mostFrequent", "GetSpatialMetacells", "GetPCList")) return(function(...) NULL)
-      if (name == "SpatialEcoTyper") return(function(normdata, metadata, ...) {
-        observed <<- metadata
-        list(metadata = data.frame(SE = rep("SE1", ncol(normdata)), row.names = colnames(normdata)))
-      })
+      if (package != "SpatialEcoTyper") {
+        return(get(name, asNamespace(package)))
+      }
+      if (name %in% c("mostFrequent", "GetSpatialMetacells", "GetPCList")) {
+        return(function(...) NULL)
+      }
+      if (name == "SpatialEcoTyper") {
+        return(function(normdata, metadata, ...) {
+          observed <<- metadata
+          list(metadata = data.frame(SE = rep("SE1", ncol(normdata)), row.names = colnames(normdata)))
+        })
+      }
       function(data_list, metadata_list, ...) {
         observed <<- metadata_list
-        data.frame(CID = unlist(lapply(data_list, colnames), use.names = FALSE),
-          Sample = rep(names(data_list), lengths(lapply(data_list, colnames))), InitSE = "I1", SE = "SE1")
+        data.frame(
+          CID = unlist(lapply(data_list, colnames), use.names = FALSE),
+          Sample = rep(names(data_list), lengths(lapply(data_list, colnames))), InitSE = "I1", SE = "SE1"
+        )
       }
-    })
+    }
+  )
   expect_error(RunSpatialEcoTyper(srt, layer = "counts", celltype.by = "type"), "Multiple spatial images")
   out <- RunSpatialEcoTyper(srt, layer = "counts", celltype.by = "type", image = "slice1", verbose = FALSE)
   expect_equal(observed$X, c(10, 20, 30, 40))
@@ -155,8 +175,10 @@ test_that("SpatialEcoTyper analysis uses the same selected raw image coordinates
   expect_true(all(is.na(out$SpatialEcoTyper_SE[5:8])))
   expect_equal(out@tools$SpatialEcoTyper$coordinates$x, observed$X)
   expect_identical(out@tools$SpatialEcoTyper$source$samples$single$image, "slice1")
-  out <- RunSpatialEcoTyper(srt, mode = "multi", sample.by = "sample", layer = "counts",
-    celltype.by = "type", outdir = tempfile(), verbose = FALSE)
+  out <- RunSpatialEcoTyper(srt,
+    mode = "multi", sample.by = "sample", layer = "counts",
+    celltype.by = "type", outdir = tempfile(), verbose = FALSE
+  )
   expect_named(observed, c("S1", "S2"))
   expect_equal(observed$S1$X, observed$S2$X)
   expect_false(anyNA(out$SpatialEcoTyper_SE))
@@ -209,7 +231,8 @@ test_that("the shared Visium input produces plottable raw-coordinate results", {
   expected <- SpatialCoordinates(spatial, image = "slice1")$data
   spatial <- RunSpatialNetwork(spatial, image = "slice1", k = 4, verbose = FALSE)
   spatial <- RunSpatialNeighborhood(
-    spatial, group.by = "coda_label", method = "observed",
+    spatial,
+    group.by = "coda_label", method = "observed",
     image = "slice1", k = 4, backend = "r", verbose = FALSE
   )
   expect_equal(SpatialCoordinates(spatial, image = "slice1")$data, expected)

@@ -88,7 +88,8 @@ test_that("NormalizeData uses the fast path for Assay5 objects", {
   expect_equal(
     as.matrix(GetAssayData5(out, assay = "RNA", layer = "data")),
     as.matrix(seurat_reference_method(
-      "NormalizeData", "default", mat, verbose = FALSE
+      "NormalizeData", "default", mat,
+      verbose = FALSE
     )),
     tolerance = 1e-8
   )
@@ -160,7 +161,8 @@ test_that("NormalizeData supports legacy Assay objects", {
   expect_equal(
     as.matrix(out[["RNA"]]@data),
     as.matrix(seurat_reference_method(
-      "NormalizeData", "default", mat, verbose = FALSE
+      "NormalizeData", "default", mat,
+      verbose = FALSE
     )),
     tolerance = 1e-8
   )

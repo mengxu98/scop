@@ -110,7 +110,7 @@ spe_to_srt <- function(
   }
   counts <- SummarizedExperiment::assay(spe, layer)
   if (length(coord.cols) != 2L || anyNA(coord.cols) ||
-      any(!nzchar(coord.cols)) || anyDuplicated(coord.cols)) {
+    any(!nzchar(coord.cols)) || anyDuplicated(coord.cols)) {
     log_message("{.arg coord.cols} must contain two unique non-empty names", message_type = "error")
   }
   meta <- as.data.frame(SummarizedExperiment::colData(spe), optional = TRUE)
@@ -134,7 +134,7 @@ spe_to_srt <- function(
     if (!is.null(provenance)) {
       space <- provenance$source$coordinate_space
       if (!is.character(space) || length(space) != 1L || is.na(space) ||
-          !space %in% c("raw", "display", "legacy_display")) {
+        !space %in% c("raw", "display", "legacy_display")) {
         log_message("Invalid SCOP SpatialExperiment coordinate provenance", message_type = "error")
       }
       if (space != "raw") {

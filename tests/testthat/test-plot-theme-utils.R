@@ -74,4 +74,3 @@ test_that("spatial_dim_continuous_scale respects upper_quantile and squish", {
   expect_equal(unname(sc100$limits), c(1, 100))
   expect_equal(sc99$oob(c(-10, 50, 150), range = c(0, 100)), c(0, 50, 100))
 })
-

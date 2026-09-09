@@ -902,7 +902,8 @@ spatialcellchat_run_one <- function(
 #' \dontrun{
 #' data(visium_human_pancreas_sub)
 #' visium_human_pancreas_sub <- Seurat::NormalizeData(
-#'   visium_human_pancreas_sub, assay = "Spatial", verbose = FALSE
+#'   visium_human_pancreas_sub,
+#'   assay = "Spatial", verbose = FALSE
 #' )
 #' # Group Visium spots by their CODA tissue labels.
 #' spatial <- RunSpatialCellChat(
