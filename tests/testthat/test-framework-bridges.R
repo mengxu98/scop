@@ -221,7 +221,10 @@ make_live_giotto_seurat <- function() {
 }
 
 test_that("srt_to_giotto and giotto_to_srt round-trip with a real GiottoClass", {
-  skip_if_not_installed("GiottoClass")
+  giotto_class <- thisutils::check_r("GiottoClass", install = FALSE, verbose = FALSE)
+  if (!isTRUE(all(unlist(giotto_class, use.names = FALSE)))) {
+    skip("GiottoClass is not installed")
+  }
 
   # In-process tiny fixture: callr+load_all of the source tree exceeds 120s in
   # optional CI before conversion starts, and visium_human_pancreas_sub is far
