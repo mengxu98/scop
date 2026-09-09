@@ -427,7 +427,7 @@ benchmark_require_runtime <- function() {
   pkgs <- c("callr", "ps")
   missing <- pkgs[!vapply(
     pkgs,
-    function(pkg) isTRUE(check_r(pkg, install = FALSE, verbose = FALSE)),
+    function(pkg) isTRUE(all(unlist(check_r(pkg, install = FALSE, verbose = FALSE), use.names = FALSE))),
     logical(1)
   )]
   if (length(missing) > 0L) {
@@ -441,7 +441,7 @@ benchmark_require_runtime <- function() {
 
 benchmark_method_availability <- function(method) {
   package <- benchmark_method_package(method)
-  installed <- isTRUE(check_r(package, install = FALSE, verbose = FALSE))
+  installed <- isTRUE(all(unlist(check_r(package, install = FALSE, verbose = FALSE), use.names = FALSE)))
   list(
     status = if (installed) "available" else "missing",
     detail = paste0(package, "=", if (installed) "available" else "missing"),
