@@ -34,10 +34,7 @@ spatial <- Seurat::NormalizeData(
   assay = "Spatial",
   verbose = FALSE
 )
-if (all(unlist(
-  thisutils::check_r("drieslab/Giotto", verbose = FALSE),
-  use.names = FALSE
-))) {
+if (requireNamespace("GiottoClass", quietly = TRUE)) {
   giotto <- srt_to_giotto(spatial, image = "slice1")
   print(giotto)
 }
