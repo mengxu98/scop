@@ -3,16 +3,10 @@
 # Resolve the common Seurat-object input used by native spatial functions.
 #
 # Spatial plotting and analysis APIs take the Seurat object as `object`. `srt`
-# remains an accepted compatibility alias so named calls keep working.
+# remains an accepted deprecated alias until scop 1.0.0.
 spatial_resolve_object <- function(object = NULL, srt = NULL) {
-  if (!is.null(object) && !is.null(srt)) {
-    log_message(
-      "Provide only one of {.arg object} or {.arg srt}",
-      message_type = "error"
-    )
-  }
   input_arg <- if (is.null(object)) "srt" else "object"
-  resolved <- if (is.null(object)) srt else object
+  resolved <- resolve_deprecated_srt(object, srt, is.null(object))
   if (is.null(resolved)) {
     log_message(
       "Provide a {.cls Seurat} object through {.arg object} or {.arg srt}",

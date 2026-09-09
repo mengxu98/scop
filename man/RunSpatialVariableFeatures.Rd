@@ -79,8 +79,8 @@ uses the process OpenMP default.}
 
 \item{...}{Additional arguments passed to external backends.}
 
-\item{srt}{Compatibility alias for \code{object}. Supply exactly one of \code{object}
-or \code{srt}.}
+\item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with spatial variable feature results stored in
