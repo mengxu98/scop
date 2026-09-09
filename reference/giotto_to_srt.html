@@ -89,9 +89,9 @@
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The bridge selects the GiottoClass v4 or v5 converter according to the
 installed Seurat major version. If GiottoClass is already installed, it is
-reused instead of reinstalling <code>drieslab/Giotto</code>. For round trips produced by
-<code><a href="srt_to_giotto.html">srt_to_giotto()</a></code>, normalize the Seurat input first (for example with
-<code><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">Seurat::NormalizeData()</a></code>); the official GiottoClass converter records an
+reused instead of reinstalling `drieslab/Giotto`. For round trips produced by
+[srt_to_giotto()], normalize the Seurat input first (for example with
+[Seurat::NormalizeData()]); the official GiottoClass converter records an
 empty normalized layer otherwise, which its reverse converter cannot read
 back. Conversion does not initialize Giotto's optional Python/conda
 environment.</p>
