@@ -76,7 +76,7 @@ neighborhood-level result list under <code>neighborhood_results</code>.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RunMilo</span><span class="op">(</span></span>
-<span>  <span class="va">srt</span>,</span>
+<span>  <span class="va">object</span>,</span>
 <span>  <span class="va">group.by</span>,</span>
 <span>  <span class="va">split.by</span>,</span>
 <span>  <span class="va">sample.by</span>,</span>
@@ -87,7 +87,8 @@ neighborhood-level result list under <code>neighborhood_results</code>.</p>
 <span>  backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"cpp"</span><span class="op">)</span>,</span>
 <span>  n_bootstrap <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">11</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -95,7 +96,7 @@ neighborhood-level result list under <code>neighborhood_results</code>.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>A <code>Seurat</code> object.</p></dd>
 
 
@@ -156,6 +157,11 @@ neighborhood-level quasi-likelihood test.</p></dd>
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Whether to print the message.
 Default is <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
+will be removed in scop 1.0.0.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -82,7 +82,7 @@ in the returned annotation table.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">SCENICPlot</span><span class="op">(</span></span>
-<span>  <span class="va">srt</span>,</span>
+<span>  <span class="va">object</span>,</span>
 <span>  <span class="va">group.by</span>,</span>
 <span>  tool_name <span class="op">=</span> <span class="st">"SCENIC"</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"scenic"</span>,</span>
@@ -157,7 +157,8 @@ in the returned annotation table.</p>
 <span>  label_size <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  label_max_overlaps <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -165,7 +166,7 @@ in the returned annotation table.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>A Seurat object with SCENIC or SCENIC+ results.</p></dd>
 
 
@@ -428,6 +429,11 @@ direct score comparison, or <code>"free"</code> for the legacy per-panel scale.<
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Extra heatmap arguments such as <code>width</code> and <code>height</code>.</p></dd>
+
+
+<dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
+will be removed in scop 1.0.0.</p></dd>
 
 </dl></div>
     <div class="section level2">

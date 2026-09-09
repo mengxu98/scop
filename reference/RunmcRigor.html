@@ -67,7 +67,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RunmcRigor</span><span class="op">(</span></span>
-<span>  <span class="va">srt</span>,</span>
+<span>  <span class="va">object</span>,</span>
 <span>  cell_membership <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  metacell.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"detect"</span>, <span class="st">"optimize"</span><span class="op">)</span>,</span>
@@ -96,7 +96,8 @@
 <span>  step_save <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  prefix <span class="op">=</span> <span class="st">"mcRigor"</span>,</span>
 <span>  tool_name <span class="op">=</span> <span class="st">"mcRigor"</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -104,7 +105,7 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>A <code>Seurat</code> object containing the original single-cell data.</p></dd>
 
 
@@ -187,6 +188,11 @@ intermediate-save parameters forwarded to mcRigor.</p></dd>
 <dd><p>Whether to print the message.
 Default is <code>TRUE</code>.</p></dd>
 
+
+<dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
+will be removed in scop 1.0.0.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -212,16 +218,16 @@ rigor of metacell partitioning in single-cell data analysis.
 <span class="r-in"><span>  nonlinear_reduction_dims <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 13:30:59] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 20:50:42] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="va">mc</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunMetaCell.html">RunMetaCell</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"supercell"</span>,</span></span>
 <span class="r-in"><span>  gamma <span class="op">=</span> <span class="fl">25</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 13:31:10] Running <span style="color: #0000BB;">SuperCell</span> with gamma = <span style="color: #0000BB;">25</span>, k.knn = <span style="color: #0000BB;">5</span> on <span style="color: #0000BB;">1000</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 13:31:11] `RunMetaCell()` (<span style="color: #0000BB;">"supercell"</span>) built <span style="color: #0000BB;">40</span> metacells from <span style="color: #0000BB;">1000</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 13:31:11] Metacell size summary: min <span style="color: #0000BB;">5</span>, median <span style="color: #0000BB;">20</span>, mean <span style="color: #0000BB;">25</span>, max <span style="color: #0000BB;">74</span> cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-09 13:31:11] `RunMetaCell()` returned metacell Seurat with <span style="color: #0000BB;">40</span> metacells. Original cells in `@misc[["original_srt"]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 20:50:50] Running <span style="color: #0000BB;">SuperCell</span> with gamma = <span style="color: #0000BB;">25</span>, k.knn = <span style="color: #0000BB;">5</span> on <span style="color: #0000BB;">1000</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 20:50:50] `RunMetaCell()` (<span style="color: #0000BB;">"supercell"</span>) built <span style="color: #0000BB;">40</span> metacells from <span style="color: #0000BB;">1000</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 20:50:50] Metacell size summary: min <span style="color: #0000BB;">5</span>, median <span style="color: #0000BB;">20</span>, mean <span style="color: #0000BB;">25</span>, max <span style="color: #0000BB;">74</span> cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-09 20:50:51] `RunMetaCell()` returned metacell Seurat with <span style="color: #0000BB;">40</span> metacells. Original cells in `@misc[["original_srt"]]`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">membership</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  Metacell <span class="op">=</span> <span class="va">mc</span><span class="op">@</span><span class="va">misc</span><span class="op">[[</span><span class="st">"cell_membership"</span><span class="op">]</span><span class="op">]</span>,</span></span>
@@ -235,14 +241,14 @@ rigor of metacell partitioning in single-cell data analysis.
 <span class="r-in"><span>  feature_use <span class="op">=</span> <span class="fl">100</span>,</span></span>
 <span class="r-in"><span>  draw <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 13:31:59] Run <span style="color: #0000BB;">mcRigor</span> in <span style="color: #0000BB;">"detect"</span> mode with <span style="color: #0000BB;">1</span> partition</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-09 20:51:36] Run <span style="color: #0000BB;">mcRigor</span> in <span style="color: #0000BB;">"detect"</span> mode with <span style="color: #0000BB;">1</span> partition</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Normalizing data...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> gamma = 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==                                                                    |   2%  |                                                                              |====                                                                  |   5%  |                                                                              |=====                                                                 |   8%  |                                                                              |=======                                                               |  10%  |                                                                              |=========                                                             |  12%  |                                                                              |==========                                                            |  15%  |                                                                              |============                                                          |  18%  |                                                                              |==============                                                        |  20%  |                                                                              |================                                                      |  22%  |                                                                              |==================                                                    |  25%  |                                                                              |===================                                                   |  28%  |                                                                              |=====================                                                 |  30%  |                                                                              |=======================                                               |  32%  |                                                                              |========================                                              |  35%  |                                                                              |==========================                                            |  38%  |                                                                              |============================                                          |  40%  |                                                                              |==============================                                        |  42%  |                                                                              |================================                                      |  45%  |                                                                              |=================================                                     |  48%  |                                                                              |===================================                                   |  50%  |                                                                              |=====================================                                 |  52%  |                                                                              |======================================                                |  55%  |                                                                              |========================================                              |  57%  |                                                                              |==========================================                            |  60%  |                                                                              |============================================                          |  62%  |                                                                              |==============================================                        |  65%  |                                                                              |===============================================                       |  68%  |                                                                              |=================================================                     |  70%  |                                                                              |===================================================                   |  72%  |                                                                              |====================================================                  |  75%  |                                                                              |======================================================                |  78%  |                                                                              |========================================================              |  80%  |                                                                              |==========================================================            |  82%  |                                                                              |============================================================          |  85%  |                                                                              |=============================================================         |  88%  |                                                                              |===============================================================       |  90%  |                                                                              |=================================================================     |  92%  |                                                                              |==================================================================    |  95%  |                                                                              |====================================================================  |  98%  |                                                                              |======================================================================| 100%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     dubious trustworthy </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          27          13 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-09 13:32:06] <span style="color: #0000BB;">mcRigor</span> results stored in `srt@tools[[mcRigor]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-09 20:51:41] <span style="color: #0000BB;">mcRigor</span> results stored in `srt@tools[[mcRigor]]`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">mcRigor_status</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

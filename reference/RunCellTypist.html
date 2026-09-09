@@ -73,7 +73,7 @@ on a Seurat object or AnnData object.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RunCellTypist</span><span class="op">(</span></span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  object <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  adata <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
 <span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span>
@@ -91,7 +91,8 @@ on a Seurat object or AnnData object.</p>
 <span>  insert_decision <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  prefix <span class="op">=</span> <span class="st">"celltypist_"</span>,</span>
 <span>  return_seurat <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -99,7 +100,7 @@ on a Seurat object or AnnData object.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>A Seurat object.
 If provided, <code>adata</code> will be ignored.</p></dd>
 
@@ -184,6 +185,11 @@ Supports three formats:</p><ol><li><p>Model name (e.g., <code>"Immune_All_Low.pk
 <dd><p>Whether to print the message.
 Default is <code>TRUE</code>.</p></dd>
 
+
+<dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
+<dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
+will be removed in scop 1.0.0.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -200,10 +206,12 @@ Default is <code>TRUE</code>.</p></dd>
 <span class="r-in"><span><span class="fu"><a href="check_python.html">check_python</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celltypist"</span>, <span class="st">"anndata"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pbmcmultiome_sub</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, linear_reduction_dims <span class="op">=</span> <span class="fl">10</span></span></span>
+<span class="r-in"><span>  <span class="va">pbmcmultiome_sub</span>,</span></span>
+<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>, linear_reduction_dims <span class="op">=</span> <span class="fl">10</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pbmcmultiome_sub</span> <span class="op">&lt;-</span> <span class="fu">RunCellTypist</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pbmcmultiome_sub</span>, model <span class="op">=</span> <span class="st">"Immune_All_Low.pkl"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  <span class="va">pbmcmultiome_sub</span>,</span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="st">"Immune_All_Low.pkl"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
