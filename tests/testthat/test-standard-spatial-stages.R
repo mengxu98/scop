@@ -462,8 +462,7 @@ test_that("effective SVF storage controls require logical scalars", {
     )
     stages <- attr(condition, "standard_spatial_stages")
     svf <- stages[
-      stages$stage == "spatial_variable_features",
-      ,
+      stages$stage == "spatial_variable_features", ,
       drop = FALSE
     ]
 
@@ -615,8 +614,7 @@ test_that("BayesSpace planning failures carry clustering stage diagnostics", {
     )
     stages <- attr(condition, "standard_spatial_stages")
     clustering <- stages[
-      stages$stage == "spatial_clustering",
-      ,
+      stages$stage == "spatial_clustering", ,
       drop = FALSE
     ]
 
@@ -672,8 +670,7 @@ test_that("BayesSpace q inference failures retain clustering stage diagnostics",
   )
   stages <- attr(condition, "standard_spatial_stages")
   clustering <- stages[
-    stages$stage == "spatial_clustering",
-    ,
+    stages$stage == "spatial_clustering", ,
     drop = FALSE
   ]
 

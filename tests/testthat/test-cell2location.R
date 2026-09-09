@@ -180,11 +180,13 @@ test_that("RunCell2location writes abundance, proportions, and reproducible tool
       checked_python_packages <<- packages
       TRUE
     },
-    conda_python = function(...) normalizePath(
-      file.path(R.home("bin"), if (.Platform$OS.type == "windows") "Rscript.exe" else "R"),
-      winslash = "/",
-      mustWork = TRUE
-    ),
+    conda_python = function(...) {
+      normalizePath(
+        file.path(R.home("bin"), if (.Platform$OS.type == "windows") "Rscript.exe" else "R"),
+        winslash = "/",
+        mustWork = TRUE
+      )
+    },
     resolve_conda = function(...) "mamba",
     runner_script_path = function(...) "cell2location.py",
     runner_write_json = function(...) invisible(NULL),
@@ -252,11 +254,13 @@ test_that("RunCell2location does not mutate Seurat when Python fails", {
     .package = "scop",
     PrepareEnv = function(...) invisible(NULL),
     check_python = function(...) TRUE,
-    conda_python = function(...) normalizePath(
-      file.path(R.home("bin"), if (.Platform$OS.type == "windows") "Rscript.exe" else "R"),
-      winslash = "/",
-      mustWork = TRUE
-    ),
+    conda_python = function(...) {
+      normalizePath(
+        file.path(R.home("bin"), if (.Platform$OS.type == "windows") "Rscript.exe" else "R"),
+        winslash = "/",
+        mustWork = TRUE
+      )
+    },
     resolve_conda = function(...) "mamba",
     runner_script_path = function(...) "cell2location.py",
     runner_write_json = function(...) invisible(NULL),
@@ -297,15 +301,13 @@ test_that("standard spatial workflow dispatches cell2location signatures", {
   testthat::local_mocked_bindings(
     .package = "scop",
     RunStandardWorkflow = function(srt, ...) srt,
-    RunCell2location = function(
-      srt,
-      result_dir,
-      reference_signatures,
-      prefix,
-      tool_name,
-      store_results,
-      ...
-    ) {
+    RunCell2location = function(srt,
+                                result_dir,
+                                reference_signatures,
+                                prefix,
+                                tool_name,
+                                store_results,
+                                ...) {
       called <<- TRUE
       expect_identical(result_dir, "c2l")
       expect_identical(reference_signatures, signatures)

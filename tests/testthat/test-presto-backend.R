@@ -109,11 +109,9 @@ test_that("FindAllMarkers probes Presto only after support checks and before mar
       events <<- c(events, "supported")
       identical(test.use, "wilcox")
     },
-    presto_get_fun = function(
-      fun = "wilcoxauc",
-      install = FALSE,
-      error_on_missing = TRUE
-    ) {
+    presto_get_fun = function(fun = "wilcoxauc",
+                              install = FALSE,
+                              error_on_missing = TRUE) {
       events <<- c(events, "presto")
       expect_identical(fun, "wilcoxauc")
       expect_false(install)
@@ -234,11 +232,9 @@ test_that("automatic marker fast paths fall back without installing Presto", {
   all_fallback <- data.frame(path = "all")
   requests <- list()
   testthat::local_mocked_bindings(
-    presto_get_fun = function(
-      fun = "wilcoxauc",
-      install = FALSE,
-      error_on_missing = TRUE
-    ) {
+    presto_get_fun = function(fun = "wilcoxauc",
+                              install = FALSE,
+                              error_on_missing = TRUE) {
       requests[[length(requests) + 1L]] <<- list(
         fun = fun,
         install = install,

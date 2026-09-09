@@ -92,10 +92,12 @@ on a Seurat object or AnnData object.
 check_python(c("celltypist", "anndata"))
 data(pbmcmultiome_sub)
 pbmcmultiome_sub <- RunStandardWorkflow(
-  pbmcmultiome_sub, assay = "RNA", linear_reduction_dims = 10
+  pbmcmultiome_sub,
+  assay = "RNA", linear_reduction_dims = 10
 )
 pbmcmultiome_sub <- RunCellTypist(
-  pbmcmultiome_sub, model = "Immune_All_Low.pkl", verbose = FALSE
+  pbmcmultiome_sub,
+  model = "Immune_All_Low.pkl", verbose = FALSE
 )
 }
 }

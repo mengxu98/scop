@@ -46,7 +46,8 @@
 #' spatial <- Seurat::NormalizeData(visium_human_pancreas_sub, verbose = FALSE)
 #' # Paraview bandwidth: 1000 full-resolution image pixels.
 #' spatial <- RunMistyR(
-#'   spatial, assay = "Spatial", features = rownames(spatial)[1:5],
+#'   spatial,
+#'   assay = "Spatial", features = rownames(spatial)[1:5],
 #'   image = "slice1", views = "para", para_l = 1000,
 #'   cv_folds = 3, verbose = FALSE
 #' )

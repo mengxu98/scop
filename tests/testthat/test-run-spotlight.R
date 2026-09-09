@@ -262,17 +262,15 @@ test_that("standard spatial workflow dispatches to RunSPOTlight", {
   testthat::local_mocked_bindings(
     .package = "scop",
     RunSpotQC = function(srt, ...) srt,
-    RunSPOTlight = function(
-      srt,
-      reference,
-      reference_label,
-      assay,
-      reference_assay,
-      prefix,
-      tool_name,
-      store_results,
-      ...
-    ) {
+    RunSPOTlight = function(srt,
+                            reference,
+                            reference_label,
+                            assay,
+                            reference_assay,
+                            prefix,
+                            tool_name,
+                            store_results,
+                            ...) {
       expect_identical(reference, pair$reference)
       expect_identical(reference_label, "celltype")
       expect_identical(assay, "RNA")

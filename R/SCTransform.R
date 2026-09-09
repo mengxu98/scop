@@ -562,8 +562,7 @@ SCTransform.Seurat <- function(
   methods::slot(assay.out, "data") <- data_layer
   rm(data_layer)
   scale.data <- vst.out$y[
-    rownames(assay.out)[rownames(assay.out) %in% rownames(vst.out$y)],
-    ,
+    rownames(assay.out)[rownames(assay.out) %in% rownames(vst.out$y)], ,
     drop = FALSE
   ]
   methods::slot(assay.out, "scale.data") <- scale.data

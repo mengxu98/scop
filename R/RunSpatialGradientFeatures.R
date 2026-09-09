@@ -378,7 +378,6 @@ SpatialGradientPlot <- function(
       theme_args = theme_args
     ))
   }
-
 }
 
 

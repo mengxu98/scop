@@ -306,8 +306,10 @@ spatial_integration_prepare_input <- function(
     srt_list <- NULL
   } else {
     srt_list <- spatial_integration_as_list(object, sample.by = sample.by)
-    list_coordinates <- spatial_integration_list_coords(srt_list, sample.by, image,
-                                                       coord.cols, coordinate_space)
+    list_coordinates <- spatial_integration_list_coords(
+      srt_list, sample.by, image,
+      coord.cols, coordinate_space
+    )
     srt <- spatial_integration_merge_list(srt_list, sample.by = sample.by)
   }
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -684,7 +686,7 @@ spatial_integration_standardize_embedding <- function(embedding, cells) {
   } else {
     ids <- rownames(embedding)
     if (anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids) ||
-        !setequal(ids, cells)) {
+      !setequal(ids, cells)) {
       log_message(
         "Backend embedding row IDs must match Seurat cells exactly",
         message_type = "error"
@@ -772,7 +774,7 @@ spatial_integration_standardize_coords <- function(coords, cells) {
   } else {
     ids <- rownames(coords)
     if (anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids) ||
-        !setequal(ids, cells)) {
+      !setequal(ids, cells)) {
       log_message(
         "Backend aligned-coordinate row IDs must match Seurat cells exactly",
         message_type = "error"

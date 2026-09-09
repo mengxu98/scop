@@ -111,7 +111,8 @@ test_that("ProjectionPlot rasterizes the final query overlay when requested", {
     }, .package = "ggrastr"
   )
   expect_no_error(ProjectionPlot(
-    query, reference, query_group = "group", ref_group = "group",
+    query, reference,
+    query_group = "group", ref_group = "group",
     query_reduction = "umap", ref_reduction = "umap",
     query_param = list(raster = TRUE, label = FALSE),
     ref_param = list(raster = TRUE, label = FALSE), verbose = FALSE
