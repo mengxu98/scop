@@ -232,7 +232,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  linear_reduction_dims <span class="op">=</span> <span class="fl">10</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-10 13:26:59] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-10 20:16:16] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span>, cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">120</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span>, cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pbmcmultiome_sub</span><span class="op">)</span><span class="op">[</span><span class="fl">121</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span></span>
@@ -242,7 +242,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  linear_reduction_dims <span class="op">=</span> <span class="fl">10</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-10 13:27:08] Only one cluster found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-10 20:16:24] Only one cluster found</span>
 <span class="r-in"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu">RunLabelTransfer</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  object <span class="op">=</span> <span class="va">query</span>,</span></span>
 <span class="r-in"><span>  reference <span class="op">=</span> <span class="va">reference</span>,</span></span>
@@ -274,7 +274,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CAAGGCTGTGTTTGCT-1                      0.05208446                    0.0000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CAAGGGAGTGGTTCCC-1                      0.00000000                    0.8809738</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CAAGGTAAGCCACATG-1                      0.00000000                    0.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> CAAGTAACAACAGGAT-1                      0.55003767                    0.0000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CAAGTAACAACAGGAT-1                      0.55049225                    0.0000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CAAGTAACACAACAGG-1                      0.00000000                    0.0000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    predicted_prediction.score.CD4.T</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CAAGGCCTCTAGCGTG-1                       0.00000000</span>
@@ -288,7 +288,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CAAGGCTGTGTTTGCT-1                  0.0003947406                      0.5342408</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CAAGGGAGTGGTTCCC-1                  0.0781832706                      0.8809738</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CAAGGTAAGCCACATG-1                  0.0000000000                      0.5602397</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> CAAGTAACAACAGGAT-1                  0.4499623257                      0.5500377</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CAAGTAACAACAGGAT-1                  0.4495077499                      0.5504923</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CAAGTAACACAACAGG-1                  0.0000000000                      0.5865782</span>
 </code></pre></div>
     </div>
