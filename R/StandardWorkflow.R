@@ -1347,7 +1347,7 @@ run_standard_spatial_workflow <- function(
 
   if (do_spatial_qc) {
     qc_tool <- spatial_qc_params$tool_name %||% "SpotSweeper"
-    qc_args <- merge_call_args(list(srt = standard_spatial_clear_outputs(srt, tool_keys = qc_tool),
+    qc_args <- merge_call_args(list(object = standard_spatial_clear_outputs(srt, tool_keys = qc_tool),
       assay = assay, image = image, coord.cols = coord.cols, return_filtered = FALSE,
       store_results = TRUE, cores = cores, verbose = verbose), spatial_qc_params)
     srt <- run_stage("spatial_quality_control", do.call(RunSpotSweeper, qc_args), "RunSpotSweeper",
@@ -1366,7 +1366,7 @@ run_standard_spatial_workflow <- function(
   if (use_spanorm) {
     analysis_assay <- spanorm_params$new_assay %||% "SpaNorm"
     norm_tool <- spanorm_params$tool_name %||% "SpaNorm"
-    norm_args <- merge_call_args(list(srt = standard_spatial_clear_outputs(srt, tool_keys = norm_tool),
+    norm_args <- merge_call_args(list(object = standard_spatial_clear_outputs(srt, tool_keys = norm_tool),
       assay = assay, layer = "counts", image = image, coord.cols = coord.cols,
       store_results = TRUE, verbose = verbose), spanorm_params)
     srt <- run_stage("spatial_normalization", do.call(RunSpaNorm, norm_args), "RunSpaNorm",
@@ -1705,7 +1705,7 @@ run_standard_spatial_workflow <- function(
   if (isTRUE(do_spatial_cluster) && spatial_cluster_method != "BayesSpace") {
     cluster_setup <- run_stage_setup("spatial_clustering", {
       standard_spatial_fixed_args(bayesspace_params, c("srt", "object", "image", "coord.cols"))
-      args <- merge_call_args(list(srt = srt, assay = analysis_assay, image = image,
+      args <- merge_call_args(list(object = srt, assay = analysis_assay, image = image,
         coord.cols = coord.cols, coordinate_space = "raw", seed = seed, verbose = verbose), bayesspace_params)
       if (spatial_cluster_method == "SmoothClust") {
         args$cores <- args$cores %||% cores
@@ -1717,7 +1717,7 @@ run_standard_spatial_workflow <- function(
       }
       args$cluster_colname <- planned_bayesspace_cluster_colname
       key <- args$tool_name %||% spatial_cluster_method
-      args$srt <- standard_spatial_clear_outputs(srt, tool_keys = key, metadata_keys = args$cluster_colname)
+      args$object <- standard_spatial_clear_outputs(srt, tool_keys = key, metadata_keys = args$cluster_colname)
       list(args = args, tool = key, stored = args$store_results %||% TRUE)
     }, cluster_producer)
     fun <- switch(spatial_cluster_method, BANKSY = RunBANKSY, SmoothClust = RunSmoothClust)
