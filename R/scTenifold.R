@@ -21,13 +21,13 @@
 #' `scTenifoldNet::manifoldAlignment()`.
 #' @param cores Number of cores used by native network-construction workers and
 #' forwarded to downstream linear algebra where applicable.
-#' @param backend `r` calls `scTenifoldKnk::scTenifoldKnk()` directly and is the
-#' default high-consistency path. `cpp` follows the upstream
-#' `scTenifoldNet`/`scTenifoldKnk` network construction, tensor decomposition,
-#' manifold alignment, and differential-regulation steps while keeping input
-#' handling and result storage inside `scop`.
+#' @param backend `r` runs the upstream `scTenifoldNet` pipeline with the
+#' `scTenifoldKnk` differential-regulation helpers and is the default
+#' high-consistency path. `cpp` runs all steps with scop's native kernels and is
+#' much faster on large gene sets.
 #' @param store_networks Whether to keep WT/KO tensor networks in
-#' `srt@tools`.
+#' `srt@tools`. This only controls what is stored; the network ensemble is
+#' always built the same way.
 #' @param store_manifold Whether to keep manifold-alignment coordinates in
 #' `srt@tools`.
 #' @param tool_name Name of the `srt@tools` entry.
@@ -307,37 +307,24 @@ RunscTenifoldKnk <- function(
 
   result <- switch(backend,
     cpp = {
-      for (pkg in c("scTenifoldNet", "RSpectra", "RhpcBLASctl", "MASS")) {
+      for (pkg in c("RSpectra", "RhpcBLASctl", "MASS")) {
         check_r(pkg, verbose = FALSE)
       }
 
       log_message(
-        "Construct scTenifoldNet network ensemble",
+        "Construct gene regulatory network ensemble",
         verbose = verbose
       )
-      wt <- if (isTRUE(store_networks)) {
-        get_namespace_fun("scTenifoldNet", "makeNetworks")(
-          X = count_matrix,
-          q = nc_q,
-          nNet = as.integer(nc_nNet),
-          nCells = as.integer(nc_nCells),
-          scaleScores = isTRUE(nc_scaleScores),
-          symmetric = isTRUE(nc_symmetric),
-          nComp = as.integer(nc_nComp),
-          nCores = as.integer(cores)
-        )
-      } else {
-        sctenifold_make_networks_cpp(
-          X = count_matrix,
-          q = nc_q,
-          nNet = as.integer(nc_nNet),
-          nCells = as.integer(nc_nCells),
-          scaleScores = isTRUE(nc_scaleScores),
-          symmetric = isTRUE(nc_symmetric),
-          nComp = as.integer(nc_nComp),
-          nCores = as.integer(cores)
-        )
-      }
+      wt <- sctenifold_make_networks_cpp(
+        X = count_matrix,
+        q = nc_q,
+        nNet = as.integer(nc_nNet),
+        nCells = as.integer(nc_nCells),
+        scaleScores = isTRUE(nc_scaleScores),
+        symmetric = isTRUE(nc_symmetric),
+        nComp = as.integer(nc_nComp),
+        nCores = as.integer(cores)
+      )
       wt <- sctenifold_tensor_cpp(
         wt,
         k = as.integer(td_K),
