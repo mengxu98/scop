@@ -142,6 +142,8 @@ quantile or absolute cutoffs for the color scale.}
 
 \item{sizes.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
 
+\item{alpha.highlight, stroke.highlight}{Transparency and stroke width of the highlighted points.}
+
 \item{calculate_coexp}{Plot the geometric mean of the features.}
 
 \item{compare_features}{Show multiple features on one plot.}
@@ -165,9 +167,13 @@ quantile or absolute cutoffs for the color scale.}
 
 \item{lineages}{Pseudotime columns to use. If \code{NULL}, lineage-like pseudotime columns such as \code{Lineage1}, \code{Lineage2}, \code{prefix_Lineage1}, or \code{pseudotime} are detected and merged into one global pseudotime for a single panel. Use \code{"all"} to plot each detected lineage in separate panels.}
 
+\item{lineages_trim, lineages_span, lineages_palcolor, lineages_arrow, lineages_linewidth, lineages_line_bg, lineages_line_bg_stroke, lineages_whiskers, lineages_whiskers_linewidth, lineages_whiskers_alpha}{Pseudotime lineages as \link[stats:loess]{stats::loess} curves. See \link[grid:arrow]{grid::arrow} for \code{lineages_arrow}.}
+
 \item{lineages_palette}{Color palette used for lineage groups.}
 
 \item{graph}{Neighbor-graph edges.}
+
+\item{edge_size, edge_alpha, edge_color}{Neighbor-graph edges.}
 
 \item{hex}{Whether to use hexagonal binning for 2D assignments.}
 
@@ -195,6 +201,10 @@ there are more than 100,000 cells.}
 \item{legend.position}{Legend placement (\code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}), direction, and title. \code{legend.title = NULL} uses the group name.}
 
 \item{legend.direction}{Legend direction: \code{"horizontal"} or \code{"vertical"}.}
+
+\item{legend.title}{Title of the legend. \code{NULL} uses the group name.}
+
+\item{theme_use}{Theme name or function.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 

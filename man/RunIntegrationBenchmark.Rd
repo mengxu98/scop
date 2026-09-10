@@ -34,6 +34,16 @@ RunIntegrationBenchmark(
 
 \item{methods}{Integration methods passed to \code{\link[=RunIntegration]{RunIntegration()}}.}
 
+\item{linear_reduction}{Linear reduction (\code{"pca"}, \code{"svd"}, \code{"ica"}, \code{"nmf"}, \code{"mds"}, \code{"glmpca"}).}
+
+\item{nHVF}{Number of highly variable features.}
+
+\item{linear_reduction_dims}{Total number of dimensions to compute and store for \code{linear_reduction}.}
+
+\item{linear_reduction_dims_use}{Dimensions used downstream. \code{NULL} uses estimated dimensions, else the first 50.}
+
+\item{nonlinear_reduction}{Nonlinear reduction (\code{"umap"}, \code{"umap-naive"}, \code{"tsne"}, \code{"dm"}, \code{"phate"}, \code{"pacmap"}, \code{"trimap"}, \code{"largevis"}, \code{"fr"}).}
+
 \item{perplexity}{Neighborhood size for \code{\link[=RunLISI]{RunLISI()}}.}
 
 \item{k_graph}{Neighbor size for graph connectivity.}
