@@ -1,44 +1,7 @@
 # Official SpaTalk producer and stored-result plotting -------------------------
 
-.spatalk_repository <- "ZJUFanLab/SpaTalk"
-.spatalk_package <- "SpaTalk"
-.spatalk_nnlm_repository <- "linxihui/NNLM"
-
-
-spatalk_check_r <- function() {
-  package_status <- check_r(
-    c("NNLM", .spatalk_package),
-    install = FALSE,
-    verbose = FALSE
-  )
-  package_status <- unname(unlist(package_status, use.names = FALSE))
-  package_status <- suppressWarnings(as.logical(package_status))
-  if (length(package_status) == 2L && !anyNA(package_status) && all(package_status)) {
-    return(invisible(TRUE))
-  }
-  available <- check_r(c(.spatalk_nnlm_repository, .spatalk_repository), verbose = FALSE)
-  available <- unname(unlist(available, use.names = FALSE))
-  available <- suppressWarnings(as.logical(available))
-  if (length(available) != 2L || anyNA(available) || !all(available)) {
-    log_message(
-      "Install the official {.pkg SpaTalk} backend from {.url https://github.com/ZJUFanLab/SpaTalk}",
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}
-
-spatalk_get_fun <- function(fun) {
-  if (!fun %in% {
-    c("createSpaTalk", "dec_celltype", "find_lr_path", "dec_cci_all")
-  }) {
-    log_message("Unsupported {.pkg SpaTalk} function {.fn {fun}}", message_type = "error")
-  }
-  get_namespace_fun(.spatalk_package, fun)
-}
-
 spatalk_package_version <- function() {
-  desc <- tryCatch(utils::packageDescription(.spatalk_package), error = function(e) NULL)
+  desc <- tryCatch(utils::packageDescription("SpaTalk"), error = function(e) NULL)
   if (is.null(desc)) NA_character_ else as.character(desc$Version %||% NA_character_)
 }
 
@@ -54,7 +17,7 @@ spatalk_component <- function(object, name, default = NULL) {
 
 spatalk_load_data <- function(name, species) {
   env <- new.env(parent = emptyenv())
-  utils::data(list = name, package = .spatalk_package, envir = env)
+  utils::data(list = name, package = "SpaTalk", envir = env)
   if (!exists(name, envir = env, inherits = FALSE)) {
     log_message("The {.pkg SpaTalk} dataset {.val {name}} is unavailable", message_type = "error")
   }
@@ -440,11 +403,17 @@ RunSpaTalk <- function(
     dots <- deconvolution_spec$dots
   }
 
-  spatalk_check_r()
-  create_fun <- spatalk_get_fun("createSpaTalk")
-  dec_fun <- spatalk_get_fun("dec_celltype")
-  find_fun <- spatalk_get_fun("find_lr_path")
-  cci_fun <- spatalk_get_fun("dec_cci_all")
+  spatalk_installed <- isTRUE(all(unlist(
+    check_r(c("NNLM", "SpaTalk"), install = FALSE, verbose = FALSE),
+    use.names = FALSE
+  )))
+  if (!spatalk_installed) {
+    check_r(c("linxihui/NNLM", "ZJUFanLab/SpaTalk"), verbose = FALSE)
+  }
+  create_fun <- get_namespace_fun("SpaTalk", "createSpaTalk")
+  dec_fun <- get_namespace_fun("SpaTalk", "dec_celltype")
+  find_fun <- get_namespace_fun("SpaTalk", "find_lr_path")
+  cci_fun <- get_namespace_fun("SpaTalk", "dec_cci_all")
   lrpairs <- spatalk_load_data("lrpairs", species)
   pathways <- spatalk_load_data("pathways", species)
 
@@ -540,7 +509,7 @@ RunSpaTalk <- function(
     provenance = list(
       producer = "RunSpaTalk", backend_id = "spatalk",
       backend_version = spatalk_package_version(),
-      repository = .spatalk_repository
+      repository = "ZJUFanLab/SpaTalk"
     )
   )
   bundle <- spatial_tag_coordinate_contract(bundle)

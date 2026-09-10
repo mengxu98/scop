@@ -89,7 +89,7 @@ RunLIANA <- function(
     assay = assay %||% SeuratObject::DefaultAssay(srt),
     layer = "data"
   )
-  sce <- liana_get_fun("SingleCellExperiment", package = "SingleCellExperiment")(
+  sce <- get_namespace_fun("SingleCellExperiment", "SingleCellExperiment")(
     assays = list(
       counts = counts,
       logcounts = logcounts
@@ -102,7 +102,7 @@ RunLIANA <- function(
     dots$base <- exp(1)
   }
   res <- do.call(
-    liana_get_fun("liana_wrap"),
+    get_namespace_fun("liana", "liana_wrap"),
     c(
       list(
         sce = sce,
@@ -157,7 +157,7 @@ RunLIANA <- function(
       producer = "RunLIANA",
       backend = "liana",
       backend_version = {
-        version_fun <- liana_get_fun("packageVersion", package = "utils")
+        version_fun <- get_namespace_fun("utils", "packageVersion")
         as.character(version_fun("liana"))
       }
     ),
@@ -364,11 +364,6 @@ ccc_resources_cellphonedb <- function() {
   )
 }
 
-liana_get_fun <- function(fun, package = "liana") {
-  get_namespace_fun(package, fun)
-}
-
-
 liana_resource_description <- function(resource) {
   switch(resource,
     Consensus = "Curated human consensus ligand-receptor resource",
@@ -554,7 +549,10 @@ liana_build_consensus <- function(
     )
   }
   nested <- is.list(res[[1]]) && !is.data.frame(res[[1]])
-  fun <- liana_get_fun(if (identical(mode, "rank")) "rank_aggregate" else "liana_aggregate")
+  fun <- get_namespace_fun(
+    "liana",
+    if (identical(mode, "rank")) "rank_aggregate" else "liana_aggregate"
+  )
   by_resource <- lapply(resources, function(resource_name) {
     args <- c(list(liana_res = res), consensus_args)
     if (nested) args$resource <- resource_name

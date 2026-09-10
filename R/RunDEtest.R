@@ -1204,10 +1204,11 @@ RunDEtestFindAllMarkers <- function(
     return(NULL)
   }
 
-  presto_fun <- presto_get_fun(
-    install = FALSE,
-    error_on_missing = FALSE
-  )
+  presto_ready <- isTRUE(all(unlist(
+    check_r("presto", install = FALSE, verbose = FALSE),
+    use.names = FALSE
+  )))
+  presto_fun <- if (presto_ready) get_namespace_fun("presto", "wilcoxauc")
   if (is.null(presto_fun)) {
     return(NULL)
   }

@@ -142,7 +142,7 @@ test_that("RunCHOIR calls the optional backend and standardizes results", {
   expect_setequal(
     mocked$checked,
     c(
-      getFromNamespace(".choir_repository", "scop"),
+      "corceslab/CHOIR",
       getFromNamespace(".choir_dependencies", "scop")
     )
   )
@@ -445,7 +445,7 @@ test_that("RunCHOIR installs and verifies the pinned backend through check_r", {
   expect_setequal(
     mocked$checked,
     c(
-      getFromNamespace(".choir_repository", "scop"),
+      "corceslab/CHOIR",
       getFromNamespace(".choir_dependencies", "scop")
     )
   )
