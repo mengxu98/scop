@@ -301,6 +301,39 @@ test_that("SCENICPlot rss rank keeps requested labels by default", {
   )
 })
 
+test_that("SCENIC RSS rank thins x-axis labels for long regulon lists", {
+  n_regulon <- 300L
+  groups <- c("A", "B")
+  rss <- matrix(
+    seq_len(n_regulon * length(groups)),
+    nrow = n_regulon,
+    dimnames = list(paste0("TF", seq_len(n_regulon)), groups)
+  )
+  rank_table <- do.call(rbind, lapply(groups, function(one_group) {
+    scores <- sort(rss[, one_group], decreasing = TRUE)
+    data.frame(
+      group = one_group,
+      regulon = names(scores),
+      TF = names(scores),
+      specificity_score = as.numeric(scores),
+      rank = seq_along(scores),
+      is_top = seq_along(scores) <= 3,
+      is_highlight = FALSE,
+      display_label = names(scores),
+      stringsAsFactors = FALSE
+    )
+  }))
+
+  out <- scenic_plot_rss_rank(
+    rss_matrix = rss,
+    rank_table = rank_table,
+    top_table = rank_table[rank_table[["is_top"]], , drop = FALSE]
+  )
+  x_breaks <- ggplot2::ggplot_build(out$plots[[1]])$layout$panel_params[[1]]$x$breaks
+  expect_true(1 %in% x_breaks)
+  expect_lte(length(x_breaks), 11)
+})
+
 test_that("SCENIC regulon labels preserve signed duplicates in auto mode", {
   rank_table <- data.frame(
     group = c("A", "B", "A"),
