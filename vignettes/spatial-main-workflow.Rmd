@@ -19,6 +19,9 @@ main path short: inspect the object, run the spatial workflow, check summaries,
 plot spatial features, and branch into optional backends only when the question
 requires them.
 
+For platform import, optional spatial normalization and method routing, see
+[platform workflows](spatial-platform-workflows.html).
+
 It is not a catalogue of every spatial backend. Use method pages for backend
 specific parameters and dependency notes.
 
@@ -193,12 +196,16 @@ For other domain backends, keep the output contract in mind: cluster labels
 should land in metadata and method details should stay under `srt@tools`.
 
 ```r
-spatial <- RunBANKSY(
+spatial <- RunStandardWorkflow(
   spatial,
+  workflow = "spatial",
   assay = "Spatial",
-  layer = "counts",
+  image = "slice1",
   coord.cols = c("x", "y"),
-  cluster_colname = "BANKSY_cluster"
+  do_spatial_cluster = TRUE,
+  spatial_cluster_method = "BANKSY",
+  spatial_cluster_params = list(cluster_colname = "BANKSY_cluster"),
+  do_deconvolution = FALSE
 )
 SpatialSpotPlot(spatial, group.by = "BANKSY_cluster")
 ```
