@@ -48,6 +48,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
   </ul>
 </li>
@@ -127,8 +128,9 @@ and RNA velocity.</p>
 </h2>
 <p>RNA velocity requires spliced and unspliced matrices. Generate those
 matrices outside <code>scop</code> with tools such as velocyto,
-bustools, or alevin-fry, then store them as assays in the Seurat
-object.</p>
+bustools, or alevin-fry, then store them as assays in the Seurat object,
+or as extra layers of the <code>RNA</code> assay. <code>assay_y</code>
+accepts either location.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunSCVELO.html">RunSCVELO</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
