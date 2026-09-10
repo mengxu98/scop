@@ -1,0 +1,99 @@
+---
+title: "Spatial imports and standard workflow methods"
+---
+
+Use Seurat as the container and select an explicit assay and image. SCOP
+records the observation unit and validates assay/image identity. The loader
+supports Visium, Visium HD bins and Xenium; it does not download data or install
+dependencies. Other platforms can use their existing Seurat loaders.
+
+## Visium: choose the existing methods through one workflow
+
+```r
+spatial <- ReadSpatialData("path/to/visium/outs", "visium", sample_id = "S1")
+
+spatial <- RunStandardWorkflow(
+  spatial, workflow = "spatial", assay = "Spatial", image = "slice1",
+  do_spatial_qc = TRUE,
+  spatial_qc_params = list(run_artifact = FALSE),
+  do_spatial_cluster = TRUE,
+  spatial_cluster_method = "BANKSY",
+  spatial_cluster_params = list(lambda = 0.2, resolution = 0.6),
+  do_deconvolution = FALSE
+)
+spatial@tools$run_standard_spatial_workflow$stages
+SpatialSpotPlot(spatial, group.by = "BANKSY_cluster", image = "slice1")
+```
+
+Here SpotSweeper runs local QC, with artifact detection explicitly not requested.
+It does not remove observations. When artifact detection is requested but cannot
+complete, the stage fails with the stage table attached to the error; a partial
+artifact assessment is not reported as a completed workflow.
+
+For SmoothClust, use `spatial_cluster_method = "SmoothClust"`, `spatial_q = 4`
+and `spatial_cluster_params = list(smooth_method = "knn", k = 18)`. For BANKSY,
+use its resolution parameter instead of `spatial_q`. Existing BayesSpace calls
+and `bayesspace_params` remain supported; do not supply both parameter lists.
+HD bin input routes BayesSpace to its `VisiumHD` platform unless explicitly
+overridden in method parameters. Segmented cells are rejected by the BayesSpace
+and spot-deconvolution branches of the standard workflow.
+
+## Keep normalized expression separate from counts
+
+```r
+normalized <- RunStandardWorkflow(
+  spatial, workflow = "spatial", assay = "Spatial", image = "slice1",
+  normalization_method = "SpaNorm",
+  spanorm_params = list(new_assay = "SpaNormAnalysis"),
+  do_spatial_cluster = TRUE, spatial_cluster_method = "BANKSY",
+  do_deconvolution = FALSE
+)
+normalized@tools$run_standard_spatial_workflow$parameters
+```
+
+The input assay remains the count source for deconvolution and BayesSpace.
+SpaNorm writes a separate normalized assay used for expression preprocessing,
+Moran/Geary features, BANKSY and SmoothClust. The default HVF method switches
+from count-based `vst` to data-based `mvp` for the SpaNorm output. The workflow
+also attaches the matching original counts to that assay for library QC; these
+are never replaced with normalized values. Explicit
+method parameter overrides are retained. Count-based SVG backends must receive
+an appropriate original assay/layer explicitly. Selecting SpaNorm with
+`do_normalization = FALSE` is rejected; a preexisting destination assay also
+requires choosing a new name.
+
+## Platform import and existing plots
+
+```r
+hd <- ReadSpatialData("path/to/hd/outs", "visium_hd",
+                      bin.size = c(8, 16), sample_id = "HD1")
+SpatialSpotPlot(hd, assay = "Spatial.008um", image = "slice1.008um",
+                features = rownames(hd)[1], layer = "counts")
+
+cells <- ReadSpatialData("path/to/xenium/outs", "xenium", sample_id = "X1")
+SpatialCellPlot(cells, image = "fov")
+```
+
+HD resolutions remain separate assays/images. An 8-micron bin may have
+full-resolution pixel coordinates; bin size and coordinate units are distinct.
+Xenium imports retain vendor segmentation boundaries and micron coordinates.
+The existing cell plot recognizes Seurat's `segmentations` boundary name.
+Boundary display is not segmentation QC or a new segmentation algorithm.
+
+## Sparse expression and assay compatibility
+
+SPARK-X and C++ Moran/Geary retain sparse input. R-reference and nnSVG
+conversions check `max_dense_gb` before creating a dense expression matrix.
+This bounds a single conversion, not the total backend memory. `ScaleData()`
+uses the selected assay/layer's cell set and updates layer membership on
+rescaling, including assays containing only a subset of the object's cells.
+
+## Validation
+
+`scripts/validate-spatial-platforms.R` runs seven public-data cases in isolated
+R processes: Visium baseline, BANKSY, SmoothClust, SpaNorm, local SpotSweeper,
+HD import, and Xenium import/rendering. It saves results, timings, sampled
+process-tree memory and logs. `scripts/verify-spatial-artifacts.R` reloads and
+plots those results. See `scripts/spatial-platform-data.md` for sources.
+Developer fixtures validate format and computation, not biological performance
+on full production slides. Mock tests are separate from live backend runs.

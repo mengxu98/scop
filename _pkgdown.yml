@@ -52,6 +52,7 @@ articles:
   navbar: Spatial Analysis
   contents:
   - spatial-main-workflow
+  - spatial-platform-workflows
   - spatial-framework-bridges
 
 reference:
@@ -210,6 +211,7 @@ reference:
 - subtitle: "Spatial Result Access"
 - contents:
   - SpatialCoordinates
+  - ReadSpatialData
   - SetSpatialImageAxes
   - GetSpatialGraph
 
