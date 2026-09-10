@@ -33,8 +33,14 @@ prepare_adata_feature_metadata <- function(metadata,
 #' @inheritParams RunStandardWorkflow
 #' @param assay_x Assay to convert as the main data matrix in the anndata object.
 #' @param layer_x Layer name for assay_x in the Seurat object.
-#' @param assay_y Assays to convert as layers in the anndata object.
-#' @param layer_y Layer names for the assay_y in the Seurat object.
+#' @param assay_y Assays, or extra layers of `assay_x`, to convert as layers in
+#' the anndata object. Each name is matched against the assays of the object
+#' first, then against the layers of `assay_x`, which covers velocity matrices
+#' such as `spliced` and `unspliced` stored as layers of a Seurat v5 `RNA`
+#' assay.
+#' @param layer_y Layer names for the assays in `assay_y`. It is ignored for
+#' names that are matched as layers of `assay_x`, where the layer name itself is
+#' used.
 #' @param reductions Character vector specifying which Seurat reductions to
 #' convert into `obsm`. Default is `NULL`, which converts all available
 #' reductions.
@@ -128,6 +134,9 @@ srt_to_adata <- function(
       message_type = "error"
     )
   }
+  if (is.null(names(layer_y))) {
+    names(layer_y) <- assay_y
+  }
 
   ad <- reticulate::import("anndata", convert = FALSE)
   np <- reticulate::import("numpy", convert = FALSE)
@@ -196,32 +205,16 @@ srt_to_adata <- function(
   layer_list <- list()
   for (assay in names(srt@assays)[names(srt@assays) != assay_x]) {
     if (assay %in% assay_y) {
-      layer <- GetAssayData5(
-        srt,
+      layer_list[[assay]] <- get_adata_sparse_layer(
+        srt = srt,
         assay = assay,
-        layer = layer_y[assay]
-      )
-      if (!identical(dim(layer), c(length(features), length(cell_order)))) {
-        if (all(features %in% rownames(layer)) && all(cell_order %in% colnames(layer))) {
-          layer <- layer[features, cell_order, drop = FALSE]
-        } else {
-          features_null <- features[!features %in% rownames(layer)]
-          cells_null <- cell_order[!cell_order %in% colnames(layer)]
-          log_message(
-            "The following features in the {.val {assay_x}} are not found in the {.val {assay}}: {.val {features_null}}",
-            message_type = "warning",
-            verbose = verbose
-          )
-          log_message(
-            "The following cells in the {.val {assay_x}} are not found in the {.val {assay}}: {.val {cells_null}}",
-            message_type = "warning",
-            verbose = verbose
-          )
-        }
-      }
-      layer_list[[assay]] <- scipy_sparse$csr_matrix(
-        reticulate::r_to_py(Matrix::t(layer)),
-        dtype = np$float32
+        layer = layer_y[[assay]],
+        assay_x = assay_x,
+        features = features,
+        cell_order = cell_order,
+        scipy_sparse = scipy_sparse,
+        np = np,
+        verbose = verbose
       )
     } else {
       log_message(
@@ -230,6 +223,34 @@ srt_to_adata <- function(
         verbose = verbose
       )
     }
+  }
+  assay_x_layers <- SeuratObject::Layers(srt[[assay_x]])
+  requested_layers <- setdiff(assay_y, names(srt@assays))
+  missing_layers <- setdiff(requested_layers, assay_x_layers)
+  for (layer in setdiff(requested_layers, missing_layers)) {
+    layer_list[[layer]] <- get_adata_sparse_layer(
+      srt = srt,
+      assay = assay_x,
+      layer = layer,
+      assay_x = assay_x,
+      features = features,
+      cell_order = cell_order,
+      scipy_sparse = scipy_sparse,
+      np = np,
+      verbose = verbose
+    )
+  }
+  if (length(missing_layers) > 0) {
+    log_message(
+      "{.val {missing_layers}} cannot be converted: neither an assay in the {.cls Seurat} object nor a layer of the {.val {assay_x}} assay",
+      message_type = "warning",
+      verbose = verbose
+    )
+    log_message(
+      "Assays in the {.cls Seurat} object: {.val {names(srt@assays)}}. Layers of the {.val {assay_x}} assay: {.val {assay_x_layers}}",
+      message_type = "info",
+      verbose = verbose
+    )
   }
   if (length(layer_list) > 0) {
     for (nm in names(layer_list)) {
@@ -320,6 +341,46 @@ srt_to_adata <- function(
   )
 
   return(adata)
+}
+
+get_adata_sparse_layer <- function(
+  srt,
+  assay,
+  layer,
+  assay_x,
+  features,
+  cell_order,
+  scipy_sparse,
+  np,
+  verbose = TRUE
+) {
+  mat <- GetAssayData5(
+    srt,
+    assay = assay,
+    layer = layer
+  )
+  if (!identical(dim(mat), c(length(features), length(cell_order)))) {
+    if (all(features %in% rownames(mat)) && all(cell_order %in% colnames(mat))) {
+      mat <- mat[features, cell_order, drop = FALSE]
+    } else {
+      features_null <- features[!features %in% rownames(mat)]
+      cells_null <- cell_order[!cell_order %in% colnames(mat)]
+      log_message(
+        "The following features in the {.val {assay_x}} are not found in the {.val {assay}}: {.val {features_null}}",
+        message_type = "warning",
+        verbose = verbose
+      )
+      log_message(
+        "The following cells in the {.val {assay_x}} are not found in the {.val {assay}}: {.val {cells_null}}",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+  }
+  scipy_sparse$csr_matrix(
+    reticulate::r_to_py(Matrix::t(mat)),
+    dtype = np$float32
+  )
 }
 
 get_adata_sparse_assay_layer <- function(

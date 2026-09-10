@@ -34,9 +34,15 @@ Default is all features in \code{assay_x}.}
 
 \item{layer_x}{Layer name for assay_x in the Seurat object.}
 
-\item{assay_y}{Assays to convert as layers in the anndata object.}
+\item{assay_y}{Assays, or extra layers of \code{assay_x}, to convert as layers in
+the anndata object. Each name is matched against the assays of the object
+first, then against the layers of \code{assay_x}, which covers velocity matrices
+such as \code{spliced} and \code{unspliced} stored as layers of a Seurat v5 \code{RNA}
+assay.}
 
-\item{layer_y}{Layer names for the assay_y in the Seurat object.}
+\item{layer_y}{Layer names for the assays in \code{assay_y}. It is ignored for
+names that are matched as layers of \code{assay_x}, where the layer name itself is
+used.}
 
 \item{reductions}{Character vector specifying which Seurat reductions to
 convert into \code{obsm}. Default is \code{NULL}, which converts all available
