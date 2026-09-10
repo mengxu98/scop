@@ -440,6 +440,16 @@ def SCVELO(
 
         adata.obs[group_by] = adata.obs[group_by].astype("category")
 
+        missing_layers = [
+            layer for layer in ("spliced", "unspliced") if layer not in adata.layers
+        ]
+        if len(missing_layers) > 0:
+            log_message(
+                "The {.cls AnnData} object has no {.val {missing_layers}} layer(s), so {.pkg scVelo} cannot estimate velocity. Available layers: {.val {list(adata.layers.keys())}}. Convert the object with {.fn srt_to_adata}/{.fn RunSCVELO} and {.arg assay_y} = c('spliced', 'unspliced'), which also accepts these matrices stored as layers of {.arg assay_x}",
+                message_type="error",
+                verbose=verbose,
+            )
+
         log_message("Starting preprocessing", message_type="running", verbose=verbose)
 
         if filter_genes:
@@ -545,11 +555,9 @@ def SCVELO(
                     verbose=verbose,
                 )
 
-        try:
-            scv.pp.moments(adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=use_rep)
-        except Exception as e:
+        def compute_moments_manually():
             log_message(
-                "{.pkg scvelo} moments failed ({.val {e}}), using manual computation...",
+                "Computing {.pkg scvelo} moments with the fallback implementation...",
                 message_type="warning",
                 verbose=verbose,
             )
@@ -567,6 +575,18 @@ def SCVELO(
 
             adata.layers["Ms"] = Ms
             adata.layers["Mu"] = Mu
+
+        try:
+            scv.pp.moments(adata, n_pcs=n_pcs, n_neighbors=n_neighbors, use_rep=use_rep)
+        except Exception as e:
+            log_message(
+                "{.pkg scvelo} moments failed ({.val {e}}), using manual computation...",
+                message_type="warning",
+                verbose=verbose,
+            )
+
+        if "Ms" not in adata.layers or "Mu" not in adata.layers:
+            compute_moments_manually()
 
         log_message(
             "Starting {.pkg velocity} estimation",
