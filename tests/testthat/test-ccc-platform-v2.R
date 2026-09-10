@@ -139,7 +139,7 @@ test_that("RunLIANA stores official consensus and keeps legacy tables", {
         resource
       }
     },
-    liana_get_fun = function(fun, package = "liana") {
+    get_namespace_fun = function(package, fun) {
       if (identical(package, "SingleCellExperiment")) {
         return(function(...) list(...))
       }
@@ -215,7 +215,7 @@ test_that("LIANA consensus failure does not mutate the Seurat object", {
         resource
       }
     },
-    liana_get_fun = function(fun, package = "liana") {
+    get_namespace_fun = function(package, fun) {
       if (identical(package, "SingleCellExperiment")) {
         return(function(...) list(...))
       }
@@ -277,7 +277,8 @@ test_that("LIANA aggregates multiple resources independently", {
   )
   seen <- character(0)
   testthat::local_mocked_bindings(
-    liana_get_fun = function(fun, package = "liana") {
+    get_namespace_fun = function(package, fun) {
+      expect_equal(package, "liana")
       expect_equal(fun, "rank_aggregate")
       function(liana_res, resource, ...) {
         seen <<- c(seen, resource)
