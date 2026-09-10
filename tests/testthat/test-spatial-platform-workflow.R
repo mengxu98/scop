@@ -57,16 +57,17 @@ test_that("loaders validate provenance without installing or synthesizing data",
 test_that("BANKSY and SmoothClust route to their own producers and reject stale labels", {
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   seen <- NULL
-  producer <- function(srt, cluster_colname, tool_name = "BANKSY", ...) {
+  producer <- function(object, cluster_colname, tool_name = "BANKSY", ...) {
+    srt <- object
     seen <<- list(...)
     srt[[cluster_colname]] <- rep(c("1", "2"), length.out = ncol(srt))
     srt@tools[[tool_name]] <- list(status = "completed")
     srt
   }
   testthat::local_mocked_bindings(.package = "scop",
-    RunStandardWorkflow = function(srt, ...) srt,
+    RunStandardWorkflow = function(object, ...) object,
     RunBANKSY = producer,
-    RunSmoothClust = function(srt, ..., tool_name = "SmoothClust") producer(srt, ..., tool_name = tool_name))
+    RunSmoothClust = function(object, ..., tool_name = "SmoothClust") producer(object, ..., tool_name = tool_name))
   for (method in c("BANKSY", "SmoothClust")) {
     out <- original(make_platform_object(), assay = "RNA", do_spot_qc = FALSE,
       do_spatial_variable_features = FALSE, do_deconvolution = FALSE,
@@ -79,7 +80,7 @@ test_that("BANKSY and SmoothClust route to their own producers and reject stale 
   }
   expect_error(original(make_platform_object(), assay = "RNA", do_spatial_cluster = TRUE,
     spatial_cluster_method = "BANKSY", spatial_q = 3, verbose = FALSE), "resolution")
-  testthat::local_mocked_bindings(.package = "scop", RunBANKSY = function(srt, ...) srt)
+  testthat::local_mocked_bindings(.package = "scop", RunBANKSY = function(object, ...) object)
   x <- make_platform_object(); x$BANKSY_cluster <- "old"; x@tools$BANKSY <- list(old = TRUE)
   expect_error(original(x, assay = "RNA", do_spot_qc = FALSE, do_spatial_variable_features = FALSE,
     do_spatial_cluster = TRUE, spatial_cluster_method = "BANKSY", verbose = FALSE))
@@ -90,18 +91,26 @@ test_that("SpaNorm routes normalized data separately and QC partial is not succe
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   seen <- list()
   testthat::local_mocked_bindings(.package = "scop",
-    RunSpaNorm = function(srt, assay, layer, ...) {
+    RunSpaNorm = function(object, assay, layer, ...) {
+      srt <- object
       seen$counts <<- GetAssayData5(srt, assay = assay, layer = layer)
       suppressWarnings(srt[["SpaNorm"]] <- SeuratObject::CreateAssayObject(data = log1p(seen$counts)))
       srt@tools$SpaNorm <- list(cells = colnames(srt)); srt
     },
-    RunStandardWorkflow = function(srt, assay, do_normalization, HVF_method, ...) {
+    RunStandardWorkflow = function(object, assay, do_normalization, HVF_method, ...) {
+      srt <- object
       seen$assay <<- assay; seen$normalize <<- do_normalization; seen$hvf <<- HVF_method; srt
     },
-    RunSpatialVariableFeatures = function(srt, assay, ...) {
+    RunSpatialVariableFeatures = function(object, assay, ...) {
+      srt <- object
       seen$svf <<- assay; srt@tools$SpatialVariableFeatures <- list(result = data.frame(feature = rownames(srt))); srt
     },
-    RunSpotSweeper = function(srt, ...) { srt@tools$SpotSweeper <- list(status = "partial"); srt })
+    RunSpotSweeper = function(object, ...) {
+      srt <- object
+      srt@tools$SpotSweeper <- list(status = "partial")
+      srt
+    }
+  )
   x <- make_platform_object()
   out <- original(x, assay = "RNA", do_spot_qc = FALSE, normalization_method = "SpaNorm", verbose = FALSE)
   expect_identical(seen$assay, "SpaNorm")
