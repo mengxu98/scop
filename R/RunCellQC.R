@@ -28,21 +28,21 @@
 RunDoubletCalling <- function(
   object,
   assay = "RNA",
-  db_rate = ncol(srt) / 1000 * 0.01,
+  db_rate = ncol(object) / 1000 * 0.01,
   db_method = "scDblFinder",
   data_type = NULL,
   ...,
   verbose = TRUE,
   srt = NULL
 ) {
-  srt <- resolve_deprecated_srt(object, srt, missing(object))
-  if (!inherits(srt, "Seurat")) {
+  object <- resolve_deprecated_srt(object, srt, missing(object))
+  if (!inherits(object, "Seurat")) {
     log_message(
-      "{.arg srt} is not a {.cls Seurat}",
+      "{.arg object} is not a {.cls Seurat}",
       message_type = "error"
     )
   }
-  status <- data_type %||% CheckDataType(srt, layer = "counts", assay = assay)
+  status <- data_type %||% CheckDataType(object, layer = "counts", assay = assay)
   if (status != "raw_counts") {
     log_message(
       "Data type is not raw counts",
@@ -74,10 +74,11 @@ RunDoubletCalling <- function(
     for (n in names(args2)) {
       args1[[n]] <- args2[[n]]
     }
-    args1 <- args1[!names(args1) %in% c("db_method", "...")]
+    args1 <- args1[!names(args1) %in% c("db_method", "...", "srt")]
+    args1[["object"]] <- object
     tryCatch(
       expr = {
-        srt <- do.call(
+        object <- do.call(
           what = paste0("Run", method1),
           args = args1
         )
@@ -89,7 +90,7 @@ RunDoubletCalling <- function(
         log_message(err_msg, message_type = "error")
       }
     )
-    return(srt)
+    return(object)
   } else {
     log_message(
       "{.arg db_method} must be one of {.val {db_methods}}",
