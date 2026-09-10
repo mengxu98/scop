@@ -718,7 +718,8 @@ scenic_plot_rss_rank <- function(
   }
   rank_breaks <- 1L
   if (nrow(rss_matrix) >= 5L) {
-    rank_breaks <- unique(c(rank_breaks, seq.int(5L, nrow(rss_matrix), by = 5L)))
+    rank_step <- 5L * ((nrow(rss_matrix) + 49L) %/% 50L)
+    rank_breaks <- unique(c(rank_breaks, seq.int(rank_step, nrow(rss_matrix), by = rank_step)))
   }
   plots <- lapply(colnames(rss_matrix), function(one_group) {
     data_rank_plot <- rank_table[
@@ -854,6 +855,23 @@ scenic_plot_rss_rank <- function(
     }
     if (!is.null(title)) {
       plot <- plot + patchwork::plot_annotation(title = title)
+    }
+    if (length(plots) > 1L) {
+      assembled <- patchwork::patchworkGrob(plot)
+      area <- assembled$layout[assembled$layout$name == "panel-area", , drop = FALSE]
+      if (nrow(area) == 1L) {
+        xlab_cell <- assembled$layout$l == area$l &
+          assembled$layout$r == area$r &
+          assembled$layout$t > area$b
+        ylab_cell <- assembled$layout$t == area$t &
+          assembled$layout$b == area$b &
+          assembled$layout$l < area$l
+        assembled$layout$l[xlab_cell] <- 1L
+        assembled$layout$r[xlab_cell] <- ncol(assembled)
+        assembled$layout$t[ylab_cell] <- 1L
+        assembled$layout$b[ylab_cell] <- nrow(assembled)
+        plot <- patchwork::wrap_plots(patchwork::wrap_elements(panel = assembled))
+      }
     }
   }
   list(plot = plot, plots = plots, data = rank_table)
