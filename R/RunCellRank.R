@@ -420,6 +420,7 @@ RunCellRank <- function(
     !names(args) %in%
       c(
         "srt",
+        "object",
         "assay_x",
         "layer_x",
         "assay_y",

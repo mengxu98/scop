@@ -12,6 +12,19 @@ make_python_backend_test_srt <- function(
   Seurat::CreateSeuratObject(counts = counts)
 }
 
+python_mock_without_data_object <- function(value) {
+  function(...) {
+    forwarded <- intersect(names(list(...)), c("object", "srt"))
+    if (length(forwarded) > 0) {
+      stop(
+        "unexpected keyword argument(s) for python: ",
+        paste(forwarded, collapse = ", ")
+      )
+    }
+    value
+  }
+}
+
 test_that("RunPAGA python backend promotes misc$paga into tools$PAGA", {
   adata_in <- list(obs = data.frame(cluster = factor(c("a", "b"))))
   paga_srt <- make_python_backend_test_srt()
@@ -28,7 +41,7 @@ test_that("RunPAGA python backend promotes misc$paga into tools$PAGA", {
     py_to_r2 = function(x) x,
     palette_colors = function(...) c("a" = "#111111", "b" = "#222222"),
     scop_python_import = function(...) {
-      list(PAGA = function(...) "fake_adata_out")
+      list(PAGA = python_mock_without_data_object("fake_adata_out"))
     },
     adata_to_srt = function(...) paga_srt
   )
@@ -70,7 +83,7 @@ test_that("RunSCVELO python backend records result locations in tools", {
     PrepareEnv = function(...) NULL,
     py_to_r2 = function(x) x,
     scop_python_import = function(...) {
-      list(SCVELO = function(...) "fake_adata_out")
+      list(SCVELO = python_mock_without_data_object("fake_adata_out"))
     },
     adata_to_srt = function(...) scvelo_srt
   )
@@ -132,7 +145,7 @@ test_that("RunPalantir python backend records converted outputs in tools", {
     check_python = function(...) TRUE,
     py_to_r2 = function(x) x,
     scop_python_import = function(...) {
-      list(Palantir = function(...) "fake_adata_out")
+      list(Palantir = python_mock_without_data_object("fake_adata_out"))
     },
     adata_to_srt = function(...) palantir_srt
   )
@@ -161,4 +174,60 @@ test_that("RunPalantir python backend records converted outputs in tools", {
     "palantir_dm"
   )
   expect_equal(out@tools$Palantir$dm_kernel, diag(2))
+})
+
+test_that("RunPAGA python backend takes the data object as `object`", {
+  adata_in <- list(obs = data.frame(cluster = factor(c("a", "b"))))
+  paga_srt <- make_python_backend_test_srt()
+  paga_srt$cluster <- factor(c("a", "b"))
+
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    PrepareEnv = function(...) NULL,
+    DefaultReduction = function(object, pattern = NULL, ...) "PCA",
+    py_to_r2 = function(x) x,
+    srt_to_adata = function(object, ...) adata_in,
+    palette_colors = function(...) c("a" = "#111111", "b" = "#222222"),
+    scop_python_import = function(...) {
+      list(PAGA = python_mock_without_data_object("fake_adata_out"))
+    }
+  )
+
+  out <- RunPAGA(
+    object = paga_srt,
+    group.by = "cluster",
+    backend = "python",
+    return_seurat = FALSE,
+    verbose = FALSE
+  )
+
+  expect_identical(out, "fake_adata_out")
+})
+
+test_that("RunWOT python backend takes the data object as `object`", {
+  adata_in <- list(obs = data.frame(cluster = factor(c("a", "b"))))
+  wot_srt <- make_python_backend_test_srt()
+  wot_srt$cluster <- factor(c("a", "b"))
+
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    PrepareEnv = function(...) NULL,
+    check_python = function(...) TRUE,
+    py_to_r2 = function(x) x,
+    srt_to_adata = function(object, ...) adata_in,
+    palette_colors = function(...) c("a" = "#111111", "b" = "#222222"),
+    scop_python_import = function(...) {
+      list(WOT = python_mock_without_data_object("fake_adata_out"))
+    }
+  )
+
+  out <- RunWOT(
+    object = wot_srt,
+    group.by = "cluster",
+    time_from = 1,
+    return_seurat = FALSE,
+    verbose = FALSE
+  )
+
+  expect_identical(out, "fake_adata_out")
 })
