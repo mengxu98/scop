@@ -208,7 +208,7 @@ RunCell2fate <- function(
     c(
       paste0(
         "git+https://github.com/",
-        .cell2fate_repository,
+        "BayraktarLab/cell2fate",
         ".git@",
         .cell2fate_commit
       ),
@@ -427,7 +427,7 @@ RunCell2fate <- function(
     provenance = list(
       producer = .cell2fate_producer,
       backend_id = "cell2fate",
-      backend_repository = .cell2fate_repository,
+      backend_repository = "BayraktarLab/cell2fate",
       backend_commit = manifest$backend_commit
     )
   )
@@ -440,7 +440,6 @@ RunCell2fate <- function(
   srt_out
 }
 
-.cell2fate_repository <- "BayraktarLab/cell2fate"
 .cell2fate_commit <- "c03d1ca0bb963f550001c6070d4986a61ec8456a"
 .cell2fate_producer <- "RunCell2fate"
 .cell2fate_schema_version <- 1L

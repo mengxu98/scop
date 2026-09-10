@@ -1,8 +1,5 @@
 # Spatial CellChat producer and stored-result plotting -------------------------
 
-.spatialcellchat_repository <- "jinworks/SpatialCellChat"
-.spatialcellchat_package <- "SpatialCellChat"
-
 spatialcellchat_required_symbols <- function(analysis.level = c("cell", "spot", "composition")) {
   analysis.level <- match.arg(analysis.level)
   common <- c(
@@ -405,13 +402,13 @@ spatialcellchat_database <- function(species, database, custom.db = NULL) {
     Mus_musculus = "CellChatDB.mouse"
   )
   data_env <- new.env(parent = emptyenv())
-  utils::data(list = data_name, package = .spatialcellchat_package, envir = data_env)
+  utils::data(list = data_name, package = "SpatialCellChat", envir = data_env)
   db <- get0(data_name, envir = data_env, inherits = FALSE)
   if (is.null(db)) {
     log_message("Cannot load SpatialCellChat database {.val {data_name}}", message_type = "error")
   }
   if (identical(database, "protein")) {
-    db <- get_namespace_fun(.spatialcellchat_package, "subsetDB")(
+    db <- get_namespace_fun("SpatialCellChat", "subsetDB")(
       db,
       search = c("Secreted Signaling", "ECM-Receptor", "Cell-Cell Contact"),
       non_protein = FALSE
@@ -427,14 +424,14 @@ spatialcellchat_call <- function(symbol, args, analysis.level) {
       message_type = "error"
     )
   }
-  fun <- get_namespace_fun(.spatialcellchat_package, symbol)
+  fun <- get_namespace_fun("SpatialCellChat", symbol)
   optional_fun <- function(package, name) {
     suppressWarnings(tryCatch(
       get_namespace_fun(package, name),
       error = function(e) NULL
     ))
   }
-  original_sparse_fun <- optional_fun(.spatialcellchat_package, "my_as_sparse3Darray")
+  original_sparse_fun <- optional_fun("SpatialCellChat", "my_as_sparse3Darray")
   sparse3d_fun <- optional_fun("spatstat.sparse", "sparse3Darray")
   compatibility_env <- new.env(parent = environment(fun))
   compatibility_env[["my_future_lapply"]] <- function(
@@ -522,7 +519,7 @@ spatialcellchat_call <- function(symbol, args, analysis.level) {
     "identifyOverExpressedLigandReceptor"
   )
   for (backend_symbol in compatibility_symbols) {
-    backend_fun <- optional_fun(.spatialcellchat_package, backend_symbol)
+    backend_fun <- optional_fun("SpatialCellChat", backend_symbol)
     if (is.function(backend_fun)) {
       backend_fun <- eval(
         call("function", formals(backend_fun), body(backend_fun)),
@@ -561,7 +558,7 @@ spatialcellchat_extract_table <- function(chat, sample, analysis.level, do.permu
   table <- NULL
   lr_error <- NULL
   if (isTRUE(lr_available)) {
-    subset_fun <- get_namespace_fun(.spatialcellchat_package, "subsetCommunication")
+    subset_fun <- get_namespace_fun("SpatialCellChat", "subsetCommunication")
     table <- tryCatch(subset_fun(chat), error = identity)
     if (inherits(table, "error")) {
       lr_error <- conditionMessage(table)
@@ -1039,13 +1036,13 @@ RunSpatialCellChat <- function(
   if (isTRUE(contact.dependent)) {
     spatialcellchat_validate_scalar(contact.range, "contact.range", positive = TRUE)
   }
-  check_r(.spatialcellchat_repository, verbose = FALSE)
+  check_r("jinworks/SpatialCellChat", verbose = FALSE)
   missing <- vapply(
     spatialcellchat_required_symbols(analysis.level),
     function(symbol) {
       tryCatch(
         {
-          get_namespace_fun(.spatialcellchat_package, symbol)
+          get_namespace_fun("SpatialCellChat", symbol)
           FALSE
         },
         error = function(e) TRUE

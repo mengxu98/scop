@@ -289,24 +289,13 @@ PlotscPagwas <- function(
   plots
 }
 
-scpagwas_get_fun <- function(fun, error = TRUE) {
-  out <- tryCatch(
-    suppressWarnings(get_namespace_fun("scPagwas", fun)),
-    error = function(e) NULL
-  )
-  if (!is.function(out) && isTRUE(error)) {
-    log_message(
-      "Could not find {.pkg scPagwas} function {.val {fun}}",
-      message_type = "error"
-    )
-  }
-  out
-}
-
 scpagwas_find_runner <- function(error = TRUE) {
   candidates <- c("scPagwas_main2", "scPagwas_main", "scPagwas")
   for (fun in candidates) {
-    runner <- scpagwas_get_fun(fun, error = FALSE)
+    runner <- tryCatch(
+      suppressWarnings(get_namespace_fun("scPagwas", fun)),
+      error = function(e) NULL
+    )
     if (is.function(runner)) {
       attr(runner, "scpagwas_runner") <- fun
       return(runner)
@@ -322,7 +311,10 @@ scpagwas_prepare_runner <- function(fun) {
   runner_name <- attr(fun, "scpagwas_runner", exact = TRUE)
   compat_env <- new.env(parent = environment(fun))
   for (name in c("Single_data_input", "Get_CorrectBg_p")) {
-    helper <- scpagwas_get_fun(name, error = FALSE)
+    helper <- tryCatch(
+      suppressWarnings(get_namespace_fun("scPagwas", name)),
+      error = function(e) NULL
+    )
     if (is.function(helper)) {
       helper <- scpagwas_rewrite_seurat_calls(helper)
       environment(helper) <- compat_env

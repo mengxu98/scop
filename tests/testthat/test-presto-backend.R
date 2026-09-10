@@ -1,100 +1,3 @@
-test_that("Presto checks existing installs without installing and uses the repository for installation", {
-  requests <- list()
-  testthat::local_mocked_bindings(
-    check_r = function(packages, install = TRUE, verbose = TRUE) {
-      requests[[length(requests) + 1L]] <<- list(
-        packages = packages,
-        install = install,
-        verbose = verbose
-      )
-      c(presto = TRUE)
-    },
-    .package = "scop"
-  )
-
-  expect_true(presto_check_r(install = FALSE))
-  expect_true(presto_check_r(install = TRUE))
-  expect_identical(requests[[1]]$packages, "presto")
-  expect_false(requests[[1]]$install)
-  expect_false(requests[[1]]$verbose)
-  expect_identical(requests[[2]]$packages, "immunogenomics/presto")
-  expect_true(requests[[2]]$install)
-  expect_false(requests[[2]]$verbose)
-})
-
-test_that("presto_get_fun checks and resolves the function exactly once", {
-  calls <- c(check = 0L, resolve = 0L)
-  wilcoxauc <- function(...) list(ok = TRUE)
-  testthat::local_mocked_bindings(
-    presto_check_r = function(install = FALSE) {
-      calls[["check"]] <<- calls[["check"]] + 1L
-      expect_false(install)
-      TRUE
-    },
-    get_namespace_fun = function(package, fun) {
-      calls[["resolve"]] <<- calls[["resolve"]] + 1L
-      expect_identical(package, "presto")
-      expect_identical(fun, "wilcoxauc")
-      wilcoxauc
-    },
-    .package = "scop"
-  )
-
-  resolved <- presto_get_fun(
-    install = FALSE,
-    error_on_missing = FALSE
-  )
-  expect_identical(resolved, wilcoxauc)
-  expect_equal(calls, c(check = 1L, resolve = 1L))
-})
-
-test_that("presto_get_fun supports a non-installing optional fallback", {
-  resolved <- FALSE
-  testthat::local_mocked_bindings(
-    presto_check_r = function(install = FALSE) {
-      expect_false(install)
-      FALSE
-    },
-    get_namespace_fun = function(...) {
-      resolved <<- TRUE
-      stop("resolver should not run")
-    },
-    .package = "scop"
-  )
-
-  expect_null(presto_get_fun(
-    install = FALSE,
-    error_on_missing = FALSE
-  ))
-  expect_false(resolved)
-  expect_error(
-    presto_get_fun(install = FALSE),
-    "optional.*presto.*unavailable"
-  )
-})
-
-test_that("presto_get_fun treats a missing backend symbol as unavailable", {
-  testthat::local_mocked_bindings(
-    presto_check_r = function(...) TRUE,
-    get_namespace_fun = function(...) stop("missing wilcoxauc"),
-    .package = "scop"
-  )
-
-  expect_null(presto_get_fun(error_on_missing = FALSE))
-  expect_error(presto_get_fun(), "does not provide.*wilcoxauc")
-})
-
-test_that("presto_get_fun rejects a NULL namespace lookup", {
-  testthat::local_mocked_bindings(
-    presto_check_r = function(...) TRUE,
-    get_namespace_fun = function(...) NULL,
-    .package = "scop"
-  )
-
-  expect_null(presto_get_fun(error_on_missing = FALSE))
-  expect_error(presto_get_fun(), "does not provide.*wilcoxauc.*not found")
-})
-
 test_that("FindAllMarkers probes Presto only after support checks and before marker context", {
   native_all_markers <- get("FindAllMarkers.Seurat", asNamespace("scop"))
   fallback <- data.frame(path = "Seurat", stringsAsFactors = FALSE)
@@ -109,14 +12,12 @@ test_that("FindAllMarkers probes Presto only after support checks and before mar
       events <<- c(events, "supported")
       identical(test.use, "wilcox")
     },
-    presto_get_fun = function(fun = "wilcoxauc",
-                              install = FALSE,
-                              error_on_missing = TRUE) {
-      events <<- c(events, "presto")
-      expect_identical(fun, "wilcoxauc")
-      expect_false(install)
-      expect_false(error_on_missing)
-      NULL
+    check_r = function(packages, install = TRUE, verbose = TRUE) {
+      if (identical(packages, "presto")) {
+        events <<- c(events, "presto")
+        return(c(presto = FALSE))
+      }
+      TRUE
     },
     marker_context = function(...) {
       events <<- c(events, "context")
@@ -148,50 +49,20 @@ test_that("FindAllMarkers probes Presto only after support checks and before mar
   expect_identical(events, c("chromatin", "supported"))
 })
 
-test_that("CellChat requests Presto only for a supported fast path", {
+test_that("RunCellChat requests Presto only for a supported fast path", {
   installs <- logical()
   testthat::local_mocked_bindings(
-    presto_check_r = function(install = FALSE) {
-      installs <<- c(installs, install)
+    check_r = function(packages, install = TRUE, verbose = TRUE) {
+      if (identical(packages, "immunogenomics/presto")) {
+        installs <<- c(installs, install)
+        return(c(presto = TRUE))
+      }
       TRUE
     },
-    .package = "scop"
-  )
-
-  expect_false(cellchat_check_presto(FALSE, c("object", "do.fast")))
-  expect_false(cellchat_check_presto(TRUE, "object"))
-  expect_true(cellchat_check_presto(TRUE, c("object", "do.fast")))
-  expect_true(cellchat_check_presto(TRUE, c("object", "...")))
-  expect_equal(installs, c(TRUE, TRUE))
-})
-
-test_that("CellChat fails before its fast path when Presto installation fails", {
-  testthat::local_mocked_bindings(
-    presto_check_r = function(install = FALSE) {
-      expect_true(install)
-      FALSE
-    },
-    .package = "scop"
-  )
-
-  expect_error(
-    cellchat_check_presto(TRUE, c("object", "do.fast")),
-    "optional.*presto.*do.fast.*unavailable"
-  )
-})
-
-test_that("RunCellChat routes its supported do.fast path through the Presto helper", {
-  presto_installs <- logical()
-  testthat::local_mocked_bindings(
-    check_r = function(...) invisible(TRUE),
     get_namespace_fun = function(package, fun) {
       expect_identical(package, "CellChat")
       expect_identical(fun, "identifyOverExpressedGenes")
       function(object, do.fast = FALSE) object
-    },
-    presto_check_r = function(install = FALSE) {
-      presto_installs <<- c(presto_installs, install)
-      FALSE
     },
     validate_cc_input = function(...) stop("input validation reached"),
     .package = "scop"
@@ -201,12 +72,61 @@ test_that("RunCellChat routes its supported do.fast path through the Presto help
     RunCellChat(NULL, group.by = "group", do.fast = FALSE, verbose = FALSE),
     "input validation reached"
   )
-  expect_length(presto_installs, 0L)
+  expect_length(installs, 0L)
+  expect_error(
+    RunCellChat(NULL, group.by = "group", do.fast = TRUE, verbose = FALSE),
+    "input validation reached"
+  )
+  expect_identical(installs, TRUE)
+})
+
+test_that("RunCellChat fails before its fast path when Presto installation fails", {
+  testthat::local_mocked_bindings(
+    check_r = function(packages, install = TRUE, verbose = TRUE) {
+      if (identical(packages, "immunogenomics/presto")) {
+        expect_true(install)
+        return(c(presto = FALSE))
+      }
+      TRUE
+    },
+    get_namespace_fun = function(package, fun) {
+      expect_identical(package, "CellChat")
+      function(object, do.fast = FALSE) object
+    },
+    validate_cc_input = function(...) stop("input validation reached"),
+    .package = "scop"
+  )
+
   expect_error(
     RunCellChat(NULL, group.by = "group", do.fast = TRUE, verbose = FALSE),
     "optional.*presto.*do.fast.*unavailable"
   )
-  expect_identical(presto_installs, TRUE)
+})
+
+test_that("RunCellChat skips the Presto request when the backend has no fast path", {
+  installs <- logical()
+  testthat::local_mocked_bindings(
+    check_r = function(packages, install = TRUE, verbose = TRUE) {
+      if (identical(packages, "immunogenomics/presto")) {
+        installs <<- c(installs, install)
+        return(c(presto = TRUE))
+      }
+      TRUE
+    },
+    get_namespace_fun = function(package, fun) {
+      expect_identical(package, "CellChat")
+      expect_identical(fun, "identifyOverExpressedGenes")
+      function(object) object
+    },
+    validate_cc_input = function(...) stop("input validation reached"),
+    .package = "scop"
+  )
+
+  expect_error(
+    RunCellChat(NULL, group.by = "group", do.fast = TRUE, verbose = FALSE),
+    "input validation reached"
+  )
+  expect_length(installs, 0L)
 })
 
 test_that("automatic marker fast paths fall back without installing Presto", {
@@ -232,15 +152,15 @@ test_that("automatic marker fast paths fall back without installing Presto", {
   all_fallback <- data.frame(path = "all")
   requests <- list()
   testthat::local_mocked_bindings(
-    presto_get_fun = function(fun = "wilcoxauc",
-                              install = FALSE,
-                              error_on_missing = TRUE) {
-      requests[[length(requests) + 1L]] <<- list(
-        fun = fun,
-        install = install,
-        error_on_missing = error_on_missing
-      )
-      NULL
+    check_r = function(packages, install = TRUE, verbose = TRUE) {
+      if (identical(packages, "presto")) {
+        requests[[length(requests) + 1L]] <<- list(
+          packages = packages,
+          install = install
+        )
+        return(c(presto = FALSE))
+      }
+      TRUE
     },
     get_namespace_fun = function(package, fun) {
       expect_identical(package, "Seurat")
@@ -273,19 +193,16 @@ test_that("automatic marker fast paths fall back without installing Presto", {
 
   expect_identical(pair, pair_fallback)
   expect_identical(all_markers, all_fallback)
-  expect_true(all(vapply(requests, function(x) identical(x$fun, "wilcoxauc"), logical(1))))
+  expect_true(all(vapply(requests, function(x) identical(x$packages, "presto"), logical(1))))
   expect_true(all(!vapply(requests, `[[`, logical(1), "install")))
-  expect_true(all(!vapply(requests, `[[`, logical(1), "error_on_missing")))
 })
 
 test_that("the installed runtime Presto backend resolves and executes its current API", {
   skip_if_not_installed("Matrix")
+  skip_if_not_installed("presto")
 
-  presto_fun <- presto_get_fun(
-    install = FALSE,
-    error_on_missing = FALSE
-  )
-  skip_if(is.null(presto_fun), "The runtime-optional Presto backend is unavailable")
+  presto_fun <- get_namespace_fun("presto", "wilcoxauc")
+  skip_if(!is.function(presto_fun), "The runtime-optional Presto backend is unavailable")
 
   expression <- Matrix::Matrix(
     matrix(
@@ -315,12 +232,10 @@ test_that("the installed runtime Presto backend resolves and executes its curren
 test_that("the installed runtime Presto backend drives SCOP marker entry points", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
+  skip_if_not_installed("presto")
 
-  presto_fun <- presto_get_fun(
-    install = FALSE,
-    error_on_missing = FALSE
-  )
-  skip_if(is.null(presto_fun), "The runtime-optional Presto backend is unavailable")
+  presto_fun <- get_namespace_fun("presto", "wilcoxauc")
+  skip_if(!is.function(presto_fun), "The runtime-optional Presto backend is unavailable")
 
   set.seed(16)
   counts <- Matrix::rsparsematrix(
@@ -362,7 +277,7 @@ test_that("the installed runtime Presto backend drives SCOP marker entry points"
   expect_true(all(c("gene", "cluster", "p_val", "p_val_adj") %in% colnames(all_markers)))
 })
 
-test_that("Presto remains declared only as a runtime remote", {
+test_that("optional GitHub backends stay out of the package metadata", {
   description_path <- system.file("DESCRIPTION", package = "scop")
   expect_true(nzchar(description_path))
   description <- read.dcf(description_path)[1, ]
@@ -379,5 +294,6 @@ test_that("Presto remains declared only as a runtime remote", {
   remotes <- trimws(unlist(strsplit(description[["Remotes"]], ",", fixed = TRUE)))
 
   expect_false("presto" %in% dependencies)
-  expect_true("immunogenomics/presto" %in% remotes)
+  expect_false(any(grepl("presto", remotes, fixed = TRUE)))
+  expect_setequal(remotes, c("mengxu98/thisplot", "mengxu98/thisutils"))
 })

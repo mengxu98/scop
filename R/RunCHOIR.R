@@ -202,7 +202,7 @@ RunCHOIR <- function(
     }
   } else {
     check_r(
-      c(.choir_repository, .choir_dependencies),
+      c("corceslab/CHOIR", .choir_dependencies),
       dependencies = NA,
       install = TRUE,
       verbose = FALSE
@@ -216,7 +216,13 @@ RunCHOIR <- function(
     }
     backend_commit <- observed_commit
   }
-  choir_fun <- choir_get_fun("CHOIR")
+  choir_fun <- get_namespace_fun("CHOIR", "CHOIR")
+  if (!identical(choir_loaded_commit(), .choir_commit)) {
+    log_message(
+      "The loaded {.pkg CHOIR} namespace could not be matched to the pinned backend. Restart R and try again.",
+      message_type = "error"
+    )
+  }
 
   args <- c(
     list(
@@ -271,8 +277,8 @@ RunCHOIR <- function(
         stringsAsFactors = FALSE
       ),
       backend = list(
-        package = .choir_package,
-        repository = .choir_repository,
+        package = "CHOIR",
+        repository = "corceslab/CHOIR",
         commit = backend_commit,
         key = key,
         cluster_column = backend_cluster_col
@@ -311,8 +317,6 @@ RunCHOIR <- function(
   result
 }
 
-.choir_repository <- "corceslab/CHOIR"
-.choir_package <- "CHOIR"
 .choir_commit <- "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
 .choir_reduction <- "CHOIR_P0_reduction"
 .choir_dependencies <- c(
@@ -335,7 +339,7 @@ RunCHOIR <- function(
 )
 
 choir_namespace_loaded <- function() {
-  isNamespaceLoaded(.choir_package)
+  isNamespaceLoaded("CHOIR")
 }
 
 choir_loaded_commit <- function() {
@@ -343,7 +347,7 @@ choir_loaded_commit <- function() {
     return(NULL)
   }
   namespace <- tryCatch(
-    asNamespace(.choir_package),
+    asNamespace("CHOIR"),
     error = function(...) NULL
   )
   package_path <- tryCatch(
@@ -372,7 +376,7 @@ choir_loaded_commit <- function() {
 
 choir_installed_commit <- function() {
   description <- tryCatch(
-    utils::packageDescription(.choir_package),
+    utils::packageDescription("CHOIR"),
     error = function(...) NULL
   )
   if (is.null(description)) {
@@ -383,17 +387,6 @@ choir_installed_commit <- function() {
     return(NULL)
   }
   as.character(commit)
-}
-
-choir_get_fun <- function(fun) {
-  value <- get_namespace_fun(.choir_package, fun)
-  if (!identical(choir_loaded_commit(), .choir_commit)) {
-    log_message(
-      "The loaded {.pkg CHOIR} namespace could not be matched to the pinned backend. Restart R and try again.",
-      message_type = "error"
-    )
-  }
-  value
 }
 
 choir_prepare_output <- function(

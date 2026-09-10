@@ -64,8 +64,20 @@ density of the first two dimensions).}
 
 \item{bg_color}{Color for background / \code{NA} points.}
 
+\item{pt.size}{Point size and transparency. \code{pt.size = NULL} scales with \code{sqrt(n)} (minimum \code{0.3}). Rasterized points keep at least a two-pixel radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
+
+\item{cells.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
+
+\item{cols.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
+
 \item{shape.highlight}{Shape of the cell to highlight.
 See \href{https://plotly.com/r/reference/scattergl/#scattergl-marker-symbol}{scattergl-marker-symbol}}
+
+\item{sizes.highlight}{Cells to highlight and their appearance. \code{TRUE} highlights all cells.}
+
+\item{lineages}{Pseudotime columns to use. If \code{NULL}, lineage-like pseudotime columns such as \code{Lineage1}, \code{Lineage2}, \code{prefix_Lineage1}, or \code{pseudotime} are detected and merged into one global pseudotime for a single panel. Use \code{"all"} to plot each detected lineage in separate panels.}
+
+\item{lineages_palette}{Color palette used for lineage groups.}
 
 \item{density_n}{Grid size used by \code{MASS::kde2d()} for
 \code{plot_type = "density_surface"}.}

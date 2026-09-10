@@ -441,7 +441,7 @@ branch_stream_single_plot <- function(
             size = .data$size
           ),
           fill = grDevices::adjustcolor(label_fill, alpha.f = label_fill_alpha),
-          label.size = 0,
+          linewidth = 0,
           fontface = label_fontface,
           show.legend = FALSE
         ) +

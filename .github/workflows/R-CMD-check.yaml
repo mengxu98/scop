@@ -76,10 +76,8 @@ jobs:
         shell: Rscript {0}
         run: |
           pkgload::load_all(".", quiet = TRUE, compile = FALSE)
-          presto_fun <- get("presto_get_fun", asNamespace("scop"))(
-            install = FALSE,
-            error_on_missing = FALSE
-          )
+          get_namespace_fun <- get("get_namespace_fun", asNamespace("scop"))
+          presto_fun <- get_namespace_fun("presto", "wilcoxauc")
           stopifnot(is.function(presto_fun))
           testthat::test_file(
             "tests/testthat/test-presto-backend.R",

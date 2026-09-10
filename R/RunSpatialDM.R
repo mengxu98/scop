@@ -1,9 +1,5 @@
 # Official SpatialDM producer, result accessor, and SCOP-style plots -----------
 
-.spatialdm_backend_commit <- "9b0f559dfd152c361fdd311b129cda84692349f3"
-.spatialdm_repository <- "StatBiomed/SpatialDM"
-
-
 spatialdm_validate_matrix <- function(x, label, nonnegative = TRUE) {
   if ((!is.matrix(x) && !methods::is(x, "sparseMatrix")) ||
     is.null(rownames(x)) || is.null(colnames(x)) ||
@@ -246,7 +242,7 @@ spatialdm_bundle <- function(input, executed, parameters, result.name) {
     provenance = list(
       producer = "RunSpatialDM", backend_id = "SpatialDM",
       backend_version = executed$manifest$versions$SpatialDM %||% NA_character_,
-      repository = .spatialdm_repository, commit = .spatialdm_backend_commit,
+      repository = "StatBiomed/SpatialDM", commit = "9b0f559dfd152c361fdd311b129cda84692349f3",
       manifest = executed$manifest
     )
   )

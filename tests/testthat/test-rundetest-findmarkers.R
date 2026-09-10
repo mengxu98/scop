@@ -128,10 +128,7 @@ test_that("RunDEtest exports internal marker workers to parallel processes", {
 test_that("supported RunDEtest Wilcoxon branches stay on the scop backend", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
-  skip_if(
-    is.null(presto_get_fun(install = FALSE, error_on_missing = FALSE)),
-    "The runtime-optional Presto backend is unavailable"
-  )
+  skip_if_not_installed("presto")
 
   set.seed(3)
   counts <- Matrix::rsparsematrix(
@@ -283,11 +280,12 @@ test_that("RunDEtest all-in-one fallback never installs missing Presto", {
       context_materialized <<- TRUE
       stop("marker context should not be materialized without Presto")
     },
-    presto_get_fun = function(fun = "wilcoxauc",
-                              install = FALSE,
-                              error_on_missing = TRUE) {
-      install_requested <<- install
-      NULL
+    check_r = function(packages, install = TRUE, verbose = TRUE) {
+      if (identical(packages, "presto")) {
+        install_requested <<- install
+        return(c(presto = FALSE))
+      }
+      TRUE
     },
     .package = "scop"
   )
@@ -342,10 +340,7 @@ test_that("RunDEtest all-in-one fallback never installs missing Presto", {
 test_that("RunDEtest all-in-one markers match the pairwise scop backend", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("Matrix")
-  skip_if(
-    is.null(presto_get_fun(install = FALSE, error_on_missing = FALSE)),
-    "The runtime-optional Presto backend is unavailable"
-  )
+  skip_if_not_installed("presto")
 
   set.seed(5)
   counts <- Matrix::rsparsematrix(

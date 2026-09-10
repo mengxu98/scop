@@ -152,12 +152,8 @@ Suggests:
     SpaNorm,
     withr
 Remotes:
-    immunogenomics/presto,
     mengxu98/thisplot,
-    mengxu98/thisutils,
-    jinworks/SpatialCellChat,
-    linxihui/NNLM,
-    ZJUFanLab/SpaTalk
+    mengxu98/thisutils
 LinkingTo:
     cli,
     Rcpp,
