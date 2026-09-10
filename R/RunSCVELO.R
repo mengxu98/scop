@@ -287,6 +287,7 @@ RunSCVELO <- function(
 
   params <- c(
     "srt",
+    "object",
     "assay_x",
     "layer_x",
     "assay_y",
