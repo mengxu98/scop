@@ -68,14 +68,14 @@ parameters forwarded to \code{scTenifoldNet::tensorDecomposition()}.}
 \item{cores}{Number of cores used by native network-construction workers and
 forwarded to downstream linear algebra where applicable.}
 
-\item{backend}{\code{r} calls \code{scTenifoldKnk::scTenifoldKnk()} directly and is the
-default high-consistency path. \code{cpp} follows the upstream
-\code{scTenifoldNet}/\code{scTenifoldKnk} network construction, tensor decomposition,
-manifold alignment, and differential-regulation steps while keeping input
-handling and result storage inside \code{scop}.}
+\item{backend}{\code{r} runs the upstream \code{scTenifoldNet} pipeline with the
+\code{scTenifoldKnk} differential-regulation helpers and is the default
+high-consistency path. \code{cpp} runs all steps with scop's native kernels and is
+much faster on large gene sets.}
 
 \item{store_networks}{Whether to keep WT/KO tensor networks in
-\code{srt@tools}.}
+\code{srt@tools}. This only controls what is stored; the network ensemble is
+always built the same way.}
 
 \item{store_manifold}{Whether to keep manifold-alignment coordinates in
 \code{srt@tools}.}
