@@ -133,6 +133,7 @@ RunCellTypist <- function(
 
   params <- c(
     "srt",
+    "object",
     "assay",
     "layer",
     "return_seurat"

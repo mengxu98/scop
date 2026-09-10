@@ -469,6 +469,65 @@ test_that("RunDoubletCalling dispatches to Run-prefixed backends", {
   expect_identical(unique(out$dispatch), "RunScrublet")
 })
 
+test_that("RunDoubletCalling forwards the data object under one name only", {
+  counts <- methods::as(Matrix::Matrix(
+    matrix(c(1, 0, 2, 3), nrow = 2),
+    sparse = TRUE
+  ), "generalMatrix")
+  rownames(counts) <- c("g1", "g2")
+  colnames(counts) <- c("c1", "c2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  observed <- new.env(parent = emptyenv())
+
+  testthat::local_mocked_bindings(
+    RunScrublet = function(...) {
+      observed$args <- list(...)
+      observed$args[["object"]]
+    },
+    Runscds = function(...) {
+      observed$args <- list(...)
+      observed$args[["object"]]
+    },
+    .package = "scop"
+  )
+
+  for (db_method in c("Scrublet", "scds_cxds")) {
+    observed$args <- NULL
+    out <- RunDoubletCalling(
+      object = srt,
+      db_method = db_method,
+      db_rate = 0.02,
+      data_type = "raw_counts",
+      verbose = FALSE
+    )
+
+    expect_false("srt" %in% names(observed$args), info = db_method)
+    expect_identical(observed$args[["object"]], srt, info = db_method)
+    expect_identical(
+      observed$args[["method"]],
+      if (db_method == "scds_cxds") "cxds",
+      info = db_method
+    )
+    expect_identical(out, srt, info = db_method)
+  }
+
+  observed$args <- NULL
+  expect_warning(
+    out <- RunDoubletCalling(
+      srt = srt,
+      db_method = "Scrublet",
+      db_rate = 0.02,
+      data_type = "raw_counts",
+      verbose = FALSE
+    ),
+    "deprecated"
+  )
+
+  expect_false("srt" %in% names(observed$args))
+  expect_identical(observed$args[["object"]], srt)
+  expect_identical(out, srt)
+})
+
 test_that("deprecated doublet callers forward to Run-prefixed replacements", {
   testthat::local_mocked_bindings(
     RunscDblFinder = function(...) "RunscDblFinder",
