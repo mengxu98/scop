@@ -1750,7 +1750,7 @@ cell_dim_nested_legend_grob <- function(
       ),
       color = "white",
       fontface = "bold",
-      label.size = 0,
+      linewidth = 0,
       label.r = grid::unit(0, "pt"),
       label.padding = grid::unit(1.8, "pt"),
       hjust = 0,
@@ -1854,6 +1854,10 @@ cell_dim_nested_legend_data <- function(
 }
 
 #' @title 3D-Dimensional reduction plot for cell classification visualization.
+#'
+#' @md
+#' @inheritParams CellDimPlot
+#' @inheritParams scop-params
 #'
 #' @description
 #' Color cells in 3D reduction space, or draw an interactive density surface.

@@ -11,6 +11,11 @@
 #' @md
 #' @inheritParams thisutils::log_message
 #' @inheritParams RunIntegration
+#' @param linear_reduction Linear reduction (`"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`, `"glmpca"`).
+#' @param nHVF Number of highly variable features.
+#' @param linear_reduction_dims Total number of dimensions to compute and store for `linear_reduction`.
+#' @param linear_reduction_dims_use Dimensions used downstream. `NULL` uses estimated dimensions, else the first 50.
+#' @param nonlinear_reduction Nonlinear reduction (`"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`, `"phate"`, `"pacmap"`, `"trimap"`, `"largevis"`, `"fr"`).
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A `Seurat` object containing a batch column.

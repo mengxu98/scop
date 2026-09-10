@@ -67,7 +67,7 @@ test_that("SpatialDM stores spatial association semantics without fake edges", {
   expect_identical(out@tools$SpatialDM$cells, colnames(srt))
   expect_identical(out@tools$SpatialDM$features, rownames(srt))
   expect_identical(out@tools$SpatialDM$source$spatial$coordinate_space, "raw")
-  expect_identical(out@tools$SpatialDM$provenance$commit, getFromNamespace(".spatialdm_backend_commit", "scop"))
+  expect_identical(out@tools$SpatialDM$provenance$commit, "9b0f559dfd152c361fdd311b129cda84692349f3")
   expect_true(is.null(out@tools$CCC))
   expect_equal(scop::GetSpatialDMResult(out, type = "global")$moran_r, 0.8)
   expect_s3_class(scop::SpatialDMPlot(out, plot_type = "global"), "ggplot")

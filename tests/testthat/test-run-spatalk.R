@@ -11,9 +11,9 @@ make_spatalk_test_object <- function() {
   srt
 }
 
-mock_spatalk_bindings <- function(dec_seen = NULL, fail_cci = FALSE) {
+mock_spatalk_bindings <- function(dec_seen = NULL, fail_cci = FALSE, check_r = NULL) {
   testthat::local_mocked_bindings(
-    check_r = function(repos, verbose = FALSE, install = TRUE, ...) {
+    check_r = check_r %||% function(repos, verbose = FALSE, install = TRUE, ...) {
       expect_identical(repos, c("NNLM", "SpaTalk"))
       expect_false(install)
       list(NNLM = TRUE, SpaTalk = TRUE)
@@ -85,14 +85,17 @@ mock_spatalk_bindings <- function(dec_seen = NULL, fail_cci = FALSE) {
 test_that("SpaTalk preflight accepts installed packages without remote metadata", {
   seen <- new.env(parent = emptyenv())
   seen$calls <- list()
-  testthat::local_mocked_bindings(
-    check_r = function(repos, verbose = FALSE, install = TRUE, ...) {
-      seen$calls[[length(seen$calls) + 1L]] <- list(repos = repos, install = install)
-      list(NNLM = TRUE, SpaTalk = TRUE)
-    },
-    .package = "scop"
+  mock_spatalk_bindings(check_r = function(repos, verbose = FALSE, install = TRUE, ...) {
+    seen$calls[[length(seen$calls) + 1L]] <- list(repos = repos, install = install)
+    list(NNLM = TRUE, SpaTalk = TRUE)
+  })
+  srt <- make_spatalk_test_object()
+  RunSpaTalk(
+    srt,
+    group.by = "celltype", mode = "single_cell",
+    coord.cols = c("col", "row"), store.object = "minimal",
+    backend = "r", verbose = FALSE
   )
-  expect_invisible(spatalk_check_r())
   expect_length(seen$calls, 1L)
   expect_identical(seen$calls[[1L]]$repos, c("NNLM", "SpaTalk"))
   expect_false(seen$calls[[1L]]$install)
@@ -101,17 +104,20 @@ test_that("SpaTalk preflight accepts installed packages without remote metadata"
 test_that("SpaTalk preflight falls back to official repositories when absent", {
   seen <- new.env(parent = emptyenv())
   seen$calls <- list()
-  testthat::local_mocked_bindings(
-    check_r = function(repos, verbose = FALSE, install = TRUE, ...) {
-      seen$calls[[length(seen$calls) + 1L]] <- list(repos = repos, install = install)
-      if (identical(repos, c("NNLM", "SpaTalk"))) {
-        return(list(NNLM = FALSE, SpaTalk = FALSE))
-      }
-      list(NNLM = TRUE, SpaTalk = TRUE)
-    },
-    .package = "scop"
+  mock_spatalk_bindings(check_r = function(repos, verbose = FALSE, install = TRUE, ...) {
+    seen$calls[[length(seen$calls) + 1L]] <- list(repos = repos, install = install)
+    if (identical(repos, c("NNLM", "SpaTalk"))) {
+      return(list(NNLM = FALSE, SpaTalk = FALSE))
+    }
+    list(NNLM = TRUE, SpaTalk = TRUE)
+  })
+  srt <- make_spatalk_test_object()
+  RunSpaTalk(
+    srt,
+    group.by = "celltype", mode = "single_cell",
+    coord.cols = c("col", "row"), store.object = "minimal",
+    backend = "r", verbose = FALSE
   )
-  expect_invisible(spatalk_check_r())
   expect_length(seen$calls, 2L)
   expect_identical(
     seen$calls[[2L]]$repos,

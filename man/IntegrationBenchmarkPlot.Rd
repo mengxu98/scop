@@ -44,6 +44,12 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{boxplot_jitter}{Whether to overlay jittered points on the LISI boxes.}
 
+\item{combine}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{nrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE} returns a list of ggplots.}
+
+\item{ncol}{Number of columns of the combined plot.}
+
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 

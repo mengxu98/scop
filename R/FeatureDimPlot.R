@@ -7,7 +7,12 @@
 #' @md
 #' @inheritParams scop-params
 #' @inheritParams CellDimPlot
-#' @inheritParams scop-params
+#' @param lineages_trim,lineages_span,lineages_palcolor,lineages_arrow,lineages_linewidth,lineages_line_bg,lineages_line_bg_stroke,lineages_whiskers,lineages_whiskers_linewidth,lineages_whiskers_alpha
+#' Pseudotime lineages as [stats::loess] curves. See [grid::arrow] for `lineages_arrow`.
+#' @param edge_size,edge_alpha,edge_color Neighbor-graph edges.
+#' @param legend.title Title of the legend. `NULL` uses the group name.
+#' @param alpha.highlight,stroke.highlight Transparency and stroke width of the highlighted points.
+#' @param theme_use Theme name or function.
 #' @param features Features to plot: a character vector or a named list of
 #' assay gene names or numeric metadata columns.
 #' @param layer Assay layer to use.

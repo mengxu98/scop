@@ -70,6 +70,8 @@ in the selected assay are used.}
 \item{round_counts}{Whether to round non-integer counts before model fitting.
 This is a preprocessing choice and does not recover original counts.}
 
+\item{verbose}{Whether to print messages.}
+
 \item{...}{Additional arguments passed to the STdeconvolve fit steps.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It

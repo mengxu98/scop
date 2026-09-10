@@ -32,7 +32,10 @@
 #' scenicplus_dot <- SCENICPlusPlot(pancreas_sub, group.by = "CellType")
 #' example_tfs <- unique(scenicplus_dot$top_table$TF)[1:3]
 #' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "egrn", features = example_tfs)
-#' SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "network_graph", features = example_tfs)
+#' SCENICPlusPlot(
+#'   pancreas_sub,
+#'   group.by = "CellType", plot_type = "network_graph", features = example_tfs
+#' )
 #' }
 SCENICPlusPlot <- function(
   object,

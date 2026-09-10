@@ -405,7 +405,7 @@ CCCNetworkPlot <- function(
           message_type = "error"
         )
       }
-      check_r(.spatialcellchat_repository, verbose = FALSE)
+      check_r("jinworks/SpatialCellChat", verbose = FALSE)
       native <- GetCCCObject(
         object = srt,
         method = "SpatialCellChat",
@@ -413,7 +413,7 @@ CCCNetworkPlot <- function(
         sample = sample
       )
       diffusion_fun <- get_namespace_fun(
-        .spatialcellchat_package,
+        "SpatialCellChat",
         "netVisual_CommunField"
       )
       native_formals <- names(formals(diffusion_fun))
