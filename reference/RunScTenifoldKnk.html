@@ -161,16 +161,16 @@ forwarded to downstream linear algebra where applicable.</p></dd>
 
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p><code>r</code> calls <code><a href="https://rdrr.io/pkg/scTenifoldKnk/man/scTenifoldKnk.html" class="external-link">scTenifoldKnk::scTenifoldKnk()</a></code> directly and is the
-default high-consistency path. <code>cpp</code> follows the upstream
-<code>scTenifoldNet</code>/<code>scTenifoldKnk</code> network construction, tensor decomposition,
-manifold alignment, and differential-regulation steps while keeping input
-handling and result storage inside <code>scop</code>.</p></dd>
+<dd><p><code>r</code> runs the upstream <code>scTenifoldNet</code> pipeline with the
+<code>scTenifoldKnk</code> differential-regulation helpers and is the default
+high-consistency path. <code>cpp</code> runs all steps with scop's native kernels and is
+much faster on large gene sets.</p></dd>
 
 
 <dt id="arg-store-networks">store_networks<a class="anchor" aria-label="anchor" href="#arg-store-networks"></a></dt>
 <dd><p>Whether to keep WT/KO tensor networks in
-<code>srt@tools</code>.</p></dd>
+<code>srt@tools</code>. This only controls what is stored; the network ensemble is
+always built the same way.</p></dd>
 
 
 <dt id="arg-store-manifold">store_manifold<a class="anchor" aria-label="anchor" href="#arg-store-manifold"></a></dt>
@@ -225,28 +225,29 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  store_networks <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  store_manifold <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-10 11:21:03] Run <span style="color: #0000BB;">scTenifoldKnk</span> knockout for <span style="color: #0000BB;">"Pdx1"</span> using <span style="color: #0000BB;">"r"</span> backend</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-10 12:04:37] Run <span style="color: #0000BB;">scTenifoldKnk</span> knockout for <span style="color: #0000BB;">"Pdx1"</span> using <span style="color: #0000BB;">"r"</span> backend</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Building 3 gene regulatory networks (200 cells each)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Networks <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  33% | ETA:  5s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Networks <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  67% | ETA:  3s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Networks <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ </span> 100% | ETA:  0s</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Network construction complete: 3 networks</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [X] Tensor: 301 x 301 x 3 (K=3)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [X] CP decomposition complete (norm explained: 39.9%)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [X] CP decomposition complete (norm explained: 35.8%)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Manifold alignment: 301 shared genes, d=2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Manifold alignment complete: 2 dimensions</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Computing distances for 301 genes</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential regulation complete: 1/301 significant genes (FDR &lt; 0.05)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-10 11:21:15] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `srt@tools[[scTenifoldKnk]]`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-10 12:05:04] <span style="color: #0000BB;">scTenifoldKnk</span> results stored in `srt@tools[[scTenifoldKnk]]`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dr</span> <span class="op">&lt;-</span> <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">scTenifoldKnk</span><span class="op">$</span><span class="va">diffRegulation</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dr</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       gene     distance        Z          FC      p.value        p.adj</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1     Pdx1 6.754982e-04 3.963089 289.3616215 6.849419e-65 2.061675e-62</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 292   Cd81 7.505946e-05 2.316055   3.5727569 5.873472e-02 1.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 256   Myl6 3.581292e-05 1.864745   0.8133400 3.671346e-01 1.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 84   Actg1 3.437486e-05 1.841072   0.7493322 3.866877e-01 1.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 148   Ssr2 2.780289e-05 1.720629   0.4901989 4.838386e-01 1.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 156 Sec61b 2.552481e-05 1.673092   0.4131593 5.203703e-01 1.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     Pdx1 1.558525e-03 5.339097 295.2784402 3.519387e-66 1.059336e-63</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33    Gnas 7.812258e-05 2.198948   0.7419201 3.890465e-01 1.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 148   Ssr2 6.643820e-05 2.070395   0.5365865 4.638509e-01 1.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 156 Sec61b 6.511214e-05 2.054643   0.5153804 4.728190e-01 1.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 268   Ssr4 5.231320e-05 1.887084   0.3326799 5.640853e-01 1.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 176 Minos1 4.802236e-05 1.823242   0.2803438 5.964760e-01 1.000000e+00</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="scTenifoldKnkPlot.html">scTenifoldKnkPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, plot_type <span class="op">=</span> <span class="st">"effect"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="RunScTenifoldKnk-1.png" alt="" width="700" height="433"></span>
