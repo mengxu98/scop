@@ -657,7 +657,7 @@ test_that("clustering and multimodal wrappers delegate all arguments", {
   cells <- paste0("c", seq_len(60L))
   adjacency <- Matrix::rsparsematrix(60L, 60L, density = 0.08)
   adjacency@x[] <- 1
-  adjacency <- as(adjacency + Matrix::t(adjacency) > 0, "dgCMatrix")
+  adjacency <- as(adjacency + Matrix::t(adjacency) > 0, "dMatrix")
   diag(adjacency) <- 0
   rownames(adjacency) <- colnames(adjacency) <- cells
   graph <- SeuratObject::as.Graph(adjacency)

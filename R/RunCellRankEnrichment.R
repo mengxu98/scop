@@ -145,7 +145,7 @@ RunCellRankEnrichment <- function(
       if (nrow(combined)) {
         p <- ggplot2::ggplot(
           head(combined[order(combined$p.adjust), , drop = FALSE], as.integer(show_category)),
-          ggplot2::aes(x = cluster, y = reorder(Description, -log10(p.adjust)), size = Count, color = p.adjust)
+          ggplot2::aes(x = cluster, y = stats::reorder(Description, -log10(p.adjust)), size = Count, color = p.adjust)
         ) +
           ggplot2::geom_point() +
           ggplot2::scale_color_viridis_c(trans = "log10", direction = -1) +
