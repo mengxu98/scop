@@ -34,6 +34,25 @@
 #' `sender = "all"`.
 #' @param backend Backend used for post-processing aggregation. Upstream
 #'   NicheNet inference is unchanged.
+#' @param merged_table_file Optional path to a CSV file for exporting a temporary
+#'   ligand-receptor/activity/target merged table. The file is not stored in the
+#'   result bundle. Existing files and missing parent directories are rejected.
+#' @details In the exported table, a ligand's predicted targets are repeated for
+#'   each candidate receptor from the LR table. This is a ligand-level display
+#'   of the existing results; it does not establish receptor-mediated targets or
+#'   sender-specific target effects.
+#' @examples
+#' \dontrun{
+#' srt <- RunNichenetr(
+#'   object = srt,
+#'   group.by = "celltype",
+#'   receiver = "Receiver",
+#'   condition.by = "condition",
+#'   condition_oi = "case",
+#'   condition_reference = "control",
+#'   merged_table_file = "NicheNet_merged.csv"
+#' )
+#' }
 #' @return A Seurat object with standardized NicheNet results stored in
 #' `srt@tools[["Nichenetr"]]`.
 #' @export
@@ -63,12 +82,41 @@ RunNichenetr <- function(
   use_sender_agnostic_background = TRUE,
   backend = c("cpp", "r"),
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  merged_table_file = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   backend <- match.arg(backend)
   mode <- match.arg(mode)
   species <- match.arg(species)
+
+  if (!is.null(merged_table_file)) {
+    if (
+      !is.character(merged_table_file) ||
+        length(merged_table_file) != 1L ||
+        is.na(merged_table_file) ||
+        !nzchar(trimws(merged_table_file))
+    ) {
+      log_message(
+        "{.arg merged_table_file} must be a single non-empty file path or {.val NULL}",
+        message_type = "error"
+      )
+    }
+    merged_table_file <- path.expand(merged_table_file)
+    if (file.exists(merged_table_file)) {
+      log_message(
+        "{.arg merged_table_file} already exists: {.file {merged_table_file}}. Choose a new path to avoid overwriting it.",
+        message_type = "error"
+      )
+    }
+    merged_table_parent <- dirname(merged_table_file)
+    if (!dir.exists(merged_table_parent)) {
+      log_message(
+        "The parent directory of {.arg merged_table_file} does not exist: {.file {merged_table_parent}}",
+        message_type = "error"
+      )
+    }
+  }
 
   if (!inherits(srt, "Seurat")) {
     log_message(
@@ -365,6 +413,132 @@ RunNichenetr <- function(
     species = species,
     backend = backend
   )
+
+  if (!is.null(merged_table_file)) {
+    merged_table <- bundle$long_table
+    if (!is.data.frame(merged_table)) {
+      merged_table <- data.frame(stringsAsFactors = FALSE)
+    } else {
+      merged_table <- as.data.frame(merged_table, stringsAsFactors = FALSE)
+    }
+
+    if ("weight" %in% colnames(merged_table)) {
+      if ("lr_weight" %in% colnames(merged_table)) {
+        merged_table$weight <- NULL
+      } else {
+        colnames(merged_table)[match("weight", colnames(merged_table))] <- "lr_weight"
+      }
+    }
+    if (!"lr_weight" %in% colnames(merged_table)) {
+      merged_table$lr_weight <- NA_real_
+    }
+
+    ligand_target_table <- bundle$ligand_target_df
+    if (!is.data.frame(ligand_target_table)) {
+      ligand_target_table <- data.frame(stringsAsFactors = FALSE)
+    }
+    target_ligand_col <- ccc_pick_col(
+      ligand_target_table,
+      c("ligand", "from", "test_ligand")
+    )
+    target_col <- ccc_pick_col(
+      ligand_target_table,
+      c("target", "to", "gene")
+    )
+    target_weight_col <- ccc_pick_col(
+      ligand_target_table,
+      c("weight", "lt_weight", "regulatory_potential", "score")
+    )
+
+    if (
+      nrow(merged_table) > 0L &&
+        "ligand" %in% colnames(merged_table) &&
+        !is.null(target_ligand_col) &&
+        !is.null(target_col)
+    ) {
+      target_ligands <- as.character(ligand_target_table[[target_ligand_col]])
+      target_values <- as.character(ligand_target_table[[target_col]])
+      target_weights <- if (!is.null(target_weight_col)) {
+        ligand_target_table[[target_weight_col]]
+      } else {
+        rep(NA_real_, nrow(ligand_target_table))
+      }
+      ligand_values <- as.character(merged_table$ligand)
+      expanded <- lapply(seq_len(nrow(merged_table)), function(i) {
+        target_idx <- which(
+          !is.na(target_ligands) &
+            !is.na(ligand_values[[i]]) &
+            target_ligands == ligand_values[[i]]
+        )
+        if (length(target_idx) == 0L) {
+          out <- merged_table[i, , drop = FALSE]
+          out$target <- NA_character_
+          out$lt_weight <- NA_real_
+          return(out)
+        }
+        out <- merged_table[rep(i, length(target_idx)), , drop = FALSE]
+        out$target <- target_values[target_idx]
+        out$lt_weight <- target_weights[target_idx]
+        out
+      })
+      merged_table <- do.call(rbind, expanded)
+      rownames(merged_table) <- NULL
+    } else {
+      merged_table$target <- if (nrow(merged_table) > 0L) {
+        NA_character_
+      } else {
+        character(0)
+      }
+      merged_table$lt_weight <- if (nrow(merged_table) > 0L) {
+        NA_real_
+      } else {
+        numeric(0)
+      }
+    }
+
+    condition_value <- if (
+      length(condition_oi) == 1L && !is.null(condition_oi)
+    ) {
+      as.character(condition_oi)
+    } else {
+      NA_character_
+    }
+    reference_value <- if (
+      length(condition_reference) == 1L && !is.null(condition_reference)
+    ) {
+      as.character(condition_reference)
+    } else {
+      NA_character_
+    }
+    contrast_value <- if (
+      !is.na(condition_value) && !is.na(reference_value)
+    ) {
+      paste(condition_value, reference_value, sep = "_vs_")
+    } else {
+      NA_character_
+    }
+    merged_table$condition <- rep(condition_value, nrow(merged_table))
+    merged_table$reference <- rep(reference_value, nrow(merged_table))
+    merged_table$contrast <- rep(contrast_value, nrow(merged_table))
+    if (identical(mode, "aggregate_cluster_de")) {
+      merged_table$receiver_affected <- rep(
+        paste(receiver_affected_use %||% character(0), collapse = ","),
+        nrow(merged_table)
+      )
+      merged_table$receiver_reference <- rep(
+        paste(receiver_reference_use %||% character(0), collapse = ","),
+        nrow(merged_table)
+      )
+    }
+
+    utils::write.csv(
+      merged_table,
+      file = merged_table_file,
+      row.names = FALSE,
+      na = "",
+      fileEncoding = "UTF-8"
+    )
+  }
 
   srt@tools[["Nichenetr"]] <- bundle
   srt <- ccc_update_unified_bundle(

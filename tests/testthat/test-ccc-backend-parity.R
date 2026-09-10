@@ -658,6 +658,169 @@ test_that("RunNichenetr aggregate_cluster_de keeps distinct receiver fields", {
   expect_equal(out@tools$Nichenetr$parameters$receiver_reference, "ReceiverB")
 })
 
+test_that("RunNichenetr exports an LR activity target table without changing old tables", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(
+    i = rep(1:5, 6),
+    j = rep(seq_len(6), each = 5),
+    x = seq_len(30),
+    dims = c(5, 6)
+  )
+  rownames(counts) <- c("L1", "R1", "R2", "G1", "G2")
+  colnames(counts) <- paste0("Cell", seq_len(ncol(counts)))
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$celltype <- rep(c("Sender", "Receiver"), each = 3)
+  srt$condition <- rep(c("case", "control"), times = 3)
+  output_file <- tempfile(fileext = ".csv")
+  unlink(output_file)
+
+  testthat::local_mocked_bindings(
+    check_r = function(...) TRUE,
+    get_namespace_fun = function(package, name) {
+      if (identical(package, "nichenetr") && identical(name, "nichenet_seuratobj_aggregate_cluster_de")) {
+        return(function(...) {
+          list(
+            ligand_activities = data.frame(
+              test_ligand = "L1",
+              aupr_corrected = 0.9,
+              pearson = 0.8,
+              rank = 1
+            ),
+            ligand_receptor_df = data.frame(
+              from = c("L1", "L1"),
+              to = c("R1", "R2"),
+              weight = c(0.4, 0.6)
+            ),
+            ligand_target_df = data.frame(
+              ligand = rep("L1", 3),
+              target = c("G1", "G2", "G3"),
+              weight = c(0.3, 0.2, 0.1)
+            ),
+            geneset_oi = "G1"
+          )
+        })
+      }
+      stop("Unexpected mocked namespace lookup: ", package, "::", name)
+    },
+    load_nichenetr_models = function(...) {
+      list(
+        lr_network = data.frame(from = "L1", to = c("R1", "R2")),
+        ligand_target_matrix = matrix(
+          1,
+          nrow = 1,
+          ncol = 1,
+          dimnames = list("G1", "L1")
+        ),
+        weighted_networks = list()
+      )
+    },
+    .package = "scop"
+  )
+
+  out <- scop::RunNichenetr(
+    object = srt,
+    group.by = "celltype",
+    receiver = "Receiver",
+    sender = "Sender",
+    condition.by = "condition",
+    condition_oi = "case",
+    condition_reference = "control",
+    receiver_affected = "Receiver",
+    receiver_reference = "Receiver",
+    mode = "aggregate_cluster_de",
+    merged_table_file = output_file,
+    backend = "r",
+    verbose = FALSE
+  )
+
+  expect_true(file.exists(output_file))
+  exported <- utils::read.csv(output_file, check.names = FALSE, na.strings = "")
+  expect_equal(nrow(exported), 6L)
+  expect_true(all(c(
+    "ligand", "receptor", "target", "lr_weight", "lt_weight",
+    "aupr_corrected", "rank", "condition", "reference", "contrast",
+    "receiver_affected", "receiver_reference"
+  ) %in% colnames(exported)))
+  expect_equal(unique(exported$aupr_corrected), 0.9)
+  expect_equal(unique(exported$rank), 1)
+  expect_equal(sort(unique(exported$lr_weight)), c(0.4, 0.6))
+  expect_equal(sort(exported$lt_weight), c(0.1, 0.1, 0.2, 0.2, 0.3, 0.3))
+  expect_equal(unique(exported$condition), "case")
+  expect_equal(unique(exported$reference), "control")
+  expect_equal(unique(exported$contrast), "case_vs_control")
+  expect_equal(unique(exported$receiver_affected), "Receiver")
+  expect_equal(unique(exported$receiver_reference), "Receiver")
+  expect_equal(nrow(out@tools$Nichenetr$long_table), 2L)
+  expect_equal(nrow(out@tools$Nichenetr$ligand_target_df), 3L)
+  expect_equal(nrow(out@tools$Nichenetr$pair_table), 1L)
+})
+
+test_that("RunNichenetr validates merged table paths before backend execution", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  counts <- Matrix::sparseMatrix(
+    i = c(1, 2), j = c(1, 2), x = c(1, 1), dims = c(2, 2)
+  )
+  rownames(counts) <- c("L1", "R1")
+  colnames(counts) <- c("Cell1", "Cell2")
+  srt <- Seurat::CreateSeuratObject(counts = counts)
+  srt$celltype <- c("Sender", "Receiver")
+  srt$condition <- c("case", "control")
+  backend_called <- FALSE
+  existing_file <- tempfile(fileext = ".csv")
+  writeLines("sentinel", existing_file)
+
+  testthat::local_mocked_bindings(
+    check_r = function(...) {
+      backend_called <<- TRUE
+      TRUE
+    },
+    .package = "scop"
+  )
+
+  expect_error(
+    scop::RunNichenetr(
+      object = srt,
+      group.by = "celltype",
+      receiver = "Receiver",
+      sender = "Sender",
+      condition.by = "condition",
+      condition_oi = "case",
+      condition_reference = "control",
+      mode = "aggregate_cluster_de",
+      merged_table_file = existing_file,
+      verbose = FALSE
+    ),
+    "already exists"
+  )
+  expect_false(backend_called)
+  expect_equal(readLines(existing_file), "sentinel")
+
+  missing_parent <- file.path(
+    tempfile("nichenet_missing_parent_"),
+    "merged.csv"
+  )
+  expect_error(
+    scop::RunNichenetr(
+      object = srt,
+      group.by = "celltype",
+      receiver = "Receiver",
+      sender = "Sender",
+      condition.by = "condition",
+      condition_oi = "case",
+      condition_reference = "control",
+      mode = "aggregate_cluster_de",
+      merged_table_file = missing_parent,
+      verbose = FALSE
+    ),
+    "parent directory.*does not exist"
+  )
+  expect_false(backend_called)
+})
+
 test_that("NicheNet standardization preserves official ranks and sender support", {
   standardize <- getFromNamespace("standardize_nichenetr_result", "scop")
   out <- standardize(
