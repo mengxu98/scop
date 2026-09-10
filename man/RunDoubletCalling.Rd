@@ -7,7 +7,7 @@
 RunDoubletCalling(
   object,
   assay = "RNA",
-  db_rate = ncol(srt)/1000 * 0.01,
+  db_rate = ncol(object)/1000 * 0.01,
   db_method = "scDblFinder",
   data_type = NULL,
   ...,
