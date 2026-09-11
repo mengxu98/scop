@@ -78,6 +78,18 @@ A \code{ggplot}, patchwork object, or list of plots.
 \description{
 Visualize standardized results produced by \code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}.
 }
+\examples{
+\dontrun{
+data(visium_human_pancreas_sub)
+spatial <- RunSpatialIntegration(
+  visium_human_pancreas_sub,
+  method = "PRECAST",
+  group.by = "CellType",
+  sample.by = "Sample"
+)
+SpatialIntegrationPlot(spatial, method = "PRECAST", plot_type = "spatial")
+}
+}
 \seealso{
 \code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}
 }

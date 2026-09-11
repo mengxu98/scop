@@ -26,6 +26,10 @@
 #'
 #' @return A `ggplot` or patchwork object.
 #'
+#'
+#' @examples
+#' data(visium_human_pancreas_sub)
+#' SpatialCellPlot(visium_human_pancreas_sub, group.by = "CellType")
 #' @export
 SpatialCellPlot <- function(
   object = NULL,

@@ -438,7 +438,7 @@ GSEAPlot <- function(
       )
       p <- ggplot(gsdata, aes(x = x)) +
         xlab(NULL) +
-        theme_classic(base_size = 12) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           panel.grid.major = element_line(colour = "grey90", linetype = 2),
           panel.grid.minor = element_line(colour = "grey90", linetype = 2)
@@ -500,7 +500,7 @@ GSEAPlot <- function(
         ) +
         xlab(NULL) +
         ylab(NULL) +
-        theme_classic(base_size = 12) +
+        apply_plot_theme(theme_use, theme_args) +
         theme(
           legend.position = "none",
           plot.margin = margin(t = -0.1, b = 0, r = 0.2, l = 0.2, unit = "cm"),

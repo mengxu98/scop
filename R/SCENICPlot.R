@@ -75,13 +75,16 @@
 #' @param title Optional combined-plot title. Ignored by `"network"`, `"network_graph"`, and `"egrn"`.
 #' @param point_color Rank-plot point color.
 #' @param top_color Top-regulon point color.
-#' @param point_size Point size.
-#' @param point_alpha Rank-plot alpha.
+#' @param pt.size Point size.
+#' @param pt.alpha Rank-plot alpha.
+#' @param point_size,point_alpha Deprecated alias(es) for `pt.size`/`pt.alpha`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param highlight_tf TFs or regulons to highlight.
 #' @param highlight_color Highlight color.
 #' @param highlight_point_size Highlight point size.
 #' @param highlight_linewidth Highlight line width.
 #' @param label_size Top-regulon label size.
+#' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
 #' @param label_max_overlaps Max overlapping labels.
 #' @param verbose Print messages.
 #'
@@ -173,8 +176,10 @@ SCENICPlot <- function(
   title = NULL,
   point_color = "#B8C2CC",
   top_color = "#B64342",
-  point_size = 1.8,
-  point_alpha = 0.85,
+  pt.size = 1.8,
+  point_size = NULL,
+  pt.alpha = 0.85,
+  point_alpha = NULL,
   highlight_tf = NULL,
   highlight_color = "#7A0177",
   highlight_point_size = 2,
@@ -183,9 +188,23 @@ SCENICPlot <- function(
   label_max_overlaps = Inf,
   verbose = TRUE,
   ...,
-  srt = NULL
+  srt = NULL,
+  theme_use = "theme_scop",
+  theme_args = list()
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  if (!is.null(point_alpha)) {
+    .Deprecated(msg = paste0("`point_alpha` is deprecated; use `pt.alpha` instead. ",
+      "It will be removed in scop 1.0.0."))
+    pt.alpha <- point_alpha
+  }
+  point_alpha <- pt.alpha
+  if (!is.null(point_size)) {
+    .Deprecated(msg = paste0("`point_size` is deprecated; use `pt.size` instead. ",
+      "It will be removed in scop 1.0.0."))
+    pt.size <- point_size
+  }
+  point_size <- pt.size
   plot_type <- match.arg(plot_type)
   network_layout <- match.arg(network_layout)
   label_nodes <- match.arg(label_nodes)
@@ -387,6 +406,7 @@ SCENICPlot <- function(
 
   plot_result <- switch(plot_type,
     rss_rank = scenic_plot_rss_rank(
+      theme_use = theme_use, theme_args = theme_args,
       rss_matrix = rss_matrix,
       rank_table = rank_table,
       top_table = top_table,
@@ -429,6 +449,7 @@ SCENICPlot <- function(
       heatmap_args = heatmap_args
     ),
     rss_dotplot = scenic_plot_rss_dotplot(
+      theme_use = theme_use, theme_args = theme_args,
       rss_matrix = rss_matrix,
       top_table = top_table,
       features = features,
@@ -437,6 +458,7 @@ SCENICPlot <- function(
       title = title
     ),
     heatmap_dotplot = scenic_plot_heatmap_dotplot(
+      theme_use = theme_use, theme_args = theme_args,
       srt = srt,
       rss_matrix = rss_matrix,
       top_table = top_table,
@@ -544,6 +566,7 @@ SCENICPlot <- function(
       verbose = verbose
     ),
     activity_cor_dumbbell = scenic_plot_activity_cor_dumbbell(
+      theme_use = theme_use, theme_args = theme_args,
       srt = srt,
       auc_mat = auc_mat,
       top_table = top_table,
@@ -564,6 +587,7 @@ SCENICPlot <- function(
       verbose = verbose
     ),
     regulon_size = scenic_plot_regulon_size(
+      theme_use = theme_use, theme_args = theme_args,
       srt = srt,
       tool_name = tool_name,
       top_table = top_table,
@@ -635,6 +659,7 @@ SCENICPlot <- function(
       title = title
     ),
     target_bar = scenic_plot_target_bar(
+      theme_use = theme_use, theme_args = theme_args,
       srt = srt,
       tool_name = tool_name,
       top_table = top_table,
@@ -701,7 +726,9 @@ scenic_plot_rss_rank <- function(
   highlight_linewidth = 0.5,
   label_size = 3,
   label_max_overlaps = Inf,
-  yscale = c("shared", "free")
+  yscale = c("shared", "free"),
+  theme_use = "theme_scop",
+  theme_args = list()
 ) {
   yscale <- match.arg(yscale)
   shared_ylim <- NULL
@@ -771,7 +798,7 @@ scenic_plot_rss_rank <- function(
         breaks = rank_breaks,
         expand = ggplot2::expansion(mult = c(0.025, 0.055))
       ) +
-      ggplot2::theme_classic(base_size = 10) +
+      apply_plot_theme(theme_use, theme_args) +
       ggplot2::theme(
         axis.line = ggplot2::element_blank(),
         axis.ticks = ggplot2::element_line(colour = "#30343B", linewidth = 0.4),
@@ -970,7 +997,9 @@ scenic_plot_rss_dotplot <- function(
   features = NULL,
   palette = "RdYlBu",
   palcolor = NULL,
-  title = NULL
+  title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list()
 ) {
   regulons <- scenic_resolve_regulon_features(
     features = features,
@@ -1000,7 +1029,7 @@ scenic_plot_rss_dotplot <- function(
     ggplot2::geom_point(alpha = 0.9) +
     scenic_gradient_scale(fill_colors, "RSS", fill = FALSE) +
     ggplot2::scale_size(range = c(1, 6)) +
-    theme_scop() +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
       axis.title = ggplot2::element_text(colour = "black", size = 12),
       axis.text = ggplot2::element_text(colour = "black", size = 10),
@@ -1027,7 +1056,9 @@ scenic_plot_heatmap_dotplot <- function(
   palette = "RdYlBu",
   palcolor = NULL,
   title = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  theme_use = "theme_scop",
+  theme_args = list()
 ) {
   regulons <- scenic_resolve_regulon_features(
     features = features,
@@ -1097,7 +1128,7 @@ scenic_plot_heatmap_dotplot <- function(
     ggplot2::geom_point(alpha = 0.9) +
     scenic_gradient_scale(fill_colors, color_name, fill = FALSE) +
     ggplot2::scale_size(range = c(1, 8), name = "RSS") +
-    theme_scop() +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
       axis.title = ggplot2::element_text(colour = "black", size = 12),
       axis.text = ggplot2::element_text(colour = "black", size = 10),
@@ -1502,7 +1533,9 @@ scenic_plot_activity_cor_dumbbell <- function(
   title = NULL,
   point_size = 2,
   label_size = 3,
-  verbose = TRUE
+  verbose = TRUE,
+  theme_use = "theme_scop",
+  theme_args = list()
 ) {
   regulons <- scenic_resolve_regulon_features(
     features = features,
@@ -1667,7 +1700,7 @@ scenic_plot_activity_cor_dumbbell <- function(
     ggplot2::scale_color_manual(values = cor_cols, drop = FALSE) +
     ggplot2::scale_fill_manual(values = cor_cols, drop = FALSE, guide = "none") +
     ggplot2::scale_shape_manual(values = shape_values, drop = FALSE) +
-    theme_scop() +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
       axis.title = ggplot2::element_text(colour = "black", size = 12),
       axis.text = ggplot2::element_text(colour = "black", size = 10),
@@ -1801,7 +1834,9 @@ scenic_plot_regulon_size <- function(
   top_n = 12,
   palette = "RdYlBu",
   palcolor = NULL,
-  title = NULL
+  title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list()
 ) {
   regulon_list <- scenic_get_regulon_list(srt, tool_name)
   size_data <- data.frame(
@@ -1826,7 +1861,7 @@ scenic_plot_regulon_size <- function(
   ) +
     ggplot2::geom_col(width = 0.75) +
     scenic_gradient_scale(fill_colors, "Targets", fill = TRUE) +
-    theme_scop() +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
       axis.title = ggplot2::element_text(colour = "black", size = 12),
       axis.text = ggplot2::element_text(colour = "black", size = 10),
@@ -1846,7 +1881,9 @@ scenic_plot_target_bar <- function(
   max_targets = 30,
   palette = "RdYlBu",
   palcolor = NULL,
-  title = NULL
+  title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list()
 ) {
   regulon_list <- scenic_get_regulon_list(srt, tool_name)
   regulons <- scenic_resolve_regulon_features(
@@ -1895,7 +1932,7 @@ scenic_plot_target_bar <- function(
         if (identical(value_col, "importance")) "Importance" else "Rank",
         fill = TRUE
       ) +
-      theme_scop() +
+      apply_plot_theme(theme_use, theme_args) +
       ggplot2::theme(
         axis.title = ggplot2::element_text(colour = "black", size = 12),
         axis.text = ggplot2::element_text(colour = "black", size = 10),

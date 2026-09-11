@@ -3,7 +3,6 @@
 \name{RunGRN}
 \alias{RunGRN}
 \alias{RunGRN.Seurat}
-\alias{RunGRN.matrix}
 \alias{RunGRN.default}
 \title{Infer gene regulatory networks with a selected backend method}
 \usage{
@@ -19,8 +18,6 @@ RunGRN(object, ...)
   backend = c("cpp", "python"),
   ...
 )
-
-\method{RunGRN}{matrix}(object, ...)
 
 \method{RunGRN}{default}(
   object,

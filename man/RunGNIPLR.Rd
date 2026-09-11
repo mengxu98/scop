@@ -3,7 +3,6 @@
 \name{RunGNIPLR}
 \alias{RunGNIPLR}
 \alias{RunGNIPLR.Seurat}
-\alias{RunGNIPLR.matrix}
 \alias{RunGNIPLR.default}
 \title{Infer gene regulatory networks with GNIPLR}
 \usage{
@@ -29,8 +28,6 @@ RunGNIPLR(object, ...)
   verbose = TRUE,
   ...
 )
-
-\method{RunGNIPLR}{matrix}(object, ...)
 
 \method{RunGNIPLR}{default}(
   object,

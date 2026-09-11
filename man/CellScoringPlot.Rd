@@ -23,11 +23,13 @@ CellScoringPlot(
   ncol = NULL,
   nrow = NULL,
   row.heights = c(1, 1),
+  pt.size = NULL,
   point.size = NULL,
   raster = NULL,
   raster.dpi = 512,
   point.fraction = 0.1,
-  point.alpha = 0.2,
+  pt.alpha = 0.2,
+  point.alpha = NULL,
   boxplot.y.range = TRUE,
   group.palette = "Chinese",
   group.palcolor = NULL,
@@ -109,8 +111,11 @@ must therefore be even. `NULL` chooses the minimum required value.}
 \item{row.heights}{Relative heights of the UMAP and statistic rows within
 each row pair. Use `c(0.47, 0.53)` for the compact benchmark layout.}
 
-\item{point.size}{Point size in rasterized UMAPs. `NULL` lets
+\item{pt.size}{Point size in rasterized UMAPs. `NULL` lets
 [CellDimPlot()] choose a readable size from the number of plotted cells.}
+
+\item{point.size, point.alpha}{Deprecated alias(es) for `pt.size`/`pt.alpha`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 
 \item{raster, raster.dpi}{Rasterize points. \code{raster = NULL} rasterizes when
 there are more than 100,000 cells.}
@@ -118,7 +123,7 @@ there are more than 100,000 cells.}
 \item{point.fraction}{Fraction of cells shown as jittered points in each
 boxplot. Boxplot statistics always use all cells.}
 
-\item{point.alpha}{Alpha for jittered points.}
+\item{pt.alpha}{Alpha for jittered points.}
 
 \item{boxplot.y.range}{If `TRUE`, use the reference boxplot y-axis range
 of 0--0.5 when it contains all scores; otherwise use the score range.}

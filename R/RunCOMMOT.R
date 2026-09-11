@@ -443,16 +443,35 @@ commot_select_key <- function(table, key, label) {
 #' @param object A `Seurat` object with COMMOT results.
 #' @param result.name Stored COMMOT result name.
 #' @param plot_type Network, cluster matrix, or direction-vector view.
+#' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
 #' @param key Stored cluster or direction selection key.
 #' @param ... Arguments passed to the SCOP network plot for `"network"`.
 #'
 #' @return A `ggplot` or compatible plot object.
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- RunCOMMOT(
+#'   visium_human_pancreas_sub,
+#'   group.by = "CellType",
+#'   coord.cols = c("col", "row"),
+#'   cluster = TRUE,
+#'   direction = TRUE,
+#'   backend = "r"
+#' )
+#' COMMOTPlot(spatial, plot_type = "matrix")
+#' COMMOTPlot(spatial, plot_type = "direction")
+#' COMMOTPlot(spatial, plot_type = "network")
+#' }
 #' @export
 COMMOTPlot <- function(
   object,
   result.name = NULL,
   plot_type = c("network", "matrix", "direction"),
   key = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
   ...
 ) {
   plot_type <- match.arg(plot_type)
@@ -481,7 +500,7 @@ COMMOTPlot <- function(
         ggplot2::geom_tile() +
         ggplot2::scale_fill_viridis_c() +
         ggplot2::labs(x = "Receiver", y = "Sender", fill = "Score") +
-        ggplot2::theme_bw()
+        apply_plot_theme(theme_use, theme_args)
     )
   }
   table <- stored$result$direction_table
@@ -498,5 +517,5 @@ COMMOTPlot <- function(
     ggplot2::facet_wrap(~perspective) +
     ggplot2::coord_equal() +
     ggplot2::labs(x = "Raw x", y = "Raw y", color = "Group") +
-    ggplot2::theme_bw()
+    apply_plot_theme(theme_use, theme_args)
 }

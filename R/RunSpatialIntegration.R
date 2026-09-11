@@ -148,6 +148,18 @@ RunSpatialIntegration <- function(
 #'
 #' @return A `ggplot`, patchwork object, or list of plots.
 #' @seealso [RunSpatialIntegration()]
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- RunSpatialIntegration(
+#'   visium_human_pancreas_sub,
+#'   method = "PRECAST",
+#'   group.by = "CellType",
+#'   sample.by = "Sample"
+#' )
+#' SpatialIntegrationPlot(spatial, method = "PRECAST", plot_type = "spatial")
+#' }
 #' @export
 #'
 SpatialIntegrationPlot <- function(

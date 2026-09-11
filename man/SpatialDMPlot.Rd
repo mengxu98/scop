@@ -47,3 +47,14 @@ A `ggplot` or `patchwork` object.
 \description{
 Plot stored SpatialDM results
 }
+\examples{
+\dontrun{
+data(visium_human_pancreas_sub)
+spatial <- RunSpatialDM(
+  visium_human_pancreas_sub,
+  coord.cols = c("col", "row")
+)
+SpatialDMPlot(spatial, plot_type = "global")
+SpatialDMPlot(spatial, plot_type = "weights", spot = colnames(spatial)[1])
+}
+}

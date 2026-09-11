@@ -703,6 +703,7 @@ scFEAHeatmap <- function(
 #' @param pathways Optional `SM_anno` classes to plot.
 #' @param p_adj_cutoff Adjusted p-value cutoff for highlighting, labels, and
 #' the horizontal threshold line.
+#' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
 #' @param cohen_cutoff Absolute Cohen's d cutoff for highlighting, labels, and
 #' the vertical threshold lines.
 #' @param combine Whether to combine pathway plots into 2 x 2 paged panels.
@@ -716,6 +717,14 @@ scFEAHeatmap <- function(
 #' Statistics are stored in the `"data"` attribute. For automatic one-vs-rest
 #' mode, a named list of single-contrast results is returned and combined
 #' statistics are stored in the outer `"data"` attribute.
+#'
+#' @examples
+#' \dontrun{
+#' data(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#' pancreas_sub <- RunscFEA(pancreas_sub, group.by = "SubCellType")
+#' scFEAVolcanoPlot(pancreas_sub, group.by = "SubCellType", ident.1 = "Alpha", ident.2 = "Beta")
+#' }
 #' @export
 scFEAVolcanoPlot <- function(
   object,
@@ -731,6 +740,8 @@ scFEAVolcanoPlot <- function(
   combine = TRUE,
   width = 12,
   height = 10.4,
+  theme_use = "theme_scop",
+  theme_args = list(),
   verbose = TRUE,
   srt = NULL
 ) {
@@ -752,6 +763,7 @@ scFEAVolcanoPlot <- function(
       contrasts$items,
       function(contrast_i) {
         scfea_volcano_plot_one(
+          theme_use = theme_use, theme_args = theme_args,
           mat = mat,
           module_info = module_info,
           group_df = contrast_i$group_df,
@@ -777,6 +789,7 @@ scFEAVolcanoPlot <- function(
 
   contrast_i <- contrasts$items[[1]]
   scfea_volcano_plot_one(
+    theme_use = theme_use, theme_args = theme_args,
     mat = mat,
     module_info = module_info,
     group_df = contrast_i$group_df,
@@ -806,6 +819,8 @@ scfea_volcano_plot_one <- function(
   combine,
   width,
   height,
+  theme_use = "theme_scop",
+  theme_args = list(),
   verbose
 ) {
   stats <- scfea_compare_features(
@@ -949,7 +964,7 @@ scfea_volcano_plot_one <- function(
           breaks = y_breaks,
           labels = threshold_label
         ) +
-        ggplot2::theme_bw() +
+        apply_plot_theme(theme_use, theme_args) +
         ggplot2::theme(
           panel.grid.major = ggplot2::element_blank(),
           panel.grid.minor = ggplot2::element_blank(),
@@ -1015,12 +1030,7 @@ scfea_volcano_plot_one <- function(
     pages <- lapply(
       split_four,
       function(plot_group) {
-        cowplot::plot_grid(
-          plotlist = plot_group,
-          ncol = 2,
-          nrow = 2,
-          align = "hv"
-        )
+        patchwork::wrap_plots(plot_group, ncol = 2)
       }
     )
     attr(pages, "data") <- stats
@@ -1048,6 +1058,8 @@ scfea_volcano_plot_one <- function(
 #' are generated automatically.
 #' @param assay Balance assay name.
 #' @param layer Balance assay layer.
+#' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
+#' @param palcolor Two colors for the higher and lower group.
 #' @param top_n If `NULL`, plot all metabolites. If positive, plot the top
 #' `top_n` increased and top `top_n` decreased metabolites after the
 #' adjusted-p-value filter.
@@ -1057,6 +1069,14 @@ scfea_volcano_plot_one <- function(
 #' @return For a single contrast, a list with `plot` and plotted `data`. For
 #' automatic one-vs-rest mode, a named list of single-contrast results is
 #' returned and combined statistics are stored in the outer `"data"` attribute.
+#'
+#' @examples
+#' \dontrun{
+#' data(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#' pancreas_sub <- RunscFEA(pancreas_sub, group.by = "SubCellType")
+#' scFEABalanceBarPlot(pancreas_sub, group.by = "SubCellType", ident.1 = "Alpha", ident.2 = "Beta")
+#' }
 #' @export
 scFEABalanceBarPlot <- function(
   object,
@@ -1067,7 +1087,10 @@ scFEABalanceBarPlot <- function(
   layer = "data",
   top_n = NULL,
   p_adj_cutoff = 0.01,
+  palcolor = c("#D73027", "#4575B4"),
   title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
@@ -1085,6 +1108,7 @@ scFEABalanceBarPlot <- function(
       contrasts$items,
       function(contrast_i) {
         scfea_balance_plot_one(
+          palcolor = palcolor, theme_use = theme_use, theme_args = theme_args,
           mat = mat,
           group_df = contrast_i$group_df,
           ident.1 = contrast_i$ident.1,
@@ -1106,6 +1130,7 @@ scFEABalanceBarPlot <- function(
 
   contrast_i <- contrasts$items[[1]]
   scfea_balance_plot_one(
+    palcolor = palcolor, theme_use = theme_use, theme_args = theme_args,
     mat = mat,
     group_df = contrast_i$group_df,
     ident.1 = contrast_i$ident.1,
@@ -1123,7 +1148,10 @@ scfea_balance_plot_one <- function(
   ident.2,
   top_n,
   p_adj_cutoff,
-  title
+  title,
+  palcolor = c("#D73027", "#4575B4"),
+  theme_use = "theme_scop",
+  theme_args = list()
 ) {
   stats <- scfea_compare_features(
     mat = mat,
@@ -1182,7 +1210,7 @@ scfea_balance_plot_one <- function(
     ggplot2::geom_col(width = 0.78) +
     ggplot2::geom_hline(yintercept = 0, linewidth = 0.35, color = "grey30") +
     ggplot2::scale_fill_manual(
-      values = stats::setNames(c("#D73027", "#4575B4"), c(ident.1, ident.2))
+      values = stats::setNames(palcolor, c(ident.1, ident.2))
     ) +
     ggplot2::labs(
       title = title,
@@ -1190,7 +1218,7 @@ scfea_balance_plot_one <- function(
       y = paste0("Mean balance difference (", ident.1, " - ", ident.2, ")"),
       fill = "Higher in"
     ) +
-    ggplot2::theme_classic(base_size = 11) +
+    apply_plot_theme(theme_use, theme_args) +
     ggplot2::theme(
       plot.title = ggplot2::element_text(face = "bold"),
       axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),

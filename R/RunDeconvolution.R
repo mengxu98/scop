@@ -596,13 +596,7 @@ RunBayesPrism <- function(
     )
   } else {
     effective_n_cores <- if (isTRUE(n_cores_missing)) {
-      max(
-        1L,
-        min(
-          4L,
-          as.integer(parallel::detectCores(logical = FALSE) %||% 1L)
-        )
-      )
+      thisutils::detect_cores(max_threads = 4L, logical = FALSE)
     } else {
       as.integer(n.cores)
     }
@@ -915,11 +909,7 @@ RunCIBERSORT <- function(
 
 resolve_cibersort_cores <- function(cores = NULL) {
   if (is.null(cores)) {
-    detected <- parallel::detectCores(logical = FALSE)
-    if (is.na(detected) || !is.finite(detected) || detected < 1L) {
-      detected <- 1L
-    }
-    return(as.integer(max(1L, min(4L, detected))))
+    return(thisutils::detect_cores(max_threads = 4L, logical = FALSE))
   }
   as.integer(cores)
 }

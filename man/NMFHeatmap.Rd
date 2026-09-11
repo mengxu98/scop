@@ -250,7 +250,6 @@ otherwise \code{NULL}.
 NMF similarity heatmap
 }
 \examples{
-library(Matrix)
 data(pancreas_sub)
 pancreas_sub <- NormalizeData(pancreas_sub)
 pancreas_sub <- FindVariableFeatures(
