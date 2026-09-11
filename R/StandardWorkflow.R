@@ -66,7 +66,6 @@
 #' @export
 #'
 #' @examples
-#' library(Matrix)
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' CellDimPlot(

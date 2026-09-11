@@ -13,7 +13,8 @@ SpatialCellChatPlot(
   pairLR.use = NULL,
   direction = c("outgoing", "incoming"),
   top_n = 30,
-  point.size = 1.5,
+  pt.size = 1.5,
+  point.size = NULL,
   palette = "RdBu",
   palcolor = NULL,
   title = NULL
@@ -36,7 +37,10 @@ SpatialCellChatPlot(
 
 \item{top_n}{Maximum network edges.}
 
-\item{point.size}{Coordinate point size.}
+\item{pt.size}{Coordinate point size.}
+
+\item{point.size}{Deprecated alias(es) for `pt.size`; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 
 \item{palette, palcolor}{Color palette.}
 

@@ -38,7 +38,8 @@ DorotheaPlot(
   nlabel = 10,
   reduction = NULL,
   bar_width = 0.72,
-  point_size = 3.2,
+  pt.size = 3.2,
+  point_size = NULL,
   aspect.ratio = NULL,
   legend.position = "right",
   legend.direction = "vertical",
@@ -140,8 +141,11 @@ reduction of \code{srt} is used.}
 
 \item{bar_width}{Width of bars in \code{"bar"} plots.}
 
-\item{point_size}{Point size in \code{"lollipop"}, \code{"volcano"}, and
+\item{pt.size}{Point size in \code{"lollipop"}, \code{"volcano"}, and
 \code{"targets"} plots.}
+
+\item{point_size}{Deprecated alias(es) for \code{pt.size}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 
 \item{aspect.ratio}{Panel aspect ratio.}
 

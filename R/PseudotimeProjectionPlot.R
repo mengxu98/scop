@@ -231,17 +231,10 @@ PseudotimeProjectionPlot <- function(
     }
     df_field <- cbind.data.frame(x_emb, v_emb)
     colnames(df_field) <- c("x", "y", "u", "v")
-    df_field[["length"]] <- sqrt(df_field[["u"]]^2 + df_field[["v"]]^2)
-    global_size <- sqrt(
-      max(df_field[["x"]], na.rm = TRUE)^2 +
-        max(df_field[["y"]], na.rm = TRUE)^2
-    )
-    df_field[["length_perc"]] <- df_field[["length"]] / global_size
-
-    arrow_length <- grid::unit(
-      mean(df_field[["length_perc"]], na.rm = TRUE),
-      "npc"
-    )
+    # Arrowheads must be device-independent. Scaling them in npc units makes
+    # dense fields collapse into solid triangles when the vectors are large
+    # relative to the embedding extent (see VelocityPlot()).
+    arrow_length <- grid::unit(1.5, "mm")
 
     if (!is.null(group.by)) {
       df_field[["group.by"]] <- srt@meta.data[
@@ -309,17 +302,8 @@ PseudotimeProjectionPlot <- function(
 
     df_field <- cbind.data.frame(x_grid, v_grid)
     colnames(df_field) <- c("x", "y", "u", "v")
-    df_field[["length"]] <- sqrt(df_field[["u"]]^2 + df_field[["v"]]^2)
-    global_size <- sqrt(
-      max(df_field[["x"]], na.rm = TRUE)^2 +
-        max(df_field[["y"]], na.rm = TRUE)^2
-    )
-    df_field[["length_perc"]] <- df_field[["length"]] / global_size
-
-    arrow_length <- grid::unit(
-      mean(df_field[["length_perc"]], na.rm = TRUE),
-      "npc"
-    )
+    # Device-independent arrowheads, as in the raw branch above.
+    arrow_length <- grid::unit(1.5, "mm")
     velocity_layer <- list(
       geom_segment(
         data = df_field,

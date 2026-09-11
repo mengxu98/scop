@@ -9,6 +9,8 @@ COMMOTPlot(
   result.name = NULL,
   plot_type = c("network", "matrix", "direction"),
   key = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
   ...
 )
 }
@@ -21,6 +23,8 @@ COMMOTPlot(
 
 \item{key}{Stored cluster or direction selection key.}
 
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
+
 \item{...}{Arguments passed to the SCOP network plot for `"network"`.}
 }
 \value{
@@ -29,4 +33,20 @@ A `ggplot` or compatible plot object.
 \description{
 Plot stored COMMOT group communication, cluster matrices, or
 raw-coordinate direction vectors without rerunning Python.
+}
+\examples{
+\dontrun{
+data(visium_human_pancreas_sub)
+spatial <- RunCOMMOT(
+  visium_human_pancreas_sub,
+  group.by = "CellType",
+  coord.cols = c("col", "row"),
+  cluster = TRUE,
+  direction = TRUE,
+  backend = "r"
+)
+COMMOTPlot(spatial, plot_type = "matrix")
+COMMOTPlot(spatial, plot_type = "direction")
+COMMOTPlot(spatial, plot_type = "network")
+}
 }

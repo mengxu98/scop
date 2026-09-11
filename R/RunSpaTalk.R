@@ -544,6 +544,7 @@ spatalk_plot_object <- function(object, stored) {
 #' @param result.name Stored SpaTalk result name.
 #' @param plot_type Network, ligand-receptor bubble, pathway bubble, or
 #'   receptor-TF view.
+#' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
 #' @param ... Arguments passed to the corresponding SCOP CCC plot.
 #'
 #' @return A `ggplot` or compatible plot object.
@@ -552,6 +553,8 @@ SpaTalkPlot <- function(
   object,
   result.name = NULL,
   plot_type = c("network", "bubble", "pathway", "tf"),
+  theme_use = "theme_scop",
+  theme_args = list(),
   ...
 ) {
   plot_type <- match.arg(plot_type)
@@ -598,5 +601,5 @@ SpaTalkPlot <- function(
   )) +
     ggplot2::geom_point(alpha = 0.8) +
     ggplot2::labs(x = "Receptor", y = "Transcription factor", color = "Receiver", size = "Score") +
-    ggplot2::theme_bw()
+    apply_plot_theme(theme_use, theme_args)
 }

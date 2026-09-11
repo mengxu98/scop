@@ -421,6 +421,17 @@ GetSpatialDMResult <- function(object, result.name = NULL, type = c("global", "l
 #' @param palette,palcolor,theme_use,theme_args SCOP plotting controls.
 #' @param ... Additional arguments passed to SCOP spatial plotting functions.
 #' @return A `ggplot` or `patchwork` object.
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- RunSpatialDM(
+#'   visium_human_pancreas_sub,
+#'   coord.cols = c("col", "row")
+#' )
+#' SpatialDMPlot(spatial, plot_type = "global")
+#' SpatialDMPlot(spatial, plot_type = "weights", spot = colnames(spatial)[1])
+#' }
 #' @export
 SpatialDMPlot <- function(
   object, result.name = NULL, plot_type = c("weights", "global", "local"),
@@ -452,7 +463,10 @@ SpatialDMPlot <- function(
     df$minus_log10_fdr <- -log10(pmax(as.numeric(df$fdr %||% df$pvalue), .Machine$double.xmin))
     p <- ggplot2::ggplot(df, ggplot2::aes(x = .data$moran_r, y = .data$minus_log10_fdr)) +
       ggplot2::geom_point(ggplot2::aes(color = .data$selected), alpha = 0.75) +
-      ggplot2::scale_color_manual(values = c(`FALSE` = "grey70", `TRUE` = "#D55E00"), name = "Selected") +
+      ggplot2::scale_color_manual(
+        values = c(`FALSE` = "grey70", `TRUE` = palcolor %||% "#D55E00"),
+        name = "Selected"
+      ) +
       ggplot2::labs(x = "Global Moran's R", y = global_p_label, title = "Spatial association (Moran's R)") +
       apply_plot_theme(theme_use = theme_use, theme_args = theme_args)
     if (!is.null(highlight)) p <- p + ggrepel::geom_text_repel(data = df[df$interaction %in% highlight, , drop = FALSE], ggplot2::aes(label = .data$interaction), size = 3, max.overlaps = Inf)

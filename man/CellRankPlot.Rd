@@ -69,3 +69,19 @@ A ggplot object or a SCOP plot object.
 \description{
 Plot CellRank outputs without rerunning a Python backend.
 }
+\examples{
+\dontrun{
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+pancreas_sub <- RunCellRank(
+  pancreas_sub,
+  group.by = "SubCellType",
+  kernel_type = "pseudotime",
+  time_key = "palantir_pseudotime",
+  schur_method = "brandts",
+  backend = "python"
+)
+CellRankPlot(pancreas_sub, plot_type = "fate", reduction = "UMAP")
+CellRankPlot(pancreas_sub, plot_type = "circular")
+}
+}

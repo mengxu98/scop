@@ -71,8 +71,10 @@ SCENICPlot(
   title = NULL,
   point_color = "#B8C2CC",
   top_color = "#B64342",
-  point_size = 1.8,
-  point_alpha = 0.85,
+  pt.size = 1.8,
+  point_size = NULL,
+  pt.alpha = 0.85,
+  point_alpha = NULL,
   highlight_tf = NULL,
   highlight_color = "#7A0177",
   highlight_point_size = 2,
@@ -81,7 +83,9 @@ SCENICPlot(
   label_max_overlaps = Inf,
   verbose = TRUE,
   ...,
-  srt = NULL
+  srt = NULL,
+  theme_use = "theme_scop",
+  theme_args = list()
 )
 }
 \arguments{
@@ -202,9 +206,12 @@ direct score comparison, or \code{"free"} for the legacy per-panel scale.}
 
 \item{top_color}{Top-regulon point color.}
 
-\item{point_size}{Point size.}
+\item{pt.size}{Point size.}
 
-\item{point_alpha}{Rank-plot alpha.}
+\item{point_size, point_alpha}{Deprecated alias(es) for \code{pt.size}/\code{pt.alpha}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
+
+\item{pt.alpha}{Rank-plot alpha.}
 
 \item{highlight_tf}{TFs or regulons to highlight.}
 
@@ -224,6 +231,8 @@ direct score comparison, or \code{"free"} for the legacy per-panel scale.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 }
 \value{
 Plot, or a list with \code{rss_matrix}, \code{rank_table}, \code{top_table}, \code{plots}, and \code{plot} when \code{return_data = TRUE}.

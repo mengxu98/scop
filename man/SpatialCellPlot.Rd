@@ -67,3 +67,7 @@ Plot cell segmentation polygons from a boundary table or Seurat spatial image.
 Boundary tables require `cell_id`, `x`, and `y` columns in polygon vertex
 order. Seurat images must contain segmentation boundaries.
 }
+\examples{
+data(visium_human_pancreas_sub)
+SpatialCellPlot(visium_human_pancreas_sub, group.by = "CellType")
+}

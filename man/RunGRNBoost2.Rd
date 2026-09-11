@@ -3,7 +3,6 @@
 \name{RunGRNBoost2}
 \alias{RunGRNBoost2}
 \alias{RunGRNBoost2.Seurat}
-\alias{RunGRNBoost2.matrix}
 \alias{RunGRNBoost2.default}
 \title{Infer gene regulatory networks with GRNBoost2}
 \usage{
@@ -41,8 +40,6 @@ RunGRNBoost2(object, ...)
   verbose = TRUE,
   ...
 )
-
-\method{RunGRNBoost2}{matrix}(object, ...)
 
 \method{RunGRNBoost2}{default}(
   object,

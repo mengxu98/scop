@@ -156,7 +156,6 @@ Objects that also contain a \code{ChromatinAssay} are preprocessed sequentially
 (default assay, then chromatin).
 }
 \examples{
-library(Matrix)
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 CellDimPlot(
