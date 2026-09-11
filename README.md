@@ -6,7 +6,7 @@
 
 <!-- badges: end -->
 
-## Introduction
+## **Introduction**
 [scop](https://github.com/mengxu98/scop) is an *R* package for comprehensive single-cell and spatial omics analysis, providing modular workflows for analyzing, integrating, visualizing, and interactively exploring single-cell and spatial omics data.
 
 > Documentation: https://mengxu98.github.io/scop/
@@ -35,15 +35,15 @@
 - High-quality data visualization methods.
 - Fast deployment of single-cell data into SCExplorer, a [shiny](https://shiny.rstudio.com/) app that provides an interactive visualization interface.
 
-## Table of Contents
+## **Table of Contents**
 
 - [scop: Single-cell and Spatial omics analysis pipeline](#scop-single-cell-and-spatial-omics-analysis-pipeline)
   - [Introduction](#introduction)
   - [Table of Contents](#table-of-contents)
   - [Credits](#credits)
   - [Installation](#installation)
-    - [*R* requirement](#r-requirement)
-    - [*Python* environment](#python-environment)
+    - [R requirement](#r-requirement)
+    - [Python environment](#python-environment)
   - [Pipeline](#pipeline)
     - [Data exploration](#data-exploration)
     - [Quality control](#quality-control)
@@ -68,7 +68,7 @@
     - [Interactive data visualization with SCExplorer](#interactive-data-visualization-with-scexplorer)
     - [Other visualization examples](#other-visualization-examples)
 
-## Credits
+## **Credits**
 
 The [scop](https://github.com/mengxu98/scop) package is developed based on the [SCP](https://github.com/zhanghao-njmu/SCP) package, with the following major improvements:
 
@@ -78,9 +78,9 @@ The [scop](https://github.com/mengxu98/scop) package is developed based on the [
 4. Performance: a new parallel framework has been developed based on `thisutils::parallelize_fun`, providing a consistent experience across *Linux*, *macOS*, and *Windows*.
 5. Functionality: more analysis methods have been added.
 
-## Installation
+## **Installation**
 
-### *R* requirement
+### **R requirement**
 
 -   R \>= 4.1.0
 
@@ -93,7 +93,7 @@ if (!require("pak", quietly = TRUE)) {
 pak::pak("mengxu98/scop")
 ```
 
-### *Python* environment
+### **Python environment**
 
 To run functions such as `RunPAGA()`, `RunSCVELO()`, [scop](https://github.com/mengxu98/scop) requires a conda-compatible environment manager ([conda](https://docs.conda.io/en/latest/miniconda.html), [mamba](https://mamba.readthedocs.io/), or [micromamba](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html)) to create a separate environment. The default environment name is `"scop_env"`. You can specify the environment name for scop by setting `options(scop_envname = "new_name")`.
 
@@ -142,9 +142,9 @@ scop::PrepareEnv(
   - <https://mirrors.xjtu.edu.cn/pypi/simple>
   - <https://mirrors.hit.edu.cn/pypi/web/simple>
 
-## Pipeline
+## **Pipeline**
 
-### Data exploration
+### **Data exploration**
 
 The analysis is based on a subsetted version of [mouse pancreas data](https://doi.org/10.1242/dev.173849).
 
@@ -252,7 +252,7 @@ print(ht$plot)
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5.png" width="100%" style="display: block; margin: auto;"/>
 
-###  Quality control
+### **Quality control**
 
 ``` r
 pancreas_sub <- RunCellQC(pancreas_sub)
@@ -291,7 +291,7 @@ CellStatPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-3.png" width="100%" style="display: block; margin: auto;"/>
 
-### Integration pipeline
+### **Integration pipeline**
 
 Example data for integration is a subsetted version of [panc8(eight human pancreas datasets)](https://github.com/satijalab/seurat-data)
 
@@ -312,9 +312,9 @@ CellDimPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunIntegration-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Cell annotation
+### **Cell annotation**
 
-#### Cell projection between single-cell datasets
+#### **Cell projection between single-cell datasets**
 
 ``` r
 genenames <- make.unique(
@@ -348,7 +348,7 @@ ProjectionPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.png" width="100%" style="display: block; margin: auto;"/>
 
-#### Cell annotation using bulk RNA-seq datasets
+#### **Cell annotation using bulk RNA-seq datasets**
 
 ``` r
 data(ref_scMCA)
@@ -369,7 +369,7 @@ CellDimPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1.png" width="100%" style="display: block; margin: auto;"/>
 
-#### Cell annotation using single-cell datasets
+#### **Cell annotation using single-cell datasets**
 
 ``` r
 pancreas_sub <- RunKNNPredict(
@@ -408,9 +408,9 @@ print(ht$plot)
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3.png" width="100%" style="display: block; margin: auto;"/>
 
-### Cellular potency
+### **Cellular potency**
 
-#### CytoTRACE 2
+#### **CytoTRACE 2**
 
 ``` r
 pancreas_sub <- RunCytoTRACE(
@@ -427,9 +427,9 @@ CytoTRACEPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCytoTRACE.png" width="100%" style="display: block; margin: auto;"/>
 
-### Trajectory inference
+### **Trajectory inference**
 
-#### RNA Velocity analysis
+#### **RNA Velocity analysis**
 
 To estimate RNA velocity, both "spliced" and "unspliced" assays are required in the Seurat object. You can generate these matrices using [velocyto](http://velocyto.org/velocyto.py/index.html), [bustools](https://bustools.github.io/BUS_notebooks_R/velocity.html), or [alevin](https://combine-lab.github.io/alevin-fry-tutorials/2021/alevin-fry-velocity/).
 
@@ -463,7 +463,7 @@ VelocityPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2.png" width="100%" style="display: block; margin: auto;"/>
 
-#### PAGA
+#### **PAGA**
 
 ``` r
 pancreas_sub <- RunPAGA(
@@ -487,7 +487,7 @@ PAGAPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunPAGA-1.png" width="100%" style="display: block; margin: auto;"/>
 
-#### Slingshot
+#### **Slingshot**
 
 ``` r
 pancreas_sub <- RunSlingshot(
@@ -522,7 +522,7 @@ FeatureDimPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-2.png" width="100%" style="display: block; margin: auto;"/>
 
-#### Monocle3
+#### **Monocle3**
 
 ``` r
 pancreas_sub <- RunMonocle3(
@@ -571,7 +571,7 @@ CellDimPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunMonocle3.png" width="100%" style="display: block; margin: auto;"/>
 
-### Dynamic features
+### **Dynamic features**
 
 ``` r
 pancreas_sub <- RunDynamicFeatures(
@@ -651,7 +651,7 @@ FeatureStatPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureStatPlot-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Differential expression analysis
+### **Differential expression analysis**
 
 ``` r
 pancreas_sub <- RunDEtest(
@@ -741,9 +741,9 @@ print(ht$plot)
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Enrichment analysis
+### **Enrichment analysis**
 
-#### Over-representation
+#### **Over-representation**
 
 ``` r
 pancreas_sub <- RunEnrichment(
@@ -833,7 +833,7 @@ EnrichmentPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1.png" width="100%" style="display: block; margin: auto;"/>
 
-#### GSEA
+#### **GSEA**
 
 ``` r
 pancreas_sub <- RunGSEA(
@@ -867,7 +867,7 @@ GSEAPlot(
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Interactive data visualization with SCExplorer
+### **Interactive data visualization with SCExplorer**
 
 ``` r
 PrepareSCExplorer(
@@ -887,7 +887,7 @@ if (interactive()) {
 
 <img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCExplorer-1.png" width="100%" style="display: block; margin: auto;"/>
 
-### Other visualization examples
+### **Other visualization examples**
 
 [**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)![Example1](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-1.png) 
 
