@@ -27,7 +27,7 @@ test_that("velocity_embedding_autoscale preserves direction", {
     velocity_1 = stats::rnorm(50, sd = 0.5),
     velocity_2 = stats::rnorm(50, sd = 0.5)
   )
-  out <- scop:::velocity_embedding_autoscale(X, V)
+  out <- getFromNamespace("velocity_embedding_autoscale", "scop")(X, V)
   cosv <- rowSums(out * V) / (sqrt(rowSums(out^2)) * sqrt(rowSums(V^2)))
   expect_equal(cosv, rep(1, nrow(X)), tolerance = 1e-12)
 })
@@ -36,8 +36,8 @@ test_that("velocity_embedding_autoscale is scale-equivariant", {
   set.seed(42)
   X <- cbind(UMAP_1 = stats::rnorm(30, sd = 3), UMAP_2 = stats::rnorm(30, sd = 2))
   V <- cbind(velocity_1 = stats::rnorm(30), velocity_2 = stats::rnorm(30))
-  out1 <- scop:::velocity_embedding_autoscale(X, V)
-  out2 <- scop:::velocity_embedding_autoscale(X, V * 2.5)
+  out1 <- getFromNamespace("velocity_embedding_autoscale", "scop")(X, V)
+  out2 <- getFromNamespace("velocity_embedding_autoscale", "scop")(X, V * 2.5)
   expect_equal(out1, out2, tolerance = 1e-12)
 })
 
@@ -45,7 +45,7 @@ test_that("velocity_embedding_autoscale reaches the scvelo fixed point", {
   set.seed(42)
   X <- cbind(UMAP_1 = stats::rnorm(100, sd = 5), UMAP_2 = stats::rnorm(100, sd = 4))
   V <- cbind(velocity_1 = stats::rnorm(100), velocity_2 = stats::rnorm(100))
-  out <- scop:::velocity_embedding_autoscale(X, V)
+  out <- getFromNamespace("velocity_embedding_autoscale", "scop")(X, V)
   expect_equal(
     quiver_autoscale_ref(X, out),
     1 / 3,

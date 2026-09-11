@@ -136,6 +136,15 @@ test_that("CellScoring AUCell backend switch controls R and C++ paths", {
 
   expect_equal(dim(cpp_scores), dim(r_scores))
   expect_true(all(is.finite(cpp_scores)))
+  expect_gte(
+    suppressWarnings(stats::cor(
+      as.numeric(r_scores),
+      as.numeric(cpp_scores),
+      method = "spearman",
+      use = "complete.obs"
+    )),
+    0.95
+  )
 })
 
 test_that("CellScoring AUCell cpp backend keeps high consistency with R backend", {

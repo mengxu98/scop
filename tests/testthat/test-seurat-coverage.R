@@ -225,7 +225,7 @@ test_that("ScaleData accepts explicit latent.data covariates", {
     latent.data = latent,
     verbose = FALSE
   )
-  expected_assay <- Seurat:::ScaleData.Assay(
+  expected_assay <- getFromNamespace("ScaleData.Assay", "Seurat")(
     srt_vf[["RNA"]],
     vars.to.regress = "custom_covariate",
     latent.data = latent,

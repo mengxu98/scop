@@ -68,8 +68,8 @@ test_that("CoverageTrackPlot preserves factor level order for palette_colors", {
 
 test_that("spatial_dim_continuous_scale respects upper_quantile and squish", {
   vals <- 1:100
-  sc99 <- scop:::spatial_dim_continuous_scale(vals, colors = c("blue", "red"), upper_quantile = 0.99)
-  sc100 <- scop:::spatial_dim_continuous_scale(vals, colors = c("blue", "red"), upper_quantile = 1)
+  sc99 <- getFromNamespace("spatial_dim_continuous_scale", "scop")(vals, colors = c("blue", "red"), upper_quantile = 0.99)
+  sc100 <- getFromNamespace("spatial_dim_continuous_scale", "scop")(vals, colors = c("blue", "red"), upper_quantile = 1)
   expect_equal(unname(sc99$limits), c(1, 99.01))
   expect_equal(unname(sc100$limits), c(1, 100))
   expect_equal(sc99$oob(c(-10, 50, 150), range = c(0, 100)), c(0, 50, 100))

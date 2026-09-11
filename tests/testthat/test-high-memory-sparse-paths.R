@@ -1,4 +1,5 @@
 test_that("scFEA comparison statistics match dense row SDs", {
+  skip_if_not_installed("MatrixGenerics")
   mat <- Matrix::Matrix(
     c(
       0, 1, 0, 3,

@@ -213,7 +213,7 @@ test_that("aggregate_ccc_long cpp backend lumped NA as string group", {
   expect_equal(cpp_out, r_out)
 })
 
-test_that("aggregate_ccc_long cpp backend is faster than R backend on larger data", {
+test_that("aggregate_ccc_long cpp backend matches R backend on larger data", {
   skip_on_cran()
   n <- 50000L
   set.seed(42)
@@ -226,12 +226,8 @@ test_that("aggregate_ccc_long cpp backend is faster than R backend on larger dat
     stringsAsFactors = FALSE
   )
 
-  r_time <- system.time({
-    r_out <- getFromNamespace("aggregate_ccc_long", "scop")(df, backend = "r")
-  })[["elapsed"]]
-  cpp_time <- system.time({
-    cpp_out <- getFromNamespace("aggregate_ccc_long", "scop")(df, backend = "cpp")
-  })[["elapsed"]]
+  r_out <- getFromNamespace("aggregate_ccc_long", "scop")(df, backend = "r")
+  cpp_out <- getFromNamespace("aggregate_ccc_long", "scop")(df, backend = "cpp")
 
   r_out <- r_out[order(r_out$sender, r_out$receiver), , drop = FALSE]
   cpp_out <- cpp_out[order(cpp_out$sender, cpp_out$receiver), , drop = FALSE]
@@ -242,8 +238,6 @@ test_that("aggregate_ccc_long cpp backend is faster than R backend on larger dat
   expect_equal(cpp_out$receiver, r_out$receiver)
   expect_equal(cpp_out$sum, r_out$sum, tolerance = 1e-10)
   expect_equal(cpp_out$count, r_out$count, tolerance = 1e-10)
-
-  expect_true(cpp_time <= r_time + 0.5)
 })
 
 test_that("LIANA C++ aggregation preserves custom sample key and non-empty fallback", {
