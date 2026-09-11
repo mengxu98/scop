@@ -903,8 +903,7 @@ monocle2_cpp_resolve_root_state <- function(srt, root_state = NULL, group.by = N
 #' @param resolution The resolution parameter for clustering.
 #' Defaults to NULL.
 #' @param use_partition Whether to use partitions to learn disjoint graph in each partition.
-#' If not specified, user will be prompted for input.
-#' Defaults to NULL.
+#' Defaults to NULL, in which case TRUE is used.
 #' @param close_loop Whether to close loops in the graph.
 #' Defaults to TRUE.
 #' @param root_pr_nodes The root nodes to order cells.

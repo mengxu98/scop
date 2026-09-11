@@ -62,8 +62,7 @@ Defaults to 2.}
 Defaults to NULL.}
 
 \item{use_partition}{Whether to use partitions to learn disjoint graph in each partition.
-If not specified, user will be prompted for input.
-Defaults to NULL.}
+Defaults to NULL, in which case TRUE is used.}
 
 \item{close_loop}{Whether to close loops in the graph.
 Defaults to TRUE.}
