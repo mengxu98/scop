@@ -91,7 +91,7 @@ test_that("RunSpatialEcoTyper supplies locally scoped dplyr compatibility symbol
     out <- RunSpatialEcoTyper(
       srt,
       celltype.by = "CellType",
-      ncores = 1,
+      cores = 1,
       verbose = FALSE
     )
   })

@@ -230,7 +230,7 @@ test_that("RunscPagwas supplies upstream default package data explicitly", {
       object = srt,
       gwas_data = gwas,
       block_annotation = block,
-      output.dirs = "relative-output",
+      output.dirs = file.path(tempfile(), "relative-output"),
       return_seurat = FALSE,
       verbose = FALSE
     )

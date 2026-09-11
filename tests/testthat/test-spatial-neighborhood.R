@@ -204,7 +204,10 @@ test_that("SpatialNeighborhoodPlot returns scop-style ggplot objects", {
     expect_identical(grid::unitType(curve_layers[[1]]$geom_params$arrow$length), "mm")
     expect_equal(as.numeric(curve_layers[[1]]$geom_params$arrow$length), 1.5)
   }
+  # Print to a temporary device so the test never writes Rplots.pdf
+  grDevices::pdf(file = tempfile(fileext = ".pdf"))
   expect_silent(print(p_network))
+  grDevices::dev.off()
 })
 
 test_that("RunSpatialNeighborhood validates spatial inputs clearly", {

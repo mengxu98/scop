@@ -118,7 +118,7 @@ test_that("RunMERINGUE autocorrelation matches original moranTest per feature", 
     binary = TRUE,
     alternative = "greater",
     nperm = 0,
-    ncores = 1,
+    cores = 1,
     set_variable_features = FALSE,
     verbose = FALSE
   )
@@ -183,7 +183,7 @@ test_that("RunMERINGUE permutation test matches original moranPermutationTest", 
     binary = TRUE,
     alternative = "greater",
     nperm = 50,
-    ncores = 1,
+    cores = 1,
     seed = 11,
     set_variable_features = FALSE,
     verbose = FALSE

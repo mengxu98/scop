@@ -52,7 +52,7 @@ test_that("meringue_moran_cpp matches MERINGUE::moranTest exactly", {
   for (feature in features) {
     z <- expr[feature, ]
     z <- z[rownames(weight)]
-    cpp_out <- scop:::meringue_moran_cpp(
+    cpp_out <- getFromNamespace("meringue_moran_cpp", "scop")(
       z = z,
       weight = weight,
       n_perm = 0,
@@ -92,7 +92,7 @@ test_that("meringue_moran_matrix_cpp batch matches per-gene kernel and moranTest
     error = function(e) FALSE
   )
 
-  batch <- scop:::meringue_moran_matrix_cpp(
+  batch <- getFromNamespace("meringue_moran_matrix_cpp", "scop")(
     as.matrix(expr[features, rownames(weight)]),
     weight,
     "greater",
@@ -102,7 +102,7 @@ test_that("meringue_moran_matrix_cpp batch matches per-gene kernel and moranTest
     feature <- features[i]
     z <- expr[feature, ]
     z <- z[rownames(weight)]
-    per_gene <- scop:::meringue_moran_cpp(
+    per_gene <- getFromNamespace("meringue_moran_cpp", "scop")(
       z = z, weight = weight, n_perm = 0, alternative = "greater",
       rounding_sample = rounding
     )
@@ -156,7 +156,7 @@ test_that("meringue_moran_cpp permutation matches MERINGUE::moranPermutationTest
     z <- expr[feature, ]
     z <- z[rownames(weight)]
     set.seed(11)
-    cpp_out <- scop:::meringue_moran_cpp(
+    cpp_out <- getFromNamespace("meringue_moran_cpp", "scop")(
       z = z,
       weight = weight,
       n_perm = 100,
@@ -210,7 +210,7 @@ test_that("meringue permutation batch matches the seeded per-gene kernel", {
   )
 
   set.seed(11)
-  batch <- scop:::meringue_moran_matrix_cpp(
+  batch <- getFromNamespace("meringue_moran_matrix_cpp", "scop")(
     as.matrix(expr[features, rownames(weight)]),
     weight,
     "greater",
@@ -227,7 +227,7 @@ test_that("meringue permutation batch matches the seeded per-gene kernel", {
   for (i in seq_along(features)) {
     z <- expr[features[[i]], rownames(weight)]
     set.seed(11)
-    per_gene <- scop:::meringue_moran_cpp(
+    per_gene <- getFromNamespace("meringue_moran_cpp", "scop")(
       z = z,
       weight = weight,
       n_perm = 100L,
@@ -256,7 +256,7 @@ test_that("RunMERINGUE cpp and r backends give identical autocorrelation tables"
     binary = TRUE,
     alternative = "greater",
     nperm = 30,
-    ncores = 1,
+    cores = 1,
     seed = 11,
     set_variable_features = FALSE,
     backend = "cpp",
@@ -273,7 +273,7 @@ test_that("RunMERINGUE cpp and r backends give identical autocorrelation tables"
     binary = TRUE,
     alternative = "greater",
     nperm = 30,
-    ncores = 1,
+    cores = 1,
     seed = 11,
     set_variable_features = FALSE,
     backend = "r",
@@ -297,34 +297,50 @@ test_that("RunMERINGUE cpp and r backends give identical autocorrelation tables"
   )
 })
 
-test_that("RunMERINGUE cpp backend is much faster than r for permutations", {
+test_that("RunMERINGUE cpp backend matches r for permutations", {
   skip_on_cran()
   skip_if_not_installed("MERINGUE")
 
   srt <- meringue_real_input(n = 120)
   features <- meringue_real_features(srt, k = 20)
 
-  cpp_time <- system.time({
-    cpp_out <- RunMERINGUE(
-      srt,
-      mode = "autocorrelation",
-      coord.cols = c("x", "y"),
-      features = features,
-      min_spots = 5,
-      filterDist = NA_real_,
-      binary = TRUE,
-      alternative = "greater",
-      nperm = 200,
-      ncores = 1,
-      seed = 11,
-      set_variable_features = FALSE,
-      backend = "cpp",
-      verbose = FALSE
-    )
-  })[["elapsed"]]
+  cpp_out <- RunMERINGUE(
+    srt,
+    mode = "autocorrelation",
+    coord.cols = c("x", "y"),
+    features = features,
+    min_spots = 5,
+    filterDist = NA_real_,
+    binary = TRUE,
+    alternative = "greater",
+    nperm = 200,
+    cores = 1,
+    seed = 11,
+    set_variable_features = FALSE,
+    backend = "cpp",
+    verbose = FALSE
+  )
+  r_out <- RunMERINGUE(
+    srt,
+    mode = "autocorrelation",
+    coord.cols = c("x", "y"),
+    features = features,
+    min_spots = 5,
+    filterDist = NA_real_,
+    binary = TRUE,
+    alternative = "greater",
+    nperm = 200,
+    cores = 1,
+    seed = 11,
+    set_variable_features = FALSE,
+    backend = "r",
+    verbose = FALSE
+  )
 
-  expect_true(all(is.finite(cpp_out@tools$MERINGUE$autocorrelation$p_value)))
-  expect_lt(cpp_time, 30)
+  cpp_table <- cpp_out@tools$MERINGUE$autocorrelation
+  r_table <- r_out@tools$MERINGUE$autocorrelation
+  expect_true(all(is.finite(cpp_table$p_value)))
+  expect_equal(cpp_table, r_table, tolerance = 1e-12)
 })
 
 test_that("RunMERINGUE cpp backend honors moran_params with a warning", {

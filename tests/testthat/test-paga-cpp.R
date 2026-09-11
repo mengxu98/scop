@@ -155,15 +155,29 @@ test_that("paga_connectivities_cpp works with exactly 2 groups", {
 test_that("paga_connectivities_cpp handles single group gracefully", {
   n_cells <- 10
   groups <- rep(1L, n_cells)
+  set.seed(1)
   knn_idx <- matrix(NA_integer_, nrow = n_cells, ncol = 3)
   for (i in seq_len(n_cells)) {
     candidates <- setdiff(seq_len(n_cells), i)
     knn_idx[i, ] <- sort(sample(candidates, 3))
   }
-  expect_error(
-    paga_connectivities_cpp(knn_idx = knn_idx, groups = groups, n_groups = 1),
-    NA # should not error
+
+  out <- paga_connectivities_cpp(knn_idx = knn_idx, groups = groups, n_groups = 1)
+
+  expect_named(
+    out,
+    c(
+      "connectivities", "connectivities_tree",
+      "expected_n_edges_random", "group_sizes", "directed_edges"
+    )
   )
+  expect_equal(dim(out$connectivities), c(1, 1))
+  expect_equal(dim(out$connectivities_tree), c(1, 1))
+  expect_equal(out$group_sizes, n_cells)
+  expect_equal(sum(out$group_sizes), n_cells)
+  # Every KNN edge of the single group is an intra-group edge
+  expect_equal(out$directed_edges[1, 1], n_cells * 3)
+  expect_equal(out$connectivities[1, 1], 0)
 })
 
 # ---------------------------------------------------------------------------
