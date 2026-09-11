@@ -85,7 +85,8 @@
 
 <!-- badges: end -->
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="introduction">
+<strong>Introduction</strong><a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p><a href="https://github.com/mengxu98/scop" class="external-link">scop</a> is an <em>R</em> package for comprehensive single-cell and spatial omics analysis, providing modular workflows for analyzing, integrating, visualizing, and interactively exploring single-cell and spatial omics data.</p>
 <blockquote>
@@ -119,7 +120,8 @@
 </ul>
 </div>
 <div class="section level2">
-<h2 id="table-of-contents">Table of Contents<a class="anchor" aria-label="anchor" href="#table-of-contents"></a>
+<h2 id="table-of-contents">
+<strong>Table of Contents</strong><a class="anchor" aria-label="anchor" href="#table-of-contents"></a>
 </h2>
 <ul>
 <li>
@@ -131,8 +133,8 @@
 <li>
 <a href="#installation">Installation</a>
 <ul>
-<li><a href="#r-requirement"><em>R</em> requirement</a></li>
-<li><a href="#python-environment"><em>Python</em> environment</a></li>
+<li><a href="#r-requirement">R requirement</a></li>
+<li><a href="#python-environment">Python environment</a></li>
 </ul>
 </li>
 <li>
@@ -183,7 +185,8 @@
 </ul>
 </div>
 <div class="section level2">
-<h2 id="credits">Credits<a class="anchor" aria-label="anchor" href="#credits"></a>
+<h2 id="credits">
+<strong>Credits</strong><a class="anchor" aria-label="anchor" href="#credits"></a>
 </h2>
 <p>The <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> package is developed based on the <a href="https://github.com/zhanghao-njmu/SCP" class="external-link">SCP</a> package, with the following major improvements:</p>
 <ol style="list-style-type: decimal">
@@ -195,11 +198,12 @@
 </ol>
 </div>
 <div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<h2 id="installation">
+<strong>Installation</strong><a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="section level3">
 <h3 id="r-requirement">
-<em>R</em> requirement<a class="anchor" aria-label="anchor" href="#r-requirement"></a>
+<strong>R requirement</strong><a class="anchor" aria-label="anchor" href="#r-requirement"></a>
 </h3>
 <ul>
 <li>R &gt;= 4.1.0</li>
@@ -213,7 +217,7 @@
 </div>
 <div class="section level3">
 <h3 id="python-environment">
-<em>Python</em> environment<a class="anchor" aria-label="anchor" href="#python-environment"></a>
+<strong>Python environment</strong><a class="anchor" aria-label="anchor" href="#python-environment"></a>
 </h3>
 <p>To run functions such as <code><a href="reference/RunPAGA.html">RunPAGA()</a></code>, <code><a href="reference/RunSCVELO.html">RunSCVELO()</a></code>, <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> requires a conda-compatible environment manager (<a href="https://docs.conda.io/en/latest/miniconda.html" class="external-link">conda</a>, <a href="https://mamba.readthedocs.io/" class="external-link">mamba</a>, or <a href="https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html" class="external-link">micromamba</a>) to create a separate environment. The default environment name is <code>"scop_env"</code>. You can specify the environment name for scop by setting <code>options(scop_envname = "new_name")</code>.</p>
 <p>Now, you can run <code><a href="reference/PrepareEnv.html">PrepareEnv()</a></code> to create the python environment for <a href="https://github.com/mengxu98/scop" class="external-link">scop</a>. If no conda-compatible executable is found, it will automatically download and install miniconda. If you explicitly request <code>conda = "micromamba"</code> and micromamba is not available on <code>PATH</code>, <a href="https://github.com/mengxu98/scop" class="external-link">scop</a> downloads a package-managed micromamba automatically.</p>
@@ -263,10 +267,12 @@
 </div>
 </div>
 <div class="section level2">
-<h2 id="pipeline">Pipeline<a class="anchor" aria-label="anchor" href="#pipeline"></a>
+<h2 id="pipeline">
+<strong>Pipeline</strong><a class="anchor" aria-label="anchor" href="#pipeline"></a>
 </h2>
 <div class="section level3">
-<h3 id="data-exploration">Data exploration<a class="anchor" aria-label="anchor" href="#data-exploration"></a>
+<h3 id="data-exploration">
+<strong>Data exploration</strong><a class="anchor" aria-label="anchor" href="#data-exploration"></a>
 </h3>
 <p>The analysis is based on a subsetted version of <a href="https://doi.org/10.1242/dev.173849" class="external-link">mouse pancreas data</a>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -356,7 +362,8 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="quality-control">Quality control<a class="anchor" aria-label="anchor" href="#quality-control"></a>
+<h3 id="quality-control">
+<strong>Quality control</strong><a class="anchor" aria-label="anchor" href="#quality-control"></a>
 </h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunCellQC.html">RunCellQC</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
@@ -388,7 +395,8 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-3.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="integration-pipeline">Integration pipeline<a class="anchor" aria-label="anchor" href="#integration-pipeline"></a>
+<h3 id="integration-pipeline">
+<strong>Integration pipeline</strong><a class="anchor" aria-label="anchor" href="#integration-pipeline"></a>
 </h3>
 <p>Example data for integration is a subsetted version of <a href="https://github.com/satijalab/seurat-data" class="external-link">panc8(eight human pancreas datasets)</a></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -407,10 +415,12 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunIntegration-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="cell-annotation">Cell annotation<a class="anchor" aria-label="anchor" href="#cell-annotation"></a>
+<h3 id="cell-annotation">
+<strong>Cell annotation</strong><a class="anchor" aria-label="anchor" href="#cell-annotation"></a>
 </h3>
 <div class="section level4">
-<h4 id="cell-projection-between-single-cell-datasets">Cell projection between single-cell datasets<a class="anchor" aria-label="anchor" href="#cell-projection-between-single-cell-datasets"></a>
+<h4 id="cell-projection-between-single-cell-datasets">
+<strong>Cell projection between single-cell datasets</strong><a class="anchor" aria-label="anchor" href="#cell-projection-between-single-cell-datasets"></a>
 </h4>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genenames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/make.unique.html" class="external-link">make.unique</a></span><span class="op">(</span></span>
@@ -443,7 +453,8 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
-<h4 id="cell-annotation-using-bulk-rna-seq-datasets">Cell annotation using bulk RNA-seq datasets<a class="anchor" aria-label="anchor" href="#cell-annotation-using-bulk-rna-seq-datasets"></a>
+<h4 id="cell-annotation-using-bulk-rna-seq-datasets">
+<strong>Cell annotation using bulk RNA-seq datasets</strong><a class="anchor" aria-label="anchor" href="#cell-annotation-using-bulk-rna-seq-datasets"></a>
 </h4>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ref_scMCA</span><span class="op">)</span></span>
@@ -463,7 +474,8 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
-<h4 id="cell-annotation-using-single-cell-datasets">Cell annotation using single-cell datasets<a class="anchor" aria-label="anchor" href="#cell-annotation-using-single-cell-datasets"></a>
+<h4 id="cell-annotation-using-single-cell-datasets">
+<strong>Cell annotation using single-cell datasets</strong><a class="anchor" aria-label="anchor" href="#cell-annotation-using-single-cell-datasets"></a>
 </h4>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunKNNPredict.html">RunKNNPredict</a></span><span class="op">(</span></span>
@@ -499,10 +511,12 @@
 </div>
 </div>
 <div class="section level3">
-<h3 id="cellular-potency">Cellular potency<a class="anchor" aria-label="anchor" href="#cellular-potency"></a>
+<h3 id="cellular-potency">
+<strong>Cellular potency</strong><a class="anchor" aria-label="anchor" href="#cellular-potency"></a>
 </h3>
 <div class="section level4">
-<h4 id="cytotrace-2">CytoTRACE 2<a class="anchor" aria-label="anchor" href="#cytotrace-2"></a>
+<h4 id="cytotrace-2">
+<strong>CytoTRACE 2</strong><a class="anchor" aria-label="anchor" href="#cytotrace-2"></a>
 </h4>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunCytoTRACE.html">RunCytoTRACE</a></span><span class="op">(</span></span>
@@ -519,10 +533,12 @@
 </div>
 </div>
 <div class="section level3">
-<h3 id="trajectory-inference">Trajectory inference<a class="anchor" aria-label="anchor" href="#trajectory-inference"></a>
+<h3 id="trajectory-inference">
+<strong>Trajectory inference</strong><a class="anchor" aria-label="anchor" href="#trajectory-inference"></a>
 </h3>
 <div class="section level4">
-<h4 id="rna-velocity-analysis">RNA Velocity analysis<a class="anchor" aria-label="anchor" href="#rna-velocity-analysis"></a>
+<h4 id="rna-velocity-analysis">
+<strong>RNA Velocity analysis</strong><a class="anchor" aria-label="anchor" href="#rna-velocity-analysis"></a>
 </h4>
 <p>To estimate RNA velocity, both “spliced” and “unspliced” assays are required in the Seurat object. You can generate these matrices using <a href="http://velocyto.org/velocyto.py/index.html" class="external-link">velocyto</a>, <a href="https://bustools.github.io/BUS_notebooks_R/velocity.html" class="external-link">bustools</a>, or <a href="https://combine-lab.github.io/alevin-fry-tutorials/2021/alevin-fry-velocity/" class="external-link">alevin</a>.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
@@ -551,7 +567,8 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
-<h4 id="paga">PAGA<a class="anchor" aria-label="anchor" href="#paga"></a>
+<h4 id="paga">
+<strong>PAGA</strong><a class="anchor" aria-label="anchor" href="#paga"></a>
 </h4>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunPAGA.html">RunPAGA</a></span><span class="op">(</span></span>
@@ -574,7 +591,8 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunPAGA-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
-<h4 id="slingshot">Slingshot<a class="anchor" aria-label="anchor" href="#slingshot"></a>
+<h4 id="slingshot">
+<strong>Slingshot</strong><a class="anchor" aria-label="anchor" href="#slingshot"></a>
 </h4>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunSlingshot.html">RunSlingshot</a></span><span class="op">(</span></span>
@@ -605,7 +623,8 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-2.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
-<h4 id="monocle3">Monocle3<a class="anchor" aria-label="anchor" href="#monocle3"></a>
+<h4 id="monocle3">
+<strong>Monocle3</strong><a class="anchor" aria-label="anchor" href="#monocle3"></a>
 </h4>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunMonocle3.html">RunMonocle3</a></span><span class="op">(</span></span>
@@ -654,7 +673,8 @@
 </div>
 </div>
 <div class="section level3">
-<h3 id="dynamic-features">Dynamic features<a class="anchor" aria-label="anchor" href="#dynamic-features"></a>
+<h3 id="dynamic-features">
+<strong>Dynamic features</strong><a class="anchor" aria-label="anchor" href="#dynamic-features"></a>
 </h3>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunDynamicFeatures.html">RunDynamicFeatures</a></span><span class="op">(</span></span>
@@ -727,7 +747,8 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureStatPlot-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="differential-expression-analysis">Differential expression analysis<a class="anchor" aria-label="anchor" href="#differential-expression-analysis"></a>
+<h3 id="differential-expression-analysis">
+<strong>Differential expression analysis</strong><a class="anchor" aria-label="anchor" href="#differential-expression-analysis"></a>
 </h3>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span>
@@ -805,10 +826,12 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="enrichment-analysis">Enrichment analysis<a class="anchor" aria-label="anchor" href="#enrichment-analysis"></a>
+<h3 id="enrichment-analysis">
+<strong>Enrichment analysis</strong><a class="anchor" aria-label="anchor" href="#enrichment-analysis"></a>
 </h3>
 <div class="section level4">
-<h4 id="over-representation">Over-representation<a class="anchor" aria-label="anchor" href="#over-representation"></a>
+<h4 id="over-representation">
+<strong>Over-representation</strong><a class="anchor" aria-label="anchor" href="#over-representation"></a>
 </h4>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunEnrichment.html">RunEnrichment</a></span><span class="op">(</span></span>
@@ -878,7 +901,8 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
-<h4 id="gsea">GSEA<a class="anchor" aria-label="anchor" href="#gsea"></a>
+<h4 id="gsea">
+<strong>GSEA</strong><a class="anchor" aria-label="anchor" href="#gsea"></a>
 </h4>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunGSEA.html">RunGSEA</a></span><span class="op">(</span></span>
@@ -909,7 +933,8 @@
 </div>
 </div>
 <div class="section level3">
-<h3 id="interactive-data-visualization-with-scexplorer">Interactive data visualization with SCExplorer<a class="anchor" aria-label="anchor" href="#interactive-data-visualization-with-scexplorer"></a>
+<h3 id="interactive-data-visualization-with-scexplorer">
+<strong>Interactive data visualization with SCExplorer</strong><a class="anchor" aria-label="anchor" href="#interactive-data-visualization-with-scexplorer"></a>
 </h3>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/PrepareSCExplorer.html">PrepareSCExplorer</a></span><span class="op">(</span></span>
@@ -928,7 +953,8 @@
 <p><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCExplorer-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="other-visualization-examples">Other visualization examples<a class="anchor" aria-label="anchor" href="#other-visualization-examples"></a>
+<h3 id="other-visualization-examples">
+<strong>Other visualization examples</strong><a class="anchor" aria-label="anchor" href="#other-visualization-examples"></a>
 </h3>
 <p><a href="https://mengxu98.github.io/scop/reference/CellDimPlot.html"><strong>CellDimPlot</strong></a><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-1.png" alt="Example1"></p>
 <p><a href="https://mengxu98.github.io/scop/reference/CellStatPlot.html"><strong>CellStatPlot</strong></a><img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-2.png" alt="Example2"></p>
