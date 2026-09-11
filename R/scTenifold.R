@@ -541,6 +541,7 @@ sctenifold_make_networks_cpp <- function(
     out <- Matrix::sparseMatrix(
       i = integer(0),
       j = integer(0),
+      x = numeric(0),
       dims = c(n_genes, n_genes),
       dimnames = list(gene_names, gene_names)
     )
