@@ -1186,11 +1186,6 @@ spot_sweeper_metadata_col <- function(prefix, metric, suffix) {
   make.names(paste(prefix, metric, suffix, sep = "_"))
 }
 
-spot_sweeper_pass_fail <- function(fail) {
-  factor(ifelse(fail, "Fail", "Pass"), levels = c("Pass", "Fail"))
-}
-
-
 spot_sweeper_assert_positive_integer <- function(x, arg) {
   if (!is.numeric(x) || length(x) != 1L || is.na(x) || x < 1 || x != round(x)) {
     log_message(

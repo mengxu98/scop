@@ -537,7 +537,7 @@ cnv_run_infercnv <- function(
       write_expr_matrix = FALSE,
       write_phylo = FALSE,
       inspect_subclusters = FALSE,
-      num_threads = cnv_default_threads()
+      num_threads = thisutils::detect_cores(max_threads = 4L)
     ),
     list(...)
   )
@@ -1656,14 +1656,6 @@ cnv_call_backend_fun <- function(fun, args) {
   }
   allowed <- setdiff(formal_names, "...")
   do.call(fun, args[names(args) %in% allowed])
-}
-
-cnv_default_threads <- function(max_threads = 4L) {
-  cores <- suppressWarnings(parallel::detectCores(logical = TRUE))
-  if (length(cores) == 0L || !is.finite(cores) || cores < 1L) {
-    return(1L)
-  }
-  max(1L, min(as.integer(max_threads), as.integer(cores)))
 }
 
 cnv_find_seurat_assay_matrix <- function(result, cells) {

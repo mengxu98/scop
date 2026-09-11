@@ -785,22 +785,25 @@ CellScoring <- function(
     srt[[class_col]] <- assignments[rownames(scores_mat)]
   }
 
-  srt <- cell_scoring_store_record(
-    srt,
-    record = list(
-      method = method,
-      features = stats::setNames(colnames(scores_mat), display_labels),
-      assay_features = if (isTRUE(new_assay)) {
-        stats::setNames(rownames(srt[[name]]), display_labels)
-      } else {
-        NULL
-      },
-      metadata = isTRUE(store_metadata),
-      assay = if (isTRUE(new_assay)) name else NULL,
-      classification = class_col,
-      name = name
-    )
+  record <- list(
+    method = method,
+    features = stats::setNames(colnames(scores_mat), display_labels),
+    assay_features = if (isTRUE(new_assay)) {
+      stats::setNames(rownames(srt[[name]]), display_labels)
+    } else {
+      NULL
+    },
+    metadata = isTRUE(store_metadata),
+    assay = if (isTRUE(new_assay)) name else NULL,
+    classification = class_col,
+    name = name
   )
+  provenance <- srt@misc[["CellScoring"]]
+  if (!is.list(provenance) || !is.list(provenance$records)) {
+    provenance <- list(records = list())
+  }
+  provenance$records[[length(provenance$records) + 1L]] <- record
+  srt@misc[["CellScoring"]] <- provenance
 
   log_message(
     "Cell scoring completed",
@@ -809,16 +812,6 @@ CellScoring <- function(
   )
 
   return(srt)
-}
-
-cell_scoring_store_record <- function(srt, record) {
-  provenance <- srt@misc[["CellScoring"]]
-  if (!is.list(provenance) || !is.list(provenance$records)) {
-    provenance <- list(records = list())
-  }
-  provenance$records[[length(provenance$records) + 1L]] <- record
-  srt@misc[["CellScoring"]] <- provenance
-  srt
 }
 
 AddModuleScore2 <- function(

@@ -562,16 +562,12 @@ scpagwas_validate_block_annotation_selector <- function(block_annotation) {
 
 scpagwas_resolve_block_annotation <- function(block_annotation) {
   if (identical(block_annotation, "hg38")) {
-    return(scpagwas_package_data("block_annotation"))
+    return(scpagwas_check_block_annotation(scpagwas_package_data_raw("block_annotation")))
   }
   if (identical(block_annotation, "hg37")) {
-    return(scpagwas_package_data("block_annotation_hg37"))
+    return(scpagwas_check_block_annotation(scpagwas_package_data_raw("block_annotation_hg37")))
   }
   scpagwas_read_block_annotation(block_annotation)
-}
-
-scpagwas_package_data <- function(name) {
-  scpagwas_check_block_annotation(scpagwas_package_data_raw(name))
 }
 
 scpagwas_package_data_raw <- function(name) {

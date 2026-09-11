@@ -254,10 +254,7 @@ RunSCENIC <- function(
     cores_requested <- 1L
   }
   cores <- max(1L, cores_requested)
-  detected_cores <- tryCatch(
-    parallel::detectCores(logical = TRUE),
-    error = function(...) NA_integer_
-  )
+  detected_cores <- thisutils::detect_cores()
   if (cores_requested > 1L && (is.na(detected_cores) || detected_cores < 2L)) {
     log_message(
       "{.arg cores} was set to {.val {cores_requested}}, but multicore support was not detected; using one core",
