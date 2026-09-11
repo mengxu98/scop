@@ -12,9 +12,11 @@
 #' @param plot_type Plot type. Currently `"box"` draws a boxplot with jittered
 #' pseudobulk samples.
 #' @param palette,palcolor Palette forwarded to `thisplot::palette_colors()`.
-#' @param alpha Overall point and box alpha. `point_alpha` and `box_alpha`
+#' @param alpha Overall point and box alpha. `pt.alpha` and `box_alpha`
 #' take precedence when set.
-#' @param point_size,point_alpha Jittered point size and alpha.
+#' @param point_size,point_alpha Deprecated alias(es) for `pt.size`/`pt.alpha`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
+#' @param pt.size,pt.alpha Jittered point size and alpha.
 #' @param box_alpha Boxplot fill alpha.
 #' @param flip Whether to flip coordinates so group labels run along the y
 #' axis.
@@ -51,8 +53,10 @@ tAgePlot <- function(
   palette = "Chinese",
   palcolor = NULL,
   alpha = 1,
-  point_size = 2.2,
-  point_alpha = 0.85,
+  pt.size = 2.2,
+  point_size = NULL,
+  pt.alpha = 0.85,
+  point_alpha = NULL,
   box_alpha = 0.15,
   flip = TRUE,
   title = NULL,
@@ -73,6 +77,18 @@ tAgePlot <- function(
   ...
 ) {
   plot_type <- match.arg(plot_type)
+  if (!is.null(point_alpha)) {
+    .Deprecated(msg = paste0("`point_alpha` is deprecated; use `pt.alpha` instead. ",
+      "It will be removed in scop 1.0.0."))
+    pt.alpha <- point_alpha
+  }
+  point_alpha <- pt.alpha
+  if (!is.null(point_size)) {
+    .Deprecated(msg = paste0("`point_size` is deprecated; use `pt.size` instead. ",
+      "It will be removed in scop 1.0.0."))
+    pt.size <- point_size
+  }
+  point_size <- pt.size
   plot_df <- tage_plot_data(
     object = object,
     tool_name = tool_name,

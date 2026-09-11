@@ -150,7 +150,9 @@ RunscPagwas <- function(
 #' cells. Set to `NULL` to omit the significance plot.
 #' @param output.dir Optional directory in which to save PDF files.
 #' @param width,height PDF dimensions in inches.
-#' @param point_size Point size passed to [FeatureDimPlot()] and [CellDimPlot()].
+#' @param pt.size Point size passed to [FeatureDimPlot()] and [CellDimPlot()].
+#' @param point_size Deprecated alias(es) for `pt.size`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param palette,palcolor Palette used for continuous scPagwas scores, passed
 #' to [FeatureDimPlot()].
 #' @param significance_palette,significance_palcolor Palette used for the
@@ -167,6 +169,7 @@ PlotscPagwas <- function(
   output.dir = NULL,
   width = 7,
   height = 7,
+  pt.size = NULL,
   point_size = NULL,
   palette = "Spectral",
   palcolor = NULL,
@@ -179,6 +182,12 @@ PlotscPagwas <- function(
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a Seurat object", message_type = "error")
   }
+  if (!is.null(point_size)) {
+    .Deprecated(msg = paste0("`point_size` is deprecated; use `pt.size` instead. ",
+      "It will be removed in scop 1.0.0."))
+    pt.size <- point_size
+  }
+  point_size <- pt.size
   reduction <- match.arg(reduction)
   if (!reduction %in% names(srt@reductions)) {
     log_message(

@@ -38,11 +38,13 @@
 #'   must therefore be even. `NULL` chooses the minimum required value.
 #' @param row.heights Relative heights of the UMAP and statistic rows within
 #'   each row pair. Use `c(0.47, 0.53)` for the compact benchmark layout.
-#' @param point.size Point size in rasterized UMAPs. `NULL` lets
+#' @param pt.size Point size in rasterized UMAPs. `NULL` lets
 #'   [CellDimPlot()] choose a readable size from the number of plotted cells.
 #' @param point.fraction Fraction of cells shown as jittered points in each
 #'   boxplot. Boxplot statistics always use all cells.
-#' @param point.alpha Alpha for jittered points.
+#' @param pt.alpha Alpha for jittered points.
+#' @param point.size,point.alpha Deprecated alias(es) for `pt.size`/`pt.alpha`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param boxplot.y.range If `TRUE`, use the reference boxplot y-axis range
 #'   of 0--0.5 when it contains all scores; otherwise use the score range.
 #' @param group.palette,group.palcolor Group color palette arguments passed to
@@ -125,11 +127,13 @@ CellScoringPlot <- function(
   ncol = NULL,
   nrow = NULL,
   row.heights = c(1, 1),
+  pt.size = NULL,
   point.size = NULL,
   raster = NULL,
   raster.dpi = 512,
   point.fraction = 0.1,
-  point.alpha = 0.2,
+  pt.alpha = 0.2,
+  point.alpha = NULL,
   boxplot.y.range = TRUE,
   group.palette = "Chinese",
   group.palcolor = NULL,
@@ -155,6 +159,18 @@ CellScoringPlot <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  if (!is.null(point.alpha)) {
+    .Deprecated(msg = paste0("`point.alpha` is deprecated; use `pt.alpha` instead. ",
+      "It will be removed in scop 1.0.0."))
+    pt.alpha <- point.alpha
+  }
+  point.alpha <- pt.alpha
+  if (!is.null(point.size)) {
+    .Deprecated(msg = paste0("`point.size` is deprecated; use `pt.size` instead. ",
+      "It will be removed in scop 1.0.0."))
+    pt.size <- point.size
+  }
+  point.size <- pt.size
   if (length(method) != 1L || is.na(method)) {
     log_message(
       "{.arg method} must name one CellScoring method",

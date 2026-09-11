@@ -1337,7 +1337,9 @@ spatialcellchat_get_stored_sample <- function(object, result.name = NULL, sample
 #' @param pairLR.use Optional interaction name.
 #' @param direction Score direction for spatial score plots.
 #' @param top_n Maximum network edges.
-#' @param point.size Coordinate point size.
+#' @param pt.size Coordinate point size.
+#' @param point.size Deprecated alias(es) for `pt.size`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param palette,palcolor Color palette.
 #' @param title Optional title.
 #'
@@ -1353,12 +1355,19 @@ SpatialCellChatPlot <- function(
   pairLR.use = NULL,
   direction = c("outgoing", "incoming"),
   top_n = 30,
-  point.size = 1.5,
+  pt.size = 1.5,
+  point.size = NULL,
   palette = "RdBu",
   palcolor = NULL,
   title = NULL
 ) {
   plot_type <- match.arg(plot_type)
+  if (!is.null(point.size)) {
+    .Deprecated(msg = paste0("`point.size` is deprecated; use `pt.size` instead. ",
+      "It will be removed in scop 1.0.0."))
+    pt.size <- point.size
+  }
+  point.size <- pt.size
   direction <- match.arg(direction)
   stored <- spatialcellchat_get_stored_sample(object, result.name, sample)
   result <- stored$result
