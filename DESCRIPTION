@@ -19,6 +19,7 @@ Depends:
     R (>= 4.1.0)
 Imports:
     cli,
+    graphics,
     ComplexHeatmap,
     dplyr,
     ggnewscale (>= 0.5.2),
@@ -34,12 +35,16 @@ Imports:
     Rcpp,
     RcppParallel,
     Signac,
+    splines,
     S4Vectors,
     Seurat,
     SeuratObject,
     SummarizedExperiment,
+    stats,
     thisplot (>= 0.4.3),
+    tools,
     thisutils (>= 0.5.0),
+    utils,
     uwot
 Suggests:
     AnnotationDbi,

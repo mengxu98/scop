@@ -787,10 +787,6 @@ RunGRN.Seurat <- function(
 
 #' @rdname RunGRN
 #' @export
-RunGRN.matrix <- function(object, ...) {
-  RunGRN.default(object, ...)
-}
-
 #' @rdname RunGRN
 #' @export
 RunGRN.default <- function(

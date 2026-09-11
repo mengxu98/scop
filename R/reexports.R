@@ -5,7 +5,10 @@
 #' @importFrom ggforce geom_mark_ellipse geom_mark_hull geom_mark_rect geom_mark_circle
 #' @importFrom dplyr "%>%" %>% .data
 #' @importFrom grDevices as.raster
+#' @importFrom graphics par
 #' @importFrom methods slot
+#' @importFrom splines bs
+#' @importFrom tools toTitleCase
 #' @importFrom Rcpp evalCpp
 #' @importFrom RcppParallel RcppParallelLibs
 #' @importFrom stats approx ave density median model.matrix p.adjust setNames

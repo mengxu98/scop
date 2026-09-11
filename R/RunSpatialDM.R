@@ -379,15 +379,9 @@ RunSpatialDM <- function(
 }
 
 spatialdm_get_result <- function(object, result.name = NULL) {
-  if (!inherits(object, "Seurat")) log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
-  bundle <- object@tools[["SpatialDM"]]
-  if (is.null(bundle)) log_message("SpatialDM results are absent", message_type = "error")
-  if (is.null(result.name) && length(bundle$results) > 1L) log_message("Multiple SpatialDM results are stored; select {.arg result.name}", message_type = "error")
-  result.name <- result.name %||% bundle$active_result
-  result <- bundle$results[[result.name]]
-  if (is.null(result)) log_message("Unknown SpatialDM result {.val {result.name}}", message_type = "error")
-  spatial_require_coordinate_contract(result, "RunSpatialDM()")
-  result
+  bundle <- tool_bundle_get_result(object, "SpatialDM", result.name)
+  spatial_require_coordinate_contract(bundle$result, "RunSpatialDM()")
+  bundle$result
 }
 
 

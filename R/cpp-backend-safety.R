@@ -87,18 +87,3 @@ assert_cpp_approximation_opt_in <- function(
   invisible(TRUE)
 }
 
-reject_unsupported_cpp_arguments <- function(arguments, context) {
-  arguments <- unique(as.character(arguments))
-  arguments <- arguments[nzchar(arguments)]
-  if (length(arguments) > 0L) {
-    log_message(
-      sprintf(
-        "%s does not support: %s. Use the reference backend for these arguments.",
-        context,
-        paste(arguments, collapse = ", ")
-      ),
-      message_type = "error"
-    )
-  }
-  invisible(TRUE)
-}

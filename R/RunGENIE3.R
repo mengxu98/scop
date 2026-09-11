@@ -58,10 +58,6 @@ RunGENIE3.Seurat <- function(
 
 #' @rdname RunGENIE3
 #' @export
-RunGENIE3.matrix <- function(object, ...) {
-  RunGENIE3.default(object, ...)
-}
-
 #' @rdname RunGENIE3
 #' @export
 RunGENIE3.default <- function(

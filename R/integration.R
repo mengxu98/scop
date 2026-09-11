@@ -3209,7 +3209,7 @@ bbknn_native_matrix <- function(embedding, batches, params = list()) {
   }
   cores <- as.integer(
     params[["cores"]] %||%
-      max(1L, min(8L, parallel::detectCores(logical = TRUE)))
+      thisutils::detect_cores(max_threads = 8L)
   )
   batch_indices <- split(seq_len(nrow(embedding)), batches, drop = TRUE)
   if (any(lengths(batch_indices) < neighbors_within_batch)) {

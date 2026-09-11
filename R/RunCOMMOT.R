@@ -421,16 +421,6 @@ RunCOMMOT <- function(
 }
 
 
-commot_plot_object <- function(object, stored) {
-  bundle <- stored$bundle
-  spatial_require_coordinate_contract(stored$result, "RunCOMMOT()")
-  bundle$active_result <- stored$result.name
-  bundle$long_table <- stored$result$long_table
-  bundle$primary_table <- stored$result$long_table
-  object@tools[["COMMOT"]] <- spatial_tag_coordinate_contract(bundle)
-  ccc_update_unified_bundle(object, method = "COMMOT", bundle = bundle, backend = "r")
-}
-
 commot_select_key <- function(table, key, label) {
   keys <- unique(as.character(table$key))
   keys <- keys[!is.na(keys) & nzchar(keys)]
@@ -469,7 +459,13 @@ COMMOTPlot <- function(
   stored <- tool_bundle_get_result(object, "COMMOT", result.name)
   spatial_require_coordinate_contract(stored$result, "RunCOMMOT()")
   if (identical(plot_type, "network")) {
-    plot_object <- commot_plot_object(object, stored)
+    plot_bundle <- stored$bundle
+    spatial_require_coordinate_contract(stored$result, "RunCOMMOT()")
+    plot_bundle$active_result <- stored$result.name
+    plot_bundle$long_table <- stored$result$long_table
+    plot_bundle$primary_table <- stored$result$long_table
+    object@tools[["COMMOT"]] <- spatial_tag_coordinate_contract(plot_bundle)
+    plot_object <- ccc_update_unified_bundle(object, method = "COMMOT", bundle = plot_bundle, backend = "r")
     return(do.call(CCCNetworkPlot, c(list(object = plot_object, method = "COMMOT", plot_type = "circle"), list(...))))
   }
   if (identical(plot_type, "matrix")) {
