@@ -3,7 +3,6 @@
 \name{RunGENIE3}
 \alias{RunGENIE3}
 \alias{RunGENIE3.Seurat}
-\alias{RunGENIE3.matrix}
 \alias{RunGENIE3.default}
 \title{Infer gene regulatory networks with GENIE3}
 \usage{
@@ -22,8 +21,6 @@ RunGENIE3(object, ...)
   verbose = TRUE,
   ...
 )
-
-\method{RunGENIE3}{matrix}(object, ...)
 
 \method{RunGENIE3}{default}(
   object,

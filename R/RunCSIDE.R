@@ -138,10 +138,13 @@ RunCSIDE <- function(
     srt = srt,
     rctd_result = rctd_result
   )
-  stored_rctd_mode <- cside_stored_rctd_mode(
-    srt = srt,
-    rctd_result = rctd_result
-  )
+  stored_rctd_mode <- NULL
+  if (is.null(rctd_result)) {
+    stored <- srt@tools[["RCTD"]]
+    if (!is.null(stored) && !is.null(stored$parameters$rctd_mode)) {
+      stored_rctd_mode <- stored$parameters$rctd_mode
+    }
+  }
   rctd_result <- cside_resolve_rctd_result(
     srt = srt,
     rctd_result = rctd_result
@@ -251,17 +254,6 @@ cside_rctd_context <- function(srt, rctd_result = NULL) {
     input_type = "stored_rctd_result",
     tool_name = "RCTD"
   )
-}
-
-cside_stored_rctd_mode <- function(srt, rctd_result = NULL) {
-  if (!is.null(rctd_result)) {
-    return(NULL)
-  }
-  stored <- srt@tools[["RCTD"]]
-  if (is.null(stored) || is.null(stored$parameters$rctd_mode)) {
-    return(NULL)
-  }
-  stored$parameters$rctd_mode
 }
 
 cside_apply_rctd_mode_defaults <- function(extra_args, stored_rctd_mode = NULL) {

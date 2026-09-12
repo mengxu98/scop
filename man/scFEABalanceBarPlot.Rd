@@ -13,7 +13,10 @@ scFEABalanceBarPlot(
   layer = "data",
   top_n = NULL,
   p_adj_cutoff = 0.01,
+  palcolor = c("#D73027", "#4575B4"),
   title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
   srt = NULL
 )
 }
@@ -37,7 +40,11 @@ adjusted-p-value filter.}
 
 \item{p_adj_cutoff}{Adjusted p-value cutoff used when `top_n` is not `NULL`.}
 
+\item{palcolor}{Two colors for the higher and lower group.}
+
 \item{title}{Optional plot title.}
+
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
@@ -49,4 +56,12 @@ returned and combined statistics are stored in the outer `"data"` attribute.
 }
 \description{
 Plot scFEA metabolite balance changes
+}
+\examples{
+\dontrun{
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+pancreas_sub <- RunscFEA(pancreas_sub, group.by = "SubCellType")
+scFEABalanceBarPlot(pancreas_sub, group.by = "SubCellType", ident.1 = "Alpha", ident.2 = "Beta")
+}
 }

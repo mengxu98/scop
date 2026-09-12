@@ -12,6 +12,7 @@ PlotscPagwas(
   output.dir = NULL,
   width = 7,
   height = 7,
+  pt.size = NULL,
   point_size = NULL,
   palette = "Spectral",
   palcolor = NULL,
@@ -36,7 +37,10 @@ cells. Set to \code{NULL} to omit the significance plot.}
 
 \item{width, height}{PDF dimensions in inches.}
 
-\item{point_size}{Point size passed to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} and \code{\link[=CellDimPlot]{CellDimPlot()}}.}
+\item{pt.size}{Point size passed to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}} and \code{\link[=CellDimPlot]{CellDimPlot()}}.}
+
+\item{point_size}{Deprecated alias(es) for \code{pt.size}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 
 \item{palette, palcolor}{Palette used for continuous scPagwas scores, passed
 to \code{\link[=FeatureDimPlot]{FeatureDimPlot()}}.}

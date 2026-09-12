@@ -130,10 +130,6 @@ RunGRNBoost2.Seurat <- function(
 
 #' @rdname RunGRNBoost2
 #' @export
-RunGRNBoost2.matrix <- function(object, ...) {
-  RunGRNBoost2.default(object, ...)
-}
-
 #' @rdname RunGRNBoost2
 #' @export
 RunGRNBoost2.default <- function(

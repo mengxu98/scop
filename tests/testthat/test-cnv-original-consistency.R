@@ -36,7 +36,6 @@ test_that("RunCNV copykat matches the original copykat pipeline", {
   wrapped <- RunCNV(srt, method = "copykat", genome = "hg38", verbose = FALSE)
   wrapped_pred <- wrapped$CNV_prediction
 
-  suppressPackageStartupMessages(library(copykat))
   oldwd <- getwd()
   setwd(tempdir())
   on.exit(setwd(oldwd), add = TRUE)
@@ -67,6 +66,7 @@ test_that("RunCNV copykat matches the original copykat pipeline", {
 test_that("RunCNV scevan matches the original SCEVAN pipeline", {
   skip_on_cran()
   skip_if_not_installed("SCEVAN")
+  skip_if_not_installed("copykat")
 
   srt <- cnv_real_breast_seurat()
   wrapped <- RunCNV(srt, method = "scevan", genome = "hg38", verbose = FALSE)
@@ -204,6 +204,7 @@ test_that("RunCNV numbat matches the original numbat pipeline output tables", {
 test_that("RunCNV fastCNV matches the original fastCNV pipeline", {
   skip_on_cran()
   skip_if_not_installed("fastCNV")
+  skip_if_not_installed("copykat")   # cnv_real_breast_seurat() loads copykat::exp.rawdata
 
   srt <- cnv_real_breast_seurat()
   srt$celltype <- ifelse(seq_len(ncol(srt)) %% 5 == 0, "Normal", "Tumor")
@@ -217,7 +218,6 @@ test_that("RunCNV fastCNV matches the original fastCNV pipeline", {
   )
   wrapped_score <- wrapped$CNV_fastCNV_score
 
-  suppressPackageStartupMessages(library(fastCNV))
   direct <- fastCNV::fastCNV(
     seuratObj = srt,
     sampleName = "scop_cnv",

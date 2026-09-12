@@ -54,18 +54,18 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
 
   # original pipeline with the same inputs; spacexr exposes two generations of
   # API (Bioc 1.4.0: createRctd/runRctd, GitHub 2.x: SpatialRNA/create.RCTD)
-  labels <- scop:::resolve_reference_labels(reference, "celltype")
+  labels <- getFromNamespace("resolve_reference_labels", "scop")(reference, "celltype")
   names(labels) <- colnames(reference)
   labels <- labels[!is.na(labels) & nzchar(as.character(labels))]
-  labels <- scop:::rctd_filter_labels_by_min_cells(labels, min_cells = 25, verbose = FALSE)
+  labels <- getFromNamespace("rctd_filter_labels_by_min_cells", "scop")(labels, min_cells = 25, verbose = FALSE)
   reference2 <- reference[, names(labels)]
   labels <- factor(as.character(labels), levels = unique(as.character(labels)))
   names(labels) <- colnames(reference2)
-  label_map <- scop:::rctd_backend_label_map(labels)
+  label_map <- getFromNamespace("rctd_backend_label_map", "scop")(labels)
   features <- intersect(rownames(srt), rownames(reference2))
-  st <- scop:::rctd_get_count_matrix(srt, visium_assay2(srt), "counts", features, "Spatial", TRUE, FALSE)
-  rf <- scop:::rctd_get_count_matrix(reference2, visium_assay2(reference2), "counts", features, "Reference", TRUE, FALSE)
-  cq <- scop:::rctd_sparse_quality_cpp(st, rf)
+  st <- getFromNamespace("rctd_get_count_matrix", "scop")(srt, visium_assay2(srt), "counts", features, "Spatial", TRUE, FALSE)
+  rf <- getFromNamespace("rctd_get_count_matrix", "scop")(reference2, visium_assay2(reference2), "counts", features, "Reference", TRUE, FALSE)
+  cq <- getFromNamespace("rctd_sparse_quality_cpp", "scop")(st, rf)
   st <- st[rownames(st)[cq$keep_features], , drop = FALSE]
   rf <- rf[rownames(rf)[cq$keep_features], , drop = FALSE]
   st_numi <- cq$st_numi
@@ -73,7 +73,7 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
   keep_spots <- is.finite(st_numi) & st_numi > 0
   st <- st[, keep_spots, drop = FALSE]
   st_numi <- st_numi[keep_spots]
-  coords <- scop:::resolve_spatial_spot_coords(srt, colnames(st), NULL, c("x", "y"), "raw")
+  coords <- getFromNamespace("resolve_spatial_spot_coords", "scop")(srt, colnames(st), NULL, c("x", "y"), "raw")
   ref_numi <- cq$ref_numi
   names(ref_numi) <- colnames(rf)
 

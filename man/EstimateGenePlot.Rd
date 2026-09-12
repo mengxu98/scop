@@ -54,3 +54,13 @@ A `ggplot` object.
 Compare ESTIMATE scores between target-gene high and low expression groups,
 or draw continuous gene-expression correlations with ESTIMATE scores.
 }
+\examples{
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+pancreas_sub <- RunESTIMATE(pancreas_sub, group.by = "SubCellType")
+EstimateGenePlot(
+  pancreas_sub,
+  features = c("GCG", "INS"),
+  group.by = "SubCellType"
+)
+}

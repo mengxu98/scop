@@ -148,6 +148,18 @@ RunSpatialIntegration <- function(
 #'
 #' @return A `ggplot`, patchwork object, or list of plots.
 #' @seealso [RunSpatialIntegration()]
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- RunSpatialIntegration(
+#'   visium_human_pancreas_sub,
+#'   method = "PRECAST",
+#'   group.by = "CellType",
+#'   sample.by = "Sample"
+#' )
+#' SpatialIntegrationPlot(spatial, method = "PRECAST", plot_type = "spatial")
+#' }
 #' @export
 #'
 SpatialIntegrationPlot <- function(
@@ -179,7 +191,13 @@ SpatialIntegrationPlot <- function(
   }
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)
-  bundle <- spatial_integration_get_bundle(srt, tool_name = tool_name)
+  bundle <- srt@tools[[tool_name]]
+  if (is.null(bundle)) {
+    log_message(
+      "Cannot find spatial integration results in {.code srt@tools[[{tool_name}]]}",
+      message_type = "error"
+    )
+  }
   method <- method %||% bundle$active_method
   method_bundle <- spatial_integration_get_method_bundle(bundle, method)
   spatial_require_coordinate_contract(method_bundle, "RunSpatialIntegration()")
@@ -896,17 +914,6 @@ spatial_integration_apply_result <- function(
     srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
   srt
-}
-
-spatial_integration_get_bundle <- function(srt, tool_name) {
-  bundle <- srt@tools[[tool_name]]
-  if (is.null(bundle)) {
-    log_message(
-      "Cannot find spatial integration results in {.code srt@tools[[{tool_name}]]}",
-      message_type = "error"
-    )
-  }
-  bundle
 }
 
 spatial_integration_get_method_bundle <- function(bundle, method) {

@@ -20,7 +20,9 @@
 #' explicit compatibility option.
 #' @param binary Whether to binarize the MERINGUE spatial neighbor matrix.
 #' @param alternative Alternative hypothesis passed to MERINGUE Moran tests.
-#' @param ncores Number of cores passed to MERINGUE permutation tests.
+#' @param cores Number of cores passed to MERINGUE permutation tests.
+#' @param ncores Deprecated alias for `cores`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param pairwise_features Features used for spatial cross-correlation. If
 #' `NULL`, top spatially autocorrelated features are used.
 #' @param neighbor_params,moran_params,cross_cor_params,module_params Named
@@ -65,7 +67,8 @@ RunMERINGUE <- function(
   binary = TRUE,
   alternative = "greater",
   nperm = 0,
-  ncores = 1,
+  cores = 1,
+  ncores = NULL,
   pairwise_features = NULL,
   set_variable_features = FALSE,
   store_results = TRUE,
@@ -80,6 +83,11 @@ RunMERINGUE <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  if (!is.null(ncores)) {
+    .Deprecated(msg = paste0("`ncores` is deprecated; use `cores` instead. ",
+      "It will be removed in scop 1.0.0."))
+    cores <- ncores
+  }
   coordinate_space <- match.arg(coordinate_space)
   backend <- match.arg(backend)
   if (!inherits(srt, "Seurat")) {
@@ -103,7 +111,7 @@ RunMERINGUE <- function(
   nfeatures <- meringue_check_positive_integer(nfeatures, "nfeatures")
   min_spots <- meringue_check_positive_integer(min_spots, "min_spots")
   nperm <- meringue_check_nonnegative_integer(nperm, "nperm")
-  ncores <- meringue_check_positive_integer(ncores, "ncores")
+  cores <- meringue_check_positive_integer(cores, "cores")
   meringue_check_scalar_logical(binary, "binary")
   meringue_check_scalar_logical(set_variable_features, "set_variable_features")
   meringue_check_scalar_logical(store_results, "store_results")
@@ -162,7 +170,7 @@ RunMERINGUE <- function(
       expressed_spots = expressed_spots,
       alternative = alternative,
       nperm = nperm,
-      ncores = ncores,
+      cores = cores,
       seed = seed,
       moran_params = moran_params,
       backend = backend
@@ -182,7 +190,7 @@ RunMERINGUE <- function(
       expr = expr,
       weight = weight,
       features = pairwise_features,
-      ncores = ncores,
+      cores = cores,
       cross_cor_params = cross_cor_params
     )
     cross_correlation <- cross_out$result
@@ -236,7 +244,7 @@ RunMERINGUE <- function(
     binary = binary,
     alternative = alternative,
     nperm = nperm,
-    ncores = ncores,
+    cores = cores,
     pairwise_features = pairwise_features,
     set_variable_features = set_variable_features,
     store_results = store_results,
@@ -360,7 +368,7 @@ meringue_run_autocorrelation <- function(
   expressed_spots,
   alternative = "greater",
   nperm = 0,
-  ncores = 1,
+  cores = 1,
   seed = 11,
   moran_params = list(),
   backend = c("cpp", "r")
@@ -387,7 +395,7 @@ meringue_run_autocorrelation <- function(
       alternative = alternative,
       rounding_sample = rounding_sample,
       n_perm = as.integer(nperm),
-      n_threads = as.integer(ncores)
+      n_threads = as.integer(cores)
     )
     rows <- lapply(seq_len(nrow(expr)), function(i) {
       feature <- rownames(expr)[[i]]
@@ -455,7 +463,7 @@ meringue_run_autocorrelation <- function(
           alternative = alternative,
           N = nperm,
           seed = seed,
-          ncores = ncores,
+          cores = cores,
           plot = FALSE
         ),
         moran_params
@@ -593,7 +601,7 @@ meringue_run_cross_correlation <- function(
   expr,
   weight,
   features,
-  ncores = 1,
+  cores = 1,
   cross_cor_params = list()
 ) {
   scc <- meringue_run_cross_correlation_matrix(
@@ -608,7 +616,7 @@ meringue_run_cross_correlation <- function(
       expr = expr,
       weight = weight,
       result = result,
-      ncores = ncores,
+      cores = cores,
       test_params = test_params
     )
   } else {
@@ -658,7 +666,7 @@ meringue_run_cross_correlation_tests <- function(
   expr,
   weight,
   result,
-  ncores = 1,
+  cores = 1,
   test_params = list()
 ) {
   cross_test <- get_namespace_fun("MERINGUE", "spatialCrossCorTest")
@@ -668,7 +676,7 @@ meringue_run_cross_correlation_tests <- function(
         x = expr[result$feature1[[i]], ],
         y = expr[result$feature2[[i]], ],
         w = weight,
-        ncores = ncores,
+        cores = cores,
         plot = FALSE
       ),
       test_params

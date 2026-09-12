@@ -11,15 +11,15 @@ test_that("feature metadata only drops generated identifier columns", {
     row.names = feature_names
   )
 
-  generated_out <- scop:::prepare_adata_feature_metadata(
+  generated_out <- getFromNamespace("prepare_adata_feature_metadata", "scop")(
     generated,
     feature_names
   )
-  external_import <- scop:::prepare_adata_feature_metadata(
+  external_import <- getFromNamespace("prepare_adata_feature_metadata", "scop")(
     external,
     feature_names
   )
-  external_export <- scop:::prepare_adata_feature_metadata(
+  external_export <- getFromNamespace("prepare_adata_feature_metadata", "scop")(
     external,
     feature_names,
     reserve_features = TRUE

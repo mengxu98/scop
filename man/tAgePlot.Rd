@@ -14,8 +14,10 @@ tAgePlot(
   palette = "Chinese",
   palcolor = NULL,
   alpha = 1,
-  point_size = 2.2,
-  point_alpha = 0.85,
+  pt.size = 2.2,
+  point_size = NULL,
+  pt.alpha = 0.85,
+  point_alpha = NULL,
   box_alpha = 0.15,
   flip = TRUE,
   title = NULL,
@@ -54,10 +56,13 @@ pseudobulk samples.}
 
 \item{palette, palcolor}{Palette forwarded to \code{thisplot::palette_colors()}.}
 
-\item{alpha}{Overall point and box alpha. \code{point_alpha} and \code{box_alpha}
+\item{alpha}{Overall point and box alpha. \code{pt.alpha} and \code{box_alpha}
 take precedence when set.}
 
-\item{point_size, point_alpha}{Jittered point size and alpha.}
+\item{pt.size, pt.alpha}{Jittered point size and alpha.}
+
+\item{point_size, point_alpha}{Deprecated alias(es) for \code{pt.size}/\code{pt.alpha}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 
 \item{box_alpha}{Boxplot fill alpha.}
 

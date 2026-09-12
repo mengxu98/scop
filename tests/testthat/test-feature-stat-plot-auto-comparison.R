@@ -30,6 +30,15 @@ get_boxplot_layer <- function(plot) {
   boxplot_layers[[1]]
 }
 
+get_stat_label_layer <- function(plot) {
+  built <- suppressWarnings(ggplot2::ggplot_build(plot))
+  label_layers <- Filter(function(data) "label" %in% names(data), built$data)
+  if (length(label_layers) == 0) {
+    return(NULL)
+  }
+  label_layers[[1]]
+}
+
 test_that("ExpressionStatPlot honors box_width for standalone box plots", {
   meta <- make_feature_stat_meta(
     score = seq_len(6),
@@ -128,7 +137,16 @@ test_that("multiple-group p.format labels build with current ggpubr", {
     force = TRUE
   )
 
-  expect_no_error(ggplot2::ggplot_build(plots[[1L]]))
+  label_data <- get_stat_label_layer(plots[[1L]])
+  expect_false(is.null(label_data))
+  expect_equal(as.character(label_data$method), "Kruskal-Wallis")
+  expect_equal(
+    label_data$p,
+    stats::kruskal.test(score ~ group, data = meta)$p.value,
+    tolerance = 1e-8
+  )
+  expect_identical(label_data$label, paste0("p = ", label_data$p.format))
+  expect_identical(label_data$label, "p = 0.027")
 })
 
 test_that("pairwise p.format labels build with current ggpubr", {

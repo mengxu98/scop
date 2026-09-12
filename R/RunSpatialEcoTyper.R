@@ -49,7 +49,9 @@
 #' meta-cell.
 #' @param iterations Number of similarity network fusion iterations.
 #' @param minibatch Number of columns processed per mini-batch in SNF.
-#' @param ncores Number of CPU cores used by `SpatialEcoTyper`.
+#' @param cores Number of CPU cores used by `SpatialEcoTyper`.
+#' @param ncores Deprecated alias for `cores`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param grid.size Spatial grid size used to discretize coordinates.
 #' @param filter.region.by.celltypes Optional cell types used to restrict spatial
 #' neighborhoods.
@@ -118,7 +120,8 @@ RunSpatialEcoTyper <- function(
   min.features = 10,
   iterations = 10,
   minibatch = 5000,
-  ncores = 4,
+  cores = 4,
+  ncores = NULL,
   grid.size = round(radius * 1.4),
   filter.region.by.celltypes = NULL,
   k = 20,
@@ -149,6 +152,11 @@ RunSpatialEcoTyper <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  if (!is.null(ncores)) {
+    .Deprecated(msg = paste0("`ncores` is deprecated; use `cores` instead. ",
+      "It will be removed in scop 1.0.0."))
+    cores <- ncores
+  }
   mode <- match.arg(mode)
 
   has_seurat <- inherits(srt, "Seurat")
@@ -217,7 +225,7 @@ RunSpatialEcoTyper <- function(
       min.features = min.features,
       iterations = iterations,
       minibatch = minibatch,
-      ncores = ncores,
+      cores = cores,
       grid.size = grid.size,
       filter.region.by.celltypes = filter.region.by.celltypes,
       k = k,
@@ -253,7 +261,7 @@ RunSpatialEcoTyper <- function(
       nfeatures = nfeatures,
       min.features = min.features,
       minibatch = minibatch,
-      ncores = ncores,
+      cores = cores,
       grid.size = grid.size,
       filter.region.by.celltypes = filter.region.by.celltypes,
       k = k,
@@ -290,7 +298,7 @@ RunSpatialEcoTyper <- function(
       Ws = Ws,
       ncell.per.run = ncell.per.run,
       min.score = min.score,
-      ncores = ncores,
+      cores = cores,
       prefix = prefix,
       tool_name = tool_name,
       store_results = store_results,
@@ -310,7 +318,7 @@ RunSpatialEcoTyper <- function(
     W = W,
     nsample.per.run = nsample.per.run,
     sum2one = sum2one,
-    ncores = ncores,
+    cores = cores,
     prefix = prefix,
     tool_name = tool_name,
     store_results = store_results,
@@ -339,7 +347,7 @@ spatialecotyper_run_single <- function(
   min.features,
   iterations,
   minibatch,
-  ncores,
+  cores,
   grid.size,
   filter.region.by.celltypes,
   k,
@@ -398,7 +406,7 @@ spatialecotyper_run_single <- function(
     min.features = min.features,
     iterations = iterations,
     minibatch = minibatch,
-    ncores = ncores,
+    ncores = cores,
     grid.size = grid.size,
     filter.region.by.celltypes = filter.region.by.celltypes,
     k = k,
@@ -443,7 +451,7 @@ spatialecotyper_run_single <- function(
       min.features = min.features,
       iterations = iterations,
       minibatch = minibatch,
-      ncores = ncores,
+      cores = cores,
       grid.size = grid.size,
       filter.region.by.celltypes = filter.region.by.celltypes,
       k = k,
@@ -481,7 +489,7 @@ spatialecotyper_run_multi <- function(
   nfeatures,
   min.features,
   minibatch,
-  ncores,
+  cores,
   grid.size,
   filter.region.by.celltypes,
   k,
@@ -569,7 +577,7 @@ spatialecotyper_run_multi <- function(
     downsample.by.region = downsample.by.region,
     subresolution = subresolution,
     minibatch = minibatch,
-    ncores = ncores,
+    ncores = cores,
     seed = seed,
     filter.region.by.celltypes = filter.region.by.celltypes,
     npcs = npcs,
@@ -616,7 +624,7 @@ spatialecotyper_run_multi <- function(
       nfeatures = nfeatures,
       min.features = min.features,
       minibatch = minibatch,
-      ncores = ncores,
+      cores = cores,
       grid.size = grid.size,
       filter.region.by.celltypes = filter.region.by.celltypes,
       k = k,
@@ -655,7 +663,7 @@ spatialecotyper_run_recover <- function(
   Ws,
   ncell.per.run,
   min.score,
-  ncores,
+  cores,
   prefix,
   tool_name,
   store_results,
@@ -682,7 +690,7 @@ spatialecotyper_run_recover <- function(
     Ws = Ws,
     ncell.per.run = ncell.per.run,
     min.score = min.score,
-    ncores = ncores,
+    ncores = cores,
     ...
   )
   result_metadata <- spatialecotyper_extract_recover_metadata(result)
@@ -714,7 +722,7 @@ spatialecotyper_run_recover <- function(
       Ws = Ws,
       ncell.per.run = ncell.per.run,
       min.score = min.score,
-      ncores = ncores,
+      cores = cores,
       prefix = prefix,
       tool_name = tool_name,
       allow_partial = allow_partial
@@ -738,7 +746,7 @@ spatialecotyper_run_deconvolute <- function(
   W,
   nsample.per.run,
   sum2one,
-  ncores,
+  cores,
   prefix,
   tool_name,
   store_results,
@@ -756,7 +764,7 @@ spatialecotyper_run_deconvolute <- function(
     W = W,
     nsample.per.run = nsample.per.run,
     sum2one = sum2one,
-    ncores = ncores,
+    cores = cores,
     ...
   )
   abundance <- as.matrix(result)
@@ -784,7 +792,7 @@ spatialecotyper_run_deconvolute <- function(
       W = W,
       nsample.per.run = nsample.per.run,
       sum2one = sum2one,
-      ncores = ncores,
+      cores = cores,
       prefix = prefix,
       tool_name = tool_name
     )

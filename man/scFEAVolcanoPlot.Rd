@@ -18,6 +18,8 @@ scFEAVolcanoPlot(
   combine = TRUE,
   width = 12,
   height = 10.4,
+  theme_use = "theme_scop",
+  theme_args = list(),
   verbose = TRUE,
   srt = NULL
 )
@@ -52,6 +54,8 @@ If `FALSE`, returns one plot per pathway.}
 \item{width, height}{Suggested export size. Stored as attributes on the
 returned plot object.}
 
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
+
 \item{verbose}{Whether to print messages.}
 
 \item{srt}{Deprecated alias for `object`; supply exactly one of the two. It
@@ -66,4 +70,12 @@ statistics are stored in the outer `"data"` attribute.
 }
 \description{
 Plot scFEA flux Cohen's d volcano plots
+}
+\examples{
+\dontrun{
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+pancreas_sub <- RunscFEA(pancreas_sub, group.by = "SubCellType")
+scFEAVolcanoPlot(pancreas_sub, group.by = "SubCellType", ident.1 = "Alpha", ident.2 = "Beta")
+}
 }

@@ -112,10 +112,6 @@ RunMDIC3.Seurat <- function(
 
 #' @rdname RunMDIC3
 #' @export
-RunMDIC3.matrix <- function(object, ...) {
-  RunMDIC3.default(object, ...)
-}
-
 #' @rdname RunMDIC3
 #' @export
 RunMDIC3.default <- function(

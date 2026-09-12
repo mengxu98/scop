@@ -23,7 +23,6 @@
 #' @export
 #'
 #' @examples
-#' library(Matrix)
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunNMF(pancreas_sub)

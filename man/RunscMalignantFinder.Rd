@@ -17,7 +17,8 @@ RunscMalignantFinder(
   model_method = c("LogisticRegression", "RandomForest", "XGBoost"),
   norm_type = NULL,
   use_raw = FALSE,
-  n_thread = 1,
+  cores = 1,
+  n_thread = NULL,
   prefix = "",
   return_seurat = !is.null(srt),
   verbose = TRUE,
@@ -56,7 +57,10 @@ input. If \code{NULL}, defaults to \code{TRUE} only for Seurat counts input.}
 
 \item{use_raw}{Whether to use \code{adata.raw.X} when available.}
 
-\item{n_thread}{Number of threads used by \code{scMalignantFinder}.}
+\item{cores}{Number of threads used by \code{scMalignantFinder}.}
+
+\item{n_thread}{Deprecated alias for \code{cores}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 
 \item{prefix}{Optional prefix for output metadata columns. Default preserves
 the original \code{scMalignantFinder} column names.}

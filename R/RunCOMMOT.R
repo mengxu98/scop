@@ -421,16 +421,6 @@ RunCOMMOT <- function(
 }
 
 
-commot_plot_object <- function(object, stored) {
-  bundle <- stored$bundle
-  spatial_require_coordinate_contract(stored$result, "RunCOMMOT()")
-  bundle$active_result <- stored$result.name
-  bundle$long_table <- stored$result$long_table
-  bundle$primary_table <- stored$result$long_table
-  object@tools[["COMMOT"]] <- spatial_tag_coordinate_contract(bundle)
-  ccc_update_unified_bundle(object, method = "COMMOT", bundle = bundle, backend = "r")
-}
-
 commot_select_key <- function(table, key, label) {
   keys <- unique(as.character(table$key))
   keys <- keys[!is.na(keys) & nzchar(keys)]
@@ -453,23 +443,48 @@ commot_select_key <- function(table, key, label) {
 #' @param object A `Seurat` object with COMMOT results.
 #' @param result.name Stored COMMOT result name.
 #' @param plot_type Network, cluster matrix, or direction-vector view.
+#' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
 #' @param key Stored cluster or direction selection key.
 #' @param ... Arguments passed to the SCOP network plot for `"network"`.
 #'
 #' @return A `ggplot` or compatible plot object.
+#'
+#' @examples
+#' \dontrun{
+#' data(visium_human_pancreas_sub)
+#' spatial <- RunCOMMOT(
+#'   visium_human_pancreas_sub,
+#'   group.by = "CellType",
+#'   coord.cols = c("col", "row"),
+#'   cluster = TRUE,
+#'   direction = TRUE,
+#'   backend = "r"
+#' )
+#' COMMOTPlot(spatial, plot_type = "matrix")
+#' COMMOTPlot(spatial, plot_type = "direction")
+#' COMMOTPlot(spatial, plot_type = "network")
+#' }
 #' @export
 COMMOTPlot <- function(
   object,
   result.name = NULL,
   plot_type = c("network", "matrix", "direction"),
   key = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
   ...
 ) {
   plot_type <- match.arg(plot_type)
   stored <- tool_bundle_get_result(object, "COMMOT", result.name)
   spatial_require_coordinate_contract(stored$result, "RunCOMMOT()")
   if (identical(plot_type, "network")) {
-    plot_object <- commot_plot_object(object, stored)
+    plot_bundle <- stored$bundle
+    spatial_require_coordinate_contract(stored$result, "RunCOMMOT()")
+    plot_bundle$active_result <- stored$result.name
+    plot_bundle$long_table <- stored$result$long_table
+    plot_bundle$primary_table <- stored$result$long_table
+    object@tools[["COMMOT"]] <- spatial_tag_coordinate_contract(plot_bundle)
+    plot_object <- ccc_update_unified_bundle(object, method = "COMMOT", bundle = plot_bundle, backend = "r")
     return(do.call(CCCNetworkPlot, c(list(object = plot_object, method = "COMMOT", plot_type = "circle"), list(...))))
   }
   if (identical(plot_type, "matrix")) {
@@ -485,7 +500,7 @@ COMMOTPlot <- function(
         ggplot2::geom_tile() +
         ggplot2::scale_fill_viridis_c() +
         ggplot2::labs(x = "Receiver", y = "Sender", fill = "Score") +
-        ggplot2::theme_bw()
+        apply_plot_theme(theme_use, theme_args)
     )
   }
   table <- stored$result$direction_table
@@ -502,5 +517,5 @@ COMMOTPlot <- function(
     ggplot2::facet_wrap(~perspective) +
     ggplot2::coord_equal() +
     ggplot2::labs(x = "Raw x", y = "Raw y", color = "Group") +
-    ggplot2::theme_bw()
+    apply_plot_theme(theme_use, theme_args)
 }

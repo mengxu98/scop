@@ -261,6 +261,8 @@ test_that("RunBayesPrism accepts sample.by from RunDeconvolution dispatch", {
 
 test_that("RunCIBERSORT cpp backend matches the R backend on small deterministic data", {
   skip_if_not_installed("CIBERSORT")
+  skip_if_not_installed("future")
+  skip_if_not_installed("withr")
   dat <- make_cibersort_mock(seed = 4)
   previous_future_plan <- future::plan()
   withr::defer(future::plan(previous_future_plan))

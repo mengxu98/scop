@@ -91,19 +91,22 @@ RunNichenetr(
 \item{backend}{Backend used for post-processing aggregation. Upstream
 NicheNet inference is unchanged.}
 
-\item{merged_table_file}{Optional path to a CSV file for exporting a temporary
-ligand-receptor/activity/target merged table. The file is not stored in the
-result bundle. Existing files and missing parent directories are rejected.}
-
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{merged_table_file}{Optional path to a CSV file for exporting a temporary
+ligand-receptor/activity/target merged table. The file is not stored in the
+result bundle. Existing files and missing parent directories are rejected.}
 }
 \value{
 A Seurat object with standardized NicheNet results stored in
 \code{srt@tools[["Nichenetr"]]}.
+}
+\description{
+Run NicheNet analysis
 }
 \details{
 In the exported table, a ligand's predicted targets are repeated for
@@ -123,7 +126,4 @@ srt <- RunNichenetr(
   merged_table_file = "NicheNet_merged.csv"
 )
 }
-}
-\description{
-Run NicheNet analysis
 }

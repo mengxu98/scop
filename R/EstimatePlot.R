@@ -19,6 +19,12 @@
 #'
 #' @return A `ggplot` object.
 #'
+#'
+#' @examples
+#' data(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#' pancreas_sub <- RunESTIMATE(pancreas_sub, group.by = "SubCellType")
+#' EstimateScorePlot(pancreas_sub, group.by = "SubCellType")
 #' @export
 EstimateScorePlot <- function(
   object = NULL,
@@ -222,6 +228,16 @@ EstimateScorePlot <- function(
 #'
 #' @return A `ggplot` object.
 #'
+#'
+#' @examples
+#' data(pancreas_sub)
+#' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+#' pancreas_sub <- RunESTIMATE(pancreas_sub, group.by = "SubCellType")
+#' EstimateGenePlot(
+#'   pancreas_sub,
+#'   features = c("GCG", "INS"),
+#'   group.by = "SubCellType"
+#' )
 #' @export
 EstimateGenePlot <- function(
   object = NULL,

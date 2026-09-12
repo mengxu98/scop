@@ -47,16 +47,45 @@ test_that("FeatureCorPlot calculates co-expression on a public plot call", {
   srt <- NormalizeData(srt, verbose = FALSE)
   srt$group <- factor(c("a", "a", "b", "b"))
 
-  expect_no_error(
-    FeatureCorPlot(
-      srt,
-      features = rownames(srt)[1:2],
-      group.by = "group",
-      calculate_coexp = TRUE,
-      add_smooth = FALSE,
-      add_r2 = FALSE,
-      add_pvalue = FALSE,
-      verbose = FALSE
+  geometric_mean <- getFromNamespace("feature_cor_geometric_mean", "scop")
+  coexp_input <- NULL
+  coexp_values <- NULL
+  testthat::local_mocked_bindings(
+    feature_cor_geometric_mean = function(x, log_normalized = FALSE) {
+      coexp_input <<- x
+      coexp_values <<- geometric_mean(x, log_normalized)
+      coexp_values
+    },
+    .package = "scop"
+  )
+
+  p <- FeatureCorPlot(
+    srt,
+    features = rownames(srt)[1:2],
+    group.by = "group",
+    calculate_coexp = TRUE,
+    add_smooth = FALSE,
+    add_r2 = FALSE,
+    add_pvalue = FALSE,
+    verbose = FALSE
+  )
+
+  expect_s3_class(p, "ggplot")
+  # The plot must run co-expression on the log-normalized data of the
+  # requested features ...
+  expect_identical(rownames(coexp_input), rownames(srt)[1:2])
+  expect_equal(
+    unname(as_matrix(coexp_input)),
+    unname(as_matrix(
+      Seurat::GetAssayData(srt, assay = "RNA", layer = "data")[rownames(srt)[1:2], ]
+    ))
+  )
+  # ... and the values it plots must match the legacy geometric mean.
+  expect_equal(
+    coexp_values,
+    legacy_feature_cor_geometric_mean(
+      as_matrix(coexp_input),
+      log_normalized = TRUE
     )
   )
 })

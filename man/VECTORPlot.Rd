@@ -11,8 +11,10 @@ VECTORPlot(
   score.name = "VECTOR_Score",
   group.by = NULL,
   background = c("auto", "score", "group", "none"),
+  pt.size = NULL,
   point.size = NULL,
-  point.alpha = 0.7,
+  pt.alpha = 0.7,
+  point.alpha = NULL,
   grid.size = 2,
   arrow.linewidth = 0.5,
   arrow.length = grid::unit(0.035, "inches"),
@@ -47,10 +49,13 @@ for direction-field plots.}
 \code{\link[=FeatureDimPlot]{FeatureDimPlot()}}, \code{"group"} uses \code{\link[=CellDimPlot]{CellDimPlot()}} and requires \code{group.by},
 and \code{"none"} draws the flow field without cell points.}
 
-\item{point.size}{Cell point size. If \code{NULL}, uses the same default as
+\item{pt.size}{Cell point size. If \code{NULL}, uses the same default as
 \code{\link[=FeatureDimPlot]{FeatureDimPlot()}}.}
 
-\item{point.alpha}{Cell point alpha.}
+\item{point.size, point.alpha}{Deprecated alias(es) for \code{pt.size}/\code{pt.alpha}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
+
+\item{pt.alpha}{Cell point alpha.}
 
 \item{grid.size}{Grid-center point size.}
 

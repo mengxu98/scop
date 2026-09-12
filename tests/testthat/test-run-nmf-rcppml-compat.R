@@ -23,7 +23,6 @@ test_that("NMF dense feature variances match base R", {
 
 test_that("RunNMF works when RcppML has no global thread setter", {
   skip_if_not_installed("RcppML")
-  library(Matrix)
 
   set.seed(11)
   x <- Matrix::rsparsematrix(60, 30, density = 0.2)
