@@ -11,7 +11,7 @@ materialized individual cell-by-cell edge table."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +82,8 @@ materialized individual cell-by-cell edge table.</p>
 <span>  pairLR.use <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"outgoing"</span>, <span class="st">"incoming"</span><span class="op">)</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  point.size <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  pt.size <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  point.size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  palette <span class="op">=</span> <span class="st">"RdBu"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  title <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -125,8 +126,13 @@ materialized individual cell-by-cell edge table.</p>
 <dd><p>Maximum network edges.</p></dd>
 
 
-<dt id="arg-point-size">point.size<a class="anchor" aria-label="anchor" href="#arg-point-size"></a></dt>
+<dt id="arg-pt-size">pt.size<a class="anchor" aria-label="anchor" href="#arg-pt-size"></a></dt>
 <dd><p>Coordinate point size.</p></dd>
+
+
+<dt id="arg-point-size">point.size<a class="anchor" aria-label="anchor" href="#arg-point-size"></a></dt>
+<dd><p>Deprecated alias(es) for `pt.size`; supply exactly one of the two. It
+will be removed in scop 1.0.0.</p></dd>
 
 
 <dt id="arg-palette-palcolor">palette, palcolor<a class="anchor" aria-label="anchor" href="#arg-palette-palcolor"></a></dt>

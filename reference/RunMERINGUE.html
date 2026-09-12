@@ -9,7 +9,7 @@ spatial module analysis for a spatial Seurat object."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">scop</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,7 +84,8 @@ spatial module analysis for a spatial <code>Seurat</code> object.</p>
 <span>  binary <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  alternative <span class="op">=</span> <span class="st">"greater"</span>,</span>
 <span>  nperm <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  ncores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  ncores <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pairwise_features <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  set_variable_features <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  store_results <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -165,8 +166,13 @@ units.</p></dd>
 default <code>0</code> skips p-value calculation.</p></dd>
 
 
-<dt id="arg-ncores">ncores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>
+<dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
 <dd><p>Number of cores passed to MERINGUE permutation tests.</p></dd>
+
+
+<dt id="arg-ncores">ncores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>
+<dd><p>Deprecated alias for <code>cores</code>; supply exactly one of the two. It
+will be removed in scop 1.0.0.</p></dd>
 
 
 <dt id="arg-pairwise-features">pairwise_features<a class="anchor" aria-label="anchor" href="#arg-pairwise-features"></a></dt>
