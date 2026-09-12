@@ -108,10 +108,6 @@ RunGNIPLR.Seurat <- function(
 
 #' @rdname RunGNIPLR
 #' @export
-RunGNIPLR.matrix <- function(object, ...) {
-  RunGNIPLR.default(object, ...)
-}
-
 #' @rdname RunGNIPLR
 #' @export
 RunGNIPLR.default <- function(

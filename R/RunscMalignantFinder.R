@@ -29,7 +29,9 @@
 #' that should be library-size normalized; use `FALSE` for already normalized
 #' input. If `NULL`, defaults to `TRUE` only for Seurat counts input.
 #' @param use_raw Whether to use `adata.raw.X` when available.
-#' @param n_thread Number of threads used by `scMalignantFinder`.
+#' @param cores Number of threads used by `scMalignantFinder`.
+#' @param n_thread Deprecated alias for `cores`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param prefix Optional prefix for output metadata columns. Default preserves
 #' the original `scMalignantFinder` column names.
 #' @param return_seurat Whether to return a Seurat object when `srt` is
@@ -69,13 +71,19 @@ RunscMalignantFinder <- function(
   model_method = c("LogisticRegression", "RandomForest", "XGBoost"),
   norm_type = NULL,
   use_raw = FALSE,
-  n_thread = 1,
+  cores = 1,
+  n_thread = NULL,
   prefix = "",
   return_seurat = !is.null(srt),
   verbose = TRUE,
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  if (!is.null(n_thread)) {
+    .Deprecated(msg = paste0("`n_thread` is deprecated; use `cores` instead. ",
+      "It will be removed in scop 1.0.0."))
+    cores <- n_thread
+  }
   model_method <- match.arg(model_method)
   scmf_check_one_input(srt = srt, adata = adata, h5ad = h5ad)
   norm_type <- scmf_resolve_norm_type(norm_type, srt = srt, layer = layer)
@@ -144,7 +152,7 @@ RunscMalignantFinder <- function(
     model_method = model_method,
     norm_type = norm_type,
     use_raw = use_raw,
-    n_thread = as.integer(n_thread),
+    n_thread = as.integer(cores),
     return_obs = TRUE,
     verbose = verbose
   )
@@ -190,7 +198,7 @@ RunscMalignantFinder <- function(
       model_method = model_method,
       norm_type = norm_type,
       use_raw = use_raw,
-      n_thread = as.integer(n_thread)
+      n_thread = as.integer(cores)
     )
   )
   srt

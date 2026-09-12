@@ -1,4 +1,5 @@
 test_that("cross kNN matches the raw cosine and euclidean rankings", {
+  skip_if_not_installed("proxyC")
   reference <- rbind(
     c(1.2, 0.1, 0.4),
     c(0.2, 1.3, 0.6),
@@ -38,6 +39,7 @@ test_that("cross kNN matches the raw cosine and euclidean rankings", {
 })
 
 test_that("native cross kNN supports exact Pearson and Spearman rankings", {
+  skip_if_not_installed("proxyC")
   reference <- rbind(
     c(1, 0, 3),
     c(0, 3, 1),
@@ -109,6 +111,7 @@ test_that("fast row ranks install matrixStats and preserve Spearman preprocessin
 })
 
 test_that("cross kNN preserves raw tie ordering", {
+  skip_if_not_installed("proxyC")
   reference <- rbind(c(1, 0), c(0, 1), c(1, 1), c(1, 0))
   query <- rbind(c(1, 0), c(0, 1))
 

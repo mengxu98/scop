@@ -3,7 +3,6 @@
 \name{RunMDIC3}
 \alias{RunMDIC3}
 \alias{RunMDIC3.Seurat}
-\alias{RunMDIC3.matrix}
 \alias{RunMDIC3.default}
 \title{Run MDIC3 cell-cell communication inference}
 \usage{
@@ -23,8 +22,6 @@ RunMDIC3(object, ...)
   verbose = TRUE,
   ...
 )
-
-\method{RunMDIC3}{matrix}(object, ...)
 
 \method{RunMDIC3}{default}(
   object,

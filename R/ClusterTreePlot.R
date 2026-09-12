@@ -895,7 +895,8 @@ clustertree_single_plot <- function(
       ) +
       ggplot2::scale_fill_gradientn(
         name = if (
-          clustertree_is_compact_legend(legend.position) && is.null(subtitle)
+          (clustertree_is_inside_legend(legend.position) ||
+            clustertree_is_corner_legend(legend.position)) && is.null(subtitle)
         ) {
           NULL
         } else {
@@ -951,11 +952,6 @@ clustertree_is_corner_legend <- function(legend.position) {
   is.character(legend.position) &&
     length(legend.position) == 1L &&
     legend.position %in% c("top-left", "top-right")
-}
-
-clustertree_is_compact_legend <- function(legend.position) {
-  clustertree_is_inside_legend(legend.position) ||
-    clustertree_is_corner_legend(legend.position)
 }
 
 clustertree_resolve_legend_position <- function(

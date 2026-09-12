@@ -127,31 +127,25 @@ test_that("RunVECTOR stores cell scores and grid arrows", {
   expect_s3_class(VECTORPlot(out, plot_type = "raw", group.by = "celltype"), "ggplot")
 })
 
-test_that("native FWP vectorization matches a naive reference and is faster", {
+test_that("native FWP vectorization matches a naive reference", {
   srt <- make_literature_method_srt(n_genes = 200, n_cells = 80)
   mat <- GetAssayData5(srt, layer = "data")
   features <- rownames(mat)[seq_len(120)]
   y <- as.integer(srt$celltype == "B")
 
-  fast_time <- system.time({
-    fast <- RunFWP(
-      mat,
-      features = features,
-      phenotype.by = NULL,
-      weights = fwp_score(mat[features, ], y = y)$weights,
-      verbose = FALSE
-    )
-  })[["elapsed"]]
+  fast <- RunFWP(
+    mat,
+    features = features,
+    phenotype.by = NULL,
+    weights = fwp_score(mat[features, ], y = y)$weights,
+    verbose = FALSE
+  )
 
-  naive_time <- system.time({
-    dense <- scale_feature_matrix(mat[features, ])
-    weights <- rowMeans(dense[, y == 1, drop = FALSE]) - rowMeans(dense[, y == 0, drop = FALSE])
-    weights <- weights / (sqrt(sum(weights^2)) + 1e-8)
-    naive <- scale01(as.numeric(crossprod(weights, dense)))
-    names(naive) <- colnames(dense)
-  })[["elapsed"]]
+  dense <- scale_feature_matrix(mat[features, ])
+  weights <- rowMeans(dense[, y == 1, drop = FALSE]) - rowMeans(dense[, y == 0, drop = FALSE])
+  weights <- weights / (sqrt(sum(weights^2)) + 1e-8)
+  naive <- scale01(as.numeric(crossprod(weights, dense)))
+  names(naive) <- colnames(dense)
 
   expect_equal(fast$score, naive[names(fast$score)], tolerance = 1e-10)
-  expect_true(is.finite(fast_time))
-  expect_true(is.finite(naive_time))
 })

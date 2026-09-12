@@ -71,8 +71,10 @@
 #' @param reduction Reduction used by `"dim"` plots. If `NULL`, the default
 #' reduction of `srt` is used.
 #' @param bar_width Width of bars in `"bar"` plots.
-#' @param point_size Point size in `"lollipop"`, `"volcano"`, and
+#' @param pt.size Point size in `"lollipop"`, `"volcano"`, and
 #' `"targets"` plots.
+#' @param point_size Deprecated alias(es) for `pt.size`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param title,xlab,ylab,fill.title Axis, plot, and legend titles.
 #' @param flip Whether to draw comparison bar/lollipop plots horizontally.
 #' @param cols Optional three-color vector used instead of `palette` for
@@ -190,7 +192,8 @@ DorotheaPlot <- function(
   nlabel = 10,
   reduction = NULL,
   bar_width = 0.72,
-  point_size = 3.2,
+  pt.size = 3.2,
+  point_size = NULL,
   aspect.ratio = NULL,
   legend.position = "right",
   legend.direction = "vertical",
@@ -207,6 +210,12 @@ DorotheaPlot <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  if (!is.null(point_size)) {
+    .Deprecated(msg = paste0("`point_size` is deprecated; use `pt.size` instead. ",
+      "It will be removed in scop 1.0.0."))
+    pt.size <- point_size
+  }
+  point_size <- pt.size
   if (!inherits(srt, "Seurat")) {
     log_message(
       "{.arg srt} must be a {.cls Seurat} object",

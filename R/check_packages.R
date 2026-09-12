@@ -635,7 +635,7 @@ remove_python <- function(
   )
 
   conda <- resolve_conda(conda)
-  manager <- conda_manager_label(conda)
+  manager <- conda_manager_type(conda)
   if (!ensure_conda(conda)) {
     return(invisible(FALSE))
   }

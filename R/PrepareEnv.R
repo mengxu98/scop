@@ -235,7 +235,7 @@ PrepareEnv <- function(
   }
   if (!is.null(conda)) {
     log_message(
-      "Using {.pkg {conda_manager_label(conda)}} executable: {.file {conda}}"
+      "Using {.pkg {conda_manager_type(conda)}} executable: {.file {conda}}"
     )
   }
 
@@ -292,7 +292,7 @@ PrepareEnv <- function(
       log_message("Installing miniconda...")
       conda <- install_miniconda2(miniconda_repo)
       log_message(
-        "Using {.pkg {conda_manager_label(conda)}} executable: {.file {conda}}"
+        "Using {.pkg {conda_manager_type(conda)}} executable: {.file {conda}}"
       )
       cache_spec <- build_env_cache_spec(
         envname = envname,
@@ -305,7 +305,7 @@ PrepareEnv <- function(
     }
 
     log_message(
-      "Creating Python environment with python {.val {python_version}} using {.pkg {conda_manager_label(conda)}}..."
+      "Creating Python environment with python {.val {python_version}} using {.pkg {conda_manager_type(conda)}}..."
     )
 
     accept_conda_tos(conda = conda)
@@ -340,7 +340,7 @@ PrepareEnv <- function(
       )
       log_message(
         "Unable to find environment under the expected path: {.file {env_path}}\n",
-        "manager: {.pkg {conda_manager_label(conda)}}\n",
+        "manager: {.pkg {conda_manager_type(conda)}}\n",
         "executable: {.file {conda}}\n",
         "python: {.file {python_path}}",
         message_type = "error"
@@ -650,7 +650,7 @@ env_python_spec <- function(packages, methods = "pip", aliases = list()) {
 }
 
 env_module_requirements <- function() {
-  scenic_backend <- scenic_backend_package()
+  scenic_backend <- paste0("py", "scenic")
   scenic_pkg <- stats::setNames(scenic_backend_requirement(), scenic_backend)
   scenic_method <- stats::setNames("pip", scenic_backend)
   scmalignantfinder_packages <- c(
@@ -1709,7 +1709,7 @@ env_info <- function(conda, envname, verbose = TRUE) {
     return(invisible(NULL))
   }
 
-  manager <- conda_manager_label(conda = conda)
+  manager <- conda_manager_type(conda = conda)
   env_path <- conda_env_path(envname = envname, conda = conda)
   envs_dir <- if (!is.null(env_path)) {
     dirname(env_path)
@@ -2046,12 +2046,8 @@ scmalignantfinder_core_python_requirements <- function() {
   )
 }
 
-scenic_backend_package <- function() {
-  paste0("py", "scenic")
-}
-
 scenic_backend_requirement <- function(version = "0.12.1") {
-  paste0(scenic_backend_package(), "==", version)
+  paste0("py", "scenic", "==", version)
 }
 
 commot_core_python_requirements <- function() {
@@ -2361,10 +2357,6 @@ conda_manager_type <- function(conda = "auto") {
     return("mamba")
   }
   "conda"
-}
-
-conda_manager_label <- function(conda = "auto") {
-  conda_manager_type(conda = conda)
 }
 
 conda_root_prefix <- function(conda = "auto", info = NULL) {
@@ -2938,7 +2930,7 @@ conda_install <- function(
   if (!ensure_conda(conda)) {
     return(invisible(packages))
   }
-  manager <- conda_manager_label(conda)
+  manager <- conda_manager_type(conda)
   envname <- get_namespace_fun(
     "reticulate",
     "condaenv_resolve"
@@ -3322,7 +3314,7 @@ RemoveEnv <- function(
   if (!ensure_conda(conda)) {
     return(invisible(FALSE))
   }
-  manager <- conda_manager_label(conda)
+  manager <- conda_manager_type(conda)
 
   log_message(
     "Removing environment: {.file {envname}} using {.pkg {manager}}",

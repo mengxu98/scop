@@ -1,5 +1,6 @@
 test_that("native UCell scores match official tie and missing-gene semantics", {
   skip_if_not_installed("UCell")
+  skip_if_not_installed("BiocParallel")
   set.seed(20260730)
   expr <- matrix(
     sample(0:5, 20 * 12, replace = TRUE),
@@ -44,6 +45,7 @@ test_that("native UCell scores match official tie and missing-gene semantics", {
 
 test_that("CellScoring UCell backend agrees end to end", {
   skip_if_not_installed("UCell")
+  skip_if_not_installed("BiocParallel")
   set.seed(20260731)
   counts <- matrix(
     sample(0:8, 30 * 20, replace = TRUE),

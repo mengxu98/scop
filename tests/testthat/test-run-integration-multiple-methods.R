@@ -49,7 +49,7 @@ test_that("multiple integration methods are run sequentially", {
     paste(c(srt_merge, integration_methods), collapse = "+")
   }
 
-  result <- scop:::run_integration_methods(
+  result <- getFromNamespace("run_integration_methods", "scop")(
     args = list(
       srt_merge = "raw",
       srt_list = list("split"),

@@ -18,7 +18,8 @@ RunMERINGUE(
   binary = TRUE,
   alternative = "greater",
   nperm = 0,
-  ncores = 1,
+  cores = 1,
+  ncores = NULL,
   pairwise_features = NULL,
   set_variable_features = FALSE,
   store_results = TRUE,
@@ -69,7 +70,10 @@ units.}
 \item{nperm}{Number of label permutations used for empirical p values. The
 default \code{0} skips p-value calculation.}
 
-\item{ncores}{Number of cores passed to MERINGUE permutation tests.}
+\item{cores}{Number of cores passed to MERINGUE permutation tests.}
+
+\item{ncores}{Deprecated alias for \code{cores}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 
 \item{pairwise_features}{Features used for spatial cross-correlation. If
 \code{NULL}, top spatially autocorrelated features are used.}

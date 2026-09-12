@@ -27,7 +27,8 @@ RunSpatialEcoTyper(
   min.features = 10,
   iterations = 10,
   minibatch = 5000,
-  ncores = 4,
+  cores = 4,
+  ncores = NULL,
   grid.size = round(radius * 1.4),
   filter.region.by.celltypes = NULL,
   k = 20,
@@ -118,7 +119,10 @@ meta-cell.}
 
 \item{minibatch}{Number of columns processed per mini-batch in SNF.}
 
-\item{ncores}{Number of CPU cores used by \code{SpatialEcoTyper}.}
+\item{cores}{Number of CPU cores used by \code{SpatialEcoTyper}.}
+
+\item{ncores}{Deprecated alias for \code{cores}; supply exactly one of the two. It
+will be removed in scop 1.0.0.}
 
 \item{grid.size}{Spatial grid size used to discretize coordinates.}
 

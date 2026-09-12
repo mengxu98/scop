@@ -42,3 +42,9 @@ A \code{ggplot} object.
 Visualize ESTIMATE stromal, immune, combined ESTIMATE, and tumor-purity
 scores from a \code{RunESTIMATE()} result.
 }
+\examples{
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+pancreas_sub <- RunESTIMATE(pancreas_sub, group.by = "SubCellType")
+EstimateScorePlot(pancreas_sub, group.by = "SubCellType")
+}

@@ -126,9 +126,11 @@ RunVECTOR <- function(
 #' @param background Background for plots. `"score"` uses
 #' [FeatureDimPlot()], `"group"` uses [CellDimPlot()] and requires `group.by`,
 #' and `"none"` draws the flow field without cell points.
-#' @param point.size Cell point size. If `NULL`, uses the same default as
+#' @param pt.size Cell point size. If `NULL`, uses the same default as
 #' [FeatureDimPlot()].
-#' @param point.alpha Cell point alpha.
+#' @param pt.alpha Cell point alpha.
+#' @param point.size,point.alpha Deprecated alias(es) for `pt.size`/`pt.alpha`; supply exactly one of the two. It
+#' will be removed in scop 1.0.0.
 #' @param grid.size Grid-center point size.
 #' @param arrow.linewidth Direction arrow line width.
 #' @param arrow.length Arrow head length passed to [grid::arrow()].
@@ -157,8 +159,10 @@ VECTORPlot <- function(
   score.name = "VECTOR_Score",
   group.by = NULL,
   background = c("auto", "score", "group", "none"),
+  pt.size = NULL,
   point.size = NULL,
-  point.alpha = 0.7,
+  pt.alpha = 0.7,
+  point.alpha = NULL,
   grid.size = 2,
   arrow.linewidth = 0.5,
   arrow.length = grid::unit(0.035, "inches"),
@@ -176,6 +180,18 @@ VECTORPlot <- function(
   ...
 ) {
   plot_type <- match.arg(plot_type)
+  if (!is.null(point.alpha)) {
+    .Deprecated(msg = paste0("`point.alpha` is deprecated; use `pt.alpha` instead. ",
+      "It will be removed in scop 1.0.0."))
+    pt.alpha <- point.alpha
+  }
+  point.alpha <- pt.alpha
+  if (!is.null(point.size)) {
+    .Deprecated(msg = paste0("`point.size` is deprecated; use `pt.size` instead. ",
+      "It will be removed in scop 1.0.0."))
+    pt.size <- point.size
+  }
+  point.size <- pt.size
   background <- match.arg(background)
   draw_raw <- identical(plot_type, "raw")
   if (!inherits(object, "Seurat")) {

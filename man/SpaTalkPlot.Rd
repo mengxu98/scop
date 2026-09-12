@@ -8,6 +8,8 @@ SpaTalkPlot(
   object,
   result.name = NULL,
   plot_type = c("network", "bubble", "pathway", "tf"),
+  theme_use = "theme_scop",
+  theme_args = list(),
   ...
 )
 }
@@ -18,6 +20,8 @@ SpaTalkPlot(
 
 \item{plot_type}{Network, ligand-receptor bubble, pathway bubble, or
 receptor-TF view.}
+
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{...}{Arguments passed to the corresponding SCOP CCC plot.}
 }

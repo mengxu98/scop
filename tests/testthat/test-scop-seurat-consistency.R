@@ -43,8 +43,36 @@ test_that("RunPCA default output is identical to Seurat", {
 test_that("RunPCA cpp backend remains an explicit override", {
   obj <- make_consistency_object()
   hvf <- SeuratObject::VariableFeatures(obj)
-  expect_no_error(
-    RunPCA(obj, features = hvf, npcs = 8, backend = "cpp", verbose = FALSE)
+
+  scop_pca <- RunPCA(
+    obj,
+    features = hvf,
+    npcs = 8,
+    reduction.name = "pca_cpp",
+    seed.use = 42,
+    backend = "cpp",
+    verbose = FALSE
+  )
+  seurat_pca <- seurat_reference_method(
+    "RunPCA",
+    "Seurat",
+    obj,
+    features = hvf,
+    npcs = 8,
+    reduction.name = "pca_seurat",
+    seed.use = 42,
+    verbose = FALSE
+  )
+
+  cpp_embeddings <- SeuratObject::Embeddings(scop_pca[["pca_cpp"]])
+  seurat_embeddings <- SeuratObject::Embeddings(seurat_pca[["pca_seurat"]])
+  expect_equal(dim(cpp_embeddings), c(ncol(obj), 8L))
+  expect_true(all(is.finite(cpp_embeddings)))
+  # PC signs are arbitrary, so compare magnitudes against the Seurat reference
+  expect_equal(
+    unname(abs(cpp_embeddings)),
+    unname(abs(seurat_embeddings)),
+    tolerance = 1e-3
   )
 })
 
