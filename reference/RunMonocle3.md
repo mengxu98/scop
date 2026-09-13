@@ -6,7 +6,7 @@ Run Monocle3 analysis
 
 ``` r
 RunMonocle3(
-  srt,
+  object,
   group.by = NULL,
   assay = NULL,
   layer = "counts",
@@ -26,13 +26,14 @@ RunMonocle3(
   xlab = NULL,
   ylab = NULL,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -87,7 +88,7 @@ RunMonocle3(
 - use_partition:
 
   Whether to use partitions to learn disjoint graph in each partition.
-  If not specified, user will be prompted for input. Defaults to NULL.
+  Defaults to NULL, in which case TRUE is used.
 
 - close_loop:
 
@@ -122,6 +123,11 @@ RunMonocle3(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Examples
 

@@ -10,7 +10,7 @@ the reference UMAP.
 
 ``` r
 RunReferenceMapping(
-  srt,
+  object,
   reference,
   assay = NULL,
   prefix = "ATAC",
@@ -44,13 +44,14 @@ RunReferenceMapping(
   scomm_batch_size = 32,
   scomm_threshold = 0.5,
   scomm_seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -156,6 +157,11 @@ RunReferenceMapping(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A query `Seurat` object mapped into the RNA reference space.
@@ -171,7 +177,7 @@ pbmcmultiome_sub <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ℹ [2026-09-06 22:31:35] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:43:29] Skip `log1p()` because `layer = data` is not "counts"
 reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:120])
 query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[121:200])
 query <- RunStandardWorkflow(
@@ -181,9 +187,9 @@ query <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ! [2026-09-06 22:31:43] Only one cluster found
+#> ! [2026-09-13 22:43:37] Only one cluster found
 query <- RunReferenceMapping(
-  srt = query,
+  object = query,
   reference = reference,
   assay = "peaks",
   reference_assay = "RNA",
@@ -200,10 +206,10 @@ query <- RunReferenceMapping(
 #> Finding integration vectors
 #> Finding integration vector weights
 #> Integrating data
-#> ℹ [2026-09-06 22:31:54] No UMAP model detected. Set the `projection_method` to "knn"
-#> ℹ [2026-09-06 22:31:54] Use the reduction to calculate distance metric
-#> ℹ [2026-09-06 22:31:54] Use raw method to find neighbors
-#> ℹ [2026-09-06 22:31:54] Predicting cell types based on ref_group
+#> ℹ [2026-09-13 22:43:48] No UMAP model detected. Set the `projection_method` to "knn"
+#> ℹ [2026-09-13 22:43:48] Use the reduction to calculate distance metric
+#> ℹ [2026-09-13 22:43:48] Use raw method to find neighbors
+#> ℹ [2026-09-13 22:43:48] Predicting cell types based on ref_group
 head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = FALSE])
 #>                    predicted_predicted.id predicted_prediction.score.NK
 #> CAAGGCCTCTAGCGTG-1                      B                    0.03359597
@@ -241,10 +247,10 @@ head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = 
 #> CAAGTAACAACAGGAT-1                    0.40879333                      0.5624981
 #> CAAGTAACACAACAGG-1                    0.00000000                      0.5503580
 #>                    predicted_ref_group
-#> CAAGGCCTCTAGCGTG-1                Mono
-#> CAAGGCTGTGTTTGCT-1                   B
-#> CAAGGGAGTGGTTCCC-1                Mono
-#> CAAGGTAAGCCACATG-1                   B
-#> CAAGTAACAACAGGAT-1                  DC
-#> CAAGTAACACAACAGG-1                   B
+#> CAAGGCCTCTAGCGTG-1                   B
+#> CAAGGCTGTGTTTGCT-1                Mono
+#> CAAGGGAGTGGTTCCC-1               CD4 T
+#> CAAGGTAAGCCACATG-1                Mono
+#> CAAGTAACAACAGGAT-1                  NK
+#> CAAGTAACACAACAGG-1                Mono
 ```

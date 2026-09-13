@@ -26,18 +26,29 @@ The package object uses the GEO supplementary files
 `GSM8058244_PanIN-LG2.tar.gz` and
 `GSE254829_codatable_may202024.csv.gz`.
 
+## Details
+
+`coda_label` describes tissue components at Visium spots.
+Feature-dependent QC requires the full expression assay.
+
 ## Examples
 
 ``` r
 if (interactive()) {
   download.file(
-    "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8058nnn/GSM8058244/suppl/GSM8058244_PanIN-LG2.tar.gz",
+    paste0(
+      "https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM8058nnn/GSM8058244/suppl/",
+      "GSM8058244_PanIN-LG2.tar.gz"
+    ),
     destfile = "GSM8058244_PanIN-LG2.tar.gz",
     mode = "wb"
   )
   untar("GSM8058244_PanIN-LG2.tar.gz", exdir = ".")
   download.file(
-    "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE254nnn/GSE254829/suppl/GSE254829_codatable_may202024.csv.gz",
+    paste0(
+      "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE254nnn/GSE254829/suppl/",
+      "GSE254829_codatable_may202024.csv.gz"
+    ),
     destfile = "GSE254829_codatable_may202024.csv.gz",
     mode = "wb"
   )

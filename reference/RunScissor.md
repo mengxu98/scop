@@ -6,7 +6,7 @@ Run Scissor phenotype-associated cell selection
 
 ``` r
 RunScissor(
-  srt,
+  object,
   bulk_dataset,
   phenotype = NULL,
   condition.by = NULL,
@@ -27,13 +27,14 @@ RunScissor(
   prefix = "Scissor",
   tool_name = "Scissor",
   store_inputs = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object containing single-cell expression data.
 
@@ -135,6 +136,11 @@ RunScissor(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with Scissor status and coefficient columns in
@@ -157,7 +163,7 @@ integrating bulk and single-cell sequencing data. *Nature Biotechnology*
 data(panc8_sub)
 data(islet_bulk)
 panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
-#> ℹ [2026-09-06 22:32:43] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:44:36] Skip `log1p()` because `layer = data` is not "counts"
 panc8_sub <- RunScissor(
   panc8_sub,
   bulk_dataset = islet_bulk,
@@ -173,8 +179,8 @@ panc8_sub <- RunScissor(
   alpha = 0.2,
   cutoff = 0.5
 )
-#> ℹ [2026-09-06 22:33:03] Scissor alpha 0.2 selected 1 positive and 491 negative cells (30.75%)
-#> ✔ [2026-09-06 22:33:03] Scissor stored 1 Scissor+ and 491 Scissor- cells
+#> ℹ [2026-09-13 22:44:56] Scissor alpha 0.2 selected 1 positive and 491 negative cells (30.75%)
+#> ✔ [2026-09-13 22:44:56] Scissor stored 1 Scissor+ and 491 Scissor- cells
 
 ScissorPlot(
   panc8_sub,

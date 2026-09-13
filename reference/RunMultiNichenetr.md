@@ -6,7 +6,7 @@ Run MultiNicheNet analysis
 
 ``` r
 RunMultiNichenetr(
-  srt,
+  object,
   group.by,
   sample.by,
   condition.by,
@@ -27,13 +27,14 @@ RunMultiNichenetr(
   empirical_pval = TRUE,
   top_n_interactions = 250,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -124,6 +125,11 @@ RunMultiNichenetr(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

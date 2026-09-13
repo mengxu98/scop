@@ -21,9 +21,6 @@ RunGRN(
   ...
 )
 
-# S3 method for class 'matrix'
-RunGRN(object, ...)
-
 # Default S3 method
 RunGRN(
   object,

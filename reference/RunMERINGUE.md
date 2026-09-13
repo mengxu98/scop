@@ -7,7 +7,7 @@ spatial module analysis for a spatial `Seurat` object.
 
 ``` r
 RunMERINGUE(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   image = NULL,
@@ -20,7 +20,8 @@ RunMERINGUE(
   binary = TRUE,
   alternative = "greater",
   nperm = 0,
-  ncores = 1,
+  cores = 1,
+  ncores = NULL,
   pairwise_features = NULL,
   set_variable_features = FALSE,
   store_results = TRUE,
@@ -31,13 +32,14 @@ RunMERINGUE(
   cross_cor_params = list(),
   module_params = list(),
   coordinate_space = c("raw", "legacy_display"),
-  backend = c("cpp", "r")
+  backend = c("cpp", "r"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -97,9 +99,14 @@ RunMERINGUE(
   Number of label permutations used for empirical p values. The default
   `0` skips p-value calculation.
 
-- ncores:
+- cores:
 
   Number of cores passed to MERINGUE permutation tests.
+
+- ncores:
+
+  Deprecated alias for `cores`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 - pairwise_features:
 
@@ -144,6 +151,11 @@ RunMERINGUE(
   are ignored with a warning because the compiled kernel has no extra
   arguments.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with MERINGUE results stored in
@@ -153,28 +165,17 @@ A `Seurat` object with MERINGUE results stored in
 ## Examples
 
 ``` r
-data(visium_human_pancreas_results_sub)
-mer_result <- visium_human_pancreas_results_sub@tools$MERINGUE
-mer_result$summary
-#> $top_features
-#>  [1] "CELA3A" "TTR"    "GCG"    "COL1A1" "COL3A1" "SPARC"  "DCN"    "FOS"   
-#>  [9] "COL1A2" "B2M"    "IGFBP7" "TMSB4X" "S100A6" "VIM"    "EEF2"   "UBC"   
-#> [17] "FTH1"   "ACTB"   "PABPC1" "UBA52" 
-#> 
-SpatialSpotPlot(
-  visium_human_pancreas_results_sub,
-  features = mer_result$autocorrelation$feature[1],
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-
-
 if (FALSE) { # \dontrun{
-check_r("JEFworks-Lab/MERINGUE", verbose = FALSE)
+data(visium_human_pancreas_sub)
+visium_human_pancreas_sub <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial", verbose = FALSE
+)
 spatial <- RunMERINGUE(
-  visium_human_pancreas_results_sub,
+  visium_human_pancreas_sub,
   assay = "Spatial", coord.cols = c("x", "y"),
   mode = "autocorrelation", nfeatures = 20, verbose = FALSE
 )
+spatial@tools$MERINGUE$summary
 } # }
 ```

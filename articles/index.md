@@ -28,5 +28,7 @@
 
 - [Spatial transcriptomics main
   workflow](https://mengxu98.github.io/scop/articles/spatial-main-workflow.md):
+- [Spatial imports and standard workflow
+  methods](https://mengxu98.github.io/scop/articles/spatial-platform-workflows.md):
 - [Spatial framework
   bridges](https://mengxu98.github.io/scop/articles/spatial-framework-bridges.md):

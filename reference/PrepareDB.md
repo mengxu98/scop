@@ -128,17 +128,17 @@ db_list <- PrepareDB(
   species = "Homo_sapiens",
   db = "GO_BP"
 )
-#> ℹ [2026-09-06 21:44:35] Species: "Homo_sapiens"
+#> ℹ [2026-09-13 21:56:31] Species: "Homo_sapiens"
 #> 
-#> ℹ [2026-09-06 21:48:54] Preparing database: GO_BP
-#> ℹ [2026-09-06 21:49:02] Convert ID types for the GO_BP database
-#> ℹ [2026-09-06 21:49:03] Converted ID types using local annotation package org.Hs.eg.db
+#> ℹ [2026-09-13 22:00:49] Preparing database: GO_BP
+#> ℹ [2026-09-13 22:00:59] Convert ID types for the GO_BP database
+#> ℹ [2026-09-13 22:00:59] Converted ID types using local annotation package org.Hs.eg.db
 ListDB(
   species = "Homo_sapiens",
   db = "GO_BP"
 )
 #>   Database      Species            Version                       Date
-#> 1    GO_BP Homo_sapiens 3.23.1 nterm:14209 2026-09-06 21:49:04.743761
+#> 1    GO_BP Homo_sapiens 3.23.1 nterm:14209 2026-09-13 22:01:01.320635
 head(
   db_list[["Homo_sapiens"]][["GO_BP"]][["TERM2GENE"]]
 )
@@ -156,35 +156,35 @@ db_list <- PrepareDB(
   species = "Homo_sapiens",
   db = "MP"
 )
-#> ℹ [2026-09-06 21:49:05] Species: "Homo_sapiens"
-#> ! [2026-09-06 21:49:05] Use the mouse annotation to create the MP database for "Homo_sapiens"
-#> ℹ [2026-09-06 21:49:05] Preparing MP database
-#> ℹ [2026-09-06 21:49:18] Convert species for the MP database
-#> ℹ [2026-09-06 21:49:18] Connect to the Ensembl archives...
-#> ℹ [2026-09-06 21:49:18] Using the 116 version of ensembl database...
-#> ℹ [2026-09-06 21:49:18] Downloading the ensembl database from https://jun2026.archive.ensembl.org...
+#> ℹ [2026-09-13 22:01:01] Species: "Homo_sapiens"
+#> ! [2026-09-13 22:01:01] Use the mouse annotation to create the MP database for "Homo_sapiens"
+#> ℹ [2026-09-13 22:01:01] Preparing MP database
+#> ℹ [2026-09-13 22:01:18] Convert species for the MP database
+#> ℹ [2026-09-13 22:01:18] Connect to the Ensembl archives...
+#> ℹ [2026-09-13 22:01:19] Using the 116 version of ensembl database...
+#> ℹ [2026-09-13 22:01:19] Downloading the ensembl database from https://jun2026.archive.ensembl.org...
 #> Ensembl site unresponsive, trying www mirror
 #> Ensembl site unresponsive, trying asia mirror
-#> ℹ [2026-09-06 21:49:22] Searching the dataset mmusculus ...
-#> ℹ [2026-09-06 21:49:22] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-09-06 21:49:24] Converting the geneIDs...
-#> ℹ [2026-09-06 21:49:32] 14164 genes mapped with "ensembl_symbol"
-#> ℹ [2026-09-06 21:49:34] 3 genes mapped with "entrez_symbol"
-#> ℹ [2026-09-06 21:49:36] 12 genes mapped with "uniprot_symbol"
-#> ℹ [2026-09-06 21:49:38] ==============================
+#> ℹ [2026-09-13 22:01:22] Searching the dataset mmusculus ...
+#> ℹ [2026-09-13 22:01:22] Connecting to the dataset mmusculus_gene_ensembl ...
+#> ℹ [2026-09-13 22:01:25] Converting the geneIDs...
+#> ℹ [2026-09-13 22:01:33] 14164 genes mapped with "ensembl_symbol"
+#> ℹ [2026-09-13 22:01:34] 3 genes mapped with "entrez_symbol"
+#> ℹ [2026-09-13 22:01:37] 12 genes mapped with "uniprot_symbol"
+#> ℹ [2026-09-13 22:01:38] ==============================
 #> ℹ                       14179 genes mapped
 #> ℹ                       48 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-09-06 21:49:44] Convert ID types for the MP database
-#> ℹ [2026-09-06 21:49:44] Converted ID types using local annotation package org.Hs.eg.db
+#> ℹ [2026-09-13 22:01:45] Convert ID types for the MP database
+#> ℹ [2026-09-13 22:01:45] Converted ID types using local annotation package org.Hs.eg.db
 ListDB(
   species = "Homo_sapiens",
   db = "MP"
 )
 #>   Database      Species                                             Version
-#> 1       MP Homo_sapiens 2026-09-06(converted from Mus_musculus) nterm:10803
+#> 1       MP Homo_sapiens 2026-09-13(converted from Mus_musculus) nterm:10815
 #>                         Date
-#> 1 2026-09-06 21:49:46.990192
+#> 1 2026-09-13 22:01:46.371719
 head(
   db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]]
 )
@@ -198,8 +198,8 @@ head(
 
 # You can also build a custom database based on the gene sets you have
 ccgenes <- CycGenePrefetch("Homo_sapiens")
-#> ℹ [2026-09-06 21:49:47] Prefetching cell cycle genes for "Homo_sapiens" ...
-#> ✔ [2026-09-06 21:49:47] Cell cycle gene prefetching completed "Homo_sapiens"
+#> ℹ [2026-09-13 22:01:46] Prefetching cell cycle genes for "Homo_sapiens" ...
+#> ✔ [2026-09-13 22:01:46] Cell cycle gene prefetching completed "Homo_sapiens"
 custom_TERM2GENE <- rbind(
   data.frame(
     term = "S_genes",
@@ -226,37 +226,37 @@ db_list <- PrepareDB(
   custom_IDtype = "symbol",
   custom_version = "Seurat_v5"
 )
-#> ℹ [2026-09-06 21:49:47] Species: "Homo_sapiens"
-#> ℹ [2026-09-06 21:49:47] Convert ID types for the CellCycle database
-#> ℹ [2026-09-06 21:49:47] Converted ID types using local annotation package org.Hs.eg.db
-#> ℹ [2026-09-06 21:49:47] Species: "Mus_musculus"
-#> ! [2026-09-06 21:49:47] Use the "Homo_sapiens" annotation to create the "CellCycle" database for "Mus_musculus"
-#> ℹ [2026-09-06 21:49:47] Convert species for the CellCycle database
-#> ℹ [2026-09-06 21:49:47] Connect to the Ensembl archives...
-#> ℹ [2026-09-06 21:49:47] Using the 116 version of ensembl database...
-#> ℹ [2026-09-06 21:49:47] Downloading the ensembl database from https://jun2026.archive.ensembl.org...
+#> ℹ [2026-09-13 22:01:46] Species: "Homo_sapiens"
+#> ℹ [2026-09-13 22:01:46] Convert ID types for the CellCycle database
+#> ℹ [2026-09-13 22:01:46] Converted ID types using local annotation package org.Hs.eg.db
+#> ℹ [2026-09-13 22:01:46] Species: "Mus_musculus"
+#> ! [2026-09-13 22:01:46] Use the "Homo_sapiens" annotation to create the "CellCycle" database for "Mus_musculus"
+#> ℹ [2026-09-13 22:01:46] Convert species for the CellCycle database
+#> ℹ [2026-09-13 22:01:46] Connect to the Ensembl archives...
+#> ℹ [2026-09-13 22:01:47] Using the 116 version of ensembl database...
+#> ℹ [2026-09-13 22:01:47] Downloading the ensembl database from https://jun2026.archive.ensembl.org...
 #> Ensembl site unresponsive, trying asia mirror
-#> ℹ [2026-09-06 21:49:48] Searching the dataset hsapiens ...
-#> ℹ [2026-09-06 21:49:49] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-09-06 21:49:51] Converting the geneIDs...
-#> ℹ [2026-09-06 21:49:53] 97 genes mapped with "ensembl_symbol"
-#> ℹ [2026-09-06 21:49:53] ==============================
+#> ℹ [2026-09-13 22:01:47] Searching the dataset hsapiens ...
+#> ℹ [2026-09-13 22:01:48] Connecting to the dataset hsapiens_gene_ensembl ...
+#> ℹ [2026-09-13 22:01:51] Converting the geneIDs...
+#> ℹ [2026-09-13 22:01:52] 97 genes mapped with "ensembl_symbol"
+#> ℹ [2026-09-13 22:01:52] ==============================
 #> ℹ                       97 genes mapped
 #> ℹ                       0 genes unmapped
 #> ℹ                       ==============================
-#> ℹ [2026-09-06 21:49:53] Convert ID types for the CellCycle database
-#> ℹ [2026-09-06 21:49:53] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-09-13 22:01:52] Convert ID types for the CellCycle database
+#> ℹ [2026-09-13 22:01:53] Converted ID types using local annotation package org.Mm.eg.db
 ListDB(db = "CellCycle")
 #>    Database      Species                                        Version
 #> 1 CellCycle Homo_sapiens                              Seurat_v5 nterm:2
 #> 2 CellCycle Mus_musculus Seurat_v5(converted from Homo_sapiens) nterm:2
 #>                         Date
-#> 1 2026-09-06 21:49:47.371647
-#> 2 2026-09-06 21:49:53.636954
+#> 1 2026-09-13 22:01:46.788418
+#> 2 2026-09-13 22:01:53.069239
 
 db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
-#> ℹ [2026-09-06 21:49:53] Species: "Mus_musculus"
-#> ℹ [2026-09-06 21:49:53] Loading cached: CellCycle version: Seurat_v5(converted from Homo_sapiens) nterm:2 created: 2026-09-06 21:49:53
+#> ℹ [2026-09-13 22:01:53] Species: "Mus_musculus"
+#> ℹ [2026-09-13 22:01:53] Loading cached: CellCycle version: Seurat_v5(converted from Homo_sapiens) nterm:2 created: 2026-09-13 22:01:53
 head(
   db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]]
 )

@@ -8,7 +8,7 @@ domains with PCA and k-means.
 
 ``` r
 RunSmoothClust(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   image = NULL,
@@ -36,13 +36,14 @@ RunSmoothClust(
   seed = 11,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -156,6 +157,11 @@ RunSmoothClust(
   Additional arguments passed to
   [`smoothclust::smoothclust()`](https://rdrr.io/pkg/smoothclust/man/smoothclust.html).
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with smoothclust clusters in metadata. When
@@ -165,9 +171,12 @@ A `Seurat` object with smoothclust clusters in metadata. When
 ## Examples
 
 ``` r
-data(visium_human_pancreas_results_sub)
+data(visium_human_pancreas_sub)
+keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
+spatial <- visium_human_pancreas_sub[, keep_spots]
+spatial <- Seurat::NormalizeData(spatial, assay = "Spatial", verbose = FALSE)
 spatial <- RunSmoothClust(
-  visium_human_pancreas_results_sub,
+  spatial,
   assay = "Spatial",
   n_clusters = 3,
   smooth_method = "knn",
@@ -177,7 +186,7 @@ spatial <- RunSmoothClust(
   cores = 1,
   verbose = FALSE
 )
-#> ! [2026-09-06 22:35:11] Function "smoothness_metric" not found in smoothclust namespace
+#> ! [2026-09-13 22:47:05] Function "smoothness_metric" not found in smoothclust namespace
 SpatialSpotPlot(
   spatial,
   group.by = "SmoothClust_cluster",
@@ -185,4 +194,6 @@ SpatialSpotPlot(
   coord.cols = c("x", "y"),
   pt.size = 1.5
 )
+#> Ignoring unknown labels:
+#> • colour : "SmoothClust_cluster"
 ```

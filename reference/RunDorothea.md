@@ -6,7 +6,7 @@ Run transcription factor activity inference
 
 ``` r
 RunDorothea(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   species = c("Homo_sapiens", "Mus_musculus"),
@@ -22,13 +22,14 @@ RunDorothea(
   assay_name = "dorothea",
   new_assay = TRUE,
   add_meta = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -116,6 +117,11 @@ RunDorothea(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with TF activity results stored in
@@ -159,7 +165,7 @@ pancreas_sub <- RunStandardWorkflow(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-09-06 22:04:34] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:16:35] Skip `log1p()` because `layer = data` is not "counts"
 
 pancreas_sub <- RunDorothea(
   pancreas_sub,
@@ -169,9 +175,9 @@ pancreas_sub <- RunDorothea(
   method = "ulm",
   minsize = 5
 )
-#> ℹ [2026-09-06 22:04:40] Run "DoRothEA"/decoupleR with 12895 regulon edges
-#> ℹ [2026-09-06 22:04:51] "DoRothEA" TF activity scores stored in assay "dorothea"
-#> ℹ [2026-09-06 22:04:51] "DoRothEA" TF activity scores stored in <Seurat> metadata
+#> ℹ [2026-09-13 22:16:41] Run "DoRothEA"/decoupleR with 12895 regulon edges
+#> ℹ [2026-09-13 22:16:52] "DoRothEA" TF activity scores stored in assay "dorothea"
+#> ℹ [2026-09-13 22:16:52] "DoRothEA" TF activity scores stored in <Seurat> metadata
 
 pancreas_sub@tools$Dorothea$regulon_summary
 #>   n_tfs n_targets n_edges confidence
@@ -211,7 +217,7 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "dim"
 )
-#> ℹ [2026-09-06 22:04:53] Draw "DoRothEA" embedding plots for 1 TFs
+#> ℹ [2026-09-13 22:16:54] Draw "DoRothEA" embedding plots for 1 TFs
 
 DorotheaPlot(
   pancreas_sub,
@@ -221,7 +227,7 @@ DorotheaPlot(
   plot_type = "bar",
   top_n = 20
 )
-#> ℹ [2026-09-06 22:04:54] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-09-13 22:16:55] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 ht <- DorotheaPlot(
   pancreas_sub,
@@ -229,7 +235,7 @@ ht <- DorotheaPlot(
   plot_type = "heatmap",
   top_n = 20
 )
-#> ℹ [2026-09-06 22:04:54] Draw "DoRothEA" TF activity heatmap for 20 TFs
+#> ℹ [2026-09-13 22:16:55] Draw "DoRothEA" TF activity heatmap for 20 TFs
 ht$plot
 
 DorotheaPlot(
@@ -240,8 +246,8 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "targets"
 )
-#> ! [2026-09-06 22:04:55] Dropping 3 "Sox9" targets missing from assay "RNA"
-#> ℹ [2026-09-06 22:04:55] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
+#> ! [2026-09-13 22:16:56] Dropping 3 "Sox9" targets missing from assay "RNA"
+#> ℹ [2026-09-13 22:16:56] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
 
 
 # A RunGRN-compatible unsigned network can be passed directly.
@@ -260,7 +266,7 @@ pancreas_sub <- RunDorothea(
   add_meta = FALSE,
   verbose = FALSE
 )
-#> ℹ [2026-09-06 22:04:55] The supplied network is unsigned; "importance" is used as positive edge weight. Scores represent target-program activity, not signed TF activation or repression.
+#> ℹ [2026-09-13 22:16:56] The supplied network is unsigned; "importance" is used as positive edge weight. Scores represent target-program activity, not signed TF activation or repression.
 pancreas_sub@tools$Dorothea$network_info
 #> $source
 #> [1] "custom"

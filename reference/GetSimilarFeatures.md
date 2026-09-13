@@ -6,7 +6,7 @@ Find features with expression patterns similar to provided features
 
 ``` r
 GetSimilarFeatures(
-  srt,
+  object,
   features,
   n,
   features_use = rownames(srt),
@@ -14,13 +14,14 @@ GetSimilarFeatures(
   aggregator = "sum",
   assay = "RNA",
   layer = "data",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -57,6 +58,11 @@ GetSimilarFeatures(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

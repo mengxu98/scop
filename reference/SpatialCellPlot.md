@@ -1,8 +1,7 @@
 # Plot spatial cell boundaries
 
-Plot real cell segmentation polygons supplied directly, stored in a
-result object, or extracted from a Seurat spatial image. Spot centers
-are never converted into synthetic polygons.
+Plot cell segmentation polygons from a boundary table or Seurat spatial
+image.
 
 ## Usage
 
@@ -23,6 +22,8 @@ SpatialCellPlot(
   boundary.linewidth = 0.1,
   theme_use = "theme_spatial",
   theme_args = list(),
+  assay = NULL,
+  layer = "data",
   ...
 )
 ```
@@ -77,6 +78,14 @@ SpatialCellPlot(
 
   Theme used to style the plot. Default is \`"theme_spatial"\`.
 
+- assay:
+
+  Assay used when \`features\` are fetched from \`object\`.
+
+- layer:
+
+  Layer used when \`features\` are fetched from \`object\`.
+
 - ...:
 
   Additional arguments passed to \`ggplot2::geom_polygon()\`.
@@ -85,14 +94,15 @@ SpatialCellPlot(
 
 A \`ggplot\` or patchwork object.
 
+## Details
+
+Boundary tables require \`cell_id\`, \`x\`, and \`y\` columns in polygon
+vertex order. Seurat images must contain segmentation boundaries.
+
 ## Examples
 
 ``` r
-data(xenium_human_pancreas_boundaries_sub)
-SpatialCellPlot(
-  boundaries = xenium_human_pancreas_boundaries_sub,
-  group.by = "cell_area",
-  crop = TRUE
-)
-
+data(visium_human_pancreas_sub)
+SpatialCellPlot(visium_human_pancreas_sub, group.by = "CellType")
+#> Error: The selected image does not contain segmentation boundaries
 ```

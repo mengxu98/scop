@@ -8,7 +8,7 @@ method bundle and added to SCOP's unified CCC table.
 
 ``` r
 RunSpaTalk(
-  srt,
+  object,
   group.by,
   mode = c("auto", "single_cell", "spot"),
   reference = NULL,
@@ -27,13 +27,14 @@ RunSpaTalk(
   overwrite = FALSE,
   backend = c("cpp", "r"),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A \`Seurat\` spatial object.
 
@@ -111,6 +112,11 @@ RunSpaTalk(
 
   Named arguments forwarded to compatible official SpaTalk steps.
 
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
+
 ## Value
 
 The input \`Seurat\` object with \`srt@tools\$SpaTalk\` and unified CCC
@@ -124,17 +130,11 @@ results updated.
 
 ``` r
 if (FALSE) { # \dontrun{
-available <- unname(unlist(thisutils::check_r(
-  c("linxihui/NNLM", "ZJUFanLab/SpaTalk"),
-  verbose = FALSE
-)))
-if (length(available) == 2L && all(available)) {
-  spatial <- RunSpaTalk(
-    spatial,
-    group.by = "celltype",
-    mode = "single_cell",
-    image = "slice1"
-  )
-}
+spatial <- RunSpaTalk(
+  spatial,
+  group.by = "celltype",
+  mode = "single_cell",
+  image = "slice1"
+)
 } # }
 ```

@@ -8,7 +8,7 @@ as doublet calling or ambient RNA decontamination.
 
 ``` r
 RunSpotQC(
-  srt = NULL,
+  object = NULL,
   assay = NULL,
   return_filtered = FALSE,
   qc_metrics = c("outlier", "umi", "gene", "mito"),
@@ -22,20 +22,15 @@ RunSpotQC(
   mito_gene = NULL,
   verbose = TRUE,
   seed = 11,
-  object = NULL
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
-
-  A `Seurat` object. The same object may be supplied as `object =` for
-  consistency with spatial plotting APIs.
-
 - object:
 
-  Optional alias for `srt`. Supply exactly one of `srt` or `object`.
+  A `Seurat` object.
 
 - assay:
 
@@ -91,6 +86,11 @@ RunSpotQC(
 
   Random seed for reproducibility.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with spot QC metadata columns. Cells that are not
@@ -104,13 +104,15 @@ retained when `return_filtered = TRUE`.
 ``` r
 data(visium_human_pancreas_sub)
 spatial <- RunSpotQC(
-  visium_human_pancreas_sub,
+  object = visium_human_pancreas_sub,
   assay = "Spatial"
 )
-#> ◌ [2026-09-06 22:35:26] Running spot-level quality control
-#> ✔ [2026-09-06 22:35:26] Spot QC completed: 1986 evaluated, 1907 Pass, 79 Fail
+#> ◌ [2026-09-13 22:47:16] Running spot-level quality control
+#> ✔ [2026-09-13 22:47:17] Spot QC completed: 1986 evaluated, 1907 Pass, 79 Fail
 #> ℹ   Scope assay "Spatial", layer "counts"
 #> ℹ   Saved metadata column `SpotQC`
 #> ℹ   Plot returned object `SpatialSpotPlot(<returned_object>, group.by = "SpotQC")`
-SpatialSpotPlot(spatial, group.by = "SpotQC")
+SpatialSpotPlot(object = spatial, group.by = "SpotQC")
+#> Ignoring unknown labels:
+#> • colour : "SpotQC"
 ```

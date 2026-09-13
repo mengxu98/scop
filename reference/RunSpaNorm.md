@@ -1,16 +1,13 @@
 # Run SpaNorm spatial normalization
 
-Normalize spatial transcriptomics counts with the optional Bioconductor
-`SpaNorm` backend and store the normalized expression in a new Seurat
-assay. The example is a non-executing template because the optional
-backend and its platform-specific numerical requirements are not part of
-a standard SCOP installation.
+Normalize spatial transcriptomics counts using SpaNorm and store the
+normalized expression in a Seurat assay.
 
 ## Usage
 
 ``` r
 RunSpaNorm(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   image = NULL,
@@ -21,13 +18,14 @@ RunSpaNorm(
   store_spe = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -81,6 +79,11 @@ RunSpaNorm(
   [`SpaNorm::SpaNorm()`](https://bhuvad.github.io/spaNorm/reference/SpaNorm.html),
   such as `sample.p`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with SpaNorm-normalized expression stored in
@@ -92,7 +95,6 @@ features, cells, and optional backend output are stored in
 
 ``` r
 if (FALSE) { # \dontrun{
-thisutils::check_r("SpaNorm", verbose = FALSE)
 data(visium_human_pancreas_sub)
 keep_spots <- unique(round(seq(
   1,

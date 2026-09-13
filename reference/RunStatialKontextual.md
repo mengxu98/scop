@@ -1,17 +1,13 @@
 # Run Statial Kontextual spatial relationships
 
-Run `Statial::Kontextual()` on a spatial `Seurat` object to quantify
-pairwise cell or spot label relationships relative to a parent context.
-Results are stored as a compact SCOP bundle with raw Statial output,
-standardized summary, and parameters. `Statial` is an optional
-Bioconductor dependency installable with
-`BiocManager::install("Statial")`.
+Compute spatial relationships between cell or spot labels relative to a
+parent context using Statial Kontextual.
 
 ## Usage
 
 ``` r
 RunStatialKontextual(
-  srt,
+  object,
   group.by,
   r,
   from = NULL,
@@ -33,13 +29,14 @@ RunStatialKontextual(
   store_input = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -127,6 +124,11 @@ RunStatialKontextual(
 
   Additional named arguments passed to `Statial::Kontextual()`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with Statial results stored in
@@ -135,42 +137,15 @@ A `Seurat` object with Statial results stored in
 ## Examples
 
 ``` r
-data(visium_human_pancreas_results_sub)
-statial <- visium_human_pancreas_results_sub@tools$StatialKontextual
-statial$summary
-#> $n_records
-#> [1] 1
-#> 
-#> $n_images
-#> [1] 1
-#> 
-#> $n_tests
-#> [1] 1
-#> 
-#> $radii
-#> [1] 50
-#> 
-#> $n_localized
-#> [1] 0
-#> 
-#> $n_dispersed
-#> [1] 1
-#> 
-#> $top_relationships
-#>   imageID            test original kontextual  r inhomL
-#> 1 sample1 collagen__acini      -50        -50 50  FALSE
-#> 
-StatialKontextualPlot(res = statial)
-#> `geom_line()`: Each group consists of only one observation.
-#> ℹ Do you need to adjust the group aesthetic?
-
-
 if (FALSE) { # \dontrun{
-check_r("sydney-informatics-hub/Statial", verbose = FALSE)
+data(visium_human_pancreas_sub)
+# Compare tissue-labelled spots at two radii (full-resolution image pixels).
 spatial <- RunStatialKontextual(
-  visium_human_pancreas_results_sub, group.by = "coda_label", r = 50,
-  from = "collagen", to = "acini", parent = c("collagen", "acini"),
-  coord.cols = c("x", "y"), verbose = FALSE
+  visium_human_pancreas_sub,
+  group.by = "coda_label", image = "slice1",
+  r = c(500, 1000), from = "collagen", to = "acini", parent = c("collagen", "acini"),
+  verbose = FALSE
 )
+StatialKontextualPlot(spatial)
 } # }
 ```

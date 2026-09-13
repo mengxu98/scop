@@ -14,7 +14,7 @@ negative artifact call.
 
 ``` r
 RunSpotSweeper(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   coord.cols = c("col", "row"),
@@ -40,13 +40,14 @@ RunSpotSweeper(
   workers = NULL,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -176,6 +177,11 @@ RunSpotSweeper(
   Additional named arguments passed to matching SpotSweeper backend
   functions when those arguments are supported by the installed version.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with SpotSweeper QC metadata. When
@@ -190,41 +196,16 @@ spots not fully evaluated by the requested QC stages.
 ## Examples
 
 ``` r
-data(visium_human_pancreas_sub)
-keep_spots <- unique(round(seq(
-  1,
-  ncol(visium_human_pancreas_sub),
-  length.out = 120
-)))
-spatial <- visium_human_pancreas_sub[, keep_spots]
-
-# Plot a real input QC metric before running the optional backend.
-SpatialSpotPlot(
-  spatial,
-  group.by = "nCount_Spatial",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-
-
-# Template only: the current runtime still raises its known spot
-# identity/order validation error. This documentation change leaves that
-# backend issue unresolved and does not fabricate a successful result.
 if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
-keep_spots <- unique(round(seq(
-  1,
-  ncol(visium_human_pancreas_sub),
-  length.out = 120
-)))
-spatial <- visium_human_pancreas_sub[, keep_spots]
 spatial <- RunSpotSweeper(
-  spatial,
-  assay = "Spatial",
-  coord.cols = c("x", "y"),
-  n_neighbors = 12,
-  run_artifact = FALSE,
-  verbose = FALSE
+  visium_human_pancreas_sub,
+  assay = "Spatial", image = "slice1",
+  metrics = c("nCount_Spatial", "nFeature_Spatial"),
+  directions = c("lower", "lower"), n_neighbors = 12,
+  run_artifact = FALSE, verbose = FALSE
 )
+# Plot local-outlier calls.
+SpatialSpotPlot(spatial, group.by = "SpotSweeper_local_outlier_qc", image = "slice1")
 } # }
 ```

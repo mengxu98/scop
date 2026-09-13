@@ -10,7 +10,6 @@ Reference datasets for cell type annotation in single-cell RNA data
 
 ``` r
 if (interactive()) {
-  thisutils::check_r(c("ggjlab/scMCA"))
   ref_scMCA <- NormalizeData(get("ref.expr", envir = asNamespace("scMCA")))
   Encoding(colnames(ref_scMCA)) <- "latin1"
   colnames(ref_scMCA) <- iconv(colnames(ref_scMCA), "latin1", "UTF-8")

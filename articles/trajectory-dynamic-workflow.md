@@ -42,7 +42,8 @@ table(pancreas_sub$SubCellType)
 
 RNA velocity requires spliced and unspliced matrices. Generate those
 matrices outside `scop` with tools such as velocyto, bustools, or
-alevin-fry, then store them as assays in the Seurat object.
+alevin-fry, then store them as assays in the Seurat object, or as extra
+layers of the `RNA` assay. `assay_y` accepts either location.
 
 ``` r
 

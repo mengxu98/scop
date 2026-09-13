@@ -9,7 +9,7 @@ multi-method proportion-test workflow.
 
 ``` r
 ProportionTestPlot(
-  srt,
+  object,
   comparison = NULL,
   proportion_method = NULL,
   result_level = c("group"),
@@ -51,13 +51,14 @@ ProportionTestPlot(
   ncol = NULL,
   byrow = TRUE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object containing proportion-test results.
 
@@ -230,6 +231,11 @@ ProportionTestPlot(
 
   Whether to print messages.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [RunProportionTest](https://mengxu98.github.io/scop/reference/RunProportionTest.md)
@@ -239,36 +245,36 @@ ProportionTestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 21:50:24] Start standard processing workflow...
-#> ℹ [2026-09-06 21:50:25] Checking a list of <Seurat>...
-#> ! [2026-09-06 21:50:25] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 21:50:25] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:50:25] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:50:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 21:50:25] Number of available HVF: 2000
-#> ℹ [2026-09-06 21:50:25] Finished check
-#> ℹ [2026-09-06 21:50:25] Perform `ScaleData()`
-#> ℹ [2026-09-06 21:50:25] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 21:50:25] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 21:50:26] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 21:50:26] Reorder clusters...
-#> ℹ [2026-09-06 21:50:26] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:50:26] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 21:50:32] Standard processing workflow completed
+#> ℹ [2026-09-13 22:02:24] Start standard processing workflow...
+#> ℹ [2026-09-13 22:02:24] Checking a list of <Seurat>...
+#> ! [2026-09-13 22:02:24] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 22:02:24] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:02:24] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:02:25] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 22:02:25] Number of available HVF: 2000
+#> ℹ [2026-09-13 22:02:25] Finished check
+#> ℹ [2026-09-13 22:02:25] Perform `ScaleData()`
+#> ℹ [2026-09-13 22:02:25] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 22:02:25] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 22:02:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 22:02:25] Reorder clusters...
+#> ℹ [2026-09-13 22:02:25] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:02:25] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 22:02:31] Standard processing workflow completed
 pancreas_sub <- RunProportionTest(
   pancreas_sub,
   group.by = "CellType",
   split.by = "Phase",
   proportion_method = "permutation"
 )
-#> ℹ [2026-09-06 21:50:32] Start proportion test ("permutation")
-#> ℹ [2026-09-06 21:50:32] Running comparison: "G1" vs "S"
-#> ℹ [2026-09-06 21:50:33] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-09-06 21:50:36] Running comparison: "S" vs "G2M"
-#> ℹ [2026-09-06 21:50:36] Running comparison: "S" vs "G1"
-#> ℹ [2026-09-06 21:50:36] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-09-06 21:50:36] Running comparison: "G2M" vs "S"
-#> ✔ [2026-09-06 21:50:36] Proportion test completed ("permutation")
+#> ℹ [2026-09-13 22:02:31] Start proportion test ("permutation")
+#> ℹ [2026-09-13 22:02:31] Running comparison: "G1" vs "S"
+#> ℹ [2026-09-13 22:02:33] Running comparison: "G1" vs "G2M"
+#> ℹ [2026-09-13 22:02:35] Running comparison: "S" vs "G2M"
+#> ℹ [2026-09-13 22:02:35] Running comparison: "S" vs "G1"
+#> ℹ [2026-09-13 22:02:35] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-09-13 22:02:35] Running comparison: "G2M" vs "S"
+#> ✔ [2026-09-13 22:02:35] Proportion test completed ("permutation")
 
 ProportionTestPlot(pancreas_sub)
 

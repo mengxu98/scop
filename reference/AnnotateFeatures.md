@@ -7,7 +7,7 @@ databases or a GTF file.
 
 ``` r
 AnnotateFeatures(
-  srt,
+  object,
   species = "Homo_sapiens",
   IDtype = c("symbol", "ensembl_id", "entrez_id"),
   db = NULL,
@@ -23,13 +23,14 @@ AnnotateFeatures(
   assays = "RNA",
   overwrite = FALSE,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   Seurat object to be annotated.
 
@@ -105,6 +106,11 @@ AnnotateFeatures(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [PrepareDB](https://mengxu98.github.io/scop/reference/PrepareDB.md),
@@ -119,8 +125,8 @@ pancreas_sub <- AnnotateFeatures(
   species = "Mus_musculus",
   db = "TF"
 )
-#> ℹ [2026-09-06 20:52:04] Species: "Mus_musculus"
-#> ℹ [2026-09-06 20:52:04] Preparing database: TF
+#> ℹ [2026-09-13 21:07:03] Species: "Mus_musculus"
+#> ℹ [2026-09-13 21:07:03] Preparing database: TF
 head(
   GetFeaturesData(
     pancreas_sub

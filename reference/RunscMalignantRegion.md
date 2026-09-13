@@ -9,7 +9,7 @@ converted AnnData object does not already contain spatial coordinates.
 
 ``` r
 RunscMalignantRegion(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -27,13 +27,14 @@ RunscMalignantRegion(
   prefix = "scMalignantFinder_",
   return_seurat = !is.null(srt),
   verbose = TRUE,
-  backend = c("cpp", "python")
+  backend = c("cpp", "python"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object.
 
@@ -123,6 +124,11 @@ RunscMalignantRegion(
   input when `image = FALSE`. `"python"` retains the official
   scMalignantFinder/Squidpy path and is required for image features,
   AnnData, and h5ad input.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

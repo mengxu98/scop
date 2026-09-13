@@ -6,7 +6,7 @@ Plot scFEA flux Cohen's d volcano plots
 
 ``` r
 scFEAVolcanoPlot(
-  srt,
+  object,
   group.by,
   ident.1 = NULL,
   ident.2 = NULL,
@@ -19,13 +19,16 @@ scFEAVolcanoPlot(
   combine = TRUE,
   width = 12,
   height = 10.4,
-  verbose = TRUE
+  theme_use = "theme_scop",
+  theme_args = list(),
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object returned by \[RunscFEA()\].
 
@@ -76,9 +79,18 @@ scFEAVolcanoPlot(
   Suggested export size. Stored as attributes on the returned plot
   object.
 
+- theme_use, theme_args:
+
+  Theme name or function, plus extra theme arguments.
+
 - verbose:
 
   Whether to print messages.
+
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
 
 ## Value
 
@@ -87,3 +99,14 @@ For a single contrast, a paged list of \`ggplot\` objects when \`combine
 Statistics are stored in the \`"data"\` attribute. For automatic
 one-vs-rest mode, a named list of single-contrast results is returned
 and combined statistics are stored in the outer \`"data"\` attribute.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+pancreas_sub <- RunscFEA(pancreas_sub, group.by = "SubCellType")
+scFEAVolcanoPlot(pancreas_sub, group.by = "SubCellType", ident.1 = "Alpha", ident.2 = "Beta")
+} # }
+```

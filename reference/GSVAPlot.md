@@ -6,7 +6,7 @@ Plots for GSVA (Gene Set Variation Analysis)
 
 ``` r
 GSVAPlot(
-  srt = NULL,
+  object = NULL,
   res = NULL,
   group.by = NULL,
   sample.by = NULL,
@@ -40,7 +40,8 @@ GSVAPlot(
   enrichmap_cluster = "fast_greedy",
   enrichmap_label = c("term", "feature"),
   enrichmap_labelsize = 5,
-  enrlichmap_nlabel = 4,
+  enrichmap_nlabel = 4,
+  enrlichmap_nlabel = NULL,
   enrichmap_show_keyword = FALSE,
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
@@ -89,13 +90,14 @@ GSVAPlot(
   border = TRUE,
   nlabel = 0,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object containing the results of RunGSVA. If specified, GSVA
   results will be extracted from the `Seurat` object automatically. If
@@ -255,9 +257,13 @@ GSVAPlot(
 
   The label size for enrichmap plot.
 
-- enrlichmap_nlabel:
+- enrichmap_nlabel:
 
   The number of labels to display for each cluster in enrichmap plot.
+
+- enrlichmap_nlabel:
+
+  Deprecated. Please use `enrichmap_nlabel` instead.
 
 - enrichmap_show_keyword:
 
@@ -410,6 +416,11 @@ GSVAPlot(
 
   Whether to print messages.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Details
 
 GSVA itself returns pathway activity/enrichment scores, not statistical
@@ -440,14 +451,14 @@ pancreas_sub <- RunGSVA(
   minGSSize = 2,
   min.sz = 2
 )
-#> ℹ [2026-09-06 21:34:31] Start GSVA analysis
-#> ℹ [2026-09-06 21:34:31] Single-cell GSVA mode: using expression matrix directly ...
-#> ℹ [2026-09-06 21:34:31] Expression matrix: 12238 genes x 80 cells
-#> ℹ [2026-09-06 21:34:31] Processing database: "custom" ...
-#> ℹ [2026-09-06 21:34:31] Initial overlap: 6 genes out of 12238 expression genes and 10 genes in gene sets
-#> ℹ [2026-09-06 21:34:31] Running GSVA for 2 gene sets ...
-#> ℹ [2026-09-06 21:34:31] GSVA results stored in assay "GSVA", meta.data, and tools slot "GSVA_cell_zscore"
-#> ✔ [2026-09-06 21:34:31] GSVA analysis done
+#> ℹ [2026-09-13 21:46:46] Start GSVA analysis
+#> ℹ [2026-09-13 21:46:46] Single-cell GSVA mode: using expression matrix directly ...
+#> ℹ [2026-09-13 21:46:46] Expression matrix: 12238 genes x 80 cells
+#> ℹ [2026-09-13 21:46:46] Processing database: "custom" ...
+#> ℹ [2026-09-13 21:46:46] Initial overlap: 6 genes out of 12238 expression genes and 10 genes in gene sets
+#> ℹ [2026-09-13 21:46:46] Running GSVA for 2 gene sets ...
+#> ℹ [2026-09-13 21:46:46] GSVA results stored in assay "GSVA", meta.data, and tools slot "GSVA_cell_zscore"
+#> ✔ [2026-09-13 21:46:46] GSVA analysis done
 
 ht <- GSVAPlot(
   pancreas_sub,
@@ -461,7 +472,7 @@ ht$plot
 
 
 GSVAPlot(
-  srt = pancreas_sub,
+  object = pancreas_sub,
   group.by = "CellType",
   plot_type = "comparison",
   topTerm = 1
@@ -469,7 +480,7 @@ GSVAPlot(
 
 
 GSVAPlot(
-  srt = pancreas_sub,
+  object = pancreas_sub,
   group.by = "CellType",
   plot_type = "bar",
   topTerm = 2

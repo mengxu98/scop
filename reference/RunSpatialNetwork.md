@@ -8,7 +8,7 @@ spatial coordinates. Results are stored as named graphs in
 
 ``` r
 RunSpatialNetwork(
-  srt = NULL,
+  object = NULL,
   method = c("knn", "radius"),
   image = NULL,
   coord.cols = c("col", "row"),
@@ -17,20 +17,15 @@ RunSpatialNetwork(
   graph.name = NULL,
   overwrite = FALSE,
   verbose = TRUE,
-  object = NULL
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
-
-  A \`Seurat\` object. The same object may be supplied as `object =` for
-  consistency with spatial plotting APIs.
-
 - object:
 
-  Optional alias for `srt`. Supply exactly one of `srt` or `object`.
+  A \`Seurat\` object.
 
 - method:
 
@@ -67,6 +62,11 @@ RunSpatialNetwork(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
+
 ## Value
 
 The input \`Seurat\` object with a \`SpatialNetwork\` result in
@@ -77,7 +77,7 @@ The input \`Seurat\` object with a \`SpatialNetwork\` result in
 ``` r
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
-spatial <- RunSpatialNetwork(spatial, k = 6, verbose = FALSE)
-SpatialNetworkPlot(spatial, group.by = "coda_label")
+spatial <- RunSpatialNetwork(object = spatial, k = 6, verbose = FALSE)
+SpatialNetworkPlot(object = spatial, group.by = "coda_label")
 
 ```

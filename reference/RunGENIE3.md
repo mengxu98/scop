@@ -23,9 +23,6 @@ RunGENIE3(
   ...
 )
 
-# S3 method for class 'matrix'
-RunGENIE3(object, ...)
-
 # Default S3 method
 RunGENIE3(
   object,

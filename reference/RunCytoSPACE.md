@@ -6,7 +6,7 @@ Run CytoSPACE spatial assignment
 
 ``` r
 RunCytoSPACE(
-  srt,
+  object,
   reference,
   reference_label,
   assay = NULL,
@@ -27,13 +27,14 @@ RunCytoSPACE(
   coord.cols = c("col", "row"),
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
-  max_dense_gib = 8
+  max_dense_gib = 8,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -131,6 +132,11 @@ RunCytoSPACE(
 
   Maximum estimated GiB allowed for dense expression working matrices.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with CytoSPACE metadata columns and detailed results
@@ -147,6 +153,7 @@ keep_spots <- unique(round(seq(
   length.out = 120
 )))
 spatial <- visium_human_pancreas_sub[, keep_spots]
+# Results are conditional on the three reference cell types used here.
 reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
   c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
@@ -155,7 +162,7 @@ features_use <- head(intersect(
   rownames(spatial)
 ), 300)
 spatial <- RunCytoSPACE(
-  srt = spatial,
+  object = spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",
@@ -167,10 +174,13 @@ spatial <- RunCytoSPACE(
   coord.cols = c("x", "y"),
   verbose = FALSE
 )
+
 SpatialSpotPlot(
   spatial,
   group.by = "CytoSPACE_dominant_type",
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
+#> Ignoring unknown labels:
+#> • colour : "CytoSPACE_dominant_type"
 ```

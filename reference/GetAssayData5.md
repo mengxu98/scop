@@ -10,13 +10,20 @@ function to compatible with Assay5 objects.
 GetAssayData5(object, ...)
 
 # S3 method for class 'Seurat'
-GetAssayData5(object, layer = "counts", assay = NULL, ...)
+GetAssayData5(
+  object,
+  layer = "counts",
+  assay = NULL,
+  features = NULL,
+  cells = NULL,
+  ...
+)
 
 # S3 method for class 'Assay5'
-GetAssayData5(object, layer = "counts", ...)
+GetAssayData5(object, layer = "counts", features = NULL, cells = NULL, ...)
 
 # S3 method for class 'Assay'
-GetAssayData5(object, layer = "counts", ...)
+GetAssayData5(object, layer = "counts", features = NULL, cells = NULL, ...)
 ```
 
 ## Arguments
@@ -39,6 +46,14 @@ GetAssayData5(object, layer = "counts", ...)
   Specific assay to get data from or set data for; defaults to the
   [default
   assay](https://satijalab.github.io/seurat-object/reference/DefaultAssay.html)
+
+- features:
+
+  Optional vector of feature names to extract.
+
+- cells:
+
+  Optional vector of cell names to extract.
 
 ## Value
 

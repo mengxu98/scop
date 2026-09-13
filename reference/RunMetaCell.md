@@ -6,7 +6,7 @@ Run metacell partitioning for single-cell data
 
 ``` r
 RunMetaCell(
-  srt,
+  object,
   method = c("supercell", "seacells", "metacell"),
   assay = NULL,
   layer = "counts",
@@ -17,13 +17,14 @@ RunMetaCell(
   prefix = "Metacell",
   tool_name = "Metacell",
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -79,6 +80,11 @@ RunMetaCell(
 
   Additional arguments passed to the underlying metacell method.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A metacell-level `Seurat` object. The original single-cell Seurat is
@@ -112,17 +118,17 @@ pancreas_sub <- RunStandardWorkflow(
   nonlinear_reduction_dims = 2,
   verbose = FALSE
 )
-#> ℹ [2026-09-06 22:28:31] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:40:22] Skip `log1p()` because `layer = data` is not "counts"
 
 mc1 <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 20
 )
-#> ℹ [2026-09-06 22:28:38] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
-#> ℹ [2026-09-06 22:28:39] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
-#> ℹ [2026-09-06 22:28:39] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
-#> ✔ [2026-09-06 22:28:39] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
+#> ℹ [2026-09-13 22:40:30] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
+#> ℹ [2026-09-13 22:40:31] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
+#> ℹ [2026-09-13 22:40:31] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
+#> ✔ [2026-09-13 22:40:31] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
 
 MetaCellPlot(mc1, group.by = "CellType")
 
@@ -132,10 +138,10 @@ mc2 <- RunMetaCell(
   method = "metacell",
   gamma = 20
 )
-#> ℹ [2026-09-06 22:28:41] Running MetaCell-style KNN partitioning with k = 20 on 1000 cells
-#> ℹ [2026-09-06 22:28:41] `RunMetaCell()` ("metacell") built 8 metacells from 1000 cells
-#> ℹ [2026-09-06 22:28:41] Metacell size summary: min 16, median 150, mean 125, max 215 cells
-#> ✔ [2026-09-06 22:28:41] `RunMetaCell()` returned metacell Seurat with 8 metacells. Original cells in `@misc[["original_srt"]]`
+#> ℹ [2026-09-13 22:40:32] Running MetaCell-style KNN partitioning with k = 20 on 1000 cells
+#> ℹ [2026-09-13 22:40:33] `RunMetaCell()` ("metacell") built 8 metacells from 1000 cells
+#> ℹ [2026-09-13 22:40:33] Metacell size summary: min 16, median 150, mean 125, max 215 cells
+#> ✔ [2026-09-13 22:40:33] `RunMetaCell()` returned metacell Seurat with 8 metacells. Original cells in `@misc[["original_srt"]]`
 
 MetaCellPlot(mc2, group.by = "CellType")
 ```

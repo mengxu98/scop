@@ -6,7 +6,7 @@ Spatial spot plot
 
 ``` r
 SpatialSpotPlot(
-  srt = NULL,
+  object = NULL,
   group.by = NULL,
   features = NULL,
   assay = NULL,
@@ -37,6 +37,10 @@ SpatialSpotPlot(
   palette = "Spectral",
   palcolor = NULL,
   bg_color = "grey20",
+  lower_quantile = 0,
+  upper_quantile = 0.99,
+  lower_cutoff = NULL,
+  upper_cutoff = NULL,
   legend.position = "right",
   legend.direction = "vertical",
   legend.title = NULL,
@@ -47,17 +51,16 @@ SpatialSpotPlot(
   ncol = NULL,
   byrow = TRUE,
   verbose = TRUE,
-  object = NULL,
+  srt = NULL,
   image.scale = c("lowres", "hires")
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
-  A `Seurat` object. The same object may be supplied as `object =` for
-  consistency with spatial plotting APIs.
+  A `Seurat` object.
 
 - group.by:
 
@@ -163,6 +166,11 @@ SpatialSpotPlot(
 
   Point border color.
 
+- lower_quantile, upper_quantile, lower_cutoff, upper_cutoff:
+
+  Limits for continuous feature scales. Non-`NULL` cutoffs take
+  precedence over the quantiles.
+
 - legend.position, legend.direction, legend.title:
 
   Legend placement (`"none"`, `"left"`, `"right"`, `"bottom"`, `"top"`),
@@ -179,16 +187,17 @@ SpatialSpotPlot(
 - combine, nrow, ncol, byrow:
 
   Combine plots with
-  [patchwork::patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
   `combine = FALSE` returns a list of ggplots.
 
 - verbose:
 
   Whether to print messages.
 
-- object:
+- srt:
 
-  Optional alias for `srt`. Supply exactly one of `srt` or `object`.
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 - image.scale:
 
@@ -208,6 +217,8 @@ SpatialSpotPlot(
   object = visium_human_pancreas_sub,
   group.by = "coda_label"
 )
+#> Ignoring unknown labels:
+#> • colour : "coda_label"
 
 
 SpatialSpotPlot(
@@ -215,4 +226,8 @@ SpatialSpotPlot(
   features = rownames(visium_human_pancreas_sub)[1:2],
   layer = "counts"
 )
+#> Ignoring unknown labels:
+#> • fill : "TMSB4X"
+#> Ignoring unknown labels:
+#> • fill : "UBC"
 ```

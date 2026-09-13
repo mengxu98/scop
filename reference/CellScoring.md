@@ -10,7 +10,7 @@ is retained for downstream plot functions such as
 
 ``` r
 CellScoring(
-  srt,
+  object,
   features = NULL,
   layer = "data",
   assay = NULL,
@@ -35,13 +35,14 @@ CellScoring(
   seed = 11,
   cores = 1,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -180,28 +181,33 @@ CellScoring(
 
   Passed to the scoring methods.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Examples
 
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 21:02:12] Start standard processing workflow...
-#> ℹ [2026-09-06 21:02:13] Checking a list of <Seurat>...
-#> ! [2026-09-06 21:02:13] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 21:17:05] Start standard processing workflow...
+#> ℹ [2026-09-13 21:17:05] Checking a list of <Seurat>...
+#> ! [2026-09-13 21:17:05] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 21:02:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:02:13] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:02:13] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 21:02:13] Number of available HVF: 2000
-#> ℹ [2026-09-06 21:02:14] Finished check
-#> ℹ [2026-09-06 21:02:14] Perform `ScaleData()`
-#> ℹ [2026-09-06 21:02:14] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 21:02:14] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 21:02:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 21:02:14] Reorder clusters...
-#> ℹ [2026-09-06 21:02:14] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:02:14] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 21:02:19] Standard processing workflow completed
+#> ℹ [2026-09-13 21:17:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:17:05] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:17:06] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 21:17:06] Number of available HVF: 2000
+#> ℹ [2026-09-13 21:17:06] Finished check
+#> ℹ [2026-09-13 21:17:06] Perform `ScaleData()`
+#> ℹ [2026-09-13 21:17:06] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 21:17:06] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 21:17:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 21:17:06] Reorder clusters...
+#> ℹ [2026-09-13 21:17:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:17:06] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 21:17:11] Standard processing workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -212,10 +218,10 @@ pancreas_sub <- CellScoring(
   method = "AUCell",
   name = "test"
 )
-#> ℹ [2026-09-06 21:02:19] Start cell scoring
-#> ℹ [2026-09-06 21:02:19] Data type is log-normalized
-#> ℹ [2026-09-06 21:02:19] Number of feature lists to be scored: 2
-#> ✔ [2026-09-06 21:02:20] Cell scoring completed
+#> ℹ [2026-09-13 21:17:11] Start cell scoring
+#> ℹ [2026-09-13 21:17:11] Data type is log-normalized
+#> ℹ [2026-09-13 21:17:11] Number of feature lists to be scored: 2
+#> ✔ [2026-09-13 21:17:11] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 
 
@@ -230,16 +236,15 @@ pancreas_sub <- CellScoring(
   features = list(A = features_all[1:100]),
   method = c("AUCell", "GSVA")
 )
-#> ℹ [2026-09-06 21:02:20] Start cell scoring
-#> ℹ [2026-09-06 21:02:20] Start cell scoring
-#> ℹ [2026-09-06 21:02:20] Data type is log-normalized
-#> ℹ [2026-09-06 21:02:20] Number of feature lists to be scored: 1
-#> ✔ [2026-09-06 21:02:20] Cell scoring completed
-#> ℹ [2026-09-06 21:02:20] Start cell scoring
-#> ℹ [2026-09-06 21:02:21] Data type is log-normalized
-#> ℹ [2026-09-06 21:02:21] Number of feature lists to be scored: 1
-#> ℹ 2514877 nonzeros (less than 2^31) and 82.77% sparsity
-#> ✔ [2026-09-06 21:03:47] Cell scoring completed
+#> ℹ [2026-09-13 21:17:12] Start cell scoring
+#> ℹ [2026-09-13 21:17:12] Start cell scoring
+#> ℹ [2026-09-13 21:17:12] Data type is log-normalized
+#> ℹ [2026-09-13 21:17:12] Number of feature lists to be scored: 1
+#> ✔ [2026-09-13 21:17:12] Cell scoring completed
+#> ℹ [2026-09-13 21:17:12] Start cell scoring
+#> ℹ [2026-09-13 21:17:12] Data type is log-normalized
+#> ℹ [2026-09-13 21:17:13] Number of feature lists to be scored: 1
+#> ✔ [2026-09-13 21:17:15] Cell scoring completed
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("AUCell_A", "GSVA_A"),
@@ -248,7 +253,7 @@ FeatureStatPlot(
   plot_type = "violin",
   stack = TRUE
 )
-#> ℹ [2026-09-06 21:03:47] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-09-13 21:17:15] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureDimPlot(
@@ -268,22 +273,22 @@ GroupHeatmap(
 
 #> 
 #> $g_tree
-#> gTree[GRID.gTree.17440] 
+#> gTree[GRID.gTree.17427] 
 #> 
 #> $matrix_list
 #> $matrix_list$CellType
-#>              Ductal Ngn3-high-EP   Endocrine Ngn3-low-EP Pre-endocrine
-#> AUCell_A -0.8821370    0.3521051 -0.09190844  -0.8923595     1.5142998
-#> GSVA_A    0.5904666    0.5803752 -1.77007223   0.2694525     0.3297779
-#> Sox9      1.4288723   -0.6125486 -0.79466665   0.6788737    -0.7005309
-#> Anxa2     1.1467252   -0.6170844 -0.78673632   1.0374551    -0.7803596
-#> Bicc1     1.1109781   -0.6764747 -0.73759372   1.0784037    -0.7753133
+#>             Ductal Ngn3-high-EP   Endocrine Ngn3-low-EP Pre-endocrine
+#> AUCell_A -0.882137    0.3521051 -0.09190844  -0.8923595     1.5142998
+#> GSVA_A    1.284271   -0.7833688 -0.48805934   0.8592283    -0.8720707
+#> Sox9      1.428872   -0.6125486 -0.79466665   0.6788737    -0.7005309
+#> Anxa2     1.146725   -0.6170844 -0.78673632   1.0374551    -0.7803596
+#> Bicc1     1.110978   -0.6764747 -0.73759372   1.0784037    -0.7753133
 #> attr(,"scaled:center")
-#>   AUCell_A     GSVA_A       Sox9      Anxa2      Bicc1 
-#> 0.02608917 0.10872510 1.96420268 2.04845477 1.94117464 
+#>    AUCell_A      GSVA_A        Sox9       Anxa2       Bicc1 
+#>  0.02608917 -0.91687608  1.96420268  2.04845477  1.94117464 
 #> attr(,"scaled:scale")
 #>    AUCell_A      GSVA_A        Sox9       Anxa2       Bicc1 
-#> 0.002103202 0.018493019 2.163337655 2.542869069 2.379710010 
+#> 0.002103202 0.015210486 2.163337655 2.542869069 2.379710010 
 #> 
 #> 
 #> $feature_split

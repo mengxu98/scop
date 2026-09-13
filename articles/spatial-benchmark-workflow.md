@@ -12,9 +12,10 @@ This workflow is separate from scRNA batch integration benchmarking
 
 ## Load data and define a gold standard
 
-The bundled Visium pancreas subset is used here. For demonstration, a
-simple cyclic domain label is assigned as the gold standard. Replace
-this with manual annotations or reference domains for real analyses.
+This workflow uses a small simulated spatial object with three regions
+and region-specific expression signals. It demonstrates the benchmark
+interface; replace the simulated labels with tissue annotations for real
+analyses.
 
 ``` r
 
@@ -27,7 +28,7 @@ library(scop)
 #>                                   /_/
 #>       ⬢               .      ⬡        .          ⬢
 #> ------------------------------------------------------------
-#> Version: 0.9.1 (2026-09-01 update)
+#> Version: 0.9.2 (2026-09-12 update)
 #> Website: https://mengxu98.github.io/scop/
 #> 
 #> Python environment initialization is disabled
@@ -38,16 +39,29 @@ library(scop)
 #>   or options(log_message.verbose = FALSE)
 #> ------------------------------------------------------------
 
-data(visium_human_pancreas_sub)
-spatial <- visium_human_pancreas_sub
-
-spatial$gold_domain <- factor(
-  paste0("domain_", (seq_len(ncol(spatial)) - 1) %% 3 + 1)
+set.seed(42)
+n_spots <- 36L
+n_genes <- 60L
+grid <- expand.grid(x = 1:6, y = 1:6)
+spatial_domain <- factor(ifelse(grid$x <= 2, "left", ifelse(grid$x <= 4, "middle", "right")))
+counts <- matrix(rpois(n_genes * n_spots, 2),
+  nrow = n_genes,
+  dimnames = list(paste0("Gene", seq_len(n_genes)), paste0("spot", seq_len(n_spots)))
 )
+signal <- split(seq_len(n_genes), rep(c("left", "middle", "right"), each = 20))
+for (label in names(signal)) {
+  counts[signal[[label]], spatial_domain == label] <-
+    counts[signal[[label]], spatial_domain == label] + rpois(sum(spatial_domain == label) * 20, 5)
+}
+spatial <- SeuratObject::CreateSeuratObject(counts)
+#> Warning: Data is of class matrix. Coercing to dgCMatrix.
+spatial$x <- grid$x
+spatial$y <- grid$y
+spatial$gold_domain <- spatial_domain
 table(spatial$gold_domain)
 #> 
-#> domain_1 domain_2 domain_3 
-#>      662      662      662
+#>   left middle  right 
+#>     12     12     12
 ```
 
 ## Run the benchmark
@@ -61,26 +75,26 @@ bench <- RunSpatialBenchmark(
   spatial,
   gold_standard = "gold_domain",
   method_params = list(
-    BayesSpace = list(n.PCs = 5, n.HVGs = 200),
-    BANKSY = list(layer = "counts"),
-    SmoothClust = list(layer = "counts", min_spots = 1)
+    BayesSpace = list(n.PCs = 5, n.HVGs = 20, coord.cols = c("x", "y")),
+    BANKSY = list(layer = "counts", coord.cols = c("x", "y")),
+    SmoothClust = list(layer = "counts", min_spots = 1, coord.cols = c("x", "y"))
   ),
   verbose = FALSE
 )
 
 bench$summary
-#>        method      workflow           ARI          NMI    purity runtime_s
-#> 1  BayesSpace SpatialDomain -0.0007844788 1.295315e-04 0.3398792   274.722
-#> 2      BANKSY SpatialDomain -0.0010452685 4.916507e-04 0.3449144    16.713
-#> 3 SmoothClust SpatialDomain -0.0009201495 3.559811e-05 0.3358510     8.728
-#>   baseline_memory_mb peak_memory_mb memory_delta_mb n_evaluated n_clusters
-#> 1           659.9062       1470.707        810.8008        1986          3
-#> 2           659.9805       2020.625       1360.6445        1986          6
-#> 3           660.0352       1446.555        786.5195        1986          3
-#>    status error
-#> 1 success      
-#> 2 success      
-#> 3 success
+#>        method      workflow ARI NMI purity runtime_s baseline_memory_mb
+#> 1  BayesSpace SpatialDomain   1   1      1    11.338           617.2969
+#> 2      BANKSY SpatialDomain  NA  NA     NA     3.566           617.1719
+#> 3 SmoothClust SpatialDomain   1   1      1     3.268           617.4141
+#>   peak_memory_mb memory_delta_mb n_evaluated n_clusters  status
+#> 1      1311.0234        693.7266          36          3 success
+#> 2       886.4414        269.2695           0         NA  failed
+#> 3       881.0508        263.6367          36          3 success
+#>                               error
+#> 1                                  
+#> 2 Not enough neighbors in data set!
+#> 3
 ```
 
 ## Inspect the result object
@@ -98,25 +112,25 @@ str(bench$summary, max.level = 1)
 #> 'data.frame':    3 obs. of  13 variables:
 #>  $ method            : chr  "BayesSpace" "BANKSY" "SmoothClust"
 #>  $ workflow          : chr  "SpatialDomain" "SpatialDomain" "SpatialDomain"
-#>  $ ARI               : num  -0.000784 -0.001045 -0.00092
-#>  $ NMI               : num  1.30e-04 4.92e-04 3.56e-05
-#>  $ purity            : num  0.34 0.345 0.336
-#>  $ runtime_s         : num  274.72 16.71 8.73
-#>  $ baseline_memory_mb: num  660 660 660
-#>  $ peak_memory_mb    : num  1471 2021 1447
-#>  $ memory_delta_mb   : num  811 1361 787
-#>  $ n_evaluated       : int  1986 1986 1986
-#>  $ n_clusters        : int  3 6 3
-#>  $ status            : chr  "success" "success" "success"
-#>  $ error             : chr  "" "" ""
+#>  $ ARI               : num  1 NA 1
+#>  $ NMI               : num  1 NA 1
+#>  $ purity            : num  1 NA 1
+#>  $ runtime_s         : num  11.34 3.57 3.27
+#>  $ baseline_memory_mb: num  617 617 617
+#>  $ peak_memory_mb    : num  1311 886 881
+#>  $ memory_delta_mb   : num  694 269 264
+#>  $ n_evaluated       : int  36 0 36
+#>  $ n_clusters        : int  3 NA 3
+#>  $ status            : chr  "success" "failed" "success"
+#>  $ error             : chr  "" "Not enough neighbors in data set!" ""
 head(bench$predictions)
-#>              spot_id gold_standard     method prediction
-#> 1 TGGTATCGGTCTGTAT-1      domain_1 BayesSpace          1
-#> 2 ATTATCTCGACAGATC-1      domain_2 BayesSpace          1
-#> 3 TGAGATCAAATACTCA-1      domain_3 BayesSpace          2
-#> 4 CTGGTCCTAACTTGGC-1      domain_1 BayesSpace          1
-#> 5 ATAGTCTTTGACGTGC-1      domain_2 BayesSpace          1
-#> 6 GGGTGGTCCAGCCTGT-1      domain_3 BayesSpace          2
+#>   spot_id gold_standard     method prediction
+#> 1   spot1          left BayesSpace          1
+#> 2   spot2          left BayesSpace          1
+#> 3   spot3        middle BayesSpace          3
+#> 4   spot4        middle BayesSpace          3
+#> 5   spot5         right BayesSpace          2
+#> 6   spot6         right BayesSpace          2
 ```
 
 ## Plot benchmark views

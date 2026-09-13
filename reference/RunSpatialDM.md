@@ -6,7 +6,7 @@ Run official SpatialDM spatial ligand-receptor association analysis
 
 ``` r
 RunSpatialDM(
-  srt,
+  object,
   species = c("human", "mouse"),
   lr.database = NULL,
   assay = NULL,
@@ -35,13 +35,14 @@ RunSpatialDM(
   result.name = "default",
   envname = "spatialdm_env",
   overwrite = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` spatial object.
 
@@ -81,7 +82,9 @@ RunSpatialDM(
 
 - cutoff:
 
-  Maximum selected-cell fraction used by Scissor's alpha search.
+  RBF weight cutoff used by SpatialDM to retain local spatial weights.
+  This is a fraction between zero and one; it is not a Scissor
+  alpha-search parameter.
 
 - n_neighbors:
 
@@ -93,11 +96,13 @@ RunSpatialDM(
 
 - single_cell:
 
-  Whether the input is a single-cell (rather than spatial) dataset.
+  Whether to use the single-cell spatial mode supported by SpatialDM.
+  This is not a generic "single-cell rather than spatial" switch.
 
 - complex.mean:
 
-  Whether to use a modified mean test statistic in complex heatmaps.
+  Mean used for complex ligand-receptor expression: `"algebra"` or
+  `"geometric"`.
 
 - min_cell:
 
@@ -115,21 +120,14 @@ RunSpatialDM(
 
   Random seed.
 
-- global.fdr:
+- global.fdr, local.fdr:
 
-  Global FDR threshold.
+  Whether the corresponding p-value table uses FDR values for selection.
+  These are logical switches, not numeric thresholds.
 
-- global.threshold:
+- global.threshold, local.threshold:
 
-  Global threshold.
-
-- local.fdr:
-
-  Local FDR threshold.
-
-- local.threshold:
-
-  Local threshold.
+  Selection thresholds for global and local results.
 
 - result.name:
 
@@ -147,6 +145,11 @@ RunSpatialDM(
 - verbose:
 
   Whether to print messages.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

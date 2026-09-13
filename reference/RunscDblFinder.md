@@ -6,18 +6,19 @@ Run doublet-calling with scDblFinder
 
 ``` r
 RunscDblFinder(
-  srt,
+  object,
   assay = "RNA",
   db_rate = ncol(srt)/1000 * 0.01,
   data_type = NULL,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -43,3 +44,8 @@ RunscDblFinder(
 - verbose:
 
   Whether to print messages.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.

@@ -6,18 +6,19 @@ Plots for metabolism pathway scoring
 
 ``` r
 MetabolismPlot(
-  srt = NULL,
+  object = NULL,
   res = NULL,
   group.by = NULL,
   assay_name = "METABOLISM",
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object containing the results of RunMetabolism.
 
@@ -43,6 +44,11 @@ MetabolismPlot(
 
   Whether to print messages.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [RunMetabolism](https://mengxu98.github.io/scop/reference/RunMetabolism.md),
@@ -53,22 +59,22 @@ MetabolismPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 21:38:56] Start standard processing workflow...
-#> ℹ [2026-09-06 21:38:56] Checking a list of <Seurat>...
-#> ! [2026-09-06 21:38:57] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 21:38:57] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:38:57] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:38:57] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 21:38:57] Number of available HVF: 2000
-#> ℹ [2026-09-06 21:38:57] Finished check
-#> ℹ [2026-09-06 21:38:57] Perform `ScaleData()`
-#> ℹ [2026-09-06 21:38:57] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 21:38:57] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 21:38:58] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 21:38:58] Reorder clusters...
-#> ℹ [2026-09-06 21:38:58] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:38:58] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 21:39:04] Standard processing workflow completed
+#> ℹ [2026-09-13 21:50:56] Start standard processing workflow...
+#> ℹ [2026-09-13 21:50:56] Checking a list of <Seurat>...
+#> ! [2026-09-13 21:50:56] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 21:50:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:50:56] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:50:56] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 21:50:56] Number of available HVF: 2000
+#> ℹ [2026-09-13 21:50:56] Finished check
+#> ℹ [2026-09-13 21:50:56] Perform `ScaleData()`
+#> ℹ [2026-09-13 21:50:56] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 21:50:56] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 21:50:57] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 21:50:57] Reorder clusters...
+#> ℹ [2026-09-13 21:50:57] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:50:57] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 21:51:03] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   db = c("KEGG", "REACTOME"),
@@ -77,15 +83,15 @@ pancreas_sub <- RunMetabolism(
   method = "AUCell",
   use_preparedb = FALSE
 )
-#> ℹ [2026-09-06 21:39:04] Start metabolism pathway scoring
-#> ℹ [2026-09-06 21:39:04] Data type is raw counts
-#> ℹ [2026-09-06 21:39:04] Averaging expression by "CellType" ...
-#> ℹ [2026-09-06 21:39:04] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-09-06 21:39:04] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
-#> ℹ [2026-09-06 21:39:05] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
-#> ! [2026-09-06 21:39:05] `GeneConvert()` failed: "variable names are limited to 10000 bytes". Falling back to direct symbol matching.
-#> ℹ [2026-09-06 21:39:05] Total metabolism gene sets to score: 127
-#> ✔ [2026-09-06 21:39:05] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
+#> ℹ [2026-09-13 21:51:03] Start metabolism pathway scoring
+#> ℹ [2026-09-13 21:51:03] Data type is raw counts
+#> ℹ [2026-09-13 21:51:03] Averaging expression by "CellType" ...
+#> ℹ [2026-09-13 21:51:03] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-09-13 21:51:03] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
+#> ℹ [2026-09-13 21:51:04] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
+#> ! [2026-09-13 21:51:04] `GeneConvert()` failed: "variable names are limited to 10000 bytes". Falling back to direct symbol matching.
+#> ℹ [2026-09-13 21:51:04] Total metabolism gene sets to score: 127
+#> ✔ [2026-09-13 21:51:04] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 
 ht1 <- MetabolismPlot(
   pancreas_sub,
@@ -139,7 +145,7 @@ MetabolismPlot(
   plot_type = "network",
   topTerm = 3
 )
-#> ✔ [2026-09-06 21:39:08] shadowtext installed successfully
+#> ✔ [2026-09-13 21:51:07] shadowtext installed successfully
 
 
 MetabolismPlot(
@@ -167,14 +173,14 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   use_preparedb = FALSE
 )
-#> ℹ [2026-09-06 21:39:13] Start metabolism pathway scoring
-#> ℹ [2026-09-06 21:39:14] Data type is raw counts
-#> ℹ [2026-09-06 21:39:14] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
-#> ℹ [2026-09-06 21:39:14] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
-#> ! [2026-09-06 21:39:14] `GeneConvert()` failed: "variable names are limited to 10000 bytes". Falling back to direct symbol matching.
-#> ℹ [2026-09-06 21:39:14] Total metabolism gene sets to score: 127
-#> ✔ [2026-09-06 21:39:14] Metabolism scores stored in tools slot "Metabolism_AUCell"
-#> ℹ [2026-09-06 21:39:14] Metabolism scores also stored in assay "METABOLISM"
+#> ℹ [2026-09-13 21:51:11] Start metabolism pathway scoring
+#> ℹ [2026-09-13 21:51:12] Data type is raw counts
+#> ℹ [2026-09-13 21:51:12] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
+#> ℹ [2026-09-13 21:51:12] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
+#> ! [2026-09-13 21:51:12] `GeneConvert()` failed: "variable names are limited to 10000 bytes". Falling back to direct symbol matching.
+#> ℹ [2026-09-13 21:51:12] Total metabolism gene sets to score: 127
+#> ✔ [2026-09-13 21:51:12] Metabolism scores stored in tools slot "Metabolism_AUCell"
+#> ℹ [2026-09-13 21:51:12] Metabolism scores also stored in assay "METABOLISM"
 
 FeatureDimPlot(
   pancreas_sub,
@@ -201,5 +207,5 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
-#> ! [2026-09-06 21:39:15] The values in the "counts" layer are non-integer. Set the library size to "1"
+#> ! [2026-09-13 21:51:13] The values in the "counts" layer are non-integer. Set the library size to "1"
 ```

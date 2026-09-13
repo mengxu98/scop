@@ -24,7 +24,6 @@ Derived from the PBMC multiome reference data distributed through
 
 ``` r
 if (interactive()) {
-  thisutils::check_r("satijalab/seurat-data")
   InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
   InstallData("pbmcMultiome")
   data(pbmcMultiome)

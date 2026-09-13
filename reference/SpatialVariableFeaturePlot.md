@@ -12,7 +12,7 @@ to draw spatial expression for selected features.
 
 ``` r
 SpatialVariableFeaturePlot(
-  srt = NULL,
+  object = NULL,
   plot_type = c("summary", "surface", "combined"),
   features = NULL,
   nfeatures = 10,
@@ -36,21 +36,16 @@ SpatialVariableFeaturePlot(
   nrow = NULL,
   ncol = NULL,
   byrow = TRUE,
-  object = NULL,
+  srt = NULL,
   image.scale = c("lowres", "hires")
 )
 ```
 
 ## Arguments
 
-- srt:
-
-  A `Seurat` object. The same object may be supplied as `object =` for
-  consistency with spatial plotting APIs.
-
 - object:
 
-  Optional alias for `srt`. Supply exactly one of `srt` or `object`.
+  A `Seurat` object.
 
 - plot_type:
 
@@ -92,7 +87,10 @@ SpatialVariableFeaturePlot(
 
 - flip.y:
 
-  Reverse the y axis for metadata coordinates.
+  Reverse the y axis for metadata or FOV coordinates without a raster
+  image. The default `FALSE` agrees with spatial networks and cell
+  boundaries. Raster-backed display coordinates already include their
+  flip.
 
 - pt.size, pt.alpha:
 
@@ -128,6 +126,11 @@ SpatialVariableFeaturePlot(
   [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
   `combine = FALSE` returns a list of ggplots.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 - image.scale:
 
   Image scale factor matching the raster stored in the selected image.
@@ -148,10 +151,10 @@ spatial <- Seurat::NormalizeData(
   verbose = FALSE
 )
 spatial <- RunSpatialVariableFeatures(
-  spatial,
+  object = spatial,
   assay = "Spatial",
   nfeatures = 10,
   verbose = FALSE
 )
-SpatialVariableFeaturePlot(spatial, plot_type = "summary")
+SpatialVariableFeaturePlot(object = spatial, plot_type = "summary")
 ```

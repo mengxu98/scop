@@ -7,7 +7,7 @@ and grouped summary plots.
 
 ``` r
 FitDevoPlot(
-  srt,
+  object,
   reduction = NULL,
   group.by = NULL,
   score.name = "FitDevo_Score",
@@ -22,13 +22,14 @@ FitDevoPlot(
   palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object processed by
   [`RunFitDevo()`](https://mengxu98.github.io/scop/reference/RunFitDevo.md).
@@ -81,6 +82,11 @@ FitDevoPlot(
   and
   [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md).
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A patchwork object or a named list of `ggplot` objects.
@@ -90,22 +96,22 @@ A patchwork object or a named list of `ggplot` objects.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 21:34:18] Start standard processing workflow...
-#> ℹ [2026-09-06 21:34:18] Checking a list of <Seurat>...
-#> ! [2026-09-06 21:34:18] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 21:34:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:34:18] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:34:19] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 21:34:19] Number of available HVF: 2000
-#> ℹ [2026-09-06 21:34:19] Finished check
-#> ℹ [2026-09-06 21:34:19] Perform `ScaleData()`
-#> ℹ [2026-09-06 21:34:19] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 21:34:19] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 21:34:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 21:34:19] Reorder clusters...
-#> ℹ [2026-09-06 21:34:19] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:34:19] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 21:34:25] Standard processing workflow completed
+#> ℹ [2026-09-13 21:46:35] Start standard processing workflow...
+#> ℹ [2026-09-13 21:46:35] Checking a list of <Seurat>...
+#> ! [2026-09-13 21:46:35] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 21:46:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:46:35] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:46:35] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 21:46:35] Number of available HVF: 2000
+#> ℹ [2026-09-13 21:46:35] Finished check
+#> ℹ [2026-09-13 21:46:35] Perform `ScaleData()`
+#> ℹ [2026-09-13 21:46:35] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 21:46:35] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 21:46:36] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 21:46:36] Reorder clusters...
+#> ℹ [2026-09-13 21:46:36] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:46:36] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 21:46:41] Standard processing workflow completed
 pancreas_sub <- RunFitDevo(pancreas_sub, verbose = FALSE)
 FitDevoPlot(pancreas_sub)
 ```

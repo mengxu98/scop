@@ -1,15 +1,13 @@
 # Run RCTD spatial deconvolution
 
-Estimate spot-level cell type proportions from a spatial `Seurat` object
-using a single-cell `Seurat` reference and the optional `spacexr` RCTD
-backend. The example is a non-executing template so pkgdown does not
-need to install or run this heavy optional dependency.
+Estimate spot-level cell-type proportions using RCTD and an annotated
+single-cell reference.
 
 ## Usage
 
 ``` r
 RunRCTD(
-  srt,
+  object,
   reference,
   reference_label = "celltype",
   assay = NULL,
@@ -30,13 +28,14 @@ RunRCTD(
   verbose = TRUE,
   ...,
   coordinate_space = c("raw", "legacy_display"),
-  tool_name = "RCTD"
+  tool_name = "RCTD",
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   Spatial `Seurat` object used as the RCTD query.
 
@@ -98,10 +97,9 @@ RunRCTD(
 
 - round_counts:
 
-  Whether to round non-integer counts to the nearest integer before
-  passing data to `spacexr`. RCTD requires integer count matrices; this
-  defaults to `TRUE` so bundled example data with scaled non-integer
-  reference counts can run directly.
+  Whether to round non-integer values before passing data to `spacexr`.
+  RCTD requires integer count matrices; rounding is a compatibility
+  option and does not recover original counts.
 
 - create_rctd_params:
 
@@ -134,6 +132,11 @@ RunRCTD(
 
   Name used to store the plain result bundle in `srt@tools`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with RCTD proportion columns in metadata and dominant
@@ -144,7 +147,6 @@ also stored in `srt@tools[[tool_name]]`.
 
 ``` r
 if (FALSE) { # \dontrun{
-thisutils::check_r("dmcable/spacexr", verbose = FALSE)
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(
@@ -153,6 +155,7 @@ keep_spots <- unique(round(seq(
   length.out = 120
 )))
 spatial <- visium_human_pancreas_sub[, keep_spots]
+# Results are conditional on the three reference cell types used here.
 reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
   c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
@@ -161,7 +164,7 @@ features_use <- head(intersect(
   rownames(spatial)
 ), 300)
 spatial <- RunRCTD(
-  srt = spatial,
+  object = spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",

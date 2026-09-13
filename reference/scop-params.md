@@ -6,6 +6,11 @@ Shared parameters
 
 - srt:
 
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
+- object:
+
   A `Seurat` object.
 
 - assay:
@@ -128,7 +133,8 @@ Shared parameters
 
 - complex.mean:
 
-  Whether to use a modified mean test statistic in complex heatmaps.
+  Method-specific complex ligand-receptor mean. Methods that do not
+  expose it should document their own alternative.
 
 - coordinate.unit:
 
@@ -137,7 +143,7 @@ Shared parameters
 
 - cutoff:
 
-  Maximum selected-cell fraction used by Scissor's alpha search.
+  Method-specific cutoff; methods should document its scale.
 
 - decreasing:
 
@@ -171,7 +177,7 @@ Shared parameters
 
 - global.fdr:
 
-  Global FDR threshold.
+  Method-specific global FDR selection switch or threshold.
 
 - global.threshold:
 
@@ -266,7 +272,7 @@ Shared parameters
 
 - local.fdr:
 
-  Local FDR threshold.
+  Method-specific local FDR selection switch or threshold.
 
 - local.threshold:
 

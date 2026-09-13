@@ -7,7 +7,7 @@ Visualize standardized results produced by
 
 ``` r
 SpatialIntegrationPlot(
-  srt,
+  object,
   method = NULL,
   plot_type = c("spatial", "embedding", "alignment", "composition"),
   group.by = NULL,
@@ -23,13 +23,14 @@ SpatialIntegrationPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object containing spatial integration results.
 
@@ -106,24 +107,30 @@ SpatialIntegrationPlot(
   Use `"hires"` for a hires raster; do not modify Seurat scale-factor
   slots.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `ggplot`, patchwork object, or list of plots.
 
+## See also
+
+[`RunSpatialIntegration()`](https://mengxu98.github.io/scop/reference/RunSpatialIntegration.md)
+
 ## Examples
 
 ``` r
-data(visium_human_pancreas_pair_sub)
-SpatialIntegrationPlot(
-  visium_human_pancreas_pair_sub,
-  plot_type = "spatial",
-  group.by = "domain",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
+if (FALSE) { # \dontrun{
+data(visium_human_pancreas_sub)
+spatial <- RunSpatialIntegration(
+  visium_human_pancreas_sub,
+  method = "PRECAST",
+  group.by = "CellType",
+  sample.by = "Sample"
 )
-
-SpatialIntegrationPlot(
-  visium_human_pancreas_pair_sub,
-  plot_type = "embedding"
-)
+SpatialIntegrationPlot(spatial, method = "PRECAST", plot_type = "spatial")
+} # }
 ```

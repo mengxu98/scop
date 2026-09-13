@@ -8,7 +8,7 @@ optionally evaluate predictions against a truth label.
 
 ``` r
 RunscOMM(
-  srt,
+  object,
   reference,
   reference_assay = NULL,
   query_assay = NULL,
@@ -25,13 +25,14 @@ RunscOMM(
   scomm_batch_size = 32,
   scomm_threshold = 0.5,
   scomm_seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -94,9 +95,52 @@ RunscOMM(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with `scOMM` predictions stored in metadata and
 `tools`.
 
 ## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data("pbmcmultiome_sub", package = "scop")
+pbmcmultiome_sub <- RunStandardWorkflow(pbmcmultiome_sub, assay = "RNA")
+ref_cells <- colnames(pbmcmultiome_sub)[1:250]
+query_cells <- colnames(pbmcmultiome_sub)[251:500]
+reference <- subset(pbmcmultiome_sub, cells = ref_cells)
+query <- subset(pbmcmultiome_sub, cells = query_cells)
+query <- RunscOMM(
+  object = query,
+  reference = reference,
+  reference_assay = "RNA",
+  query_assay = "RNA",
+  reference_label = "CellType",
+  scomm_epochs = 1
+)
+CellDimPlot(
+  query,
+  group.by = c(
+    "CellType",
+    "scomm_prediction"
+  ),
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
+)
+
+FeatureDimPlot(
+  query,
+  features = c(
+    "scomm_score.B",
+    "scomm_score.max"
+  ),
+  xlab = "UMAP_1",
+  ylab = "UMAP_2"
+)
+} # }
+```

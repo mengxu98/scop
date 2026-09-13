@@ -8,7 +8,7 @@ slots of a `Seurat` object.
 
 ``` r
 RunLISI(
-  srt,
+  object,
   reductions = NULL,
   reduction = NULL,
   dims = NULL,
@@ -22,13 +22,14 @@ RunLISI(
   cores = NULL,
   max_dense_bytes = Inf,
   overwrite = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -100,6 +101,11 @@ RunLISI(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A modified `Seurat` object.
@@ -134,7 +140,7 @@ panc8_sub <- RunLISI(
   label_colnames = "tech",
   perplexity = 10
 )
-#> ℹ [2026-09-06 22:27:42] Compute LISI scores from reduction "demo"
-#> ✔ [2026-09-06 22:27:42] Stored LISI scores in metadata: "demo_tech_LISI"
+#> ℹ [2026-09-13 22:39:32] Compute LISI scores from reduction "demo"
+#> ✔ [2026-09-13 22:39:33] Stored LISI scores in metadata: "demo_tech_LISI"
 IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 ```

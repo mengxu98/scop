@@ -8,7 +8,7 @@ using spatial, statistical, and network plotting conventions.
 
 ``` r
 SpatialNeighborhoodPlot(
-  srt,
+  object,
   method = NULL,
   plot_type = c("heatmap", "network", "stat", "spatial"),
   comparison = NULL,
@@ -40,13 +40,14 @@ SpatialNeighborhoodPlot(
   seed = 11,
   verbose = TRUE,
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -143,7 +144,7 @@ SpatialNeighborhoodPlot(
 - combine, nrow, ncol, byrow:
 
   Combine plots with
-  [patchwork::patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
   `combine = FALSE` returns a list of ggplots.
 
 - seed:
@@ -164,18 +165,38 @@ SpatialNeighborhoodPlot(
   Use `"hires"` for a hires raster; do not modify Seurat scale-factor
   slots.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `ggplot`, `patchwork`, or list of `ggplot` objects.
 
+## See also
+
+[`RunSpatialNeighborhood()`](https://mengxu98.github.io/scop/reference/RunSpatialNeighborhood.md)
+
 ## Examples
 
 ``` r
-data(visium_human_pancreas_results_sub)
+data(visium_human_pancreas_sub)
+spatial <- visium_human_pancreas_sub
+spatial <- RunSpatialNeighborhood(
+  spatial,
+  group.by = "coda_label",
+  coord.cols = c("x", "y"),
+  k = 4,
+  verbose = FALSE
+)
+
 SpatialNeighborhoodPlot(
-  visium_human_pancreas_results_sub,
+  spatial,
   plot_type = "spatial",
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
+#> Ignoring unknown labels:
+#> • fill : "Observed count: collagen -> collagen"
 ```

@@ -5,12 +5,18 @@ Rename features for the Seurat object
 ## Usage
 
 ``` r
-RenameFeatures(srt, newnames = NULL, assays = NULL, verbose = TRUE)
+RenameFeatures(
+  object,
+  newnames = NULL,
+  assays = NULL,
+  verbose = TRUE,
+  srt = NULL
+)
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -26,6 +32,11 @@ RenameFeatures(srt, newnames = NULL, assays = NULL, verbose = TRUE)
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Examples
 
@@ -44,7 +55,7 @@ panc8_rename <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-09-06 21:51:14] Rename features for the assay: RNA
+#> ℹ [2026-09-13 22:03:13] Rename features for the assay: RNA
 head(rownames(panc8_rename))
 #> [1] "A1cf"   "A4galt" "Aaas"   "Aacs"   "Aadac"  "Aadat" 
 ```

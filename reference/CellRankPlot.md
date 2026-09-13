@@ -6,7 +6,7 @@ Plot CellRank outputs without rerunning a Python backend.
 
 ``` r
 CellRankPlot(
-  srt,
+  object,
   plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters",
     "enrichment", "projection", "random_walks"),
   lineage = NULL,
@@ -23,13 +23,14 @@ CellRankPlot(
   feature_palcolor = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object returned by \[RunCellRank\].
 
@@ -89,6 +90,30 @@ CellRankPlot(
 
   Arguments passed to the underlying SCOP plotting function.
 
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
+
 ## Value
 
 A ggplot object or a SCOP plot object.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+pancreas_sub <- RunCellRank(
+  pancreas_sub,
+  group.by = "SubCellType",
+  kernel_type = "pseudotime",
+  time_key = "palantir_pseudotime",
+  schur_method = "brandts",
+  backend = "python"
+)
+CellRankPlot(pancreas_sub, plot_type = "fate", reduction = "UMAP")
+CellRankPlot(pancreas_sub, plot_type = "circular")
+} # }
+```

@@ -9,7 +9,7 @@ installed.
 
 ``` r
 RunSpatialVariableFeatures(
-  srt = NULL,
+  object = NULL,
   assay = NULL,
   layer = "data",
   features = NULL,
@@ -26,21 +26,18 @@ RunSpatialVariableFeatures(
   seed = 11,
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
+  cores = NULL,
+  max_dense_gb = 2,
   ...,
-  object = NULL
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
-
-  A `Seurat` object. The same object may be supplied as `object =` for
-  consistency with spatial plotting APIs.
-
 - object:
 
-  Optional alias for `srt`. Supply exactly one of `srt` or `object`.
+  A `Seurat` object.
 
 - assay:
 
@@ -117,9 +114,25 @@ RunSpatialVariableFeatures(
   Backend used by the package `"moran"` and `"geary"` methods. `"cpp"`
   is the default; use `"r"` for the reference implementation.
 
+- cores:
+
+  Number of OpenMP threads for C++ Moran/Geary scoring. `NULL` uses the
+  process OpenMP default.
+
+- max_dense_gb:
+
+  Maximum estimated GB for an expression matrix conversion in the
+  R-reference or nnSVG path. The C++ and SPARK-X paths retain sparse
+  input. This guard bounds one conversion, not total backend memory.
+
 - ...:
 
   Additional arguments passed to external backends.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 
@@ -145,20 +158,28 @@ spatial <- Seurat::FindVariableFeatures(
 )
 
 SpatialSpotPlot(
-  spatial,
+  object = spatial,
   features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:2]
 )
+#> Ignoring unknown labels:
+#> • fill : "FBP1"
+#> Ignoring unknown labels:
+#> • fill : "PNLIP"
 
 
 spatial <- RunSpatialVariableFeatures(
-  spatial,
+  object = spatial,
   assay = "Spatial",
   nfeatures = 50
 )
-#> ◌ [2026-09-06 22:35:24] Running spatial variable feature detection
-#> ✔ [2026-09-06 22:35:24] Spatial variable features completed: 100 tested, 50 ranked in the top set
+#> ◌ [2026-09-13 22:47:14] Running spatial variable feature detection
+#> ✔ [2026-09-13 22:47:14] Spatial variable features completed: 100 tested, 50 ranked in the top set
 #> ℹ   Scope method "moran" ("cpp" backend); assay "Spatial", layer "data"; 1986 spots; coordinates "raw"
 #> ℹ   Saved 50 top features as assay `VariableFeatures`; full result in returned object tool bundle `SpatialVariableFeatures`
 #> ℹ   Plot returned object `SpatialVariableFeaturePlot(<returned_object>, plot_type = "combined", assay = "Spatial", image = "slice1", coord.cols = c("x", "y"))`
-SpatialVariableFeaturePlot(spatial, plot_type = "combined", nfeatures = 2)
+SpatialVariableFeaturePlot(object = spatial, plot_type = "combined", nfeatures = 2)
+#> Ignoring unknown labels:
+#> • fill : "FBP1"
+#> Ignoring unknown labels:
+#> • fill : "CELA3A"
 ```

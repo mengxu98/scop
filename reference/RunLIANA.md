@@ -6,7 +6,7 @@ Run LIANA cell-cell communication analysis
 
 ``` r
 RunLIANA(
-  srt,
+  object,
   group.by,
   method = c("natmi", "connectome", "logfc", "sca", "cellphonedb"),
   resource = NULL,
@@ -18,13 +18,14 @@ RunLIANA(
   species = c("human", "mouse"),
   consensus = c("auto", "rank", "aggregate", "none"),
   consensus_args = list(),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -83,6 +84,11 @@ RunLIANA(
 - ...:
 
   Additional arguments passed to `liana::liana_wrap()`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

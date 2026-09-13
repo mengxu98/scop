@@ -11,7 +11,7 @@ without modifying the installed backend namespace.
 
 ``` r
 RunscPagwas(
-  srt = NULL,
+  object = NULL,
   single_data = NULL,
   gwas_data,
   group.by = NULL,
@@ -23,13 +23,14 @@ RunscPagwas(
   cleanup_soar = TRUE,
   return_seurat = !is.null(srt) || inherits(single_data, "Seurat"),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   Optional Seurat object used as single-cell input.
 
@@ -85,6 +86,11 @@ RunscPagwas(
 
   Additional arguments passed to the upstream `scPagwas` function after
   filtering by its formal arguments.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

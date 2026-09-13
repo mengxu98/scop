@@ -6,7 +6,7 @@ RunSlingshot
 
 ``` r
 RunSlingshot(
-  srt,
+  object,
   group.by,
   reduction = NULL,
   dims = NULL,
@@ -19,13 +19,14 @@ RunSlingshot(
   lineage_palette = "Dark2",
   seed = 11,
   ...,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -87,6 +88,11 @@ RunSlingshot(
 
   Whether to print messages.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [CellDimPlot](https://mengxu98.github.io/scop/reference/CellDimPlot.md),
@@ -98,22 +104,22 @@ RunSlingshot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 22:34:18] Start standard processing workflow...
-#> ℹ [2026-09-06 22:34:19] Checking a list of <Seurat>...
-#> ! [2026-09-06 22:34:19] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 22:34:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:34:19] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:34:19] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 22:34:19] Number of available HVF: 2000
-#> ℹ [2026-09-06 22:34:19] Finished check
-#> ℹ [2026-09-06 22:34:19] Perform `ScaleData()`
-#> ℹ [2026-09-06 22:34:20] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 22:34:20] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 22:34:20] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 22:34:20] Reorder clusters...
-#> ℹ [2026-09-06 22:34:20] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 22:34:20] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 22:34:28] Standard processing workflow completed
+#> ℹ [2026-09-13 22:46:13] Start standard processing workflow...
+#> ℹ [2026-09-13 22:46:13] Checking a list of <Seurat>...
+#> ! [2026-09-13 22:46:13] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 22:46:13] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:46:13] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:46:13] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 22:46:13] Number of available HVF: 2000
+#> ℹ [2026-09-13 22:46:13] Finished check
+#> ℹ [2026-09-13 22:46:13] Perform `ScaleData()`
+#> ℹ [2026-09-13 22:46:13] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 22:46:13] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 22:46:14] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 22:46:14] Reorder clusters...
+#> ℹ [2026-09-13 22:46:14] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:46:14] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 22:46:22] Standard processing workflow completed
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
   group.by = "SubCellType",

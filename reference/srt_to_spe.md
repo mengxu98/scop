@@ -7,19 +7,20 @@ using one assay layer, metadata, and resolved spatial coordinates.
 
 ``` r
 srt_to_spe(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   coord.cols = c("col", "row"),
   image = NULL,
   include_meta = TRUE,
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -53,6 +54,11 @@ srt_to_spe(
   stored in `metadata(spe)$scop_spatial_coordinates` so that an explicit
   display export can be inverted by
   [`spe_to_srt()`](https://mengxu98.github.io/scop/reference/spe_to_srt.md).
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

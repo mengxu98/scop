@@ -1,27 +1,21 @@
 # Plot spatial gradient screening results
 
 Visualize normalized results produced by
-[`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)
+[`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md).
+The plot reads only the stored screening, summary, and model-fit tables;
+it does not refetch expression from the object's current assay or layer.
+The model view displays the stored model-matching error (RMSE) for each
+feature.
 
 ## Usage
 
 ``` r
 SpatialGradientPlot(
-  srt,
+  object,
   result_name = NULL,
-  plot_type = c("summary", "surface", "line", "model", "combined"),
+  plot_type = c("summary", "line", "model"),
   features = NULL,
   nfeatures = 4,
-  assay = NULL,
-  layer = "data",
-  image = NULL,
-  overlay_image = TRUE,
-  image.alpha = 1,
-  coord.cols = c("col", "row"),
-  flip.y = TRUE,
-  pt.size = NULL,
-  pt.alpha = 0.9,
-  stroke = 0.1,
   palette = "Spectral",
   palcolor = NULL,
   legend.position = "right",
@@ -32,16 +26,15 @@ SpatialGradientPlot(
   line_fit = c("stored", "lm"),
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE,
-  image.scale = c("lowres", "hires")
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
-  A `Seurat` object.
+  A `Seurat` object containing stored gradient results.
 
 - result_name:
 
@@ -50,8 +43,7 @@ SpatialGradientPlot(
 
 - plot_type:
 
-  Plot type: `"summary"`, `"surface"`, `"line"`, `"model"`, or
-  `"combined"`.
+  Plot type: `"summary"`, `"line"`, or `"model"`.
 
 - features:
 
@@ -62,48 +54,13 @@ SpatialGradientPlot(
 
   Number of top variables used when `features = NULL`.
 
-- assay:
-
-  Assay to use. `NULL` uses the default assay.
-
-- layer:
-
-  Assay layer to use.
-
-- image:
-
-  Spatial image name. Required when multiple images are present; a
-  single image is selected automatically when `NULL`.
-
-- overlay_image, image.alpha:
-
-  Draw the spatial image beneath spots.
-
-- coord.cols:
-
-  Metadata coordinate columns used when no image is available.
-
-- flip.y:
-
-  Reverse the y axis for metadata coordinates.
-
-- pt.size, pt.alpha:
-
-  Point size and transparency. `pt.size = NULL` scales with `sqrt(n)`
-  (minimum `0.3`). Rasterized points keep at least a two-pixel radius at
-  `raster.dpi = c(512, 512)` and scale with `raster.dpi`.
-
-- stroke:
-
-  Point border width.
-
 - palette, palcolor:
 
   Color palette passed to SCOP plotting helpers.
 
 - legend.position:
 
-  Legend position for surface, line, and model plots.
+  Legend position for line, summary, and model plots.
 
 - theme_use:
 
@@ -111,7 +68,7 @@ SpatialGradientPlot(
 
 - theme_args:
 
-  Theme name or function, plus extra theme arguments.
+  Additional theme arguments.
 
 - line_size:
 
@@ -128,31 +85,52 @@ SpatialGradientPlot(
   fit from `screening$value`, which is useful for showing a simple
   monotonic trend even when the backend stores a smoothed curve.
 
-- nrow, ncol, byrow:
+- nrow, ncol:
 
   Layout controls for multi-feature plots.
 
-- image.scale:
+- srt:
 
-  Image scale factor matching the raster stored in the selected image.
-  Use `"hires"` for a hires raster; do not modify Seurat scale-factor
-  slots.
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 
 A `ggplot` or `patchwork` object.
 
+## See also
+
+[`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)
+
 ## Examples
 
 ``` r
-data(visium_human_pancreas_results_sub)
-SpatialGradientPlot(
-  visium_human_pancreas_results_sub,
-  result_name = "scop_gradient_fixture",
-  plot_type = "surface",
-  features = rownames(visium_human_pancreas_results_sub)[1:2],
-  overlay_image = FALSE,
+data(visium_human_pancreas_sub)
+spatial <- visium_human_pancreas_sub
+counts <- GetAssayData5(spatial, assay = "Spatial", layer = "counts")
+gradient_features <- names(sort(Matrix::rowSums(counts), decreasing = TRUE))[
+  seq_len(min(8L, nrow(counts)))
+]
+# Use a diagonal example axis without permutation testing.
+spatial <- RunSpatialGradientFeatures(
+  spatial,
+  reference = "trajectory",
+  backend = "cpp",
+  result_name = "example_axis",
+  variables = gradient_features,
+  start = c(min(spatial$x), min(spatial$y)),
+  end = c(max(spatial$x), max(spatial$y)),
+  layer = "counts",
   coord.cols = c("x", "y"),
-  pt.size = 1.2
+  n_random = 0,
+  n_bins = 5,
+  min_spots = 3,
+  sign_threshold = 1,
+  nfeatures = 4,
+  verbose = FALSE
 )
+
+SpatialGradientPlot(spatial, plot_type = "line")
+
+SpatialGradientPlot(spatial, plot_type = "model")
 ```

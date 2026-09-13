@@ -6,18 +6,19 @@ FetchData but with zeroes for unavailable genes
 
 ``` r
 FetchDataZero(
-  srt,
+  object,
   features,
   assay = "RNA",
   layer = "data",
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -41,3 +42,8 @@ FetchDataZero(
 
   Other arguments to pass to
   [Seurat::FetchData](https://satijalab.github.io/seurat-object/reference/FetchData.html).
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.

@@ -12,19 +12,20 @@ as uncertainty estimates for observed log2 fold-differences
 
 ``` r
 RunPermutation(
-  srt,
+  object,
   group.by,
   split.by,
   comparison = NULL,
   n_permutations = 1000,
   include_all_cells = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -60,6 +61,11 @@ RunPermutation(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

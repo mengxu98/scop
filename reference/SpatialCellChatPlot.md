@@ -16,7 +16,8 @@ SpatialCellChatPlot(
   pairLR.use = NULL,
   direction = c("outgoing", "incoming"),
   top_n = 30,
-  point.size = 1.5,
+  pt.size = 1.5,
+  point.size = NULL,
   palette = "RdBu",
   palcolor = NULL,
   title = NULL
@@ -57,9 +58,14 @@ SpatialCellChatPlot(
 
   Maximum network edges.
 
-- point.size:
+- pt.size:
 
   Coordinate point size.
+
+- point.size:
+
+  Deprecated alias(es) for \`pt.size\`; supply exactly one of the two.
+  It will be removed in scop 1.0.0.
 
 - palette, palcolor:
 
@@ -73,14 +79,6 @@ SpatialCellChatPlot(
 
 A \`ggplot\` object.
 
-## Examples
+## See also
 
-``` r
-data(visium_human_pancreas_results_sub)
-SpatialCellChatPlot(
-  visium_human_pancreas_results_sub,
-  plot_type = "incoming",
-  sample = "ALL",
-  top_n = 10
-)
-```
+\[RunSpatialCellChat()\]

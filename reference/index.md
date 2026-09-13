@@ -264,6 +264,8 @@
 
 - [`SpatialCoordinates()`](https://mengxu98.github.io/scop/reference/SpatialCoordinates.md)
   : Read spatial coordinates with an explicit coordinate contract
+- [`ReadSpatialData()`](https://mengxu98.github.io/scop/reference/ReadSpatialData.md)
+  : Load and validate Visium, Visium HD, or Xenium data
 - [`SetSpatialImageAxes()`](https://mengxu98.github.io/scop/reference/SetSpatialImageAxes.md)
   : Persist the coordinate axis convention of a VisiumV2 image
 - [`GetSpatialGraph()`](https://mengxu98.github.io/scop/reference/GetSpatialGraph.md)
@@ -297,8 +299,6 @@
   : Run STdeconvolve reference-free spatial deconvolution
 - [`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md)
   : Run SPOTlight spatial deconvolution
-- [`RunSpatialDWLS()`](https://mengxu98.github.io/scop/reference/RunSpatialDWLS.md)
-  : Run lightweight SpatialDWLS-style deconvolution
 - [`RunSpatialEcoTyper()`](https://mengxu98.github.io/scop/reference/RunSpatialEcoTyper.md)
   : Run SpatialEcoTyper spatial ecotype analysis
 
@@ -342,10 +342,6 @@
 
 ### Spatial Visualization
 
-- [`SpatialEcoTyperCompositionPlot()`](https://mengxu98.github.io/scop/reference/SpatialEcoTyperCompositionPlot.md)
-  : SpatialEcoTyper composition plot
-- [`SpatialEcoTyperSpatialPlot()`](https://mengxu98.github.io/scop/reference/SpatialEcoTyperSpatialPlot.md)
-  : SpatialEcoTyper spatial plot
 - [`SpatialGradientPlot()`](https://mengxu98.github.io/scop/reference/SpatialGradientPlot.md)
   : Plot spatial gradient screening results
 - [`SpatialIntegrationPlot()`](https://mengxu98.github.io/scop/reference/SpatialIntegrationPlot.md)
@@ -803,17 +799,9 @@
   : A subsetted version of mouse 'pancreas' datasets
 - [`pbmcmultiome_sub`](https://mengxu98.github.io/scop/reference/pbmcmultiome_sub.md)
   : A small human PBMC multiome example dataset
-- [`pbmc_celltypist_sub`](https://mengxu98.github.io/scop/reference/pbmc_celltypist_sub.md)
-  : Compact PBMC CellTypist example
 - [`ref_scMCA`](https://mengxu98.github.io/scop/reference/ref_scMCA.md)
   : Reference datasets for cell type annotation in single-cell RNA data
-- [`visium_human_pancreas_pair_sub`](https://mengxu98.github.io/scop/reference/visium_human_pancreas_pair_sub.md)
-  : Compact two-sample human PanIN Visium example
 - [`visium_human_pancreas_sub`](https://mengxu98.github.io/scop/reference/visium_human_pancreas_sub.md)
   : A human pancreas Visium spatial example dataset
-- [`visium_human_pancreas_results_sub`](https://mengxu98.github.io/scop/reference/visium_human_pancreas_results_sub.md)
-  : Compact Visium result example for spatial documentation
-- [`xenium_human_pancreas_boundaries_sub`](https://mengxu98.github.io/scop/reference/xenium_human_pancreas_boundaries_sub.md)
-  : Compact Xenium human pancreas cell boundaries
 - [`words_excluded`](https://mengxu98.github.io/scop/reference/words_excluded.md)
   : Excluded words in keyword enrichment analysis and extraction

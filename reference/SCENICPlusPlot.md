@@ -8,7 +8,7 @@ with `tool_name = "SCENICPlus"` and `assay = "scenicplus"`. Default
 
 ``` r
 SCENICPlusPlot(
-  srt,
+  object,
   group.by,
   tool_name = "SCENICPlus",
   assay = "scenicplus",
@@ -16,13 +16,14 @@ SCENICPlusPlot(
     "activity_heatmap", "activity_violin", "activity_dim", "eregulon_dim",
     "activity_cor_dumbbell", "regulon_size", "network_graph", "network", "egrn",
     "overlap", "target_bar", "coverage"),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object from
   [`RunSCENICPlus()`](https://mengxu98.github.io/scop/reference/RunSCENICPlus.md).
@@ -48,6 +49,11 @@ SCENICPlusPlot(
   Passed to
   [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md).
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 Same as
@@ -72,6 +78,9 @@ pancreas_sub <- RunSCENICPlus(
 scenicplus_dot <- SCENICPlusPlot(pancreas_sub, group.by = "CellType")
 example_tfs <- unique(scenicplus_dot$top_table$TF)[1:3]
 SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "egrn", features = example_tfs)
-SCENICPlusPlot(pancreas_sub, group.by = "CellType", plot_type = "network_graph", features = example_tfs)
+SCENICPlusPlot(
+  pancreas_sub,
+  group.by = "CellType", plot_type = "network_graph", features = example_tfs
+)
 } # }
 ```

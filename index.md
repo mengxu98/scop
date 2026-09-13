@@ -1,6 +1,6 @@
 # scop: Single-cell and Spatial omics analysis pipeline
 
-## Introduction
+## **Introduction**
 
 [scop](https://github.com/mengxu98/scop) is an *R* package for
 comprehensive single-cell and spatial omics analysis, providing modular
@@ -167,7 +167,7 @@ exploring single-cell and spatial omics data.
   [shiny](https://shiny.rstudio.com/) app that provides an interactive
   visualization interface.
 
-## Table of Contents
+## **Table of Contents**
 
 - [scop: Single-cell and Spatial omics analysis
   pipeline](#scop-single-cell-and-spatial-omics-analysis-pipeline)
@@ -175,8 +175,8 @@ exploring single-cell and spatial omics data.
   - [Table of Contents](#table-of-contents)
   - [Credits](#credits)
   - [Installation](#installation)
-    - [*R* requirement](#r-requirement)
-    - [*Python* environment](#python-environment)
+    - [R requirement](#r-requirement)
+    - [Python environment](#python-environment)
   - [Pipeline](#pipeline)
     - [Data exploration](#data-exploration)
     - [Quality control](#quality-control)
@@ -207,7 +207,7 @@ exploring single-cell and spatial omics data.
       SCExplorer](#interactive-data-visualization-with-scexplorer)
     - [Other visualization examples](#other-visualization-examples)
 
-## Credits
+## **Credits**
 
 The [scop](https://github.com/mengxu98/scop) package is developed based
 on the [SCP](https://github.com/zhanghao-njmu/SCP) package, with the
@@ -228,9 +228,9 @@ following major improvements:
     *Windows*.
 5.  Functionality: more analysis methods have been added.
 
-## Installation
+## **Installation**
 
-### *R* requirement
+### **R requirement**
 
 - R \>= 4.1.0
 
@@ -247,7 +247,7 @@ if (!require("pak", quietly = TRUE)) {
 pak::pak("mengxu98/scop")
 ```
 
-### *Python* environment
+### **Python environment**
 
 To run functions such as
 [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md),
@@ -320,9 +320,9 @@ scop::PrepareEnv(
   - <https://mirrors.xjtu.edu.cn/pypi/simple>
   - <https://mirrors.hit.edu.cn/pypi/web/simple>
 
-## Pipeline
+## **Pipeline**
 
-### Data exploration
+### **Data exploration**
 
 The analysis is based on a subsetted version of [mouse pancreas
 data](https://doi.org/10.1242/dev.173849).
@@ -438,7 +438,7 @@ print(ht$plot)
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5.png)
 
-### Quality control
+### **Quality control**
 
 ``` r
 
@@ -480,7 +480,7 @@ CellStatPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-3.png)
 
-### Integration pipeline
+### **Integration pipeline**
 
 Example data for integration is a subsetted version of [panc8(eight
 human pancreas datasets)](https://github.com/satijalab/seurat-data)
@@ -503,9 +503,9 @@ CellDimPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunIntegration-1.png)
 
-### Cell annotation
+### **Cell annotation**
 
-#### Cell projection between single-cell datasets
+#### **Cell projection between single-cell datasets**
 
 ``` r
 
@@ -540,7 +540,7 @@ ProjectionPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.png)
 
-#### Cell annotation using bulk RNA-seq datasets
+#### **Cell annotation using bulk RNA-seq datasets**
 
 ``` r
 
@@ -562,7 +562,7 @@ CellDimPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1.png)
 
-#### Cell annotation using single-cell datasets
+#### **Cell annotation using single-cell datasets**
 
 ``` r
 
@@ -603,9 +603,9 @@ print(ht$plot)
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3.png)
 
-### Cellular potency
+### **Cellular potency**
 
-#### CytoTRACE 2
+#### **CytoTRACE 2**
 
 ``` r
 
@@ -623,9 +623,9 @@ CytoTRACEPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCytoTRACE.png)
 
-### Trajectory inference
+### **Trajectory inference**
 
-#### RNA Velocity analysis
+#### **RNA Velocity analysis**
 
 To estimate RNA velocity, both “spliced” and “unspliced” assays are
 required in the Seurat object. You can generate these matrices using
@@ -665,7 +665,7 @@ VelocityPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2.png)
 
-#### PAGA
+#### **PAGA**
 
 ``` r
 
@@ -690,7 +690,7 @@ PAGAPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunPAGA-1.png)
 
-#### Slingshot
+#### **Slingshot**
 
 ``` r
 
@@ -727,7 +727,7 @@ FeatureDimPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-2.png)
 
-#### Monocle3
+#### **Monocle3**
 
 ``` r
 
@@ -777,7 +777,7 @@ CellDimPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunMonocle3.png)
 
-### Dynamic features
+### **Dynamic features**
 
 ``` r
 
@@ -860,7 +860,7 @@ FeatureStatPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureStatPlot-1.png)
 
-### Differential expression analysis
+### **Differential expression analysis**
 
 ``` r
 
@@ -955,9 +955,9 @@ print(ht$plot)
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1.png)
 
-### Enrichment analysis
+### **Enrichment analysis**
 
-#### Over-representation
+#### **Over-representation**
 
 ``` r
 
@@ -1055,7 +1055,7 @@ EnrichmentPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1.png)
 
-#### GSEA
+#### **GSEA**
 
 ``` r
 
@@ -1091,7 +1091,7 @@ GSEAPlot(
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1.png)
 
-### Interactive data visualization with SCExplorer
+### **Interactive data visualization with SCExplorer**
 
 ``` r
 
@@ -1112,7 +1112,7 @@ if (interactive()) {
 
 ![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCExplorer-1.png)
 
-### Other visualization examples
+### **Other visualization examples**
 
 [**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)![Example1](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-1.png)
 

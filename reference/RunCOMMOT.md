@@ -8,7 +8,7 @@ not placed inside the Seurat object.
 
 ``` r
 RunCOMMOT(
-  srt,
+  object,
   group.by,
   species = c("human", "mouse"),
   database = "CellChat",
@@ -28,13 +28,14 @@ RunCOMMOT(
   store.h5ad = FALSE,
   overwrite = FALSE,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A \`Seurat\` spatial object.
 
@@ -115,6 +116,11 @@ RunCOMMOT(
 - verbose:
 
   Whether to print progress messages.
+
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
 
 ## Value
 

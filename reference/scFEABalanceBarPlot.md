@@ -6,7 +6,7 @@ Plot scFEA metabolite balance changes
 
 ``` r
 scFEABalanceBarPlot(
-  srt,
+  object,
   group.by,
   ident.1 = NULL,
   ident.2 = NULL,
@@ -14,13 +14,17 @@ scFEABalanceBarPlot(
   layer = "data",
   top_n = NULL,
   p_adj_cutoff = 0.01,
-  title = NULL
+  palcolor = c("#D73027", "#4575B4"),
+  title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object returned by \[RunscFEA()\].
 
@@ -53,9 +57,22 @@ scFEABalanceBarPlot(
 
   Adjusted p-value cutoff used when \`top_n\` is not \`NULL\`.
 
+- palcolor:
+
+  Two colors for the higher and lower group.
+
 - title:
 
   Optional plot title.
+
+- theme_use, theme_args:
+
+  Theme name or function, plus extra theme arguments.
+
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
 
 ## Value
 
@@ -63,3 +80,14 @@ For a single contrast, a list with \`plot\` and plotted \`data\`. For
 automatic one-vs-rest mode, a named list of single-contrast results is
 returned and combined statistics are stored in the outer \`"data"\`
 attribute.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+data(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub)
+pancreas_sub <- RunscFEA(pancreas_sub, group.by = "SubCellType")
+scFEABalanceBarPlot(pancreas_sub, group.by = "SubCellType", ident.1 = "Alpha", ident.2 = "Beta")
+} # }
+```

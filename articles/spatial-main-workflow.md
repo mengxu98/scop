@@ -6,6 +6,10 @@ subset and keeps the main path short: inspect the object, run the
 spatial workflow, check summaries, plot spatial features, and branch
 into optional backends only when the question requires them.
 
+For platform import, optional spatial normalization and method routing,
+see [platform
+workflows](https://mengxu98.github.io/scop/articles/spatial-platform-workflows.md).
+
 It is not a catalogue of every spatial backend. Use method pages for
 backend specific parameters and dependency notes.
 
@@ -31,7 +35,7 @@ library(scop)
 #>                                   /_/
 #>       ⬢               .      ⬡        .          ⬢
 #> ------------------------------------------------------------
-#> Version: 0.9.1 (2026-09-01 update)
+#> Version: 0.9.2 (2026-09-12 update)
 #> Website: https://mengxu98.github.io/scop/
 #> 
 #> Python environment initialization is disabled
@@ -107,6 +111,8 @@ SpatialSpotPlot(
   spatial,
   group.by = "coda_label"
 )
+#> Ignoring unknown labels:
+#> • colour : "coda_label"
 ```
 
 ![](spatial-main-workflow_files/figure-html/inspect-spatial-1.png)
@@ -120,6 +126,10 @@ SpatialSpotPlot(
   assay = "Spatial",
   layer = "counts"
 )
+#> Ignoring unknown labels:
+#> • fill : "TMSB4X"
+#> Ignoring unknown labels:
+#> • fill : "UBC"
 ```
 
 ![](spatial-main-workflow_files/figure-html/inspect-spatial-2.png)
@@ -155,35 +165,35 @@ spatial <- RunStandardWorkflow(
   do_spatial_cluster = FALSE,
   do_deconvolution = FALSE
 )
-#> ℹ [2026-09-06 23:02:10] Start standard spot-level spatial workflow...
-#> ◌ [2026-09-06 23:02:10] Running spot-level quality control
-#> ✔ [2026-09-06 23:02:11] Spot QC completed: 1986 evaluated, 1907 Pass, 79 Fail
+#> ℹ [2026-09-13 23:09:01] Start standard spot-level spatial workflow...
+#> ◌ [2026-09-13 23:09:01] Running spot-level quality control
+#> ✔ [2026-09-13 23:09:01] Spot QC completed: 1986 evaluated, 1907 Pass, 79 Fail
 #> ℹ   Scope assay "Spatial", layer "counts"
 #> ℹ   Saved metadata column `SpotQC`
 #> ℹ   Plot returned object `SpatialSpotPlot(<returned_object>, group.by = "SpotQC")`
-#> ℹ [2026-09-06 23:02:11] Start standard processing workflow...
-#> ℹ [2026-09-06 23:02:11] Checking a list of <Seurat>...
-#> ! [2026-09-06 23:02:11] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 23:09:01] Start standard processing workflow...
+#> ℹ [2026-09-13 23:09:01] Checking a list of <Seurat>...
+#> ! [2026-09-13 23:09:02] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 23:02:11] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 23:02:11] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 23:02:11] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 23:02:11] Number of available HVF: 2000
-#> ℹ [2026-09-06 23:02:11] Finished check
-#> ℹ [2026-09-06 23:02:11] Perform `ScaleData()`
-#> ℹ [2026-09-06 23:02:11] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 23:02:12] Use stored estimated dimensions 1:30 for Standardpca
-#> ℹ [2026-09-06 23:02:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 23:02:13] Reorder clusters...
-#> ℹ [2026-09-06 23:02:13] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 23:02:13] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 23:02:18] Standard processing workflow completed
-#> ◌ [2026-09-06 23:02:18] Running spatial variable feature detection
-#> ✔ [2026-09-06 23:02:18] Spatial variable features completed: 2000 tested, 50 ranked in the top set
+#> ℹ [2026-09-13 23:09:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 23:09:02] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 23:09:02] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 23:09:02] Number of available HVF: 2000
+#> ℹ [2026-09-13 23:09:03] Finished check
+#> ℹ [2026-09-13 23:09:03] Perform `ScaleData()`
+#> ℹ [2026-09-13 23:09:03] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 23:09:04] Use stored estimated dimensions 1:30 for Standardpca
+#> ℹ [2026-09-13 23:09:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 23:09:05] Reorder clusters...
+#> ℹ [2026-09-13 23:09:05] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 23:09:05] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 23:09:10] Standard processing workflow completed
+#> ◌ [2026-09-13 23:09:10] Running spatial variable feature detection
+#> ✔ [2026-09-13 23:09:10] Spatial variable features completed: 2000 tested, 50 ranked in the top set
 #> ℹ   Scope method "moran" ("cpp" backend); assay "Spatial", layer "data"; 1986 spots; coordinates "raw"
 #> ℹ   Saved full result in returned object tool bundle `SpatialVariableFeatures`
 #> ℹ   Plot returned object `SpatialVariableFeaturePlot(<returned_object>, plot_type = "combined", assay = "Spatial", image = "slice1", coord.cols = c("x", "y"))`
-#> ✔ [2026-09-06 23:02:18] Standard spot-level spatial workflow completed
+#> ✔ [2026-09-13 23:09:10] Standard spot-level spatial workflow completed
 ```
 
 After the run, look at the stable result locations before making more
@@ -252,6 +262,8 @@ SpatialSpotPlot(
   spatial,
   group.by = "SpotQC"
 )
+#> Ignoring unknown labels:
+#> • colour : "SpotQC"
 ```
 
 ![](spatial-main-workflow_files/figure-html/plot-results-1.png)
@@ -272,7 +284,7 @@ SpatialVariableFeaturePlot(
 
 SpatialVariableFeaturePlot(
   spatial,
-  plot_type = "surface",
+  plot_type = "summary",
   nfeatures = 4
 )
 ```
@@ -316,12 +328,16 @@ labels should land in metadata and method details should stay under
 
 ``` r
 
-spatial <- RunBANKSY(
+spatial <- RunStandardWorkflow(
   spatial,
+  workflow = "spatial",
   assay = "Spatial",
-  layer = "counts",
+  image = "slice1",
   coord.cols = c("x", "y"),
-  cluster_colname = "BANKSY_cluster"
+  do_spatial_cluster = TRUE,
+  spatial_cluster_method = "BANKSY",
+  spatial_cluster_params = list(cluster_colname = "BANKSY_cluster"),
+  do_deconvolution = FALSE
 )
 SpatialSpotPlot(spatial, group.by = "BANKSY_cluster")
 ```
@@ -335,27 +351,28 @@ spatial biology.
 
 ``` r
 
-spatial <- RunSpatialDWLS(
+spatial <- RunRCTD(
   spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",
   reference_assay = "RNA",
+  layer = "counts",
+  reference_layer = "counts",
   coord.cols = c("x", "y"),
-  prefix = "SpatialDWLS"
+  rctd_mode = "full",
+  max_cores = 1,
+  verbose = FALSE
 )
 
-spatial@tools$SpatialDWLS$summary
+spatial@tools$RCTD$summary
 
-SpatialSpotPlot(
+SpatialDeconvolutionPlot(
   spatial,
-  group.by = "SpatialDWLS_dominant_type"
-)
-
-SpatialSpotPlot(
-  spatial,
-  group.by = "SpatialDWLS_dominant_type",
-  plot_type = "pie"
+  tool_name = "RCTD",
+  plot_type = "dominant",
+  overlay_image = FALSE,
+  coord.cols = c("x", "y")
 )
 ```
 
@@ -380,7 +397,8 @@ cells does not remove their surrounding tissue from the calculation:
 ``` r
 
 profile <- SpatialNeighborhoodProfile(
-  spatial, group.by = "coda_label", radii = c(100, 200, 400),
+  spatial,
+  group.by = "coda_label", radii = c(100, 200, 400),
   cells = head(colnames(spatial), 20), cumulative = TRUE, verbose = FALSE
 )
 head(profile)
@@ -407,7 +425,7 @@ spatial <- RunSpatialNeighborhood(
   coord.cols = c("x", "y"),
   k = 6
 )
-#> ✔ [2026-09-06 23:02:22] Spatial neighborhood analysis completed ("observed")
+#> ✔ [2026-09-13 23:09:12] Spatial neighborhood analysis completed ("observed")
 
 spatial@tools$SpatialNeighborhood$summary
 #> $n_pairs
@@ -513,7 +531,7 @@ coordinates by cell or spot ID and `image.scale` never changes raw
 distances or neighborhoods. Objects with multiple spatial images must
 always select one explicitly with `image`; analysis, plotting, and
 framework conversion never silently use the first image.
-Coordinate-dependent results created before contract v2 are not silently
+Coordinate-dependent results created before contract v3 are not silently
 migrated; rerun their producer. Metadata passed directly to
 [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
 cannot be traced to its producer, so users upgrading an old analysis
@@ -527,7 +545,8 @@ spatial <- RunMistyR(
   layer = "data",
   features = head(spatial@tools$SpatialVariableFeatures$summary$top_features, 20),
   coord.cols = c("x", "y"),
-  views = "para"
+  views = "para",
+  para_l = 1000
 )
 spatial@tools$MistyR$summary
 MistyRPlot(spatial, type = "improvements")
@@ -647,9 +666,12 @@ spatial <- RunSpatialDM(
   local.threshold = 0.1
 )
 
-SpatialDMPlot(spatial, plot_type = "weights", spot = "spot_001")
-SpatialDMPlot(spatial, plot_type = "global", highlight = "SPP1_CD44")
-SpatialDMPlot(spatial, plot_type = "local", pair = "SPP1_CD44")
+spatialdm_global <- GetSpatialDMResult(spatial, type = "global")
+spatialdm_pair <- spatialdm_global$interaction[[1L]]
+spatialdm_spot <- spatial@tools$SpatialDM$coordinates$cell_id[[1L]]
+SpatialDMPlot(spatial, plot_type = "global")
+SpatialDMPlot(spatial, plot_type = "local", pair = spatialdm_pair)
+SpatialDMPlot(spatial, plot_type = "weights", spot = spatialdm_spot)
 GetSpatialDMResult(spatial, type = "global")
 ```
 

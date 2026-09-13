@@ -6,7 +6,7 @@ Run Palantir analysis
 
 ``` r
 RunPalantir(
-  srt = NULL,
+  object = NULL,
   assay_x = "RNA",
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
@@ -49,13 +49,14 @@ RunPalantir(
   backend = c("python", "cpp"),
   allow_approximate = FALSE,
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object. If provided, `adata` will be ignored.
 
@@ -69,11 +70,17 @@ RunPalantir(
 
 - assay_y:
 
-  Assays to convert as layers in the anndata object.
+  Assays, or extra layers of `assay_x`, to convert as layers in the
+  anndata object. Each name is matched against the assays of the object
+  first, then against the layers of `assay_x`, which covers velocity
+  matrices such as `spliced` and `unspliced` stored as layers of a
+  Seurat v5 `RNA` assay.
 
 - layer_y:
 
-  Layer names for the assay_y in the Seurat object.
+  Layer names for the assays in `assay_y`. It is ignored for names that
+  are matched as layers of `assay_x`, where the layer name itself is
+  used.
 
 - adata:
 
@@ -243,6 +250,11 @@ RunPalantir(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [PalantirTrajectoryPlot](https://mengxu98.github.io/scop/reference/PalantirTrajectoryPlot.md)
@@ -252,22 +264,22 @@ RunPalantir(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 22:30:11] Start standard processing workflow...
-#> ℹ [2026-09-06 22:30:12] Checking a list of <Seurat>...
-#> ! [2026-09-06 22:30:12] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 22:30:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:30:12] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:30:12] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 22:30:12] Number of available HVF: 2000
-#> ℹ [2026-09-06 22:30:12] Finished check
-#> ℹ [2026-09-06 22:30:12] Perform `ScaleData()`
-#> ℹ [2026-09-06 22:30:12] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 22:30:13] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 22:30:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 22:30:13] Reorder clusters...
-#> ℹ [2026-09-06 22:30:13] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 22:30:13] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 22:30:21] Standard processing workflow completed
+#> ℹ [2026-09-13 22:42:06] Start standard processing workflow...
+#> ℹ [2026-09-13 22:42:06] Checking a list of <Seurat>...
+#> ! [2026-09-13 22:42:06] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 22:42:06] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:42:06] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:42:06] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 22:42:06] Number of available HVF: 2000
+#> ℹ [2026-09-13 22:42:06] Finished check
+#> ℹ [2026-09-13 22:42:06] Perform `ScaleData()`
+#> ℹ [2026-09-13 22:42:06] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 22:42:06] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 22:42:07] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 22:42:07] Reorder clusters...
+#> ℹ [2026-09-13 22:42:07] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:42:07] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 22:42:15] Standard processing workflow completed
 pancreas_sub <- RunPalantir(
   pancreas_sub,
   group.by = "SubCellType",
@@ -278,8 +290,8 @@ pancreas_sub <- RunPalantir(
   backend = "cpp",
   allow_approximate = TRUE
 )
-#> ℹ [2026-09-06 22:30:21] Computing Palantir KNN graph with BiocNeighbors...
-#> ✔ [2026-09-06 22:30:21] Palantir cpp backend completed
+#> ℹ [2026-09-13 22:42:15] Computing Palantir KNN graph with BiocNeighbors...
+#> ✔ [2026-09-13 22:42:15] Palantir cpp backend completed
 
 FeatureDimPlot(
   pancreas_sub,

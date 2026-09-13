@@ -8,7 +8,7 @@ normalized trend matrix and gene modules in
 
 ``` r
 RunCellRankTrends(
-  srt,
+  object,
   lineage,
   features = NULL,
   top_n = 500L,
@@ -31,13 +31,14 @@ RunCellRankTrends(
   distribution = "gamma",
   link = "log",
   fallback_distribution = "normal",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object returned by \[RunCellRank\].
 
@@ -134,6 +135,11 @@ RunCellRankTrends(
 - verbose:
 
   Whether to print progress messages.
+
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
 
 ## Value
 

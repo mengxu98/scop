@@ -1,20 +1,13 @@
 # Run C-SIDE spatial differential expression
 
-Run `spacexr` C-SIDE after RCTD to test cell type-specific spatial or
-condition-aware differential expression. C-SIDE stores effect and
-significance results, not spot-level cell-type proportions, so it has no
-recommended proportion plot. Inspect its stored tables in
-`srt@tools[[tool_name]]`. The metadata columns `<prefix>_n_sig` and
-`<prefix>_mode` repeat run-level summaries across spots. The former
-counts significant result records, not unique genes or spot-level
-effects. The example is a non-executing template because C-SIDE requires
-a completed optional RCTD result.
+Run C-SIDE after RCTD to test cell-type-specific differential expression
+associated with spatial regions or covariates.
 
 ## Usage
 
 ``` r
 RunCSIDE(
-  srt,
+  object,
   rctd_result = NULL,
   explanatory.variable = NULL,
   group.by = NULL,
@@ -31,13 +24,14 @@ RunCSIDE(
   tool_name = "CSIDE",
   store_results = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   Spatial `Seurat` object used as the RCTD query.
 
@@ -129,16 +123,23 @@ RunCSIDE(
   with `rctd_mode = "full"`, `doublet_mode` defaults to `FALSE` unless
   explicitly supplied.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
-A `Seurat` object with C-SIDE summary metadata and detailed results
-stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
+A `Seurat` object with run-level summaries in metadata. When
+`store_results = TRUE`, cell-type-specific effects and significance
+values are stored in `srt@tools[[tool_name]]$result_table`.
+`<prefix>_n_sig` counts significant result records and is repeated
+across spots.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-thisutils::check_r("dmcable/spacexr", verbose = FALSE)
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(
@@ -147,12 +148,14 @@ keep_spots <- unique(round(seq(
   length.out = 120
 )))
 spatial <- visium_human_pancreas_sub[, keep_spots]
+# Define three coordinate-based regions for this example.
 spatial$region <- cut(
   spatial$x,
   breaks = stats::quantile(spatial$x, probs = seq(0, 1, length.out = 4)),
   include.lowest = TRUE,
   labels = c("left", "middle", "right")
 )
+# Results are conditional on the three reference cell types used here.
 reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
   c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
@@ -161,7 +164,7 @@ features_use <- head(intersect(
   rownames(spatial)
 ), 300)
 spatial <- RunRCTD(
-  srt = spatial,
+  object = spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",
@@ -177,7 +180,7 @@ spatial <- RunRCTD(
 )
 spatial <- spatial[, rownames(spatial@tools$RCTD$weights)]
 spatial <- RunCSIDE(
-  srt = spatial,
+  object = spatial,
   group.by = "region",
   celltypes = c("ductal", "alpha"),
   features = features_use,
@@ -185,11 +188,7 @@ spatial <- RunCSIDE(
   cell_type_threshold = 5,
   verbose = FALSE
 )
-SpatialSpotPlot(
-  spatial,
-  group.by = "CSIDE_n_sig",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
+# Inspect cell-type-specific differential expression.
+head(spatial@tools$CSIDE$result_table)
 } # }
 ```

@@ -17,13 +17,13 @@ Source:
 [`DESCRIPTION`](https://github.com/mengxu98/scop/blob/main/DESCRIPTION)
 
 Meng X, Zhu H, Li Y, Zhang H (2026). *scop: Single-cell and Spatial
-omics analysis pipeline*. R package version 0.9.1,
+omics analysis pipeline*. R package version 0.9.2,
 <https://mengxu98.github.io/scop/>.
 
     @Manual{,
       title = {scop: Single-cell and Spatial omics analysis pipeline},
       author = {Xu Meng and Haoliang Zhu and Yifan Li and Hao Zhang},
       year = {2026},
-      note = {R package version 0.9.1},
+      note = {R package version 0.9.2},
       url = {https://mengxu98.github.io/scop/},
     }

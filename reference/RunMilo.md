@@ -10,7 +10,7 @@ list under `neighborhood_results`.
 
 ``` r
 RunMilo(
-  srt,
+  object,
   group.by,
   split.by,
   sample.by,
@@ -21,13 +21,14 @@ RunMilo(
   backend = c("r", "cpp"),
   n_bootstrap = 500,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -89,6 +90,11 @@ RunMilo(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

@@ -7,7 +7,7 @@ results.
 
 ``` r
 GSEAPlot(
-  srt,
+  object,
   db = "GO_BP",
   group.by = NULL,
   test.use = "wilcox",
@@ -44,7 +44,8 @@ GSEAPlot(
   enrichmap_cluster = "fast_greedy",
   enrichmap_label = c("term", "feature"),
   enrichmap_labelsize = 5,
-  enrlichmap_nlabel = 4,
+  enrichmap_nlabel = 4,
+  enrlichmap_nlabel = NULL,
   enrichmap_show_keyword = FALSE,
   enrichmap_mark = c("ellipse", "hull"),
   enrichmap_expand = c(0.5, 0.5),
@@ -62,13 +63,14 @@ GSEAPlot(
   ncol = NULL,
   byrow = TRUE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object containing the results of RunDEtest and RunGSEA. If
   specified, GSEA results will be extracted from the Seurat object
@@ -237,9 +239,13 @@ GSEAPlot(
 
   The label size for enrichmap plot.
 
-- enrlichmap_nlabel:
+- enrichmap_nlabel:
 
   The number of labels to display for each cluster in enrichmap plot.
+
+- enrlichmap_nlabel:
+
+  Deprecated. Please use `enrichmap_nlabel` instead.
 
 - enrichmap_show_keyword:
 
@@ -302,6 +308,11 @@ GSEAPlot(
 
   Whether to print messages.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [RunGSEA](https://mengxu98.github.io/scop/reference/RunGSEA.md)
@@ -323,20 +334,21 @@ gsea_out <- RunGSEA(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-09-06 21:34:27] Start GSEA analysis
-#> ! [2026-09-06 21:34:27] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-09-06 21:34:27] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-09-06 21:34:27] Prepared 10 ranked gene rows after ID mapping.
-#> ℹ [2026-09-06 21:34:27] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
-#> ℹ [2026-09-06 21:34:27] Using 1 core
-#> ℹ [2026-09-06 21:34:27] Running GSEA: group "Cluster1", database "custom", genes 10 ...
+#> ℹ [2026-09-13 21:46:43] Start GSEA analysis
+#> ! [2026-09-13 21:46:43] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-09-13 21:46:43] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-09-13 21:46:43] Prepared 10 ranked gene rows after ID mapping.
+#> ℹ [2026-09-13 21:46:43] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
+#> ℹ [2026-09-13 21:46:43] Using 1 core
+#> ℹ [2026-09-13 21:46:43] Running GSEA: group "Cluster1", database "custom", genes 10 ...
 #> Registered S3 method overwritten by 'ggtree':
 #>   method         from     
 #>   fortify.igraph ggnetwork
-#> ℹ [2026-09-06 21:34:27] Finished GSEA: group "Cluster1", database "custom".
-#> ℹ [2026-09-06 21:34:27] Building results
-#> ✔ [2026-09-06 21:34:27] GSEA analysis done
+#> ℹ [2026-09-13 21:46:43] Finished GSEA: group "Cluster1", database "custom".
+#> ℹ [2026-09-13 21:46:43] Building results
+#> ✔ [2026-09-13 21:46:43] GSEA analysis done
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison")
-
+#> Error in GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison"): argument "object" is missing, with no default
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar")
+#> Error in GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar"): argument "object" is missing, with no default
 ```

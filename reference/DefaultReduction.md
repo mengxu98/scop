@@ -6,17 +6,18 @@ Find the default reduction name in a Seurat object
 
 ``` r
 DefaultReduction(
-  srt,
+  object,
   pattern = NULL,
   min_dim = 2,
   max_distance = 0.1,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -36,6 +37,11 @@ DefaultReduction(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 Default reduction name.
@@ -45,22 +51,22 @@ Default reduction name.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 21:22:23] Start standard processing workflow...
-#> ℹ [2026-09-06 21:22:23] Checking a list of <Seurat>...
-#> ! [2026-09-06 21:22:23] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 21:22:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:22:24] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:22:24] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 21:22:24] Number of available HVF: 2000
-#> ℹ [2026-09-06 21:22:24] Finished check
-#> ℹ [2026-09-06 21:22:24] Perform `ScaleData()`
-#> ℹ [2026-09-06 21:22:24] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 21:22:24] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 21:22:24] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 21:22:24] Reorder clusters...
-#> ℹ [2026-09-06 21:22:24] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:22:25] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 21:22:30] Standard processing workflow completed
+#> ℹ [2026-09-13 21:34:34] Start standard processing workflow...
+#> ℹ [2026-09-13 21:34:34] Checking a list of <Seurat>...
+#> ! [2026-09-13 21:34:34] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 21:34:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:34:34] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:34:34] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 21:34:34] Number of available HVF: 2000
+#> ℹ [2026-09-13 21:34:34] Finished check
+#> ℹ [2026-09-13 21:34:34] Perform `ScaleData()`
+#> ℹ [2026-09-13 21:34:34] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 21:34:34] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 21:34:35] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 21:34:35] Reorder clusters...
+#> ℹ [2026-09-13 21:34:35] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:34:35] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 21:34:40] Standard processing workflow completed
 names(pancreas_sub@reductions)
 #> [1] "Standardpca"       "StandardpcaUMAP2D" "StandardUMAP2D"   
 

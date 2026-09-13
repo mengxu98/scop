@@ -6,7 +6,7 @@ CCC network and flow plots
 
 ``` r
 CCCNetworkPlot(
-  srt,
+  object,
   method = NULL,
   condition = NULL,
   dataset = 1,
@@ -75,13 +75,14 @@ CCCNetworkPlot(
   spot_alpha = 0.35,
   composition_display = c("pie", "dominant", "none"),
   composition_radius = NULL,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -364,6 +365,11 @@ CCCNetworkPlot(
   `max.groups`, `small.gap`, `big.gap`, and `lab.cex` can be used to
   adjust the CellChat-like chord layout.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A ggplot, patchwork, or recorded plot object.
@@ -373,23 +379,23 @@ A ggplot, patchwork, or recorded plot object.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 20:58:06] Start standard processing workflow...
-#> ℹ [2026-09-06 20:58:07] Checking a list of <Seurat>...
-#> ! [2026-09-06 20:58:07] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 21:13:08] Start standard processing workflow...
+#> ℹ [2026-09-13 21:13:08] Checking a list of <Seurat>...
+#> ! [2026-09-13 21:13:08] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 20:58:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 20:58:07] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 20:58:07] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 20:58:07] Number of available HVF: 2000
-#> ℹ [2026-09-06 20:58:07] Finished check
-#> ℹ [2026-09-06 20:58:07] Perform `ScaleData()`
-#> ℹ [2026-09-06 20:58:07] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 20:58:08] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 20:58:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 20:58:08] Reorder clusters...
-#> ℹ [2026-09-06 20:58:08] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 20:58:08] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 20:58:12] Standard processing workflow completed
+#> ℹ [2026-09-13 21:13:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:13:08] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:13:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 21:13:08] Number of available HVF: 2000
+#> ℹ [2026-09-13 21:13:08] Finished check
+#> ℹ [2026-09-13 21:13:08] Perform `ScaleData()`
+#> ℹ [2026-09-13 21:13:08] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 21:13:09] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 21:13:09] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 21:13:09] Reorder clusters...
+#> ℹ [2026-09-13 21:13:09] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:13:09] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 21:13:13] Standard processing workflow completed
 
 pc1 <- Seurat::Embeddings(pancreas_sub, "Standardpca")[, 1]
 ct <- as.character(pancreas_sub$CellType)
@@ -407,30 +413,30 @@ pancreas_sub <- RunCellChat(
   group_cmp = list(c("ConditionA", "ConditionB")),
   species = "Mus_musculus"
 )
-#> ℹ [2026-09-06 20:58:12] Start CellChat analysis
-#> ℹ [2026-09-06 20:58:12] Processing condition: "ConditionA"
+#> ℹ [2026-09-13 21:13:13] Start CellChat analysis
+#> ℹ [2026-09-13 21:13:13] Processing condition: "ConditionA"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Endocrine, Ngn3-high-EP, Ngn3-low-EP, Pre-endocrine 
-#> ! [2026-09-06 20:58:13] Function "CellChatDB.mouse" not found in CellChat namespace
+#> ! [2026-09-13 21:13:13] Function "CellChatDB.mouse" not found in CellChat namespace
 #> Warning: Function "CellChatDB.mouse" not found in CellChat namespace
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 542 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-09-06 20:58:14.618182]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-09-06 20:58:34.135986]"
-#> ℹ [2026-09-06 20:58:34] Processing condition: "ConditionB"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-09-13 21:13:15.20156]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-09-13 21:13:34.113499]"
+#> ℹ [2026-09-13 21:13:34] Processing condition: "ConditionB"
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Endocrine, Ngn3-high-EP, Ngn3-low-EP, Pre-endocrine 
-#> ! [2026-09-06 20:58:34] Function "CellChatDB.mouse" not found in CellChat namespace
+#> ! [2026-09-13 21:13:34] Function "CellChatDB.mouse" not found in CellChat namespace
 #> Warning: Function "CellChatDB.mouse" not found in CellChat namespace
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 597 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-09-06 20:58:36.855932]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-09-06 20:58:59.189968]"
-#> ℹ [2026-09-06 20:58:59] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-09-13 21:13:36.037447]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-09-13 21:13:57.606359]"
+#> ℹ [2026-09-13 21:13:57] Merging CellChat objects for comparison "ConditionA_vs_ConditionB"
 #> Merge the following slots: 'data.signaling','images','net', 'netP','meta', 'idents', 'var.features' , 'DB', and 'LR'.
-#> ✔ [2026-09-06 20:58:59] CellChat analysis completed
+#> ✔ [2026-09-13 21:13:58] CellChat analysis completed
 
 CCCNetworkPlot(
   pancreas_sub,

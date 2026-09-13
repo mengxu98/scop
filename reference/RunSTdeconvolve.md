@@ -1,16 +1,13 @@
 # Run STdeconvolve reference-free spatial deconvolution
 
-Estimate spot-level topic proportions from a spatial `Seurat` object
-using the optional `STdeconvolve` package. The producer example is a
-non-executing template;
-[`STdeconvolvePlot()`](https://mengxu98.github.io/scop/reference/STdeconvolvePlot.md)
-demonstrates a validated stored result without rerunning the backend.
+Infer expression topics and their spot-level proportions using
+STdeconvolve.
 
 ## Usage
 
 ``` r
 RunSTdeconvolve(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   features = NULL,
@@ -28,19 +25,21 @@ RunSTdeconvolve(
   store_results = TRUE,
   round_counts = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
-  Spatial `Seurat` object used as the RCTD query.
+  A `Seurat` object containing spatial expression data.
 
 - assay:
 
-  Assay used in `srt`. If `NULL`, the default assay is used.
+  Assay used as STdeconvolve input. If `NULL`, the default assay is
+  used.
 
 - layer:
 
@@ -48,7 +47,8 @@ RunSTdeconvolve(
 
 - features:
 
-  Features used for RCTD. If `NULL`, shared features are used.
+  Features passed to the topic model. If `NULL`, all features in the
+  selected assay are used.
 
 - k:
 
@@ -89,7 +89,7 @@ RunSTdeconvolve(
 
 - prefix:
 
-  Prefix for metadata columns.
+  Prefix for topic proportion metadata columns.
 
 - tool_name:
 
@@ -97,19 +97,25 @@ RunSTdeconvolve(
 
 - store_results:
 
-  Whether to store detailed RCTD results in `srt@tools`.
+  Whether to store detailed topic matrices in `srt@tools`.
 
 - round_counts:
 
-  Whether to round non-integer counts before model fitting.
+  Whether to round non-integer counts before model fitting. This is a
+  preprocessing choice and does not recover original counts.
 
 - verbose:
 
-  Whether to print the message. Default is `TRUE`.
+  Whether to print messages.
 
 - ...:
 
-  Additional parameters passed to the RCTD run step.
+  Additional arguments passed to the STdeconvolve fit steps.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 
@@ -120,19 +126,17 @@ results stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
 
 ``` r
 if (FALSE) { # \dontrun{
-thisutils::check_r("JEFworks-Lab/STdeconvolve", verbose = FALSE)
 data(visium_human_pancreas_sub)
-keep_spots <- unique(round(seq(
-  1,
-  ncol(visium_human_pancreas_sub),
-  length.out = 120
-)))
-spatial <- visium_human_pancreas_sub[, keep_spots]
+spatial <- visium_human_pancreas_sub
+counts <- GetAssayData5(spatial, assay = "Spatial", layer = "counts")
+features <- names(sort(Matrix::rowSums(counts), decreasing = TRUE))[
+  seq_len(min(300L, nrow(counts)))
+]
 spatial <- RunSTdeconvolve(
   spatial,
   assay = "Spatial",
   layer = "counts",
-  features = head(rownames(spatial), 300),
+  features = features,
   k = 3,
   verbose = FALSE
 )

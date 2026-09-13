@@ -6,20 +6,21 @@ Create HDF5 data file from Seurat object
 
 ``` r
 CreateDataFile(
-  srt,
+  object,
   data_file,
   name = NULL,
   assays = "RNA",
   layers = "data",
   compression_level = 6,
   overwrite = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -52,6 +53,11 @@ CreateDataFile(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## See also
 

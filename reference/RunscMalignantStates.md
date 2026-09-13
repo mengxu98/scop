@@ -7,7 +7,7 @@ utilities and append the resulting activity scores to Seurat metadata.
 
 ``` r
 RunscMalignantStates(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -18,13 +18,14 @@ RunscMalignantStates(
   prefix = "scMalignantState_",
   return_seurat = !is.null(srt),
   verbose = TRUE,
-  backend = c("cpp", "python")
+  backend = c("cpp", "python"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object.
 
@@ -79,6 +80,11 @@ RunscMalignantStates(
   State-scoring backend. `"cpp"` uses a compiled sparse AUCell
   implementation for Seurat input. `"python"` retains the official
   scMalignantFinder path and is used for AnnData or h5ad input.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 
