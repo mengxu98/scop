@@ -1,15 +1,13 @@
 # Run CARD spatial deconvolution
 
-Estimate spot-level cell-type proportions from a spatial `Seurat` object
-using a single-cell `Seurat` reference and the optional `CARD`/`CARDspa`
-backend. The example is a non-executing template because CARD
-installation and execution are optional.
+Estimate spot-level cell-type proportions from spatial expression and an
+annotated single-cell reference using CARD or CARDspa.
 
 ## Usage
 
 ``` r
 RunCARD(
-  srt,
+  object,
   reference,
   reference_label,
   assay = NULL,
@@ -31,13 +29,14 @@ RunCARD(
   card_deconvolution_params = list(),
   verbose = TRUE,
   ...,
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   Spatial `Seurat` object used as the RCTD query.
 
@@ -104,10 +103,9 @@ RunCARD(
 
 - round_counts:
 
-  Whether to round non-integer counts to the nearest integer before
-  passing data to `spacexr`. RCTD requires integer count matrices; this
-  defaults to `TRUE` so bundled example data with scaled non-integer
-  reference counts can run directly.
+  Whether to round non-integer values before passing data to `spacexr`.
+  RCTD requires integer count matrices; rounding is a compatibility
+  option and does not recover original counts.
 
 - create_card_params:
 
@@ -132,6 +130,11 @@ RunCARD(
   units. Use `"legacy_display"` explicitly to reproduce the
   display-scaled coordinates used before scop 0.9.0.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with CARD proportion columns in metadata and dominant
@@ -142,7 +145,6 @@ stored in `srt@tools[[tool_name]]`.
 
 ``` r
 if (FALSE) { # \dontrun{
-thisutils::check_r("YingMa0107/CARD", verbose = FALSE)
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(
@@ -151,11 +153,12 @@ keep_spots <- unique(round(seq(
   length.out = 120
 )))
 spatial <- visium_human_pancreas_sub[, keep_spots]
+# Results are conditional on the three reference cell types used here.
 reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
   c("ductal", "alpha", "beta")]
 features_use <- head(intersect(rownames(spatial), rownames(reference)), 300)
 spatial <- RunCARD(
-  srt = spatial,
+  object = spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",

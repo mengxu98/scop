@@ -6,7 +6,7 @@ Run dimension reduction
 
 ``` r
 RunDimsReduction(
-  srt,
+  object,
   prefix = "",
   features = NULL,
   assay = NULL,
@@ -24,13 +24,14 @@ RunDimsReduction(
   nonlinear_reduction_params = list(),
   force_nonlinear_reduction = TRUE,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -114,6 +115,11 @@ RunDimsReduction(
   deterministic independent L'Ecuyer-CMRG random-number stream, making
   results reproducible across worker counts and scheduling order. The
   caller's random number state is restored when the call finishes.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## See also
 

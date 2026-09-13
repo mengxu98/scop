@@ -7,7 +7,7 @@ modeling.
 
 ``` r
 RunCellRank(
-  srt = NULL,
+  object = NULL,
   assay_x = "RNA",
   layer_x = "counts",
   assay_y = c("spliced", "unspliced"),
@@ -70,13 +70,14 @@ RunCellRank(
   conda = "auto",
   recompute_neighbors = TRUE,
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object. If provided, `adata` will be ignored.
 
@@ -90,11 +91,17 @@ RunCellRank(
 
 - assay_y:
 
-  Assays to convert as layers in the anndata object.
+  Assays, or extra layers of `assay_x`, to convert as layers in the
+  anndata object. Each name is matched against the assays of the object
+  first, then against the layers of `assay_x`, which covers velocity
+  matrices such as `spliced` and `unspliced` stored as layers of a
+  Seurat v5 `RNA` assay.
 
 - layer_y:
 
-  Layer names for the assay_y in the Seurat object.
+  Layer names for the assays in `assay_y`. It is ignored for names that
+  are matched as layers of `assay_x`, where the layer name itself is
+  used.
 
 - adata:
 
@@ -369,6 +376,11 @@ RunCellRank(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 Returns a Seurat object if `return_seurat = TRUE` or an anndata object
@@ -393,7 +405,7 @@ if (FALSE) { # \dontrun{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunCellRank(
-  srt = pancreas_sub,
+  object = pancreas_sub,
   group.by = "SubCellType"
 )
 

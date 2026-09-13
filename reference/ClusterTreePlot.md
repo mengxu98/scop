@@ -11,7 +11,7 @@ supplied order.
 
 ``` r
 ClusterTreePlot(
-  srt,
+  object,
   cluster_cols = NULL,
   prefix = NULL,
   resolutions = NULL,
@@ -40,13 +40,14 @@ ClusterTreePlot(
   return_data = FALSE,
   verbose = TRUE,
   family = "Arial",
-  direction = c("left-to-right", "right-to-left", "top-to-bottom", "bottom-to-top")
+  direction = c("left-to-right", "right-to-left", "top-to-bottom", "bottom-to-top"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -161,6 +162,11 @@ ClusterTreePlot(
 
   Tree direction: `"left-to-right"`, `"right-to-left"`,
   `"top-to-bottom"`, or `"bottom-to-top"`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

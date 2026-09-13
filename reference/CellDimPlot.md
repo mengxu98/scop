@@ -8,7 +8,7 @@ layers.
 
 ``` r
 CellDimPlot(
-  srt,
+  object,
   group.by,
   label.by = NULL,
   mark.by = NULL,
@@ -141,13 +141,14 @@ CellDimPlot(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -327,6 +328,11 @@ CellDimPlot(
 
   Whether to print messages.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `ggplot`, `patchwork`, or list of `ggplot` objects.
@@ -342,23 +348,23 @@ A `ggplot`, `patchwork`, or list of `ggplot` objects.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 21:01:17] Start standard processing workflow...
-#> ℹ [2026-09-06 21:01:18] Checking a list of <Seurat>...
-#> ! [2026-09-06 21:01:18] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 21:16:12] Start standard processing workflow...
+#> ℹ [2026-09-13 21:16:12] Checking a list of <Seurat>...
+#> ! [2026-09-13 21:16:12] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 21:01:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:01:18] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:01:18] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 21:01:18] Number of available HVF: 2000
-#> ℹ [2026-09-06 21:01:18] Finished check
-#> ℹ [2026-09-06 21:01:18] Perform `ScaleData()`
-#> ℹ [2026-09-06 21:01:18] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 21:01:18] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 21:01:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 21:01:19] Reorder clusters...
-#> ℹ [2026-09-06 21:01:19] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:01:19] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 21:01:24] Standard processing workflow completed
+#> ℹ [2026-09-13 21:16:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:16:12] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:16:12] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 21:16:12] Number of available HVF: 2000
+#> ℹ [2026-09-13 21:16:12] Finished check
+#> ℹ [2026-09-13 21:16:12] Perform `ScaleData()`
+#> ℹ [2026-09-13 21:16:12] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 21:16:12] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 21:16:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 21:16:13] Reorder clusters...
+#> ℹ [2026-09-13 21:16:13] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:16:13] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 21:16:17] Standard processing workflow completed
 p1 <- CellDimPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -704,8 +710,8 @@ pancreas_sub <- RunPAGA(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-09-06 21:01:42] Running PAGA with BiocNeighbors using 29 neighbors
-#> ✔ [2026-09-06 21:01:42] PAGA cpp backend completed
+#> ℹ [2026-09-13 21:16:35] Running PAGA with BiocNeighbors using 29 neighbors
+#> ✔ [2026-09-13 21:16:35] PAGA cpp backend completed
 
 CellDimPlot(
   pancreas_sub,
@@ -754,10 +760,10 @@ pancreas_sub <- RunSCVELO(
   show_plot = FALSE,
   return_seurat = TRUE
 )
-#> ℹ [2026-09-06 21:01:43] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
-#> ℹ [2026-09-06 21:01:46] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
-#> ✔ [2026-09-06 21:01:49] scVelo "stochastic" mode completed
-#> ✔ [2026-09-06 21:01:49] scVelo cpp backend completed
+#> ℹ [2026-09-13 21:16:36] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
+#> ℹ [2026-09-13 21:16:38] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
+#> ✔ [2026-09-13 21:16:41] scVelo "stochastic" mode completed
+#> ✔ [2026-09-13 21:16:41] scVelo cpp backend completed
 
 CellDimPlot(
   pancreas_sub,

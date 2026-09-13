@@ -6,7 +6,7 @@ Graph-based inference of cellular trajectories.
 
 ``` r
 RunPAGA(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   assay_x = "RNA",
   layer_x = "counts",
@@ -42,13 +42,14 @@ RunPAGA(
   dirpath = "./paga",
   backend = c("python", "cpp"),
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object. If provided, `adata` will be ignored.
 
@@ -66,11 +67,17 @@ RunPAGA(
 
 - assay_y:
 
-  Assays to convert as layers in the anndata object.
+  Assays, or extra layers of `assay_x`, to convert as layers in the
+  anndata object. Each name is matched against the assays of the object
+  first, then against the layers of `assay_x`, which covers velocity
+  matrices such as `spliced` and `unspliced` stored as layers of a
+  Seurat v5 `RNA` assay.
 
 - layer_y:
 
-  Layer names for the assay_y in the Seurat object.
+  Layer names for the assays in `assay_y`. It is ignored for names that
+  are matched as layers of `assay_x`, where the layer name itself is
+  used.
 
 - group.by:
 
@@ -216,6 +223,11 @@ RunPAGA(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [PAGAPlot](https://mengxu98.github.io/scop/reference/PAGAPlot.md),
@@ -227,22 +239,22 @@ RunPAGA(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 22:29:26] Start standard processing workflow...
-#> ℹ [2026-09-06 22:29:27] Checking a list of <Seurat>...
-#> ! [2026-09-06 22:29:27] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 22:29:27] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:29:27] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:29:28] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 22:29:28] Number of available HVF: 2000
-#> ℹ [2026-09-06 22:29:28] Finished check
-#> ℹ [2026-09-06 22:29:28] Perform `ScaleData()`
-#> ℹ [2026-09-06 22:29:28] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 22:29:28] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 22:29:28] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 22:29:28] Reorder clusters...
-#> ℹ [2026-09-06 22:29:28] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 22:29:28] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 22:29:36] Standard processing workflow completed
+#> ℹ [2026-09-13 22:41:21] Start standard processing workflow...
+#> ℹ [2026-09-13 22:41:21] Checking a list of <Seurat>...
+#> ! [2026-09-13 22:41:21] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 22:41:21] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:41:21] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:41:21] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 22:41:21] Number of available HVF: 2000
+#> ℹ [2026-09-13 22:41:21] Finished check
+#> ℹ [2026-09-13 22:41:21] Perform `ScaleData()`
+#> ℹ [2026-09-13 22:41:21] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 22:41:22] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 22:41:22] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 22:41:22] Reorder clusters...
+#> ℹ [2026-09-13 22:41:22] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:41:22] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 22:41:30] Standard processing workflow completed
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   assay_x = "RNA",
@@ -251,8 +263,8 @@ pancreas_sub <- RunPAGA(
   nonlinear_reduction = "UMAP",
   backend = "cpp"
 )
-#> ℹ [2026-09-06 22:29:36] Running PAGA with BiocNeighbors using 29 neighbors
-#> ✔ [2026-09-06 22:29:36] PAGA cpp backend completed
+#> ℹ [2026-09-13 22:41:30] Running PAGA with BiocNeighbors using 29 neighbors
+#> ✔ [2026-09-13 22:41:30] PAGA cpp backend completed
 PAGAPlot(pancreas_sub, reduction = "UMAP")
 
 

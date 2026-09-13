@@ -1,15 +1,13 @@
 # Run SPOTlight spatial deconvolution
 
-Estimate spot-level cell type proportions from a spatial `Seurat` object
-using a single-cell `Seurat` reference and the optional `SPOTlight`
-package. The example is a non-executing template because the backend is
-optional and may require additional Bioconductor dependencies.
+Estimate spot-level cell-type proportions using SPOTlight and an
+annotated single-cell reference.
 
 ## Usage
 
 ``` r
 RunSPOTlight(
-  srt,
+  object,
   reference,
   reference_label = "celltype",
   assay = NULL,
@@ -29,13 +27,14 @@ RunSPOTlight(
   tool_name = "SPOTlight",
   store_results = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   Spatial `Seurat` object used as the RCTD query.
 
@@ -114,6 +113,11 @@ RunSPOTlight(
   Additional parameters passed to
   [`SPOTlight::SPOTlight()`](https://rdrr.io/pkg/SPOTlight/man/SPOTlight.html).
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with `SPOTlight` proportion columns in metadata and
@@ -124,7 +128,6 @@ results are stored in `srt@tools[[tool_name]]`.
 
 ``` r
 if (FALSE) { # \dontrun{
-thisutils::check_r("SPOTlight", verbose = FALSE)
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(
@@ -133,6 +136,7 @@ keep_spots <- unique(round(seq(
   length.out = 120
 )))
 spatial <- visium_human_pancreas_sub[, keep_spots]
+# Results are conditional on the three reference cell types used here.
 reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
   c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
@@ -141,7 +145,7 @@ features_use <- head(intersect(
   rownames(spatial)
 ), 300)
 spatial <- RunSPOTlight(
-  srt = spatial,
+  object = spatial,
   reference = reference,
   reference_label = "celltype",
   assay = "Spatial",

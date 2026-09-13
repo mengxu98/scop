@@ -6,7 +6,7 @@ Statistical plot of cells
 
 ``` r
 CellStatPlot(
-  srt,
+  object,
   stat.by,
   group.by = NULL,
   split.by = NULL,
@@ -53,13 +53,14 @@ CellStatPlot(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -231,6 +232,11 @@ CellStatPlot(
 
   Additional arguments passed to the plotting helpers.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [FeatureStatPlot](https://mengxu98.github.io/scop/reference/FeatureStatPlot.md)
@@ -240,22 +246,22 @@ CellStatPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 21:04:02] Start standard processing workflow...
-#> ℹ [2026-09-06 21:04:03] Checking a list of <Seurat>...
-#> ! [2026-09-06 21:04:03] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 21:04:03] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:04:03] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:04:03] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 21:04:03] Number of available HVF: 2000
-#> ℹ [2026-09-06 21:04:03] Finished check
-#> ℹ [2026-09-06 21:04:03] Perform `ScaleData()`
-#> ℹ [2026-09-06 21:04:03] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 21:04:04] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 21:04:04] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 21:04:04] Reorder clusters...
-#> ℹ [2026-09-06 21:04:04] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:04:04] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 21:04:10] Standard processing workflow completed
+#> ℹ [2026-09-13 21:17:29] Start standard processing workflow...
+#> ℹ [2026-09-13 21:17:29] Checking a list of <Seurat>...
+#> ! [2026-09-13 21:17:29] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 21:17:29] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:17:30] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:17:30] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 21:17:30] Number of available HVF: 2000
+#> ℹ [2026-09-13 21:17:30] Finished check
+#> ℹ [2026-09-13 21:17:30] Perform `ScaleData()`
+#> ℹ [2026-09-13 21:17:30] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 21:17:30] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 21:17:30] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 21:17:31] Reorder clusters...
+#> ℹ [2026-09-13 21:17:31] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:17:31] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 21:17:36] Standard processing workflow completed
 p1 <- CellStatPlot(
   pancreas_sub,
   stat.by = "Phase",
@@ -484,7 +490,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "sankey"
 )
-#> ! [2026-09-06 21:04:24] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-09-13 21:17:49] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -492,7 +498,7 @@ CellStatPlot(
   stat.by = c("CellType", "Phase"),
   plot_type = "chord"
 )
-#> ! [2026-09-06 21:04:25] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-09-13 21:17:49] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -504,7 +510,7 @@ CellStatPlot(
     Phase = "S"
   )
 )
-#> ! [2026-09-06 21:04:25] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-09-13 21:17:50] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 pancreas_sub$Progenitor <- pancreas_sub$CellType %in% c("Ngn3-low-EP", "Ngn3-high-EP")
@@ -528,7 +534,7 @@ CellStatPlot(
   plot_type = "venn",
   stat_level = "TRUE"
 )
-#> ! [2026-09-06 21:04:25] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-09-13 21:17:50] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 CellStatPlot(
@@ -539,7 +545,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "TRUE"
 )
-#> ! [2026-09-06 21:04:26] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-09-13 21:17:50] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 
 
 sum(

@@ -8,7 +8,7 @@ Python workflow and requires explicit opt-in.
 
 ``` r
 RunSCENICPlus(
-  srt,
+  object,
   rna_assay = "RNA",
   atac_assay = "peaks",
   rna_layer = "counts",
@@ -55,13 +55,14 @@ RunSCENICPlus(
   scplus_object = NULL,
   envname = "scenicplus_env",
   conda = "auto",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object containing RNA and chromatin assays.
 
@@ -309,6 +310,11 @@ RunSCENICPlus(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

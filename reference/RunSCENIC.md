@@ -6,7 +6,7 @@ Run SCENIC gene regulatory network analysis
 
 ``` r
 RunSCENIC(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   ranking_dbs = NULL,
@@ -38,13 +38,14 @@ RunSCENIC(
   return_seurat = TRUE,
   envname = NULL,
   conda = "auto",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object.
 
@@ -206,6 +207,11 @@ RunSCENIC(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

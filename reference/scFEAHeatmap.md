@@ -6,7 +6,7 @@ Plot scFEA module flux heatmap
 
 ``` r
 scFEAHeatmap(
-  srt,
+  object,
   assay = "scFEAflux",
   layer = "data",
   group.by = NULL,
@@ -58,13 +58,14 @@ scFEAHeatmap(
   ht_params = list(),
   width = NULL,
   height = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object returned by \[RunscFEA()\].
 
@@ -235,6 +236,11 @@ scFEAHeatmap(
 - verbose:
 
   Whether to print messages.
+
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
 
 ## Value
 

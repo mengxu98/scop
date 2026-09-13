@@ -6,7 +6,7 @@ RareQ rare-cell population detection
 
 ``` r
 RunRareQ(
-  srt,
+  object,
   assay = NULL,
   reduction = "pca",
   dims = 1:30,
@@ -26,13 +26,14 @@ RunRareQ(
   size_colname = paste0(prefix, "_cluster_size"),
   rare_colname = paste0(prefix, "_is_rare"),
   tool_name = "RareQ",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -122,6 +123,11 @@ RunRareQ(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with RareQ results in metadata and
@@ -141,16 +147,16 @@ pancreas_sub <- RunStandardWorkflow(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-09-06 22:30:29] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:42:23] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunRareQ(
   pancreas_sub,
   dims = 1:20
 )
-#> ℹ [2026-09-06 22:31:09] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
+#> ℹ [2026-09-13 22:43:03] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
 #> Computing nearest neighbors
 #> Only one graph name supplied, storing nearest-neighbor graph only
-#> ℹ [2026-09-06 22:31:32] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
-#> ℹ [2026-09-06 22:31:32] RareQ clusters stored in metadata column "RareQ_cluster"
+#> ℹ [2026-09-13 22:43:26] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
+#> ℹ [2026-09-13 22:43:26] RareQ clusters stored in metadata column "RareQ_cluster"
 
 CellDimPlot(
   pancreas_sub,

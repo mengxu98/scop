@@ -31,13 +31,6 @@ StatialKontextualPlot(object = NULL, res = NULL, tests = NULL, images = NULL)
 
 A \`ggplot\` object.
 
-## Examples
+## See also
 
-``` r
-data(visium_human_pancreas_results_sub)
-StatialKontextualPlot(
-  res = visium_human_pancreas_results_sub@tools$StatialKontextual
-)
-#> `geom_line()`: Each group consists of only one observation.
-#> ℹ Do you need to adjust the group aesthetic?
-```
+\[RunStatialKontextual()\]

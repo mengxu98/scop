@@ -1,14 +1,13 @@
 # Run spatial neighborhood statistics
 
-Build a standardized spatial neighborhood result bundle and optionally
-dispatch to a supported backend for colocalization or local-effect
-statistics.
+Summarize observed spatial neighborhoods or test differential spatial
+associations between conditions using spicyR.
 
 ## Usage
 
 ``` r
 RunSpatialNeighborhood(
-  srt,
+  object,
   group.by,
   method = NULL,
   assay = NULL,
@@ -28,13 +27,14 @@ RunSpatialNeighborhood(
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   backend = c("cpp", "r"),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -130,6 +130,11 @@ RunSpatialNeighborhood(
 
   Additional arguments passed to the selected backend.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with results stored in `srt@tools[[tool_name]]`.
@@ -153,4 +158,6 @@ SpatialNeighborhoodPlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
+#> Ignoring unknown labels:
+#> • fill : "Observed count: collagen -> collagen"
 ```

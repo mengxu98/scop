@@ -43,9 +43,6 @@ RunGRNBoost2(
   ...
 )
 
-# S3 method for class 'matrix'
-RunGRNBoost2(object, ...)
-
 # Default S3 method
 RunGRNBoost2(
   object,

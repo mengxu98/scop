@@ -9,7 +9,7 @@ propeller.
 
 ``` r
 RunProportionTest(
-  srt,
+  object,
   group.by,
   split.by = NULL,
   comparison = NULL,
@@ -22,13 +22,14 @@ RunProportionTest(
   include_all_cells = FALSE,
   seed = 11,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -100,6 +101,11 @@ RunProportionTest(
 
   Additional arguments passed to the selected method function.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## References
 
 [Miller et al. paper](https://doi.org/10.1158/0008-5472.can-20-3562),
@@ -127,10 +133,10 @@ pancreas_sub <- RunProportionTest(
   proportion_method = "permutation",
   comparison = list(c("G2M", "G1"))
 )
-#> ℹ [2026-09-06 22:30:25] Start proportion test ("permutation")
-#> ℹ [2026-09-06 22:30:25] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-09-06 22:30:25] Running comparison: "G1" vs "G2M"
-#> ✔ [2026-09-06 22:30:25] Proportion test completed ("permutation")
+#> ℹ [2026-09-13 22:42:19] Start proportion test ("permutation")
+#> ℹ [2026-09-13 22:42:19] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-09-13 22:42:19] Running comparison: "G1" vs "G2M"
+#> ✔ [2026-09-13 22:42:19] Proportion test completed ("permutation")
 
 ProportionTestPlot(
   pancreas_sub

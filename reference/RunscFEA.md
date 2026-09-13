@@ -6,7 +6,7 @@ Run scFEA flux estimation for a Seurat object
 
 ``` r
 RunscFEA(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   species = c("human", "mouse"),
@@ -18,13 +18,14 @@ RunscFEA(
   data_dir = NULL,
   seed = 16,
   max_cells = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object.
 
@@ -82,6 +83,11 @@ RunscFEA(
 - verbose:
 
   Whether to print progress messages.
+
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
 
 ## Value
 

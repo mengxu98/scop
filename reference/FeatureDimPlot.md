@@ -7,7 +7,7 @@ or numeric metadata).
 
 ``` r
 FeatureDimPlot(
-  srt,
+  object,
   features,
   reduction = NULL,
   dims = c(1, 2),
@@ -90,13 +90,14 @@ FeatureDimPlot(
   byrow = TRUE,
   force = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -193,6 +194,10 @@ FeatureDimPlot(
 
   Cells to highlight and their appearance. `TRUE` highlights all cells.
 
+- alpha.highlight, stroke.highlight:
+
+  Transparency and stroke width of the highlighted points.
+
 - calculate_coexp:
 
   Plot the geometric mean of the features.
@@ -245,11 +250,24 @@ FeatureDimPlot(
   detected and merged into one global pseudotime for a single panel. Use
   `"all"` to plot each detected lineage in separate panels.
 
+- lineages_trim, lineages_span, lineages_palcolor, lineages_arrow,
+  lineages_linewidth, lineages_line_bg, lineages_line_bg_stroke,
+  lineages_whiskers, lineages_whiskers_linewidth,
+  lineages_whiskers_alpha:
+
+  Pseudotime lineages as
+  [stats::loess](https://rdrr.io/r/stats/loess.html) curves. See
+  [grid::arrow](https://rdrr.io/r/grid/arrow.html) for `lineages_arrow`.
+
 - lineages_palette:
 
   Color palette used for lineage groups.
 
 - graph:
+
+  Neighbor-graph edges.
+
+- edge_size, edge_alpha, edge_color:
 
   Neighbor-graph edges.
 
@@ -309,6 +327,14 @@ FeatureDimPlot(
 
   Legend direction: `"horizontal"` or `"vertical"`.
 
+- legend.title:
+
+  Title of the legend. `NULL` uses the group name.
+
+- theme_use:
+
+  Theme name or function.
+
 - theme_args:
 
   Theme name or function, plus extra theme arguments.
@@ -345,6 +371,11 @@ FeatureDimPlot(
 
   Whether to print messages.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [CellDimPlot](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
@@ -354,22 +385,22 @@ FeatureDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 21:28:51] Start standard processing workflow...
-#> ℹ [2026-09-06 21:28:52] Checking a list of <Seurat>...
-#> ! [2026-09-06 21:28:52] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 21:28:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:28:52] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:28:52] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 21:28:52] Number of available HVF: 2000
-#> ℹ [2026-09-06 21:28:52] Finished check
-#> ℹ [2026-09-06 21:28:52] Perform `ScaleData()`
-#> ℹ [2026-09-06 21:28:52] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 21:28:53] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 21:28:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 21:28:53] Reorder clusters...
-#> ℹ [2026-09-06 21:28:53] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:28:53] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 21:28:59] Standard processing workflow completed
+#> ℹ [2026-09-13 21:41:17] Start standard processing workflow...
+#> ℹ [2026-09-13 21:41:17] Checking a list of <Seurat>...
+#> ! [2026-09-13 21:41:17] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 21:41:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:41:17] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:41:17] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 21:41:17] Number of available HVF: 2000
+#> ℹ [2026-09-13 21:41:17] Finished check
+#> ℹ [2026-09-13 21:41:17] Perform `ScaleData()`
+#> ℹ [2026-09-13 21:41:17] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 21:41:17] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 21:41:18] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 21:41:18] Reorder clusters...
+#> ℹ [2026-09-13 21:41:18] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:41:18] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 21:41:24] Standard processing workflow completed
 FeatureDimPlot(
   pancreas_sub,
   features = "G2M_score", reduction = "UMAP"

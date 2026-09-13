@@ -8,7 +8,7 @@ with scop defaults.
 
 ``` r
 CoverageTrackPlot(
-  srt,
+  object,
   region,
   assay = NULL,
   group.by = NULL,
@@ -24,13 +24,14 @@ CoverageTrackPlot(
   ranges.group.by = NULL,
   region.highlight = NULL,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -85,6 +86,11 @@ CoverageTrackPlot(
 
   Additional parameters passed to
   [`Signac::CoveragePlot`](https://stuartlab.org/signac/reference/CoveragePlot.html).
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

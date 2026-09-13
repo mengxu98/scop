@@ -6,7 +6,7 @@ Create Meta File in HDF5 format from Seurat object
 
 ``` r
 CreateMetaFile(
-  srt,
+  object,
   meta_file,
   name = NULL,
   write_tools = FALSE,
@@ -14,13 +14,14 @@ CreateMetaFile(
   ignore_nlevel = 100,
   compression_level = 6,
   overwrite = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -58,6 +59,11 @@ CreateMetaFile(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## See also
 

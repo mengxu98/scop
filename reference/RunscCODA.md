@@ -6,7 +6,7 @@ scCODA differential abundance
 
 ``` r
 RunscCODA(
-  srt,
+  object,
   group.by,
   split.by,
   sample.by,
@@ -18,13 +18,14 @@ RunscCODA(
   envname = "sccoda_env",
   conda = "auto",
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -90,6 +91,11 @@ RunscCODA(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

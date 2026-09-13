@@ -16,7 +16,7 @@ and `"targets"` shows a regulon-target volcano for one TF.
 
 ``` r
 DorotheaPlot(
-  srt,
+  object,
   group.by,
   group1 = NULL,
   group2 = NULL,
@@ -49,7 +49,8 @@ DorotheaPlot(
   nlabel = 10,
   reduction = NULL,
   bar_width = 0.72,
-  point_size = 3.2,
+  pt.size = 3.2,
+  point_size = NULL,
   aspect.ratio = NULL,
   legend.position = "right",
   legend.direction = "vertical",
@@ -62,13 +63,14 @@ DorotheaPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   return_data = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object containing results from
   [`RunDorothea()`](https://mengxu98.github.io/scop/reference/RunDorothea.md).
@@ -220,9 +222,14 @@ DorotheaPlot(
 
   Width of bars in `"bar"` plots.
 
-- point_size:
+- pt.size:
 
   Point size in `"lollipop"`, `"volcano"`, and `"targets"` plots.
+
+- point_size:
+
+  Deprecated alias(es) for `pt.size`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
 
 - aspect.ratio:
 
@@ -262,6 +269,11 @@ DorotheaPlot(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 For `"bar"`, `"lollipop"`, `"volcano"`, `"dim"`, `"stat"`, and
@@ -281,7 +293,7 @@ For `"bar"`, `"lollipop"`, `"volcano"`, `"dim"`, `"stat"`, and
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-09-06 21:22:41] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:34:50] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunDorothea(
   pancreas_sub,
   layer = "counts",
@@ -289,9 +301,9 @@ pancreas_sub <- RunDorothea(
   method = "ulm",
   minsize = 5
 )
-#> ℹ [2026-09-06 21:23:47] Run "DoRothEA"/decoupleR with 12895 regulon edges
-#> ℹ [2026-09-06 21:23:58] "DoRothEA" TF activity scores stored in assay "dorothea"
-#> ℹ [2026-09-06 21:23:58] "DoRothEA" TF activity scores stored in <Seurat> metadata
+#> ℹ [2026-09-13 21:35:54] Run "DoRothEA"/decoupleR with 12895 regulon edges
+#> ℹ [2026-09-13 21:36:05] "DoRothEA" TF activity scores stored in assay "dorothea"
+#> ℹ [2026-09-13 21:36:05] "DoRothEA" TF activity scores stored in <Seurat> metadata
 
 DorotheaPlot(
   pancreas_sub,
@@ -301,7 +313,7 @@ DorotheaPlot(
   plot_type = "bar",
   top_n = 20
 )
-#> ℹ [2026-09-06 21:23:58] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-09-13 21:36:05] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
 DorotheaPlot(
@@ -312,7 +324,7 @@ DorotheaPlot(
   plot_type = "lollipop",
   top_n = 20
 )
-#> ℹ [2026-09-06 21:23:58] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-09-13 21:36:05] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
 DorotheaPlot(
@@ -322,7 +334,7 @@ DorotheaPlot(
   group2 = "Ductal",
   plot_type = "volcano"
 )
-#> ℹ [2026-09-06 21:23:59] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-09-13 21:36:06] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
 ht <- DorotheaPlot(
@@ -331,7 +343,7 @@ ht <- DorotheaPlot(
   plot_type = "heatmap",
   top_n = 20
 )
-#> ℹ [2026-09-06 21:23:59] Draw "DoRothEA" TF activity heatmap for 20 TFs
+#> ℹ [2026-09-13 21:36:06] Draw "DoRothEA" TF activity heatmap for 20 TFs
 ht$plot
 
 
@@ -341,7 +353,7 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "dim"
 )
-#> ℹ [2026-09-06 21:24:00] Draw "DoRothEA" embedding plots for 1 TFs
+#> ℹ [2026-09-13 21:36:07] Draw "DoRothEA" embedding plots for 1 TFs
 
 
 DorotheaPlot(
@@ -351,7 +363,7 @@ DorotheaPlot(
   plot_type = "stat",
   stat_plot_type = "violin"
 )
-#> ℹ [2026-09-06 21:24:00] Draw "DoRothEA" activity distributions for 3 TFs
+#> ℹ [2026-09-13 21:36:07] Draw "DoRothEA" activity distributions for 3 TFs
 
 
 DorotheaPlot(
@@ -362,6 +374,6 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "targets"
 )
-#> ! [2026-09-06 21:24:01] Dropping 3 "Sox9" targets missing from assay "RNA"
-#> ℹ [2026-09-06 21:24:01] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
+#> ! [2026-09-13 21:36:08] Dropping 3 "Sox9" targets missing from assay "RNA"
+#> ℹ [2026-09-13 21:36:08] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
 ```

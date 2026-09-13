@@ -6,7 +6,7 @@ Perform the enrichment analysis (over-representation) on the genes
 
 ``` r
 RunEnrichment(
-  srt = NULL,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   DE_threshold = "avg_log2FC > 0 & p_val_adj < 0.05",
@@ -36,13 +36,14 @@ RunEnrichment(
   simplify_similarityCutoff = 0.7,
   cores = 1,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object or `SummarizedExperiment` object containing the
   results of differential expression analysis
@@ -204,6 +205,11 @@ RunEnrichment(
 
   Passed to helper functions.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 If input is a Seurat object, returns the modified Seurat object with the
@@ -260,10 +266,11 @@ enrich_out <- RunEnrichment(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-09-06 22:08:10] Start Enrichment analysis
+#> ℹ [2026-09-13 22:20:08] Start Enrichment analysis
 EnrichmentPlot(
   res = enrich_out,
   db = "custom",
   plot_type = "comparison"
 )
+#> Error in EnrichmentPlot(res = enrich_out, db = "custom", plot_type = "comparison"): argument "object" is missing, with no default
 ```

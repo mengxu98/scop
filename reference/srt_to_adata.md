@@ -6,7 +6,7 @@ Convert a Seurat object to an AnnData object
 
 ``` r
 srt_to_adata(
-  srt,
+  object,
   features = NULL,
   assay_x = "RNA",
   layer_x = "counts",
@@ -18,13 +18,14 @@ srt_to_adata(
   convert_tools = FALSE,
   convert_misc = FALSE,
   prepare_env = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -43,11 +44,17 @@ srt_to_adata(
 
 - assay_y:
 
-  Assays to convert as layers in the anndata object.
+  Assays, or extra layers of `assay_x`, to convert as layers in the
+  anndata object. Each name is matched against the assays of the object
+  first, then against the layers of `assay_x`, which covers velocity
+  matrices such as `spliced` and `unspliced` stored as layers of a
+  Seurat v5 `RNA` assay.
 
 - layer_y:
 
-  Layer names for the assay_y in the Seurat object.
+  Layer names for the assays in `assay_y`. It is ignored for names that
+  are matched as layers of `assay_x`, where the layer name itself is
+  used.
 
 - reductions:
 
@@ -82,6 +89,11 @@ srt_to_adata(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

@@ -16,7 +16,7 @@ entries are never overwritten.
 
 ``` r
 RunCell2fate(
-  srt,
+  object,
   result_dir,
   spliced_assay = "spliced",
   unspliced_assay = "unspliced",
@@ -41,13 +41,14 @@ RunCell2fate(
   prefix = "Cell2fate",
   tool_name = "Cell2fate",
   store_velocity = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object containing raw spliced and unspliced counts.
 
@@ -148,6 +149,11 @@ RunCell2fate(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

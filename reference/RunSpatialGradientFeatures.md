@@ -1,15 +1,13 @@
 # Run spatial gradient feature screening
 
-Run native spatial trajectory or annotation gradient screening for
-Seurat objects. The compiled C++ backend computes distance-based
-screening and stores validated result tables in `srt@tools` when
-requested.
+Screen features for expression trends along a spatial trajectory or with
+distance from annotated regions.
 
 ## Usage
 
 ``` r
 RunSpatialGradientFeatures(
-  srt,
+  object,
   reference = c("trajectory", "annotation"),
   backend = "cpp",
   result_name = NULL,
@@ -53,13 +51,14 @@ RunSpatialGradientFeatures(
   store_results = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -186,6 +185,11 @@ RunSpatialGradientFeatures(
   Additional named arguments accepted for compatibility. The native
   backend ignores them and does not store them as effective parameters.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object. When `store_results = TRUE`, spatial gradient
@@ -199,12 +203,17 @@ when `set_variable_features = TRUE`.
 ``` r
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
+counts <- GetAssayData5(spatial, assay = "Spatial", layer = "counts")
+gradient_features <- names(sort(Matrix::rowSums(counts), decreasing = TRUE))[
+  seq_len(min(8L, nrow(counts)))
+]
+# Use a diagonal example axis without permutation testing.
 spatial <- RunSpatialGradientFeatures(
   spatial,
   reference = "trajectory",
   backend = "cpp",
-  result_name = "ductal_axis",
-  variables = rownames(spatial)[1:8],
+  result_name = "example_axis",
+  variables = gradient_features,
   start = c(min(spatial$x), min(spatial$y)),
   end = c(max(spatial$x), max(spatial$y)),
   layer = "counts",
@@ -217,12 +226,7 @@ spatial <- RunSpatialGradientFeatures(
   verbose = FALSE
 )
 
-SpatialGradientPlot(
-  spatial,
-  plot_type = "surface",
-  features = rownames(spatial)[1:2],
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  pt.size = 1.2
-)
+SpatialGradientPlot(spatial, plot_type = "line")
+
+SpatialGradientPlot(spatial, plot_type = "model")
 ```

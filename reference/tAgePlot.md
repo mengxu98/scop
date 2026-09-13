@@ -15,8 +15,10 @@ tAgePlot(
   palette = "Chinese",
   palcolor = NULL,
   alpha = 1,
-  point_size = 2.2,
-  point_alpha = 0.85,
+  pt.size = 2.2,
+  point_size = NULL,
+  pt.alpha = 0.85,
+  point_alpha = NULL,
   box_alpha = 0.15,
   flip = TRUE,
   title = NULL,
@@ -75,12 +77,17 @@ tAgePlot(
 
 - alpha:
 
-  Overall point and box alpha. `point_alpha` and `box_alpha` take
+  Overall point and box alpha. `pt.alpha` and `box_alpha` take
   precedence when set.
+
+- pt.size, pt.alpha:
+
+  Jittered point size and alpha.
 
 - point_size, point_alpha:
 
-  Jittered point size and alpha.
+  Deprecated alias(es) for `pt.size`/`pt.alpha`; supply exactly one of
+  the two. It will be removed in scop 1.0.0.
 
 - box_alpha:
 

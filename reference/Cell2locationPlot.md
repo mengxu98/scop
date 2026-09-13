@@ -6,7 +6,7 @@ Plot cell2location spatial results
 
 ``` r
 Cell2locationPlot(
-  srt,
+  object,
   plot_type = c("proportion", "abundance", "dominant", "pie"),
   cell_types = NULL,
   prefix = "Cell2location",
@@ -15,13 +15,14 @@ Cell2locationPlot(
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object returned by
   [`RunCell2location()`](https://mengxu98.github.io/scop/reference/RunCell2location.md).
@@ -69,34 +70,16 @@ Cell2locationPlot(
   Use `"hires"` for a hires raster; do not modify Seurat scale-factor
   slots.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `ggplot`, `patchwork`, or list of plots.
 
-## Examples
+## Details
 
-``` r
-if (FALSE) { # \dontrun{
-# Result from the official Human Lymph Node example in RunCell2location().
-# The tutorial result is an external file and is not downloaded by pkgdown.
-spatial <- readRDS("human_lymph_node_cell2location/official_human_lymph_node.rds")
-selected <- names(sort(
-  colMeans(spatial@tools$Cell2location$proportions),
-  decreasing = TRUE
-))[1:6]
-Cell2locationPlot(
-  spatial,
-  plot_type = "proportion",
-  cell_types = selected,
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  ncol = 3
-)
-Cell2locationPlot(
-  spatial,
-  plot_type = "dominant",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-} # }
-```
+Abundance plots use posterior q05 values. Proportion plots normalize
+these values across cell types within each spot.

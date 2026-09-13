@@ -6,7 +6,7 @@ Convert CCC results to OmicVerse communication AnnData
 
 ``` r
 ccc_to_adata(
-  srt = NULL,
+  object = NULL,
   method = NULL,
   condition = NULL,
   dataset = 1,
@@ -26,13 +26,14 @@ ccc_to_adata(
   inverse_pvalue = FALSE,
   sample_col = NULL,
   h5ad_path = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -121,6 +122,11 @@ ccc_to_adata(
 - verbose:
 
   Whether to print progress messages.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

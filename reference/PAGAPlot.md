@@ -6,7 +6,7 @@ Generates a PAGA plot based on the given Seurat object and PAGA result.
 
 ``` r
 PAGAPlot(
-  srt,
+  object,
   paga = NULL,
   type = "connectivities",
   reduction = NULL,
@@ -65,13 +65,14 @@ PAGAPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -284,6 +285,11 @@ PAGAPlot(
 
   Whether to print messages.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [RunPAGA](https://mengxu98.github.io/scop/reference/RunPAGA.md),
@@ -295,22 +301,22 @@ PAGAPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 21:44:21] Start standard processing workflow...
-#> ℹ [2026-09-06 21:44:22] Checking a list of <Seurat>...
-#> ! [2026-09-06 21:44:22] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 21:44:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:44:22] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:44:22] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 21:44:22] Number of available HVF: 2000
-#> ℹ [2026-09-06 21:44:22] Finished check
-#> ℹ [2026-09-06 21:44:22] Perform `ScaleData()`
-#> ℹ [2026-09-06 21:44:22] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 21:44:23] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 21:44:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 21:44:23] Reorder clusters...
-#> ℹ [2026-09-06 21:44:23] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:44:23] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 21:44:30] Standard processing workflow completed
+#> ℹ [2026-09-13 21:56:18] Start standard processing workflow...
+#> ℹ [2026-09-13 21:56:18] Checking a list of <Seurat>...
+#> ! [2026-09-13 21:56:18] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 21:56:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:56:18] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:56:18] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 21:56:18] Number of available HVF: 2000
+#> ℹ [2026-09-13 21:56:18] Finished check
+#> ℹ [2026-09-13 21:56:18] Perform `ScaleData()`
+#> ℹ [2026-09-13 21:56:18] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 21:56:19] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 21:56:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 21:56:19] Reorder clusters...
+#> ℹ [2026-09-13 21:56:19] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:56:19] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 21:56:25] Standard processing workflow completed
 pancreas_sub <- RunPAGA(
   pancreas_sub,
   group.by = "SubCellType",
@@ -319,8 +325,8 @@ pancreas_sub <- RunPAGA(
   backend = "cpp",
   return_seurat = TRUE
 )
-#> ℹ [2026-09-06 21:44:30] Running PAGA with BiocNeighbors using 29 neighbors
-#> ✔ [2026-09-06 21:44:30] PAGA cpp backend completed
+#> ℹ [2026-09-13 21:56:25] Running PAGA with BiocNeighbors using 29 neighbors
+#> ✔ [2026-09-13 21:56:25] PAGA cpp backend completed
 
 PAGAPlot(pancreas_sub)
 

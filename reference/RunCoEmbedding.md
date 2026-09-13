@@ -9,7 +9,7 @@ vignette for ATAC query and RNA reference.
 
 ``` r
 RunCoEmbedding(
-  srt,
+  object,
   reference,
   assay = NULL,
   reference_assay = NULL,
@@ -26,13 +26,14 @@ RunCoEmbedding(
   umap_dims = 1:30,
   k.weight = 100,
   verbose = TRUE,
-  seed = 11
+  seed = 11,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -108,6 +109,11 @@ RunCoEmbedding(
 
   Random seed used for UMAP.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A merged `Seurat` object containing RNA reference and ATAC query cells.
@@ -123,10 +129,10 @@ pbmcmultiome_sub <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ℹ [2026-09-06 21:53:38] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:53:45] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:05:31] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:05:37] Skip `log1p()` because `layer = data` is not "counts"
 coembed <- RunCoEmbedding(
-  srt = pbmcmultiome_sub,
+  object = pbmcmultiome_sub,
   reference = pbmcmultiome_sub,
   assay = "peaks",
   reference_assay = "RNA",

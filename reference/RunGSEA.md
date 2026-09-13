@@ -6,7 +6,7 @@ Perform the enrichment analysis (GSEA) on the genes
 
 ``` r
 RunGSEA(
-  srt = NULL,
+  object = NULL,
   group.by = NULL,
   test.use = "wilcox",
   DE_threshold = "p_val_adj < 0.05",
@@ -37,13 +37,14 @@ RunGSEA(
   simplify_similarityCutoff = 0.7,
   cores = 1,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object or `SummarizedExperiment` object containing the
   results of differential expression analysis
@@ -209,6 +210,11 @@ RunGSEA(
 
   Passed to helper functions.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 If input is a Seurat object, returns the modified Seurat object with the
@@ -262,19 +268,20 @@ gsea_out <- RunGSEA(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-09-06 22:09:02] Start GSEA analysis
-#> ! [2026-09-06 22:09:02] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-09-06 22:09:02] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-09-06 22:09:02] Prepared 15 ranked gene rows after ID mapping.
-#> ℹ [2026-09-06 22:09:02] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
-#> ℹ [2026-09-06 22:09:02] Using 1 core
-#> ℹ [2026-09-06 22:09:02] Running GSEA: group "Cluster1", database "custom", genes 15 ...
-#> ℹ [2026-09-06 22:09:02] Finished GSEA: group "Cluster1", database "custom".
-#> ℹ [2026-09-06 22:09:02] Building results
-#> ✔ [2026-09-06 22:09:02] GSEA analysis done
+#> ℹ [2026-09-13 22:21:00] Start GSEA analysis
+#> ! [2026-09-13 22:21:00] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-09-13 22:21:00] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-09-13 22:21:00] Prepared 15 ranked gene rows after ID mapping.
+#> ℹ [2026-09-13 22:21:00] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
+#> ℹ [2026-09-13 22:21:00] Using 1 core
+#> ℹ [2026-09-13 22:21:00] Running GSEA: group "Cluster1", database "custom", genes 15 ...
+#> ℹ [2026-09-13 22:21:00] Finished GSEA: group "Cluster1", database "custom".
+#> ℹ [2026-09-13 22:21:00] Building results
+#> ✔ [2026-09-13 22:21:00] GSEA analysis done
 GSEAPlot(
   res = gsea_out,
   db = "custom",
   plot_type = "comparison"
 )
+#> Error in GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison"): argument "object" is missing, with no default
 ```

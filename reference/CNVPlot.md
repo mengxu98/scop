@@ -8,7 +8,7 @@ the unified `srt@tools[[tool_name]]` result bundle.
 
 ``` r
 CNVPlot(
-  srt,
+  object,
   plot_type = c("heatmap", "dim", "spatial", "bar", "tree"),
   tool_name = "CNV",
   method = NULL,
@@ -24,13 +24,14 @@ CNVPlot(
   subtitle = NULL,
   theme_use = "theme_scop",
   theme_args = list(),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -87,6 +88,11 @@ CNVPlot(
 - ...:
 
   Additional parameters forwarded to the underlying plotting function.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

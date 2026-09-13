@@ -8,7 +8,7 @@ results retain distinct interpretations.
 
 ``` r
 RunSpatialCellChat(
-  srt,
+  object,
   group.by,
   sample.by = NULL,
   assay = NULL,
@@ -39,13 +39,14 @@ RunSpatialCellChat(
   store.object = c("minimal", "full"),
   overwrite = FALSE,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A \`Seurat\` object with normalized, non-negative expression and
   spatial coordinates.
@@ -191,6 +192,11 @@ RunSpatialCellChat(
 
   Whether to print progress messages.
 
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
+
 ## Value
 
 The input \`Seurat\` object with a plain SpatialCellChat result bundle
@@ -242,40 +248,21 @@ SpatialCellChat object is needed.
 ## Examples
 
 ``` r
-data(visium_human_pancreas_results_sub)
-chat <- visium_human_pancreas_results_sub@tools$SpatialCellChat
-chat$summary
-#> $result_name
-#> [1] "default"
-#> 
-#> $samples
-#> [1] "ALL"
-#> 
-#> $analysis_level
-#> [1] "spot"
-#> 
-#> $n_interactions
-#> [1] 959
-#> 
-#> $store_object
-#> [1] "minimal"
-#> 
-SpatialCellChatPlot(
-  visium_human_pancreas_results_sub,
-  plot_type = "incoming",
-  sample = "ALL"
-)
-
-
 if (FALSE) { # \dontrun{
-check_r("jinworks/SpatialCellChat", verbose = FALSE)
+data(visium_human_pancreas_sub)
+visium_human_pancreas_sub <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial", verbose = FALSE
+)
+# Group Visium spots by their CODA tissue labels.
 spatial <- RunSpatialCellChat(
-  visium_human_pancreas_results_sub,
-  group.by = "coda_label", assay = "Spatial", image = NULL,
+  visium_human_pancreas_sub,
+  group.by = "coda_label", assay = "Spatial", image = "slice1",
   coord.cols = c("x", "y"),
   technology = "visium", analysis.level = "spot",
   coordinate.unit = "pixel", species = "Homo_sapiens",
   store.object = "minimal", verbose = FALSE
 )
+SpatialCellChatPlot(spatial, plot_type = "incoming")
 } # }
 ```

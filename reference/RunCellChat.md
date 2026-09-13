@@ -6,7 +6,7 @@ Run CellChat analysis
 
 ``` r
 RunCellChat(
-  srt,
+  object,
   group.by,
   species = c("Homo_sapiens", "Mus_musculus", "zebrafish"),
   split.by = NULL,
@@ -19,13 +19,14 @@ RunCellChat(
   backend = c("cpp", "r"),
   assay = NULL,
   layer = "data",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -82,6 +83,11 @@ RunCellChat(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with `CellChat` results stored in
@@ -102,37 +108,37 @@ A `Seurat` object with `CellChat` results stored in
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 21:52:30] Start standard processing workflow...
-#> ℹ [2026-09-06 21:52:31] Checking a list of <Seurat>...
-#> ! [2026-09-06 21:52:31] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 21:52:31] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:52:31] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:52:31] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 21:52:31] Number of available HVF: 2000
-#> ℹ [2026-09-06 21:52:31] Finished check
-#> ℹ [2026-09-06 21:52:31] Perform `ScaleData()`
-#> ℹ [2026-09-06 21:52:31] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 21:52:32] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 21:52:32] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 21:52:32] Reorder clusters...
-#> ℹ [2026-09-06 21:52:32] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:52:32] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 21:52:39] Standard processing workflow completed
+#> ℹ [2026-09-13 22:04:30] Start standard processing workflow...
+#> ℹ [2026-09-13 22:04:30] Checking a list of <Seurat>...
+#> ! [2026-09-13 22:04:30] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 22:04:31] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:04:31] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:04:31] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 22:04:31] Number of available HVF: 2000
+#> ℹ [2026-09-13 22:04:31] Finished check
+#> ℹ [2026-09-13 22:04:31] Perform `ScaleData()`
+#> ℹ [2026-09-13 22:04:31] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 22:04:31] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 22:04:32] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 22:04:32] Reorder clusters...
+#> ℹ [2026-09-13 22:04:32] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:04:32] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 22:04:38] Standard processing workflow completed
 pancreas_sub <- RunCellChat(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-09-06 21:52:39] Start CellChat analysis
+#> ℹ [2026-09-13 22:04:38] Start CellChat analysis
 #> [1] "Create a CellChat object from a data matrix"
 #> Set cell identities for the new CellChat object 
 #> The cell groups used for CellChat analysis are  Ductal, Endocrine, Ngn3-high-EP, Ngn3-low-EP, Pre-endocrine 
-#> ! [2026-09-06 21:52:39] Function "CellChatDB.mouse" not found in CellChat namespace
+#> ! [2026-09-13 22:04:38] Function "CellChatDB.mouse" not found in CellChat namespace
 #> The number of highly variable ligand-receptor pairs used for signaling inference is 841 
 #> triMean is used for calculating the average gene expression per cell group. 
-#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-09-06 21:52:41.685207]"
-#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-09-06 21:53:03.832861]"
-#> ✔ [2026-09-06 21:53:04] CellChat analysis completed
+#> [1] ">>> Run CellChat on sc/snRNA-seq data <<< [2026-09-13 22:04:41.124337]"
+#> [1] ">>> CellChat inference is done. Parameter values are stored in `object@options$parameter` <<< [2026-09-13 22:05:03.525258]"
+#> ✔ [2026-09-13 22:05:03] CellChat analysis completed
 
 CCCNetworkPlot(
   pancreas_sub,

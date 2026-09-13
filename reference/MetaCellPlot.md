@@ -6,7 +6,7 @@ Visualize metacell partitions on a dimensionality reduction
 
 ``` r
 MetaCellPlot(
-  srt,
+  object,
   reduction = NULL,
   show_cells = FALSE,
   group.by = NULL,
@@ -31,13 +31,14 @@ MetaCellPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   return_layer = FALSE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object with metacell results from
   [`RunMetaCell()`](https://mengxu98.github.io/scop/reference/RunMetaCell.md).
@@ -147,6 +148,11 @@ MetaCellPlot(
   [`geom_point()`](https://ggplot2.tidyverse.org/reference/geom_point.html)
   for metacell centroids.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `ggplot` object, or a named list of ggplot2 layers when
@@ -157,16 +163,16 @@ A `ggplot` object, or a named list of ggplot2 layers when
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-09-06 21:37:48] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:49:50] Skip `log1p()` because `layer = data` is not "counts"
 mc <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 20
 )
-#> ℹ [2026-09-06 21:38:53] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
-#> ℹ [2026-09-06 21:38:54] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
-#> ℹ [2026-09-06 21:38:54] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
-#> ✔ [2026-09-06 21:38:54] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
+#> ℹ [2026-09-13 21:50:52] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
+#> ℹ [2026-09-13 21:50:53] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
+#> ℹ [2026-09-13 21:50:53] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
+#> ✔ [2026-09-13 21:50:53] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
 
 MetaCellPlot(
   mc,

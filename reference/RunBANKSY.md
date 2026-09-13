@@ -8,7 +8,7 @@ metadata.
 
 ``` r
 RunBANKSY(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   features = NULL,
@@ -32,13 +32,14 @@ RunBANKSY(
   tool_name = "BANKSY",
   store_results = TRUE,
   verbose = TRUE,
-  coordinate_space = c("raw", "legacy_display")
+  coordinate_space = c("raw", "legacy_display"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -154,6 +155,11 @@ RunBANKSY(
   coordinate units. Use `"legacy_display"` explicitly to reproduce the
   display-scaled coordinates used before scop 0.9.0.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with BANKSY clusters in metadata. When
@@ -163,13 +169,15 @@ A `Seurat` object with BANKSY clusters in metadata. When
 ## Examples
 
 ``` r
-data(visium_human_pancreas_results_sub)
+data(visium_human_pancreas_sub)
+keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
+spatial <- visium_human_pancreas_sub[, keep_spots]
 spatial <- RunBANKSY(
-  visium_human_pancreas_results_sub,
+  spatial,
   assay = "Spatial",
   layer = "counts",
   coord.cols = c("x", "y"),
-  features = rownames(visium_human_pancreas_results_sub)[1:200],
+  features = rownames(spatial)[1:200],
   lambda = 0.2,
   k_geom = 8,
   resolution = 0.6,
@@ -195,4 +203,6 @@ SpatialSpotPlot(
   coord.cols = c("x", "y"),
   pt.size = 1.5
 )
+#> Ignoring unknown labels:
+#> • colour : "BANKSY_cluster"
 ```

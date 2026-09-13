@@ -10,20 +10,21 @@ stores standardized outputs for plotting.
 
 ``` r
 RunPropeller(
-  srt,
+  object,
   group.by,
   split.by,
   sample.by,
   comparison = NULL,
   n_bootstrap = 1000,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -65,6 +66,11 @@ RunPropeller(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

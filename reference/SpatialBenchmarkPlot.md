@@ -12,7 +12,7 @@ use
 
 ``` r
 SpatialBenchmarkPlot(
-  srt = NULL,
+  object = NULL,
   data = NULL,
   features = NULL,
   metrics = NULL,
@@ -37,13 +37,14 @@ SpatialBenchmarkPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -139,6 +140,11 @@ SpatialBenchmarkPlot(
 - ...:
 
   The message to print.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

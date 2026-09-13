@@ -6,7 +6,7 @@ Run Monocle2 analysis
 
 ``` r
 RunMonocle2(
-  srt,
+  object,
   assay = NULL,
   layer = "counts",
   group.by = NULL,
@@ -20,8 +20,8 @@ RunMonocle2(
   residualModelFormulaStr = NULL,
   pseudo_expr = 1,
   root_state = NULL,
-  backend = c("r", "cpp"),
-  n_neighbors = 30,
+  backend = NULL,
+  n_neighbors = NULL,
   ddrtree_maxIter = NULL,
   ddrtree_ncenter = NULL,
   ddrtree_tol = NULL,
@@ -29,13 +29,14 @@ RunMonocle2(
   xlab = NULL,
   ylab = NULL,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -95,25 +96,17 @@ RunMonocle2(
 
 - root_state:
 
-  The state to use as the root of the trajectory. If NULL, the R backend
-  prompts for user input, and the C++ backend prompts in interactive
-  sessions after initial ordering. In non-interactive C++ runs, the
-  first cell is used. For `backend = "cpp"`, `root_state` can also match
-  a C++ trajectory state id after initial ordering, or a `group.by`
-  label when `group.by` is provided.
+  The state to use as the root of the trajectory. If NULL, the
+  trajectory is rooted at the first state after an initial ordering.
 
 - backend:
 
-  Backend used to compute the trajectory. `"r"` keeps the original
-  Monocle2 workflow and remains the default. `"cpp"` keeps Monocle2
-  dimensional reduction, uses native C++ ordering for DDRTree, and falls
-  back to Monocle2 ordering for other reduction methods.
+  Deprecated and ignored. Monocle now accelerates cell ordering natively
+  with C++, so the separate `"cpp"` backend has been removed.
 
 - n_neighbors:
 
-  Deprecated compatibility parameter for the C++ backend. The current
-  C++ backend reuses Monocle2's learned minimum spanning tree and
-  ignores this value.
+  Deprecated and ignored.
 
 - ddrtree_maxIter:
 
@@ -149,6 +142,11 @@ RunMonocle2(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

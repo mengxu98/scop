@@ -6,7 +6,7 @@ Run scTenifoldKnk in-silico knockout analysis
 
 ``` r
 RunscTenifoldKnk(
-  srt,
+  object,
   gKO,
   assay = NULL,
   layer = "counts",
@@ -32,13 +32,14 @@ RunscTenifoldKnk(
   store_networks = TRUE,
   store_manifold = TRUE,
   tool_name = "scTenifoldKnk",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -99,16 +100,16 @@ RunscTenifoldKnk(
 
 - backend:
 
-  `r` calls
-  [`scTenifoldKnk::scTenifoldKnk()`](https://rdrr.io/pkg/scTenifoldKnk/man/scTenifoldKnk.html)
-  directly and is the default high-consistency path. `cpp` follows the
-  upstream `scTenifoldNet`/`scTenifoldKnk` network construction, tensor
-  decomposition, manifold alignment, and differential-regulation steps
-  while keeping input handling and result storage inside `scop`.
+  `r` runs the upstream `scTenifoldNet` pipeline with the
+  `scTenifoldKnk` differential-regulation helpers and is the default
+  high-consistency path. `cpp` runs all steps with scop's native kernels
+  and is much faster on large gene sets.
 
 - store_networks:
 
-  Whether to keep WT/KO tensor networks in `srt@tools`.
+  Whether to keep WT/KO tensor networks in `srt@tools`. This only
+  controls what is stored; the network ensemble is always built the same
+  way.
 
 - store_manifold:
 
@@ -121,6 +122,11 @@ RunscTenifoldKnk(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 
@@ -155,7 +161,7 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-09-06 22:32:18] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
+#> ℹ [2026-09-13 22:44:11] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
 #> ℹ Building 3 gene regulatory networks (200 cells each)
 #> Networks ■■■■■■■■■■■                       33% | ETA:  5s
 #> Networks ■■■■■■■■■■■■■■■■■■■■■             67% | ETA:  2s
@@ -167,7 +173,7 @@ pancreas_sub <- RunscTenifoldKnk(
 #> ✔ Manifold alignment complete: 2 dimensions
 #> ℹ Computing distances for 301 genes
 #> ✔ Differential regulation complete: 1/301 significant genes (FDR < 0.05)
-#> ✔ [2026-09-06 22:32:30] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ✔ [2026-09-13 22:44:23] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
 head(dr)

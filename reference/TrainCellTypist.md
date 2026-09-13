@@ -7,7 +7,7 @@ file.
 
 ``` r
 TrainCellTypist(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -38,13 +38,14 @@ TrainCellTypist(
   version = "",
   model_path = NULL,
   return = c("summary", "path", "model"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object. If provided, `adata` will be ignored.
 
@@ -157,6 +158,11 @@ TrainCellTypist(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 Depends on `return`: a summary list, the model path, or a Python model
@@ -174,10 +180,11 @@ if (FALSE) { # \dontrun{
 check_python(c("celltypist", "anndata"))
 data(pbmcmultiome_sub)
 pbmcmultiome_sub <- RunStandardWorkflow(
-  pbmcmultiome_sub, assay = "RNA", linear_reduction_dims = 10
+  pbmcmultiome_sub,
+  assay = "RNA", linear_reduction_dims = 10
 )
 model_info <- TrainCellTypist(
-  srt = pbmcmultiome_sub, labels = "CellType",
+  object = pbmcmultiome_sub, labels = "CellType",
   model_path = tempfile(fileext = ".pkl")
 )
 } # }

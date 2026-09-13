@@ -8,7 +8,7 @@ space above the automatic layout.
 
 ``` r
 STdeconvolvePlot(
-  srt,
+  object,
   tool_name = "STdeconvolve",
   topics = NULL,
   prefix = NULL,
@@ -18,13 +18,14 @@ STdeconvolvePlot(
   ncol = NULL,
   byrow = TRUE,
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -71,18 +72,15 @@ STdeconvolvePlot(
   Use `"hires"` for a hires raster; do not modify Seurat scale-factor
   slots.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `ggplot`, `patchwork`, or list of `ggplot` objects.
 
-## Examples
+## See also
 
-``` r
-data(visium_human_pancreas_results_sub)
-STdeconvolvePlot(
-  visium_human_pancreas_results_sub,
-  topics = 1:2,
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
-```
+[`RunSTdeconvolve()`](https://mengxu98.github.io/scop/reference/RunSTdeconvolve.md)

@@ -6,7 +6,7 @@ Run NicheNet analysis
 
 ``` r
 RunNichenetr(
-  srt,
+  object,
   group.by,
   receiver,
   sender = "all",
@@ -30,13 +30,15 @@ RunNichenetr(
   lfc_cutoff = 0.25,
   use_sender_agnostic_background = TRUE,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL,
+  merged_table_file = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -141,7 +143,42 @@ RunNichenetr(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
+- merged_table_file:
+
+  Optional path to a CSV file for exporting a temporary
+  ligand-receptor/activity/target merged table. The file is not stored
+  in the result bundle. Existing files and missing parent directories
+  are rejected.
+
 ## Value
 
 A Seurat object with standardized NicheNet results stored in
 `srt@tools[["Nichenetr"]]`.
+
+## Details
+
+In the exported table, a ligand's predicted targets are repeated for
+each candidate receptor from the LR table. This is a ligand-level
+display of the existing results; it does not establish receptor-mediated
+targets or sender-specific target effects.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+srt <- RunNichenetr(
+  object = srt,
+  group.by = "celltype",
+  receiver = "Receiver",
+  condition.by = "condition",
+  condition_oi = "case",
+  condition_reference = "control",
+  merged_table_file = "NicheNet_merged.csv"
+)
+} # }
+```

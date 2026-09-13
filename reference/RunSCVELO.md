@@ -8,7 +8,7 @@ handling, version compatibility, and modular design.
 
 ``` r
 RunSCVELO(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   assay_x = "RNA",
   layer_x = "counts",
@@ -62,13 +62,14 @@ RunSCVELO(
   backend = c("python", "cpp"),
   max_dense_gib = 8,
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object. If provided, `adata` will be ignored.
 
@@ -86,11 +87,17 @@ RunSCVELO(
 
 - assay_y:
 
-  Assays to convert as layers in the anndata object.
+  Assays, or extra layers of `assay_x`, to convert as layers in the
+  anndata object. Each name is matched against the assays of the object
+  first, then against the layers of `assay_x`, which covers velocity
+  matrices such as `spliced` and `unspliced` stored as layers of a
+  Seurat v5 `RNA` assay.
 
 - layer_y:
 
-  Layer names for the assay_y in the Seurat object.
+  Layer names for the assays in `assay_y`. It is ignored for names that
+  are matched as layers of `assay_x`, where the layer name itself is
+  used.
 
 - group.by:
 
@@ -313,6 +320,11 @@ RunSCVELO(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [VelocityPlot](https://mengxu98.github.io/scop/reference/VelocityPlot.md),
@@ -324,22 +336,22 @@ RunSCVELO(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 22:31:55] Start standard processing workflow...
-#> ℹ [2026-09-06 22:31:56] Checking a list of <Seurat>...
-#> ! [2026-09-06 22:31:56] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 22:31:56] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:31:56] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:31:56] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 22:31:56] Number of available HVF: 2000
-#> ℹ [2026-09-06 22:31:56] Finished check
-#> ℹ [2026-09-06 22:31:56] Perform `ScaleData()`
-#> ℹ [2026-09-06 22:31:57] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 22:31:57] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 22:31:57] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 22:31:57] Reorder clusters...
-#> ℹ [2026-09-06 22:31:57] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 22:31:57] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 22:32:05] Standard processing workflow completed
+#> ℹ [2026-09-13 22:43:51] Start standard processing workflow...
+#> ℹ [2026-09-13 22:43:51] Checking a list of <Seurat>...
+#> ! [2026-09-13 22:43:51] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 22:43:51] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:43:51] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:43:51] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 22:43:51] Number of available HVF: 2000
+#> ℹ [2026-09-13 22:43:51] Finished check
+#> ℹ [2026-09-13 22:43:51] Perform `ScaleData()`
+#> ℹ [2026-09-13 22:43:51] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 22:43:51] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 22:43:52] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 22:43:52] Reorder clusters...
+#> ℹ [2026-09-13 22:43:52] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:43:52] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 22:44:00] Standard processing workflow completed
 pancreas_sub <- RunSCVELO(
   pancreas_sub,
   assay_x = "RNA",
@@ -349,10 +361,10 @@ pancreas_sub <- RunSCVELO(
   backend = "cpp",
   show_plot = FALSE
 )
-#> ℹ [2026-09-06 22:32:05] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
-#> ℹ [2026-09-06 22:32:10] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
-#> ✔ [2026-09-06 22:32:13] scVelo "stochastic" mode completed
-#> ✔ [2026-09-06 22:32:13] scVelo cpp backend completed
+#> ℹ [2026-09-13 22:44:00] Running scanpy-compatible preprocessing (15998 features -> filter + normalize)...
+#> ℹ [2026-09-13 22:44:04] Running scVelo "stochastic" mode with `backend = 'cpp'` (9699 features)
+#> ✔ [2026-09-13 22:44:07] scVelo "stochastic" mode completed
+#> ✔ [2026-09-13 22:44:07] scVelo cpp backend completed
 
 FeatureDimPlot(
   pancreas_sub,

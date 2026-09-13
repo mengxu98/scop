@@ -23,7 +23,6 @@ A `Seurat` object.
 ``` r
 if (interactive()) {
   data(pancreas_sub)
-  thisutils::check_r("satijalab/seurat-data")
 
   InstallData <- thisutils::get_namespace_fun("SeuratData", "InstallData")
   InstallData("panc8")

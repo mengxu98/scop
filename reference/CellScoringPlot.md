@@ -6,7 +6,7 @@ Plot CellScoring results from a Seurat object
 
 ``` r
 CellScoringPlot(
-  srt,
+  object,
   method = "AUCell",
   features = NULL,
   scores = NULL,
@@ -24,11 +24,13 @@ CellScoringPlot(
   ncol = NULL,
   nrow = NULL,
   row.heights = c(1, 1),
+  pt.size = NULL,
   point.size = NULL,
   raster = NULL,
   raster.dpi = 512,
   point.fraction = 0.1,
-  point.alpha = 0.2,
+  pt.alpha = 0.2,
+  point.alpha = NULL,
   boxplot.y.range = TRUE,
   group.palette = "Chinese",
   group.palcolor = NULL,
@@ -50,13 +52,14 @@ CellScoringPlot(
   ...,
   combine = TRUE,
   seed = 42,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A \`Seurat\` object.
 
@@ -148,10 +151,15 @@ CellScoringPlot(
   Relative heights of the UMAP and statistic rows within each row pair.
   Use \`c(0.47, 0.53)\` for the compact benchmark layout.
 
-- point.size:
+- pt.size:
 
   Point size in rasterized UMAPs. \`NULL\` lets \[CellDimPlot()\] choose
   a readable size from the number of plotted cells.
+
+- point.size, point.alpha:
+
+  Deprecated alias(es) for \`pt.size\`/\`pt.alpha\`; supply exactly one
+  of the two. It will be removed in scop 1.0.0.
 
 - raster, raster.dpi:
 
@@ -163,7 +171,7 @@ CellScoringPlot(
   Fraction of cells shown as jittered points in each boxplot. Boxplot
   statistics always use all cells.
 
-- point.alpha:
+- pt.alpha:
 
   Alpha for jittered points.
 
@@ -263,6 +271,11 @@ CellScoringPlot(
 
   Whether to report plotting progress.
 
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
+
 ## Value
 
 A \`patchwork\` object, or a named list of \`ggplot\`/\`patchwork\`
@@ -273,7 +286,7 @@ components when \`combine = FALSE\`.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-09-06 21:03:52] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:17:19] Skip `log1p()` because `layer = data` is not "counts"
 reduction <- DefaultReduction(pancreas_sub)
 SeuratObject::Key(pancreas_sub[[reduction]]) <- "UMAP_"
 genesets <- list(
@@ -287,17 +300,17 @@ pancreas_sub <- CellScoring(
   method = "AUCell",
   classification = FALSE
 )
-#> ℹ [2026-09-06 21:03:58] Start cell scoring
-#> ℹ [2026-09-06 21:03:58] Data type is log-normalized
-#> ℹ [2026-09-06 21:03:58] Number of feature lists to be scored: 3
-#> ✔ [2026-09-06 21:03:58] Cell scoring completed
+#> ℹ [2026-09-13 21:17:24] Start cell scoring
+#> ℹ [2026-09-13 21:17:24] Data type is log-normalized
+#> ℹ [2026-09-13 21:17:24] Number of feature lists to be scored: 3
+#> ✔ [2026-09-13 21:17:24] Cell scoring completed
 CellScoringPlot(
   pancreas_sub,
   method = "AUCell",
   group.by = "SubCellType"
 )
-#> ℹ [2026-09-06 21:03:58] Using the latest AUCell result recorded by `CellScoring()`
-#> ℹ [2026-09-06 21:03:59] Plotting AUCell feature "Alpha"
-#> ℹ [2026-09-06 21:03:59] Plotting AUCell feature "Beta"
-#> ℹ [2026-09-06 21:03:59] Plotting AUCell feature "Ductal"
+#> ℹ [2026-09-13 21:17:24] Using the latest AUCell result recorded by `CellScoring()`
+#> ℹ [2026-09-13 21:17:26] Plotting AUCell feature "Alpha"
+#> ℹ [2026-09-13 21:17:26] Plotting AUCell feature "Beta"
+#> ℹ [2026-09-13 21:17:26] Plotting AUCell feature "Ductal"
 ```

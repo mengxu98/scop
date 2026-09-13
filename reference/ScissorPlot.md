@@ -6,7 +6,7 @@ Plot Scissor results
 
 ``` r
 ScissorPlot(
-  srt,
+  object,
   plot_type = c("umap", "heatmap", "bar", "upset", "rose", "ring", "pie", "dot"),
   reduction = NULL,
   prefix = "Scissor",
@@ -47,13 +47,14 @@ ScissorPlot(
   theme_use = "theme_scop",
   theme_args = list(),
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object after
   [RunScissor](https://mengxu98.github.io/scop/reference/RunScissor.md).
@@ -239,6 +240,11 @@ ScissorPlot(
   [thisplot::StatPlot](https://mengxu98.github.io/thisplot/reference/StatPlot.html),
   depending on `plot_type`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A ggplot/patchwork object for embedding and statistical plots, or a list
@@ -268,11 +274,11 @@ panc8_sub <- RunScissor(
   alpha = 0.2,
   cutoff = 0.5
 )
-#> ℹ [2026-09-06 22:42:04] Build a temporary Scissor-style SNN graph
-#> ℹ [2026-09-06 22:42:08] Scissor alpha 0.2 selected 1 positive and 501 negative cells (31.375%)
-#> ✔ [2026-09-06 22:42:08] Scissor stored 1 Scissor+ and 501 Scissor- cells
+#> ℹ [2026-09-13 22:53:58] Build a temporary Scissor-style SNN graph
+#> ℹ [2026-09-13 22:54:01] Scissor alpha 0.2 selected 1 positive and 501 negative cells (31.375%)
+#> ✔ [2026-09-13 22:54:01] Scissor stored 1 Scissor+ and 501 Scissor- cells
 panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
-#> ℹ [2026-09-06 22:42:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:54:03] Skip `log1p()` because `layer = data` is not "counts"
 
 ScissorPlot(
   panc8_sub,

@@ -41,7 +41,8 @@ A Seurat object with an explicit image coordinate convention.
 ``` r
 data(visium_human_pancreas_sub)
 spatial <- SetSpatialImageAxes(
-  visium_human_pancreas_sub, image = "slice1", x_orientation = "horizontal"
+  visium_human_pancreas_sub,
+  image = "slice1", x_orientation = "horizontal"
 )
 SpatialCoordinates(spatial, image = "slice1")$source$coord.cols
 #> [1] "x" "y"

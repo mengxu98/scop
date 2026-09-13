@@ -1,13 +1,118 @@
 # Changelog
 
-## scop 0.9.1
+## scop 0.9.2
+
+- **breaking**:
+  [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md)
+  drops the `backend = "cpp"` path and its `n_neighbors` parameter.
+  Monocle now accelerates the DDRTree ordering hot paths natively in
+  C++, so the separate scop implementation is no longer needed;
+  `backend` and `n_neighbors` are accepted with a deprecation warning
+  and ignored. The `group.by`-based `root_state` resolution that only
+  the C++ backend supported is removed with it, and `root_state` must be
+  a trajectory State as with the previous `"r"` backend.
+
+- **perf**:
+  [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md)
+  DDRTree ordering now runs on monocle’s native C++ fast paths
+  (cell-to-MST projection, projected-cell minimum spanning tree, tree
+  ordering traversal, and state-based root selection, ported from the
+  former scop backend into mengxu98/monocle). Ordering a 3,000-cell
+  dataset drops from ~9.3 s to ~1.2 s, and the ordering step no longer
+  scales quadratically with cell number. Pseudotime, states, and the
+  root cell are unchanged. The updated monocle is installed
+  automatically through `check_r()`.
+
+- **breaking**: Public APIs take the data object as `object=` rather
+  than `srt=`. Every exported function that took `srt=` now takes
+  `object=`; `srt=` remains accepted as a deprecated alias that warns on
+  use and is removed in scop 1.0.0.
+  [`RunVECTOR()`](https://mengxu98.github.io/scop/reference/RunVECTOR.md),
+  [`VECTORPlot()`](https://mengxu98.github.io/scop/reference/VECTORPlot.md),
+  [`RuntAge()`](https://mengxu98.github.io/scop/reference/RuntAge.md),
+  [`tAgePlot()`](https://mengxu98.github.io/scop/reference/tAgePlot.md),
+  [`RunscTenifoldNet()`](https://mengxu98.github.io/scop/reference/RunscTenifoldNet.md),
+  and
+  [`PrepareSCExplorer()`](https://mengxu98.github.io/scop/reference/PrepareSCExplorer.md)
+  take `object=` only.
+
+- **breaking**: Remove unverified `RunSpatialDWLS()` and its plotting
+  path rather than presenting clipped least-squares output as
+  SpatialDWLS. Use
+  [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md),
+  [`RunCARD()`](https://mengxu98.github.io/scop/reference/RunCARD.md),
+  or
+  [`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md)
+  with
+  [`SpatialDeconvolutionPlot()`](https://mengxu98.github.io/scop/reference/SpatialDeconvolutionPlot.md).
+
+- **breaking**: Remove `SpatialEcoTyperCompositionPlot()` and
+  `SpatialEcoTyperSpatialPlot()`. Use
+  [`CellStatPlot()`](https://mengxu98.github.io/scop/reference/CellStatPlot.md)
+  and
+  [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md).
+
+- **breaking**:
+  [`SpatialGradientPlot()`](https://mengxu98.github.io/scop/reference/SpatialGradientPlot.md)
+  now reads only stored `summary`, `line`, and `model` views.
+  `surface`/`combined` plot types and current-assay/layer refetch are
+  removed.
+
+- **fix**:
+  [`RunDoubletCalling()`](https://mengxu98.github.io/scop/reference/RunDoubletCalling.md)
+  forwards the data object as `object=` only, so
+  [`RunCellQC()`](https://mengxu98.github.io/scop/reference/RunCellQC.md)
+  no longer fails with “Provide only one of `object` or `srt`” for any
+  `db_method`. The Python bridges
+  ([`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md),
+  [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md),
+  [`RunPalantir()`](https://mengxu98.github.io/scop/reference/RunPalantir.md),
+  [`RunPAGA()`](https://mengxu98.github.io/scop/reference/RunPAGA.md),
+  [`RunWOT()`](https://mengxu98.github.io/scop/reference/RunWOT.md),
+  [`RunCellTypist()`](https://mengxu98.github.io/scop/reference/RunCellTypist.md))
+  no longer pass the data-object argument on to Python functions that
+  accept neither `object=` nor extra keywords.
+
+- **fix**: Giotto bridges reuse an already-installed GiottoClass instead
+  of reinstalling `drieslab/Giotto` when the GitHub remote does not
+  match (for example the optional CI pin `giotto-suite/Giotto`). The
+  live round-trip test uses a tiny in-process fixture instead of
+  reloading the source tree under a 120s `callr` timeout.
+
+- **fix**:
+  [`srt_to_adata()`](https://mengxu98.github.io/scop/reference/srt_to_adata.md)
+  converts velocity matrices stored as extra layers of `assay_x`, such
+  as `spliced`/`unspliced` in the `RNA` assay of a Seurat v5 object,
+  instead of dropping them without a message.
+  [`RunSCVELO()`](https://mengxu98.github.io/scop/reference/RunSCVELO.md)
+  failed on such objects with `Error in scVelo analysis: 'Ms'`, because
+  scVelo skips the moment computation when the layers are absent and
+  reports the problem later as `adata.layers['Ms']`. Names in `assay_y`
+  that are neither an assay nor a layer of `assay_x` are now reported
+  with the available ones, and the Python workflow names the missing
+  layers instead of raising a `KeyError`.
+
+- **fix**: `MistyRPlot(measure =)` selects the numeric result column
+  explicitly (`gain.R2`/`gain.RMSE` or `contribution`/`importance`).
+
+- **fix**: Spatial integration (PRECAST) domain, embedding, and
+  coordinate results must match Seurat cell identities exactly,
+  including named, reordered, missing, extra, and duplicate IDs.
+
+- **fix**:
+  [`SpatialCellPlot()`](https://mengxu98.github.io/scop/reference/SpatialCellPlot.md)
+  fetches feature values through
+  [`GetAssayData5()`](https://mengxu98.github.io/scop/reference/GetAssayData5.md)
+  with explicit `assay`/`layer`.
+
+- **fix**:
+  [`StatialKontextualPlot()`](https://mengxu98.github.io/scop/reference/StatialKontextualPlot.md)
+  draws connecting lines only when a relationship has multiple radii.
 
 - **fix**: Coordinate v3 accepts the empty native orientation slot
   introduced by newer SeuratObject versions. List integration resolves
-  explicit image maps before merging duplicate image names. Bundled
-  metadata-only result fixtures are migrated only after pinned-input
-  coordinate-equivalence and payload-preservation checks; arbitrary user
-  v2 results still require rerunning.
+  explicit image maps before merging duplicate image names. Existing
+  coordinate-contract v2 results still require rerunning.
 
 - **fix**: Spatial coordinate contract v3 uses persistent image axis
   provenance instead of guessing from mutable metadata, parses numeric
@@ -39,6 +144,40 @@
   condition, distinguish zero from unevaluated cells, reject unsupported
   plot arguments, and support valid empty observed results.
 
+- **fix**:
+  [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md)
+  skips `estimateDispersions()` unless `feature_type = "Disp"` or
+  `show_plot = TRUE`. The sparse-matrix `2^31-1` crash in dispersion
+  fitting is fixed in
+  [mengxu98/monocle](https://github.com/mengxu98/monocle) 2.9.3.
+
+- **fix**:
+  [`RunScTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)
+  builds the gene regulatory network ensemble with scop’s native C++
+  kernel in every backend instead of calling
+  [`scTenifoldNet::makeNetworks()`](https://rdrr.io/pkg/scTenifoldNet/man/makeNetworks.html);
+  `backend` only selects how the downstream differential-regulation
+  steps run (`r` = upstream helpers, `cpp` = scop kernels) and what is
+  stored, with the `cpp` path much faster on large gene sets.
+
+- **fix**: `RunScTenifoldKnk(backend = "cpp")` no longer loses network
+  scores when a subsample drops an all-zero gene: the empty sparse
+  template was a pattern (`ngCMatrix`) matrix that coerced the ensemble
+  coefficients to logical, so affected networks reached the tensor
+  decomposition as 0/1 and the knocked-out gene was reported as not
+  dysregulated ([\#427](https://github.com/mengxu98/scop/issues/427)).
+
+- **fix**: Optional GitHub-only backends (`presto`, `SpatialCellChat`,
+  `NNLM`, `SpaTalk`) are resolved at their call sites through
+  `check_r()` and dropped from the check-time Suggests, so R CMD check
+  no longer installs them; `presto` stays a runtime-optional backend
+  with marker fast paths using an existing installation and
+  `RunCellChat(do.fast = TRUE)` resolving it before execution.
+
+- **fix**: C-SIDE completion messages respect result storage and
+  document compatibility metadata as run-level significant record
+  counts.
+
 - **feat**:
 
   - [`SpatialNeighborhoodProfile()`](https://mengxu98.github.io/scop/reference/SpatialNeighborhoodProfile.md)
@@ -52,6 +191,79 @@
     is below a threshold, which can reverse DE direction relative to
     cell-level tests. Set `min.cells.sample = 1` to keep the previous
     unfiltered behavior.
+  - [`RunNichenetr()`](https://mengxu98.github.io/scop/reference/RunNichenetr.md)
+    and
+    [`RunMultiNichenetr()`](https://mengxu98.github.io/scop/reference/RunMultiNichenetr.md)
+    gain `merged_table_file` to export a temporary merged
+    ligand-receptor/activity/target table as CSV; an existing file is
+    never overwritten.
+
+- **spatial workflows**: Add BANKSY and SmoothClust to
+  `RunStandardWorkflow(workflow = "spatial")`, with explicit
+  `spatial_cluster_params`. Optional SpotSweeper QC and SpaNorm
+  normalization retain stage status and keep original counts separate
+  from normalized downstream expression.
+
+- **spatial inputs**:
+  [`ReadSpatialData()`](https://mengxu98.github.io/scop/reference/ReadSpatialData.md)
+  delegates Visium, Visium HD and Xenium loading to Seurat and records
+  analysis units, assay/image resolution and coordinate units. Import
+  and workflow entry points automatically validate the selected context.
+
+- **large spatial data**:
+  [`ScaleData()`](https://mengxu98.github.io/scop/reference/ScaleData.md)
+  now supports Assay5 cell subsets and updates layer membership on
+  rescaling. SPARK-X retains sparse input, and dense spatial-feature
+  conversions have an explicit size guard.
+
+- **normalization**: Explicit `do_normalization = FALSE` is respected by
+  preprocessing, including externally normalized data that the heuristic
+  cannot classify. The SpaNorm workflow retains matched original counts
+  for library QC alongside normalized expression.
+
+- **dependencies**: Declare the existing direct lifecycle dependency
+  used by PseudobulkExpression; no optional Remotes backend is promoted
+  to Imports.
+
+- **data**: Remove the derivative `pbmc_celltypist_sub`,
+  `visium_human_pancreas_results_sub`, `visium_human_pancreas_pair_sub`,
+  and `xenium_human_pancreas_boundaries_sub` datasets and one-off data
+  migration scripts. Examples reuse `pbmcmultiome_sub` and
+  `visium_human_pancreas_sub`, computing results when needed;
+  specialized workflows document their required inputs without
+  placeholder files. Existing scripts using the removed
+  [`data()`](https://rdrr.io/r/utils/data.html) names must be updated.
+
+- **chore**: Optional-package probes in package code now use
+  `check_r(install = FALSE)` and `get_namespace_fun()` instead of
+  [`requireNamespace()`](https://rdrr.io/r/base/ns-load.html).
+  Documented examples call public functions under `\dontrun` and do not
+  invoke `check_r`.
+
+- **chore**: Cleared the remaining R CMD check findings across plot
+  wrappers and integration benchmarks.
+
+- **docs**: Synced the
+  [`RunMonocle3()`](https://mengxu98.github.io/scop/reference/RunMonocle3.md)
+  `use_partition` default and the
+  [`RunDoubletCalling()`](https://mengxu98.github.io/scop/reference/RunDoubletCalling.md)
+  backend default with their sources, and bolded the README headings to
+  match the other packages.
+
+- **test**: Dropped the stale AUCell namespace expectation from the
+  consistency tests.
+
+- **removed**:
+
+  - Removed the legacy spatial registry and result-discovery APIs
+    (`GetSpatialResult()`, `ListSpatialMethods()`,
+    `SpatialBackendStatus()`, and `SpatialResultInfo()`). Use each
+    producer’s documented `srt@tools` entry and, where provided, its
+    dedicated result accessor or plotting function.
+
+## scop 0.9.1
+
+- **feat**:
   - Internal preprocessing and integration workflows now use scop’s
     Seurat-compatible entry points, enabling validated native
     acceleration for normalization, variable-feature selection, scaling,
@@ -103,6 +315,14 @@
     sparsely (row-major edge list, bit-identical accumulation):
     `nperm = 200` Moran p-values at 300 spots drop from ~442s to ~14s
     (~30x).
+  - Removed wrappers whose upstream dependencies are unavailable or
+    uncompilable: `RunSpatialQM()`, the `RunSemla*()` wrappers, the
+    `BASS`/`SpatialMNN` branches of
+    [`RunSpatialIntegration()`](https://mengxu98.github.io/scop/reference/RunSpatialIntegration.md)
+    (PRECAST unaffected), and the SPATA2 `backend = "r"` path of
+    [`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)
+    (C++ backend only; `srt_to_spata2()`/`spata2_to_srt()` removed as
+    well).
   - [`RunMERINGUE()`](https://mengxu98.github.io/scop/reference/RunMERINGUE.md)
     gains a `backend = c("cpp", "r")` option; the C++ kernels replicate
     `MERINGUE::moranTest()`/`moranPermutationTest()` to machine
@@ -141,16 +361,10 @@
     `network_graph`, `egrn`, `overlap`. `"network"` draws one hub per
     TF. Network plots have no title. Networks use `"Chinese"` when
     `palette = "RdYlBu"`. Multi-TF legends show the top RSS cell type.
-
 - **fixed**:
-
-  - C-SIDE completion messages respect result storage and document
-    compatibility metadata as run-level significant record counts.
-  - `presto` is now a runtime-optional GitHub backend instead of a
-    suggested check dependency. Marker fast paths use an existing
-    installation without installing it, while
-    `RunCellChat(do.fast = TRUE)` can resolve the backend from
-    `immunogenomics/presto` before execution.
+  - R-CMD-check now installs `presto` directly from
+    `immunogenomics/presto`, avoiding dependency-resolution failures
+    caused by treating the GitHub-only package as a CRAN package.
   - [`RunCellRank()`](https://mengxu98.github.io/scop/reference/RunCellRank.md)
     now disables PETSc explicitly when retrying fate probabilities with
     SciPy’s direct solver, preventing CellRank 2.0.7 from silently
@@ -264,22 +478,7 @@
     Wilcoxon underflow on the y-axis, colors points by direction, and
     labels significant TFs. `"targets"` labels only significant genes so
     leader lines no longer pile at x = 0.
-
 - **removed**:
-
-  - Removed wrappers whose upstream dependencies are unavailable or
-    uncompilable: `RunSpatialQM()`, the `RunSemla*()` wrappers, the
-    `BASS`/`SpatialMNN` branches of
-    [`RunSpatialIntegration()`](https://mengxu98.github.io/scop/reference/RunSpatialIntegration.md)
-    (PRECAST unaffected), and the SPATA2 `backend = "r"` path of
-    [`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)
-    (C++ backend only; `srt_to_spata2()`/`spata2_to_srt()` removed as
-    well).
-  - Removed the legacy spatial registry and result-discovery APIs
-    (`GetSpatialResult()`, `ListSpatialMethods()`,
-    `SpatialBackendStatus()`, and `SpatialResultInfo()`). Use each
-    producer’s documented `srt@tools` entry and, where provided, its
-    dedicated result accessor or plotting function.
   - The `CaSpER` branch of
     [`RunCNV()`](https://mengxu98.github.io/scop/reference/RunCNV.md) is
     removed: `runCaSpER()` segfaults deterministically on R \>= 4.5 (HMM
@@ -288,9 +487,7 @@
     [`RunCNV()`](https://mengxu98.github.io/scop/reference/RunCNV.md)
     now supports `copykat`, `fastCNV`, `scevan`, `infercnv`, and
     `numbat`.
-
 - **changed**:
-
   - `RunBenchmark()` / `BenchmarkPlot()` are replaced by
     [`RunSpatialBenchmark()`](https://mengxu98.github.io/scop/reference/RunSpatialBenchmark.md)
     /
@@ -685,9 +882,9 @@
     checking.
   - [`srt_reorder()`](https://mengxu98.github.io/scop/reference/srt_reorder.md):
     Replaced per-cluster repeated sparse subsetting and
-    [`rowMeans()`](https://rdrr.io/pkg/Matrix/man/colSums-methods.html)
-    with a single sparse group-membership matrix multiplication,
-    speeding the cluster-reordering step used by
+    [`rowMeans()`](https://rdrr.io/r/base/colSums.html) with a single
+    sparse group-membership matrix multiplication, speeding the
+    cluster-reordering step used by
     [`RunStandardWorkflow()`](https://mengxu98.github.io/scop/reference/RunStandardWorkflow.md)
     while preserving average expression values.
   - [`FindExpressedMarkers()`](https://mengxu98.github.io/scop/reference/FindExpressedMarkers.md):

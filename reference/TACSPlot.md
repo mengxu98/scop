@@ -12,7 +12,7 @@ each cell, and the resulting quantities are plotted.
 
 ``` r
 TACSPlot(
-  srt,
+  object,
   ref_srt = NULL,
   assay = "RNA",
   layer = "data",
@@ -48,13 +48,14 @@ TACSPlot(
   nrow = NULL,
   ncol = NULL,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -204,6 +205,11 @@ TACSPlot(
   Additional parameters passed to
   [ggplot2::stat_density2d](https://ggplot2.tidyverse.org/reference/geom_density_2d.html).
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## References
 
 [Kernfeld et al. paper](https://doi.org/10.1016/j.immuni.2018.04.015),
@@ -214,22 +220,22 @@ TACSPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 22:42:43] Start standard processing workflow...
-#> ℹ [2026-09-06 22:42:43] Checking a list of <Seurat>...
-#> ! [2026-09-06 22:42:43] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 22:42:43] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:42:43] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:42:44] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 22:42:44] Number of available HVF: 2000
-#> ℹ [2026-09-06 22:42:44] Finished check
-#> ℹ [2026-09-06 22:42:44] Perform `ScaleData()`
-#> ℹ [2026-09-06 22:42:44] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 22:42:44] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 22:42:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 22:42:45] Reorder clusters...
-#> ℹ [2026-09-06 22:42:45] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 22:42:45] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 22:42:52] Standard processing workflow completed
+#> ℹ [2026-09-13 22:54:34] Start standard processing workflow...
+#> ℹ [2026-09-13 22:54:34] Checking a list of <Seurat>...
+#> ! [2026-09-13 22:54:34] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 22:54:34] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:54:34] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:54:34] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 22:54:34] Number of available HVF: 2000
+#> ℹ [2026-09-13 22:54:34] Finished check
+#> ℹ [2026-09-13 22:54:34] Perform `ScaleData()`
+#> ℹ [2026-09-13 22:54:34] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 22:54:34] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 22:54:35] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 22:54:35] Reorder clusters...
+#> ℹ [2026-09-13 22:54:35] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:54:35] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 22:54:43] Standard processing workflow completed
 TACSPlot(
   pancreas_sub,
   feature1 = "H3f3b",

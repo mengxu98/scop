@@ -6,12 +6,12 @@ running a Giotto workflow or changing the input object.
 ## Usage
 
 ``` r
-srt_to_giotto(srt, image = NULL, ...)
+srt_to_giotto(object, image = NULL, ..., srt = NULL)
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A \`Seurat\` object.
 
@@ -23,9 +23,22 @@ srt_to_giotto(srt, image = NULL, ...)
 
   Additional arguments passed to the Giotto converter.
 
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
+
 ## Value
 
 A native Giotto object.
+
+## Details
+
+Converters live in GiottoClass. If that package is already installed
+from any source, the bridge reuses it and does not reinstall
+\`drieslab/Giotto\`. A GitHub reinstall is requested only when
+GiottoClass is missing. Conversion does not initialize Giotto's optional
+Python/conda environment.
 
 ## Examples
 
@@ -37,12 +50,7 @@ spatial <- Seurat::NormalizeData(
   assay = "Spatial",
   verbose = FALSE
 )
-if (all(unlist(
-  thisutils::check_r("drieslab/Giotto", verbose = FALSE),
-  use.names = FALSE
-))) {
-  giotto <- srt_to_giotto(spatial, image = "slice1")
-  print(giotto)
-}
+giotto <- srt_to_giotto(spatial, image = "slice1")
+print(giotto)
 } # }
 ```

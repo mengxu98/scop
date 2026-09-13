@@ -14,8 +14,10 @@ VECTORPlot(
   score.name = "VECTOR_Score",
   group.by = NULL,
   background = c("auto", "score", "group", "none"),
+  pt.size = NULL,
   point.size = NULL,
-  point.alpha = 0.7,
+  pt.alpha = 0.7,
+  point.alpha = NULL,
   grid.size = 2,
   arrow.linewidth = 0.5,
   arrow.length = grid::unit(0.035, "inches"),
@@ -68,12 +70,17 @@ VECTORPlot(
   and requires `group.by`, and `"none"` draws the flow field without
   cell points.
 
-- point.size:
+- pt.size:
 
   Cell point size. If `NULL`, uses the same default as
   [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md).
 
-- point.alpha:
+- point.size, point.alpha:
+
+  Deprecated alias(es) for `pt.size`/`pt.alpha`; supply exactly one of
+  the two. It will be removed in scop 1.0.0.
+
+- pt.alpha:
 
   Cell point alpha.
 
@@ -132,22 +139,22 @@ A `ggplot` object.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 22:42:58] Start standard processing workflow...
-#> ℹ [2026-09-06 22:42:58] Checking a list of <Seurat>...
-#> ! [2026-09-06 22:42:58] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 22:42:58] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:42:59] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:42:59] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 22:42:59] Number of available HVF: 2000
-#> ℹ [2026-09-06 22:42:59] Finished check
-#> ℹ [2026-09-06 22:42:59] Perform `ScaleData()`
-#> ℹ [2026-09-06 22:42:59] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 22:42:59] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 22:43:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 22:43:00] Reorder clusters...
-#> ℹ [2026-09-06 22:43:00] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 22:43:00] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 22:43:08] Standard processing workflow completed
+#> ℹ [2026-09-13 22:54:49] Start standard processing workflow...
+#> ℹ [2026-09-13 22:54:49] Checking a list of <Seurat>...
+#> ! [2026-09-13 22:54:49] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 22:54:49] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:54:49] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:54:49] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 22:54:49] Number of available HVF: 2000
+#> ℹ [2026-09-13 22:54:49] Finished check
+#> ℹ [2026-09-13 22:54:49] Perform `ScaleData()`
+#> ℹ [2026-09-13 22:54:49] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 22:54:50] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 22:54:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 22:54:50] Reorder clusters...
+#> ℹ [2026-09-13 22:54:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:54:50] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 22:54:59] Standard processing workflow completed
 pancreas_sub <- RunVECTOR(pancreas_sub, verbose = FALSE)
 VECTORPlot(pancreas_sub, plot_type = "grid")
 

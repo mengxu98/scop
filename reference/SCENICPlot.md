@@ -16,7 +16,7 @@ the returned annotation table.
 
 ``` r
 SCENICPlot(
-  srt,
+  object,
   group.by,
   tool_name = "SCENIC",
   assay = "scenic",
@@ -82,8 +82,10 @@ SCENICPlot(
   title = NULL,
   point_color = "#B8C2CC",
   top_color = "#B64342",
-  point_size = 1.8,
-  point_alpha = 0.85,
+  pt.size = 1.8,
+  point_size = NULL,
+  pt.alpha = 0.85,
+  point_alpha = NULL,
   highlight_tf = NULL,
   highlight_color = "#7A0177",
   highlight_point_size = 2,
@@ -91,13 +93,16 @@ SCENICPlot(
   label_size = 3,
   label_max_overlaps = Inf,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL,
+  theme_use = "theme_scop",
+  theme_args = list()
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object with SCENIC or SCENIC+ results.
 
@@ -332,11 +337,16 @@ SCENICPlot(
 
   Top-regulon point color.
 
-- point_size:
+- pt.size:
 
   Point size.
 
-- point_alpha:
+- point_size, point_alpha:
+
+  Deprecated alias(es) for `pt.size`/`pt.alpha`; supply exactly one of
+  the two. It will be removed in scop 1.0.0.
+
+- pt.alpha:
 
   Rank-plot alpha.
 
@@ -371,6 +381,15 @@ SCENICPlot(
 - ...:
 
   Extra heatmap arguments such as `width` and `height`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
+- theme_use, theme_args:
+
+  Theme name or function, plus extra theme arguments.
 
 ## Value
 

@@ -6,7 +6,7 @@ Convert CCC results to a LIANA-like table
 
 ``` r
 ccc_to_liana(
-  srt,
+  object,
   method = NULL,
   condition = NULL,
   dataset = 1,
@@ -23,13 +23,14 @@ ccc_to_liana(
   aggregate = TRUE,
   sample_col = NULL,
   score_col = "score",
-  pvalue_col = "pvalue"
+  pvalue_col = "pvalue",
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -105,6 +106,11 @@ ccc_to_liana(
 - pvalue_col:
 
   Column used as the exported p-value/rank-like support.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

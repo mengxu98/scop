@@ -6,7 +6,7 @@ Run mcRigor metacell partition assessment
 
 ``` r
 RunmcRigor(
-  srt,
+  object,
   cell_membership = NULL,
   metacell.by = NULL,
   mode = c("detect", "optimize"),
@@ -35,13 +35,14 @@ RunmcRigor(
   step_save = FALSE,
   prefix = "mcRigor",
   tool_name = "mcRigor",
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object containing the original single-cell data.
 
@@ -123,6 +124,11 @@ RunmcRigor(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with mcRigor metadata and a result list stored in
@@ -148,16 +154,16 @@ pancreas_sub <- RunStandardWorkflow(
   nonlinear_reduction_dims = 2,
   verbose = FALSE
 )
-#> ℹ [2026-09-06 22:38:43] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:50:36] Skip `log1p()` because `layer = data` is not "counts"
 mc <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 25
 )
-#> ℹ [2026-09-06 22:38:51] Running SuperCell with gamma = 25, k.knn = 5 on 1000 cells
-#> ℹ [2026-09-06 22:38:52] `RunMetaCell()` ("supercell") built 40 metacells from 1000 cells
-#> ℹ [2026-09-06 22:38:52] Metacell size summary: min 5, median 20, mean 25, max 74 cells
-#> ✔ [2026-09-06 22:38:52] `RunMetaCell()` returned metacell Seurat with 40 metacells. Original cells in `@misc[["original_srt"]]`
+#> ℹ [2026-09-13 22:50:44] Running SuperCell with gamma = 25, k.knn = 5 on 1000 cells
+#> ℹ [2026-09-13 22:50:45] `RunMetaCell()` ("supercell") built 40 metacells from 1000 cells
+#> ℹ [2026-09-13 22:50:45] Metacell size summary: min 5, median 20, mean 25, max 74 cells
+#> ✔ [2026-09-13 22:50:45] `RunMetaCell()` returned metacell Seurat with 40 metacells. Original cells in `@misc[["original_srt"]]`
 
 membership <- data.frame(
   Metacell = mc@misc[["cell_membership"]],
@@ -171,14 +177,14 @@ pancreas_sub <- RunmcRigor(
   feature_use = 100,
   draw = FALSE
 )
-#> ℹ [2026-09-06 22:41:17] Run mcRigor in "detect" mode with 1 partition
+#> ℹ [2026-09-13 22:53:10] Run mcRigor in "detect" mode with 1 partition
 #> Normalizing data...
 #> gamma = 1 
 #>   |                                                                              |                                                                      |   0%  |                                                                              |==                                                                    |   2%  |                                                                              |====                                                                  |   5%  |                                                                              |=====                                                                 |   8%  |                                                                              |=======                                                               |  10%  |                                                                              |=========                                                             |  12%  |                                                                              |==========                                                            |  15%  |                                                                              |============                                                          |  18%  |                                                                              |==============                                                        |  20%  |                                                                              |================                                                      |  22%  |                                                                              |==================                                                    |  25%  |                                                                              |===================                                                   |  28%  |                                                                              |=====================                                                 |  30%  |                                                                              |=======================                                               |  32%  |                                                                              |========================                                              |  35%  |                                                                              |==========================                                            |  38%  |                                                                              |============================                                          |  40%  |                                                                              |==============================                                        |  42%  |                                                                              |================================                                      |  45%  |                                                                              |=================================                                     |  48%  |                                                                              |===================================                                   |  50%  |                                                                              |=====================================                                 |  52%  |                                                                              |======================================                                |  55%  |                                                                              |========================================                              |  57%  |                                                                              |==========================================                            |  60%  |                                                                              |============================================                          |  62%  |                                                                              |==============================================                        |  65%  |                                                                              |===============================================                       |  68%  |                                                                              |=================================================                     |  70%  |                                                                              |===================================================                   |  72%  |                                                                              |====================================================                  |  75%  |                                                                              |======================================================                |  78%  |                                                                              |========================================================              |  80%  |                                                                              |==========================================================            |  82%  |                                                                              |============================================================          |  85%  |                                                                              |=============================================================         |  88%  |                                                                              |===============================================================       |  90%  |                                                                              |=================================================================     |  92%  |                                                                              |==================================================================    |  95%  |                                                                              |====================================================================  |  98%  |                                                                              |======================================================================| 100%
 #> 
 #>     dubious trustworthy 
 #>          27          13 
-#> ✔ [2026-09-06 22:41:23] mcRigor results stored in `srt@tools[[mcRigor]]`
+#> ✔ [2026-09-13 22:53:16] mcRigor results stored in `srt@tools[[mcRigor]]`
 
 table(pancreas_sub$mcRigor_status)
 #> 

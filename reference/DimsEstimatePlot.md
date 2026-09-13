@@ -6,7 +6,7 @@ Dimension estimate diagnostic plot
 
 ``` r
 DimsEstimatePlot(
-  srt,
+  object,
   max_pcs = 50,
   variance_thresholds = c(0.6, 0.7, 0.8, 0.9),
   reduction = NULL,
@@ -18,13 +18,14 @@ DimsEstimatePlot(
   theme_use = "theme_scop",
   theme_args = list(),
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object with a PCA-like reduction computed.
 
@@ -79,6 +80,11 @@ DimsEstimatePlot(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `ggplot` object showing per-PC explained variance (bars, left axis)
@@ -93,21 +99,21 @@ and cumulative explained variance (line, right axis).
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 21:22:31] Start standard processing workflow...
-#> ℹ [2026-09-06 21:22:31] Checking a list of <Seurat>...
-#> ! [2026-09-06 21:22:31] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 21:22:31] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:22:31] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 21:22:32] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 21:22:32] Number of available HVF: 2000
-#> ℹ [2026-09-06 21:22:32] Finished check
-#> ℹ [2026-09-06 21:22:32] Perform `ScaleData()`
-#> ℹ [2026-09-06 21:22:32] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 21:22:32] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 21:22:32] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 21:22:32] Reorder clusters...
-#> ℹ [2026-09-06 21:22:32] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 21:22:32] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 21:22:38] Standard processing workflow completed
+#> ℹ [2026-09-13 21:34:41] Start standard processing workflow...
+#> ℹ [2026-09-13 21:34:41] Checking a list of <Seurat>...
+#> ! [2026-09-13 21:34:41] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 21:34:41] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:34:41] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 21:34:41] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 21:34:42] Number of available HVF: 2000
+#> ℹ [2026-09-13 21:34:42] Finished check
+#> ℹ [2026-09-13 21:34:42] Perform `ScaleData()`
+#> ℹ [2026-09-13 21:34:42] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 21:34:42] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 21:34:42] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 21:34:42] Reorder clusters...
+#> ℹ [2026-09-13 21:34:42] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 21:34:42] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 21:34:48] Standard processing workflow completed
 DimsEstimatePlot(pancreas_sub)
 ```

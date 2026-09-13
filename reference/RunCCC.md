@@ -6,7 +6,7 @@ Run common cell-cell communication analyses
 
 ``` r
 RunCCC(
-  srt,
+  object,
   group.by = NULL,
   methods = c("CellChat", "CellphoneDB", "LIANA"),
   method_params = list(),
@@ -14,13 +14,14 @@ RunCCC(
   skip_failed = FALSE,
   rebuild_unified = TRUE,
   thresh = 0.05,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -69,6 +70,11 @@ RunCCC(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

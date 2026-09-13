@@ -11,7 +11,7 @@ of these plots.
 
 ``` r
 IntegrationBenchmarkPlot(
-  srt,
+  object,
   plot_type = c("auto", "box", "heatmap", "scatter", "umap"),
   tool_name = "IntegrationBenchmark",
   metrics = NULL,
@@ -26,13 +26,14 @@ IntegrationBenchmarkPlot(
   nrow = NULL,
   ncol = NULL,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object from
   [`RunIntegrationBenchmark()`](https://mengxu98.github.io/scop/reference/RunIntegrationBenchmark.md).
@@ -71,6 +72,22 @@ IntegrationBenchmarkPlot(
 
   Whether to overlay jittered points on the LISI boxes.
 
+- combine:
+
+  Combine plots with
+  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  `combine = FALSE` returns a list of ggplots.
+
+- nrow:
+
+  Combine plots with
+  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  `combine = FALSE` returns a list of ggplots.
+
+- ncol:
+
+  Number of columns of the combined plot.
+
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
@@ -78,6 +95,11 @@ IntegrationBenchmarkPlot(
 - ...:
 
   The message to print.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

@@ -6,7 +6,7 @@ Run BayesSpace spatial clustering
 
 ``` r
 RunBayesSpace(
-  srt,
+  object,
   q,
   assay = NULL,
   platform = c("Visium", "VisiumHD", "ST"),
@@ -23,13 +23,14 @@ RunBayesSpace(
   init_colname = "BayesSpace_init",
   store_sce = TRUE,
   verbose = TRUE,
-  coord.cols = c("col", "row")
+  coord.cols = c("col", "row"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -104,6 +105,11 @@ RunBayesSpace(
   Two metadata columns containing raw x/y coordinates when no spatial
   image is available.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with BayesSpace clusters in metadata and raw results
@@ -112,9 +118,11 @@ in `srt@tools[["BayesSpace"]]`.
 ## Examples
 
 ``` r
-data(visium_human_pancreas_results_sub)
+data(visium_human_pancreas_sub)
+keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
+spatial <- visium_human_pancreas_sub[, keep_spots]
 spatial <- RunBayesSpace(
-  visium_human_pancreas_results_sub,
+  spatial,
   q = 3,
   n.PCs = 5,
   n.HVGs = 200,
@@ -123,7 +131,7 @@ spatial <- RunBayesSpace(
   coord.cols = c("x", "y"),
   verbose = FALSE
 )
-#> Neighbors were identified for 132 out of 400 spots.
+#> Neighbors were identified for 377 out of 400 spots.
 #> Fitting model...
 #> Calculating labels using iterations 11 through 100.
 SpatialSpotPlot(
@@ -133,4 +141,6 @@ SpatialSpotPlot(
   coord.cols = c("x", "y"),
   pt.size = 1.5
 )
+#> Ignoring unknown labels:
+#> • colour : "BayesSpace_cluster"
 ```

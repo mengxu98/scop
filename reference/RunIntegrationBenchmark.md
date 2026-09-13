@@ -12,7 +12,7 @@ plotting can reuse the embeddings and per-cell LISI scores.
 
 ``` r
 RunIntegrationBenchmark(
-  srt,
+  object,
   batch,
   celltype = NULL,
   methods = c("Uncorrected", "Harmony"),
@@ -28,13 +28,14 @@ RunIntegrationBenchmark(
   skip_failed = TRUE,
   tool_name = "IntegrationBenchmark",
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object containing a batch column.
 
@@ -50,6 +51,30 @@ RunIntegrationBenchmark(
 
   Integration methods passed to
   [`RunIntegration()`](https://mengxu98.github.io/scop/reference/RunIntegration.md).
+
+- linear_reduction:
+
+  Linear reduction (`"pca"`, `"svd"`, `"ica"`, `"nmf"`, `"mds"`,
+  `"glmpca"`).
+
+- nHVF:
+
+  Number of highly variable features.
+
+- linear_reduction_dims:
+
+  Total number of dimensions to compute and store for
+  `linear_reduction`.
+
+- linear_reduction_dims_use:
+
+  Dimensions used downstream. `NULL` uses estimated dimensions, else the
+  first 50.
+
+- nonlinear_reduction:
+
+  Nonlinear reduction (`"umap"`, `"umap-naive"`, `"tsne"`, `"dm"`,
+  `"phate"`, `"pacmap"`, `"trimap"`, `"largevis"`, `"fr"`).
 
 - perplexity:
 
@@ -80,6 +105,11 @@ RunIntegrationBenchmark(
 - ...:
 
   The message to print.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

@@ -12,6 +12,7 @@
 <url><loc>https://mengxu98.github.io/scop/articles/spatial-benchmark-workflow.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/articles/spatial-framework-bridges.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/articles/spatial-main-workflow.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/articles/spatial-platform-workflows.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/articles/trajectory-dynamic-workflow.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/authors.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/index.html</loc></url>
@@ -122,6 +123,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/ProportionTestPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/PseudotimeProjectionPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RPCA_integrate.html</loc></url>
+<url><loc>https://mengxu98.github.io/scop/reference/ReadSpatialData.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RecoverCounts.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RemoveEnv.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RenameClusters.html</loc></url>
@@ -234,7 +236,6 @@
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpatialBenchmark.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpatialCellChat.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpatialDM.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/RunSpatialDWLS.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpatialEcoTyper.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/RunSpatialIntegration.html</loc></url>
@@ -280,8 +281,6 @@
 <url><loc>https://mengxu98.github.io/scop/reference/SpatialCoordinates.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/SpatialDMPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/SpatialDeconvolutionPlot.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/SpatialEcoTyperCompositionPlot.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/SpatialEcoTyperSpatialPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/SpatialGradientPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/SpatialIntegrationPlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/SpatialNeighborhoodPlot.html</loc></url>
@@ -316,7 +315,6 @@
 <url><loc>https://mengxu98.github.io/scop/reference/loom_to_srt.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/panc8_sub.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/pancreas_sub.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/pbmc_celltypist_sub.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/pbmcmultiome_sub.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/reexports.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/ref_scMCA.html</loc></url>
@@ -341,10 +339,7 @@
 <url><loc>https://mengxu98.github.io/scop/reference/tAgePlot.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/theme_scop.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/theme_spatial.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/visium_human_pancreas_pair_sub.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/visium_human_pancreas_results_sub.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/visium_human_pancreas_sub.html</loc></url>
 <url><loc>https://mengxu98.github.io/scop/reference/words_excluded.html</loc></url>
-<url><loc>https://mengxu98.github.io/scop/reference/xenium_human_pancreas_boundaries_sub.html</loc></url>
 </urlset>
 

@@ -6,7 +6,7 @@ Plot branch-aware Palantir trajectories on a two-dimensional embedding.
 
 ``` r
 PalantirTrajectoryPlot(
-  srt,
+  object,
   reduction = NULL,
   dims = c(1, 2),
   cells = NULL,
@@ -44,13 +44,14 @@ PalantirTrajectoryPlot(
   theme_args = list(),
   return_layer = FALSE,
   seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -200,6 +201,11 @@ PalantirTrajectoryPlot(
 - verbose:
 
   Whether to print messages.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## See also
 

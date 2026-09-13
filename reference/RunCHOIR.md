@@ -13,7 +13,7 @@ lightweight summary to `srt@tools[[tool_name]]`.
 
 ``` r
 RunCHOIR(
-  srt,
+  object,
   assay = NULL,
   layer = NULL,
   key = "CHOIR",
@@ -38,13 +38,14 @@ RunCHOIR(
   store_tool = TRUE,
   verbose = TRUE,
   overwrite = FALSE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -163,6 +164,11 @@ RunCHOIR(
   Unsupported arguments produce an error rather than being silently
   ignored.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object containing CHOIR clusters in `cluster_colname`,
@@ -180,16 +186,14 @@ types and states from single-cell data. *Nature Genetics* 57, 1309-1319
 
 ``` r
 if (FALSE) { # \dontrun{
-if (check_r("corceslab/CHOIR", verbose = FALSE)) {
-  data(pancreas_sub)
-  pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
-  pancreas_sub <- RunCHOIR(
-    pancreas_sub,
-    assay = "RNA",
-    n_cores = 2,
-    verbose = FALSE
-  )
-  CellDimPlot(pancreas_sub, group.by = "CHOIR_cluster")
-}
+data(pancreas_sub)
+pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
+pancreas_sub <- RunCHOIR(
+  pancreas_sub,
+  assay = "RNA",
+  n_cores = 2,
+  verbose = FALSE
+)
+CellDimPlot(pancreas_sub, group.by = "CHOIR_cluster")
 } # }
 ```

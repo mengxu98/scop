@@ -208,14 +208,16 @@ query <- Seurat::NormalizeData(
 )
 genes <- head(intersect(rownames(reference), rownames(query)), 200)
 query <- RunKNNPredict(
-  query, srt_ref = reference, ref_group = "celltype",
+  query,
+  srt_ref = reference, ref_group = "celltype",
   features = genes, nfeatures = length(genes),
   ref_collapsing = FALSE, k = 10, verbose = FALSE
 )
 query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
-#> ℹ [2026-09-06 22:27:33] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:39:24] Skip `log1p()` because `layer = data` is not "counts"
 CellDimPlot(
-  query, group.by = "KNNPredict_classification",
+  query,
+  group.by = "KNNPredict_classification",
   label = TRUE, legend.position = "bottom"
 )
 

@@ -3,9 +3,7 @@
 Plot spot-by-cell-type proportions stored by
 [`RunRCTD()`](https://mengxu98.github.io/scop/reference/RunRCTD.md),
 [`RunCARD()`](https://mengxu98.github.io/scop/reference/RunCARD.md),
-[`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md),
-or
-[`RunSpatialDWLS()`](https://mengxu98.github.io/scop/reference/RunSpatialDWLS.md).
+[`RunSPOTlight()`](https://mengxu98.github.io/scop/reference/RunSPOTlight.md).
 The plot reads the stored result directly from `srt@tools[[tool_name]]`
 and never reruns a deconvolution backend.
 [`RunCSIDE()`](https://mengxu98.github.io/scop/reference/RunCSIDE.md) is
@@ -16,7 +14,7 @@ context effects rather than cell-type proportions.
 
 ``` r
 SpatialDeconvolutionPlot(
-  srt,
+  object,
   tool_name = NULL,
   cell_types = NULL,
   plot_type = c("point", "dominant", "pie"),
@@ -25,13 +23,14 @@ SpatialDeconvolutionPlot(
   ncol = NULL,
   byrow = TRUE,
   ...,
-  image.scale = c("lowres", "hires")
+  image.scale = c("lowres", "hires"),
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A spatial `Seurat` object containing a stored deconvolution result.
 
@@ -68,6 +67,11 @@ SpatialDeconvolutionPlot(
 
   Image scale factor matching the selected raster.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `ggplot`, `patchwork`, or named list of `ggplot` objects.
@@ -75,35 +79,28 @@ A `ggplot`, `patchwork`, or named list of `ggplot` objects.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
 data(panc8_sub)
-keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 120)))
-spatial <- visium_human_pancreas_sub[, keep_spots]
-reference <- panc8_sub[, panc8_sub@meta.data[["celltype"]] %in%
-  c("ductal", "alpha", "beta")]
+reference <- panc8_sub[, panc8_sub$celltype %in% c("ductal", "alpha", "beta")]
 reference <- Seurat::FindVariableFeatures(reference, nfeatures = 300, verbose = FALSE)
-shared <- head(intersect(
+features <- head(intersect(
   SeuratObject::VariableFeatures(reference),
-  rownames(spatial)
+  rownames(visium_human_pancreas_sub)
 ), 300)
-spatial <- RunSpatialDWLS(
-  srt = spatial,
+spatial <- RunRCTD(
+  visium_human_pancreas_sub,
   reference = reference,
   reference_label = "celltype",
+  features = features,
   assay = "Spatial",
   reference_assay = "RNA",
   layer = "counts",
   reference_layer = "counts",
-  features = shared,
-  coord.cols = c("x", "y"),
-  min_cells = 2,
+  rctd_mode = "full",
+  max_cores = 1,
   verbose = FALSE
 )
-SpatialDeconvolutionPlot(
-  spatial,
-  tool_name = "SpatialDWLS",
-  plot_type = "dominant",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y")
-)
+SpatialDeconvolutionPlot(spatial, tool_name = "RCTD", plot_type = "dominant")
+} # }
 ```

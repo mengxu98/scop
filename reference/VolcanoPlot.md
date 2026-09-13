@@ -7,7 +7,7 @@ results.
 
 ``` r
 VolcanoPlot(
-  srt,
+  object,
   group.by = NULL,
   test.use = "wilcox",
   res = NULL,
@@ -52,13 +52,14 @@ VolcanoPlot(
   enrich_gsva_score_cutoff = NULL,
   gsva_method = NULL,
   enrich_nlabel = 15,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object or `SummarizedExperiment` object containing the
   results of differential expression analysis.
@@ -256,6 +257,11 @@ VolcanoPlot(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## See also
 
 [DEtestPlot](https://mengxu98.github.io/scop/reference/DEtestPlot.md),
@@ -268,38 +274,38 @@ VolcanoPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-06 22:43:31] Start standard processing workflow...
-#> ℹ [2026-09-06 22:43:32] Checking a list of <Seurat>...
-#> ! [2026-09-06 22:43:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-06 22:43:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:43:32] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-06 22:43:32] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-06 22:43:32] Number of available HVF: 2000
-#> ℹ [2026-09-06 22:43:32] Finished check
-#> ℹ [2026-09-06 22:43:32] Perform `ScaleData()`
-#> ℹ [2026-09-06 22:43:32] Perform pca linear dimension reduction
-#> ℹ [2026-09-06 22:43:32] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-06 22:43:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-06 22:43:33] Reorder clusters...
-#> ℹ [2026-09-06 22:43:33] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-06 22:43:33] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-06 22:43:41] Standard processing workflow completed
+#> ℹ [2026-09-13 22:55:22] Start standard processing workflow...
+#> ℹ [2026-09-13 22:55:22] Checking a list of <Seurat>...
+#> ! [2026-09-13 22:55:22] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-13 22:55:22] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:55:22] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-13 22:55:22] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-13 22:55:22] Number of available HVF: 2000
+#> ℹ [2026-09-13 22:55:22] Finished check
+#> ℹ [2026-09-13 22:55:22] Perform `ScaleData()`
+#> ℹ [2026-09-13 22:55:22] Perform pca linear dimension reduction
+#> ℹ [2026-09-13 22:55:23] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-13 22:55:23] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-13 22:55:23] Reorder clusters...
+#> ℹ [2026-09-13 22:55:23] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:55:23] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-13 22:55:32] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-09-06 22:43:41] Data type is log-normalized
-#> ℹ [2026-09-06 22:43:41] Start differential expression test
-#> ℹ [2026-09-06 22:43:41] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-09-06 22:43:41] Using 1 core
-#> ⠙ [2026-09-06 22:43:41] Running for Ductal [1/5] ■■          20% | ETA: 15s
-#> ⠹ [2026-09-06 22:43:41] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
-#> ⠸ [2026-09-06 22:43:41] Running for Endocrine [3/5] ■■■■■■      60% | ETA:  6s
-#> ⠼ [2026-09-06 22:43:41] Running for Ngn3-low-EP [4/5] ■■■■■■■■    80% | ETA:  3s
-#> ✔ [2026-09-06 22:43:41] Completed 5 tasks in 15s
+#> ℹ [2026-09-13 22:55:32] Data type is log-normalized
+#> ℹ [2026-09-13 22:55:32] Start differential expression test
+#> ℹ [2026-09-13 22:55:32] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-09-13 22:55:32] Using 1 core
+#> ⠙ [2026-09-13 22:55:32] Running for Ductal [1/5] ■■          20% | ETA: 15s
+#> ⠹ [2026-09-13 22:55:32] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
+#> ⠸ [2026-09-13 22:55:32] Running for Endocrine [3/5] ■■■■■■      60% | ETA:  6s
+#> ⠼ [2026-09-13 22:55:32] Running for Ngn3-low-EP [4/5] ■■■■■■■■    80% | ETA:  3s
+#> ✔ [2026-09-13 22:55:32] Completed 5 tasks in 15.1s
 #> 
-#> ℹ [2026-09-06 22:43:41] Building results
-#> ✔ [2026-09-06 22:43:56] Differential expression test completed
+#> ℹ [2026-09-13 22:55:32] Building results
+#> ✔ [2026-09-13 22:55:47] Differential expression test completed
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -348,17 +354,17 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-09-06 22:44:04] Start Enrichment analysis
-#> ℹ [2026-09-06 22:44:04] Species: "Mus_musculus"
-#> ℹ [2026-09-06 22:44:04] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-06 21:27:14
-#> ℹ [2026-09-06 22:44:06] Permform enrichment...
-#> ℹ [2026-09-06 22:44:07] Using 1 core
-#> ⠙ [2026-09-06 22:44:07] Running for 1 [1/5] ■■          20% | ETA:  2s
-#> ⠹ [2026-09-06 22:44:07] Running for 2 [2/5] ■■■■        40% | ETA:  2s
-#> ✔ [2026-09-06 22:44:07] Completed 5 tasks in 2.7s
+#> ℹ [2026-09-13 22:55:56] Start Enrichment analysis
+#> ℹ [2026-09-13 22:55:56] Species: "Mus_musculus"
+#> ℹ [2026-09-13 22:55:56] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-13 21:39:21
+#> ℹ [2026-09-13 22:55:57] Permform enrichment...
+#> ℹ [2026-09-13 22:55:58] Using 1 core
+#> ⠙ [2026-09-13 22:55:58] Running for 1 [1/5] ■■          20% | ETA:  2s
+#> ⠹ [2026-09-13 22:55:58] Running for 4 [4/5] ■■■■■■■■    80% | ETA:  1s
+#> ✔ [2026-09-13 22:55:58] Completed 5 tasks in 2.9s
 #> 
-#> ℹ [2026-09-06 22:44:07] Building results
-#> ✔ [2026-09-06 22:44:10] Enrichment analysis done
+#> ℹ [2026-09-13 22:55:58] Building results
+#> ✔ [2026-09-13 22:56:01] Enrichment analysis done
 VolcanoPlot(
   pancreas_sub,
   group.by = "CellType",

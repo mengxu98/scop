@@ -88,7 +88,8 @@ object$col <- c(0, 1, 3, 5)
 object$row <- c(0, 0, 0, 0)
 object$celltype <- c("T", "M", "M", "T")
 profile <- SpatialNeighborhoodProfile(
-  object, "celltype", radii = c(1, 3), cells = "a", verbose = FALSE
+  object, "celltype",
+  radii = c(1, 3), cells = "a", verbose = FALSE
 )
 profile
 #>   cell_id sample group lower radius count total fraction

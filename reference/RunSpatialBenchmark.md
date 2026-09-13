@@ -11,7 +11,7 @@ assessed.
 
 ``` r
 RunSpatialBenchmark(
-  srt,
+  object,
   gold_standard,
   methods = NULL,
   method_params = list(),
@@ -22,13 +22,14 @@ RunSpatialBenchmark(
   seed = 1,
   timeout = Inf,
   poll_interval = 0.1,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A spatial `Seurat` object.
 
@@ -90,6 +91,11 @@ RunSpatialBenchmark(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `spatial_benchmark_result` object (also inherits `benchmark_result`).
@@ -106,17 +112,31 @@ for visualization, and `$predictions` for the aligned labels.
 
 ``` r
 if (FALSE) { # \dontrun{
-data(visium_human_pancreas_sub)
-visium_human_pancreas_sub$gold_domain <- factor(
-  paste0("domain_", (seq_len(ncol(visium_human_pancreas_sub)) - 1) %% 3 + 1)
+set.seed(42)
+n_spots <- 36L
+n_genes <- 60L
+grid <- expand.grid(x = 1:6, y = 1:6)
+domain <- factor(ifelse(grid$x <= 2, "left", ifelse(grid$x <= 4, "middle", "right")))
+counts <- matrix(rpois(n_genes * n_spots, 2),
+  nrow = n_genes,
+  dimnames = list(paste0("Gene", seq_len(n_genes)), paste0("spot", seq_len(n_spots)))
 )
+signal <- split(seq_len(n_genes), rep(c("left", "middle", "right"), each = 20))
+for (label in names(signal)) {
+  counts[signal[[label]], domain == label] <-
+    counts[signal[[label]], domain == label] + rpois(sum(domain == label) * 20, 5)
+}
+spatial <- SeuratObject::CreateSeuratObject(counts)
+spatial$x <- grid$x
+spatial$y <- grid$y
+spatial$gold_domain <- domain
 bench <- RunSpatialBenchmark(
-  visium_human_pancreas_sub,
+  spatial,
   gold_standard = "gold_domain",
   method_params = list(
-    BayesSpace = list(n.PCs = 5, n.HVGs = 200),
-    BANKSY = list(layer = "counts"),
-    SmoothClust = list(layer = "counts", min_spots = 1)
+    BayesSpace = list(n.PCs = 5, n.HVGs = 20, coord.cols = c("x", "y")),
+    BANKSY = list(layer = "counts", coord.cols = c("x", "y")),
+    SmoothClust = list(layer = "counts", min_spots = 1, coord.cols = c("x", "y"))
   )
 )
 bench

@@ -7,7 +7,7 @@ SpaCET single-cell-resolution spatial transcriptomics input.
 
 ``` r
 RunSecActCCC(
-  srt = NULL,
+  object = NULL,
   inputProfile = NULL,
   mode = c("scRNAseq", "scST"),
   cellType_meta,
@@ -30,13 +30,14 @@ RunSecActCCC(
   coreNo = 6,
   tool_name = "SecAct_CCC",
   store_results = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   Optional Seurat object. When `mode = "scRNAseq"`, this is passed to
   `SecAct.activity.inference.scRNAseq`. When `mode = "matrix"`,
@@ -97,6 +98,11 @@ RunSecActCCC(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

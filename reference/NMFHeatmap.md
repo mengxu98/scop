@@ -6,7 +6,7 @@ NMF similarity heatmap
 
 ``` r
 NMFHeatmap(
-  srt,
+  object,
   plot_type = c("cells", "features"),
   reduction = "nmf",
   dims = NULL,
@@ -104,13 +104,14 @@ NMFHeatmap(
   seed = 11,
   legend.position = "right",
   ht_params = list(),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object containing an NMF dimensional reduction.
 
@@ -346,6 +347,11 @@ NMFHeatmap(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A list with the following elements:
@@ -370,7 +376,6 @@ A list with the following elements:
 ## Examples
 
 ``` r
-library(Matrix)
 data(pancreas_sub)
 pancreas_sub <- NormalizeData(pancreas_sub)
 pancreas_sub <- FindVariableFeatures(
@@ -383,7 +388,7 @@ pancreas_sub <- RunNMF(
   nbes = 5,
   maxit = 50
 )
-#> ℹ [2026-09-06 21:39:22] Running NMF...
+#> ℹ [2026-09-13 21:51:20] Running NMF...
 #> ℹ BE_ 1 
 #> ℹ Positive:  Spp1, Clu, Ttr, Krt18, Ptma, Rpl12, Sparc, Dbi, Gapdh, Mt1 
 #> ℹ      Cd24a, Mgst1, H19, Pebp1, Myl12a, Cldn3, Clps, Atp1b1, Sox4, Gnas 
@@ -419,18 +424,18 @@ pancreas_sub <- RunNMF(
 #> ℹ Negative:  Lrrc6, Ccl28, 1810034E14Rik, Tmem100, Fam71b, Sycp3, Kiss1r, Gng4, Prodh2, Lingo1 
 #> ℹ      Mpzl1, Angptl4, Slc16a10, Gm8113, C2cd4c, Dpysl3, Entpd3, Col1a1, Rem2, Acvr1c 
 #> ℹ      Bcl2, Kctd8, Adora2b, C530044C16Rik, Gm28875, C1qa, Serpinb6b, Camk2n1, Pax6os1, Nrsn1 
-#> ✔ [2026-09-06 21:44:13] NMF compute completed
+#> ✔ [2026-09-13 21:56:06] NMF compute completed
 ht_cells <- NMFHeatmap(
   pancreas_sub,
   plot_type = "cells",
   cell_annotation = "CellType"
 )
-#> ℹ [2026-09-06 21:44:13] `NMFHeatmap()` input: 1000 cells x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
-#> ℹ [2026-09-06 21:44:13] Ordering `NMFHeatmap()` rows and columns ...
-#> ℹ [2026-09-06 21:44:13] Building ComplexHeatmap object for `NMFHeatmap()` ...
-#> ℹ [2026-09-06 21:44:13] Calculating `NMFHeatmap()` render size ...
-#> ℹ [2026-09-06 21:44:13] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
-#> ℹ [2026-09-06 21:44:14] Assembling `NMFHeatmap()` plot object ...
+#> ℹ [2026-09-13 21:56:06] `NMFHeatmap()` input: 1000 cells x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
+#> ℹ [2026-09-13 21:56:06] Ordering `NMFHeatmap()` rows and columns ...
+#> ℹ [2026-09-13 21:56:06] Building ComplexHeatmap object for `NMFHeatmap()` ...
+#> ℹ [2026-09-13 21:56:06] Calculating `NMFHeatmap()` render size ...
+#> ℹ [2026-09-13 21:56:06] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
+#> ℹ [2026-09-13 21:56:08] Assembling `NMFHeatmap()` plot object ...
 ht_cells$plot
 
 
@@ -438,11 +443,11 @@ ht_features <- NMFHeatmap(
   pancreas_sub,
   plot_type = "features"
 )
-#> ℹ [2026-09-06 21:44:15] `NMFHeatmap()` input: 1000 features x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
-#> ℹ [2026-09-06 21:44:15] Ordering `NMFHeatmap()` rows and columns ...
-#> ℹ [2026-09-06 21:44:15] Building ComplexHeatmap object for `NMFHeatmap()` ...
-#> ℹ [2026-09-06 21:44:15] Calculating `NMFHeatmap()` render size ...
-#> ℹ [2026-09-06 21:44:15] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
-#> ℹ [2026-09-06 21:44:16] Assembling `NMFHeatmap()` plot object ...
+#> ℹ [2026-09-13 21:56:08] `NMFHeatmap()` input: 1000 features x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
+#> ℹ [2026-09-13 21:56:08] Ordering `NMFHeatmap()` rows and columns ...
+#> ℹ [2026-09-13 21:56:08] Building ComplexHeatmap object for `NMFHeatmap()` ...
+#> ℹ [2026-09-13 21:56:08] Calculating `NMFHeatmap()` render size ...
+#> ℹ [2026-09-13 21:56:08] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
+#> ℹ [2026-09-13 21:56:10] Assembling `NMFHeatmap()` plot object ...
 ht_features$plot
 ```

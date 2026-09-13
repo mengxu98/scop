@@ -7,7 +7,7 @@ backends and store the results in a consistent SCOP result bundle.
 
 ``` r
 RunCNV(
-  srt,
+  object,
   method = c("copykat", "fastCNV", "scevan", "infercnv", "numbat"),
   assay = NULL,
   layer = "counts",
@@ -24,13 +24,14 @@ RunCNV(
   tool_name = "CNV",
   store_matrix = TRUE,
   verbose = TRUE,
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -111,6 +112,11 @@ RunCNV(
 - ...:
 
   Additional parameters forwarded to the selected backend.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

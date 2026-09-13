@@ -29,9 +29,6 @@ RunGNIPLR(
   ...
 )
 
-# S3 method for class 'matrix'
-RunGNIPLR(object, ...)
-
 # Default S3 method
 RunGNIPLR(
   object,
@@ -172,7 +169,7 @@ grn <- RunGNIPLR(
   max_lag = 1,
   max_edges_per_target = 2
 )
-#> ℹ [2026-09-06 22:09:00] Running GNIPLR with `backend = cpp` on 5 genes and 8 cells
+#> ℹ [2026-09-13 22:20:58] Running GNIPLR with `backend = cpp` on 5 genes and 8 cells
 head(grn)
 #>     TF target importance      pvalue
 #> 3 Iapp   Nnat  2.2454349 0.005682836

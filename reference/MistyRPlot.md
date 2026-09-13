@@ -11,7 +11,8 @@ MistyRPlot(
   res = NULL,
   type = c("improvements", "contributions"),
   top_n = 20,
-  target = NULL
+  target = NULL,
+  measure = NULL
 )
 ```
 
@@ -37,17 +38,19 @@ MistyRPlot(
 
   Optional target feature filter.
 
+- measure:
+
+  Numeric result column to display. For \`type = "improvements"\` use
+  \`"gain.R2"\` or \`"gain.RMSE"\`; for \`type = "contributions"\`, use
+  \`"contribution"\` or \`"importance"\` as provided by the backend.
+  \`NULL\` defaults to \`"gain.R2"\` for improvements and
+  \`"contribution"\` for contributions, and errors if that column is not
+  present.
+
 ## Value
 
 A \`ggplot\` object.
 
-## Examples
+## See also
 
-``` r
-data(visium_human_pancreas_results_sub)
-MistyRPlot(
-  res = visium_human_pancreas_results_sub@tools$MistyR,
-  type = "improvements",
-  top_n = 10
-)
-```
+\[RunMistyR()\]

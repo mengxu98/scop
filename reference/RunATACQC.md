@@ -7,7 +7,7 @@ thresholds.
 
 ``` r
 RunATACQC(
-  srt,
+  object,
   assay = NULL,
   tss.positions = NULL,
   blacklist = NULL,
@@ -16,13 +16,14 @@ RunATACQC(
   min_TSS_enrichment = NULL,
   max_nucleosome_signal = NULL,
   max_blacklist_ratio = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -53,6 +54,11 @@ RunATACQC(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with QC metadata added.
@@ -67,9 +73,9 @@ pbmcmultiome_sub <- RunATACQC(
   assay = "peaks",
   fast = TRUE
 )
-#> ℹ [2026-09-06 21:51:15] Calculating ATAC QC metrics...
-#> ! [2026-09-06 21:51:15] Skip nucleosome signal: "No fragment files present in assay"
-#> ! [2026-09-06 21:51:15] Skip FRiP calculation: no total fragment count column or local fragments available
-#> ✔ [2026-09-06 21:51:15] ATAC QC completed
+#> ℹ [2026-09-13 22:03:14] Calculating ATAC QC metrics...
+#> ! [2026-09-13 22:03:14] Skip nucleosome signal: "No fragment files present in assay"
+#> ! [2026-09-13 22:03:14] Skip FRiP calculation: no total fragment count column or local fragments available
+#> ✔ [2026-09-13 22:03:14] ATAC QC completed
 # }
 ```

@@ -7,7 +7,7 @@ and keep complete tables and an execution manifest in the Seurat object.
 
 ``` r
 RunCellRankEnrichment(
-  srt,
+  object,
   lineage,
   db = c("MSigDB_C2", "GO_BP", "GO_CC", "GO_MF", "MSigDB_H"),
   species = "Mus_musculus",
@@ -20,13 +20,14 @@ RunCellRankEnrichment(
   show_category = 8L,
   output_dir = NULL,
   continue_on_error = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object returned by \[RunCellRankTrends\].
 
@@ -83,6 +84,11 @@ RunCellRankEnrichment(
 - verbose:
 
   Whether to print progress messages.
+
+- srt:
+
+  Deprecated alias for \`object\`; supply exactly one of the two. It
+  will be removed in scop 1.0.0.
 
 ## Value
 

@@ -1,17 +1,14 @@
 # Run mistyR multiview spatial modeling
 
-Build a small `mistyR` view composition from a spatial `Seurat` object,
-train MISTy models, collect results, and store a standardized result
-bundle in `srt@tools`. The intraview is always created from the selected
-assay layer; optional juxtaview and paraview components describe local
-and broader spatial context. `mistyR` is an optional Bioconductor
-dependency installable with `BiocManager::install("mistyR")`.
+Model feature expression using MISTy intraview and spatial predictors.
+Juxtaview and paraview predictors describe local and broader
+neighborhoods.
 
 ## Usage
 
 ``` r
 RunMistyR(
-  srt,
+  object,
   assay = NULL,
   layer = "data",
   features = NULL,
@@ -37,13 +34,14 @@ RunMistyR(
   store_views = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...
+  ...,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -126,6 +124,11 @@ RunMistyR(
 
   Additional named arguments passed to `mistyR::run_misty()`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with results stored in `srt@tools[[tool_name]]` when
@@ -134,34 +137,16 @@ A `Seurat` object with results stored in `srt@tools[[tool_name]]` when
 ## Examples
 
 ``` r
-data(visium_human_pancreas_results_sub)
-misty <- visium_human_pancreas_results_sub@tools$MistyR
-misty$summary
-#> $views
-#> [1] "intraview"      "misty.uniqueid" "paraview.5"    
-#> 
-#> $n_targets
-#> [1] 5
-#> 
-#> $n_improvement_records
-#> [1] 40
-#> 
-#> $n_contribution_records
-#> [1] 30
-#> 
-#> $importance_views
-#> [1] "view"       "Predictor"  "Target"     "Importance" "nsamples"  
-#> 
-MistyRPlot(res = misty, type = "improvements", top_n = 10)
-
-
 if (FALSE) { # \dontrun{
-check_r("saezlab/mistyR", verbose = FALSE)
+data(visium_human_pancreas_sub)
+spatial <- Seurat::NormalizeData(visium_human_pancreas_sub, verbose = FALSE)
+# Paraview bandwidth: 1000 full-resolution image pixels.
 spatial <- RunMistyR(
-  visium_human_pancreas_results_sub,
-  assay = "Spatial", features = rownames(visium_human_pancreas_results_sub)[1:5],
-  coord.cols = c("x", "y"), views = "para", para_l = 5,
+  spatial,
+  assay = "Spatial", features = rownames(spatial)[1:5],
+  image = "slice1", views = "para", para_l = 1000,
   cv_folds = 3, verbose = FALSE
 )
+MistyRPlot(spatial, type = "improvements", top_n = 5)
 } # }
 ```

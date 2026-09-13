@@ -6,7 +6,7 @@ Run CellphoneDB analysis
 
 ``` r
 RunCellphoneDB(
-  srt,
+  object,
   group.by,
   species = c("Homo_sapiens", "Mus_musculus"),
   assay = NULL,
@@ -36,13 +36,14 @@ RunCellphoneDB(
   output_suffix = NULL,
   keep_output = FALSE,
   backend = c("cpp", "r"),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -181,6 +182,11 @@ RunCellphoneDB(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

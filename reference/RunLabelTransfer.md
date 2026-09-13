@@ -8,7 +8,7 @@ mapped to a scRNA-seq reference via gene activity.
 
 ``` r
 RunLabelTransfer(
-  srt,
+  object,
   reference,
   assay = NULL,
   method = c("Seurat", "scOMM"),
@@ -34,13 +34,14 @@ RunLabelTransfer(
   scomm_batch_size = 32,
   scomm_threshold = 0.5,
   scomm_seed = 11,
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object.
 
@@ -143,6 +144,11 @@ RunLabelTransfer(
 
   Whether to print the message. Default is `TRUE`.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with prediction metadata added.
@@ -158,7 +164,7 @@ pbmcmultiome_sub <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ℹ [2026-09-06 22:27:43] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-13 22:39:34] Skip `log1p()` because `layer = data` is not "counts"
 reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:120])
 query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[121:200])
 query <- RunStandardWorkflow(
@@ -168,9 +174,9 @@ query <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ! [2026-09-06 22:27:51] Only one cluster found
+#> ! [2026-09-13 22:39:42] Only one cluster found
 query <- RunLabelTransfer(
-  srt = query,
+  object = query,
   reference = reference,
   assay = "peaks",
   reference_assay = "RNA",

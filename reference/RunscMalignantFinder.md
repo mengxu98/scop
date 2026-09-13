@@ -9,7 +9,7 @@ model files are not bundled with `scop`; provide a directory containing
 
 ``` r
 RunscMalignantFinder(
-  srt = NULL,
+  object = NULL,
   adata = NULL,
   h5ad = NULL,
   assay = "RNA",
@@ -21,16 +21,18 @@ RunscMalignantFinder(
   model_method = c("LogisticRegression", "RandomForest", "XGBoost"),
   norm_type = NULL,
   use_raw = FALSE,
-  n_thread = 1,
+  cores = 1,
+  n_thread = NULL,
   prefix = "",
   return_seurat = !is.null(srt),
-  verbose = TRUE
+  verbose = TRUE,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A Seurat object.
 
@@ -84,9 +86,14 @@ RunscMalignantFinder(
 
   Whether to use `adata.raw.X` when available.
 
-- n_thread:
+- cores:
 
   Number of threads used by `scMalignantFinder`.
+
+- n_thread:
+
+  Deprecated alias for `cores`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 - prefix:
 
@@ -101,6 +108,11 @@ RunscMalignantFinder(
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
+
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 ## Value
 

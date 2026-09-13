@@ -1,14 +1,12 @@
 # Run SpatialEcoTyper spatial ecotype analysis
 
-Run SpatialEcoTyper workflows through the optional `SpatialEcoTyper`
-package and write spatial ecotype labels or abundances back to a
-`Seurat` object when possible.
+Discover, recover, or deconvolve spatial ecotypes using SpatialEcoTyper.
 
 ## Usage
 
 ``` r
 RunSpatialEcoTyper(
-  srt,
+  object,
   mode = c("single", "multi", "recover", "deconvolute"),
   assay = NULL,
   layer = "data",
@@ -30,7 +28,8 @@ RunSpatialEcoTyper(
   min.features = 10,
   iterations = 10,
   minibatch = 5000,
-  ncores = 4,
+  cores = 4,
+  ncores = NULL,
   grid.size = round(radius * 1.4),
   filter.region.by.celltypes = NULL,
   k = 20,
@@ -57,13 +56,14 @@ RunSpatialEcoTyper(
   allow_partial = FALSE,
   verbose = TRUE,
   ...,
-  image = NULL
+  image = NULL,
+  srt = NULL
 )
 ```
 
 ## Arguments
 
-- srt:
+- object:
 
   A `Seurat` object. For `mode = "deconvolute"`, a numeric expression
   matrix can also be supplied.
@@ -161,9 +161,14 @@ RunSpatialEcoTyper(
 
   Number of columns processed per mini-batch in SNF.
 
-- ncores:
+- cores:
 
   Number of CPU cores used by `SpatialEcoTyper`.
+
+- ncores:
+
+  Deprecated alias for `cores`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
 
 - grid.size:
 
@@ -253,6 +258,11 @@ RunSpatialEcoTyper(
   for multi discovery. Multi discovery resolves each sample
   independently.
 
+- srt:
+
+  Deprecated alias for `object`; supply exactly one of the two. It will
+  be removed in scop 1.0.0.
+
 ## Value
 
 A `Seurat` object with SpatialEcoTyper results in metadata and raw
@@ -260,42 +270,16 @@ results stored in `srt@tools[[tool_name]]` when `store_results = TRUE`.
 For matrix input with `mode = "deconvolute"`, the abundance matrix is
 returned.
 
-## Examples
+## Details
 
-``` r
-data(visium_human_pancreas_pair_sub)
-# Plot the stored spatial grouping from the real two-sample object. This
-# compact fixture keeps the real spatial grouping for a fast layout demo;
-# rerun SpatialEcoTyper in the dontrun block for a new SE result.
-SpatialEcoTyperSpatialPlot(
-  visium_human_pancreas_pair_sub,
-  group.by = "domain",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  pt.size = 1.5
-)
+Discovery requires cell-resolved spatial expression, cell-type labels,
+and coordinates; multi-sample discovery also requires sample labels.
+Recovery and deconvolution require the pretrained basis matrices `Ws`
+and `W`, respectively.
 
-SpatialEcoTyperCompositionPlot(
-  visium_human_pancreas_pair_sub,
-  se.by = "domain",
-  group.by = "coda_label",
-  sample.by = "sample",
-  position = "fill"
-)
+## See also
 
-
-if (FALSE) { # \dontrun{
-check_r("digitalcytometry/SpatialEcoTyper", verbose = FALSE)
-  srt <- RunSpatialEcoTyper(
-    visium_human_pancreas_pair_sub,
-    mode = "multi",
-    celltype.by = "coda_label",
-    sample.by = "sample",
-    x.by = "x",
-    y.by = "y",
-    nfeatures = 50,
-    ncores = 1,
-    verbose = FALSE
-  )
-} # }
-```
+[`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md),
+[`CellStatPlot()`](https://mengxu98.github.io/scop/reference/CellStatPlot.md),
+[SpatialEcoTyper
+tutorials](https://digitalcytometry.github.io/spatialecotyper/)
