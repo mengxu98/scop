@@ -142,7 +142,6 @@ FeatureHeatmap(
   height = NULL,
   width = NULL,
   units = "inch",
-  cores = 1,
   seed = 11,
   legend.position = "right",
   ht_params = list(),
@@ -253,9 +252,6 @@ missing for \code{species}.}
 \item{use_raster, raster_device, raster_by_magick}{Raster device (\code{NULL} chooses automatically).}
 
 \item{width, height, units}{Heatmap size. \code{NULL} sizes from matrix dimensions.}
-
-\item{cores}{The number of worker processes to use for parallelization.
-Default is \code{1}.}
 
 \item{seed}{Optional integer seed. When supplied, every input receives a
 deterministic independent L'Ecuyer-CMRG random-number stream, making results

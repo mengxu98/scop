@@ -160,8 +160,7 @@ pancreas_sub <- RunEnrichment(
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus",
-  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05",
-  cores = 5
+  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05"
 )
 
 EnrichmentPlot(
@@ -206,8 +205,7 @@ pancreas_sub <- RunGSEA(
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus",
-  DE_threshold = "p_val_adj < 0.05",
-  cores = 5
+  DE_threshold = "p_val_adj < 0.05"
 )
 
 gsea_endocrine <- subset(

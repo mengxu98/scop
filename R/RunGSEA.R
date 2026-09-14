@@ -85,7 +85,6 @@ RunGSEA <- function(
   GO_simplify_cutoff = "p.adjust < 0.05",
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
-  cores = 1,
   verbose = TRUE,
   ...,
   srt = NULL
@@ -328,12 +327,15 @@ RunGSEA <- function(
     stringsAsFactors = FALSE
   )
 
+  # A PSOCK worker costs ~650 MB and seconds of package loading before running
+  # one sub-second task, which a per-group x per-database fan-out cannot earn
+  # back.
   check_r("clusterProfiler", verbose = FALSE)
   log_message(
-    "Running GSEA for {.val {nrow(comb)}} group/database combination(s) using {.val {cores}} core(s) ...",
+    "Running GSEA for {.val {nrow(comb)}} group/database combination(s) ...",
     verbose = verbose
   )
-  res_list <- parallelize_fun(
+  res_list <- lapply(
     seq_len(nrow(comb)),
     function(i) {
       group <- comb[i, "group"]
@@ -465,9 +467,7 @@ RunGSEA <- function(
         verbose = verbose
       )
       enrich_res
-    },
-    cores = cores,
-    verbose = verbose
+    }
   )
 
   nm <- paste(comb$group, comb$term, sep = "-")

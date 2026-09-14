@@ -166,7 +166,6 @@ NMFHeatmap <- function(
   height = NULL,
   width = NULL,
   units = "inch",
-  cores = 1,
   seed = 11,
   legend.position = "right",
   ht_params = list(),
@@ -379,8 +378,7 @@ NMFHeatmap <- function(
       topTerm = topTerm,
       show_termid = show_termid,
       topWord = topWord,
-      words_excluded = words_excluded,
-      cores = cores
+      words_excluded = words_excluded
     )
   } else if (
     !identical(plot_type, "features") &&

@@ -420,8 +420,7 @@ pancreas_sub <- RunEnrichment(
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus",
-  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05",
-  cores = 2
+  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05"
 )
 
 go_bp_overlay_values <- setNames(

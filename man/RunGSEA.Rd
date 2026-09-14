@@ -34,7 +34,6 @@ RunGSEA(
   GO_simplify_cutoff = "p.adjust < 0.05",
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
-  cores = 1,
   verbose = TRUE,
   ...,
   srt = NULL
@@ -126,9 +125,6 @@ This argument is only used if \code{GO_simplify} is \code{TRUE}.}
 
 \item{simplify_similarityCutoff}{The similarity cutoff for simplification of GO terms.
 This argument is only used if \code{GO_simplify} is \code{TRUE}.}
-
-\item{cores}{The number of worker processes to use for parallelization.
-Default is \code{1}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

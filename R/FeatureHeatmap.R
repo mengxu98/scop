@@ -252,7 +252,6 @@ FeatureHeatmap <- function(
   height = NULL,
   width = NULL,
   units = "inch",
-  cores = 1,
   seed = 11,
   legend.position = "right",
   ht_params = list(),
@@ -1468,7 +1467,6 @@ FeatureHeatmap <- function(
     show_termid = show_termid,
     topWord = topWord,
     words_excluded = words_excluded,
-    cores = cores,
     ...
   )
   res <- enrichment$res
