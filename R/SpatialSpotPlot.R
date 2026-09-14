@@ -34,6 +34,10 @@
 #' @param lower_quantile,upper_quantile,lower_cutoff,upper_cutoff Limits for
 #' continuous feature scales. Non-`NULL` cutoffs take precedence over the
 #' quantiles.
+#' @details
+#' Factor levels retain their order, including after selecting `cells`.
+#' Named `palcolor` vectors map category names to colors; unnamed colors follow
+#' factor order. Missing values remain distinct from a category named `"NA"`.
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #' @export
@@ -388,7 +392,7 @@ spatial_dim_long_plot <- function(
   }
 
   if (is.numeric(values)) {
-    cols <- palette_colors(
+    cols <- spatial_palette_colors(
       type = "continuous",
       palette = palette,
       palcolor = palcolor
@@ -411,11 +415,12 @@ spatial_dim_long_plot <- function(
     p <- p +
       point_layer +
       spatial_dim_continuous_scale(values, aesthetic = "color", colors = cols) +
+      ggplot2::guides(colour = spatial_colorbar_guide(legend.direction)) +
       ggplot2::labs(x = NULL, y = NULL, color = legend.title %||% color.by)
   } else {
-    values <- as.character(values)
-    df[[color.by]] <- factor(values, levels = unique(values))
-    cols <- palette_colors(
+    df[[color.by]] <- spatial_plot_factor(values)
+    p$data <- df
+    cols <- spatial_palette_colors(
       levels(df[[color.by]]),
       palette = palette,
       palcolor = palcolor
@@ -448,17 +453,17 @@ spatial_dim_long_plot <- function(
   }
 
   p <- p +
+    theme_obj +
     ggplot2::theme(
       legend.position = legend.position,
       legend.direction = legend.direction
-    ) +
-    theme_obj
+    )
 
   if (isTRUE(flip.y) && isFALSE(coords$uses_image)) {
     p <- p + ggplot2::scale_y_reverse()
   }
   if (!is.null(split.by)) {
-    p <- p + ggplot2::facet_wrap(stats::as.formula(paste("~", split.by)))
+    p <- p + ggplot2::facet_wrap(ggplot2::vars(!!rlang::sym(split.by)))
   }
   if (isTRUE(crop)) {
     limits <- spatial_crop_limits(df$x, df$y)
@@ -522,7 +527,11 @@ spatial_dim_pie_plot <- function(
     values = values,
     cells = rownames(dat)
   )
-  mat[!is.finite(mat) | mat < 0] <- 0
+  if (any(is.infinite(mat)) || any(mat < 0, na.rm = TRUE)) {
+    log_message("Pie values must be non-negative and cannot be infinite", message_type = "error")
+  }
+  # A pie cannot represent an unknown component as a measured zero.
+  mat[rowSums(is.na(mat)) > 0L, ] <- NA_real_
   keep <- rowSums(mat, na.rm = TRUE) > 0
   dat <- dat[keep, , drop = FALSE]
   mat <- mat[keep, , drop = FALSE]
@@ -554,7 +563,7 @@ spatial_dim_pie_plot <- function(
     radius = pie.radius,
     scale = pie.radius.scale
   )
-  cols <- palette_colors(
+  cols <- spatial_palette_colors(
     colnames(mat),
     palette = palette,
     palcolor = palcolor
@@ -584,17 +593,17 @@ spatial_dim_pie_plot <- function(
     ) +
     ggplot2::scale_fill_manual(values = cols) +
     ggplot2::labs(x = NULL, y = NULL, fill = legend.title %||% "Proportion") +
+    theme_obj +
     ggplot2::theme(
       legend.position = legend.position,
       legend.direction = legend.direction
-    ) +
-    theme_obj
+    )
 
   if (isTRUE(flip.y) && isFALSE(coords$uses_image)) {
     p <- p + ggplot2::scale_y_reverse()
   }
   if (!is.null(split.by)) {
-    p <- p + ggplot2::facet_wrap(stats::as.formula(paste("~", split.by)))
+    p <- p + ggplot2::facet_wrap(ggplot2::vars(!!rlang::sym(split.by)))
   }
   if (isTRUE(crop)) {
     radius_max <- max(plot_dat[[".radius"]], na.rm = TRUE)
@@ -618,6 +627,7 @@ spatial_dim_pie_values <- function(srt, group.by = NULL, values = NULL, cells) {
         message_type = "error"
       )
     }
+    spatial_dim_value_items(values)
     mat <- as.data.frame(values, check.names = FALSE)
     if (is.null(rownames(mat)) || !any(cells %in% rownames(mat))) {
       log_message(
@@ -825,12 +835,20 @@ spatial_dim_value_items <- function(values) {
   if (is.atomic(values) && is.null(dim(values))) {
     return("value")
   }
+  if ((!is.matrix(values) && !inherits(values, "Matrix") && !is.data.frame(values)) ||
+      is.null(rownames(values)) || anyNA(rownames(values)) ||
+      any(!nzchar(rownames(values))) || anyDuplicated(rownames(values))) {
+    log_message("{.arg values} must be a matrix/data.frame with unique non-empty spot row names", message_type = "error")
+  }
   values <- as.data.frame(values, check.names = FALSE)
   if (ncol(values) == 0L) {
     log_message(
       "{.arg values} must contain at least one column",
       message_type = "error"
     )
+  }
+  if (anyNA(colnames(values)) || any(!nzchar(colnames(values))) || anyDuplicated(colnames(values))) {
+    log_message("{.arg values} must have unique non-empty column names", message_type = "error")
   }
   colnames(values)
 }
@@ -847,6 +865,12 @@ spatial_dim_values_from_input <- function(
         "{.arg values} vector must be named with spatial spot names",
         message_type = "error"
       )
+    }
+    if (anyNA(names(values)) || any(!nzchar(names(values))) || anyDuplicated(names(values))) {
+      log_message("{.arg values} must have unique non-empty spot names", message_type = "error")
+    }
+    if (!any(cells %in% names(values))) {
+      log_message("{.arg values} names must match spatial spot names", message_type = "error")
     }
     out <- values[cells]
     names(out) <- cells
@@ -867,11 +891,7 @@ spatial_dim_values_from_input <- function(
     out <- values[cells, item, drop = TRUE]
   }
   if (!is.numeric(out)) {
-    out <- as.character(out)
-    if (isTRUE(show_na)) {
-      out[is.na(out)] <- "NA"
-    }
-    out <- factor(out, levels = unique(out))
+    out <- spatial_plot_factor(out)
   }
   out
 }
@@ -897,11 +917,7 @@ spatial_dim_values <- function(
     }
     values <- srt@meta.data[cells, item, drop = TRUE]
     if (!is.numeric(values)) {
-      values <- as.character(values)
-      if (isTRUE(show_na)) {
-        values[is.na(values)] <- "NA"
-      }
-      values <- factor(values, levels = unique(values))
+      values <- spatial_plot_factor(values)
     }
     return(values)
   }
@@ -979,7 +995,7 @@ spatial_dim_single_plot <- function(
     ))
   }
   if (is.numeric(values)) {
-    cols <- palette_colors(
+    cols <- spatial_palette_colors(
       type = "continuous",
       palette = palette,
       palcolor = palcolor
@@ -1000,8 +1016,8 @@ spatial_dim_single_plot <- function(
         upper_cutoff = upper_cutoff
       )
   } else {
-    lvls <- levels(factor(values))
-    cols <- palette_colors(lvls, palette = palette, palcolor = palcolor)
+    lvls <- levels(spatial_plot_factor(values))
+    cols <- spatial_palette_colors(lvls, palette = palette, palcolor = palcolor)
     p <- p +
       ggplot2::geom_point(
         ggplot2::aes(fill = .data[[value_col]]),
@@ -1023,32 +1039,33 @@ spatial_dim_single_plot <- function(
     ggplot2::labs(
       title = value_name,
       x = NULL,
-      y = NULL,
-      color = legend.title,
-      fill = legend.title
+      y = NULL
     ) +
     ggplot2::theme(
       legend.position = legend.position,
       legend.direction = legend.direction
     )
+  if (is.numeric(values)) {
+    p <- p + ggplot2::labs(color = legend.title) +
+      ggplot2::guides(colour = spatial_colorbar_guide(legend.direction))
+  } else {
+    p <- p + ggplot2::labs(fill = legend.title)
+  }
 
   if (isTRUE(flip.y)) {
     p <- p + ggplot2::scale_y_reverse()
   }
   if (isTRUE(crop)) {
-    crop_xlim <- range(plot_dat$x, na.rm = TRUE)
-    crop_ylim <- range(plot_dat$y, na.rm = TRUE)
-    x_pad <- max(diff(crop_xlim) * 0.02, 1)
-    y_pad <- max(diff(crop_ylim) * 0.02, 1)
+    limits <- spatial_crop_limits(plot_dat$x, plot_dat$y)
     p <- p + ggplot2::coord_equal(
-      xlim = crop_xlim + c(-x_pad, x_pad),
-      ylim = crop_ylim + c(-y_pad, y_pad)
+      xlim = limits$xlim,
+      ylim = limits$ylim
     )
   } else {
     p <- p + ggplot2::coord_equal()
   }
   if (!identical(split.by, ".split")) {
-    p <- p + ggplot2::facet_wrap(stats::as.formula(paste("~", split.by)))
+    p <- p + ggplot2::facet_wrap(ggplot2::vars(!!rlang::sym(split.by)))
   }
   p
 }
@@ -1063,20 +1080,35 @@ spatial_dim_continuous_scale <- function(
   upper_cutoff = NULL
 ) {
   aesthetic <- match.arg(aesthetic)
+  if (any(is.infinite(values))) {
+    log_message("Continuous spatial values cannot be infinite", message_type = "error")
+  }
+  for (cutoff in list(lower_cutoff, upper_cutoff)) {
+    if (!is.null(cutoff) && (!is.numeric(cutoff) || length(cutoff) != 1L || !is.finite(cutoff))) {
+      log_message("Continuous cutoffs must be finite numeric scalars", message_type = "error")
+    }
+  }
+  quantiles <- c(lower_quantile %||% 0, upper_quantile %||% 1)
+  if (!is.numeric(quantiles) || length(quantiles) != 2L || any(!is.finite(quantiles)) ||
+      any(quantiles < 0 | quantiles > 1) || quantiles[1L] > quantiles[2L]) {
+    log_message("Quantiles must satisfy 0 <= lower_quantile <= upper_quantile <= 1", message_type = "error")
+  }
   finite <- values[is.finite(values)]
   limits <- NULL
   breaks <- ggplot2::waiver()
-  if (length(unique(finite)) == 1L) {
+  if (length(finite) > 0L || (!is.null(lower_cutoff) && !is.null(upper_cutoff))) {
+    min_v <- lower_cutoff %||% stats::quantile(finite, probs = quantiles[1L], na.rm = TRUE)
+    max_v <- upper_cutoff %||% stats::quantile(finite, probs = quantiles[2L], na.rm = TRUE)
+    if (min_v > max_v) {
+      log_message("The lower continuous limit must not exceed the upper limit", message_type = "error")
+    }
+    if (min_v < max_v) limits <- unname(c(min_v, max_v))
+  }
+  if (is.null(limits) && length(unique(finite)) == 1L) {
     center <- unique(finite)
     span <- max(abs(center) * 0.1, 0.5)
     limits <- center + c(-span, span)
     breaks <- center
-  } else if (length(finite) > 1L) {
-    min_v <- lower_cutoff %||% stats::quantile(finite, probs = lower_quantile %||% 0, na.rm = TRUE)
-    max_v <- upper_cutoff %||% stats::quantile(finite, probs = upper_quantile %||% 1, na.rm = TRUE)
-    if (is.finite(min_v) && is.finite(max_v) && min_v < max_v) {
-      limits <- c(min_v, max_v)
-    }
   }
   if (identical(aesthetic, "color")) {
     return(ggplot2::scale_color_gradientn(

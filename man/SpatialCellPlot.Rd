@@ -13,7 +13,7 @@ SpatialCellPlot(
   crop = TRUE,
   group.by = NULL,
   features = NULL,
-  palette = "Paired",
+  palette = NULL,
   palcolor = NULL,
   fill.alpha = 0.7,
   boundary.color = "grey30",
@@ -22,7 +22,14 @@ SpatialCellPlot(
   theme_args = list(),
   assay = NULL,
   layer = "data",
-  ...
+  ...,
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  legend.position = "right",
+  legend.direction = "vertical",
+  legend.title = NULL
 )
 }
 \arguments{
@@ -42,7 +49,9 @@ SpatialCellPlot(
 
 \item{features}{Features to display. Multiple features return a patchwork.}
 
-\item{palette, palcolor}{Palette name or explicit colors.}
+\item{palette, palcolor}{Palette name or explicit colors. The default uses
+`"Paired"` for categories and sequential `"YlGnBu"` for numeric values.
+Named colors are matched to category names.}
 
 \item{fill.alpha}{Polygon fill opacity.}
 
@@ -56,9 +65,15 @@ SpatialCellPlot(
 \item{layer}{Layer used when `features` are fetched from `object`.}
 
 \item{...}{Additional arguments passed to `ggplot2::geom_polygon()`.}
+
+\item{combine}{Return combined panels, or a named list when `FALSE`.}
+
+\item{nrow, ncol, byrow}{Layout controls for multiple feature panels.}
+
+\item{legend.position, legend.direction, legend.title}{Legend controls.}
 }
 \value{
-A `ggplot` or patchwork object.
+A `ggplot`, patchwork, or named list of plots.
 }
 \description{
 Plot cell segmentation polygons from a boundary table or Seurat spatial image.
@@ -68,6 +83,11 @@ Boundary tables require `cell_id`, `x`, and `y` columns in polygon vertex
 order. Seurat images must contain segmentation boundaries.
 }
 \examples{
-data(visium_human_pancreas_sub)
-SpatialCellPlot(visium_human_pancreas_sub, group.by = "CellType")
+# Constructed polygons demonstrate plotting, not a segmentation algorithm.
+boundaries <- data.frame(
+  cell_id = rep(c("cell1", "cell2"), each = 4),
+  x = c(0, 2, 2, 0, 3, 5, 5, 3), y = rep(c(0, 0, 1, 1), 2),
+  cell_type = rep(c("A", "B"), each = 4)
+)
+SpatialCellPlot(boundaries = boundaries, group.by = "cell_type")
 }

@@ -100,6 +100,33 @@ SpatialSpotPlot(
 # SpatialSpotPlot(spatial, group.by = "coda_label", image.scale = "hires")
 ```
 
+## Reusable Plot Controls
+
+Spatial maps preserve the coordinate aspect ratio by default. An explicit
+`theme_args = list(aspect.ratio = 1)` requests a square panel and may distort
+spatial geometry. Set `pt.size`, `pt.alpha`, `image.alpha` and
+`legend.position` for the intended output size; no single point size is suitable
+for both a small selection and a full-resolution tissue.
+
+Keep categorical metadata as factors to preserve its level order across cell
+subsets. A named palette such as `palcolor = c(A = "#4477AA", B = "#EE6677")`
+matches names rather than first-observed order; the names must cover the plotted
+factor levels. Missing values stay distinct from a literal category named `NA`.
+`split.by` accepts metadata names containing spaces.
+
+Use `combine = FALSE` to obtain named plot lists for independent adjustment.
+`SpatialCellPlot()` also accepts this control, layout arguments `nrow`/`ncol`,
+and explicit legend settings. Its numeric feature maps use a sequential palette
+unless a palette is supplied. `SpatialDeconvolutionPlot()` retains a common
+zero-to-one scale and shows an empty panel for a cell type with no measured
+values. In dominant/pie mode, a `cell_types` subset defines the displayed
+comparison; pie fractions are relative to the selected types.
+
+`SpatialIntegrationPlot()` uses one image panel per sample when images are
+present. Use a named `image` map in the merged object's image namespace when
+selection is ambiguous. `use_aligned = TRUE` plots stored aligned coordinates
+without the unregistered raw tissue images; it does not register images.
+
 ## Run the Basic Spatial Workflow
 
 `RunStandardWorkflow(workflow = "spatial")` is the shortest entry point for a

@@ -13,23 +13,33 @@
 #' @param features Features to display. Multiple features return a patchwork.
 #' @param assay Assay used when `features` are fetched from `object`.
 #' @param layer Layer used when `features` are fetched from `object`.
-#' @param palette,palcolor Palette name or explicit colors.
+#' @param palette,palcolor Palette name or explicit colors. The default uses
+#' `"Paired"` for categories and sequential `"YlGnBu"` for numeric values.
+#' Named colors are matched to category names.
 #' @param fill.alpha Polygon fill opacity.
 #' @param boundary.color,boundary.linewidth Boundary appearance.
 #' @param theme_use,theme_args Theme used to style the plot. Default is
 #' `"theme_spatial"`.
 #' @param ... Additional arguments passed to `ggplot2::geom_polygon()`.
+#' @param combine Return combined panels, or a named list when `FALSE`.
+#' @param nrow,ncol,byrow Layout controls for multiple feature panels.
+#' @param legend.position,legend.direction,legend.title Legend controls.
 #'
 #' @details
 #' Boundary tables require `cell_id`, `x`, and `y` columns in polygon vertex
 #' order. Seurat images must contain segmentation boundaries.
 #'
-#' @return A `ggplot` or patchwork object.
+#' @return A `ggplot`, patchwork, or named list of plots.
 #'
 #'
 #' @examples
-#' data(visium_human_pancreas_sub)
-#' SpatialCellPlot(visium_human_pancreas_sub, group.by = "CellType")
+#' # Constructed polygons demonstrate plotting, not a segmentation algorithm.
+#' boundaries <- data.frame(
+#'   cell_id = rep(c("cell1", "cell2"), each = 4),
+#'   x = c(0, 2, 2, 0, 3, 5, 5, 3), y = rep(c(0, 0, 1, 1), 2),
+#'   cell_type = rep(c("A", "B"), each = 4)
+#' )
+#' SpatialCellPlot(boundaries = boundaries, group.by = "cell_type")
 #' @export
 SpatialCellPlot <- function(
   object = NULL,
@@ -40,7 +50,7 @@ SpatialCellPlot <- function(
   crop = TRUE,
   group.by = NULL,
   features = NULL,
-  palette = "Paired",
+  palette = NULL,
   palcolor = NULL,
   fill.alpha = 0.7,
   boundary.color = "grey30",
@@ -49,7 +59,14 @@ SpatialCellPlot <- function(
   theme_args = list(),
   assay = NULL,
   layer = "data",
-  ...
+  ...,
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  legend.position = "right",
+  legend.direction = "vertical",
+  legend.title = NULL
 ) {
   if (!is.null(object) && !inherits(object, "Seurat")) {
     log_message("{.arg object} must be a {.cls Seurat} object", message_type = "error")
@@ -109,6 +126,9 @@ SpatialCellPlot <- function(
       value_tables[[group.by]] <- boundaries[[group.by]]
     } else if (!is.null(object) && group.by %in% colnames(object@meta.data)) {
       cell_idx <- match(boundaries$cell_id, rownames(object@meta.data))
+      if (anyNA(cell_idx)) {
+        log_message("Boundary cell IDs do not match the selected Seurat object", message_type = "error")
+      }
       value_tables[[group.by]] <- object@meta.data[[group.by]][cell_idx]
     } else {
       log_message("{.arg group.by} {.val {group.by}} was not found", message_type = "error")
@@ -183,20 +203,22 @@ SpatialCellPlot <- function(
     )
     p <- ggplot2::ggplot() + polygon_layer
     if (is.numeric(dat$.value)) {
-      p <- p + ggplot2::scale_fill_gradientn(
-        colors = palette_colors(type = "continuous", palette = palette, palcolor = palcolor),
-        na.value = "grey80"
-      )
+      p <- p + spatial_dim_continuous_scale(
+        dat$.value, aesthetic = "fill",
+        colors = spatial_palette_colors(type = "continuous", palette = palette %||% "YlGnBu", palcolor = palcolor)
+      ) + ggplot2::guides(fill = spatial_colorbar_guide(legend.direction))
     } else {
-      lvls <- levels(factor(dat$.value))
+      lvls <- levels(spatial_plot_factor(dat$.value))
       p <- p + ggplot2::scale_fill_manual(
-        values = palette_colors(lvls, palette = palette, palcolor = palcolor),
-        na.value = "grey80"
+        values = spatial_palette_colors(lvls, palette = palette %||% "Paired", palcolor = palcolor),
+        na.value = "grey80", drop = FALSE
       )
     }
     p <- p +
-      ggplot2::labs(x = NULL, y = NULL, fill = value_name) +
-      apply_plot_theme(theme_use = theme_use, theme_args = theme_args)
+      ggplot2::labs(x = NULL, y = NULL, fill = legend.title %||% value_name,
+                    title = if (length(value_tables) > 1L) value_name else NULL) +
+      apply_plot_theme(theme_use = theme_use, theme_args = theme_args) +
+      ggplot2::theme(legend.position = legend.position, legend.direction = legend.direction)
     if (isTRUE(crop)) {
       limits <- spatial_crop_limits(dat$x, dat$y)
       p <- p + ggplot2::coord_equal(
@@ -208,11 +230,6 @@ SpatialCellPlot <- function(
     }
     p
   })
-  if (length(plots) == 1L) {
-    plots[[1L]]
-  } else {
-    check_r("patchwork", verbose = FALSE)
-    wrap_plots <- get_namespace_fun("patchwork", "wrap_plots")
-    wrap_plots(plots)
-  }
+  names(plots) <- names(value_tables)
+  combine_plot_list(plots, combine = combine, nrow = nrow, ncol = ncol, byrow = byrow)
 }

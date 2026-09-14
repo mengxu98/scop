@@ -342,7 +342,7 @@ benchmark_quality_plot <- function(
     unname(metric_offsets[as.character(data$metric)])
   values <- data$value[is.finite(data$value)]
   lower <- if (length(values) > 0L && min(values) < 0) min(-0.05, min(values) - 0.04) else 0
-  metric_colors <- palette_colors(
+  metric_colors <- spatial_palette_colors(
     metrics,
     palette = palette,
     palcolor = palcolor
@@ -1053,7 +1053,7 @@ benchmark_summary_barplot <- function(
   theme_use = "theme_scop",
   theme_args = list()
 ) {
-  fill_cols <- palette_colors(
+  fill_cols <- spatial_palette_colors(
     levels(summary_df$method),
     palette = palette,
     palcolor = palcolor
@@ -1272,7 +1272,7 @@ feature_boxplot <- function(
     plot_df$feature_label,
     levels = mean_df$feature_label
   )
-  fill_cols <- palette_colors(
+  fill_cols <- spatial_palette_colors(
     levels(plot_df$feature_label),
     palette = palette,
     palcolor = palcolor

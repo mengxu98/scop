@@ -536,13 +536,13 @@ SpatialNetworkPlot <- function(
   p <- p + node_layer
   if (!is.null(group.by) && is.numeric(nodes$.group)) {
     p <- p + ggplot2::scale_color_gradientn(
-      colors = palette_colors(type = "continuous", palette = palette, palcolor = palcolor),
+      colors = spatial_palette_colors(type = "continuous", palette = palette, palcolor = palcolor),
       na.value = "grey80"
     ) + ggplot2::labs(color = group.by)
   } else if (!is.null(group.by)) {
-    lvls <- levels(factor(nodes$.group))
+    lvls <- levels(spatial_plot_factor(nodes$.group))
     p <- p + ggplot2::scale_fill_manual(
-      values = palette_colors(lvls, palette = palette, palcolor = palcolor),
+      values = spatial_palette_colors(lvls, palette = palette, palcolor = palcolor),
       na.value = "grey80"
     ) + ggplot2::labs(fill = group.by)
   }

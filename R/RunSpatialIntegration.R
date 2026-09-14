@@ -144,7 +144,14 @@ RunSpatialIntegration <- function(
 #' @param combine Whether to combine plots when delegated plotting returns a
 #' list.
 #' @param ... Additional arguments passed to [SpatialSpotPlot()] or
-#' [CellDimPlot()].
+#' [CellDimPlot()]. For spatial maps, `image` can be one image or a named
+#' sample-to-image vector using names in the merged object. By default, each
+#' sample uses its uniquely matching image. `nrow`, `ncol` and `byrow` control
+#' the layout of separate image panels.
+#' @details
+#' Raw spatial maps retain every sample and use consistent category colors.
+#' Aligned maps use the stored aligned coordinates without a raw tissue-image
+#' overlay. This plotting option does not perform image registration.
 #'
 #' @return A `ggplot`, patchwork object, or list of plots.
 #' @seealso [RunSpatialIntegration()]
@@ -190,6 +197,9 @@ SpatialIntegrationPlot <- function(
     )
   }
   plot_type <- match.arg(plot_type)
+  if (missing(theme_use) && plot_type %in% c("spatial", "alignment")) {
+    theme_use <- "theme_spatial"
+  }
   image.scale <- match.arg(image.scale)
   bundle <- srt@tools[[tool_name]]
   if (is.null(bundle)) {
@@ -213,7 +223,8 @@ SpatialIntegrationPlot <- function(
   }
 
   if (identical(plot_type, "spatial")) {
-    coord_use <- coord.cols
+    coord_use <- if (missing(coord.cols)) parameters$coord.cols %||% coord.cols else coord.cols
+    dots <- list(...)
     if (isTRUE(use_aligned)) {
       coord_use <- parameters$aligned_coord_cols
       if (is.null(coord_use) || !all(coord_use %in% colnames(srt@meta.data))) {
@@ -222,8 +233,53 @@ SpatialIntegrationPlot <- function(
           message_type = "error"
         )
       }
+      if (isTRUE(dots$overlay_image) || !is.null(dots$image)) {
+        log_message("Aligned coordinates cannot use a raw image overlay or image selection", message_type = "error")
+      }
+      # This local plotting copy makes the chosen metadata coordinates explicit
+      # to the shared resolver; the input object's images remain unchanged.
+      srt@images <- list()
+      dots$overlay_image <- FALSE
+    } else if (length(SeuratObject::Images(srt)) > 0L) {
+      image_map <- spatial_integration_plot_images(srt, sample.by, parameters, dots$image)
+      dots$image <- NULL
+      layout_args <- dots[intersect(names(dots), c("nrow", "ncol", "byrow"))]
+      dots[c("nrow", "ncol", "byrow")] <- NULL
+      requested_cells <- dots$cells %||% colnames(srt)
+      dots$cells <- NULL
+      if (is.numeric(srt@meta.data[[group.by]])) {
+        values <- srt@meta.data[intersect(colnames(srt), requested_cells), group.by, drop = TRUE]
+        values <- values[is.finite(values)]
+        if (length(values)) {
+          dots$lower_cutoff <- dots$lower_cutoff %||% unname(stats::quantile(values, dots$lower_quantile %||% 0))
+          dots$upper_cutoff <- dots$upper_cutoff %||% unname(stats::quantile(values, dots$upper_quantile %||% 0.99))
+        }
+      } else {
+        srt@meta.data[[group.by]] <- spatial_plot_factor(srt@meta.data[[group.by]])
+      }
+      plots <- lapply(names(image_map), function(sample) {
+        sample_cells <- colnames(srt)[as.character(srt@meta.data[[sample.by]]) == sample]
+        sample_cells <- intersect(sample_cells, requested_cells)
+        if (!length(sample_cells)) return(NULL)
+        do.call(SpatialSpotPlot, c(list(
+          object = srt, group.by = group.by, image = image_map[[sample]],
+          cells = sample_cells, coord.cols = coord_use, image.scale = image.scale,
+          palette = palette, palcolor = palcolor, theme_use = theme_use,
+          theme_args = theme_args
+        ), dots)) + ggplot2::labs(title = sample)
+      })
+      names(plots) <- names(image_map)
+      plots <- Filter(Negate(is.null), plots)
+      if (!length(plots)) log_message("No samples remain for spatial plotting", message_type = "error")
+      if (!isTRUE(combine)) return(plots)
+      if (length(plots) == 1L) return(plots[[1L]])
+      combined <- do.call(patchwork::wrap_plots, c(list(plotlist = plots, guides = "collect"), layout_args))
+      return(combined & ggplot2::theme(
+        legend.position = dots$legend.position %||% "right",
+        legend.direction = dots$legend.direction %||% "vertical"
+      ))
     }
-    return(SpatialSpotPlot(
+    return(do.call(SpatialSpotPlot, c(list(
       object = srt,
       group.by = group.by,
       split.by = sample.by,
@@ -233,9 +289,8 @@ SpatialIntegrationPlot <- function(
       palette = palette,
       palcolor = palcolor,
       theme_use = theme_use,
-      theme_args = theme_args,
-      ...
-    ))
+      theme_args = theme_args
+    ), dots)))
   }
 
   if (identical(plot_type, "embedding")) {
@@ -297,6 +352,48 @@ SpatialIntegrationPlot <- function(
     theme_use = theme_use,
     theme_args = theme_args
   )
+}
+
+spatial_integration_plot_images <- function(srt, sample.by, parameters, image = NULL) {
+  if (is.null(sample.by) || !sample.by %in% names(srt@meta.data)) {
+    log_message("A valid {.arg sample.by} is required for spatial image panels", message_type = "error")
+  }
+  labels <- as.character(srt@meta.data[[sample.by]])
+  if (anyNA(labels) || any(!nzchar(labels))) {
+    log_message("Every spatial observation must have a sample label", message_type = "error")
+  }
+  samples <- unique(labels)
+  images <- SeuratObject::Images(srt)
+  if (!length(images)) return(NULL)
+  if (!is.null(image)) {
+    if (!is.character(image) || !length(image) || anyNA(image) || any(!nzchar(image))) {
+      log_message("{.arg image} must be an image name or a named sample-to-image map", message_type = "error")
+    }
+    if (length(image) > 1L || !is.null(names(image))) {
+      if (is.null(names(image)) || anyDuplicated(names(image)) || !setequal(names(image), samples)) {
+        log_message("The named {.arg image} map must cover every sample exactly once", message_type = "error")
+      }
+    }
+  }
+  out <- stats::setNames(character(length(samples)), samples)
+  for (sample in samples) {
+    cells <- colnames(srt)[labels == sample]
+    candidates <- images[vapply(images, function(name) all(cells %in% SeuratObject::Cells(srt[[name]])), logical(1))]
+    selected <- if (is.null(image)) NULL else if (is.null(names(image))) image else unname(image[[sample]])
+    if (is.null(selected)) {
+      source <- parameters$coordinate_sources[[sample]]
+      if (length(source$image) == 1L && !identical(source$selection_namespace, "input_sample") && source$image %in% candidates) {
+        selected <- source$image
+      } else if (length(candidates) == 1L) {
+        selected <- candidates[[1L]]
+      }
+    }
+    if (length(selected) != 1L || !selected %in% candidates) {
+      log_message("Sample {.val {sample}} requires one covering image; supply a named {.arg image} map", message_type = "error")
+    }
+    out[[sample]] <- selected
+  }
+  out
 }
 
 spatial_integration_prepare_input <- function(
@@ -955,7 +1052,7 @@ spatial_integration_composition_plot <- function(
   colnames(tab) <- c("sample", "domain", "count")
   tab <- tab[tab$count > 0, , drop = FALSE]
   tab$fraction <- stats::ave(tab$count, tab$sample, FUN = function(x) x / sum(x))
-  cols <- palette_colors(unique(as.character(tab$domain)), palette = palette, palcolor = palcolor)
+  cols <- spatial_palette_colors(unique(as.character(tab$domain)), palette = palette, palcolor = palcolor)
   ggplot2::ggplot(tab, ggplot2::aes(x = .data$sample, y = .data$fraction, fill = .data$domain)) +
     ggplot2::geom_col(width = 0.75, color = "white", linewidth = 0.2) +
     ggplot2::scale_fill_manual(values = cols) +
@@ -978,12 +1075,9 @@ spatial_integration_alignment_plot <- function(
   theme_args
 ) {
   aligned_cols <- parameters$aligned_coord_cols
-  raw_cols <- parameters$coord.cols
   if (
     is.null(aligned_cols) ||
-      !all(aligned_cols %in% colnames(srt@meta.data)) ||
-      is.null(raw_cols) ||
-      !all(raw_cols %in% colnames(srt@meta.data))
+      !all(aligned_cols %in% colnames(srt@meta.data))
   ) {
     log_message(
       "Alignment plots require stored raw and aligned coordinate columns",
@@ -991,9 +1085,12 @@ spatial_integration_alignment_plot <- function(
     )
   }
   meta <- srt@meta.data
+  image_map <- spatial_integration_plot_images(srt, sample.by, parameters)
+  raw <- spatial_sample_coords(srt, sample.by, image = image_map,
+    coord.cols = parameters$coord.cols, coordinate_space = parameters$coordinate_space %||% "raw")$data
   dat_raw <- data.frame(
-    x = meta[[raw_cols[1L]]],
-    y = meta[[raw_cols[2L]]],
+    x = raw$x,
+    y = raw$y,
     group = meta[[group.by]],
     sample = if (!is.null(sample.by) && sample.by %in% colnames(meta)) meta[[sample.by]] else "All",
     coordinate = "Raw",
@@ -1015,8 +1112,8 @@ spatial_integration_alignment_plot <- function(
       message_type = "error"
     )
   }
-  dat$group <- factor(as.character(dat$group), levels = unique(as.character(dat$group)))
-  cols <- palette_colors(levels(dat$group), palette = palette, palcolor = palcolor)
+  dat$group <- spatial_plot_factor(dat$group)
+  cols <- spatial_palette_colors(levels(dat$group), palette = palette, palcolor = palcolor)
   ggplot2::ggplot(dat, ggplot2::aes(x = .data$x, y = .data$y, fill = .data$group)) +
     ggplot2::geom_point(shape = 21, color = "grey20", stroke = 0.1, size = 1.2, alpha = 0.9) +
     ggplot2::scale_fill_manual(values = cols, na.value = "grey80") +

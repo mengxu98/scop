@@ -125,7 +125,7 @@ quantiles.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{verbose}{Whether to print messages.}
@@ -142,6 +142,11 @@ A \code{ggplot}, \code{patchwork}, or list of \code{ggplot} objects.
 }
 \description{
 Spatial spot plot
+}
+\details{
+Factor levels retain their order, including after selecting \code{cells}.
+Named \code{palcolor} vectors map category names to colors; unnamed colors follow
+factor order. Missing values remain distinct from a category named \code{"NA"}.
 }
 \examples{
 data(visium_human_pancreas_sub)

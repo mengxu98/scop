@@ -1,5 +1,10 @@
 # scop 0.9.2
 
+* **fix**: Spatial plots preserve coordinate aspect ratios, factor order and named category colors. Point, long-format and pie facets accept metadata names with spaces, constant features honor explicit color limits, and ambiguous value IDs are rejected.
+* **fix**: Spatial integration maps render every sample with its matching image; aligned views use aligned coordinates without raw-image overlays. `SpatialCellPlot()` adds named-list/layout and legend controls, with a sequential default palette for numeric features.
+* **fix**: Deconvolution summaries report assigned/unassigned spot counts without assigning zero-weight spots to the first cell type. Invalid weights fail before object mutation. Empty deconvolution panels remain plottable and constant proportion panels share comparable legends.
+* **dependencies**: Require thisutils >= 0.5.2 for the `detect_cores()` calls already used by SCOP.
+
 * **breaking**: `RunMonocle2()` drops the `backend = "cpp"` path and its `n_neighbors` parameter. Monocle now accelerates the DDRTree ordering hot paths natively in C++, so the separate scop implementation is no longer needed; `backend` and `n_neighbors` are accepted with a deprecation warning and ignored. The `group.by`-based `root_state` resolution that only the C++ backend supported is removed with it, and `root_state` must be a trajectory State as with the previous `"r"` backend.
 * **perf**: `RunMonocle2()` DDRTree ordering now runs on monocle's native C++ fast paths (cell-to-MST projection, projected-cell minimum spanning tree, tree ordering traversal, and state-based root selection, ported from the former scop backend into mengxu98/monocle). Ordering a 3,000-cell dataset drops from ~9.3 s to ~1.2 s, and the ordering step no longer scales quadratically with cell number. Pseudotime, states, and the root cell are unchanged. The updated monocle is installed automatically through `check_r()`.
 

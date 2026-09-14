@@ -440,8 +440,8 @@ ccc_spatial_network_plot <- function(
   nodes <- render$nodes
   edges <- render$edges
   groups <- stored$payload$group_levels
-  cell_cols <- palette_colors(groups, palette = cell_palette, palcolor = cell_palcolor, NA_keep = TRUE)
-  link_cols <- palette_colors(groups, palette = link_palette, palcolor = link_palcolor, NA_keep = TRUE)
+  cell_cols <- spatial_palette_colors(groups, palette = cell_palette, palcolor = cell_palcolor, NA_keep = TRUE)
+  link_cols <- spatial_palette_colors(groups, palette = link_palette, palcolor = link_palcolor, NA_keep = TRUE)
   if (length(edge_size) != 2L || any(!is.finite(edge_size)) || any(edge_size <= 0)) {
     log_message("{.arg edge_size} must contain two positive finite values", message_type = "error")
   }

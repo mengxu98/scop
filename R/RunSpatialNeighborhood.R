@@ -315,6 +315,7 @@ SpatialNeighborhoodPlot <- function(
     )
   }
   plot_type <- match.arg(plot_type)
+  if (missing(theme_use) && identical(plot_type, "spatial")) theme_use <- "theme_spatial"
   image.scale <- match.arg(image.scale)
   value <- if (identical(plot_type, "spatial") && missing(value)) "count" else match.arg(value)
   layout <- match.arg(layout)
@@ -817,7 +818,7 @@ spatial_neighborhood_heatmap_plot <- function(
   theme_use = "theme_scop",
   theme_args = list()
 ) {
-  cols <- palette_colors(type = "continuous", palette = palette, palcolor = palcolor)
+  cols <- spatial_palette_colors(type = "continuous", palette = palette, palcolor = palcolor)
   ggplot2::ggplot(df, ggplot2::aes(x = .data$to, y = .data$from, fill = .data[[value]])) +
     do.call(ggplot2::geom_tile, c(list(color = "white"), {
       .inline0 <- 0.2
