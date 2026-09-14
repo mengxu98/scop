@@ -4,6 +4,7 @@
 #' @inheritParams GroupHeatmap
 #' @inheritParams RunDynamicFeatures
 #' @inheritParams scop-params
+#' @inheritParams thisutils::parallelize_fun
 #' @param features Features to plot.
 #' By default, this parameter is set to NULL, and the dynamic features will be determined by the parameters
 #' `min_expcells`, `r.sq`, `dev.expl`, `padjust` and `num_intersections`.
@@ -1842,7 +1843,6 @@ DynamicHeatmap <- function(
     show_termid = show_termid,
     topWord = topWord,
     words_excluded = words_excluded,
-    cores = cores,
     ...
   )
   res <- enrichment$res

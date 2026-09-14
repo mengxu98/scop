@@ -44,7 +44,6 @@
 #' This argument is only used if `GO_simplify` is `TRUE`.
 #' @param simplify_similarityCutoff The similarity cutoff for simplification of GO terms.
 #' This argument is only used if `GO_simplify` is `TRUE`.
-#' @inheritParams thisutils::parallelize_fun
 #'
 #' @return
 #' If input is a Seurat object, returns the modified Seurat object with the enrichment result stored in the tools slot.
@@ -122,7 +121,6 @@ RunEnrichment <- function(
   GO_simplify_cutoff = "p.adjust < 0.05",
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
-  cores = 1,
   verbose = TRUE,
   ...,
   srt = NULL
@@ -402,7 +400,9 @@ RunEnrichment <- function(
     db
   )
 
-  res_list <- parallelize_fun(
+  # A PSOCK worker costs ~650 MB and seconds of package loading before running
+  # one ~1 s task, which a per-group x per-database fan-out cannot earn back.
+  res_list <- lapply(
     seq_len(nrow(comb)),
     function(i) {
       group <- comb[i, "group"]
@@ -532,9 +532,7 @@ RunEnrichment <- function(
         enrich_res <- NULL
       }
       enrich_res
-    },
-    cores = cores,
-    verbose = verbose
+    }
   )
 
   nm <- paste(comb$group, comb$term, sep = "-")
