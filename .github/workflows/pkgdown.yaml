@@ -64,7 +64,7 @@ jobs:
           # regenerated when the corresponding man pages are committed.
           # Vignette changes are handled by the articles workflow.
           if printf '%s\n' "$files" |
-            grep -E '^(README[.](md|Rmd|qmd)|NEWS\.md|DESCRIPTION|_pkgdown\.yml|man/|pkgdown/|inst/pkgdown/|[.]github/workflows/(pkgdown|warm-renv-cache|articles)\.yaml)' |
+            grep -E '^(README[.](md|Rmd|qmd)|NEWS\.md|DESCRIPTION|renv\.lock|_pkgdown\.yml|man/|pkgdown/|inst/pkgdown/|[.]github/workflows/(pkgdown|warm-renv-cache|articles)\.yaml)' |
             grep -q .; then
             echo "package_changed=true" >> "$GITHUB_OUTPUT"
           else
