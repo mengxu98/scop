@@ -2814,39 +2814,67 @@
       "Repository": "CRAN"
     },
     "RcppML": {
-      "Package": "RcppML",
-      "Version": "0.3.7.1",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Rcpp Machine Learning Library",
-      "Date": "2021-09-21",
-      "Authors@R": "person(\"Zachary\", \"DeBruine\",  email = \"zacharydebruine@gmail.com\",  role = c(\"aut\", \"cre\"),  comment = c(ORCID = \"0000-0003-2234-4827\"))",
-      "Description": "Fast machine learning algorithms including matrix factorization  and divisive clustering for large sparse and dense matrices.",
-      "License": "GPL (>= 2)",
-      "Imports": [
-        "Rcpp",
-        "Matrix",
-        "methods",
-        "stats"
-      ],
-      "LinkingTo": [
-        "Rcpp",
-        "RcppEigen"
-      ],
-      "VignetteBuilder": "knitr",
-      "RoxygenNote": "7.1.1",
-      "Suggests": [
-        "knitr",
-        "rmarkdown",
-        "testthat (>= 3.0.0)"
-      ],
-      "Config/testthat/edition": "3",
-      "URL": "https://github.com/zdebruine/RcppML",
-      "BugReports": "https://github.com/zdebruine/RcppML/issues",
-      "NeedsCompilation": "yes",
-      "Author": "Zachary DeBruine [aut, cre] (ORCID: <https://orcid.org/0000-0003-2234-4827>)",
-      "Maintainer": "Zachary DeBruine <zacharydebruine@gmail.com>",
-      "Repository": "CRAN"
+        "Package": "RcppML",
+        "Version": "1.0.0",
+        "Source": "GitHub",
+        "Type": "Package",
+        "Title": "Fast Non-Negative Matrix Factorization and Divisive Clustering",
+        "Date": "2026-03-10",
+        "Authors@R": "person(\"Zachary\", \"DeBruine\",  email = \"zacharydebruine@gmail.com\",  role = c(\"aut\", \"cre\"),  comment = c(ORCID = \"0000-0003-2234-4827\"))",
+        "Description": "High-performance non-negative matrix factorization (NMF), singular value decomposition (SVD), and divisive clustering for large sparse and dense matrices. Implements alternating least squares with coordinate descent and Cholesky NNLS solvers, diagonal scaling for interpretable factors, cross-validation for automatic rank selection, multiple distribution-based losses (Gaussian, Poisson, Generalized Poisson, Negative Binomial, Gamma, Inverse Gaussian, Tweedie) via iteratively reweighted least squares, regularization (L1, L2, L21, angular, graph Laplacian), and optional GPU acceleration via CUDA. Includes divisive clustering via recursive rank-2 factorization, consensus clustering, and the StreamPress compressed sparse matrix format. Methods are described in DeBruine, Melcher, and Triche (2021) <doi:10.1101/2021.09.01.458620>.",
+        "Depends": [
+            "R (>= 4.1.0)",
+            "Matrix"
+        ],
+        "License": "GPL (>= 3)",
+        "Imports": [
+            "Rcpp",
+            "methods",
+            "stats",
+            "utils"
+        ],
+        "LinkingTo": [
+            "Rcpp",
+            "RcppEigen"
+        ],
+        "RoxygenNote": "7.3.3",
+        "Suggests": [
+            "ggplot2",
+            "hdf5r",
+            "jsonlite",
+            "knitr",
+            "pheatmap",
+            "randomForest",
+            "RColorBrewer",
+            "rmarkdown",
+            "patchwork",
+            "plotly",
+            "scales",
+            "Seurat",
+            "SeuratData",
+            "SeuratObject",
+            "testthat (>= 3.0.0)",
+            "uwot",
+            "viridis"
+        ],
+        "VignetteBuilder": "knitr",
+        "Config/testthat/edition": "3",
+        "LazyData": "true",
+        "LazyDataCompression": "xz",
+        "URL": "https://github.com/zdebruine/RcppML",
+        "BugReports": "https://github.com/zdebruine/RcppML/issues",
+        "SystemRequirements": "CUDA Toolkit >= 11.0 (optional, for GPU acceleration)",
+        "Encoding": "UTF-8",
+        "RemoteType": "github",
+        "RemoteHost": "api.github.com",
+        "RemoteRepo": "RcppML",
+        "RemoteUsername": "zdebruine",
+        "RemotePkgRef": "zdebruine/RcppML",
+        "RemoteRef": "HEAD",
+        "RemoteSha": "df69dddbe37962cd0179b6b6c6ace94e400b4f60",
+        "NeedsCompilation": "yes",
+        "Author": "Zachary DeBruine [aut, cre] (ORCID: <https://orcid.org/0000-0003-2234-4827>)",
+        "Maintainer": "Zachary DeBruine <zacharydebruine@gmail.com>"
     },
     "RcppParallel": {
       "Package": "RcppParallel",
