@@ -273,7 +273,8 @@ test_that("RunSpatialEcoTyper aligns named recovery celltypes before length chec
 
 test_that("RunSpatialEcoTyper writes deconvoluted SE abundance to metadata", {
   srt <- make_spatialecotyper_seurat()
-  fake_deconv <- function(dat, scale, nsample.per.run, sum2one, ...) {
+  fake_deconv <- function(dat, scale, W, nsample.per.run, sum2one, ncores) {
+    expect_equal(ncores, 2)
     expect_s4_class(dat, "dgCMatrix")
     expect_true(scale)
     expect_identical(nsample.per.run, 500)
@@ -293,6 +294,7 @@ test_that("RunSpatialEcoTyper writes deconvoluted SE abundance to metadata", {
     out <- RunSpatialEcoTyper(
       srt,
       mode = "deconvolute",
+      cores = 2,
       prefix = "SET",
       verbose = FALSE
     )
@@ -309,7 +311,8 @@ test_that("RunSpatialEcoTyper returns deconvolution matrix for matrix input", {
     nrow = 3,
     dimnames = list(paste0("Gene", 1:3), paste0("Bulk", 1:2))
   )
-  fake_deconv <- function(dat, ...) {
+  fake_deconv <- function(dat, scale, W, nsample.per.run, sum2one, ncores) {
+    expect_equal(ncores, 2)
     expect_identical(dat, expr)
     matrix(
       c(0.4, 0.6, 0.5, 0.5),
@@ -319,7 +322,10 @@ test_that("RunSpatialEcoTyper returns deconvolution matrix for matrix input", {
   }
 
   with_mock_spatialecotyper(list(DeconvoluteSE = fake_deconv), {
-    out <- RunSpatialEcoTyper(expr, mode = "deconvolute", verbose = FALSE)
+    expect_warning(
+      out <- RunSpatialEcoTyper(expr, mode = "deconvolute", ncores = 2, verbose = FALSE),
+      "deprecated"
+    )
   })
 
   expect_equal(dim(out), c(2, 2))

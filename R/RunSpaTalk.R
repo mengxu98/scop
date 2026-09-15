@@ -524,17 +524,6 @@ RunSpaTalk <- function(
 }
 
 
-spatalk_plot_object <- function(object, stored) {
-  long_table <- stored$result$long_table %||% spatalk_long_table(stored$result$lr_table)
-  bundle <- stored$bundle
-  spatial_require_coordinate_contract(stored$result, "RunSpaTalk()")
-  bundle$active_result <- stored$result.name
-  bundle$long_table <- long_table
-  bundle$primary_table <- long_table
-  object@tools[["SpaTalk"]] <- spatial_tag_coordinate_contract(bundle)
-  ccc_update_unified_bundle(object, method = "SpaTalk", bundle = bundle, backend = "r")
-}
-
 #' @title Plot stored SpaTalk results
 #'
 #' @description Plot a stored SpaTalk communication result without rerunning
@@ -545,6 +534,7 @@ spatalk_plot_object <- function(object, stored) {
 #' @param plot_type Network, ligand-receptor bubble, pathway bubble, or
 #'   receptor-TF view.
 #' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
+#' Applied to every plot type, including the delegated CCC views.
 #' @param ... Arguments passed to the corresponding SCOP CCC plot.
 #'
 #' @return A `ggplot` or compatible plot object.
@@ -560,21 +550,31 @@ SpaTalkPlot <- function(
   plot_type <- match.arg(plot_type)
   stored <- tool_bundle_get_result(object, "SpaTalk", result.name)
   spatial_require_coordinate_contract(stored$result, "RunSpaTalk()")
-  if (identical(plot_type, "network")) {
-    plot_object <- spatalk_plot_object(object, stored)
-    return(do.call(CCCNetworkPlot, c(list(object = plot_object, method = "SpaTalk", plot_type = "circle"), list(...))))
-  }
-  if (identical(plot_type, "bubble")) {
-    plot_object <- spatalk_plot_object(object, stored)
-    return(do.call(CCCHeatmap, c(list(object = plot_object, method = "SpaTalk", plot_type = "bubble"), list(...))))
-  }
-  if (identical(plot_type, "pathway")) {
-    plot_object <- spatalk_plot_object(object, stored)
-    pathway <- plot_object@tools$SpaTalk$long_table$pathway_name
-    if (all(is.na(pathway)) || all(!nzchar(pathway[!is.na(pathway)]))) {
-      log_message("The stored SpaTalk result has no pathway labels", message_type = "error")
+  if (!identical(plot_type, "tf")) {
+    bundle <- stored$bundle
+    long_table <- stored$result$long_table %||% spatalk_long_table(stored$result$lr_table)
+    bundle$active_result <- stored$result.name
+    bundle$long_table <- long_table
+    bundle$primary_table <- long_table
+    object@tools[["SpaTalk"]] <- spatial_tag_coordinate_contract(bundle)
+    plot_object <- ccc_update_unified_bundle(object, method = "SpaTalk", bundle = bundle, backend = "r")
+    if (identical(plot_type, "network")) {
+      return(CCCNetworkPlot(
+        object = plot_object, method = "SpaTalk", plot_type = "circle",
+        theme_use = theme_use, theme_args = theme_args, ...
+      ))
     }
-    return(do.call(CCCHeatmap, c(list(object = plot_object, method = "SpaTalk", plot_type = "pathway_bubble"), list(...))))
+    if (identical(plot_type, "pathway")) {
+      pathway <- long_table$pathway_name
+      if (all(is.na(pathway)) || all(!nzchar(pathway[!is.na(pathway)]))) {
+        log_message("The stored SpaTalk result has no pathway labels", message_type = "error")
+      }
+    }
+    return(CCCHeatmap(
+      object = plot_object, method = "SpaTalk",
+      plot_type = if (identical(plot_type, "pathway")) "pathway_bubble" else "bubble",
+      theme_use = theme_use, theme_args = theme_args, ...
+    ))
   }
   tf <- stored$result$tf_table
   if (!is.data.frame(tf) || nrow(tf) == 0L) {

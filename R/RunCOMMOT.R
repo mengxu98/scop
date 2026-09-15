@@ -444,6 +444,7 @@ commot_select_key <- function(table, key, label) {
 #' @param result.name Stored COMMOT result name.
 #' @param plot_type Network, cluster matrix, or direction-vector view.
 #' @param theme_use,theme_args Theme name or function, plus extra theme arguments.
+#' Applied to every plot type, including the network view.
 #' @param key Stored cluster or direction selection key.
 #' @param ... Arguments passed to the SCOP network plot for `"network"`.
 #'
@@ -479,13 +480,15 @@ COMMOTPlot <- function(
   spatial_require_coordinate_contract(stored$result, "RunCOMMOT()")
   if (identical(plot_type, "network")) {
     plot_bundle <- stored$bundle
-    spatial_require_coordinate_contract(stored$result, "RunCOMMOT()")
     plot_bundle$active_result <- stored$result.name
     plot_bundle$long_table <- stored$result$long_table
     plot_bundle$primary_table <- stored$result$long_table
     object@tools[["COMMOT"]] <- spatial_tag_coordinate_contract(plot_bundle)
     plot_object <- ccc_update_unified_bundle(object, method = "COMMOT", bundle = plot_bundle, backend = "r")
-    return(do.call(CCCNetworkPlot, c(list(object = plot_object, method = "COMMOT", plot_type = "circle"), list(...))))
+    return(CCCNetworkPlot(
+      object = plot_object, method = "COMMOT", plot_type = "circle",
+      theme_use = theme_use, theme_args = theme_args, ...
+    ))
   }
   if (identical(plot_type, "matrix")) {
     table <- stored$result$cluster_table

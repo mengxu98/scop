@@ -23,7 +23,8 @@ COMMOTPlot(
 
 \item{key}{Stored cluster or direction selection key.}
 
-\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.
+Applied to every plot type, including the network view.}
 
 \item{...}{Arguments passed to the SCOP network plot for `"network"`.}
 }

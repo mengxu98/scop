@@ -21,7 +21,8 @@ SpaTalkPlot(
 \item{plot_type}{Network, ligand-receptor bubble, pathway bubble, or
 receptor-TF view.}
 
-\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.}
+\item{theme_use, theme_args}{Theme name or function, plus extra theme arguments.
+Applied to every plot type, including the delegated CCC views.}
 
 \item{...}{Arguments passed to the corresponding SCOP CCC plot.}
 }

@@ -151,6 +151,30 @@ test_that("RunSpaTalk stores official single-cell results and unified CCC rows",
   expect_s3_class(SpaTalkPlot(out, plot_type = "tf"), "ggplot")
 })
 
+test_that("SpaTalkPlot forwards theme controls through all CCC views", {
+  mock_spatalk_bindings()
+  out <- RunSpaTalk(make_spatalk_test_object(), group.by = "celltype", mode = "single_cell",
+    coord.cols = c("col", "row"), backend = "r", verbose = FALSE)
+  out@tools$SpaTalk$results$default$long_table$pathway_name <- "P1"
+  before <- out@tools
+  seen <- character()
+  plot_fun <- function(object, method, plot_type, theme_use = NULL, theme_args = NULL, ...) {
+    expect_identical(method, "SpaTalk")
+    expect_identical(theme_use, "theme_void")
+    expect_identical(theme_args, list(base_size = 17))
+    expect_identical(list(...)$show_title, FALSE)
+    seen <<- c(seen, plot_type)
+    ggplot2::ggplot()
+  }
+  testthat::local_mocked_bindings(CCCNetworkPlot = plot_fun, CCCHeatmap = plot_fun)
+  for (view in c("network", "bubble", "pathway")) {
+    SpaTalkPlot(out, plot_type = view, theme_use = "theme_void",
+      theme_args = list(base_size = 17), show_title = FALSE)
+  }
+  expect_identical(seen, c("circle", "bubble", "pathway_bubble"))
+  expect_identical(out@tools, before)
+})
+
 test_that("RunSpaTalk spot mode runs NNLM deconvolution and can retain native output", {
   spatial <- make_spatalk_test_object()
   reference <- make_spatalk_test_object()

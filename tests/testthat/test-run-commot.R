@@ -153,6 +153,25 @@ test_that("RunCOMMOT retains official cluster p-values and stored directions", {
   expect_s3_class(COMMOTPlot(out, plot_type = "direction"), "ggplot")
 })
 
+test_that("COMMOTPlot forwards theme controls to the network plot", {
+  mock_commot_execute()
+  out <- RunCOMMOT(make_commot_test_object(), group.by = "celltype",
+    coord.cols = c("col", "row"), backend = "r", verbose = FALSE)
+  before <- out@tools
+  testthat::local_mocked_bindings(
+    CCCNetworkPlot = function(object, method, plot_type, theme_use = NULL, theme_args = NULL, ...) {
+      expect_identical(method, "COMMOT")
+      expect_identical(plot_type, "circle")
+      expect_identical(theme_use, "theme_void")
+      expect_identical(theme_args, list(base_size = 17))
+      expect_identical(list(...)$top_n, 3)
+      ggplot2::ggplot()
+    }
+  )
+  COMMOTPlot(out, theme_use = "theme_void", theme_args = list(base_size = 17), top_n = 3)
+  expect_identical(out@tools, before)
+})
+
 test_that("RunCOMMOT never silently selects one image", {
   srt <- make_commot_test_object()
   assay <- SeuratObject::DefaultAssay(srt)

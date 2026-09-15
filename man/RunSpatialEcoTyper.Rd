@@ -119,7 +119,8 @@ meta-cell.}
 
 \item{minibatch}{Number of columns processed per mini-batch in SNF.}
 
-\item{cores}{Number of CPU cores used by \code{SpatialEcoTyper}.}
+\item{cores}{Number of CPU cores used by \code{SpatialEcoTyper}.
+Passed to the selected backend as \code{ncores}.}
 
 \item{ncores}{Deprecated alias for \code{cores}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
