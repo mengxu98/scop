@@ -63,7 +63,10 @@ list.}
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 
 \item{...}{Additional arguments passed to \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} or
-\code{\link[=CellDimPlot]{CellDimPlot()}}.}
+\code{\link[=CellDimPlot]{CellDimPlot()}}. For spatial maps, \code{image} can be one image or a named
+sample-to-image vector using names in the merged object. By default, each
+sample uses its uniquely matching image. \code{nrow}, \code{ncol} and \code{byrow} control
+the layout of separate image panels.}
 
 \item{image.scale}{Image scale factor matching the raster stored in the
 selected image. Use \code{"hires"} for a hires raster; do not modify Seurat
@@ -77,6 +80,11 @@ A \code{ggplot}, patchwork object, or list of plots.
 }
 \description{
 Visualize standardized results produced by \code{\link[=RunSpatialIntegration]{RunSpatialIntegration()}}.
+}
+\details{
+Raw spatial maps retain every sample and use consistent category colors.
+Aligned maps use the stored aligned coordinates without a raw tissue-image
+overlay. This plotting option does not perform image registration.
 }
 \examples{
 \dontrun{

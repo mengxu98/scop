@@ -43,7 +43,7 @@ Imports:
     stats,
     thisplot (>= 0.4.3),
     tools,
-    thisutils (>= 0.5.0),
+    thisutils (>= 0.5.2),
     utils,
     uwot
 Suggests:
