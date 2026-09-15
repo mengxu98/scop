@@ -21,6 +21,7 @@
 #' @param binary Whether to binarize the MERINGUE spatial neighbor matrix.
 #' @param alternative Alternative hypothesis passed to MERINGUE Moran tests.
 #' @param cores Number of cores passed to MERINGUE permutation tests.
+#' Mapped to `ncores` for the R backend and `n_threads` for the native backend.
 #' @param ncores Deprecated alias for `cores`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param pairwise_features Features used for spatial cross-correlation. If
@@ -442,20 +443,7 @@ meringue_run_autocorrelation <- function(
   }
   rows <- lapply(seq_len(nrow(expr)), function(i) {
     feature <- rownames(expr)[[i]]
-    out <- if (identical(backend, "cpp")) {
-      z <- expr[i, ]
-      z <- z[rownames(weight)]
-      if (nperm > 0L) {
-        set.seed(seed)
-      }
-      meringue_moran_cpp(
-        z = z,
-        weight = weight,
-        n_perm = as.integer(nperm),
-        alternative = alternative,
-        rounding_sample = rounding_sample
-      )
-    } else if (nperm > 0L) {
+    out <- if (nperm > 0L) {
       args <- utils::modifyList(
         list(
           z = expr[i, ],
@@ -463,7 +451,7 @@ meringue_run_autocorrelation <- function(
           alternative = alternative,
           N = nperm,
           seed = seed,
-          cores = cores,
+          ncores = cores,
           plot = FALSE
         ),
         moran_params
@@ -676,7 +664,7 @@ meringue_run_cross_correlation_tests <- function(
         x = expr[result$feature1[[i]], ],
         y = expr[result$feature2[[i]], ],
         w = weight,
-        cores = cores,
+        ncores = cores,
         plot = FALSE
       ),
       test_params

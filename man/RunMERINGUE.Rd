@@ -70,7 +70,8 @@ units.}
 \item{nperm}{Number of label permutations used for empirical p values. The
 default \code{0} skips p-value calculation.}
 
-\item{cores}{Number of cores passed to MERINGUE permutation tests.}
+\item{cores}{Number of cores passed to MERINGUE permutation tests.
+Mapped to \code{ncores} for the R backend and \code{n_threads} for the native backend.}
 
 \item{ncores}{Deprecated alias for \code{cores}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}

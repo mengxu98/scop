@@ -50,6 +50,7 @@
 #' @param iterations Number of similarity network fusion iterations.
 #' @param minibatch Number of columns processed per mini-batch in SNF.
 #' @param cores Number of CPU cores used by `SpatialEcoTyper`.
+#' Passed to the selected backend as `ncores`.
 #' @param ncores Deprecated alias for `cores`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param grid.size Spatial grid size used to discretize coordinates.
@@ -764,7 +765,7 @@ spatialecotyper_run_deconvolute <- function(
     W = W,
     nsample.per.run = nsample.per.run,
     sum2one = sum2one,
-    cores = cores,
+    ncores = cores,
     ...
   )
   abundance <- as.matrix(result)
