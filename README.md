@@ -180,8 +180,8 @@ CellDimPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 CellDimPlot(
@@ -195,8 +195,8 @@ CellDimPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-2.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-2-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-2.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-2-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 FeatureDimPlot(
@@ -209,8 +209,8 @@ FeatureDimPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-3.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-3-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-3.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-3-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 FeatureDimPlot(
@@ -226,8 +226,8 @@ FeatureDimPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-4.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-4-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-4.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-4-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 ht <- GroupHeatmap(
@@ -254,8 +254,8 @@ ht <- GroupHeatmap(
 print(ht$plot)
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ### **Quality control**
 
@@ -268,8 +268,8 @@ CellDimPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 CellStatPlot(
@@ -279,8 +279,8 @@ CellStatPlot(
 ) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-2.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-2-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-2.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-2-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 CellStatPlot(
@@ -296,8 +296,8 @@ CellStatPlot(
 ) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-3.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-3-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-3.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-3-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ### **Integration pipeline**
 
@@ -318,8 +318,8 @@ CellDimPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/integration_scop-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/integration_scop-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/integration_scop-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/integration_scop-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ### **Cell annotation**
 
@@ -355,8 +355,8 @@ ProjectionPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 #### **Cell annotation using bulk RNA-seq datasets**
 
@@ -377,8 +377,8 @@ CellDimPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 #### **Cell annotation using single-cell datasets**
 
@@ -399,8 +399,8 @@ CellDimPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 ht <- CellCorHeatmap(
@@ -418,8 +418,8 @@ ht <- CellCorHeatmap(
 print(ht$plot)
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ### **Cellular potency**
 
@@ -438,8 +438,8 @@ CytoTRACEPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCytoTRACE.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCytoTRACE-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCytoTRACE.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCytoTRACE-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ### **Trajectory inference**
 
@@ -463,8 +463,8 @@ VelocityPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 VelocityPlot(
@@ -476,8 +476,8 @@ VelocityPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2-dark.svg#gh-dark-mode-only" width="100%"/>
 
 #### **PAGA**
 
@@ -501,8 +501,8 @@ PAGAPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunPAGA-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunPAGA-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunPAGA-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunPAGA-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 #### **Slingshot**
 
@@ -524,8 +524,8 @@ CellDimPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 FeatureDimPlot(
@@ -538,8 +538,8 @@ FeatureDimPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-2.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-2-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-2.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-2-dark.svg#gh-dark-mode-only" width="100%"/>
 
 #### **Monocle3**
 
@@ -588,8 +588,8 @@ CellDimPlot(
   trajectory
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunMonocle3.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunMonocle3-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunMonocle3.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunMonocle3-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ### **Dynamic features**
 
@@ -636,8 +636,8 @@ ht <- DynamicHeatmap(
 print(ht$plot)
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicHeatmap-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicHeatmap-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicHeatmap-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicHeatmap-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 DynamicPlot(
@@ -651,8 +651,8 @@ DynamicPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicPlot-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicPlot-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicPlot-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicPlot-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 FeatureStatPlot(
@@ -671,8 +671,8 @@ FeatureStatPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureStatPlot-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureStatPlot-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureStatPlot-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureStatPlot-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ### **Differential expression analysis**
 
@@ -691,8 +691,8 @@ DEtestPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 # Hyperbolic volcano with enrichment annotation
@@ -726,8 +726,8 @@ DEtestPlot(
 ) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-2.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-2-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-2.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-2-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 DEtestPlot(
@@ -738,8 +738,8 @@ DEtestPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-3.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-3-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-3.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-3-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 DEGs <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
@@ -764,8 +764,8 @@ ht <- FeatureHeatmap(
 print(ht$plot)
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ### **Enrichment analysis**
 
@@ -787,8 +787,8 @@ EnrichmentPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 EnrichmentPlot(
@@ -799,8 +799,8 @@ EnrichmentPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-2.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-2-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-2.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-2-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 EnrichmentPlot(
@@ -812,8 +812,8 @@ EnrichmentPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-3.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-3-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-3.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-3-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 EnrichmentPlot(
@@ -824,8 +824,8 @@ EnrichmentPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-4.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-4-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-4.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-4-dark.svg#gh-dark-mode-only" width="100%"/>
 
 To ensure that labels are visible, you can adjust the size of the viewer panel on Rstudio IDE.
 
@@ -838,8 +838,8 @@ EnrichmentPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_enrichmap-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_enrichmap-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_enrichmap-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_enrichmap-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 EnrichmentPlot(
@@ -850,8 +850,8 @@ EnrichmentPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_comparison-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_comparison-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_comparison-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_comparison-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 EnrichmentPlot(
@@ -862,8 +862,8 @@ EnrichmentPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 #### **GSEA**
 
@@ -883,8 +883,8 @@ GSEAPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunGSEA-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunGSEA-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunGSEA-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunGSEA-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ``` r
 GSEAPlot(
@@ -897,8 +897,8 @@ GSEAPlot(
 )
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1.svg#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1-dark.svg#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1.svg#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1-dark.svg#gh-dark-mode-only" width="100%"/>
 
 ### **Interactive data visualization with SCExplorer**
 
@@ -918,8 +918,8 @@ if (interactive()) {
 }
 ```
 
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCExplorer-1.png#gh-light-mode-only" width="100%" style="display: block; margin: auto;"/>
-<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCExplorer-1-dark.png#gh-dark-mode-only" width="100%" style="display: block; margin: auto;"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCExplorer-1.png#gh-light-mode-only" width="100%"/>
+<img src="https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCExplorer-1-dark.png#gh-dark-mode-only" width="100%"/>
 
 ### **Other visualization examples**
 
