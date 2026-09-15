@@ -73,6 +73,7 @@ test_that("EnrichmentPlot finds results stored without a grouping variable", {
 
 test_that("GSEAPlot finds results stored without a grouping variable", {
   skip_if_not_installed("Seurat")
+  skip_if_not_installed("clusterProfiler")
 
   data("pancreas_sub", package = "scop")
   cell_types <- as.character(pancreas_sub$CellType)
@@ -145,6 +146,7 @@ test_that("GSEAPlot finds results stored without a grouping variable", {
 })
 
 test_that("EnrichmentPlot and GSEAPlot plot results passed through `res`", {
+  skip_if_not_installed("clusterProfiler")
   term2gene <- data.frame(
     Term = c(rep("Endocrine markers", 5), rep("Ductal markers", 5)),
     symbol = c(
