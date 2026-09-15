@@ -130,8 +130,6 @@ RunGRNBoost2.Seurat <- function(
 
 #' @rdname RunGRNBoost2
 #' @export
-#' @rdname RunGRNBoost2
-#' @export
 RunGRNBoost2.default <- function(
   object,
   regulators = NULL,

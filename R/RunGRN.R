@@ -787,8 +787,6 @@ RunGRN.Seurat <- function(
 
 #' @rdname RunGRN
 #' @export
-#' @rdname RunGRN
-#' @export
 RunGRN.default <- function(
   object,
   regulators = NULL,
