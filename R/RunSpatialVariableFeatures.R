@@ -832,7 +832,7 @@ spatial_variable_summary_plot <- function(
   } else {
     NA_real_
   }
-  cols <- palette_colors(as.character(features), palette = palette, palcolor = palcolor)
+  cols <- spatial_palette_colors(as.character(features), palette = palette, palcolor = palcolor)
   p <- ggplot2::ggplot(df, ggplot2::aes(x = .data[[".score"]], y = .data[["feature"]], color = .data[["feature"]])) +
     ggplot2::geom_segment(
       ggplot2::aes(x = 0, xend = .data[[".score"]], yend = .data[["feature"]]),

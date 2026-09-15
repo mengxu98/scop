@@ -119,7 +119,10 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
   expect_identical(rownames(original), rownames(wrapped_weights))
   expect_identical(colnames(original), colnames(wrapped_weights))
   expect_equal(original, wrapped_weights, tolerance = 1e-6)
-  expect_equal(unname(rowSums(wrapped_weights)), rep(1, nrow(wrapped_weights)), tolerance = 1e-6)
+  assigned <- rowSums(original) > 0
+  expect_equal(unname(rowSums(wrapped_weights)[assigned]), rep(1, sum(assigned)), tolerance = 1e-6)
+  expect_equal(unname(rowSums(wrapped_weights)[!assigned]), rep(0, sum(!assigned)))
+  expect_true(all(is.na(wrapped@meta.data[rownames(wrapped_weights)[!assigned], "RCTD_dominant_type"])))
   expect_true("RCTD_dominant_type" %in% colnames(wrapped[[]]))
 })
 

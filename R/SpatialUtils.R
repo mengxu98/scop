@@ -156,6 +156,8 @@ spatial_empty_plot <- function(
 #'
 #' @md
 #' @param show_axes Whether to keep axis titles, text, ticks, and grid lines.
+#' @param aspect.ratio Optional panel aspect ratio. The default `NULL` lets
+#' spatial coordinates determine the geometry through `coord_equal()`.
 #' @inheritParams theme_scop
 #' @inherit theme_scop return
 #' @seealso [theme_scop()]
@@ -164,7 +166,7 @@ spatial_empty_plot <- function(
 #' theme_spatial()
 theme_spatial <- function(
   show_axes = FALSE,
-  aspect.ratio = 1,
+  aspect.ratio = NULL,
   base_size = 12,
   ...
 ) {
@@ -198,20 +200,29 @@ spatial_crop_limits <- function(x, y, pad_fraction = 0.04, min_pad = 0) {
 }
 
 spatial_weight_summary <- function(weights) {
-  weights <- as.data.frame(weights, check.names = FALSE)
-  if (nrow(weights) == 0L || ncol(weights) == 0L) {
+  weights <- as.matrix(weights)
+  assigned <- if (ncol(weights) > 0L) {
+    rowSums(is.finite(weights)) == ncol(weights) & rowSums(weights) > 0
+  } else {
+    rep(FALSE, nrow(weights))
+  }
+  assigned[is.na(assigned)] <- FALSE
+  if (!any(assigned)) {
     return(list(
       n_spots = nrow(weights),
       n_types = ncol(weights),
       dominant_counts = data.frame(type = character(), count = integer()),
-      max_prop = c(min = NA_real_, median = NA_real_, mean = NA_real_, max = NA_real_)
+      max_prop = c(min = NA_real_, median = NA_real_, mean = NA_real_, max = NA_real_),
+      n_assigned = 0L,
+      n_unassigned = nrow(weights)
     ))
   }
-  max_idx <- max.col(as.matrix(weights), ties.method = "first")
+  valid_weights <- weights[assigned, , drop = FALSE]
+  max_idx <- max.col(valid_weights, ties.method = "first")
   dominant <- colnames(weights)[max_idx]
   dominant_counts <- as.data.frame(table(dominant), stringsAsFactors = FALSE)
   colnames(dominant_counts) <- c("type", "count")
-  max_prop <- apply(weights, 1, max, na.rm = TRUE)
+  max_prop <- apply(valid_weights, 1, max)
   list(
     n_spots = nrow(weights),
     n_types = ncol(weights),
@@ -221,24 +232,83 @@ spatial_weight_summary <- function(weights) {
       median = unname(stats::median(max_prop, na.rm = TRUE)),
       mean = unname(mean(max_prop, na.rm = TRUE)),
       max = unname(max(max_prop, na.rm = TRUE))
-    )
+    ),
+    n_assigned = sum(assigned),
+    n_unassigned = sum(!assigned)
   )
 }
 
 spatial_normalize_weights <- function(weights) {
   weights <- as.matrix(weights)
-  weights[!is.finite(weights) | weights < 0] <- 0
+  if (!is.numeric(weights) || any(!is.finite(weights))) {
+    log_message("Deconvolution weights must be finite numeric values", message_type = "error")
+  }
+  if (any(weights < -sqrt(.Machine$double.eps))) {
+    log_message("Deconvolution weights must be non-negative", message_type = "error")
+  }
+  # Only tolerate floating-point noise around zero; do not hide invalid output.
+  weights[weights < 0] <- 0
   totals <- rowSums(weights)
+  if (any(!is.finite(totals))) {
+    log_message("Deconvolution weight totals must be finite", message_type = "error")
+  }
   keep <- is.finite(totals) & totals > 0
   weights[keep, ] <- weights[keep, , drop = FALSE] / totals[keep]
   weights[!keep, ] <- 0
   weights
 }
 
+# Keep named colors attached to their categories, independent of row order.
+spatial_palette_colors <- function(
+  x, palette = "Chinese", palcolor = NULL,
+  type = c("auto", "discrete", "continuous"), NA_keep = FALSE, ...
+) {
+  type <- match.arg(type)
+  continuous <- missing(x) || identical(type, "continuous") ||
+    (identical(type, "auto") && is.numeric(x))
+  if (!continuous && !is.null(palcolor) && !is.null(names(palcolor))) {
+    if (anyNA(names(palcolor)) || any(!nzchar(names(palcolor))) || anyDuplicated(names(palcolor))) {
+      log_message("Named {.arg palcolor} must have unique non-empty category names", message_type = "error")
+    }
+    labels <- if (is.factor(x)) levels(x) else unique(as.character(x[!is.na(x)]))
+    missing_colors <- setdiff(labels, names(palcolor))
+    if (length(missing_colors)) {
+      log_message("Named {.arg palcolor} is missing colors for {.val {missing_colors}}", message_type = "error")
+    }
+    colors <- stats::setNames(as.character(unlist(palcolor[labels])), labels)
+    if (isTRUE(NA_keep) && anyNA(x)) colors <- c(colors, "NA" = "grey80")
+    return(colors)
+  }
+  if (missing(x)) {
+    return(palette_colors(palette = palette, palcolor = palcolor, type = type, NA_keep = NA_keep, ...))
+  }
+  palette_colors(x, palette = palette, palcolor = palcolor, type = type, NA_keep = NA_keep, ...)
+}
+
+spatial_plot_factor <- function(x) {
+  labels <- if (is.factor(x)) levels(x) else unique(as.character(x[!is.na(x)]))
+  # Keep missingness separate from a genuine category whose name is "NA".
+  factor(as.character(x), levels = labels, ordered = is.ordered(x))
+}
+
+spatial_colorbar_guide <- function(direction = c("vertical", "horizontal")) {
+  direction <- match.arg(direction)
+  horizontal <- identical(direction, "horizontal")
+  ggplot2::guide_colorbar(direction = direction, theme = ggplot2::theme(
+    legend.key.width = grid::unit(if (horizontal) 38 else 3, "mm"),
+    legend.key.height = grid::unit(if (horizontal) 3 else 28, "mm")
+  ))
+}
+
 spatial_finalize_weights <- function(weights, all_spots) {
   weights <- spatial_normalize_weights(weights)
-  if (is.null(rownames(weights)) || is.null(colnames(weights))) {
-    log_message("Deconvolution weights must have row and column names", message_type = "error")
+  valid_names <- function(x) !is.null(x) && !anyNA(x) && all(nzchar(x)) && !anyDuplicated(x)
+  if (any(dim(weights) == 0L) || !valid_names(rownames(weights)) ||
+      !valid_names(colnames(weights)) || !valid_names(all_spots)) {
+    log_message("Deconvolution weights must be non-empty with unique row and column names", message_type = "error")
+  }
+  if (length(setdiff(rownames(weights), all_spots))) {
+    log_message("Deconvolution weights contain unknown spatial spot names", message_type = "error")
   }
   full_weights <- matrix(
     NA_real_,

@@ -1024,7 +1024,7 @@ sgf_model_plot <- function(
     ggplot2::scale_fill_gradientn(colors = rev({
       .inline0 <- palette
       .inline1 <- palcolor
-      palette_colors(palette = .inline0, palcolor = .inline1, n = 9)
+      spatial_palette_colors(palette = .inline0, palcolor = .inline1, n = 9)
     }), na.value = "grey85") +
     ggplot2::labs(x = "Model", y = NULL, fill = "RMSE") +
     apply_plot_theme(theme_use = theme_use, theme_args = theme_args, fallback = ggplot2::theme_minimal) +
@@ -1036,7 +1036,7 @@ sgf_model_plot <- function(
 
 sgf_feature_colors <- function(features, palette = "Spectral", palcolor = NULL) {
   features <- unique(as.character(features))
-  cols <- palette_colors(features, palette = palette, palcolor = palcolor)
+  cols <- spatial_palette_colors(features, palette = palette, palcolor = palcolor)
   stats::setNames(cols[seq_along(features)], features)
 }
 

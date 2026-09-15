@@ -53,6 +53,12 @@ backend. \code{\link[=RunCSIDE]{RunCSIDE()}} is intentionally excluded because i
 represents differential or context effects rather than cell-type
 proportions.
 }
+\details{
+Point maps share a zero-to-one scale. A cell type with no measured values
+produces an informative empty panel instead of aborting the other maps.
+For dominant and pie maps, \code{cell_types} selects the types participating in
+the displayed comparison; pie fractions are relative to those selected types.
+}
 \examples{
 \dontrun{
 data(visium_human_pancreas_sub)

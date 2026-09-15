@@ -4,12 +4,13 @@
 \alias{theme_spatial}
 \title{ggplot2 theme for spatial plots}
 \usage{
-theme_spatial(show_axes = FALSE, aspect.ratio = 1, base_size = 12, ...)
+theme_spatial(show_axes = FALSE, aspect.ratio = NULL, base_size = 12, ...)
 }
 \arguments{
 \item{show_axes}{Whether to keep axis titles, text, ticks, and grid lines.}
 
-\item{aspect.ratio}{Aspect ratio of the panel.}
+\item{aspect.ratio}{Optional panel aspect ratio. The default \code{NULL} lets
+spatial coordinates determine the geometry through \code{coord_equal()}.}
 
 \item{base_size}{Base font size}
 

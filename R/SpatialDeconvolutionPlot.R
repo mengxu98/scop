@@ -21,6 +21,11 @@
 #' @param combine Whether to combine point maps. If `FALSE`, return a named list.
 #' @param nrow,ncol,byrow Point-map layout controls. When both dimensions are
 #' `NULL`, a near-square layout with at most three columns is used.
+#' @details
+#' Point maps share a zero-to-one scale. A cell type with no measured values
+#' produces an informative empty panel instead of aborting the other maps.
+#' For dominant and pie maps, `cell_types` selects the types participating in
+#' the displayed comparison; pie fractions are relative to those selected types.
 #' @param image.scale Image scale factor matching the selected raster.
 #' @param ... Additional arguments passed to [SpatialSpotPlot()].
 #'
@@ -138,12 +143,18 @@ SpatialDeconvolutionPlot <- function(
   legend_title <- list(...)$legend.title %||% "Proportion"
   plots <- Map(
     function(plot, cell_type) {
-      set_continuous_color_scale(
+      if (!".value" %in% names(plot$data) || all(is.na(plot$data$.value))) {
+        return(plot + ggplot2::labs(title = cell_type))
+      }
+      plot <- set_continuous_color_scale(
         plot = plot,
         limits = c(0, 1),
         title = legend_title,
         context = "proportion"
       ) + ggplot2::labs(title = cell_type)
+      scale <- plot$scales$get_scales("colour")
+      scale$breaks <- ggplot2::waiver()
+      plot
     },
     plots,
     colnames(proportions)
@@ -157,13 +168,18 @@ SpatialDeconvolutionPlot <- function(
   if (is.null(nrow) && is.null(ncol)) {
     ncol <- min(3L, ceiling(sqrt(length(plots))))
   }
-  patchwork::wrap_plots(
+  combined <- patchwork::wrap_plots(
     plots,
     nrow = nrow,
     ncol = ncol,
     byrow = byrow,
     guides = "collect"
   ) + patchwork::plot_annotation(title = paste0(tool_name, " proportions"))
+  dots <- list(...)
+  combined & ggplot2::theme(
+    legend.position = dots$legend.position %||% "right",
+    legend.direction = dots$legend.direction %||% "vertical"
+  )
 }
 
 spatial_deconvolution_requires_coordinate_contract <- function(stored) {
@@ -204,6 +220,9 @@ spatial_deconvolution_proportions <- function(x, spot_ids, tool_name) {
     )
   }
   finite <- x[is.finite(x)]
+  if (any(is.infinite(x))) {
+    log_message("Stored proportions cannot contain infinite values", message_type = "error")
+  }
   if (length(finite) > 0L && (any(finite < 0) || any(finite > 1 + sqrt(.Machine$double.eps)))) {
     log_message("Stored proportions must lie between zero and one", message_type = "error")
   }
