@@ -112,8 +112,6 @@ RunMDIC3.Seurat <- function(
 
 #' @rdname RunMDIC3
 #' @export
-#' @rdname RunMDIC3
-#' @export
 RunMDIC3.default <- function(
   object,
   labels,

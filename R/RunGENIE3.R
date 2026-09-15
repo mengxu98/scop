@@ -58,8 +58,6 @@ RunGENIE3.Seurat <- function(
 
 #' @rdname RunGENIE3
 #' @export
-#' @rdname RunGENIE3
-#' @export
 RunGENIE3.default <- function(
   object,
   regulators = NULL,
