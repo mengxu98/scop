@@ -5,7 +5,7 @@
 \title{Enrichment Plot}
 \usage{
 EnrichmentPlot(
-  object,
+  object = NULL,
   db = "GO_BP",
   group.by = NULL,
   test.use = "wilcox",
@@ -68,7 +68,9 @@ If not specified, the \code{res} arguments must be provided.}
 \item{db}{The database to use for enrichment plot.}
 
 \item{group.by}{Grouping variable in the \code{Seurat} object.
-This argument is only used if \code{srt} is specified.}
+This argument is only used if \code{srt} is specified.
+\code{NULL} (the default) selects the results that \link{RunEnrichment} stored for
+custom gene sets or custom cell groups, which are keyed as \code{"custom"}.}
 
 \item{test.use}{Test to be used in differential expression analysis.
 This argument is only used if \code{srt} is specified.}
