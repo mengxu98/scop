@@ -866,7 +866,7 @@ bool solve_gpcca_cell_absorption(
 
 // [[Rcpp::export]]
 Eigen::SparseMatrix<double> cellrank_hard_threshold_kernel_cpp(
-    const Eigen::MappedSparseMatrix<double> connectivities,
+    const Eigen::Map<Eigen::SparseMatrix<double> > connectivities,
     NumericVector pseudotime,
     double frac_to_keep = 0.3,
     bool backward = false)
