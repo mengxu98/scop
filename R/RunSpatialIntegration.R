@@ -27,6 +27,10 @@
 #' and aligned-coordinate input. The default is raw acquisition coordinates;
 #' `"legacy_display"` remains an explicit compatibility option.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
+#' @param store_object Whether to retain the complete native PRECAST object in
+#' the stored method result. Set `FALSE` for a lighter result bundle; standard
+#' embeddings, domains, coordinates, parameters, summaries, and plotting do
+#' not require the native object.
 #' @param ... Additional backend-specific arguments.
 #'
 #' @details
@@ -52,6 +56,7 @@ RunSpatialIntegration <- function(
   cluster_colname = NULL,
   tool_name = "SpatialIntegration",
   store_results = TRUE,
+  store_object = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   ...
@@ -59,6 +64,7 @@ RunSpatialIntegration <- function(
   method <- match.arg(method)
   coordinate_space <- match.arg(coordinate_space)
   validate_scalar_string(tool_name, "tool_name")
+  validate_scalar_flag(store_object, "store_object")
   sample.by <- spatial_integration_resolve_sample_by(object, sample.by)
   reduction.name <- reduction.name %||% paste0("SpatialIntegration_", method)
   cluster_colname <- cluster_colname %||% paste0("SpatialIntegration_", method, "_domain")
@@ -105,7 +111,8 @@ RunSpatialIntegration <- function(
     reduction.name = reduction.name,
     cluster_colname = cluster_colname,
     tool_name = tool_name,
-    store_results = store_results
+    store_results = store_results,
+    store_object = store_object
   )
   log_message(
     "{.pkg {method}} spatial integration results stored in {.code srt@tools[[{tool_name}]]}",
@@ -358,42 +365,26 @@ spatial_integration_plot_images <- function(srt, sample.by, parameters, image = 
   if (is.null(sample.by) || !sample.by %in% names(srt@meta.data)) {
     log_message("A valid {.arg sample.by} is required for spatial image panels", message_type = "error")
   }
-  labels <- as.character(srt@meta.data[[sample.by]])
-  if (anyNA(labels) || any(!nzchar(labels))) {
-    log_message("Every spatial observation must have a sample label", message_type = "error")
-  }
-  samples <- unique(labels)
-  images <- SeuratObject::Images(srt)
-  if (!length(images)) return(NULL)
-  if (!is.null(image)) {
-    if (!is.character(image) || !length(image) || anyNA(image) || any(!nzchar(image))) {
-      log_message("{.arg image} must be an image name or a named sample-to-image map", message_type = "error")
-    }
-    if (length(image) > 1L || !is.null(names(image))) {
-      if (is.null(names(image)) || anyDuplicated(names(image)) || !setequal(names(image), samples)) {
-        log_message("The named {.arg image} map must cover every sample exactly once", message_type = "error")
-      }
-    }
-  }
-  out <- stats::setNames(character(length(samples)), samples)
+  if (length(SeuratObject::Images(srt)) == 0L) return(NULL)
+  samples <- unique(as.character(srt@meta.data[[sample.by]]))
+  sources <- parameters$coordinate_sources %||% list()
+  preferred <- stats::setNames(rep(NA_character_, length(samples)), samples)
   for (sample in samples) {
-    cells <- colnames(srt)[labels == sample]
-    candidates <- images[vapply(images, function(name) all(cells %in% SeuratObject::Cells(srt[[name]])), logical(1))]
-    selected <- if (is.null(image)) NULL else if (is.null(names(image))) image else unname(image[[sample]])
-    if (is.null(selected)) {
-      source <- parameters$coordinate_sources[[sample]]
-      if (length(source$image) == 1L && !identical(source$selection_namespace, "input_sample") && source$image %in% candidates) {
-        selected <- source$image
-      } else if (length(candidates) == 1L) {
-        selected <- candidates[[1L]]
-      }
+    source <- sources[[sample]]
+    if (
+      is.list(source) && length(source$image) == 1L &&
+        !identical(source$selection_namespace, "input_sample")
+    ) {
+      preferred[[sample]] <- as.character(source$image)
     }
-    if (length(selected) != 1L || !selected %in% candidates) {
-      log_message("Sample {.val {sample}} requires one covering image; supply a named {.arg image} map", message_type = "error")
-    }
-    out[[sample]] <- selected
   }
-  out
+  spatial_resolve_sample_images(
+    srt = srt,
+    sample.by = sample.by,
+    image = image,
+    preferred = preferred,
+    require_image = TRUE
+  )
 }
 
 spatial_integration_prepare_input <- function(
@@ -655,13 +646,10 @@ spatial_integration_sparse_matrix <- function(mat) {
 }
 
 spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) {
+  if (!identical(method, "PRECAST")) {
+    log_message("Unsupported spatial integration method {.val {method}}", message_type = "error")
+  }
   params <- list(...)
-  switch(method,
-    PRECAST = spatial_integration_run_precast(input, params, verbose = verbose)
-  )
-}
-
-spatial_integration_run_precast <- function(input, params, verbose = TRUE) {
   check_r("feiyoung/PRECAST", verbose = FALSE)
   create_fun <- get_namespace_fun("PRECAST", "CreatePRECASTObject")
   adj_fun <- get_namespace_fun("PRECAST", "AddAdjList")
@@ -709,22 +697,7 @@ spatial_integration_run_precast <- function(input, params, verbose = TRUE) {
     select_fun,
     c(list(obj = obj), params$select_params %||% list())
   )
-  spatial_integration_extract_backend(
-    raw_result = obj,
-    method = "PRECAST",
-    input = input
-  )
-}
-
-spatial_integration_extract_backend <- function(raw_result, method, input) {
-  if (is.list(raw_result) && any(c("embedding", "domains", "aligned_coords") %in% names(raw_result))) {
-    raw_result$raw_result <- raw_result$raw_result %||% raw_result
-    return(raw_result)
-  }
-  if (identical(method, "PRECAST") && inherits(raw_result, "PRECASTObj")) {
-    return(spatial_integration_extract_precast(raw_result, input))
-  }
-  list(raw_result = raw_result)
+  spatial_integration_extract_precast(obj, input)
 }
 
 spatial_integration_extract_precast <- function(raw_result, input) {
@@ -928,6 +901,7 @@ spatial_integration_apply_result <- function(
   cluster_colname,
   tool_name,
   store_results,
+  store_object = TRUE,
   coordinate_sources = NULL
 ) {
   all_cells <- colnames(srt)
@@ -978,6 +952,7 @@ spatial_integration_apply_result <- function(
     reduction.name = reduction.name,
     cluster_colname = cluster_colname,
     aligned_coord_cols = aligned_coord_cols,
+    store_object = store_object,
     tool_name = tool_name
   )
   sample_summary <- as.data.frame(table(srt@meta.data[[sample.by]]), stringsAsFactors = FALSE)
@@ -986,7 +961,6 @@ spatial_integration_apply_result <- function(
     embedding = result$embedding,
     domains = result$domains,
     aligned_coords = result$aligned_coords,
-    raw_result = result$raw_result,
     summary = list(
       n_cells = length(all_cells),
       domains = spatial_domain_summary(result$domains),
@@ -994,6 +968,9 @@ spatial_integration_apply_result <- function(
     ),
     parameters = parameters
   )
+  if (isTRUE(store_object)) {
+    method_bundle$raw_result <- result$raw_result
+  }
   method_bundle <- spatial_tag_coordinate_contract(method_bundle)
   if (isTRUE(store_results)) {
     old <- srt@tools[[tool_name]] %||% list()

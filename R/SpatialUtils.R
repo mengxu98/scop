@@ -83,10 +83,17 @@ spatial_coordinate_numeric <- function(x) {
   suppressWarnings(as.numeric(x))
 }
 
-# Resolve every sample independently. A scalar image must cover every sample;
-# a named image map must cover exactly the requested sample names.
-spatial_sample_coords <- function(srt, sample.by, image = NULL,
-                                  coord.cols = c("col", "row"), coordinate_space = "raw") {
+# Resolve one image for every sample. A scalar image must cover every sample;
+# a named image map must cover exactly the requested sample names. `preferred`
+# is an internal provenance hint and is used only when it names a covering
+# image; it never overrides an explicit user image.
+spatial_resolve_sample_images <- function(
+  srt,
+  sample.by,
+  image = NULL,
+  preferred = NULL,
+  require_image = FALSE
+) {
   labels <- as.character(srt[[]][[sample.by]])
   if (length(labels) != ncol(srt) || anyNA(labels) || any(!nzchar(labels))) {
     log_message("{.arg sample.by} must identify every cell or spot", message_type = "error")
@@ -105,13 +112,21 @@ spatial_sample_coords <- function(srt, sample.by, image = NULL,
   images <- SeuratObject::Images(srt)
   image_cells <- lapply(images, function(nm) SeuratObject::Cells(srt[[nm]]))
   names(image_cells) <- images
-  data <- sources <- vector("list", length(samples))
-  names(data) <- names(sources) <- samples
+  if (isTRUE(require_image) && length(images) == 0L) {
+    log_message("One image covering every sample is required", message_type = "error")
+  }
+  out <- stats::setNames(rep(NA_character_, length(samples)), samples)
   for (sample in samples) {
     cells <- colnames(srt)[labels == sample]
     selected <- if (is.null(image)) NULL else if (is.null(names(image))) image else unname(image[[sample]])
+    candidates <- images[vapply(image_cells, function(ids) all(cells %in% ids), logical(1))]
+    if (is.null(selected) && !is.null(preferred) && sample %in% names(preferred)) {
+      preferred_image <- preferred[[sample]]
+      if (length(preferred_image) == 1L && isTRUE(preferred_image %in% candidates)) {
+        selected <- preferred_image
+      }
+    }
     if (is.null(selected) && length(images) > 0L) {
-      candidates <- images[vapply(image_cells, function(ids) all(cells %in% ids), logical(1))]
       if (length(candidates) != 1L) {
         log_message(
           "Sample {.val {sample}} requires one image covering all its cells; supply a named {.arg image} map when ambiguous",
@@ -120,8 +135,36 @@ spatial_sample_coords <- function(srt, sample.by, image = NULL,
       }
       selected <- candidates[[1L]]
     }
-    resolved <- spatial_analysis_coords(srt,
-      image = selected, coord.cols = coord.cols,
+    if (isTRUE(require_image) && (is.null(selected) || length(selected) != 1L)) {
+      log_message("Sample {.val {sample}} requires one covering image", message_type = "error")
+    }
+    if (!is.null(selected)) {
+      if (length(selected) != 1L || !selected %in% images || !all(cells %in% image_cells[[selected]])) {
+        log_message("Selected image does not cover every cell in sample {.val {sample}}", message_type = "error")
+      }
+      out[[sample]] <- selected
+    }
+  }
+  out
+}
+
+# Resolve every sample independently and retain the source metadata needed by
+# schema-v1 spatial results.
+spatial_sample_coords <- function(srt, sample.by, image = NULL,
+                                  coord.cols = c("col", "row"), coordinate_space = "raw") {
+  labels <- as.character(srt[[]][[sample.by]])
+  samples <- unique(labels)
+  image_map <- spatial_resolve_sample_images(srt, sample.by, image = image)
+  data <- sources <- vector("list", length(samples))
+  names(data) <- names(sources) <- samples
+  for (sample in samples) {
+    cells <- colnames(srt)[labels == sample]
+    selected <- image_map[[sample]]
+    if (is.na(selected)) selected <- NULL
+    resolved <- spatial_analysis_coords(
+      srt,
+      image = selected,
+      coord.cols = coord.cols,
       coordinate_space = coordinate_space
     )
     if (!all(cells %in% resolved$data$cell_id)) {
@@ -132,7 +175,7 @@ spatial_sample_coords <- function(srt, sample.by, image = NULL,
   }
   coords <- do.call(rbind, unname(data))
   rownames(coords) <- coords$cell_id
-  list(data = coords[colnames(srt), , drop = FALSE], sources = sources)
+  list(data = coords[colnames(srt), , drop = FALSE], sources = sources, images = image_map)
 }
 
 spatial_empty_plot <- function(
