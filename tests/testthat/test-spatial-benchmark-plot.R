@@ -103,6 +103,14 @@ test_that("legacy benchmark bar mode remains available", {
   expect_s3_class(SpatialBenchmarkPlot(data = data, plot_type = "bar"), "ggplot")
 })
 
+test_that("automatic summary plots use the stable bar view", {
+  data <- data.frame(
+    method = c("A", "B"), metric = c("ARI", "ARI"), value = c(0.8, 0.6)
+  )
+  plot <- SpatialBenchmarkPlot(data = data)
+  expect_s3_class(plot, "ggplot")
+})
+
 test_that("all-unavailable benchmark results render truthful empty panels", {
   result <- make_benchmark_plot_result(rep("unavailable", 3))
   result$summary[, c(
