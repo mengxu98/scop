@@ -1016,6 +1016,10 @@ run_standard_spatial_workflow <- function(
       if (spatial_cluster_method == "BANKSY" && !is.null(spatial_q)) {
         stop("BANKSY uses spatial_cluster_params$resolution; spatial_q is not supported", call. = FALSE)
       }
+      standard_spatial_fixed_args(
+        if (length(spatial_cluster_params)) spatial_cluster_params else bayesspace_params,
+        c("srt", "object", "image", "coord.cols")
+      )
     }, cluster_producer)
     if (length(spatial_cluster_params)) bayesspace_params <- spatial_cluster_params
   }
@@ -1703,7 +1707,6 @@ run_standard_spatial_workflow <- function(
 
   if (isTRUE(do_spatial_cluster) && spatial_cluster_method != "BayesSpace") {
     cluster_setup <- run_stage_setup("spatial_clustering", {
-      standard_spatial_fixed_args(bayesspace_params, c("srt", "object", "image", "coord.cols"))
       args <- merge_call_args(list(object = srt, assay = analysis_assay, image = image,
         coord.cols = coord.cols, coordinate_space = "raw", seed = seed, verbose = verbose), bayesspace_params)
       if (spatial_cluster_method == "SmoothClust") {
