@@ -111,12 +111,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // cellrank_hard_threshold_kernel_cpp
-Eigen::SparseMatrix<double> cellrank_hard_threshold_kernel_cpp(const Eigen::MappedSparseMatrix<double> connectivities, NumericVector pseudotime, double frac_to_keep, bool backward);
+Eigen::SparseMatrix<double> cellrank_hard_threshold_kernel_cpp(const Eigen::Map<Eigen::SparseMatrix<double> > connectivities, NumericVector pseudotime, double frac_to_keep, bool backward);
 RcppExport SEXP _scop_cellrank_hard_threshold_kernel_cpp(SEXP connectivitiesSEXP, SEXP pseudotimeSEXP, SEXP frac_to_keepSEXP, SEXP backwardSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::MappedSparseMatrix<double> >::type connectivities(connectivitiesSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::SparseMatrix<double> > >::type connectivities(connectivitiesSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type pseudotime(pseudotimeSEXP);
     Rcpp::traits::input_parameter< double >::type frac_to_keep(frac_to_keepSEXP);
     Rcpp::traits::input_parameter< bool >::type backward(backwardSEXP);
