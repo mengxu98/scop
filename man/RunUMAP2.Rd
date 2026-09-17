@@ -27,7 +27,6 @@ RunUMAP2(object, ...)
   n.epochs = 200L,
   cores = 1,
   min.dist = 0.3,
-  spread = 1,
   set.op.mix.ratio = 1,
   local.connectivity = 1L,
   negative.sample.rate = 5L,
@@ -39,6 +38,7 @@ RunUMAP2(object, ...)
   reduction.key = "UMAP_",
   verbose = TRUE,
   seed.use = 11,
+  spread = 1,
   ...
 )
 
@@ -55,7 +55,6 @@ RunUMAP2(object, ...)
   n.epochs = 200L,
   cores = 1,
   min.dist = 0.3,
-  spread = 1,
   set.op.mix.ratio = 1,
   local.connectivity = 1L,
   negative.sample.rate = 5L,
@@ -66,6 +65,7 @@ RunUMAP2(object, ...)
   reduction.key = "UMAP_",
   verbose = TRUE,
   seed.use = 11L,
+  spread = 1,
   ...
 )
 }
@@ -103,9 +103,6 @@ String \code{metric} values include \code{"euclidean"}, \code{"manhattan"}, \cod
 
 \item{min.dist}{Minimum embedding distance (how tightly points pack).}
 
-\item{spread}{Spread of the embedding (the effective scale of embedded
-points).}
-
 \item{set.op.mix.ratio}{Mix of fuzzy union (\code{1}) and intersection (\code{0}).}
 
 \item{local.connectivity, negative.sample.rate}{Fuzzy simplicial set and
@@ -121,6 +118,9 @@ optimization sampling.}
 Default is \code{TRUE}.}
 
 \item{seed.use}{Random seed.}
+
+\item{spread}{Spread of the embedding (the effective scale of embedded
+points).}
 }
 \description{
 Run UMAP
