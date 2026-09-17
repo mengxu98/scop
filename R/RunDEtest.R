@@ -1081,7 +1081,7 @@ WilcoxDETest <- function(
   cells.2,
   min.expression = 0,
   verbose = TRUE,
-  n_threads = NULL,
+  cores = NULL,
   ...
 ) {
   data.use <- data.use[, c(cells.1, cells.2), drop = FALSE]
@@ -1093,7 +1093,7 @@ WilcoxDETest <- function(
       x = data.use,
       n_group1 = length(cells.1),
       min.expression = min.expression,
-      n_threads = n_threads
+      cores = cores
     )
     return(data.frame(
       p_val = p_val,
@@ -1578,15 +1578,15 @@ RunDEtestStopOnParallelErrors <- function(results, context) {
   )
 }
 
-RunDEtestNormalizeDataLayer <- function(srt, assay, reason, verbose) {
-  if (inherits(srt[[assay]], "ChromatinAssay")) {
+RunDEtestNormalizeDataLayer <- function(object, assay, reason, verbose) {
+  if (inherits(object[[assay]], "ChromatinAssay")) {
     log_message(
       paste0(reason, " Performing Signac::RunTFIDF()."),
       message_type = "warning",
       verbose = verbose
     )
     return(Signac::RunTFIDF(
-      object = srt,
+      object = object,
       assay = assay,
       verbose = FALSE
     ))
@@ -1597,7 +1597,7 @@ RunDEtestNormalizeDataLayer <- function(srt, assay, reason, verbose) {
     verbose = verbose
   )
   NormalizeData(
-    object = srt,
+    object = object,
     assay = assay,
     normalization.method = "LogNormalize",
     verbose = FALSE
@@ -2577,7 +2577,7 @@ RunDEtest.Seurat <- function(
       (is.null(data_layer) || any(dim(data_layer) == 0L))
   ) {
     srt <- RunDEtestNormalizeDataLayer(
-      srt = srt,
+      object = srt,
       assay = assay,
       reason = "The data layer is missing.",
       verbose = verbose
@@ -2594,7 +2594,7 @@ RunDEtest.Seurat <- function(
   if (layer == "data" && status != "log_normalized_counts") {
     if (status == "raw_counts") {
       srt <- RunDEtestNormalizeDataLayer(
-        srt = srt,
+        object = srt,
         assay = assay,
         reason = "Data in the data layer contains raw counts.",
         verbose = verbose
@@ -2602,7 +2602,7 @@ RunDEtest.Seurat <- function(
     }
     if (status == "raw_normalized_counts") {
       srt <- RunDEtestNormalizeDataLayer(
-        srt = srt,
+        object = srt,
         assay = assay,
         reason = "Data in the data layer contains raw normalized counts.",
         verbose = verbose
