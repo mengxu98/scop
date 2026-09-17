@@ -92,7 +92,9 @@ will be removed in scop 1.0.0.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>Number of CPU cores.</p></dd>
+<dd><p>Number of CPU cores. <code>NULL</code> lets each backend pick its own
+default: the process OpenMP team (<code>OMP_NUM_THREADS</code>) for C++ kernels and one
+worker for R/Python parallel backends.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>

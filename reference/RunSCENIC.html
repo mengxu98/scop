@@ -91,7 +91,7 @@
 <span>  max_features <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  subsample <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  early_stop_window_length <span class="op">=</span> <span class="fl">25</span>,</span>
-<span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  cores <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  parallel_backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"psock"</span>, <span class="st">"fork"</span><span class="op">)</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1234</span>,</span>
 <span>  force <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -226,8 +226,9 @@ cisTarget pruning, and AUCell scoring together.</p></dd>
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
 <dd><p>Number of workers used by GRNBoost2, <code>scenic ctx</code>, and
-AUCell scoring. If multicore execution is not supported, this is
-automatically reduced to one core.</p></dd>
+AUCell scoring. <code>NULL</code> (the default) keeps the process OpenMP team for the
+C++ kernels and uses one worker elsewhere. If multicore execution is not
+supported, this is automatically reduced to one core.</p></dd>
 
 
 <dt id="arg-parallel-backend">parallel_backend<a class="anchor" aria-label="anchor" href="#arg-parallel-backend"></a></dt>
