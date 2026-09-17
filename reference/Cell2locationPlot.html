@@ -126,7 +126,7 @@ a single image is selected automatically when <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Whether to combine matrix point maps. If <code>FALSE</code>, return a
+<dd><p>Whether to combine matrix or dominant point maps. If <code>FALSE</code>, return a
 named list of plots.</p></dd>
 
 
@@ -156,7 +156,10 @@ will be removed in scop 1.0.0.</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Abundance plots use posterior q05 values. Proportion plots normalize
-these values across cell types within each spot.</p>
+these values across cell types within each spot.
+Matrix point maps share a default display range. Explicit cutoff or
+quantile arguments passed through <code>...</code> retain the scales computed by
+<code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code>, including when returning separate panels.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
