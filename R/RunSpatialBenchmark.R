@@ -433,11 +433,8 @@ benchmark_assert_number <- function(
 
 benchmark_require_runtime <- function() {
   pkgs <- c("callr", "ps")
-  missing <- pkgs[!vapply(
-    pkgs,
-    function(pkg) isTRUE(all(unlist(check_r(pkg, install = FALSE, verbose = FALSE), use.names = FALSE))),
-    logical(1)
-  )]
+  installed <- check_r(pkgs, install = FALSE, verbose = FALSE)
+  missing <- pkgs[!vapply(installed[pkgs], isTRUE, logical(1))]
   if (length(missing) > 0L) {
     log_message(
       "{.pkg {missing}} {?is/are} required for isolated benchmark execution and memory measurement",
