@@ -203,6 +203,37 @@ test_that("STdeconvolvePlot uses readable automatic layouts and supports lists",
   expect_identical(combined$patches$annotation$title, "STSeven topic proportions")
 })
 
+test_that("STdeconvolvePlot keeps all-missing topic panels composable", {
+  srt <- make_stdeconvolve_seurat()
+  theta <- matrix(
+    c(rep(NA_real_, ncol(srt)), rep(0, ncol(srt))),
+    nrow = ncol(srt),
+    dimnames = list(colnames(srt), c("topic_missing", "topic_zero"))
+  )
+  srt@tools$STMissing <- list(
+    theta = theta,
+    parameters = list(prefix = "STMissing")
+  )
+
+  plots <- STdeconvolvePlot(
+    srt,
+    tool_name = "STMissing",
+    combine = FALSE,
+    overlay_image = FALSE
+  )
+  combined <- STdeconvolvePlot(
+    srt,
+    tool_name = "STMissing",
+    overlay_image = FALSE
+  )
+
+  expect_named(plots, c("topic_missing", "topic_zero"))
+  expect_match(plots$topic_missing$data$label, "No values")
+  expect_equal(plots$topic_zero$scales$get_scales("colour")$limits, c(0, 1))
+  expect_s3_class(combined, "patchwork")
+  expect_no_error(patchwork::patchworkGrob(combined))
+})
+
 test_that("STdeconvolvePlot rejects missing, stale, and malformed stored results", {
   srt <- make_stdeconvolve_seurat()
   expect_error(STdeconvolvePlot(srt, tool_name = "missing"), "was not produced by")

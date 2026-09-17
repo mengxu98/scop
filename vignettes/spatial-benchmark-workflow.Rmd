@@ -87,8 +87,11 @@ head(bench$predictions)
 
 ## Plot benchmark views
 
-`SpatialBenchmarkPlot()` defaults to a publication-oriented overview that
-combines clustering agreement with runtime and peak-memory efficiency.
+For a `spatial_benchmark_result`, `plot_type = "auto"` selects the
+publication-oriented overview that combines clustering agreement with runtime
+and peak-memory efficiency. For an ordinary summary table, `auto` selects the
+stable native bar view; it does not depend on whether the optional
+`funkyheatmap` package happens to be installed.
 
 ```{r plot-overview, fig.height=6}
 SpatialBenchmarkPlot(data = bench, plot_type = "overview")
@@ -100,7 +103,12 @@ Other views:
 SpatialBenchmarkPlot(data = bench, plot_type = "quality")
 SpatialBenchmarkPlot(data = bench, plot_type = "efficiency")
 SpatialBenchmarkPlot(data = bench, plot_type = "heatmap")
+SpatialBenchmarkPlot(data = bench, plot_type = "funkyheatmap")
 ```
+
+`funkyheatmap` is an explicit optional view. If its dependency is unavailable,
+the call reports that availability condition; it is never selected implicitly
+by `auto`.
 
 ## What to report
 

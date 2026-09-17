@@ -172,6 +172,42 @@ test_that("requested stage parameter lists fail through their stage wrapper", {
   }
 })
 
+test_that("managed spatial cluster arguments fail before preprocessing", {
+  original <- getFromNamespace("run_standard_spatial_workflow", "scop")
+  calls <- character()
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    RunStandardWorkflow = function(object, ...) {
+      calls <<- c(calls, "preprocessing")
+      object
+    }
+  )
+  condition <- tryCatch(
+    original(
+      make_standard_spatial_stage_object(),
+      assay = "RNA",
+      do_spot_qc = FALSE,
+      do_spatial_variable_features = FALSE,
+      do_spatial_cluster = TRUE,
+      spatial_cluster_method = "BANKSY",
+      spatial_cluster_params = list(object = "must-not-be-forwarded"),
+      do_deconvolution = FALSE,
+      verbose = FALSE
+    ),
+    error = identity
+  )
+
+  expect_s3_class(condition, "error")
+  expect_match(conditionMessage(condition), "spatial_cluster_params|object")
+  expect_length(calls, 0L)
+  expect_identical(
+    attr(condition, "standard_spatial_stages")$status[
+      attr(condition, "standard_spatial_stages")$stage == "spatial_clustering"
+    ],
+    "failed"
+  )
+})
+
 test_that("requested stage methods fail through their stage wrapper", {
   original <- getFromNamespace("run_standard_spatial_workflow", "scop")
   producer_calls <- character()

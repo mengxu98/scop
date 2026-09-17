@@ -17,6 +17,7 @@ RunSpatialIntegration(
   cluster_colname = NULL,
   tool_name = "SpatialIntegration",
   store_results = TRUE,
+  store_object = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   ...
@@ -56,6 +57,11 @@ a method-specific name is used.}
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
 \item{store_results}{Whether to store the full result in \code{srt@tools}.}
+
+\item{store_object}{Whether to retain the complete native PRECAST object in
+the stored method result. Set \code{FALSE} for a lighter result bundle; standard
+embeddings, domains, coordinates, parameters, summaries, and plotting do
+not require the native object.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
