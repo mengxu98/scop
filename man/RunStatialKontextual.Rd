@@ -95,6 +95,7 @@ Compute spatial relationships between cell or spot labels relative to a
 parent context using Statial Kontextual.
 }
 \examples{
+\dontrun{
 data(visium_human_pancreas_sub)
 # Compare tissue-labelled spots at two radii (full-resolution image pixels).
 spatial <- RunStatialKontextual(
@@ -104,4 +105,5 @@ spatial <- RunStatialKontextual(
   verbose = FALSE
 )
 StatialKontextualPlot(spatial)
+}
 }
