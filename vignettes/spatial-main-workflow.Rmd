@@ -13,126 +13,77 @@ knitr::opts_chunk$set(
 )
 ```
 
-This article shows the recommended first-pass SCOP workflow for a spatial
-transcriptomics object. It uses the bundled Visium pancreas subset and keeps the
-main path short: inspect the object, run the spatial workflow, check summaries,
-plot spatial features, and branch into optional backends only when the question
-requires them.
+This is the short, result-first path for a spatial Seurat object: inspect the
+input, run a small baseline workflow, inspect the stored result, and plot it.
+The bundled `visium_human_pancreas_sub` object is a real Visium spot-level
+dataset used for the executable examples below. It is not a single-cell
+measurement: one spot can contain transcripts from several cells.
 
-For platform import, optional spatial normalization and method routing, see
-[platform workflows](spatial-platform-workflows.html).
+Use [Spatial imports and standard workflow methods](spatial-platform-workflows.html)
+for Visium/Visium HD/Xenium input choices, assays, units, and backend-specific
+parameters. Use [Spatial framework bridges](spatial-framework-bridges.html)
+for Seurat, SpatialExperiment, and Giotto conversion boundaries.
 
-It is not a catalogue of every spatial backend. Use method pages for backend
-specific parameters and dependency notes.
-
-Read the workflow as an evidence ladder: first confirm coordinates and image
-orientation, then compute QC and spatially variable features, then add domains,
-deconvolution, or neighborhood models only when they answer the biological
-question.
-
-## Load a Spatial Object
-
-Start with a Seurat object that has expression, metadata, and spatial
-coordinates. The bundled `visium_human_pancreas_sub` object has a `Spatial`
-assay, a `slice1` image, and metadata coordinates.
+## Check the input before analysis
 
 ```{r load-spatial}
 library(scop)
 
 data(visium_human_pancreas_sub)
 spatial <- visium_human_pancreas_sub
-
 SeuratObject::DefaultAssay(spatial) <- "Spatial"
+
 SeuratObject::Images(spatial)
 head(spatial@meta.data[, c("x", "y", "coda_label")])
+raw_coordinates <- SpatialCoordinates(
+  spatial,
+  image = "slice1",
+  space = "raw"
+)
+raw_coordinates$source
 ```
 
-Before running methods, make one direct map. This checks whether coordinates,
-image orientation, labels, and the default spatial theme are sensible.
-If this first map is rotated, mirrored, or shifted, downstream spatial domains
-and neighborhood results will be difficult to interpret even if the model runs.
-SCOP reads full-resolution raw coordinates for analysis and applies the selected
-Seurat scale factor exactly once for display. The default is the low-resolution
-raster. If the image slot contains `tissue_hires_image.png`, pass
-`image.scale = "hires"`; do not rewrite `@scale.factors`.
-Seurat's standard `VisiumV2` loader stores source `imagerow`/`imagecol`
-positionally as centroid `x`/`y`; SCOP restores horizontal image-column and
-vertical image-row order. Generic FOV centroid tables with explicit `x`/`y`
-retain their order. Legacy Visium pixel coordinates are normalized only when
-explicit image row/column names are available, before the selected display
-transform is applied.
+The first checks should answer four questions: which assay contains the counts,
+which image is selected, which columns identify the observations, and whether
+the coordinate IDs match the expression columns. SCOP uses raw acquisition
+coordinates for distance-sensitive analysis. `image.scale` is a display choice
+for a selected raster; it does not change distances or rewrite Seurat scale
+factors.
 
-Custom VisiumV2 objects with horizontal centroid `x` should record that convention
-once with `SetSpatialImageAxes(spatial, image = "slice1", x_orientation = "horizontal")`.
-Standard Seurat `Read10X_Image()` objects use the vertical centroid-x convention.
-The marker is stored in `spatial@misc$spatial_image_axes`, survives subsetting and
-cell renaming, and is carried by `RunSpatialIntegration()` when it merges a list.
-Migrate older custom objects before subsetting: a legacy image attribute may be
-lost by Seurat. Editing ordinary metadata `x/y` never changes image axes.
-Reapply the marker if an image is replaced or copied under another name.
+For Visium, the observations are spots on an acquisition grid. For Xenium or
+other segmented assays, the observations are cells and the right visualization
+is [SpatialCellPlot()], not a spot-composition interpretation. A spot label is
+therefore not automatically a cell type.
 
-Coordinate contract v3 rejects older coordinate-dependent stored results; rerun
-their producers. Metadata/FOV plots now default to `flip.y = FALSE`, matching
-network and boundary plots; `flip.y = TRUE` remains an explicit display override.
-Numeric text and factor coordinates are parsed as their values, not level codes.
+## Draw an input map
 
-For multi-sample integration and SpatialEcoTyper `mode = "multi"`, SCOP resolves
-one image covering all cells in each sample. If several images cover the same
-sample, pass a named map such as `image = c(S1 = "slice1", S2 = "slice2")`.
-A scalar image cannot silently discard other samples. SpatialEcoTyper single
-discovery uses the selected image's raw coordinates and requires explicit image
-selection when multiple images are present. Its radius is in those raw units.
-
-```{r inspect-spatial}
+```{r input-map, fig.height=4.5}
 SpatialSpotPlot(
   spatial,
-  group.by = "coda_label"
+  group.by = "coda_label",
+  image = "slice1",
+  palcolor = c(
+    acini = "#E69F00",
+    collagen = "#56B4E9",
+    fat = "#009E73",
+    islets = "#CC79A7",
+    `normal epithelium` = "#0072B2",
+    panin = "#D55E00",
+    `smooth muscle` = "#999999"
+  )
 )
-
-SpatialSpotPlot(
-  spatial,
-  features = rownames(spatial)[1:2],
-  assay = "Spatial",
-  layer = "counts"
-)
-
-# For an object loaded with a hires raster:
-# SpatialSpotPlot(spatial, group.by = "coda_label", image.scale = "hires")
 ```
 
-## Reusable Plot Controls
+The map is an input and metadata check, not a result from a clustering or
+deconvolution model. Named palettes are matched to category names, so changing
+the row order or subsetting spots does not silently change the biological color
+meaning. `SpatialSpotPlot()` keeps equal coordinate scaling by default.
 
-Spatial maps preserve the coordinate aspect ratio by default. An explicit
-`theme_args = list(aspect.ratio = 1)` requests a square panel and may distort
-spatial geometry. Set `pt.size`, `pt.alpha`, `image.alpha` and
-`legend.position` for the intended output size; no single point size is suitable
-for both a small selection and a full-resolution tissue.
+## Run the baseline spatial workflow
 
-Keep categorical metadata as factors to preserve its level order across cell
-subsets. A named palette such as `palcolor = c(A = "#4477AA", B = "#EE6677")`
-matches names rather than first-observed order; the names must cover the plotted
-factor levels. Missing values stay distinct from a literal category named `NA`.
-`split.by` accepts metadata names containing spaces.
-
-Use `combine = FALSE` to obtain named plot lists for independent adjustment.
-`SpatialCellPlot()` also accepts this control, layout arguments `nrow`/`ncol`,
-and explicit legend settings. Its numeric feature maps use a sequential palette
-unless a palette is supplied. `SpatialDeconvolutionPlot()` retains a common
-zero-to-one scale and shows an empty panel for a cell type with no measured
-values. In dominant/pie mode, a `cell_types` subset defines the displayed
-comparison; pie fractions are relative to the selected types.
-
-`SpatialIntegrationPlot()` uses one image panel per sample when images are
-present. Use a named `image` map in the merged object's image namespace when
-selection is ambiguous. `use_aligned = TRUE` plots stored aligned coordinates
-without the unregistered raw tissue images; it does not register images.
-
-## Run the Basic Spatial Workflow
-
-`RunStandardWorkflow(workflow = "spatial")` is the shortest entry point for a
-first-pass spatial analysis. Keep optional domain clustering and deconvolution
-off at first. This makes the first run fast and gives you QC and spatial
-variable features before choosing heavier backends.
+Keep the first run small and interpretable. This real Visium example performs
+spot QC and native Moran spatial-variable-feature scoring. It does not run an
+optional deconvolution or domain backend.
 
 ```{r standard-spatial}
 spatial <- RunStandardWorkflow(
@@ -145,373 +96,128 @@ spatial <- RunStandardWorkflow(
   do_spatial_variable_features = TRUE,
   spatial_variable_features_params = list(
     method = "moran",
-    nfeatures = 50
+    nfeatures = 50,
+    nperm = 0
   ),
   do_spatial_cluster = FALSE,
-  do_deconvolution = FALSE
+  do_deconvolution = FALSE,
+  verbose = FALSE
 )
 ```
 
-After the run, look at the stable result locations before making more plots.
-Most spatial wrappers write method parameters and summaries under `srt@tools`.
-Spatial variable features are genes whose expression varies with spatial
-position according to the selected method. They are candidates for spatial
-patterning, not automatically domain markers.
+## Inspect stored results before plotting
 
 ```{r inspect-results}
-names(spatial@tools)
+workflow <- spatial@tools$run_standard_spatial_workflow
+workflow$status
+workflow$stages[, c("stage", "requested", "status", "actual_method", "reason")]
 spatial@tools$SpatialVariableFeatures$summary
 head(spatial@tools$SpatialVariableFeatures$summary$top_features)
 ```
 
-## Plot the First Results
+The stage table is the execution receipt. `completed`, `skipped`, and `failed`
+are different states; an unavailable optional backend is not relabelled as a
+successful result. A spatially variable feature is a candidate spatial pattern,
+not automatically a domain marker or a cell-type marker.
 
-The default spatial maps hide axes and crop to the observed spots. Use
-`show_axes = TRUE` only when debugging coordinates.
-`SpotQC` summarizes spot-level quality-control status. Spatial feature surfaces
-should be interpreted together with raw spot maps, because smoothing can make
-sparse signal look broader than it is.
+## Plot QC and spatial features
 
-```{r plot-results}
-SpatialSpotPlot(
-  spatial,
-  group.by = "SpotQC"
-)
-
-SpatialVariableFeaturePlot(
-  spatial,
-  plot_type = "summary"
-)
-
+```{r plot-results, fig.height=4.5}
+SpatialSpotPlot(spatial, group.by = "SpotQC", image = "slice1")
 SpatialVariableFeaturePlot(
   spatial,
   plot_type = "summary",
   nfeatures = 4
 )
-```
-
-## Add Spatial Domains When Needed
-
-Run a domain method only after the baseline object looks correct. BayesSpace is
-a common Visium choice. BANKSY and SmoothClust are useful alternatives when
-their assumptions match the data and optional dependencies are available.
-Domain labels are unsupervised spatial clusters. They are useful for segmenting
-tissue regions, but they need marker genes, histology, or reference labels
-before being named biologically.
-
-```r
-spatial_bayes <- RunStandardWorkflow(
-  spatial,
-  workflow = "spatial",
-  assay = "Spatial",
-  image = "slice1",
-  coord.cols = c("x", "y"),
-  do_spot_qc = FALSE,
-  do_spatial_variable_features = FALSE,
-  do_spatial_cluster = TRUE,
-  spatial_cluster_method = "BayesSpace",
-  spatial_q = 3
-)
-
 SpatialSpotPlot(
-  spatial_bayes,
-  group.by = "BayesSpace_cluster"
-)
-```
-
-For other domain backends, keep the output contract in mind: cluster labels
-should land in metadata and method details should stay under `srt@tools`.
-
-```r
-spatial <- RunStandardWorkflow(
   spatial,
-  workflow = "spatial",
+  features = head(spatial@tools$SpatialVariableFeatures$summary$top_features, 2),
   assay = "Spatial",
-  image = "slice1",
-  coord.cols = c("x", "y"),
-  do_spatial_cluster = TRUE,
-  spatial_cluster_method = "BANKSY",
-  spatial_cluster_params = list(cluster_colname = "BANKSY_cluster"),
-  do_deconvolution = FALSE
-)
-SpatialSpotPlot(spatial, group.by = "BANKSY_cluster")
-```
-
-## Add Cell Composition Only With a Reference
-
-For spot-level data, deconvolution depends more on reference quality than on the
-wrapper choice. Use a matched single-cell reference, then inspect dominant cell
-types and maximum proportions before interpreting spatial biology.
-
-```r
-spatial <- RunRCTD(
-  spatial,
-  reference = reference,
-  reference_label = "celltype",
-  assay = "Spatial",
-  reference_assay = "RNA",
   layer = "counts",
-  reference_layer = "counts",
-  coord.cols = c("x", "y"),
-  rctd_mode = "full",
-  max_cores = 1,
-  verbose = FALSE
+  image = "slice1"
 )
+```
 
-spatial@tools$RCTD$summary
+`combine = FALSE` returns named plots for independent editing. Spatial feature
+plots read the stored result; they do not rerun the backend. A saved Seurat
+object can be reloaded and plotted again as long as the stored result and the
+selected spatial context remain complete.
+
+## Proportion and empty-panel display
+
+Composition plots require a spot-by-cell-type result. The following compact
+fixture deliberately creates a display-only matrix from real spot IDs so that
+the layout contract is executable without installing an optional deconvolution
+backend. It is not a biological inference and must not be reported as one.
+
+```{r composition-layout, eval=FALSE}
+label <- as.character(spatial@meta.data[["coda_label"]])
+label[is.na(label)] <- "other"
+demo_proportions <- matrix(
+  cbind(
+    alpha = ifelse(label == "alpha", 0.8, 0.2),
+    beta = ifelse(label == "beta", 0.8, 0.2),
+    unmeasured = NA_real_
+  ),
+  nrow = ncol(spatial),
+  dimnames = list(colnames(spatial), c("alpha", "beta", "unmeasured"))
+)
+demo_proportions <- demo_proportions / rowSums(demo_proportions, na.rm = TRUE)
+spatial@tools$display_only_proportions <- list(proportions = demo_proportions)
 
 SpatialDeconvolutionPlot(
   spatial,
-  tool_name = "RCTD",
-  plot_type = "dominant",
+  tool_name = "display_only_proportions",
+  combine = FALSE,
   overlay_image = FALSE,
-  coord.cols = c("x", "y")
+  palcolor = c(alpha = "#E69F00", beta = "#56B4E9", unmeasured = "#999999")
 )
 ```
 
-`RCTD`, `SPOTlight`, `CARD`, and `STdeconvolve` follow the same practical rule:
-first check the result summary, then visualize dominant labels, maximum
-proportions, and selected proportions.
-Deconvolution estimates cell-type composition per spot. It is constrained by
-the reference, so missing reference cell types can be misassigned to the closest
-available label.
+In a real analysis, replace that fixture with the stored output of
+`RunRCTD()`, `RunSPOTlight()`, or another supported producer and keep the
+producer's provenance. The common matrix renderer keeps numeric values and
+colors identical between `combine = TRUE` and `combine = FALSE`; all-missing
+panels remain informative empty panels. q05 abundance from cell2location is a
+different quantity from a proportion and is not forced onto a 0--1 scale.
 
-## Add Neighborhood or Context Models Last
+For a proportion pie, use the explicit numeric matrix with
+`SpatialSpotPlot(..., plot_type = "pie")` when `scatterpie` is installed. Pie
+fractions are relative to the selected components; they are not cell counts.
 
-Neighborhood methods answer a different question from domain clustering. Use
-them after labels are stable, either from metadata, clustering, or
-deconvolution.
+## Multiple samples and optional backends
 
-For a small observed distance profile, `SpatialNeighborhoodProfile()` returns
-a plain table without modifying the object. Selecting target cells does not
-remove their surrounding tissue from the calculation:
+`split.by` is useful for a quick faceted view of metadata:
 
-```{r spatial-neighborhood-profile}
-profile <- SpatialNeighborhoodProfile(
-  spatial,
-  group.by = "coda_label", radii = c(100, 200, 400),
-  cells = head(colnames(spatial), 20), cumulative = TRUE, verbose = FALSE
-)
-head(profile)
-```
-
-Distances above are illustrative raw coordinate units, not automatically
-micrometers. Supply `sample.by` for pooled metadata coordinates and `image`
-when multiple images are present. Fractions describe labelled neighbors; an
-empty neighborhood has undefined composition (`NA`), not evidence of depletion.
-
-```{r spatial-neighborhood}
-spatial <- RunSpatialNeighborhood(
+```{r sample-facets, fig.height=4.5}
+spatial$display_sample <- rep(c("sample-A", "sample-B"), length.out = ncol(spatial))
+SpatialSpotPlot(
   spatial,
   group.by = "coda_label",
-  coord.cols = c("x", "y"),
-  k = 6
-)
-
-spatial@tools$SpatialNeighborhood$summary
-
-SpatialNeighborhoodPlot(spatial, plot_type = "heatmap")
-SpatialNeighborhoodPlot(spatial, plot_type = "stat", top_n = 12)
-```
-
-With `method = NULL`, the package computes observed KNN or radius summaries when
-`split.by` is absent and preserves the historical spicyR route when `split.by`
-is supplied. For new differential neighborhood analyses, request spicyR
-explicitly and provide the condition column; SCOP errors before execution if
-that design is incomplete.
-
-```r
-spatial <- RunSpatialNeighborhood(
-  spatial,
-  group.by = "coda_label",
-  method = "spicyR",
-  split.by = "condition",
-  sample.by = "sample"
+  split.by = "display_sample",
+  overlay_image = FALSE
 )
 ```
 
-```r
-SpatialNeighborhoodPlot(spatial, plot_type = "network", top_n = 12)
-```
+This facet does not register images or create a cross-sample inference. A
+multi-image analysis must select one covering image per sample; ambiguous
+coverage errors instead of dropping a sample. The platform page contains the
+`RunSpatialIntegration()` example with an explicit named image map and labels
+the PRECAST dependency as an execution condition.
 
-Use `RunStatialKontextual()` when you have explicit `from`, `to`, and `parent`
-cell populations. Use `RunMistyR()` when the question is feature-level local or
-broader spatial context rather than pairwise label enrichment.
-Both are independent producers rather than `RunSpatialNeighborhood()` method
-choices. HoodscanR remains unimplemented.
-Neighborhood enrichment is label-level spatial association. Context models are
-feature-level spatial association. Keep those interpretations separate in
-reports.
+Domain clustering, deconvolution, neighborhood, communication, and framework
+conversion are separate questions. Add one only after the baseline map and
+stage receipt are sensible, then report the observation unit, assay, image,
+coordinate columns, method, and result status.
 
-Spatial results follow the same structure as single-cell analyses in SCOP:
-each producer stores its output as a plain key in `srt@tools`, for example
-`spatial@tools$MistyR` or `spatial@tools$SpatialNeighborhood`, with
-method-specific fields at the top level plus `parameters` and `summary`.
-Read results directly from `srt@tools[[tool_name]]` and pass them to the
-dedicated plot functions. Custom `tool_name` values are honored exactly as
-written.
+## What to report
 
-```r
-coords <- SpatialCoordinates(spatial, image = "slice1", space = "raw")
-network_result <- spatial@tools$SpatialNetwork
-network_graph <- GetSpatialGraph(
-  res = network_result,
-  format = "sparse",
-  value = "weight"
-)
-names(spatial@tools)
-```
+At minimum record:
 
-Distance-sensitive methods default to full-resolution raw acquisition
-coordinates. `coordinate_space = "legacy_display"` remains an explicit
-compatibility option only. Plot functions map results to display coordinates by
-cell or spot ID and `image.scale` never changes raw distances or neighborhoods.
-Objects with multiple spatial images must always select one explicitly with
-`image`; analysis, plotting, and framework conversion never silently use the
-first image. Coordinate-dependent results created before contract v3 are not
-silently migrated; rerun their producer. Metadata passed directly to
-`SpatialSpotPlot()` cannot be traced to its producer, so users upgrading an old
-analysis should rerun that analysis before plotting its metadata.
-
-```r
-spatial <- RunMistyR(
-  spatial,
-  assay = "Spatial",
-  layer = "data",
-  features = head(spatial@tools$SpatialVariableFeatures$summary$top_features, 20),
-  coord.cols = c("x", "y"),
-  views = "para",
-  para_l = 1000
-)
-spatial@tools$MistyR$summary
-MistyRPlot(spatial, type = "improvements")
-```
-
-For label-level contextual scores, use
-`StatialKontextualPlot(spatial)` after `RunStatialKontextual()`. These dedicated
-plots summarize stored backend output and never rerun the analysis.
-
-## Add Spatially Constrained Communication Deliberately
-
-`RunCellChat()` and `RunSpatialCellChat()` answer different questions. The
-first estimates expression-supported communication without a physical spatial
-constraint. The second uses micron-scale distances and stores its group-level
-table under the distinct method name `"SpatialCellChat"`, so the two results
-can coexist in `spatial@tools$CCC` without overwriting one another.
-
-Choose the analysis level from the observation represented by each column:
-
-- `"cell"` for segmented cells such as Xenium or CosMx;
-- `"spot"` for spot/domain communication, which must not be described as
-  direct cell-type communication;
-- `"composition"` for Visium spots with a spot-by-cell-type proportion matrix.
-
-Distance parameters are always interpreted in microns. Micron coordinates use
-`ratio = 1`. For Visium full-image pixel coordinates, `RunSpatialCellChat()`
-can derive the conversion ratio as `65 / spot_diameter_fullres` when the
-selected image contains exactly one trusted full-resolution spot diameter;
-otherwise provide `ratio` explicitly. Never substitute a low-resolution display
-scale. This article uses one slice; multi-sample objects are run independently
-and require an explicit `sample.by` and named image mapping.
-
-```{r spatial-cellchat, eval=FALSE}
-spatial <- RunSpatialCellChat(
-  spatial,
-  group.by = "coda_label",
-  image = "slice1",
-  technology = "visium",
-  analysis.level = "spot",
-  coordinate.unit = "pixel",
-  tol = 32.5,
-  species = "Homo_sapiens",
-  database = "protein",
-  store.object = "minimal"
-)
-
-CCCNetworkPlot(spatial, method = "SpatialCellChat", plot_type = "circle")
-CCCNetworkPlot(
-  spatial,
-  method = "SpatialCellChat",
-  condition = "default",
-  sample = "slice1",
-  plot_type = "spatial",
-  signaling = "SPP1",
-  top_n = 50
-)
-CCCHeatmap(spatial, method = "SpatialCellChat", plot_type = "bubble")
-SpatialCellChatPlot(spatial, plot_type = "incoming")
-result <- spatial@tools$SpatialCellChat
-```
-
-`CCCNetworkPlot(plot_type = "spatial")` is the common stored-result renderer
-for `SpatialCellChat`, `SpaTalk`, and `COMMOT`. It overlays all stored cells or
-spots, draws group-centroid nodes with abundance-scaled sizes, and draws
-sender-coloured directed edges whose widths represent the filtered communication
-score. For `analysis.level = "composition"`, the default spot layer is a
-proportion pie (`composition_display = "pie"`); use `composition_display =
-"dominant"` only when a single representative type is acceptable. This plot
-does not rerun an optional backend. A result created before the current spatial
-plot payload was stored must be rerun rather than reconstructed from mutable
-metadata.
-
-`store.object = "minimal"` stores normalized interaction, pathway, network,
-coordinate, and diagnostic results but not the large native S4 object or a
-materialized cell-by-cell-by-LR edge table. Use `"full"` only when native
-SpatialCellChat downstream analysis is required, then retrieve it with
-`GetCCCObject(method = "SpatialCellChat")`.
-
-Visium spots form a hexagonal acquisition grid, but six-neighbor topology is
-not a replacement for the Euclidean diffusion model. Contact-dependent
-signaling is therefore rejected in spot mode. P-values from spatial
-permutation and non-spatial CellChat analyses also have different null models
-and should not be compared as if they were interchangeable.
-
-SpatialDM addresses a different question: which ligand-receptor pairs are
-spatially associated, and which spots contain local interaction evidence. It
-does not infer sender-receiver cell-type edges, so its Moran's R must not be
-reported as communication probability or transport mass. The official
-workflow is global selection followed by local spot selection. Use normalized
-or log-transformed expression for `layer`, raw counts for `counts.layer`, and
-set `l` or `eff_dist` in the raw coordinate unit of the selected image.
-
-```{r spatialdm, eval=FALSE}
-spatial <- RunSpatialDM(
-  spatial,
-  species = "human",
-  image = "slice1",
-  layer = "data",
-  counts.layer = "counts",
-  l = 1.2,
-  cutoff = 0.2,
-  global.threshold = 0.1,
-  local.threshold = 0.1
-)
-
-spatialdm_global <- GetSpatialDMResult(spatial, type = "global")
-spatialdm_pair <- spatialdm_global$interaction[[1L]]
-spatialdm_spot <- spatial@tools$SpatialDM$coordinates$cell_id[[1L]]
-SpatialDMPlot(spatial, plot_type = "global")
-SpatialDMPlot(spatial, plot_type = "local", pair = spatialdm_pair)
-SpatialDMPlot(spatial, plot_type = "weights", spot = spatialdm_spot)
-GetSpatialDMResult(spatial, type = "global")
-```
-
-`SpatialDMPlot()` follows the information content of the official melanoma
-tutorial while returning SCOP `ggplot`/`patchwork` objects and using SCOP
-themes and palettes. The `weights` view should be checked before interpreting
-global or local results because `l`, `cutoff`, and coordinate scale determine
-the effective interaction range.
-
-## What to Report
-
-A compact first-pass spatial report should include:
-
-- the source object, assay, image, and coordinate columns;
-- spot or cell counts after filtering;
-- top spatial variable features and the method used;
-- the domain method, cluster count, and domain sizes if clustering was run;
-- deconvolution dominant labels and maximum proportions if composition was run;
-- neighborhood or context summaries only after labels are stable.
-
-Keep the main workflow short. Add backend-specific sections only when they
-answer a concrete biological question for the current dataset.
+- the source object and platform, assay/layer, selected image, coordinate
+  columns, and coordinate space;
+- the number of spots or cells retained at each stage;
+- QC status and the selected spatial-variable-feature method;
+- domain or composition methods only when they were actually run;
+- backend availability and failed/skipped stages, rather than presenting
+  unexecuted code as a result.

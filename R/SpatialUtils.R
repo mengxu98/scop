@@ -140,7 +140,7 @@ spatial_resolve_sample_images <- function(
     }
     if (!is.null(selected)) {
       if (length(selected) != 1L || !selected %in% images || !all(cells %in% image_cells[[selected]])) {
-        log_message("Selected image does not cover every cell in sample {.val {sample}}", message_type = "error")
+        log_message("Selected image is not a covering image and does not cover every cell in sample {.val {sample}}", message_type = "error")
       }
       out[[sample]] <- selected
     }

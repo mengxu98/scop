@@ -240,6 +240,22 @@ test_that("RunCell2location writes abundance, proportions, and reproducible tool
   expect_true(is.list(out@tools$Cell2location$summary))
   expect_true("scvi-tools==1.3.3" %in% checked_python_packages)
   expect_false(any(grepl("^scvi-tools<1\\.2$", checked_python_packages)))
+
+  abundance_plots <- Cell2locationPlot(
+    out,
+    plot_type = "abundance",
+    combine = FALSE,
+    overlay_image = FALSE
+  )
+  proportion_plots <- Cell2locationPlot(
+    out,
+    plot_type = "proportion",
+    combine = FALSE,
+    overlay_image = FALSE
+  )
+  expect_named(abundance_plots, c("Alpha", "Beta"))
+  expect_equal(abundance_plots$Alpha$scales$get_scales("colour")$limits, c(0, 9))
+  expect_equal(proportion_plots$Alpha$scales$get_scales("colour")$limits, c(0, 1))
 })
 
 test_that("RunCell2location does not mutate Seurat when Python fails", {
