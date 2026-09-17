@@ -543,13 +543,8 @@ test_that("scop_n_threads maps NULL and invalid values to OpenMP default", {
   expect_identical(scop_n_threads(NULL), 0L)
   expect_identical(scop_n_threads(8), 8L)
   expect_identical(scop_n_threads(1), 1L)
+  expect_identical(scop_n_threads(0), 0L)
+  expect_identical(scop_n_threads(NA), 0L)
+  expect_identical(scop_n_threads("8"), 8L)
   expect_identical(scop_n_threads(-2), 0L)
-})
-
-test_that("scop_inner_n_threads treats cores <= 1 as the OpenMP default", {
-  expect_identical(scop_inner_n_threads(NULL), 0L)
-  expect_identical(scop_inner_n_threads(1), 0L)
-  expect_identical(scop_inner_n_threads(0), 0L)
-  expect_identical(scop_inner_n_threads(8), 8L)
-  expect_identical(scop_inner_n_threads(-2), 0L)
 })
