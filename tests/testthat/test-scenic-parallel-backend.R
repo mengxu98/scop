@@ -174,3 +174,35 @@ test_that("serial, PSOCK, and fork cisTarget results have identical payloads", {
     profile_names[[1L]]
   )))
 })
+
+test_that("native cisTarget normalizes NULL cores before the worker-state guard", {
+  skip_if_not_installed("arrow")
+  fixture <- make_scenic_parallel_fixture()
+  captured <- new.env(parent = emptyenv())
+  original_parallelize_fun <- thisutils::parallelize_fun
+  original_modules <- getFromNamespace("scenic_modules_from_adjacencies", "scop")
+  testthat::local_mocked_bindings(
+    .package = "thisutils",
+    parallelize_fun = function(x, fun, ..., cores, backend) {
+      captured$r_workers <- cores
+      original_parallelize_fun(x, fun, ..., cores = cores, backend = backend)
+    }
+  )
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    scenic_modules_from_adjacencies = function(...) {
+      args <- list(...)
+      captured$omp_threads <- args$cores
+      do.call(original_modules, args)
+    }
+  )
+
+  result <- run_scenic_parallel_fixture(
+    fixture,
+    cores = NULL,
+    parallel_backend = "auto"
+  )
+  expect_identical(captured$r_workers, 1L)
+  expect_identical(captured$omp_threads, 0L)
+  expect_identical(names(result), "TF1(+)")
+})
