@@ -64,12 +64,11 @@ Normalize spatial transcriptomics counts using SpaNorm and store the
 normalized expression in a Seurat assay.
 }
 \examples{
-\dontrun{
 data(visium_human_pancreas_sub)
 keep_spots <- unique(round(seq(
   1,
   ncol(visium_human_pancreas_sub),
-  length.out = 120
+  length.out = 300
 )))
 spatial <- visium_human_pancreas_sub[, keep_spots]
 spatial <- RunSpaNorm(
@@ -79,7 +78,7 @@ spatial <- RunSpaNorm(
   coord.cols = c("x", "y"),
   new_assay = "SpaNorm",
   store_spe = FALSE,
-  sample.p = 0.25,
+  sample.p = 0.5,
   verbose = FALSE
 )
 SpatialSpotPlot(
@@ -90,5 +89,4 @@ SpatialSpotPlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-}
 }

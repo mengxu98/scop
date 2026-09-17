@@ -90,10 +90,6 @@ rescaling, including assays containing only a subset of the object's cells.
 
 ## Validation
 
-`scripts/validate-spatial-platforms.R` runs seven public-data cases in isolated
-R processes: Visium baseline, BANKSY, SmoothClust, SpaNorm, local SpotSweeper,
-HD import, and Xenium import/rendering. It saves results, timings, sampled
-process-tree memory and logs. `scripts/verify-spatial-artifacts.R` reloads and
-plots those results. See `scripts/spatial-platform-data.md` for sources.
-Developer fixtures validate format and computation, not biological performance
-on full production slides. Mock tests are separate from live backend runs.
+Acceptance runs use public slide data outside the package. Developer fixtures
+check format and computation, not biological performance on production slides.
+Public slide data are not redistributed with scop.

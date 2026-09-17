@@ -99,7 +99,6 @@ Estimate spot-level cell-type proportions using RCTD and an annotated
 single-cell reference.
 }
 \examples{
-\dontrun{
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(
@@ -139,5 +138,4 @@ SpatialDeconvolutionPlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-}
 }

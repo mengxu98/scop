@@ -46,11 +46,11 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
 #' pancreas_sub <- Seurat::FindNeighbors(
 #'   pancreas_sub,
+#'   reduction = "Standardpca",
 #'   dims = 1:20,
 #'   verbose = FALSE
 #' )
@@ -65,7 +65,6 @@
 #'   pancreas_sub,
 #'   features = c("Ins1", "Gcg")
 #' )
-#' }
 ClusterTreePlot <- function(
   object,
   cluster_cols = NULL,
