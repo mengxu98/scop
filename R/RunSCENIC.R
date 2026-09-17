@@ -1172,6 +1172,17 @@ cistarget2 <- function(
       call. = FALSE
     )
   }
+  # OpenMP kernels keep the raw value (NULL = process default). R workers
+  # need a length-1 integer before the PSOCK worker-state guard.
+  cores_kernel <- cores
+  r_workers <- suppressWarnings(as.integer(cores))
+  if (
+    length(r_workers) != 1L ||
+      is.na(r_workers) ||
+      r_workers < 1L
+  ) {
+    r_workers <- 1L
+  }
   check_r("arrow", verbose = FALSE)
   profile_time <- function(expr) {
     start <- proc.time()[["elapsed"]]
@@ -1388,7 +1399,7 @@ cistarget2 <- function(
       top_n_targets = module_top_n_targets,
       keep_only_activating = !isTRUE(include_negative_regulons),
       verbose = verbose,
-      cores = scop_n_threads(cores)
+      cores = scop_n_threads(cores_kernel)
     )
   })
   modules <- profiled[["value"]]
@@ -1602,7 +1613,7 @@ cistarget2 <- function(
   if (
     .Platform$OS.type != "windows" &&
       !identical(parallel_backend, "fork") &&
-      as.integer(cores) > 1L &&
+      r_workers > 1L &&
       worker_state_bytes >= 256 * 1024^2
   ) {
     log_message(
@@ -1615,7 +1626,7 @@ cistarget2 <- function(
     )
   }
 
-  module_cores <- max(1L, as.integer(cores))
+  module_cores <- r_workers
   module_results <- thisutils::parallelize_fun(
     modules,
     process_module,
