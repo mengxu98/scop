@@ -238,6 +238,7 @@ build_cpdb_adata <- function(
 }
 
 matrix_to_adata <- function(mat, obs) {
+  PrepareEnv(modules = "scanpy")
   sc <- reticulate::import("scanpy", convert = FALSE)
 
   if (!inherits(mat, "Matrix")) {

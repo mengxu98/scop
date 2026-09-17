@@ -378,7 +378,7 @@ run_paga_cpp <- function(
       k = knn_k,
       metric = "euclidean",
       exclude_self = TRUE,
-      n_threads = as.integer(cores)
+      n_threads = scop_n_threads(cores)
     )
   }
   paga <- paga_connectivities_cpp(

@@ -38,7 +38,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(panc8_sub)
 #' panc8_sub <- RunIntegrationBenchmark(
 #'   panc8_sub,
@@ -62,7 +61,6 @@
 #' )
 #' IntegrationBenchmarkPlot(panc8_sub)
 #' IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
-#' }
 RunIntegrationBenchmark <- function(
   object,
   batch,

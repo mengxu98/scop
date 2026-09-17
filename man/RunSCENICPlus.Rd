@@ -45,7 +45,7 @@ RunSCENICPlus(
   grn_subsample = 0.9,
   grn_early_stop_window_length = 0,
   seed = 666,
-  cores = 1,
+  cores = NULL,
   assay_name = "scenicplus",
   tool_name = "SCENICPlus",
   python_result_dir = NULL,
@@ -189,7 +189,8 @@ disables early stopping to match official SCENIC+ \code{SGBM_KWARGS}.}
 \item{seed}{Random seed used by the C++ stochastic boosting code. The
 default matches official SCENIC+ command-line wrappers.}
 
-\item{cores}{Number of workers used by C++ TF-gene GRN inference.}
+\item{cores}{Number of workers used by C++ TF-gene GRN inference. \code{NULL}
+(the default) uses the process OpenMP team.}
 
 \item{assay_name}{Assay used to store eRegulon AUC scores.}
 

@@ -218,14 +218,11 @@ Cell2locationPlot(
 )
 ```
 
-## Validation and reproducible public-data checks
+## Validation and analysis receipts
 
-The repository's platform validation script runs isolated cases for a bundled
-Visium object, BANKSY, SmoothClust, SpaNorm, local SpotSweeper, Visium HD, and
-Xenium import/rendering. Its companion artifact script reloads saved results
-and checks plots. These are separate from mock adapter tests: a mock verifies
-SCOP's alignment and failure contract, while a live optional backend verifies
-the installed upstream package.
+Acceptance runs use public slide data outside the package: developer fixtures
+check format and computation rather than biological performance on production
+slides, and public slide data are not redistributed with scop.
 
 For a new dataset, preserve the following in the analysis receipt:
 

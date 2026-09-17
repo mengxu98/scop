@@ -1364,6 +1364,7 @@ python_runtime_restart_hint <- function(envname = "scop_env", modules = NULL) {
 }
 
 configure_python_thread_env <- function() {
+  # intentional: permanent session config for scop Python env
   Sys.setenv(OMP_NUM_THREADS = "1")
   Sys.setenv(OPENBLAS_NUM_THREADS = "1")
   Sys.setenv(MKL_NUM_THREADS = "1")
@@ -1386,6 +1387,7 @@ configure_python_runtime <- function(python_path) {
   python_dir <- dirname(python_path)
   env_path <- dirname(python_dir)
 
+  # intentional: permanent session config for scop Python env
   Sys.setenv(
     RETICULATE_PYTHON = python_path,
     PYTHONNOUSERSITE = "1",
@@ -1497,7 +1499,8 @@ install_miniconda2 <- function(
   timeout = 600
 ) {
   log_message("Installing miniconda...")
-  options(timeout = timeout)
+  old_timeout <- options(timeout = timeout)
+  on.exit(options(old_timeout), add = TRUE)
 
   info <- as.list(Sys.info())
 
@@ -1528,7 +1531,8 @@ install_miniconda2 <- function(
     url <- file.path(miniconda_repo, name)
   }
 
-  options(reticulate.miniconda.url = url)
+  old_url <- options(reticulate.miniconda.url = url)
+  on.exit(options(old_url), add = TRUE)
 
   if (!is.na(Sys.getenv("USER", unset = NA))) {
     miniconda_path <- gsub(
@@ -1637,6 +1641,7 @@ configure_managed_micromamba_root <- function() {
       grepl("\\s", current_norm)
   ) {
     dir.create(root, recursive = TRUE, showWarnings = FALSE)
+    # intentional: permanent session config for scop Python env
     Sys.setenv(MAMBA_ROOT_PREFIX = root)
   }
   invisible(Sys.getenv("MAMBA_ROOT_PREFIX"))

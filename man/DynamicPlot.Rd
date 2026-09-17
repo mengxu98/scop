@@ -104,7 +104,9 @@ Gap to the heatmap grows automatically when long row names are on the right.}
 \item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
-\item{cores}{Number of CPU cores.}
+\item{cores}{Number of CPU cores. \code{NULL} lets each backend pick its own
+default: the process OpenMP team (\code{OMP_NUM_THREADS}) for C++ kernels and one
+worker for R/Python parallel backends.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
