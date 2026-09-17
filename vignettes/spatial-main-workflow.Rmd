@@ -150,28 +150,24 @@ fixture deliberately creates a display-only matrix from real spot IDs so that
 the layout contract is executable without installing an optional deconvolution
 backend. It is not a biological inference and must not be reported as one.
 
-```{r composition-layout, eval=FALSE}
-label <- as.character(spatial@meta.data[["coda_label"]])
-label[is.na(label)] <- "other"
-demo_proportions <- matrix(
-  cbind(
-    alpha = ifelse(label == "alpha", 0.8, 0.2),
-    beta = ifelse(label == "beta", 0.8, 0.2),
-    unmeasured = NA_real_
-  ),
-  nrow = ncol(spatial),
-  dimnames = list(colnames(spatial), c("alpha", "beta", "unmeasured"))
-)
-demo_proportions <- demo_proportions / rowSums(demo_proportions, na.rm = TRUE)
-spatial@tools$display_only_proportions <- list(proportions = demo_proportions)
+```{r composition-layout, fig.width=10, fig.height=4.5}
+display_object <- spatial[, unique(round(seq(1, ncol(spatial), length.out = 120)))]
+fraction <- seq(0, 1, length.out = ncol(display_object))
+demo_proportions <- cbind(component_A = fraction, component_B = 1 - fraction,
+                         unmeasured = NA_real_)
+rownames(demo_proportions) <- colnames(display_object)
+display_object@tools$display_only_proportions <- list(proportions = demo_proportions)
 
 SpatialDeconvolutionPlot(
-  spatial,
+  display_object,
   tool_name = "display_only_proportions",
-  combine = FALSE,
+  combine = TRUE,
   overlay_image = FALSE,
-  palcolor = c(alpha = "#E69F00", beta = "#56B4E9", unmeasured = "#999999")
-)
+  ncol = 3,
+  palette = "YlGnBu",
+  legend.position = "bottom",
+  legend.direction = "horizontal"
+) + patchwork::plot_annotation(title = "Display-only matrix example")
 ```
 
 In a real analysis, replace that fixture with the stored output of
@@ -209,6 +205,25 @@ Domain clustering, deconvolution, neighborhood, communication, and framework
 conversion are separate questions. Add one only after the baseline map and
 stage receipt are sensible, then report the observation unit, assay, image,
 coordinate columns, method, and result status.
+
+## Save, reload, and redraw
+
+Save the analysis object, not only its figure. This example uses a temporary
+file; choose a persistent filename when keeping your own results. The real
+analysis object is separate from the display-only fixture above.
+
+```{r save-reload, fig.height=4.5}
+result_file <- tempfile(fileext = ".rds")
+saveRDS(spatial, result_file)
+reloaded <- readRDS(result_file)
+stopifnot(identical(colnames(reloaded), colnames(spatial)))
+stopifnot(identical(reloaded@tools$SpatialVariableFeatures,
+                    spatial@tools$SpatialVariableFeatures))
+SpatialSpotPlot(reloaded, group.by = "SpotQC", image = "slice1")
+unlink(result_file)
+```
+
+The redraw does not rerun QC, normalization, or spatial-feature detection.
 
 ## What to report
 

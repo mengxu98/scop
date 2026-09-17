@@ -166,10 +166,14 @@ integrated <- RunSpatialIntegration(
 
 SpatialIntegrationPlot(
   integrated,
-  plot_type = "spatial",
-  image = c(S1 = "slice1", S2 = "slice1")
+  plot_type = "spatial"
 )
 ```
+
+The plotting call resolves the images in the merged object. Inspect
+`SeuratObject::Images(integrated)` before supplying an explicit plotting map:
+duplicate input names such as `slice1` may have been renamed during merging.
+Do not reuse the input-list map as a merged-object map.
 
 The PRECAST package is an execution-time optional dependency. The template is
 not a successful run unless PRECAST is installed and the input objects exist.
@@ -186,6 +190,11 @@ and `RunCell2location()` preserve their own result semantics. Use
 `SpatialDeconvolutionPlot()` or `Cell2locationPlot()` after checking the stored
 result. Cell2location q05 abundance and normalized proportions are distinct;
 the abundance view uses its native range rather than a forced 0--1 scale.
+An explicit `lower_cutoff`, `upper_cutoff`, or quantile control overrides the
+default matrix-wide display range. With a one-sided override, each panel keeps
+the remaining bound computed by `SpatialSpotPlot()`; specify both cutoffs when
+you want identical explicit limits across panels. `combine` changes only the
+return form, including for the dominant point map.
 
 ```{r deconvolution-templates, eval=FALSE}
 deconvolved <- RunRCTD(

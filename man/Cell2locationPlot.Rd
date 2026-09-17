@@ -42,7 +42,7 @@ a single image is selected automatically when \code{NULL}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
-\item{combine}{Whether to combine matrix point maps. If \code{FALSE}, return a
+\item{combine}{Whether to combine matrix or dominant point maps. If \code{FALSE}, return a
 named list of plots.}
 
 \item{nrow, ncol, byrow}{Point-map layout controls.}
@@ -65,4 +65,7 @@ Plot cell2location spatial results
 \details{
 Abundance plots use posterior q05 values. Proportion plots normalize
 these values across cell types within each spot.
+Matrix point maps share a default display range. Explicit cutoff or
+quantile arguments passed through \code{...} retain the scales computed by
+\code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}, including when returning separate panels.
 }
