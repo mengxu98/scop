@@ -388,13 +388,16 @@ RunCell2location <- function(
 #' @param tool_name Name of the `srt@tools` result entry.
 #' @param overlay_image Whether to draw the selected spatial image.
 #' @param ... Additional arguments passed to [SpatialSpotPlot()].
-#' @param combine Whether to combine matrix point maps. If `FALSE`, return a
+#' @param combine Whether to combine matrix or dominant point maps. If `FALSE`, return a
 #' named list of plots.
 #' @param nrow,ncol,byrow Point-map layout controls.
 #'
 #' @details
 #' Abundance plots use posterior q05 values. Proportion plots normalize
 #' these values across cell types within each spot.
+#' Matrix point maps share a default display range. Explicit cutoff or
+#' quantile arguments passed through `...` retain the scales computed by
+#' [SpatialSpotPlot()], including when returning separate panels.
 #'
 #' @return A `ggplot`, `patchwork`, or list of plots.
 #' @export
@@ -448,6 +451,10 @@ Cell2locationPlot <- function(
   )
   if (identical(plot_type, "dominant")) {
     defaults$group.by <- paste0(prefix, "_dominant_type")
+    defaults$combine <- combine
+    defaults$nrow <- nrow
+    defaults$ncol <- ncol
+    defaults$byrow <- byrow
   } else {
     if (identical(plot_type, "pie")) {
       defaults$object <- srt

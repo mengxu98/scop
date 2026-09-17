@@ -32,7 +32,7 @@ raw acquisition coordinates, which is the safe choice for downstream distances.
 source and affine transform are stored in
 `metadata(spe)$scop_spatial_coordinates`.
 
-```{r spe-roundtrip, eval=FALSE}
+```{r spe-roundtrip, fig.height=4.5}
 library(scop)
 data(visium_human_pancreas_sub)
 
@@ -52,10 +52,15 @@ spatial_roundtrip <- spe_to_srt(spe, assay = "Spatial", layer = "scop_input")
 
 stopifnot(identical(colnames(spatial_roundtrip), colnames(spe)))
 head(spatial_roundtrip@meta.data)
-SpatialSpotPlot(spatial_roundtrip, image = NULL, features = rownames(spatial_roundtrip)[1])
+SpatialSpotPlot(spatial_roundtrip, image = NULL,
+               features = rownames(spatial_roundtrip)[1],
+               assay = "Spatial", layer = "counts",
+               palette = "YlGnBu", legend.title = "Counts")
 ```
 
-The `stopifnot()` check is intentionally about IDs, not byte-for-byte equality
+The returned assay contains the exported counts, so the plot explicitly reads
+`layer = "counts"`; exporting counts does not also export a normalized `data`
+layer. The `stopifnot()` check is intentionally about IDs, not byte-for-byte equality
 of every Seurat slot. The conversion is lightweight: it does not promise to
 round-trip Seurat images, reductions, graphs, tools, or all assays. External
 SpatialExperiment objects without SCOP coordinate provenance are interpreted
