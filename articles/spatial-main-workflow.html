@@ -221,7 +221,7 @@ does not run an optional deconvolution or domain backend.</p>
 <span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-17 03:15:59] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-17 06:44:35] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="inspect-stored-results-before-plotting">Inspect stored results before plotting<a class="anchor" aria-label="anchor" href="#inspect-stored-results-before-plotting"></a>
@@ -323,27 +323,33 @@ spot IDs so that the layout contract is executable without installing an
 optional deconvolution backend. It is not a biological inference and
 must not be reported as one.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">label</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="st">"coda_label"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="va">label</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">label</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"other"</span></span>
-<span><span class="va">demo_proportions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
-<span>    alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">label</span> <span class="op">==</span> <span class="st">"alpha"</span>, <span class="fl">0.8</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
-<span>    beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">label</span> <span class="op">==</span> <span class="st">"beta"</span>, <span class="fl">0.8</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
-<span>    unmeasured <span class="op">=</span> <span class="cn">NA_real_</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span>,</span>
-<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"alpha"</span>, <span class="st">"beta"</span>, <span class="st">"unmeasured"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">demo_proportions</span> <span class="op">&lt;-</span> <span class="va">demo_proportions</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">demo_proportions</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">display_only_proportions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>proportions <span class="op">=</span> <span class="va">demo_proportions</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">display_object</span> <span class="op">&lt;-</span> <span class="va">spatial</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">120</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; Warning: Not validating Centroids objects</span></span>
+<span><span class="co">#&gt; Not validating Centroids objects</span></span>
+<span><span class="co">#&gt; Warning: Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Warning: Not validating Seurat objects</span></span>
+<span><span class="va">fraction</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, length.out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">display_object</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">demo_proportions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>component_A <span class="op">=</span> <span class="va">fraction</span>, component_B <span class="op">=</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">fraction</span>,</span>
+<span>                         unmeasured <span class="op">=</span> <span class="cn">NA_real_</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">demo_proportions</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">display_object</span><span class="op">)</span></span>
+<span><span class="va">display_object</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">display_only_proportions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>proportions <span class="op">=</span> <span class="va">demo_proportions</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
+<span>  <span class="va">display_object</span>,</span>
 <span>  tool_name <span class="op">=</span> <span class="st">"display_only_proportions"</span>,</span>
-<span>  combine <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  combine <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="st">"#E69F00"</span>, beta <span class="op">=</span> <span class="st">"#56B4E9"</span>, unmeasured <span class="op">=</span> <span class="st">"#999999"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  ncol <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"YlGnBu"</span>,</span>
+<span>  legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
+<span>  legend.direction <span class="op">=</span> <span class="st">"horizontal"</span></span>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Display-only matrix example"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="spatial-main-workflow_files/figure-html/composition-layout-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
 <p>In a real analysis, replace that fixture with the stored output of
 <code><a href="../reference/RunRCTD.html">RunRCTD()</a></code>, <code><a href="../reference/RunSPOTlight.html">RunSPOTlight()</a></code>, or another
 supported producer and keep the producer’s provenance. The common matrix
@@ -381,6 +387,27 @@ execution condition.</p>
 framework conversion are separate questions. Add one only after the
 baseline map and stage receipt are sensible, then report the observation
 unit, assay, image, coordinate columns, method, and result status.</p>
+</div>
+<div class="section level2">
+<h2 id="save-reload-and-redraw">Save, reload, and redraw<a class="anchor" aria-label="anchor" href="#save-reload-and-redraw"></a>
+</h2>
+<p>Save the analysis object, not only its figure. This example uses a
+temporary file; choose a persistent filename when keeping your own
+results. The real analysis object is separate from the display-only
+fixture above.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">result_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".rds"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">spatial</span>, <span class="va">result_file</span><span class="op">)</span></span>
+<span><span class="va">reloaded</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">result_file</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialVariableFeatures</span>,</span>
+<span>                    <span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialVariableFeatures</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">reloaded</span>, group.by <span class="op">=</span> <span class="st">"SpotQC"</span>, image <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="spatial-main-workflow_files/figure-html/save-reload-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">result_file</span><span class="op">)</span></span></code></pre></div>
+<p>The redraw does not rerun QC, normalization, or spatial-feature
+detection.</p>
 </div>
 <div class="section level2">
 <h2 id="what-to-report">What to report<a class="anchor" aria-label="anchor" href="#what-to-report"></a>
