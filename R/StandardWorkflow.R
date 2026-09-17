@@ -900,37 +900,12 @@ run_standard_spatial_workflow <- function(
     set_variable_features = NULL,
     reason = NULL
   ) {
+    updates <- as.list(environment())
+    updates$stage <- NULL
+    updates <- Filter(Negate(is.null), updates)
+    if ("result_stored" %in% names(updates)) updates$result_stored <- isTRUE(updates$result_stored)
     i <- match(stage, stages$stage)
-    if (!is.null(status)) {
-      stages$status[[i]] <<- status
-    }
-    if (!is.null(actual_method)) {
-      stages$actual_method[[i]] <<- actual_method
-    }
-    if (!is.null(result_tool_key)) {
-      stages$result_tool_key[[i]] <<- result_tool_key
-    }
-    if (!is.null(result_metadata_key)) {
-      stages$result_metadata_key[[i]] <<- result_metadata_key
-    }
-    if (!is.null(result_stored)) {
-      stages$result_stored[[i]] <<- isTRUE(result_stored)
-    }
-    if (!is.null(result_location)) {
-      stages$result_location[[i]] <<- result_location
-    }
-    if (!is.null(variable_features_before)) {
-      stages$variable_features_before[[i]] <<- variable_features_before
-    }
-    if (!is.null(variable_features_after)) {
-      stages$variable_features_after[[i]] <<- variable_features_after
-    }
-    if (!is.null(set_variable_features)) {
-      stages$set_variable_features[[i]] <<- set_variable_features
-    }
-    if (!is.null(reason)) {
-      stages$reason[[i]] <<- reason
-    }
+    for (field in names(updates)) stages[[field]][[i]] <<- updates[[field]]
     invisible(NULL)
   }
   fail_stage <- function(stage, actual_method, error) {
@@ -1016,6 +991,10 @@ run_standard_spatial_workflow <- function(
       if (spatial_cluster_method == "BANKSY" && !is.null(spatial_q)) {
         stop("BANKSY uses spatial_cluster_params$resolution; spatial_q is not supported", call. = FALSE)
       }
+      standard_spatial_fixed_args(
+        if (length(spatial_cluster_params)) spatial_cluster_params else bayesspace_params,
+        c("srt", "object", "image", "coord.cols")
+      )
     }, cluster_producer)
     if (length(spatial_cluster_params)) bayesspace_params <- spatial_cluster_params
   }
@@ -1036,16 +1015,8 @@ run_standard_spatial_workflow <- function(
   }
   deconvolution_row <- match("deconvolution", stages$stage)
   stages$requested_method[[deconvolution_row]] <- deconvolution_method
-  deconv_default_name <- switch(deconvolution_method,
-    RCTD = "RCTD",
-    SPOTlight = "SPOTlight",
-    Cell2location = "Cell2location"
-  )
-  deconv_producer <- switch(deconvolution_method,
-    RCTD = "RunRCTD",
-    SPOTlight = "RunSPOTlight",
-    Cell2location = "RunCell2location"
-  )
+  deconv_default_name <- deconvolution_method
+  deconv_producer <- paste0("Run", deconvolution_method)
   deconv_fun <- switch(deconvolution_method,
     RCTD = RunRCTD,
     SPOTlight = RunSPOTlight,
@@ -1076,60 +1047,22 @@ run_standard_spatial_workflow <- function(
     if ((spanorm_params$new_assay %||% "SpaNorm") %in% SeuratObject::Assays(srt)) stop("SpaNorm new_assay already exists; choose a new assay name", call. = FALSE)
   }, "RunSpaNorm")
 
-  spot_qc_params <- if (do_spot_qc) {
-    run_stage_setup(
-      stage = "quality_control",
-      actual_method = "RunSpotQC",
-      expr = {
-        validate_named_list(spot_qc_params, "spot_qc_params")
-        spot_qc_params
-      }
-    )
-  } else {
-    list()
+  stage_params <- function(params, name, stage, producer, requested) {
+    if (!isTRUE(requested)) return(list())
+    run_stage_setup(stage, {
+      validate_named_list(params, name)
+      params
+    }, producer)
   }
-  spatial_variable_features_params <- if (do_spatial_variable_features) {
-    run_stage_setup(
-      stage = "spatial_variable_features",
-      actual_method = "RunSpatialVariableFeatures",
-      expr = {
-        validate_named_list(
-          spatial_variable_features_params,
-          "spatial_variable_features_params"
-        )
-        spatial_variable_features_params
-      }
-    )
-  } else {
-    list()
-  }
-  bayesspace_params <- if (do_spatial_cluster) {
-    run_stage_setup(
-      stage = "spatial_clustering",
-      actual_method = cluster_producer,
-      expr = {
-        validate_named_list(bayesspace_params, "bayesspace_params")
-        bayesspace_params
-      }
-    )
-  } else {
-    list()
-  }
-  deconvolution_params <- if (deconvolution_requested) {
-    run_stage_setup(
-      stage = "deconvolution",
-      actual_method = deconv_producer,
-      expr = {
-        validate_named_list(
-          deconvolution_params,
-          "deconvolution_params"
-        )
-        deconvolution_params
-      }
-    )
-  } else {
-    list()
-  }
+  spot_qc_params <- stage_params(spot_qc_params, "spot_qc_params",
+    "quality_control", "RunSpotQC", do_spot_qc)
+  spatial_variable_features_params <- stage_params(spatial_variable_features_params,
+    "spatial_variable_features_params", "spatial_variable_features",
+    "RunSpatialVariableFeatures", do_spatial_variable_features)
+  # Clustering parameters have already been validated before resolving the alias.
+  if (!do_spatial_cluster) bayesspace_params <- list()
+  deconvolution_params <- stage_params(deconvolution_params, "deconvolution_params",
+    "deconvolution", deconv_producer, deconvolution_requested)
   if (is.null(do_deconvolution)) {
     do_deconvolution <- !is.null(reference) ||
       (
@@ -1703,7 +1636,6 @@ run_standard_spatial_workflow <- function(
 
   if (isTRUE(do_spatial_cluster) && spatial_cluster_method != "BayesSpace") {
     cluster_setup <- run_stage_setup("spatial_clustering", {
-      standard_spatial_fixed_args(bayesspace_params, c("srt", "object", "image", "coord.cols"))
       args <- merge_call_args(list(object = srt, assay = analysis_assay, image = image,
         coord.cols = coord.cols, coordinate_space = "raw", seed = seed, verbose = verbose), bayesspace_params)
       if (spatial_cluster_method == "SmoothClust") {

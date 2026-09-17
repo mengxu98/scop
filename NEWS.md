@@ -1,5 +1,34 @@
 # scop 0.9.2
 
+* **fix**: Matrix spatial plots retain explicit cutoff/quantile scales, and Cell2location dominant maps forward `combine` and layout controls. Constant topic/abundance panels use consistent default legend breaks.
+* **refactor**: Long-format spatial points and jitter reuse the standard point renderer. Spatial workflow parameter validation, stage-field updates and method-name dispatch are consolidated without removing preflight or result checks.
+* **docs**: Execute the SpatialExperiment round-trip with the correct counts layer, use merged-image auto-resolution in the PRECAST template, and render the main workflow's empty-panel and save/reload examples.
+
+* **breaking**: `RunSpatialGradientFeatures()` now exposes only the native C++
+  gradient interface. The unused compatibility parameters `sample_name`,
+  `platform`, `img_scale_fct`, `assay_modality`, `trajectory_id`, `width`,
+  `annotation_id`, `core`, `distance`, `angle_span`, `resolution`, `model_add`,
+  `model_subset`, `model_remove`, and `control`, plus unsupported
+  `annotation_ids` and `...`, are removed and now fail as unused arguments.
+  Use `image`/`coord.cols`/`coordinate_space`, the annotation metadata inputs,
+  and the native screening controls documented by the function.
+* **fix**: Spatial proportion, topic-proportion, and q05-abundance point maps
+  share one renderer. Scale/title formatting now happens before the
+  `combine` decision, so empty panels, constant values, named colors, and
+  combined/non-combined returns have the same interpretation. Ordinary
+  benchmark summary tables use the stable bar view for `plot_type = "auto"`;
+  `funkyheatmap` remains explicit.
+* **feat**: `RunSpatialIntegration()` gains `store_object = TRUE`. Setting it
+  to `FALSE` omits the complete native PRECAST object while retaining the
+  standardized result, source, parameters, summaries, and plotting payload.
+* **docs**: Refresh the three Spatial Analysis articles around the real Visium
+  baseline, platform-specific imports and units, and separate
+  Seurat--SpatialExperiment/Giotto bridge contracts. External paths are
+  templates and optional backend examples are labeled as such.
+* **chore**: Package attachment no longer prints the ASCII startup banner or
+  repeated environment instructions. Explicit Python-environment initialization
+  still reports its actual success or failure.
+
 * **fix**: Spatial plots preserve coordinate aspect ratios, factor order and named category colors. Point, long-format and pie facets accept metadata names with spaces, constant features honor explicit color limits, and ambiguous value IDs are rejected.
 * **fix**: Spatial integration maps render every sample with its matching image; aligned views use aligned coordinates without raw-image overlays. `SpatialCellPlot()` adds named-list/layout and legend controls, with a sequential default palette for numeric features.
 * **fix**: Deconvolution summaries report assigned/unassigned spot counts without assigning zero-weight spots to the first cell type. Invalid weights fail before object mutation. Empty deconvolution panels remain plottable and constant proportion panels share comparable legends.

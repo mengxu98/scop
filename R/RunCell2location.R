@@ -388,10 +388,16 @@ RunCell2location <- function(
 #' @param tool_name Name of the `srt@tools` result entry.
 #' @param overlay_image Whether to draw the selected spatial image.
 #' @param ... Additional arguments passed to [SpatialSpotPlot()].
+#' @param combine Whether to combine matrix or dominant point maps. If `FALSE`, return a
+#' named list of plots.
+#' @param nrow,ncol,byrow Point-map layout controls.
 #'
 #' @details
 #' Abundance plots use posterior q05 values. Proportion plots normalize
 #' these values across cell types within each spot.
+#' Matrix point maps share a default display range. Explicit cutoff or
+#' quantile arguments passed through `...` retain the scales computed by
+#' [SpatialSpotPlot()], including when returning separate panels.
 #'
 #' @return A `ggplot`, `patchwork`, or list of plots.
 #' @export
@@ -405,6 +411,10 @@ Cell2locationPlot <- function(
   image = NULL,
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
   ...,
   image.scale = c("lowres", "hires"),
   srt = NULL
@@ -415,17 +425,6 @@ Cell2locationPlot <- function(
   }
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)
-  coords <- spatial_dim_coords(
-    srt = srt,
-    image = image,
-    image.scale = image.scale,
-    coord.cols = coord.cols,
-    overlay_image = overlay_image
-  )$data
-  if (!all(c("x", "y") %in% colnames(coords)) || any(!is.finite(as.matrix(coords[, c("x", "y"), drop = FALSE])))) {
-    log_message("Spatial coordinates must exist and contain finite numeric values", message_type = "error")
-  }
-
   tool <- srt@tools[[tool_name]]
   values <- NULL
   if (plot_type %in% c("proportion", "pie")) {
@@ -445,7 +444,6 @@ Cell2locationPlot <- function(
   }
 
   defaults <- list(
-    object = srt,
     image = image,
     image.scale = image.scale,
     overlay_image = overlay_image,
@@ -453,10 +451,33 @@ Cell2locationPlot <- function(
   )
   if (identical(plot_type, "dominant")) {
     defaults$group.by <- paste0(prefix, "_dominant_type")
+    defaults$combine <- combine
+    defaults$nrow <- nrow
+    defaults$ncol <- ncol
+    defaults$byrow <- byrow
   } else {
-    defaults$values <- values
-    defaults$plot_type <- if (identical(plot_type, "pie")) "pie" else "point"
+    if (identical(plot_type, "pie")) {
+      defaults$object <- srt
+      defaults$values <- values
+      defaults$plot_type <- "pie"
+      return(do.call(SpatialSpotPlot, merge_call_args(defaults, list(...))))
+    }
+    dots <- list(...)
+    return(spatial_matrix_point_plot(
+      srt = srt,
+      values = values,
+      value_names = colnames(values),
+      value_kind = if (identical(plot_type, "proportion")) "proportion" else "abundance",
+      legend_title = dots$legend.title,
+      plot_title = paste0(tool_name, " ", plot_type),
+      combine = combine,
+      nrow = nrow,
+      ncol = ncol,
+      byrow = byrow,
+      plot_args = c(defaults, dots)
+    ))
   }
+  defaults$object <- srt
   do.call(SpatialSpotPlot, merge_call_args(defaults, list(...)))
 }
 
