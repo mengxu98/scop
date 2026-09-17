@@ -388,6 +388,7 @@ scVI5_integrate <- function(
     max_epochs = NULL,
     ...
   ) {
+    PrepareEnv(modules = "scanpy")
     reticulate::use_condaenv(conda_env, required = TRUE)
     sc <- reticulate::import("scanpy", convert = FALSE)
     scvi <- reticulate::import("scvi", convert = FALSE)

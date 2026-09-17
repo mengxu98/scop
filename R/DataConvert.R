@@ -1166,6 +1166,7 @@ adata_matrix_to_r <- function(x) {
   if (!inherits(x, "python.builtin.object")) {
     return(x)
   }
+  PrepareEnv(modules = "scanpy")
 
   scipy_sparse <- tryCatch(
     reticulate::import("scipy.sparse", convert = FALSE),
