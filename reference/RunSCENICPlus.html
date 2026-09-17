@@ -114,7 +114,7 @@ workflow and requires explicit opt-in.</p>
 <span>  grn_subsample <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  grn_early_stop_window_length <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">666</span>,</span>
-<span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  cores <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay_name <span class="op">=</span> <span class="st">"scenicplus"</span>,</span>
 <span>  tool_name <span class="op">=</span> <span class="st">"SCENICPlus"</span>,</span>
 <span>  python_result_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -343,7 +343,8 @@ default matches official SCENIC+ command-line wrappers.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>Number of workers used by C++ TF-gene GRN inference.</p></dd>
+<dd><p>Number of workers used by C++ TF-gene GRN inference. <code>NULL</code>
+(the default) uses the process OpenMP team.</p></dd>
 
 
 <dt id="arg-assay-name">assay_name<a class="anchor" aria-label="anchor" href="#arg-assay-name"></a></dt>
