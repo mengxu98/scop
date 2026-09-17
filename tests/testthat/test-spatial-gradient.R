@@ -209,7 +209,7 @@ test_that("cpp backend stores annotation gradient result tables", {
   )
 })
 
-test_that("cpp backend rejects legacy SPATA2 annotation ids explicitly", {
+test_that("removed gradient compatibility arguments fail explicitly", {
   srt <- make_spatial_gradient_seurat()
 
   expect_error(
@@ -226,7 +226,7 @@ test_that("cpp backend rejects legacy SPATA2 annotation ids explicitly", {
       min_spots = 1,
       verbose = FALSE
     ),
-    "annotation_ids.*not supported"
+    "unused argument|annotation_ids"
   )
 })
 
@@ -241,11 +241,6 @@ test_that("cpp backend stores trajectory gradient result tables", {
     variables = c("Gene1", "Gene2"),
     start = c(1, 1),
     end = c(2, 2),
-    trajectory_id = "ignored_trajectory",
-    annotation_id = "ignored_annotation",
-    core = TRUE,
-    distance = "ignored_distance",
-    angle_span = c(15, 180),
     unit = "micron",
     layer = "counts",
     coord.cols = c("x", "y"),

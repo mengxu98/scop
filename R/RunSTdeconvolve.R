@@ -278,55 +278,23 @@ STdeconvolvePlot <- function(
       ...
     ))
   }
-  plots <- SpatialSpotPlot(
-    srt,
+  dots <- list(...)
+  spatial_matrix_point_plot(
+    srt = srt,
     values = values,
-    plot_type = "point",
-    image.scale = image.scale,
-    combine = FALSE,
-    ...
-  )
-  if (isFALSE(combine)) {
-    return(plots)
-  }
-  if (length(plots) == 1L) {
-    return(plots[[1L]])
-  }
-  if (is.null(nrow) && is.null(ncol)) {
-    ncol <- min(3L, ceiling(sqrt(length(plots))))
-  }
-  finite_values <- values[is.finite(values)]
-  common_limit <- if (length(finite_values) == 0L) 1 else max(finite_values)
-  common_limit <- max(common_limit, .Machine$double.eps)
-  legend_title <- list(...)$legend.title %||% "Proportion"
-  plots <- Map(
-    function(plot, topic) {
-      plot <- set_continuous_color_scale(
-        plot = plot,
-        limits = c(0, common_limit),
-        title = legend_title,
-        context = "topic-proportion"
-      )
-      plot +
-        ggplot2::labs(title = topic) +
-        ggplot2::theme(plot.title = ggplot2::element_text(margin = ggplot2::margin(b = 4)))
-    },
-    plots,
-    topic_names
-  )
-  patchwork::wrap_plots(
-    plots,
+    value_names = topic_names,
+    value_kind = "topic-proportion",
+    legend_title = dots$legend.title,
+    plot_title = paste0(tool_name, " topic proportions"),
+    combine = combine,
     nrow = nrow,
     ncol = ncol,
     byrow = byrow,
-    guides = "collect"
-  ) +
-    patchwork::plot_annotation(
-      title = paste0(tool_name, " topic proportions"),
-      theme = ggplot2::theme(
-        plot.title = ggplot2::element_text(margin = ggplot2::margin(b = 8))
-      )
+    plot_args = c(
+      list(image.scale = image.scale),
+      dots
     )
+  )
 }
 
 

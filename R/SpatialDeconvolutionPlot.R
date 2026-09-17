@@ -113,6 +113,7 @@ SpatialDeconvolutionPlot <- function(
     }
     proportions <- proportions[, cell_types, drop = FALSE]
   }
+  dots <- list(...)
   if (identical(plot_type, "pie")) {
     return(SpatialSpotPlot(
       srt,
@@ -132,53 +133,21 @@ SpatialDeconvolutionPlot <- function(
       ...
     ))
   }
-  plots <- SpatialSpotPlot(
-    srt,
+  spatial_matrix_point_plot(
+    srt = srt,
     values = proportions,
-    plot_type = "point",
-    image.scale = image.scale,
-    combine = FALSE,
-    ...
-  )
-  legend_title <- list(...)$legend.title %||% "Proportion"
-  plots <- Map(
-    function(plot, cell_type) {
-      if (!".value" %in% names(plot$data) || all(is.na(plot$data$.value))) {
-        return(plot + ggplot2::labs(title = cell_type))
-      }
-      plot <- set_continuous_color_scale(
-        plot = plot,
-        limits = c(0, 1),
-        title = legend_title,
-        context = "proportion"
-      ) + ggplot2::labs(title = cell_type)
-      scale <- plot$scales$get_scales("colour")
-      scale$breaks <- ggplot2::waiver()
-      plot
-    },
-    plots,
-    colnames(proportions)
-  )
-  if (isFALSE(combine)) {
-    return(plots)
-  }
-  if (length(plots) == 1L) {
-    return(plots[[1L]])
-  }
-  if (is.null(nrow) && is.null(ncol)) {
-    ncol <- min(3L, ceiling(sqrt(length(plots))))
-  }
-  combined <- patchwork::wrap_plots(
-    plots,
+    value_names = colnames(proportions),
+    value_kind = "proportion",
+    legend_title = dots$legend.title,
+    plot_title = paste0(tool_name, " proportions"),
+    combine = combine,
     nrow = nrow,
     ncol = ncol,
     byrow = byrow,
-    guides = "collect"
-  ) + patchwork::plot_annotation(title = paste0(tool_name, " proportions"))
-  dots <- list(...)
-  combined & ggplot2::theme(
-    legend.position = dots$legend.position %||% "right",
-    legend.direction = dots$legend.direction %||% "vertical"
+    plot_args = c(
+      list(image.scale = image.scale),
+      dots
+    )
   )
 }
 

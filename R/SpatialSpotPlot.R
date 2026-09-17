@@ -291,6 +291,158 @@ SpatialSpotPlot <- function(
   patchwork::wrap_plots(plots, nrow = nrow, ncol = ncol, byrow = byrow)
 }
 
+spatial_matrix_point_plot <- function(
+  srt,
+  values,
+  value_names = colnames(values),
+  value_kind = c("proportion", "topic-proportion", "abundance"),
+  legend_title = NULL,
+  plot_title = NULL,
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  plot_args = list()
+) {
+  value_kind <- match.arg(value_kind)
+  values <- spatial_matrix_plot_values(
+    values = values,
+    spot_ids = colnames(srt),
+    kind = value_kind
+  )
+  if (is.null(value_names) || length(value_names) != ncol(values)) {
+    value_names <- colnames(values)
+  }
+  if (anyNA(value_names) || any(!nzchar(value_names)) || anyDuplicated(value_names)) {
+    log_message("Spatial matrix panel names must be unique and non-empty", message_type = "error")
+  }
+
+  plot_args$object <- srt
+  plot_args$values <- values
+  plot_args$plot_type <- "point"
+  plot_args$combine <- FALSE
+  plots <- do.call(SpatialSpotPlot, plot_args)
+  if (!is.list(plots) || length(plots) != length(value_names)) {
+    log_message("Spatial matrix renderer did not return one panel per column", message_type = "error")
+  }
+
+  limits <- spatial_matrix_plot_limits(values, value_kind)
+  legend_title <- legend_title %||% switch(
+    value_kind,
+    proportion = "Proportion",
+    `topic-proportion` = "Proportion",
+    abundance = "Abundance"
+  )
+  plots <- Map(
+    function(plot, value_name) {
+      plot <- plot + ggplot2::labs(title = value_name)
+      if (
+        ".value" %in% names(plot$data) &&
+          is.numeric(plot$data$.value) &&
+          any(is.finite(plot$data$.value))
+      ) {
+        plot <- set_continuous_color_scale(
+          plot = plot,
+          limits = limits,
+          title = legend_title,
+          context = value_kind
+        )
+        if (identical(value_kind, "proportion")) {
+          scale <- plot$scales$get_scales("colour")
+          scale$breaks <- ggplot2::waiver()
+        }
+      }
+      plot
+    },
+    plots,
+    value_names
+  )
+  names(plots) <- value_names
+  if (isFALSE(combine)) {
+    return(plots)
+  }
+  if (length(plots) == 1L) {
+    return(plots[[1L]])
+  }
+  if (is.null(nrow) && is.null(ncol)) {
+    ncol <- min(3L, ceiling(sqrt(length(plots))))
+  }
+  dots <- plot_args
+  combined <- patchwork::wrap_plots(
+    plots,
+    nrow = nrow,
+    ncol = ncol,
+    byrow = byrow,
+    guides = "collect"
+  )
+  if (!is.null(plot_title)) {
+    combined <- combined + patchwork::plot_annotation(
+      title = plot_title,
+      theme = ggplot2::theme(
+        plot.title = ggplot2::element_text(margin = ggplot2::margin(b = 8))
+      )
+    )
+  }
+  combined & ggplot2::theme(
+    legend.position = dots$legend.position %||% "right",
+    legend.direction = dots$legend.direction %||% "vertical"
+  )
+}
+
+spatial_matrix_plot_values <- function(values, spot_ids, kind) {
+  if (
+    is.null(values) ||
+      (!is.matrix(values) && !inherits(values, "Matrix") && !is.data.frame(values))
+  ) {
+    log_message("Spatial matrix values must be a matrix-like object", message_type = "error")
+  }
+  values <- as.matrix(values)
+  valid_names <- function(x) {
+    !is.null(x) && !anyNA(x) && all(nzchar(x)) && !anyDuplicated(x)
+  }
+  if (nrow(values) == 0L || ncol(values) == 0L) {
+    log_message("Spatial matrix values are empty", message_type = "error")
+  }
+  if (!is.numeric(values)) {
+    log_message("Spatial matrix values must be numeric", message_type = "error")
+  }
+  if (!valid_names(rownames(values))) {
+    log_message("Spatial matrix values must have unique, non-missing spot names", message_type = "error")
+  }
+  if (!valid_names(colnames(values))) {
+    log_message("Spatial matrix values must have unique, non-missing panel names", message_type = "error")
+  }
+  missing_spots <- setdiff(spot_ids, rownames(values))
+  extra_spots <- setdiff(rownames(values), spot_ids)
+  if (length(missing_spots) || length(extra_spots)) {
+    log_message(
+      "Spatial matrix spot identities are stale or incomplete: {.val {length(missing_spots)}} missing and {.val {length(extra_spots)}} unknown",
+      message_type = "error"
+    )
+  }
+  if (any(is.infinite(values))) {
+    log_message("Spatial matrix values cannot contain infinite values", message_type = "error")
+  }
+  finite <- values[is.finite(values)]
+  if (length(finite) && any(finite < 0)) {
+    log_message("Spatial matrix values must be non-negative", message_type = "error")
+  }
+  if (identical(kind, "proportion") && length(finite) && any(finite > 1 + sqrt(.Machine$double.eps))) {
+    log_message("Spatial proportions must lie between zero and one", message_type = "error")
+  }
+  values[spot_ids, , drop = FALSE]
+}
+
+spatial_matrix_plot_limits <- function(values, kind) {
+  if (identical(kind, "proportion")) {
+    return(c(0, 1))
+  }
+  finite <- values[is.finite(values)]
+  upper <- if (length(finite)) max(finite) else 1
+  if (!is.finite(upper) || upper <= 0) upper <- 1
+  c(0, upper)
+}
+
 spatial_dim_long_plot <- function(
   srt,
   plot.data,

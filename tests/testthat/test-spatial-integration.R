@@ -72,6 +72,26 @@ test_that("RunSpatialIntegration writes standardized results for merged Seurat",
     "SpatialIntegration_PRECAST_aligned_x",
     "SpatialIntegration_PRECAST_aligned_y"
   ) %in% colnames(out@meta.data)))
+
+  mock_spatial_integration_backend({
+    light <- RunSpatialIntegration(
+      srt,
+      method = "PRECAST",
+      sample.by = "sample",
+      assay = "RNA",
+      layer = "counts",
+      coord.cols = c("col", "row"),
+      store_object = FALSE,
+      verbose = FALSE
+    )
+  })
+  light_bundle <- light@tools$SpatialIntegration$methods$PRECAST
+  expect_false("raw_result" %in% names(light_bundle))
+  expect_true(all(c("embedding", "domains", "aligned_coords", "parameters", "summary") %in% names(light_bundle)))
+  expect_s3_class(
+    SpatialIntegrationPlot(light, plot_type = "spatial", overlay_image = FALSE),
+    "ggplot"
+  )
 })
 test_that("RunSpatialIntegration supports list input and preserves sample labels", {
   srt <- make_spatial_integration_seurat()
@@ -179,10 +199,10 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
         stop("unexpected PRECAST function")
       )
     },
-    spatial_integration_extract_backend = function(raw_result, method, input) raw_result
+    spatial_integration_extract_precast = function(raw_result, input) raw_result
   )
 
-  out <- spatial_integration_run_precast(input, params = list(), verbose = FALSE)
+  out <- spatial_integration_run_backend("PRECAST", input, verbose = FALSE)
   expect_identical(observed$features, input$features)
   expect_identical(observed$selected, list(step = "created"))
   expect_identical(out, list(step = "created"))
