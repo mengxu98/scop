@@ -91,52 +91,26 @@
 
     
     
-<p>This article shows the recommended first-pass SCOP workflow for a
-spatial transcriptomics object. It uses the bundled Visium pancreas
-subset and keeps the main path short: inspect the object, run the
-spatial workflow, check summaries, plot spatial features, and branch
-into optional backends only when the question requires them.</p>
-<p>For platform import, optional spatial normalization and method
-routing, see <a href="spatial-platform-workflows.html">platform
-workflows</a>.</p>
-<p>It is not a catalogue of every spatial backend. Use method pages for
-backend specific parameters and dependency notes.</p>
-<p>Read the workflow as an evidence ladder: first confirm coordinates
-and image orientation, then compute QC and spatially variable features,
-then add domains, deconvolution, or neighborhood models only when they
-answer the biological question.</p>
+<p>This is the short, result-first path for a spatial Seurat object:
+inspect the input, run a small baseline workflow, inspect the stored
+result, and plot it. The bundled <code>visium_human_pancreas_sub</code>
+object is a real Visium spot-level dataset used for the executable
+examples below. It is not a single-cell measurement: one spot can
+contain transcripts from several cells.</p>
+<p>Use <a href="spatial-platform-workflows.html">Spatial imports and
+standard workflow methods</a> for Visium/Visium HD/Xenium input choices,
+assays, units, and backend-specific parameters. Use <a href="spatial-framework-bridges.html">Spatial framework bridges</a> for
+Seurat, SpatialExperiment, and Giotto conversion boundaries.</p>
 <div class="section level2">
-<h2 id="load-a-spatial-object">Load a Spatial Object<a class="anchor" aria-label="anchor" href="#load-a-spatial-object"></a>
+<h2 id="check-the-input-before-analysis">Check the input before analysis<a class="anchor" aria-label="anchor" href="#check-the-input-before-analysis"></a>
 </h2>
-<p>Start with a Seurat object that has expression, metadata, and spatial
-coordinates. The bundled <code>visium_human_pancreas_sub</code> object
-has a <code>Spatial</code> assay, a <code>slice1</code> image, and
-metadata coordinates.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">          </span><span style="color: #BB0000;">⬢</span><span style="color: #0000BB;">          </span><span style="color: #BBBB00;">.</span><span style="color: #0000BB;">        </span><span style="color: #00BB00;">⬡</span><span style="color: #0000BB;">             </span><span style="color: #BB00BB;">⬢</span><span style="color: #0000BB;">     </span><span style="color: #00BBBB;">.</span></span></span>
-<span><span class="co"><span style="color: #0000BB;">#&gt;                      _____ _________  ____</span></span></span>
-<span><span class="co"><span style="color: #0000BB;">#&gt;                     / ___// ___/ __ ./ __ .</span></span></span>
-<span><span class="co"><span style="color: #0000BB;">#&gt;                    (__  )/ /__/ /_/ / /_/ /</span></span></span>
-<span><span class="co"><span style="color: #0000BB;">#&gt;                   /____/ .___/.____/ .___/</span></span></span>
-<span><span class="co"><span style="color: #0000BB;">#&gt;                                   /_/</span></span></span>
-<span><span class="co"><span style="color: #0000BB;">#&gt;       </span><span style="color: #BBBB00;">⬢</span><span style="color: #0000BB;">               </span><span style="color: #00BB00;">.</span><span style="color: #0000BB;">      </span><span style="color: #BBBBBB;">⬡</span><span style="color: #0000BB;">        </span><span style="color: #BB00BB;">.</span><span style="color: #0000BB;">          </span><span style="color: #00BBBB;">⬢</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">------------------------------------------------------------</span></span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">Version: 0.9.2 (2026-09-12 update)</span></span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">Website: </span><span style="color: #0000BB; font-style: italic;">https://mengxu98.github.io/scop/</span></span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">Python environment initialization is disabled</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">To enable it, set: options(scop_env_init = TRUE)</span></span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">The message can be suppressed by: </span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">  suppressPackageStartupMessages(library(scop))</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">  or options(log_message.verbose = FALSE)</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">------------------------------------------------------------</span></span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span>
 <span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span>
-<span></span>
 <span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"Spatial"</span></span>
+<span></span>
 <span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Images.html" class="external-link">Images</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "slice1"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"coda_label"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
@@ -146,84 +120,90 @@ metadata coordinates.</p>
 <span><span class="co">#&gt; TGAGATCAAATACTCA-1 3969 662   collagen</span></span>
 <span><span class="co">#&gt; CTGGTCCTAACTTGGC-1 4024 662     islets</span></span>
 <span><span class="co">#&gt; ATAGTCTTTGACGTGC-1 4079 662   collagen</span></span>
-<span><span class="co">#&gt; GGGTGGTCCAGCCTGT-1 4134 662   collagen</span></span></code></pre></div>
-<p>Before running methods, make one direct map. This checks whether
-coordinates, image orientation, labels, and the default spatial theme
-are sensible. If this first map is rotated, mirrored, or shifted,
-downstream spatial domains and neighborhood results will be difficult to
-interpret even if the model runs. SCOP reads full-resolution raw
-coordinates for analysis and applies the selected Seurat scale factor
-exactly once for display. The default is the low-resolution raster. If
-the image slot contains <code>tissue_hires_image.png</code>, pass
-<code>image.scale = "hires"</code>; do not rewrite
-<code>@scale.factors</code>. Seurat’s standard <code>VisiumV2</code>
-loader stores source <code>imagerow</code>/<code>imagecol</code>
-positionally as centroid <code>x</code>/<code>y</code>; SCOP restores
-horizontal image-column and vertical image-row order. Generic FOV
-centroid tables with explicit <code>x</code>/<code>y</code> retain their
-order. Legacy Visium pixel coordinates are normalized only when explicit
-image row/column names are available, before the selected display
-transform is applied.</p>
-<p>Custom VisiumV2 objects with horizontal centroid <code>x</code>
-should record that convention once with
-<code>SetSpatialImageAxes(spatial, image = "slice1", x_orientation = "horizontal")</code>.
-Standard Seurat <code>Read10X_Image()</code> objects use the vertical
-centroid-x convention. The marker is stored in
-<code>spatial@misc$spatial_image_axes</code>, survives subsetting and
-cell renaming, and is carried by <code><a href="../reference/RunSpatialIntegration.html">RunSpatialIntegration()</a></code>
-when it merges a list. Migrate older custom objects before subsetting: a
-legacy image attribute may be lost by Seurat. Editing ordinary metadata
-<code>x/y</code> never changes image axes. Reapply the marker if an
-image is replaced or copied under another name.</p>
-<p>Coordinate contract v3 rejects older coordinate-dependent stored
-results; rerun their producers. Metadata/FOV plots now default to
-<code>flip.y = FALSE</code>, matching network and boundary plots;
-<code>flip.y = TRUE</code> remains an explicit display override. Numeric
-text and factor coordinates are parsed as their values, not level
-codes.</p>
-<p>For multi-sample integration and SpatialEcoTyper
-<code>mode = "multi"</code>, SCOP resolves one image covering all cells
-in each sample. If several images cover the same sample, pass a named
-map such as <code>image = c(S1 = "slice1", S2 = "slice2")</code>. A
-scalar image cannot silently discard other samples. SpatialEcoTyper
-single discovery uses the selected image’s raw coordinates and requires
-explicit image selection when multiple images are present. Its radius is
-in those raw units.</p>
+<span><span class="co">#&gt; GGGTGGTCCAGCCTGT-1 4134 662   collagen</span></span>
+<span><span class="va">raw_coordinates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SpatialCoordinates.html">SpatialCoordinates</a></span><span class="op">(</span></span>
+<span>  <span class="va">spatial</span>,</span>
+<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
+<span>  space <span class="op">=</span> <span class="st">"raw"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">raw_coordinates</span><span class="op">$</span><span class="va">source</span></span>
+<span><span class="co">#&gt; $image</span></span>
+<span><span class="co">#&gt; [1] "slice1"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $coord.cols</span></span>
+<span><span class="co">#&gt; [1] "x" "y"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_policy</span></span>
+<span><span class="co">#&gt; [1] "strict"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $coordinate_space</span></span>
+<span><span class="co">#&gt; [1] "raw"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_class</span></span>
+<span><span class="co">#&gt; [1] "VisiumV2"</span></span>
+<span><span class="co">#&gt; attr(,"package")</span></span>
+<span><span class="co">#&gt; [1] "Seurat"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_width</span></span>
+<span><span class="co">#&gt; [1] 600</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_height</span></span>
+<span><span class="co">#&gt; [1] 340</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $scale_name</span></span>
+<span><span class="co">#&gt; [1] "lowres"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $scale_factor</span></span>
+<span><span class="co">#&gt; [1] 0.078125</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $coordinate_contract_version</span></span>
+<span><span class="co">#&gt; [1] 3</span></span></code></pre></div>
+<p>The first checks should answer four questions: which assay contains
+the counts, which image is selected, which columns identify the
+observations, and whether the coordinate IDs match the expression
+columns. SCOP uses raw acquisition coordinates for distance-sensitive
+analysis. <code>image.scale</code> is a display choice for a selected
+raster; it does not change distances or rewrite Seurat scale
+factors.</p>
+<p>For Visium, the observations are spots on an acquisition grid. For
+Xenium or other segmented assays, the observations are cells and the
+right visualization is [SpatialCellPlot()], not a spot-composition
+interpretation. A spot label is therefore not automatically a cell
+type.</p>
+</div>
+<div class="section level2">
+<h2 id="draw-an-input-map">Draw an input map<a class="anchor" aria-label="anchor" href="#draw-an-input-map"></a>
+</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Ignoring unknown labels:</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">colour</span> : <span style="color: #0000BB;">"coda_label"</span></span></span></code></pre></div>
-<p><img src="spatial-main-workflow_files/figure-html/inspect-spatial-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>,</span>
-<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
-<span>  layer <span class="op">=</span> <span class="st">"counts"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Ignoring unknown labels:</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">fill</span> : <span style="color: #0000BB;">"TMSB4X"</span></span></span>
-<span><span class="co">#&gt; Ignoring unknown labels:</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">fill</span> : <span style="color: #0000BB;">"UBC"</span></span></span></code></pre></div>
-<p><img src="spatial-main-workflow_files/figure-html/inspect-spatial-2.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># For an object loaded with a hires raster:</span></span>
-<span><span class="co"># SpatialSpotPlot(spatial, group.by = "coda_label", image.scale = "hires")</span></span></code></pre></div>
+<span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span>,</span>
+<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
+<span>  palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    acini <span class="op">=</span> <span class="st">"#E69F00"</span>,</span>
+<span>    collagen <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span>
+<span>    fat <span class="op">=</span> <span class="st">"#009E73"</span>,</span>
+<span>    islets <span class="op">=</span> <span class="st">"#CC79A7"</span>,</span>
+<span>    `normal epithelium` <span class="op">=</span> <span class="st">"#0072B2"</span>,</span>
+<span>    panin <span class="op">=</span> <span class="st">"#D55E00"</span>,</span>
+<span>    `smooth muscle` <span class="op">=</span> <span class="st">"#999999"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="spatial-main-workflow_files/figure-html/input-map-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p>The map is an input and metadata check, not a result from a
+clustering or deconvolution model. Named palettes are matched to
+category names, so changing the row order or subsetting spots does not
+silently change the biological color meaning.
+<code><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot()</a></code> keeps equal coordinate scaling by
+default.</p>
 </div>
 <div class="section level2">
-<h2 id="run-the-basic-spatial-workflow">Run the Basic Spatial Workflow<a class="anchor" aria-label="anchor" href="#run-the-basic-spatial-workflow"></a>
+<h2 id="run-the-baseline-spatial-workflow">Run the baseline spatial workflow<a class="anchor" aria-label="anchor" href="#run-the-baseline-spatial-workflow"></a>
 </h2>
-<p><code>RunStandardWorkflow(workflow = "spatial")</code> is the
-shortest entry point for a first-pass spatial analysis. Keep optional
-domain clustering and deconvolution off at first. This makes the first
-run fast and gives you QC and spatial variable features before choosing
-heavier backends.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>Keep the first run small and interpretable. This real Visium example
+performs spot QC and native Moran spatial-variable-feature scoring. It
+does not run an optional deconvolution or domain backend.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
 <span>  workflow <span class="op">=</span> <span class="st">"spatial"</span>,</span>
@@ -234,50 +214,33 @@ heavier backends.</p>
 <span>  do_spatial_variable_features <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  spatial_variable_features_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    method <span class="op">=</span> <span class="st">"moran"</span>,</span>
-<span>    nfeatures <span class="op">=</span> <span class="fl">50</span></span>
+<span>    nfeatures <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>    nperm <span class="op">=</span> <span class="fl">0</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  do_spatial_cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:01] <span style="color: #0000BB;">Start standard spot-level spatial workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-09-13 23:09:01] Running spot-level quality control</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-13 23:09:01] Spot QC completed: <span style="color: #0000BB;">1986</span> evaluated, <span style="color: #0000BB;">1907</span> Pass, <span style="color: #0000BB;">79</span> Fail</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Scope</span> assay <span style="color: #0000BB;">"Spatial"</span>, layer <span style="color: #0000BB;">"counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Saved</span> metadata column `SpotQC`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Plot returned object</span> `SpatialSpotPlot(&lt;returned_object&gt;, group.by = "SpotQC")`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:01] <span style="color: #0000BB;">Start standard processing workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:01] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-09-13 23:09:02] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; Warning: Data 1/1 of the `srt_list` is "unknown"</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:02] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:02] Use the separate HVF from `srt_list`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:02] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:03] Finished check</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:03] Perform `ScaleData()`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:03] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:04] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">30</span> for <span style="color: #0000BB;">Standardpca</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:05] Reorder clusters...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:05] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-13 23:09:05] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-13 23:09:10] <span style="color: #00BB00;">Standard processing workflow completed</span></span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-09-13 23:09:10] Running spatial variable feature detection</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-13 23:09:10] Spatial variable features completed: <span style="color: #0000BB;">2000</span> tested, <span style="color: #0000BB;">50</span> ranked in the top set</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Scope</span> method <span style="color: #0000BB;">"moran"</span> (<span style="color: #0000BB;">"cpp"</span> backend); assay <span style="color: #0000BB;">"Spatial"</span>, layer <span style="color: #0000BB;">"data"</span>; <span style="color: #0000BB;">1986</span> spots; coordinates <span style="color: #0000BB;">"raw"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Saved</span> full result in returned object tool bundle `SpatialVariableFeatures`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span>   <span style="color: #00BB00;">Plot returned object</span> `SpatialVariableFeaturePlot(&lt;returned_object&gt;, plot_type = "combined", assay = "Spatial", image = "slice1", coord.cols = c("x", "y"))`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-13 23:09:10] <span style="color: #00BB00;">Standard spot-level spatial workflow completed</span></span></span></code></pre></div>
-<p>After the run, look at the stable result locations before making more
-plots. Most spatial wrappers write method parameters and summaries under
-<code>srt@tools</code>. Spatial variable features are genes whose
-expression varies with spatial position according to the selected
-method. They are candidates for spatial patterning, not automatically
-domain markers.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "GSE254829_coda_table"          "SpatialVariableFeatures"      </span></span>
-<span><span class="co">#&gt; [3] "run_standard_spatial_workflow"</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-17 03:15:59] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="inspect-stored-results-before-plotting">Inspect stored results before plotting<a class="anchor" aria-label="anchor" href="#inspect-stored-results-before-plotting"></a>
+</h2>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">run_standard_spatial_workflow</span></span>
+<span><span class="va">workflow</span><span class="op">$</span><span class="va">status</span></span>
+<span><span class="co">#&gt; [1] "completed"</span></span>
+<span><span class="va">workflow</span><span class="op">$</span><span class="va">stages</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stage"</span>, <span class="st">"requested"</span>, <span class="st">"status"</span>, <span class="st">"actual_method"</span>, <span class="st">"reason"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;                       stage requested    status              actual_method</span></span>
+<span><span class="co">#&gt; 1           quality_control      TRUE completed                  RunSpotQC</span></span>
+<span><span class="co">#&gt; 2 spatial_variable_features      TRUE completed RunSpatialVariableFeatures</span></span>
+<span><span class="co">#&gt; 3        spatial_clustering     FALSE   skipped                       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 4             deconvolution     FALSE   skipped                       &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;          reason</span></span>
+<span><span class="co">#&gt; 1          &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2          &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 3 not requested</span></span>
+<span><span class="co">#&gt; 4 not requested</span></span>
 <span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialVariableFeatures</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="co">#&gt; $n_features</span></span>
 <span><span class="co">#&gt; [1] 2000</span></span>
@@ -317,407 +280,121 @@ domain markers.</p>
 <span><span class="co">#&gt; 20   SFRP2   20 0.4799576</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialVariableFeatures</span><span class="op">$</span><span class="va">summary</span><span class="op">$</span><span class="va">top_features</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "FBP1"   "CELA3A" "PNLIP"  "SPP1"   "CLPS"   "CTRC"</span></span></code></pre></div>
+<p>The stage table is the execution receipt. <code>completed</code>,
+<code>skipped</code>, and <code>failed</code> are different states; an
+unavailable optional backend is not relabelled as a successful result. A
+spatially variable feature is a candidate spatial pattern, not
+automatically a domain marker or a cell-type marker.</p>
 </div>
 <div class="section level2">
-<h2 id="plot-the-first-results">Plot the First Results<a class="anchor" aria-label="anchor" href="#plot-the-first-results"></a>
+<h2 id="plot-qc-and-spatial-features">Plot QC and spatial features<a class="anchor" aria-label="anchor" href="#plot-qc-and-spatial-features"></a>
 </h2>
-<p>The default spatial maps hide axes and crop to the observed spots.
-Use <code>show_axes = TRUE</code> only when debugging coordinates.
-<code>SpotQC</code> summarizes spot-level quality-control status.
-Spatial feature surfaces should be interpreted together with raw spot
-maps, because smoothing can make sparse signal look broader than it
-is.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"SpotQC"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Ignoring unknown labels:</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> <span style="color: #00BB00;">colour</span> : <span style="color: #0000BB;">"SpotQC"</span></span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">spatial</span>, group.by <span class="op">=</span> <span class="st">"SpotQC"</span>, image <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="spatial-main-workflow_files/figure-html/plot-results-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/SpatialVariableFeaturePlot.html">SpatialVariableFeaturePlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"summary"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="spatial-main-workflow_files/figure-html/plot-results-2.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/SpatialVariableFeaturePlot.html">SpatialVariableFeaturePlot</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialVariableFeaturePlot.html">SpatialVariableFeaturePlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"summary"</span>,</span>
 <span>  nfeatures <span class="op">=</span> <span class="fl">4</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="spatial-main-workflow_files/figure-html/plot-results-3.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
-</div>
-<div class="section level2">
-<h2 id="add-spatial-domains-when-needed">Add Spatial Domains When Needed<a class="anchor" aria-label="anchor" href="#add-spatial-domains-when-needed"></a>
-</h2>
-<p>Run a domain method only after the baseline object looks correct.
-BayesSpace is a common Visium choice. BANKSY and SmoothClust are useful
-alternatives when their assumptions match the data and optional
-dependencies are available. Domain labels are unsupervised spatial
-clusters. They are useful for segmenting tissue regions, but they need
-marker genes, histology, or reference labels before being named
-biologically.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial_bayes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
+<p><img src="spatial-main-workflow_files/figure-html/plot-results-2.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
-<span>  workflow <span class="op">=</span> <span class="st">"spatial"</span>,</span>
+<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialVariableFeatures</span><span class="op">$</span><span class="va">summary</span><span class="op">$</span><span class="va">top_features</span>, <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
-<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
-<span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
-<span>  do_spot_qc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  do_spatial_variable_features <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  do_spatial_cluster <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  spatial_cluster_method <span class="op">=</span> <span class="st">"BayesSpace"</span>,</span>
-<span>  spatial_q <span class="op">=</span> <span class="fl">3</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial_bayes</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"BayesSpace_cluster"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>For other domain backends, keep the output contract in mind: cluster
-labels should land in metadata and method details should stay under
-<code>srt@tools</code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  workflow <span class="op">=</span> <span class="st">"spatial"</span>,</span>
-<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
-<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
-<span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
-<span>  do_spatial_cluster <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  spatial_cluster_method <span class="op">=</span> <span class="st">"BANKSY"</span>,</span>
-<span>  spatial_cluster_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cluster_colname <span class="op">=</span> <span class="st">"BANKSY_cluster"</span><span class="op">)</span>,</span>
-<span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">spatial</span>, group.by <span class="op">=</span> <span class="st">"BANKSY_cluster"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="add-cell-composition-only-with-a-reference">Add Cell Composition Only With a Reference<a class="anchor" aria-label="anchor" href="#add-cell-composition-only-with-a-reference"></a>
-</h2>
-<p>For spot-level data, deconvolution depends more on reference quality
-than on the wrapper choice. Use a matched single-cell reference, then
-inspect dominant cell types and maximum proportions before interpreting
-spatial biology.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunRCTD.html">RunRCTD</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  reference <span class="op">=</span> <span class="va">reference</span>,</span>
-<span>  reference_label <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
-<span>  reference_assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
 <span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
-<span>  reference_layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
-<span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
-<span>  rctd_mode <span class="op">=</span> <span class="st">"full"</span>,</span>
-<span>  max_cores <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  image <span class="op">=</span> <span class="st">"slice1"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="spatial-main-workflow_files/figure-html/plot-results-3.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p><code>combine = FALSE</code> returns named plots for independent
+editing. Spatial feature plots read the stored result; they do not rerun
+the backend. A saved Seurat object can be reloaded and plotted again as
+long as the stored result and the selected spatial context remain
+complete.</p>
+</div>
+<div class="section level2">
+<h2 id="proportion-and-empty-panel-display">Proportion and empty-panel display<a class="anchor" aria-label="anchor" href="#proportion-and-empty-panel-display"></a>
+</h2>
+<p>Composition plots require a spot-by-cell-type result. The following
+compact fixture deliberately creates a display-only matrix from real
+spot IDs so that the layout contract is executable without installing an
+optional deconvolution backend. It is not a biological inference and
+must not be reported as one.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">label</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="st">"coda_label"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">label</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">label</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"other"</span></span>
+<span><span class="va">demo_proportions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
+<span>    alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">label</span> <span class="op">==</span> <span class="st">"alpha"</span>, <span class="fl">0.8</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>    beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">label</span> <span class="op">==</span> <span class="st">"beta"</span>, <span class="fl">0.8</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>    unmeasured <span class="op">=</span> <span class="cn">NA_real_</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"alpha"</span>, <span class="st">"beta"</span>, <span class="st">"unmeasured"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">RCTD</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="va">demo_proportions</span> <span class="op">&lt;-</span> <span class="va">demo_proportions</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">demo_proportions</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">display_only_proportions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>proportions <span class="op">=</span> <span class="va">demo_proportions</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
-<span>  tool_name <span class="op">=</span> <span class="st">"RCTD"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"dominant"</span>,</span>
+<span>  tool_name <span class="op">=</span> <span class="st">"display_only_proportions"</span>,</span>
+<span>  combine <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span></span>
+<span>  palcolor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="st">"#E69F00"</span>, beta <span class="op">=</span> <span class="st">"#56B4E9"</span>, unmeasured <span class="op">=</span> <span class="st">"#999999"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><code>RCTD</code>, <code>SPOTlight</code>, <code>CARD</code>, and
-<code>STdeconvolve</code> follow the same practical rule: first check
-the result summary, then visualize dominant labels, maximum proportions,
-and selected proportions. Deconvolution estimates cell-type composition
-per spot. It is constrained by the reference, so missing reference cell
-types can be misassigned to the closest available label.</p>
+<p>In a real analysis, replace that fixture with the stored output of
+<code><a href="../reference/RunRCTD.html">RunRCTD()</a></code>, <code><a href="../reference/RunSPOTlight.html">RunSPOTlight()</a></code>, or another
+supported producer and keep the producer’s provenance. The common matrix
+renderer keeps numeric values and colors identical between
+<code>combine = TRUE</code> and <code>combine = FALSE</code>;
+all-missing panels remain informative empty panels. q05 abundance from
+cell2location is a different quantity from a proportion and is not
+forced onto a 0–1 scale.</p>
+<p>For a proportion pie, use the explicit numeric matrix with
+<code>SpatialSpotPlot(..., plot_type = "pie")</code> when
+<code>scatterpie</code> is installed. Pie fractions are relative to the
+selected components; they are not cell counts.</p>
 </div>
 <div class="section level2">
-<h2 id="add-neighborhood-or-context-models-last">Add Neighborhood or Context Models Last<a class="anchor" aria-label="anchor" href="#add-neighborhood-or-context-models-last"></a>
+<h2 id="multiple-samples-and-optional-backends">Multiple samples and optional backends<a class="anchor" aria-label="anchor" href="#multiple-samples-and-optional-backends"></a>
 </h2>
-<p>Neighborhood methods answer a different question from domain
-clustering. Use them after labels are stable, either from metadata,
-clustering, or deconvolution.</p>
-<p>For a small observed distance profile,
-<code><a href="../reference/SpatialNeighborhoodProfile.html">SpatialNeighborhoodProfile()</a></code> returns a plain table without
-modifying the object. Selecting target cells does not remove their
-surrounding tissue from the calculation:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">profile</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SpatialNeighborhoodProfile.html">SpatialNeighborhoodProfile</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span>, radii <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">400</span><span class="op">)</span>,</span>
-<span>  cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span>, <span class="fl">20</span><span class="op">)</span>, cumulative <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">profile</span><span class="op">)</span></span>
-<span><span class="co">#&gt;              cell_id sample group lower radius count total  fraction</span></span>
-<span><span class="co">#&gt; 1 TGGTATCGGTCTGTAT-1    all acini     0    100     0     6 0.0000000</span></span>
-<span><span class="co">#&gt; 2 ATTATCTCGACAGATC-1    all acini     0    100     0     7 0.0000000</span></span>
-<span><span class="co">#&gt; 3 TGAGATCAAATACTCA-1    all acini     0    100     1     7 0.1428571</span></span>
-<span><span class="co">#&gt; 4 CTGGTCCTAACTTGGC-1    all acini     0    100     0     7 0.0000000</span></span>
-<span><span class="co">#&gt; 5 ATAGTCTTTGACGTGC-1    all acini     0    100     1     7 0.1428571</span></span>
-<span><span class="co">#&gt; 6 GGGTGGTCCAGCCTGT-1    all acini     0    100     1     7 0.1428571</span></span></code></pre></div>
-<p>Distances above are illustrative raw coordinate units, not
-automatically micrometers. Supply <code>sample.by</code> for pooled
-metadata coordinates and <code>image</code> when multiple images are
-present. Fractions describe labelled neighbors; an empty neighborhood
-has undefined composition (<code>NA</code>), not evidence of
-depletion.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunSpatialNeighborhood.html">RunSpatialNeighborhood</a></span><span class="op">(</span></span>
+<p><code>split.by</code> is useful for a quick faceted view of
+metadata:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spatial</span><span class="op">$</span><span class="va">display_sample</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample-A"</span>, <span class="st">"sample-B"</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">spatial</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span>,</span>
-<span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
-<span>  k <span class="op">=</span> <span class="fl">6</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-09-13 23:09:12] Spatial neighborhood analysis completed (<span style="color: #0000BB;">"observed"</span>)</span></span>
-<span></span>
-<span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialNeighborhood</span><span class="op">$</span><span class="va">summary</span></span>
-<span><span class="co">#&gt; $n_pairs</span></span>
-<span><span class="co">#&gt; [1] 35</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $n_edges</span></span>
-<span><span class="co">#&gt; [1] 11916</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $top_pairs</span></span>
-<span><span class="co">#&gt;      method comparison condition              from                to   estimate</span></span>
-<span><span class="co">#&gt; 7  observed        all       all          collagen          collagen 0.70955018</span></span>
-<span><span class="co">#&gt; 12 observed        all       all          collagen     smooth muscle 0.04170863</span></span>
-<span><span class="co">#&gt; 31 observed        all       all     smooth muscle          collagen 0.04162471</span></span>
-<span><span class="co">#&gt; 17 observed        all       all            islets          collagen 0.03423968</span></span>
-<span><span class="co">#&gt; 9  observed        all       all          collagen            islets 0.03407184</span></span>
-<span><span class="co">#&gt; 6  observed        all       all          collagen             acini 0.02626720</span></span>
-<span><span class="co">#&gt; 2  observed        all       all             acini          collagen 0.02526015</span></span>
-<span><span class="co">#&gt; 35 observed        all       all     smooth muscle     smooth muscle 0.01602887</span></span>
-<span><span class="co">#&gt; 22 observed        all       all normal epithelium          collagen 0.01216851</span></span>
-<span><span class="co">#&gt; 10 observed        all       all          collagen normal epithelium 0.01166499</span></span>
-<span><span class="co">#&gt;    statistic pval FDR direction  sample subject count total   fraction</span></span>
-<span><span class="co">#&gt; 7         NA   NA  NA  observed sample1 sample1  8455 11916 0.70955018</span></span>
-<span><span class="co">#&gt; 12        NA   NA  NA  observed sample1 sample1   497 11916 0.04170863</span></span>
-<span><span class="co">#&gt; 31        NA   NA  NA  observed sample1 sample1   496 11916 0.04162471</span></span>
-<span><span class="co">#&gt; 17        NA   NA  NA  observed sample1 sample1   408 11916 0.03423968</span></span>
-<span><span class="co">#&gt; 9         NA   NA  NA  observed sample1 sample1   406 11916 0.03407184</span></span>
-<span><span class="co">#&gt; 6         NA   NA  NA  observed sample1 sample1   313 11916 0.02626720</span></span>
-<span><span class="co">#&gt; 2         NA   NA  NA  observed sample1 sample1   301 11916 0.02526015</span></span>
-<span><span class="co">#&gt; 35        NA   NA  NA  observed sample1 sample1   191 11916 0.01602887</span></span>
-<span><span class="co">#&gt; 22        NA   NA  NA  observed sample1 sample1   145 11916 0.01216851</span></span>
-<span><span class="co">#&gt; 10        NA   NA  NA  observed sample1 sample1   139 11916 0.01166499</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/SpatialNeighborhoodPlot.html">SpatialNeighborhoodPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="spatial-main-workflow_files/figure-html/spatial-neighborhood-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialNeighborhoodPlot.html">SpatialNeighborhoodPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"stat"</span>, top_n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
-<p><img src="spatial-main-workflow_files/figure-html/spatial-neighborhood-2.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
-<p>With <code>method = NULL</code>, the package computes observed KNN or
-radius summaries when <code>split.by</code> is absent and preserves the
-historical spicyR route when <code>split.by</code> is supplied. For new
-differential neighborhood analyses, request spicyR explicitly and
-provide the condition column; SCOP errors before execution if that
-design is incomplete.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunSpatialNeighborhood.html">RunSpatialNeighborhood</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"spicyR"</span>,</span>
-<span>  split.by <span class="op">=</span> <span class="st">"condition"</span>,</span>
-<span>  sample.by <span class="op">=</span> <span class="st">"sample"</span></span>
+<span>  split.by <span class="op">=</span> <span class="st">"display_sample"</span>,</span>
+<span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialNeighborhoodPlot.html">SpatialNeighborhoodPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"network"</span>, top_n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
-<p>Use <code><a href="../reference/RunStatialKontextual.html">RunStatialKontextual()</a></code> when you have explicit
-<code>from</code>, <code>to</code>, and <code>parent</code> cell
-populations. Use <code><a href="../reference/RunMistyR.html">RunMistyR()</a></code> when the question is
-feature-level local or broader spatial context rather than pairwise
-label enrichment. Both are independent producers rather than
-<code><a href="../reference/RunSpatialNeighborhood.html">RunSpatialNeighborhood()</a></code> method choices. HoodscanR remains
-unimplemented. Neighborhood enrichment is label-level spatial
-association. Context models are feature-level spatial association. Keep
-those interpretations separate in reports.</p>
-<p>Spatial results follow the same structure as single-cell analyses in
-SCOP: each producer stores its output as a plain key in
-<code>srt@tools</code>, for example <code>spatial@tools$MistyR</code> or
-<code>spatial@tools$SpatialNeighborhood</code>, with method-specific
-fields at the top level plus <code>parameters</code> and
-<code>summary</code>. Read results directly from
-<code>srt@tools[[tool_name]]</code> and pass them to the dedicated plot
-functions. Custom <code>tool_name</code> values are honored exactly as
-written.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SpatialCoordinates.html">SpatialCoordinates</a></span><span class="op">(</span><span class="va">spatial</span>, image <span class="op">=</span> <span class="st">"slice1"</span>, space <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></span>
-<span><span class="va">network_result</span> <span class="op">&lt;-</span> <span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialNetwork</span></span>
-<span><span class="va">network_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GetSpatialGraph.html">GetSpatialGraph</a></span><span class="op">(</span></span>
-<span>  res <span class="op">=</span> <span class="va">network_result</span>,</span>
-<span>  format <span class="op">=</span> <span class="st">"sparse"</span>,</span>
-<span>  value <span class="op">=</span> <span class="st">"weight"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">)</span></span></code></pre></div>
-<p>Distance-sensitive methods default to full-resolution raw acquisition
-coordinates. <code>coordinate_space = "legacy_display"</code> remains an
-explicit compatibility option only. Plot functions map results to
-display coordinates by cell or spot ID and <code>image.scale</code>
-never changes raw distances or neighborhoods. Objects with multiple
-spatial images must always select one explicitly with
-<code>image</code>; analysis, plotting, and framework conversion never
-silently use the first image. Coordinate-dependent results created
-before contract v3 are not silently migrated; rerun their producer.
-Metadata passed directly to <code><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot()</a></code> cannot be
-traced to its producer, so users upgrading an old analysis should rerun
-that analysis before plotting its metadata.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunMistyR.html">RunMistyR</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
-<span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span>
-<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialVariableFeatures</span><span class="op">$</span><span class="va">summary</span><span class="op">$</span><span class="va">top_features</span>, <span class="fl">20</span><span class="op">)</span>,</span>
-<span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
-<span>  views <span class="op">=</span> <span class="st">"para"</span>,</span>
-<span>  para_l <span class="op">=</span> <span class="fl">1000</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">MistyR</span><span class="op">$</span><span class="va">summary</span></span>
-<span><span class="fu"><a href="../reference/MistyRPlot.html">MistyRPlot</a></span><span class="op">(</span><span class="va">spatial</span>, type <span class="op">=</span> <span class="st">"improvements"</span><span class="op">)</span></span></code></pre></div>
-<p>For label-level contextual scores, use
-<code>StatialKontextualPlot(spatial)</code> after
-<code><a href="../reference/RunStatialKontextual.html">RunStatialKontextual()</a></code>. These dedicated plots summarize
-stored backend output and never rerun the analysis.</p>
+<p><img src="spatial-main-workflow_files/figure-html/sample-facets-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p>This facet does not register images or create a cross-sample
+inference. A multi-image analysis must select one covering image per
+sample; ambiguous coverage errors instead of dropping a sample. The
+platform page contains the <code><a href="../reference/RunSpatialIntegration.html">RunSpatialIntegration()</a></code> example
+with an explicit named image map and labels the PRECAST dependency as an
+execution condition.</p>
+<p>Domain clustering, deconvolution, neighborhood, communication, and
+framework conversion are separate questions. Add one only after the
+baseline map and stage receipt are sensible, then report the observation
+unit, assay, image, coordinate columns, method, and result status.</p>
 </div>
 <div class="section level2">
-<h2 id="add-spatially-constrained-communication-deliberately">Add Spatially Constrained Communication Deliberately<a class="anchor" aria-label="anchor" href="#add-spatially-constrained-communication-deliberately"></a>
+<h2 id="what-to-report">What to report<a class="anchor" aria-label="anchor" href="#what-to-report"></a>
 </h2>
-<p><code><a href="../reference/RunCellChat.html">RunCellChat()</a></code> and <code><a href="../reference/RunSpatialCellChat.html">RunSpatialCellChat()</a></code>
-answer different questions. The first estimates expression-supported
-communication without a physical spatial constraint. The second uses
-micron-scale distances and stores its group-level table under the
-distinct method name <code>"SpatialCellChat"</code>, so the two results
-can coexist in <code>spatial@tools$CCC</code> without overwriting one
-another.</p>
-<p>Choose the analysis level from the observation represented by each
-column:</p>
+<p>At minimum record:</p>
 <ul>
-<li>
-<code>"cell"</code> for segmented cells such as Xenium or
-CosMx;</li>
-<li>
-<code>"spot"</code> for spot/domain communication, which must not be
-described as direct cell-type communication;</li>
-<li>
-<code>"composition"</code> for Visium spots with a spot-by-cell-type
-proportion matrix.</li>
+<li>the source object and platform, assay/layer, selected image,
+coordinate columns, and coordinate space;</li>
+<li>the number of spots or cells retained at each stage;</li>
+<li>QC status and the selected spatial-variable-feature method;</li>
+<li>domain or composition methods only when they were actually run;</li>
+<li>backend availability and failed/skipped stages, rather than
+presenting unexecuted code as a result.</li>
 </ul>
-<p>Distance parameters are always interpreted in microns. Micron
-coordinates use <code>ratio = 1</code>. For Visium full-image pixel
-coordinates, <code><a href="../reference/RunSpatialCellChat.html">RunSpatialCellChat()</a></code> can derive the conversion
-ratio as <code>65 / spot_diameter_fullres</code> when the selected image
-contains exactly one trusted full-resolution spot diameter; otherwise
-provide <code>ratio</code> explicitly. Never substitute a low-resolution
-display scale. This article uses one slice; multi-sample objects are run
-independently and require an explicit <code>sample.by</code> and named
-image mapping.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunSpatialCellChat.html">RunSpatialCellChat</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"coda_label"</span>,</span>
-<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
-<span>  technology <span class="op">=</span> <span class="st">"visium"</span>,</span>
-<span>  analysis.level <span class="op">=</span> <span class="st">"spot"</span>,</span>
-<span>  coordinate.unit <span class="op">=</span> <span class="st">"pixel"</span>,</span>
-<span>  tol <span class="op">=</span> <span class="fl">32.5</span>,</span>
-<span>  species <span class="op">=</span> <span class="st">"Homo_sapiens"</span>,</span>
-<span>  database <span class="op">=</span> <span class="st">"protein"</span>,</span>
-<span>  store.object <span class="op">=</span> <span class="st">"minimal"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/CCCNetworkPlot.html">CCCNetworkPlot</a></span><span class="op">(</span><span class="va">spatial</span>, method <span class="op">=</span> <span class="st">"SpatialCellChat"</span>, plot_type <span class="op">=</span> <span class="st">"circle"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/CCCNetworkPlot.html">CCCNetworkPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"SpatialCellChat"</span>,</span>
-<span>  condition <span class="op">=</span> <span class="st">"default"</span>,</span>
-<span>  sample <span class="op">=</span> <span class="st">"slice1"</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"spatial"</span>,</span>
-<span>  signaling <span class="op">=</span> <span class="st">"SPP1"</span>,</span>
-<span>  top_n <span class="op">=</span> <span class="fl">50</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/CCCHeatmap.html">CCCHeatmap</a></span><span class="op">(</span><span class="va">spatial</span>, method <span class="op">=</span> <span class="st">"SpatialCellChat"</span>, plot_type <span class="op">=</span> <span class="st">"bubble"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/SpatialCellChatPlot.html">SpatialCellChatPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"incoming"</span><span class="op">)</span></span>
-<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialCellChat</span></span></code></pre></div>
-<p><code>CCCNetworkPlot(plot_type = "spatial")</code> is the common
-stored-result renderer for <code>SpatialCellChat</code>,
-<code>SpaTalk</code>, and <code>COMMOT</code>. It overlays all stored
-cells or spots, draws group-centroid nodes with abundance-scaled sizes,
-and draws sender-coloured directed edges whose widths represent the
-filtered communication score. For
-<code>analysis.level = "composition"</code>, the default spot layer is a
-proportion pie (<code>composition_display = "pie"</code>); use
-<code>composition_display = "dominant"</code> only when a single
-representative type is acceptable. This plot does not rerun an optional
-backend. A result created before the current spatial plot payload was
-stored must be rerun rather than reconstructed from mutable
-metadata.</p>
-<p><code>store.object = "minimal"</code> stores normalized interaction,
-pathway, network, coordinate, and diagnostic results but not the large
-native S4 object or a materialized cell-by-cell-by-LR edge table. Use
-<code>"full"</code> only when native SpatialCellChat downstream analysis
-is required, then retrieve it with
-<code>GetCCCObject(method = "SpatialCellChat")</code>.</p>
-<p>Visium spots form a hexagonal acquisition grid, but six-neighbor
-topology is not a replacement for the Euclidean diffusion model.
-Contact-dependent signaling is therefore rejected in spot mode. P-values
-from spatial permutation and non-spatial CellChat analyses also have
-different null models and should not be compared as if they were
-interchangeable.</p>
-<p>SpatialDM addresses a different question: which ligand-receptor pairs
-are spatially associated, and which spots contain local interaction
-evidence. It does not infer sender-receiver cell-type edges, so its
-Moran’s R must not be reported as communication probability or transport
-mass. The official workflow is global selection followed by local spot
-selection. Use normalized or log-transformed expression for
-<code>layer</code>, raw counts for <code>counts.layer</code>, and set
-<code>l</code> or <code>eff_dist</code> in the raw coordinate unit of
-the selected image.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunSpatialDM.html">RunSpatialDM</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>,</span>
-<span>  species <span class="op">=</span> <span class="st">"human"</span>,</span>
-<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
-<span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span>
-<span>  counts.layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
-<span>  l <span class="op">=</span> <span class="fl">1.2</span>,</span>
-<span>  cutoff <span class="op">=</span> <span class="fl">0.2</span>,</span>
-<span>  global.threshold <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  local.threshold <span class="op">=</span> <span class="fl">0.1</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">spatialdm_global</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GetSpatialDMResult.html">GetSpatialDMResult</a></span><span class="op">(</span><span class="va">spatial</span>, type <span class="op">=</span> <span class="st">"global"</span><span class="op">)</span></span>
-<span><span class="va">spatialdm_pair</span> <span class="op">&lt;-</span> <span class="va">spatialdm_global</span><span class="op">$</span><span class="va">interaction</span><span class="op">[[</span><span class="fl">1L</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="va">spatialdm_spot</span> <span class="op">&lt;-</span> <span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialDM</span><span class="op">$</span><span class="va">coordinates</span><span class="op">$</span><span class="va">cell_id</span><span class="op">[[</span><span class="fl">1L</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="fu"><a href="../reference/SpatialDMPlot.html">SpatialDMPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"global"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/SpatialDMPlot.html">SpatialDMPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"local"</span>, pair <span class="op">=</span> <span class="va">spatialdm_pair</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/SpatialDMPlot.html">SpatialDMPlot</a></span><span class="op">(</span><span class="va">spatial</span>, plot_type <span class="op">=</span> <span class="st">"weights"</span>, spot <span class="op">=</span> <span class="va">spatialdm_spot</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/GetSpatialDMResult.html">GetSpatialDMResult</a></span><span class="op">(</span><span class="va">spatial</span>, type <span class="op">=</span> <span class="st">"global"</span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="../reference/SpatialDMPlot.html">SpatialDMPlot()</a></code> follows the information content of the
-official melanoma tutorial while returning SCOP
-<code>ggplot</code>/<code>patchwork</code> objects and using SCOP themes
-and palettes. The <code>weights</code> view should be checked before
-interpreting global or local results because <code>l</code>,
-<code>cutoff</code>, and coordinate scale determine the effective
-interaction range.</p>
-</div>
-<div class="section level2">
-<h2 id="what-to-report">What to Report<a class="anchor" aria-label="anchor" href="#what-to-report"></a>
-</h2>
-<p>A compact first-pass spatial report should include:</p>
-<ul>
-<li>the source object, assay, image, and coordinate columns;</li>
-<li>spot or cell counts after filtering;</li>
-<li>top spatial variable features and the method used;</li>
-<li>the domain method, cluster count, and domain sizes if clustering was
-run;</li>
-<li>deconvolution dominant labels and maximum proportions if composition
-was run;</li>
-<li>neighborhood or context summaries only after labels are stable.</li>
-</ul>
-<p>Keep the main workflow short. Add backend-specific sections only when
-they answer a concrete biological question for the current dataset.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

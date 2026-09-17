@@ -91,93 +91,155 @@
 
     
     
-<p>This article documents SCOP’s lightweight bridge to Giotto. The
-bridge moves a single spatial image between Seurat and Giotto; it does
-not wrap Giotto’s analysis or plotting workflow and it does not merge
-slices implicitly.</p>
+<p>This page describes two separate bridges from the <a href="spatial-main-workflow.html">main spatial workflow</a>:
+Seurat↔︎SpatialExperiment and Seurat↔︎Giotto. A bridge moves a data
+container; it does not claim that the target framework’s analysis or
+plotting backend ran. The <a href="spatial-platform-workflows.html">platform page</a> defines assay,
+image, and platform-specific input choices.</p>
 <div class="section level2">
-<h2 id="choose-the-interface">Choose the interface<a class="anchor" aria-label="anchor" href="#choose-the-interface"></a>
+<h2 id="what-each-bridge-preserves">What each bridge preserves<a class="anchor" aria-label="anchor" href="#what-each-bridge-preserves"></a>
 </h2>
-<p><code><a href="../reference/srt_to_spe.html">srt_to_spe()</a></code> exports raw coordinates by default. For an
-explicit <code>coordinate_space = "legacy_display"</code> export, the
-source and affine transform are retained in
-<code>S4Vectors::metadata(spe)$scop_spatial_coordinates</code>.
-<code><a href="../reference/spe_to_srt.html">spe_to_srt()</a></code> inverts that transform, including after
-subsetting/reordering spots, so subsequent analysis uses raw units.
-Preserve this metadata during external processing; external SPE objects
-without it are interpreted as raw coordinates in their supplied units.
-These guarantees apply to the SpatialExperiment bridge, not to Giotto’s
-independently implemented converter.</p>
 <table class="table">
 <colgroup>
-<col width="25%">
-<col width="25%">
-<col width="25%">
-<col width="25%">
+<col width="33%">
+<col width="33%">
+<col width="33%">
 </colgroup>
 <thead><tr class="header">
-<th>Goal</th>
-<th>Interface</th>
-<th>Returned object</th>
-<th>Plotting</th>
+<th>Field</th>
+<th>Seurat ↔︎ SpatialExperiment</th>
+<th>Seurat ↔︎ Giotto</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>Move one Seurat image into Giotto</td>
-<td><code><a href="../reference/srt_to_giotto.html">srt_to_giotto()</a></code></td>
-<td>Native Giotto object</td>
-<td>Giotto’s native plotting API</td>
+<td>Expression</td>
+<td>One selected Seurat <code>assay</code>/<code>layer</code> becomes
+the <code>scop_input</code> assay; it is restored as the requested
+Seurat assay</td>
+<td>The selected image subset is passed to the official GiottoClass
+converter; native Giotto layers follow that converter’s rules</td>
 </tr>
 <tr class="even">
-<td>Move a native Giotto object into Seurat</td>
-<td><code><a href="../reference/giotto_to_srt.html">giotto_to_srt()</a></code></td>
-<td>New Seurat object</td>
-<td>scop or Seurat plotting</td>
+<td>Observation IDs and order</td>
+<td>SpatialExperiment column names and coordinate row names must match
+exactly; reverse conversion reorders to assay-column order</td>
+<td>The official converter owns target IDs; convert one selected image
+and check the returned object before analysis</td>
+</tr>
+<tr class="odd">
+<td>Metadata</td>
+<td>
+<code>include_meta = TRUE</code> copies Seurat metadata to
+<code>colData</code>; reverse conversion copies <code>colData</code> to
+Seurat metadata</td>
+<td>Metadata retention follows <code>GiottoClass</code>; the bridge does
+not invent or merge sample labels</td>
+</tr>
+<tr class="even">
+<td>Coordinates</td>
+<td>Raw coordinates are the default; an explicit display export records
+its transform and reverse conversion inverts it</td>
+<td>One selected image’s spatial coordinates are sent through the
+official converter; no extra coordinate system is invented by SCOP</td>
+</tr>
+<tr class="odd">
+<td>Image/raster information</td>
+<td>Raster image slots are not represented by the lightweight
+SpatialExperiment conversion</td>
+<td>One image is selected and subset; multiple images/slices are never
+silently merged</td>
+</tr>
+<tr class="even">
+<td>Analysis and plots</td>
+<td>No SpatialExperiment analysis is run by the bridge</td>
+<td>No Giotto analysis or plot is run by the bridge</td>
 </tr>
 </tbody>
 </table>
+<p>The common invariant is identity: expression columns, metadata rows,
+and coordinate rows must refer to the same spots/cells in the same
+intended order. The bridge keeps provenance where SCOP can invert it,
+but it cannot preserve target-framework fields that have no
+counterpart.</p>
 </div>
 <div class="section level2">
-<h2 id="giotto-version-boundary">Giotto version boundary<a class="anchor" aria-label="anchor" href="#giotto-version-boundary"></a>
+<h2 id="seurat-and-spatialexperiment-round-trip">Seurat and SpatialExperiment round-trip<a class="anchor" aria-label="anchor" href="#seurat-and-spatialexperiment-round-trip"></a>
 </h2>
-<p>Current Giotto Suite releases split analysis functions and
-object/conversion helpers across the <code>Giotto</code> and
-<code>GiottoClass</code> namespaces. scop resolves these optional
-functions at runtime and does not add Giotto to Imports, Depends, or
-Suggests.</p>
-<p>The forward bridge selects <code>seuratToGiottoV5()</code> for Seurat
-5 and <code>seuratToGiottoV4()</code> for Seurat 4. The reverse bridge
-selects <code>giottoToSeuratV5()</code> for Seurat 5 and
-<code>giottoToSeuratV4()</code> for Seurat 4. These converters are
-expected from a current GiottoClass installation. If an older Giotto
-installation does not provide them, update Giotto before using the
-bridges.</p>
-</div>
-<div class="section level2">
-<h2 id="single-image-conversion">Single-image conversion<a class="anchor" aria-label="anchor" href="#single-image-conversion"></a>
-</h2>
-<p>The bridges process exactly one image at a time:</p>
-<ul>
-<li>a single image is selected automatically;</li>
-<li>a multi-image object requires an explicit <code>image</code>;</li>
-<li>an unknown image name is rejected;</li>
-<li>slices are never merged implicitly.</li>
-</ul>
+<p><code><a href="../reference/srt_to_spe.html">srt_to_spe()</a></code> exports one selected assay layer and
+coordinates. It defaults to raw acquisition coordinates, which is the
+safe choice for downstream distances.
+<code>coordinate_space = "legacy_display"</code> is an explicit
+compatibility export; the source and affine transform are stored in
+<code>metadata(spe)$scop_spatial_coordinates</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span></span>
 <span>  <span class="va">visium_human_pancreas_sub</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
+<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/srt_to_spe.html">srt_to_spe</a></span><span class="op">(</span></span>
+<span>  <span class="va">spatial</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
+<span>  coordinate_space <span class="op">=</span> <span class="st">"raw"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">spatial_roundtrip</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spe_to_srt.html">spe_to_srt</a></span><span class="op">(</span><span class="va">spe</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, layer <span class="op">=</span> <span class="st">"scop_input"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">gobject</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/srt_to_giotto.html">srt_to_giotto</a></span><span class="op">(</span><span class="va">spatial</span>, image <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span>
-<span><span class="va">spatial_roundtrip</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/giotto_to_srt.html">giotto_to_srt</a></span><span class="op">(</span><span class="va">gobject</span><span class="op">)</span></span></code></pre></div>
-<p>After conversion, inspect the returned object with the target
-framework’s own accessors. SCOP retains responsibility for Seurat-side
-analysis and plotting; Giotto retains responsibility for Giotto-side
-analysis and plotting.</p>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spatial_roundtrip</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">spatial_roundtrip</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">spatial_roundtrip</span>, image <span class="op">=</span> <span class="cn">NULL</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial_roundtrip</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p>The <code><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot()</a></code> check is intentionally about IDs, not
+byte-for-byte equality of every Seurat slot. The conversion is
+lightweight: it does not promise to round-trip Seurat images,
+reductions, graphs, tools, or all assays. External SpatialExperiment
+objects without SCOP coordinate provenance are interpreted as raw
+coordinates in their supplied units; verify their units before using a
+distance-sensitive method.</p>
+</div>
+<div class="section level2">
+<h2 id="seurat-and-giotto-round-trip">Seurat and Giotto round-trip<a class="anchor" aria-label="anchor" href="#seurat-and-giotto-round-trip"></a>
+</h2>
+<p>The Giotto bridge is a one-image adapter. A single-image object can
+be resolved automatically; a multi-image object requires
+<code>image =</code>. SCOP selects the official <code>GiottoClass</code>
+v4/v5 converter for the installed Seurat major version, reuses an
+installed optional package, and does not initialize Giotto’s optional
+Python environment.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span></span>
+<span>  <span class="va">visium_human_pancreas_sub</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">giotto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/srt_to_giotto.html">srt_to_giotto</a></span><span class="op">(</span><span class="va">spatial</span>, image <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span>
+<span><span class="va">spatial_from_giotto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/giotto_to_srt.html">giotto_to_srt</a></span><span class="op">(</span><span class="va">giotto</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Images.html" class="external-link">Images</a></span><span class="op">(</span><span class="va">spatial_from_giotto</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">spatial_from_giotto</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial_from_giotto</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p>This block runs only when a compatible GiottoClass installation is
+available; <code>eval=FALSE</code> is deliberate so a documentation
+build does not install or download an external backend. A live
+round-trip must compare the expression features, observation IDs,
+metadata columns, and coordinate values that the installed converter
+claims to preserve. It must not be presented as proof that Giotto’s own
+analysis or plotting pipeline ran.</p>
+</div>
+<div class="section level2">
+<h2 id="choosing-a-bridge">Choosing a bridge<a class="anchor" aria-label="anchor" href="#choosing-a-bridge"></a>
+</h2>
+<p>Use SpatialExperiment when a Bioconductor container and explicit
+assay/column metadata are the interchange target. Use Giotto when the
+native Giotto object and its official converter are the target. For
+either route, select one image, record the coordinate space and units,
+check IDs immediately after conversion, and re-check the target object’s
+own accessors before starting downstream analysis.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -91,109 +91,275 @@
 
     
     
-<p>Use Seurat as the container and select an explicit assay and image.
-SCOP records the observation unit and validates assay/image identity.
-The loader supports Visium, Visium HD bins and Xenium; it does not
-download data or install dependencies. Other platforms can use their
-existing Seurat loaders.</p>
+<p>This page is the platform and method reference for the <a href="spatial-main-workflow.html">main spatial workflow</a>. It
+concentrates input contracts: assay, image, observation unit, coordinate
+space, and the methods that can consume them. The example paths below
+are templates for an existing local vendor output directory. SCOP does
+not download large data or install optional backends during import.</p>
 <div class="section level2">
-<h2 id="visium-choose-the-existing-methods-through-one-workflow">Visium: choose the existing methods through one workflow<a class="anchor" aria-label="anchor" href="#visium-choose-the-existing-methods-through-one-workflow"></a>
+<h2 id="platform-contracts-at-a-glance">Platform contracts at a glance<a class="anchor" aria-label="anchor" href="#platform-contracts-at-a-glance"></a>
 </h2>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+</colgroup>
+<thead><tr class="header">
+<th>Input</th>
+<th>Observation</th>
+<th>Typical assay/image</th>
+<th>Coordinate meaning</th>
+<th>Natural SCOP entry</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Visium</td>
+<td>spot</td>
+<td>
+<code>Spatial</code> / <code>slice1</code>
+</td>
+<td>full-resolution image pixels; display scale is separate</td>
+<td>
+<code><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot()</a></code>, spot QC, Moran/Geary, domain
+clustering, spot deconvolution</td>
+</tr>
+<tr class="even">
+<td>Visium HD</td>
+<td>bin</td>
+<td>
+<code>Spatial.008um</code> or <code>Spatial.016um</code> / matching
+image</td>
+<td>full-resolution pixels for the selected bin resolution</td>
+<td>
+<code><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot()</a></code>, resolution-aware BayesSpace,
+spatial-variable features</td>
+</tr>
+<tr class="odd">
+<td>Xenium</td>
+<td>segmented cell</td>
+<td>vendor assay / <code>fov</code>
+</td>
+<td>vendor segmentation coordinates in microns</td>
+<td>
+<code><a href="../reference/SpatialCellPlot.html">SpatialCellPlot()</a></code>, cell-level context or
+communication</td>
+</tr>
+</tbody>
+</table>
+<p>The exact assay and image names are read from the loaded object; do
+not copy a name from a different resolution or sample. Check the
+selected context before calling a method:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span><span class="st">"path/to/visium/outs"</span>, <span class="st">"visium"</span>, sample_id <span class="op">=</span> <span class="st">"S1"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialCoordinates.html">SpatialCoordinates</a></span><span class="op">(</span><span class="va">object</span>, image <span class="op">=</span> <span class="st">"slice1"</span>, space <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Images.html" class="external-link">Images</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span></code></pre></div>
+<p>SCOP keeps spot IDs/cell IDs aligned with expression columns. If
+several images cover one sample, analysis and plotting require an
+explicit selection or an explicit named sample-to-image map. A display
+<code>lowres</code>/<code>hires</code> scale never changes raw distances
+and does not turn pixels into microns.</p>
+</div>
+<div class="section level2">
+<h2 id="import-existing-vendor-output">Import existing vendor output<a class="anchor" aria-label="anchor" href="#import-existing-vendor-output"></a>
+</h2>
+<p>These paths are deliberately marked as templates. They are not
+evaluated by the site build.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>, workflow <span class="op">=</span> <span class="st">"spatial"</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
-<span>  do_spatial_qc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  spatial_qc_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>run_artifact <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span><span class="va">visium</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span></span>
+<span>  data.dir <span class="op">=</span> <span class="st">"path/to/visium/outs"</span>,  <span class="co"># existing local output directory</span></span>
+<span>  technology <span class="op">=</span> <span class="st">"visium"</span>,</span>
+<span>  sample_id <span class="op">=</span> <span class="st">"S1"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">visium_hd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span></span>
+<span>  data.dir <span class="op">=</span> <span class="st">"path/to/visium-hd/outs"</span>,  <span class="co"># existing local output directory</span></span>
+<span>  technology <span class="op">=</span> <span class="st">"visium_hd"</span>,</span>
+<span>  bin.size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">16</span><span class="op">)</span>,</span>
+<span>  sample_id <span class="op">=</span> <span class="st">"HD1"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">xenium</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span></span>
+<span>  data.dir <span class="op">=</span> <span class="st">"path/to/xenium/outs"</span>,  <span class="co"># existing local output directory</span></span>
+<span>  technology <span class="op">=</span> <span class="st">"xenium"</span>,</span>
+<span>  sample_id <span class="op">=</span> <span class="st">"X1"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="../reference/ReadSpatialData.html">ReadSpatialData()</a></code> delegates file parsing to Seurat and
+records import provenance under
+<code>object@misc$scop_spatial_input</code>. It validates that each
+returned image, assay, observation set, resolution, and coordinate-unit
+label agree. It does not normalize counts, segment cells, or infer cell
+types.</p>
+<p>Public data sources for testing the input formats are available from
+the <a href="https://www.10xgenomics.com/datasets" class="external-link">10x Genomics Visium
+datasets</a>, the <a href="https://www.10xgenomics.com/datasets/visium-hd-cytassist-11mm-human-pancreas" class="external-link">10x
+Visium HD human-pancreas example</a>, the <a href="https://www.10xgenomics.com/support/software/space-ranger/latest/resources/visium-hd-example-data" class="external-link">10x
+Visium HD developer example data</a>, and <a href="https://www.10xgenomics.com/support/software/xenium-explorer/latest/resources/xenium-explorer-demos" class="external-link">10x
+Xenium Explorer demo datasets</a>. Download and unpack them outside the
+package; do not hard-code a machine path in a reproducible article.</p>
+</div>
+<div class="section level2">
+<h2 id="visium-and-visium-hd-keep-counts-and-normalized-data-separate">Visium and Visium HD: keep counts and normalized data separate<a class="anchor" aria-label="anchor" href="#visium-and-visium-hd-keep-counts-and-normalized-data-separate"></a>
+</h2>
+<p>Raw counts are the input for count-dependent QC and methods that
+model sampling depth. Normalized/log-transformed data are appropriate
+for expression-level plots and methods whose contract asks for a
+normalized layer. <code>SpaNorm</code> is a separate normalization
+stage; it does not replace the original count source.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">normalized</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
+<span>  <span class="va">visium</span>,</span>
+<span>  workflow <span class="op">=</span> <span class="st">"spatial"</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
+<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
+<span>  normalization_method <span class="op">=</span> <span class="st">"SpaNorm"</span>,</span>
+<span>  spanorm_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>new_assay <span class="op">=</span> <span class="st">"SpaNormAnalysis"</span><span class="op">)</span>,</span>
+<span>  do_spatial_cluster <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  spatial_cluster_method <span class="op">=</span> <span class="st">"BANKSY"</span>,</span>
+<span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Count-dependent method: keep the original assay/layer explicit.</span></span>
+<span><span class="fu"><a href="../reference/RunBayesSpace.html">RunBayesSpace</a></span><span class="op">(</span></span>
+<span>  <span class="va">normalized</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
+<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  store_sce <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The workflow attaches matching original counts when needed for QC and
+uses the separate normalized assay for downstream expression
+preprocessing. It rejects an explicit
+<code>do_normalization = FALSE</code> conflict with
+<code>SpaNorm</code>. Do not relabel normalized values as counts.</p>
+</div>
+<div class="section level2">
+<h2 id="standard-methods-by-platform">Standard methods by platform<a class="anchor" aria-label="anchor" href="#standard-methods-by-platform"></a>
+</h2>
+<p>For a Visium spot or HD bin, a compact method selection is:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
+<span>  <span class="va">visium</span>,</span>
+<span>  workflow <span class="op">=</span> <span class="st">"spatial"</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
+<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
+<span>  do_spot_qc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  do_spatial_variable_features <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  spatial_variable_features_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"moran"</span>, nfeatures <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>,</span>
+<span>  do_spatial_cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">banksy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
+<span>  <span class="va">visium</span>,</span>
+<span>  workflow <span class="op">=</span> <span class="st">"spatial"</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
+<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
+<span>  do_spot_qc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  do_spatial_variable_features <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  do_spatial_cluster <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  spatial_cluster_method <span class="op">=</span> <span class="st">"BANKSY"</span>,</span>
 <span>  spatial_cluster_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>lambda <span class="op">=</span> <span class="fl">0.2</span>, resolution <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>,</span>
 <span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">spatial</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">run_standard_spatial_workflow</span><span class="op">$</span><span class="va">stages</span></span>
-<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">spatial</span>, group.by <span class="op">=</span> <span class="st">"BANKSY_cluster"</span>, image <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span></code></pre></div>
-<p>Here SpotSweeper runs local QC, with artifact detection explicitly
-not requested. It does not remove observations. When artifact detection
-is requested but cannot complete, the stage fails with the stage table
-attached to the error; a partial artifact assessment is not reported as
-a completed workflow.</p>
-<p>For SmoothClust, use
-<code>spatial_cluster_method = "SmoothClust"</code>,
-<code>spatial_q = 4</code> and
-<code>spatial_cluster_params = list(smooth_method = "knn", k = 18)</code>.
-For BANKSY, use its resolution parameter instead of
-<code>spatial_q</code>. Existing BayesSpace calls and
-<code>bayesspace_params</code> remain supported; do not supply both
-parameter lists. HD bin input routes BayesSpace to its
-<code>VisiumHD</code> platform unless explicitly overridden in method
-parameters. Segmented cells are rejected by the BayesSpace and
-spot-deconvolution branches of the standard workflow.</p>
-</div>
-<div class="section level2">
-<h2 id="keep-normalized-expression-separate-from-counts">Keep normalized expression separate from counts<a class="anchor" aria-label="anchor" href="#keep-normalized-expression-separate-from-counts"></a>
-</h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">normalized</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
-<span>  <span class="va">spatial</span>, workflow <span class="op">=</span> <span class="st">"spatial"</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
-<span>  normalization_method <span class="op">=</span> <span class="st">"SpaNorm"</span>,</span>
-<span>  spanorm_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>new_assay <span class="op">=</span> <span class="st">"SpaNormAnalysis"</span><span class="op">)</span>,</span>
-<span>  do_spatial_cluster <span class="op">=</span> <span class="cn">TRUE</span>, spatial_cluster_method <span class="op">=</span> <span class="st">"BANKSY"</span>,</span>
-<span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">normalized</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">run_standard_spatial_workflow</span><span class="op">$</span><span class="va">parameters</span></span></code></pre></div>
-<p>The input assay remains the count source for deconvolution and
-BayesSpace. SpaNorm writes a separate normalized assay used for
-expression preprocessing, Moran/Geary features, BANKSY and SmoothClust.
-The default HVF method switches from count-based <code>vst</code> to
-data-based <code>mvp</code> for the SpaNorm output. The workflow also
-attaches the matching original counts to that assay for library QC;
-these are never replaced with normalized values. Explicit method
-parameter overrides are retained. Count-based SVG backends must receive
-an appropriate original assay/layer explicitly. Selecting SpaNorm with
-<code>do_normalization = FALSE</code> is rejected; a preexisting
-destination assay also requires choosing a new name.</p>
-</div>
-<div class="section level2">
-<h2 id="platform-import-and-existing-plots">Platform import and existing plots<a class="anchor" aria-label="anchor" href="#platform-import-and-existing-plots"></a>
-</h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span><span class="st">"path/to/hd/outs"</span>, <span class="st">"visium_hd"</span>,</span>
-<span>                      bin.size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">16</span><span class="op">)</span>, sample_id <span class="op">=</span> <span class="st">"HD1"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">hd</span>, assay <span class="op">=</span> <span class="st">"Spatial.008um"</span>, image <span class="op">=</span> <span class="st">"slice1.008um"</span>,</span>
-<span>                features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">hd</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span><span class="st">"path/to/xenium/outs"</span>, <span class="st">"xenium"</span>, sample_id <span class="op">=</span> <span class="st">"X1"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/SpatialCellPlot.html">SpatialCellPlot</a></span><span class="op">(</span><span class="va">cells</span>, image <span class="op">=</span> <span class="st">"fov"</span><span class="op">)</span></span></code></pre></div>
-<p>HD resolutions remain separate assays/images. An 8-micron bin may
-have full-resolution pixel coordinates; bin size and coordinate units
-are distinct. Xenium imports retain vendor segmentation boundaries and
-micron coordinates. The existing cell plot recognizes Seurat’s
-<code>segmentations</code> boundary name. Boundary display is not
-segmentation QC or a new segmentation algorithm.</p>
+<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">banksy</span>, group.by <span class="op">=</span> <span class="st">"BANKSY_cluster"</span>, image <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span></code></pre></div>
+<p><code>BayesSpace</code> is the spot/bin array branch;
+<code>spatial_q</code> or BayesSpace’s <code>q</code> controls the
+number of domains. <code>BANKSY</code> uses its own resolution
+parameters. <code>SmoothClust</code> accepts a requested
+<code>n_clusters</code> and its smoothing parameters. Segmented cell
+observations are not silently sent through spot deconvolution or
+BayesSpace; use cell-level methods and plots instead.</p>
 </div>
 <div class="section level2">
-<h2 id="sparse-expression-and-assay-compatibility">Sparse expression and assay compatibility<a class="anchor" aria-label="anchor" href="#sparse-expression-and-assay-compatibility"></a>
+<h2 id="multi-sample-precast-integration">Multi-sample PRECAST integration<a class="anchor" aria-label="anchor" href="#multi-sample-precast-integration"></a>
 </h2>
-<p>SPARK-X and C++ Moran/Geary retain sparse input. R-reference and
-nnSVG conversions check <code>max_dense_gb</code> before creating a
-dense expression matrix. This bounds a single conversion, not the total
-backend memory. <code><a href="../reference/ScaleData.html">ScaleData()</a></code> uses the selected assay/layer’s
-cell set and updates layer membership on rescaling, including assays
-containing only a subset of the object’s cells.</p>
+<p>Integration needs a sample label and a covering image per sample.
+With a merged object, the image map names are the merged object’s image
+keys. With list input, the map names refer to the original list element
+names before Seurat renames duplicate image keys.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">integrated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunSpatialIntegration.html">RunSpatialIntegration</a></span><span class="op">(</span></span>
+<span>  object <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S1 <span class="op">=</span> <span class="va">visium_S1</span>, S2 <span class="op">=</span> <span class="va">visium_S2</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"PRECAST"</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  image <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S1 <span class="op">=</span> <span class="st">"slice1"</span>, S2 <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span>,</span>
+<span>  store_object <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/SpatialIntegrationPlot.html">SpatialIntegrationPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">integrated</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"spatial"</span>,</span>
+<span>  image <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S1 <span class="op">=</span> <span class="st">"slice1"</span>, S2 <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The PRECAST package is an execution-time optional dependency. The
+template is not a successful run unless PRECAST is installed and the
+input objects exist. <code>store_object = FALSE</code> omits only the
+complete native PRECAST object; domains, embedding, aligned coordinates,
+parameters, source information, and standard plots remain stored. Keep
+the default <code>TRUE</code> when a later native PRECAST analysis needs
+the full object.</p>
 </div>
 <div class="section level2">
-<h2 id="validation">Validation<a class="anchor" aria-label="anchor" href="#validation"></a>
+<h2 id="deconvolution-and-cell2location-storage-choices">Deconvolution and cell2location storage choices<a class="anchor" aria-label="anchor" href="#deconvolution-and-cell2location-storage-choices"></a>
 </h2>
-<p><code>scripts/validate-spatial-platforms.R</code> runs seven
-public-data cases in isolated R processes: Visium baseline, BANKSY,
-SmoothClust, SpaNorm, local SpotSweeper, HD import, and Xenium
-import/rendering. It saves results, timings, sampled process-tree memory
-and logs. <code>scripts/verify-spatial-artifacts.R</code> reloads and
-plots those results. See <code>scripts/spatial-platform-data.md</code>
-for sources. Developer fixtures validate format and computation, not
-biological performance on full production slides. Mock tests are
-separate from live backend runs.</p>
+<p>Spot deconvolution is reference-dependent and estimates composition
+per spot; it does not turn a spot into a segmented cell.
+<code><a href="../reference/RunRCTD.html">RunRCTD()</a></code>, <code><a href="../reference/RunSPOTlight.html">RunSPOTlight()</a></code>, and
+<code><a href="../reference/RunCell2location.html">RunCell2location()</a></code> preserve their own result semantics. Use
+<code><a href="../reference/SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot()</a></code> or
+<code><a href="../reference/Cell2locationPlot.html">Cell2locationPlot()</a></code> after checking the stored result.
+Cell2location q05 abundance and normalized proportions are distinct; the
+abundance view uses its native range rather than a forced 0–1 scale.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">deconvolved</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunRCTD.html">RunRCTD</a></span><span class="op">(</span></span>
+<span>  <span class="va">visium</span>,</span>
+<span>  reference <span class="op">=</span> <span class="va">reference</span>,</span>
+<span>  reference_label <span class="op">=</span> <span class="st">"celltype"</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
+<span>  reference_assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
+<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  reference_layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
+<span>  rctd_mode <span class="op">=</span> <span class="st">"full"</span>,</span>
+<span>  max_cores <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot</a></span><span class="op">(</span><span class="va">deconvolved</span>, tool_name <span class="op">=</span> <span class="st">"RCTD"</span>, plot_type <span class="op">=</span> <span class="st">"dominant"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/Cell2locationPlot.html">Cell2locationPlot</a></span><span class="op">(</span></span>
+<span>  <span class="va">cell2location_result</span>,</span>
+<span>  plot_type <span class="op">=</span> <span class="st">"abundance"</span>,</span>
+<span>  combine <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="validation-and-reproducible-public-data-checks">Validation and reproducible public-data checks<a class="anchor" aria-label="anchor" href="#validation-and-reproducible-public-data-checks"></a>
+</h2>
+<p>The repository’s platform validation script runs isolated cases for a
+bundled Visium object, BANKSY, SmoothClust, SpaNorm, local SpotSweeper,
+Visium HD, and Xenium import/rendering. Its companion artifact script
+reloads saved results and checks plots. These are separate from mock
+adapter tests: a mock verifies SCOP’s alignment and failure contract,
+while a live optional backend verifies the installed upstream
+package.</p>
+<p>For a new dataset, preserve the following in the analysis
+receipt:</p>
+<ul>
+<li>platform and observation unit (<code>spot</code>, <code>bin</code>,
+or <code>cell</code>);</li>
+<li>assay and layer, selected image, coordinate columns, coordinate
+space, and physical units when known;</li>
+<li>raw-count versus normalized-expression input decisions;</li>
+<li>sample-to-image map for every sample;</li>
+<li>stage status and backend versions for methods that actually
+ran.</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
