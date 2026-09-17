@@ -349,15 +349,12 @@ only the return form, including for the dominant point map.</p>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="validation-and-reproducible-public-data-checks">Validation and reproducible public-data checks<a class="anchor" aria-label="anchor" href="#validation-and-reproducible-public-data-checks"></a>
+<h2 id="validation-and-analysis-receipts">Validation and analysis receipts<a class="anchor" aria-label="anchor" href="#validation-and-analysis-receipts"></a>
 </h2>
-<p>The repository’s platform validation script runs isolated cases for a
-bundled Visium object, BANKSY, SmoothClust, SpaNorm, local SpotSweeper,
-Visium HD, and Xenium import/rendering. Its companion artifact script
-reloads saved results and checks plots. These are separate from mock
-adapter tests: a mock verifies SCOP’s alignment and failure contract,
-while a live optional backend verifies the installed upstream
-package.</p>
+<p>Acceptance runs use public slide data outside the package: developer
+fixtures check format and computation rather than biological performance
+on production slides, and public slide data are not redistributed with
+scop.</p>
 <p>For a new dataset, preserve the following in the analysis
 receipt:</p>
 <ul>
