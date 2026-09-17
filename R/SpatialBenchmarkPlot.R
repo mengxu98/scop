@@ -166,15 +166,7 @@ SpatialBenchmarkPlot <- function(
       metrics = metrics
     )
     if (identical(plot_type, "auto")) {
-      plot_type <- if (
-        isTRUE(check_r("funkyheatmap", verbose = FALSE)) &&
-          length(unique(summary_df$method)) > 1 &&
-          length(unique(summary_df$metric)) > 1
-      ) {
-        "funkyheatmap"
-      } else {
-        "bar"
-      }
+      plot_type <- "bar"
     }
     if (identical(plot_type, "funkyheatmap")) {
       return(benchmark_summary_funkyheatmap(
@@ -1099,7 +1091,8 @@ benchmark_summary_funkyheatmap <- function(
   verbose = TRUE
 ) {
   check_r("funkyheatmap", verbose = FALSE)
-  check_r("funkyheatmap", verbose = FALSE)
+  funky_heatmap <- get_namespace_fun("funkyheatmap", "funky_heatmap")
+  position_arguments <- get_namespace_fun("funkyheatmap", "position_arguments")
 
   metrics_use <- metrics %||% levels(summary_df$metric)
   metrics_use <- metrics_use[metrics_use %in% as.character(summary_df$metric)]
@@ -1132,7 +1125,7 @@ benchmark_summary_funkyheatmap <- function(
 
   tryCatch(
     {
-      funkyheatmap::funky_heatmap(
+      funky_heatmap(
         data = wide_df,
         column_info = column_info,
         palettes = list(
@@ -1140,7 +1133,7 @@ benchmark_summary_funkyheatmap <- function(
             c("#F7FBFF", "#C6DBEF", "#6BAED6", "#2171B5", "#08306B")
           )(100)
         ),
-        position_args = funkyheatmap::position_arguments(expand_xmax = 4)
+        position_args = position_arguments(expand_xmax = 4)
       )
     },
     error = function(error) {

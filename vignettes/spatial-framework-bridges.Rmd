@@ -2,58 +2,38 @@
 title: "Spatial framework bridges"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = FALSE
-)
-```
+This page describes two separate bridges from the [main spatial workflow](spatial-main-workflow.html):
+Seurat↔SpatialExperiment and Seurat↔Giotto. A bridge moves a data container;
+it does not claim that the target framework's analysis or plotting backend ran.
+The [platform page](spatial-platform-workflows.html) defines assay, image, and
+platform-specific input choices.
 
-This article documents SCOP's lightweight bridge to Giotto. The bridge moves a
-single spatial image between Seurat and Giotto; it does not wrap Giotto's
-analysis or plotting workflow and it does not merge slices implicitly.
+## What each bridge preserves
 
-## Choose the interface
+| Field | Seurat ↔ SpatialExperiment | Seurat ↔ Giotto |
+|---|---|---|
+| Expression | One selected Seurat `assay`/`layer` becomes the `scop_input` assay; it is restored as the requested Seurat assay | The selected image subset is passed to the official GiottoClass converter; native Giotto layers follow that converter's rules |
+| Observation IDs and order | SpatialExperiment column names and coordinate row names must match exactly; reverse conversion reorders to assay-column order | The official converter owns target IDs; convert one selected image and check the returned object before analysis |
+| Metadata | `include_meta = TRUE` copies Seurat metadata to `colData`; reverse conversion copies `colData` to Seurat metadata | Metadata retention follows `GiottoClass`; the bridge does not invent or merge sample labels |
+| Coordinates | Raw coordinates are the default; an explicit display export records its transform and reverse conversion inverts it | One selected image's spatial coordinates are sent through the official converter; no extra coordinate system is invented by SCOP |
+| Image/raster information | Raster image slots are not represented by the lightweight SpatialExperiment conversion | One image is selected and subset; multiple images/slices are never silently merged |
+| Analysis and plots | No SpatialExperiment analysis is run by the bridge | No Giotto analysis or plot is run by the bridge |
 
-`srt_to_spe()` exports raw coordinates by default. For an explicit
-`coordinate_space = "legacy_display"` export, the source and affine transform
-are retained in `S4Vectors::metadata(spe)$scop_spatial_coordinates`.
-`spe_to_srt()` inverts that transform, including after subsetting/reordering
-spots, so subsequent analysis uses raw units. Preserve this metadata during
-external processing; external SPE objects without it are interpreted as raw
-coordinates in their supplied units. These guarantees apply to the
-SpatialExperiment bridge, not to Giotto's independently implemented converter.
+The common invariant is identity: expression columns, metadata rows, and
+coordinate rows must refer to the same spots/cells in the same intended order.
+The bridge keeps provenance where SCOP can invert it, but it cannot preserve
+target-framework fields that have no counterpart.
 
-| Goal | Interface | Returned object | Plotting |
-|---|---|---|---|
-| Move one Seurat image into Giotto | `srt_to_giotto()` | Native Giotto object | Giotto's native plotting API |
-| Move a native Giotto object into Seurat | `giotto_to_srt()` | New Seurat object | scop or Seurat plotting |
+## Seurat and SpatialExperiment round-trip
 
-## Giotto version boundary
+`srt_to_spe()` exports one selected assay layer and coordinates. It defaults to
+raw acquisition coordinates, which is the safe choice for downstream distances.
+`coordinate_space = "legacy_display"` is an explicit compatibility export; the
+source and affine transform are stored in
+`metadata(spe)$scop_spatial_coordinates`.
 
-Current Giotto Suite releases split analysis functions and object/conversion
-helpers across the `Giotto` and `GiottoClass` namespaces. scop resolves these
-optional functions at runtime and does not add Giotto to Imports, Depends, or
-Suggests.
-
-The forward bridge selects `seuratToGiottoV5()` for Seurat 5 and
-`seuratToGiottoV4()` for Seurat 4. The reverse bridge selects
-`giottoToSeuratV5()` for Seurat 5 and `giottoToSeuratV4()` for Seurat 4.
-These converters are expected from a current GiottoClass installation. If an
-older Giotto installation does not provide them, update Giotto before using
-the bridges.
-
-## Single-image conversion
-
-The bridges process exactly one image at a time:
-
-- a single image is selected automatically;
-- a multi-image object requires an explicit `image`;
-- an unknown image name is rejected;
-- slices are never merged implicitly.
-
-```{r giotto-roundtrip}
+```{r spe-roundtrip, fig.height=4.5}
+library(scop)
 data(visium_human_pancreas_sub)
 
 spatial <- Seurat::NormalizeData(
@@ -61,11 +41,68 @@ spatial <- Seurat::NormalizeData(
   assay = "Spatial",
   verbose = FALSE
 )
+spe <- srt_to_spe(
+  spatial,
+  assay = "Spatial",
+  layer = "counts",
+  image = "slice1",
+  coordinate_space = "raw"
+)
+spatial_roundtrip <- spe_to_srt(spe, assay = "Spatial", layer = "scop_input")
 
-gobject <- srt_to_giotto(spatial, image = "slice1")
-spatial_roundtrip <- giotto_to_srt(gobject)
+stopifnot(identical(colnames(spatial_roundtrip), colnames(spe)))
+head(spatial_roundtrip@meta.data)
+SpatialSpotPlot(spatial_roundtrip, image = NULL,
+               features = rownames(spatial_roundtrip)[1],
+               assay = "Spatial", layer = "counts",
+               palette = "YlGnBu", legend.title = "Counts")
 ```
 
-After conversion, inspect the returned object with the target framework's own
-accessors. SCOP retains responsibility for Seurat-side analysis and plotting;
-Giotto retains responsibility for Giotto-side analysis and plotting.
+The returned assay contains the exported counts, so the plot explicitly reads
+`layer = "counts"`; exporting counts does not also export a normalized `data`
+layer. The `stopifnot()` check is intentionally about IDs, not byte-for-byte equality
+of every Seurat slot. The conversion is lightweight: it does not promise to
+round-trip Seurat images, reductions, graphs, tools, or all assays. External
+SpatialExperiment objects without SCOP coordinate provenance are interpreted
+as raw coordinates in their supplied units; verify their units before using a
+distance-sensitive method.
+
+## Seurat and Giotto round-trip
+
+The Giotto bridge is a one-image adapter. A single-image object can be resolved
+automatically; a multi-image object requires `image =`. SCOP selects the
+official `GiottoClass` v4/v5 converter for the installed Seurat major version,
+reuses an installed optional package, and does not initialize Giotto's optional
+Python environment.
+
+```{r giotto-roundtrip, eval=FALSE}
+library(scop)
+data(visium_human_pancreas_sub)
+
+spatial <- Seurat::NormalizeData(
+  visium_human_pancreas_sub,
+  assay = "Spatial",
+  verbose = FALSE
+)
+giotto <- srt_to_giotto(spatial, image = "slice1")
+spatial_from_giotto <- giotto_to_srt(giotto)
+
+SeuratObject::Images(spatial_from_giotto)
+SpatialSpotPlot(spatial_from_giotto, features = rownames(spatial_from_giotto)[1])
+```
+
+This block runs only when a compatible GiottoClass installation is available;
+`eval=FALSE` is deliberate so a documentation build does not install or
+download an external backend. A live round-trip must compare the expression
+features, observation IDs, metadata columns, and coordinate values that the
+installed converter claims to preserve. It must not be presented as proof that
+Giotto's own analysis or plotting pipeline ran.
+
+## Choosing a bridge
+
+Use SpatialExperiment when a Bioconductor container and explicit assay/column
+metadata are the interchange target. Use Giotto when the native Giotto object
+and its official converter are the target. For either route, select one image,
+record the coordinate space and units, check IDs immediately after conversion,
+and re-check the target object's own accessors before starting downstream
+analysis.

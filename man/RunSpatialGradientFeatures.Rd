@@ -12,36 +12,20 @@ RunSpatialGradientFeatures(
   assay = NULL,
   layer = "data",
   variables = NULL,
-  sample_name = NULL,
-  platform = "Undefined",
   image = NULL,
   coord.cols = c("x", "y"),
-  img_scale_fct = "lowres",
-  assay_modality = "gene",
-  trajectory_id = "scop_gradient",
   start = NULL,
   end = NULL,
   traj_df = NULL,
-  width = NULL,
-  annotation_ids = NULL,
   annotation.by = NULL,
   annotation.groups = NULL,
   annotation.variable = NULL,
   annotation.threshold = NULL,
-  annotation_id = "scop_gradient",
-  core = FALSE,
-  distance = "dte",
-  angle_span = c(0, 360),
-  resolution = NULL,
   unit = NULL,
   sign_var = "fdr",
   sign_threshold = 0.05,
-  model_add = NULL,
-  model_subset = NULL,
-  model_remove = NULL,
   n_random = 10000,
   seed = 123,
-  control = NULL,
   n_bins = 50,
   min_spots = 3,
   nfeatures = 2000,
@@ -49,7 +33,6 @@ RunSpatialGradientFeatures(
   store_results = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
   srt = NULL
 )
 }
@@ -73,9 +56,6 @@ generated from \code{reference}.}
 \code{srt@tools[["SpatialVariableFeatures"]]} is used first, then variable
 features, then all assay features.}
 
-\item{sample_name, platform, img_scale_fct, assay_modality, trajectory_id, width, annotation_id, core, distance, angle_span, resolution, model_add, model_subset, model_remove, control}{Legacy compatibility inputs. The native backend ignores these values and
-does not include them in the stored effective-parameter summary.}
-
 \item{image}{Spatial image name. Required when multiple images are present;
 a single image is selected automatically when \code{NULL}.}
 
@@ -84,10 +64,6 @@ backend when no image coordinates are available.}
 
 \item{start, end, traj_df}{Trajectory geometry used by the native backend when
 \code{reference = "trajectory"}.}
-
-\item{annotation_ids}{Reserved compatibility input. It is not supported by
-the native backend; use \code{annotation.by} with \code{annotation.groups}, or
-\code{annotation.variable} with \code{annotation.threshold}.}
 
 \item{annotation.by, annotation.groups}{Metadata grouping used to create the
 native annotation mask.}
@@ -130,9 +106,6 @@ coordinate units. Use \code{"legacy_display"} explicitly for pre-0.9.0 display
 coordinates. Results retain the raw coordinate units used by the native
 backend.}
 
-\item{...}{Additional named arguments accepted for compatibility. The native
-backend ignores them and does not store them as effective parameters.}
-
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
 }
@@ -145,6 +118,18 @@ independently updated only when \code{set_variable_features = TRUE}.
 \description{
 Screen features for expression trends along a spatial trajectory or
 with distance from annotated regions.
+}
+\details{
+The current native interface is intentionally small. Older calls that pass
+\code{sample_name}, \code{platform}, \code{img_scale_fct}, \code{assay_modality},
+\code{trajectory_id}, \code{width}, \code{annotation_id}, \code{core}, \code{distance},
+\code{angle_span}, \code{resolution}, \code{model_add}, \code{model_subset}, \code{model_remove},
+\code{control}, or \code{annotation_ids} now fail as unused arguments. Use \code{image},
+\code{coord.cols}, and \code{coordinate_space} for coordinate selection; use
+\code{annotation.by}/\code{annotation.groups} or
+\code{annotation.variable}/\code{annotation.threshold} for annotation references;
+and use \code{n_random}, \code{n_bins}, \code{min_spots}, \code{sign_threshold}, and
+\code{nfeatures} for native screening controls.
 }
 \examples{
 data(visium_human_pancreas_sub)

@@ -85,121 +85,55 @@ print.scop_logo <- function(x, ...) {
 .onAttach <- function(libname, pkgname) {
   options(scop_env_cache = NULL)
 
-  verbose <- thisutils::get_verbose()
-  if (isTRUE(verbose)) {
-    scop_env_init <- getOption("scop_env_init", default = FALSE)
-
-    version <- utils::packageVersion(pkgname)
-    date <- utils::packageDate(pkgname)
-    url <- utils::packageDescription(pkgname, fields = "URL")
-    msg <- paste0(
-      cli::col_grey(strrep("-", 60)),
-      "\n",
-      cli::col_blue("Version: ", version, " (", date, " update)"),
-      "\n",
-      cli::col_blue("Website: ", cli::style_italic(url)),
-      "\n"
-    )
-    if (isFALSE(scop_env_init)) {
-      msg <- paste0(
-        msg,
-        "\n",
-        cli::col_grey("Python environment initialization is disabled"),
-        "\n",
-        cli::col_grey("To enable it, set: options(scop_env_init = TRUE)"),
-        "\n"
-      )
-    }
-    suppress_msg <- paste0(
-      cli::col_grey("The message can be suppressed by: "),
-      "\n",
-      cli::col_grey("  suppressPackageStartupMessages(library(scop))"),
-      "\n",
-      cli::col_grey("  or options(log_message.verbose = FALSE)")
-    )
-    if (isFALSE(scop_env_init)) {
-      msg <- paste0(
-        msg,
-        "\n",
-        suppress_msg,
-        "\n",
-        cli::col_grey(strrep("-", 60))
-      )
-    }
-
-    packageStartupMessage(scop_logo())
-    packageStartupMessage(msg)
-
-    if (isTRUE(scop_env_init)) {
-      tryCatch(
-        {
-          conda <- find_conda()
-          if (is.null(conda)) {
-            packageStartupMessage(
-              cli::col_grey(
-                "Conda-compatible environment manager not found. Run: PrepareEnv() to create the environment"
-              )
-            )
-            return(invisible(NULL))
-          }
-          envname <- get_envname()
-          envs_dir <- get_conda_envs_dir(conda = conda)
-          env <- env_exist(
-            conda = conda,
-            envname = envname,
-            envs_dir = envs_dir
-          )
-
-          if (isFALSE(env)) {
-            packageStartupMessage(
-              cli::col_grey(
-                "Python environment not found. Run: PrepareEnv() to create the environment"
-              )
-            )
-            return(invisible(NULL))
-          }
-          python_path <- conda_python(
-            conda = conda,
-            envname = envname
-          )
-          configure_python_runtime(python_path)
-
-          packageStartupMessage(
-            cli::col_green("Python environment initialized successfully")
-          )
-
-          env_info(conda = conda, envname = envname)
-
-          packageStartupMessage(
-            "\n",
-            cli::col_grey(
-              "Configure conda/mamba/micromamba path: options(reticulate.conda_binary = \"/path/to/micromamba\")"
-            ),
-            "\n",
-            cli::col_grey(
-              "Disable Python initialization information: options(scop_env_init = FALSE)"
-            ),
-            "\n\n",
-            suppress_msg,
-            "\n",
-            cli::col_grey(strrep("-", 60))
-          )
-        },
-        error = function(e) {
+  if (
+    isTRUE(thisutils::get_verbose()) &&
+      isTRUE(getOption("scop_env_init", default = FALSE))
+  ) {
+    tryCatch(
+      {
+        conda <- find_conda()
+        if (is.null(conda)) {
           packageStartupMessage(
             cli::col_grey(
-              "Failed to initialize Python environment: ",
-              e$message,
-              "\n",
-              "Run: PrepareEnv() to set up the environment, or disable: options(scop_env_init = FALSE)",
-              "\n\n",
-              suppress_msg,
-              "\n",
-              strrep("-", 60)
+              "Conda-compatible environment manager not found. Run: PrepareEnv() to create the environment"
             )
           )
+          return(invisible(NULL))
         }
-      )
-    }
+        envname <- get_envname()
+        envs_dir <- get_conda_envs_dir(conda = conda)
+        env <- env_exist(
+          conda = conda,
+          envname = envname,
+          envs_dir = envs_dir
+        )
+
+        if (isFALSE(env)) {
+          packageStartupMessage(
+            cli::col_grey(
+              "Python environment not found. Run: PrepareEnv() to create the environment"
+            )
+          )
+          return(invisible(NULL))
+        }
+        python_path <- conda_python(
+          conda = conda,
+          envname = envname
+        )
+        configure_python_runtime(python_path)
+
+        packageStartupMessage(cli::col_green("Python environment initialized"))
+
+        env_info(conda = conda, envname = envname)
+      },
+      error = function(e) {
+        packageStartupMessage(
+          cli::col_grey(
+            "Failed to initialize Python environment: ",
+            e$message
+          )
+        )
+      }
+    )
   }
 }

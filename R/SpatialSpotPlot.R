@@ -291,6 +291,160 @@ SpatialSpotPlot <- function(
   patchwork::wrap_plots(plots, nrow = nrow, ncol = ncol, byrow = byrow)
 }
 
+spatial_matrix_point_plot <- function(
+  srt,
+  values,
+  value_names = colnames(values),
+  value_kind = c("proportion", "topic-proportion", "abundance"),
+  legend_title = NULL,
+  plot_title = NULL,
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
+  plot_args = list()
+) {
+  value_kind <- match.arg(value_kind)
+  values <- spatial_matrix_plot_values(
+    values = values,
+    spot_ids = colnames(srt),
+    kind = value_kind
+  )
+  if (is.null(value_names) || length(value_names) != ncol(values)) {
+    value_names <- colnames(values)
+  }
+  if (anyNA(value_names) || any(!nzchar(value_names)) || anyDuplicated(value_names)) {
+    log_message("Spatial matrix panel names must be unique and non-empty", message_type = "error")
+  }
+
+  plot_args$object <- srt
+  plot_args$values <- values
+  plot_args$plot_type <- "point"
+  plot_args$combine <- FALSE
+  plots <- do.call(SpatialSpotPlot, plot_args)
+  if (!is.list(plots) || length(plots) != length(value_names)) {
+    log_message("Spatial matrix renderer did not return one panel per column", message_type = "error")
+  }
+
+  scale_args <- intersect(names(plot_args), c("lower_cutoff", "upper_cutoff", "lower_quantile", "upper_quantile"))
+  custom_scale <- any(!vapply(plot_args[scale_args], is.null, logical(1)))
+  limits <- if (!custom_scale) spatial_matrix_plot_limits(values, value_kind) else NULL
+  legend_title <- legend_title %||% switch(
+    value_kind,
+    proportion = "Proportion",
+    `topic-proportion` = "Proportion",
+    abundance = "Abundance"
+  )
+  plots <- Map(
+    function(plot, value_name) {
+      plot <- plot + ggplot2::labs(title = value_name)
+      if (
+        ".value" %in% names(plot$data) &&
+          is.numeric(plot$data$.value) &&
+          any(is.finite(plot$data$.value))
+      ) {
+        plot <- set_continuous_color_scale(
+          plot = plot,
+          limits = if (custom_scale) plot$scales$get_scales("colour")$limits else limits,
+          title = legend_title,
+          context = value_kind
+        )
+        if (!custom_scale) {
+          scale <- plot$scales$get_scales("colour")
+          scale$breaks <- ggplot2::waiver()
+        }
+      }
+      plot
+    },
+    plots,
+    value_names
+  )
+  names(plots) <- value_names
+  if (isFALSE(combine)) {
+    return(plots)
+  }
+  if (length(plots) == 1L) {
+    return(plots[[1L]])
+  }
+  if (is.null(nrow) && is.null(ncol)) {
+    ncol <- min(3L, ceiling(sqrt(length(plots))))
+  }
+  dots <- plot_args
+  combined <- patchwork::wrap_plots(
+    plots,
+    nrow = nrow,
+    ncol = ncol,
+    byrow = byrow,
+    guides = "collect"
+  )
+  if (!is.null(plot_title)) {
+    combined <- combined + patchwork::plot_annotation(
+      title = plot_title,
+      theme = ggplot2::theme(
+        plot.title = ggplot2::element_text(margin = ggplot2::margin(b = 8))
+      )
+    )
+  }
+  combined & ggplot2::theme(
+    legend.position = dots$legend.position %||% "right",
+    legend.direction = dots$legend.direction %||% "vertical"
+  )
+}
+
+spatial_matrix_plot_values <- function(values, spot_ids, kind) {
+  if (
+    is.null(values) ||
+      (!is.matrix(values) && !inherits(values, "Matrix") && !is.data.frame(values))
+  ) {
+    log_message("Spatial matrix values must be a matrix-like object", message_type = "error")
+  }
+  values <- as.matrix(values)
+  valid_names <- function(x) {
+    !is.null(x) && !anyNA(x) && all(nzchar(x)) && !anyDuplicated(x)
+  }
+  if (nrow(values) == 0L || ncol(values) == 0L) {
+    log_message("Spatial matrix values are empty", message_type = "error")
+  }
+  if (!is.numeric(values)) {
+    log_message("Spatial matrix values must be numeric", message_type = "error")
+  }
+  if (!valid_names(rownames(values))) {
+    log_message("Spatial matrix values must have unique, non-missing spot names", message_type = "error")
+  }
+  if (!valid_names(colnames(values))) {
+    log_message("Spatial matrix values must have unique, non-missing panel names", message_type = "error")
+  }
+  missing_spots <- setdiff(spot_ids, rownames(values))
+  extra_spots <- setdiff(rownames(values), spot_ids)
+  if (length(missing_spots) || length(extra_spots)) {
+    log_message(
+      "Spatial matrix spot identities are stale or incomplete: {.val {length(missing_spots)}} missing and {.val {length(extra_spots)}} unknown",
+      message_type = "error"
+    )
+  }
+  if (any(is.infinite(values))) {
+    log_message("Spatial matrix values cannot contain infinite values", message_type = "error")
+  }
+  finite <- values[is.finite(values)]
+  if (length(finite) && any(finite < 0)) {
+    log_message("Spatial matrix values must be non-negative", message_type = "error")
+  }
+  if (identical(kind, "proportion") && length(finite) && any(finite > 1 + sqrt(.Machine$double.eps))) {
+    log_message("Spatial proportions must lie between zero and one", message_type = "error")
+  }
+  values[spot_ids, , drop = FALSE]
+}
+
+spatial_matrix_plot_limits <- function(values, kind) {
+  if (identical(kind, "proportion")) {
+    return(c(0, 1))
+  }
+  finite <- values[is.finite(values)]
+  upper <- if (length(finite)) max(finite) else 1
+  if (!is.finite(upper) || upper <= 0) upper <- 1
+  c(0, upper)
+}
+
 spatial_dim_long_plot <- function(
   srt,
   plot.data,
@@ -358,6 +512,7 @@ spatial_dim_long_plot <- function(
       message_type = "error"
     )
   }
+  values <- df[[color.by]]
   df$x <- coords$data[df[[spot.by]], "x"]
   df$y <- coords$data[df[[spot.by]], "y"]
   if (!is.null(split.by)) {
@@ -373,109 +528,19 @@ spatial_dim_long_plot <- function(
     pt.size <- min(3000 / nrow(df), 2)
   }
 
-  theme_args$show_axes <- show_axes
-  theme_obj <- apply_plot_theme(
-    theme_use = theme_use,
-    theme_args = theme_args
+  df$.value <- if (is.numeric(values)) values else spatial_plot_factor(values)
+  spatial_dim_single_plot(
+    plot_dat = df, value_col = ".value", value_name = color.by,
+    split.by = split.by %||% ".split", image_info = coords$image,
+    overlay_image = overlay_image, image.alpha = image.alpha,
+    crop = crop, flip.y = flip.y && !coords$uses_image, show_axes = show_axes,
+    pt.size = pt.size, pt.alpha = pt.alpha, stroke = stroke,
+    palette = palette, palcolor = palcolor, bg_color = bg_color,
+    legend.position = legend.position, legend.direction = legend.direction,
+    legend.title = legend.title %||% color.by, theme_use = theme_use, theme_args = theme_args,
+    position = if (geom == "jitter") ggplot2::position_jitter(width = jitter_width, height = jitter_height) else ggplot2::position_identity(),
+    title = NULL, drop = TRUE
   )
-  values <- df[[color.by]]
-  p <- ggplot2::ggplot(df, ggplot2::aes(x = .data$x, y = .data$y))
-  if (isTRUE(overlay_image) && !is.null(coords$image)) {
-    p <- p +
-      ggplot2::annotation_raster(
-        spatial_dim_raster(coords$image$image, image.alpha),
-        xmin = 0,
-        xmax = coords$image$width,
-        ymin = 0,
-        ymax = coords$image$height
-      )
-  }
-
-  if (is.numeric(values)) {
-    cols <- spatial_palette_colors(
-      type = "continuous",
-      palette = palette,
-      palcolor = palcolor
-    )
-    point_layer <- if (geom == "jitter") {
-      ggplot2::geom_jitter(
-        ggplot2::aes(color = .data[[color.by]]),
-        width = jitter_width,
-        height = jitter_height,
-        size = pt.size,
-        alpha = pt.alpha
-      )
-    } else {
-      ggplot2::geom_point(
-        ggplot2::aes(color = .data[[color.by]]),
-        size = pt.size,
-        alpha = pt.alpha
-      )
-    }
-    p <- p +
-      point_layer +
-      spatial_dim_continuous_scale(values, aesthetic = "color", colors = cols) +
-      ggplot2::guides(colour = spatial_colorbar_guide(legend.direction)) +
-      ggplot2::labs(x = NULL, y = NULL, color = legend.title %||% color.by)
-  } else {
-    df[[color.by]] <- spatial_plot_factor(values)
-    p$data <- df
-    cols <- spatial_palette_colors(
-      levels(df[[color.by]]),
-      palette = palette,
-      palcolor = palcolor
-    )
-    point_layer <- if (geom == "jitter") {
-      ggplot2::geom_jitter(
-        ggplot2::aes(fill = .data[[color.by]]),
-        shape = 21,
-        color = bg_color,
-        stroke = stroke,
-        width = jitter_width,
-        height = jitter_height,
-        size = pt.size,
-        alpha = pt.alpha
-      )
-    } else {
-      ggplot2::geom_point(
-        ggplot2::aes(fill = .data[[color.by]]),
-        shape = 21,
-        color = bg_color,
-        stroke = stroke,
-        size = pt.size,
-        alpha = pt.alpha
-      )
-    }
-    p <- p +
-      point_layer +
-      ggplot2::scale_fill_manual(values = cols, na.value = "grey80") +
-      ggplot2::labs(x = NULL, y = NULL, fill = legend.title %||% color.by)
-  }
-
-  p <- p +
-    theme_obj +
-    ggplot2::theme(
-      legend.position = legend.position,
-      legend.direction = legend.direction
-    )
-
-  if (isTRUE(flip.y) && isFALSE(coords$uses_image)) {
-    p <- p + ggplot2::scale_y_reverse()
-  }
-  if (!is.null(split.by)) {
-    p <- p + ggplot2::facet_wrap(ggplot2::vars(!!rlang::sym(split.by)))
-  }
-  if (isTRUE(crop)) {
-    limits <- spatial_crop_limits(df$x, df$y)
-    p <- p +
-      ggplot2::coord_equal(
-        xlim = limits$xlim,
-        ylim = limits$ylim
-      )
-  } else {
-    p <- p + ggplot2::coord_equal()
-  }
-  p
 }
 
 spatial_dim_pie_plot <- function(
@@ -966,7 +1031,10 @@ spatial_dim_single_plot <- function(
   legend.title = value_name,
   theme_use = "theme_spatial",
   theme_args = list(),
-  show_axes = FALSE
+  show_axes = FALSE,
+  position = ggplot2::position_identity(),
+  title = value_name,
+  drop = FALSE
 ) {
   theme_args$show_axes <- show_axes
   theme_obj <- apply_plot_theme(
@@ -989,7 +1057,7 @@ spatial_dim_single_plot <- function(
   if (nrow(plot_dat) == 0L || all(is.na(values))) {
     return(spatial_empty_plot(
       "No values available for plotting",
-      title = value_name,
+      title = title,
       theme_use = theme_use,
       theme_args = theme_args
     ))
@@ -1004,7 +1072,7 @@ spatial_dim_single_plot <- function(
       ggplot2::geom_point(
         ggplot2::aes(color = .data[[value_col]]),
         size = pt.size,
-        alpha = pt.alpha
+        alpha = pt.alpha, position = position
       ) +
       spatial_dim_continuous_scale(
         values,
@@ -1025,19 +1093,19 @@ spatial_dim_single_plot <- function(
         color = bg_color,
         stroke = stroke,
         size = pt.size,
-        alpha = pt.alpha
+        alpha = pt.alpha, position = position
       ) +
       ggplot2::scale_fill_manual(
         values = cols,
         na.value = "grey80",
-        drop = FALSE
+        drop = drop
       )
   }
 
   p <- p +
     theme_obj +
     ggplot2::labs(
-      title = value_name,
+      title = title,
       x = NULL,
       y = NULL
     ) +

@@ -29,17 +29,11 @@
 #' backend.
 #' @param start,end,traj_df Trajectory geometry used by the native backend when
 #' `reference = "trajectory"`.
-#' @param annotation_ids Reserved compatibility input. It is not supported by
-#' the native backend; use `annotation.by` with `annotation.groups`, or
-#' `annotation.variable` with `annotation.threshold`.
 #' @param annotation.by,annotation.groups Metadata grouping used to create the
 #' native annotation mask.
 #' @param annotation.variable,annotation.threshold Numeric variable and
 #' threshold used to create a native numeric annotation mask. Numeric
 #' thresholds are interpreted as `">{threshold}"`.
-#' @param sample_name,platform,img_scale_fct,assay_modality,trajectory_id,width,annotation_id,core,distance,angle_span,resolution,model_add,model_subset,model_remove,control
-#' Legacy compatibility inputs. The native backend ignores these values and
-#' does not include them in the stored effective-parameter summary.
 #' @param unit Optional coordinate-unit label stored in the result source. It
 #' does not transform coordinates.
 #' @param sign_var,sign_threshold Column and cutoff used to select top gradient
@@ -56,8 +50,17 @@
 #' variable features independently of `store_results`. If explicitly `TRUE`,
 #' an empty selection clears the target assay's variable features.
 #' @param store_results Whether to store the normalized result in `srt@tools`.
-#' @param ... Additional named arguments accepted for compatibility. The native
-#' backend ignores them and does not store them as effective parameters.
+#' @details
+#' The current native interface is intentionally small. Older calls that pass
+#' `sample_name`, `platform`, `img_scale_fct`, `assay_modality`,
+#' `trajectory_id`, `width`, `annotation_id`, `core`, `distance`,
+#' `angle_span`, `resolution`, `model_add`, `model_subset`, `model_remove`,
+#' `control`, or `annotation_ids` now fail as unused arguments. Use `image`,
+#' `coord.cols`, and `coordinate_space` for coordinate selection; use
+#' `annotation.by`/`annotation.groups` or
+#' `annotation.variable`/`annotation.threshold` for annotation references;
+#' and use `n_random`, `n_bins`, `min_spots`, `sign_threshold`, and
+#' `nfeatures` for native screening controls.
 #'
 #' @return A `Seurat` object. When `store_results = TRUE`, spatial gradient
 #' screening results are stored in `srt@tools[["SpatialGradientFeatures"]]`.
@@ -101,36 +104,20 @@ RunSpatialGradientFeatures <- function(
   assay = NULL,
   layer = "data",
   variables = NULL,
-  sample_name = NULL,
-  platform = "Undefined",
   image = NULL,
   coord.cols = c("x", "y"),
-  img_scale_fct = "lowres",
-  assay_modality = "gene",
-  trajectory_id = "scop_gradient",
   start = NULL,
   end = NULL,
   traj_df = NULL,
-  width = NULL,
-  annotation_ids = NULL,
   annotation.by = NULL,
   annotation.groups = NULL,
   annotation.variable = NULL,
   annotation.threshold = NULL,
-  annotation_id = "scop_gradient",
-  core = FALSE,
-  distance = "dte",
-  angle_span = c(0, 360),
-  resolution = NULL,
   unit = NULL,
   sign_var = "fdr",
   sign_threshold = 0.05,
-  model_add = NULL,
-  model_subset = NULL,
-  model_remove = NULL,
   n_random = 10000,
   seed = 123,
-  control = NULL,
   n_bins = 50,
   min_spots = 3,
   nfeatures = 2000,
@@ -138,7 +125,6 @@ RunSpatialGradientFeatures <- function(
   store_results = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
@@ -152,7 +138,7 @@ RunSpatialGradientFeatures <- function(
     log_message("{.arg srt} must be a {.cls Seurat} object", message_type = "error")
   }
   reference <- match.arg(reference)
-  backend <- match.arg(backend)
+  backend <- match.arg(backend, "cpp")
   coordinate_space <- match.arg(coordinate_space)
   requested_image <- image
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -197,51 +183,48 @@ RunSpatialGradientFeatures <- function(
   )
   result_name <- result_name %||% paste0(reference, "_", format(Sys.time(), "%Y%m%d%H%M%S"))
 
-  if (identical(backend, "cpp")) {
-    result <- sgf_run_cpp_gradient(
-      srt = srt,
+  result <- sgf_run_cpp_gradient(
+    srt = srt,
+    reference = reference,
+    assay = assay,
+    layer = layer,
+    variables = variables,
+    image = image,
+    coord.cols = coord.cols,
+    coordinate_space = coordinate_space,
+    start = start,
+    end = end,
+    traj_df = traj_df,
+    annotation.by = annotation.by,
+    annotation.groups = annotation.groups,
+    annotation.variable = annotation.variable,
+    annotation.threshold = annotation.threshold,
+    n_random = n_random,
+    seed = seed,
+    n_bins = n_bins,
+    min_spots = min_spots,
+    sign_var = sign_var,
+    sign_threshold = sign_threshold,
+    nfeatures = nfeatures,
+    parameters = list(
+      result_name = result_name,
       reference = reference,
+      backend = backend,
       assay = assay,
       layer = layer,
-      variables = variables,
       image = image,
-      coord.cols = coord.cols,
+      coord.cols = paste(coord.cols, collapse = ","),
       coordinate_space = coordinate_space,
-      start = start,
-      end = end,
-      traj_df = traj_df,
-      annotation_ids = annotation_ids,
       annotation.by = annotation.by,
-      annotation.groups = annotation.groups,
+      annotation.groups = paste(annotation.groups %||% character(0), collapse = ","),
       annotation.variable = annotation.variable,
       annotation.threshold = annotation.threshold,
       n_random = n_random,
       seed = seed,
       n_bins = n_bins,
-      min_spots = min_spots,
-      sign_var = sign_var,
-      sign_threshold = sign_threshold,
-      nfeatures = nfeatures,
-      parameters = list(
-        result_name = result_name,
-        reference = reference,
-        backend = backend,
-        assay = assay,
-        layer = layer,
-        image = image,
-        coord.cols = paste(coord.cols, collapse = ","),
-        coordinate_space = coordinate_space,
-        annotation.by = annotation.by,
-        annotation.groups = paste(annotation.groups %||% character(0), collapse = ","),
-        annotation.variable = annotation.variable,
-        annotation.threshold = annotation.threshold,
-        n_random = n_random,
-        seed = seed,
-        n_bins = n_bins,
-        min_spots = min_spots
-      )
+      min_spots = min_spots
     )
-  }
+  )
 
   vars <- sgf_validate_result(result)
   if (isTRUE(set_variable_features) && any(!vars %in% rownames(srt[[assay]]))) {
@@ -424,7 +407,6 @@ sgf_run_cpp_gradient <- function(
   start,
   end,
   traj_df,
-  annotation_ids,
   annotation.by,
   annotation.groups,
   annotation.variable,
@@ -438,13 +420,6 @@ sgf_run_cpp_gradient <- function(
   nfeatures,
   parameters
 ) {
-  if (!is.null(annotation_ids) && length(annotation_ids) > 0L) {
-    log_message(
-      "{.arg annotation_ids} is not supported by the native {.arg backend = 'cpp'} path; provide annotation metadata through {.arg annotation.by}/{.arg annotation.groups} or {.arg annotation.variable}/{.arg annotation.threshold}",
-      message_type = "error"
-    )
-  }
-
   coords <- sgf_cpp_coords(
     srt = srt,
     image = image,
