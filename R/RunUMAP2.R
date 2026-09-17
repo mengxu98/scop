@@ -11,7 +11,9 @@
 #' @param features Features used instead of a reduction.
 #' @param neighbor,graph Existing `Neighbor` or `Graph` object name.
 #' @param umap.method `"uwot"` or `"naive"`.
-#' @param n_threads Number of threads.
+#' @param spread Spread of the embedding (the effective scale of embedded
+#' points).
+#' @param n_threads Deprecated alias for `cores`.
 #' @param reduction.model Pre-trained UMAP `DimReduc` used to embed new data.
 #' @param return.model Store the UMAP model.
 #' @param n.neighbors,n.components,metric,n.epochs UMAP layout parameters.
@@ -66,6 +68,7 @@ RunUMAP2.Seurat <- function(
   n.epochs = 200L,
   cores = 1,
   min.dist = 0.3,
+  spread = 1,
   set.op.mix.ratio = 1,
   local.connectivity = 1L,
   negative.sample.rate = 5L,
@@ -79,6 +82,10 @@ RunUMAP2.Seurat <- function(
   seed.use = 11,
   ...
 ) {
+  if (!is.null(n_threads)) {
+    .Deprecated(msg = "'n_threads' is deprecated; use 'cores' instead")
+    cores <- n_threads
+  }
   if (
     sum(c(
       is.null(dims),
@@ -173,6 +180,7 @@ RunUMAP2.Seurat <- function(
     n.epochs = n.epochs,
     cores = cores,
     min.dist = min.dist,
+    spread = spread,
     set.op.mix.ratio = set.op.mix.ratio,
     local.connectivity = local.connectivity,
     negative.sample.rate = negative.sample.rate,
@@ -182,8 +190,7 @@ RunUMAP2.Seurat <- function(
     repulsion.strength = repulsion.strength,
     seed.use = seed.use,
     verbose = verbose,
-    reduction.key = reduction.key,
-    n_threads = n_threads
+    reduction.key = reduction.key
   )
   object <- Seurat::LogSeuratCommand(object = object)
   return(object)
@@ -205,6 +212,7 @@ RunUMAP2.default <- function(
   n.epochs = 200L,
   cores = 1,
   min.dist = 0.3,
+  spread = 1,
   set.op.mix.ratio = 1,
   local.connectivity = 1L,
   negative.sample.rate = 5L,
@@ -217,6 +225,10 @@ RunUMAP2.default <- function(
   seed.use = 11L,
   ...
 ) {
+  if (!is.null(n_threads)) {
+    .Deprecated(msg = "'n_threads' is deprecated; use 'cores' instead")
+    cores <- n_threads
+  }
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }
@@ -292,7 +304,7 @@ RunUMAP2.default <- function(
     umap.config$n_components <- n.components
     umap.config$metric <- metric
     umap.config$n_epochs <- ifelse(is.null(n.epochs), 200, n.epochs)
-    umap.config$spread <- cores
+    umap.config$spread <- spread
     umap.config$min_dist <- min.dist
     umap.config$set_op_mix_ratio <- set.op.mix.ratio
     umap.config$local_connectivity <- local.connectivity
@@ -451,13 +463,13 @@ RunUMAP2.default <- function(
       embeddings <- uwot::umap(
         X = object,
         n_neighbors = n.neighbors,
-        n_threads = n_threads,
+        n_threads = cores,
         n_components = n.components,
         metric = metric,
         n_epochs = n.epochs,
         learning_rate = learning.rate,
         min_dist = min.dist,
-        spread = cores,
+        spread = spread,
         set_op_mix_ratio = set.op.mix.ratio,
         local_connectivity = local.connectivity,
         repulsion_strength = repulsion.strength,
@@ -486,13 +498,13 @@ RunUMAP2.default <- function(
       out <- uwot::umap(
         X = NULL,
         nn_method = object,
-        n_threads = n_threads,
+        n_threads = cores,
         n_components = n.components,
         metric = metric,
         n_epochs = n.epochs,
         learning_rate = learning.rate,
         min_dist = min.dist,
-        spread = cores,
+        spread = spread,
         set_op_mix_ratio = set.op.mix.ratio,
         local_connectivity = local.connectivity,
         repulsion_strength = repulsion.strength,
@@ -560,13 +572,13 @@ RunUMAP2.default <- function(
       out <- uwot::umap(
         X = NULL,
         nn_method = nn,
-        n_threads = n_threads,
+        n_threads = cores,
         n_components = n.components,
         metric = metric,
         n_epochs = n.epochs,
         learning_rate = learning.rate,
         min_dist = min.dist,
-        spread = cores,
+        spread = spread,
         set_op_mix_ratio = set.op.mix.ratio,
         local_connectivity = local.connectivity,
         repulsion_strength = repulsion.strength,
@@ -602,13 +614,13 @@ RunUMAP2.default <- function(
       out <- uwot::umap(
         X = object,
         n_neighbors = n.neighbors,
-        n_threads = n_threads,
+        n_threads = cores,
         n_components = n.components,
         metric = metric,
         n_epochs = n.epochs,
         learning_rate = learning.rate,
         min_dist = min.dist,
-        spread = cores,
+        spread = spread,
         set_op_mix_ratio = set.op.mix.ratio,
         local_connectivity = local.connectivity,
         repulsion_strength = repulsion.strength,
@@ -689,7 +701,7 @@ RunUMAP2.default <- function(
         nn_method = object,
         model = model,
         n_epochs = n.epochs,
-        n_threads = n_threads,
+        n_threads = cores,
         verbose = FALSE
       )
       rownames(x = embeddings) <- row.names(object[["idx"]])
@@ -732,7 +744,7 @@ RunUMAP2.default <- function(
         nn_method = object,
         model = model,
         n_epochs = n.epochs,
-        n_threads = n_threads,
+        n_threads = cores,
         verbose = FALSE
       )
       rownames(x = embeddings) <- row.names(object[["idx"]])
@@ -753,7 +765,7 @@ RunUMAP2.default <- function(
         X = object,
         model = model,
         n_epochs = n.epochs,
-        n_threads = n_threads,
+        n_threads = cores,
         verbose = FALSE
       )
       rownames(x = embeddings) <- row.names(object)
