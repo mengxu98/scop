@@ -78,36 +78,20 @@ with distance from annotated regions.</p>
 <span>  assay <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  layer <span class="op">=</span> <span class="st">"data"</span>,</span>
 <span>  variables <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  sample_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  platform <span class="op">=</span> <span class="st">"Undefined"</span>,</span>
 <span>  image <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span>
-<span>  img_scale_fct <span class="op">=</span> <span class="st">"lowres"</span>,</span>
-<span>  assay_modality <span class="op">=</span> <span class="st">"gene"</span>,</span>
-<span>  trajectory_id <span class="op">=</span> <span class="st">"scop_gradient"</span>,</span>
 <span>  start <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  end <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  traj_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  width <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  annotation_ids <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  annotation.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  annotation.groups <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  annotation.variable <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  annotation.threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  annotation_id <span class="op">=</span> <span class="st">"scop_gradient"</span>,</span>
-<span>  core <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  distance <span class="op">=</span> <span class="st">"dte"</span>,</span>
-<span>  angle_span <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">360</span><span class="op">)</span>,</span>
-<span>  resolution <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  unit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sign_var <span class="op">=</span> <span class="st">"fdr"</span>,</span>
 <span>  sign_threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  model_add <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  model_subset <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  model_remove <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_random <span class="op">=</span> <span class="fl">10000</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">123</span>,</span>
-<span>  control <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_bins <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  min_spots <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  nfeatures <span class="op">=</span> <span class="fl">2000</span>,</span>
@@ -115,7 +99,6 @@ with distance from annotated regions.</p>
 <span>  store_results <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  coordinate_space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw"</span>, <span class="st">"legacy_display"</span><span class="op">)</span>,</span>
-<span>  <span class="va">...</span>,</span>
 <span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -157,11 +140,6 @@ generated from <code>reference</code>.</p></dd>
 features, then all assay features.</p></dd>
 
 
-<dt id="arg-sample-name-platform-img-scale-fct-assay-modality-trajectory-id-width-annotation-id-core-distance-angle-span-resolution-model-add-model-subset-model-remove-control">sample_name, platform, img_scale_fct, assay_modality, trajectory_id, width, annotation_id, core, distance, angle_span, resolution, model_add, model_subset, model_remove, control<a class="anchor" aria-label="anchor" href="#arg-sample-name-platform-img-scale-fct-assay-modality-trajectory-id-width-annotation-id-core-distance-angle-span-resolution-model-add-model-subset-model-remove-control"></a></dt>
-<dd><p>Legacy compatibility inputs. The native backend ignores these values and
-does not include them in the stored effective-parameter summary.</p></dd>
-
-
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
 <dd><p>Spatial image name. Required when multiple images are present;
 a single image is selected automatically when <code>NULL</code>.</p></dd>
@@ -175,12 +153,6 @@ backend when no image coordinates are available.</p></dd>
 <dt id="arg-start-end-traj-df">start, end, traj_df<a class="anchor" aria-label="anchor" href="#arg-start-end-traj-df"></a></dt>
 <dd><p>Trajectory geometry used by the native backend when
 <code>reference = "trajectory"</code>.</p></dd>
-
-
-<dt id="arg-annotation-ids">annotation_ids<a class="anchor" aria-label="anchor" href="#arg-annotation-ids"></a></dt>
-<dd><p>Reserved compatibility input. It is not supported by
-the native backend; use <code>annotation.by</code> with <code>annotation.groups</code>, or
-<code>annotation.variable</code> with <code>annotation.threshold</code>.</p></dd>
 
 
 <dt id="arg-annotation-by-annotation-groups">annotation.by, annotation.groups<a class="anchor" aria-label="anchor" href="#arg-annotation-by-annotation-groups"></a></dt>
@@ -248,11 +220,6 @@ coordinates. Results retain the raw coordinate units used by the native
 backend.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional named arguments accepted for compatibility. The native
-backend ignores them and does not store them as effective parameters.</p></dd>
-
-
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
 <dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
 will be removed in scop 1.0.0.</p></dd>
@@ -264,6 +231,19 @@ will be removed in scop 1.0.0.</p></dd>
 screening results are stored in <code>srt@tools[["SpatialGradientFeatures"]]</code>.
 Otherwise existing stored results are unchanged. Variable features are
 independently updated only when <code>set_variable_features = TRUE</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The current native interface is intentionally small. Older calls that pass
+<code>sample_name</code>, <code>platform</code>, <code>img_scale_fct</code>, <code>assay_modality</code>,
+<code>trajectory_id</code>, <code>width</code>, <code>annotation_id</code>, <code>core</code>, <code>distance</code>,
+<code>angle_span</code>, <code>resolution</code>, <code>model_add</code>, <code>model_subset</code>, <code>model_remove</code>,
+<code>control</code>, or <code>annotation_ids</code> now fail as unused arguments. Use <code>image</code>,
+<code>coord.cols</code>, and <code>coordinate_space</code> for coordinate selection; use
+<code>annotation.by</code>/<code>annotation.groups</code> or
+<code>annotation.variable</code>/<code>annotation.threshold</code> for annotation references;
+and use <code>n_random</code>, <code>n_bins</code>, <code>min_spots</code>, <code>sign_threshold</code>, and
+<code>nfeatures</code> for native screening controls.</p>
     </div>
 
     <div class="section level2">
