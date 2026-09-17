@@ -412,7 +412,7 @@ RunMetabolism <- function(
         gene_sets = gene_sets,
         strategy = "topk",
         tie_method = "first",
-        n_threads = scop_n_threads(cores)
+        cores = scop_n_threads(cores)
       )
     } else {
       scores_mat <- run_aucell_official_scores(
@@ -430,7 +430,7 @@ RunMetabolism <- function(
           min_gs_size = minGSSize,
           max_gs_size = maxGSSize,
           chunk_size = cpp_chunk_size,
-          n_threads = scop_n_threads(cores)
+          cores = scop_n_threads(cores)
         )
       } else {
         scores_mat <- run_ssgsea_scores(

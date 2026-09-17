@@ -28,7 +28,7 @@ CellScoring(
   new_assay = FALSE,
   store_metadata = NULL,
   seed = 11,
-  cores = 1,
+  cores = NULL,
   verbose = TRUE,
   ...,
   srt = NULL
@@ -107,8 +107,8 @@ deterministic independent L'Ecuyer-CMRG random-number stream, making results
 reproducible across worker counts and scheduling order. The caller's random
 number state is restored when the call finishes.}
 
-\item{cores}{The number of worker processes to use for parallelization.
-Default is \code{1}.}
+\item{cores}{Number of CPU cores. \code{NULL} (the default) uses the process
+OpenMP team for the C++ kernels and one R worker otherwise.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

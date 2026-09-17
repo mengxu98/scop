@@ -16,7 +16,7 @@ RunCytoTRACE(object, ...)
   batch_size = 10000,
   smooth_batch_size = 1000,
   compute_knn_smoothing = TRUE,
-  cores = 1,
+  cores = NULL,
   backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
@@ -30,7 +30,7 @@ RunCytoTRACE(object, ...)
   batch_size = 10000,
   smooth_batch_size = 1000,
   compute_knn_smoothing = TRUE,
-  cores = 1,
+  cores = NULL,
   backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
@@ -65,7 +65,9 @@ No diffusion subsampling if \code{NULL}.}
 kNN smoothing step. Set to \code{FALSE} for a faster score using the pre-kNN
 binned CytoTRACE2 output.}
 
-\item{cores}{Number of cores for parallel processing.}
+\item{cores}{Number of cores for parallel processing. \code{NULL} (the default)
+uses the process OpenMP team for the C++ kernels and one worker for the
+CytoTRACE2 backend.}
 
 \item{backend}{Backend used to run CytoTRACE2. \code{"r"} calls the official
 \code{CytoTRACE2::cytotrace2()} implementation and is the default. \code{"cpp"} uses

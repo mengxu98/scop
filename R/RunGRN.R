@@ -514,6 +514,10 @@ grnboost_python <- function(
   force = FALSE,
   verbose = TRUE
 ) {
+  cores <- suppressWarnings(as.integer(cores))
+  if (length(cores) != 1L || is.na(cores) || cores < 1L) {
+    cores <- 1L
+  }
   envname <- envname %||% "scenic_env"
   output_file <- output_file %||%
     file.path(work_dir, paste0(prefix, "_adj.tsv"))

@@ -168,7 +168,7 @@ run_aucell_scores <- function(
   tie_method = c("first", "hash", "numpy"),
   auc_threshold = 0.05,
   normalize_by_signature_max = FALSE,
-  n_threads = NULL
+  cores = NULL
 ) {
   strategy <- match.arg(strategy)
   algorithm <- match.arg(algorithm)
@@ -210,7 +210,7 @@ run_aucell_scores <- function(
     strategy = strategy_id,
     algorithm = algorithm_id,
     seed = rank_seed,
-    n_threads = scop_n_threads(n_threads)
+    n_threads = scop_n_threads(cores)
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
   names(dimnames(scores)) <- c("cells", "gene sets")
@@ -236,7 +236,7 @@ run_ucell_scores <- function(
   negative_weight = 1,
   missing_genes = c("impute", "skip"),
   ties_method = c("average", "min", "max", "dense", "first", "last"),
-  n_threads = NULL
+  cores = NULL
 ) {
   missing_genes <- match.arg(missing_genes)
   ties_method <- match.arg(ties_method)
@@ -307,7 +307,7 @@ run_ucell_scores <- function(
       ties_method,
       c("average", "min", "max", "dense", "first", "last")
     ),
-    n_threads = scop_n_threads(n_threads)
+    n_threads = scop_n_threads(cores)
   )
   dimnames(scores) <- list(colnames(expr_counts), names(gene_sets))
   names(dimnames(scores)) <- c("cells", "gene sets")
@@ -344,7 +344,7 @@ run_aucell_official_scores <- function(
       strategy = "topk",
       tie_method = "first",
       auc_threshold = auc_thr,
-      n_threads = dots[["n_threads"]] %||% dots[["cores"]]
+      cores = dots[["n_threads"]] %||% dots[["cores"]]
     ))
   }
 
@@ -455,7 +455,7 @@ run_seurat_module_scores <- function(
   nbin = 24,
   ctrl = 100,
   seed = 11,
-  n_threads = NULL
+  cores = NULL
 ) {
   set.seed(seed = seed)
   expr_data <- gene_set_scoring_to_dgC(expr_data)
@@ -519,7 +519,7 @@ run_seurat_module_scores <- function(
     expr = expr_data,
     feature_sets = feature_idx,
     control_sets = control_idx,
-    n_threads = scop_n_threads(n_threads)
+    n_threads = scop_n_threads(cores)
   )
   dimnames(scores) <- list(colnames(expr_data), names(features))
   scores
@@ -537,7 +537,7 @@ run_gsva_scores <- function(
   chunk_size = NULL,
   sparse = NULL,
   kernel = c("auto", "delegated", "native"),
-  n_threads = NULL
+  cores = NULL
 ) {
   kcdf <- match.arg(kcdf)
   kernel <- match.arg(kernel)
@@ -606,7 +606,7 @@ run_gsva_scores <- function(
       abs_ranking = abs_ranking,
       tau = tau,
       chunk_size = chunk_size,
-      n_threads = scop_n_threads(n_threads)
+      n_threads = scop_n_threads(cores)
     )
     dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
     return(scores)

@@ -1,4 +1,4 @@
-run_sparse_wilcox <- function(x, n_group1, min.expression = 0, n_threads = NULL) {
+run_sparse_wilcox <- function(x, n_group1, min.expression = 0, cores = NULL) {
   if (!inherits(x, "dgCMatrix")) {
     x <- methods::as(Matrix::Matrix(x, sparse = TRUE), "dgCMatrix")
   }
@@ -6,7 +6,7 @@ run_sparse_wilcox <- function(x, n_group1, min.expression = 0, n_threads = NULL)
     mat = x,
     n_group1 = as.integer(n_group1),
     min_expression = as.numeric(min.expression),
-    n_threads = scop_n_threads(n_threads)
+    n_threads = scop_n_threads(cores)
   )
   names(p_val) <- rownames(x)
   p_val

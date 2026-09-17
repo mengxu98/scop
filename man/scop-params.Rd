@@ -15,7 +15,9 @@ will be removed in scop 1.0.0.}
 
 \item{seed}{Random seed.}
 
-\item{cores}{Number of CPU cores.}
+\item{cores}{Number of CPU cores. \code{NULL} lets each backend pick its own
+default: the process OpenMP team (\code{OMP_NUM_THREADS}) for C++ kernels and one
+worker for R/Python parallel backends.}
 
 \item{group.by}{Metadata column(s) to group cells by.}
 
