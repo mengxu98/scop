@@ -68,7 +68,6 @@ RunUMAP2.Seurat <- function(
   n.epochs = 200L,
   cores = 1,
   min.dist = 0.3,
-  spread = 1,
   set.op.mix.ratio = 1,
   local.connectivity = 1L,
   negative.sample.rate = 5L,
@@ -80,6 +79,7 @@ RunUMAP2.Seurat <- function(
   reduction.key = "UMAP_",
   verbose = TRUE,
   seed.use = 11,
+  spread = 1,
   ...
 ) {
   if (!is.null(n_threads)) {
@@ -212,7 +212,6 @@ RunUMAP2.default <- function(
   n.epochs = 200L,
   cores = 1,
   min.dist = 0.3,
-  spread = 1,
   set.op.mix.ratio = 1,
   local.connectivity = 1L,
   negative.sample.rate = 5L,
@@ -223,6 +222,7 @@ RunUMAP2.default <- function(
   reduction.key = "UMAP_",
   verbose = TRUE,
   seed.use = 11L,
+  spread = 1,
   ...
 ) {
   if (!is.null(n_threads)) {
