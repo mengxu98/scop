@@ -1166,7 +1166,9 @@ adata_matrix_to_r <- function(x) {
   if (!inherits(x, "python.builtin.object")) {
     return(x)
   }
-  PrepareEnv(modules = "scanpy")
+  # Environment preparation stays in public wrappers such as adata_to_srt().
+  # Callers that pass prepare_env = FALSE have already bound a custom
+  # reticulate interpreter; preparing Scanpy here would abort.
 
   scipy_sparse <- tryCatch(
     reticulate::import("scipy.sparse", convert = FALSE),

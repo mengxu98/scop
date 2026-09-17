@@ -111,3 +111,29 @@ test_that("srt <-> adata roundtrip keeps var column names unique", {
   expect_identical(result$features_col, rownames(srt))
   expect_false("features" %in% result$assay_meta_cols)
 })
+
+test_that("adata_to_srt(prepare_env = FALSE) does not prepare the Scanpy environment", {
+  n_prepare <- 0L
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    PrepareEnv = function(...) {
+      n_prepare <<- n_prepare + 1L
+      invisible(NULL)
+    }
+  )
+  adata <- structure(
+    list(X = structure(list(), class = "python.builtin.object")),
+    class = "python.builtin.object"
+  )
+  try(
+    adata_to_srt(adata, prepare_env = FALSE, verbose = FALSE),
+    silent = TRUE
+  )
+  expect_identical(n_prepare, 0L)
+
+  try(
+    getFromNamespace("adata_matrix_to_r", "scop")(adata$X),
+    silent = TRUE
+  )
+  expect_identical(n_prepare, 0L)
+})
