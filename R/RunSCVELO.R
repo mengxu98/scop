@@ -36,6 +36,8 @@
 #' @param compute_pseudotime Whether to compute velocity pseudotime.
 #' @param compute_paga Whether to compute PAGA (Partition-based graph abstraction).
 #' @param top_n The number of top features to plot.
+#' @param cores Number of CPU cores. `NULL` (the default) uses the process
+#' OpenMP team for the C++ kernels and one Python worker.
 #'
 #' @seealso
 #' [VelocityPlot], [CellDimPlot], [RunPAGA]
@@ -117,7 +119,7 @@ RunSCVELO <- function(
   compute_pseudotime = FALSE,
   compute_paga = FALSE,
   top_n = 6,
-  cores = 1,
+  cores = NULL,
   palette = "Chinese",
   palcolor = NULL,
   legend.position = "on data",
@@ -278,7 +280,7 @@ RunSCVELO <- function(
     }
   })
 
-  args[["n_jobs"]] <- cores
+  args[["n_jobs"]] <- cores %||% 1L
 
   args[["legend_loc"]] <- legend.position
 
@@ -614,7 +616,7 @@ run_scanpy_cpp <- function(
     1L,
     min(as.integer(n_neighbors) - 1L, nrow(linear_embedding) - 1L)
   )
-  omp_threads <- scop_inner_n_threads(cores)
+  omp_threads <- scop_n_threads(cores)
   knn <- scanpy_knn_cpp(linear_embedding, knn_nonself, TRUE, omp_threads)
   knn_k <- ncol(knn[["idx"]])
   moments <- scanpy_moments_connectivities_cpp(

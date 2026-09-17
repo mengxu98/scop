@@ -51,8 +51,9 @@
 #' @param subsample Row subsampling fraction used by GRNBoost2.
 #' @param early_stop_window_length Early-stopping window used by GRNBoost2.
 #' @param cores Number of workers used by GRNBoost2, `scenic ctx`, and
-#' AUCell scoring. If multicore execution is not supported, this is
-#' automatically reduced to one core.
+#' AUCell scoring. `NULL` (the default) keeps the process OpenMP team for the
+#' C++ kernels and uses one worker elsewhere. If multicore execution is not
+#' supported, this is automatically reduced to one core.
 #' @param parallel_backend Parallel backend used for native C++ cisTarget
 #' module processing. `"auto"` preserves the current cross-platform PSOCK
 #' behavior. `"fork"` is an explicit opt-in on macOS and Linux and is not
@@ -127,7 +128,7 @@ RunSCENIC <- function(
   max_features = 0.1,
   subsample = 0.9,
   early_stop_window_length = 25,
-  cores = 1,
+  cores = NULL,
   parallel_backend = c("auto", "psock", "fork"),
   seed = 1234,
   force = FALSE,
@@ -729,6 +730,9 @@ scenic_cpp <- function(
 ) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   max_regulon_targets <- scenic_normalize_max_regulon_targets(max_regulon_targets)
+  # The C++ kernels below keep the raw value, where NULL means the process
+  # OpenMP default; worker counts use cores as given.
+  cores_kernel <- cores
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
 
   work_dir <- normalizePath(work_dir, mustWork = FALSE)
@@ -954,7 +958,7 @@ scenic_cpp <- function(
           max_targets = max_regulon_targets,
           min_regulon_size = min_regulon_size,
           include_negative_regulons = include_negative_regulons,
-          cores = cores,
+          cores = cores_kernel,
           parallel_backend = parallel_backend,
           verbose = verbose
         )
@@ -1001,7 +1005,7 @@ scenic_cpp <- function(
         counts = grn_matrix,
         regulon_list = regulon_list,
         min_regulon_size = min_regulon_size,
-        cores = cores,
+        cores = cores_kernel,
         backend = "cpp",
         cpp_algorithm = "ctxcore",
         seed = seed,
@@ -1384,7 +1388,7 @@ cistarget2 <- function(
       top_n_targets = module_top_n_targets,
       keep_only_activating = !isTRUE(include_negative_regulons),
       verbose = verbose,
-      n_threads = scop_inner_n_threads(cores)
+      cores = scop_n_threads(cores)
     )
   })
   modules <- profiled[["value"]]
@@ -1727,7 +1731,7 @@ scenic_modules_from_adjacencies <- function(
   rho_threshold = 0.03,
   keep_only_activating = TRUE,
   verbose = TRUE,
-  n_threads = NULL
+  cores = NULL
 ) {
   if (!all(c("TF", "target", "importance") %in% colnames(adjacency))) {
     log_message(
@@ -1750,7 +1754,7 @@ scenic_modules_from_adjacencies <- function(
       adjacency = adjacency,
       expr_mtx = expr_mtx,
       rho_threshold = rho_threshold,
-      n_threads = n_threads
+      cores = cores
     )
     if (isTRUE(keep_only_activating)) {
       adjacency <- adjacency[adjacency[["regulation"]] == 1L, , drop = FALSE]
@@ -1865,7 +1869,7 @@ scenic_add_correlation <- function(
   adjacency,
   expr_mtx,
   rho_threshold = 0.03,
-  n_threads = NULL
+  cores = NULL
 ) {
   tfs <- intersect(unique(adjacency[["TF"]]), colnames(expr_mtx))
   targets <- intersect(unique(adjacency[["target"]]), colnames(expr_mtx))
@@ -1888,7 +1892,7 @@ scenic_add_correlation <- function(
       expr = expr_mtx,
       tf_index = tf_index,
       target_index = target_index,
-      n_threads = scop_n_threads(n_threads)
+      n_threads = scop_n_threads(cores)
     ),
     error = function(e) NULL
   )
@@ -2563,7 +2567,7 @@ scenic_compute_aucell_score <- function(
       strategy = "full",
       algorithm = cpp_algorithm,
       seed = if (!is.null(seed)) -1L else 0L,
-      n_threads = scop_inner_n_threads(cores)
+      cores = scop_n_threads(cores)
     )
     return(as.data.frame(scores, check.names = FALSE)[
       colnames(counts), ,

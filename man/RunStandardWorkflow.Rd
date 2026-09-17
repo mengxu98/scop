@@ -113,7 +113,9 @@ scaled data (\code{NULL}). One of \code{"LogNormalize"}, \code{"SCT"}, \code{"TF
 \item{cluster_algorithm, cluster_resolution}{Clustering (\code{"louvain"}, \code{"slm"},
 \code{"leiden"}). Larger \code{cluster_resolution} yields fewer clusters.}
 
-\item{cores}{Number of CPU cores.}
+\item{cores}{Number of CPU cores. \code{NULL} lets each backend pick its own
+default: the process OpenMP team (\code{OMP_NUM_THREADS}) for C++ kernels and one
+worker for R/Python parallel backends.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

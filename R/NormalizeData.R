@@ -1,4 +1,4 @@
-sct_norm_sparse <- function(counts, normalization.method, scale.factor, margin, n_threads = NULL) {
+sct_norm_sparse <- function(counts, normalization.method, scale.factor, margin, cores = NULL) {
   if (identical(normalization.method, "RC")) {
     counts@x <- counts@x + 0
     sizes <- Matrix::colSums(counts)
@@ -21,7 +21,7 @@ sct_norm_sparse <- function(counts, normalization.method, scale.factor, margin, 
   }
   norm <- counts
   norm@x <- counts@x + 0
-  log_normalize_dgc(norm, scale.factor, 100L, scop_n_threads(n_threads))
+  log_normalize_dgc(norm, scale.factor, 100L, scop_n_threads(cores))
   norm
 }
 

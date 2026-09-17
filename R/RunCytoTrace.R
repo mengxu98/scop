@@ -39,7 +39,9 @@
 #' @param compute_knn_smoothing Whether to run the final PCA-based adaptive
 #' kNN smoothing step. Set to `FALSE` for a faster score using the pre-kNN
 #' binned CytoTRACE2 output.
-#' @param cores Number of cores for parallel processing.
+#' @param cores Number of cores for parallel processing. `NULL` (the default)
+#' uses the process OpenMP team for the C++ kernels and one worker for the
+#' CytoTRACE2 backend.
 #' @param backend Backend used to run CytoTRACE2. `"r"` calls the official
 #' `CytoTRACE2::cytotrace2()` implementation and is the default. `"cpp"` uses
 #' the package R/C++ implementation.
@@ -115,7 +117,7 @@ RunCytoTRACE.Seurat <- function(
   batch_size = 10000,
   smooth_batch_size = 1000,
   compute_knn_smoothing = TRUE,
-  cores = 1,
+  cores = NULL,
   backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
@@ -131,6 +133,8 @@ RunCytoTRACE.Seurat <- function(
   layer <- match.arg(layer)
   backend <- match.arg(backend)
   species <- match.arg(species)
+  # NULL reaches the C++ kernels as the process OpenMP default.
+  cores_kernel <- cores
   cores <- max(1L, as.integer(cores))
 
   assay <- assay %||% SeuratObject::DefaultAssay(object = object)
@@ -200,7 +204,7 @@ RunCytoTRACE.Seurat <- function(
       batch_size = batch_size,
       smooth_batch_size = smooth_batch_size,
       compute_knn_smoothing = compute_knn_smoothing,
-      cores = cores,
+      cores = cores_kernel,
       backend = "cpp",
       seed = seed,
       data_dir = data_dir,
@@ -226,7 +230,7 @@ RunCytoTRACE.default <- function(
   batch_size = 10000,
   smooth_batch_size = 1000,
   compute_knn_smoothing = TRUE,
-  cores = 1,
+  cores = NULL,
   backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
@@ -235,6 +239,8 @@ RunCytoTRACE.default <- function(
 ) {
   species <- match.arg(species)
   backend <- match.arg(backend)
+  # NULL reaches the C++ kernels as the process OpenMP default.
+  cores_kernel <- cores
   cores <- max(1L, as.integer(cores))
   log_message(
     "Running {.pkg CytoTRACE2} with {.arg backend = {backend}}",
@@ -353,7 +359,7 @@ RunCytoTRACE.default <- function(
     cpp_threads <- if (outer_cores > 1L) {
       inner_cores
     } else {
-      scop_inner_n_threads(cores)
+      scop_n_threads(cores_kernel)
     }
 
     process_subsample <- function(subsample) {
@@ -367,7 +373,7 @@ RunCytoTRACE.default <- function(
         alias_dict = model_data$alias_dict,
         mouse_alias_dict = model_data$mouse_alias_dict,
         verbose = verbose,
-        n_threads = cpp_threads
+        cores = cpp_threads
       )
 
       ranked_data <- preprocessed$ranked_data
@@ -649,7 +655,7 @@ cytotrace2_preprocess <- function(
   alias_dict,
   mouse_alias_dict,
   verbose,
-  n_threads = NULL
+  cores = NULL
 ) {
   gene_names <- rownames(data)
   expression <- data
@@ -765,12 +771,12 @@ cytotrace2_preprocess <- function(
   preprocessed_numeric <- if (inherits(expression_mapped, "sparseMatrix")) {
     cytotrace2_preprocess_sparse_numeric(
       expression_mapped,
-      scop_n_threads(n_threads)
+      scop_n_threads(cores)
     )
   } else {
     cytotrace2_preprocess_numeric(
       as.matrix(expression_mapped),
-      scop_n_threads(n_threads)
+      scop_n_threads(cores)
     )
   }
   ranked_data <- preprocessed_numeric$ranked_data

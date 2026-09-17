@@ -101,7 +101,8 @@
 #' disables early stopping to match official SCENIC+ `SGBM_KWARGS`.
 #' @param seed Random seed used by the C++ stochastic boosting code. The
 #' default matches official SCENIC+ command-line wrappers.
-#' @param cores Number of workers used by C++ TF-gene GRN inference.
+#' @param cores Number of workers used by C++ TF-gene GRN inference. `NULL`
+#' (the default) uses the process OpenMP team.
 #' @param assay_name Assay used to store eRegulon AUC scores.
 #' @param tool_name Name of the `srt@tools` result entry.
 #' @param python_result_dir Directory containing official SCENIC+ outputs already
@@ -184,7 +185,7 @@ RunSCENICPlus <- function(
   grn_subsample = 0.9,
   grn_early_stop_window_length = 0,
   seed = 666,
-  cores = 1,
+  cores = NULL,
   assay_name = "scenicplus",
   tool_name = "SCENICPlus",
   python_result_dir = NULL,
@@ -450,7 +451,7 @@ RunSCENICPlus <- function(
       gene_sets = eregulons,
       strategy = "full",
       algorithm = "ctxcore",
-      n_threads = scop_inner_n_threads(cores)
+      cores = scop_n_threads(cores)
     )
   }
   auc <- as.data.frame(auc, check.names = FALSE)[
@@ -1262,12 +1263,12 @@ scenicplus_tf_gene_native <- function(
   adjacency <- scenicplus_add_tfg_cor(
     adjacency,
     rna_counts = rna_counts,
-    n_threads = scop_inner_n_threads(cores)
+    cores = scop_n_threads(cores)
   )
   scenicplus_inject_tf_self(
     adjacency,
     rna_counts = rna_counts,
-    n_threads = scop_inner_n_threads(cores)
+    cores = scop_n_threads(cores)
   )
 }
 
@@ -1275,7 +1276,7 @@ scenicplus_add_tfg_cor <- function(
   adjacency,
   rna_counts,
   rho_threshold = 0.03,
-  n_threads = NULL
+  cores = NULL
 ) {
   if (nrow(adjacency) == 0L) {
     return(adjacency)
@@ -1299,7 +1300,7 @@ scenicplus_add_tfg_cor <- function(
       expr = t(expr),
       tf_index = tf_index[matched],
       target_index = target_index[matched],
-      n_threads = scop_n_threads(n_threads)
+      n_threads = scop_n_threads(cores)
     )
   } else {
     corr <- suppressWarnings(stats::cor(
@@ -1326,7 +1327,7 @@ scenicplus_inject_tf_self <- function(
   adjacency,
   rna_counts,
   increase_importance_by = 0.00001,
-  n_threads = NULL
+  cores = NULL
 ) {
   if (nrow(adjacency) == 0L) {
     return(adjacency)
@@ -1350,7 +1351,7 @@ scenicplus_inject_tf_self <- function(
   self <- scenicplus_add_tfg_cor(
     self,
     rna_counts = rna_counts,
-    n_threads = n_threads
+    cores = cores
   )
   out <- rbind(adjacency, self[, colnames(adjacency), drop = FALSE])
   rownames(out) <- NULL

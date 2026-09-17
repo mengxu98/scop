@@ -10,7 +10,9 @@
 #' @param layer Assay layer to use.
 #' @param verbose Print progress messages.
 #' @param seed Random seed.
-#' @param cores Number of CPU cores.
+#' @param cores Number of CPU cores. `NULL` lets each backend pick its own
+#' default: the process OpenMP team (`OMP_NUM_THREADS`) for C++ kernels and one
+#' worker for R/Python parallel backends.
 #' @param group.by Metadata column(s) to group cells by.
 #' @param split.by Metadata column to split the analysis or plot by.
 #' @param reduction Dimensionality reduction to use. `NULL` uses [DefaultReduction].
