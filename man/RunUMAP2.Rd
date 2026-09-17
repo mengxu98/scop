@@ -27,6 +27,7 @@ RunUMAP2(object, ...)
   n.epochs = 200L,
   cores = 1,
   min.dist = 0.3,
+  spread = 1,
   set.op.mix.ratio = 1,
   local.connectivity = 1L,
   negative.sample.rate = 5L,
@@ -54,6 +55,7 @@ RunUMAP2(object, ...)
   n.epochs = 200L,
   cores = 1,
   min.dist = 0.3,
+  spread = 1,
   set.op.mix.ratio = 1,
   local.connectivity = 1L,
   negative.sample.rate = 5L,
@@ -89,7 +91,7 @@ RunUMAP2(object, ...)
 
 \item{reduction.model}{Pre-trained UMAP \code{DimReduc} used to embed new data.}
 
-\item{n_threads}{Number of threads.}
+\item{n_threads}{Deprecated alias for \code{cores}.}
 
 \item{return.model}{Store the UMAP model.}
 
@@ -100,6 +102,9 @@ String \code{metric} values include \code{"euclidean"}, \code{"manhattan"}, \cod
 \item{cores}{Number of CPU cores.}
 
 \item{min.dist}{Minimum embedding distance (how tightly points pack).}
+
+\item{spread}{Spread of the embedding (the effective scale of embedded
+points).}
 
 \item{set.op.mix.ratio}{Mix of fuzzy union (\code{1}) and intersection (\code{0}).}
 

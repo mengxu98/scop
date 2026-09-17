@@ -493,7 +493,7 @@ RunGSVA <- function(
           abs_ranking = abs.ranking,
           tau = tau,
           chunk_size = cpp_chunk_size,
-          n_threads = cores
+          cores = cores
         ))
       } else if (identical(method, "ssgsea")) {
         gsva_scores <- t(run_ssgsea_scores(

@@ -37,6 +37,8 @@
 #' When `NULL`, manual `features = list(...)` input is stored in `meta.data` by default,
 #' while database-derived results stay assay-only when `new_assay = TRUE`.
 #' @param ... Passed to the scoring methods.
+#' @param cores Number of CPU cores. `NULL` (the default) uses the process
+#' OpenMP team for the C++ kernels and one R worker otherwise.
 #'
 #' @export
 #'
@@ -110,7 +112,7 @@ CellScoring <- function(
   new_assay = FALSE,
   store_metadata = NULL,
   seed = 11,
-  cores = 1,
+  cores = NULL,
   verbose = TRUE,
   ...,
   srt = NULL
@@ -381,7 +383,7 @@ CellScoring <- function(
           nbin = dots[["nbin"]] %||% 24,
           ctrl = dots[["ctrl"]] %||% 100,
           seed = seed,
-          n_threads = scop_inner_n_threads(cores)
+          cores = scop_n_threads(cores)
         )
         filtered <- names(features)[
           !names(features) %in% colnames(module_scores)
@@ -435,7 +437,7 @@ CellScoring <- function(
           negative_weight = dots[["w_neg"]] %||% 1,
           missing_genes = dots[["missing_genes"]] %||% "impute",
           ties_method = ties_method,
-          n_threads = scop_inner_n_threads(cores)
+          cores = scop_n_threads(cores)
         )
         filtered <- names(features)[
           !names(features) %in% colnames(ucell_scores)
@@ -513,7 +515,7 @@ CellScoring <- function(
           # a full n_features sort for every cell.
           strategy = "topk",
           tie_method = "first",
-          n_threads = scop_inner_n_threads(cores)
+          cores = scop_n_threads(cores)
         )
         filtered <- names(features)[
           !names(features) %in% colnames(auc_scores)
@@ -562,7 +564,7 @@ CellScoring <- function(
             abs_ranking = abs.ranking,
             tau = tau,
             chunk_size = cpp_chunk_size,
-            n_threads = scop_inner_n_threads(cores)
+            cores = scop_n_threads(cores)
           )
         } else if (method == "ssGSEA") {
           gs_scores <- run_ssgsea_scores(

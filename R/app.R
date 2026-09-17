@@ -462,11 +462,9 @@ CreateMetaFile <- function(
 #'
 #' @export
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
-#' }
+#' PrepareSCExplorer(pancreas_sub, base_dir = tempdir())
 PrepareSCExplorer <- function(
   object,
   base_dir = "SCExplorer",
@@ -589,18 +587,16 @@ PrepareSCExplorer <- function(
 #'
 #' @export
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#' PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
+#' PrepareSCExplorer(pancreas_sub, base_dir = tempdir())
 #' srt <- FetchH5(
-#'   data_file = "./SCExplorer/data.hdf5",
-#'   meta_file = "./SCExplorer/meta.hdf5",
+#'   data_file = paste0(tempdir(), "/data.hdf5"),
+#'   meta_file = paste0(tempdir(), "/meta.hdf5"),
 #'   features = c("Ins1", "Ghrl"),
 #'   metanames = c("SubCellType", "Phase"),
 #'   reduction = "UMAP"
 #' )
-#' }
 FetchH5 <- function(
   data_file,
   meta_file,
@@ -908,7 +904,6 @@ CreateSeuratObject2 <- function(
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' data(panc8_sub)
@@ -924,21 +919,21 @@ CreateSeuratObject2 <- function(
 #'     mouse_pancreas = pancreas_sub,
 #'     human_pancreas = panc8_sub
 #'   ),
-#'   base_dir = "./SCExplorer"
+#'   base_dir = paste0(tempdir(), "/SCExplorer")
 #' )
 #'
 #' # Create the app.R script
 #' app <- RunSCExplorer(
-#'   base_dir = "./SCExplorer",
+#'   base_dir = paste0(tempdir(), "/SCExplorer"),
 #'   initial_dataset = "mouse_pancreas",
 #'   initial_group = "CellType",
 #'   initial_feature = "Ncoa2"
 #' )
 #' # Check files
-#' list.files("./SCExplorer")
+#' list.files(paste0(tempdir(), "/SCExplorer"))
 #'
 #' # Run shiny app
-#' shiny::runApp(app)
+#' # shiny::runApp(app)
 #' # Note: If scop installed in the isolated environment using renv,
 #' # add `renv::activate(project = "path/to/scop_env")` to the app.R script.
 #'
@@ -959,7 +954,6 @@ CreateSeuratObject2 <- function(
 #'
 #' ### step2: deploy the app
 #' # deployApp("./SCExplorer")
-#' }
 RunSCExplorer <- function(
   base_dir = "SCExplorer",
   data_file = "data.hdf5",

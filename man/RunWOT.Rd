@@ -132,6 +132,9 @@ pancreas_sub <- RunWOT(
 }
 }
 \references{
-\href{https://doi.org/10.1016/j.cell.2019.01.006}{Geoffrey et al. (2019) Cell},
+Schiebinger G, Shu J, Tabaka M, et al. (2019). Optimal-Transport Analysis of
+Single-Cell Gene Expression Identifies Developmental Trajectories in
+Reprogramming. Cell, 176(4), 928-943. doi:10.1016/j.cell.2019.01.006
+
 \href{https://github.com/broadinstitute/wot}{GitHub}
 }

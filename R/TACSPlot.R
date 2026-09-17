@@ -44,8 +44,12 @@
 #' @export
 #'
 #' @references
-#' [Kernfeld et al. paper](https://doi.org/10.1016/j.immuni.2018.04.015),
-#' [Github](https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271)
+#' Kernfeld EM, Genga RMJ, Neherin K, et al. (2018). A Single-Cell
+#' Transcriptomic Atlas of Thymus Organogenesis Resolves Cell Types and
+#' Developmental Maturation. Immunity, 48(6), 1258-1270.
+#' doi:10.1016/j.immuni.2018.04.015
+#'
+#' [GitHub](https://github.com/maehrlab/thymusatlastools2/blob/f8b51ad684d56b2eeda780787eb9ad4ff3003eef/R/data_handling_seurat.R#L271)
 #' @examples
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)

@@ -93,12 +93,15 @@ mc2 <- RunMetaCell(
 MetaCellPlot(mc2, group.by = "CellType")
 }
 \references{
-Baran, Y. et al. (2019). MetaCell: analysis of single-cell RNA-seq data
-using K-nn graph partitions. \emph{Genome Biology}.
+Baran Y, Bercovich A, Sebe-Pedros A, et al. (2019). MetaCell: analysis of
+single-cell RNA-seq data using K-nn graph partitions.
+Genome Biology, 20(1), 206. doi:10.1186/s13059-019-1812-2
 
-Bilous, M. et al. (2022). SuperCell: a versatile tool for single-cell
-data analysis. \emph{Genome Biology}.
+Bilous M, Tran L, Cianciaruso C, et al. (2022). SuperCell: a versatile tool
+for single-cell data analysis. Genome Biology, 23(1), 227.
+doi:10.1186/s13059-022-02778-5
 
-Persad, S. et al. (2023). SEACells infers transcriptional and epigenomic
-cellular states from single-cell genomics data. \emph{Nature Biotechnology}.
+Persad S, Choo ZN, Dien C, et al. (2023). SEACells infers transcriptional
+and epigenomic cellular states from single-cell genomics data.
+Nature Biotechnology, 41(11), 1658-1667. doi:10.1038/s41587-023-01716-9
 }

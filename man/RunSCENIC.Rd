@@ -28,7 +28,7 @@ RunSCENIC(
   max_features = 0.1,
   subsample = 0.9,
   early_stop_window_length = 25,
-  cores = 1,
+  cores = NULL,
   parallel_backend = c("auto", "psock", "fork"),
   seed = 1234,
   force = FALSE,
@@ -112,8 +112,9 @@ cisTarget pruning, and AUCell scoring together.}
 \item{early_stop_window_length}{Early-stopping window used by GRNBoost2.}
 
 \item{cores}{Number of workers used by GRNBoost2, \verb{scenic ctx}, and
-AUCell scoring. If multicore execution is not supported, this is
-automatically reduced to one core.}
+AUCell scoring. \code{NULL} (the default) keeps the process OpenMP team for the
+C++ kernels and uses one worker elsewhere. If multicore execution is not
+supported, this is automatically reduced to one core.}
 
 \item{parallel_backend}{Parallel backend used for native C++ cisTarget
 module processing. \code{"auto"} preserves the current cross-platform PSOCK

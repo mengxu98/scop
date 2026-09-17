@@ -245,7 +245,7 @@ RunSpatialVariableFeatures <- function(
       method = method,
       nperm = nperm,
       backend = backend,
-      n_threads = cores
+      cores = cores
     )
   } else if (identical(method, "SPARKX")) {
     result <- spatial_variable_run_sparkx(
@@ -423,7 +423,7 @@ spatial_variable_run_knn <- function(
   method,
   nperm = 0,
   backend = c("cpp", "r"),
-  n_threads = NULL
+  cores = NULL
 ) {
   backend <- match.arg(backend)
   scores <- if (identical(backend, "cpp")) {
@@ -433,7 +433,7 @@ spatial_variable_run_knn <- function(
       edge_to = as.integer(edges$to) - 1L,
       method = match(method, c("moran", "geary")),
       n_permutations = as.integer(nperm),
-      n_threads = scop_n_threads(n_threads)
+      n_threads = scop_n_threads(cores)
     )
   } else {
     spatial_variable_score_matrix(

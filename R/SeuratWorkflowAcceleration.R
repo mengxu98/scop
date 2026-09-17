@@ -97,8 +97,8 @@ module_score_native <- function(
   nbin,
   ctrl,
   name,
-  seed,
-  n_threads = NULL
+  seed = 1,
+  cores = NULL
 ) {
   if (!is.null(seed)) {
     set.seed(seed = seed)
@@ -130,7 +130,7 @@ module_score_native <- function(
       expr = data,
       feature_sets = lapply(features, match, table = rownames(data)),
       control_sets = lapply(control_sets, match, table = rownames(data)),
-      n_threads = scop_n_threads(n_threads)
+      n_threads = scop_n_threads(cores)
     )
     rownames(scores) <- colnames(data)
     scores
@@ -222,7 +222,7 @@ AddModuleScore <- function(
     ctrl = as.integer(ctrl),
     name = name,
     seed = seed,
-    n_threads = n_threads
+    cores = n_threads
   )
 }
 

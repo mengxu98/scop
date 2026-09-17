@@ -77,7 +77,6 @@ returned so later plotting can reuse the embeddings and per-cell LISI
 scores.
 }
 \examples{
-\dontrun{
 data(panc8_sub)
 panc8_sub <- RunIntegrationBenchmark(
   panc8_sub,
@@ -101,7 +100,6 @@ thisplot::print_colored_table(
 )
 IntegrationBenchmarkPlot(panc8_sub)
 IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
-}
 }
 \seealso{
 \link{IntegrationBenchmarkPlot}, \link{RunIntegration}, \link{RunLISI}

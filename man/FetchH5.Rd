@@ -47,18 +47,16 @@ A Seurat object with the fetched data.
 Fetch data from the hdf5 file and returns a Seurat object
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-PrepareSCExplorer(pancreas_sub, base_dir = "./SCExplorer")
+PrepareSCExplorer(pancreas_sub, base_dir = tempdir())
 srt <- FetchH5(
-  data_file = "./SCExplorer/data.hdf5",
-  meta_file = "./SCExplorer/meta.hdf5",
+  data_file = paste0(tempdir(), "/data.hdf5"),
+  meta_file = paste0(tempdir(), "/meta.hdf5"),
   features = c("Ins1", "Ghrl"),
   metanames = c("SubCellType", "Phase"),
   reduction = "UMAP"
 )
-}
 }
 \seealso{
 \link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{RunSCExplorer}

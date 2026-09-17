@@ -117,11 +117,11 @@ transposed. Automatically detected resolutions are ordered numerically;
 explicit \code{cluster_cols} keep the supplied order.
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
 pancreas_sub <- Seurat::FindNeighbors(
   pancreas_sub,
+  reduction = "Standardpca",
   dims = 1:20,
   verbose = FALSE
 )
@@ -136,5 +136,4 @@ ClusterTreePlot(
   pancreas_sub,
   features = c("Ins1", "Gcg")
 )
-}
 }

@@ -46,7 +46,7 @@ RunSCVELO(
   compute_pseudotime = FALSE,
   compute_paga = FALSE,
   top_n = 6,
-  cores = 1,
+  cores = NULL,
   palette = "Chinese",
   palcolor = NULL,
   legend.position = "on data",
@@ -166,7 +166,8 @@ The velocity embedding itself is always graph-projected, matching
 
 \item{top_n}{The number of top features to plot.}
 
-\item{cores}{The number of cores to use for \code{cellrank}.}
+\item{cores}{Number of CPU cores. \code{NULL} (the default) uses the process
+OpenMP team for the C++ kernels and one Python worker.}
 
 \item{palette, palcolor}{Palette name (\link[thisplot:show_palettes]{thisplot::show_palettes}) or custom colors.}
 
