@@ -91,7 +91,11 @@ ProportionTestPlot(
 )
 }
 \references{
-\href{https://doi.org/10.1158/0008-5472.can-20-3562}{Miller et al. paper},
+Miller SA, Policastro RA, Sriramkumar S, et al. (2021). LSD1 and Aberrant
+DNA Methylation Mediate Persistence of Enteroendocrine Progenitors That
+Support BRAF-Mutant Colorectal Cancer. Cancer Research, 81(14), 3791-3805.
+doi:10.1158/0008-5472.CAN-20-3562
+
 \href{https://github.com/rpolicastro/scProportionTest}{scProportionTest},
 \href{https://bioconductor.org/packages/miloR}{miloR},
 \href{https://github.com/theislab/scCODA}{scCODA},

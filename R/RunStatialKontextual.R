@@ -43,7 +43,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
 #' # Compare tissue-labelled spots at two radii (full-resolution image pixels).
 #' spatial <- RunStatialKontextual(
@@ -53,7 +52,6 @@
 #'   verbose = FALSE
 #' )
 #' StatialKontextualPlot(spatial)
-#' }
 RunStatialKontextual <- function(
   object,
   group.by,

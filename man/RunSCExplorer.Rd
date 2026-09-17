@@ -83,7 +83,6 @@ Default is \code{TRUE}.}
 Run SCExplorer
 }
 \examples{
-\dontrun{
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 data(panc8_sub)
@@ -99,21 +98,21 @@ PrepareSCExplorer(
     mouse_pancreas = pancreas_sub,
     human_pancreas = panc8_sub
   ),
-  base_dir = "./SCExplorer"
+  base_dir = paste0(tempdir(), "/SCExplorer")
 )
 
 # Create the app.R script
 app <- RunSCExplorer(
-  base_dir = "./SCExplorer",
+  base_dir = paste0(tempdir(), "/SCExplorer"),
   initial_dataset = "mouse_pancreas",
   initial_group = "CellType",
   initial_feature = "Ncoa2"
 )
 # Check files
-list.files("./SCExplorer")
+list.files(paste0(tempdir(), "/SCExplorer"))
 
 # Run shiny app
-shiny::runApp(app)
+# shiny::runApp(app)
 # Note: If scop installed in the isolated environment using renv,
 # add `renv::activate(project = "path/to/scop_env")` to the app.R script.
 
@@ -134,7 +133,6 @@ shiny::runApp(app)
 
 ### step2: deploy the app
 # deployApp("./SCExplorer")
-}
 }
 \seealso{
 \link{CreateDataFile}, \link{CreateMetaFile}, \link{PrepareSCExplorer}, \link{FetchH5}

@@ -62,9 +62,9 @@
 #' `store_tool = TRUE`, a lightweight summary in `srt@tools[[tool_name]]`.
 #'
 #' @references
-#' Sant, C. et al. CHOIR improves significance-based detection of cell types
-#' and states from single-cell data. \emph{Nature Genetics} 57, 1309-1319
-#' (2025). \doi{10.1038/s41588-025-02148-8}
+#' Sant C, Mucke L, Corces MR. (2025). CHOIR improves significance-based
+#' detection of cell types and states from single-cell data.
+#' Nature Genetics, 57(5), 1309-1319. doi:10.1038/s41588-025-02148-8
 #'
 #' @export
 #'

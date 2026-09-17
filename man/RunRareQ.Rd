@@ -116,7 +116,7 @@ FeatureDimPlot(
 )
 }
 \references{
-Fa, B. et al. Cell neighborhood topology directs rare cell population
-identification. \emph{Nature Communications} (2026).
-\doi{10.1038/s41467-026-71180-x}
+Fa B, Huang C, Ma Y, et al. (2026). Cell neighborhood topology directs
+rare cell population identification. Nature Communications, 17, 4618.
+doi:10.1038/s41467-026-71180-x
 }

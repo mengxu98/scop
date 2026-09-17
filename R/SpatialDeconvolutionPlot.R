@@ -33,7 +33,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' data(visium_human_pancreas_sub)
 #' data(panc8_sub)
 #' reference <- panc8_sub[, panc8_sub$celltype %in% c("ductal", "alpha", "beta")]
@@ -56,7 +55,6 @@
 #'   verbose = FALSE
 #' )
 #' SpatialDeconvolutionPlot(spatial, tool_name = "RCTD", plot_type = "dominant")
-#' }
 SpatialDeconvolutionPlot <- function(
   object,
   tool_name = NULL,

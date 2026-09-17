@@ -48,9 +48,9 @@
 #' @seealso [ScissorPlot]
 #'
 #' @references
-#' Sun, D. et al. Identifying phenotype-associated subpopulations by
-#' integrating bulk and single-cell sequencing data. \emph{Nature
-#' Biotechnology} (2021). \doi{10.1038/s41587-021-01091-3}
+#' Sun D, Guan X, Moran AE, et al. (2022). Identifying phenotype-associated
+#' subpopulations by integrating bulk and single-cell sequencing data.
+#' Nature Biotechnology, 40(4), 527-538. doi:10.1038/s41587-021-01091-3
 #'
 #' @examples
 #' data(panc8_sub)

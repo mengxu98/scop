@@ -60,7 +60,6 @@ For dominant and pie maps, \code{cell_types} selects the types participating in
 the displayed comparison; pie fractions are relative to those selected types.
 }
 \examples{
-\dontrun{
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 reference <- panc8_sub[, panc8_sub$celltype \%in\% c("ductal", "alpha", "beta")]
@@ -83,5 +82,4 @@ spatial <- RunRCTD(
   verbose = FALSE
 )
 SpatialDeconvolutionPlot(spatial, tool_name = "RCTD", plot_type = "dominant")
-}
 }
