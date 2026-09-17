@@ -326,7 +326,9 @@ spatial_matrix_point_plot <- function(
     log_message("Spatial matrix renderer did not return one panel per column", message_type = "error")
   }
 
-  limits <- spatial_matrix_plot_limits(values, value_kind)
+  scale_args <- intersect(names(plot_args), c("lower_cutoff", "upper_cutoff", "lower_quantile", "upper_quantile"))
+  custom_scale <- any(!vapply(plot_args[scale_args], is.null, logical(1)))
+  limits <- if (!custom_scale) spatial_matrix_plot_limits(values, value_kind) else NULL
   legend_title <- legend_title %||% switch(
     value_kind,
     proportion = "Proportion",
@@ -343,11 +345,11 @@ spatial_matrix_point_plot <- function(
       ) {
         plot <- set_continuous_color_scale(
           plot = plot,
-          limits = limits,
+          limits = if (custom_scale) plot$scales$get_scales("colour")$limits else limits,
           title = legend_title,
           context = value_kind
         )
-        if (identical(value_kind, "proportion")) {
+        if (!custom_scale) {
           scale <- plot$scales$get_scales("colour")
           scale$breaks <- ggplot2::waiver()
         }
@@ -510,6 +512,7 @@ spatial_dim_long_plot <- function(
       message_type = "error"
     )
   }
+  values <- df[[color.by]]
   df$x <- coords$data[df[[spot.by]], "x"]
   df$y <- coords$data[df[[spot.by]], "y"]
   if (!is.null(split.by)) {
@@ -525,109 +528,19 @@ spatial_dim_long_plot <- function(
     pt.size <- min(3000 / nrow(df), 2)
   }
 
-  theme_args$show_axes <- show_axes
-  theme_obj <- apply_plot_theme(
-    theme_use = theme_use,
-    theme_args = theme_args
+  df$.value <- if (is.numeric(values)) values else spatial_plot_factor(values)
+  spatial_dim_single_plot(
+    plot_dat = df, value_col = ".value", value_name = color.by,
+    split.by = split.by %||% ".split", image_info = coords$image,
+    overlay_image = overlay_image, image.alpha = image.alpha,
+    crop = crop, flip.y = flip.y && !coords$uses_image, show_axes = show_axes,
+    pt.size = pt.size, pt.alpha = pt.alpha, stroke = stroke,
+    palette = palette, palcolor = palcolor, bg_color = bg_color,
+    legend.position = legend.position, legend.direction = legend.direction,
+    legend.title = legend.title %||% color.by, theme_use = theme_use, theme_args = theme_args,
+    position = if (geom == "jitter") ggplot2::position_jitter(width = jitter_width, height = jitter_height) else ggplot2::position_identity(),
+    title = NULL, drop = TRUE
   )
-  values <- df[[color.by]]
-  p <- ggplot2::ggplot(df, ggplot2::aes(x = .data$x, y = .data$y))
-  if (isTRUE(overlay_image) && !is.null(coords$image)) {
-    p <- p +
-      ggplot2::annotation_raster(
-        spatial_dim_raster(coords$image$image, image.alpha),
-        xmin = 0,
-        xmax = coords$image$width,
-        ymin = 0,
-        ymax = coords$image$height
-      )
-  }
-
-  if (is.numeric(values)) {
-    cols <- spatial_palette_colors(
-      type = "continuous",
-      palette = palette,
-      palcolor = palcolor
-    )
-    point_layer <- if (geom == "jitter") {
-      ggplot2::geom_jitter(
-        ggplot2::aes(color = .data[[color.by]]),
-        width = jitter_width,
-        height = jitter_height,
-        size = pt.size,
-        alpha = pt.alpha
-      )
-    } else {
-      ggplot2::geom_point(
-        ggplot2::aes(color = .data[[color.by]]),
-        size = pt.size,
-        alpha = pt.alpha
-      )
-    }
-    p <- p +
-      point_layer +
-      spatial_dim_continuous_scale(values, aesthetic = "color", colors = cols) +
-      ggplot2::guides(colour = spatial_colorbar_guide(legend.direction)) +
-      ggplot2::labs(x = NULL, y = NULL, color = legend.title %||% color.by)
-  } else {
-    df[[color.by]] <- spatial_plot_factor(values)
-    p$data <- df
-    cols <- spatial_palette_colors(
-      levels(df[[color.by]]),
-      palette = palette,
-      palcolor = palcolor
-    )
-    point_layer <- if (geom == "jitter") {
-      ggplot2::geom_jitter(
-        ggplot2::aes(fill = .data[[color.by]]),
-        shape = 21,
-        color = bg_color,
-        stroke = stroke,
-        width = jitter_width,
-        height = jitter_height,
-        size = pt.size,
-        alpha = pt.alpha
-      )
-    } else {
-      ggplot2::geom_point(
-        ggplot2::aes(fill = .data[[color.by]]),
-        shape = 21,
-        color = bg_color,
-        stroke = stroke,
-        size = pt.size,
-        alpha = pt.alpha
-      )
-    }
-    p <- p +
-      point_layer +
-      ggplot2::scale_fill_manual(values = cols, na.value = "grey80") +
-      ggplot2::labs(x = NULL, y = NULL, fill = legend.title %||% color.by)
-  }
-
-  p <- p +
-    theme_obj +
-    ggplot2::theme(
-      legend.position = legend.position,
-      legend.direction = legend.direction
-    )
-
-  if (isTRUE(flip.y) && isFALSE(coords$uses_image)) {
-    p <- p + ggplot2::scale_y_reverse()
-  }
-  if (!is.null(split.by)) {
-    p <- p + ggplot2::facet_wrap(ggplot2::vars(!!rlang::sym(split.by)))
-  }
-  if (isTRUE(crop)) {
-    limits <- spatial_crop_limits(df$x, df$y)
-    p <- p +
-      ggplot2::coord_equal(
-        xlim = limits$xlim,
-        ylim = limits$ylim
-      )
-  } else {
-    p <- p + ggplot2::coord_equal()
-  }
-  p
 }
 
 spatial_dim_pie_plot <- function(
@@ -1118,7 +1031,10 @@ spatial_dim_single_plot <- function(
   legend.title = value_name,
   theme_use = "theme_spatial",
   theme_args = list(),
-  show_axes = FALSE
+  show_axes = FALSE,
+  position = ggplot2::position_identity(),
+  title = value_name,
+  drop = FALSE
 ) {
   theme_args$show_axes <- show_axes
   theme_obj <- apply_plot_theme(
@@ -1141,7 +1057,7 @@ spatial_dim_single_plot <- function(
   if (nrow(plot_dat) == 0L || all(is.na(values))) {
     return(spatial_empty_plot(
       "No values available for plotting",
-      title = value_name,
+      title = title,
       theme_use = theme_use,
       theme_args = theme_args
     ))
@@ -1156,7 +1072,7 @@ spatial_dim_single_plot <- function(
       ggplot2::geom_point(
         ggplot2::aes(color = .data[[value_col]]),
         size = pt.size,
-        alpha = pt.alpha
+        alpha = pt.alpha, position = position
       ) +
       spatial_dim_continuous_scale(
         values,
@@ -1177,19 +1093,19 @@ spatial_dim_single_plot <- function(
         color = bg_color,
         stroke = stroke,
         size = pt.size,
-        alpha = pt.alpha
+        alpha = pt.alpha, position = position
       ) +
       ggplot2::scale_fill_manual(
         values = cols,
         na.value = "grey80",
-        drop = FALSE
+        drop = drop
       )
   }
 
   p <- p +
     theme_obj +
     ggplot2::labs(
-      title = value_name,
+      title = title,
       x = NULL,
       y = NULL
     ) +
