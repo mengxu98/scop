@@ -171,7 +171,7 @@ double numpy_random_sample(std::mt19937& rng) {
   return (a * 67108864.0 + b) / 9007199254740992.0;
 }
 
-} // namespace
+}
 
 // [[Rcpp::export]]
 List cytospace_assign(

@@ -510,9 +510,6 @@ CellScoring <- function(
         auc_scores <- run_aucell_scores(
           expr_counts = expr_sp,
           gene_sets = features,
-          # AUCell AUC only consumes ranks above aucMaxRank (5% by default).
-          # The C++ top-k path preserves those ranks exactly while avoiding
-          # a full n_features sort for every cell.
           strategy = "topk",
           tie_method = "first",
           cores = scop_n_threads(cores)

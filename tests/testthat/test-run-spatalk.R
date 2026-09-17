@@ -212,7 +212,7 @@ test_that("RunSpaTalk reuses stored RCTD weights with SpaTalk method 2", {
   )
   spatial@tools$RCTD <- list(
     weights = weights,
-    parameters = list(coordinate_contract_version = .spatial_coordinate_contract_version)
+    parameters = list(coordinate_contract_version = 3L)
   )
   seen <- new.env(parent = emptyenv())
   seen$value <- FALSE
@@ -313,7 +313,7 @@ test_that("RunSpaTalk validates spot inputs before backend execution", {
   )
   spatial@tools$RCTD <- list(
     weights = invalid,
-    parameters = list(coordinate_contract_version = .spatial_coordinate_contract_version)
+    parameters = list(coordinate_contract_version = 3L)
   )
   expect_error(
     RunSpaTalk(

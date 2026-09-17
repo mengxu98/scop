@@ -331,3 +331,8 @@ test_that("RunSpatialEcoTyper returns deconvolution matrix for matrix input", {
   expect_equal(dim(out), c(2, 2))
   expect_equal(rownames(out), c("SE1", "SE2"))
 })
+
+test_that("spatial backends reject conflicting parallel parameter aliases", {
+  expect_error(RunSpatialEcoTyper(object = NULL, cores = 2, ncores = 3), "only one")
+  expect_error(RunMERINGUE(object = NULL, cores = 2, ncores = 3), "only one")
+})

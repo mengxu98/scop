@@ -134,14 +134,6 @@ List phate_graphtools_affinity_data_cpp(
   );
 }
 
-// ── 1. α-Decaying kernel affinity ─────────────────────────────────────────
-// Builds a sparse affinity matrix from k-NN distances using the α-decaying
-// kernel from PHATE (Moon, van Dijk et al., Nature Biotechnology 2019).
-//
-// For each cell i and neighbor j, affinity K(i,j) = exp(-(d_{ij} / σ_i)^α)
-// where σ_i is the local bandwidth (distance to k-th neighbor, or median).
-// The result is symmetrized: A = (K + K^T) / 2, then row-normalized.
-//
 // [[Rcpp::export]]
 List phate_affinity_cpp(
     NumericMatrix knn_dist,
@@ -160,7 +152,6 @@ List phate_affinity_cpp(
   vals.reserve(n_cells * k * 2);
 
   for (int i = 0; i < n_cells; ++i) {
-    // Local bandwidth σ_i = distance to bw-th neighbor
     double sigma = 1.0;
     int valid_neighbors = 0;
     for (int j = 0; j < bw; ++j) {
@@ -170,13 +161,11 @@ List phate_affinity_cpp(
       }
     }
     if (sigma <= 0.0 || !std::isfinite(sigma)) sigma = 1.0;
-    // If alpha=1, this is just a Gaussian kernel scaled by 1/sigma_i
-    // If alpha>1, steeper decay with distance
 
     for (int j = 0; j < k; ++j) {
       int nb = knn_idx(i, j);
       if (nb == NA_INTEGER) continue;
-      nb -= 1;  // 0-based
+      nb -= 1;
       if (nb < 0 || nb >= n_cells || nb == i) continue;
       double d = knn_dist(i, j);
       if (!std::isfinite(d) || d <= 0.0) continue;
@@ -185,14 +174,12 @@ List phate_affinity_cpp(
       double weight = std::exp(-std::pow(d_scaled, alpha_decay));
       if (weight < 1e-4) continue;
 
-      // Upper triangle for symmetric matrix
       rows.push_back(i);
       cols.push_back(nb);
       vals.push_back(weight);
     }
   }
 
-  // Build sparse triplet list (symmetric, so we add both directions)
   int nnz = static_cast<int>(vals.size());
   std::vector<int> sym_rows, sym_cols;
   std::vector<double> sym_vals;
@@ -203,7 +190,6 @@ List phate_affinity_cpp(
     sym_rows.push_back(rows[e]);
     sym_cols.push_back(cols[e]);
     sym_vals.push_back(vals[e]);
-    // Symmetrize
     if (rows[e] != cols[e]) {
       sym_rows.push_back(cols[e]);
       sym_cols.push_back(rows[e]);
@@ -219,13 +205,6 @@ List phate_affinity_cpp(
   );
 }
 
-// ── 2. Diffusion operator ──────────────────────────────────────────────────
-// From sparse affinity triplets, computes the Markov transition matrix P
-// via row-normalization, then powers it to diffusion time t.
-//
-// Returns P^t × (random walk starting distribution) for MDS input,
-// or the powered transition matrix in log-space for potential distances.
-//
 // [[Rcpp::export]]
 NumericMatrix phate_diffusion_operator_cpp(
     IntegerVector rows,
@@ -234,7 +213,6 @@ NumericMatrix phate_diffusion_operator_cpp(
     int n_cells,
     int t_max = 10)
 {
-  // Build row-normalized transition matrix P (dense for now, can be optimized)
   mat P = zeros<mat>(n_cells, n_cells);
   vec row_sums = zeros<vec>(n_cells);
 
@@ -249,7 +227,6 @@ NumericMatrix phate_diffusion_operator_cpp(
     }
   }
 
-  // Row normalize
   for (int i = 0; i < n_cells; ++i) {
     if (row_sums(i) > 1e-15) {
       for (int j = 0; j < n_cells; ++j) {
@@ -260,14 +237,11 @@ NumericMatrix phate_diffusion_operator_cpp(
     }
   }
 
-  // Power iteration: P^t for t = 2..t_max
   mat Pt = P;
   for (int t = 1; t < t_max; ++t) {
     Pt = Pt * P;
   }
 
-  // Convert to log-space: log(P^t + epsilon) for potential distance.
-  // scVelo/PHATE uses a small floor of 1e-7 before the log.
   const double eps = 1e-7;
   mat logPt = zeros<mat>(n_cells, n_cells);
   for (int i = 0; i < n_cells; ++i) {
@@ -276,7 +250,6 @@ NumericMatrix phate_diffusion_operator_cpp(
     }
   }
 
-  // Return log-transformed diffusion probabilities
   NumericMatrix result(n_cells, n_cells);
   for (int i = 0; i < n_cells; ++i) {
     for (int j = 0; j < n_cells; ++j) {
@@ -286,12 +259,6 @@ NumericMatrix phate_diffusion_operator_cpp(
   return result;
 }
 
-// ── 3. Potential distance ─────────────────────────────────────────────────
-// Computes D(i,j) = ||log P^t_{i,·} − log P^t_{j,·}||
-// (Euclidean distance between rows of log-transformed diffusion matrix)
-//
-// Uses landmark-based approximation if n_landmarks < n_cells.
-//
 // [[Rcpp::export]]
 NumericMatrix phate_potential_distance_cpp(
     NumericMatrix log_transition,
@@ -304,7 +271,6 @@ NumericMatrix phate_potential_distance_cpp(
 
   mat logP(log_transition.begin(), n, n, false);
 
-  // If landmark MDS: select landmarks randomly and compute distances to landmarks
   if (use_landmarks < n) {
     std::vector<int> landmark_idx(n);
     for (int i = 0; i < n; ++i) landmark_idx[i] = i;
@@ -341,7 +307,6 @@ NumericMatrix phate_potential_distance_cpp(
     return D;
   }
 
-  // Full pairwise distance matrix
   NumericMatrix D(n, n);
   for (int i = 0; i < n; ++i) {
     D(i, i) = 0.0;
@@ -358,12 +323,6 @@ NumericMatrix phate_potential_distance_cpp(
   return D;
 }
 
-// ── 4. Classical MDS (Metric MDS) ─────────────────────────────────────────
-// Given a pairwise distance matrix D, computes the top n_components
-// eigenvectors of the double-centered squared distance matrix.
-//
-// Returns: embedding coordinates (n × n_components)
-//
 // [[Rcpp::export]]
 NumericMatrix phate_metric_mds_cpp(
     NumericMatrix D,
@@ -380,11 +339,8 @@ NumericMatrix phate_metric_mds_cpp(
 
   mat dist(D.begin(), n, n, false);
 
-  // Match phate.mds.classic exactly: double-center the squared distance
-  // matrix, then run PCA on it (scores = U * singular_values).
-  mat D2 = dist % dist;  // element-wise square
+  mat D2 = dist % dist;
 
-  // Center columns (Python classic subtracts the column mean first).
   mat centered = D2;
   for (int j = 0; j < n; ++j) {
     double col_mean = 0.0;
@@ -392,7 +348,6 @@ NumericMatrix phate_metric_mds_cpp(
     col_mean /= static_cast<double>(n);
     for (int i = 0; i < n; ++i) centered(i, j) -= col_mean;
   }
-  // Center rows.
   for (int i = 0; i < n; ++i) {
     double row_mean = 0.0;
     for (int j = 0; j < n; ++j) row_mean += centered(i, j);
@@ -400,7 +355,6 @@ NumericMatrix phate_metric_mds_cpp(
     for (int j = 0; j < n; ++j) centered(i, j) -= row_mean;
   }
 
-  // PCA via SVD of the centered matrix.
   mat U;
   vec s;
   mat V;
@@ -417,10 +371,6 @@ NumericMatrix phate_metric_mds_cpp(
   return embedding;
 }
 
-// ── 5. Optimal diffusion time via Von Neumann entropy ─────────────────────
-// Matches phate.vne.compute_von_neumann_entropy + find_knee_point.
-// Returns: optimal t as selected by the Python phate reference.
-//
 // [[Rcpp::export]]
 int phate_find_optimal_t_cpp(
     IntegerVector rows,
@@ -431,7 +381,6 @@ int phate_find_optimal_t_cpp(
 {
   if (t_max < 1) t_max = 1;
 
-  // Build P
   mat P = zeros<mat>(n_cells, n_cells);
   vec row_sums = zeros<vec>(n_cells);
   int nnz = rows.size();
@@ -450,8 +399,6 @@ int phate_find_optimal_t_cpp(
     }
   }
 
-  // Compute VNE exactly as phate.vne.compute_von_neumann_entropy:
-  // singular values of P, then for each t use singular_values^(t+1).
   vec sv;
   mat U;
   mat V;
@@ -474,7 +421,6 @@ int phate_find_optimal_t_cpp(
     vne_vals[t] = vne;
   }
 
-  // Find knee point exactly as phate.vne.find_knee_point.
   if (t_max < 3) return 1;
   std::vector<double> x(t_max), y(t_max);
   for (int i = 0; i < t_max; ++i) {
@@ -482,12 +428,10 @@ int phate_find_optimal_t_cpp(
     y[i] = vne_vals[i];
   }
 
-  const int m = t_max - 1;  // number of cumulative fits
+  const int m = t_max - 1;
   std::vector<double> sigma_xy(m), sigma_x(m), sigma_y(m), sigma_xx(m);
   std::vector<double> mfwd(m), bfwd(m), mbck(m), bbck(m);
 
-  // Python's find_knee_point accumulates from two points onward
-  // (np.cumsum(...)[1:]), so the first fit covers x[0] and x[1].
   double cs_x = x[0], cs_y = y[0], cs_xx = x[0] * x[0], cs_xy = x[0] * y[0];
   for (int i = 0; i < m; ++i) {
     cs_x += x[i + 1];
@@ -505,7 +449,6 @@ int phate_find_optimal_t_cpp(
     }
   }
 
-  // Reverse fit: first fit covers the last two points.
   cs_x = x[t_max - 1]; cs_y = y[t_max - 1];
   cs_xx = x[t_max - 1] * x[t_max - 1];
   cs_xy = x[t_max - 1] * y[t_max - 1];

@@ -119,7 +119,6 @@ Suggests:
     rsample,
     scales,
     scatterpie,
-    testthat,
     simplifyEnrichment,
     slingshot,
     scattermore,

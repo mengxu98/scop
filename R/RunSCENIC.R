@@ -730,8 +730,6 @@ scenic_cpp <- function(
 ) {
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   max_regulon_targets <- scenic_normalize_max_regulon_targets(max_regulon_targets)
-  # The C++ kernels below keep the raw value, where NULL means the process
-  # OpenMP default; worker counts use cores as given.
   cores_kernel <- cores
   dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
 
@@ -1172,8 +1170,6 @@ cistarget2 <- function(
       call. = FALSE
     )
   }
-  # OpenMP kernels keep the raw value (NULL = process default). R workers
-  # need a length-1 integer before the PSOCK worker-state guard.
   cores_kernel <- cores
   r_workers <- suppressWarnings(as.integer(cores))
   if (
@@ -1509,10 +1505,6 @@ cistarget2 <- function(
         match(rm[["clusters"]][annotated_feature_idx], annotated_features[["motif"]]), ,
         drop = FALSE
       ]
-      # ctxcore sorts annotated enriched motifs ahead of unannotated rows, then
-      # applies that annotation mask positionally to the original recovery
-      # matrix. Reproduce that ordering here so leading edges remain identical
-      # to pySCENIC 0.12.x for clustered motif databases.
       py_row_idx <- enriched_idx[
         seq_len(min(length(enriched_idx), nrow(annotated_features)))
       ]
@@ -1561,7 +1553,6 @@ cistarget2 <- function(
       drop = FALSE
     ]
 
-    # ctxcore Regulon.union() retains the maximum GRN importance per gene.
     n_motifs <- nrow(cluster_scores)
     tf_adj <- state[["tf_importance_map"]][[tf]]
     if (!is.null(tf_adj) && length(tf_adj) > 0L) {

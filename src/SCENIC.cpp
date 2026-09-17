@@ -531,10 +531,6 @@ static std::vector<std::vector<int> > scenic_feature_orders(
   for (std::size_t fi = 0; fi < features.size(); ++fi) {
     const int g = features[fi];
     if (g < 0 || g >= n_genes || !orders[g].empty()) continue;
-    // Keep the dense ordering identical to the sparse path. In particular,
-    // structural zeros are emitted later in their current bootstrap order,
-    // rather than being pre-sorted by row index. This preserves split sums and
-    // therefore makes dense acceleration a representation-only change.
     std::vector<std::pair<double, int> > nonzero;
     nonzero.reserve(n_samples);
     for (int i = 0; i < n_samples; ++i) {

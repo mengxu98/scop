@@ -143,7 +143,9 @@ test_that("RunCHOIR calls the optional backend and standardizes results", {
     mocked$checked,
     c(
       "corceslab/CHOIR",
-      getFromNamespace(".choir_dependencies", "scop")
+      "BiocGenerics", "bluster", "dplyr", "ggplot2", "ggtree",
+      "harmony", "magrittr", "Matrix", "pengminshi/mrtree", "plyr",
+      "progress", "ranger", "Seurat", "spatstat.univar", "stringr", "tidyr"
     )
   )
   expect_identical(mocked$received$args$use_assay, "RNA")
@@ -446,7 +448,9 @@ test_that("RunCHOIR installs and verifies the pinned backend through check_r", {
     mocked$checked,
     c(
       "corceslab/CHOIR",
-      getFromNamespace(".choir_dependencies", "scop")
+      "BiocGenerics", "bluster", "dplyr", "ggplot2", "ggtree",
+      "harmony", "magrittr", "Matrix", "pengminshi/mrtree", "plyr",
+      "progress", "ranger", "Seurat", "spatstat.univar", "stringr", "tidyr"
     )
   )
   expect_s4_class(mocked$result, "Seurat")

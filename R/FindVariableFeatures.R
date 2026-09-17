@@ -445,8 +445,6 @@ FindVariableFeatures.Seurat <- function(
     assay[1L]
   }
   assay_obj <- object[[assay]]
-  # Custom layer/method arguments and SCTAssay residual handling are owned by
-  # Seurat. Delegate these uncommon branches instead of silently dropping them.
   native_layer <- dots[["layer"]]
   remaining_dots <- dots[setdiff(names(dots), "layer")]
   if (

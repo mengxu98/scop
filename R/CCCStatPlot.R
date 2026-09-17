@@ -619,7 +619,6 @@ CCCStatPlot <- function(
     )))
   }
 
-  # --- bar ---
   if (identical(plot_type, "bar")) {
     return(finish_plot(ccc_stat_bar_plot(
       df = df,
@@ -644,7 +643,6 @@ CCCStatPlot <- function(
     )))
   }
 
-  # --- sankey ---
   if (identical(plot_type, "sankey")) {
     return(finish_plot(ccc_sankey_plot(
       pair_df = pair_df,
@@ -667,7 +665,6 @@ CCCStatPlot <- function(
     )))
   }
 
-  # --- box / violin ---
   if (plot_type %in% c("box", "violin")) {
     return(finish_plot(ccc_stat_distribution_plot(
       interaction_df = interaction_df,
@@ -689,7 +686,6 @@ CCCStatPlot <- function(
     )))
   }
 
-  # --- scatter ---
   if (identical(plot_type, "scatter")) {
     return(finish_plot(ccc_scatter_plot(
       srt = srt,

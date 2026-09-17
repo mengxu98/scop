@@ -1001,7 +1001,7 @@ scissor_fit_cox <- function(
     }
 
     cvraw <- cvPL / weighti
-    nfoldi <- colSums(!is.na(cvraw)) # rm(cvPL) #
+    nfoldi <- colSums(!is.na(cvraw))
     cvm <- apply(cvraw, 2, stats::weighted.mean, w = weighti, na.rm = TRUE)
     cvse <- sqrt(
       apply(
@@ -1408,7 +1408,7 @@ scissor_prepare_cox <- function(x, y) {
   N <- nrow(x)
   n1 <- sum(y[, "status"])
 
-  dty <- duplicated(ty) # ties
+  dty <- duplicated(ty)
 
   if (any(dty)) {
     tevent0 <- tevent

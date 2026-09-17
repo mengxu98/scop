@@ -597,7 +597,6 @@ EnrichmentPlot <- function(
   )
 
   if (plot_type == "comparison") {
-    # comparison --------------------
     ids <- NULL
     for (i in seq_along(df_list)) {
       df <- df_list[[i]]
@@ -725,7 +724,6 @@ EnrichmentPlot <- function(
       )
     plist <- list(p)
   } else if (plot_type == "bar") {
-    # bar --------------------
     plist <- suppressWarnings(lapply(df_list, function(df) {
       df_groups <- split(df, list(df$Database, df$Groups))
       df_groups <- lapply(
@@ -796,7 +794,6 @@ EnrichmentPlot <- function(
       return(p)
     }))
   } else if (plot_type == "dot") {
-    # dot --------------------
     plist <- suppressWarnings(lapply(df_list, function(df) {
       df_groups <- split(df, list(df$Database, df$Groups))
       df_groups <- lapply(
@@ -883,7 +880,6 @@ EnrichmentPlot <- function(
       return(p)
     }))
   } else if (plot_type == "lollipop") {
-    # lollipop --------------------
     plist <- suppressWarnings(lapply(df_list, function(df) {
       df_groups <- split(df, list(df$Database, df$Groups))
       df_groups <- lapply(
@@ -996,7 +992,6 @@ EnrichmentPlot <- function(
       return(p)
     }))
   } else if (plot_type == "network") {
-    # network --------------------
     plist <- suppressWarnings(lapply(df_list, function(df) {
       df_groups <- split(df, list(df$Database, df$Groups))
       df_groups <- lapply(
@@ -1212,7 +1207,6 @@ EnrichmentPlot <- function(
       return(p)
     }))
   } else if (plot_type == "enrichmap") {
-    # enrichmap --------------------
     plist <- suppressWarnings(lapply(df_list, function(df) {
       df_groups <- split(df, list(df$Database, df$Groups))
       df_groups <- lapply(
@@ -1488,7 +1482,6 @@ EnrichmentPlot <- function(
       return(p)
     }))
   } else if (plot_type == "wordcloud") {
-    # wordcloud --------------------
     check_r("ggwordcloud", verbose = FALSE)
     check_r("simplifyEnrichment", verbose = FALSE)
     plist <- lapply(df_list, function(df) {

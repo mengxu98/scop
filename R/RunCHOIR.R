@@ -190,9 +190,10 @@ RunCHOIR <- function(
       message_type = "error"
     )
   }
+  expected_commit <- "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
   if (choir_namespace_loaded()) {
     observed_commit <- choir_loaded_commit()
-    if (identical(observed_commit, .choir_commit)) {
+    if (identical(observed_commit, expected_commit)) {
       backend_commit <- observed_commit
     } else {
       log_message(
@@ -202,13 +203,18 @@ RunCHOIR <- function(
     }
   } else {
     check_r(
-      c("corceslab/CHOIR", .choir_dependencies),
+      c(
+        "corceslab/CHOIR", "BiocGenerics", "bluster", "dplyr", "ggplot2",
+        "ggtree", "harmony", "magrittr", "Matrix", "pengminshi/mrtree",
+        "plyr", "progress", "ranger", "Seurat", "spatstat.univar",
+        "stringr", "tidyr"
+      ),
       dependencies = NA,
       install = TRUE,
       verbose = FALSE
     )
     observed_commit <- choir_installed_commit()
-    if (!identical(observed_commit, .choir_commit)) {
+    if (!identical(observed_commit, expected_commit)) {
       log_message(
         "Unable to install the pinned optional {.pkg CHOIR} backend",
         message_type = "error"
@@ -217,7 +223,7 @@ RunCHOIR <- function(
     backend_commit <- observed_commit
   }
   choir_fun <- get_namespace_fun("CHOIR", "CHOIR")
-  if (!identical(choir_loaded_commit(), .choir_commit)) {
+  if (!identical(choir_loaded_commit(), expected_commit)) {
     log_message(
       "The loaded {.pkg CHOIR} namespace could not be matched to the pinned backend. Restart R and try again.",
       message_type = "error"
@@ -317,26 +323,6 @@ RunCHOIR <- function(
   result
 }
 
-.choir_commit <- "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
-.choir_reduction <- "CHOIR_P0_reduction"
-.choir_dependencies <- c(
-  "BiocGenerics",
-  "bluster",
-  "dplyr",
-  "ggplot2",
-  "ggtree",
-  "harmony",
-  "magrittr",
-  "Matrix",
-  "pengminshi/mrtree",
-  "plyr",
-  "progress",
-  "ranger",
-  "Seurat",
-  "spatstat.univar",
-  "stringr",
-  "tidyr"
-)
 
 choir_namespace_loaded <- function() {
   isNamespaceLoaded("CHOIR")
@@ -404,8 +390,8 @@ choir_prepare_output <- function(
     if (length(metadata_conflicts) > 0L) {
       paste0("metadata:", metadata_conflicts)
     },
-    if (.choir_reduction %in% names(srt@reductions)) {
-      paste0("reduction:", .choir_reduction)
+    if ("CHOIR_P0_reduction" %in% names(srt@reductions)) {
+      paste0("reduction:", "CHOIR_P0_reduction")
     },
     if (key %in% names(srt@misc)) paste0("misc:", key),
     if (isTRUE(store_tool) && tool_name %in% names(srt@tools)) {
@@ -420,7 +406,7 @@ choir_prepare_output <- function(
   }
   if (isTRUE(overwrite)) {
     srt@meta.data[[expected_cluster_col]] <- NULL
-    srt@reductions[[.choir_reduction]] <- NULL
+    srt@reductions[["CHOIR_P0_reduction"]] <- NULL
     srt@misc[[key]] <- NULL
     if (isTRUE(store_tool)) {
       srt@tools[[tool_name]] <- NULL

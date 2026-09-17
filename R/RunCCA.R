@@ -13,9 +13,6 @@ RunCCA.default <- function(
   }
   cells1 <- colnames(object1)
   cells2 <- colnames(object2)
-  # Seurat's Standardize helper expects an ordinary numeric matrix. Convert
-  # sparse inputs before calling it so RunCCA.default can accept the Matrix
-  # inputs produced by the standard normalization workflow.
   if (inherits(object1, "sparseMatrix")) {
     object1 <- as.matrix(object1)
   }

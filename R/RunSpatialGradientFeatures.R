@@ -809,13 +809,13 @@ sgf_store_result <- function(srt, result_name, result, assay, backend = "cpp", s
   }
   stored_result <- c(result[expected], list(source = source))
   attr(stored_result, "coordinate_contract_version") <-
-    .spatial_coordinate_contract_version
+    3L
   srt@tools[["SpatialGradientFeatures"]][[result_name]] <- stored_result
   srt@tools[["SpatialGradientFeatures"]]$parameters <- list(
     result_name = result_name,
     assay = assay,
     backend = backend,
-    coordinate_contract_version = .spatial_coordinate_contract_version
+    coordinate_contract_version = 3L
   )
   srt@tools[["SpatialGradientFeatures"]]$summary <- list(
     active_result = result_name,

@@ -571,7 +571,7 @@ IntegerVector make_bins(const std::vector<double>& dist, int n_bins, NumericVect
   return bins;
 }
 
-} // namespace
+}
 
 // [[Rcpp::export]]
 List spatial_gradient_screening_cpp(

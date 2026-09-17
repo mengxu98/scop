@@ -714,36 +714,6 @@ split_enrichment_genes <- function(gene_text) {
   unique(genes[nzchar(genes)])
 }
 
-get_enrichment_overlay_colors <- function(keys) {
-  keys <- unique(as.character(keys))
-  if (length(keys) == 0) {
-    return(character(0))
-  }
-  # Dedicated pastel categorical colors for enrichment overlays.
-  # Keep away from the strong RdBu-like contrast used by volcano points.
-  base_cols <- c(
-    "#CFE8CC", # mint
-    "#E9D8A6", # sand
-    "#D9C2F0", # lavender
-    "#FAD4C0", # peach
-    "#C7EAE4", # aqua
-    "#E6D5B8", # beige
-    "#F4C6D7", # blush
-    "#D5E6F2", # ice blue
-    "#E3F0CC", # light lime
-    "#F2E2CE", # apricot cream
-    "#DCCFE6", # soft mauve
-    "#CCE3D9" # sage
-  )
-  cols <- if (length(keys) <= length(base_cols)) {
-    base_cols[seq_along(keys)]
-  } else {
-    grDevices::colorRampPalette(base_cols)(length(keys))
-  }
-  names(cols) <- keys
-  cols
-}
-
 get_gsva_tool_names <- function(srt, group.by = NULL, gsva_method = NULL) {
   tool_names <- grep("^GSVA_", names(srt@tools), value = TRUE)
   if (length(tool_names) == 0) {
@@ -1765,7 +1735,7 @@ VolcanoPlot <- function(
       !nzchar(enrichment_map[["enrich_key"]])
     enrichment_map[missing_key, "enrich_key"] <- enrichment_map[missing_key, "source"]
     enrich_key_levels <- unique(enrichment_map[["enrich_key"]])
-    enrich_colors <- get_enrichment_overlay_colors(enrich_key_levels)
+    enrich_colors <- palette_colors(x = enrich_key_levels, palette = "Pastel1")
   }
 
   plist <- list()

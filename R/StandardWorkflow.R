@@ -876,7 +876,6 @@ run_standard_spatial_workflow <- function(
     ),
     stringsAsFactors = FALSE
   )
-  # Keep the historical four rows unchanged when optional stages are off.
   for (stage_name in c(if (do_spatial_qc) "spatial_quality_control",
                        if (identical(normalization_method, "SpaNorm")) "spatial_normalization")) {
     row <- stages[1L, , drop = FALSE]
@@ -1059,7 +1058,6 @@ run_standard_spatial_workflow <- function(
   spatial_variable_features_params <- stage_params(spatial_variable_features_params,
     "spatial_variable_features_params", "spatial_variable_features",
     "RunSpatialVariableFeatures", do_spatial_variable_features)
-  # Clustering parameters have already been validated before resolving the alias.
   if (!do_spatial_cluster) bayesspace_params <- list()
   deconvolution_params <- stage_params(deconvolution_params, "deconvolution_params",
     "deconvolution", deconv_producer, deconvolution_requested)
@@ -1307,9 +1305,6 @@ run_standard_spatial_workflow <- function(
         probe$result_complete <- probe$result_complete && analysis_assay %in% SeuratObject::Assays(result)
         probe
       })
-    # The general preprocessing path computes count-based library QC. Supply
-    # true input counts alongside SpaNorm data, never relabel normalized values
-    # as counts. Keep the original assay intact for count-based producers.
     normalized_assay <- srt[[analysis_assay]]
     original_counts <- GetAssayData5(srt, assay = assay, layer = "counts",
       features = rownames(normalized_assay), cells = colnames(normalized_assay))
@@ -1319,7 +1314,6 @@ run_standard_spatial_workflow <- function(
     }
     normalized_assay <- SeuratObject::SetAssayData(normalized_assay, layer = "counts", new.data = original_counts)
     srt[[analysis_assay]] <- normalized_assay
-    # SpaNorm produces data, not counts; vst must not reinterpret it as counts.
     if (isTRUE(do_HVF_finding) && identical(HVF_method, "vst")) HVF_method <- "mvp"
     preprocessing_normalization <- "LogNormalize"
     preprocessing_do_normalization <- FALSE
@@ -1886,8 +1880,6 @@ standard_spatial_restore_variable_feature_info <- function(
   }
   srt[[assay]] <- assay_object
   if (isTRUE(preserve_empty_selection)) {
-    # SeuratObject may expose an NA sentinel for the explicit StdAssay
-    # zero-feature state; standard_spatial_variable_features() removes it.
     srt <- spatial_set_active_variable_features(
       srt,
       assay = assay,

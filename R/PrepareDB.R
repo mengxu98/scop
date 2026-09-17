@@ -152,7 +152,6 @@ PrepareDB <- function(
   species <- normalize_species_name(species)
   db_list <- list()
 
-  # ---- CytoTRACE2 (species-independent) ----
   if ("CytoTRACE2" %in% db) {
     db <- setdiff(db, "CytoTRACE2")
     cyto_version <- "1.1.0"
@@ -385,11 +384,8 @@ PrepareDB <- function(
     }
     if (sps == "Saccharomyces_cerevisiae") {
       org_sp <- "org.Sc.sgd.db"
-      # org_key <- "SGD"
-      # default_id_types[c("GO", "GO_BP", "GO_CC", "GO_MF", "PFAM", "Chromosome", "GeneType", "Enzyme")] <- "sgd_gene"
     }
 
-    ## Prepare -----------------
     if (any(!sps %in% names(db_list)) || any(!db %in% names(db_list[[sps]]))) {
       orgdb_dependent <- c(
         "GO",
@@ -439,7 +435,6 @@ PrepareDB <- function(
       }
 
       if (is.null(custom_TERM2GENE)) {
-        ## GO -----------------------
         go_categories <- c("GO", "GO_BP", "GO_CC", "GO_MF")
         if (any(db %in% go_categories) &&
           any(!intersect(db, go_categories) %in% names(db_list[[sps]]))
@@ -533,7 +528,6 @@ PrepareDB <- function(
           }
         }
 
-        ## KEGG -----------------
         if (any(db == "KEGG") && (!"KEGG" %in% names(db_list[[sps]]))) {
           log_message("Preparing {.pkg KEGG} database", verbose = verbose)
           check_r("httr", verbose = FALSE)
@@ -637,7 +631,6 @@ PrepareDB <- function(
           colnames(TERM2NAME) <- c("Term", "Name")
           TERM2GENE <- stats::na.omit(unique(TERM2GENE))
           TERM2NAME <- stats::na.omit(unique(TERM2NAME))
-          # kegg_info <- readLines("https://rest.kegg.jp/info/hsa")
           kegg_info <- strsplit(
             httr::content(httr::GET(paste0(
               "https://rest.kegg.jp/info/",
@@ -665,7 +658,6 @@ PrepareDB <- function(
           }
         }
 
-        ## WikiPathway -----------------
         if (
           any(db == "WikiPathway") &&
             (!"WikiPathway" %in% names(db_list[[sps]]))
@@ -828,7 +820,6 @@ PrepareDB <- function(
           }
         }
 
-        ## Reactome -----------------
         if (any(db == "Reactome") && (!"Reactome" %in% names(db_list[[sps]]))) {
           log_message("Preparing {.pkg Reactome} database", verbose = verbose)
           reactome_sp <- gsub(pattern = "_", replacement = " ", x = sps)
@@ -920,7 +911,6 @@ PrepareDB <- function(
           }
         }
 
-        ## CORUM -----------------
         if (any(db == "CORUM") && (!"CORUM" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
@@ -982,7 +972,6 @@ PrepareDB <- function(
           }
         }
 
-        ## MP -----------------
         if (any(db == "MP") && (!"MP" %in% names(db_list[[sps]]))) {
           if (sps != "Mus_musculus") {
             if (isTRUE(convert_species)) {
@@ -1073,7 +1062,6 @@ PrepareDB <- function(
           }
         }
 
-        ## DO -----------------
         if (any(db == "DO") && (!"DO" %in% names(db_list[[sps]]))) {
           log_message("Preparing {.pkg DO} database", verbose = verbose)
           temp <- tempfile(fileext = ".tsv.gz")
@@ -1156,7 +1144,6 @@ PrepareDB <- function(
           }
         }
 
-        ## HPO -----------------
         if (any(db == "HPO") && (!"HPO" %in% names(db_list[[sps]]))) {
           log_message("Preparing {.pkg HPO} database", verbose = verbose)
           if (!sps %in% c("Homo_sapiens")) {
@@ -1232,7 +1219,6 @@ PrepareDB <- function(
           }
         }
 
-        ## PFAM -----------------
         if (any(db == "PFAM") && (!"PFAM" %in% names(db_list[[sps]]))) {
           log_message("Preparing {.pkg PFAM} database", verbose = verbose)
           if (!"PFAM" %in% AnnotationDbi::columns(orgdb)) {
@@ -1287,7 +1273,6 @@ PrepareDB <- function(
           }
         }
 
-        ## Chromosome -----------------
         if (
           any(db == "Chromosome") && (!"Chromosome" %in% names(db_list[[sps]]))
         ) {
@@ -1335,7 +1320,6 @@ PrepareDB <- function(
           }
         }
 
-        ## GeneType -----------------
         if (any(db == "GeneType") && (!"GeneType" %in% names(db_list[[sps]]))) {
           log_message("Preparing {.pkg GeneType} database", verbose = verbose)
           if (!"GENETYPE" %in% AnnotationDbi::columns(orgdb)) {
@@ -1389,7 +1373,6 @@ PrepareDB <- function(
           }
         }
 
-        ## Enzyme -----------------
         if (any(db == "Enzyme") && (!"Enzyme" %in% names(db_list[[sps]]))) {
           log_message("Preparing {.pkg Enzyme} database", verbose = verbose)
           if (!"ENZYME" %in% AnnotationDbi::columns(orgdb)) {
@@ -1492,11 +1475,9 @@ PrepareDB <- function(
           }
         }
 
-        ## TF -----------------
         if (any(db == "TF") && (!"TF" %in% names(db_list[[sps]]))) {
           log_message("Preparing database: TF")
 
-          # AnimalTFDB4
           status <- tryCatch(
             {
               temp <- tempfile()
@@ -1581,7 +1562,6 @@ PrepareDB <- function(
             error = identity
           )
 
-          # AnimalTFDB3
           if (inherits(status, "error")) {
             temp <- tempfile()
             url <- paste0(
@@ -1688,7 +1668,6 @@ PrepareDB <- function(
           }
         }
 
-        ## CSPA -----------------
         if (any(db == "CSPA") && (!"CSPA" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
@@ -1769,7 +1748,6 @@ PrepareDB <- function(
           }
         }
 
-        ## Surfaceome -----------------
         if (
           any(db == "Surfaceome") && (!"Surfaceome" %in% names(db_list[[sps]]))
         ) {
@@ -1857,7 +1835,6 @@ PrepareDB <- function(
           }
         }
 
-        ## SPRomeDB -----------------
         if (any(db == "SPRomeDB") && (!"SPRomeDB" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
@@ -1933,7 +1910,6 @@ PrepareDB <- function(
           }
         }
 
-        ## VerSeDa -----------------
         if (any(db == "VerSeDa") && (!"VerSeDa" %in% names(db_list[[sps]]))) {
           temp <- tempfile()
           download(
@@ -2043,7 +2019,6 @@ PrepareDB <- function(
           }
         }
 
-        ## TFLink -----------------
         if (any(db == "TFLink") && (!"TFLink" %in% names(db_list[[sps]]))) {
           tflink_sp <- c(
             "Homo_sapiens",
@@ -2124,7 +2099,6 @@ PrepareDB <- function(
           }
         }
 
-        ## hTFtarget -----------------
         if (
           any(db == "hTFtarget") && (!"hTFtarget" %in% names(db_list[[sps]]))
         ) {
@@ -2196,7 +2170,6 @@ PrepareDB <- function(
           }
         }
 
-        ## TRRUST -----------------
         if (any(db == "TRRUST") && (!"TRRUST" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
@@ -2288,7 +2261,6 @@ PrepareDB <- function(
           }
         }
 
-        ## JASPAR -----------------
         if (any(db == "JASPAR") && (!"JASPAR" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
@@ -2349,7 +2321,6 @@ PrepareDB <- function(
           }
         }
 
-        ## ENCODE -----------------
         if (any(db == "ENCODE") && (!"ENCODE" %in% names(db_list[[sps]]))) {
           if (!sps %in% c("Homo_sapiens")) {
             if (isTRUE(convert_species)) {
@@ -2410,7 +2381,6 @@ PrepareDB <- function(
           }
         }
 
-        ## MSigDB -----------------
         if (
           any(grepl("^MSigDB($|_)", db)) && (!"MSigDB" %in% names(db_list[[sps]]))
         ) {
@@ -2609,7 +2579,6 @@ PrepareDB <- function(
           }
         }
 
-        ## CellTalk / CellChat -----------------
         ccc_db_use <- intersect(db, c("CellTalk", "CellChat"))
         if (length(ccc_db_use) > 0L &&
           any(!ccc_db_use %in% names(db_list[[sps]]))) {
@@ -2628,7 +2597,6 @@ PrepareDB <- function(
           }
         }
       } else {
-        ## Custom -----------------
         db_species[db] <- custom_species
         if (sps != custom_species) {
           if (isTRUE(convert_species)) {

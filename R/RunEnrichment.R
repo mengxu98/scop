@@ -400,8 +400,6 @@ RunEnrichment <- function(
     db
   )
 
-  # A PSOCK worker costs ~650 MB and seconds of package loading before running
-  # one ~1 s task, which a per-group x per-database fan-out cannot earn back.
   res_list <- lapply(
     seq_len(nrow(comb)),
     function(i) {

@@ -133,8 +133,6 @@ List dpt_from_transition(
 
   List eig;
   if (n_comps < n_cells - 1) {
-    // Only the leading diffusion components are used below.  A partial
-    // decomposition avoids the cubic full-eigen cost on cell-level graphs.
     Environment rspectra = Environment::namespace_env("RSpectra");
     Function eigs_sym = rspectra["eigs_sym"];
     eig = eigs_sym(
@@ -210,7 +208,7 @@ List dpt_from_transition(
   );
 }
 
-}  // namespace
+}
 
 // [[Rcpp::export]]
 List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_groups) {
@@ -243,8 +241,6 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
 
   NumericMatrix connectivities(n_groups, n_groups);
 
-  // Scanpy PAGA v1.2 uses (n_cells - 1) as the random-null denominator:
-  // expected = (es[i] * ns[j] + es[j] * ns[i]) / (n - 1)
   const double denom = std::max(static_cast<double>(n_cells - 1), 1.0);
   for (int i = 0; i < n_groups; ++i) {
     for (int j = i + 1; j < n_groups; ++j) {
@@ -288,7 +284,6 @@ List paga_connectivities_cpp(IntegerMatrix knn_idx, IntegerVector groups, int n_
   );
 }
 
-// ── 2. PAGA diffusion pseudotime (improved: uses R eigen() for accuracy) ──
 
 // [[Rcpp::export]]
 List paga_diffusion_pseudotime_cpp(
@@ -308,7 +303,6 @@ List paga_diffusion_pseudotime_cpp(
     for (int j = 0; j < n_groups; ++j)
       row_sum[i] += connectivities(i, j);
 
-  // Transition matrix (column-major)
   std::vector<double> T(n_groups * n_groups, 0.0);
   for (int i = 0; i < n_groups; ++i) {
     if (row_sum[i] < 1e-10) {
@@ -321,7 +315,6 @@ List paga_diffusion_pseudotime_cpp(
       if (connectivities(i, j) > 0)
         T[i + j * n_groups] = connectivities(i, j) / row_sum[i];
 
-  // sqrt(D) normalized symmetric matrix
   NumericMatrix Tsym(n_groups, n_groups);
   for (int i = 0; i < n_groups; ++i) {
     double di = row_sum[i] > 0 ? std::sqrt(row_sum[i]) : 1.0;
@@ -331,14 +324,12 @@ List paga_diffusion_pseudotime_cpp(
     }
   }
 
-  // Use R's eigen() for accurate eigendecomposition (replaces manual power iteration)
   Environment base("package:base");
   Function eigen_fun = base["eigen"];
   List eig = eigen_fun(Tsym, Named("symmetric", true));
   NumericVector evals_c = eig["values"];
   NumericMatrix evecs_c = eig["vectors"];
 
-  // Sort by eigenvalue magnitude (descending)
   std::vector<std::pair<double, int>> pairs;
   for (int i = 0; i < n_groups; ++i)
     pairs.push_back({std::abs(evals_c[i]), i});
@@ -371,19 +362,14 @@ List paga_diffusion_pseudotime_cpp(
     }
   }
 
-  // Branching detection (if n_branchings > 0)
   int n_branches_found = 0;
   if (n_branchings > 0 && n_use >= 2) {
-    // Detect branches by finding groups far from the main trajectory
-    // in the second+ diffusion component
     for (int d = 1; d < n_use && n_branches_found < n_branchings; ++d) {
       std::vector<double> comp_vals(n_groups);
       for (int g = 0; g < n_groups; ++g) comp_vals[g] = dc(g, d);
-      // Check if this component separates groups into distinct branches
       double mean_val = 0;
       for (int g = 0; g < n_groups; ++g) mean_val += comp_vals[g];
       mean_val /= n_groups;
-      // A branch is detected if the component has large spread
       double spread = 0;
       for (int g = 0; g < n_groups; ++g) spread += (comp_vals[g] - mean_val) * (comp_vals[g] - mean_val);
       spread /= n_groups;
@@ -425,7 +411,6 @@ List paga_diffusion_pseudotime_cpp(
   );
 }
 
-// ── 2b. Scanpy-compatible connectivities and cell-level DPT ──
 
 // [[Rcpp::export]]
 NumericMatrix gauss_connectivities_cpp(
@@ -463,13 +448,12 @@ List cell_dpt_pseudotime_cpp(
   );
 }
 
-// ── 3. PAGA velocity transitions (group-level) ───────────────────────────────
 
 // [[Rcpp::export]]
 List paga_velocity_transitions_cpp(
-    NumericMatrix velocity_embedding,  // cells x dims
-    IntegerMatrix knn_idx,             // cells x k (1-based)
-    IntegerVector groups,              // 1-based
+    NumericMatrix velocity_embedding,
+    IntegerMatrix knn_idx,
+    IntegerVector groups,
     int n_groups,
     double softmax_scale = 4.0)
 {
@@ -480,7 +464,6 @@ List paga_velocity_transitions_cpp(
   if (groups.size() != n_cells)
     thisutils::log_message("groups length must match number of cells", "error");
 
-  // Build group-level transition matrix
   NumericMatrix transitions(n_groups, n_groups);
   NumericVector group_sizes(n_groups);
   for (int i = 0; i < n_cells; ++i) {
@@ -527,7 +510,6 @@ List paga_velocity_transitions_cpp(
     }
   }
 
-  // Normalize rows
   for (int i = 0; i < n_groups; ++i) {
     double rs = 0.0;
     for (int j = 0; j < n_groups; ++j) rs += transitions(i, j);
@@ -535,7 +517,6 @@ List paga_velocity_transitions_cpp(
       for (int j = 0; j < n_groups; ++j) transitions(i, j) /= rs;
   }
 
-  // Build MST of transitions for tree
   std::vector<scop_util::Edge> edges;
   edges.reserve(n_groups * (n_groups - 1) / 2);
   for (int i = 0; i < n_groups; ++i)
@@ -556,18 +537,16 @@ List paga_velocity_transitions_cpp(
   );
 }
 
-// ── 4. PAGA root cell selection ────────────────────────────────────────────────
 
 // [[Rcpp::export]]
 IntegerVector paga_root_cell_cpp(
-    NumericMatrix embedding,    // cells x dims (e.g., UMAP)
-    IntegerVector groups,       // 1-based
-    int root_group)             // which group is root (1-based)
+    NumericMatrix embedding,
+    IntegerVector groups,
+    int root_group)
 {
   const int n_cells = embedding.nrow();
   const int n_dims = embedding.ncol();
 
-  // Find centroid of root group
   std::vector<double> centroid(n_dims, 0.0);
   int count = 0;
   for (int i = 0; i < n_cells; ++i) {
@@ -580,7 +559,6 @@ IntegerVector paga_root_cell_cpp(
   if (count == 0) count = 1;
   for (int d = 0; d < n_dims; ++d) centroid[d] /= count;
 
-  // Find cell in root_group closest to centroid
   int best_cell = 0;
   double best_dist = std::numeric_limits<double>::max();
   for (int i = 0; i < n_cells; ++i) {
@@ -596,7 +574,6 @@ IntegerVector paga_root_cell_cpp(
     }
   }
 
-  // Return all cells in root_group sorted by distance to centroid (1-based)
   std::vector<std::pair<double, int>> dist_idx;
   for (int i = 0; i < n_cells; ++i) {
     if (groups[i] != root_group) continue;
@@ -605,7 +582,7 @@ IntegerVector paga_root_cell_cpp(
       double delta = embedding(i, d) - centroid[d];
       dist += delta * delta;
     }
-    dist_idx.push_back({dist, i + 1});  // 1-based
+    dist_idx.push_back({dist, i + 1});
   }
   std::sort(dist_idx.begin(), dist_idx.end());
 
@@ -613,5 +590,5 @@ IntegerVector paga_root_cell_cpp(
   for (size_t i = 0; i < dist_idx.size(); ++i)
     result[i] = dist_idx[i].second;
 
-  return result;  // 1-based cell indices, closest to centroid first
+  return result;
 }

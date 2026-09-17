@@ -27,9 +27,6 @@ static int cytotrace_worker_count(int requested, int n_tasks) {
   return worker_count(n, n_tasks);
 }
 
-// ============================================================================
-// Utility functions
-// ============================================================================
 
 // [[Rcpp::export]]
 List cytotrace2_preprocess_numeric(const arma::mat& expression_mapped, int n_threads = 0) {
@@ -191,7 +188,6 @@ List cytotrace2_preprocess_sparse_numeric(const S4& expression_mapped, int n_thr
   );
 }
 
-// Softmax over columns (each row independently)
 inline arma::mat softmax_rows(const arma::mat& X) {
   arma::mat Y = arma::exp(X);
   arma::vec rowsum = arma::sum(Y, 1);
@@ -199,11 +195,7 @@ inline arma::mat softmax_rows(const arma::mat& X) {
   return Y;
 }
 
-// ============================================================================
-// Stage 2: Binary Module forward pass (single layer)
-// ============================================================================
 
-// Pre-extracted layer parameters (pure C++ struct, no R API dependency)
 struct LayerParams {
   arma::sp_mat weight;
   arma::rowvec n_vec;
@@ -216,7 +208,6 @@ struct LayerParams {
   double out_bias;
 };
 
-// Extract layer params from R list (called BEFORE parallel region)
 LayerParams extract_layer_params(const List& layer_dict) {
   LayerParams p;
   p.weight = as<arma::sp_mat>(layer_dict["weight"]);
@@ -231,17 +222,15 @@ LayerParams extract_layer_params(const List& layer_dict) {
   return p;
 }
 
-// Pure C++ forward pass (no R API calls, thread-safe)
 arma::vec binary_module_forward(
-    const arma::mat& rank_data,     // [n_cells x n_genes]
-    const arma::mat& log2_data,     // [n_cells x n_genes]
+    const arma::mat& rank_data,
+    const arma::mat& log2_data,
     const LayerParams& p,
     double eps = 1e-5
 ) {
   int n_cells = rank_data.n_rows;
   int hidden_size = p.n_vec.n_elem;
 
-  // --- UCell score ---
   arma::mat R_UCell(n_cells, hidden_size, arma::fill::zeros);
   for (int j = 0; j < hidden_size; j++) {
     for (arma::sp_mat::const_col_iterator it = p.weight.begin_col(j);
@@ -266,7 +255,6 @@ arma::vec binary_module_forward(
     R_UCell.col(j) = 1.0 - (R_UCell.col(j) - n_offset) / denom;
   }
 
-  // --- AMS score ---
   arma::mat raw_score = log2_data * p.weight;
   for (int j = 0; j < hidden_size; j++) {
     raw_score.col(j) /= p.n_vec(j);
@@ -279,7 +267,6 @@ arma::vec binary_module_forward(
 
   arma::mat R_AMS = raw_score - bg_score;
 
-  // --- Batch Normalization + Linear output ---
   arma::vec out(n_cells, arma::fill::value(p.out_bias));
   for (int j = 0; j < hidden_size; j++) {
     const double inv_std = 1.0 / std::sqrt(p.running_var(j) + eps);
@@ -296,11 +283,7 @@ arma::vec binary_module_forward(
   return out;
 }
 
-// ============================================================================
-// Stage 2 (cont.): Binary Encoder (6 layers) -> one model
-// ============================================================================
 
-// Pre-extracted model: vector of 6 LayerParams
 typedef std::vector<LayerParams> ModelParams;
 
 void extract_model_params(const List& model_dict, ModelParams& mp) {
@@ -311,7 +294,6 @@ void extract_model_params(const List& model_dict, ModelParams& mp) {
   }
 }
 
-// Pure C++ binary encoder (no R API calls, thread-safe)
 void binary_encoder_forward(
     const arma::mat& rank_data,
     const arma::mat& log2_data,
@@ -335,14 +317,11 @@ void binary_encoder_forward(
   }
 }
 
-// ============================================================================
-// Stage 2 (cont.): Ensemble Prediction (19 models)
-// ============================================================================
 
 List cytotrace2_ensemble_predict(
-    const arma::mat& rank_data,      // [n_cells x n_genes]
-    const arma::mat& log2_data,      // [n_cells x n_genes]
-    const List& parameter_dict,      // list of 19 model dicts
+    const arma::mat& rank_data,
+    const arma::mat& log2_data,
+    const List& parameter_dict,
     int cores = 1
 ) {
   int n_models = parameter_dict.size();
@@ -427,11 +406,7 @@ List cytotrace2_ensemble_predict(
   );
 }
 
-// ============================================================================
-// Stage 3: Diffusion Smoothing
-// ============================================================================
 
-// Compute dispersion (var/mean) for each gene column
 arma::vec compute_dispersion(const arma::mat& X) {
   int n_genes = X.n_cols;
   arma::vec disp(n_genes);
@@ -447,32 +422,24 @@ arma::vec compute_dispersion(const arma::mat& X) {
   return disp;
 }
 
-// Build Markov transition matrix from Pearson correlation
 arma::mat build_markov_matrix(const arma::mat& sub_mat) {
-  // sub_mat: [n_cells x n_top_genes]
   int n_cells = sub_mat.n_rows;
 
-  // Pearson correlation matrix
-  arma::mat D = arma::cor(sub_mat.t());  // [n_cells x n_cells]
+  arma::mat D = arma::cor(sub_mat.t());
 
-  // Zero out diagonal
   D.diag().zeros();
 
-  // Replace NaN with 0
   D.replace(arma::datum::nan, 0.0);
 
-  // Threshold at max(mean(D), 0)
   double cutoff = std::max(arma::mean(arma::mean(D)), 0.0);
   D.elem(arma::find(D < cutoff)).zeros();
 
-  // Row-normalize to Markov matrix
   arma::vec row_sums = arma::sum(D, 1) + 1e-5;
   arma::mat A = D.each_col() / row_sums;
 
   return A;
 }
 
-// Iterative smoothing with restart
 arma::vec smoothing_by_diffusion(
     const arma::vec& init_score,
     const arma::mat& markov_mat,
@@ -495,8 +462,8 @@ arma::vec smoothing_by_diffusion(
 }
 
 arma::vec cytotrace2_diffusion_smooth(
-  const arma::mat& log2_data,      // [n_cells x n_genes]
-  const arma::vec& raw_scores,     // [n_cells]
+  const arma::mat& log2_data,
+  const arma::vec& raw_scores,
   const IntegerVector& smooth_groups
 ) {
   int n_cells = log2_data.n_rows;
@@ -505,7 +472,6 @@ arma::vec cytotrace2_diffusion_smooth(
     thisutils::log_message("smooth_groups must have one entry per cell", "error");
   }
 
-  // Select top 1000 most variable genes by dispersion
   arma::vec dispersion = compute_dispersion(log2_data);
   int n_top = std::min(1000, n_genes);
   arma::uvec top_idx = arma::sort_index(dispersion, "descend");
@@ -542,27 +508,22 @@ arma::vec cytotrace2_diffusion_smooth(
   return smoothed_scores;
 }
 
-// ============================================================================
-// Stage 4: Binning
-// ============================================================================
 
 List cytotrace2_bin_data(
-    const arma::vec& smoothed_scores,    // [n_cells]
-    const IntegerVector& categories,     // [n_cells] values 1-6
-    const StringVector& category_labels  // length 6
+    const arma::vec& smoothed_scores,
+    const IntegerVector& categories,
+    const StringVector& category_labels
 ) {
   int n_cells = smoothed_scores.n_elem;
   arma::vec binned_scores(n_cells);
   StringVector binned_categories(n_cells);
 
-  // Unit interval bounds for each of 6 categories
   arma::vec limits = arma::linspace(0.0, 1.0, 7);
 
   for (int cat = 0; cat < 6; cat++) {
     double lower = limits(cat);
     double upper = limits(cat + 1);
 
-    // Find cells in this category (categories are 1-based)
     std::vector<int> cell_indices;
     std::vector<double> cell_scores;
     for (int i = 0; i < n_cells; i++) {
@@ -575,7 +536,6 @@ List cytotrace2_bin_data(
     int n_in_cat = cell_indices.size();
     if (n_in_cat == 0) continue;
 
-    // Sort cells by score and get ranks
     std::vector<std::pair<double, int>> score_idx;
     for (int i = 0; i < n_in_cat; i++) {
       score_idx.push_back({cell_scores[i], cell_indices[i]});
@@ -603,21 +563,16 @@ List cytotrace2_bin_data(
   );
 }
 
-// ============================================================================
-// Stage 5: Adaptive kNN Smoothing
-// ============================================================================
 
-// Maps a score to potency category label index (0-5)
 int map_score_to_potency(double score) {
-  if (score <= 1.0 / 6.0) return 0;      // Differentiated
-  else if (score <= 2.0 / 6.0) return 1; // Unipotent
-  else if (score <= 3.0 / 6.0) return 2; // Oligopotent
-  else if (score <= 4.0 / 6.0) return 3; // Multipotent
-  else if (score <= 5.0 / 6.0) return 4; // Pluripotent
-  else return 5;                          // Totipotent
+  if (score <= 1.0 / 6.0) return 0;
+  else if (score <= 2.0 / 6.0) return 1;
+  else if (score <= 3.0 / 6.0) return 2;
+  else if (score <= 4.0 / 6.0) return 3;
+  else if (score <= 5.0 / 6.0) return 4;
+  else return 5;
 }
 
-// Find shortest consensus segment
 int shortest_consensus(const arma::vec& neighbor_scores) {
   int len = neighbor_scores.n_elem;
   int idx_use = 2;
@@ -641,16 +596,15 @@ int shortest_consensus(const arma::vec& neighbor_scores) {
 }
 
 List cytotrace2_knn_smooth(
-    const arma::mat& pca_coords,         // [n_cells x n_pcs]
-    const arma::vec& preKNN_scores,      // [n_cells]
-    const StringVector& preKNN_potency,  // [n_cells]
+    const arma::mat& pca_coords,
+    const arma::vec& preKNN_scores,
+    const StringVector& preKNN_potency,
     int cores = 1,
     int seed = 14
 ) {
   int n_cells = pca_coords.n_rows;
 
   if (n_cells < 100) {
-    // Skip kNN smoothing for small datasets
     StringVector final_potency(n_cells);
     for (int i = 0; i < n_cells; i++) {
       final_potency[i] = preKNN_potency[i];
@@ -661,22 +615,16 @@ List cytotrace2_knn_smooth(
     );
   }
 
-  // kNN smoothing
   arma::vec final_scores(n_cells);
 
-  // Pre-compute row squared norms for vectorized distance computation
-  // ||x_i - x_j||² = ||x_i||² + ||x_j||² - 2 * x_i · x_j
   arma::vec row_norms_sq = arma::sum(arma::square(pca_coords), 1);
 
   auto smooth_one_cell = [&](int i) {
-    // Vectorized Euclidean distances to all other cells in PCA space
     arma::vec dists_sq = row_norms_sq + row_norms_sq(i) -
       2.0 * (pca_coords * pca_coords.row(i).t());
-    // Clamp tiny negative values from floating-point rounding
     dists_sq.elem(arma::find(dists_sq < 0.0)).zeros();
     arma::vec dists = arma::sqrt(dists_sq);
 
-    // Normalize distances by max
     double max_dist = dists.max();
     if (max_dist > 0) {
       dists /= max_dist;
@@ -699,7 +647,6 @@ List cytotrace2_knn_smooth(
       }
     );
 
-    // Extract neighbor scores (sorted by distance)
     arma::vec neighbor_scores(n_neighbors);
     arma::vec neighbor_dists(n_neighbors);
     for (int k = 0; k < n_neighbors; k++) {
@@ -711,7 +658,6 @@ List cytotrace2_knn_smooth(
     int num_neighbors_keep = shortest_consensus(neighbor_scores);
 
     if (num_neighbors_keep > 1) {
-      // Distance-weighted average
       double weight_sum = 0.0;
       double score_sum = 0.0;
       for (int k = 0; k < num_neighbors_keep; k++) {
@@ -748,7 +694,6 @@ List cytotrace2_knn_smooth(
     }
   }
 
-  // Map scores to potency categories
   StringVector final_potency(n_cells);
   StringVector labels = StringVector::create(
     "Differentiated", "Unipotent", "Oligopotent",
@@ -766,28 +711,23 @@ List cytotrace2_knn_smooth(
   );
 }
 
-// ============================================================================
-// Main entry point: full pipeline in C++
-// ============================================================================
 
 // [[Rcpp::export]]
 List cytotrace2_main(
-    const arma::mat& rank_data,          // [n_cells x n_genes]
-    const arma::mat& log2_data,          // [n_cells x n_genes]
-    const List& parameter_dict,          // 19 model dicts
+    const arma::mat& rank_data,
+    const arma::mat& log2_data,
+    const List& parameter_dict,
     const IntegerVector& smooth_groups,
     int cores,
     int seed,
-    const arma::mat& pca_coords              // [n_cells x n_pcs] pre-computed PCA
+    const arma::mat& pca_coords
 ) {
   int n_cells = rank_data.n_rows;
 
-  // Stage 2: Ensemble prediction
   List pred_result = cytotrace2_ensemble_predict(rank_data, log2_data, parameter_dict, cores);
   arma::vec raw_scores = as<arma::vec>(pred_result["score"]);
   IntegerVector raw_categories = as<IntegerVector>(pred_result["category"]);
 
-  // Map integer categories to labels
   StringVector cat_labels = StringVector::create(
     "Differentiated", "Unipotent", "Oligopotent",
     "Multipotent", "Pluripotent", "Totipotent"
@@ -797,7 +737,6 @@ List cytotrace2_main(
     preKNN_potency[i] = cat_labels[raw_categories[i] - 1];
   }
 
-  // Stage 3: Diffusion smoothing
   arma::vec smoothed = cytotrace2_diffusion_smooth(
     log2_data, raw_scores, smooth_groups
   );
@@ -812,17 +751,14 @@ List cytotrace2_main(
     );
   }
 
-  // Stage 4: Binning
   List bin_result = cytotrace2_bin_data(smoothed, raw_categories, cat_labels);
   arma::vec binned_scores = as<arma::vec>(bin_result["preKNN_score"]);
   StringVector binned_potency = as<StringVector>(bin_result["preKNN_potency"]);
 
-  // Stage 5: kNN smoothing
   List knn_result;
   if (n_cells > 100 && pca_coords.n_rows == n_cells && pca_coords.n_cols > 0) {
     knn_result = cytotrace2_knn_smooth(pca_coords, binned_scores, binned_potency, cores, seed);
   } else if (n_cells > 100) {
-    // Fallback: skip kNN if PCA not provided
     StringVector final_potency = binned_potency;
     knn_result = List::create(
       Named("CytoTRACE2_Score") = binned_scores,
@@ -838,7 +774,6 @@ List cytotrace2_main(
   arma::vec final_scores = as<arma::vec>(knn_result["CytoTRACE2_Score"]);
   StringVector final_potency = as<StringVector>(knn_result["CytoTRACE2_Potency"]);
 
-  // Compute relative score
   double min_score = final_scores.min();
   double max_score = final_scores.max();
   double range = max_score - min_score;

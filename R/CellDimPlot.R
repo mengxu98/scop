@@ -1209,10 +1209,6 @@ CellDimPlot <- function(
         }
       }
       legend_title_use <- if (is.null(legend.title)) paste0(g, ":") else legend.title
-      # Store a character on the scale. ggnewscale < 0.5.0 does
-      # `scale$guide == "none"` and errors when `guide` is a Guide object
-      # (ggplot2 >= 3.5). Lineage / PAGA / velocity layers call
-      # `new_scale_color()` on this plot.
       color_scale_guide <- if (is.null(legend.by)) "legend" else "none"
       p <- p +
         scale_color_manual(

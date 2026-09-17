@@ -1,4 +1,3 @@
-# Spatial CellChat producer and stored-result plotting -------------------------
 
 spatialcellchat_required_symbols <- function(analysis.level = c("cell", "spot", "composition")) {
   analysis.level <- match.arg(analysis.level)

@@ -1437,17 +1437,17 @@ scfea_compare_features <- function(mat, srt = NULL, group.by = NULL, ident.1, id
   )
 }
 
-scfea_files <- c(
-  "Human_M168_information.symbols.csv",
-  "cName_c70_m168.csv",
-  "cName_complete_mouse_c70_m168.csv",
-  "cmMat_c70_m168.csv",
-  "cmMat_complete_mouse_c70_m168.csv",
-  "module_gene_complete_mouse_m168.csv",
-  "module_gene_m168.csv"
-)
 
 resolve_scfea_dir <- function(data_dir = NULL, verbose = TRUE) {
+  scfea_files <- c(
+    "Human_M168_information.symbols.csv",
+    "cName_c70_m168.csv",
+    "cName_complete_mouse_c70_m168.csv",
+    "cmMat_c70_m168.csv",
+    "cmMat_complete_mouse_c70_m168.csv",
+    "module_gene_complete_mouse_m168.csv",
+    "module_gene_m168.csv"
+  )
   if (!is.null(data_dir)) {
     if (!dir.exists(data_dir)) {
       log_message(

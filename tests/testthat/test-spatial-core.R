@@ -1,4 +1,3 @@
-# Reference implementation kept only as a test oracle for the display/raw round trip.
 spatial_coords_to_raw <- function(display, transform) {
   out <- as.data.frame(display, stringsAsFactors = FALSE)
   if (!all(c("x", "y") %in% colnames(out))) {
@@ -82,7 +81,7 @@ test_that("dedicated spatial result plots accept result-only input", {
   misty <- list(results = list(
     improvements = data.frame(target = c("A", "B"), measure = "gain.R2", value = c(0.1, 0.4)),
     contributions = data.frame(target = "A", view = "paraview.3", value = 0.3)
-  ), coordinate_contract_version = .spatial_coordinate_contract_version)
+  ), coordinate_contract_version = 3L)
   expect_s3_class(MistyRPlot(res = misty, measure = "value"), "ggplot")
   expect_s3_class(MistyRPlot(res = misty, type = "contributions", measure = "value"), "ggplot")
   expect_error(MistyRPlot(res = misty, measure = "missing"), "measure")
@@ -90,7 +89,7 @@ test_that("dedicated spatial result plots accept result-only input", {
   statial <- list(table = data.frame(
     imageID = rep(c("s1", "s2"), each = 2), test = rep(c("A:B", "B:A"), 2),
     r = rep(c(10, 20), 2), kontextual = c(-1, 0.5, 0.2, 1)
-  ), coordinate_contract_version = .spatial_coordinate_contract_version)
+  ), coordinate_contract_version = 3L)
   expect_s3_class(StatialKontextualPlot(res = statial), "ggplot")
 
   single_radius <- statial

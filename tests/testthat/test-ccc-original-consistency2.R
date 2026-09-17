@@ -1,5 +1,3 @@
-# End-to-end consistency between the scop CCC wrappers and the original
-# backend methods on real data (pancreas_sub). No mocks.
 
 real_ccc_input <- function(n_cells = 300, seed = 42) {
   data(pancreas_sub)
@@ -28,7 +26,6 @@ test_that("RunLIANA results match the original liana pipeline", {
   expect_true(nrow(long_table) > 0)
   expect_true(all(long_table$method == "LIANA"))
 
-  # original pipeline with identical inputs
   sce <- SingleCellExperiment::SingleCellExperiment(
     assays = list(
       counts = Seurat::GetAssayData(srt, assay = "RNA", layer = "counts"),
@@ -60,7 +57,6 @@ test_that("RunLIANA results match the original liana pipeline", {
   )
   expect_gt(length(intersect(long_key, original_key)) / length(unique(original_key)), 0.9)
 
-  # scores agree for shared interactions (logfc_comb is the logfc method score)
   merged <- merge(
     data.frame(key = original_key, score_original = original_df$logfc_comb),
     data.frame(key = long_key, score_wrapped = long_table$score),

@@ -270,8 +270,6 @@ test_that("large sparse permutation boundaries agree exactly", {
       expr, edges,
       method = method, nperm = 10L, backend = "cpp"
     )
-    # The R and C++ permutation paths may differ in low-order bits on
-    # some platforms; the boundaries must agree within machine precision.
     expect_equal(candidate$statistic, reference$statistic, tolerance = 1e-12)
     expect_equal(candidate$p_value, reference$p_value, tolerance = 1e-12)
   }

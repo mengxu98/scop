@@ -61,7 +61,6 @@ test_that("long points share geometry and named colors with ordinary points", {
 
 test_that("numeric long plots retain jitter and original color values", {
   object <- followup_spatial_object()
-  # The input value column may itself be named x; position resolution must not overwrite it.
   long <- data.frame(spot = colnames(object), x = c(10, 20, 30, 40))
   p <- SpatialSpotPlot(object, plot.data = long, spot.by = "spot", color.by = "x",
     geom = "jitter", jitter_width = .2, jitter_height = .1)

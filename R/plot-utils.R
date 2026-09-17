@@ -27,9 +27,6 @@ matrix_to_long <- function(mat, row_name, col_name, value_name) {
   df
 }
 
-# "theme_scop" is a scop alias of thisplot::theme_this. thisplot::StatPlot()
-# looks up character theme_use in the thisplot namespace, so the string
-# "theme_scop" cannot be found there. Return the function instead.
 resolve_plot_theme_use <- function(theme_use) {
   if (identical(theme_use, "theme_scop")) {
     return(thisplot::theme_this)
@@ -43,8 +40,6 @@ resolve_plot_theme_use <- function(theme_use) {
   theme_use
 }
 
-# Build a ggplot2 theme from theme_use (name, function, or theme object).
-# allow_null = TRUE returns NULL when theme_use is NULL instead of the fallback.
 apply_plot_theme <- function(
   theme_use = "theme_scop",
   theme_args = list(),

@@ -1,3 +1,11 @@
+# scop (development version)
+
+* **refactor**: Use the thisplot Pastel1 palette for volcano enrichment overlays instead of a hard-coded palette.
+
+* **refactor**: Keep fixed method lists, resource filenames, and internal contract values at their use sites instead of package-level static constants.
+* **fix**: Restore Palantir thread settings on exit, validate Python runtime changes before applying thread configuration, invalidate CytoTRACE2 model caches when assets change, and reject conflicting `cores`/`ncores` arguments.
+* **refactor**: Trajectory Python backends call `PrepareEnv()` directly and use its managed environment validation/cache instead of bypassing preparation when modules happen to be importable.
+
 # scop 0.9.2
 
 * **fix**: Matrix spatial plots retain explicit cutoff/quantile scales, and Cell2location dominant maps forward `combine` and layout controls. Constant topic/abundance panels use consistent default legend breaks.

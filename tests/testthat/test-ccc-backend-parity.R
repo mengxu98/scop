@@ -1,4 +1,3 @@
-# Reference implementation kept only as a test oracle for the C++ aggregation path.
 ccc_pair_table <- function(
   srt,
   method,

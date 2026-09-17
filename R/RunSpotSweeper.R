@@ -611,8 +611,6 @@ spot_sweeper_align_local_output <- function(output, input, sample_col, metric) {
     anyNA(output_ids) || anyDuplicated(output_ids)) {
     fail()
   }
-  # localOutliers 1.5.0 rbinds named per-sample results, prefixing their IDs.
-  # Match the complete expected names; never strip an arbitrary prefix.
   prefixed <- paste(as.character(SummarizedExperiment::colData(input)[[sample_col]]), input_ids, sep = ".")
   candidates <- list(input_ids, prefixed)
   valid <- vapply(candidates, function(ids) !anyDuplicated(ids) && setequal(ids, output_ids), logical(1))

@@ -4,8 +4,6 @@
 #include <Rcpp.h>
 #include <vector>
 
-// Convert an R numeric matrix to a row-major float buffer (used by the
-// kNN/UMAP C++ kernels that consume flat float arrays).
 inline std::vector<float> matrix_as_row_float(Rcpp::NumericMatrix x) {
   const int rows = x.nrow();
   const int cols = x.ncol();
@@ -19,4 +17,4 @@ inline std::vector<float> matrix_as_row_float(Rcpp::NumericMatrix x) {
   return out;
 }
 
-#endif // SCOP_NUMERIC_UTILS_H
+#endif

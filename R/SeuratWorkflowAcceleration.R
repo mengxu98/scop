@@ -116,9 +116,6 @@ module_score_native <- function(
     )
     names(data_cut) <- names(data_avg)
 
-    # Build control sets in O(k) time: sample candidates per feature, then
-    # combine with unlist + unique. The original c()-in-a-loop grew the vector
-    # by copying on every iteration (O(k²) total); lapply avoids those copies.
     control_sets <- lapply(seq_along(features), function(i) {
       sampled <- unlist(lapply(features[[i]], function(feature) {
         candidates <- data_cut[data_cut == data_cut[[feature]]]

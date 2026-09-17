@@ -121,10 +121,6 @@ FindNeighbors.Seurat <- function(
   SeuratObject::LogSeuratCommand(object = object)
 }
 
-# Convert a nearest-neighbour index matrix to reference cell names without an
-# element-wise `apply()` call.  Matrix indexing is column-major just like the
-# index matrices returned by Seurat, so this preserves both values and
-# dimnames while avoiding one R closure invocation per neighbour.
 knn_indices_to_names <- function(indices, reference_names) {
   out <- matrix(
     reference_names[as.integer(indices)],
@@ -135,10 +131,6 @@ knn_indices_to_names <- function(indices, reference_names) {
   out
 }
 
-# `knn_cross_topk_native()` has already rejected non-finite values before this
-# helper is reached.  `matrixStats::rowRanks()` therefore has the same ranking
-# semantics as `rank()` here (including average tie ranks), while avoiding an
-# R-level `apply()` call for every reference/query vector.
 knn_rank_rows <- function(x) {
   check_r("matrixStats", verbose = FALSE)
   matrixStats::rowRanks(as.matrix(x), ties.method = "average")
@@ -198,9 +190,6 @@ find_neighbors_l2_rows <- function(mat) {
   mat / norms
 }
 
-# Map a finite embedding matrix to k nearest neighbors. Native code covers the
-# exact RANN path only; Annoy always returns NULL so callers use Seurat.
-# Returns NULL when the request is outside the validated native contract.
 find_neighbors_native_embedding <- function(
   object,
   query = NULL,
@@ -566,9 +555,6 @@ FindNeighbors.Assay <- function(
   )
 }
 
-# SeuratObject's v5 assay class is not an S3 subclass of `Assay`, so it needs
-# an explicit method even though both assay generations share the same data
-# extraction contract here.
 #' @export
 FindNeighbors.Assay5 <- FindNeighbors.Assay
 

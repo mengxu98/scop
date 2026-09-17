@@ -169,8 +169,6 @@ test_that("Assay5 scaling matches Seurat for sketch cells and repeated scaling",
   expect_identical(rownames(GetAssayData5(out, assay = "sketch", layer = "scale.data")), features[1:6])
   expect_true(isTRUE(methods::validObject(out[["sketch"]])))
   object$batch <- rep(c("A", "B"), length.out = ncol(object))
-  # Seurat's whole-object split.by path uses all object cells even for a sketch;
-  # compare with its correctly subsetted reference context instead.
   reference <- original(subset(object, cells = colnames(object[["sketch"]])),
     assay = "sketch", features = features, split.by = "batch", verbose = FALSE)
   out <- ScaleData(object, assay = "sketch", features = features, split.by = "batch", verbose = FALSE)

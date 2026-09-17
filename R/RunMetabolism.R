@@ -200,7 +200,6 @@ RunMetabolism <- function(
     expr_counts <- as_matrix(expr_counts)
   }
 
-  # ---- Build gene sets ----
 
   if (isTRUE(use_preparedb)) {
     log_message(
@@ -231,7 +230,6 @@ RunMetabolism <- function(
     gene_sets <- result[["gene_sets"]]
     term_names_final <- result[["term_names"]]
 
-    # Skip the GMT-based gene set construction below
     skip_gmt <- TRUE
   } else {
     need_species_conv <- isTRUE(convert_species) && !identical(species, "Homo_sapiens")
@@ -304,7 +302,7 @@ RunMetabolism <- function(
         term_ids_db
       )
     }
-  } # end if (!skip_gmt)
+  }
 
   if (!isTRUE(skip_gmt) && isTRUE(convert_species) && !identical(species, "Homo_sapiens") &&
     length(gene_sets_all) > 0) {
@@ -356,14 +354,12 @@ RunMetabolism <- function(
           for (pw in names(gmt_gene_sets)) {
             if (!pw %in% names(gs_current)) next
             human_genes <- toupper(gmt_gene_sets[[pw]])
-            # For each human gene, find target species homologs
             target_genes <- unique(unlist(
               hs_to_target[human_genes],
               use.names = FALSE
             ))
             target_genes <- target_genes[!is.na(target_genes) & nzchar(target_genes)]
             if (length(target_genes) == 0) next
-            # Match target genes to expression rownames
             matched <- intersect(target_genes, rownames(expr_counts))
             if (length(matched) > 0) {
               existing <- gs_current[[pw]]
@@ -372,7 +368,6 @@ RunMetabolism <- function(
                 (length(gs_current[[pw]]) - length(existing))
             }
           }
-          # Re-filter by size
           gs_size <- lengths(gs_current)
           gs_current <- gs_current[gs_size >= minGSSize & gs_size <= maxGSSize]
           gene_sets_all[[db_name]] <- gs_current
@@ -396,7 +391,7 @@ RunMetabolism <- function(
 
     gene_sets <- do.call(c, gene_sets_all)
     term_names_final <- unlist(term_names_all, use.names = TRUE)
-  } # end if (!skip_gmt)
+  }
 
   log_message(
     "Total metabolism gene sets to score: {.val {length(gene_sets)}}",
@@ -807,9 +802,7 @@ build_metabolism_gene_sets_from_preparedb <- function(
     tn <- db_entry[["TERM2NAME"]]
     if (is.null(tg) || nrow(tg) == 0L) next
 
-    # Filter to scMetabolism-curated pathways
     if (identical(term_db, "KEGG")) {
-      # Match KEGG pathway numbers (e.g., "00010" matches "hsa00010")
       kegg_nums <- curated[["kegg_refs"]]
       if (length(kegg_nums) == 0) next
       term_ids <- as.character(tg[["Term"]])
@@ -843,7 +836,6 @@ build_metabolism_gene_sets_from_preparedb <- function(
       if (is.na(gene_col)) next
     }
 
-    # Build gene sets: Term → genes present in expression matrix
     term_vec <- as.character(tg[["Term"]])
     gene_vec <- as.character(tg[[gene_col]])
     valid_gene <- !is.na(gene_vec) & nzchar(trimws(gene_vec))
@@ -863,7 +855,6 @@ build_metabolism_gene_sets_from_preparedb <- function(
 
     if (length(gs) == 0) next
 
-    # Build term names
     tn_sub <- tn[tn[["Term"]] %in% names(gs), , drop = FALSE]
     term_name_vec <- stats::setNames(
       as.character(tn_sub[["Name"]]),

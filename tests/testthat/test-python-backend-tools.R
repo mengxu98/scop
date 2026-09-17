@@ -122,6 +122,8 @@ test_that("RunSCVELO python backend records result locations in tools", {
 })
 
 test_that("RunPalantir python backend records converted outputs in tools", {
+  withr::local_envvar(c(OMP_NUM_THREADS = "7", OPENBLAS_NUM_THREADS = NA, nm = NA))
+  before_env <- Sys.getenv(c("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "nm"), unset = NA_character_)
   adata_in <- list(obs = data.frame(cluster = factor(c("a", "b"))))
   palantir_srt <- make_python_backend_test_srt()
   palantir_srt$cluster <- factor(c("a", "b"))
@@ -161,6 +163,7 @@ test_that("RunPalantir python backend records converted outputs in tools", {
     verbose = FALSE
   )
 
+  expect_identical(Sys.getenv(names(before_env), unset = NA_character_), before_env)
   expect_identical(out@tools$Palantir$backend, "python")
   expect_identical(out@tools$Palantir$group.by, "cluster")
   expect_equal(out@tools$Palantir$pseudotime, c(0.1, 0.9))

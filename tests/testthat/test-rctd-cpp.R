@@ -1,4 +1,3 @@
-# Reference implementations kept only as test oracles for the C++ paths.
 rctd_nonzero_shared_features <- function(st_counts, ref_counts) {
   st_counts <- methods::as(st_counts, "dgCMatrix")
   ref_counts <- methods::as(ref_counts, "dgCMatrix")

@@ -10,8 +10,6 @@ make_sctenifold_knk_srt <- function(n_genes = 60L, n_cells = 80L, seed = 1L) {
   )
 }
 
-# A gene without counts in any cell is dropped by every subsample, so each
-# network has to be re-embedded into the full gene space.
 make_sctenifold_dropout_counts <- function(
   n_genes = 40L,
   n_cells = 60L,
@@ -60,9 +58,6 @@ run_sctenifold_knk <- function(srt, store_networks) {
 test_that("RunscTenifoldKnk cpp backend builds the network ensemble natively", {
   srt <- make_sctenifold_knk_srt()
   manifold_calls <- 0L
-  # Manifold alignment and differential regulation need the optional
-  # RSpectra/RhpcBLASctl/MASS packages; stubbing them keeps this guard running
-  # where the check installs hard dependencies only.
   testthat::local_mocked_bindings(
     .package = "scop",
     check_r = function(...) invisible(TRUE),
@@ -131,15 +126,12 @@ test_that("RunscTenifoldKnk store_networks only controls what is stored", {
 
 test_that("RunscTenifoldKnk re-embeds subsampled networks with their scores", {
   counts <- make_sctenifold_dropout_counts()
-  # 30 sampled cells exercise the dual solver, 50 the primal one
   for (n_cells in c(30L, 50L)) {
     nets <- NULL
     expect_no_warning(nets <- build_sctenifold_networks(counts, n_cells))
 
     expect_length(nets, 2L)
     for (net in nets) {
-      # a pattern (ngCMatrix) result silently drops the regression scores and
-      # collapses the network to unweighted logical entries
       expect_s4_class(net, "dgCMatrix")
       expect_identical(dim(net), c(nrow(counts), nrow(counts)))
       expect_identical(rownames(net), rownames(counts))

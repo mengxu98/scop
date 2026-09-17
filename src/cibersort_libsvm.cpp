@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-// R defines a legacy length(x) macro. Include the C++ standard library first so
-// that the macro cannot rewrite std::codecvt::length declarations in libc++.
 #include <R.h>
 #include <Rdefines.h>
 
@@ -98,10 +96,6 @@ static inline double powi(double base, int times)
 
 static void print_string_stdout(const char *s)
 {
-    /*
-	fputs(s,stdout);
-	fflush(stdout);
-    */
     cibersort_libsvm_reprintf("%s", s);
 }
 static void (*svm_print_string) (const char *) = &print_string_stdout;
@@ -119,21 +113,12 @@ static void info(const char *fmt,...)
 static void info(const char *fmt,...) {}
 #endif
 
-//
-// Kernel Cache
-//
-// l is the number of total data items
-// size is the cache size limit in bytes
-//
 class Cache
 {
 public:
 	Cache(int l,long int size);
 	~Cache();
 
-	// request data [0,len)
-	// return some position p where [p,len) need to be filled
-	// (p >= len if nothing needs to be filled)
 	int get_data(const int index, Qfloat **data, int len);
 	void swap_index(int i, int j);
 private:
@@ -141,9 +126,9 @@ private:
 	long int size;
 	struct head_t
 	{
-		head_t *prev, *next;	// a circular list
+		head_t *prev, *next;
 		Qfloat *data;
-		int len;		// data[0,len) is cached in this entry
+		int len;
 	};
 
 	head_t *head;
@@ -154,10 +139,10 @@ private:
 
 Cache::Cache(int l_,long int size_):l(l_),size(size_)
 {
-	head = (head_t *)calloc(l,sizeof(head_t));	// initialized to 0
+	head = (head_t *)calloc(l,sizeof(head_t));
 	size /= sizeof(Qfloat);
 	size -= l * sizeof(head_t) / sizeof(Qfloat);
-	size = max(size, 2 * (long int) l);	// cache must be large enough for two columns
+	size = max(size, 2 * (long int) l);
 	lru_head.next = lru_head.prev = &lru_head;
 }
 
@@ -170,14 +155,12 @@ Cache::~Cache()
 
 void Cache::lru_delete(head_t *h)
 {
-	// delete from current location
 	h->prev->next = h->next;
 	h->next->prev = h->prev;
 }
 
 void Cache::lru_insert(head_t *h)
 {
-	// insert to last position
 	h->next = &lru_head;
 	h->prev = lru_head.prev;
 	h->prev->next = h;
@@ -192,7 +175,6 @@ int Cache::get_data(const int index, Qfloat **data, int len)
 
 	if(more > 0)
 	{
-		// free old space
 		while(size < more)
 		{
 			head_t *old = lru_head.next;
@@ -203,7 +185,6 @@ int Cache::get_data(const int index, Qfloat **data, int len)
 			old->len = 0;
 		}
 
-		// allocate new space
 		h->data = (Qfloat *)realloc(h->data,sizeof(Qfloat)*len);
 		size -= more;
 		swap(h->len,len);
@@ -234,7 +215,6 @@ void Cache::swap_index(int i, int j)
 				swap(h->data[i],h->data[j]);
 			else
 			{
-				// give up
 				lru_delete(h);
 				free(h->data);
 				size += h->len;
@@ -245,13 +225,6 @@ void Cache::swap_index(int i, int j)
 	}
 }
 
-//
-// Kernel evaluation
-//
-// the static method k_function is for doing single kernel evaluation
-// the constructor of Kernel prepares to calculate the l*l kernel matrix
-// the member function get_Q is for getting one column from the Q Matrix
-//
 class QMatrix {
 public:
 	virtual Qfloat *get_Q(int column, int len) const = 0;
@@ -269,7 +242,7 @@ public:
 				 const cibersort_svm_parameter& param);
 	virtual Qfloat *get_Q(int column, int len) const = 0;
 	virtual double *get_QD() const = 0;
-	virtual void swap_index(int i, int j) const	// no so const...
+	virtual void swap_index(int i, int j) const
 	{
 		swap(x[i],x[j]);
 		if(x_square) swap(x_square[i],x_square[j]);
@@ -282,7 +255,6 @@ private:
 	const cibersort_svm_node **x;
 	double *x_square;
 
-	// cibersort_svm_parameter
 	const int kernel_type;
 	const int degree;
 	const double gamma;
@@ -426,31 +398,13 @@ double Kernel::k_function(const cibersort_svm_node *x, const cibersort_svm_node 
 		}
 		case SIGMOID:
 			return tanh(param.gamma*dot(x,y)+param.coef0);
-		case PRECOMPUTED:  //x: test (validation), y: SV
+		case PRECOMPUTED:
 			return x[(int)(y->value)].value;
 		default:
-			return 0;  // Unreachable
+			return 0;
 	}
 }
 
-// An SMO algorithm in Fan et al., JMLR 6(2005), p. 1889--1918
-// Solves:
-//
-//	min 0.5(\alpha^T Q \alpha) + p^T \alpha
-//
-//		y^T \alpha = \delta
-//		y_i = +1 or -1
-//		0 <= alpha_i <= Cp for y_i = 1
-//		0 <= alpha_i <= Cn for y_i = -1
-//
-// Given:
-//
-//	Q, p, y, Cp, Cn, and an initial feasible point \alpha
-//	l is the size of vectors and matrices
-//	eps is the stopping tolerance
-//
-// solution will be put in \alpha, objective value will be put in obj
-//
 class Solver {
 public:
 	Solver() {};
@@ -461,7 +415,7 @@ public:
 		double rho;
 		double upper_bound_p;
 		double upper_bound_n;
-		double r;	// for Solver_NU
+		double r;
 	};
 
 	void Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
@@ -470,9 +424,9 @@ public:
 protected:
 	int active_size;
 	schar *y;
-	double *G;		// gradient of objective function
+	double *G;
 	enum { LOWER_BOUND, UPPER_BOUND, FREE };
-	char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
+	char *alpha_status;
 	double *alpha;
 	const QMatrix *Q;
 	const double *QD;
@@ -480,9 +434,9 @@ protected:
 	double Cp,Cn;
 	double *p;
 	int *active_set;
-	double *G_bar;		// gradient, if we treat free variables as 0
+	double *G_bar;
 	int l;
-	bool unshrink;	// XXX
+	bool unshrink;
 
 	double get_C(int i)
 	{
@@ -522,7 +476,6 @@ void Solver::swap_index(int i, int j)
 
 void Solver::reconstruct_gradient()
 {
-	// reconstruct inactive elements of G from G_bar and free variables
 
 	if(active_size == l) return;
 
@@ -577,14 +530,12 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 	this->eps = eps;
 	unshrink = false;
 
-	// initialize alpha_status
 	{
 		alpha_status = new char[l];
 		for(int i=0;i<l;i++)
 			update_alpha_status(i);
 	}
 
-	// initialize active set (for shrinking)
 	{
 		active_set = new int[l];
 		for(int i=0;i<l;i++)
@@ -592,7 +543,6 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 		active_size = l;
 	}
 
-	// initialize gradient
 	{
 		G = new double[l];
 		G_bar = new double[l];
@@ -616,7 +566,6 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 			}
 	}
 
-	// optimization step
 
 	int iter = 0;
 	int max_iter = max(10000000, l>INT_MAX/100 ? INT_MAX : 100*l);
@@ -624,7 +573,6 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 
 	while(iter < max_iter)
 	{
-		// show progress and do shrinking
 
 		if(--counter == 0)
 		{
@@ -636,20 +584,17 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 		int i,j;
 		if(select_working_set(i,j)!=0)
 		{
-			// reconstruct the whole gradient
 			reconstruct_gradient();
-			// reset active set size and check
 			active_size = l;
 			info("*");
 			if(select_working_set(i,j)!=0)
 				break;
 			else
-				counter = 1;	// do shrinking next iteration
+				counter = 1;
 		}
 
 		++iter;
 
-		// update alpha[i] and alpha[j], handle bounds carefully
 
 		const Qfloat *Q_i = Q.get_Q(i,active_size);
 		const Qfloat *Q_j = Q.get_Q(j,active_size);
@@ -747,7 +692,6 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 			}
 		}
 
-		// update G
 
 		double delta_alpha_i = alpha[i] - old_alpha_i;
 		double delta_alpha_j = alpha[j] - old_alpha_j;
@@ -757,7 +701,6 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 			G[k] += Q_i[k]*delta_alpha_i + Q_j[k]*delta_alpha_j;
 		}
 
-		// update alpha_status and G_bar
 
 		{
 			bool ui = is_upper_bound(i);
@@ -793,7 +736,6 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 	{
 		if(active_size < l)
 		{
-			// reconstruct the whole gradient to calculate objective value
 			reconstruct_gradient();
 			active_size = l;
 			info("*");
@@ -801,11 +743,9 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 		cibersort_libsvm_reprintf("\nWARNING: reaching max number of iterations\n");
 	}
 
-	// calculate rho
 
 	si->rho = calculate_rho();
 
-	// calculate objective value
 	{
 		double v = 0;
 		int i;
@@ -815,19 +755,11 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 		si->obj = v/2;
 	}
 
-	// put back the solution
 	{
 		for(int i=0;i<l;i++)
 			alpha_[active_set[i]] = alpha[i];
 	}
 
-	// juggle everything back
-	/*{
-		for(int i=0;i<l;i++)
-			while(active_set[i] != i)
-				swap_index(i,active_set[i]);
-				// or Q.swap_index(i,active_set[i]);
-	}*/
 
 	si->upper_bound_p = Cp;
 	si->upper_bound_n = Cn;
@@ -843,14 +775,8 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 	delete[] G_bar;
 }
 
-// return 1 if already optimal, return 0 otherwise
 int Solver::select_working_set(int &out_i, int &out_j)
 {
-	// return i,j such that
-	// i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
-	// j: minimizes the decrease of obj value
-	//    (if quadratic coefficeint <= 0, replace it with tau)
-	//    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
 	double Gmax = -INF;
 	double Gmax2 = -INF;
@@ -880,7 +806,7 @@ int Solver::select_working_set(int &out_i, int &out_j)
 
 	int i = Gmax_idx;
 	const Qfloat *Q_i = NULL;
-	if(i != -1) // NULL Q_i not accessed: Gmax=-INF if i=-1
+	if(i != -1)
 		Q_i = Q->get_Q(i,active_size);
 
 	for(int j=0;j<active_size;j++)
@@ -966,10 +892,9 @@ bool Solver::be_shrunk(int i, double Gmax1, double Gmax2)
 void Solver::do_shrinking()
 {
 	int i;
-	double Gmax1 = -INF;		// max { -y_i * grad(f)_i | i in I_up(\alpha) }
-	double Gmax2 = -INF;		// max { y_i * grad(f)_i | i in I_low(\alpha) }
+	double Gmax1 = -INF;
+	double Gmax2 = -INF;
 
-	// find maximal violating pair first
 	for(i=0;i<active_size;i++)
 	{
 		if(y[i]==+1)
@@ -1062,11 +987,6 @@ double Solver::calculate_rho()
 	return r;
 }
 
-//
-// Solver for nu-svm classification and regression
-//
-// additional constraint: e^T \alpha = constant
-//
 class Solver_NU: public Solver
 {
 public:
@@ -1086,14 +1006,8 @@ private:
 	void do_shrinking();
 };
 
-// return 1 if already optimal, return 0 otherwise
 int Solver_NU::select_working_set(int &out_i, int &out_j)
 {
-	// return i,j such that y_i = y_j and
-	// i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
-	// j: minimizes the decrease of obj value
-	//    (if quadratic coefficeint <= 0, replace it with tau)
-	//    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
 	double Gmaxp = -INF;
 	double Gmaxp2 = -INF;
@@ -1130,7 +1044,7 @@ int Solver_NU::select_working_set(int &out_i, int &out_j)
 	int in = Gmaxn_idx;
 	const Qfloat *Q_ip = NULL;
 	const Qfloat *Q_in = NULL;
-	if(ip != -1) // NULL Q_ip not accessed: Gmaxp=-INF if ip=-1
+	if(ip != -1)
 		Q_ip = Q->get_Q(ip,active_size);
 	if(in != -1)
 		Q_in = Q->get_Q(in,active_size);
@@ -1221,12 +1135,11 @@ bool Solver_NU::be_shrunk(int i, double Gmax1, double Gmax2, double Gmax3, doubl
 
 void Solver_NU::do_shrinking()
 {
-	double Gmax1 = -INF;	// max { -y_i * grad(f)_i | y_i = +1, i in I_up(\alpha) }
-	double Gmax2 = -INF;	// max { y_i * grad(f)_i | y_i = +1, i in I_low(\alpha) }
-	double Gmax3 = -INF;	// max { -y_i * grad(f)_i | y_i = -1, i in I_up(\alpha) }
-	double Gmax4 = -INF;	// max { y_i * grad(f)_i | y_i = -1, i in I_low(\alpha) }
+	double Gmax1 = -INF;
+	double Gmax2 = -INF;
+	double Gmax3 = -INF;
+	double Gmax4 = -INF;
 
-	// find maximal violating pair first
 	int i;
 	for(i=0;i<active_size;i++)
 	{
@@ -1321,9 +1234,6 @@ double Solver_NU::calculate_rho()
 	return (r1-r2)/2;
 }
 
-//
-// Q matrices for various formulations
-//
 class SVC_Q: public Kernel
 {
 public:
@@ -1462,7 +1372,6 @@ public:
 				data[j] = (Qfloat)(this->*kernel_function)(real_i,j);
 		}
 
-		// reorder and copy
 		Qfloat *buf = buffer[next_buffer];
 		next_buffer = 1 - next_buffer;
 		schar si = sign[i];
@@ -1495,9 +1404,6 @@ private:
 	double *QD;
 };
 
-//
-// construct and solve various formulations
-//
 static void solve_c_svc(
 	const cibersort_svm_problem *prob, const cibersort_svm_parameter* param,
 	double *alpha, Solver::SolutionInfo* si, double Cp, double Cn)
@@ -1597,7 +1503,7 @@ static void solve_one_class(
 	schar *ones = new schar[l];
 	int i;
 
-	int n = (int)(param->nu*prob->l);	// # of alpha's at upper bound
+	int n = (int)(param->nu*prob->l);
 
 	for(i=0;i<n;i++)
 		alpha[i] = 1;
@@ -1696,9 +1602,6 @@ static void solve_nu_svr(
 	delete[] y;
 }
 
-//
-// decision_function
-//
 struct decision_function
 {
 	double *alpha;
@@ -1732,7 +1635,6 @@ static decision_function svm_train_one(
 
 	info("obj = %f, rho = %f\n",si.obj,si.rho);
 
-	// output SVs
 
 	int nSV = 0;
 	int nBSV = 0;
@@ -1762,7 +1664,6 @@ static decision_function svm_train_one(
 	return f;
 }
 
-// Platt's binary SVM Probablistic Output: an improvement from Lin et al.
 static void sigmoid_train(
 	int l, const double *dec_values, const double *labels,
 	double& A, double& B)
@@ -1774,9 +1675,9 @@ static void sigmoid_train(
 		if (labels[i] > 0) prior1+=1;
 		else prior0+=1;
 
-	int max_iter=100;	// Maximal number of iterations
-	double min_step=1e-10;	// Minimal step taken in line search
-	double sigma=1e-12;	// For numerically strict PD of Hessian
+	int max_iter=100;
+	double min_step=1e-10;
+	double sigma=1e-12;
 	double eps=1e-5;
 	double hiTarget=(prior1+1.0)/(prior1+2.0);
 	double loTarget=1/(prior0+2.0);
@@ -1785,7 +1686,6 @@ static void sigmoid_train(
 	double newA,newB,newf,d1,d2;
 	int iter;
 
-	// Initial Point and Initial Fun Value
 	A=0.0; B=log((prior0+1.0)/(prior1+1.0));
 	double fval = 0.0;
 
@@ -1801,8 +1701,7 @@ static void sigmoid_train(
 	}
 	for (iter=0;iter<max_iter;iter++)
 	{
-		// Update Gradient and Hessian (use H' = H + sigma I)
-		h11=sigma; // numerically ensures strict PD
+		h11=sigma;
 		h22=sigma;
 		h21=0.0;g1=0.0;g2=0.0;
 		for (i=0;i<l;i++)
@@ -1827,24 +1726,21 @@ static void sigmoid_train(
 			g2+=d1;
 		}
 
-		// Stopping Criteria
 		if (fabs(g1)<eps && fabs(g2)<eps)
 			break;
 
-		// Finding Newton direction: -inv(H') * g
 		det=h11*h22-h21*h21;
 		dA=-(h22*g1 - h21 * g2) / det;
 		dB=-(-h21*g1+ h11 * g2) / det;
 		gd=g1*dA+g2*dB;
 
 
-		stepsize = 1;		// Line Search
+		stepsize = 1;
 		while (stepsize >= min_step)
 		{
 			newA = A + stepsize * dA;
 			newB = B + stepsize * dB;
 
-			// New function value
 			newf = 0.0;
 			for (i=0;i<l;i++)
 			{
@@ -1854,7 +1750,6 @@ static void sigmoid_train(
 				else
 					newf += (t[i] - 1)*fApB +log(1+exp(fApB));
 			}
-			// Check sufficient decrease
 			if (newf<fval+0.0001*stepsize*gd)
 			{
 				A=newA;B=newB;fval=newf;
@@ -1879,14 +1774,12 @@ static void sigmoid_train(
 static double sigmoid_predict(double decision_value, double A, double B)
 {
 	double fApB = decision_value*A+B;
-	// 1-p used later; avoid catastrophic cancellation
 	if (fApB >= 0)
 		return exp(-fApB)/(1.0+exp(-fApB));
 	else
 		return 1.0/(1+exp(fApB)) ;
 }
 
-// Method 2 from the multiclass_prob paper by Wu, Lin, and Weng
 static void multiclass_probability(int k, double **r, double *p)
 {
 	int t,j;
@@ -1897,7 +1790,7 @@ static void multiclass_probability(int k, double **r, double *p)
 
 	for (t=0;t<k;t++)
 	{
-		p[t]=1.0/k;  // Valid if k = 1
+		p[t]=1.0/k;
 		Q[t]=Malloc(double,k);
 		Q[t][t]=0;
 		for (j=0;j<t;j++)
@@ -1913,7 +1806,6 @@ static void multiclass_probability(int k, double **r, double *p)
 	}
 	for (iter=0;iter<max_iter;iter++)
 	{
-		// stopping condition, recalculate QP,pQP for numerical accuracy
 		pQp=0;
 		for (t=0;t<k;t++)
 		{
@@ -1950,7 +1842,6 @@ static void multiclass_probability(int k, double **r, double *p)
 	free(Qp);
 }
 
-// Cross-validation decision values for probability estimates
 static void svm_binary_svc_probability(
 	const cibersort_svm_problem *prob, const cibersort_svm_parameter *param,
 	double Cp, double Cn, double& probA, double& probB)
@@ -1960,7 +1851,6 @@ static void svm_binary_svc_probability(
 	int *perm = Malloc(int,prob->l);
 	double *dec_values = Malloc(double,prob->l);
 
-	// random shuffle
 	GetRNGstate();
 	for(i=0;i<prob->l;i++) perm[i]=i;
 	for(i=0;i<prob->l;i++)
@@ -2025,7 +1915,6 @@ static void svm_binary_svc_probability(
 			for(j=begin;j<end;j++)
 			{
 				cibersort_svm_predict_values(submodel,prob->x[perm[j]],&(dec_values[perm[j]]));
-				// ensure +1 -1 order; reason not using CV subroutine
 				dec_values[perm[j]] *= submodel->label[0];
 			}
 			cibersort_svm_free_and_destroy_model(&submodel);
@@ -2039,7 +1928,6 @@ static void svm_binary_svc_probability(
 	free(perm);
 }
 
-// Return parameter of a Laplace distribution
 static double svm_svr_probability(
 	const cibersort_svm_problem *prob, const cibersort_svm_parameter *param)
 {
@@ -2072,8 +1960,6 @@ static double svm_svr_probability(
 }
 
 
-// label: label name, start: begin of each class, count: #data of classes, perm: indices to the original data
-// perm, length l, must be allocated before calling this subroutine
 static void svm_group_classes(const cibersort_svm_problem *prob, int *nr_class_ret, int **label_ret, int **start_ret, int **count_ret, int *perm)
 {
 	int l = prob->l;
@@ -2111,11 +1997,6 @@ static void svm_group_classes(const cibersort_svm_problem *prob, int *nr_class_r
 		}
 	}
 
-	//
-	// Labels are ordered by their first occurrence in the training set.
-	// However, for two-class sets with -1/+1 labels and -1 appears first,
-	// we swap labels to ensure that internally the binary SVM has positive data corresponding to the +1 instances.
-	//
 	if (nr_class == 2 && label[0] == -1 && label[1] == 1)
 	{
 		swap(label[0],label[1]);
@@ -2149,20 +2030,16 @@ static void svm_group_classes(const cibersort_svm_problem *prob, int *nr_class_r
 	free(data_label);
 }
 
-//
-// Interface functions
-//
 cibersort_svm_model *cibersort_svm_train(const cibersort_svm_problem *prob, const cibersort_svm_parameter *param)
 {
 	cibersort_svm_model *model = Malloc(cibersort_svm_model,1);
 	model->param = *param;
-	model->free_sv = 0;	// XXX
+	model->free_sv = 0;
 
 	if(param->svm_type == ONE_CLASS ||
 	   param->svm_type == EPSILON_SVR ||
 	   param->svm_type == NU_SVR)
 	{
-		// regression or one-class-svm
 		model->nr_class = 2;
 		model->label = NULL;
 		model->nSV = NULL;
@@ -2203,7 +2080,6 @@ cibersort_svm_model *cibersort_svm_train(const cibersort_svm_problem *prob, cons
 	}
 	else
 	{
-		// classification
 		int l = prob->l;
 		int nr_class;
 		int *label = NULL;
@@ -2211,7 +2087,6 @@ cibersort_svm_model *cibersort_svm_train(const cibersort_svm_problem *prob, cons
 		int *count = NULL;
 		int *perm = Malloc(int,l);
 
-		// group training data of the same class
 		svm_group_classes(prob,&nr_class,&label,&start,&count,perm);
 		if(nr_class == 1)
 			info("WARNING: training data in only one class. See README for details.\n");
@@ -2221,7 +2096,6 @@ cibersort_svm_model *cibersort_svm_train(const cibersort_svm_problem *prob, cons
 		for(i=0;i<l;i++)
 			x[i] = prob->x[perm[i]];
 
-		// calculate weighted C
 
 		double *weighted_C = Malloc(double, nr_class);
 		for(i=0;i<nr_class;i++)
@@ -2238,7 +2112,6 @@ cibersort_svm_model *cibersort_svm_train(const cibersort_svm_problem *prob, cons
 				weighted_C[j] *= param->weight[i];
 		}
 
-		// train k*(k-1)/2 models
 
 		bool *nonzero = Malloc(bool,l);
 		for(i=0;i<l;i++)
@@ -2289,7 +2162,6 @@ cibersort_svm_model *cibersort_svm_train(const cibersort_svm_problem *prob, cons
 				++p;
 			}
 
-		// build output
 
 		model->nr_class = nr_class;
 
@@ -2359,9 +2231,6 @@ cibersort_svm_model *cibersort_svm_train(const cibersort_svm_problem *prob, cons
 		for(i=0;i<nr_class;i++)
 			for(int j=i+1;j<nr_class;j++)
 			{
-				// classifier (i,j): coefficients with
-				// i are in sv_coef[j-1][nz_start[i]...],
-				// j are in sv_coef[i][nz_start[j]...]
 
 				int si = start[i];
 				int sj = start[j];
@@ -2398,7 +2267,6 @@ cibersort_svm_model *cibersort_svm_train(const cibersort_svm_problem *prob, cons
 	return model;
 }
 
-// Stratified cross validation
 void cibersort_svm_cross_validation(const cibersort_svm_problem *prob, const cibersort_svm_parameter *param, int nr_fold, double *target)
 {
 	int i;
@@ -2413,8 +2281,6 @@ void cibersort_svm_cross_validation(const cibersort_svm_problem *prob, const cib
 		cibersort_libsvm_reprintf("WARNING: # folds > # data. Will use # folds = # data instead (i.e., leave-one-out cross validation)\n");
 	}
 	fold_start = Malloc(int,nr_fold+1);
-	// stratified cv may not give leave-one-out rate
-	// Each class to l folds -> some folds may have zero elements
 	if((param->svm_type == C_SVC ||
 	    param->svm_type == NU_SVC) && nr_fold < l)
 	{
@@ -2423,7 +2289,6 @@ void cibersort_svm_cross_validation(const cibersort_svm_problem *prob, const cib
 		int *count = NULL;
 		svm_group_classes(prob,&nr_class,&label,&start,&count,perm);
 
-		// random shuffle and then data grouped by fold using the array perm
 		int *fold_count = Malloc(int,nr_fold);
 		int c;
 		int *index = Malloc(int,l);
@@ -2754,7 +2619,7 @@ int cibersort_svm_save_model(const char *model_file_name, const cibersort_svm_mo
 		(void) fprintf(fp, "\n");
 	}
 
-	if(model->probA) // regression has probA only
+	if(model->probA)
 	{
 		(void) fprintf(fp, "probA");
 		for(int i=0;i<nr_class*(nr_class-1)/2;i++)
@@ -2827,18 +2692,10 @@ static char* readline(FILE *input)
 	return line;
 }
 
-//
-// FSCANF helps to handle fscanf failures.
-// Its do-while block avoids the ambiguity when
-// if (...)
-//    FSCANF();
-// is used
-//
 #define FSCANF(_stream, _format, _var) do{ if (fscanf(_stream, _format, _var) != 1) return false; }while(0)
 bool read_model_header(FILE *fp, cibersort_svm_model* model)
 {
 	cibersort_svm_parameter& param = model->param;
-	// parameters for training only won't be assigned, but arrays are assigned as NULL for safety
 	param.nr_weight = 0;
 	param.weight_label = NULL;
 	param.weight = NULL;
@@ -2960,7 +2817,6 @@ cibersort_svm_model *cibersort_svm_load_model(const char *model_file_name)
 	}
 	setlocale(LC_ALL, "C");
 
-	// read parameters
 
 	cibersort_svm_model *model = Malloc(cibersort_svm_model,1);
 	model->rho = NULL;
@@ -2970,7 +2826,6 @@ cibersort_svm_model *cibersort_svm_load_model(const char *model_file_name)
 	model->label = NULL;
 	model->nSV = NULL;
 
-	// read header
 	if (!read_model_header(fp, model))
 	{
 	        cibersort_libsvm_reprintf("ERROR: fscanf failed to read model\n");
@@ -2983,7 +2838,6 @@ cibersort_svm_model *cibersort_svm_load_model(const char *model_file_name)
 		return NULL;
 	}
 
-	// read sv_coef and SV
 
 	int elements = 0;
 	long pos = ftell(fp);
@@ -3053,7 +2907,7 @@ cibersort_svm_model *cibersort_svm_load_model(const char *model_file_name)
 	if (ferror(fp) != 0 || fclose(fp) != 0)
 		return NULL;
 
-	model->free_sv = 1;	// XXX
+	model->free_sv = 1;
 	return model;
 }
 
@@ -3110,7 +2964,6 @@ void cibersort_svm_destroy_param(cibersort_svm_parameter* param)
 
 const char *cibersort_svm_check_parameter(const cibersort_svm_problem *prob, const cibersort_svm_parameter *param)
 {
-	// svm_type
 
 	int svm_type = param->svm_type;
 	if(svm_type != C_SVC &&
@@ -3120,7 +2973,6 @@ const char *cibersort_svm_check_parameter(const cibersort_svm_problem *prob, con
 	   svm_type != NU_SVR)
 		return "unknown svm type";
 
-	// kernel_type, degree
 
 	int kernel_type = param->kernel_type;
 	if(kernel_type != LINEAR &&
@@ -3136,7 +2988,6 @@ const char *cibersort_svm_check_parameter(const cibersort_svm_problem *prob, con
 	if(param->degree < 0)
 		return "degree of polynomial kernel < 0";
 
-	// cache_size,eps,C,nu,p,shrinking
 
 	if(param->cache_size <= 0)
 		return "cache_size <= 0";
@@ -3173,7 +3024,6 @@ const char *cibersort_svm_check_parameter(const cibersort_svm_problem *prob, con
 		return "one-class SVM probability output not supported yet";
 
 
-	// check whether nu-svc is feasible
 
 	if(svm_type == NU_SVC)
 	{

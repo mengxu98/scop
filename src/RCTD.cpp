@@ -187,7 +187,7 @@ List metadata_from_weights(NumericMatrix weights, CharacterVector all_spots) {
   );
 }
 
-} // namespace
+}
 
 // [[Rcpp::export]]
 List rctd_sparse_quality_cpp(S4 st_counts, S4 ref_counts) {

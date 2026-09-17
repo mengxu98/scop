@@ -284,9 +284,6 @@ srt_to_adata <- function(
     ) {
       graph_matrix <- graph_matrix[cell_order, cell_order, drop = FALSE]
     }
-    # R sparse matrices are column-compressed and reticulate therefore emits
-    # scipy.csc_matrix. Scanpy's Neighbors reader requires CSR specifically
-    # when estimating n_neighbors from an existing AnnData graph.
     obsp_list[[graph]] <- scipy_sparse$csr_matrix(
       reticulate::r_to_py(graph_matrix)
     )
@@ -1166,9 +1163,6 @@ adata_matrix_to_r <- function(x) {
   if (!inherits(x, "python.builtin.object")) {
     return(x)
   }
-  # Environment preparation stays in public wrappers such as adata_to_srt().
-  # Callers that pass prepare_env = FALSE have already bound a custom
-  # reticulate interpreter; preparing Scanpy here would abort.
 
   scipy_sparse <- tryCatch(
     reticulate::import("scipy.sparse", convert = FALSE),

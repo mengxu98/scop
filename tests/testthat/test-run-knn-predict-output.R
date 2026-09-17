@@ -1,4 +1,3 @@
-# Reference implementation kept only as a test oracle for the C++ path.
 knn_match_best_labels <- function(match_prob) {
   match_prob <- as.matrix(match_prob)
   if (!all(is.finite(match_prob))) {

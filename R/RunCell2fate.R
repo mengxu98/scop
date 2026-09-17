@@ -210,7 +210,7 @@ RunCell2fate <- function(
         "git+https://github.com/",
         "BayraktarLab/cell2fate",
         ".git@",
-        .cell2fate_commit
+        "c03d1ca0bb963f550001c6070d4986a61ec8456a"
       ),
       "scvi-tools==0.16.1",
       "anndata==0.8.0",
@@ -425,7 +425,7 @@ RunCell2fate <- function(
       c("input_path", "result_dir", "request_id", "lock_token")
     )],
     provenance = list(
-      producer = .cell2fate_producer,
+      producer = "RunCell2fate",
       backend_id = "cell2fate",
       backend_repository = "BayraktarLab/cell2fate",
       backend_commit = manifest$backend_commit
@@ -440,9 +440,6 @@ RunCell2fate <- function(
   srt_out
 }
 
-.cell2fate_commit <- "c03d1ca0bb963f550001c6070d4986a61ec8456a"
-.cell2fate_producer <- "RunCell2fate"
-.cell2fate_schema_version <- 1L
 
 cell2fate_result_dir_is_owned <- function(result_dir) {
   owner_path <- file.path(result_dir, ".cell2fate.json")
@@ -460,11 +457,11 @@ cell2fate_result_dir_is_owned <- function(result_dir) {
     return(FALSE)
   }
   schema <- owner[["runner_schema_version"]]
-  identical(owner[["producer"]], .cell2fate_producer) &&
+  identical(owner[["producer"]], "RunCell2fate") &&
     is.numeric(schema) &&
     length(schema) == 1L &&
     !is.na(schema) &&
-    schema == .cell2fate_schema_version
+    schema == 1L
 }
 
 cell2fate_prepare_result_dir <- function(result_dir) {
@@ -501,9 +498,9 @@ cell2fate_prepare_result_dir <- function(result_dir) {
     }
     runner_write_json(
       list(
-        producer = .cell2fate_producer,
-        runner_schema_version = .cell2fate_schema_version,
-        backend_commit = .cell2fate_commit
+        producer = "RunCell2fate",
+        runner_schema_version = 1L,
+        backend_commit = "c03d1ca0bb963f550001c6070d4986a61ec8456a"
       ),
       file.path(result_dir, ".cell2fate.json")
     )
@@ -576,13 +573,13 @@ cell2fate_validate_manifest <- function(
     if (isTRUE(store_velocity)) "tables/velocity.csv"
   )
   valid <- is.list(manifest) &&
-    identical(manifest[["producer"]], .cell2fate_producer) &&
+    identical(manifest[["producer"]], "RunCell2fate") &&
     is.numeric(schema) &&
     length(schema) == 1L &&
     !is.na(schema) &&
-    schema == .cell2fate_schema_version &&
+    schema == 1L &&
     identical(manifest[["status"]], "complete") &&
-    identical(manifest[["backend_commit"]], .cell2fate_commit) &&
+    identical(manifest[["backend_commit"]], "c03d1ca0bb963f550001c6070d4986a61ec8456a") &&
     identical(manifest[["request_id"]], request_id) &&
     is.list(artifacts) &&
     !is.null(names(artifacts)) &&
@@ -821,7 +818,7 @@ cell2fate_prepare_seurat_output <- function(srt, prefix, tool_name) {
     is.list(existing_tool[["provenance"]]) &&
     identical(
       existing_tool[["provenance"]][["producer"]],
-      .cell2fate_producer
+      "RunCell2fate"
     )
   if (!tool_is_owned) {
     log_message(
@@ -1012,7 +1009,6 @@ cell2fate_write_input <- function(prepared, path, verbose = TRUE) {
     counts = prepared$unspliced
   )
 
-  # Reuse the isolated runtime selected above without re-entering PrepareEnv.
   old_options <- options(scop_skip_python_prepare = TRUE)
   on.exit(options(old_options), add = TRUE)
   srt_to_h5ad(

@@ -213,12 +213,16 @@ RunPalantir <- function(
   on.exit(
     {
       for (nm in names(old_env)) {
-        if (is.na(old_env[nm])) Sys.unsetenv(nm) else Sys.setenv(nm = old_env[nm])
+        if (is.na(old_env[nm])) {
+          Sys.unsetenv(nm)
+        } else {
+          do.call(Sys.setenv, as.list(old_env[nm]))
+        }
       }
     },
     add = TRUE
   )
-  prepare_env_if_needed(
+  PrepareEnv(
     envname = envname,
     conda = conda,
     modules = c("scanpy", "palantir"),

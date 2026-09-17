@@ -66,7 +66,7 @@ arma::mat mdic3_type_raw(const arma::mat& cellular, const IntegerVector& group) 
   return out;
 }
 
-}  // namespace
+}
 
 // [[Rcpp::export]]
 List mdic3_score_cpp(NumericMatrix expression, NumericMatrix grn, IntegerVector group) {

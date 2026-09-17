@@ -1,4 +1,3 @@
-# Inherited via @inheritParams.
 
 #' @title Shared parameters
 #'

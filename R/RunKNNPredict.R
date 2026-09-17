@@ -404,7 +404,6 @@ RunKNNPredict <- function(
       )
       if (isTRUE(ref_collapsing)) {
         ref <- Seurat::AverageExpression(
-          # ref <- Seurat::PseudobulkExpression( # require run JoinLayers
           object = srt_ref,
           features = features_common,
           layer = "data",
@@ -470,7 +469,6 @@ RunKNNPredict <- function(
         )
       }
       query <- Seurat::AverageExpression(
-        # query <- Seurat::PseudobulkExpression( # require run JoinLayers
         object = srt_query,
         features = colnames(ref),
         layer = "data",

@@ -129,7 +129,7 @@ inline void add_pair_gradient(
   }
 }
 
-}  // namespace
+}
 
 // [[Rcpp::export]]
 Rcpp::List manifold_exact_knn_cpp(

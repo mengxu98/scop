@@ -408,8 +408,6 @@ scpagwas_add_default_data_args <- function(fun, args) {
 
 scpagwas_output_context <- function(output.dirs) {
   old_wd <- getwd()
-  # scPagwas prefixes output.dirs with "./", so call it from the parent and
-  # pass only the directory name to keep Windows drive paths valid.
   setwd(dirname(output.dirs))
   list(
     backend_dir = basename(output.dirs),

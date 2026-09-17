@@ -109,14 +109,12 @@ FindExpressedMarkers <- function(
     numeric()
   )
 
-  ########## FoldChange.Assay ##########
   features <- intersect(
     features %||% rownames(x = data.use),
     rownames(x = data.use)
   )
   layer <- data_layer
 
-  # By default run as if LogNormalize is done
   log1pdata.mean.fxn <- function(x) {
     return(log(
       x = rowMeans(x = expm1(x), na.rm = TRUE) + pseudocount.use,
@@ -135,7 +133,6 @@ FindExpressedMarkers <- function(
     )
   }
   if (!is.null(norm.method)) {
-    # For anything apart from log normalization set to rowMeans
     if (norm.method != "LogNormalize") {
       new.mean.fxn <- counts.mean.fxn
     } else {
@@ -148,7 +145,6 @@ FindExpressedMarkers <- function(
       )
     }
   } else {
-    # If no normalization method is passed use slots to decide mean function
     new.mean.fxn <- switch(
       EXPR = layer,
       "data" = log1pdata.mean.fxn,
@@ -159,7 +155,6 @@ FindExpressedMarkers <- function(
   }
   mean_fxn_custom <- !is.null(mean.fxn)
   mean.fxn <- mean.fxn %||% new.mean.fxn
-  # Omit the decimal value of e from the column name if base == exp(1)
   base.text <- ifelse(
     test = base == exp(1),
     yes = "",
@@ -202,7 +197,6 @@ FindExpressedMarkers <- function(
     )
   }
 
-  ########## FindMarkers.default ##########
 
   object <- data.use
   layer <- data_layer
@@ -215,7 +209,6 @@ FindExpressedMarkers <- function(
     min.cells.group = min.cells.group
   )
 
-  # reset parameters so no feature filtering is performed
   if (test.use %in% "DESeq2") {
     features <- rownames(x = object)
     min.diff.pct <- -Inf
@@ -226,7 +219,6 @@ FindExpressedMarkers <- function(
     "scale.data" = counts,
     object
   )
-  # feature selection (based on percentages)
   alpha.min <- pmax(fc.results$pct.1, fc.results$pct.2)
   names(x = alpha.min) <- rownames(x = fc.results)
   features <- names(x = which(x = alpha.min >= min.pct))
@@ -248,9 +240,8 @@ FindExpressedMarkers <- function(
     )
     return(fc.results[features, ])
   }
-  # feature selection (based on logFC)
   if (layer != "scale.data") {
-    total.diff <- fc.results[, 1] # first column is logFC
+    total.diff <- fc.results[, 1]
     names(total.diff) <- rownames(fc.results)
     features.diff <- if (only.pos) {
       names(x = which(x = total.diff >= logfc.threshold))
@@ -266,7 +257,6 @@ FindExpressedMarkers <- function(
       return(fc.results[features, ])
     }
   }
-  # subsample cell groups if they are too large
   if (max.cells.per.ident < Inf) {
     set.seed(seed)
     if (length(cells.1) > max.cells.per.ident) {

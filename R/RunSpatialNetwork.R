@@ -100,7 +100,7 @@ RunSpatialNetwork <- function(
   edges$to <- graph$nodes$cell_id[edges$to]
   parameters <- graph$parameters
   parameters$coordinate_space <- "raw"
-  parameters$coordinate_contract_version <- .spatial_coordinate_contract_version
+  parameters$coordinate_contract_version <- 3L
 
   sanitize_name <- function(x) {
     x <- gsub("[^A-Za-z0-9]+", "_", x)
@@ -141,7 +141,7 @@ RunSpatialNetwork <- function(
   )
   store$active_graph <- graph.name
   store$parameters <- parameters
-  store$coordinate_contract_version <- .spatial_coordinate_contract_version
+  store$coordinate_contract_version <- 3L
   store$summary <- list(
     active_graph = graph.name,
     n_graphs = length(store$graphs),

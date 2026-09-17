@@ -1,7 +1,3 @@
-# Pure coordinate and graph primitives for spatial analyses.
-
-.spatial_coordinate_contract_version <- 3L
-
 spatial_coordinate_contract_version <- function(result) {
   candidates <- list(
     attr(result, "coordinate_contract_version", exact = TRUE),
@@ -21,7 +17,7 @@ spatial_require_coordinate_contract <- function(result, producer) {
   version <- spatial_coordinate_contract_version(result)
   if (
     length(version) != 1L || is.na(version) ||
-      version < .spatial_coordinate_contract_version
+      version < 3L
   ) {
     log_message(
       paste0(
@@ -43,15 +39,15 @@ spatial_tag_coordinate_contract <- function(result) {
   }
   tagged <- FALSE
   if (is.list(result$parameters)) {
-    result$parameters$coordinate_contract_version <- .spatial_coordinate_contract_version
+    result$parameters$coordinate_contract_version <- 3L
     tagged <- TRUE
   }
   if (is.list(result$source)) {
-    result$source$coordinate_contract_version <- .spatial_coordinate_contract_version
+    result$source$coordinate_contract_version <- 3L
     tagged <- TRUE
   }
   if (!isTRUE(tagged)) {
-    result$coordinate_contract_version <- .spatial_coordinate_contract_version
+    result$coordinate_contract_version <- 3L
   }
   result
 }
@@ -158,7 +154,7 @@ spatial_coords_raw <- function(
       raw_x_col = coord.cols[[1L]],
       raw_y_col = coord.cols[[2L]],
       image_class = NULL,
-      coordinate_contract_version = .spatial_coordinate_contract_version
+      coordinate_contract_version = 3L
     )
   } else {
     spatial_image <- srt[[selected_image]]
@@ -193,9 +189,6 @@ spatial_coords_raw <- function(
       inherits(spatial_image, "VisiumV2") &&
         all(c("x", "y") %in% raw_names)
     ) {
-      # Read10X_Image stores imagerow/imagecol positionally as x/y. Custom
-      # loaders can persist the opposite convention on the image itself.
-      # Ordinary cell metadata is not coordinate-system provenance.
       orientation <- spatial_image_x_orientation(srt, selected_image)
       x_col <- spatial_dim_pick_col(raw, if (orientation == "horizontal") "x" else "y")
       y_col <- spatial_dim_pick_col(raw, if (orientation == "horizontal") "y" else "x")
@@ -226,7 +219,7 @@ spatial_coords_raw <- function(
       raw_x_col = x_col,
       raw_y_col = y_col,
       image_class = class(spatial_image),
-      coordinate_contract_version = .spatial_coordinate_contract_version
+      coordinate_contract_version = 3L
     )
   }
   if (anyDuplicated(cells)) {
@@ -273,7 +266,7 @@ spatial_coords_raw <- function(
       image_height = transform$image_height,
       scale_name = transform$scale_name,
       scale_factor = transform$scale,
-      coordinate_contract_version = .spatial_coordinate_contract_version
+      coordinate_contract_version = 3L
     )
   )
   attr(result$data, "spatial_source") <- result$source
@@ -285,8 +278,6 @@ spatial_image_x_orientation <- function(object, image) {
   orientation <- object@misc$spatial_image_axes[[image]]
   if (is.null(orientation)) {
     orientation <- attr(object[[image]], "coords_x_orientation", exact = TRUE)
-    # SeuratObject's newer FOV class initializes this slot to character(0).
-    # An unset native slot has the same meaning as an absent legacy attribute.
     if (length(orientation) == 0L) orientation <- "vertical"
   }
   if (length(orientation) != 1L || is.na(orientation) ||
@@ -331,8 +322,6 @@ spatial_analysis_coords <- function(
   coordinate_space <- match.arg(coordinate_space)
   image.scale <- match.arg(image.scale)
   if (identical(coordinate_space, "legacy_display")) {
-    # Preserve the historical lowres-to-hires fallback only for the explicit
-    # compatibility mode. Current display APIs remain strict about image.scale.
     if (identical(image.scale, "lowres")) {
       resolved_image <- spatial_image_resolve(
         srt = srt,

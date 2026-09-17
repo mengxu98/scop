@@ -1,21 +1,4 @@
-# Tests for CellRank C++ backend
-#
-# Covers:
-#   1. cellrank_hard_threshold_kernel_cpp
-#   2. cellrank_validate_transition_matrix_cpp
-#   3. cellrank_stationary_distribution_cpp
-#   4. cellrank_schur_cpp (real Schur)
-#   5. cellrank_auto_n_states_cpp
-#   6. cellrank_velocity_kernel_cpp
-#   7. cellrank_pseudotime_kernel_cpp
-#   8. cellrank_cytotrace_kernel_cpp
-#   9. cellrank_cflare_cpp
-#  10. cellrank_gpcca_cpp
-#  11. cellrank_lineage_drivers_cpp
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 
 make_transition_matrix <- function(n = 30, seed = 1) {
   set.seed(seed)
@@ -34,9 +17,6 @@ make_knn_idx <- function(n_cells, n_neighbors = 5, seed = 42) {
   knn_idx
 }
 
-# ---------------------------------------------------------------------------
-# 1. Sparse hard-threshold pseudotime kernel
-# ---------------------------------------------------------------------------
 
 test_that("CellRank hard threshold reproduces NumPy 1.26 quicksort ties", {
   n <- 32L
@@ -54,8 +34,6 @@ test_that("CellRank hard threshold reproduces NumPy 1.26 quicksort ties", {
     frac_to_keep = 0.3,
     backward = FALSE
   )
-  # np.flip(np.argsort(rep(1, 31)))[:9] under NumPy 1.26.4 selects
-  # zero-based positions 30, 14, 1:7. The graph columns start at R column 2.
   selected <- c(32L, 16L, 3:9)
   expected <- Matrix::sparseMatrix(
     i = c(rep(1L, length(selected)), seq.int(2L, n)),
@@ -84,9 +62,6 @@ test_that("CellRank hard threshold reproduces NumPy 1.26 quicksort ties", {
   expect_equal(as.numeric(backward[1, seq.int(2L, n)]), rep(1 / 31, 31), tolerance = 1e-15)
 })
 
-# ---------------------------------------------------------------------------
-# 2. Validate transition matrix
-# ---------------------------------------------------------------------------
 
 test_that("cellrank_validate_transition_matrix_cpp fixes NaN/Inf", {
   n <- 10
@@ -103,9 +78,6 @@ test_that("cellrank_validate_transition_matrix_cpp fixes NaN/Inf", {
   expect_true(out$nans_fixed >= 1 || out$negs_clipped >= 1 || out$zero_rows_fixed >= 1)
 })
 
-# ---------------------------------------------------------------------------
-# 2. Stationary distribution
-# ---------------------------------------------------------------------------
 
 test_that("cellrank_stationary_distribution_cpp sums to 1", {
   T <- make_transition_matrix(30, seed = 2)
@@ -122,9 +94,6 @@ test_that("stationary distribution satisfies pi = pi * T", {
   expect_equal(pi, pi_next, tolerance = 1e-6)
 })
 
-# ---------------------------------------------------------------------------
-# 3. Real Schur decomposition
-# ---------------------------------------------------------------------------
 
 test_that("cellrank_schur_cpp returns valid components", {
   n <- 30
@@ -155,9 +124,6 @@ test_that("cellrank_schur_cpp defaults to n_components = 2 for small matrices", 
   expect_true(ncol(out$schur_vectors) <= 3)
 })
 
-# ---------------------------------------------------------------------------
-# 4. Auto-detect n_states
-# ---------------------------------------------------------------------------
 
 test_that("cellrank_auto_n_states_cpp returns valid range", {
   evals <- c(1.0, 0.95, 0.8, 0.3, 0.1)
@@ -166,9 +132,6 @@ test_that("cellrank_auto_n_states_cpp returns valid range", {
   expect_true(n <= length(evals))
 })
 
-# ---------------------------------------------------------------------------
-# 5. Velocity kernel
-# ---------------------------------------------------------------------------
 
 test_that("cellrank_velocity_kernel_cpp produces valid transition matrix", {
   n_cells <- 20
@@ -183,7 +146,6 @@ test_that("cellrank_velocity_kernel_cpp produces valid transition matrix", {
   expect_equal(dim(T), c(n_cells, n_cells))
   expect_true(all(is.finite(T)))
   expect_true(all(T >= 0))
-  # Rows should sum to ~1
   rs <- rowSums(T)
   expect_equal(rs, rep(1, n_cells), tolerance = 1e-8)
 })
@@ -192,14 +154,12 @@ test_that("velocity kernel backward mode differs from forward", {
   n_cells <- 15
   n_dims <- 2
   set.seed(2)
-  # Create directed velocity field: cells on left point right
   embedding <- matrix(c(rep(1, 8), rep(4, 7), rep(0, 8), rep(0, 7)), ncol = 2)
   vel_emb <- matrix(c(rep(3, 8), rep(-3, 7), rep(0, 15)), ncol = 2)
   knn_idx <- make_knn_idx(n_cells, 4, seed = 2)
 
   T_fwd <- cellrank_velocity_kernel_cpp(vel_emb, embedding, knn_idx, backward = FALSE)
   T_bwd <- cellrank_velocity_kernel_cpp(vel_emb, embedding, knn_idx, backward = TRUE)
-  # With directed velocities, forward and backward should differ somewhere
   expect_false(identical(T_fwd, T_bwd))
   expect_equal(rowSums(T_fwd), rep(1, n_cells), tolerance = 1e-8)
   expect_equal(rowSums(T_bwd), rep(1, n_cells), tolerance = 1e-8)
@@ -208,13 +168,12 @@ test_that("velocity kernel backward mode differs from forward", {
 test_that("velocity kernel handles zero-velocity cells", {
   n_cells <- 10
   n_dims <- 2
-  vel_emb <- matrix(0, n_cells, n_dims) # all zero velocity
+  vel_emb <- matrix(0, n_cells, n_dims)
   set.seed(3)
   embedding <- matrix(rnorm(n_cells * n_dims), n_cells, n_dims)
   knn_idx <- make_knn_idx(n_cells, 3, seed = 3)
 
   T <- cellrank_velocity_kernel_cpp(vel_emb, embedding, knn_idx)
-  # Zero-velocity cells should have self-loop = 1
   for (i in seq_len(n_cells)) expect_equal(T[i, i], 1)
 })
 
@@ -251,9 +210,6 @@ test_that("connectivity kernel cpp matches legacy neighbor weighting", {
   expect_equal(out, legacy, tolerance = 1e-12)
 })
 
-# ---------------------------------------------------------------------------
-# 6. Pseudotime kernel
-# ---------------------------------------------------------------------------
 
 test_that("cellrank_pseudotime_kernel_cpp produces valid transition matrix", {
   n_cells <- 20
@@ -277,13 +233,9 @@ test_that("pseudotime kernel forward mode transitions toward later pseudotime", 
     pseudotime, knn_idx,
     cell_weights = rep(1, n_cells), backward = FALSE
   )
-  # Early cell should have non-zero transitions
   expect_true(sum(T[1, ]) > 0)
 })
 
-# ---------------------------------------------------------------------------
-# 7. CytoTRACE kernel
-# ---------------------------------------------------------------------------
 
 test_that("cellrank_cytotrace_kernel_cpp produces valid transition matrix", {
   n_cells <- 20
@@ -298,9 +250,6 @@ test_that("cellrank_cytotrace_kernel_cpp produces valid transition matrix", {
   expect_equal(rowSums(T), rep(1, n_cells), tolerance = 1e-8)
 })
 
-# ---------------------------------------------------------------------------
-# 8. CFLARE estimator
-# ---------------------------------------------------------------------------
 
 test_that("cellrank_cflare_cpp full pipeline runs end-to-end", {
   n <- 50
@@ -333,9 +282,6 @@ test_that("CFLARE handles identity matrix (absorbing)", {
   expect_true(all(out$fate_confidence >= 0))
 })
 
-# ---------------------------------------------------------------------------
-# 9. GPCCA estimator
-# ---------------------------------------------------------------------------
 
 test_that("cellrank_gpcca_cpp full pipeline runs end-to-end", {
   n <- 50
@@ -417,9 +363,6 @@ test_that("GPCCA preserves complex-conjugate invariant subspaces", {
   expect_length(unique(block_assignment), 3L)
 })
 
-# ---------------------------------------------------------------------------
-# 10. Lineage drivers
-# ---------------------------------------------------------------------------
 
 test_that("cellrank_lineage_drivers_cpp computes correlations", {
   n_genes <- 20
@@ -448,9 +391,6 @@ test_that("lineage drivers with specific lineage indices", {
   expect_equal(out$lineage_idx, as.integer(c(1, 3)))
 })
 
-# ---------------------------------------------------------------------------
-# 11. Determinism
-# ---------------------------------------------------------------------------
 
 test_that("CFLARE is deterministic", {
   T <- make_transition_matrix(30, seed = 11)

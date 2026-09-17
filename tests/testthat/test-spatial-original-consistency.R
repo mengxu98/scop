@@ -1,8 +1,3 @@
-# End-to-end consistency between the scop spatial wrappers and the original
-# backend methods, run with real datasets (visium_human_pancreas_sub,
-# panc8_sub). No simulated data and no mocked backends: the wrappers and the
-# original pipelines receive the same real input and must return the same
-# scientific results.
 
 real_visium_subset <- function(n = 200, seed = 42) {
   data(visium_human_pancreas_sub)

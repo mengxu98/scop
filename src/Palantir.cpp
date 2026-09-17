@@ -14,9 +14,6 @@
 
 using namespace Rcpp;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 1. ADAPTIVE ANISOTROPIC KERNEL
-// ═══════════════════════════════════════════════════════════════════════════
 
 // [[Rcpp::export]]
 List palantir_compute_kernel_cpp(
@@ -29,7 +26,6 @@ List palantir_compute_kernel_cpp(
   int n = data.nrow();
   int k = knn_idx.ncol();
 
-  // Per-cell adaptive bandwidth = distance to (knn/3)-th neighbor
   int adaptive_k = std::max(1, (int)std::floor(knn / 3.0) - 1);
   adaptive_k = std::min(adaptive_k, k - 1);
   NumericVector adaptive_std(n);
@@ -41,8 +37,6 @@ List palantir_compute_kernel_cpp(
     if (adaptive_std[i] < 1e-10) adaptive_std[i] = 1e-10;
   }
 
-  // Match palantir.utils.compute_kernel():
-  // dists /= adaptive_std[x]; W = exp(-dists); kernel = W + W.T.
   std::vector<int> rows, cols;
   std::vector<double> vals;
   for (int i = 0; i < n; ++i) {
@@ -59,8 +53,6 @@ List palantir_compute_kernel_cpp(
     }
   }
 
-  // Add W.T entries. Duplicate triplets are intentionally left for Matrix to
-  // sum, matching scipy's sparse addition semantics.
   int ntriplets = vals.size();
   for (int t = 0; t < ntriplets; ++t) {
     int i = rows[t], j = cols[t];
@@ -89,9 +81,6 @@ List palantir_compute_kernel_cpp(
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 2. DIFFUSION MAP NORMALIZATION (Markov normalization)
-// ═══════════════════════════════════════════════════════════════════════════
 
 // [[Rcpp::export]]
 List palantir_normalize_kernel_cpp(
@@ -100,7 +89,6 @@ List palantir_normalize_kernel_cpp(
     NumericVector kernel_x,
     int n)
 {
-  // Row sums of kernel
   int nnz = kernel_i.size();
   NumericVector row_sum(n, 0.0);
   for (int t = 0; t < nnz; ++t) {
@@ -110,7 +98,6 @@ List palantir_normalize_kernel_cpp(
   for (int i = 0; i < n; ++i)
     if (row_sum[i] < 1e-10) row_sum[i] = 1.0;
 
-  // Markov transition matrix: T(i,j) = K(i,j) / row_sum[i]
   std::vector<int> T_i, T_j;
   std::vector<double> T_x;
   for (int t = 0; t < nnz; ++t) {
@@ -123,8 +110,6 @@ List palantir_normalize_kernel_cpp(
     }
   }
 
-  // Eigenvalues of Laplacian
-  // For the diffusion map, we need D^{-1/2} * K * D^{-1/2}
   NumericVector sqrt_inv_row(n);
   for (int i = 0; i < n; ++i)
     sqrt_inv_row[i] = 1.0 / std::sqrt(row_sum[i]);
@@ -153,9 +138,6 @@ List palantir_normalize_kernel_cpp(
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 3. MULTISCALE SPACE (eigenvalue-scaled diffusion components)
-// ═══════════════════════════════════════════════════════════════════════════
 
 // [[Rcpp::export]]
 NumericMatrix palantir_multiscale_space_cpp(
@@ -165,7 +147,6 @@ NumericMatrix palantir_multiscale_space_cpp(
   int n = eigenvectors.nrow();
   int n_eigs = eigenvectors.ncol();
 
-  // Match palantir.utils.determine_multiscale_space(n_eigs = None).
   std::vector<std::pair<double, int> > gaps;
   for (int i = 0; i < n_eigs - 1; ++i) {
     gaps.push_back(std::make_pair(eigenvalues[i] - eigenvalues[i + 1], i));
@@ -176,7 +157,6 @@ NumericMatrix palantir_multiscale_space_cpp(
   if (n_use < 3) n_use = 3;
   n_use = std::min(n_use, n_eigs);
 
-  // Scale: eigval / (1 - eigval) * eigvec
   NumericMatrix ms(n, n_use - 1);
   for (int i = 0; i < n; ++i)
     for (int j = 1; j < n_use; ++j)
@@ -185,9 +165,6 @@ NumericMatrix palantir_multiscale_space_cpp(
   return ms;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 4. MAX-MIN WAYPOINT SAMPLING
-// ═══════════════════════════════════════════════════════════════════════════
 
 static uint32_t numpy_random_bounded_uint32(std::mt19937& rng, uint32_t max_value) {
   uint32_t mask = max_value;
@@ -207,7 +184,7 @@ static uint32_t numpy_random_bounded_uint32(std::mt19937& rng, uint32_t max_valu
 NumericVector palantir_numpy_random_sample_cpp(int n, int seed = 0) {
   std::mt19937 rng(seed);
   NumericVector out(n);
-  const double scale = 1.0 / 9007199254740992.0; // 2^53
+  const double scale = 1.0 / 9007199254740992.0;
   for (int i = 0; i < n; ++i) {
     uint32_t a = rng() >> 5;
     uint32_t b = rng() >> 6;
@@ -273,9 +250,6 @@ IntegerVector palantir_maxmin_waypoints_cpp(
   return result;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 5. PSEUDOTIME VIA SHORTEST PATHS + ITERATIVE REFINEMENT
-// ═══════════════════════════════════════════════════════════════════════════
 
 struct DijkstraCmp {
   bool operator()(const std::pair<double,int>& a, const std::pair<double,int>& b) const {
@@ -336,8 +310,6 @@ List palantir_pseudotime_cpp(
     knn_dist.nrow() == n && knn_dist.ncol() == knn;
 
   if (use_precomputed) {
-    // Use the kNN graph already computed on the R side (BiocNeighbors),
-    // avoiding the O(n^2 * d) brute-force distance scan below.
     for (int i = 0; i < n; ++i) {
       for (int k_idx = 0; k_idx < knn; ++k_idx) {
         knn_idx_cpp(i, k_idx) = knn_idx(i, k_idx);
@@ -345,9 +317,6 @@ List palantir_pseudotime_cpp(
       }
     }
   } else {
-    // Build kNN graph using brute force (small data) or Euclidean distances
-    // Since waypoints << n_cells usually, we build graph on ALL cells
-    // Compute pairwise distances for kNN
 #ifdef _OPENMP
     const int omp_threads = n_jobs > 0 ? n_jobs : 1;
 #pragma omp parallel for num_threads(omp_threads) schedule(dynamic)
@@ -377,7 +346,6 @@ List palantir_pseudotime_cpp(
     }
   }
 
-  // Build adjacency from kNN
   std::vector<int> adj_i, adj_j;
   std::vector<double> adj_x;
   for (int i = 0; i < n; ++i) {
@@ -390,7 +358,6 @@ List palantir_pseudotime_cpp(
     }
   }
 
-  // Dijkstra from all waypoints
   int n_sources = n_wp;
   std::vector<int> wp_offsets(n_wp);
   for (int w = 0; w < n_wp; ++w) wp_offsets[w] = waypoints[w] - 1;
@@ -431,15 +398,6 @@ List palantir_pseudotime_cpp(
     }
   }
   if (disconnected) {
-    // Match palantir python `core._connect_graph`: instead of rejecting the
-    // graph, bridge the disconnected components exactly like the Python
-    // reference. Python connects the farthest reachable cell (from the start
-    // cell) to its nearest unreachable cell in multiscale space, adding one
-    // Euclidean-distance edge per iteration and recomputing reachability.
-    // Tie-breaking follows cell index order, matching pandas first-max /
-    // first-min on the reindexed distance series. After bridging every
-    // waypoint reaches every cell, so the D matrix below is recomputed on the
-    // bridged graph for exact parity with the Python pseudotime.
     std::vector<double> reach_dists;
     dijkstra_graph(n, graph, start_cell, reach_dists);
     while (true) {
@@ -476,7 +434,6 @@ List palantir_pseudotime_cpp(
       graph[nearest_unreachable].push_back({farthest_reachable, bridge_weight});
       dijkstra_graph(n, graph, start_cell, reach_dists);
     }
-    // Recompute the waypoint distance matrix on the bridged graph.
     for (int s = 0; s < n_wp; ++s) {
       std::vector<double> dists_v;
       dijkstra_graph(n, graph, wp_offsets[s], dists_v);
@@ -486,7 +443,6 @@ List palantir_pseudotime_cpp(
     }
   }
 
-  // Bandwidth for weight matrix
   double d_mean = 0.0;
   const double d_count = static_cast<double>(n_wp) * static_cast<double>(n);
   for (int s = 0; s < n_wp; ++s)
@@ -503,8 +459,6 @@ List palantir_pseudotime_cpp(
   d_var /= d_count;
   double sdv = std::sqrt(d_var) * 1.06 * std::pow(d_count, -0.2);
 
-  // Weight matrix: W(s,i) = exp(-D(s,i)^2 / (2*sdv^2)).
-  // In pandas, `W = W / W.sum()` divides each column by its column sum.
   NumericVector column_weight(n, 0.0);
   for (int s = 0; s < n_wp; ++s) {
     for (int i = 0; i < n; ++i) {
@@ -520,12 +474,10 @@ List palantir_pseudotime_cpp(
     }
   }
 
-  // Start row: waypoint closest to start_cell
   int start_row = -1;
   for (int w = 0; w < n_wp; ++w)
     if (wp_offsets[w] == start_cell) { start_row = w; break; }
   if (start_row < 0) {
-    // Find nearest waypoint
     double min_d = 1e100;
     for (int w = 0; w < n_wp; ++w) {
       if (D(w, start_cell) < min_d) { min_d = D(w, start_cell); start_row = w; }
@@ -535,7 +487,6 @@ List palantir_pseudotime_cpp(
   NumericVector pseudotime(n);
   for (int i = 0; i < n; ++i) pseudotime[i] = D(start_row, i);
 
-  // Iterative refinement
   bool converged = false;
   int iteration = 1;
   while (!converged && iteration < max_iterations) {
@@ -552,7 +503,6 @@ List palantir_pseudotime_cpp(
       new_pt[i] = t_i;
     }
 
-    // Check convergence
     double corr_num = 0.0, corr_den_x = 0.0, corr_den_y = 0.0;
     double mx = 0.0, my = 0.0;
     for (int i = 0; i < n; ++i) { mx += pseudotime[i]; my += new_pt[i]; }
@@ -571,7 +521,6 @@ List palantir_pseudotime_cpp(
     ++iteration;
   }
 
-  // Normalize to [0, 1]
   double pt_min = pseudotime[0], pt_max = pseudotime[0];
   for (int i = 0; i < n; ++i) {
     if (pseudotime[i] < pt_min) pt_min = pseudotime[i];
@@ -587,9 +536,6 @@ List palantir_pseudotime_cpp(
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 6. MARKOV CHAIN & ABSORPTION PROBABILITIES
-// ═══════════════════════════════════════════════════════════════════════════
 
 // [[Rcpp::export]]
 List palantir_markov_chain_cpp(
@@ -600,7 +546,6 @@ List palantir_markov_chain_cpp(
   int n = wp_data.nrow();
   int d = wp_data.ncol();
 
-  // kNN on waypoints
   IntegerMatrix knn_idx(n, knn);
   NumericMatrix knn_dist(n, knn);
 
@@ -627,7 +572,6 @@ List palantir_markov_chain_cpp(
     }
   }
 
-  // Adaptive bandwidth = distance to (knn/3)-th neighbor
   int adaptive_k = std::max(1, std::min((int)std::floor(knn / 3.0) - 1, knn - 1));
   NumericVector adaptive_std(n);
   for (int i = 0; i < n; ++i) {
@@ -641,7 +585,6 @@ List palantir_markov_chain_cpp(
     if (adaptive_std[i] < 1e-10) adaptive_std[i] = 1e-10;
   }
 
-  // Directed graph: keep edges where neighbor is not too far back in pseudotime
   std::vector<int> T_i, T_j;
   std::vector<double> T_x;
 
@@ -659,7 +602,6 @@ List palantir_markov_chain_cpp(
       if (j < 0) continue;
       double dist_ij = knn_dist(i, k_idx);
 
-      // Only keep edges forward in pseudotime (not too far back)
       double pt_j = pseudotime[j];
       if (pt_j < cutoff) continue;
 
@@ -677,7 +619,6 @@ List palantir_markov_chain_cpp(
         T_x.push_back(local_w[t] / row_sum);
       }
     } else {
-      // Self-loop if no valid neighbors
       T_i.push_back(i + 1);
       T_j.push_back(i + 1);
       T_x.push_back(1.0);
@@ -692,9 +633,6 @@ List palantir_markov_chain_cpp(
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 7. TERMINAL STATE DETECTION via Markov chain eigen analysis
-// ═══════════════════════════════════════════════════════════════════════════
 
 // [[Rcpp::export]]
 List palantir_terminal_states_cpp(
@@ -704,26 +642,14 @@ List palantir_terminal_states_cpp(
     int n,
     NumericMatrix wp_data)
 {
-  // This is done in R using RSpectra or eigen for eigenvalue decomposition
-  // This C++ function computes the ranks and cutoff threshold
-  // Called from R after eigen decomposition
 
-  // R will:
-  // 1. Compute leading eigenvector of T (using RSpectra)
-  // 2. Pass eigenvalues/vectors here
-  // 3. We compute cutoff and terminal state assignment
 
-  // This is a stub — the heavy lifting (eigendecomposition) is done in R
-  // Placeholder for the cutoff computation
 
   return List::create(
     _["n"] = n
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 8. ABSORPTION PROBABILITIES via (I-Q) solve
-// ═══════════════════════════════════════════════════════════════════════════
 
 // [[Rcpp::export]]
 NumericMatrix palantir_absorption_cpp(
@@ -733,12 +659,10 @@ NumericMatrix palantir_absorption_cpp(
     int n,
     IntegerVector terminal_state_indices)
 {
-  // Terminal state indices (0-based from caller, but we receive 1-based)
   int n_abs = terminal_state_indices.size();
   std::set<int> abs_set;
   for (int t = 0; t < n_abs; ++t) abs_set.insert(terminal_state_indices[t] - 1);
 
-  // Identify transient states
   std::vector<int> trans;
   for (int i = 0; i < n; ++i)
     if (abs_set.find(i) == abs_set.end()) trans.push_back(i);
@@ -751,11 +675,9 @@ NumericMatrix palantir_absorption_cpp(
     return bp;
   }
 
-  // Map old indices to new indices in I-Q
   std::vector<int> new_idx(n, -1);
   for (int i = 0; i < n_trans; ++i) new_idx[trans[i]] = i;
 
-  // Build I-Q matrix (dense — acceptable since n = num waypoints, typically < 2000)
   arma::mat I_Q(n_trans, n_trans, arma::fill::zeros);
   arma::mat R(n_trans, n_abs, arma::fill::zeros);
 
@@ -763,10 +685,8 @@ NumericMatrix palantir_absorption_cpp(
     int i = T_i[t] - 1, j = T_j[t] - 1;
     double val = T_x[t];
     if (new_idx[i] >= 0 && new_idx[j] >= 0) {
-      // Both transient: add to I-Q
       I_Q(new_idx[i], new_idx[j]) -= val;
     } else if (new_idx[i] >= 0 && abs_set.find(j) != abs_set.end()) {
-      // i = transient, j = absorbing: add to R
       int abs_col = 0;
       for (int a = 0; a < n_abs; ++a)
         if (terminal_state_indices[a] - 1 == j) { abs_col = a; break; }
@@ -774,18 +694,14 @@ NumericMatrix palantir_absorption_cpp(
     }
   }
 
-  // Set diagonal of I-Q to 1
   for (int i = 0; i < n_trans; ++i) I_Q(i, i) += 1.0;
 
-  // Solve (I-Q) * B = R using Armadillo
   arma::mat B;
   bool solve_ok = arma::solve(B, I_Q, R);
   if (!solve_ok) {
-    // Fallback: pseudoinverse
     B = arma::pinv(I_Q) * R;
   }
 
-  // Assemble full absorption matrix
   NumericMatrix bp(n, n_abs);
   for (int i = 0; i < n_abs; ++i)
     bp(terminal_state_indices[i] - 1, i) = 1.0;
@@ -798,7 +714,6 @@ NumericMatrix palantir_absorption_cpp(
     }
   }
 
-  // Row-normalize
   for (int i = 0; i < n; ++i) {
     double rs = 0.0;
     for (int a = 0; a < n_abs; ++a) rs += bp(i, a);

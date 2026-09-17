@@ -104,10 +104,6 @@ sct_regress_out <- function(mat, latent.df) {
     stats::as.formula(paste("~", paste(names(renamed), collapse = " + "))),
     data = renamed
   )
-  # Normal equations are much faster for SCTransform's wide dense matrices
-  # (genes x cells, cells >> genes) than lm.fit(t(mat)). They match the QR
-  # residual path to numerical noise only for well-conditioned designs, so
-  # keep QR for rank-deficient or ill-conditioned ones.
   xtx <- crossprod(design)
   xty <- t(mat %*% design)
   beta <- tryCatch(

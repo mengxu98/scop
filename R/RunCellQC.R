@@ -550,8 +550,6 @@ RunDoubletDetection <- function(
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   log_message("Running {.pkg DoubletDetection}", verbose = verbose)
-  # Sys.setenv(NUMBA_NUM_THREADS = "1")
-  # Sys.setenv(NUMBA_DISABLE_JIT = "0")
   PrepareEnv(modules = "doubletdetection")
 
   if (!inherits(srt, "Seurat")) {

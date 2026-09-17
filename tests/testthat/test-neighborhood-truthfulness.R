@@ -1,6 +1,4 @@
 test_that("neighborhood counts preserve saved scope, zero and unknown values", {
-  # Exercise the producer and plot semantics without optional neighbor search.
-  # This tiny all-pairs fixture is test-only, not a production fallback.
   local_mocked_bindings(
     spatial_graph_compute = function(coords, method, radius, directed, weight) {
       expect_identical(method, "radius")

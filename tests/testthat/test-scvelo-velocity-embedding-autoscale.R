@@ -1,9 +1,3 @@
-# Tests for scvelo-compatible velocity embedding autoscaling
-#
-# `velocity_embedding_autoscale` replicates scvelo's
-# `V_emb /= 3 * quiver_autoscale(X_emb, V_emb)` step with matplotlib's
-# default `plt.subplots()` geometry. The exact scale factor is a fixed point:
-# after scaling, re-running `quiver_autoscale` on the result must yield 1/3.
 
 quiver_autoscale_ref <- function(embedding, velocity_embedding) {
   rx <- diff(range(embedding[, 1L]))

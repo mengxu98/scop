@@ -1018,6 +1018,43 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// pca_backend_run
+Rcpp::List pca_backend_run(const arma::mat& X, int npcs, bool weight_by_var);
+RcppExport SEXP _scop_pca_backend_run(SEXP XSEXP, SEXP npcsSEXP, SEXP weight_by_varSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< int >::type npcs(npcsSEXP);
+    Rcpp::traits::input_parameter< bool >::type weight_by_var(weight_by_varSEXP);
+    rcpp_result_gen = Rcpp::wrap(pca_backend_run(X, npcs, weight_by_var));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cca_crossprod_matrix
+arma::mat cca_crossprod_matrix(const arma::mat& X1, const arma::mat& X2);
+RcppExport SEXP _scop_cca_crossprod_matrix(SEXP X1SEXP, SEXP X2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
+    rcpp_result_gen = Rcpp::wrap(cca_crossprod_matrix(X1, X2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// matrix_product
+arma::mat matrix_product(const arma::mat& A, const arma::mat& B);
+RcppExport SEXP _scop_matrix_product(SEXP ASEXP, SEXP BSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type A(ASEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
+    rcpp_result_gen = Rcpp::wrap(matrix_product(A, B));
+    return rcpp_result_gen;
+END_RCPP
+}
 // phate_graphtools_affinity_data_cpp
 List phate_graphtools_affinity_data_cpp(NumericMatrix data, int knn, double decay, double thresh, int knn_max);
 RcppExport SEXP _scop_phate_graphtools_affinity_data_cpp(SEXP dataSEXP, SEXP knnSEXP, SEXP decaySEXP, SEXP threshSEXP, SEXP knn_maxSEXP) {
@@ -2666,43 +2703,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// pca_backend_run
-Rcpp::List pca_backend_run(const arma::mat& X, int npcs, bool weight_by_var);
-RcppExport SEXP _scop_pca_backend_run(SEXP XSEXP, SEXP npcsSEXP, SEXP weight_by_varSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< int >::type npcs(npcsSEXP);
-    Rcpp::traits::input_parameter< bool >::type weight_by_var(weight_by_varSEXP);
-    rcpp_result_gen = Rcpp::wrap(pca_backend_run(X, npcs, weight_by_var));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cca_crossprod_matrix
-arma::mat cca_crossprod_matrix(const arma::mat& X1, const arma::mat& X2);
-RcppExport SEXP _scop_cca_crossprod_matrix(SEXP X1SEXP, SEXP X2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type X1(X1SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X2(X2SEXP);
-    rcpp_result_gen = Rcpp::wrap(cca_crossprod_matrix(X1, X2));
-    return rcpp_result_gen;
-END_RCPP
-}
-// matrix_product
-arma::mat matrix_product(const arma::mat& A, const arma::mat& B);
-RcppExport SEXP _scop_matrix_product(SEXP ASEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type A(ASEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(matrix_product(A, B));
-    return rcpp_result_gen;
-END_RCPP
-}
 // scale_sparse_full
 NumericMatrix scale_sparse_full(S4 sparse_mat, IntegerVector gene_indices, double scale_max, int n_threads);
 RcppExport SEXP _scop_scale_sparse_full(SEXP sparse_matSEXP, SEXP gene_indicesSEXP, SEXP scale_maxSEXP, SEXP n_threadsSEXP) {
@@ -2956,6 +2956,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_cell_dpt_pseudotime_cpp", (DL_FUNC) &_scop_cell_dpt_pseudotime_cpp, 4},
     {"_scop_paga_velocity_transitions_cpp", (DL_FUNC) &_scop_paga_velocity_transitions_cpp, 5},
     {"_scop_paga_root_cell_cpp", (DL_FUNC) &_scop_paga_root_cell_cpp, 3},
+    {"_scop_pca_backend_run", (DL_FUNC) &_scop_pca_backend_run, 3},
+    {"_scop_cca_crossprod_matrix", (DL_FUNC) &_scop_cca_crossprod_matrix, 2},
+    {"_scop_matrix_product", (DL_FUNC) &_scop_matrix_product, 2},
     {"_scop_phate_graphtools_affinity_data_cpp", (DL_FUNC) &_scop_phate_graphtools_affinity_data_cpp, 5},
     {"_scop_phate_affinity_cpp", (DL_FUNC) &_scop_phate_affinity_cpp, 4},
     {"_scop_phate_diffusion_operator_cpp", (DL_FUNC) &_scop_phate_diffusion_operator_cpp, 5},
@@ -3052,9 +3055,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_exact_knn_f32", (DL_FUNC) &_scop_exact_knn_f32, 3},
     {"_scop_cross_knn_f32", (DL_FUNC) &_scop_cross_knn_f32, 5},
     {"_scop_log_normalize_dgc", (DL_FUNC) &_scop_log_normalize_dgc, 4},
-    {"_scop_pca_backend_run", (DL_FUNC) &_scop_pca_backend_run, 3},
-    {"_scop_cca_crossprod_matrix", (DL_FUNC) &_scop_cca_crossprod_matrix, 2},
-    {"_scop_matrix_product", (DL_FUNC) &_scop_matrix_product, 2},
     {"_scop_scale_sparse_full", (DL_FUNC) &_scop_scale_sparse_full, 4},
     {"_scop_scale_sparse_rows_from_stats", (DL_FUNC) &_scop_scale_sparse_rows_from_stats, 4},
     {"_scop_csc_to_csr", (DL_FUNC) &_scop_csc_to_csr, 5},

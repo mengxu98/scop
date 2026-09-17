@@ -410,9 +410,6 @@ vector_weighted_arrows <- function(
       "grid", "x", "y", "dx", "dy", "xend", "yend", "length"
     ), drop = FALSE])
   }
-  # Distances are computed row-wise (dx * dx + dy * dy), matching the
-  # C++ backend exactly, so tied distances rank identically on every
-  # platform instead of drifting at the last bit inside stats::dist().
   row_distances <- t(apply(centers, 1, function(ci) {
     dx <- centers[, 1] - ci[1]
     dy <- centers[, 2] - ci[2]

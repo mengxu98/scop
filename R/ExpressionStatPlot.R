@@ -986,7 +986,6 @@ ExpressionStatPlot <- function(
           identical(sig_label, "p.format") &&
             exists("create_p_label", envir = asNamespace("ggpubr"), inherits = FALSE)
         ) {
-          # See the pairwise-comparison branch above.
           label_env <- rlang::env(
             create_p_label = getFromNamespace("create_p_label", "ggpubr")
           )

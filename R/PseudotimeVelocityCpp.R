@@ -1,5 +1,3 @@
-# C++-accelerated pseudotime velocity computation
-# Internal helper functions
 
 run_pseudotime_velocity_knn <- function(x_emb, pseudotime, neighbors, normalize = TRUE) {
   if (!is.matrix(x_emb)) {
@@ -37,7 +35,6 @@ run_pseudotime_velocity_gradient <- function(x_emb, pseudotime, neighbors, smoot
 }
 
 neighbors_list_to_matrix <- function(neighbors_list, k) {
-  # Convert a list of neighbor index vectors to an n x k integer matrix
   n <- length(neighbors_list)
   k_use <- min(k, max(vapply(neighbors_list, length, integer(1)), 0))
   mat <- matrix(NA_integer_, nrow = n, ncol = k_use)

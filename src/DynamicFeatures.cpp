@@ -30,10 +30,8 @@ inline int unique_count(const RowUniqueValues& row) {
     static_cast<int>(row.has_na) + static_cast<int>(row.has_nan);
 }
 
-}  // namespace
+}
 
-// Count distinct values in every row of a dense numeric matrix.  NA and NaN
-// remain distinct, matching `length(unique(row))` in base R.
 // [[Rcpp::export]]
 IntegerVector dynamic_row_unique_counts_dense_cpp(NumericMatrix x) {
   const int n_rows = x.nrow();
@@ -50,10 +48,6 @@ IntegerVector dynamic_row_unique_counts_dense_cpp(NumericMatrix x) {
   return out;
 }
 
-// Count distinct values in each row of a dgCMatrix without materialising it.
-// The final implicit-zero increment intentionally follows the existing R
-// implementation: it is based on the number of stored entries, including an
-// explicitly stored zero should one be present.
 // [[Rcpp::export]]
 IntegerVector dynamic_row_unique_counts_sparse_cpp(S4 x) {
   IntegerVector dims = x.slot("Dim");

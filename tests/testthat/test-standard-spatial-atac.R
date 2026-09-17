@@ -21,7 +21,6 @@ make_standard_spatial_atac_object <- function() {
     sep = c("-", "-")
   )
   object <- Seurat::CreateSeuratObject(counts = chromatin, assay = "peaks")
-  # A spatial workflow fixture needs coordinates even when its backend is mocked.
   object$x <- c(0, 1, 0, 1)
   object$y <- c(0, 0, 1, 1)
   object

@@ -485,7 +485,6 @@ FeatureCorPlot <- function(
           if (!is.null(cells.highlight)) {
             cell_df <- subset(p$data, rownames(p$data) %in% cells.highlight)
             if (nrow(cell_df) > 0) {
-              # point_size <- p$layers[[1]]$aes_params$size
               if (isTRUE(raster)) {
                 p <- p +
                   scattermore::geom_scattermore(
@@ -531,7 +530,7 @@ FeatureCorPlot <- function(
           }
         }
         if (f1_index > f2_index) {
-          label <- paste0(f1, "\n", f2, "\nCor: ", round(pair_sim[f1, f2], 3)) # "\n","f1_index:",f1_index," ","f2_index:",f2_index
+          label <- paste0(f1, "\n", f2, "\nCor: ", round(pair_sim[f1, f2], 3))
           label_pos <- (max(dat_exp[rownames(dat), ], na.rm = TRUE) +
             min(dat_exp[rownames(dat), ], na.rm = TRUE)) /
             2

@@ -68,7 +68,6 @@ test_that("RunPCA cpp backend remains an explicit override", {
   seurat_embeddings <- SeuratObject::Embeddings(seurat_pca[["pca_seurat"]])
   expect_equal(dim(cpp_embeddings), c(ncol(obj), 8L))
   expect_true(all(is.finite(cpp_embeddings)))
-  # PC signs are arbitrary, so compare magnitudes against the Seurat reference
   expect_equal(
     unname(abs(cpp_embeddings)),
     unname(abs(seurat_embeddings)),
@@ -279,12 +278,7 @@ test_that("VST on split Assay5 layers matches Seurat's layered reference", {
     FindVariableFeatures(joined, selection.method = "vst", nfeatures = 40, verbose = FALSE)
   )
 
-  # scop follows Seurat's per-layer VST semantics: the layered HVF must be
-  # byte-identical to the reference implementation on the same layered input.
   expect_identical(layered_hvf, seurat_layered_hvf)
-  # Seurat's layered behaviour itself differs from the joined reference
-  # (per-layer vst + consensus merge vs one-shot joined vst); scop mirrors
-  # that behaviour, so the layered result may differ from the joined one.
   expect_identical(
     identical(layered_hvf, joined_hvf),
     identical(seurat_layered_hvf, joined_hvf)
@@ -346,9 +340,6 @@ test_that("VST aligns Assay5 layers with partially overlapping features", {
       seurat_hvf[, logical_cols, drop = FALSE]
     )
   }
-  # Selected HVFs stay identical (asserted above). Per-layer VST doubles can
-  # differ by a few ULPs across libm/BLAS; macOS CI reported waldo "equal but
-  # not identical" while Linux/Windows stayed bit-identical.
   expect_equal(
     scop_hvf[, numeric_cols, drop = FALSE],
     seurat_hvf[, numeric_cols, drop = FALSE]

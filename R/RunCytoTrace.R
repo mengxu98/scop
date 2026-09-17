@@ -133,7 +133,6 @@ RunCytoTRACE.Seurat <- function(
   layer <- match.arg(layer)
   backend <- match.arg(backend)
   species <- match.arg(species)
-  # NULL reaches the C++ kernels as the process OpenMP default.
   cores_kernel <- cores
   cores <- max(1L, as.integer(cores))
 
@@ -239,7 +238,6 @@ RunCytoTRACE.default <- function(
 ) {
   species <- match.arg(species)
   backend <- match.arg(backend)
-  # NULL reaches the C++ kernels as the process OpenMP default.
   cores_kernel <- cores
   cores <- max(1L, as.integer(cores))
   log_message(
@@ -509,8 +507,17 @@ load_cytotrace2_data <- function(data_dir, verbose) {
     data_dir <- cyto_cache$data_dir
   }
   cache_key <- normalizePath(data_dir, mustWork = FALSE)
+  assets <- file.path(data_dir, c(
+    "parameter_dict_19.rds", "model_parameters.rds",
+    "features_model_training_17.csv", "mt_dict_human_to_mouse.csv",
+    "mt_human_alias.csv", "mt_mouse_alias.csv"
+  ))
+  fingerprint <- tools::md5sum(assets[file.exists(assets)])
   if (exists(cache_key, envir = .cytotrace2_data_cache, inherits = FALSE)) {
-    return(get(cache_key, envir = .cytotrace2_data_cache, inherits = FALSE))
+    cached <- get(cache_key, envir = .cytotrace2_data_cache, inherits = FALSE)
+    if (identical(cached$fingerprint, fingerprint)) {
+      return(cached$data)
+    }
   }
 
   log_message(
@@ -603,7 +610,9 @@ load_cytotrace2_data <- function(data_dir, verbose) {
     alias_dict = alias_dict,
     mouse_alias_dict = mouse_alias_dict
   )
-  assign(cache_key, model_data, envir = .cytotrace2_data_cache)
+  assign(cache_key, list(fingerprint = fingerprint, data = model_data),
+    envir = .cytotrace2_data_cache
+  )
   model_data
 }
 

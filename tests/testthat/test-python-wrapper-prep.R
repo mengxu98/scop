@@ -160,3 +160,70 @@ test_that("CellRank fate confidence is derived from absorption probabilities", {
   expect_equal(fate_confidence(absorption), c(0.7, 0.5, 0.8))
   expect_error(fate_confidence(matrix(NA_real_, 1, 1)), "non-finite")
 })
+
+test_that("Palantir restores existing and unset environment variables on failure", {
+  withr::local_envvar(c(OMP_NUM_THREADS = "7", OPENBLAS_NUM_THREADS = NA, nm = NA))
+  before <- Sys.getenv(c("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "nm"), unset = NA_character_)
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    PrepareEnv = function(...) stop("controlled preparation failure")
+  )
+  expect_error(RunPalantir(backend = "python"), "controlled preparation failure")
+  expect_identical(Sys.getenv(names(before), unset = NA_character_), before)
+})
+
+test_that("rejected Python runtime does not change thread configuration", {
+  withr::local_envvar(c(OMP_NUM_THREADS = "7", NUMBA_NUM_THREADS = NA))
+  before <- Sys.getenv(c("OMP_NUM_THREADS", "NUMBA_NUM_THREADS"), unset = NA_character_)
+  python <- tempfile()
+  file.create(python)
+  on.exit(unlink(python), add = TRUE)
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    assert_python_runtime_switchable = function(...) stop("interpreter mismatch")
+  )
+  expect_error(configure_python_runtime(python), "interpreter mismatch")
+  expect_identical(Sys.getenv(names(before), unset = NA_character_), before)
+})
+
+test_that("trajectory Python wrappers prepare through the public entry point", {
+  seen <- NULL
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    PrepareEnv = function(modules, ...) {
+      seen <<- modules
+      stop("public preparation")
+    }
+  )
+  expect_error(RunPHATE(matrix(1:6, nrow = 3), backend = "python"), "public preparation")
+  expect_identical(seen, "phate")
+  expect_error(RunPAGA(adata = list(), group.by = "cluster", backend = "python"), "public preparation")
+  expect_identical(seen, "scanpy")
+  expect_error(RunSCVELO(backend = "python", magic_impute = FALSE), "public preparation")
+  expect_identical(seen, "scvelo")
+  expect_error(RunCellRank(backend = "python", magic_impute = FALSE), "public preparation")
+  expect_true("cellrank" %in% seen)
+  expect_error(RunPalantir(backend = "python"), "public preparation")
+  expect_identical(seen, c("scanpy", "palantir"))
+})
+
+test_that("PrepareEnv reuses its managed environment cache", {
+  python <- tempfile()
+  file.create(python)
+  on.exit(unlink(python), add = TRUE)
+  withr::local_options(list(scop_env_cache = list(python = python)))
+  configured <- NULL
+  testthat::local_mocked_bindings(
+    .package = "scop",
+    resolve_conda = function(conda) conda,
+    is_cached_env_valid = function(spec) TRUE,
+    assert_python_runtime_switchable = function(...) NULL,
+    configure_python_runtime = function(python_path) configured <<- python_path,
+    remember_python_environment = function(...) NULL,
+    ensure_external_wrapper_r_packages = function(...) NULL,
+    log_message = function(...) NULL
+  )
+  expect_null(PrepareEnv(envname = "test", conda = "test-conda",
+    version = "3.10-1", modules = "phate", verbose = FALSE))
+  expect_identical(configured, python)
+})
