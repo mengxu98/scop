@@ -111,17 +111,17 @@ parent context using Statial Kontextual.</p>
 
 
 <dt id="arg-r">r<a class="anchor" aria-label="anchor" href="#arg-r"></a></dt>
-<dd><p>Numeric radius or radii used by <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>, expressed
+<dd><p>Numeric radius or radii used by <code>Statial::Kontextual()</code>, expressed
 in the selected coordinate units.</p></dd>
 
 
 <dt id="arg-from-to-parent">from, to, parent<a class="anchor" aria-label="anchor" href="#arg-from-to-parent"></a></dt>
-<dd><p>Cell or spot labels passed to <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>.
+<dd><p>Cell or spot labels passed to <code>Statial::Kontextual()</code>.
 Ignored when <code>parent_df</code> is supplied.</p></dd>
 
 
 <dt id="arg-parent-df">parent_df<a class="anchor" aria-label="anchor" href="#arg-parent-df"></a></dt>
-<dd><p>Optional data frame from <code><a href="https://sydneybiox.github.io/Statial/reference/parentCombinations.html" class="external-link">Statial::parentCombinations()</a></code>.</p></dd>
+<dd><p>Optional data frame from <code>Statial::parentCombinations()</code>.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
@@ -153,7 +153,7 @@ coordinates are available.</p></dd>
 
 <dt id="arg-window-window-length">window, window.length<a class="anchor" aria-label="anchor" href="#arg-window-window-length"></a></dt>
 <dd><p>Window arguments passed to
-<code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>. Numeric window lengths use the selected coordinate
+<code>Statial::Kontextual()</code>. Numeric window lengths use the selected coordinate
 units.</p></dd>
 
 
@@ -162,7 +162,7 @@ units.</p></dd>
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>Number of cores passed to <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>.</p></dd>
+<dd><p>Number of cores passed to <code>Statial::Kontextual()</code>.</p></dd>
 
 
 <dt id="arg-tool-name">tool_name<a class="anchor" aria-label="anchor" href="#arg-tool-name"></a></dt>
@@ -190,7 +190,7 @@ explicit compatibility option.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional named arguments passed to <code><a href="https://sydneybiox.github.io/Statial/reference/Kontextual.html" class="external-link">Statial::Kontextual()</a></code>.</p></dd>
+<dd><p>Additional named arguments passed to <code>Statial::Kontextual()</code>.</p></dd>
 
 
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>
@@ -206,7 +206,8 @@ will be removed in scop 1.0.0.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Compare tissue-labelled spots at two radii (full-resolution image pixels).</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunStatialKontextual</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
@@ -215,7 +216,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="StatialKontextualPlot.html">StatialKontextualPlot</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunStatialKontextual-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
