@@ -728,7 +728,6 @@ branch_stream_tapered_density <- function(values, x, bw = 0.15, pad = 0.035) {
   }
   bw_use <- bw
   if (is.numeric(bw) && length(bw) == 1L && is.finite(bw) && bw > 0) {
-    # Match scipy.stats.gaussian_kde(bw_method = bw) for a scalar bw_method.
     bw_use <- stats::sd(values) * bw
     if (!is.finite(bw_use) || bw_use <= 0) {
       bw_use <- bw

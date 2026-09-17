@@ -1,4 +1,3 @@
-# Official SpatialDM producer, result accessor, and SCOP-style plots -----------
 
 spatialdm_validate_matrix <- function(x, label, nonnegative = TRUE) {
   if ((!is.matrix(x) && !methods::is(x, "sparseMatrix")) ||

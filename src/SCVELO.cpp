@@ -8,13 +8,7 @@
 
 using namespace Rcpp;
 
-// ── 1. Filter genes ───────────────────────────────────────────────────────────
-// Gene filtering is implemented once in Preprocessing.cpp as
-// scanpy_filter_genes_cpp (matching scv.pp.filter_genes exactly, OpenMP).
-// The scVelo C++ pipeline performs the same threshold check in R
-// (run_scanpy_cpp), so no separate cpp-side filter is needed here.
 
-// ── 2. Normalize per cell + log1p ─────────────────────────────────────────────
 
 // [[Rcpp::export]]
 List scanpy_normalize_log_cpp(
@@ -48,7 +42,6 @@ List scanpy_normalize_log_cpp(
 }
 
 
-// ── 3. Compute moments (KNN smoothing) ────────────────────────────────────────
 
 // [[Rcpp::export]]
 List scanpy_moments_cpp(
@@ -255,22 +248,18 @@ List scanpy_second_order_moments_cpp(
 }
 
 
-// ── 4. Deterministic velocity + embedding ─────────────────────────────────────
 
 static double scanpy_quantile_linear(
     const std::vector<double>& values,
     double probability)
 {
   if (values.empty()) return 0.0;
-  // nth_element reorders its range. Copy so callers can keep indexing the
-  // original vector by cell/gene after the cutoff is computed.
   std::vector<double> scratch = values;
   probability = std::max(0.0, std::min(1.0, probability));
   const double position =
     probability * static_cast<double>(scratch.size() - 1);
   const std::size_t lower = static_cast<std::size_t>(std::floor(position));
   const std::size_t upper = static_cast<std::size_t>(std::ceil(position));
-  // Match numpy.percentile(..., method="linear").
   std::nth_element(scratch.begin(), scratch.begin() + lower, scratch.end());
   const double lower_value = scratch[lower];
   if (upper == lower) return lower_value;
@@ -304,7 +293,6 @@ List scanpy_deterministic_cpp(
   if (embedding.nrow() != n_cells)
     thisutils::log_message("embedding rows must match number of cells", "error");
 
-  // --- Estimate gamma per gene ---
   NumericVector gamma(n_genes);
   NumericVector offset(n_genes);
   NumericVector gamma_r2(n_genes);
@@ -315,9 +303,6 @@ List scanpy_deterministic_cpp(
   #pragma omp parallel for num_threads(threads) schedule(dynamic, 16)
   #endif
   for (int g = 0; g < n_genes; ++g) {
-    // scVelo includes zero-valued moments when it finds the per-gene extreme
-    // quantile. Dropping zeros changes both the cutoff and fitted coefficient
-    // on sparse single-cell data.
     double s_max = 0.0, u_max = 0.0;
     for (int c = 0; c < n_cells; ++c) {
       const double s = Ms(g, c);
@@ -342,7 +327,6 @@ List scanpy_deterministic_cpp(
       cutoff = scanpy_quantile_linear(normalized, perc / 100.0);
     }
 
-    // Extreme-quantile regression used for the actual velocity residual.
     double sx = 0.0, sy = 0.0, sxx = 0.0, sxy = 0.0;
     int used = 0;
     for (int c = 0; c < n_cells; ++c) {
@@ -379,9 +363,6 @@ List scanpy_deterministic_cpp(
     if (!std::isfinite(gamma[g])) gamma[g] = 0.0;
     if (!std::isfinite(offset[g])) offset[g] = 0.0;
 
-    // scVelo's scv.tl.velocity(..., r2_adjusted=None) keeps the quantile
-    // residual for R2 and velocity-gene selection; no separate untrimmed
-    // regression is fitted in that default path.
     double full_sy = 0.0;
     int full_used = 0;
     bool has_ms = false, has_mu = false;
@@ -426,7 +407,6 @@ List scanpy_deterministic_cpp(
     }
   }
 
-  // Residual velocity
   NumericMatrix residual(n_genes, n_cells);
   for (int c = 0; c < n_cells; ++c) {
     for (int g = 0; g < n_genes; ++g) {
@@ -434,7 +414,6 @@ List scanpy_deterministic_cpp(
     }
   }
 
-  // Velocity embedding (cosine projection)
   NumericMatrix velocity_embedding(n_cells, n_dims);
   NumericVector confidence(n_cells);
   NumericVector velocity_length(n_cells);
@@ -453,7 +432,6 @@ List scanpy_deterministic_cpp(
 }
 
 
-// ── 5. Stochastic velocity + embedding (refactored, takes Ms/Mu as input) ──
 
 // [[Rcpp::export]]
 List scanpy_stochastic_cpp(
@@ -491,11 +469,6 @@ List scanpy_stochastic_cpp(
   std::vector<double> deterministic_res_std(n_genes, 1.0);
   std::vector<char> stochastic_update_gene(n_genes, 1);
   const int threads = omp_thread_count(n_threads, n_genes);
-  // scVelo stochastic mode first runs compute_deterministic(perc=[5, 95])
-  // with fit_offset=False: an upper-quantile (95th percentile) regression
-  // supplies the initial gamma, and its residual supplies the R2 used for
-  // velocity-gene selection. Mirror that here; the stochastic generalized
-  // fit below then refits gamma for the selected velocity genes only.
   #ifdef _OPENMP
   #pragma omp parallel for num_threads(threads) schedule(dynamic, 16)
   #endif
@@ -522,7 +495,6 @@ List scanpy_stochastic_cpp(
     }
     const double cutoff = scanpy_quantile_linear(normalized, 0.95);
 
-    // Upper-quantile regression (no intercept) for the velocity residual.
     double num_det = 0.0, den_det = 0.0;
     for (int c = 0; c < n_cells; ++c) {
       const int idx = c * n_genes + g;
@@ -537,8 +509,6 @@ List scanpy_stochastic_cpp(
     const double gamma_det = den_det > 1e-12 ? num_det / den_det : 0.0;
     gamma[g] = std::isfinite(gamma_det) && gamma_det > 0.0 ? gamma_det : 0.0;
 
-    // scVelo's scv.tl.velocity(..., r2_adjusted=None) uses the quantile
-    // residual for R2 and velocity-gene selection.
     double full_sy = 0.0;
     int full_used = 0;
     bool has_ms = false, has_mu = false;
@@ -571,9 +541,6 @@ List scanpy_stochastic_cpp(
     velocity_genes[g] =
       (gamma_r2[g] > 0.01 && gamma[g] > 0.01 && has_ms && has_mu) ? 1 : 0;
 
-    // Residual std for the generalized least squares uses the quantile
-    // residual, matching scVelo's `_residual.std(0)` after
-    // compute_deterministic.
     double res_mean = 0.0;
     int n_res = 0;
     for (int c = 0; c < n_cells; ++c) {
@@ -618,8 +585,6 @@ List scanpy_stochastic_cpp(
     }
   }
 
-  // Match scvelo: stochastic generalized fit updates gamma only for
-  // deterministic velocity genes; non-selected genes keep deterministic gamma.
   #ifdef _OPENMP
   #pragma omp parallel for num_threads(threads) schedule(dynamic, 16)
   #endif
@@ -696,7 +661,6 @@ List scanpy_stochastic_cpp(
     }
   }
 
-  // Velocity embedding (cosine projection)
   NumericMatrix velocity_embedding(n_cells, n_dims);
   NumericVector confidence(n_cells);
   NumericVector velocity_length(n_cells);
@@ -715,7 +679,6 @@ List scanpy_stochastic_cpp(
 }
 
 
-// ── 6. Velocity graph (cosine similarity on gene space) ───────────────────────
 
 // [[Rcpp::export]]
 List scanpy_velocity_graph_cpp(
@@ -929,8 +892,6 @@ NumericMatrix scanpy_project_velocity_embedding_cpp(
     for (int i = 0; i < n_cells; ++i) {
       double self_prob = std::min(1.0, std::max(0.0, ub - max_conf[i]));
       if (self_prob != 0.0) {
-        // scvelo sets the diagonal to `self_prob` before applying `expm1`,
-        // so the diagonal entry is `expm1(self_prob * scale)`.
         rows[i].push_back(std::make_pair(i, std::expm1(self_prob * scale)));
       }
     }
@@ -979,13 +940,12 @@ NumericMatrix scanpy_project_velocity_embedding_cpp(
   return velocity_embedding;
 }
 
-// ── 7. Velocity confidence metrics ─────────────────────────────────────────────
 
 // [[Rcpp::export]]
 List scanpy_velocity_confidence_cpp(
     NumericMatrix Ms,
-    NumericMatrix residual,   // gene × cell velocity residuals
-    IntegerMatrix knn_idx)    // cells × k (1-based)
+    NumericMatrix residual,
+    IntegerMatrix knn_idx)
 {
   const int n_cells = Ms.ncol();
 
@@ -1003,7 +963,6 @@ List scanpy_velocity_confidence_cpp(
   );
 }
 
-// ── 8. Terminal states (root_cells, end_points via Markov eigenvectors) ───────
 
 
 static NumericVector scanpy_smooth_connectivities(
@@ -1074,7 +1033,6 @@ List scanpy_terminal_states_cpp(
   if (velocity_embedding.nrow() != n_cells || velocity_embedding.ncol() != n_dims)
     thisutils::log_message("velocity_embedding must have same dimensions as embedding", "error");
 
-  // Build velocity transition matrix (embedding-space cosine)
   std::vector<double> T;
   scop_util::build_velocity_transition(velocity_embedding, embedding, knn_idx, n_neighbors_velo, T);
 
@@ -1284,7 +1242,6 @@ List scanpy_pseudotime_cpp(
   if (end_points.size() != n_cells)
     thisutils::log_message("end_points length must match n_cells", "error");
 
-  // Build velocity transition matrix (embedding-space cosine)
   std::vector<double> T;
   scop_util::build_velocity_transition(velocity_embedding, embedding, knn_idx, n_neighbors_velo, T);
 
@@ -1297,7 +1254,6 @@ List scanpy_pseudotime_cpp(
   for (int i = 1; i < n_cells; ++i)
     if (end_points[i] > ev) { ev = end_points[i]; end = i; }
 
-  // Symmetrize: D = (T + T^T) / 2 for diffusion components
   NumericMatrix D(n_cells, n_cells);
   for (int i = 0; i < n_cells; ++i) {
     for (int j = 0; j < n_cells; ++j) {
@@ -1305,20 +1261,17 @@ List scanpy_pseudotime_cpp(
     }
   }
 
-  // Use R's eigen() for accurate eigendecomposition
   Environment base("package:base");
   Function eigen_fun = base["eigen"];
   List eig = eigen_fun(D, Named("symmetric", true));
   NumericVector evals_c = eig["values"];
   NumericMatrix evecs_c = eig["vectors"];
 
-  // Sort by eigenvalue descending
   std::vector<std::pair<double, int>> pairs;
   for (int i = 0; i < n_cells; ++i)
     pairs.push_back({evals_c[i], i});
   std::sort(pairs.begin(), pairs.end(), std::greater<std::pair<double,int>>());
 
-  // Diffusion components for the current C++ DPT approximation.
   int k = std::min(10, n_cells);
   NumericMatrix dc(n_cells, k);
   for (int comp = 0; comp < k; ++comp) {
@@ -1544,7 +1497,6 @@ List scanpy_pseudotime_graph_cpp(
 }
 
 
-// ── 9. Keep backward-compatible wrapper (same API as before) ─────────────────
 
 // [[Rcpp::export]]
 List scanpy_stochastic_embedding_cpp(
@@ -1553,13 +1505,11 @@ List scanpy_stochastic_embedding_cpp(
   IntegerMatrix knn_idx,
   NumericMatrix embedding
 ) {
-  // Compute moments
   List moments = scanpy_moments_cpp(spliced, unspliced, knn_idx);
   NumericMatrix Ms = moments["Ms"];
   NumericMatrix Mu = moments["Mu"];
   List second = scanpy_second_order_moments_cpp(spliced, unspliced, knn_idx);
   NumericMatrix Mss = second["Mss"];
   NumericMatrix Mus = second["Mus"];
-  // Run stochastic embedding
   return scanpy_stochastic_cpp(Ms, Mu, Mss, Mus, knn_idx, embedding);
 }

@@ -1,4 +1,3 @@
-# ListCCCDB and PrepareCCCDB unit tests.
 
 test_that("ListCCCDB enumerates CCC databases with a unified schema", {
   liana_loaded <- "liana" %in% loadedNamespaces()

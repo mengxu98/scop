@@ -1,8 +1,6 @@
 #ifndef SCOP_DYNLOAD_H
 #define SCOP_DYNLOAD_H
 
-// Process-local symbol lookup for optional BLAS entry points. Windows CI
-// does not provide <dlfcn.h>; LoadLibrary / GetProcAddress is the equivalent.
 
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
@@ -25,7 +23,6 @@ inline void* scop_dlsym(void* handle, const char* name) {
   if (handle == nullptr || name == nullptr) {
     return nullptr;
   }
-  // FARPROC is a function pointer; MSVC/MinGW reject static_cast to void*.
   return reinterpret_cast<void*>(GetProcAddress(static_cast<HMODULE>(handle), name));
 }
 

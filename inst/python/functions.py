@@ -2362,7 +2362,6 @@ def CellRank(
                         )
                         raise
                     else:
-                        # Already tried to switch, just raise
                         raise
                 else:
                     log_message(
@@ -3727,9 +3726,6 @@ def Palantir(
             )
             exit()
 
-        # if linear_reduction is None:
-        #     sc.pp.pca(adata, n_comps=n_pcs)
-        #     linear_reduction = "X_pca"
 
         if basis is None:
             if nonlinear_reduction is not None:
@@ -3806,9 +3802,6 @@ def Palantir(
 
             terminal_cells = list(terminal_cells_dict.keys())
 
-        # reticulate converts a length-one R character vector to a Python
-        # string. Palantir expects an Index/array-like collection of terminal
-        # states, so preserve the public R vector contract for singleton input.
         terminal_cells = as_list(terminal_cells)
 
         if terminal_cells is None:
@@ -3899,10 +3892,6 @@ def Palantir(
             pr_res.branch_probs = pr_res.branch_probs.rename(
                 columns=terminal_cells_dict
             )
-        # Keep the resolved cell identities and branch names with the result.
-        # This is intentionally stored in ``uns`` so the R conversion can
-        # preserve the actual cells selected from groups (including any
-        # adjustments), rather than only the user's requested arguments.
         adata.uns["scop_palantir_parameters"] = {
             "early_cell": str(early_cell),
             "terminal_cells": [str(x) for x in (terminal_cells or [])],
@@ -4826,8 +4815,6 @@ def CellTypist(
                 over_clustering_value = over_clustering
 
         if majority_voting and over_clustering_value is None:
-            # CellTypist may detect graph matrices in `obsp` but still requires
-            # `uns["neighbors"]` metadata for Scanpy Leiden over-clustering.
             has_neighbors_uns = isinstance(adata.uns.get("neighbors"), dict)
             has_graph_in_obsp = (
                 "connectivities" in adata.obsp and "distances" in adata.obsp
@@ -5175,8 +5162,6 @@ def _sccoda_parse_comparison(comparison):
 
 
 def _sccoda_formula(condition_key, reference):
-    # Treatment(reference) makes `reference` the baseline, so coefficients
-    # are the other condition versus this group.
     return f"C({condition_key}, Treatment({str(reference)!r}))"
 
 
@@ -5387,7 +5372,6 @@ def ScCODA(
 
         model = comp_ana.CompositionalAnalysis(
             cdata,
-            # cluster_2 is the reference so log2FD is group1 versus group2.
             formula=_sccoda_formula(condition_key, cluster_2),
             reference_cell_type=ref_cell,
         )
@@ -6106,7 +6090,6 @@ def RunSEACells(
     except Exception:
         soft_assign = None
 
-    # Handle newer SEACells API returning tuple
     if isinstance(soft_assign, tuple):
         soft_assign = soft_assign[0]
 
@@ -6118,9 +6101,7 @@ def RunSEACells(
         )
         return {"membership": None, "n_metacells": 0}
 
-    # Convert to numpy and compute hard assignments (argmax)
     if hasattr(soft_assign, "values"):
-        # pandas DataFrame
         sa = soft_assign.values
     else:
         sa = np.asarray(soft_assign)
@@ -6133,9 +6114,8 @@ def RunSEACells(
         )
         return {"membership": None, "n_metacells": 0}
 
-    # Argmax along axis=1 → 1-based indices for R
     membership = np.argmax(sa, axis=1).tolist()
-    membership = [int(m) + 1 for m in membership]  # 1-based
+    membership = [int(m) + 1 for m in membership]
 
     return {"membership": membership, "n_metacells": int(sa.shape[1])}
 

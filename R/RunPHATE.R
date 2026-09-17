@@ -221,7 +221,7 @@ RunPHATE.default <- function(
     ))
   }
 
-  prepare_env_if_needed(modules = "phate", verbose = verbose)
+  PrepareEnv(modules = "phate", verbose = verbose)
   check_python("phate", verbose = verbose)
   phate <- reticulate::import("phate")
 

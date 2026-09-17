@@ -1,8 +1,3 @@
-# End-to-end consistency between the scop CNV wrappers and the original
-# backend methods, run with real bundled example datasets (copykat::exp.rawdata
-# breast-cancer scRNA-seq, infercnv example, numbat ATC2 example). No simulated
-# data and no mocked backends: the wrappers and the original pipelines receive
-# the same real input and must return the same scientific results.
 
 cnv_real_breast_seurat <- function() {
   data(exp.rawdata, package = "copykat")
@@ -204,7 +199,7 @@ test_that("RunCNV numbat matches the original numbat pipeline output tables", {
 test_that("RunCNV fastCNV matches the original fastCNV pipeline", {
   skip_on_cran()
   skip_if_not_installed("fastCNV")
-  skip_if_not_installed("copykat")   # cnv_real_breast_seurat() loads copykat::exp.rawdata
+  skip_if_not_installed("copykat")
 
   srt <- cnv_real_breast_seurat()
   srt$celltype <- ifelse(seq_len(ncol(srt)) %% 5 == 0, "Normal", "Tumor")

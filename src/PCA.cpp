@@ -42,8 +42,6 @@ static PcaBlas* resolve_pca_blas() {
     return (scop_pca_blas.dsyrk && scop_pca_blas.dgemm) ? &scop_pca_blas : nullptr;
   }
   scop_pca_blas_checked = true;
-  // The process itself usually carries the right BLAS (Accelerate on macOS,
-  // the OpenBLAS/MKL that R links on Linux); named candidates cover the rest.
   const char* candidates[] = {
     NULL,
     "/System/Library/Frameworks/Accelerate.framework/Accelerate",

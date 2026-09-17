@@ -96,8 +96,6 @@ test_that("RunSCENIC exposes and forwards the native cisTarget parallel backend"
 })
 
 test_that("native cisTarget parallel backend validates Windows fork explicitly", {
-  # Keep the rest of .Platform: dependencies read fields such as $GUI while the
-  # mock is installed, and a partial replacement makes those reads fail.
   testthat::local_mocked_bindings(
     .package = "base",
     .Platform = utils::modifyList(base::.Platform, list(OS.type = "windows"))

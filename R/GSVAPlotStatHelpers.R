@@ -1,6 +1,3 @@
-# The score matrix is already materialized by GSVAPlot before its presentation
-# filters run.  Keep the row-wise calculations in one vectorized pass instead
-# of dispatching an R closure for every gene set.
 gsva_plot_row_variances <- function(scores) {
   check_r("matrixStats", verbose = FALSE)
   out <- matrixStats::rowVars(as.matrix(scores), na.rm = TRUE)

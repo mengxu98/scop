@@ -142,7 +142,6 @@ PseudotimeProjectionPlot <- function(
   plot_type <- match.arg(plot_type)
   method <- match.arg(method)
 
-  # Preserve backward compatibility with the old palette/palcolor arguments.
   if (!is.null(palette)) {
     group_palette <- palette
   }
@@ -231,9 +230,6 @@ PseudotimeProjectionPlot <- function(
     }
     df_field <- cbind.data.frame(x_emb, v_emb)
     colnames(df_field) <- c("x", "y", "u", "v")
-    # Arrowheads must be device-independent. Scaling them in npc units makes
-    # dense fields collapse into solid triangles when the vectors are large
-    # relative to the embedding extent (see VelocityPlot()).
     arrow_length <- grid::unit(1.5, "mm")
 
     if (!is.null(group.by)) {
@@ -302,7 +298,6 @@ PseudotimeProjectionPlot <- function(
 
     df_field <- cbind.data.frame(x_grid, v_grid)
     colnames(df_field) <- c("x", "y", "u", "v")
-    # Device-independent arrowheads, as in the raw branch above.
     arrow_length <- grid::unit(1.5, "mm")
     velocity_layer <- list(
       geom_segment(

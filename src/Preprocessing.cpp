@@ -13,11 +13,10 @@
 
 using namespace Rcpp;
 
-// ── 1. Filter genes (matching scv.pp.filter_genes exactly) ──────────────────
 
 // [[Rcpp::export]]
 IntegerVector scanpy_filter_genes_cpp(
-    NumericMatrix spliced,     // genes × cells
+    NumericMatrix spliced,
     NumericMatrix unspliced,
     int min_counts = 3,
     int min_counts_u = 3,
@@ -39,21 +38,18 @@ IntegerVector scanpy_filter_genes_cpp(
       sum_s += spliced(g, c);
       sum_u += unspliced(g, c);
     }
-    // scvelo does TWO PASSES: first filter on spliced, then on unspliced
-    // Each pass keeps if sum >= min_counts
     if (sum_s < min_counts || sum_u < min_counts_u)
       keep[g] = 0;
   }
   return keep;
 }
 
-// ── 2. Normalize per cell (matching scv.pp.normalize_per_cell, without log1p) ──
 
 // [[Rcpp::export]]
 List scanpy_normalize_cpp(
-    NumericMatrix spliced,     // genes × cells, ALREADY FILTERED
-    NumericMatrix unspliced,   // genes × cells, ALREADY FILTERED
-    NumericVector initial_spliced_totals,  // per-cell totals BEFORE filtering (length = n_cells)
+    NumericMatrix spliced,
+    NumericMatrix unspliced,
+    NumericVector initial_spliced_totals,
     NumericVector initial_unspliced_totals)
 {
   int n_genes = spliced.nrow();
@@ -63,7 +59,6 @@ List scanpy_normalize_cpp(
   if (initial_spliced_totals.size() != n_cells || initial_unspliced_totals.size() != n_cells)
     thisutils::log_message("initial totals must match n_cells", "error");
 
-  // Median of pre-filtering totals (matching scvelo's get_initial_size)
   std::vector<double> sorted_s(n_cells), sorted_u(n_cells);
   for (int c = 0; c < n_cells; ++c) {
     sorted_s[c] = initial_spliced_totals[c];
@@ -71,8 +66,6 @@ List scanpy_normalize_cpp(
   }
   std::sort(sorted_s.begin(), sorted_s.end());
   std::sort(sorted_u.begin(), sorted_u.end());
-  // numpy.median averages the two middle values for even-length input;
-  // scvelo's normalize_per_cell uses np.median(get_initial_size(...)).
   const bool even = n_cells % 2 == 0;
   const int mid = n_cells / 2;
   double median_s = even
@@ -84,8 +77,6 @@ List scanpy_normalize_cpp(
   if (median_s <= 0) median_s = 1.0;
   if (median_u <= 0) median_u = 1.0;
 
-  // Normalize in place and return the input matrices, avoiding two dense
-  // 84 MB-class copies for large single-cell datasets.
   for (int c = 0; c < n_cells; ++c) {
     double scale_s = initial_spliced_totals[c] > 0
       ? median_s / initial_spliced_totals[c] : 1.0;
@@ -104,7 +95,6 @@ List scanpy_normalize_cpp(
 }
 
 
-// ── 3. KNN via exact brute-force Euclidean (deterministic, matching scanpy) ──
 
 // [[Rcpp::export]]
 List scanpy_knn_cpp(

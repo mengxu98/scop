@@ -217,14 +217,6 @@ RunSpatialBenchmark <- function(
   )
 }
 
-benchmark_method_aliases <- c(
-  "bayesspace" = "BayesSpace",
-  "runbayesspace" = "BayesSpace",
-  "banksy" = "BANKSY",
-  "runbanksy" = "BANKSY",
-  "smoothclust" = "SmoothClust",
-  "runsmoothclust" = "SmoothClust"
-)
 
 benchmark_method_runner <- function(method) {
   switch(method,
@@ -245,6 +237,14 @@ benchmark_method_package <- function(method) {
 }
 
 benchmark_resolve_methods <- function(methods = NULL) {
+  benchmark_method_aliases <- c(
+    "bayesspace" = "BayesSpace",
+    "runbayesspace" = "BayesSpace",
+    "banksy" = "BANKSY",
+    "runbanksy" = "BANKSY",
+    "smoothclust" = "SmoothClust",
+    "runsmoothclust" = "SmoothClust"
+  )
   defaults <- c("BayesSpace", "BANKSY", "SmoothClust")
   if (is.null(methods)) {
     return(defaults)
@@ -264,6 +264,14 @@ benchmark_resolve_methods <- function(methods = NULL) {
 }
 
 benchmark_normalize_method_params <- function(method_params, methods) {
+  benchmark_method_aliases <- c(
+    "bayesspace" = "BayesSpace",
+    "runbayesspace" = "BayesSpace",
+    "banksy" = "BANKSY",
+    "runbanksy" = "BANKSY",
+    "smoothclust" = "SmoothClust",
+    "runsmoothclust" = "SmoothClust"
+  )
   if (!is.list(method_params)) {
     log_message("{.arg method_params} must be a named list", message_type = "error")
   }

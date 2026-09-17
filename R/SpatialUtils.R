@@ -1,9 +1,4 @@
-# Internal helpers shared by spatial workflow wrappers.
 
-# Resolve the common Seurat-object input used by native spatial functions.
-#
-# Spatial plotting and analysis APIs take the Seurat object as `object`. `srt`
-# remains an accepted deprecated alias until scop 1.0.0.
 spatial_resolve_object <- function(object = NULL, srt = NULL) {
   input_arg <- if (is.null(object)) "srt" else "object"
   resolved <- resolve_deprecated_srt(object, srt, is.null(object))
@@ -83,10 +78,6 @@ spatial_coordinate_numeric <- function(x) {
   suppressWarnings(as.numeric(x))
 }
 
-# Resolve one image for every sample. A scalar image must cover every sample;
-# a named image map must cover exactly the requested sample names. `preferred`
-# is an internal provenance hint and is used only when it names a covering
-# image; it never overrides an explicit user image.
 spatial_resolve_sample_images <- function(
   srt,
   sample.by,
@@ -148,8 +139,6 @@ spatial_resolve_sample_images <- function(
   out
 }
 
-# Resolve every sample independently and retain the source metadata needed by
-# schema-v1 spatial results.
 spatial_sample_coords <- function(srt, sample.by, image = NULL,
                                   coord.cols = c("col", "row"), coordinate_space = "raw") {
   labels <- as.character(srt[[]][[sample.by]])
@@ -289,7 +278,6 @@ spatial_normalize_weights <- function(weights) {
   if (any(weights < -sqrt(.Machine$double.eps))) {
     log_message("Deconvolution weights must be non-negative", message_type = "error")
   }
-  # Only tolerate floating-point noise around zero; do not hide invalid output.
   weights[weights < 0] <- 0
   totals <- rowSums(weights)
   if (any(!is.finite(totals))) {
@@ -301,7 +289,6 @@ spatial_normalize_weights <- function(weights) {
   weights
 }
 
-# Keep named colors attached to their categories, independent of row order.
 spatial_palette_colors <- function(
   x, palette = "Chinese", palcolor = NULL,
   type = c("auto", "discrete", "continuous"), NA_keep = FALSE, ...
@@ -330,7 +317,6 @@ spatial_palette_colors <- function(
 
 spatial_plot_factor <- function(x) {
   labels <- if (is.factor(x)) levels(x) else unique(as.character(x[!is.na(x)]))
-  # Keep missingness separate from a genuine category whose name is "NA".
   factor(as.character(x), levels = labels, ordered = is.ordered(x))
 }
 
@@ -476,8 +462,6 @@ spatial_set_active_variable_features <- function(srt, assay, features) {
     }
   }
   if (inherits(assay_object, "StdAssay")) {
-    # Write full, ID-aligned metadata: some Assay5 setters recycle short
-    # character selections and treat an empty assignment as a no-op.
     feature_names <- rownames(assay_object)
     empty_labels <- feature_names %in% features
     empty_ranks <- match(feature_names, features)

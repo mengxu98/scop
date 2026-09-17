@@ -690,8 +690,6 @@ test_that("Cell2fate refuses a non-empty unowned result directory", {
 })
 
 test_that("Cell2fate rejects symbolic links in managed result paths", {
-  # file.symlink() creates junctions on Windows, which Sys.readlink()
-  # does not report, so the POSIX symlink scenario cannot be simulated.
   skip_on_os("windows")
 
   result_dir <- tempfile("cell2fate symlink ")

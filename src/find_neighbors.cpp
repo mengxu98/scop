@@ -49,8 +49,6 @@ static matrix_multiply_f32 runtime_sgemm() {
   static bool loaded = false;
   if (!loaded) {
     loaded = true;
-    // A cblas already linked into the process (Accelerate on macOS, the
-    // OpenBLAS/MKL/BLIS that R itself links on Linux) is the reliable hit.
     void* self = scop_dlopen(NULL);
     if (self != NULL) {
       fn = reinterpret_cast<matrix_multiply_f32>(scop_dlsym(self, "cblas_sgemm"));
@@ -151,9 +149,6 @@ static bool exact_blas(const std::vector<float>& data,
   std::vector<float> scores(static_cast<size_t>(tile_rows) * rows);
   enum { row_major = 101, no_trans = 111, trans = 112 };
 
-  // Skinny GEMMs (kNN on 20–50 PCs) lose time with 48 BLAS threads. Cap the
-  // GEMM pool; the heap search still uses `workers` OpenMP threads after each
-  // tile, when BLAS is idle.
   const int gemm_threads = std::max(1, std::min(workers, std::max(1, (cols + 7) / 8)));
   const int previous_blas = blas_get_num_threads();
   blas_set_num_threads(gemm_threads);

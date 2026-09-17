@@ -1,7 +1,3 @@
-# End-to-end consistency between the scop wrapper and the original backend
-# method, run with real data. These tests do not mock the backend: they run
-# `RunCellChat` and the CellChat package's own vignette pipeline on the same
-# input and require the stored results to be identical.
 
 cellchat_consistency_input <- function(n_cells = 120) {
   data(pancreas_sub)

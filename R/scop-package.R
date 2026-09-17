@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #' @title Single-cell and Spatial omics analysis pipeline
 #'

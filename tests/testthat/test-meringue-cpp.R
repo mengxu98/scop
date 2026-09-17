@@ -1,9 +1,3 @@
-# Consistency and speed tests for the scop C++ Moran backend
-# (`meringue_moran_cpp`) against the original MERINGUE implementation
-# (`moranTest` / `moranPermutationTest`) on real spatial data. No mocks here:
-# both implementations run on the same real Visium input and must agree to
-# machine precision, including permutation p-values (the kernel replicates the
-# session's `sample.kind` RNG stream).
 
 meringue_real_input <- function(n = 120, seed = 42) {
   data(visium_human_pancreas_sub)

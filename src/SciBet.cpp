@@ -562,7 +562,7 @@ List predict_labels_and_scores_sparse(
   );
 }
 
-}  // namespace
+}
 
 // [[Rcpp::export]]
 List scibet_fit_predict(

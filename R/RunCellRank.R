@@ -280,7 +280,7 @@ RunCellRank <- function(
     return(srt)
   }
 
-  prepare_env_if_needed(
+  PrepareEnv(
     envname = envname,
     conda = conda,
     modules = c(
@@ -474,8 +474,6 @@ RunCellRank <- function(
   if (isTRUE(return_seurat)) {
     srt_out <- adata_to_srt(adata, prepare_env = FALSE)
 
-    # ── Normalize Python output to match C++ backend structure ──
-    # Map Python obs column names → C++ standard names
     py_to_cpp_cols <- c(
       macrostates_fwd = "cellrank_macrostate",
       term_states_fwd = "cellrank_terminal_states"
@@ -516,7 +514,6 @@ RunCellRank <- function(
       )
     }
 
-    # ── Extract absorption probabilities from adata.obsm ──
     ap <- NULL
     obsm_keys <- tryCatch(
       if (inherits(adata$obsm, "python.builtin.object")) {
@@ -585,8 +582,6 @@ RunCellRank <- function(
         paste0(ap_key, " row maximum")
       }
     } else if ("term_states_fwd_probs" %in% colnames(srt_out@meta.data)) {
-      # Preserve the historical column when fate probabilities are unavailable,
-      # but record that this is only a terminal-membership fallback.
       srt_out@meta.data[["cellrank_fate_confidence"]] <-
         as.numeric(srt_out@meta.data[["term_states_fwd_probs"]])
       fate_confidence_source <- "term_states_fwd_probs fallback"
@@ -597,7 +592,6 @@ RunCellRank <- function(
       )
     }
 
-    # ── Store standard tools$CellRank slot ──
     transition <- if ("cellrank_transition" %in% names(srt_out@graphs)) {
       srt_out@graphs[["cellrank_transition"]]
     } else {
@@ -643,7 +637,6 @@ RunCellRank <- function(
       )
     )
 
-    # Keep raw Python objects in misc for debugging
     srt_out@misc$cellrank <- list(
       estimator = estimator,
       kernel = kernel
@@ -657,7 +650,6 @@ RunCellRank <- function(
       if (is.null(merged@misc$cellrank)) {
         merged@misc$cellrank <- srt_out@misc$cellrank
       }
-      # Merge tools$CellRank from append
       if (!is.null(srt_out@tools[["CellRank"]])) {
         merged@tools[["CellRank"]] <- srt_out@tools[["CellRank"]]
       }
@@ -1006,7 +998,6 @@ run_cellrank_cpp <- function(
     )
   }
 
-  # Build transition matrix based on kernel_type
   T_mat <- NULL
   kernel_used <- kernel_type
   pseudotime_source <- NULL
@@ -1100,7 +1091,6 @@ run_cellrank_cpp <- function(
     kernel_used <- if (isTRUE(combined$combined)) "wot_connectivity_combined" else "wot"
     pseudotime_source <- time_field
   } else {
-    # Default: velocity kernel (original inline computation)
     T_mat <- matrix(0, n_cells, n_cells)
     for (i in seq_len(n_cells)) {
       vn <- sqrt(sum(ve[i, ]^2))
@@ -1162,7 +1152,6 @@ run_cellrank_cpp <- function(
     }
   }
 
-  # Choose estimator
   if (identical(estimator_type, "cflare")) {
     result <- cellrank_cflare_cpp(T_ = T_mat, n_states = n_mac)
   } else {
@@ -1183,7 +1172,6 @@ run_cellrank_cpp <- function(
     )
   }
 
-  # Store absorption probabilities if available
   if ("absorption_probabilities" %in% names(result)) {
     ap <- result[["absorption_probabilities"]]
     rownames(ap) <- cells

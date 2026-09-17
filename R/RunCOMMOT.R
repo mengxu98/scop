@@ -1,4 +1,3 @@
-# Official COMMOT producer and stored-result plotting --------------------------
 
 commot_validate_param_list <- function(x, name) {
   if (!is.list(x) || (length(x) > 0L && (is.null(names(x)) || any(!nzchar(names(x)))))) {

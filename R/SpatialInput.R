@@ -1,19 +1,3 @@
-# Inspect the analysis unit and coordinates of spatial data
-#
-# Resolve one spatial context without changing the object or materializing its
-# expression matrix. Import provenance takes precedence over image-class
-# evidence. Metadata-only coordinates have unknown physical units unless
-# explicitly supplied. Selecting an image never implies that pixels are microns.
-#
-# @param object A Seurat object.
-# @param assay Assay to inspect; NULL uses the default assay.
-# @param image Image name. Multiple images require an explicit selection.
-# @param coord.cols Coordinate columns for metadata-only input.
-# @param data_type Observation type: auto, spot, bin, or cell. Auto returns
-#   unknown when no reliable evidence is available.
-# @param coordinate_units Optional explicit units: pixel, micron, or unknown.
-# @return A list containing the assay, image, observation type, units, selected
-#   cell IDs, dimensions, estimated dense matrix bytes, and coordinate source.
 spatial_input_info <- function(object, assay = NULL, image = NULL,
                             coord.cols = c("col", "row"), data_type = "auto",
                             coordinate_units = NULL) {

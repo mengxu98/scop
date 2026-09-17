@@ -21,9 +21,6 @@ static inline void rescale_column(double* values, int begin, int end,
   }
 }
 
-// grain_size is retained for API compatibility but is no longer used;
-// column-level parallelism is now handled by OpenMP (each column is
-// independent: it normalises only its own non-zero entries in @x).
 // [[Rcpp::export]]
 void log_normalize_dgc(S4 mat, double scale_factor, int grain_size = 100, int n_threads = 0) {
   NumericVector x = mat.slot("x");

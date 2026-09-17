@@ -17,8 +17,6 @@ struct TileHash {
 };
 }
 
-// Validated R entry point supplies one sample, 1-based IDs and sorted radii.
-// Direct reduction avoids materializing a potentially large cell-cell edge list.
 // [[Rcpp::export(rng = false)]]
 Rcpp::IntegerVector spatial_neighborhood_profile_cpp(
     Rcpp::NumericMatrix xy, Rcpp::IntegerVector group, Rcpp::IntegerVector query,

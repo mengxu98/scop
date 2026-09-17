@@ -2034,8 +2034,6 @@ scenic_call_with_args <- function(fun, args, extra_args = list()) {
     )
   }
   args[names(extra_args)] <- extra_args
-  # The internal arg builders keep the historical `srt` name; the public
-  # plotting functions take the data object as `object`.
   if (!is.null(args[["srt"]])) {
     args[["object"]] <- args[["object"]] %||% args[["srt"]]
     args[["srt"]] <- NULL

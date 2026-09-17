@@ -4,10 +4,7 @@
 
 using namespace Rcpp;
 
-//typedef Eigen::SparseMatrix<double> SpMat;
-//typedef Eigen::SparseMatrix<double>::InnerIterator InIterMat;
 
-/*****  Center and standardize  *****/
 // [[Rcpp::export]]
 List scaleC(Eigen::MatrixXd X){
   int i, p=X.cols(), N=X.rows();
@@ -21,14 +18,12 @@ List scaleC(Eigen::MatrixXd X){
   return List::create(Named("x")=X, Named("sd")=sdX, Named("m")=mX);
 }
 
-/*****  Omega  *****/
 // [[Rcpp::export]]
 List OmegaC(Eigen::MatrixXd & Omega, Eigen::VectorXi & sgn){
   int i, j, p=sgn.size();
   Eigen::VectorXi nadj=Eigen::VectorXi::Zero(p);
   Eigen::VectorXd ndegree=Eigen::VectorXd::Zero(p);
 
-  //Omega.diagonal().setZero();
   Eigen::SparseMatrix<double> OmegaS=Omega.sparseView();
 
   for(i=0;i<p;++i){
@@ -50,7 +45,6 @@ List OmegaC(Eigen::MatrixXd & Omega, Eigen::VectorXi & sgn){
   return(List::create(Named("nadj")=nadj, Named("loc")=loc, Named("Omega")=OmegaS));
 }
 
-/*****  Sparse Omega  *****/
 // [[Rcpp::export]]
 List OmegaSC(Eigen::SparseMatrix<double> & OmegaS, Eigen::VectorXi & sgn){
   int i, j, p=sgn.size();
@@ -80,11 +74,7 @@ List OmegaSC(Eigen::SparseMatrix<double> & OmegaS, Eigen::VectorXi & sgn){
 
 
 
-/////////////////////////////////
-/////   Linear Regression   /////
-/////////////////////////////////
 
-/*****  LM: Lambda path (max) inner product <xj,y> *****/
 // [[Rcpp::export]]
 double maxLambdaLmC(Eigen::MatrixXd X, Eigen::VectorXd y, double alpha, Eigen::VectorXd wbeta, int N0, int p){
   int i;
@@ -92,7 +82,7 @@ double maxLambdaLmC(Eigen::MatrixXd X, Eigen::VectorXd y, double alpha, Eigen::V
 
   for (i=0; i<p; ++i) {
     if (wbeta(i) > 0.0) {
-      LiMaxi=std::abs(y.transpose()*X.col(i))/wbeta(i); // <xj,y>/N0
+      LiMaxi=std::abs(y.transpose()*X.col(i))/wbeta(i);
       if (LiMaxi > LiMax) {
         LiMax=LiMaxi;
       }
@@ -106,24 +96,23 @@ double maxLambdaLmC(Eigen::MatrixXd X, Eigen::VectorXd y, double alpha, Eigen::V
 
 
 
-/*****  Used for CV trimming  *****/
 // [[Rcpp::export]]
 Eigen::VectorXd cvTrimLmC(Eigen::VectorXd beta, int nn, int nn2, Eigen::VectorXi loco,
                           Eigen::MatrixXd XF, Eigen::VectorXd yF, int NF, double a0) {
   int i, j;
-  Eigen::VectorXd RSS, xbF=Eigen::VectorXd::Zero(NF); // xb=Eigen::VectorXd::Zero(N),
+  Eigen::VectorXd RSS, xbF=Eigen::VectorXd::Zero(NF);
 
   yF=yF.array()-a0;
 
   if(nn2>0){
-    RSS.setZero(nn2); //nn2= # of part of data
+    RSS.setZero(nn2);
 
       if(nn==0){
         RSS(0)=yF.squaredNorm();
       }else{
         for(i=0;i<nn;i++){
-          j=loco(i); //   index of nonzero beta
-          xbF+=XF.col(j)*beta(i); //
+          j=loco(i);
+          xbF+=XF.col(j)*beta(i);
             RSS(i)=(yF-xbF).squaredNorm();
         }
       }
@@ -145,7 +134,6 @@ Eigen::VectorXd cvTrimLmC(Eigen::VectorXd beta, int nn, int nn2, Eigen::VectorXi
 }
 
 
-/*****  LM: Enet (L1+L2)  *****/
 // [[Rcpp::export]]
 List EnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
              double alpha, Eigen::VectorXd lambda, int nlambda, int ilambda, Eigen::VectorXd wbeta,
@@ -161,14 +149,11 @@ List EnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
   Eigen::VectorXi flag=Eigen::VectorXi::Zero(nlambda);
   Eigen::VectorXd RSS=Eigen::VectorXd::Zero(nlambda), RSQ=Eigen::VectorXd::Zero(nlambda);
   double xr, dbMax;
-//  Eigen::VectorXd mX(p), sdX(p), di(p);
   Eigen::VectorXd mX(p), di(p);
 
   for (i=0;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N0);
-//    X.col(i)/=sdX(i);
   }
   y=y.array()-y.mean();
 
@@ -189,7 +174,7 @@ List EnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
   }
 
   for(il=0;il<nlambda;++il){
-    lambda1=lambda(il)*alpha*wbeta; lambda2=lambda(il)*(1.0-alpha); // lambda1:vector lambda*alpha, lambda2=lambda*(1-alpha)
+    lambda1=lambda(il)*alpha*wbeta; lambda2=lambda(il)*(1.0-alpha);
 
     for(i=0;i<p;++i){
       if(iactive(i)==0){
@@ -210,14 +195,12 @@ List EnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
           xr=y.dot(X.col(j));
           zi=xr/N0+beta0(j);
           if(zi>lambda1(j)){
-            // b0=(zi-lambda1(j))/(lambda2*wbeta(j)+1); // x*x/N=1
-            b0=(zi-lambda1(j))/(lambda2+1.0); // x*x/N=1
+            b0=(zi-lambda1(j))/(lambda2+1.0);
             db0=beta0(j)-b0;beta0(j)=b0;
             y+=db0*X.col(j);
             objQj+=std::abs(b0)*lambda1(j);
             objQi+=pow(b0, 2);
           }else if(zi<-lambda1(j)){
-            // b0=(zi+lambda1(j))/(lambda2*wbeta(j)+1);
             b0=(zi+lambda1(j))/(lambda2+1.0);
             db0=beta0(j)-b0;beta0(j)=b0;
             y+=db0*X.col(j);
@@ -233,7 +216,7 @@ List EnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
 
           rss0+=db0*(db0*N0+2.0*xr);
           dbMax=std::max(dbMax, pow(db0, 2));
-        }//for update
+        }
 
         obj0=rss0/N0/2.0+objQj+objQi*lambda2/2.0;
 
@@ -244,9 +227,8 @@ List EnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
         if(obj0!=obj0){flag(il)=2;goto exit;}
         if(it>=maxit){
           flag(il)=1; break;
-          // goto exit;
         }
-      }//while
+      }
 
     iadd=0;
     for(i=0;i<p;++i){
@@ -261,11 +243,11 @@ List EnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
 
 
     BetaSTD.col(il)=beta0;
-    Beta.col(il)=beta0.array();//sdX.array();
+    Beta.col(il)=beta0.array();
     RSS(il)=rss0; RSQ(il)=1.0-rss0/RSS0;
 
     if(RSQ(il) > 0.999) goto exit;
-  }//for lambda
+  }
 
   exit:
   return(List::create(Named("Beta")=Beta, Named("BetaSTD")=BetaSTD, Named("flag")=flag, Named("rsq")=RSQ,
@@ -273,7 +255,6 @@ List EnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
 }
 
 
-/*****  LM: Enet (L1+L2) cross-validation  *****/
 // [[Rcpp::export]]
 List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
                double alpha, Eigen::VectorXd lambda, int nlambda, Eigen::VectorXd wbeta,
@@ -282,7 +263,7 @@ List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
   int i, j, it=0, il, iadd, ia=0;
   double lambda2, zi, obj0, obj1, rss0, rss1, b0, db0, objQi, objQj, RSS0;
   Eigen::VectorXd beta0=Eigen::VectorXd::Zero(p);
-  Eigen::MatrixXd Beta=Eigen::MatrixXd::Zero(p,nlambda), BetaSTD=Eigen::MatrixXd::Zero(p,nlambda); // beta matrix for different lambdas
+  Eigen::MatrixXd Beta=Eigen::MatrixXd::Zero(p,nlambda), BetaSTD=Eigen::MatrixXd::Zero(p,nlambda);
   Eigen::VectorXd lambda1(p);
   Eigen::VectorXd RSSp(nlambda), RSS(nlambda), RSQ(nlambda);
   Eigen::VectorXi active=Eigen::VectorXi::Zero(p), iactive=Eigen::VectorXi::Zero(p);
@@ -290,7 +271,6 @@ List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
   Eigen::VectorXd xb=Eigen::VectorXd::Zero(N);
   Eigen::VectorXd xbF(NF);
   double xr, dbMax;
-//  Eigen::VectorXd mX(p), sdX(p), di(p);
   Eigen::VectorXd mX(p), di(p);
   double a0=0.0, my=0.0;
   Eigen::MatrixXd predY=Eigen::MatrixXd::Zero(NF, nlambda);
@@ -301,8 +281,6 @@ List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
   for (i=0;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N);
-//    X.col(i)/=sdX(i);
   }
   my=y.mean();
   y=y.array()-my;
@@ -315,7 +293,7 @@ List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
   }
 
   for(il=0;il<nlambda;++il){
-    lambda1=lambda(il)*alpha*wbeta; lambda2=lambda(il)*(1.0-alpha); // lambda1:vector lambda*alpha, lambda2=lambda*(1-alpha)
+    lambda1=lambda(il)*alpha*wbeta; lambda2=lambda(il)*(1.0-alpha);
 
     for(i=0;i<p;++i){
       if(iactive(i)==0){
@@ -336,7 +314,7 @@ List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
           xr=y.dot(X.col(j));
           zi=xr/N+beta0(j);
           if(zi>lambda1(j)){
-            b0=(zi-lambda1(j))/(lambda2+1.0); // x*x/N=1
+            b0=(zi-lambda1(j))/(lambda2+1.0);
             db0=beta0(j)-b0;beta0(j)=b0;
             y+=db0*X.col(j);
             objQj+=std::abs(b0)*lambda1(j);
@@ -357,7 +335,7 @@ List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
 
           rss0+=db0*(db0*N+2.0*xr);
           dbMax=std::max(dbMax, pow(db0, 2));
-        }//for update
+        }
 
         obj0=rss0/N/2.0+objQj+objQi*lambda2/2.0;
 
@@ -368,9 +346,8 @@ List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
         if(obj0!=obj0){flag(il)=2;goto exit;}
         if(it>=maxit){
           flag(il)=1; break;
-          // goto exit;
         }
-      }//while
+      }
 
     iadd=0;
     for(i=0;i<p;++i){
@@ -384,7 +361,7 @@ List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
     if(iadd==1){goto local;}
 
     BetaSTD.col(il)=beta0;
-    Beta.col(il)=beta0.array();//sdX.array();
+    Beta.col(il)=beta0.array();
     RSS(il)=rss0; RSQ(il)=1.0-rss0/RSS0;
 
     a0=my; xbF.setZero(NF);
@@ -399,8 +376,7 @@ List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
     RSSp(il)=(yF-xbF).squaredNorm();
     a0S(il)=a0;
 
-    //if(RSQ(il) > 0.999) goto exit;
-  }//for lambda
+  }
 
   exit:
   return(List::create(Named("Beta")=Beta, Named("BetaSTD")=BetaSTD, Named("flag")=flag, Named("predY")=predY, Named("a0S")=a0S,
@@ -409,7 +385,6 @@ List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y,
 
 
 
-/*****  LM: Network (L1+La)  *****/
   // [[Rcpp::export]]
 List NetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y, double alpha,
             Eigen::VectorXd lambda, int nlambda, int ilambda, Eigen::VectorXd wbeta,
@@ -426,14 +401,11 @@ List NetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y, double alpha,
   Eigen::VectorXd xb=Eigen::VectorXd::Zero(N0);
   Eigen::VectorXd RSS=Eigen::VectorXd::Zero(nlambda), RSQ(nlambda);
   double xr, dbMax, lambdaMax;
-//  Eigen::VectorXd mX(p), sdX(p), di(p);
   Eigen::VectorXd mX(p), di(p);
 
   for (i=0;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N0);
-//    X.col(i)/=sdX(i);
   }
   y=y.array()-y.mean();
 
@@ -477,14 +449,14 @@ List NetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y, double alpha,
           zi2=0.0;
           for(ij=0;ij<nadj(j);++ij){
             m=loc(ij, j)-1;
-            if(iactive(m)==1){zi2+=beta0(m)*Omega.coeffRef(m, j);} // Omega: w_kl/sqrt(d_k*d_l),L=I-Omega ; L=SLS (included sign of beta)
+            if(iactive(m)==1){zi2+=beta0(m)*Omega.coeffRef(m, j);}
           }
           zi+=lambda2*zi2;
 
           if(zi>lambda1(j)){
             b0=(zi-lambda1(j))/(lambda2+1.0);
             db0=beta0(j)-b0;
-            objQi-=db0*(beta0(j)+b0-2.0*zi2); //  beta^T*L*beta
+            objQi-=db0*(beta0(j)+b0-2.0*zi2);
             beta0(j)=b0;
             y+=db0*X.col(j);
             objQj+=std::abs(b0)*lambda1(j);
@@ -507,7 +479,7 @@ List NetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y, double alpha,
 
           rss0+=db0*(db0*N0+2.0*xr);
           dbMax=std::max(dbMax, pow(db0, 2));
-        }//for update
+        }
 
         obj0=rss0/N0/2.0+objQj+objQi*lambda2/2.0;
 
@@ -521,9 +493,8 @@ List NetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y, double alpha,
         if(it>=maxit){
           flag(il)=1;
           break;
-          // goto exit;
         }
-      }//while
+      }
 
     iadd=0;
     for(i=0;i<p;++i){
@@ -542,11 +513,11 @@ List NetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y, double alpha,
     if(iadd==1){goto local;}
 
     BetaSTD.col(il)=beta0;
-    Beta.col(il)=beta0.array();//sdX.array();
+    Beta.col(il)=beta0.array();
     RSS(il)=rss0; RSQ(il)=1.0-rss0/RSS0;
 
     if(RSQ(il) > 0.999) goto exit;
-  }//for lambda
+  }
 
   exit:
     return(List::create(Named("Beta")=Beta, Named("BetaSTD")=BetaSTD, Named("flag")=flag, Named("rsq")=RSQ,
@@ -555,7 +526,6 @@ List NetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y, double alpha,
 
 
 
-/*****  LM: Network (L1+La) cross-validation *****/
 // [[Rcpp::export]]
 List cvNetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y,double alpha,
               Eigen::VectorXd lambda, int nlambda, Eigen::VectorXd wbeta,
@@ -573,7 +543,6 @@ List cvNetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y,double alpha,
   Eigen::VectorXd xbF(NF);
   Eigen::VectorXd RSS(nlambda), RSQ(nlambda), RSSp(nlambda);
   double xr, dbMax;
-//  Eigen::VectorXd mX(p), sdX(p), di(p);
   Eigen::VectorXd mX(p), di(p);
 
   double a0=0.0, my=0.0;
@@ -584,8 +553,6 @@ List cvNetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y,double alpha,
   for (i=0;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N);
-//    X.col(i)/=sdX(i);
   }
   my=y.mean();
   y=y.array()-my;
@@ -621,14 +588,14 @@ List cvNetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y,double alpha,
           zi2=0.0;
           for(ij=0;ij<nadj(j);++ij){
             m=loc(ij, j)-1;
-            if(iactive(m)==1){zi2+=beta0(m)*Omega.coeffRef(m, j);} // Omega: w_kl/sqrt(d_k*d_l),L=I-Omega ; L=SLS (included sign of beta)
+            if(iactive(m)==1){zi2+=beta0(m)*Omega.coeffRef(m, j);}
           }
           zi+=lambda2*zi2;
 
           if(zi>lambda1(j)){
             b0=(zi-lambda1(j))/(lambda2+1.0);
             db0=beta0(j)-b0;
-            objQi-=db0*(beta0(j)+b0-2.0*zi2); //  beta^T*L*beta
+            objQi-=db0*(beta0(j)+b0-2.0*zi2);
             beta0(j)=b0;
             y+=db0*X.col(j);
             objQj+=std::abs(b0)*lambda1(j);
@@ -651,7 +618,7 @@ List cvNetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y,double alpha,
 
           rss0+=db0*(db0*N+2.0*xr);
           dbMax=std::max(dbMax, pow(db0, 2));
-        }//for update
+        }
 
         obj0=rss0/N/2.0+objQj+objQi*lambda2/2.0;
 
@@ -662,9 +629,8 @@ List cvNetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y,double alpha,
         if(obj0!=obj0){flag(il)=2;goto exit;}
         if(it>=maxit){
           flag(il)=1; break;
-          // goto exit;
         }
-      }//while
+      }
 
     iadd=0;
     for(i=0;i<p;++i){
@@ -683,7 +649,7 @@ List cvNetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y,double alpha,
     if(iadd==1){goto local;}
 
     BetaSTD.col(il)=beta0;
-    Beta.col(il)=beta0.array();//sdX.array();
+    Beta.col(il)=beta0.array();
     RSS(il)=rss0; RSQ(il)=1.0-rss0/RSS0;
 
     a0=my; xbF.setZero(NF);
@@ -698,8 +664,7 @@ List cvNetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y,double alpha,
     RSSp(il)=(yF-xbF).squaredNorm();
     a0S(il)=a0;
 
-    //if(RSQ(il) > 0.999) goto exit;
-  }//for lambda
+  }
 
   exit:
   return(List::create(Named("Beta")=Beta, Named("BetaSTD")=BetaSTD, Named("flag")=flag, Named("predY")=predY, Named("a0S")=a0S,
@@ -710,11 +675,7 @@ List cvNetLmC(Eigen::MatrixXd & X, Eigen::VectorXd & y,double alpha,
 
 
 
-///////////////////
-/////   Cox   /////
-///////////////////
 
-/*****  Cox: Lambda path (max)  *****/
 // [[Rcpp::export]]
 double maxLambdaCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent, int N,
                      Eigen::VectorXi nevent, Eigen::VectorXi nevent1, Eigen::VectorXi loc1,
@@ -732,7 +693,7 @@ double maxLambdaCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent, int N,
 
   for (i=0; i<p; ++i) {
     if (wbeta(i) > 0.0) {
-      LiMaxi=std::abs(lli.transpose()*X.col(i))/wbeta(i); // <xj,y>/N0
+      LiMaxi=std::abs(lli.transpose()*X.col(i))/wbeta(i);
       if (LiMaxi > LiMax) {
         LiMax=LiMaxi;
       }
@@ -746,7 +707,6 @@ double maxLambdaCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent, int N,
 
 
 
-/*****  Derivatives of log-pl of eta (1st&2nd order),  ties  *****/
 void dletaCm(Eigen::VectorXd& exb, Eigen::VectorXd& tevent, int& N,
                Eigen::VectorXi& nevent, Eigen::VectorXi& nevent1, Eigen::VectorXi& loc1,
                int& n, Eigen::VectorXd& pl1, Eigen::VectorXd& pl2, int& ifast, int& itwo){
@@ -783,7 +743,6 @@ void dletaCm(Eigen::VectorXd& exb, Eigen::VectorXd& tevent, int& N,
   }
 }
 
-/*****  Log-pl of eta,  ties  *****/
 // [[Rcpp::export]]
 double pletaCm(Eigen::VectorXd& xb, Eigen::VectorXd& exb, Eigen::VectorXi& nevent,
                Eigen::VectorXi& nevent1, Eigen::VectorXi& loc1, int& n, int& ifast, int& itwo){
@@ -817,7 +776,6 @@ double pletaCm(Eigen::VectorXd& xb, Eigen::VectorXd& exb, Eigen::VectorXi& neven
 }
 
 
-/*****  Cox: Used for CV trimming  *****/
 // [[Rcpp::export]]
 Eigen::VectorXd cvTrimCoxC(Eigen::VectorXd beta, int nn, int nn2, Eigen::VectorXi loco,
                            Eigen::MatrixXd XF, int NF,
@@ -873,7 +831,6 @@ Eigen::VectorXd cvTrimCoxC(Eigen::VectorXd beta, int nn, int nn2, Eigen::VectorX
 }
 
 
-/*****  Cox: Enet (L1+L2)  *****/
   // [[Rcpp::export]]
 List EnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
               double alpha, Eigen::VectorXd lambda, int nlambda, int ilambda, Eigen::VectorXd wbeta,
@@ -889,15 +846,12 @@ List EnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
   Eigen::VectorXi flag=Eigen::VectorXi::Zero(nlambda);
   Eigen::VectorXd exb=Eigen::VectorXd::Constant(N, 1.0), xb=Eigen::VectorXd::Zero(N);
   Eigen::VectorXd pl1(N), pl2(N);
-//  Eigen::VectorXd mX(p), sdX(p);
   Eigen::VectorXd mX(p);
   double lambdaMax;
 
   for (i=0;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N0);
-//    X.col(i)/=sdX(i);
   }
 
   if (ilambda == 1) {
@@ -959,7 +913,7 @@ List EnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
               xb-=db0*X.col(j);
             }
           }
-        }//for update
+        }
 
         ll1=ll0;obj1=obj0;
         exb=(xb.array()).exp();
@@ -974,7 +928,7 @@ List EnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
 
         dletaCm(exb, tevent, N, nevent, nevent1, loc1, n, pl1, pl2, ifast, itwo);
         if(ifast==1 && itwo==1)goto exit;
-      }//while
+      }
 
     dletaCm(exb, tevent, N, nevent, nevent1, loc1, n, pl1, pl2, ifast, itwo);
     if(ifast==1 && itwo==1)goto exit;
@@ -991,8 +945,8 @@ List EnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
 
     locbeta(il)=ll0;
     BetasSTD.col(il)=beta0;
-    Betas.col(il)=beta0.array();//sdX.array();
-  }//for lambda
+    Betas.col(il)=beta0.array();
+  }
 
   exit:
   if(ifast==1 && itwo==1 && il>0)--il;
@@ -1001,7 +955,6 @@ List EnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
 }
 
 
-/*****  Cox: Enet (L1+L2) cross-validation  *****/
 // [[Rcpp::export]]
 List cvEnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
                 double alpha, Eigen::VectorXd lambda, int nlambda, Eigen::VectorXd wbeta,
@@ -1019,15 +972,12 @@ List cvEnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
   Eigen::VectorXd exb=Eigen::VectorXd::Constant(N, 1.0), xb=Eigen::VectorXd::Zero(N);
   Eigen::VectorXd exbF(NF), xbF(NF);
   Eigen::VectorXd pl1(N), pl2(N);
-//  Eigen::VectorXd mX(p), sdX(p);
   Eigen::VectorXd mX(p);
   double mxi;
 
   for (i=0;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N0);
-//    X.col(i)/=sdX(i);
 
     mxi=XF.col(i).mean();
     XF.col(i)=XF.col(i).array()-mxi;
@@ -1082,7 +1032,7 @@ List cvEnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
               xb-=db0*X.col(j);
             }
           }
-        }//for update
+        }
 
         ll1=ll0;obj1=obj0;
         exb=(xb.array()).exp();
@@ -1097,7 +1047,7 @@ List cvEnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
 
         dletaCm(exb, tevent, N, nevent, nevent1, loc1, n, pl1, pl2, ifast, itwo);
         if(ifast==1 && itwo==1)goto exit;
-      }//while
+      }
 
     dletaCm(exb, tevent, N, nevent, nevent1, loc1, n, pl1, pl2, ifast, itwo);
     if(ifast==1 && itwo==1)goto exit;
@@ -1114,13 +1064,13 @@ List cvEnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
 
     locbeta(il)=ll0;
     BetasSTD.col(il)=beta0;
-    Betas.col(il)=beta0.array();//sdX.array();
+    Betas.col(il)=beta0.array();
 
     xbF.setZero(NF);
     for(i=0;i<ia;i++){j=active(i);xbF+=XF.col(j)*Betas(j,il);}
     exbF=(xbF.array()).exp();
     locbetaF(il)=pletaCm(xbF, exbF, neventF, nevent1F, loc1F, nF, ifast, itwo);
-  }//for lambda
+  }
 
   exit:
   if(ifast==1 && itwo==1 && il>0)--il;
@@ -1130,7 +1080,6 @@ List cvEnetCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent,
 
 
 
-/*****  Cox: Network (L1+La)  *****/
   // [[Rcpp::export]]
 List NetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
              Eigen::VectorXd lambda, int nlambda, int ilambda, Eigen::VectorXd wbeta,
@@ -1147,15 +1096,12 @@ List NetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
   Eigen::VectorXi flag=Eigen::VectorXi::Zero(nlambda);
   Eigen::VectorXd exb=Eigen::VectorXd::Constant(N, 1.0), xb=Eigen::VectorXd::Zero(N);
   Eigen::VectorXd pl1(N), pl2(N);
-//  Eigen::VectorXd mX(p), sdX(p);
   Eigen::VectorXd mX(p);
   double lambdaMax;
 
   for (i=0;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N0);
-//    X.col(i)/=sdX(i);
   }
 
   if (ilambda == 1) {
@@ -1233,7 +1179,7 @@ List NetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
               xb-=db0*X.col(j);
             }
           }
-        }//for update
+        }
 
         ll1=ll0;obj1=obj0;
         exb=(xb.array()).exp();
@@ -1248,7 +1194,7 @@ List NetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
 
         dletaCm(exb, tevent, N, nevent, nevent1, loc1, n, pl1, pl2, ifast, itwo);
         if(ifast==1 && itwo==1)goto exit;
-      }//while
+      }
 
     dletaCm(exb, tevent, N, nevent, nevent1, loc1, n, pl1, pl2, ifast, itwo);
     if(ifast==1 && itwo==1)goto exit;
@@ -1270,8 +1216,8 @@ List NetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
 
     locbeta(il)=ll0;
     BetasSTD.col(il)=beta0;
-    Betas.col(il)=beta0.array();//sdX.array();
-  }//for lambda
+    Betas.col(il)=beta0.array();
+  }
 
   exit:
   if(ifast==1 && itwo==1 && il>0)--il;
@@ -1280,7 +1226,6 @@ List NetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
 }
 
 
-/*****  Cox: Network (L1+La)  cross-validation  *****/
 // [[Rcpp::export]]
 List cvNetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
                Eigen::VectorXd lambda, int nlambda, Eigen::VectorXd wbeta,
@@ -1299,15 +1244,12 @@ List cvNetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
   Eigen::VectorXd exb=Eigen::VectorXd::Constant(N, 1.0), xb=Eigen::VectorXd::Zero(N);
   Eigen::VectorXd exbF(NF), xbF(NF);
   Eigen::VectorXd pl1(N), pl2(N);
-//  Eigen::VectorXd mX(p), sdX(p);
   Eigen::VectorXd mX(p);
   double mxi;
 
   for (i=0;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N0);
-//    X.col(i)/=sdX(i);
 
     mxi=XF.col(i).mean();
     XF.col(i)=XF.col(i).array()-mxi;
@@ -1378,7 +1320,7 @@ List cvNetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
               xb-=db0*X.col(j);
             }
           }
-        }//for update
+        }
 
         ll1=ll0;obj1=obj0;
         exb=(xb.array()).exp();
@@ -1393,7 +1335,7 @@ List cvNetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
 
         dletaCm(exb, tevent, N, nevent, nevent1, loc1, n, pl1, pl2, ifast, itwo);
         if(ifast==1 && itwo==1)goto exit;
-      }//while
+      }
 
     dletaCm(exb, tevent, N, nevent, nevent1, loc1, n, pl1, pl2, ifast, itwo);
     if(ifast==1 && itwo==1)goto exit;
@@ -1415,13 +1357,13 @@ List cvNetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
 
     locbeta(il)=ll0;
     BetasSTD.col(il)=beta0;
-    Betas.col(il)=beta0.array();//sdX.array();
+    Betas.col(il)=beta0.array();
 
     xbF.setZero(NF);
     for(i=0;i<ia;i++){j=active(i);xbF+=XF.col(j)*Betas(j,il);}
     exbF=(xbF.array()).exp();
     locbetaF(il)=pletaCm(xbF, exbF, neventF, nevent1F, loc1F, nF, ifast, itwo);
-  }//for lambda
+  }
 
   exit:
     if(ifast==1 && itwo==1 && il>0)--il;
@@ -1433,11 +1375,7 @@ List cvNetCoxC(Eigen::MatrixXd & X, Eigen::VectorXd tevent, double alpha,
 
 
 
-///////////////////////////////////
-/////   Logistic Regression   /////
-///////////////////////////////////
 
-/*****  Log: Lambda path (max) inner product <xj,y> *****/
 // [[Rcpp::export]]
 double maxLambdaLogC(Eigen::MatrixXd X, Eigen::VectorXd Z,
                      double alpha, Eigen::VectorXd wbeta, int N0, int p){
@@ -1446,7 +1384,7 @@ double maxLambdaLogC(Eigen::MatrixXd X, Eigen::VectorXd Z,
 
   for (i=0; i<p; ++i) {
     if (wbeta(i) > 0.0) {
-      LiMaxi=std::abs(Z.transpose()*X.col(i))/wbeta(i); // <xj,y>/N0
+      LiMaxi=std::abs(Z.transpose()*X.col(i))/wbeta(i);
       if (LiMaxi > LiMax) {
         LiMax=LiMaxi;
       }
@@ -1459,16 +1397,15 @@ double maxLambdaLogC(Eigen::MatrixXd X, Eigen::VectorXd Z,
 }
 
 
-/*****  Used for CV trimming  *****/
 // [[Rcpp::export]]
 Eigen::VectorXd cvTrimLogC(Eigen::VectorXd beta, int nn, int nn2, Eigen::VectorXi loco,
                            Eigen::MatrixXd XF, Eigen::VectorXd yF, int NF, double threshP) {
   int i, j;
-  Eigen::VectorXd Dev(nn2), xbF=Eigen::VectorXd::Zero(NF); // xb=Eigen::VectorXd::Zero(N),
+  Eigen::VectorXd Dev(nn2), xbF=Eigen::VectorXd::Zero(NF);
   Eigen::ArrayXd p0(NF);
 
   for(i=0;i<nn;i++){
-    j=loco(i); //   index of nonzero beta
+    j=loco(i);
     xbF+=XF.col(j)*beta(i);
 
     for (j=0; j<NF; ++j) {
@@ -1492,7 +1429,6 @@ Eigen::VectorXd cvTrimLogC(Eigen::VectorXd beta, int nn, int nn2, Eigen::VectorX
 }
 
 
-/*****  Log: Enet (L1+L2)  *****/
 // [[Rcpp::export]]
 List EnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
               double alpha, Eigen::VectorXd lambda, int nlambda, int ilambda, Eigen::ArrayXd wbeta, Eigen::ArrayXd wbetai,
@@ -1508,7 +1444,6 @@ List EnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
   Eigen::VectorXi flag=Eigen::VectorXi::Zero(nlambda);
   double dbMax;
 
-//  Eigen::VectorXd mX(p), sdX(p), di(p);
 Eigen::VectorXd mX(p), di(p);
 
   Eigen::VectorXd Z(N0), W(N0);
@@ -1519,21 +1454,16 @@ Eigen::VectorXd mX(p), di(p);
   double wi2, xr, ll0;
 
 
-  //  Initial values
-//  mX(0)=0.0; sdX(0)=1.0;
   mX(0)=0.0;
   X2.col(0)=X2.col(0).array()+1.0;
 
   for (i=1;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N0);
-//    X.col(i)/=sdX(i);
     X2.col(i)=X.col(i).array()*X.col(i).array();
   }
 
 
-  // Initial constant
   beta0(0)=log(y.mean()/(1.0-y.mean()));
   iactive(0)=1; active(0)=0; ia=1;
   wbetai(0)=0.0; wbeta(0)=0.0;
@@ -1555,7 +1485,6 @@ Eigen::VectorXd mX(p), di(p);
   ll0=(y.array()*p0.log()+(1.0-y.array())*(1.0-p0).log()).mean();
 
 
-  // Lambda path
   if (ilambda == 1) {
     if (alpha > 0.0) {
       lambdaMax=maxLambdaLogC(X, Z, alpha, wbeta, N0, p);
@@ -1567,7 +1496,7 @@ Eigen::VectorXd mX(p), di(p);
 
 
   for(il=0;il<nlambda;++il){
-    lambda1=lambda(il)*alpha*wbeta*wbetai; lambda2=lambda(il)*(1.0-alpha)*wbetai; // lambda1:vector lambda*alpha, lambda2=lambda*(1-alpha)
+    lambda1=lambda(il)*alpha*wbeta*wbetai; lambda2=lambda(il)*(1.0-alpha)*wbetai;
 
     for(i=0;i<p;++i){
       if(iactive(i)==0){
@@ -1611,7 +1540,7 @@ Eigen::VectorXd mX(p), di(p);
           xb+=db0*X.col(j).array();
 
           dbMax=std::max(dbMax, pow(db0, 2));
-        }//for update
+        }
 
 
         for (i2=0; i2<N0; ++i2) {
@@ -1625,9 +1554,8 @@ Eigen::VectorXd mX(p), di(p);
 
         if(dbMax<thresh){flag(il)=0; break;}
         if(it>=maxit){flag(il)=1; break;
-        // goto exit;
         }
-      }//while
+      }
 
     iadd=0;
     Z=(y.array()-p0);
@@ -1644,10 +1572,10 @@ Eigen::VectorXd mX(p), di(p);
     LL(il)=(y.array()*p0.log()+(1.0-y.array())*(1.0-p0).log()).mean();
 
     BetaSTD.col(il)=beta0;
-    Beta.col(il)=beta0.array();//sdX.array();
+    Beta.col(il)=beta0.array();
     Beta(0,il)=Beta(0,il)-mX.dot(Beta.col(il));
 
-  }//for lambda
+  }
 
   return(List::create(Named("Beta")=Beta, Named("BetaSTD")=BetaSTD, Named("flag")=flag, Named("it")=it,
                       Named("LL")=LL.head(il), Named("ll0")=ll0,
@@ -1656,7 +1584,6 @@ Eigen::VectorXd mX(p), di(p);
 
 
 
-/*****  Log: Enet (L1+L2) cross-validation  *****/
 // [[Rcpp::export]]
 List cvEnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
                 double alpha, Eigen::VectorXd lambda, int nlambda, Eigen::ArrayXd wbeta, Eigen::ArrayXd wbetai,
@@ -1671,7 +1598,6 @@ List cvEnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
   Eigen::VectorXi flag=Eigen::VectorXi::Zero(nlambda);
   double dbMax;
 
-//  Eigen::VectorXd mX(p), sdX(p), di(p);
   Eigen::VectorXd mX(p), di(p);
 
   Eigen::VectorXd Z(N0), W(N0);
@@ -1684,21 +1610,16 @@ List cvEnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
   Eigen::ArrayXd xbF(NF), pF0(NF), LLF(nlambda);
   double llF0;
 
-  //  Initial values
-//  mX(0)=0.0; sdX(0)=1.0;
   mX(0)=0.0;
   X2.col(0)=X2.col(0).array()+1.0;
 
   for (i=1;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N0);
-//    X.col(i)/=sdX(i);
     X2.col(i)=X.col(i).array()*X.col(i).array();
   }
 
 
-  // Initial constant
   beta0(0)=log(y.mean()/(1.0-y.mean()));
   iactive(0)=1; active(0)=0; ia=1;
   wbetai(0)=0.0; wbeta(0)=0.0;
@@ -1721,7 +1642,7 @@ List cvEnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
 
 
   for(il=0;il<nlambda;++il){
-    lambda1=lambda(il)*alpha*wbeta*wbetai; lambda2=lambda(il)*(1.0-alpha)*wbetai; // lambda1:vector lambda*alpha, lambda2=lambda*(1-alpha)
+    lambda1=lambda(il)*alpha*wbeta*wbetai; lambda2=lambda(il)*(1.0-alpha)*wbetai;
 
     for(i=0;i<p;++i){
       if(iactive(i)==0){
@@ -1764,7 +1685,7 @@ List cvEnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
           xb+=db0*X.col(j).array();
 
           dbMax=std::max(dbMax, pow(db0, 2));
-        }//for update
+        }
 
         for (i2=0; i2<N0; ++i2) {
           p0(i2)=1.0/(1.0+exp(-xb(i2)));
@@ -1777,9 +1698,8 @@ List cvEnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
 
         if(dbMax<thresh){flag(il)=0; break;}
         if(it>=maxit){flag(il)=1; break;
-        // goto exit;
         }
-      }//while
+      }
 
       iadd=0;
     Z=(y.array()-p0);
@@ -1796,11 +1716,10 @@ List cvEnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
     LL(il)=(y.array()*p0.log()+(1.0-y.array())*(1.0-p0).log()).mean();
 
     BetaSTD.col(il)=beta0;
-    Beta.col(il)=beta0.array();//sdX.array();
+    Beta.col(il)=beta0.array();
     Beta(0,il)=Beta(0,il)-mX.dot(Beta.col(il));
 
 
-    // Predict Deviance
     xbF=XF*Beta.col(il);
     for (i2=0; i2<NF; ++i2) {
       pF0(i2)=1.0/(1.0+exp(-xbF(i2)));
@@ -1812,7 +1731,7 @@ List cvEnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
     }
     LLF(il)=(yF.array()*pF0.log()+(1.0-yF.array())*(1.0-pF0).log()).mean();
 
-  }//for lambda
+  }
 
   xbF=log(yF.mean()/(1.0-yF.mean()))*XF.col(0).array();
   for (i2=0; i2<NF; ++i2) {
@@ -1835,7 +1754,6 @@ List cvEnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
 
 
 
-/*****  Log: Network (L1+La)  *****/
 // [[Rcpp::export]]
 List NetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
              double alpha, Eigen::VectorXd lambda, int nlambda, int ilambda, Eigen::ArrayXd wbeta, Eigen::ArrayXd wbetai,
@@ -1852,7 +1770,6 @@ List NetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
   Eigen::VectorXi flag=Eigen::VectorXi::Zero(nlambda);
   double dbMax;
 
-//  Eigen::VectorXd mX(p), sdX(p), di(p);
 Eigen::VectorXd mX(p), di(p);
 
   Eigen::VectorXd Z(N0), W(N0);
@@ -1863,21 +1780,16 @@ Eigen::VectorXd mX(p), di(p);
   double wi2, xr, ll0;
 
 
-  //  Initial values
-//  mX(0)=0.0; sdX(0)=1.0;
   mX(0)=0.0;
   X2.col(0)=X2.col(0).array()+1.0;
 
   for (i=1;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N0);
-//    X.col(i)/=sdX(i);
     X2.col(i)=X.col(i).array()*X.col(i).array();
   }
 
 
-  // Initial constant
   beta0(0)=log(y.mean()/(1.0-y.mean()));
   iactive(0)=1; active(0)=0; ia=1;
   wbetai(0)=0.0; wbeta(0)=0.0;
@@ -1899,7 +1811,6 @@ Eigen::VectorXd mX(p), di(p);
   ll0=(y.array()*p0.log()+(1.0-y.array())*(1.0-p0).log()).mean();
 
 
-  // Lambda path
   if (ilambda == 1) {
     if (alpha > 0.0) {
       lambdaMax=maxLambdaLogC(X, Z, alpha, wbeta, N0, p);
@@ -1911,7 +1822,7 @@ Eigen::VectorXd mX(p), di(p);
 
 
   for(il=0;il<nlambda;++il){
-    lambda1=lambda(il)*alpha*wbeta*wbetai; lambda2=lambda(il)*(1.0-alpha)*wbetai; // lambda1:vector lambda*alpha, lambda2=lambda*(1-alpha)
+    lambda1=lambda(il)*alpha*wbeta*wbetai; lambda2=lambda(il)*(1.0-alpha)*wbetai;
 
     for(i=0;i<p;++i){
       if(iactive(i)==0){
@@ -1961,7 +1872,7 @@ Eigen::VectorXd mX(p), di(p);
           xb+=db0*X.col(j).array();
 
           dbMax=std::max(dbMax, pow(db0, 2));
-        }//for update
+        }
 
         for (i2=0; i2<N0; ++i2) {
           p0(i2)=1.0/(1.0+exp(-xb(i2)));
@@ -1974,9 +1885,8 @@ Eigen::VectorXd mX(p), di(p);
 
         if(dbMax<thresh){flag(il)=0; break;}
         if(it>=maxit){flag(il)=1; break;
-        // goto exit;
         }
-      }//while
+      }
 
     iadd=0;
     Z=(y.array()-p0);
@@ -2002,10 +1912,10 @@ Eigen::VectorXd mX(p), di(p);
     LL(il)=(y.array()*p0.log()+(1.0-y.array())*(1.0-p0).log()).mean();
 
     BetaSTD.col(il)=beta0;
-    Beta.col(il)=beta0.array();//sdX.array();
+    Beta.col(il)=beta0.array();
     Beta(0,il)=Beta(0,il)-mX.dot(Beta.col(il));
 
-  }//for lambda
+  }
 
   return(List::create(Named("Beta")=Beta, Named("BetaSTD")=BetaSTD, Named("flag")=flag, Named("it")=it,
                       Named("LL")=LL.head(il), Named("ll0")=ll0,
@@ -2014,7 +1924,6 @@ Eigen::VectorXd mX(p), di(p);
 
 
 
-/*****  Log: Enet (L1+L2) cross-validation  *****/
 // [[Rcpp::export]]
 List cvNetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
                double alpha, Eigen::VectorXd lambda, int nlambda, Eigen::ArrayXd wbeta, Eigen::ArrayXd wbetai,
@@ -2030,7 +1939,6 @@ List cvNetLogC(Eigen::MatrixXd X, Eigen::VectorXd y,
   Eigen::VectorXi flag=Eigen::VectorXi::Zero(nlambda);
   double dbMax;
 
-//  Eigen::VectorXd mX(p), sdX(p), di(p);
 Eigen::VectorXd mX(p), di(p);
 
   Eigen::VectorXd Z(N0), W(N0);
@@ -2043,21 +1951,16 @@ Eigen::VectorXd mX(p), di(p);
   Eigen::ArrayXd xbF(NF), pF0(NF), LLF(nlambda);
   double llF0;
 
-  //  Initial values
-//  mX(0)=0.0; sdX(0)=1.0;
   mX(0)=0.0;
   X2.col(0)=X2.col(0).array()+1.0;
 
   for (i=1;i<p;++i) {
     mX(i)=X.col(i).mean();
     X.col(i)=X.col(i).array()-mX(i);
-//    sdX(i)=sqrt(X.col(i).squaredNorm()/N0);
-//    X.col(i)/=sdX(i);
     X2.col(i)=X.col(i).array()*X.col(i).array();
   }
 
 
-  // Initial constant
   beta0(0)=log(y.mean()/(1.0-y.mean()));
   iactive(0)=1; active(0)=0; ia=1;
   wbetai(0)=0.0; wbeta(0)=0.0;
@@ -2080,7 +1983,7 @@ Eigen::VectorXd mX(p), di(p);
 
 
   for(il=0;il<nlambda;++il){
-    lambda1=lambda(il)*alpha*wbeta*wbetai; lambda2=lambda(il)*(1.0-alpha)*wbetai; // lambda1:vector lambda*alpha, lambda2=lambda*(1-alpha)
+    lambda1=lambda(il)*alpha*wbeta*wbetai; lambda2=lambda(il)*(1.0-alpha)*wbetai;
 
     for(i=0;i<p;++i){
       if(iactive(i)==0){
@@ -2130,7 +2033,7 @@ Eigen::VectorXd mX(p), di(p);
           xb+=db0*X.col(j).array();
 
           dbMax=std::max(dbMax, pow(db0, 2));
-        }//for update
+        }
 
         for (i2=0; i2<N0; ++i2) {
           p0(i2)=1.0/(1.0+exp(-xb(i2)));
@@ -2143,9 +2046,8 @@ Eigen::VectorXd mX(p), di(p);
 
         if(dbMax<thresh){flag(il)=0; break;}
         if(it>=maxit){flag(il)=1; break;
-        // goto exit;
         }
-      }//while
+      }
 
       iadd=0;
     Z=(y.array()-p0);
@@ -2171,11 +2073,10 @@ Eigen::VectorXd mX(p), di(p);
     LL(il)=(y.array()*p0.log()+(1.0-y.array())*(1.0-p0).log()).mean();
 
     BetaSTD.col(il)=beta0;
-    Beta.col(il)=beta0.array();//sdX.array();
+    Beta.col(il)=beta0.array();
     Beta(0,il)=Beta(0,il)-mX.dot(Beta.col(il));
 
 
-    // Predict Deviance
     xbF=XF*Beta.col(il);
     for (i2=0; i2<NF; ++i2) {
       pF0(i2)=1.0/(1.0+exp(-xbF(i2)));
@@ -2187,7 +2088,7 @@ Eigen::VectorXd mX(p), di(p);
     }
     LLF(il)=(yF.array()*pF0.log()+(1.0-yF.array())*(1.0-pF0).log()).mean();
 
-  }//for lambda
+  }
 
   xbF=log(yF.mean()/(1.0-yF.mean()))*XF.col(0).array();
   for (i2=0; i2<NF; ++i2) {

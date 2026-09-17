@@ -416,7 +416,7 @@ double cibersort_p_value(double cor_value, const std::vector<double>& null_dist)
   return 1.0 - static_cast<double>(best + 1) / static_cast<double>(n);
 }
 
-}  // namespace
+}
 
 // [[Rcpp::export]]
 List cibersort_cpp(

@@ -8,12 +8,9 @@
 
 using namespace Rcpp;
 
-// ── Core ODE solution (closed-form) ──────────────────────────────────────────
 
-// du/dt = alpha - beta * u   →   u(tau) = u0*exp(-beta*tau) + alpha/beta * (1 - exp(-beta*tau))
 inline double unspliced(double tau, double u0, double alpha, double beta) {
   double e = std::exp(-beta * tau);
-  // avoid inf when beta=0
   if (!std::isfinite(e) || std::abs(beta) < 1e-12) {
     return u0 + alpha * tau;
   }
@@ -21,13 +18,12 @@ inline double unspliced(double tau, double u0, double alpha, double beta) {
   return u0 * e + steady * (1.0 - e);
 }
 
-// ds/dt = beta*u - gamma*s   →   closed form with induction from (u0,s0)
 inline double spliced(double tau, double s0, double u0,
                        double alpha, double beta, double gamma) {
   double eu = std::exp(-beta * tau);
   double es = std::exp(-gamma * tau);
   if (!std::isfinite(eu) || !std::isfinite(es))
-    return s0; // fallback
+    return s0;
 
   double alpha_g = alpha / gamma;
   double diff = gamma - beta;
@@ -38,7 +34,6 @@ inline double spliced(double tau, double s0, double u0,
   return s0 * es + alpha_g * (1.0 - es) + c * (es - eu);
 }
 
-// ── Invert ODE to get tau from (u,s) ─────────────────────────────────────────
 
 inline double tau_inv_u(double u, double uinf, double u0, double beta) {
   if (std::abs(beta) < 1e-12 || std::abs(u - uinf) < 1e-12)
@@ -47,22 +42,20 @@ inline double tau_inv_u(double u, double uinf, double u0, double beta) {
   return -std::log(arg) / beta;
 }
 
-// ── Nelder-Mead Simplex Optimizer ─────────────────────────────────────────────
 
 struct NMState {
-  int n;                       // dimension
-  std::vector<double> x0;      // initial guess
-  std::vector<double> lb;      // lower bounds
-  std::vector<double> ub;      // upper bounds
+  int n;
+  std::vector<double> x0;
+  std::vector<double> lb;
+  std::vector<double> ub;
   int max_iter;
   double tol;
-  double alpha_r;              // reflection coefficient (1.0)
-  double gamma_e;              // expansion coefficient (2.0)
-  double rho_c;                // contraction coefficient (0.5)
-  double sigma_s;              // shrink coefficient (0.5)
+  double alpha_r;
+  double gamma_e;
+  double rho_c;
+  double sigma_s;
 };
 
-// Evaluate the objective function at point x
 typedef std::function<double(const std::vector<double>&)> NMFun;
 
 static std::vector<double> nm_unpack_simplex(
@@ -83,10 +76,9 @@ std::vector<double> nelder_mead(
 {
   int n = state.n;
   int npts = n + 1;
-  std::vector<double> simplex(npts * n); // simplex points, row-major
+  std::vector<double> simplex(npts * n);
   std::vector<double> fvals(npts);
 
-  // Initialize simplex: x0, x0 + ei for each i
   for (int j = 0; j < n; ++j)
     simplex[0 * n + j] = state.x0[j];
   fvals[0] = fun(state.x0);
@@ -96,7 +88,6 @@ std::vector<double> nelder_mead(
       simplex[(i + 1) * n + j] = state.x0[j];
     double delta = std::max(std::abs(state.x0[i]) * 0.05, 0.00025);
     simplex[(i + 1) * n + i] += delta;
-    // Project to bounds
     for (int j = 0; j < n; ++j) {
       simplex[(i + 1) * n + j] = std::max(state.lb[j],
         std::min(state.ub[j], simplex[(i + 1) * n + j]));
@@ -105,14 +96,12 @@ std::vector<double> nelder_mead(
   }
 
   for (int iter = 0; iter < state.max_iter; ++iter) {
-    // Sort simplex by fval (ascending)
     std::vector<int> idx(npts);
     std::iota(idx.begin(), idx.end(), 0);
     std::sort(idx.begin(), idx.end(), [&](int a, int b) {
       return fvals[a] < fvals[b];
     });
 
-    // Check convergence
     double f_std = 0.0, f_mean = 0.0;
     for (int i = 0; i < npts; ++i) f_mean += fvals[i];
     f_mean /= npts;
@@ -124,7 +113,6 @@ std::vector<double> nelder_mead(
     auto xb = nm_unpack_simplex(simplex, n, best);
     auto xw = nm_unpack_simplex(simplex, n, worst);
 
-    // Centroid of all points except worst
     std::vector<double> x0(n, 0.0);
     for (int i = 0; i < npts; ++i) {
       if (i == worst) continue;
@@ -133,7 +121,6 @@ std::vector<double> nelder_mead(
     }
     for (int j = 0; j < n; ++j) x0[j] /= n;
 
-    // Reflection
     std::vector<double> xr(n);
     for (int j = 0; j < n; ++j) {
       xr[j] = x0[j] + state.alpha_r * (x0[j] - xw[j]);
@@ -142,7 +129,6 @@ std::vector<double> nelder_mead(
     double fr = fun(xr);
 
     if (fr < fvals[best]) {
-      // Expansion
       std::vector<double> xe(n);
       for (int j = 0; j < n; ++j) {
         xe[j] = x0[j] + state.gamma_e * (xr[j] - x0[j]);
@@ -160,16 +146,13 @@ std::vector<double> nelder_mead(
       for (int j = 0; j < n; ++j) simplex[worst * n + j] = xr[j];
       fvals[worst] = fr;
     } else {
-      // Contraction
       std::vector<double> xc(n);
       if (fr < fvals[worst]) {
-        // Outside contraction
         for (int j = 0; j < n; ++j) {
           xc[j] = x0[j] + state.rho_c * (xr[j] - x0[j]);
           xc[j] = std::max(state.lb[j], std::min(state.ub[j], xc[j]));
         }
       } else {
-        // Inside contraction
         for (int j = 0; j < n; ++j) {
           xc[j] = x0[j] + state.rho_c * (xw[j] - x0[j]);
           xc[j] = std::max(state.lb[j], std::min(state.ub[j], xc[j]));
@@ -180,7 +163,6 @@ std::vector<double> nelder_mead(
         for (int j = 0; j < n; ++j) simplex[worst * n + j] = xc[j];
         fvals[worst] = fc;
       } else {
-        // Shrink toward best point
         for (int i = 0; i < npts; ++i) {
           if (i == best) continue;
           for (int j = 0; j < n; ++j) {
@@ -194,7 +176,6 @@ std::vector<double> nelder_mead(
     }
   }
 
-  // Return best point
   std::vector<int> idx2(npts);
   std::iota(idx2.begin(), idx2.end(), 0);
   std::sort(idx2.begin(), idx2.end(), [&](int a, int b) {
@@ -205,50 +186,44 @@ std::vector<double> nelder_mead(
 }
 
 
-// ── Dynamical velocity fitting (per gene, single EM iteration) ───────────────
 
 struct DynamicalPars {
-  double alpha;   // transcription rate (post-induction)
-  double beta;    // splicing rate
-  double gamma;   // degradation rate
-  double t_;      // switching time
-  double scaling; // u/s scaling factor
-  double loss;    // final MSE
+  double alpha;
+  double beta;
+  double gamma;
+  double t_;
+  double scaling;
+  double loss;
 };
 
 static DynamicalPars fit_one_gene_dynamical(
-    const double* u, const double* s,  // cell-level data (n_cells)
+    const double* u, const double* s,
     int n_cells,
     double alpha_init, double beta_init,
     double gamma_init, double t_init,
     int max_iter_nm)
 {
-  // Determine active cells (u>0 and s>0)
   std::vector<int> active;
   for (int i = 0; i < n_cells; ++i)
     if (u[i] > 0 && s[i] > 0)
       active.push_back(i);
   int na = (int)active.size();
-  if (na < 10) {  // need enough cells for fitting
+  if (na < 10) {
     return {alpha_init, beta_init, gamma_init, 0.0, 1.0, 1e10};
   }
 
-  // Extract active data
   std::vector<double> ua(na), sa(na);
   for (int i = 0; i < na; ++i) {
     ua[i] = u[active[i]];
     sa[i] = s[active[i]];
   }
 
-  // Simple initialization from data
   double u_max = *std::max_element(ua.begin(), ua.end());
   double s_max = *std::max_element(sa.begin(), sa.end());
   double u_min_pos = u_max;
   for (double v : ua) if (v > 0 && v < u_min_pos) u_min_pos = v;
   if (u_min_pos >= u_max) u_min_pos = u_max * 0.1;
 
-  // Estimate beta from decay: beta ~ -log(u_min/u_max) / tau_range
-  // gamma from s/u ratio at steady state
   double beta_est = beta_init;
   double gamma_est = gamma_init;
   double alpha_est = u_max * beta_est;
@@ -258,20 +233,16 @@ static DynamicalPars fit_one_gene_dynamical(
   if (gamma_init <= 0) gamma_est = 0.5;
   if (t_init <= 0) t_est = 2.0;
 
-  // Parameter bounds
   double alpha_lb = 0.01, alpha_ub = 100.0;
   double beta_lb  = 0.01, beta_ub  = 50.0;
   double gamma_lb = 0.01, gamma_ub = 50.0;
   double t_lb     = 0.01, t_ub    = 20.0;
 
-  // Clip initial values to bounds
   alpha_est = std::max(alpha_lb, std::min(alpha_ub, alpha_est));
   beta_est  = std::max(beta_lb,  std::min(beta_ub,  beta_est));
   gamma_est = std::max(gamma_lb, std::min(gamma_ub, gamma_est));
   t_est     = std::max(t_lb,     std::min(t_ub,     t_est));
 
-  // Nelder-Mead on (alpha, beta, gamma, t_)
-  // Objective: for each cell, invert ODE to get tau, predict (u,s), compute MSE
   NMState state;
   state.n = 4;
   state.x0 = {alpha_est, beta_est, gamma_est, t_est};
@@ -290,19 +261,15 @@ static DynamicalPars fit_one_gene_dynamical(
     double mse = 0.0;
     int used = 0;
     for (int i = 0; i < na; ++i) {
-      // Invert tau from u (unspliced equation is monotonic)
       double ui = ua[i], si = sa[i];
-      // tau from unspliced: u = u0 + (u_inf - u0)*(1 - exp(-b*tau))
-      // if ui >= u_inf, cell is beyond steady state
       double tau_i;
       if (ui >= u_inf * 0.99) {
-        tau_i = ts * 3.0; // far in the future
+        tau_i = ts * 3.0;
       } else {
         double arg = 1.0 - ui / u_inf;
         if (arg < 1e-12) arg = 1e-12;
         tau_i = -std::log(arg) / b;
       }
-      // Predict spliced
       double sp = spliced(tau_i, 0.0, 0.0, a, b, g);
       double up = unspliced(tau_i, 0.0, a, b);
       double e = (ui - up) * (ui - up) + (si - sp) * (si - sp);
@@ -320,13 +287,12 @@ static DynamicalPars fit_one_gene_dynamical(
   return {opt[0], opt[1], opt[2], opt[3], 1.0, final_loss};
 }
 
-// ── Rcpp export: fit dynamical model per gene (Nelder-Mead, legacy) ───────
 
 // [[Rcpp::export]]
 List scanpy_dynamical_nm_cpp(
     NumericMatrix Ms,
     NumericMatrix Mu,
-    IntegerVector use_genes,  // 1-based indices of genes to fit
+    IntegerVector use_genes,
     int max_iter = 10,
     double init_alpha = -1.0,
     double init_beta  = -1.0,
@@ -338,7 +304,6 @@ List scanpy_dynamical_nm_cpp(
   if (Mu.nrow() != n_genes || Mu.ncol() != n_cells)
     thisutils::log_message("Ms and Mu must have identical dimensions", "error");
 
-  // Which genes to fit
   std::vector<bool> do_fit(n_genes, true);
   if (use_genes.size() > 0) {
     do_fit.assign(n_genes, false);
@@ -348,7 +313,6 @@ List scanpy_dynamical_nm_cpp(
     }
   }
 
-  // Output arrays
   NumericVector alpha_out(n_genes);
   NumericVector beta_out(n_genes);
   NumericVector gamma_out(n_genes);
@@ -367,7 +331,6 @@ List scanpy_dynamical_nm_cpp(
       continue;
     }
 
-    // Copy per-gene data
     std::vector<double> u(n_cells), s(n_cells);
     int valid = 0;
     for (int c = 0; c < n_cells; ++c) {
@@ -381,7 +344,6 @@ List scanpy_dynamical_nm_cpp(
       continue;
     }
 
-    // Initialization: deterministic gamma as starting point
     double gamma_det = 0.0;
     {
       double num = 0.0, den = 0.0;
@@ -454,8 +416,6 @@ List scanpy_dynamical_velocity_cpp(
       (int)gamma.size() < n_genes || (int)t_.size() < n_genes)
     thisutils::log_message("parameter vectors must match n_genes", "error");
 
-  // Compute per-cell velocity from fitted parameters
-  // v = du/dt = alpha - beta*u  (unspliced velocity)
   NumericMatrix velocity(n_genes, n_cells);
   const int threads = omp_thread_count(n_threads, n_genes);
 #ifdef _OPENMP
@@ -468,7 +428,6 @@ List scanpy_dynamical_velocity_cpp(
     }
   }
 
-  // Velocity embedding (cosine projection, same as stochastic/deterministic)
   NumericMatrix velocity_embedding(n_cells, n_dims);
   NumericVector confidence(n_cells);
   NumericVector velocity_length(n_cells);
@@ -483,10 +442,6 @@ List scanpy_dynamical_velocity_cpp(
   );
 }
 
-// ── EM-based dynamical model fitting (per gene) ──────────────────────────────
-// Matches scvelo's Expectation-Maximization approach for the dynamical model.
-// The model: du/dt = alpha - beta*u (on phase), ds/dt = beta*u - gamma*s
-// With switching time t_, cells before t_ follow (alpha, beta); after t_, alpha=0.
 
 // [[Rcpp::export]]
 List scanpy_dynamical_em_cpp(
@@ -522,7 +477,6 @@ List scanpy_dynamical_em_cpp(
   NumericVector loss_out(n_genes);
   IntegerVector converged(n_genes, 0);
 
-  // Shared/u scaling: median of (u_max / s_max) across genes
   double global_scale = 1.0;
   {
     std::vector<double> ratios;
@@ -562,7 +516,6 @@ List scanpy_dynamical_em_cpp(
       continue;
     }
 
-    // Compute per-gene statistics for initialization
     double s_mean = 0, u_mean = 0;
     double ss_tot = 0, su_tot = 0, uu_tot = 0;
     for (int c = 0; c < n_cells; ++c) {
@@ -573,36 +526,26 @@ List scanpy_dynamical_em_cpp(
     }
     s_mean /= n_cells; u_mean /= n_cells;
 
-    // OLS gamma = <s,u>/<s,s>
     double gamma_det = (ss_tot > 1e-12) ? su_tot / ss_tot : 0.5;
     double alpha_init = init_alpha > 0 ? init_alpha : gamma_det * (s_mean > 0.1 ? s_mean : 0.1);
     double beta_init  = init_beta > 0 ? init_beta : 1.0;
     double gamma_init = init_gamma > 0 ? init_gamma : std::max(0.1, gamma_det);
 
-    // Clip to bounds
     double a = alpha_init, b = beta_init, gm = gamma_init;
     a = std::max(0.01, std::min(100.0, a));
     b = std::max(0.1, std::min(50.0, b));
     gm = std::max(0.01, std::min(50.0, gm));
-    double ts = 2.0;  // initial switching time
+    double ts = 2.0;
     double scaling = global_scale > 0 ? global_scale : 1.0;
 
-    // EM iterations: E-step assigns latent time, M-step optimizes parameters
     double prev_loss = 1e10;
     for (int em_iter = 0; em_iter < max_iter_em; ++em_iter) {
-      // E-step: assign each cell a latent time tau based on current params
-      // Two regimes:
-      //   Phase 1 (induction, t < t_): u(t) = alpha/beta * (1 - exp(-beta*t))
-      //   Phase 2 (repression, t >= t_): u(t) = u_ * exp(-beta*(t - t_))
-      //                                     where u_ = alpha/beta * (1 - exp(-beta*t_))
       double u_steady = a / b;
       double u_switch = u_steady * (1.0 - std::exp(-b * ts));
       double s_switch = 0.0;
       {
         double eu = std::exp(-b * ts), es = std::exp(-gm * ts);
         s_switch = (a / gm) * (1.0 - es) - (a / gm - u_switch) * (es - eu) * gm / (gm - b > 1e-10 ? (gm - b) : 1e-10);
-        // Simplified: at switching time, s = alpha/gamma * (1 - exp(-gamma*t_))
-        //   + correction from transient u
         s_switch = (a / gm) * (1.0 - es);
         if (std::abs(gm - b) > 1e-10) {
           double c_term = (a - u_switch * b) / (gm - b);
@@ -611,12 +554,10 @@ List scanpy_dynamical_em_cpp(
         if (!std::isfinite(s_switch)) s_switch = 0.0;
       }
 
-      // Assign latent times
       std::vector<double> tau(n_cells);
-      std::vector<int> regime(n_cells);  // 0=induction, 1=repression
+      std::vector<int> regime(n_cells);
       for (int c = 0; c < n_cells; ++c) {
         double uc = u[c];
-        // If u < u_switch: induction phase
         if (uc <= u_switch * 1.01 && b > 1e-10) {
           regime[c] = 0;
           double arg = 1.0 - uc / u_steady;
@@ -624,7 +565,6 @@ List scanpy_dynamical_em_cpp(
           if (arg > 1.0) arg = 1.0;
           tau[c] = -std::log(arg) / b;
         } else if (b > 1e-10) {
-          // Repression phase
           regime[c] = 1;
           if (u_steady > 1e-10 && uc < u_steady) {
             double arg = uc / u_steady;
@@ -640,13 +580,9 @@ List scanpy_dynamical_em_cpp(
         if (!std::isfinite(tau[c]) || tau[c] < 0) tau[c] = 0.0;
       }
 
-      // M-step: optimize alpha, beta, gamma given tau assignments
-      // Objective: minimize sum of (u_obs - u_pred)^2 + (s_obs - s_pred)^2
-      // Use gradient descent with line search
       double best_loss = 1e10;
       double best_a = a, best_b = b, best_g = gm, best_t = ts;
 
-      // Multiple restarts for robustness
       for (int restart = 0; restart < 3; ++restart) {
         double ra = a, rb = b, rg = gm, rt = ts;
         if (restart == 1) { rb = 2.0; rg = gamma_det > 0 ? gamma_det * 2 : 1.0; }
@@ -663,7 +599,6 @@ List scanpy_dynamical_em_cpp(
             double u_pred, s_pred;
 
             if (ti <= rt || regime[c] == 0) {
-              // Induction: u = alpha/beta * (1 - exp(-beta*tau))
               double eu = std::exp(-rb * ti);
               u_pred = ra / rb * (1.0 - eu);
               if (std::abs(rg - rb) > 1e-10) {
@@ -673,7 +608,6 @@ List scanpy_dynamical_em_cpp(
                 s_pred = ra / rg * (1.0 - std::exp(-rg * ti));
               }
             } else {
-              // Repression phase
               double u_s = ra / rb * (1.0 - std::exp(-rb * rt));
               double eu_t = std::exp(-rb * (ti - rt));
               u_pred = u_s * eu_t;
@@ -681,7 +615,7 @@ List scanpy_dynamical_em_cpp(
               double s_at_t = (ra / rg) * (1.0 - std::exp(-rg * rt));
               s_pred = s_at_t + (u_s * rb / (rg - rb > 1e-10 ? (rg - rb) : 1e-10))
                         * (es_t - eu_t) + s_at_t * (1.0 - es_t);
-              s_pred = s_at_t * es_t;  // simplified: s decays after switching
+              s_pred = s_at_t * es_t;
             }
 
             if (!std::isfinite(u_pred)) u_pred = 0.0;
@@ -693,7 +627,6 @@ List scanpy_dynamical_em_cpp(
             ++used;
           }
 
-          // Numerical gradients
           double eps = 1e-5;
           auto compute_loss_at = [&](double pa, double pb, double pg, double pt) -> double {
             double l = 0.0; int n = 0;
@@ -737,7 +670,6 @@ List scanpy_dynamical_em_cpp(
 
       a = best_a; b = best_b; gm = best_g; ts = best_t;
 
-      // Refine switching time
       double best_ts_loss = 1e10;
       for (double t_try = 0.5; t_try <= 10.0; t_try += 0.5) {
         double l = 0.0;
@@ -752,7 +684,7 @@ List scanpy_dynamical_em_cpp(
             up = ui;
             sp = a / gm * (1.0 - std::exp(-gm * (-std::log(arg) / b)));
           } else if (b > 1e-10) {
-            up = u_ss * std::exp(-b * 0.5);  // approximate
+            up = u_ss * std::exp(-b * 0.5);
             sp = a / gm * (1.0 - std::exp(-gm * t_try));
           } else { up = 0; sp = 0; }
           if (!std::isfinite(up)) up = 0.0;
@@ -762,7 +694,6 @@ List scanpy_dynamical_em_cpp(
         if (l < best_ts_loss) { best_ts_loss = l; ts = t_try; }
       }
 
-      // Compute final loss
       double final_loss = 0.0;
       for (int c = 0; c < n_cells; ++c) {
         double ui = u[c], si = s[c];
@@ -770,7 +701,7 @@ List scanpy_dynamical_em_cpp(
         double u_sw = u_st * (1.0 - std::exp(-b * ts));
         double up, sp;
         if (ui <= u_sw * 1.01) {
-          up = ui;  // exact since we invert tau from u
+          up = ui;
           double tau_i = b > 1e-10 ? -std::log(std::max(1.0 - ui / u_st, 1e-12)) / b : 0.0;
           if (!std::isfinite(tau_i) || tau_i < 0) tau_i = 0.0;
           double es = std::exp(-gm * tau_i);
@@ -780,7 +711,7 @@ List scanpy_dynamical_em_cpp(
           }
         } else {
           double s_at_sw = a / gm * (1.0 - std::exp(-gm * ts));
-          sp = s_at_sw;  // simplified
+          sp = s_at_sw;
           up = u_sw;
         }
         if (!std::isfinite(up)) up = 0.0;

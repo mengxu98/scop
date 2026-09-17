@@ -4,7 +4,6 @@
 @author: wnchang
 """
 
-# import sys
 import torch
 import torch.nn as nn
 
@@ -12,7 +11,6 @@ import torch.nn as nn
 class FLUX(nn.Module):
     def __init__(self, matrix, n_modules, f_in = 50, f_out = 1):
         super(FLUX, self).__init__()
-        # gene to flux
         self.inSize = f_in
 
         self.m_encoder = nn.ModuleList([
@@ -24,7 +22,7 @@ class FLUX(nn.Module):
                                         for i in range(n_modules)])
 
 
-    def updateC(self, m, n_comps, cmMat): # stoichiometric matrix
+    def updateC(self, m, n_comps, cmMat):
 
         c = torch.zeros((m.shape[0], n_comps), dtype=m.dtype, device=m.device)
         for i in range(c.shape[1]):

@@ -14,8 +14,6 @@ inline bool velocity_value_missing(double v) {
   return R_IsNA(v) || R_IsNaN(v) || !std::isfinite(v);
 }
 
-// Compute velocity for a single cell using KNN method.
-// Returns a vector of length n_dims, or all zeros if computation fails.
 arma::rowvec velocity_knn_single(
     int i,
     const arma::mat& x_emb,
@@ -26,14 +24,13 @@ arma::rowvec velocity_knn_single(
   const int n_dims = x_emb.n_cols;
   arma::rowvec velocity(n_dims, arma::fill::zeros);
 
-  // Count valid neighbors (non-NA)
   int n_valid = 0;
   for (int j = 0; j < k_use; ++j) {
     int nb = neighbors(i, j);
     if (nb != NA_INTEGER && nb >= 1 && nb <= static_cast<int>(x_emb.n_rows)) {
       ++n_valid;
     } else {
-      break;  // NA values fill the rest of the column
+      break;
     }
   }
 
@@ -41,14 +38,12 @@ arma::rowvec velocity_knn_single(
     return velocity;
   }
 
-  // Collect valid neighbor indices (0-based for Armadillo)
   std::vector<int> nb_idx;
   nb_idx.reserve(n_valid);
   for (int j = 0; j < n_valid; ++j) {
-    nb_idx.push_back(neighbors(i, j) - 1);  // 1-based R -> 0-based C++
+    nb_idx.push_back(neighbors(i, j) - 1);
   }
 
-  // Compute pos_diff and time_diff
   arma::mat pos_diff(n_valid, n_dims);
   arma::vec time_diff(n_valid);
   arma::vec dists(n_valid);
@@ -68,14 +63,12 @@ arma::rowvec velocity_knn_single(
     dists(j) = std::sqrt(std::max(d2, 0.0));
   }
 
-  // Clamp zero distances
   for (int j = 0; j < n_valid; ++j) {
     if (dists(j) < 1e-15) {
       dists(j) = 1e-10;
     }
   }
 
-  // Weights = time_diff / dists
   arma::vec weights(n_valid);
   for (int j = 0; j < n_valid; ++j) {
     double w = time_diff(j) / dists(j);
@@ -85,7 +78,6 @@ arma::rowvec velocity_knn_single(
     weights(j) = w;
   }
 
-  // velocity = colSums(pos_diff * weights) / n_valid
   for (int j = 0; j < n_valid; ++j) {
     double w = weights(j);
     for (int dim = 0; dim < n_dims; ++dim) {
@@ -94,7 +86,6 @@ arma::rowvec velocity_knn_single(
   }
   velocity /= static_cast<double>(n_valid);
 
-  // Check for invalid values
   for (int dim = 0; dim < n_dims; ++dim) {
     if (velocity_value_missing(velocity(dim))) {
       velocity.zeros();
@@ -105,7 +96,6 @@ arma::rowvec velocity_knn_single(
   return velocity;
 }
 
-// Compute gradient for a single cell using Gaussian-weighted gradient method.
 arma::rowvec velocity_gradient_single(
     int i,
     const arma::mat& x_emb,
@@ -117,7 +107,6 @@ arma::rowvec velocity_gradient_single(
   const int n_dims = x_emb.n_cols;
   arma::rowvec gradient(n_dims, arma::fill::zeros);
 
-  // Count valid neighbors
   int n_valid = 0;
   for (int j = 0; j < k_use; ++j) {
     int nb = neighbors(i, j);
@@ -157,21 +146,18 @@ arma::rowvec velocity_gradient_single(
     dists(j) = std::sqrt(std::max(d2, 0.0));
   }
 
-  // Clamp zero distances
   for (int j = 0; j < n_valid; ++j) {
     if (dists(j) < 1e-15) {
       dists(j) = 1e-10;
     }
   }
 
-  // sigma = mean(dists) * smooth
   double mean_dist = arma::mean(dists);
   double sigma = mean_dist * smooth;
   if (sigma < 1e-15) {
     sigma = 1e-10;
   }
 
-  // weights = exp(-dists^2 / (2 * sigma^2)) * time_diff
   arma::vec weights(n_valid);
   double neg_half_sigma2_inv = -0.5 / (sigma * sigma);
   for (int j = 0; j < n_valid; ++j) {
@@ -179,7 +165,6 @@ arma::rowvec velocity_gradient_single(
     weights(j) = gaussian * time_diff(j);
   }
 
-  // gradient = colSums(pos_diff * weights) / sum(abs(weights) + 1e-10)
   double abs_sum = 0.0;
   for (int j = 0; j < n_valid; ++j) {
     abs_sum += std::abs(weights(j));
@@ -194,7 +179,6 @@ arma::rowvec velocity_gradient_single(
   }
   gradient /= abs_sum;
 
-  // Check for invalid values
   for (int dim = 0; dim < n_dims; ++dim) {
     if (velocity_value_missing(gradient(dim))) {
       gradient.zeros();
@@ -205,8 +189,6 @@ arma::rowvec velocity_gradient_single(
   return gradient;
 }
 
-// Normalize velocity matrix: each row is divided by its norm and multiplied by mean norm.
-// Rows with zero norm are left as zero.
 void normalize_velocity_rows(arma::mat& v_emb) {
   const int n_cells = v_emb.n_rows;
   const int n_dims = v_emb.n_cols;
@@ -243,7 +225,7 @@ void normalize_velocity_rows(arma::mat& v_emb) {
   }
 }
 
-}  // namespace
+}
 
 // [[Rcpp::export]]
 NumericMatrix pseudotime_velocity_knn(
@@ -263,7 +245,6 @@ NumericMatrix pseudotime_velocity_knn(
     thisutils::log_message("neighbors must have the same number of rows as x_emb", "error");
   }
 
-  // Convert to Armadillo
   arma::mat emb(x_emb.begin(), n_cells, n_dims, false);
   arma::vec pt(pseudotime.begin(), n_cells, false);
 
@@ -277,7 +258,6 @@ NumericMatrix pseudotime_velocity_knn(
     normalize_velocity_rows(v_emb);
   }
 
-  // Copy back to NumericMatrix
   NumericMatrix result(n_cells, n_dims);
   for (int i = 0; i < n_cells; ++i) {
     for (int j = 0; j < n_dims; ++j) {

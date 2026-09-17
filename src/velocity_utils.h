@@ -12,12 +12,9 @@ using namespace Rcpp;
 
 namespace scop_util {
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 1. POWER ITERATION — top-k eigenvalues/vectors of symmetric matrix
-// ═══════════════════════════════════════════════════════════════════════════
 
 inline void power_iteration_topk(
-    const std::vector<double>& mat,     // column-major n×n
+    const std::vector<double>& mat,
     int n, int k, int max_iter,
     std::vector<double>& eigvals,
     std::vector<double>& eigvecs)
@@ -72,25 +69,21 @@ inline void power_iteration_topk(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 2. COSINE PROJECTION — gene-space velocity → embedding-space projection
-// ═══════════════════════════════════════════════════════════════════════════
 
 inline void cosine_projection_embedding(
-    const NumericMatrix& gene_velocity,  // genes × cells
-    const NumericMatrix& Ms,             // genes × cells
-    const IntegerMatrix& knn_idx,        // cells × k (1-based)
-    const NumericMatrix& embedding,      // cells × dims
-    NumericMatrix& velo_embedding,       // cells × dims (output)
-    NumericVector& confidence,           // cells (output)
-    NumericVector& velo_length)          // cells (output)
+    const NumericMatrix& gene_velocity,
+    const NumericMatrix& Ms,
+    const IntegerMatrix& knn_idx,
+    const NumericMatrix& embedding,
+    NumericMatrix& velo_embedding,
+    NumericVector& confidence,
+    NumericVector& velo_length)
 {
     int n_genes = Ms.nrow();
     int n_cells = Ms.ncol();
     int n_neighbors = knn_idx.ncol();
     int n_dims = embedding.ncol();
 
-    // Velocity norm per cell
     for (int c = 0; c < n_cells; ++c) {
         double sq = 0.0;
         for (int g = 0; g < n_genes; ++g) {
@@ -100,7 +93,6 @@ inline void cosine_projection_embedding(
         velo_length[c] = std::sqrt(std::max(sq, 0.0));
     }
 
-    // Cosine projection onto neighbors in gene space (Ms)
     for (int cell = 0; cell < n_cells; ++cell) {
         double vn = velo_length[cell];
         if (vn <= 0.0) continue;
@@ -138,10 +130,10 @@ inline void cosine_projection_embedding(
 }
 
 inline void velocity_confidence_py(
-    const NumericMatrix& gene_velocity,  // genes × cells
-    const IntegerMatrix& knn_idx,        // cells × k (1-based)
-    NumericVector& confidence,           // cells (output)
-    NumericVector& velocity_length)      // cells (output)
+    const NumericMatrix& gene_velocity,
+    const IntegerMatrix& knn_idx,
+    NumericVector& confidence,
+    NumericVector& velocity_length)
 {
     int n_genes = gene_velocity.nrow();
     int n_cells = gene_velocity.ncol();
@@ -199,9 +191,6 @@ inline void velocity_confidence_py(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 3. OLS GAMMA — spliced/unspliced ratio through origin
-// ═══════════════════════════════════════════════════════════════════════════
 
 inline void ols_gamma_origin(
     const NumericMatrix& Ms,
@@ -221,9 +210,6 @@ inline void ols_gamma_origin(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 4. DSU (UNION-FIND) + EDGE — for Kruskal MST
-// ═══════════════════════════════════════════════════════════════════════════
 
 struct DSU {
     std::vector<int> parent, rank;
@@ -248,7 +234,6 @@ struct Edge {
     int i; int j; double weight;
 };
 
-// Build MST from edge list (sorted descending by weight)
 inline NumericMatrix build_mst_matrix(
     const std::vector<Edge>& edges,
     int n_nodes)
@@ -266,16 +251,12 @@ inline NumericMatrix build_mst_matrix(
     return tree;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 5. GAUSSIAN ELIMINATION — solve (I - Q) * X = R
-// ═══════════════════════════════════════════════════════════════════════════
 
 inline bool gaussian_elimination_solve(
     const NumericMatrix& Q, int nQ,
     const NumericMatrix& R, int nT,
     NumericMatrix& X)
 {
-    // Augmented matrix: [Q | R] of size nQ × (nQ + nT)
     std::vector<std::vector<double>> aug(nQ, std::vector<double>(nQ + nT));
     for (int i = 0; i < nQ; ++i) {
         for (int j = 0; j < nQ; ++j) aug[i][j] = Q(i, j);
@@ -312,16 +293,13 @@ inline bool gaussian_elimination_solve(
     return success;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 6. BUILD VELOCITY TRANSITION — embedding-space cosine transition matrix
-// ═══════════════════════════════════════════════════════════════════════════
 
 inline void build_velocity_transition(
-    const NumericMatrix& velocity_embedding,   // cells × dims
-    const NumericMatrix& embedding,            // cells × dims
-    const IntegerMatrix& knn_idx,              // cells × k (1-based)
+    const NumericMatrix& velocity_embedding,
+    const NumericMatrix& embedding,
+    const IntegerMatrix& knn_idx,
     int n_neighbors_velo,
-    std::vector<double>& T)                    // n × n column-major (output)
+    std::vector<double>& T)
 {
     int n_cells = embedding.nrow();
     int n_dims = embedding.ncol();
@@ -357,7 +335,6 @@ inline void build_velocity_transition(
             if (cosine > 0) { row[nb] = cosine; row_sum += cosine; }
         }
 
-        // Backward transitions
         for (int col = 0; col < n_k; ++col) {
             int nb = knn_idx(i, col);
             if (nb == NA_INTEGER) continue;
@@ -385,9 +362,6 @@ inline void build_velocity_transition(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 7. STATIONARY DISTRIBUTION — power iteration on stochasic matrix
-// ═══════════════════════════════════════════════════════════════════════════
 
 inline NumericVector stationary_distribution(
     const NumericMatrix& T_, int max_iter = 1000, double tol = 1e-10)
@@ -397,8 +371,6 @@ inline NumericVector stationary_distribution(
 
     for (int iter = 0; iter < max_iter; ++iter) {
         NumericVector next_pi(n);
-        // Row-stochastic matrix: pi * T = pi
-        // pi[j] = sum_i pi[i] * T[i][j]
         for (int j = 0; j < n; ++j) {
             double s = 0.0;
             for (int i = 0; i < n; ++i)
@@ -417,9 +389,6 @@ inline NumericVector stationary_distribution(
     return pi;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 8. TRANSITION MATRIX VALIDATION
-// ═══════════════════════════════════════════════════════════════════════════
 
 inline void validate_transition_matrix(
     NumericMatrix& T,
@@ -466,9 +435,6 @@ inline void validate_transition_matrix(
     if (p_loops) *p_loops = loops;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 9. TERMINAL STATE DETECTION — from coarse transition matrix
-// ═══════════════════════════════════════════════════════════════════════════
 
 inline void detect_terminal_states(
     const NumericMatrix& P_coarse,
@@ -478,14 +444,12 @@ inline void detect_terminal_states(
     std::vector<int>& trans_idx,
     int& n_terminal)
 {
-    // Sort by self-transition probability (descending)
     std::vector<std::pair<double, int>> self_trans;
     for (int a = 0; a < M; ++a)
         self_trans.push_back({P_coarse(a, a), a});
     std::sort(self_trans.begin(), self_trans.end(),
         std::greater<std::pair<double, int>>());
 
-    // Find the largest relative gap in self-transition probabilities
     n_terminal = 1;
     for (int a = 1; a < M; ++a) {
         double gap = self_trans[a - 1].first - self_trans[a].first;
@@ -493,7 +457,6 @@ inline void detect_terminal_states(
         n_terminal = a + 1;
     }
     if (n_terminal >= M) n_terminal = M - 1;
-    // Ensure sensible range
     if (n_terminal < 1) n_terminal = 1;
     if (M >= 3 && n_terminal < 2) n_terminal = 2;
 
@@ -509,9 +472,6 @@ inline void detect_terminal_states(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 10. ABSORPTION PROBABILITY — from macrostate + coarse matrix
-// ═══════════════════════════════════════════════════════════════════════════
 
 inline void compute_absorption_probabilities(
     const NumericMatrix& P_coarse,
@@ -538,7 +498,6 @@ inline void compute_absorption_probabilities(
         }
         solve_ok = gaussian_elimination_solve(Q_r, nQ, R_r, nT, B_r);
         if (!solve_ok) {
-            // Diagonal approximation fallback
             B_r = NumericMatrix(nQ, nT);
             for (int i = 0; i < nQ; ++i) {
                 double d = Q_r(i, i);
@@ -585,6 +544,6 @@ inline void compute_absorption_probabilities(
     }
 }
 
-} // namespace scop_util
+}
 
-#endif // SCOP_VELOCITY_UTILS_H
+#endif

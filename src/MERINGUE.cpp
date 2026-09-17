@@ -14,9 +14,6 @@ using namespace Rcpp;
 
 namespace {
 
-// Replicates R's `rbits()` from src/main/RNG.c (R >= 4.5 rejection sampling
-// path of `R_unif_index`): builds a uniform integer < 2^bits from 16-bit
-// chunks of `unif_rand()` draws.
 double rbits(int bits) {
   int_least64_t v = 0;
   for (int n = 0; n <= bits; n += 16) {
@@ -27,9 +24,6 @@ double rbits(int bits) {
   return static_cast<double>(v & ((one64 << bits) - 1));
 }
 
-// Replicates R's `R_unif_index()` from src/main/RNG.c. With the default
-// `sample.kind = "Rejection"` R draws from the next larger power of two with
-// rejection; with `sample.kind = "Rounding"` it uses floor(dn * unif_rand()).
 double r_unif_index(double dn, bool rounding) {
   if (rounding) {
     return std::floor(dn * unif_rand());
@@ -45,9 +39,6 @@ double r_unif_index(double dn, bool rounding) {
   return dv;
 }
 
-// Moran's I with row-standardized weights, matching MERINGUE::moranSimple.
-// `mean_z` must be the mean of the (resampled) values; `row_std` is the
-// precomputed row-standardized weight matrix.
 double moran_i_centered(
     const double* values,
     double mean_z,
@@ -78,9 +69,6 @@ double moran_i_centered(
   return (static_cast<double>(n) / S0) * (cv / v);
 }
 
-// Moran's I with an explicit edge list in row-major order. Accumulation order
-// matches moran_i_centered (rows outer, columns inner), so results are
-// bit-identical while only visiting non-zero weights.
 double moran_i_centered_edges(
     const double* values,
     double mean_z,
@@ -110,12 +98,6 @@ double moran_i_centered_edges(
   return (static_cast<double>(n) / S0) * (cv / v);
 }
 
-// Fast variant of moran_i_centered_edges using double precision accumulation
-// and caller-provided scratch buffers. The accumulation order over the edge
-// list is identical to the long-double variant, so within-float error is the
-// only difference. Used by the permutation bootstrap path where throughput
-// matters; the bootstrap p-value is a rank count and is robust to the tiny
-// double-vs-long-double rounding differences.
 double moran_i_centered_edges_fast(
     const double* values,
     double mean_z,
@@ -148,8 +130,6 @@ double moran_i_centered_edges_fast(
   return (static_cast<double>(n) / S0) * (cv / v);
 }
 
-// Edge list (row-major, i j i j ...) of the row-standardized weight matrix;
-// rows with zero sum contribute weight/1 so they stay dense per row.
 std::vector<int> nonzero_edges(
     const std::vector<double>& row_std,
     int n
@@ -167,10 +147,8 @@ std::vector<int> nonzero_edges(
   return edges;
 }
 
-}  // namespace
+}
 
-// Row-standardized weight matrix shared by the single-gene and batch kernels
-// (MERINGUE: rs[rs == 0] <- 1).
 std::vector<double> row_standardize_weight(const NumericMatrix& weight, int n) {
   std::vector<double> row_std(static_cast<std::size_t>(n) * n);
   std::vector<double> rs(n, 0.0);
@@ -280,7 +258,6 @@ inline void moran_test_statistics_fast(
   }
 }
 
-// Normal-approximation Moran test (MERINGUE::moranTest / moranTest_C).
 void moran_test_statistics(
     const double* z,
     const std::vector<double>& row_std,
@@ -295,9 +272,6 @@ void moran_test_statistics(
   moran_test_statistics_fast(z, row_std, n, alt_norm, ws, observed, expected, sd, p_value);
 }
 
-// Batch normal-approximation Moran test over an expression matrix with one
-// gene per row and spots in columns. The row-standardized weight matrix is
-// computed once and reused for every gene.
 // [[Rcpp::export]]
 NumericMatrix meringue_moran_matrix_cpp(
     NumericMatrix expr,
@@ -365,9 +339,6 @@ NumericMatrix meringue_moran_matrix_cpp(
   const double S0 = static_cast<double>(S0_l);
   const std::vector<int> edges = nonzero_edges(row_std, n);
 
-  // RunMERINGUE resets the same seed before every per-gene permutation test.
-  // Therefore every gene consumes the same resampling indices. Generate that
-  // stream once here and reuse it without changing the statistical semantics.
   const double n_d = static_cast<double>(n);
   std::vector<int> sample_indices(static_cast<std::size_t>(n_perm) * n);
   for (int p = 0; p < n_perm; ++p) {
@@ -377,9 +348,6 @@ NumericMatrix meringue_moran_matrix_cpp(
     }
   }
 
-  // Copy the R matrix before parallel work so worker threads only touch plain
-  // C++ storage. Results are also staged outside R memory and copied back on
-  // the main thread.
   std::vector<double> expr_rows(static_cast<std::size_t>(n_genes) * n);
   for (int g = 0; g < n_genes; ++g) {
     for (int j = 0; j < n; ++j) {
@@ -537,17 +505,12 @@ NumericVector meringue_moran_cpp(
     return out;
   }
 
-  // Bootstrap Moran test (MERINGUE::moranPermutationTest): each permutation
-  // resamples the expression vector with replacement using the session's
-  // sample.kind, then computes the row-standardized Moran's I.
   const double n_d = static_cast<double>(n);
   std::vector<double> sim;
   sim.reserve(static_cast<std::size_t>(n_perm));
   std::vector<double> foo(n);
   std::vector<double> centered(n);
 
-  // Sparse edge traversal: same row-major accumulation order as the dense
-  // kernel so results are bit-identical, while skipping zero weights.
   long double S0_l = 0.0L;
   for (std::size_t k = 0; k < row_std.size(); ++k) {
     S0_l += static_cast<long double>(row_std[k]);

@@ -77,10 +77,6 @@ runumap_embedding <- function(
   if (!is.null(seed.use)) {
     set.seed(seed.use)
   }
-  # Seurat's `umap.method = "uwot"` path calls `uwot::umap`, not `umap2`.
-  # Keeping the same backend and argument defaults is important: selecting
-  # `umap2` merely because it is installed changes the embedding and can be
-  # slower for the standard Seurat workflow.
   umap_fun <- get("umap", envir = asNamespace("uwot"))
   workers <- if (is.null(cores)) {
     if (isTRUE(all(unlist(check_r("future", install = FALSE, verbose = FALSE), use.names = FALSE)))) {

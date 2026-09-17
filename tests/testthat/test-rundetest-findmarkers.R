@@ -148,9 +148,6 @@ test_that("supported RunDEtest Wilcoxon branches stay on the scop backend", {
   cells2 <- colnames(srt)[srt$group == "B"]
   features <- rownames(srt)[1:60]
 
-  # The source-mode Presto CI intentionally avoids compiling the full SCOP DLL
-  # before R CMD check. Conserved-marker aggregation is orthogonal to the
-  # Presto marker path under test, so use its exact R implementation here.
   metap_fun <- get("metap", asNamespace("scop"))
   combine_pvalues_r <- function(pvalues, method) {
     apply(as.matrix(pvalues), 1, function(x) metap_fun(x, method = method)$p)
@@ -409,9 +406,6 @@ test_that("RunDEtest all-in-one markers match the pairwise scop backend", {
   })
   pairwise <- do.call(rbind, pairwise)
   pairwise <- pairwise[, colnames(all_in_one), drop = FALSE]
-  # The all-in-one and pairwise paths may order tied rows differently
-  # across compilers; align by (group1, gene) so the comparison is
-  # row-order independent.
   all_in_one <- all_in_one[order(all_in_one$group1, all_in_one$gene), ]
   pairwise <- pairwise[order(pairwise$group1, pairwise$gene), ]
   rownames(pairwise) <- NULL

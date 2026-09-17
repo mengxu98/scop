@@ -193,9 +193,6 @@ make_live_giotto_seurat <- function() {
   )
   srt <- suppressMessages(Seurat::CreateSeuratObject(counts = counts, assay = "Spatial"))
   spots <- colnames(srt)
-  # VisiumV1 matches the official GiottoClass converter's image/coordinate path.
-  # A centroids FOV is not a reliable live fixture: seuratToGiottoV5 assigns
-  # imagerow/imagecol names onto GetTissueCoordinates() output.
   srt[["slice1"]] <- methods::new(
     "VisiumV1",
     assay = "Spatial",
@@ -223,13 +220,8 @@ test_that("srt_to_giotto and giotto_to_srt round-trip with a real GiottoClass", 
   if (!isTRUE(all(unlist(giotto_class, use.names = FALSE)))) {
     skip("GiottoClass is not installed")
   }
-  # The Visium path estimates scale factors through a Delaunay network that
-  # GiottoClass builds with the optional `geometry` package.
   skip_if_not_installed("geometry")
 
-  # In-process tiny fixture: callr+load_all of the source tree exceeds 120s in
-  # optional CI before conversion starts, and visium_human_pancreas_sub is far
-  # larger than needed to exercise the official GiottoClass converters.
   old <- options(giotto.use_conda = FALSE, giotto.check_version = FALSE)
   on.exit(options(old), add = TRUE)
 

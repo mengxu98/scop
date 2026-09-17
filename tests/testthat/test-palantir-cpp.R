@@ -1,19 +1,4 @@
-# Tests for Palantir C++ backend
-#
-# Structure:
-#   1. Helper: mock embedding/KNN data
-#   2. palantir_compute_kernel_cpp — adaptive anisotropic kernel
-#   3. palantir_normalize_kernel_cpp — diffusion map normalization
-#   4. palantir_multiscale_space_cpp — eigenvalue-scaled components
-#   5. palantir_numpy_random_sample_cpp — NumPy-compatible RNG
-#   6. palantir_maxmin_waypoints_cpp — max-min waypoint sampling
-#   7. palantir_pseudotime_cpp — pseudotime via Dijkstra + refinement
-#   8. palantir_markov_chain_cpp — directed Markov chain
-#   9. palantir_absorption_cpp — absorption probabilities (I-Q solve)
 
-# ---------------------------------------------------------------------------
-# 1. Helpers
-# ---------------------------------------------------------------------------
 
 make_palantir_mock <- function(
   n_cells = 30,
@@ -49,9 +34,6 @@ make_palantir_mock <- function(
   )
 }
 
-# ---------------------------------------------------------------------------
-# 2. palantir_compute_kernel_cpp
-# ---------------------------------------------------------------------------
 
 test_that("palantir_compute_kernel_cpp returns correct structure", {
   dat <- make_palantir_mock()
@@ -68,13 +50,10 @@ test_that("palantir_compute_kernel_cpp returns correct structure", {
   expect_equal(out$n, dat$n_cells)
   expect_length(out$adaptive_std, dat$n_cells)
   expect_true(all(out$adaptive_std > 0))
-  # All values should be finite and positive
   expect_true(all(is.finite(out$x)))
   expect_true(all(out$x > 0))
-  # i, j should be within [1, n]
   expect_true(all(out$i >= 1 & out$i <= dat$n_cells))
   expect_true(all(out$j >= 1 & out$j <= dat$n_cells))
-  # Kernel should have some non-self edges
   non_self <- out$i != out$j
   expect_gt(sum(non_self), 0)
 })
@@ -95,7 +74,6 @@ test_that("palantir_compute_kernel_cpp with alpha > 0 produces different kernel"
     knn = dat$n_neighbors,
     alpha = 0.5
   )
-  # Values should differ when alpha > 0
   expect_false(isTRUE(all.equal(out0$x, out1$x)))
 })
 
@@ -119,9 +97,7 @@ test_that("palantir_compute_kernel_cpp handles all-zero embedding", {
     knn = n_cells - 1,
     alpha = 0.0
   )
-  # adaptive_std should be a small positive number (clamped at 1e-10)
   expect_true(all(out$adaptive_std >= 1e-10))
-  # Values should be exp(0) = 1, then duplicated by W + W.T
   expect_true(all(out$x > 0))
   expect_true(all(is.finite(out$x)))
 })
@@ -145,9 +121,6 @@ test_that("palantir_compute_kernel_cpp is deterministic", {
   expect_equal(out1, out2)
 })
 
-# ---------------------------------------------------------------------------
-# 3. palantir_normalize_kernel_cpp
-# ---------------------------------------------------------------------------
 
 test_that("palantir_normalize_kernel_cpp returns correct structure", {
   dat <- make_palantir_mock()
@@ -190,7 +163,6 @@ test_that("palantir_normalize_kernel_cpp produces row-stochastic T matrix", {
     n = as.integer(kernel$n)
   )
 
-  # Each row of T should sum to approximately 1
   T_mat <- Matrix::sparseMatrix(
     i = norm$T_i,
     j = norm$T_j,
@@ -218,25 +190,20 @@ test_that("palantir_normalize_kernel_cpp handles uniform kernel", {
   expect_true(all(is.finite(norm$T_x)))
 })
 
-# ---------------------------------------------------------------------------
-# 4. palantir_multiscale_space_cpp
-# ---------------------------------------------------------------------------
 
 test_that("palantir_multiscale_space_cpp returns correct dimensions", {
   n <- 20
   n_eigs <- 8
   set.seed(1)
   eigvecs <- matrix(rnorm(n * n_eigs), nrow = n, ncol = n_eigs)
-  # Normalize columns
   eigvecs <- apply(eigvecs, 2, function(x) x / sqrt(sum(x^2)))
-  eigvals <- seq(0.99, 0.5, length.out = n_eigs) # decreasing
+  eigvals <- seq(0.99, 0.5, length.out = n_eigs)
 
   ms <- palantir_multiscale_space_cpp(eigvecs, eigvals)
 
   expect_true(is.matrix(ms))
   expect_equal(nrow(ms), n)
-  # Number of components = n_use - 1 (first eigenvector skipped)
-  expect_gte(ncol(ms), 2) # at least 3 eigs used → 2 components minimum
+  expect_gte(ncol(ms), 2)
   expect_lte(ncol(ms), n_eigs - 1)
   expect_true(all(is.finite(ms)))
 })
@@ -251,7 +218,6 @@ test_that("palantir_multiscale_space_cpp scaling formula", {
 
   ms <- palantir_multiscale_space_cpp(eigvecs, eigvals)
 
-  # Manual check on first component (j=1 in 0-based indexing, eigenvalue 0.8)
   manual <- eigvecs[, 2] * eigvals[2] / (1.0 - eigvals[2])
   expect_equal(ms[, 1], manual, tolerance = 1e-10)
 })
@@ -267,9 +233,6 @@ test_that("palantir_multiscale_space_cpp handles edge case: all equal eigenvalue
   expect_true(all(is.finite(ms)))
 })
 
-# ---------------------------------------------------------------------------
-# 5. palantir_numpy_random_sample_cpp
-# ---------------------------------------------------------------------------
 
 test_that("palantir_numpy_random_sample_cpp returns in [0, 1]", {
   out <- palantir_numpy_random_sample_cpp(100, seed = 42)
@@ -291,9 +254,6 @@ test_that("palantir_numpy_random_sample_cpp different seeds differ", {
   expect_false(isTRUE(all.equal(out1, out2)))
 })
 
-# ---------------------------------------------------------------------------
-# 6. palantir_maxmin_waypoints_cpp
-# ---------------------------------------------------------------------------
 
 test_that("palantir_maxmin_waypoints_cpp returns valid indices", {
   n <- 50
@@ -311,9 +271,8 @@ test_that("palantir_maxmin_waypoints_cpp respects minimum waypoints", {
   n <- 20
   ms_data <- matrix(rnorm(n * 3), nrow = n, ncol = 3)
 
-  # Request fewer than n_cols → should be bumped up
   wp <- palantir_maxmin_waypoints_cpp(ms_data, num_waypoints = 2, seed = 42)
-  expect_gte(length(wp), 3) # at least max(3, n_cols)
+  expect_gte(length(wp), 3)
 })
 
 test_that("palantir_maxmin_waypoints_cpp is deterministic", {
@@ -325,9 +284,6 @@ test_that("palantir_maxmin_waypoints_cpp is deterministic", {
   expect_equal(wp1, wp2)
 })
 
-# ---------------------------------------------------------------------------
-# 7. palantir_pseudotime_cpp
-# ---------------------------------------------------------------------------
 
 test_that("palantir_pseudotime_cpp returns valid structure", {
   n <- 20
@@ -337,7 +293,7 @@ test_that("palantir_pseudotime_cpp returns valid structure", {
 
   out <- palantir_pseudotime_cpp(
     ms_data = ms_data,
-    start_cell = 0, # 0-based
+    start_cell = 0,
     waypoints = as.integer(c(1, 5, 10, 15, 20)),
     knn = 5,
     max_iterations = 10,
@@ -348,7 +304,6 @@ test_that("palantir_pseudotime_cpp returns valid structure", {
   expect_true(all(c("pseudotime", "W") %in% names(out)))
   expect_length(out$pseudotime, n)
   expect_true(all(is.finite(out$pseudotime)))
-  # Pseudotime should be normalized to [0, 1]
   expect_gte(min(out$pseudotime), 0)
   expect_lte(max(out$pseudotime), 1)
 })
@@ -359,7 +314,7 @@ test_that("palantir_pseudotime_cpp start_cell has minimum pseudotime", {
   set.seed(2)
   ms_data <- matrix(rnorm(n * d), nrow = n, ncol = d)
 
-  start_cell <- 0 # first cell
+  start_cell <- 0
   out <- palantir_pseudotime_cpp(
     ms_data = ms_data,
     start_cell = start_cell,
@@ -369,7 +324,6 @@ test_that("palantir_pseudotime_cpp start_cell has minimum pseudotime", {
     n_jobs = 1
   )
 
-  # Start cell should have pseudotime near 0
   expect_equal(out$pseudotime[start_cell + 1], 0, tolerance = 0.05)
 })
 
@@ -404,9 +358,6 @@ test_that("palantir_pseudotime_cpp bridges disconnected waypoint graphs", {
   cluster_b <- cbind(seq(10, 10.05, length.out = 6), 10)
   ms_data <- rbind(cluster_a, cluster_b)
 
-  # k=3 leaves the two clusters disconnected; the python reference bridges the
-  # graph instead of failing, so the C++ backend must return a finite
-  # pseudotime covering every cell.
   res <- palantir_pseudotime_cpp(
     ms_data = ms_data,
     start_cell = 0L,
@@ -449,9 +400,6 @@ test_that("palantir_pseudotime_cpp is deterministic", {
   expect_equal(out1, out2)
 })
 
-# ---------------------------------------------------------------------------
-# 8. palantir_markov_chain_cpp
-# ---------------------------------------------------------------------------
 
 test_that("palantir_markov_chain_cpp returns correct structure", {
   n <- 15
@@ -470,7 +418,6 @@ test_that("palantir_markov_chain_cpp returns correct structure", {
   expect_true(all(c("T_i", "T_j", "T_x", "n") %in% names(out)))
   expect_equal(out$n, n)
   expect_true(all(is.finite(out$T_x)))
-  # T should be row-stochastic or have self-loops
   T_mat <- Matrix::sparseMatrix(
     i = out$T_i,
     j = out$T_j,
@@ -492,22 +439,17 @@ test_that("palantir_markov_chain_cpp handles single cell", {
   )
 
   expect_equal(out$n, 1)
-  # Single cell should get a self-loop since no valid neighbors
   expect_true(all(out$T_i == 1))
   expect_true(all(out$T_j == 1))
   expect_equal(out$T_x, 1.0)
 })
 
-# ---------------------------------------------------------------------------
-# 9. palantir_absorption_cpp
-# ---------------------------------------------------------------------------
 
 test_that("palantir_absorption_cpp returns correct dimensions", {
   n <- 10
-  # Build a simple Markov chain
   T_i <- as.integer(c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10))
   T_j <- as.integer(c(2, 3, 1, 4, 1, 5, 4, 5, 3, 6, 5, 7, 6, 8, 7, 9, 8, 10, 9, 10))
-  T_x <- rep(0.5, 20) # uniform transitions
+  T_x <- rep(0.5, 20)
 
   bp <- palantir_absorption_cpp(
     T_i = T_i,
@@ -520,10 +462,8 @@ test_that("palantir_absorption_cpp returns correct dimensions", {
   expect_true(is.matrix(bp))
   expect_equal(nrow(bp), n)
   expect_equal(ncol(bp), 2)
-  # Terminal states should have probability 1 to themselves
   expect_equal(bp[1, 1], 1.0)
   expect_equal(bp[10, 2], 1.0)
-  # All probabilities in [0, 1]
   expect_true(all(bp >= 0 & bp <= 1, na.rm = TRUE))
 })
 
@@ -559,7 +499,6 @@ test_that("palantir_absorption_cpp all cells terminal", {
     terminal_state_indices = as.integer(1:5)
   )
 
-  # Identity matrix
   expect_equal(diag(bp), rep(1, 5))
 })
 

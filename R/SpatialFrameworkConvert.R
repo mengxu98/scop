@@ -139,8 +139,6 @@ giotto_to_srt <- function(giotto, ...) {
 }
 
 ensure_giotto_bridge_backend <- function() {
-  # Prefer already-installed GiottoClass from any source. check_r("drieslab/Giotto")
-  # alone reinstalls when the GitHub remote differs (e.g. optional CI pin giotto-suite/Giotto).
   giotto_class <- check_r("GiottoClass", install = FALSE, verbose = FALSE)
   if (isTRUE(all(unlist(giotto_class, use.names = FALSE)))) {
     invisible(TRUE)

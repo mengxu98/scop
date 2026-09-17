@@ -47,8 +47,6 @@ ListDB <- function(
   out
 }
 
-# Full R.cache metadata for the databases (file, timestamp, version, comment)
-# used by PrepareDB/PrepareCCCDB cache loading and by ListDB.
 list_db_cache_entries <- function(
   species = c("Homo_sapiens", "Mus_musculus"),
   db = NULL

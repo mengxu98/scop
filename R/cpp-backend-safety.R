@@ -1,9 +1,3 @@
-# Map a public `cores` argument onto the C++ OpenMP team size.
-# `NULL` or a non-positive value becomes 0, which means "use the process
-# OpenMP default" (`omp_get_max_threads()`, i.e. OMP_NUM_THREADS); a positive
-# value caps the team. `cores = 1` is one OpenMP thread: the former
-# `scop_inner_n_threads()` treated it as the process default instead, so
-# callers that want the default must now pass `cores = NULL`.
 scop_n_threads <- function(cores = NULL) {
   if (is.null(cores) || length(cores) < 1L) {
     return(0L)

@@ -9,12 +9,10 @@ using namespace Rcpp;
 
 namespace {
 
-// R's type-7 quantile algorithm on a mutable vector
 double quantile_type7(std::vector<double>& x, double prob) {
   int n = static_cast<int>(x.size());
   if (n == 0) return NA_REAL;
 
-  // Count non-NA values
   std::vector<double> valid;
   valid.reserve(n);
   for (int i = 0; i < n; ++i) {
@@ -40,7 +38,6 @@ double quantile_type7(std::vector<double>& x, double prob) {
   return (1.0 - gamma) * valid[lo] + gamma * valid[hi];
 }
 
-// Mean ignoring NA/NaN/Inf
 double mean_valid(const std::vector<double>& x) {
   double sum = 0.0;
   int n = 0;
@@ -53,7 +50,6 @@ double mean_valid(const std::vector<double>& x) {
   return (n > 0) ? sum / n : NA_REAL;
 }
 
-// Bootstrap resampling: draw n samples with replacement, compute mean
 double bootstrap_sample_mean(
     const std::vector<double>& v,
     int n,
@@ -73,7 +69,7 @@ double bootstrap_sample_mean(
   return (count > 0) ? sum / count : NA_REAL;
 }
 
-}  // namespace
+}
 
 // [[Rcpp::export]]
 NumericVector proportion_bootstrap_log2fd(
@@ -92,13 +88,10 @@ NumericVector proportion_bootstrap_log2fd(
     return result;
   }
 
-  // Copy to std::vector for faster random access
   std::vector<double> vec1(n1), vec2(n2);
   for (int i = 0; i < n1; ++i) vec1[i] = v1[i];
   for (int i = 0; i < n2; ++i) vec2[i] = v2[i];
 
-  // Use Mersenne Twister with a seed from R's RNG for reproducibility
-  // Sample a seed from R's current RNG state
   int seed = static_cast<int>(std::floor(R::runif(0.0, 1.0) * 2147483647.0));
   std::mt19937 rng(seed);
 
@@ -139,7 +132,6 @@ List proportion_bootstrap_stats(
 ) {
   NumericVector boot = proportion_bootstrap_log2fd(v1, v2, n_bootstrap, pseudocount, verbose);
 
-  // Copy to std::vector for quantile computation
   std::vector<double> boot_vec(boot.size());
   for (int i = 0; i < boot.size(); ++i) boot_vec[i] = boot[i];
 

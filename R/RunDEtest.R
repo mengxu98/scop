@@ -1,4 +1,3 @@
-# Internal sample-level and bulk DE method implementations for RunDEtest().
 NULL
 
 RunLimmaVoom <- function(

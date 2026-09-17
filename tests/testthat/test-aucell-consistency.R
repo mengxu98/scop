@@ -85,8 +85,6 @@ test_that("AUCell numpy ties reproduce pySCENIC RandomState column order", {
     auc_threshold = 1
   )
 
-  # np.random.RandomState(2).permutation(10):
-  # 4, 1, 5, 0, 7, 2, 3, 6, 9, 8 (zero-based gene indices).
   expect_equal(
     unname(observed[1L, ]),
     c(0.6, 0.8, 0.4, 0.3, 0.9, 0.7, 0.2, 0.5, 0, 0.1),

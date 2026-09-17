@@ -63,7 +63,7 @@ double ccc_significant_or_zero(double x) {
   return x;
 }
 
-}  // namespace
+}
 
 // [[Rcpp::export]]
 DataFrame ccc_aggregate_long_cpp(

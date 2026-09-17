@@ -1,5 +1,3 @@
-# End-to-end consistency between the scop SpatialCellChat wrapper and the
-# original SpatialCellChat pipeline on real Visium data.
 
 spatialcellchat_real_input <- function(n = 80, seed = 42) {
   data(visium_human_pancreas_sub)
@@ -131,9 +129,6 @@ test_that("RunSpatialCellChat matches the original SpatialCellChat pipeline", {
 
   srt <- spatialcellchat_real_input()
 
-  # Group-level permutation tests are disabled to keep the suite fast; the
-  # wrapped and original runs still share identical inputs and settings, so
-  # net@prob/@weight/@count and netP$prob remain strong consistency checks.
   set.seed(42)
   wrapped <- RunSpatialCellChat(
     srt,
@@ -174,9 +169,6 @@ test_that("RunSpatialCellChat matches the original SpatialCellChat pipeline", {
   expect_equal(chat_w@netP$pval, chat_m@netP$pval)
   expect_identical(as.character(chat_w@idents), as.character(chat_m@idents))
 
-  # With permutation disabled, upstream subsetCommunication is unavailable for
-  # ligand-receptor records, so the bundled long table falls back to
-  # pathway-level records; assert it is built and structurally consistent.
   long_table <- wrapped@tools$SpatialCellChat$long_table
   expect_true(nrow(long_table) > 0L)
   expect_identical(unique(long_table$result_level), "pathway")

@@ -47,7 +47,6 @@ test_that("EnrichmentPlot finds results stored without a grouping variable", {
   expect_gt(nrow(enrichment), 0L)
   expect_true(any(enrichment[["p.adjust"]] < 0.05))
 
-  # a grouping variable is not required to plot the stored "custom" result
   plot <- EnrichmentPlot(
     srt,
     db = "custom",
@@ -58,7 +57,6 @@ test_that("EnrichmentPlot finds results stored without a grouping variable", {
   expect_s3_class(plot, "ggplot")
   expect_setequal(plot$data[["ID"]], paste0("custom", seq_len(10)))
 
-  # an explicit key that is absent reports the keys that are stored
   expect_error(
     EnrichmentPlot(
       srt,

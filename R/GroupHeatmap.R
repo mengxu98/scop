@@ -1681,7 +1681,6 @@ GroupHeatmap <- function(
   }
 
   if (isTRUE(cluster_rows) && !is.null(cluster_features_by)) {
-    # Preserve order of cluster_features_by (same as do.call(cbind, mat_list[cluster_features_by]))
     mat_cluster <- combined_mat[,
       unlist(lapply(cluster_features_by, function(g) which(col_groups == g))),
       drop = FALSE

@@ -323,13 +323,8 @@ run_aucell_official_scores <- function(
   check_r("AUCell", verbose = FALSE)
   tie_method <- match.arg(tie_method)
 
-  # For tie_method = "first", route directly to the native C++ path
-  # (aucell_auc_sparse with seed = -1L), which avoids converting the
-  # sparse matrix to dense and eliminates the R-level per-cell rank() loop.
   if (identical(tie_method, "first")) {
     dots <- list(...)
-    # Callers may pass auc_max_rank (integer) or auc_threshold (fraction).
-    # run_aucell_scores uses auc_threshold, so convert if needed.
     n_genes <- nrow(expr_counts)
     if (!is.null(dots[["auc_max_rank"]])) {
       auc_thr <- dots[["auc_max_rank"]] / max(n_genes, 1L)
@@ -348,7 +343,6 @@ run_aucell_official_scores <- function(
     ))
   }
 
-  # tie_method = "random": delegate to AUCell_buildRankings (original path)
   calc_auc <- get_namespace_fun("AUCell", "AUCell_calcAUC")
   expr_rank <- AUCell::AUCell_buildRankings(
     as_matrix(expr_counts),
@@ -363,10 +357,6 @@ run_aucell_official_scores <- function(
   as_matrix(scores)
 }
 
-# Calculate AUCell scores from an official aucellResults ranking object while
-# retaining AUCell's gene-set filtering rules. This is used for compatibility
-# routes that require AUCell_buildRankings() semantics (random ties, blocks,
-# or keepZeroesAsNA) but can still use the native AUC kernel.
 run_aucell_scores_from_official_rankings <- function(
   rankings,
   gene_sets,

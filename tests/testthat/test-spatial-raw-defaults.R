@@ -62,9 +62,6 @@ test_that("raw is the real public default on an image-backed Visium object", {
     legacy$data[, c("x", "y")]
   )))
 
-  # A numeric radius has the units of the selected coordinate space. On this
-  # real image, 50 raw acquisition units are smaller than the nearest spacing,
-  # while 50 legacy display units connect many of the same first 50 spots.
   cells <- rownames(raw$data)[seq_len(50L)]
   raw_distance <- as.matrix(stats::dist(raw$data[cells, c("x", "y")]))
   legacy_distance <- as.matrix(stats::dist(legacy$data[cells, c("x", "y")]))

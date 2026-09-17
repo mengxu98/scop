@@ -110,12 +110,6 @@ db_DoubletDetection <- function(...) {
   RunDoubletDetection(...)
 }
 
-# Normalize the deprecated `srt` alias of the public `object` argument.
-#
-# `object` is the documented name of the data-object argument. `srt` stays
-# accepted as a deprecated alias and is removed in scop 1.0.0. `object_missing`
-# reports whether the caller's `object` argument was missing, so `F(srt = x)`
-# still resolves and `F(object = x, srt = y)` is rejected as ambiguous.
 resolve_deprecated_srt <- function(object, srt, object_missing) {
   if (!is.null(srt)) {
     if (!object_missing) {

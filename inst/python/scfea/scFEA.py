@@ -16,25 +16,21 @@ CSV files. The model files are loaded from a ``data_dir`` prepared by the R
 wrapper, keeping data resources outside the R package tarball.
 """
 
-# system lib
 import os
 import time
 import warnings
 
-# tools
 import torch
 from torch.autograd import Variable
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-# scFEA lib
-from .ClassFlux import FLUX  # Flux class network
+from .ClassFlux import FLUX
 from .util import pearsonr
 from .DatasetFlux import MyDataset
 
 
-# hyper parameters
 LEARN_RATE = 0.008
 LAMB_BA = 1
 LAMB_NG = 1
@@ -42,7 +38,6 @@ LAMB_CELL = 1
 LAMB_MOD = 1e-2
 
 
-# bundled M168 asset sets, keyed by species
 _SPECIES_FILES = {
     'human': {
         'moduleGene_file': 'module_gene_m168.csv',
@@ -60,22 +55,18 @@ _SPECIES_FILES = {
 def myLoss(m, c, lamb1=0.2, lamb2=0.2, lamb3=0.2, lamb4=0.2,
            geneScale=None, moduleScale=None):
 
-    # balance constrain
     total1 = torch.pow(c, 2)
     total1 = torch.sum(total1, dim=1)
 
-    # non-negative constrain
     error = torch.abs(m) - m
     total2 = torch.sum(error, dim=1)
 
-    # sample-wise variation constrain
     diff = torch.pow(torch.sum(m, dim=1) - geneScale, 2)
-    if sum(diff > 0) == m.shape[0]:  # solve Nan after several iteraions
+    if sum(diff > 0) == m.shape[0]:
         total3 = torch.pow(diff, 0.5)
     else:
         total3 = diff
 
-    # module-wise variation constrain
     if lamb4 > 0:
         corr = torch.ones(m.shape[0], dtype=m.dtype, device=m.device)
         for i in range(m.shape[0]):
@@ -86,7 +77,6 @@ def myLoss(m, c, lamb1=0.2, lamb2=0.2, lamb3=0.2, lamb4=0.2,
     else:
         total4 = torch.zeros(m.shape[0], dtype=m.dtype, device=m.device)
 
-    # loss
     loss1 = torch.sum(lamb1 * total1)
     loss2 = torch.sum(lamb2 * total2)
     loss3 = torch.sum(lamb3 * total3)
@@ -118,7 +108,7 @@ def _build_X_batch(geneExpr_np, module_gene_indices, n_genes, n_modules,
     n_cells_batch = len(cell_indices)
     X = torch.zeros(n_cells_batch, n_modules * n_genes,
                     dtype=torch.float32, device=device)
-    expr_slice = geneExpr_np[cell_indices, :]  # (batch, n_genes)
+    expr_slice = geneExpr_np[cell_indices, :]
     for i in range(n_modules):
         indices = module_gene_indices[i]
         if not indices:
@@ -234,21 +224,17 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
     cm_file = files['stoichiometry_matrix']
     cName_file = files['cName_file']
 
-    # choose cpu or gpu automatically
     if device is None:
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     else:
         device = torch.device(device)
 
-    # ------------------------------------------------------------------
-    # read data (expression supplied directly as a cells x genes DataFrame)
-    # ------------------------------------------------------------------
     if verbose:
         print("Starting load data...")
     geneExpr = expr.copy()
     geneExpr = geneExpr * 1.0
     if sc_imputation is True:
-        import magic  # deferred import: only needed for imputation
+        import magic
         magic_operator = magic.MAGIC()
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -264,7 +250,6 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
                  for i in range(moduleGene.shape[0])]
     moduleLen = np.array(moduleLen)
 
-    # find existing gene
     module_gene_all = []
     for i in range(moduleGene.shape[0]):
         for j in range(moduleGene.shape[1]):
@@ -272,7 +257,7 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
                 module_gene_all.append(moduleGene.iloc[i, j])
     module_gene_all = set(module_gene_all)
     data_gene_all = set(geneExpr.columns)
-    gene_overlap = list(data_gene_all.intersection(module_gene_all))  # fix
+    gene_overlap = list(data_gene_all.intersection(module_gene_all))
     gene_overlap.sort()
 
     cmMat = pd.read_csv(
@@ -297,7 +282,6 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
 
     if verbose:
         print("Starting process data...")
-    # extract overlap gene
     geneExpr = geneExpr[gene_overlap]
     gene_names = list(geneExpr.columns)
     cell_names = geneExpr.index.astype(str).tolist()
@@ -306,9 +290,7 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
     n_cells = len(cell_names)
     n_comps = cmMat.shape[0]
 
-    # Pre-compute gene-name to column-index mapping
     gene_to_idx = {g: i for i, g in enumerate(gene_names)}
-    # Pre-compute per-module gene indices (and track empty modules)
     emptyNode = []
     module_gene_indices = []
     for i in range(n_modules):
@@ -321,10 +303,8 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
         indices = [gene_to_idx[g] for g in genes if g in gene_to_idx]
         module_gene_indices.append(indices)
 
-    # Convert expression to float32 numpy for fast tensor construction
     geneExpr_np = geneExpr.values.astype(np.float32)
 
-    # Compute geneExprScale from the full dataset (needed for loss)
     geneExprScale = torch.from_numpy(
         geneExpr_np.sum(axis=1).astype(np.float32)
     ).float().to(device)
@@ -334,7 +314,6 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
     if verbose:
         print("Process data done.")
 
-    # Determine training cells
     rng = np.random.RandomState(int(seed))
     all_indices = np.arange(n_cells, dtype=np.int64)
     if max_cells is not None and n_cells > max_cells:
@@ -349,7 +328,6 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
     if verbose:
         print(subset_msg)
 
-    # Build training tensors only for the train subset
     X_train = _build_X_batch(geneExpr_np, module_gene_indices, n_genes,
                              n_modules, train_indices, device)
     module_scale_train = _build_module_scale(geneExpr_np, module_gene_indices,
@@ -357,13 +335,10 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
     geneExprScale_train = geneExprScale[train_indices]
     n_train = len(train_indices)
 
-    # =====================================================================
-    # NN
     torch.manual_seed(int(seed))
     net = FLUX(X_train, n_modules, f_in=n_genes, f_out=1).to(device)
     optimizer = torch.optim.Adam(net.parameters(), lr=LEARN_RATE)
 
-    # Dataloader
     dataloader_params = {'batch_size': n_train,
                          'shuffle': False,
                          'num_workers': 0,
@@ -373,11 +348,9 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
     train_loader = torch.utils.data.DataLoader(dataset=dataSet,
                                                **dataloader_params)
 
-    # =====================================================================
     if verbose:
         print("Starting train neural network...")
     start = time.time()
-    # training
     loss_v = []
     loss_v1 = []
     loss_v2 = []
@@ -418,12 +391,10 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
         loss_v3.append(loss3)
         loss_v4.append(loss4)
 
-    # =====================================================================
     end = time.time()
     if verbose:
         print("Training time: ", end - start)
 
-    # Prediction: batched inference over all cells
     if verbose:
         print("Starting prediction on %d cells (batch_size=%d)..."
               % (n_cells, predict_batch_size))
@@ -446,9 +417,6 @@ def run_scfea(expr, *, species='human', sc_imputation=False, n_epoch=100,
             fluxStatuTest[start_idx:end_idx, :] = out_m.detach().cpu().numpy()
             balanceStatus[start_idx:end_idx, :] = out_c.detach().cpu().numpy()
 
-    # ------------------------------------------------------------------
-    # assemble results as DataFrames (mirrors scFEA setF / setB outputs)
-    # ------------------------------------------------------------------
     setF = pd.DataFrame(fluxStatuTest)
     setF.columns = moduleGene.index
     setF.index = geneExpr.index.tolist()

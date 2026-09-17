@@ -33,8 +33,6 @@ make_coordinate_contract_object <- function(image_class = c("VisiumV1", "VisiumV
   } else {
     fov <- SeuratObject::CreateFOV(
       data.frame(
-        # This is the positional input used by Seurat::Read10X_Image() for a
-        # VisiumV2 image: imagerow becomes centroid x and imagecol becomes y.
         imagerow = raw$y,
         imagecol = raw$x,
         row.names = rownames(raw)
@@ -76,7 +74,7 @@ test_that("VisiumV1 and VisiumV2 share full-resolution raw coordinates", {
     expect_equal(low_raw$data$x, fixture$raw$x, info = image_class)
     expect_equal(low_raw$data$y, fixture$raw$y, info = image_class)
     expect_equal(high_raw$data[, c("x", "y")], low_raw$data[, c("x", "y")])
-    expect_identical(low_raw$source$coordinate_contract_version, .spatial_coordinate_contract_version)
+    expect_identical(low_raw$source$coordinate_contract_version, 3L)
     expect_identical(low_raw$source$image_class[[1L]], image_class)
   }
 })

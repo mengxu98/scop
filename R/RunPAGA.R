@@ -181,7 +181,7 @@ RunPAGA <- function(
     return(srt)
   }
 
-  prepare_env_if_needed(modules = "scanpy", verbose = verbose)
+  PrepareEnv(modules = "scanpy", verbose = verbose)
 
   args <- mget(names(formals()))
   args <- lapply(
@@ -424,7 +424,6 @@ run_paga_cpp <- function(
   srt@misc[[paste0(group.by, "_sizes")]] <- as.numeric(paga[["group_sizes"]])
   names(srt@misc[[paste0(group.by, "_sizes")]]) <- group_levels
 
-  # Diffusion pseudotime
   if (isTRUE(infer_pseudotime)) {
     root_grp <- if (!is.null(root_group)) {
       match(root_group, group_levels)
@@ -568,7 +567,6 @@ run_paga_cpp <- function(
     srt@tools[["PAGA"]]$parameters$embedded_with_PAGA <- TRUE
   }
 
-  # Velocity-based PAGA transitions
   if (isTRUE(use_rna_velocity)) {
     vel_candidates <- unique(c(
       if (!is.null(nonlinear_reduction)) paste0(vkey, "_", nonlinear_reduction),

@@ -243,8 +243,6 @@ SpatialIntegrationPlot <- function(
       if (isTRUE(dots$overlay_image) || !is.null(dots$image)) {
         log_message("Aligned coordinates cannot use a raw image overlay or image selection", message_type = "error")
       }
-      # This local plotting copy makes the chosen metadata coordinates explicit
-      # to the shared resolver; the input object's images remain unchanged.
       srt@images <- list()
       dots$overlay_image <- FALSE
     } else if (length(SeuratObject::Images(srt)) > 0L) {
@@ -560,8 +558,6 @@ spatial_integration_merge_list <- function(srt_list, sample.by) {
     add.cell.ids = names(srt_list),
     merge.data = TRUE
   )
-  # Seurat merge does not carry object misc; map image provenance by exact
-  # renamed cell sets, including when merge has renamed duplicate image keys.
   for (sample in names(srt_list)) {
     original <- srt_list[[sample]]
     for (image in SeuratObject::Images(original)) {

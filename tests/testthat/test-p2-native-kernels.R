@@ -46,11 +46,6 @@ test_that("native VECTOR arrows agree with the R reference", {
 
   expect_equal(native$score, reference$score, tolerance = 1e-14)
   expect_equal(native$grid, reference$grid, tolerance = 1e-14)
-  # Arrow directions are rank-weighted over tied grid distances; the
-  # compiler may fuse dx*dx + dy*dy into an FMA (single rounding), so
-  # tied distances can rank differently across toolchains and shift a
-  # few arrow vectors by a couple of percent.  score and grid must stay
-  # bit-tight; arrows are compared with a coarse tolerance.
   expect_equal(native$arrows, reference$arrows, tolerance = 5e-2)
   expect_identical(native$cell_grid, reference$cell_grid)
 })

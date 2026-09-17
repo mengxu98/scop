@@ -262,7 +262,6 @@ GSEAPlot <- function(
 
   plist <- NULL
   if (plot_type == "comparison") {
-    # comparison --------------------
     if (length(id_use) > 0) {
       ids <- unlist(id_use)
     } else {
@@ -384,7 +383,6 @@ GSEAPlot <- function(
       )
     plist <- list(p)
   } else if (plot_type == "line") {
-    # line --------------------
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
@@ -838,7 +836,6 @@ GSEAPlot <- function(
       }
     }
   } else if (plot_type == "bar") {
-    # bar --------------------
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
@@ -945,7 +942,6 @@ GSEAPlot <- function(
       plist[[nm]] <- p
     }
   } else if (plot_type == "network") {
-    # network --------------------
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
@@ -1183,7 +1179,6 @@ GSEAPlot <- function(
       plist[[nm]] <- p
     }
   } else if (plot_type == "enrichmap") {
-    # enrichmap --------------------
     for (nm in names(res)) {
       res_enrich <- res[[nm]]
       if (is.null(id_use)) {
@@ -1479,7 +1474,6 @@ GSEAPlot <- function(
       plist[[nm]] <- p
     }
   } else if (plot_type == "wordcloud") {
-    # wordcloud --------------------
     check_r("ggwordcloud", verbose = FALSE)
     check_r("simplifyEnrichment", verbose = FALSE)
     for (nm in names(res)) {

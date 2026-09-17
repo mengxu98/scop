@@ -277,6 +277,18 @@ paga_root_cell_cpp <- function(embedding, groups, root_group) {
     .Call(`_scop_paga_root_cell_cpp`, embedding, groups, root_group)
 }
 
+pca_backend_run <- function(X, npcs, weight_by_var = TRUE) {
+    .Call(`_scop_pca_backend_run`, X, npcs, weight_by_var)
+}
+
+cca_crossprod_matrix <- function(X1, X2) {
+    .Call(`_scop_cca_crossprod_matrix`, X1, X2)
+}
+
+matrix_product <- function(A, B) {
+    .Call(`_scop_matrix_product`, A, B)
+}
+
 phate_graphtools_affinity_data_cpp <- function(data, knn, decay, thresh = 1e-4, knn_max = -1L) {
     .Call(`_scop_phate_graphtools_affinity_data_cpp`, data, knn, decay, thresh, knn_max)
 }
@@ -659,18 +671,6 @@ cross_knn_f32 <- function(reference, query, k, metric, cores) {
 
 log_normalize_dgc <- function(mat, scale_factor, grain_size = 100L, n_threads = 0L) {
     invisible(.Call(`_scop_log_normalize_dgc`, mat, scale_factor, grain_size, n_threads))
-}
-
-pca_backend_run <- function(X, npcs, weight_by_var = TRUE) {
-    .Call(`_scop_pca_backend_run`, X, npcs, weight_by_var)
-}
-
-cca_crossprod_matrix <- function(X1, X2) {
-    .Call(`_scop_cca_crossprod_matrix`, X1, X2)
-}
-
-matrix_product <- function(A, B) {
-    .Call(`_scop_matrix_product`, A, B)
 }
 
 scale_sparse_full <- function(sparse_mat, gene_indices, scale_max, n_threads = 0L) {

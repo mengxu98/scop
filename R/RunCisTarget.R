@@ -95,7 +95,6 @@ RunCisTarget <- function(
     dir.create(work_dir, recursive = TRUE, showWarnings = FALSE)
   }
 
-  # Resolve ranking databases and motif annotations from species
   reference_data <- scenic_reference(
     species = species,
     data_dir = data_dir,
@@ -106,7 +105,6 @@ RunCisTarget <- function(
   ranking_dbs <- reference_data[["ranking_dbs"]]
   motif_annotations <- reference_data[["motif_annotations"]]
 
-  # Normalize adjacency input
   if (is.character(adj) && length(adj) == 1 && file.exists(adj)) {
     adj_file <- adj
     adj <- utils::read.table(
@@ -143,7 +141,6 @@ RunCisTarget <- function(
     )
   }
 
-  # Output files
   ctx_output <- ctx_output %||% file.path(
     work_dir, paste0(prefix, "_ctx.csv")
   )
@@ -205,7 +202,6 @@ RunCisTarget <- function(
   )
 }
 
-# ── Native C++ backend ────────────────────────────────────────────────────
 
 cisTarget_cpp <- function(
   adj,
@@ -304,7 +300,6 @@ cisTarget_cpp <- function(
   )
 }
 
-# ── Python backend ─────────────────────────────────────────────────────────
 
 cisTarget_python <- function(
   adj,
@@ -349,15 +344,12 @@ cisTarget_python <- function(
 
   functions <- scop_python_import("functions", convert = TRUE)
 
-  # Build expression matrix CSV if not provided
   if (is.null(expression_mtx)) {
     expr_csv <- file.path(work_dir, paste0(prefix, "_expr.csv"))
-    # Collect all genes referenced anywhere in the adjacency
     all_genes <- unique(unlist(lapply(adj, function(col) {
       if (is.character(col) || is.factor(col)) as.character(col) else NULL
     })))
     all_genes <- all_genes[nzchar(all_genes) & !is.na(all_genes)]
-    # Build a minimal 3-cell stub so pySCENIC correlation works
     n_cells <- min(3L, length(all_genes))
     stub <- as.data.frame(matrix(
       1.0,
@@ -369,7 +361,6 @@ cisTarget_python <- function(
     expression_mtx <- expr_csv
   }
 
-  # Convert motif_annotations to string (handles data.frame input)
   if (is.data.frame(motif_annotations)) {
     motif_file <- file.path(work_dir, paste0(prefix, "_motif2tf.tbl"))
     utils::write.table(
@@ -395,7 +386,6 @@ cisTarget_python <- function(
     verbose = isTRUE(verbose)
   )
 
-  # Convert ctx output to regulon files
   functions$SCENICRegulonsToFiles(
     ctx_output,
     gmt_output,
@@ -419,7 +409,6 @@ cisTarget_python <- function(
   )
 }
 
-# ── R backend (RcisTarget) ─────────────────────────────────────────────────
 
 cisTarget_r <- function(
   adj,
@@ -438,8 +427,6 @@ cisTarget_r <- function(
   importRankings <- get_namespace_fun("RcisTarget", "importRankings")
   cisTarget <- get_namespace_fun("RcisTarget", "cisTarget")
 
-  # RcisTarget requires the ranking databases in feather format
-  # and the motif annotations as a data.table
   log_message(
     "Running cisTarget (RcisTarget) on {.val {nrow(adj)}} edges...",
     verbose = verbose
@@ -447,7 +434,6 @@ cisTarget_r <- function(
 
   motif_annotations_dt <- data.table::fread(motif_annotations)
 
-  # Import ranking databases for RcisTarget
   db_paths <- ranking_dbs
   if (length(db_paths) > 1) {
     log_message(
@@ -457,11 +443,9 @@ cisTarget_r <- function(
     )
   }
 
-  # Build gene list per TF from adjacency
   tf_targets <- split(adj[["target"]], adj[["TF"]])
   tf_targets <- lapply(tf_targets, unique)
 
-  # Run RcisTarget
   motif_rankings <- tryCatch(
     importRankings(db_paths[1]),
     error = function(e) {
@@ -480,7 +464,6 @@ cisTarget_r <- function(
     ...
   )
 
-  # Build regulons from RcisTarget output
   regulons <- list()
   if (is.data.frame(motif_enrichment)) {
     for (tf_name in unique(motif_enrichment[["geneSet"]])) {
@@ -502,7 +485,6 @@ cisTarget_r <- function(
       if (is.null(enriched) || nrow(enriched) == 0) {
         next
       }
-      # Take top motif per TF
       top_row <- enriched[which.max(enriched[["NES"]]), ]
       target_genes <- unique(unlist(strsplit(top_row[["enrichedGenes"]], ";")))
       target_genes <- target_genes[nzchar(target_genes)]
@@ -513,7 +495,6 @@ cisTarget_r <- function(
     }
   }
 
-  # Write GMT
   write_regulons_file(regulons, gmt_output, sep = "\t")
   write_regulons_file(regulons, txt_output, sep = ",")
 
@@ -531,7 +512,6 @@ cisTarget_r <- function(
   )
 }
 
-# ── Helpers ────────────────────────────────────────────────────────────────
 
 read_regulons_from_gmt <- function(gmt_file, min_regulon_size = 10) {
   if (!file.exists(gmt_file)) {

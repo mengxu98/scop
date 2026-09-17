@@ -158,7 +158,7 @@ inline void score_row_with_permutations(
   }
 }
 
-}  // namespace
+}
 
 // [[Rcpp::export]]
 Rcpp::List spatial_variable_score_cpp(

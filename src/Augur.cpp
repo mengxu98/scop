@@ -30,9 +30,6 @@ NumericMatrix augur_subsample_cpp(S4 mat, IntegerVector cols) {
     selected_cols[k] = col;
   }
 
-  // Identify variable genes directly from the sparse columns. This avoids
-  // materialising the full selected-cell-by-feature matrix before allocating
-  // the final dense classifier input.
   std::vector<int> stored(n_features, 0);
   std::vector<bool> seen(n_features, false);
   std::vector<bool> variable(n_features, false);

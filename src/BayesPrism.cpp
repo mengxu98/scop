@@ -103,7 +103,7 @@ void bayesprism_sample_dirichlet(
   }
 }
 
-} // namespace
+}
 
 // [[Rcpp::export]]
 List bayesprism_gibbs_initial_cpp(

@@ -205,7 +205,7 @@ RunSCVELO <- function(
     return(srt)
   }
 
-  prepare_env_if_needed(
+  PrepareEnv(
     modules = c(
       "scvelo",
       if (isTRUE(magic_impute)) "magic"
@@ -406,15 +406,6 @@ RunSCVELO <- function(
   }
 }
 
-# Replicates scvelo.tools.velocity_embedding's autoscale step.
-#
-# scvelo calls matplotlib's quiver autoscaling:
-#   V_emb /= 3 * quiver_autoscale(X_emb, V_emb)
-# where quiver_autoscale() is computed with `plt.subplots()` defaults
-# (figsize = 6.4 x 4.8, subplot rect = [0.125, 0.11, 0.9, 0.88], 5% margins).
-# With `scale_units = "xy"` the figure size and dpi cancel, leaving a
-# deterministic, data-dependent scale that depends only on the embedding
-# ranges and the axes-bbox aspect ratio.
 velocity_embedding_autoscale <- function(embedding, velocity_embedding) {
   if (ncol(embedding) < 2L || nrow(embedding) == 0L) {
     return(velocity_embedding)
@@ -424,8 +415,6 @@ velocity_embedding_autoscale <- function(embedding, velocity_embedding) {
   if (!is.finite(rx) || !is.finite(ry) || rx <= 0 || ry <= 0) {
     return(velocity_embedding)
   }
-  # matplotlib default axes bbox: width = (0.9 - 0.125) * 6.4,
-  # height = (0.88 - 0.11) * 4.8.
   bbox_aspect <- ((0.88 - 0.11) * 4.8) / ((0.9 - 0.125) * 6.4)
   ratio <- bbox_aspect * rx / ry
   vx <- velocity_embedding[, 1L]
@@ -557,7 +546,6 @@ run_scanpy_cpp <- function(
   spliced_raw <- spliced_raw[features, cells, drop = FALSE]
   unspliced_raw <- unspliced_raw[features, cells, drop = FALSE]
 
-  # ── scanpy-compatible filtering and normalization ──
   log_message(
     "Running scanpy-compatible preprocessing ({.val {length(features)}} features -> filter + normalize)...",
     verbose = verbose
@@ -634,13 +622,11 @@ run_scanpy_cpp <- function(
   rm(moments, spliced_n, unspliced_n)
   invisible(gc(full = TRUE))
 
-  # Extract UMAP embedding for velocity projection (visualization only)
   nonlinear_embedding <- as.matrix(
     srt@reductions[[nonlinear_reduction]]@cell.embeddings[cells, , drop = FALSE]
   )
   storage.mode(nonlinear_embedding) <- "double"
 
-  # ── Per-mode velocity computation ──
   srt@tools[["SCVELO"]] <- list(
     backend = "cpp",
     implementation = list(
@@ -681,7 +667,6 @@ run_scanpy_cpp <- function(
       verbose = verbose
     )
 
-    # Velocity estimation
     if (identical(m, "stochastic")) {
       velocity <- scanpy_stochastic_cpp(
         Ms = Ms,
@@ -703,7 +688,6 @@ run_scanpy_cpp <- function(
         n_threads = omp_threads
       )
     } else if (identical(m, "dynamical")) {
-      # First fit the dynamical model per gene
       n_genes <- nrow(Ms)
       dyn_genes <- seq_len(min(n_genes, 200L))
       fitting_by <- match.arg(fitting_by)
@@ -729,7 +713,6 @@ run_scanpy_cpp <- function(
           n_threads = omp_threads
         )
       }
-      # Compute velocity from fitted dynamical parameters
       velocity <- scanpy_dynamical_velocity_cpp(
         Ms = Ms,
         Mu = Mu,
@@ -745,8 +728,6 @@ run_scanpy_cpp <- function(
       log_message("Unknown mode {.val {m}}", message_type = "error")
     }
 
-    # Second-order moments are only consumed by the stochastic fit; release
-    # them before building the graph / projection working set.
     if (length(mode_use) == 1L && exists("Mss", inherits = FALSE)) {
       rm(Mss, Mus)
       invisible(gc(full = TRUE))
@@ -826,10 +807,6 @@ run_scanpy_cpp <- function(
     srt[[len_key]] <- as.numeric(vc_main[["velocity_length"]])
     srt@tools[["SCVELO"]][[m]]$confidence_detail <- vc_main[["confidence"]]
     srt@tools[["SCVELO"]][[m]]$confidence_diff <- vc_main[["confidence_diff"]]
-    # Velocity graph (cosine similarity on gene space, sparse format).
-    # The graph is always computed so the stored velocity embedding follows
-    # scv.tl.velocity_embedding's graph-projected path; the graph itself is
-    # kept only when the user requested it for downstream analyses.
     vg <- scanpy_velocity_graph_cpp(
       Ms = Ms[graph_gene_idx, , drop = FALSE],
       Mu = Mu[graph_gene_idx, , drop = FALSE],
@@ -861,7 +838,6 @@ run_scanpy_cpp <- function(
       self_transitions = TRUE,
       use_negative_cosines = TRUE
     )
-    # Match scv.tl.velocity_embedding's matplotlib quiver autoscaling.
     velocity_embedding_graph <- velocity_embedding_autoscale(
       embedding = nonlinear_embedding,
       velocity_embedding = velocity_embedding_graph
@@ -874,7 +850,6 @@ run_scanpy_cpp <- function(
       key = paste0(gsub("_", "", velocity_reduction), "_")
     )
 
-    # Terminal states
     if (isTRUE(compute_terminal_states)) {
       if (!isTRUE(compute_velocity_graph)) {
         log_message(
@@ -900,7 +875,6 @@ run_scanpy_cpp <- function(
       srt@tools[["SCVELO"]][[m]]$end_points <- ts[["end_points"]]
     }
 
-    # Velocity pseudotime
     if (isTRUE(compute_pseudotime) && isTRUE(compute_terminal_states)) {
       vpt_result <- scanpy_pseudotime_graph_cpp(
         graph_rows = vg[["velocity_graph_rows"]],
@@ -933,7 +907,6 @@ run_scanpy_cpp <- function(
       ]]
     }
 
-    # Velocity confidence metrics
     if (isTRUE(compute_velocity_confidence)) {
       srt@tools[["SCVELO"]][[m]]$confidence_detail <- vc_main[["confidence"]]
       srt@tools[["SCVELO"]][[m]]$confidence_diff <- vc_main[["confidence_diff"]]

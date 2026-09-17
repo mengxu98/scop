@@ -1038,8 +1038,6 @@ heatmap_enrichment_draw_stat_box <- function(
   axis_label = "",
   axis_digits = 2
 ) {
-  # The statistic chart is an independent annotation panel. Its shared scale
-  # occupies an unfilled strip outside the bordered plotting region.
   panel_bottom <- if (isTRUE(show_axis)) 0.34 else 0
   grid::grid.rect(
     x = grid::unit(0.5, "npc"),

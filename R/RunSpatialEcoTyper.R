@@ -154,6 +154,9 @@ RunSpatialEcoTyper <- function(
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!is.null(ncores)) {
+    if (!missing(cores)) {
+      stop("Supply only one of `cores` and `ncores`.", call. = FALSE)
+    }
     .Deprecated(msg = paste0("`ncores` is deprecated; use `cores` instead. ",
       "It will be removed in scop 1.0.0."))
     cores <- ncores
@@ -1133,7 +1136,7 @@ spatialecotyper_store_tool <- function(
       srt@tools[[tool_name]]$coordinates <- coordinate_input$data
       srt@tools[[tool_name]]$source <- list(
         coordinate_space = "raw", samples = coordinate_input$sources,
-        coordinate_contract_version = .spatial_coordinate_contract_version
+        coordinate_contract_version = 3L
       )
       srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
     }

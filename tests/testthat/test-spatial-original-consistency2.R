@@ -1,7 +1,3 @@
-# End-to-end consistency between scop spatial wrappers and the original
-# backend methods, run with real datasets (visium_human_pancreas_sub,
-# pancreas_sub, panc8_sub). No simulated data and
-# no mocked backends.
 
 real_visium_subset2 <- function(n = 150, seed = 42, assay = NULL) {
   data(visium_human_pancreas_sub)
@@ -52,8 +48,6 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
   )
   wrapped_weights <- as.matrix(wrapped@tools$RCTD$weights)
 
-  # original pipeline with the same inputs; spacexr exposes two generations of
-  # API (Bioc 1.4.0: createRctd/runRctd, GitHub 2.x: SpatialRNA/create.RCTD)
   labels <- getFromNamespace("resolve_reference_labels", "scop")(reference, "celltype")
   names(labels) <- colnames(reference)
   labels <- labels[!is.na(labels) & nzchar(as.character(labels))]
@@ -96,7 +90,6 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
     rctd_data <- spacexr::createRctd(spatial_spe, reference_se, cell_type_col = "cell_type")
     rctd_result <- spacexr::runRctd(rctd_data, rctd_mode = "multi", max_cores = 1)
     original <- as.matrix(SummarizedExperiment::assay(rctd_result, "weights"))
-    # the new API stores cell types as rows and spots as columns
     if (sum(colnames(original) %in% colnames(st)) > sum(rownames(original) %in% colnames(st))) {
       original <- t(original)
     }
@@ -149,7 +142,6 @@ test_that("RunBANKSY clusters match the original Banksy pipeline", {
   wrapped_clusters <- as.character(wrapped$BANKSY_cluster)
   names(wrapped_clusters) <- rownames(wrapped[[]])
 
-  # original pipeline with identical inputs
   expr <- Seurat::GetAssayData(srt, assay = visium_assay2(srt), layer = "data")
   coords <- getFromNamespace("spatial_analysis_coords", "scop")(
     srt = srt, image = NULL, coord.cols = c("x", "y"), coordinate_space = "raw"
@@ -207,8 +199,6 @@ test_that("RunCARD(CARDspa) proportions match the original CARDspa pipeline", {
   genes_use <- intersect(rownames(srt), rownames(reference))
   srt <- srt[genes_use, ]
 
-  # CARD's deconvolution draws random initial values; pin the RNG so the
-  # wrapped and original runs see identical random draws
   set.seed(42)
   wrapped <- RunCARD(
     srt,
@@ -220,7 +210,6 @@ test_that("RunCARD(CARDspa) proportions match the original CARDspa pipeline", {
   )
   wrapped_weights <- as.matrix(wrapped@tools$CARD$weights)
 
-  # original CARDspa one-step pipeline on identical inputs
   st_counts <- Seurat::GetAssayData(srt, assay = visium_assay2(srt), layer = "counts")
   ref_counts <- Seurat::GetAssayData(reference, assay = visium_assay2(reference), layer = "counts")
   coords <- getFromNamespace("spatial_analysis_coords", "scop")(
@@ -305,7 +294,6 @@ test_that("RunSpotSweeper local outliers match the original SpotSweeper pipeline
     verbose = FALSE
   )
 
-  # original pipeline: per-metric localOutliers on the same SPE
   expr <- Seurat::GetAssayData(srt, assay = visium_assay2(srt), layer = "counts")
   coords <- getFromNamespace("spatial_analysis_coords", "scop")(
     srt = srt, image = NULL, coord.cols = c("x", "y"), coordinate_space = "raw"
@@ -330,8 +318,6 @@ test_that("RunSpotSweeper local outliers match the original SpotSweeper pipeline
       metric = metric, direction = "lower",
       n_neighbors = 20, samples = ".SpotSweeper_sample", log = TRUE, cutoff = 3, workers = 1
     )
-    # Independently align the original backend's named rbind output. Do not
-    # call the SCOP adapter under test or index unverified names (yielding NA).
     expected_ids <- if (setequal(colnames(spe), spots)) spots else paste0("sample1.", spots)
     expect_setequal(colnames(spe), expected_ids)
     stopifnot(!anyDuplicated(colnames(spe)), all(expected_ids %in% colnames(spe)))
@@ -387,7 +373,6 @@ test_that("RunSpatialIntegration PRECAST domains match the original PRECAST pipe
   )
   wrapped_domains <- wrapped@tools$SpatialIntegration$methods$PRECAST$domains
 
-  # original pipeline with identical inputs
   expr1 <- Seurat::GetAssayData(s1, assay = visium_assay2(s1), layer = "counts")
   expr2 <- Seurat::GetAssayData(s2, assay = visium_assay2(s2), layer = "counts")
   common_genes <- intersect(rownames(expr1), rownames(expr2))

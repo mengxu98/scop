@@ -66,8 +66,6 @@ test_that("RunCisTarget forwards cores to the RcisTarget backend", {
   testthat::local_mocked_bindings(
     .package = "scop",
     check_r = function(...) invisible(TRUE),
-    # scenic_reference() downloads the species TF list when regulators
-    # are missing; mock it so the test never depends on network access.
     scenic_reference = function(...) {
       list(ranking_dbs = ranking, motif_annotations = motif)
     },

@@ -153,7 +153,7 @@ double gniplr_granger(const arma::vec& a, const arma::vec& b, int max_lag) {
   return best;
 }
 
-} // namespace
+}
 
 // [[Rcpp::export]]
 List gniplr_cpp(

@@ -85,6 +85,9 @@ RunMERINGUE <- function(
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!is.null(ncores)) {
+    if (!missing(cores)) {
+      stop("Supply only one of `cores` and `ncores`.", call. = FALSE)
+    }
     .Deprecated(msg = paste0("`ncores` is deprecated; use `cores` instead. ",
       "It will be removed in scop 1.0.0."))
     cores <- ncores

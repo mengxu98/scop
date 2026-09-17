@@ -1,4 +1,3 @@
-# Reference implementation kept only as a test oracle for the C++ path.
 gene_set_scoring_keep_variable_rows <- function(expr) {
   if (inherits(expr, "dgCMatrix")) {
     keep <- sparse_row_has_variable_finite(expr)
@@ -89,8 +88,6 @@ reference_plage_scores <- function(expr, gene_sets, min_size = 1L, max_size = .M
     }
     nonzero <- values[is.finite(values) & values != 0]
     if (length(nonzero) > 0L && min(nonzero) == max(nonzero)) {
-      # GSVA >= 2.6 drops genes whose stored (non-zero) values are constant,
-      # even when the complete row still varies because of structural zeros.
       next
     }
     scaled <- scale(values)
@@ -387,9 +384,6 @@ test_that("native Gaussian GSVA is an opt-in result-compatible kernel", {
   )
 
   expect_identical(dim(native), dim(delegated))
-  # The native kernel replicates GSVA::gsva's default sparse Gaussian
-  # algorithm exactly (kcdf values over nonzero entries, sparse ranks,
-  # dense random walk); scores must match the delegated reference.
   expect_equal(as.numeric(native), as.numeric(delegated), tolerance = 1e-12)
   expect_error(
     run_gsva_scores(

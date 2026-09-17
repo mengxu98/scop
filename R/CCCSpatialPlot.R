@@ -1,7 +1,3 @@
-# Shared spatial CCC payloads and slice-network rendering ---------------------
-
-.ccc_spatial_plot_methods <- c("SpatialCellChat", "SpaTalk", "COMMOT")
-
 ccc_spatial_plot_coordinates <- function(coordinates, source = list()) {
   coordinates <- as.data.frame(coordinates, stringsAsFactors = FALSE)
   required <- c("cell_id", "x", "y")
@@ -46,7 +42,7 @@ ccc_spatial_plot_coordinates <- function(coordinates, source = list()) {
   source <- source %||% list()
   source$coordinate_space <- source$coordinate_space %||% "raw"
   source$plot_coordinate_space <- source$plot_coordinate_space %||% "display"
-  source$coordinate_contract_version <- .spatial_coordinate_contract_version
+  source$coordinate_contract_version <- 3L
   list(coordinates = coordinates, source = source)
 }
 
@@ -240,9 +236,10 @@ ccc_spatial_payload_from_raw <- function(coordinates, source = list(), transform
 
 ccc_spatial_stored <- function(object, method = NULL, condition = NULL, sample = NULL) {
   method <- detect_method(object, method)
-  if (identical(method, "CCC") || !method %in% .ccc_spatial_plot_methods) {
+  supported_methods <- c("SpatialCellChat", "SpaTalk", "COMMOT")
+  if (identical(method, "CCC") || !method %in% supported_methods) {
     log_message(
-      "Spatial CCC plotting requires one of {.val {paste(.ccc_spatial_plot_methods, collapse = ', ')}}; {.val {method}} is not supported",
+      "Spatial CCC plotting requires one of {.val {paste(supported_methods, collapse = ', ')}}; {.val {method}} is not supported",
       message_type = "error"
     )
   }

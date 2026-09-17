@@ -447,7 +447,6 @@ CCCHeatmap <- function(
     )
   }
 
-  # Allow palette/palcolor as shorthand for cell_palette/cell_palcolor.
   if (is.null(cell_palette) || identical(cell_palette, "Chinese")) {
     cell_palette <- palette
     cell_palcolor <- palcolor
@@ -713,7 +712,6 @@ CCCHeatmap <- function(
     )))
   }
 
-  # --- ligand_target: special path (NicheNet/MultiNicheNet only) ---
   if (identical(plot_type, "ligand_target")) {
     ligand_method <- method
     if (
@@ -975,7 +973,6 @@ CCCHeatmap <- function(
   ))
 }
 
-# Internal: full ComplexHeatmap rendering
 ccc_heatmap_full_plot <- function(
   df,
   pair_df,
@@ -1111,7 +1108,6 @@ ccc_heatmap_full_plot <- function(
 
     add_text_eff <- if (is.null(add_text)) FALSE else isTRUE(add_text)
 
-    # Bar data: col = interactions, row = pair/receiver/sender
     if (ccc_side_has_bar(top_anno, bottom_anno)) {
       top_bar_vec <- ccc_collect_bar_stats(
         values = plot_df[[score_var]],
@@ -1172,7 +1168,6 @@ ccc_heatmap_full_plot <- function(
       right_summary_vec <- NULL
     }
   } else {
-    # aggregation: sender × receiver
     plot_value <- ccc_heatmap_value_spec(
       df = pair_df,
       color.by = color.by,
@@ -1266,7 +1261,6 @@ ccc_heatmap_full_plot <- function(
     }
   }
 
-  # Color scale
   mat_vals <- mat[is.finite(mat)]
   if (length(mat_vals) == 0L) {
     mat_vals <- c(0, 1)
@@ -1285,7 +1279,6 @@ ccc_heatmap_full_plot <- function(
     colors = fill_cols
   )
 
-  # Cell text
   cell_fun <- if (isTRUE(add_text_eff) && !isTRUE(add_dot)) {
     mat_local <- mat
     function(j, i, x, y, width, height, fill) {
@@ -1310,7 +1303,6 @@ ccc_heatmap_full_plot <- function(
     NULL
   }
 
-  # Dot layer_fun (hollow circles scaled by score)
   if (isTRUE(add_dot)) {
     mat_local <- mat
     mat_finite <- mat_local[is.finite(mat_local)]
@@ -1336,7 +1328,6 @@ ccc_heatmap_full_plot <- function(
         )
       )
     }
-    # suppress tile fill when in dot mode
     rect_gp <- grid::gpar(
       col = if (isTRUE(border)) "grey85" else NA,
       fill = NA,

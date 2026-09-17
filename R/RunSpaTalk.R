@@ -1,4 +1,3 @@
-# Official SpaTalk producer and stored-result plotting -------------------------
 
 spatalk_package_version <- function() {
   desc <- tryCatch(utils::packageDescription("SpaTalk"), error = function(e) NULL)

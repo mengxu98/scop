@@ -4,10 +4,6 @@
 
 using namespace Rcpp;
 
-// Calculate the per-cell geometric mean of a non-negative dgCMatrix without
-// extracting every sparse column into R.  The caller retains the legacy R
-// path for negative or non-finite inputs, where base R's NA/NaN semantics are
-// part of the public behaviour.
 // [[Rcpp::export]]
 NumericVector feature_cor_geometric_mean_sparse_cpp(S4 x, bool log_normalized) {
   IntegerVector dims = x.slot("Dim");

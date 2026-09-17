@@ -18,13 +18,9 @@ sct_fastrowscale <- function(mat_dense, do.scale, do.center, scale.max) {
   mat_dense
 }
 
-# Linear-model residualization + row scaling over feature x cell blocks,
-# honoring split.by groups. Regression runs per group as in Seurat; with
-# use.umi the residual space is mapped back through log1p after a per-gene
-# shift, matching RegressOutMatrix.
-sct_scale_general <- function(mat, # sparse or dense, features x all cells
-                              latent_df, # data.frame aligned to colnames(mat) or NULL
-                              split_levels, # factor over colnames(mat) or NULL
+sct_scale_general <- function(mat,
+                              latent_df,
+                              split_levels,
                               do.scale,
                               do.center,
                               scale.max,
@@ -147,7 +143,6 @@ ScaleData.Seurat <- function(
   features <- features[order(match(features, all_genes))]
   idx <- match(features, all_genes) - 1L
 
-  # use.umi switches the source layer to counts, matching ScaleData.default.
   want_counts <- isTRUE(use.umi)
   if (inherits(assay_obj, "Assay") && !inherits(assay_obj, "StdAssay")) {
     src_layer <- if (want_counts) "counts" else "data"
@@ -214,8 +209,6 @@ ScaleData.Seurat <- function(
         ]
       )
     }
-    # Assay5 sketch/HD assays may contain only a subset of the object's cells.
-    # Preserve that assay's order instead of indexing absent object-wide cells.
     cells_use <- colnames(assay_obj)[colnames(assay_obj) %in% colnames(data_mat)]
     data_mat <- data_mat[features, cells_use, drop = FALSE]
     idx <- seq_along(features) - 1L
@@ -232,7 +225,6 @@ ScaleData.Seurat <- function(
     } else {
       data.frame(row.names = cell_order)
     }
-    # requested covariates that are assay features come from expression rows
     feature_vars <- setdiff(vars.to.regress, colnames(sct_latent_df))
     feature_vars <- intersect(feature_vars, rownames(assay_obj))
     if (length(feature_vars) > 0L) {

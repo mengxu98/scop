@@ -224,9 +224,6 @@ VelocityPlot <- function(
     )
     df_field[["length_perc"]] <- df_field[["length"]] / global_size
 
-    # Arrowheads must be device-independent. Scaling them in npc units makes
-    # dense velocity fields collapse into solid triangles when velocities are
-    # large relative to the embedding extent.
     arrow_length <- grid::unit(1.5, "mm")
 
     if (!is.null(group.by)) {

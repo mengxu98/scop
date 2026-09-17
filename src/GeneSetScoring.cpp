@@ -92,15 +92,10 @@ static double ucell_signature_score(
   return 1.0 - (rank_sum - minimum) / denominator;
 }
 
-// Deterministic gene-index hash for tie-breaking.
-// Replaces unif_rand() so that the same gene always gets the same tiebreaker
-// regardless of strategy (sparse / topk / full), making them produce identical
-// rankings for the same input.  Also eliminates RNG-call-order sensitivity.
 static inline double gene_hash_tiebreak(int gene, int seed = 0) {
   if (seed < 0) {
     return static_cast<double>(gene);
   }
-  // SplitMix64-style hash, returns a deterministic value in [0, 1)
   unsigned long long x = static_cast<unsigned long long>(gene) +
     (static_cast<unsigned long long>(seed) << 32) +
     0x9e3779b97f4a7c15ULL;
@@ -110,11 +105,6 @@ static inline double gene_hash_tiebreak(int gene, int seed = 0) {
   return static_cast<double>(x & 0x7fffffffffffffffULL) / static_cast<double>(0x8000000000000000ULL);
 }
 
-// NumPy's legacy RandomState uses the original MT19937 initialization and
-// randomkit's rejection-sampled integer intervals.  Reproducing it here makes
-// the native AUCell ranking identical to pySCENIC's create_rankings(), which
-// first applies pandas.DataFrame.sample(..., random_state = seed) and then
-// resolves expression ties in that shuffled column order.
 class NumpyLegacyMT19937 {
  public:
   explicit NumpyLegacyMT19937(std::uint32_t seed) : pos_(624) {
@@ -246,10 +236,6 @@ static double aucell_auc_from_ranks(
   if (x.empty()) {
     return 0.0;
   }
-  // For sorted ranks r_1, ..., r_m, the step-function area is
-  // sum_{i < m} i * (r_{i + 1} - r_i) + m * (T - r_m), which telescopes to
-  // m * T - sum(r_i).  Ranking is therefore unnecessary here; sets contain
-  // unique genes and the identity also holds when ranking inputs contain ties.
   double rank_sum = 0.0;
   for (std::vector<int>::const_iterator it = x.begin(); it != x.end(); ++it) {
     rank_sum += static_cast<double>(*it);
@@ -344,23 +330,17 @@ NumericMatrix aucell_auc_sparse(
     });
   }
 
-  // Each cell's computation is fully independent: it reads only its own
-  // column from the CSC matrix (row_idx/col_ptr/values, all read-only)
-  // and writes to a distinct row of `scores`.  All mutable buffers are
-  // declared inside the parallel region so they are thread-local.
-  // zero_order / sets / max_auc / tie_by_gene / set_gene_union are read-only.
   const int threads = omp_thread_count(n_threads, n_cells);
 #ifdef _OPENMP
 #pragma omp parallel num_threads(threads)
 #endif
   {
-    // Thread-local mutable buffers reused across cells owned by this thread.
     std::vector<int> rank_by_gene(n_genes, 0);
     std::vector<double> value_by_gene(n_genes, 0.0);
     std::vector<int> touched_values;
     std::vector<int> touched_ranks;
     std::vector<AucEntry> entries;
-    std::vector<int> ranks;  // reused across gene sets (Fix 3)
+    std::vector<int> ranks;
     entries.reserve(n_genes);
     touched_values.reserve(n_genes);
     touched_ranks.reserve(n_genes);
@@ -447,7 +427,6 @@ NumericMatrix aucell_auc_sparse(
         }
       }
 
-      // Hoist `ranks` out of gene-set loop: reuse buffer across sets (Fix 3).
       for (int set_i = 0; set_i < n_sets; ++set_i) {
         ranks.clear();
         for (std::vector<int>::const_iterator it = sets[set_i].begin(); it != sets[set_i].end(); ++it) {
@@ -730,7 +709,6 @@ NumericMatrix aucell_auc_ranked(
   }
 
   NumericMatrix scores(n_cells, n_sets);
-  // Hoist `ranks` outside both loops to avoid n_cells × n_sets heap allocations.
   std::vector<int> ranks;
   ranks.reserve(128);
   for (int cell = 0; cell < n_cells; ++cell) {
@@ -752,9 +730,6 @@ NumericMatrix aucell_auc_ranked(
   return scores;
 }
 
-// AUCell-compatible AUC calculation for a rank matrix returned by
-// AUCell_buildRankings()/AUCell::getRanking(): genes x cells, 1-based ranks,
-// with NA values allowed for keepZeroesAsNA.
 // [[Rcpp::export]]
 NumericMatrix aucell_auc_ranked_full(
   NumericMatrix rankings,
@@ -786,7 +761,6 @@ NumericMatrix aucell_auc_ranked_full(
   }
 
   NumericMatrix scores(n_cells, n_sets);
-  // Hoist `ranks` outside both loops to avoid n_cells × n_sets heap allocations.
   std::vector<int> ranks;
   ranks.reserve(128);
   for (int cell = 0; cell < n_cells; ++cell) {
@@ -1067,7 +1041,6 @@ static double log2_fraction_diff(
 ) {
   const double frac_1 = static_cast<double>(count_1) / static_cast<double>(total_1);
   const double frac_2 = static_cast<double>(count_2) / static_cast<double>(total_2);
-  // Positive log2FD means enrichment in group1 relative to group2.
   return std::log((frac_1 + pseudocount) / (frac_2 + pseudocount)) / std::log(2.0);
 }
 
@@ -1303,10 +1276,6 @@ NumericMatrix ssgsea_rank_dense(
   double min_score = R_PosInf;
   double max_score = R_NegInf;
 
-  // Sparse ranking optimization: only sort non-zero genes per cell.
-  // Zero-expression genes (the vast majority in scRNA-seq) are all tied
-  // at the same value (0.0) and get identical rank/weight, so we handle
-  // them as a single block instead of sorting them individually.
   std::vector<int> nonzero_genes;
   nonzero_genes.reserve(n_genes);
   std::vector<double> nonzero_values;
@@ -1318,7 +1287,6 @@ NumericMatrix ssgsea_rank_dense(
     static_cast<double>(n_genes + 1) / 2.0;
 
   for (int cell = 0; cell < n_cells; ++cell) {
-    // Collect non-zero expression values for this cell
     nonzero_genes.clear();
     nonzero_values.clear();
 
@@ -1345,25 +1313,18 @@ NumericMatrix ssgsea_rank_dense(
       }
     }
 
-    // Zero genes are all tied at value 0.0. Their rank starts after negative
-    // non-zero values and uses the original integer-truncated average rank.
     const int zero_rank_int = (n_zero > 0) ?
       n_negative + static_cast<int>((1.0 + static_cast<double>(n_zero)) / 2.0) : 0;
     const double zero_rank_weight = std::pow(std::fabs(static_cast<double>(zero_rank_int)), alpha);
 
-    // Step 1: initialize only genes that can be queried by gene sets. The
-    // original dense view assigns the same zero rank to all structural zeros,
-    // but downstream scoring only reads genes present in at least one set.
     for (std::vector<int>::const_iterator it = set_gene_union.begin(); it != set_gene_union.end(); ++it) {
       rank_by_gene[*it] = zero_rank_int;
       rank_weight_by_gene[*it] = zero_rank_weight;
     }
 
-    // Step 2: compute non-zero gene ranks (overwrites the zero defaults)
     if (n_nonzero > 0) {
       nz_order.resize(n_nonzero);
       std::iota(nz_order.begin(), nz_order.end(), 0);
-      // Sort non-zero genes by value ascending (gene-index tiebreak)
       std::sort(
         nz_order.begin(),
         nz_order.end(),
@@ -1374,8 +1335,6 @@ NumericMatrix ssgsea_rank_dense(
         }
       );
 
-      // Compute tied ranks. Positive values start after the zero block, while
-      // negative values keep their position before zeros in the full ordering.
       int tie_start = 0;
       while (tie_start < n_nonzero) {
         int tie_end = tie_start + 1;
@@ -1399,8 +1358,6 @@ NumericMatrix ssgsea_rank_dense(
         tie_start = tie_end;
       }
 
-      // Step 3: build positions by descending rank. Insert the zero block
-      // between positive and negative non-zero ranks to match a full sort.
       std::sort(
         nz_order.begin(),
         nz_order.end(),
@@ -1447,7 +1404,6 @@ NumericMatrix ssgsea_rank_dense(
       }
     }
 
-    // Step 5: compute ES scores for each gene set
     for (int set_i = 0; set_i < n_sets; ++set_i) {
       const std::vector<int>& set = sets[set_i];
       const int set_size = set_sizes[set_i];
@@ -1488,7 +1444,6 @@ NumericMatrix ssgsea_rank_dense(
       }
     }
 
-    // Cleanup: reset is_nonzero markers for next cell
     for (int i = 0; i < n_nonzero; ++i) {
       is_nonzero[nonzero_genes[i]] = 0;
     }
@@ -1524,8 +1479,6 @@ NumericMatrix zscore_dense(
   IntegerVector col_ptr = expr.slot("p");
   NumericVector values = expr.slot("x");
 
-  // Build gene -> set adjacency first so sparse passes can ignore genes that
-  // are never queried by any retained gene set.
   std::vector<std::vector<int> > gene_to_sets(n_genes);
   std::vector<unsigned char> gene_needed(n_genes, 0);
   std::vector<int> set_sizes(n_sets, 0);
@@ -1584,10 +1537,6 @@ NumericMatrix zscore_dense(
         gene_sds[gene] = R_NaN;
         continue;
       }
-      // GSVA < 2.6 scales only stored dgCMatrix values. GSVA >= 2.6 and
-      // dense callers standardize the complete row, treating structural zeros
-      // as genuine zero observations. GSVA >= 2.6 additionally drops genes
-      // whose stored (non-zero) values are constant.
       const int standardize_count = sparse_standardize ? gene_nonzero_counts[gene] : n_cells;
       const bool constant_nonzero = gene_nonzero_counts[gene] > 0 &&
         gene_nonzero_mins[gene] == gene_nonzero_maxs[gene];
@@ -1617,9 +1566,6 @@ NumericMatrix zscore_dense(
   std::vector<double>().swap(gene_nonzero_mins);
   std::vector<double>().swap(gene_nonzero_maxs);
 
-  // CellScoring materializes expression before z-scoring; RunGSVA preserves
-  // sparse input and GSVA scales only stored values. Keep both public
-  // contracts explicit rather than treating structural zeros identically.
   NumericMatrix scores(n_cells, n_sets);
   std::vector<double> zero_sum(n_sets, 0.0);
   std::vector<int> valid_set_sizes(n_sets, 0);
@@ -1657,7 +1603,6 @@ NumericMatrix zscore_dense(
       }
     }
   }
-  // Final scaling by 1/√n
   for (int cell = 0; cell < n_cells; ++cell) {
     for (int set_i = 0; set_i < n_sets; ++set_i) {
       if (R_finite(scores(cell, set_i))) {
@@ -1767,17 +1712,9 @@ NumericMatrix plage_dense(
       if (!row_needed[gene]) {
         continue;
       }
-      // GSVA filters sparse rows whose stored non-zero values are constant
-      // before it scales each remaining row.
       if (row_counts[gene] > 0 && row_nonzero_mins[gene] == row_nonzero_maxs[gene]) {
         continue;
       }
-      // GSVA < 2.6 scales only stored dgCMatrix values; GSVA >= 2.6 and
-      // dense input standardize the complete row. The R caller selects the
-      // matching contract through dense_standardize. GSVA >= 2.6 additionally
-      // drops genes whose stored (non-zero) values are constant, so exclude
-      // them under the dense contract even when the complete row still varies
-      // because of its structural zeros.
       const bool constant_nonzero = row_counts[gene] > 0 &&
         row_nonzero_mins[gene] == row_nonzero_maxs[gene];
       const int standardize_count = dense_standardize ? n_cells : row_counts[gene];
@@ -1795,8 +1732,6 @@ NumericMatrix plage_dense(
         }
       }
 
-      // Keep the original dense-expression standardization separately for
-      // deterministic score orientation. This mirrors orient_plage_scores().
       const double orient_mean = row_sums[gene] / static_cast<double>(n_cells);
       double orient_var = (row_sq_sums[gene] -
         static_cast<double>(n_cells) * orient_mean * orient_mean) /
@@ -1839,8 +1774,6 @@ NumericMatrix plage_dense(
       static_cast<arma::uword>(n_cells),
       arma::fill::zeros
     );
-    // Under the dense contract, initialize structural zeros with their
-    // z-score. The older sparse GSVA contract leaves them as zero.
     if (dense_standardize) {
       for (int row = 0; row < effective_size; ++row) {
         const int gene = valid_genes[row];
@@ -1864,9 +1797,6 @@ NumericMatrix plage_dense(
     arma::vec first_v;
     bool ok = false;
     if (effective_size < n_cells && effective_size <= 1024) {
-      // Gene×gene covariance path: when gene set is small relative to cell count,
-      // eigendecompose ZZ' (effective_size × effective_size) instead of Z'Z (n_cells × n_cells).
-      // This is O(effective_size³ + effective_size² × n_cells) vs O(n_cells³).
       arma::mat gene_cov = z * z.t();
       arma::vec u;
       bool leading_ok = false;
@@ -1906,8 +1836,6 @@ NumericMatrix plage_dense(
         }
       }
       if (!leading_ok) {
-        // Small, degenerate, or non-converged problems keep the exact LAPACK
-        // path so the established PLAGE contract remains the fallback.
         arma::vec eigval;
         arma::mat eigvec;
         leading_ok = arma::eig_sym(eigval, eigvec, gene_cov);
@@ -1916,7 +1844,6 @@ NumericMatrix plage_dense(
         }
       }
       if (leading_ok && u.n_elem > 0) {
-        // Convert to right singular vector: v = Z'u, then normalize
         first_v = z.t() * u;
         double norm_val = arma::norm(first_v, 2);
         if (norm_val > 0.0) {
@@ -2097,9 +2024,6 @@ static void gsva_sparse_rows_from_dgc(
   }
 }
 
-// Restored from commit c9324f14 (paper-benchmark version): pairwise Gaussian
-// KDE CDF per gene on non-zero values.  This matches the GSVA R package's
-// density() → ecdf() pipeline well enough to give Spearman cor ≈ 0.81.
 static std::vector<double> gsva_sparse_kcdf_values(
   const std::vector<int>& row_ptr,
   const std::vector<double>& row_values,
@@ -2107,7 +2031,7 @@ static std::vector<double> gsva_sparse_kcdf_values(
   int n_cells,
   bool gaussian
 ) {
-  (void) n_cells;  // kept for API compatibility
+  (void) n_cells;
   std::vector<double> row_kcdf(row_values.size(), R_NaN);
 
   for (int gene = 0; gene < n_genes; ++gene) {
@@ -2504,9 +2428,6 @@ static NumericMatrix gsva_score_transformed_rows(
   return scores;
 }
 
-// GSVA 2.0.7 Gaussian-kernel helpers (kernel_estimation.c): a precomputed
-// standard-normal CDF table with 10000 integer-truncated steps over [-10, 10],
-// and the sample sd with the same two-pass mean correction as GSVA's C sd().
 
 static const std::vector<double>& gsva_gaussian_pnorm_table() {
   static std::vector<double> table;
@@ -2576,23 +2497,6 @@ NumericMatrix gsva_gaussian_dense(
   int chunk_size = 0,
   int n_threads = 0
 ) {
-  // Exact replica of GSVA::gsva(kcdf = "Gaussian") with the default sparse
-  // algorithm (gsvaParam(sparse = TRUE), the default for dgCMatrix input):
-  //   - row_d_nologodds: bandwidth sd(nonzero values)/4, step-function normal
-  //     CDF table with 10000 integer-truncated steps over [-10, 10];
-  //   - kcdf values only at nonzero entries (zeros rank 0);
-  //   - per-column rank() with ties.method = "last" (larger gene index gets
-  //     the smaller rank among ties);
-  //   - ranks2stats sparse branch: dense remap r_dense (zeros 1..nzs in gene
-  //     order, nonzeros shifted by +nzs), decordstat = p - r_dense + 1,
-  //     symrnkstat = |(nnz+1)/2 - 1| for zeros and |(nnz+1)/2 - (r+1)| for
-  //     nonzeros;
-  //   - dense random walk over the decreasing order statistics: every set gene
-  //     (expressed or zero-expression) is placed at its decordstat position
-  //     with its symmetric rank statistic;
-  //   - score: maxDiff ? (absRanking ? pos-neg : pos+neg) : max(pos, |neg|).
-  // chunk_size is accepted for interface compatibility; per-cell working
-  // memory is O(n_genes) and needs no chunking.
 
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -2651,8 +2555,6 @@ NumericMatrix gsva_gaussian_dense(
 
   const std::vector<double>& pnorm_table = gsva_gaussian_pnorm_table();
 
-  // Per-gene Gaussian KDE over the nonzero values: unique values with counts,
-  // the step-function CDF evaluated at each unique value, and the bandwidth.
   std::vector<std::vector<double> > gene_values(n_genes);
   std::vector<std::vector<double> > gene_cdfs(n_genes);
   const int kde_threads = omp_thread_count(n_threads, n_genes);
@@ -2739,8 +2641,6 @@ NumericMatrix gsva_gaussian_dense(
     }
     const int nnz = static_cast<int>(rank_entries.size());
 
-    // Ascending rank by CDF value; ties keep the largest gene index first,
-    // matching rank(x, ties.method = "last").
     std::sort(
       rank_entries.begin(),
       rank_entries.end(),
@@ -2757,8 +2657,6 @@ NumericMatrix gsva_gaussian_dense(
 
     const double nnz1div2 = static_cast<double>(nnz + 1) / 2.0;
     const double zerosymrnkstat = std::fabs(nnz1div2 - 1.0);
-    // Genes absent from this cell get decordstat > nnz so the walk classifies
-    // them as zero-expression genes; expressed genes are filled below.
     std::fill(decordstat.begin(), decordstat.end(), n_genes + 1);
     std::fill(symrnkstat.begin(), symrnkstat.end(), 0.0);
     for (int rank_i = 0; rank_i < nnz; ++rank_i) {
@@ -2768,10 +2666,6 @@ NumericMatrix gsva_gaussian_dense(
       symrnkstat[gene] = std::fabs(nnz1div2 - static_cast<double>(r + 1));
     }
 
-    // Prefix count of zero-expression genes by gene index. A zero-expression
-    // set gene with k zero genes at or before it (gene order) gets the dense
-    // rank k and decreasing order statistic p - k + 1, matching GSVA 2.0.7's
-    // .ranks2stats dense remap of the sparse ranks.
     std::fill(expressed.begin(), expressed.end(), 0);
     for (int rank_i = 0; rank_i < nnz; ++rank_i) {
       expressed[rank_entries[rank_i].second] = 1;
@@ -2783,8 +2677,6 @@ NumericMatrix gsva_gaussian_dense(
       }
       zero_prefix[gene] = zero_run;
     }
-    // The cumulative sums below mutate every position of stepcdfin/stepcdfout,
-    // so the arrays are fully reset before each set's placement.
 
     for (int set_i = 0; set_i < n_sets; ++set_i) {
       const std::vector<int>& set = sets[set_i];
@@ -2805,8 +2697,6 @@ NumericMatrix gsva_gaussian_dense(
             ? symrnkstat[gene]
             : std::pow(symrnkstat[gene], tau);
         } else {
-          // Zero-expression gene: dense rank = zero_prefix[gene], so
-          // dos = p - zero_prefix[gene] + 1, with the shared zero stat.
           pos = n_genes - zero_prefix[gene] + 1;
           stat = (tau == 1.0)
             ? zerosymrnkstat
@@ -2863,16 +2753,6 @@ NumericMatrix gsva_poisson_dense(
   int chunk_size = 0,
   int n_threads = 0
 ) {
-  // Enable z-score KDE path (frequency-based with zeros, log-odds transform,
-  // unified gene ranking) — same rationale as gsva_gaussian_dense.
-  // return gsva_sparse_exact(
-  //   expr,
-  //   gene_sets,
-  //   false,
-  //   max_diff,
-  //   abs_ranking,
-  //   tau
-  // );
 
   IntegerVector dims = expr.slot("Dim");
   const int n_genes = dims[0];
@@ -3008,9 +2888,6 @@ LogicalVector dense_row_has_variable_finite(NumericMatrix expr) {
   return out;
 }
 
-// Mirrors gene_set_scoring_keep_variable_rows() for dgCMatrix inputs.  This
-// deliberately evaluates only stored entries: the R implementation groups
-// expr@x by expr@i and does not add structural zeros to each row.
 // [[Rcpp::export]]
 LogicalVector sparse_row_has_variable_finite(S4 expr) {
   const IntegerVector row_index = expr.slot("i");

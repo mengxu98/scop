@@ -40,8 +40,6 @@ test_that("CUDA runtime discovery finds conda and pip NVIDIA libraries in load o
 })
 
 test_that("shared-library preloading retries dependencies loaded out of order", {
-  # LD_PRELOAD is a Linux-only mechanism; the preload strategy is a
-  # no-op elsewhere and the environment variable is not meaningful.
   skip_on_os(c("mac", "windows"))
 
   first <- tempfile(fileext = ".so")

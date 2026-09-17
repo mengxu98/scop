@@ -1,19 +1,4 @@
-# Tests for scVelo C++ backend — extended coverage
-#
-# Existing test-scvelo-cpp.R covers: scanpy_stochastic_embedding_cpp (9 tests)
-# This file adds coverage for independently-testable pipeline components:
-#   1. scanpy_filter_genes_cpp — gene filtering
-#   2. scanpy_normalize_log_cpp — per-cell normalization + log1p
-#   3. scanpy_moments_cpp — first-order moments (KNN smoothing)
-#
-# NOTE: scanpy_deterministic_cpp, scanpy_velocity_confidence_cpp,
-# scanpy_velocity_transition_cpp, and scanpy_velocity_graph_cpp require
-# dependent intermediate computations (Ms, residual, embedding) and are
-# better tested via integration the run_scanpy_cpp wrapper or benchmark.
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 
 make_scanpy_data <- function(
   n_genes = 20,
@@ -50,9 +35,6 @@ make_scanpy_data <- function(
   )
 }
 
-# ---------------------------------------------------------------------------
-# 1. scanpy_filter_genes_cpp
-# ---------------------------------------------------------------------------
 
 test_that("scanpy_filter_genes_cpp returns 0/1 indicator vector", {
   dat <- make_scanpy_data()
@@ -92,7 +74,7 @@ test_that("scanpy_filter_genes_cpp filters all-zero spliced genes", {
   unspliced <- matrix(100, nrow = n_genes, ncol = n_cells)
 
   out <- scanpy_filter_genes_cpp(spliced, unspliced, min_counts = 1, min_counts_u = 5)
-  expect_equal(out[1], 0) # first gene filtered (zero spliced)
+  expect_equal(out[1], 0)
   expect_true(all(out[-1] == 1))
 })
 
@@ -105,7 +87,7 @@ test_that("scanpy_filter_genes_cpp filters all-zero unspliced genes", {
   )
 
   out <- scanpy_filter_genes_cpp(spliced, unspliced, min_counts = 5, min_counts_u = 1)
-  expect_equal(out[1], 0) # first gene filtered (zero unspliced)
+  expect_equal(out[1], 0)
   expect_true(all(out[-1] == 1))
 })
 
@@ -116,9 +98,6 @@ test_that("scanpy_filter_genes_cpp is deterministic", {
   expect_equal(out1, out2)
 })
 
-# ---------------------------------------------------------------------------
-# 2. scanpy_normalize_log_cpp
-# ---------------------------------------------------------------------------
 
 test_that("scanpy_normalize_log_cpp returns correct structure", {
   dat <- make_scanpy_data()
@@ -131,7 +110,6 @@ test_that("scanpy_normalize_log_cpp returns correct structure", {
   expect_equal(dim(norm$spliced_norm), dim(dat$spliced))
   expect_true(all(is.finite(norm$spliced_norm)))
   expect_true(all(is.finite(norm$unspliced_norm)))
-  # Values should be non-negative (log1p of non-negative)
   expect_true(all(norm$spliced_norm >= 0))
   expect_true(all(norm$unspliced_norm >= 0))
 })
@@ -154,9 +132,6 @@ test_that("scanpy_normalize_log_cpp is deterministic", {
   expect_equal(out1, out2)
 })
 
-# ---------------------------------------------------------------------------
-# 3. scanpy_moments_cpp
-# ---------------------------------------------------------------------------
 
 test_that("scanpy_moments_cpp returns correct structure", {
   dat <- make_scanpy_data()
@@ -176,14 +151,11 @@ test_that("scanpy_moments_cpp returns correct structure", {
 })
 
 test_that("scanpy_moments_cpp includes self in neighborhood average", {
-  # With 1 cell and 0 neighbors, moments should equal input
   spliced <- matrix(runif(10), nrow = 10, ncol = 1)
   unspliced <- matrix(runif(10), nrow = 10, ncol = 1)
-  # KNN with no valid neighbors (all NA)
   knn_idx <- matrix(NA_integer_, nrow = 1, ncol = 2)
 
   moments <- scanpy_moments_cpp(spliced, unspliced, knn_idx)
-  # Should equal the input (self only)
   expect_equal(moments$Ms[, 1], spliced[, 1], tolerance = 1e-10)
   expect_equal(moments$Mu[, 1], unspliced[, 1], tolerance = 1e-10)
 })
@@ -330,8 +302,6 @@ test_that("stochastic first-stage gamma keeps cell order after the 95th percenti
     fit_offset = FALSE, perc = 95
   )
   st <- scanpy_stochastic_cpp(Ms, Mu, Mss, Mus, knn_idx, embedding)
-  # r2 is computed from the first-stage (quantile-trimmed) gamma and is not
-  # overwritten by the later stochastic update of gamma.
   expect_equal(
     unname(as.numeric(st$r2)),
     unname(as.numeric(det$r2)),
@@ -347,9 +317,6 @@ test_that("stochastic first-stage gamma keeps cell order after the 95th percenti
   }
 })
 
-# ---------------------------------------------------------------------------
-# 4. Input validation
-# ---------------------------------------------------------------------------
 
 test_that("scanpy_normalize_log_cpp rejects mismatched dimensions", {
   expect_error(
@@ -364,7 +331,7 @@ test_that("scanpy_normalize_log_cpp rejects mismatched dimensions", {
 test_that("scanpy_moments_cpp rejects mismatched knn_idx rows", {
   spliced <- matrix(1, 5, 10)
   unspliced <- matrix(1, 5, 10)
-  knn_idx <- matrix(1L, nrow = 5, ncol = 3) # only 5 rows, need 10
+  knn_idx <- matrix(1L, nrow = 5, ncol = 3)
 
   expect_error(
     scanpy_moments_cpp(spliced, unspliced, knn_idx),

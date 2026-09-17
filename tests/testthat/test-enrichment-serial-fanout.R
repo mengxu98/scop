@@ -62,8 +62,6 @@ test_that("RunGSEA runs the group/database fan-out without spawning workers", {
   set.seed(11)
   serial <- do.call(RunGSEA, args)
 
-  # The returned `enrichResult` objects carry environments, which never compare
-  # identical across two calls, so compare the tables they hold instead.
   extract_tables <- function(res) {
     lapply(res, function(x) x@result)
   }

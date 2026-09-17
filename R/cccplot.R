@@ -4226,7 +4226,6 @@ ccc_chord_plot <- function(
       na.rm = TRUE
     ),
     error = function(e) {
-      # Example devices may not have initialized a base plot yet.
       0.045
     }
   )

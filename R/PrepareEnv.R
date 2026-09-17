@@ -470,37 +470,6 @@ PrepareEnv <- function(
   set_env_cache(cache_spec, python)
 }
 
-prepare_env_if_needed <- function(
-  modules,
-  envname = NULL,
-  conda = "auto",
-  verbose = TRUE
-) {
-  modules <- normalize_env_modules(modules = modules)
-  can_reuse <- is.null(envname) && identical(conda, "auto") &&
-    isTRUE(reticulate::py_available(initialize = FALSE)) &&
-    all(vapply(
-      modules,
-      function(module) {
-        tryCatch(
-          reticulate::py_module_available(module),
-          error = function(...) FALSE
-        )
-      },
-      logical(1)
-    ))
-  if (can_reuse) {
-    return(invisible(FALSE))
-  }
-  PrepareEnv(
-    envname = envname,
-    conda = conda,
-    modules = modules,
-    verbose = verbose
-  )
-  invisible(TRUE)
-}
-
 normalize_cli_args <- function(args) {
   if (length(args) == 0) {
     return(character())
@@ -1155,8 +1124,6 @@ find_conda_cuda_libraries <- function(env_path) {
     return(character())
   }
 
-  # Dependency-aware order for the CUDA libraries loaded by PyTorch. The
-  # unversioned/SONAME symlink is preferred over a longer, fully versioned path.
   patterns <- c(
     "libnvJitLink.so*",
     "libcudart.so*",
@@ -1196,7 +1163,6 @@ find_conda_cuda_libraries <- function(env_path) {
 }
 
 
-# Keep a package-local seam because dyn.load() is bound in base, not scop.
 load_shared_library <- function(lib) {
   dyn.load(lib, local = FALSE, now = TRUE)
 }
@@ -1364,7 +1330,6 @@ python_runtime_restart_hint <- function(envname = "scop_env", modules = NULL) {
 }
 
 configure_python_thread_env <- function() {
-  # intentional: permanent session config for scop Python env
   Sys.setenv(OMP_NUM_THREADS = "1")
   Sys.setenv(OPENBLAS_NUM_THREADS = "1")
   Sys.setenv(MKL_NUM_THREADS = "1")
@@ -1381,13 +1346,12 @@ configure_python_runtime <- function(python_path) {
     return(invisible(FALSE))
   }
 
-  configure_python_thread_env()
   assert_python_runtime_switchable(python_path)
+  configure_python_thread_env()
 
   python_dir <- dirname(python_path)
   env_path <- dirname(python_dir)
 
-  # intentional: permanent session config for scop Python env
   Sys.setenv(
     RETICULATE_PYTHON = python_path,
     PYTHONNOUSERSITE = "1",
@@ -1641,7 +1605,6 @@ configure_managed_micromamba_root <- function() {
       grepl("\\s", current_norm)
   ) {
     dir.create(root, recursive = TRUE, showWarnings = FALSE)
-    # intentional: permanent session config for scop Python env
     Sys.setenv(MAMBA_ROOT_PREFIX = root)
   }
   invisible(Sys.getenv("MAMBA_ROOT_PREFIX"))
@@ -1925,9 +1888,6 @@ env_requirements <- function(
     package_aliases <- c(package_aliases, req_i$package_aliases)
   }
 
-  # Resolve the trajectory stack against the interpreter profile instead of
-  # forcing a single Python version. This keeps the existing SCOP environment
-  # usable on Python 3.10/3.11 while allowing the newer Python 3.12 stack.
   if (any(c("scanpy", "palantir", "cellrank") %in% modules) &&
     !"scmalignantfinder" %in% modules) {
     if (!version %in% c("3.10-1", "3.11-1", "3.12-1")) {

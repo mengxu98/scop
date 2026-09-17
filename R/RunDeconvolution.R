@@ -202,8 +202,6 @@ build_reference_profiles <- function(
     layer = layer
   )
 }
-# Internal deconvolution and CSDE method implementations for
-# RunDeconvolution() and related bulk-analysis helpers.
 NULL
 
 infer_ref_sample_col <- function(reference_meta, sample.by = NULL) {
@@ -1239,9 +1237,6 @@ cibersort_restore_sample_names <- function(fit, sample_names) {
       length(sample_names) == nrow(df) && !anyNA(sample_names) &&
       all(nzchar(sample_names)) && !anyDuplicated(sample_names)
   ) {
-    # Keep the provenance explicit because valid sample names such as
-    # "1", "2", ... are otherwise indistinguishable from automatic
-    # data.frame row names in parse_cibersort_result().
     df[["Mixture"]] <- as.character(sample_names)
   }
   df

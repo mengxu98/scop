@@ -26,10 +26,10 @@ add_spatial_deconvolution_result <- function(srt, key) {
   srt@tools[[key]] <- list(
     proportions = proportions,
     cells = colnames(srt),
-    coordinate_contract_version = .spatial_coordinate_contract_version,
+    coordinate_contract_version = 3L,
     parameters = list(
       coordinate_space = "raw",
-      coordinate_contract_version = .spatial_coordinate_contract_version
+      coordinate_contract_version = 3L
     )
   )
   srt

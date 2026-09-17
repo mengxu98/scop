@@ -595,7 +595,6 @@ spatial_dim_pie_plot <- function(
   if (any(is.infinite(mat)) || any(mat < 0, na.rm = TRUE)) {
     log_message("Pie values must be non-negative and cannot be infinite", message_type = "error")
   }
-  # A pie cannot represent an unknown component as a measured zero.
   mat[rowSums(is.na(mat)) > 0L, ] <- NA_real_
   keep <- rowSums(mat, na.rm = TRUE) > 0
   dat <- dat[keep, , drop = FALSE]

@@ -35,11 +35,6 @@ void F77_CALL(dtrexc)(
 
 namespace {
 
-// CellRank 2.0.7 ranks each CSR row with NumPy's default argsort before
-// reversing the order.  Equal connectivity weights therefore follow NumPy's
-// intentionally unstable scalar aquicksort order, not a stable column order.
-// Reproducing that order matters whenever the hard-threshold cutoff crosses a
-// tie (a common case for shared-nearest-neighbour graphs).
 inline bool numpy126_double_less(double lhs, double rhs) {
   return lhs < rhs || (std::isnan(rhs) && !std::isnan(lhs));
 }
@@ -647,10 +642,6 @@ bool build_gpcca_isa_membership(
     weights /= weight_sum;
   }
 
-  // Transform the balanced eigenvectors back to right eigenvectors and use an
-  // input-distribution-weighted modified Gram-Schmidt basis with a constant Perron
-  // vector.  The subsequent inner-simplex rotation is invariant to sign
-  // choices and substantially more faithful than abs(Schur) memberships.
   arma::mat features(n, M, arma::fill::zeros);
   features.col(0).ones();
   for (int column = 1; column < M; ++column) {
@@ -860,9 +851,8 @@ bool solve_gpcca_cell_absorption(
   return solved;
 }
 
-} // namespace
+}
 
-// ── 0. Sparse hard-threshold pseudotime kernel ─────────────────────────────
 
 // [[Rcpp::export]]
 Eigen::SparseMatrix<double> cellrank_hard_threshold_kernel_cpp(
@@ -953,7 +943,6 @@ Eigen::SparseMatrix<double> cellrank_hard_threshold_kernel_cpp(
   return transition;
 }
 
-// ── 1. Transition matrix validation & normalization ──────────────────────────
 
 // [[Rcpp::export]]
 List cellrank_validate_transition_matrix_cpp(
@@ -975,7 +964,6 @@ List cellrank_validate_transition_matrix_cpp(
   );
 }
 
-// ── 2. Stationary distribution ───────────────────────────────────────────────
 
 // [[Rcpp::export]]
 NumericVector cellrank_stationary_distribution_cpp(
@@ -984,7 +972,6 @@ NumericVector cellrank_stationary_distribution_cpp(
   return scop_util::stationary_distribution(T_, max_iter, tol);
 }
 
-// ── 3. GPCCA real Schur decomposition ──────────────────────────────────────
 
 // [[Rcpp::export]]
 List cellrank_schur_cpp(NumericMatrix T_, int n_components = 10)
@@ -993,13 +980,9 @@ List cellrank_schur_cpp(NumericMatrix T_, int n_components = 10)
   if (n_components < 2) n_components = 2;
   if (n_components > n) n_components = n;
 
-  // CellRank/pyGPCCA use a uniform input distribution by default for the
-  // weighted Schur decomposition. This is distinct from the stationary
-  // distribution, which is still returned as an estimator diagnostic.
   NumericVector pi = cellrank_stationary_distribution_cpp(T_, 200, 1e-8);
   NumericVector eta(n, 1.0 / static_cast<double>(n));
 
-  // Build T_bar = diag(sqrt(eta)) * T * diag(1/sqrt(eta)).
   NumericMatrix T_bar(n, n);
   for (int i = 0; i < n; ++i) {
     double si = std::sqrt(std::max(eta[i], 1e-15));
@@ -1022,9 +1005,6 @@ List cellrank_schur_cpp(NumericMatrix T_, int n_components = 10)
   }
   const int nc = schur_vecs.ncol();
 
-  // Macrostate assignment: largest non-trivial component per row. The leading
-  // Perron vector is close to constant and can otherwise collapse all cells into
-  // a single macrostate on connectivity kernels.
   IntegerVector macro(n);
   int start_component = (nc > 1 && std::abs(eigenvalues[0] - 1.0) < 1e-6) ? 1 : 0;
   for (int i = 0; i < n; ++i) {
@@ -1045,7 +1025,6 @@ List cellrank_schur_cpp(NumericMatrix T_, int n_components = 10)
   );
 }
 
-// ── 4. Auto-detect number of macrostates via eigengap ────────────────────────
 
 // [[Rcpp::export]]
 int cellrank_auto_n_states_cpp(NumericVector eigenvalues, int min_states = 2, int max_states = 20)
@@ -1074,13 +1053,12 @@ int cellrank_auto_n_states_cpp(NumericVector eigenvalues, int min_states = 2, in
   return best_k;
 }
 
-// ── 5. Velocity kernel ───────────────────────────────────────────────────────
 
 // [[Rcpp::export]]
 NumericMatrix cellrank_velocity_kernel_cpp(
-    NumericMatrix velocity_embedding,   // cells × dims
-    NumericMatrix embedding,            // cells × dims
-    IntegerMatrix knn_idx,              // cells × k (1-based)
+    NumericMatrix velocity_embedding,
+    NumericMatrix embedding,
+    IntegerMatrix knn_idx,
     bool backward = false,
     double softmax_scale = 4.0,
     int n_neighbors_velo = -1)
@@ -1187,13 +1165,12 @@ NumericMatrix cellrank_connectivity_kernel_cpp(
   return T;
 }
 
-// ── 5b. Gene-space velocity kernel (matching Python CellRank) ────────────────
 
 // [[Rcpp::export]]
 NumericMatrix cellrank_velocity_kernel_gene_cpp(
-    NumericMatrix gene_velocity,         // genes × cells
-    NumericMatrix expression,            // genes × cells (Ms or counts)
-    IntegerMatrix knn_idx,               // cells × k (1-based)
+    NumericMatrix gene_velocity,
+    NumericMatrix expression,
+    IntegerMatrix knn_idx,
     bool backward = false,
     double softmax_scale = 4.0,
     int n_neighbors_velo = -1)
@@ -1203,7 +1180,6 @@ NumericMatrix cellrank_velocity_kernel_gene_cpp(
   const int n_neighbors = knn_idx.ncol();
   if (n_neighbors_velo <= 0) n_neighbors_velo = n_neighbors;
 
-  // Precompute velocity norms per cell
   std::vector<double> vn_cells(n_cells, 0.0);
   for (int c = 0; c < n_cells; ++c) {
     double sq = 0.0;
@@ -1224,8 +1200,6 @@ NumericMatrix cellrank_velocity_kernel_gene_cpp(
       nb -= 1;
       if (nb < 0 || nb >= n_cells || nb == cell) continue;
 
-      // Cosine correlation in gene space:
-      // cos(v_cell, expr_nb - expr_cell)
       double dot = 0.0, ndsq = 0.0;
       for (int g = 0; g < n_genes; ++g) {
         double delta = expression(g, nb) - expression(g, cell);
@@ -1238,7 +1212,6 @@ NumericMatrix cellrank_velocity_kernel_gene_cpp(
 
       double cosine = dot / (vn_cells[cell] * nd);
       if (!std::isfinite(cosine)) continue;
-      // CellRank uses exp(cosine / scale) for ALL neighbors
       double weight = std::exp(cosine / softmax_scale);
       T(cell, nb) = weight;
       row_sum += weight;
@@ -1253,7 +1226,6 @@ NumericMatrix cellrank_velocity_kernel_gene_cpp(
   return T;
 }
 
-// ── 6. Pseudotime kernel ─────────────────────────────────────────────────────
 
 // [[Rcpp::export]]
 NumericMatrix cellrank_pseudotime_kernel_cpp(
@@ -1306,7 +1278,6 @@ NumericMatrix cellrank_pseudotime_kernel_cpp(
   return T;
 }
 
-// ── 7. CytoTRACE kernel ───────────────────────────────────────────────────────
 
 // [[Rcpp::export]]
 NumericMatrix cellrank_cytotrace_kernel_cpp(
@@ -1336,7 +1307,6 @@ NumericMatrix cellrank_cytotrace_kernel_cpp(
   return T;
 }
 
-// ── 8. CFLARE estimator ──────────────────────────────────────────────────────
 
 // [[Rcpp::export]]
 List cellrank_cflare_cpp(
@@ -1359,7 +1329,6 @@ List cellrank_cflare_cpp(
   IntegerVector macro = schur["macrostate_assignment"];
   int M = schur["n_macrostates"];
 
-  // Build coarse transition matrix
   NumericMatrix P_coarse(M, M);
   NumericVector sizes(M);
   for (int i = 0; i < n; ++i) sizes[macro[i] - 1] += 1.0;
@@ -1408,7 +1377,6 @@ List cellrank_cflare_cpp(
   );
 }
 
-// ── 9. GPCCA Estimator ────────────────────────────────────────────────────────
 
 // [[Rcpp::export]]
 List cellrank_gpcca_cpp(
@@ -1434,7 +1402,6 @@ List cellrank_gpcca_cpp(
   NumericMatrix schur_vecs_all = schur_result["schur_vectors"];
   IntegerVector macro_all = schur_result["macrostate_assignment"];
 
-  // If skip_perron, drop the first component (Perron vector, eigenvalue ≈ 1)
   int start_comp = skip_perron ? 1 : 0;
   int M = std::min(n_states, schur_vecs_all.ncol() - start_comp);
   NumericVector eigenvalues(M);
@@ -1444,7 +1411,6 @@ List cellrank_gpcca_cpp(
     for (int i = 0; i < n; ++i)
       schur_vecs(i, j) = schur_vecs_all(i, j + start_comp);
   }
-  // Recompute macro from the selected Schur vectors
   IntegerVector macro(n);
   for (int i = 0; i < n; ++i) {
     int best = 0; double best_val = -1;
@@ -1455,9 +1421,6 @@ List cellrank_gpcca_cpp(
     macro[i] = best + 1;
   }
 
-  // Approximate the PCCA rotation with the Inner Simplex Algorithm.  Fall back
-  // to absolute Schur magnitudes only when the selected invariant basis is
-  // numerically rank deficient.
   arma::mat chi(n, M);
   IntegerVector simplex_indices;
   int optimization_evaluations = 0;
@@ -1495,8 +1458,6 @@ List cellrank_gpcca_cpp(
     }
   }
 
-  // Match pyGPCCA's coarse graining:
-  // pinv(chi^T D_eta chi) * chi^T D_eta T chi.
   arma::vec eta_arma(n);
   for (int i = 0; i < n; ++i) eta_arma(i) = eta[i];
   arma::mat D_eta = arma::diagmat(eta_arma);
@@ -1518,10 +1479,6 @@ List cellrank_gpcca_cpp(
   }
   NumericMatrix P_coarse = Rcpp::wrap(P_coarse_arma);
 
-  // CellRank's GPCCA wrapper promotes representative cells from every computed
-  // macrostate to terminal states. Solve absorption on the original cell-level
-  // transition matrix instead of assigning one coarse probability vector to all
-  // cells in the same hard macrostate.
   std::vector<int> representative_lineage =
     select_gpcca_terminal_representatives(chi, n_cells_terminal);
   NumericMatrix abs_prob;
@@ -1587,7 +1544,6 @@ List cellrank_gpcca_cpp(
   );
 }
 
-// ── 10. Lineage drivers ──────────────────────────────────────────────────────────
 
 // [[Rcpp::export]]
 List cellrank_lineage_drivers_cpp(

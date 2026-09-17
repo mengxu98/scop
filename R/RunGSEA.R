@@ -327,9 +327,6 @@ RunGSEA <- function(
     stringsAsFactors = FALSE
   )
 
-  # A PSOCK worker costs ~650 MB and seconds of package loading before running
-  # one sub-second task, which a per-group x per-database fan-out cannot earn
-  # back.
   check_r("clusterProfiler", verbose = FALSE)
   log_message(
     "Running GSEA for {.val {nrow(comb)}} group/database combination(s) ...",

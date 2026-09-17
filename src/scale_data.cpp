@@ -112,9 +112,6 @@ NumericMatrix scale_sparse_full(S4 sparse_mat,
   return result;
 }
 
-// Fill a dense row-scaled matrix directly from a dgCMatrix using statistics
-// calculated by the R caller.  Keeping center/scale outside this kernel lets
-// method-specific callers preserve their established variance convention.
 // [[Rcpp::export]]
 NumericMatrix scale_sparse_rows_from_stats(
     S4 sparse_mat,
