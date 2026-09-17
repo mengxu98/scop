@@ -190,9 +190,59 @@ compatibility export; the source and affine transform are stored in
 <span><span class="va">spatial_roundtrip</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spe_to_srt.html">spe_to_srt</a></span><span class="op">(</span><span class="va">spe</span>, assay <span class="op">=</span> <span class="st">"Spatial"</span>, layer <span class="op">=</span> <span class="st">"scop_input"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spatial_roundtrip</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">spatial_roundtrip</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">spatial_roundtrip</span>, image <span class="op">=</span> <span class="cn">NULL</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial_roundtrip</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p>The <code><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot()</a></code> check is intentionally about IDs, not
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">spatial_roundtrip</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##                             orig.ident nCount_Spatial nFeature_Spatial    x   y</span></span>
+<span><span class="co">## TGGTATCGGTCTGTAT-1 GSE254829_PanIN_LG2           3932             2075 3859 662</span></span>
+<span><span class="co">## ATTATCTCGACAGATC-1 GSE254829_PanIN_LG2           9403             3340 3914 662</span></span>
+<span><span class="co">## TGAGATCAAATACTCA-1 GSE254829_PanIN_LG2           9179             3303 3969 662</span></span>
+<span><span class="co">## CTGGTCCTAACTTGGC-1 GSE254829_PanIN_LG2           5909             2525 4024 662</span></span>
+<span><span class="co">## ATAGTCTTTGACGTGC-1 GSE254829_PanIN_LG2           5140             2400 4079 662</span></span>
+<span><span class="co">## GGGTGGTCCAGCCTGT-1 GSE254829_PanIN_LG2           5813             2553 4134 662</span></span>
+<span><span class="co">##                     sample_id geo_accession patient_sample</span></span>
+<span><span class="co">## TGGTATCGGTCTGTAT-1 GSM8058244     GSE254829      PanIN-LG2</span></span>
+<span><span class="co">## ATTATCTCGACAGATC-1 GSM8058244     GSE254829      PanIN-LG2</span></span>
+<span><span class="co">## TGAGATCAAATACTCA-1 GSM8058244     GSE254829      PanIN-LG2</span></span>
+<span><span class="co">## CTGGTCCTAACTTGGC-1 GSM8058244     GSE254829      PanIN-LG2</span></span>
+<span><span class="co">## ATAGTCTTTGACGTGC-1 GSM8058244     GSE254829      PanIN-LG2</span></span>
+<span><span class="co">## GGGTGGTCCAGCCTGT-1 GSM8058244     GSE254829      PanIN-LG2</span></span>
+<span><span class="co">##                                             panin_grade coda_label coda_score</span></span>
+<span><span class="co">## TGGTATCGGTCTGTAT-1 not_manually_annotated_as_epithelial   collagen  100.00000</span></span>
+<span><span class="co">## ATTATCTCGACAGATC-1 not_manually_annotated_as_epithelial   collagen   60.00000</span></span>
+<span><span class="co">## TGAGATCAAATACTCA-1 not_manually_annotated_as_epithelial   collagen  100.00000</span></span>
+<span><span class="co">## CTGGTCCTAACTTGGC-1 not_manually_annotated_as_epithelial     islets   68.75000</span></span>
+<span><span class="co">## ATAGTCTTTGACGTGC-1 not_manually_annotated_as_epithelial   collagen   62.50000</span></span>
+<span><span class="co">## GGGTGGTCCAGCCTGT-1 not_manually_annotated_as_epithelial   collagen   86.36364</span></span>
+<span><span class="co">##                    coda_islets coda_normal.epithelium coda_smooth.muscle</span></span>
+<span><span class="co">## TGGTATCGGTCTGTAT-1        0.00                      0                  0</span></span>
+<span><span class="co">## ATTATCTCGACAGATC-1        0.00                      0                  0</span></span>
+<span><span class="co">## TGAGATCAAATACTCA-1        0.00                      0                  0</span></span>
+<span><span class="co">## CTGGTCCTAACTTGGC-1       68.75                      0                  0</span></span>
+<span><span class="co">## ATAGTCTTTGACGTGC-1       37.50                      0                  0</span></span>
+<span><span class="co">## GGGTGGTCCAGCCTGT-1        0.00                      0                  0</span></span>
+<span><span class="co">##                    coda_fat coda_acini coda_collagen coda_panin</span></span>
+<span><span class="co">## TGGTATCGGTCTGTAT-1        0    0.00000     100.00000          0</span></span>
+<span><span class="co">## ATTATCTCGACAGATC-1        0    0.00000      60.00000         40</span></span>
+<span><span class="co">## TGAGATCAAATACTCA-1        0    0.00000     100.00000          0</span></span>
+<span><span class="co">## CTGGTCCTAACTTGGC-1        0    0.00000      31.25000          0</span></span>
+<span><span class="co">## ATAGTCTTTGACGTGC-1        0    0.00000      62.50000          0</span></span>
+<span><span class="co">## GGGTGGTCCAGCCTGT-1        0   13.63636      86.36364          0</span></span>
+<span><span class="co">##                                               feature_selection</span></span>
+<span><span class="co">## TGGTATCGGTCTGTAT-1 top_5000_shared_with_panc8_by_spatial_counts</span></span>
+<span><span class="co">## ATTATCTCGACAGATC-1 top_5000_shared_with_panc8_by_spatial_counts</span></span>
+<span><span class="co">## TGAGATCAAATACTCA-1 top_5000_shared_with_panc8_by_spatial_counts</span></span>
+<span><span class="co">## CTGGTCCTAACTTGGC-1 top_5000_shared_with_panc8_by_spatial_counts</span></span>
+<span><span class="co">## ATAGTCTTTGACGTGC-1 top_5000_shared_with_panc8_by_spatial_counts</span></span>
+<span><span class="co">## GGGTGGTCCAGCCTGT-1 top_5000_shared_with_panc8_by_spatial_counts</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">spatial_roundtrip</span>, image <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>               features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial_roundtrip</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>               assay <span class="op">=</span> <span class="st">"Spatial"</span>, layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>               palette <span class="op">=</span> <span class="st">"YlGnBu"</span>, legend.title <span class="op">=</span> <span class="st">"Counts"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="spatial-framework-bridges_files/figure-html/spe-roundtrip-1.png" class="r-plt" alt="" width="700"></p>
+<p>The returned assay contains the exported counts, so the plot
+explicitly reads <code>layer = "counts"</code>; exporting counts does
+not also export a normalized <code>data</code> layer. The
+<code><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot()</a></code> check is intentionally about IDs, not
 byte-for-byte equality of every Seurat slot. The conversion is
 lightweight: it does not promise to round-trip Seurat images,
 reductions, graphs, tools, or all assays. External SpatialExperiment
@@ -209,7 +259,7 @@ be resolved automatically; a multi-image object requires
 v4/v5 converter for the installed Seurat major version, reuses an
 installed optional package, and does not initialize Giotto’s optional
 Python environment.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span>
 <span></span>
