@@ -83,6 +83,7 @@ using PRECAST.</p>
 <span>  cluster_colname <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tool_name <span class="op">=</span> <span class="st">"SpatialIntegration"</span>,</span>
 <span>  store_results <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  store_object <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  coordinate_space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw"</span>, <span class="st">"legacy_display"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -149,6 +150,13 @@ a method-specific name is used.</p></dd>
 
 <dt id="arg-store-results">store_results<a class="anchor" aria-label="anchor" href="#arg-store-results"></a></dt>
 <dd><p>Whether to store the full result in <code>srt@tools</code>.</p></dd>
+
+
+<dt id="arg-store-object">store_object<a class="anchor" aria-label="anchor" href="#arg-store-object"></a></dt>
+<dd><p>Whether to retain the complete native PRECAST object in
+the stored method result. Set <code>FALSE</code> for a lighter result bundle; standard
+embeddings, domains, coordinates, parameters, summaries, and plotting do
+not require the native object.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
