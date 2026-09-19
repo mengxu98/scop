@@ -125,7 +125,7 @@ available on Windows.}
 
 \item{force}{Whether to rebuild existing SCENIC outputs.}
 
-\item{assay_name}{Name of the assay used to store regulon activity scores.}
+\item{assay_name}{Name of the assay used to store regulon activity scores (RAS).}
 
 \item{tool_name}{Name of the \code{srt@tools} entry.}
 
@@ -148,7 +148,11 @@ A Seurat object with SCENIC results, or a result list when
 \code{return_seurat = FALSE}.
 }
 \description{
-Run SCENIC gene regulatory network analysis
+Infer gene regulatory networks, prune candidate target links with cisTarget
+motif enrichment, and calculate cellular regulon activity with AUCell. The
+resulting per-cell regulon activity scores (RAS) are stored in the Seurat assay
+specified by \code{assay_name} (default \code{"scenic"}), with network details
+stored under \code{srt@tools[[tool_name]]}.
 }
 \examples{
 \dontrun{
