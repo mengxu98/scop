@@ -961,10 +961,15 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
     ),
     script
   )
+  log_message_dir <- getFromNamespace("thisutils_log_message_dir", "scop")()
+  skip_if(
+    !nzchar(log_message_dir),
+    "thisutils does not provide a Python log_message module under inst/scripts or inst/python"
+  )
   status <- local({
     old_pythonpath <- Sys.getenv("PYTHONPATH", unset = NA_character_)
     Sys.setenv(
-      PYTHONPATH = system.file("python", package = "thisutils", mustWork = TRUE)
+      PYTHONPATH = log_message_dir
     )
     on.exit(
       {

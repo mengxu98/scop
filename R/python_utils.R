@@ -1,8 +1,20 @@
+thisutils_log_message_dir <- function() {
+  candidates <- c(
+    system.file("scripts", package = "thisutils", mustWork = FALSE),
+    system.file("python", package = "thisutils", mustWork = FALSE)
+  )
+  candidates <- candidates[nzchar(candidates)]
+  if (!length(candidates)) {
+    return("")
+  }
+  candidates[[1L]]
+}
+
 scop_python_import <- function(module, convert = TRUE) {
-  python_dir <- system.file("python", package = "thisutils", mustWork = FALSE)
+  python_dir <- thisutils_log_message_dir()
   if (!nzchar(python_dir)) {
     log_message(
-      "thisutils ({.code >= 0.4.8}) does not provide a Python {.file log_message} module",
+      "thisutils does not provide a Python {.file log_message} module under {.file inst/scripts} or {.file inst/python}. Reinstall the current thisutils.",
       message_type = "error"
     )
   }
@@ -111,7 +123,7 @@ runner_system2 <- function(command, args, env, stdout, stderr) {
       message_type = "error"
     )
   }
-  log_message_dir <- system.file("python", package = "thisutils", mustWork = FALSE)
+  log_message_dir <- thisutils_log_message_dir()
   if (nzchar(log_message_dir)) {
     python_path <- unique(c(
       log_message_dir,
