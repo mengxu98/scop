@@ -89,7 +89,9 @@ FeatureDimPlot(
   force = FALSE,
   seed = 11,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  title.face = NULL,
+  title.color = NULL
 )
 }
 \arguments{
@@ -224,6 +226,17 @@ there are more than 100,000 cells.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{title.face}{Font face of individual feature headings. \code{NULL} (default)
+uses italic for assay genes and plain for numeric metadata or embeddings.
+Set to \code{"plain"}, \code{"bold"}, \code{"italic"}, or \code{"bold.italic"} to override.}
+
+\item{title.color}{Color of individual feature headings: \code{NULL} inherits the
+theme, an unnamed color applies to every feature, or a named color vector
+maps feature names to colors. Unspecified features inherit the theme. Names
+refer to features, not group names or panel order. These heading options do
+not affect the custom \code{title}, split labels, expression palette, or blended
+panels (\code{compare_features = TRUE}).}
 }
 \description{
 Color cells on a dimensionality reduction by feature values (assay genes or
@@ -287,6 +300,11 @@ FeatureDimPlot(
   reduction = "UMAP",
   cells.highlight = TRUE,
   theme_use = "theme_blank"
+)
+
+FeatureDimPlot(
+  pancreas_sub, features = c("Rbp4", "Sst"), reduction = "UMAP",
+  title.color = c(Rbp4 = "#2A6F97", Sst = "#B14B28")
 )
 
 # Add a density layer

@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **feat**: `FeatureDimPlot()` defaults assay-gene headings to italic and supports `title.face` plus scalar or feature-named `title.color`, preserving numeric metadata headings and expression palettes.
+
 * **refactor**: Use the thisplot Pastel1 palette for volcano enrichment overlays instead of a hard-coded palette.
 
 * **refactor**: Keep fixed method lists, resource filenames, and internal contract values at their use sites instead of package-level static constants.

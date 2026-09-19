@@ -660,3 +660,31 @@ test_that("FeatureDimPlot uses readable default point size", {
   expect_equal(point_layer$aes_params$size, 1)
   expect_equal(point_layer$aes_params$stroke, 0)
 })
+
+
+test_that("FeatureDimPlot styles feature headings by identity across reordered splits", {
+  srt <- make_cell_dim_plot_srt()
+  srt$score <- seq_len(ncol(srt))
+  plots <- FeatureDimPlot(
+    srt, features = c("gene2", "score", "gene1"), layer = "counts",
+    split.by = "major_type", reduction = "umap", show_stat = FALSE,
+    title.color = c(gene1 = "#B14B28", gene2 = "#2A6F97"), combine = FALSE,
+    verbose = FALSE
+  )
+  expect_length(plots, 6L)
+  for (p in plots) {
+    f <- unique(p$data$features)
+    expect_identical(p$theme$strip.text.x$face, if (f == "score") "plain" else "italic")
+    expect_identical(p$theme$strip.text.x$colour,
+      switch(f, gene1 = "#B14B28", gene2 = "#2A6F97", score = NULL))
+    expect_equal(nrow(p$data), sum(srt$major_type == unique(p$data$major_type)))
+    expect_no_error(ggplot2::ggplotGrob(p))
+  }
+  p <- FeatureDimPlot(srt, "gene1", layer = "counts", reduction = "umap",
+    title.color = "red", title.face = "bold", combine = FALSE, verbose = FALSE)[[1]]
+  expect_identical(p$theme$strip.text.x$face, "bold")
+  expect_identical(p$theme$strip.text.x$colour, "red")
+  expect_error(FeatureDimPlot(srt, "gene1", title.color = c("red", "blue")), "title.color")
+  expect_error(FeatureDimPlot(srt, "gene1", title.color = c(gene1 = "red", gene1 = "blue")), "title.color")
+  expect_error(FeatureDimPlot(srt, "gene1", title.color = "not-a-color"), "invalid color")
+})

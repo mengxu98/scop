@@ -32,6 +32,15 @@
 #' @param label_insitu Use feature names instead of numbers when
 #' `compare_features = TRUE`.
 #' @param hex.color Border color of hexagonal bins.
+#' @param title.face Font face of individual feature headings. `NULL` (default)
+#' uses italic for assay genes and plain for numeric metadata or embeddings.
+#' Set to `"plain"`, `"bold"`, `"italic"`, or `"bold.italic"` to override.
+#' @param title.color Color of individual feature headings: `NULL` inherits the
+#' theme, an unnamed color applies to every feature, or a named color vector
+#' maps feature names to colors. Unspecified features inherit the theme. Names
+#' refer to features, not group names or panel order. These heading options do
+#' not affect the custom `title`, split labels, expression palette, or blended
+#' panels (`compare_features = TRUE`).
 #' @param force Draw even when more than 100 features are requested.
 #'
 #' @seealso [CellDimPlot]
@@ -96,6 +105,11 @@
 #'   reduction = "UMAP",
 #'   cells.highlight = TRUE,
 #'   theme_use = "theme_blank"
+#' )
+#'
+#' FeatureDimPlot(
+#'   pancreas_sub, features = c("Rbp4", "Sst"), reduction = "UMAP",
+#'   title.color = c(Rbp4 = "#2A6F97", Sst = "#B14B28")
 #' )
 #'
 #' # Add a density layer
@@ -371,10 +385,27 @@ FeatureDimPlot <- function(
   force = FALSE,
   seed = 11,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  title.face = NULL,
+  title.color = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   set.seed(seed)
+  if (!is.null(title.face)) {
+    title.face <- match.arg(title.face, c("plain", "bold", "italic", "bold.italic"))
+  }
+  if (!is.null(title.color)) {
+    if (!is.character(title.color) || !length(title.color) || anyNA(title.color) ||
+        (is.null(names(title.color)) && length(title.color) != 1L) ||
+        (!is.null(names(title.color)) &&
+          (anyNA(names(title.color)) || any(!nzchar(names(title.color))) ||
+            anyDuplicated(names(title.color))))) {
+      stop("title.color must be one unnamed color or a uniquely named feature-color vector.")
+    }
+    tryCatch(grDevices::col2rgb(title.color), error = function(e) {
+      stop("title.color contains an invalid color.")
+    })
+  }
   color_blend_mode <- match.arg(color_blend_mode)
   if (!is.null(keep_scale)) {
     keep_scale <- match.arg(keep_scale, choices = c("feature", "all"))
@@ -1496,6 +1527,17 @@ FeatureDimPlot <- function(
             }
           }
         }
+        heading_color <- if (is.null(names(title.color))) {
+          title.color
+        } else if (f %in% names(title.color)) {
+          unname(title.color[f])
+        } else {
+          NULL
+        }
+        p <- p + theme(strip.text.x = element_text(
+          face = title.face %||% if (f %in% features_gene) "italic" else "plain",
+          colour = heading_color
+        ))
         if (nrow(dat) > 0) {
           if (split.by == "All.groups") {
             p <- p + facet_grid(. ~ features)
