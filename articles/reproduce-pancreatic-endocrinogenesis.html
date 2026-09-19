@@ -350,9 +350,14 @@ progenitor-state markers before regulon scoring.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">grn_edges</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">grn_edges</span><span class="op">$</span><span class="va">importance</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="op">]</span>, <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p>SCENIC prunes the regulatory links with cisTarget and scores regulon
-activity per cell. The reference files are cached by <code>scop</code>;
-the first run may download the mouse cisTarget resources.</p>
+<p>SCENIC prunes regulatory links with cisTarget and scores cellular
+regulon activity using AUCell. Each regulon consists of a transcription
+factor (TF) and its direct cisTarget-supported target genes. AUCell
+computes the enrichment of target genes within each single cell’s
+expression ranking, yielding a per-cell Regulon Activity Score (RAS)
+matrix stored in the <code>scenic</code> assay. The reference files are
+cached by <code>scop</code>; the first run may download the mouse
+cisTarget resources.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scenic_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"scop_pancreas_scenic"</span><span class="op">)</span></span>
 <span></span>
@@ -376,8 +381,9 @@ the first run may download the mouse cisTarget resources.</p>
 <span>  scenic_entries <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SCENIC</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>,</span>
 <span>  regulons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SCENIC</span><span class="op">$</span><span class="va">regulon_list</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Rank regulons by cell-state specificity and keep the top regulons for
-heatmaps and network plots.</p>
+<p>Rank regulons by cell-state specificity using the Regulon Specificity
+Score (RSS, calculated from the cell-by-regulon RAS matrix) and keep the
+top regulons for heatmaps and network plots.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scenic_rss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SCENICPlot.html">SCENICPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
@@ -410,9 +416,13 @@ heatmaps and network plots.</p>
 <span>  heatmap_show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  heatmap_cluster_columns <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu">print_scop_plot</span><span class="op">(</span><span class="va">scenic_rss_heatmap</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">scenic_activity_heatmap</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SCENICPlot.html">SCENICPlot</a></span><span class="op">(</span></span>
+<span><span class="fu">print_scop_plot</span><span class="op">(</span><span class="va">scenic_rss_heatmap</span><span class="op">)</span></span></code></pre></div>
+<p>The <code>rss_heatmap</code> above illustrates cluster-level
+specificity (RSS), while <code>activity_heatmap</code> visualizes
+cellular Regulon Activity Scores (RAS) across cell types for
+comparison.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">scenic_activity_heatmap</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SCENICPlot.html">SCENICPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="st">"activity_heatmap"</span>,</span>
@@ -423,7 +433,7 @@ heatmaps and network plots.</p>
 <span>  heatmap_cluster_columns <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu">print_scop_plot</span><span class="op">(</span><span class="va">scenic_activity_heatmap</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scenic_network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SCENICPlot.html">SCENICPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
@@ -433,7 +443,7 @@ heatmaps and network plots.</p>
 <span>  label_nodes <span class="op">=</span> <span class="st">"tfs"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu">print_scop_plot</span><span class="op">(</span><span class="va">scenic_network</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scenic_targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SCENICPlot.html">SCENICPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
@@ -450,7 +460,7 @@ heatmaps and network plots.</p>
 These results should be interpreted together with the trajectory and TF
 analyses: dynamic genes show when programs change, while DE and
 enrichment show which programs separate annotated states.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
@@ -510,7 +520,7 @@ from the top enriched GO-BP terms selected for each cell-state
 comparison; <code>GO_BP</code> is the database label, not one specific
 pathway term. The specific enriched terms are summarized in the bar plot
 below.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/EnrichmentPlot.html">EnrichmentPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span>
@@ -523,9 +533,9 @@ below.</p>
 </h2>
 <p>The final object contains the upstream preprocessing state,
 trajectory metadata, velocity output, dynamic genes, SCENIC regulon
-activity, differential genes, and enrichment results. Export it for
-interactive review in SCExplorer.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+activity (RAS), differential genes, and enrichment results. Export it
+for interactive review in SCExplorer.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scexplorer_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"SCExplorer_pancreas_reproduction"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/PrepareSCExplorer.html">PrepareSCExplorer</a></span><span class="op">(</span></span>
@@ -546,8 +556,8 @@ trail:</p>
 the endocrine differentiation path;</li>
 <li>dynamic genes recover stage-specific programs along the pseudotime
 axis;</li>
-<li>GRNBoost2 and SCENIC prioritize TF-target links and regulon
-activity;</li>
+<li>GRNBoost2 and SCENIC prioritize TF-target links and regulon activity
+(RAS);</li>
 <li>DE and GO enrichment summarize the state-level transcriptional
 programs;</li>
 <li>SCExplorer keeps the full object available for interactive
