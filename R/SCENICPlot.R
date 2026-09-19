@@ -1,12 +1,12 @@
 #' @title Plot SCENIC or SCENIC+ regulon activity
 #'
 #' @description
-#' Plot RSS and regulon activity from [RunSCENIC()] or [RunSCENICPlus()].
-#' Use [SCENICPlusPlot()] for SCENIC+ defaults. Network `palette = "RdYlBu"`
-#' uses `"Chinese"`. `"network"` draws one hub per TF. Network plots have no
-#' title. When one TF has multiple regulons, network legends show the regulon
-#' with the highest RSS; the corresponding cell type and score remain available
-#' in the returned annotation table.
+#' Plot regulon specificity scores (RSS) and regulon activity scores (RAS) from
+#' [RunSCENIC()] or [RunSCENICPlus()]. Use [SCENICPlusPlot()] for SCENIC+ defaults.
+#' Network `palette = "RdYlBu"` uses `"Chinese"`. `"network"` draws one hub per TF.
+#' Network plots have no title. When one TF has multiple regulons, network legends
+#' show the regulon with the highest RSS; the corresponding cell type and score
+#' remain available in the returned annotation table.
 #'
 #' @md
 #' @inheritParams CellDimPlot
@@ -16,8 +16,8 @@
 #' @param object A Seurat object with SCENIC or SCENIC+ results.
 #' @param group.by Metadata column for cell groups.
 #' @param tool_name `srt@tools` entry. Default `"SCENIC"`.
-#' @param assay Fallback assay for regulon activity.
-#' @param layer Assay layer for regulon activity.
+#' @param assay Fallback assay for regulon activity scores (RAS).
+#' @param layer Assay layer for regulon activity scores (RAS).
 #' @param plot_type One of `"rss_rank"`, `"rss_heatmap"`, `"rss_dotplot"`,
 #' `"heatmap_dotplot"`, `"activity_heatmap"`, `"activity_violin"`,
 #' `"activity_dim"`, `"eregulon_dim"`, `"activity_cor_dumbbell"`,

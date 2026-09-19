@@ -1,5 +1,12 @@
 #' @title Run SCENIC gene regulatory network analysis
 #'
+#' @description
+#' Infer gene regulatory networks, prune candidate target links with cisTarget
+#' motif enrichment, and calculate cellular regulon activity with AUCell. The
+#' resulting per-cell regulon activity scores (RAS) are stored in the Seurat assay
+#' specified by `assay_name` (default `"scenic"`), with network details stored
+#' under `srt@tools[[tool_name]]`.
+#'
 #' @md
 #' @inheritParams RunStandardWorkflow
 #' @inheritParams PrepareEnv
@@ -60,7 +67,7 @@
 #' available on Windows.
 #' @param seed Random seed used by GRNBoost2 and Seurat overclustering.
 #' @param force Whether to rebuild existing SCENIC outputs.
-#' @param assay_name Name of the assay used to store regulon activity scores.
+#' @param assay_name Name of the assay used to store regulon activity scores (RAS).
 #' @param tool_name Name of the `srt@tools` entry.
 #' @param return_seurat Whether to return the modified Seurat object. If
 #' `FALSE`, a result list is returned.

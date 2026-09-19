@@ -95,9 +95,9 @@ SCENICPlot(
 
 \item{tool_name}{\code{srt@tools} entry. Default \code{"SCENIC"}.}
 
-\item{assay}{Fallback assay for regulon activity.}
+\item{assay}{Fallback assay for regulon activity scores (RAS).}
 
-\item{layer}{Assay layer for regulon activity.}
+\item{layer}{Assay layer for regulon activity scores (RAS).}
 
 \item{plot_type}{One of \code{"rss_rank"}, \code{"rss_heatmap"}, \code{"rss_dotplot"},
 \code{"heatmap_dotplot"}, \code{"activity_heatmap"}, \code{"activity_violin"},
@@ -238,7 +238,7 @@ will be removed in scop 1.0.0.}
 Plot, or a list with \code{rss_matrix}, \code{rank_table}, \code{top_table}, \code{plots}, and \code{plot} when \code{return_data = TRUE}.
 }
 \description{
-Plot RSS and regulon activity from \code{\link[=RunSCENIC]{RunSCENIC()}} or \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}.
+Plot regulon specificity scores (RSS) and regulon activity scores (RAS) from \code{\link[=RunSCENIC]{RunSCENIC()}} or \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}.
 Use \code{\link[=SCENICPlusPlot]{SCENICPlusPlot()}} for SCENIC+ defaults. Network \code{palette = "RdYlBu"}
 uses \code{"Chinese"}. \code{"network"} draws one hub per TF. Network plots have no
 title. When one TF has multiple regulons, network legends show the regulon
