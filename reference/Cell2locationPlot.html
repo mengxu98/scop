@@ -159,7 +159,11 @@ will be removed in scop 1.0.0.</p></dd>
 these values across cell types within each spot.
 Matrix point maps share a default display range. Explicit cutoff or
 quantile arguments passed through <code>...</code> retain the scales computed by
-<code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code>, including when returning separate panels.</p>
+<code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code>, including when returning separate panels.
+Saved plotting matrices retain every original spot; filtered observations
+have <code>NA</code> values, while <code>cells</code> records only the modeled spots. Older compact
+results are expanded only when their modeled IDs and <code>dropped_spots</code> record
+account for all missing rows. Unexplained missing or unknown IDs are errors.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

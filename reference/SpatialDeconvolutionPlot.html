@@ -121,7 +121,8 @@ map derived from the stored proportions, or one spot-level pie map.</p></dd>
 
 
 <dt id="arg-combine">combine<a class="anchor" aria-label="anchor" href="#arg-combine"></a></dt>
-<dd><p>Whether to combine point maps. If <code>FALSE</code>, return a named list.</p></dd>
+<dd><p>Whether to combine point or dominant maps. If <code>FALSE</code>,
+return a named list.</p></dd>
 
 
 <dt id="arg-nrow-ncol-byrow">nrow, ncol, byrow<a class="anchor" aria-label="anchor" href="#arg-nrow-ncol-byrow"></a></dt>
@@ -177,6 +178,7 @@ the displayed comparison; pie fractions are relative to those selected types.</p
 <span class="r-in"><span>  max_cores <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Reference: some nUMI values are less than min_UMI = 100, and these cells will be removed. Optionally, you may lower the min_UMI parameter.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Begin: process_cell_type_info</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of cells in reference: 694</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of genes in reference: 97</span>

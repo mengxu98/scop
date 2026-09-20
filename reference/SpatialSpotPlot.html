@@ -276,7 +276,11 @@ scale-factor slots.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Factor levels retain their order, including after selecting <code>cells</code>.
 Named <code>palcolor</code> vectors map category names to colors; unnamed colors follow
-factor order. Missing values remain distinct from a category named <code>"NA"</code>.</p>
+factor order. Missing values remain distinct from a category named <code>"NA"</code>.
+Long-format point/jitter plots honor cutoff and quantile controls and return
+a named one-element list when <code>combine = FALSE</code>. Their default continuous
+range remains the full data range; an explicitly supplied <code>upper_quantile</code>
+overrides that default.</p>
     </div>
 
     <div class="section level2">
