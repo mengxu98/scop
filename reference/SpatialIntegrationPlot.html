@@ -159,7 +159,10 @@ list.</p></dd>
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to <code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code> or
-<code><a href="CellDimPlot.html">CellDimPlot()</a></code>.</p></dd>
+<code><a href="CellDimPlot.html">CellDimPlot()</a></code>. For spatial maps, <code>image</code> can be one image or a named
+sample-to-image vector using names in the merged object. By default, each
+sample uses its uniquely matching image. <code>nrow</code>, <code>ncol</code> and <code>byrow</code> control
+the layout of separate image panels.</p></dd>
 
 
 <dt id="arg-image-scale">image.scale<a class="anchor" aria-label="anchor" href="#arg-image-scale"></a></dt>
@@ -176,6 +179,12 @@ will be removed in scop 1.0.0.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>ggplot</code>, patchwork object, or list of plots.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Raw spatial maps retain every sample and use consistent category colors.
+Aligned maps use the stored aligned coordinates without a raw tissue-image
+overlay. This plotting option does not perform image registration.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

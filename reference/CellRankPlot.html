@@ -70,7 +70,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">CellRankPlot</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
 <span>  plot_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fate"</span>, <span class="st">"states"</span>, <span class="st">"circular"</span>, <span class="st">"drivers"</span>, <span class="st">"trends"</span>, <span class="st">"clusters"</span>,</span>
-<span>    <span class="st">"enrichment"</span>, <span class="st">"projection"</span>, <span class="st">"random_walks"</span><span class="op">)</span>,</span>
+<span>    <span class="st">"enrichment"</span>, <span class="st">"projection"</span>, <span class="st">"random_walks"</span>, <span class="st">"flow"</span><span class="op">)</span>,</span>
 <span>  lineage <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  database <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  reduction <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -79,6 +79,9 @@
 <span>  n_sims <span class="op">=</span> <span class="fl">100L</span>,</span>
 <span>  max_iter <span class="op">=</span> <span class="fl">500L</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">0L</span>,</span>
+<span>  start_cells <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cluster <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  clusters <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  palette <span class="op">=</span> <span class="st">"Chinese"</span>,</span>
 <span>  palcolor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  feature_palette <span class="op">=</span> <span class="st">"Spectral"</span>,</span>
@@ -101,7 +104,7 @@
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
 <dd><p>One of `"fate"`, `"states"`, `"circular"`, `"drivers"`,
 `"trends"`, `"clusters"`, `"enrichment"`, `"projection"`, or
-`"random_walks"`.</p></dd>
+`"random_walks"`, or `"flow"`.</p></dd>
 
 
 <dt id="arg-lineage">lineage<a class="anchor" aria-label="anchor" href="#arg-lineage"></a></dt>
@@ -135,6 +138,19 @@ If `NULL`, the first stored non-empty database is used.</p></dd>
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Random seed.</p></dd>
+
+
+<dt id="arg-start-cells">start_cells<a class="anchor" aria-label="anchor" href="#arg-start-cells"></a></dt>
+<dd><p>Optional cell names used as random-walk starts. For a
+moscot result, omitted starts default to cells in the earliest time point.</p></dd>
+
+
+<dt id="arg-cluster">cluster<a class="anchor" aria-label="anchor" href="#arg-cluster"></a></dt>
+<dd><p>Starting group for <code>plot_type = "flow"</code>.</p></dd>
+
+
+<dt id="arg-clusters">clusters<a class="anchor" aria-label="anchor" href="#arg-clusters"></a></dt>
+<dd><p>Optional groups to display in a real-time flow plot.</p></dd>
 
 
 <dt id="arg-palette-palcolor">palette, palcolor<a class="anchor" aria-label="anchor" href="#arg-palette-palcolor"></a></dt>
