@@ -8,7 +8,7 @@ Plot CellRank outputs without rerunning a Python backend.
 CellRankPlot(
   object,
   plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters",
-    "enrichment", "projection", "random_walks"),
+    "enrichment", "projection", "random_walks", "flow"),
   lineage = NULL,
   database = NULL,
   reduction = NULL,
@@ -17,6 +17,9 @@ CellRankPlot(
   n_sims = 100L,
   max_iter = 500L,
   seed = 0L,
+  start_cells = NULL,
+  cluster = NULL,
+  clusters = NULL,
   palette = "Chinese",
   palcolor = NULL,
   feature_palette = "Spectral",
@@ -38,7 +41,7 @@ CellRankPlot(
 
   One of \`"fate"\`, \`"states"\`, \`"circular"\`, \`"drivers"\`,
   \`"trends"\`, \`"clusters"\`, \`"enrichment"\`, \`"projection"\`, or
-  \`"random_walks"\`.
+  \`"random_walks"\`, or \`"flow"\`.
 
 - lineage:
 
@@ -72,6 +75,19 @@ CellRankPlot(
 - seed:
 
   Random seed.
+
+- start_cells:
+
+  Optional cell names used as random-walk starts. For a moscot result,
+  omitted starts default to cells in the earliest time point.
+
+- cluster:
+
+  Starting group for `plot_type = "flow"`.
+
+- clusters:
+
+  Optional groups to display in a real-time flow plot.
 
 - palette, palcolor:
 

@@ -7,7 +7,7 @@ results.
 
 ``` r
 GSEAPlot(
-  object,
+  object = NULL,
   db = "GO_BP",
   group.by = NULL,
   test.use = "wilcox",
@@ -83,7 +83,10 @@ GSEAPlot(
 - group.by:
 
   Grouping variable in the `Seurat` object. This argument is only used
-  if `srt` is specified.
+  if `srt` is specified. `NULL` (the default) selects the results that
+  [RunGSEA](https://mengxu98.github.io/scop/reference/RunGSEA.md) stored
+  for custom gene sets or custom cell groups, which are keyed as
+  `"custom"`.
 
 - test.use:
 
@@ -334,21 +337,18 @@ gsea_out <- RunGSEA(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-09-13 21:46:43] Start GSEA analysis
-#> ! [2026-09-13 21:46:43] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-09-13 21:46:43] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-09-13 21:46:43] Prepared 10 ranked gene rows after ID mapping.
-#> ℹ [2026-09-13 21:46:43] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
-#> ℹ [2026-09-13 21:46:43] Using 1 core
-#> ℹ [2026-09-13 21:46:43] Running GSEA: group "Cluster1", database "custom", genes 10 ...
+#> ℹ [2026-09-20 21:43:52] Start GSEA analysis
+#> ! [2026-09-20 21:43:52] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-09-20 21:43:52] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-09-20 21:43:52] Prepared 10 ranked gene rows after ID mapping.
+#> ℹ [2026-09-20 21:43:52] Running GSEA for 1 group/database combination(s) ...
+#> ℹ [2026-09-20 21:43:52] Running GSEA: group "Cluster1", database "custom", genes 10 ...
 #> Registered S3 method overwritten by 'ggtree':
 #>   method         from     
 #>   fortify.igraph ggnetwork
-#> ℹ [2026-09-13 21:46:43] Finished GSEA: group "Cluster1", database "custom".
-#> ℹ [2026-09-13 21:46:43] Building results
-#> ✔ [2026-09-13 21:46:43] GSEA analysis done
+#> ℹ [2026-09-20 21:43:52] Finished GSEA: group "Cluster1", database "custom".
+#> ✔ [2026-09-20 21:43:52] GSEA analysis done
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison")
-#> Error in GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison"): argument "object" is missing, with no default
+
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar")
-#> Error in GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar"): argument "object" is missing, with no default
 ```

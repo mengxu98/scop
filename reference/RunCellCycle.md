@@ -89,10 +89,10 @@ srt <- RunCellCycle(
   species = "Mus_musculus",
   name = "Cyclone"
 )
-#> ℹ [2026-09-13 22:05:08] Start cell cycle scoring
+#> ℹ [2026-09-20 22:02:30] Start cell cycle scoring
 #> 'select()' returned 1:many mapping between keys and columns
-#> ℹ [2026-09-13 22:05:08] Map input feature names to ENSEMBL IDs with org.Mm.eg.db for scran::cyclone
-#> ✔ [2026-09-13 22:05:17] Cell cycle scoring completed
+#> ℹ [2026-09-20 22:02:31] Map input feature names to ENSEMBL IDs with org.Mm.eg.db for scran::cyclone
+#> ✔ [2026-09-20 22:02:40] Cell cycle scoring completed
 
 srt <- RunCellCycle(
   srt,
@@ -100,10 +100,10 @@ srt <- RunCellCycle(
   species = "Mus_musculus",
   name = "Tricycle"
 )
-#> ℹ [2026-09-13 22:05:17] Start cell cycle scoring
+#> ℹ [2026-09-20 22:02:40] Start cell cycle scoring
 #> No custom reference projection matrix provided. The ref learned from mouse Neuroshpere data will be used.
 #> The number of projection genes found in the new data is 485.
-#> ✔ [2026-09-13 22:05:17] Cell cycle scoring completed
+#> ✔ [2026-09-20 22:02:40] Cell cycle scoring completed
 if ("Cyclone_cyclone_Phase" %in% colnames(srt@meta.data)) {
   CellDimPlot(
     srt,

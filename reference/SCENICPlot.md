@@ -1,6 +1,7 @@
 # Plot SCENIC or SCENIC+ regulon activity
 
-Plot RSS and regulon activity from
+Plot regulon specificity scores (RSS) and regulon activity scores (RAS)
+from
 [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
 or
 [`RunSCENICPlus()`](https://mengxu98.github.io/scop/reference/RunSCENICPlus.md).
@@ -116,11 +117,11 @@ SCENICPlot(
 
 - assay:
 
-  Fallback assay for regulon activity.
+  Fallback assay for regulon activity scores (RAS).
 
 - layer:
 
-  Assay layer for regulon activity.
+  Assay layer for regulon activity scores (RAS).
 
 - plot_type:
 

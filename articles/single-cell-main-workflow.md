@@ -26,24 +26,6 @@ trajectory and RNA-velocity examples.
 ``` r
 
 library(scop)
-#>           ⬢          .        ⬡             ⬢     .
-#>                      _____ _________  ____
-#>                     / ___// ___/ __ ./ __ .
-#>                    (__  )/ /__/ /_/ / /_/ /
-#>                   /____/ .___/.____/ .___/
-#>                                   /_/
-#>       ⬢               .      ⬡        .          ⬢
-#> ------------------------------------------------------------
-#> Version: 0.9.2 (2026-09-12 update)
-#> Website: https://mengxu98.github.io/scop/
-#> 
-#> Python environment initialization is disabled
-#> To enable it, set: options(scop_env_init = TRUE)
-#> 
-#> The message can be suppressed by: 
-#>   suppressPackageStartupMessages(library(scop))
-#>   or options(log_message.verbose = FALSE)
-#> ------------------------------------------------------------
 
 data(pancreas_sub)
 pancreas_sub
@@ -109,7 +91,7 @@ pancreas_sub <- RunStandardWorkflow(
   cluster_resolution = 0.8,
   verbose = FALSE
 )
-#> ℹ [2026-09-13 23:06:24] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-20 23:09:30] Skip `log1p()` because `layer = data` is not "counts"
 
 pancreas_sub
 #> An object of class Seurat 
@@ -143,22 +125,22 @@ and keeps details under the object tools slot.
 ``` r
 
 pancreas_sub <- RunCellQC(pancreas_sub)
-#> ◌ [2026-09-13 23:06:28] Running cell-level quality control
-#> ℹ [2026-09-13 23:06:28] Data type is raw counts
-#> ℹ [2026-09-13 23:06:28] Running scDblFinder
-#> ! [2026-09-13 23:07:28] Skip "atac" QC because `assay = 'RNA'` is not a <ChromatinAssay>
+#> ◌ [2026-09-20 23:09:34] Running cell-level quality control
+#> ℹ [2026-09-20 23:09:35] Data type is raw counts
+#> ℹ [2026-09-20 23:09:35] Running scDblFinder
+#> ! [2026-09-20 23:10:36] Skip "atac" QC because `assay = 'RNA'` is not a <ChromatinAssay>
 #> Warning: Skip "atac" QC because `assay = 'RNA'` is not a <ChromatinAssay>
-#> ℹ [2026-09-13 23:07:28] Running decontX
+#> ℹ [2026-09-20 23:10:36] Running decontX
 #> Warning in .library_size_factors(assay(x, assay.type), ...): 'librarySizeFactors' is deprecated.
 #> Use 'scrapper::centerSizeFactors' instead.
 #> See help("Deprecated")
 #> Warning in .local(x, ...): 'normalizeCounts' is deprecated.
 #> Use 'scrapper::normalizeCounts' instead.
 #> See help("Deprecated")
-#> ℹ [2026-09-13 23:07:38] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
-#> ℹ [2026-09-13 23:07:38] decontX assay stored as decontXcounts
-#> ✔ [2026-09-13 23:07:38] decontX decontamination completed
-#> ✔ [2026-09-13 23:07:38] ● Total cells: 1000
+#> ℹ [2026-09-20 23:10:46] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465
+#> ℹ [2026-09-20 23:10:46] decontX assay stored as decontXcounts
+#> ✔ [2026-09-20 23:10:46] decontX decontamination completed
+#> ✔ [2026-09-20 23:10:47] ● Total cells: 1000
 #> ✔                       ◉ 957 cells remained
 #> ✔                       ◯ 43 cells filtered out:
 #> ✔                       ◯   20 potential doublets
@@ -207,7 +189,7 @@ CellStatPlot(
   plot_type = "upset",
   stat_level = "Fail"
 )
-#> ! [2026-09-13 23:07:39] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
+#> ! [2026-09-20 23:10:48] `stat_type` is forcibly set to "count" when plot "sankey", "chord", "venn", and "upset"
 #> Warning: `stat_type` is forcibly set to "count" when plot "sankey", "chord",
 #> "venn", and "upset"
 #> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.

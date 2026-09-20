@@ -148,10 +148,9 @@ metadata and a Scissor result bundle in `srt@tools[[tool_name]]`.
 
 ## References
 
-Sun, D. et al. Identifying phenotype-associated subpopulations by
-integrating bulk and single-cell sequencing data. *Nature Biotechnology*
-(2021).
-[doi:10.1038/s41587-021-01091-3](https://doi.org/10.1038/s41587-021-01091-3)
+Sun D, Guan X, Moran AE, et al. (2022). Identifying phenotype-associated
+subpopulations by integrating bulk and single-cell sequencing data.
+Nature Biotechnology, 40(4), 527-538. doi:10.1038/s41587-021-01091-3
 
 ## See also
 
@@ -163,7 +162,7 @@ integrating bulk and single-cell sequencing data. *Nature Biotechnology*
 data(panc8_sub)
 data(islet_bulk)
 panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
-#> ℹ [2026-09-13 22:44:36] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-20 22:46:36] Skip `log1p()` because `layer = data` is not "counts"
 panc8_sub <- RunScissor(
   panc8_sub,
   bulk_dataset = islet_bulk,
@@ -179,8 +178,8 @@ panc8_sub <- RunScissor(
   alpha = 0.2,
   cutoff = 0.5
 )
-#> ℹ [2026-09-13 22:44:56] Scissor alpha 0.2 selected 1 positive and 491 negative cells (30.75%)
-#> ✔ [2026-09-13 22:44:56] Scissor stored 1 Scissor+ and 491 Scissor- cells
+#> ℹ [2026-09-20 22:46:55] Scissor alpha 0.2 selected 1 positive and 491 negative cells (30.75%)
+#> ✔ [2026-09-20 22:46:55] Scissor stored 1 Scissor+ and 491 Scissor- cells
 
 ScissorPlot(
   panc8_sub,

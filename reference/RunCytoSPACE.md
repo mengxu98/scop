@@ -181,6 +181,4 @@ SpatialSpotPlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-#> Ignoring unknown labels:
-#> • colour : "CytoSPACE_dominant_type"
 ```

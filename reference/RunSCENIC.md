@@ -1,6 +1,10 @@
 # Run SCENIC gene regulatory network analysis
 
-Run SCENIC gene regulatory network analysis
+Infer gene regulatory networks, prune candidate target links with
+cisTarget motif enrichment, and calculate cellular regulon activity with
+AUCell. The resulting per-cell regulon activity scores (RAS) are stored
+in the Seurat assay specified by `assay_name` (default `"scenic"`), with
+network details stored under `srt@tools[[tool_name]]`.
 
 ## Usage
 
@@ -29,7 +33,7 @@ RunSCENIC(
   max_features = 0.1,
   subsample = 0.9,
   early_stop_window_length = 25,
-  cores = 1,
+  cores = NULL,
   parallel_backend = c("auto", "psock", "fork"),
   seed = 1234,
   force = FALSE,
@@ -164,8 +168,9 @@ RunSCENIC(
 - cores:
 
   Number of workers used by GRNBoost2, `scenic ctx`, and AUCell scoring.
-  If multicore execution is not supported, this is automatically reduced
-  to one core.
+  `NULL` (the default) keeps the process OpenMP team for the C++ kernels
+  and uses one worker elsewhere. If multicore execution is not
+  supported, this is automatically reduced to one core.
 
 - parallel_backend:
 
@@ -184,7 +189,7 @@ RunSCENIC(
 
 - assay_name:
 
-  Name of the assay used to store regulon activity scores.
+  Name of the assay used to store regulon activity scores (RAS).
 
 - tool_name:
 

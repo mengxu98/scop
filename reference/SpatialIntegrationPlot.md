@@ -100,6 +100,10 @@ SpatialIntegrationPlot(
   [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
   or
   [`CellDimPlot()`](https://mengxu98.github.io/scop/reference/CellDimPlot.md).
+  For spatial maps, `image` can be one image or a named sample-to-image
+  vector using names in the merged object. By default, each sample uses
+  its uniquely matching image. `nrow`, `ncol` and `byrow` control the
+  layout of separate image panels.
 
 - image.scale:
 
@@ -115,6 +119,13 @@ SpatialIntegrationPlot(
 ## Value
 
 A `ggplot`, patchwork object, or list of plots.
+
+## Details
+
+Raw spatial maps retain every sample and use consistent category colors.
+Aligned maps use the stored aligned coordinates without a raw
+tissue-image overlay. This plotting option does not perform image
+registration.
 
 ## See also
 

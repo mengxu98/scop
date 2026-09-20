@@ -141,6 +141,4 @@ SpatialSpotPlot(
   coord.cols = c("x", "y"),
   pt.size = 1.5
 )
-#> Ignoring unknown labels:
-#> • colour : "BayesSpace_cluster"
 ```

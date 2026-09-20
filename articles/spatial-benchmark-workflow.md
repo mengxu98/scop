@@ -20,24 +20,6 @@ analyses.
 ``` r
 
 library(scop)
-#>           ⬢          .        ⬡             ⬢     .
-#>                      _____ _________  ____
-#>                     / ___// ___/ __ ./ __ .
-#>                    (__  )/ /__/ /_/ / /_/ /
-#>                   /____/ .___/.____/ .___/
-#>                                   /_/
-#>       ⬢               .      ⬡        .          ⬢
-#> ------------------------------------------------------------
-#> Version: 0.9.2 (2026-09-12 update)
-#> Website: https://mengxu98.github.io/scop/
-#> 
-#> Python environment initialization is disabled
-#> To enable it, set: options(scop_env_init = TRUE)
-#> 
-#> The message can be suppressed by: 
-#>   suppressPackageStartupMessages(library(scop))
-#>   or options(log_message.verbose = FALSE)
-#> ------------------------------------------------------------
 
 set.seed(42)
 n_spots <- 36L
@@ -84,13 +66,13 @@ bench <- RunSpatialBenchmark(
 
 bench$summary
 #>        method      workflow ARI NMI purity runtime_s baseline_memory_mb
-#> 1  BayesSpace SpatialDomain   1   1      1    11.338           617.2969
-#> 2      BANKSY SpatialDomain  NA  NA     NA     3.566           617.1719
-#> 3 SmoothClust SpatialDomain   1   1      1     3.268           617.4141
+#> 1  BayesSpace SpatialDomain   1   1      1    11.629           615.4453
+#> 2      BANKSY SpatialDomain  NA  NA     NA     3.621           615.1953
+#> 3 SmoothClust SpatialDomain   1   1      1     3.431           615.4336
 #>   peak_memory_mb memory_delta_mb n_evaluated n_clusters  status
-#> 1      1311.0234        693.7266          36          3 success
-#> 2       886.4414        269.2695           0         NA  failed
-#> 3       881.0508        263.6367          36          3 success
+#> 1      1309.3594        693.9141          36          3 success
+#> 2       900.9961        285.8008           0         NA  failed
+#> 3       882.8242        267.3906          36          3 success
 #>                               error
 #> 1                                  
 #> 2 Not enough neighbors in data set!
@@ -115,10 +97,10 @@ str(bench$summary, max.level = 1)
 #>  $ ARI               : num  1 NA 1
 #>  $ NMI               : num  1 NA 1
 #>  $ purity            : num  1 NA 1
-#>  $ runtime_s         : num  11.34 3.57 3.27
-#>  $ baseline_memory_mb: num  617 617 617
-#>  $ peak_memory_mb    : num  1311 886 881
-#>  $ memory_delta_mb   : num  694 269 264
+#>  $ runtime_s         : num  11.63 3.62 3.43
+#>  $ baseline_memory_mb: num  615 615 615
+#>  $ peak_memory_mb    : num  1309 901 883
+#>  $ memory_delta_mb   : num  694 286 267
 #>  $ n_evaluated       : int  36 0 36
 #>  $ n_clusters        : int  3 NA 3
 #>  $ status            : chr  "success" "failed" "success"
@@ -135,9 +117,11 @@ head(bench$predictions)
 
 ## Plot benchmark views
 
-[`SpatialBenchmarkPlot()`](https://mengxu98.github.io/scop/reference/SpatialBenchmarkPlot.md)
-defaults to a publication-oriented overview that combines clustering
-agreement with runtime and peak-memory efficiency.
+For a `spatial_benchmark_result`, `plot_type = "auto"` selects the
+publication-oriented overview that combines clustering agreement with
+runtime and peak-memory efficiency. For an ordinary summary table,
+`auto` selects the stable native bar view; it does not depend on whether
+the optional `funkyheatmap` package happens to be installed.
 
 ``` r
 
@@ -153,7 +137,12 @@ Other views:
 SpatialBenchmarkPlot(data = bench, plot_type = "quality")
 SpatialBenchmarkPlot(data = bench, plot_type = "efficiency")
 SpatialBenchmarkPlot(data = bench, plot_type = "heatmap")
+SpatialBenchmarkPlot(data = bench, plot_type = "funkyheatmap")
 ```
+
+`funkyheatmap` is an explicit optional view. If its dependency is
+unavailable, the call reports that availability condition; it is never
+selected implicitly by `auto`.
 
 ## What to report
 

@@ -161,10 +161,6 @@ SpatialSpotPlot(
   object = spatial,
   features = Seurat::VariableFeatures(spatial, assay = "Spatial")[1:2]
 )
-#> Ignoring unknown labels:
-#> • fill : "FBP1"
-#> Ignoring unknown labels:
-#> • fill : "PNLIP"
 
 
 spatial <- RunSpatialVariableFeatures(
@@ -172,14 +168,10 @@ spatial <- RunSpatialVariableFeatures(
   assay = "Spatial",
   nfeatures = 50
 )
-#> ◌ [2026-09-13 22:47:14] Running spatial variable feature detection
-#> ✔ [2026-09-13 22:47:14] Spatial variable features completed: 100 tested, 50 ranked in the top set
+#> ◌ [2026-09-20 22:50:32] Running spatial variable feature detection
+#> ✔ [2026-09-20 22:50:32] Spatial variable features completed: 100 tested, 50 ranked in the top set
 #> ℹ   Scope method "moran" ("cpp" backend); assay "Spatial", layer "data"; 1986 spots; coordinates "raw"
 #> ℹ   Saved 50 top features as assay `VariableFeatures`; full result in returned object tool bundle `SpatialVariableFeatures`
 #> ℹ   Plot returned object `SpatialVariableFeaturePlot(<returned_object>, plot_type = "combined", assay = "Spatial", image = "slice1", coord.cols = c("x", "y"))`
 SpatialVariableFeaturePlot(object = spatial, plot_type = "combined", nfeatures = 2)
-#> Ignoring unknown labels:
-#> • fill : "FBP1"
-#> Ignoring unknown labels:
-#> • fill : "CELA3A"
 ```

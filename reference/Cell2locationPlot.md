@@ -14,6 +14,10 @@ Cell2locationPlot(
   image = NULL,
   overlay_image = TRUE,
   coord.cols = c("col", "row"),
+  combine = TRUE,
+  nrow = NULL,
+  ncol = NULL,
+  byrow = TRUE,
   ...,
   image.scale = c("lowres", "hires"),
   srt = NULL
@@ -59,6 +63,15 @@ Cell2locationPlot(
 
   Metadata coordinate columns used when no image is available.
 
+- combine:
+
+  Whether to combine matrix or dominant point maps. If `FALSE`, return a
+  named list of plots.
+
+- nrow, ncol, byrow:
+
+  Point-map layout controls.
+
 - ...:
 
   Additional arguments passed to
@@ -82,4 +95,12 @@ A `ggplot`, `patchwork`, or list of plots.
 ## Details
 
 Abundance plots use posterior q05 values. Proportion plots normalize
-these values across cell types within each spot.
+these values across cell types within each spot. Matrix point maps share
+a default display range. Explicit cutoff or quantile arguments passed
+through `...` retain the scales computed by
+[`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md),
+including when returning separate panels. Saved plotting matrices retain
+every original spot; filtered observations have `NA` values, while
+`cells` records only the modeled spots. Older compact results are
+expanded only when their modeled IDs and `dropped_spots` record account
+for all missing rows. Unexplained missing or unknown IDs are errors.

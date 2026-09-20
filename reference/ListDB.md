@@ -36,13 +36,13 @@ ListDB(species = "Homo_sapiens")
 #> <0 rows> (or 0-length row.names)
 ListDB(species = c("Homo_sapiens", "Mus_musculus"))
 #>   Database      Species                Version                       Date
-#> 1     CSPA Mus_musculus           CSPA nterm:1 2026-09-13 21:37:27.698186
-#> 2       DO Mus_musculus       9.0.0 nterm:6595 2026-09-13 21:40:20.346298
-#> 3    GO_BP Mus_musculus     3.23.0 nterm:14957 2026-09-13 21:39:21.659271
-#> 4    GO_CC Mus_musculus      3.23.0 nterm:2065 2026-09-13 21:39:22.750087
-#> 5       MP Mus_musculus 2026-09-13 nterm:10930 2026-09-13 21:40:15.582711
-#> 6       TF Mus_musculus    AnimalTFDB4 nterm:2 2026-09-13 21:07:04.225202
+#> 1     CSPA Mus_musculus           CSPA nterm:1 2026-09-20 21:34:23.210475
+#> 2       DO Mus_musculus       9.0.0 nterm:6595 2026-09-20 21:37:13.178838
+#> 3    GO_BP Mus_musculus     3.23.0 nterm:14957 2026-09-20 21:36:17.260543
+#> 4    GO_CC Mus_musculus      3.23.0 nterm:2065 2026-09-20 21:36:18.362955
+#> 5       MP Mus_musculus 2026-09-20 nterm:10941 2026-09-20 21:37:08.685526
+#> 6       TF Mus_musculus    AnimalTFDB4 nterm:2 2026-09-20 21:04:17.146439
 ListDB(species = "Mus_musculus", db = "GO_BP")
 #>   Database      Species            Version                       Date
-#> 1    GO_BP Mus_musculus 3.23.0 nterm:14957 2026-09-13 21:39:21.659271
+#> 1    GO_BP Mus_musculus 3.23.0 nterm:14957 2026-09-20 21:36:17.260543
 ```

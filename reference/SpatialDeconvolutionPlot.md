@@ -51,7 +51,8 @@ SpatialDeconvolutionPlot(
 
 - combine:
 
-  Whether to combine point maps. If `FALSE`, return a named list.
+  Whether to combine point or dominant maps. If `FALSE`, return a named
+  list.
 
 - nrow, ncol, byrow:
 
@@ -76,10 +77,17 @@ SpatialDeconvolutionPlot(
 
 A `ggplot`, `patchwork`, or named list of `ggplot` objects.
 
+## Details
+
+Point maps share a zero-to-one scale. A cell type with no measured
+values produces an informative empty panel instead of aborting the other
+maps. For dominant and pie maps, `cell_types` selects the types
+participating in the displayed comparison; pie fractions are relative to
+those selected types.
+
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 reference <- panc8_sub[, panc8_sub$celltype %in% c("ductal", "alpha", "beta")]
@@ -101,6 +109,34 @@ spatial <- RunRCTD(
   max_cores = 1,
   verbose = FALSE
 )
+#> Begin: process_cell_type_info
+#> process_cell_type_info: number of cells in reference: 694
+#> process_cell_type_info: number of genes in reference: 97
+#> 
+#> ductal   beta  alpha 
+#>    211    304    179 
+#> End: process_cell_type_info
+#> create.RCTD: getting regression differentially expressed genes: 
+#> get_de_genes: ductal found DE genes: 24
+#> get_de_genes: beta found DE genes: 7
+#> get_de_genes: alpha found DE genes: 51
+#> get_de_genes: total DE genes: 82
+#> create.RCTD: getting platform effect normalization differentially expressed genes: 
+#> get_de_genes: ductal found DE genes: 27
+#> get_de_genes: beta found DE genes: 8
+#> get_de_genes: alpha found DE genes: 55
+#> get_de_genes: total DE genes: 90
+#> fitBulk: decomposing bulk
+#> chooseSigma: using initial Q_mat with sigma =  1
+#> Likelihood value: 14055.4563689972
+#> Sigma value:  0.84
+#> Likelihood value: 13872.0157413349
+#> Sigma value:  0.69
+#> Likelihood value: 13777.9531790351
+#> Sigma value:  0.65
+#> Likelihood value: 13771.1936781319
+#> Sigma value:  0.64
+#> Likelihood value: 13770.9645150382
+#> Sigma value:  0.64
 SpatialDeconvolutionPlot(spatial, tool_name = "RCTD", plot_type = "dominant")
-} # }
 ```

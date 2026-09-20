@@ -60,24 +60,24 @@ RunDoubletDetection(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-13 22:17:47] Start standard processing workflow...
-#> ℹ [2026-09-13 22:17:47] Checking a list of <Seurat>...
-#> ! [2026-09-13 22:17:47] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-13 22:17:47] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-13 22:17:47] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-13 22:17:48] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-13 22:17:48] Number of available HVF: 2000
-#> ℹ [2026-09-13 22:17:48] Finished check
-#> ℹ [2026-09-13 22:17:48] Perform `ScaleData()`
-#> ℹ [2026-09-13 22:17:48] Perform pca linear dimension reduction
-#> ℹ [2026-09-13 22:17:48] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-13 22:17:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-13 22:17:49] Reorder clusters...
-#> ℹ [2026-09-13 22:17:49] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-13 22:17:49] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-13 22:17:56] Standard processing workflow completed
+#> ℹ [2026-09-20 22:15:23] Start standard processing workflow...
+#> ℹ [2026-09-20 22:15:23] Checking a list of <Seurat>...
+#> ! [2026-09-20 22:15:23] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-20 22:15:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-20 22:15:23] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-20 22:15:24] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-20 22:15:24] Number of available HVF: 2000
+#> ℹ [2026-09-20 22:15:24] Finished check
+#> ℹ [2026-09-20 22:15:24] Perform `ScaleData()`
+#> ℹ [2026-09-20 22:15:24] Perform pca linear dimension reduction
+#> ℹ [2026-09-20 22:15:24] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-20 22:15:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-20 22:15:25] Reorder clusters...
+#> ℹ [2026-09-20 22:15:25] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-20 22:15:25] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-20 22:15:32] Standard processing workflow completed
 pancreas_sub <- RunDoubletDetection(pancreas_sub)
-#> ℹ [2026-09-13 22:17:56] Running DoubletDetection
+#> ℹ [2026-09-20 22:15:32] Running DoubletDetection
 #> Error in if (existing_minor %in% c("3.10", "3.11", "3.12")) {    version <- paste0(existing_minor, "-1")}: argument is of length zero
 CellDimPlot(
   pancreas_sub,
@@ -91,6 +91,6 @@ FeatureDimPlot(
   reduction = "umap",
   features = "db.DoubletDetection_score"
 )
-#> ! [2026-09-13 22:18:22] "db.DoubletDetection_score" are not in the features of <Seurat>
+#> ! [2026-09-20 22:15:53] "db.DoubletDetection_score" are not in the features of <Seurat>
 #> Error in FeatureDimPlot(pancreas_sub, reduction = "umap", features = "db.DoubletDetection_score"): There are no valid features present.
 ```

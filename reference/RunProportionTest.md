@@ -108,7 +108,11 @@ RunProportionTest(
 
 ## References
 
-[Miller et al. paper](https://doi.org/10.1158/0008-5472.can-20-3562),
+Miller SA, Policastro RA, Sriramkumar S, et al. (2021). LSD1 and
+Aberrant DNA Methylation Mediate Persistence of Enteroendocrine
+Progenitors That Support BRAF-Mutant Colorectal Cancer. Cancer Research,
+81(14), 3791-3805. doi:10.1158/0008-5472.CAN-20-3562
+
 [scProportionTest](https://github.com/rpolicastro/scProportionTest),
 [miloR](https://bioconductor.org/packages/miloR),
 [scCODA](https://github.com/theislab/scCODA),
@@ -133,10 +137,10 @@ pancreas_sub <- RunProportionTest(
   proportion_method = "permutation",
   comparison = list(c("G2M", "G1"))
 )
-#> ℹ [2026-09-13 22:42:19] Start proportion test ("permutation")
-#> ℹ [2026-09-13 22:42:19] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-09-13 22:42:19] Running comparison: "G1" vs "G2M"
-#> ✔ [2026-09-13 22:42:19] Proportion test completed ("permutation")
+#> ℹ [2026-09-20 22:41:16] Start proportion test ("permutation")
+#> ℹ [2026-09-20 22:41:16] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-09-20 22:41:16] Running comparison: "G1" vs "G2M"
+#> ✔ [2026-09-20 22:41:16] Proportion test completed ("permutation")
 
 ProportionTestPlot(
   pancreas_sub

@@ -209,6 +209,16 @@ SpatialSpotPlot(
 
 A `ggplot`, `patchwork`, or list of `ggplot` objects.
 
+## Details
+
+Factor levels retain their order, including after selecting `cells`.
+Named `palcolor` vectors map category names to colors; unnamed colors
+follow factor order. Missing values remain distinct from a category
+named `"NA"`. Long-format point/jitter plots honor cutoff and quantile
+controls and return a named one-element list when `combine = FALSE`.
+Their default continuous range remains the full data range; an
+explicitly supplied `upper_quantile` overrides that default.
+
 ## Examples
 
 ``` r
@@ -217,8 +227,6 @@ SpatialSpotPlot(
   object = visium_human_pancreas_sub,
   group.by = "coda_label"
 )
-#> Ignoring unknown labels:
-#> • colour : "coda_label"
 
 
 SpatialSpotPlot(
@@ -226,8 +234,4 @@ SpatialSpotPlot(
   features = rownames(visium_human_pancreas_sub)[1:2],
   layer = "counts"
 )
-#> Ignoring unknown labels:
-#> • fill : "TMSB4X"
-#> Ignoring unknown labels:
-#> • fill : "UBC"
 ```

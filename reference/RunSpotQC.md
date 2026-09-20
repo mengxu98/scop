@@ -107,12 +107,10 @@ spatial <- RunSpotQC(
   object = visium_human_pancreas_sub,
   assay = "Spatial"
 )
-#> ◌ [2026-09-13 22:47:16] Running spot-level quality control
-#> ✔ [2026-09-13 22:47:17] Spot QC completed: 1986 evaluated, 1907 Pass, 79 Fail
+#> ◌ [2026-09-20 22:50:34] Running spot-level quality control
+#> ✔ [2026-09-20 22:50:34] Spot QC completed: 1986 evaluated, 1907 Pass, 79 Fail
 #> ℹ   Scope assay "Spatial", layer "counts"
 #> ℹ   Saved metadata column `SpotQC`
 #> ℹ   Plot returned object `SpatialSpotPlot(<returned_object>, group.by = "SpotQC")`
 SpatialSpotPlot(object = spatial, group.by = "SpotQC")
-#> Ignoring unknown labels:
-#> • colour : "SpotQC"
 ```

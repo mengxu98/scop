@@ -293,7 +293,7 @@ For `"bar"`, `"lollipop"`, `"volcano"`, `"dim"`, `"stat"`, and
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-09-13 21:34:50] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-20 21:32:11] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunDorothea(
   pancreas_sub,
   layer = "counts",
@@ -301,9 +301,9 @@ pancreas_sub <- RunDorothea(
   method = "ulm",
   minsize = 5
 )
-#> ℹ [2026-09-13 21:35:54] Run "DoRothEA"/decoupleR with 12895 regulon edges
-#> ℹ [2026-09-13 21:36:05] "DoRothEA" TF activity scores stored in assay "dorothea"
-#> ℹ [2026-09-13 21:36:05] "DoRothEA" TF activity scores stored in <Seurat> metadata
+#> ℹ [2026-09-20 21:33:15] Run "DoRothEA"/decoupleR with 12895 regulon edges
+#> ℹ [2026-09-20 21:33:25] "DoRothEA" TF activity scores stored in assay "dorothea"
+#> ℹ [2026-09-20 21:33:26] "DoRothEA" TF activity scores stored in <Seurat> metadata
 
 DorotheaPlot(
   pancreas_sub,
@@ -313,7 +313,7 @@ DorotheaPlot(
   plot_type = "bar",
   top_n = 20
 )
-#> ℹ [2026-09-13 21:36:05] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-09-20 21:33:26] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
 DorotheaPlot(
@@ -324,7 +324,7 @@ DorotheaPlot(
   plot_type = "lollipop",
   top_n = 20
 )
-#> ℹ [2026-09-13 21:36:05] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-09-20 21:33:26] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
 DorotheaPlot(
@@ -334,7 +334,7 @@ DorotheaPlot(
   group2 = "Ductal",
   plot_type = "volcano"
 )
-#> ℹ [2026-09-13 21:36:06] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
+#> ℹ [2026-09-20 21:33:27] Compare "DoRothEA" TF activity: "Endocrine" vs "Ductal"
 
 
 ht <- DorotheaPlot(
@@ -343,7 +343,7 @@ ht <- DorotheaPlot(
   plot_type = "heatmap",
   top_n = 20
 )
-#> ℹ [2026-09-13 21:36:06] Draw "DoRothEA" TF activity heatmap for 20 TFs
+#> ℹ [2026-09-20 21:33:27] Draw "DoRothEA" TF activity heatmap for 20 TFs
 ht$plot
 
 
@@ -353,7 +353,7 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "dim"
 )
-#> ℹ [2026-09-13 21:36:07] Draw "DoRothEA" embedding plots for 1 TFs
+#> ℹ [2026-09-20 21:33:28] Draw "DoRothEA" embedding plots for 1 TFs
 
 
 DorotheaPlot(
@@ -363,7 +363,7 @@ DorotheaPlot(
   plot_type = "stat",
   stat_plot_type = "violin"
 )
-#> ℹ [2026-09-13 21:36:07] Draw "DoRothEA" activity distributions for 3 TFs
+#> ℹ [2026-09-20 21:33:28] Draw "DoRothEA" activity distributions for 3 TFs
 
 
 DorotheaPlot(
@@ -374,6 +374,6 @@ DorotheaPlot(
   features = "Sox9",
   plot_type = "targets"
 )
-#> ! [2026-09-13 21:36:08] Dropping 3 "Sox9" targets missing from assay "RNA"
-#> ℹ [2026-09-13 21:36:08] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
+#> ! [2026-09-20 21:33:29] Dropping 3 "Sox9" targets missing from assay "RNA"
+#> ℹ [2026-09-20 21:33:29] Draw "DoRothEA" regulon-target volcano for "Sox9" (10 targets)
 ```

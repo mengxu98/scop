@@ -164,7 +164,7 @@ pbmcmultiome_sub <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ℹ [2026-09-13 22:39:34] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-20 22:38:34] Skip `log1p()` because `layer = data` is not "counts"
 reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:120])
 query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[121:200])
 query <- RunStandardWorkflow(
@@ -174,7 +174,7 @@ query <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ! [2026-09-13 22:39:42] Only one cluster found
+#> ! [2026-09-20 22:38:41] Only one cluster found
 query <- RunLabelTransfer(
   object = query,
   reference = reference,

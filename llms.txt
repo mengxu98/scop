@@ -362,7 +362,7 @@ CellDimPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -377,7 +377,7 @@ CellDimPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-2.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-2.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-2-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -391,7 +391,7 @@ FeatureDimPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-3.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-3.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-3-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -408,7 +408,7 @@ FeatureDimPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-4.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-4.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-4-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -436,7 +436,7 @@ ht <- GroupHeatmap(
 print(ht$plot)
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/EDA-5-dark.svg#gh-dark-mode-only)
 
 ### **Quality control**
 
@@ -450,7 +450,7 @@ CellDimPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -461,7 +461,7 @@ CellStatPlot(
 ) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-2.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-2.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-2-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -478,7 +478,7 @@ CellStatPlot(
 ) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-3.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-3.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCellQC-3-dark.svg#gh-dark-mode-only)
 
 ### **Integration pipeline**
 
@@ -501,7 +501,7 @@ CellDimPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunIntegration-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/integration_scop-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/integration_scop-1-dark.svg#gh-dark-mode-only)
 
 ### **Cell annotation**
 
@@ -538,7 +538,7 @@ ProjectionPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNMap-1-dark.svg#gh-dark-mode-only)
 
 #### **Cell annotation using bulk RNA-seq datasets**
 
@@ -560,7 +560,7 @@ CellDimPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-bulk-1-dark.svg#gh-dark-mode-only)
 
 #### **Cell annotation using single-cell datasets**
 
@@ -582,7 +582,7 @@ CellDimPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -601,7 +601,7 @@ ht <- CellCorHeatmap(
 print(ht$plot)
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunKNNPredict-scrna-3-dark.svg#gh-dark-mode-only)
 
 ### **Cellular potency**
 
@@ -621,7 +621,7 @@ CytoTRACEPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCytoTRACE.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCytoTRACE.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunCytoTRACE-dark.svg#gh-dark-mode-only)
 
 ### **Trajectory inference**
 
@@ -650,7 +650,7 @@ VelocityPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -663,7 +663,7 @@ VelocityPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSCVELO-2-dark.svg#gh-dark-mode-only)
 
 #### **PAGA**
 
@@ -688,7 +688,7 @@ PAGAPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunPAGA-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunPAGA-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunPAGA-1-dark.svg#gh-dark-mode-only)
 
 #### **Slingshot**
 
@@ -711,7 +711,7 @@ CellDimPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -725,7 +725,7 @@ FeatureDimPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-2.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-2.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunSlingshot-2-dark.svg#gh-dark-mode-only)
 
 #### **Monocle3**
 
@@ -775,7 +775,7 @@ CellDimPlot(
   trajectory
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunMonocle3.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunMonocle3.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunMonocle3-dark.svg#gh-dark-mode-only)
 
 ### **Dynamic features**
 
@@ -823,7 +823,7 @@ ht <- DynamicHeatmap(
 print(ht$plot)
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicHeatmap-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicHeatmap-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicHeatmap-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -838,7 +838,7 @@ DynamicPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicPlot-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicPlot-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/DynamicPlot-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -858,7 +858,7 @@ FeatureStatPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureStatPlot-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureStatPlot-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureStatPlot-1-dark.svg#gh-dark-mode-only)
 
 ### **Differential expression analysis**
 
@@ -878,7 +878,7 @@ DEtestPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -914,7 +914,7 @@ DEtestPlot(
 ) + ggplot2::theme(aspect.ratio = 1 / 2)
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-2.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-2.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-2-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -926,7 +926,7 @@ DEtestPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-3.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-3.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunDEtest-3-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -946,14 +946,13 @@ ht <- FeatureHeatmap(
   feature_annotation_palcolor = list(
     c("gold", "steelblue"), c("forestgreen")
   ),
-  cores = 6,
   height = 5,
   width = 3
 )
 print(ht$plot)
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/FeatureHeatmap-1-dark.svg#gh-dark-mode-only)
 
 ### **Enrichment analysis**
 
@@ -966,8 +965,7 @@ pancreas_sub <- RunEnrichment(
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus",
-  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05",
-  cores = 5
+  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05"
 )
 EnrichmentPlot(
   pancreas_sub,
@@ -977,7 +975,7 @@ EnrichmentPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -989,7 +987,7 @@ EnrichmentPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-2.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-2.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-2-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -1002,7 +1000,7 @@ EnrichmentPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-3.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-3.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-3-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -1014,7 +1012,7 @@ EnrichmentPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-4.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-4.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunEnrichment-4-dark.svg#gh-dark-mode-only)
 
 To ensure that labels are visible, you can adjust the size of the viewer
 panel on Rstudio IDE.
@@ -1029,7 +1027,7 @@ EnrichmentPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_enrichmap-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_enrichmap-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_enrichmap-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -1041,7 +1039,7 @@ EnrichmentPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_comparison-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_comparison-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_comparison-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -1053,7 +1051,7 @@ EnrichmentPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Enrichment_lollipop-1-dark.svg#gh-dark-mode-only)
 
 #### **GSEA**
 
@@ -1064,8 +1062,7 @@ pancreas_sub <- RunGSEA(
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus",
-  DE_threshold = "p_val_adj < 0.05",
-  cores = 5
+  DE_threshold = "p_val_adj < 0.05"
 )
 GSEAPlot(
   pancreas_sub,
@@ -1075,7 +1072,7 @@ GSEAPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunGSEA-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunGSEA-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/RunGSEA-1-dark.svg#gh-dark-mode-only)
 
 ``` r
 
@@ -1089,7 +1086,7 @@ GSEAPlot(
 )
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1.svg#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/GSEA_bar-1-dark.svg#gh-dark-mode-only)
 
 ### **Interactive data visualization with SCExplorer**
 
@@ -1110,17 +1107,17 @@ if (interactive()) {
 }
 ```
 
-![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCExplorer-1.png)
+![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCExplorer-1.png#gh-light-mode-only)![](https://raw.githubusercontent.com/mengxu98/figures/main/scop/SCExplorer-1-dark.png#gh-dark-mode-only)
 
 ### **Other visualization examples**
 
-[**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)![Example1](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-1.png)
+[**CellDimPlot**](https://mengxu98.github.io/scop/reference/CellDimPlot.html)![Example1](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-1.svg#gh-light-mode-only)![Example1](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-1-dark.svg#gh-dark-mode-only)
 
-[**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-2.png)
+[**CellStatPlot**](https://mengxu98.github.io/scop/reference/CellStatPlot.html)![Example2](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-2.svg#gh-light-mode-only)![Example2](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-2-dark.svg#gh-dark-mode-only)
 
-[**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-3.png)
+[**FeatureStatPlot**](https://mengxu98.github.io/scop/reference/FeatureStatPlot.html)![Example3](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-3.svg#gh-light-mode-only)![Example3](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-3-dark.svg#gh-dark-mode-only)
 
-[**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-4.png)
+[**GroupHeatmap**](https://mengxu98.github.io/scop/reference/GroupHeatmap.html)![Example3](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-4.svg#gh-light-mode-only)![Example3](https://raw.githubusercontent.com/mengxu98/figures/main/scop/Example-4-dark.svg#gh-dark-mode-only)
 
 You can also find more examples in the documentation of the function:
 [RunIntegration](https://mengxu98.github.io/scop/reference/RunIntegration.html),

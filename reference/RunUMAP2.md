@@ -38,6 +38,7 @@ RunUMAP2(
   reduction.key = "UMAP_",
   verbose = TRUE,
   seed.use = 11,
+  spread = 1,
   ...
 )
 
@@ -65,6 +66,7 @@ RunUMAP2(
   reduction.key = "UMAP_",
   verbose = TRUE,
   seed.use = 11L,
+  spread = 1,
   ...
 )
 ```
@@ -114,7 +116,7 @@ RunUMAP2(
 
 - n_threads:
 
-  Number of threads.
+  Deprecated alias for `cores`.
 
 - return.model:
 
@@ -161,27 +163,31 @@ RunUMAP2(
 
   Random seed.
 
+- spread:
+
+  Spread of the embedding (the effective scale of embedded points).
+
 ## Examples
 
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-13 22:50:05] Start standard processing workflow...
-#> ℹ [2026-09-13 22:50:05] Checking a list of <Seurat>...
-#> ! [2026-09-13 22:50:05] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-13 22:50:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-13 22:50:05] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-13 22:50:05] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-13 22:50:05] Number of available HVF: 2000
-#> ℹ [2026-09-13 22:50:05] Finished check
-#> ℹ [2026-09-13 22:50:05] Perform `ScaleData()`
-#> ℹ [2026-09-13 22:50:05] Perform pca linear dimension reduction
-#> ℹ [2026-09-13 22:50:06] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-13 22:50:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-13 22:50:07] Reorder clusters...
-#> ℹ [2026-09-13 22:50:07] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-13 22:50:07] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-13 22:50:15] Standard processing workflow completed
+#> ℹ [2026-09-20 22:53:23] Start standard processing workflow...
+#> ℹ [2026-09-20 22:53:23] Checking a list of <Seurat>...
+#> ! [2026-09-20 22:53:23] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-20 22:53:23] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-20 22:53:23] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-20 22:53:24] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-20 22:53:24] Number of available HVF: 2000
+#> ℹ [2026-09-20 22:53:24] Finished check
+#> ℹ [2026-09-20 22:53:24] Perform `ScaleData()`
+#> ℹ [2026-09-20 22:53:24] Perform pca linear dimension reduction
+#> ℹ [2026-09-20 22:53:24] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-20 22:53:25] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-20 22:53:25] Reorder clusters...
+#> ℹ [2026-09-20 22:53:25] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-20 22:53:25] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-20 22:53:33] Standard processing workflow completed
 pancreas_sub <- RunUMAP2(pancreas_sub, dims = 1:30)
 CellDimPlot(
   pancreas_sub,

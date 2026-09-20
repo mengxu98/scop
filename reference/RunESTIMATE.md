@@ -96,5 +96,10 @@ for `SummarizedExperiment` input, or the modified `Seurat` object for
 
 ## References
 
-Yoshihara et al. (2013) <doi:10.1038/ncomms3612>. Barbie et al. (2009)
-<doi:10.1038/nature08460>.
+Yoshihara K, Shahmoradgoli M, Martínez E, et al. (2013). Inferring
+tumour purity and stromal and immune cell admixture from expression
+data. Nature Communications, 4, 2612. doi:10.1038/ncomms3612
+
+Barbie DA, Tamayo P, Boehm JS, et al. (2009). Systematic RNA
+interference reveals that oncogenic KRAS-driven cancers require TBK1.
+Nature, 462(7269), 108-112. doi:10.1038/nature08460

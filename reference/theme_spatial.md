@@ -8,7 +8,7 @@ default to `theme_use = "theme_spatial"`.
 ## Usage
 
 ``` r
-theme_spatial(show_axes = FALSE, aspect.ratio = 1, base_size = 12, ...)
+theme_spatial(show_axes = FALSE, aspect.ratio = NULL, base_size = 12, ...)
 ```
 
 ## Arguments
@@ -19,7 +19,8 @@ theme_spatial(show_axes = FALSE, aspect.ratio = 1, base_size = 12, ...)
 
 - aspect.ratio:
 
-  Aspect ratio of the panel.
+  Optional panel aspect ratio. The default `NULL` lets spatial
+  coordinates determine the geometry through `coord_equal()`.
 
 - base_size:
 
@@ -42,7 +43,7 @@ A ggplot2 theme object (class `theme`, `gg`).
 
 ``` r
 theme_spatial()
-#> <theme> List of 22
+#> <theme> List of 21
 #>  $ text                 : <ggplot2::element_text>
 #>   ..@ family       : NULL
 #>   ..@ face         : NULL
@@ -58,7 +59,6 @@ theme_spatial()
 #>   ..@ margin       : NULL
 #>   ..@ debug        : NULL
 #>   ..@ inherit.blank: logi FALSE
-#>  $ aspect.ratio         : num 1
 #>  $ axis.title           : <ggplot2::element_blank>
 #>  $ axis.text            : <ggplot2::element_blank>
 #>  $ axis.line            : <ggplot2::element_blank>

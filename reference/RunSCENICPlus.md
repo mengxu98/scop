@@ -48,7 +48,7 @@ RunSCENICPlus(
   grn_subsample = 0.9,
   grn_early_stop_window_length = 0,
   seed = 666,
-  cores = 1,
+  cores = NULL,
   assay_name = "scenicplus",
   tool_name = "SCENICPlus",
   python_result_dir = NULL,
@@ -277,7 +277,8 @@ RunSCENICPlus(
 
 - cores:
 
-  Number of workers used by C++ TF-gene GRN inference.
+  Number of workers used by C++ TF-gene GRN inference. `NULL` (the
+  default) uses the process OpenMP team.
 
 - assay_name:
 
