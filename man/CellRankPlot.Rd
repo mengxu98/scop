@@ -7,7 +7,7 @@
 CellRankPlot(
   object,
   plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters",
-    "enrichment", "projection", "random_walks"),
+    "enrichment", "projection", "random_walks", "flow"),
   lineage = NULL,
   database = NULL,
   reduction = NULL,
@@ -16,6 +16,9 @@ CellRankPlot(
   n_sims = 100L,
   max_iter = 500L,
   seed = 0L,
+  start_cells = NULL,
+  cluster = NULL,
+  clusters = NULL,
   palette = "Chinese",
   palcolor = NULL,
   feature_palette = "Spectral",
@@ -31,7 +34,7 @@ CellRankPlot(
 
 \item{plot_type}{One of `"fate"`, `"states"`, `"circular"`, `"drivers"`,
 `"trends"`, `"clusters"`, `"enrichment"`, `"projection"`, or
-`"random_walks"`.}
+`"random_walks"`, or `"flow"`.}
 
 \item{lineage}{Lineage used for driver/trend plots.}
 
@@ -49,6 +52,13 @@ If `NULL`, the first stored non-empty database is used.}
 \item{max_iter}{Maximum length of each random walk.}
 
 \item{seed}{Random seed.}
+
+\item{start_cells}{Optional cell names used as random-walk starts. For a
+moscot result, omitted starts default to cells in the earliest time point.}
+
+\item{cluster}{Starting group for \code{plot_type = "flow"}.}
+
+\item{clusters}{Optional groups to display in a real-time flow plot.}
 
 \item{palette, palcolor}{Discrete SCOP palette for states, modules, and cell
 groups.}

@@ -51,10 +51,18 @@
 #' @param kernel_type Type of kernel to use: `"velocity"` (default, requires spliced/unspliced),
 #' `"pseudotime"` (requires pre-computed pseudotime or auto-computes DPT),
 #' `"cytotrace"` (auto-computes CytoTRACE score, suitable for RNA-only data),
-#' or `"wot"` (uses Waddington-OT transport maps through CellRank's RealTimeKernel).
+#' or `"wot"` (uses Waddington-OT transport maps through CellRank's RealTimeKernel),
+#' or `"moscot"` (uses moscot's TemporalProblem through RealTimeKernel).
 #' @param time_key Key in metadata for pseudotime. Used when `kernel_type = "pseudotime"`.
 #' If the key doesn't exist, DPT pseudotime will be computed automatically.
-#' @param time_field Key in metadata for experimental time. Used when `kernel_type = "wot"`.
+#' @param time_field Key in metadata for experimental time. Used when `kernel_type %in% c("wot", "moscot")`.
+#' @param time_values Optional named mapping from non-numeric experimental-time
+#' labels to numeric values used to order moscot time points. Numeric columns do
+#' not need a mapping.
+#' @param moscot_args Named lists for moscot's `growth`, `prepare`, and `solve`
+#' stages. Only used when `kernel_type = "moscot"`.
+#' @param realtime_args Named lists for `RealTimeKernel`'s `from_moscot` and
+#' `transition` stages. Only used when `kernel_type = "moscot"`.
 #' @param growth_iters Number of growth iterations passed to `wot.ot.OTModel`.
 #' @param tmap_out Directory used to store or read Waddington-OT transport maps.
 #' @param recalculate Whether to recompute Waddington-OT transport maps even when
@@ -177,9 +185,12 @@ RunCellRank <- function(
   calculate_velocity_genes = FALSE,
   denoise = FALSE,
   kinetics = FALSE,
-  kernel_type = c("velocity", "pseudotime", "cytotrace", "wot"),
+  kernel_type = c("velocity", "pseudotime", "cytotrace", "wot", "moscot"),
   time_key = "dpt_pseudotime",
   time_field = "Time",
+  time_values = NULL,
+  moscot_args = list(),
+  realtime_args = list(),
   growth_iters = 3L,
   tmap_out = "tmaps/tmap_out",
   recalculate = FALSE,
@@ -216,12 +227,67 @@ RunCellRank <- function(
   verbose = TRUE,
   srt = NULL
 ) {
+  layer_x_missing <- missing(layer_x)
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   kernel_type <- match.arg(kernel_type)
   backend <- match.arg(backend)
   estimator_type_upper <- toupper(match.arg(estimator_type))
   terminal_state_agg <- match.arg(terminal_state_agg)
   schur_method <- match.arg(schur_method)
+
+  if (identical(kernel_type, "moscot")) {
+    if (identical(backend, "cpp")) {
+      log_message(
+        "{.arg kernel_type = 'moscot'} requires {.arg backend = 'python'}; the C++ path is not equivalent to moscot",
+        message_type = "error"
+      )
+    }
+    if (isTRUE(backward)) {
+      log_message(
+        "{.arg backward = TRUE} is not supported for the forward-only moscot TemporalProblem path",
+        message_type = "error"
+      )
+    }
+    if (!is.list(moscot_args) || is.null(names(moscot_args)) && length(moscot_args)) {
+      log_message("{.arg moscot_args} must be a named list", message_type = "error")
+    }
+    if (!is.list(realtime_args) || is.null(names(realtime_args)) && length(realtime_args)) {
+      log_message("{.arg realtime_args} must be a named list", message_type = "error")
+    }
+    allowed_moscot <- c("growth", "prepare", "solve")
+    allowed_realtime <- c("from_moscot", "transition")
+    unknown_moscot <- setdiff(names(moscot_args) %||% character(), allowed_moscot)
+    unknown_realtime <- setdiff(names(realtime_args) %||% character(), allowed_realtime)
+    if (length(unknown_moscot)) {
+      log_message(
+        "Unknown {.arg moscot_args} section{?s}: {.val {paste(unknown_moscot, collapse = ', ')}}",
+        message_type = "error"
+      )
+    }
+    if (length(unknown_realtime)) {
+      log_message(
+        "Unknown {.arg realtime_args} section{?s}: {.val {paste(unknown_realtime, collapse = ', ')}}",
+        message_type = "error"
+      )
+    }
+    if (is.null(layer_x) || (isTRUE(layer_x_missing) && identical(layer_x, "counts"))) {
+      layer_x <- "data"
+    }
+    if (!is.null(time_values) && !is.null(names(time_values))) {
+      # Reticulate converts named R lists to Python mappings more reliably
+      # than named atomic vectors on Windows.
+      time_values <- as.list(time_values)
+    }
+    if (!isTRUE(use_connectivity_kernel) ||
+        !isTRUE(all.equal(as.numeric(velocity_weight), 0.8)) ||
+         !isTRUE(all.equal(as.numeric(connectivity_weight), 0.2))) {
+      log_message(
+        "{.arg velocity_weight}, {.arg connectivity_weight}, and {.arg use_connectivity_kernel} do not control moscot; use {.arg realtime_args$transition}",
+        message_type = "warning",
+        verbose = verbose
+      )
+    }
+  }
 
   if (identical(backend, "cpp")) {
     assert_cpp_approximation_opt_in(
@@ -286,6 +352,7 @@ RunCellRank <- function(
     modules = c(
       "cellrank",
       if (kernel_type == "wot") "wot",
+      if (kernel_type == "moscot") "moscot",
       if (isTRUE(magic_impute)) "magic"
     ),
     verbose = verbose
@@ -293,6 +360,9 @@ RunCellRank <- function(
   check_python("cellrank", envname = envname, conda = conda, verbose = verbose)
   if (kernel_type == "wot") {
     check_python("wot", envname = envname, conda = conda, verbose = verbose)
+  }
+  if (kernel_type == "moscot") {
+    check_python("moscot", envname = envname, conda = conda, verbose = verbose)
   }
   if (isTRUE(magic_impute)) {
     check_python("magic-impute", envname = envname, conda = conda, verbose = verbose)
@@ -341,28 +411,32 @@ RunCellRank <- function(
     }
   }
 
-  if (is.null(linear_reduction)) {
-    linear_reduction <- DefaultReduction(srt)
-  } else {
-    linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
-  }
-  if (!linear_reduction %in% names(srt@reductions)) {
-    log_message(
-      "{.val {linear_reduction}} is not in the srt reduction names",
-      message_type = "error"
-    )
+  if (!identical(kernel_type, "moscot") || !is.null(linear_reduction)) {
+    if (is.null(linear_reduction)) {
+      linear_reduction <- DefaultReduction(srt)
+    } else {
+      linear_reduction <- DefaultReduction(srt, pattern = linear_reduction)
+    }
+    if (!linear_reduction %in% names(srt@reductions)) {
+      log_message(
+        "{.val {linear_reduction}} is not in the srt reduction names",
+        message_type = "error"
+      )
+    }
   }
 
-  if (is.null(nonlinear_reduction)) {
-    nonlinear_reduction <- DefaultReduction(srt)
-  } else {
-    nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
-  }
-  if (!nonlinear_reduction %in% names(srt@reductions)) {
-    log_message(
-      "{.val {nonlinear_reduction}} is not in the srt reduction names",
-      message_type = "error"
-    )
+  if (!identical(kernel_type, "moscot") || !is.null(nonlinear_reduction)) {
+    if (is.null(nonlinear_reduction)) {
+      nonlinear_reduction <- DefaultReduction(srt)
+    } else {
+      nonlinear_reduction <- DefaultReduction(srt, pattern = nonlinear_reduction)
+    }
+    if (!nonlinear_reduction %in% names(srt@reductions)) {
+      log_message(
+        "{.val {nonlinear_reduction}} is not in the srt reduction names",
+        message_type = "error"
+      )
+    }
   }
 
   if (is.character(mode) && length(mode) == 1) {
@@ -440,6 +514,9 @@ RunCellRank <- function(
         "conda"
       )
   ]
+  if (identical(kernel_type, "moscot")) {
+    args[["max_dense_gib"]] <- max_dense_gib
+  }
 
   log_message("Running {.pkg CellRank} analysis...", verbose = verbose)
   functions <- scop_python_import("functions", convert = TRUE)
@@ -611,6 +688,7 @@ RunCellRank <- function(
       lineage_drivers = payload_drivers,
       transition_matrix = transition,
       transition_key = payload$transition_key %||% "cellrank_transition",
+      temporal = payload$temporal %||% NULL,
       versions = payload$versions %||% list(),
       states = list(
         macrostates = payload$macrostates %||% character(),

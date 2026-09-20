@@ -8,7 +8,7 @@
 #' @param object A Seurat object returned by [RunCellRank].
 #' @param plot_type One of `"fate"`, `"states"`, `"circular"`, `"drivers"`,
 #' `"trends"`, `"clusters"`, `"enrichment"`, `"projection"`, or
-#' `"random_walks"`.
+#' `"random_walks"`, or `"flow"`.
 #' @param lineage Lineage used for driver/trend plots.
 #' @param database Enrichment database used when `plot_type = "enrichment"`.
 #' If `NULL`, the first stored non-empty database is used.
@@ -23,6 +23,10 @@
 #' @param n_sims Number of random walks.
 #' @param max_iter Maximum length of each random walk.
 #' @param seed Random seed.
+#' @param start_cells Optional cell names used as random-walk starts. For a
+#' moscot result, omitted starts default to cells in the earliest time point.
+#' @param cluster Starting group for `plot_type = "flow"`.
+#' @param clusters Optional groups to display in a real-time flow plot.
 #' @param ... Arguments passed to the underlying SCOP plotting function.
 #'
 #' @return A ggplot object or a SCOP plot object.
@@ -45,7 +49,7 @@
 #' @export
 CellRankPlot <- function(
   object,
-  plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters", "enrichment", "projection", "random_walks"),
+  plot_type = c("fate", "states", "circular", "drivers", "trends", "clusters", "enrichment", "projection", "random_walks", "flow"),
   lineage = NULL,
   database = NULL,
   reduction = NULL,
@@ -54,6 +58,9 @@ CellRankPlot <- function(
   n_sims = 100L,
   max_iter = 500L,
   seed = 0L,
+  start_cells = NULL,
+  cluster = NULL,
+  clusters = NULL,
   palette = "Chinese",
   palcolor = NULL,
   feature_palette = "Spectral",
@@ -351,6 +358,91 @@ CellRankPlot <- function(
       ggplot2::labs(x = "Pseudotime", y = "Normalized trend"))
   }
 
+  if (plot_type == "flow") {
+    if (is.null(group.by) || !group.by %in% colnames(srt@meta.data)) {
+      log_message("{.arg group.by} is required for a real-time flow plot", message_type = "error")
+    }
+    temporal <- srt@tools$CellRank$temporal
+    if (is.null(temporal) || is.null(temporal$time_key)) {
+      log_message("Stored real-time metadata are missing; run RunCellRank(kernel_type = 'moscot') first", message_type = "error")
+    }
+    time_key <- as.character(temporal$time_key)
+    if (!time_key %in% colnames(srt@meta.data)) {
+      log_message("Stored real-time column {.val {time_key}} is missing from Seurat metadata", message_type = "error")
+    }
+    transition <- srt@tools$CellRank$transition_matrix %||% srt@graphs[["cellrank_transition"]]
+    if (is.null(transition)) log_message("Stored CellRank transition matrix is missing", message_type = "error")
+    cells <- colnames(srt)
+    if (!is.null(rownames(transition)) && !is.null(colnames(transition))) {
+      transition <- transition[cells, cells, drop = FALSE]
+    }
+    time_numeric <- suppressWarnings(as.numeric(as.character(srt@meta.data[[time_key]])))
+    if (any(!is.finite(time_numeric))) log_message("Stored real-time values are not numeric", message_type = "error")
+    time_levels <- as.numeric(temporal$time_values %||% sort(unique(time_numeric)))
+    time_levels <- sort(unique(time_levels))
+    groups <- as.character(srt@meta.data[[group.by]])
+    earliest <- time_levels[[1L]]
+    if (is.null(cluster)) {
+      cluster <- unique(groups[time_numeric == earliest])[1L]
+    }
+    starts <- which(time_numeric == earliest & groups == as.character(cluster))
+    if (!length(starts)) log_message("No cells found for the requested initial cluster and earliest time", message_type = "error")
+    keep_groups <- as.character(clusters %||% sort(unique(groups)))
+    mass <- numeric(length(cells))
+    mass[starts] <- 1 / length(starts)
+    rows <- vector("list", length(time_levels))
+    for (i in seq_along(time_levels)) {
+      if (i > 1L) {
+        mass <- as.numeric(mass %*% transition)
+        mass[time_numeric != time_levels[[i]]] <- 0
+        total <- sum(mass)
+        if (is.finite(total) && total > 0) mass <- mass / total
+      }
+      tab <- stats::aggregate(
+        mass,
+        by = list(cluster = groups, time = time_numeric),
+        FUN = sum
+      )
+      tab <- tab[tab$time == time_levels[[i]] & tab$cluster %in% keep_groups, , drop = FALSE]
+      names(tab)[3L] <- "probability"
+      rows[[i]] <- tab
+    }
+    flow <- do.call(rbind, rows)
+    if (is.null(flow) || !nrow(flow)) log_message("No real-time flow could be computed", message_type = "error")
+    complete_flow <- expand.grid(
+      cluster = keep_groups,
+      time = time_levels,
+      stringsAsFactors = FALSE
+    )
+    flow <- merge(
+      complete_flow,
+      flow,
+      by = c("cluster", "time"),
+      all.x = TRUE,
+      sort = FALSE
+    )
+    flow$probability[is.na(flow$probability)] <- 0
+    flow$cluster <- factor(flow$cluster, levels = keep_groups)
+    flow$time <- as.numeric(flow$time)
+    flow_colors <- unname(palette_colors(
+      n = length(keep_groups),
+      palette = palette,
+      palcolor = palcolor
+    ))
+    return(
+      ggplot2::ggplot(flow, ggplot2::aes(.data$time, .data$probability, fill = .data$cluster, group = .data$cluster)) +
+        ggplot2::geom_area(alpha = 0.85, colour = "white", linewidth = 0.15) +
+        ggplot2::scale_fill_manual(values = flow_colors, breaks = keep_groups, drop = FALSE) +
+        theme_layer +
+        ggplot2::labs(
+          x = "Experimental time",
+          y = "Propagated probability mass",
+          fill = group.by,
+          title = paste0("Flow from ", cluster, " at time ", earliest)
+        )
+    )
+  }
+
   transition <- srt@tools$CellRank$transition_matrix %||% srt@graphs[["cellrank_transition"]]
   if (is.null(transition)) log_message("Stored CellRank transition matrix is missing", message_type = "error")
   reduction <- reduction %||% DefaultReduction(srt)
@@ -367,7 +459,17 @@ CellRankPlot <- function(
   }
   set.seed(seed)
   starts <- seq_len(nrow(coords))
-  if (!is.null(group.by) && group.by %in% colnames(srt@meta.data)) starts <- which(as.character(srt@meta.data[[group.by]]) == unique(as.character(srt@meta.data[[group.by]]))[1L])
+  if (!is.null(start_cells)) {
+    start_cells <- intersect(as.character(start_cells), cells)
+    if (!length(start_cells)) log_message("{.arg start_cells} does not match stored CellRank cells", message_type = "error")
+    starts <- match(start_cells, cells)
+  } else if (!is.null(srt@tools$CellRank$temporal$time_key) &&
+             srt@tools$CellRank$temporal$time_key %in% colnames(srt@meta.data)) {
+    time_values <- suppressWarnings(as.numeric(as.character(srt@meta.data[[srt@tools$CellRank$temporal$time_key]])))
+    if (any(is.finite(time_values))) starts <- which(time_values == min(time_values, na.rm = TRUE))
+  } else if (!is.null(group.by) && group.by %in% colnames(srt@meta.data)) {
+    starts <- which(as.character(srt@meta.data[[group.by]]) == unique(as.character(srt@meta.data[[group.by]]))[1L])
+  }
   paths <- vector("list", as.integer(n_sims))
   for (sim in seq_len(as.integer(n_sims))) {
     current <- sample(starts, 1L)
