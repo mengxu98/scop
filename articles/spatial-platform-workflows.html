@@ -320,13 +320,21 @@ per spot; it does not turn a spot into a segmented cell.
 <code><a href="../reference/SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot()</a></code> or
 <code><a href="../reference/Cell2locationPlot.html">Cell2locationPlot()</a></code> after checking the stored result.
 Cell2location q05 abundance and normalized proportions are distinct; the
-abundance view uses its native range rather than a forced 0–1 scale. An
-explicit <code>lower_cutoff</code>, <code>upper_cutoff</code>, or
-quantile control overrides the default matrix-wide display range. With a
-one-sided override, each panel keeps the remaining bound computed by
-<code><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot()</a></code>; specify both cutoffs when you want
-identical explicit limits across panels. <code>combine</code> changes
-only the return form, including for the dominant point map.</p>
+abundance view uses its native range rather than a forced 0–1 scale.
+Cell2location plotting matrices retain the original spot IDs. Spots
+excluded from modeling, such as zero-count observations, have
+<code>NA</code> values rather than zero abundance. The saved
+<code>cells</code> field identifies modeled spots, and
+<code>input_summary$dropped_spots</code> records filtered observations.
+Historical compact results are expanded only when those records explain
+all missing rows; missing predictions or unknown IDs are not silently
+accepted. An explicit <code>lower_cutoff</code>,
+<code>upper_cutoff</code>, or quantile control overrides the default
+matrix-wide display range. With a one-sided override, each panel keeps
+the remaining bound computed by <code><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot()</a></code>; specify
+both cutoffs when you want identical explicit limits across panels.
+<code>combine</code> changes only the return form, including for the
+dominant point map.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">deconvolved</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunRCTD.html">RunRCTD</a></span><span class="op">(</span></span>
 <span>  <span class="va">visium</span>,</span>
