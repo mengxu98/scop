@@ -138,8 +138,11 @@ SpatialSpotPlot(
 )
 ```
 
-`combine = FALSE` returns named plots for independent editing. Spatial feature
-plots read the stored result; they do not rerun the backend. A saved Seurat
+`combine = FALSE` returns named plots for independent editing, including
+long-format point maps and dominant deconvolution maps. Long-format `plot.data`
+accepts explicit cutoffs and quantiles; its default range remains the full data
+range. Plotting reads stored results or the explicitly selected assay/layer;
+it does not rerun QC or spatial-feature detection. A saved Seurat
 object can be reloaded and plotted again as long as the stored result and the
 selected spatial context remain complete.
 
