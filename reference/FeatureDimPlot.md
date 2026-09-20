@@ -91,7 +91,9 @@ FeatureDimPlot(
   force = FALSE,
   seed = 11,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  title.face = NULL,
+  title.color = NULL
 )
 ```
 
@@ -376,6 +378,21 @@ FeatureDimPlot(
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
 
+- title.face:
+
+  Font face of individual feature headings. `NULL` (default) uses italic
+  for assay genes and plain for numeric metadata or embeddings. Set to
+  `"plain"`, `"bold"`, `"italic"`, or `"bold.italic"` to override.
+
+- title.color:
+
+  Color of individual feature headings: `NULL` inherits the theme, an
+  unnamed color applies to every feature, or a named color vector maps
+  feature names to colors. Unspecified features inherit the theme. Names
+  refer to features, not group names or panel order. These heading
+  options do not affect the custom `title`, split labels, expression
+  palette, or blended panels (`compare_features = TRUE`).
+
 ## See also
 
 [CellDimPlot](https://mengxu98.github.io/scop/reference/CellDimPlot.md)
@@ -385,22 +402,22 @@ FeatureDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-13 21:41:17] Start standard processing workflow...
-#> ℹ [2026-09-13 21:41:17] Checking a list of <Seurat>...
-#> ! [2026-09-13 21:41:17] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-13 21:41:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-13 21:41:17] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-13 21:41:17] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-13 21:41:17] Number of available HVF: 2000
-#> ℹ [2026-09-13 21:41:17] Finished check
-#> ℹ [2026-09-13 21:41:17] Perform `ScaleData()`
-#> ℹ [2026-09-13 21:41:17] Perform pca linear dimension reduction
-#> ℹ [2026-09-13 21:41:17] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-13 21:41:18] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-13 21:41:18] Reorder clusters...
-#> ℹ [2026-09-13 21:41:18] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-13 21:41:18] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-13 21:41:24] Standard processing workflow completed
+#> ℹ [2026-09-20 21:38:09] Start standard processing workflow...
+#> ℹ [2026-09-20 21:38:09] Checking a list of <Seurat>...
+#> ! [2026-09-20 21:38:09] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-20 21:38:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-20 21:38:09] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-20 21:38:09] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-20 21:38:09] Number of available HVF: 2000
+#> ℹ [2026-09-20 21:38:09] Finished check
+#> ℹ [2026-09-20 21:38:09] Perform `ScaleData()`
+#> ℹ [2026-09-20 21:38:09] Perform pca linear dimension reduction
+#> ℹ [2026-09-20 21:38:10] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-20 21:38:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-20 21:38:10] Reorder clusters...
+#> ℹ [2026-09-20 21:38:10] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-20 21:38:10] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-20 21:38:16] Standard processing workflow completed
 FeatureDimPlot(
   pancreas_sub,
   features = "G2M_score", reduction = "UMAP"
@@ -462,6 +479,12 @@ FeatureDimPlot(
   reduction = "UMAP",
   cells.highlight = TRUE,
   theme_use = "theme_blank"
+)
+
+
+FeatureDimPlot(
+  pancreas_sub, features = c("Rbp4", "Sst"), reduction = "UMAP",
+  title.color = c(Rbp4 = "#2A6F97", Sst = "#B14B28")
 )
 
 

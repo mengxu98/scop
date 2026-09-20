@@ -1,6 +1,123 @@
 # Changelog
 
+## scop (development version)
+
+- **feat**:
+  [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
+  defaults assay-gene headings to italic and supports `title.face` plus
+  scalar or feature-named `title.color`, preserving numeric metadata
+  headings and expression palettes.
+
+- **refactor**: Use the thisplot Pastel1 palette for volcano enrichment
+  overlays instead of a hard-coded palette.
+
+- **refactor**: Keep fixed method lists, resource filenames, and
+  internal contract values at their use sites instead of package-level
+  static constants.
+
+- **fix**: Restore Palantir thread settings on exit, validate Python
+  runtime changes before applying thread configuration, invalidate
+  CytoTRACE2 model caches when assets change, and reject conflicting
+  `cores`/`ncores` arguments.
+
+- **refactor**: Trajectory Python backends call
+  [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md)
+  directly and use its managed environment validation/cache instead of
+  bypassing preparation when modules happen to be importable.
+
 ## scop 0.9.2
+
+- **fix**: Cell2location stores plotting matrices for all original
+  spots, with NA for filtered observations, and retains the modeled IDs.
+  Historical compact matrices are expanded only when their
+  modeled/dropped-ID records explain the missing rows; stale or unknown
+  IDs still fail.
+
+- **fix**: Long-format spatial point/jitter maps forward explicit
+  cutoffs and quantiles without changing the default full range. Both
+  long maps and generic dominant deconvolution maps honor
+  `combine = FALSE`.
+
+- **fix**: Matrix spatial plots retain explicit cutoff/quantile scales,
+  and Cell2location dominant maps forward `combine` and layout controls.
+  Constant topic/abundance panels use consistent default legend breaks.
+
+- **refactor**: Long-format spatial points and jitter reuse the standard
+  point renderer. Spatial workflow parameter validation, stage-field
+  updates and method-name dispatch are consolidated without removing
+  preflight or result checks.
+
+- **docs**: Execute the SpatialExperiment round-trip with the correct
+  counts layer, use merged-image auto-resolution in the PRECAST
+  template, and render the main workflow’s empty-panel and save/reload
+  examples.
+
+- **breaking**:
+  [`RunSpatialGradientFeatures()`](https://mengxu98.github.io/scop/reference/RunSpatialGradientFeatures.md)
+  now exposes only the native C++ gradient interface. The unused
+  compatibility parameters `sample_name`, `platform`, `img_scale_fct`,
+  `assay_modality`, `trajectory_id`, `width`, `annotation_id`, `core`,
+  `distance`, `angle_span`, `resolution`, `model_add`, `model_subset`,
+  `model_remove`, and `control`, plus unsupported `annotation_ids` and
+  `...`, are removed and now fail as unused arguments. Use
+  `image`/`coord.cols`/`coordinate_space`, the annotation metadata
+  inputs, and the native screening controls documented by the function.
+
+- **fix**: Spatial proportion, topic-proportion, and q05-abundance point
+  maps share one renderer. Scale/title formatting now happens before the
+  `combine` decision, so empty panels, constant values, named colors,
+  and combined/non-combined returns have the same interpretation.
+  Ordinary benchmark summary tables use the stable bar view for
+  `plot_type = "auto"`; `funkyheatmap` remains explicit.
+
+- **feat**:
+  [`RunSpatialIntegration()`](https://mengxu98.github.io/scop/reference/RunSpatialIntegration.md)
+  gains `store_object = TRUE`. Setting it to `FALSE` omits the complete
+  native PRECAST object while retaining the standardized result, source,
+  parameters, summaries, and plotting payload.
+
+- **docs**: Refresh the three Spatial Analysis articles around the real
+  Visium baseline, platform-specific imports and units, and separate
+  Seurat–SpatialExperiment/Giotto bridge contracts. External paths are
+  templates and optional backend examples are labeled as such.
+
+- **chore**: Package attachment no longer prints the ASCII startup
+  banner or repeated environment instructions. Explicit
+  Python-environment initialization still reports its actual success or
+  failure.
+
+- **fix**: Spatial plots preserve coordinate aspect ratios, factor order
+  and named category colors. Point, long-format and pie facets accept
+  metadata names with spaces, constant features honor explicit color
+  limits, and ambiguous value IDs are rejected.
+
+- **fix**: Spatial integration maps render every sample with its
+  matching image; aligned views use aligned coordinates without
+  raw-image overlays.
+  [`SpatialCellPlot()`](https://mengxu98.github.io/scop/reference/SpatialCellPlot.md)
+  adds named-list/layout and legend controls, with a sequential default
+  palette for numeric features.
+
+- **fix**: Deconvolution summaries report assigned/unassigned spot
+  counts without assigning zero-weight spots to the first cell type.
+  Invalid weights fail before object mutation. Empty deconvolution
+  panels remain plottable and constant proportion panels share
+  comparable legends.
+
+- **dependencies**: Require thisutils \>= 0.5.2 for the `detect_cores()`
+  calls already used by SCOP.
+
+- **fix**: Restore `cores` forwarding to the `ncores` argument in
+  SpatialEcoTyper deconvolution and both MERINGUE R permutation tests;
+  the deprecated `ncores` alias remains supported.
+
+- **cleanup**: Remove the unreachable per-gene C++ branch after
+  MERINGUE’s batch kernel returns; the batch implementation and
+  numerical behavior are unchanged.
+
+- **fix**: Forward `theme_use` and `theme_args` in all SpaTalk and
+  COMMOT CCC plot views. Consolidate SpaTalk result preparation and
+  remove duplicate coordinate checks and redundant plot-call wrappers.
 
 - **breaking**:
   [`RunMonocle2()`](https://mengxu98.github.io/scop/reference/RunMonocle2.md)

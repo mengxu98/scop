@@ -69,7 +69,9 @@ CheckDataMerge(
 
 - cores:
 
-  Number of CPU cores.
+  Number of CPU cores. `NULL` lets each backend pick its own default:
+  the process OpenMP team (`OMP_NUM_THREADS`) for C++ kernels and one
+  worker for R/Python parallel backends.
 
 - verbose:
 

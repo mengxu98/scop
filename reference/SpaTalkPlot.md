@@ -32,7 +32,8 @@ SpaTalkPlot(
 
 - theme_use, theme_args:
 
-  Theme name or function, plus extra theme arguments.
+  Theme name or function, plus extra theme arguments. Applied to every
+  plot type, including the delegated CCC views.
 
 - ...:
 

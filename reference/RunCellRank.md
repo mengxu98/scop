@@ -34,9 +34,12 @@ RunCellRank(
   calculate_velocity_genes = FALSE,
   denoise = FALSE,
   kinetics = FALSE,
-  kernel_type = c("velocity", "pseudotime", "cytotrace", "wot"),
+  kernel_type = c("velocity", "pseudotime", "cytotrace", "wot", "moscot"),
   time_key = "dpt_pseudotime",
   time_field = "Time",
+  time_values = NULL,
+  moscot_args = list(),
+  realtime_args = list(),
   growth_iters = 3L,
   tmap_out = "tmaps/tmap_out",
   recalculate = FALSE,
@@ -210,7 +213,8 @@ RunCellRank(
   spliced/unspliced), `"pseudotime"` (requires pre-computed pseudotime
   or auto-computes DPT), `"cytotrace"` (auto-computes CytoTRACE score,
   suitable for RNA-only data), or `"wot"` (uses Waddington-OT transport
-  maps through CellRank's RealTimeKernel).
+  maps through CellRank's RealTimeKernel), or `"moscot"` (uses moscot's
+  TemporalProblem through RealTimeKernel).
 
 - time_key:
 
@@ -221,7 +225,23 @@ RunCellRank(
 - time_field:
 
   Key in metadata for experimental time. Used when
-  `kernel_type = "wot"`.
+  `kernel_type %in% c("wot", "moscot")`.
+
+- time_values:
+
+  Optional named mapping from non-numeric experimental-time labels to
+  numeric values used to order moscot time points. Numeric columns do
+  not need a mapping.
+
+- moscot_args:
+
+  Named lists for moscot's `growth`, `prepare`, and `solve` stages. Only
+  used when `kernel_type = "moscot"`.
+
+- realtime_args:
+
+  Named lists for `RealTimeKernel`'s `from_moscot` and `transition`
+  stages. Only used when `kernel_type = "moscot"`.
 
 - growth_iters:
 

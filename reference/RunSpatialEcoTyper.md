@@ -163,7 +163,8 @@ RunSpatialEcoTyper(
 
 - cores:
 
-  Number of CPU cores used by `SpatialEcoTyper`.
+  Number of CPU cores used by `SpatialEcoTyper`. Passed to the selected
+  backend as `ncores`.
 
 - ncores:
 

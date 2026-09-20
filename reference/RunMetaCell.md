@@ -97,14 +97,18 @@ etc.).
 
 ## References
 
-Baran, Y. et al. (2019). MetaCell: analysis of single-cell RNA-seq data
-using K-nn graph partitions. *Genome Biology*.
+Baran Y, Bercovich A, Sebe-Pedros A, et al. (2019). MetaCell: analysis
+of single-cell RNA-seq data using K-nn graph partitions. Genome Biology,
+20(1), 206. doi:10.1186/s13059-019-1812-2
 
-Bilous, M. et al. (2022). SuperCell: a versatile tool for single-cell
-data analysis. *Genome Biology*.
+Bilous M, Tran L, Cianciaruso C, et al. (2022). SuperCell: a versatile
+tool for single-cell data analysis. Genome Biology, 23(1), 227.
+doi:10.1186/s13059-022-02778-5
 
-Persad, S. et al. (2023). SEACells infers transcriptional and epigenomic
-cellular states from single-cell genomics data. *Nature Biotechnology*.
+Persad S, Choo ZN, Dien C, et al. (2023). SEACells infers
+transcriptional and epigenomic cellular states from single-cell genomics
+data. Nature Biotechnology, 41(11), 1658-1667.
+doi:10.1038/s41587-023-01716-9
 
 ## Examples
 
@@ -118,17 +122,17 @@ pancreas_sub <- RunStandardWorkflow(
   nonlinear_reduction_dims = 2,
   verbose = FALSE
 )
-#> ℹ [2026-09-13 22:40:22] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-20 22:39:21] Skip `log1p()` because `layer = data` is not "counts"
 
 mc1 <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 20
 )
-#> ℹ [2026-09-13 22:40:30] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
-#> ℹ [2026-09-13 22:40:31] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
-#> ℹ [2026-09-13 22:40:31] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
-#> ✔ [2026-09-13 22:40:31] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
+#> ℹ [2026-09-20 22:39:28] Running SuperCell with gamma = 20, k.knn = 5 on 1000 cells
+#> ℹ [2026-09-20 22:39:29] `RunMetaCell()` ("supercell") built 50 metacells from 1000 cells
+#> ℹ [2026-09-20 22:39:29] Metacell size summary: min 5, median 16.5, mean 20, max 56 cells
+#> ✔ [2026-09-20 22:39:29] `RunMetaCell()` returned metacell Seurat with 50 metacells. Original cells in `@misc[["original_srt"]]`
 
 MetaCellPlot(mc1, group.by = "CellType")
 
@@ -138,10 +142,10 @@ mc2 <- RunMetaCell(
   method = "metacell",
   gamma = 20
 )
-#> ℹ [2026-09-13 22:40:32] Running MetaCell-style KNN partitioning with k = 20 on 1000 cells
-#> ℹ [2026-09-13 22:40:33] `RunMetaCell()` ("metacell") built 8 metacells from 1000 cells
-#> ℹ [2026-09-13 22:40:33] Metacell size summary: min 16, median 150, mean 125, max 215 cells
-#> ✔ [2026-09-13 22:40:33] `RunMetaCell()` returned metacell Seurat with 8 metacells. Original cells in `@misc[["original_srt"]]`
+#> ℹ [2026-09-20 22:39:31] Running MetaCell-style KNN partitioning with k = 20 on 1000 cells
+#> ℹ [2026-09-20 22:39:31] `RunMetaCell()` ("metacell") built 8 metacells from 1000 cells
+#> ℹ [2026-09-20 22:39:31] Metacell size summary: min 16, median 150, mean 125, max 215 cells
+#> ✔ [2026-09-20 22:39:31] `RunMetaCell()` returned metacell Seurat with 8 metacells. Original cells in `@misc[["original_srt"]]`
 
 MetaCellPlot(mc2, group.by = "CellType")
 ```

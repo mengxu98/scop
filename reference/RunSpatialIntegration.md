@@ -19,6 +19,7 @@ RunSpatialIntegration(
   cluster_colname = NULL,
   tool_name = "SpatialIntegration",
   store_results = TRUE,
+  store_object = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
   ...
@@ -84,6 +85,13 @@ RunSpatialIntegration(
 - store_results:
 
   Whether to store the full result in `srt@tools`.
+
+- store_object:
+
+  Whether to retain the complete native PRECAST object in the stored
+  method result. Set `FALSE` for a lighter result bundle; standard
+  embeddings, domains, coordinates, parameters, summaries, and plotting
+  do not require the native object.
 
 - verbose:
 

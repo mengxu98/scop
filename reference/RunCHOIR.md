@@ -177,10 +177,9 @@ complete upstream records in `srt@misc[[key]]`, and, when
 
 ## References
 
-Sant, C. et al. CHOIR improves significance-based detection of cell
-types and states from single-cell data. *Nature Genetics* 57, 1309-1319
-(2025).
-[doi:10.1038/s41588-025-02148-8](https://doi.org/10.1038/s41588-025-02148-8)
+Sant C, Mucke L, Corces MR. (2025). CHOIR improves significance-based
+detection of cell types and states from single-cell data. Nature
+Genetics, 57(5), 1309-1319. doi:10.1038/s41588-025-02148-8
 
 ## Examples
 

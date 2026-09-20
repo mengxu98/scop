@@ -197,6 +197,4 @@ SpatialNeighborhoodPlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-#> Ignoring unknown labels:
-#> • fill : "Observed count: collagen -> collagen"
 ```

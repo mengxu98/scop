@@ -135,9 +135,9 @@ A `Seurat` object with RareQ results in metadata and
 
 ## References
 
-Fa, B. et al. Cell neighborhood topology directs rare cell population
-identification. *Nature Communications* (2026).
-[doi:10.1038/s41467-026-71180-x](https://doi.org/10.1038/s41467-026-71180-x)
+Fa B, Huang C, Ma Y, et al. (2026). Cell neighborhood topology directs
+rare cell population identification. Nature Communications, 17, 4618.
+doi:10.1038/s41467-026-71180-x
 
 ## Examples
 
@@ -147,16 +147,16 @@ pancreas_sub <- RunStandardWorkflow(
   pancreas_sub,
   verbose = FALSE
 )
-#> ℹ [2026-09-13 22:42:23] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-20 22:43:19] Skip `log1p()` because `layer = data` is not "counts"
 pancreas_sub <- RunRareQ(
   pancreas_sub,
   dims = 1:20
 )
-#> ℹ [2026-09-13 22:43:03] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
+#> ℹ [2026-09-20 22:43:59] Build Seurat nearest neighbors for RareQ using reduction "Standardpca"
 #> Computing nearest neighbors
 #> Only one graph name supplied, storing nearest-neighbor graph only
-#> ℹ [2026-09-13 22:43:26] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
-#> ℹ [2026-09-13 22:43:26] RareQ clusters stored in metadata column "RareQ_cluster"
+#> ℹ [2026-09-20 22:44:23] Run RareQ with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`
+#> ℹ [2026-09-20 22:44:23] RareQ clusters stored in metadata column "RareQ_cluster"
 
 CellDimPlot(
   pancreas_sub,

@@ -284,9 +284,13 @@ grn_edges <- RunGRNBoost2(
 head(grn_edges[order(grn_edges$importance, decreasing = TRUE), ], 10)
 ```
 
-SCENIC prunes the regulatory links with cisTarget and scores regulon
-activity per cell. The reference files are cached by `scop`; the first
-run may download the mouse cisTarget resources.
+SCENIC prunes regulatory links with cisTarget and scores cellular
+regulon activity using AUCell. Each regulon consists of a transcription
+factor (TF) and its direct cisTarget-supported target genes. AUCell
+computes the enrichment of target genes within each single cell’s
+expression ranking, yielding a per-cell Regulon Activity Score (RAS)
+matrix stored in the `scenic` assay. The reference files are cached by
+`scop`; the first run may download the mouse cisTarget resources.
 
 ``` r
 
@@ -314,8 +318,9 @@ data.frame(
 )
 ```
 
-Rank regulons by cell-state specificity and keep the top regulons for
-heatmaps and network plots.
+Rank regulons by cell-state specificity using the Regulon Specificity
+Score (RSS, calculated from the cell-by-regulon RAS matrix) and keep the
+top regulons for heatmaps and network plots.
 
 ``` r
 
@@ -357,6 +362,13 @@ scenic_rss_heatmap <- SCENICPlot(
   heatmap_cluster_columns = FALSE
 )
 print_scop_plot(scenic_rss_heatmap)
+```
+
+The `rss_heatmap` above illustrates cluster-level specificity (RSS),
+while `activity_heatmap` visualizes cellular Regulon Activity Scores
+(RAS) across cell types for comparison.
+
+``` r
 
 scenic_activity_heatmap <- SCENICPlot(
   pancreas_sub,
@@ -417,8 +429,7 @@ pancreas_sub <- RunEnrichment(
   group.by = "CellType",
   db = "GO_BP",
   species = "Mus_musculus",
-  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05",
-  cores = 2
+  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05"
 )
 
 go_bp_overlay_values <- setNames(
@@ -480,7 +491,7 @@ EnrichmentPlot(
 ## Export the Reproduction Object
 
 The final object contains the upstream preprocessing state, trajectory
-metadata, velocity output, dynamic genes, SCENIC regulon activity,
+metadata, velocity output, dynamic genes, SCENIC regulon activity (RAS),
 differential genes, and enrichment results. Export it for interactive
 review in SCExplorer.
 
@@ -505,7 +516,8 @@ This compact reproduction should be read as a linked evidence trail:
   endocrine differentiation path;
 - dynamic genes recover stage-specific programs along the pseudotime
   axis;
-- GRNBoost2 and SCENIC prioritize TF-target links and regulon activity;
+- GRNBoost2 and SCENIC prioritize TF-target links and regulon activity
+  (RAS);
 - DE and GO enrichment summarize the state-level transcriptional
   programs;
 - SCExplorer keeps the full object available for interactive inspection.

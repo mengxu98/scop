@@ -103,15 +103,13 @@ RunRCTD(
 
 - create_rctd_params:
 
-  Additional parameters passed to
-  [`spacexr::createRctd()`](https://rdrr.io/pkg/spacexr/man/createRCTD.html)
-  or `spacexr::create.RCTD()`.
+  Additional parameters passed to `spacexr::createRctd()` or
+  [`spacexr::create.RCTD()`](https://rdrr.io/pkg/spacexr/man/create.RCTD.html).
 
 - run_rctd_params:
 
-  Additional parameters passed to
-  [`spacexr::runRctd()`](https://rdrr.io/pkg/spacexr/man/runRCTD.html)
-  or `spacexr::run.RCTD()`.
+  Additional parameters passed to `spacexr::runRctd()` or
+  [`spacexr::run.RCTD()`](https://rdrr.io/pkg/spacexr/man/run.RCTD.html).
 
 - verbose:
 
@@ -146,7 +144,6 @@ also stored in `srt@tools[[tool_name]]`.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(visium_human_pancreas_sub)
 data(panc8_sub)
 keep_spots <- unique(round(seq(
@@ -179,6 +176,39 @@ spatial <- RunRCTD(
   prefix = "RCTD",
   verbose = FALSE
 )
+#> Begin: process_cell_type_info
+#> process_cell_type_info: number of cells in reference: 694
+#> process_cell_type_info: number of genes in reference: 97
+#> 
+#> ductal   beta  alpha 
+#>    211    304    179 
+#> End: process_cell_type_info
+#> create.RCTD: getting regression differentially expressed genes: 
+#> get_de_genes: ductal found DE genes: 24
+#> get_de_genes: beta found DE genes: 7
+#> get_de_genes: alpha found DE genes: 51
+#> get_de_genes: total DE genes: 82
+#> create.RCTD: getting platform effect normalization differentially expressed genes: 
+#> get_de_genes: ductal found DE genes: 27
+#> get_de_genes: beta found DE genes: 8
+#> get_de_genes: alpha found DE genes: 55
+#> get_de_genes: total DE genes: 90
+#> fitBulk: decomposing bulk
+#> chooseSigma: using initial Q_mat with sigma =  1
+#> Likelihood value: 1065.34481069009
+#> Sigma value:  0.84
+#> Likelihood value: 1043.70504794368
+#> Sigma value:  0.69
+#> Likelihood value: 1027.37241216243
+#> Sigma value:  0.61
+#> Likelihood value: 1021.04732656451
+#> Sigma value:  0.53
+#> Likelihood value: 1017.22091138995
+#> Sigma value:  0.49
+#> Likelihood value: 1016.52797026522
+#> Sigma value:  0.48
+#> Likelihood value: 1016.50517429608
+#> Sigma value:  0.48
 SpatialDeconvolutionPlot(
   spatial,
   tool_name = "RCTD",
@@ -186,5 +216,4 @@ SpatialDeconvolutionPlot(
   overlay_image = FALSE,
   coord.cols = c("x", "y")
 )
-} # }
 ```

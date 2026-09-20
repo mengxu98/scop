@@ -35,7 +35,6 @@ RunGSEA(
   GO_simplify_cutoff = "p.adjust < 0.05",
   simplify_method = "Wang",
   simplify_similarityCutoff = 0.7,
-  cores = 1,
   verbose = TRUE,
   ...,
   srt = NULL
@@ -197,11 +196,6 @@ RunGSEA(
   The similarity cutoff for simplification of GO terms. This argument is
   only used if `GO_simplify` is `TRUE`.
 
-- cores:
-
-  The number of worker processes to use for parallelization. Default is
-  `1`.
-
 - verbose:
 
   Whether to print the message. Default is `TRUE`.
@@ -268,20 +262,17 @@ gsea_out <- RunGSEA(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-09-13 22:21:00] Start GSEA analysis
-#> ! [2026-09-13 22:21:00] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-09-13 22:21:00] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-09-13 22:21:00] Prepared 15 ranked gene rows after ID mapping.
-#> ℹ [2026-09-13 22:21:00] Running GSEA for 1 group/database combination(s) using 1 core(s) ...
-#> ℹ [2026-09-13 22:21:00] Using 1 core
-#> ℹ [2026-09-13 22:21:00] Running GSEA: group "Cluster1", database "custom", genes 15 ...
-#> ℹ [2026-09-13 22:21:00] Finished GSEA: group "Cluster1", database "custom".
-#> ℹ [2026-09-13 22:21:00] Building results
-#> ✔ [2026-09-13 22:21:00] GSEA analysis done
+#> ℹ [2026-09-20 22:18:36] Start GSEA analysis
+#> ! [2026-09-20 22:18:36] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-09-20 22:18:36] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-09-20 22:18:36] Prepared 15 ranked gene rows after ID mapping.
+#> ℹ [2026-09-20 22:18:36] Running GSEA for 1 group/database combination(s) ...
+#> ℹ [2026-09-20 22:18:36] Running GSEA: group "Cluster1", database "custom", genes 15 ...
+#> ℹ [2026-09-20 22:18:36] Finished GSEA: group "Cluster1", database "custom".
+#> ✔ [2026-09-20 22:18:36] GSEA analysis done
 GSEAPlot(
   res = gsea_out,
   db = "custom",
   plot_type = "comparison"
 )
-#> Error in GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison"): argument "object" is missing, with no default
 ```

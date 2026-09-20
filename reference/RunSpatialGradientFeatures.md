@@ -14,36 +14,20 @@ RunSpatialGradientFeatures(
   assay = NULL,
   layer = "data",
   variables = NULL,
-  sample_name = NULL,
-  platform = "Undefined",
   image = NULL,
   coord.cols = c("x", "y"),
-  img_scale_fct = "lowres",
-  assay_modality = "gene",
-  trajectory_id = "scop_gradient",
   start = NULL,
   end = NULL,
   traj_df = NULL,
-  width = NULL,
-  annotation_ids = NULL,
   annotation.by = NULL,
   annotation.groups = NULL,
   annotation.variable = NULL,
   annotation.threshold = NULL,
-  annotation_id = "scop_gradient",
-  core = FALSE,
-  distance = "dte",
-  angle_span = c(0, 360),
-  resolution = NULL,
   unit = NULL,
   sign_var = "fdr",
   sign_threshold = 0.05,
-  model_add = NULL,
-  model_subset = NULL,
-  model_remove = NULL,
   n_random = 10000,
   seed = 123,
-  control = NULL,
   n_bins = 50,
   min_spots = 3,
   nfeatures = 2000,
@@ -51,7 +35,6 @@ RunSpatialGradientFeatures(
   store_results = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  ...,
   srt = NULL
 )
 ```
@@ -91,13 +74,6 @@ RunSpatialGradientFeatures(
   `srt@tools[["SpatialVariableFeatures"]]` is used first, then variable
   features, then all assay features.
 
-- sample_name, platform, img_scale_fct, assay_modality, trajectory_id,
-  width, annotation_id, core, distance, angle_span, resolution,
-  model_add, model_subset, model_remove, control:
-
-  Legacy compatibility inputs. The native backend ignores these values
-  and does not include them in the stored effective-parameter summary.
-
 - image:
 
   Spatial image name. Required when multiple images are present; a
@@ -112,12 +88,6 @@ RunSpatialGradientFeatures(
 
   Trajectory geometry used by the native backend when
   `reference = "trajectory"`.
-
-- annotation_ids:
-
-  Reserved compatibility input. It is not supported by the native
-  backend; use `annotation.by` with `annotation.groups`, or
-  `annotation.variable` with `annotation.threshold`.
 
 - annotation.by, annotation.groups:
 
@@ -180,11 +150,6 @@ RunSpatialGradientFeatures(
   `"legacy_display"` explicitly for pre-0.9.0 display coordinates.
   Results retain the raw coordinate units used by the native backend.
 
-- ...:
-
-  Additional named arguments accepted for compatibility. The native
-  backend ignores them and does not store them as effective parameters.
-
 - srt:
 
   Deprecated alias for `object`; supply exactly one of the two. It will
@@ -197,6 +162,19 @@ screening results are stored in
 `srt@tools[["SpatialGradientFeatures"]]`. Otherwise existing stored
 results are unchanged. Variable features are independently updated only
 when `set_variable_features = TRUE`.
+
+## Details
+
+The current native interface is intentionally small. Older calls that
+pass `sample_name`, `platform`, `img_scale_fct`, `assay_modality`,
+`trajectory_id`, `width`, `annotation_id`, `core`, `distance`,
+`angle_span`, `resolution`, `model_add`, `model_subset`, `model_remove`,
+`control`, or `annotation_ids` now fail as unused arguments. Use
+`image`, `coord.cols`, and `coordinate_space` for coordinate selection;
+use `annotation.by`/`annotation.groups` or
+`annotation.variable`/`annotation.threshold` for annotation references;
+and use `n_random`, `n_bins`, `min_spots`, `sign_threshold`, and
+`nfeatures` for native screening controls.
 
 ## Examples
 

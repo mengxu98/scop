@@ -101,7 +101,8 @@ RunMERINGUE(
 
 - cores:
 
-  Number of cores passed to MERINGUE permutation tests.
+  Number of cores passed to MERINGUE permutation tests. Mapped to
+  `ncores` for the R backend and `n_threads` for the native backend.
 
 - ncores:
 

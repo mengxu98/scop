@@ -7,7 +7,7 @@ analysis.
 
 ``` r
 EnrichmentPlot(
-  object,
+  object = NULL,
   db = "GO_BP",
   group.by = NULL,
   test.use = "wilcox",
@@ -79,7 +79,10 @@ EnrichmentPlot(
 - group.by:
 
   Grouping variable in the `Seurat` object. This argument is only used
-  if `srt` is specified.
+  if `srt` is specified. `NULL` (the default) selects the results that
+  [RunEnrichment](https://mengxu98.github.io/scop/reference/RunEnrichment.md)
+  stored for custom gene sets or custom cell groups, which are keyed as
+  `"custom"`.
 
 - test.use:
 
@@ -297,38 +300,38 @@ EnrichmentPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-13 21:38:12] Start standard processing workflow...
-#> ℹ [2026-09-13 21:38:12] Checking a list of <Seurat>...
-#> ! [2026-09-13 21:38:12] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-13 21:38:12] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-13 21:38:12] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-13 21:38:12] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-13 21:38:12] Number of available HVF: 2000
-#> ℹ [2026-09-13 21:38:12] Finished check
-#> ℹ [2026-09-13 21:38:12] Perform `ScaleData()`
-#> ℹ [2026-09-13 21:38:12] Perform pca linear dimension reduction
-#> ℹ [2026-09-13 21:38:13] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-13 21:38:13] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-13 21:38:13] Reorder clusters...
-#> ℹ [2026-09-13 21:38:13] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-13 21:38:13] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-13 21:38:19] Standard processing workflow completed
+#> ℹ [2026-09-20 21:35:08] Start standard processing workflow...
+#> ℹ [2026-09-20 21:35:08] Checking a list of <Seurat>...
+#> ! [2026-09-20 21:35:08] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-20 21:35:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-20 21:35:08] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-20 21:35:08] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-20 21:35:08] Number of available HVF: 2000
+#> ℹ [2026-09-20 21:35:08] Finished check
+#> ℹ [2026-09-20 21:35:08] Perform `ScaleData()`
+#> ℹ [2026-09-20 21:35:08] Perform pca linear dimension reduction
+#> ℹ [2026-09-20 21:35:09] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-20 21:35:09] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-20 21:35:09] Reorder clusters...
+#> ℹ [2026-09-20 21:35:09] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-20 21:35:09] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-20 21:35:15] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType"
 )
-#> ℹ [2026-09-13 21:38:19] Data type is log-normalized
-#> ℹ [2026-09-13 21:38:19] Start differential expression test
-#> ℹ [2026-09-13 21:38:19] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-09-13 21:38:19] Using 1 core
-#> ⠙ [2026-09-13 21:38:19] Running for Ductal [1/5] ■■          20% | ETA: 15s
-#> ⠹ [2026-09-13 21:38:19] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
-#> ⠸ [2026-09-13 21:38:19] Running for Endocrine [3/5] ■■■■■■      60% | ETA:  6s
-#> ⠼ [2026-09-13 21:38:19] Running for Ngn3-low-EP [4/5] ■■■■■■■■    80% | ETA:  3s
-#> ✔ [2026-09-13 21:38:19] Completed 5 tasks in 14.9s
+#> ℹ [2026-09-20 21:35:15] Data type is log-normalized
+#> ℹ [2026-09-20 21:35:15] Start differential expression test
+#> ℹ [2026-09-20 21:35:15] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-09-20 21:35:15] Using 1 core
+#> ⠙ [2026-09-20 21:35:15] Running for Ductal [1/5] ■■          20% | ETA: 15s
+#> ⠹ [2026-09-20 21:35:15] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
+#> ⠸ [2026-09-20 21:35:15] Running for Endocrine [3/5] ■■■■■■      60% | ETA:  6s
+#> ⠼ [2026-09-20 21:35:15] Running for Ngn3-low-EP [4/5] ■■■■■■■■    80% | ETA:  3s
+#> ✔ [2026-09-20 21:35:15] Completed 5 tasks in 15s
 #> 
-#> ℹ [2026-09-13 21:38:19] Building results
-#> ✔ [2026-09-13 21:38:34] Differential expression test completed
+#> ℹ [2026-09-20 21:35:15] Building results
+#> ✔ [2026-09-20 21:35:30] Differential expression test completed
 
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
@@ -336,23 +339,17 @@ pancreas_sub <- RunEnrichment(
   group.by = "CellType",
   species = "Mus_musculus"
 )
-#> ℹ [2026-09-13 21:38:34] Start Enrichment analysis
-#> ℹ [2026-09-13 21:38:34] Species: "Mus_musculus"
-#> ℹ [2026-09-13 21:38:34] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-13 21:26:21
-#> ℹ [2026-09-13 21:39:03] Preparing database: GO_BP
-#> ℹ [2026-09-13 21:39:16] Preparing database: GO_CC
-#> ℹ [2026-09-13 21:39:20] Convert ID types for the GO_BP database
-#> ℹ [2026-09-13 21:39:21] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-09-13 21:39:22] Convert ID types for the GO_CC database
-#> ℹ [2026-09-13 21:39:22] Converted ID types using local annotation package org.Mm.eg.db
-#> ℹ [2026-09-13 21:39:22] Permform enrichment...
-#> ℹ [2026-09-13 21:39:24] Using 1 core
-#> ⠙ [2026-09-13 21:39:24] Running for 1 [1/10] ■           10% | ETA:  5s
-#> ⠹ [2026-09-13 21:39:24] Running for 9 [9/10] ■■■■■■■■■   90% | ETA:  0s
-#> ✔ [2026-09-13 21:39:24] Completed 10 tasks in 3.3s
-#> 
-#> ℹ [2026-09-13 21:39:24] Building results
-#> ✔ [2026-09-13 21:39:27] Enrichment analysis done
+#> ℹ [2026-09-20 21:35:30] Start Enrichment analysis
+#> ℹ [2026-09-20 21:35:30] Species: "Mus_musculus"
+#> ℹ [2026-09-20 21:35:30] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-20 21:23:40
+#> ℹ [2026-09-20 21:36:00] Preparing database: GO_BP
+#> ℹ [2026-09-20 21:36:11] Preparing database: GO_CC
+#> ℹ [2026-09-20 21:36:16] Convert ID types for the GO_BP database
+#> ℹ [2026-09-20 21:36:16] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-09-20 21:36:17] Convert ID types for the GO_CC database
+#> ℹ [2026-09-20 21:36:18] Converted ID types using local annotation package org.Mm.eg.db
+#> ℹ [2026-09-20 21:36:18] Permform enrichment...
+#> ✔ [2026-09-20 21:36:23] Enrichment analysis done
 
 EnrichmentPlot(
   pancreas_sub,
@@ -519,9 +516,9 @@ EnrichmentPlot(
 #> Also defined by ‘BiocGenerics’
 #> Found more than one class "dist" in cache; using the first, from namespace 'spam'
 #> Also defined by ‘BiocGenerics’
-#> ◌ [2026-09-13 21:39:47] Installing 1 R packages...
+#> ◌ [2026-09-20 21:36:44] Installing 1 R packages...
 #>  
-#> → Package library at /tmp/Rtmp9D42MR/temp_libpath8aed1b29ea6f.
+#> → Package library at /tmp/RtmpDRt1H6/temp_libpath8b637068ccea.
 #> → Will install 6 packages.
 #> → All 6 packages (0 B) are cached.
 #> + fontBitstreamVera   0.1.1 
@@ -556,15 +553,15 @@ EnrichmentPlot(
 #> make is already the newest version (4.3-4.1build2).
 #> libuv1-dev is already the newest version (1.48.0-1.1build1).
 #> pandoc is already the newest version (3.1.3+ds-2).
-#> 0 upgraded, 0 newly installed, 0 to remove and 50 not upgraded.
-#> ✔ Installed fontBitstreamVera 0.1.1  (70ms)
-#> ✔ Installed fontLiberation 0.1.0  (104ms)
-#> ✔ Installed fontquiver 0.2.1  (126ms)
-#> ✔ Installed gdtools 0.5.1  (137ms)
-#> ✔ Installed ggiraph 0.9.6  (133ms)
+#> 0 upgraded, 0 newly installed, 0 to remove and 65 not upgraded.
+#> ✔ Installed fontBitstreamVera 0.1.1  (68ms)
+#> ✔ Installed fontLiberation 0.1.0  (100ms)
+#> ✔ Installed fontquiver 0.2.1  (122ms)
+#> ✔ Installed gdtools 0.5.1  (133ms)
+#> ✔ Installed ggiraph 0.9.6  (131ms)
 #> ✔ Installed shadowtext 0.1.6  (48ms)
-#> ✔ 1 pkg + 55 deps: kept 49, added 6, dld 1 (243.63 kB) [4.3s]
-#> ✔ [2026-09-13 21:39:52] shadowtext installed successfully
+#> ✔ 1 pkg + 55 deps: kept 49, added 6, dld 1 (243.63 kB) [4.7s]
+#> ✔ [2026-09-20 21:36:49] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -580,7 +577,7 @@ EnrichmentPlot(
     "GO:0030073"
   )
 )
-#> ✔ [2026-09-13 21:39:53] shadowtext installed successfully
+#> ✔ [2026-09-20 21:36:50] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -591,7 +588,7 @@ EnrichmentPlot(
   plot_type = "network",
   network_layoutadjust = FALSE
 )
-#> ✔ [2026-09-13 21:39:54] shadowtext installed successfully
+#> ✔ [2026-09-20 21:36:51] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -605,7 +602,7 @@ EnrichmentPlot(
   theme_use = "theme_blank",
   theme_args = list(add_coord = FALSE)
 ) |> thisplot::panel_fix(height = 5)
-#> ✔ [2026-09-13 21:39:55] shadowtext installed successfully
+#> ✔ [2026-09-20 21:36:52] shadowtext installed successfully
 
 
 EnrichmentPlot(
@@ -661,17 +658,12 @@ pancreas_sub <- RunEnrichment(
   convert_species = TRUE,
   species = "Mus_musculus"
 )
-#> ℹ [2026-09-13 21:39:59] Start Enrichment analysis
-#> ℹ [2026-09-13 21:39:59] Species: "Mus_musculus"
-#> ℹ [2026-09-13 21:39:59] Preparing MP database
-#> ℹ [2026-09-13 21:40:15] Preparing DO database
-#> ℹ [2026-09-13 21:40:20] Permform enrichment...
-#> ℹ [2026-09-13 21:40:20] Using 1 core
-#> ⠙ [2026-09-13 21:40:20] Running for 1 [1/10] ■           10% | ETA:  1s
-#> ✔ [2026-09-13 21:40:20] Completed 10 tasks in 819ms
-#> 
-#> ℹ [2026-09-13 21:40:20] Building results
-#> ✔ [2026-09-13 21:40:21] Enrichment analysis done
+#> ℹ [2026-09-20 21:36:56] Start Enrichment analysis
+#> ℹ [2026-09-20 21:36:56] Species: "Mus_musculus"
+#> ℹ [2026-09-20 21:36:56] Preparing MP database
+#> ℹ [2026-09-20 21:37:08] Preparing DO database
+#> ℹ [2026-09-20 21:37:13] Permform enrichment...
+#> ✔ [2026-09-20 21:37:14] Enrichment analysis done
 
 EnrichmentPlot(
   pancreas_sub,

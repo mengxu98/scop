@@ -37,7 +37,7 @@ RunCytoTRACE(
   batch_size = 10000,
   smooth_batch_size = 1000,
   compute_knn_smoothing = TRUE,
-  cores = 1,
+  cores = NULL,
   backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
@@ -52,7 +52,7 @@ RunCytoTRACE(
   batch_size = 10000,
   smooth_batch_size = 1000,
   compute_knn_smoothing = TRUE,
-  cores = 1,
+  cores = NULL,
   backend = c("r", "cpp"),
   seed = 14,
   data_dir = NULL,
@@ -104,7 +104,9 @@ RunCytoTRACE(
 
 - cores:
 
-  Number of cores for parallel processing.
+  Number of cores for parallel processing. `NULL` (the default) uses the
+  process OpenMP team for the C++ kernels and one worker for the
+  CytoTRACE2 backend.
 
 - backend:
 
@@ -170,39 +172,39 @@ Model data: <https://github.com/mengxu98/datasets/tree/main/CytoTRACE2>
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-13 22:05:55] Start standard processing workflow...
-#> ℹ [2026-09-13 22:05:55] Checking a list of <Seurat>...
-#> ! [2026-09-13 22:05:55] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-13 22:05:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-13 22:05:55] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-13 22:05:55] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-13 22:05:55] Number of available HVF: 2000
-#> ℹ [2026-09-13 22:05:55] Finished check
-#> ℹ [2026-09-13 22:05:55] Perform `ScaleData()`
-#> ℹ [2026-09-13 22:05:55] Perform pca linear dimension reduction
-#> ℹ [2026-09-13 22:05:56] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-13 22:05:56] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-13 22:05:56] Reorder clusters...
-#> ℹ [2026-09-13 22:05:56] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-13 22:05:56] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-13 22:06:03] Standard processing workflow completed
+#> ℹ [2026-09-20 22:03:18] Start standard processing workflow...
+#> ℹ [2026-09-20 22:03:18] Checking a list of <Seurat>...
+#> ! [2026-09-20 22:03:18] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-20 22:03:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-20 22:03:18] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-20 22:03:18] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-20 22:03:18] Number of available HVF: 2000
+#> ℹ [2026-09-20 22:03:18] Finished check
+#> ℹ [2026-09-20 22:03:18] Perform `ScaleData()`
+#> ℹ [2026-09-20 22:03:18] Perform pca linear dimension reduction
+#> ℹ [2026-09-20 22:03:18] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-20 22:03:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-20 22:03:19] Reorder clusters...
+#> ℹ [2026-09-20 22:03:19] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-20 22:03:19] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-20 22:03:25] Standard processing workflow completed
 pancreas_sub <- RunCytoTRACE(
   pancreas_sub,
   species = "Mus_musculus",
   backend = "cpp"
 )
-#> ◌ [2026-09-13 22:06:03] Running CytoTRACE2
-#> ℹ [2026-09-13 22:06:03] Extracting expression matrix from `assay = RNA, layer = counts`
-#> ◌ [2026-09-13 22:06:03] Running CytoTRACE2 with `backend = cpp`
-#> ℹ [2026-09-13 22:06:03] Loading cached: CytoTRACE2 version: 1.1.0
-#> ℹ [2026-09-13 22:06:03] Species: "Homo_sapiens"
-#> ℹ [2026-09-13 22:06:03] Species: "Mus_musculus"
-#> ℹ [2026-09-13 22:06:03] Dataset contains 15998 genes and 1000 cells.
-#> ℹ [2026-09-13 22:06:03] Running on 1 subsample
-#> ℹ [2026-09-13 22:06:03] Using 1 core
-#> ℹ [2026-09-13 22:06:03] 12486 input genes mapped to model genes.
-#> ℹ [2026-09-13 22:06:03] Building results
-#> ✔ [2026-09-13 22:06:11] CytoTRACE2 computed successfully
+#> ◌ [2026-09-20 22:03:25] Running CytoTRACE2
+#> ℹ [2026-09-20 22:03:25] Extracting expression matrix from `assay = RNA, layer = counts`
+#> ◌ [2026-09-20 22:03:25] Running CytoTRACE2 with `backend = cpp`
+#> ℹ [2026-09-20 22:03:25] Loading cached: CytoTRACE2 version: 1.1.0
+#> ℹ [2026-09-20 22:03:25] Species: "Homo_sapiens"
+#> ℹ [2026-09-20 22:03:25] Species: "Mus_musculus"
+#> ℹ [2026-09-20 22:03:25] Dataset contains 15998 genes and 1000 cells.
+#> ℹ [2026-09-20 22:03:25] Running on 1 subsample
+#> ℹ [2026-09-20 22:03:25] Using 1 core
+#> ℹ [2026-09-20 22:03:25] 12486 input genes mapped to model genes.
+#> ℹ [2026-09-20 22:03:25] Building results
+#> ✔ [2026-09-20 22:03:33] CytoTRACE2 computed successfully
 
 CytoTRACEPlot(
   pancreas_sub,
