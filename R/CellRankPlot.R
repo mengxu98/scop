@@ -430,7 +430,7 @@ CellRankPlot <- function(
       palcolor = palcolor
     ))
     return(
-      ggplot2::ggplot(flow, ggplot2::aes(time, probability, fill = cluster, group = cluster)) +
+      ggplot2::ggplot(flow, ggplot2::aes(.data$time, .data$probability, fill = .data$cluster, group = .data$cluster)) +
         ggplot2::geom_area(alpha = 0.85, colour = "white", linewidth = 0.15) +
         ggplot2::scale_fill_manual(values = flow_colors, breaks = keep_groups, drop = FALSE) +
         theme_layer +
