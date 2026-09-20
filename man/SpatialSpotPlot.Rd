@@ -147,6 +147,10 @@ Spatial spot plot
 Factor levels retain their order, including after selecting \code{cells}.
 Named \code{palcolor} vectors map category names to colors; unnamed colors follow
 factor order. Missing values remain distinct from a category named \code{"NA"}.
+Long-format point/jitter plots honor cutoff and quantile controls and return
+a named one-element list when \code{combine = FALSE}. Their default continuous
+range remains the full data range; an explicitly supplied \code{upper_quantile}
+overrides that default.
 }
 \examples{
 data(visium_human_pancreas_sub)

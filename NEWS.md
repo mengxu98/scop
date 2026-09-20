@@ -10,6 +10,9 @@
 
 # scop 0.9.2
 
+* **fix**: Cell2location stores plotting matrices for all original spots, with NA for filtered observations, and retains the modeled IDs. Historical compact matrices are expanded only when their modeled/dropped-ID records explain the missing rows; stale or unknown IDs still fail.
+* **fix**: Long-format spatial point/jitter maps forward explicit cutoffs and quantiles without changing the default full range. Both long maps and generic dominant deconvolution maps honor `combine = FALSE`.
+
 * **fix**: Matrix spatial plots retain explicit cutoff/quantile scales, and Cell2location dominant maps forward `combine` and layout controls. Constant topic/abundance panels use consistent default legend breaks.
 * **refactor**: Long-format spatial points and jitter reuse the standard point renderer. Spatial workflow parameter validation, stage-field updates and method-name dispatch are consolidated without removing preflight or result checks.
 * **docs**: Execute the SpatialExperiment round-trip with the correct counts layer, use merged-image auto-resolution in the PRECAST template, and render the main workflow's empty-panel and save/reload examples.

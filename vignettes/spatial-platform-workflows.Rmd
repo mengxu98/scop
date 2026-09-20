@@ -190,6 +190,12 @@ and `RunCell2location()` preserve their own result semantics. Use
 `SpatialDeconvolutionPlot()` or `Cell2locationPlot()` after checking the stored
 result. Cell2location q05 abundance and normalized proportions are distinct;
 the abundance view uses its native range rather than a forced 0--1 scale.
+Cell2location plotting matrices retain the original spot IDs. Spots excluded
+from modeling, such as zero-count observations, have `NA` values rather than
+zero abundance. The saved `cells` field identifies modeled spots, and
+`input_summary$dropped_spots` records filtered observations. Historical compact
+results are expanded only when those records explain all missing rows; missing
+predictions or unknown IDs are not silently accepted.
 An explicit `lower_cutoff`, `upper_cutoff`, or quantile control overrides the
 default matrix-wide display range. With a one-sided override, each panel keeps
 the remaining bound computed by `SpatialSpotPlot()`; specify both cutoffs when

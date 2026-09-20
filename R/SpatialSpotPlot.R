@@ -38,6 +38,10 @@
 #' Factor levels retain their order, including after selecting `cells`.
 #' Named `palcolor` vectors map category names to colors; unnamed colors follow
 #' factor order. Missing values remain distinct from a category named `"NA"`.
+#' Long-format point/jitter plots honor cutoff and quantile controls and return
+#' a named one-element list when `combine = FALSE`. Their default continuous
+#' range remains the full data range; an explicitly supplied `upper_quantile`
+#' overrides that default.
 #'
 #' @return A `ggplot`, `patchwork`, or list of `ggplot` objects.
 #' @export
@@ -135,6 +139,10 @@ SpatialSpotPlot <- function(
       stroke = stroke,
       jitter_width = jitter_width,
       jitter_height = jitter_height,
+      lower_quantile = lower_quantile,
+      upper_quantile = if (missing(upper_quantile)) 1 else upper_quantile,
+      lower_cutoff = lower_cutoff,
+      upper_cutoff = upper_cutoff,
       palette = palette,
       palcolor = palcolor,
       bg_color = bg_color,
@@ -477,7 +485,11 @@ spatial_dim_long_plot <- function(
   combine = TRUE,
   nrow = NULL,
   ncol = NULL,
-  byrow = TRUE
+  byrow = TRUE,
+  lower_quantile = 0,
+  upper_quantile = 1,
+  lower_cutoff = NULL,
+  upper_cutoff = NULL
 ) {
   geom <- match.arg(geom)
   image.scale <- match.arg(image.scale)
@@ -513,8 +525,9 @@ spatial_dim_long_plot <- function(
     )
   }
   values <- df[[color.by]]
-  df$x <- coords$data[df[[spot.by]], "x"]
-  df$y <- coords$data[df[[spot.by]], "y"]
+  spot_ids <- as.character(df[[spot.by]])
+  df$x <- coords$data[spot_ids, "x"]
+  df$y <- coords$data[spot_ids, "y"]
   if (!is.null(split.by)) {
     if (!split.by %in% colnames(srt@meta.data)) {
       log_message(
@@ -522,25 +535,29 @@ spatial_dim_long_plot <- function(
         message_type = "error"
       )
     }
-    df[[split.by]] <- srt@meta.data[df[[spot.by]], split.by, drop = TRUE]
+    df[[split.by]] <- srt@meta.data[spot_ids, split.by, drop = TRUE]
   }
   if (is.null(pt.size)) {
     pt.size <- min(3000 / nrow(df), 2)
   }
 
   df$.value <- if (is.numeric(values)) values else spatial_plot_factor(values)
-  spatial_dim_single_plot(
+  plot <- spatial_dim_single_plot(
     plot_dat = df, value_col = ".value", value_name = color.by,
     split.by = split.by %||% ".split", image_info = coords$image,
     overlay_image = overlay_image, image.alpha = image.alpha,
     crop = crop, flip.y = flip.y && !coords$uses_image, show_axes = show_axes,
     pt.size = pt.size, pt.alpha = pt.alpha, stroke = stroke,
     palette = palette, palcolor = palcolor, bg_color = bg_color,
+    lower_quantile = lower_quantile, upper_quantile = upper_quantile,
+    lower_cutoff = lower_cutoff, upper_cutoff = upper_cutoff,
     legend.position = legend.position, legend.direction = legend.direction,
     legend.title = legend.title %||% color.by, theme_use = theme_use, theme_args = theme_args,
     position = if (geom == "jitter") ggplot2::position_jitter(width = jitter_width, height = jitter_height) else ggplot2::position_identity(),
     title = NULL, drop = TRUE
   )
+  combine_plot_list(stats::setNames(list(plot), color.by),
+    combine = combine, nrow = nrow, ncol = ncol, byrow = byrow)
 }
 
 spatial_dim_pie_plot <- function(

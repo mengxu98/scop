@@ -352,8 +352,8 @@ RunCell2location <- function(
     backend_versions <- unlist(manifest$versions %||% character(), use.names = TRUE)
     backend_versions <- as.character(backend_versions[!is.na(backend_versions)])
     srt_out@tools[[tool_name]] <- list(
-      abundance = abundance,
-      proportions = proportions,
+      abundance = full_abundance,
+      proportions = weight_summary$full_weights,
       reference_signatures = signatures,
       input_summary = prepared$summary,
       manifest = manifest,
@@ -398,6 +398,10 @@ RunCell2location <- function(
 #' Matrix point maps share a default display range. Explicit cutoff or
 #' quantile arguments passed through `...` retain the scales computed by
 #' [SpatialSpotPlot()], including when returning separate panels.
+#' Saved plotting matrices retain every original spot; filtered observations
+#' have `NA` values, while `cells` records only the modeled spots. Older compact
+#' results are expanded only when their modeled IDs and `dropped_spots` record
+#' account for all missing rows. Unexplained missing or unknown IDs are errors.
 #'
 #' @return A `ggplot`, `patchwork`, or list of plots.
 #' @export
@@ -433,6 +437,7 @@ Cell2locationPlot <- function(
     values <- tool$abundance %||% cell2location_metadata_matrix(srt, paste0(prefix, "_abundance_"))
   }
   if (!is.null(values)) {
+    values <- cell2location_plot_align(values, tool, colnames(srt))
     values <- as.data.frame(values, check.names = FALSE)
     if (!is.null(cell_types)) {
       missing <- setdiff(cell_types, colnames(values))
@@ -677,6 +682,27 @@ cell2location_align_result <- function(x, spot_ids, label) {
     )
   }
   x[spot_ids, , drop = FALSE]
+}
+
+cell2location_plot_align <- function(values, tool, spot_ids) {
+  values <- as.matrix(values)
+  ids <- rownames(values)
+  valid_ids <- function(x) !is.null(x) && !anyNA(x) && all(nzchar(x)) && !anyDuplicated(x)
+  if (!valid_ids(ids) || length(setdiff(ids, spot_ids))) {
+    log_message("Cell2location plotting values have invalid or unknown spot IDs", message_type = "error")
+  }
+  missing <- setdiff(spot_ids, ids)
+  if (!length(missing)) return(values[spot_ids, , drop = FALSE])
+  dropped <- tool$input_summary$dropped_spots
+  if (!valid_ids(tool$cells) || !setequal(tool$cells, ids) ||
+      !valid_ids(dropped) || length(intersect(dropped, ids)) ||
+      !setequal(missing, intersect(dropped, spot_ids))) {
+    log_message("Cell2location plotting values are incomplete: missing spots are not accounted for by modeled and dropped IDs", message_type = "error")
+  }
+  full <- matrix(NA_real_, length(spot_ids), ncol(values),
+    dimnames = list(spot_ids, colnames(values)))
+  full[ids, ] <- values
+  full
 }
 
 cell2location_metadata_matrix <- function(srt, prefix) {

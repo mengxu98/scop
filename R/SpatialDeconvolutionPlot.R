@@ -18,7 +18,8 @@
 #' cell types.
 #' @param plot_type Plot proportions as separate point maps, one dominant-type
 #' map derived from the stored proportions, or one spot-level pie map.
-#' @param combine Whether to combine point maps. If `FALSE`, return a named list.
+#' @param combine Whether to combine point or dominant maps. If `FALSE`,
+#' return a named list.
 #' @param nrow,ncol,byrow Point-map layout controls. When both dimensions are
 #' `NULL`, a near-square layout with at most three columns is used.
 #' @details
@@ -128,6 +129,10 @@ SpatialDeconvolutionPlot <- function(
       values = stats::setNames(dominant, rownames(proportions)),
       plot_type = "point",
       image.scale = image.scale,
+      combine = combine,
+      nrow = nrow,
+      ncol = ncol,
+      byrow = byrow,
       ...
     ))
   }

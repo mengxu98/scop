@@ -68,4 +68,8 @@ these values across cell types within each spot.
 Matrix point maps share a default display range. Explicit cutoff or
 quantile arguments passed through \code{...} retain the scales computed by
 \code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}}, including when returning separate panels.
+Saved plotting matrices retain every original spot; filtered observations
+have \code{NA} values, while \code{cells} records only the modeled spots. Older compact
+results are expanded only when their modeled IDs and \code{dropped_spots} record
+account for all missing rows. Unexplained missing or unknown IDs are errors.
 }

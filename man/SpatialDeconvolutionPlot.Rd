@@ -30,7 +30,8 @@ cell types.}
 \item{plot_type}{Plot proportions as separate point maps, one dominant-type
 map derived from the stored proportions, or one spot-level pie map.}
 
-\item{combine}{Whether to combine point maps. If \code{FALSE}, return a named list.}
+\item{combine}{Whether to combine point or dominant maps. If \code{FALSE},
+return a named list.}
 
 \item{nrow, ncol, byrow}{Point-map layout controls. When both dimensions are
 \code{NULL}, a near-square layout with at most three columns is used.}
