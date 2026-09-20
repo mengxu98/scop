@@ -45,16 +45,15 @@ spatial variable feature result are used.}
 
 \item{score_col}{Result column used for the summary x-axis.}
 
-\item{assay}{Assay to use. \code{NULL} uses the default assay.}
+\item{assay, layer}{Expression assay and layer for surfaces. When \code{NULL}, use
+the saved analysis settings; explicit values override them.}
 
-\item{layer}{Assay layer to use.}
-
-\item{image}{Spatial image name. Required when multiple images are present;
-a single image is selected automatically when \code{NULL}.}
+\item{image}{Image for surfaces. When \code{NULL}, use the saved analysis image.}
 
 \item{overlay_image, image.alpha}{Draw the spatial image beneath spots.}
 
-\item{coord.cols}{Metadata coordinate columns used when no image is available.}
+\item{coord.cols}{Metadata coordinate columns for surfaces. When omitted,
+use the saved analysis columns.}
 
 \item{flip.y}{Reverse the y axis for metadata or FOV coordinates without a
 raster image. The default \code{FALSE} agrees with spatial networks and cell
@@ -74,7 +73,7 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
@@ -92,7 +91,9 @@ Visualize normalized results produced by \code{\link[=RunSpatialVariableFeatures
 summary view shows feature ranks and, when finite p- or q-values are stored,
 significance. Results without permutation statistics are shown without a
 significance size mapping or legend. The surface view reuses
-\code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} to draw spatial expression for selected features.
+\code{\link[=SpatialSpotPlot]{SpatialSpotPlot()}} to draw spatial expression for selected features. Unless
+explicitly overridden, surfaces inherit the saved assay, layer, image and
+coordinate columns, even if the object's default assay has changed.
 }
 \examples{
 data(visium_human_pancreas_sub)

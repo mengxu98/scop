@@ -17,6 +17,8 @@
 #' Seurat renames duplicate image keys during merging.
 #' @param method Spatial integration backend. The current stable backend is
 #' `"PRECAST"`.
+#' @param layer Layer containing finite, non-negative integer counts. PRECAST
+#' normalizes this selected matrix internally; normalized expression is rejected.
 #' @param sample.by Metadata column identifying samples for a merged `Seurat`
 #' object. For list input, list names are copied into this column.
 #' @param reduction.name Name of the integrated embedding reduction. If `NULL`,
@@ -31,7 +33,12 @@
 #' the stored method result. Set `FALSE` for a lighter result bundle; standard
 #' embeddings, domains, coordinates, parameters, summaries, and plotting do
 #' not require the native object.
-#' @param ... Additional backend-specific arguments.
+#' @param ... Named backend argument lists: `create_params`, `adj_params`,
+#' `par_params`, `run_params`, and `select_params`. The default adjacency is
+#' `adj_params = list(type = "fixed_number", number = 6)`, using distances in
+#' the selected coordinate space. PRECAST's fixed-distance Visium/ST array-index
+#' mode is not compatible with these coordinates and is rejected. For generic
+#' distance-based adjacency, explicitly choose `platform = "Other_SRT"`.
 #'
 #' @details
 #' Provide spatial samples with shared genes and raw coordinates. Use
@@ -64,6 +71,7 @@ RunSpatialIntegration <- function(
   method <- match.arg(method)
   coordinate_space <- match.arg(coordinate_space)
   validate_scalar_string(tool_name, "tool_name")
+  validate_scalar_flag(store_results, "store_results")
   validate_scalar_flag(store_object, "store_object")
   sample.by <- spatial_integration_resolve_sample_by(object, sample.by)
   reduction.name <- reduction.name %||% paste0("SpatialIntegration_", method)
@@ -115,7 +123,8 @@ RunSpatialIntegration <- function(
     store_object = store_object
   )
   log_message(
-    "{.pkg {method}} spatial integration results stored in {.code srt@tools[[{tool_name}]]}",
+    if (store_results) "{.pkg {method}} spatial integration results stored in {.code srt@tools[[{tool_name}]]}" else
+      "{.pkg {method}} spatial integration completed; detailed results were not stored",
     message_type = "success",
     verbose = verbose
   )
@@ -165,12 +174,12 @@ RunSpatialIntegration <- function(
 #'
 #' @examples
 #' \dontrun{
-#' data(visium_human_pancreas_sub)
+#' # Template: visium_S1 and visium_S2 are existing spatial Seurat samples.
 #' spatial <- RunSpatialIntegration(
-#'   visium_human_pancreas_sub,
+#'   list(S1 = visium_S1, S2 = visium_S2),
 #'   method = "PRECAST",
-#'   group.by = "CellType",
-#'   sample.by = "Sample"
+#'   assay = "Spatial",
+#'   image = c(S1 = "slice1", S2 = "slice1")
 #' )
 #' SpatialIntegrationPlot(spatial, method = "PRECAST", plot_type = "spatial")
 #' }
@@ -428,6 +437,11 @@ spatial_integration_prepare_input <- function(
     )
   }
   expr <- GetAssayData5(srt, assay = assay, layer = layer)
+  count_values <- if (inherits(expr, "sparseMatrix")) expr@x else as.vector(expr)
+  if (!is.numeric(count_values) || any(!is.finite(count_values)) ||
+      any(count_values < 0 | abs(count_values - round(count_values)) > 1e-8)) {
+    stop("PRECAST requires finite non-negative integer counts in the selected assay/layer", call. = FALSE)
+  }
   features_use <- if (is.null(srt_list)) {
     spatial_integration_features_merged(
       features = features,
@@ -637,7 +651,6 @@ spatial_integration_sparse_matrix <- function(mat) {
   if (!inherits(mat, "dgCMatrix")) {
     mat <- methods::as(mat, "dgCMatrix")
   }
-  mat@x[!is.finite(mat@x)] <- 0
   Matrix::drop0(mat)
 }
 
@@ -646,41 +659,63 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
     log_message("Unsupported spatial integration method {.val {method}}", message_type = "error")
   }
   params <- list(...)
+  validate_named_list(params, "...")
+  allowed <- c("create_params", "adj_params", "par_params", "run_params", "select_params")
+  if (length(setdiff(names(params), allowed))) {
+    stop("PRECAST arguments must be supplied in create_params, adj_params, par_params, run_params or select_params", call. = FALSE)
+  }
+  for (name in names(params)) validate_named_list(params[[name]], name)
+  standard_spatial_fixed_args(params$create_params, c("seuList", "customGenelist"))
+  standard_spatial_fixed_args(params$adj_params, "PRECASTObj")
+  standard_spatial_fixed_args(params$par_params, "PRECASTObj")
+  standard_spatial_fixed_args(params$run_params, "PRECASTObj")
+  standard_spatial_fixed_args(params$select_params, "obj")
+  adj_params <- params$adj_params %||% list()
+  adj_params$type <- adj_params$type %||% "fixed_number"
+  adj_params$type <- match.arg(adj_params$type, c("fixed_number", "fixed_distance"))
+  if (adj_params$type == "fixed_number") {
+    adj_params$number <- adj_params$number %||% 6L
+    number <- adj_params$number
+    if (!is.numeric(number) || length(number) != 1L || !is.finite(number) ||
+        number < 1 || number != floor(number)) {
+      stop("adj_params$number must be a positive integer", call. = FALSE)
+    }
+  } else if (tolower(adj_params$platform %||% "Visium") %in% c("visium", "st")) {
+    stop("PRECAST fixed_distance Visium/ST requires array indices, not analysis coordinates; use fixed_number or platform = 'Other_SRT'", call. = FALSE)
+  }
   check_r("feiyoung/PRECAST", verbose = FALSE)
   create_fun <- get_namespace_fun("PRECAST", "CreatePRECASTObject")
   adj_fun <- get_namespace_fun("PRECAST", "AddAdjList")
   par_fun <- get_namespace_fun("PRECAST", "AddParSetting")
   run_fun <- get_namespace_fun("PRECAST", "PRECAST")
   select_fun <- get_namespace_fun("PRECAST", "SelectModel")
-  if (
-    !is.null(input$srt_list) &&
-      length(input$coords_list) == length(input$srt_list)
-  ) {
-    for (k in seq_along(input$srt_list)) {
-      cd <- input$coords_list[[k]]
-      if (all(c("x", "y") %in% colnames(cd))) {
-        srt_k <- input$srt_list[[k]]
-        srt_k$row <- cd[colnames(srt_k), "y"]
-        srt_k$col <- cd[colnames(srt_k), "x"]
-        input$srt_list[[k]] <- srt_k
-      }
-    }
-  }
+  # PRECAST reads counts from each object's default assay. Build those objects
+  # from the selected matrix instead of letting the caller's defaults leak in.
+  backend_samples <- lapply(input$samples, function(sample) {
+    counts <- input$expr_list[[sample]]
+    cd <- input$coords_list[[sample]][colnames(counts), , drop = FALSE]
+    metadata <- data.frame(row = cd$y, col = cd$x, row.names = colnames(counts))
+    SeuratObject::CreateSeuratObject(counts = counts, assay = input$assay,
+      meta.data = metadata, project = sample)
+  })
+  names(backend_samples) <- input$samples
   obj <- spatial_integration_call(
     create_fun,
     utils::modifyList(
       list(
-        seuList = input$srt_list,
+        seuList = backend_samples,
         project = "spatial_integration",
         customGenelist = input$features
       ),
       params$create_params %||% list()
     )
   )
+  spatial_integration_validate_neighbor_count(obj, adj_params)
   obj <- spatial_integration_call(
     adj_fun,
-    c(list(PRECASTObj = obj), params$adj_params %||% list())
+    c(list(PRECASTObj = obj), adj_params)
   )
+  edge_counts <- spatial_integration_validate_adjacency(obj)
   obj <- spatial_integration_call(
     par_fun,
     c(list(PRECASTObj = obj), params$par_params %||% list())
@@ -693,7 +728,46 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
     select_fun,
     c(list(obj = obj), params$select_params %||% list())
   )
-  spatial_integration_extract_precast(obj, input)
+  result <- spatial_integration_extract_precast(obj, input)
+  result$backend_parameters <- utils::modifyList(params, list(adj_params = adj_params))
+  result$adjacency_summary <- edge_counts
+  result$backend_version <- tryCatch(as.character(utils::packageVersion("PRECAST")),
+    error = function(e) NA_character_)
+  result
+}
+
+spatial_integration_validate_neighbor_count <- function(object, adj_params) {
+  if (adj_params$type == "fixed_number") {
+    sizes <- vapply(object@seulist, ncol, numeric(1))
+    if (!length(sizes) || any(sizes < 24 | sizes <= adj_params$number)) {
+      stop("PRECAST fixed_number requires at least 24 retained spots per sample and fewer neighbors than spots", call. = FALSE)
+    }
+  }
+  invisible(NULL)
+}
+
+spatial_integration_validate_adjacency <- function(object) {
+  samples <- object@seulist
+  graphs <- object@AdjList
+  if (!is.list(graphs) || length(graphs) != length(samples) || !length(graphs)) {
+    stop("PRECAST must return one adjacency matrix per sample", call. = FALSE)
+  }
+  edges <- vapply(seq_along(samples), function(i) {
+    graph <- graphs[[i]]
+    n <- ncol(samples[[i]])
+    values <- if (inherits(graph, "sparseMatrix")) graph@x else as.vector(graph)
+    if (!(is.matrix(graph) || inherits(graph, "Matrix")) ||
+        !all(dim(graph) == c(n, n)) || n < 2L ||
+        !is.numeric(values) || any(!is.finite(values)) || any(values < 0) || any(Matrix::diag(graph) != 0)) {
+      stop("PRECAST returned an invalid adjacency matrix", call. = FALSE)
+    }
+    count <- Matrix::nnzero(graph)
+    if (!is.finite(count) || count == 0) {
+      stop("PRECAST adjacency has no edges; check coordinates and adj_params before training", call. = FALSE)
+    }
+    as.double(count)
+  }, numeric(1))
+  stats::setNames(edges, names(samples))
 }
 
 spatial_integration_extract_precast <- function(raw_result, input) {
@@ -706,7 +780,10 @@ spatial_integration_extract_precast <- function(raw_result, input) {
   embedding <- NULL
   for (i in seq_along(input$samples)) {
     sample <- input$samples[[i]]
-    cells <- colnames(input$srt_list[[sample]])
+    cells <- colnames(raw_result@seulist[[i]])
+    if (!setequal(cells, colnames(input$srt_list[[sample]]))) {
+      stop("PRECAST filtering changed the sample's spots; adjust create_params to retain the selected input spots", call. = FALSE)
+    }
     cluster <- as.vector(clusters[[i]])
     if (length(cluster) != length(cells)) {
       log_message(
@@ -754,6 +831,9 @@ spatial_integration_standardize_result <- function(backend, input, method) {
     domains = domains,
     aligned_coords = aligned_coords,
     features = input$features,
+    backend_parameters = backend$backend_parameters,
+    adjacency_summary = backend$adjacency_summary,
+    backend_version = backend$backend_version,
     raw_result = backend$raw_result %||% backend
   )
 }
@@ -763,6 +843,9 @@ spatial_integration_standardize_embedding <- function(embedding, cells) {
     return(NULL)
   }
   embedding <- as.matrix(embedding)
+  if (!is.numeric(embedding) || !ncol(embedding) || any(!is.finite(embedding))) {
+    stop("Backend embedding must contain finite numeric values and at least one dimension", call. = FALSE)
+  }
   if (is.null(rownames(embedding))) {
     if (nrow(embedding) != length(cells)) {
       log_message(
@@ -802,10 +885,13 @@ spatial_integration_standardize_named_vector <- function(x, cells) {
   }
   source_names <- names(x)
   if (is.data.frame(x) || is.matrix(x)) {
+    source_names <- rownames(x)
     x <- x[, 1L, drop = TRUE]
-    source_names <- names(x) %||% rownames(x)
   }
   x <- as.character(x)
+  if (anyNA(x) || any(!nzchar(trimws(x)))) {
+    stop("Backend domain labels must be non-missing and non-empty", call. = FALSE)
+  }
   if (is.null(source_names) || !length(source_names)) {
     if (length(x) != length(cells)) {
       log_message(
@@ -880,6 +966,9 @@ spatial_integration_standardize_coords <- function(coords, cells) {
   colnames(out) <- c("x", "y")
   out$x <- as.numeric(out$x)
   out$y <- as.numeric(out$y)
+  if (any(!is.finite(out$x)) || any(!is.finite(out$y))) {
+    stop("Backend aligned coordinates must be finite numeric values", call. = FALSE)
+  }
   out
 }
 
@@ -945,6 +1034,9 @@ spatial_integration_apply_result <- function(
     coord.cols = coord.cols,
     coordinate_space = coordinate_space,
     coordinate_sources = coordinate_sources,
+    backend_parameters = result$backend_parameters,
+    backend_version = result$backend_version,
+    adjacency_summary = result$adjacency_summary,
     reduction.name = reduction.name,
     cluster_colname = cluster_colname,
     aligned_coord_cols = aligned_coord_cols,

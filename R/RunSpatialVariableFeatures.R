@@ -290,8 +290,8 @@ RunSpatialVariableFeatures <- function(
         assay = assay,
         layer = layer,
         method = method,
-        image = image,
-        coord.cols = coord.cols,
+        image = coordinate_input$source$image,
+        coord.cols = coordinate_input$source$coord.cols,
         coordinate_space = coordinate_space,
         k = k,
         nfeatures = nfeatures,
@@ -545,8 +545,10 @@ spatial_variable_finalize_result <- function(result, expr, expressed_spots, meth
     )
   }
   result$feature <- as.character(result$feature)
-  result <- result[result$feature %in% rownames(expr), , drop = FALSE]
-  result <- result[!duplicated(result$feature), , drop = FALSE]
+  if (anyNA(result$feature) || any(!nzchar(result$feature)) ||
+      anyDuplicated(result$feature) || any(!result$feature %in% rownames(expr))) {
+    stop("Spatial variable feature result must contain unique known feature IDs", call. = FALSE)
+  }
   if (nrow(result) == 0L) {
     log_message(
       "Spatial variable feature backend returned no tested features",
@@ -557,11 +559,23 @@ spatial_variable_finalize_result <- function(result, expr, expressed_spots, meth
     if (!col %in% colnames(result)) {
       result[[col]] <- NA_real_
     }
-    result[[col]] <- suppressWarnings(as.numeric(result[[col]]))
+    original <- result[[col]]
+    value <- if (is.numeric(original)) original else suppressWarnings(as.numeric(as.character(original)))
+    if (any(!is.na(original) & is.na(value))) {
+      stop(paste("Spatial variable feature result has non-numeric", col), call. = FALSE)
+    }
+    result[[col]] <- value
+  }
+  for (col in c("p_value", "q_value")) {
+    value <- result[[col]]
+    if (any(!is.na(value) & (!is.finite(value) | value < 0 | value > 1))) {
+      stop(paste("Spatial variable feature", col, "must be NA or in [0, 1]"), call. = FALSE)
+    }
   }
   missing_q <- is.na(result$q_value) & is.finite(result$p_value)
   if (any(missing_q)) {
-    result$q_value[missing_q] <- stats::p.adjust(result$p_value[missing_q], method = "BH")
+    adjusted <- stats::p.adjust(result$p_value, method = "BH")
+    result$q_value[missing_q] <- adjusted[missing_q]
   }
   if (all(!is.finite(result$score))) {
     result$score <- spatial_variable_score_from_significance(
@@ -608,10 +622,11 @@ spatial_variable_result_features <- function(df, fallback) {
     return(as.character(df[[feature_col[[1L]]]]))
   }
   rn <- rownames(df)
-  if (!is.null(rn) && length(rn) == nrow(df) && !all(grepl("^[0-9]+$", rn))) {
+  if (!is.null(rn) && length(rn) == nrow(df) &&
+      (!identical(rn, as.character(seq_len(nrow(df)))) || all(rn %in% fallback))) {
     return(as.character(rn))
   }
-  utils::head(fallback, nrow(df))
+  stop("Spatial variable feature backend must return explicit feature IDs", call. = FALSE)
 }
 
 
@@ -622,7 +637,9 @@ spatial_variable_result_features <- function(df, fallback) {
 #' summary view shows feature ranks and, when finite p- or q-values are stored,
 #' significance. Results without permutation statistics are shown without a
 #' significance size mapping or legend. The surface view reuses
-#' [SpatialSpotPlot()] to draw spatial expression for selected features.
+#' [SpatialSpotPlot()] to draw spatial expression for selected features. Unless
+#' explicitly overridden, surfaces inherit the saved assay, layer, image and
+#' coordinate columns, even if the object's default assay has changed.
 #'
 #' @md
 #' @inheritParams SpatialSpotPlot
@@ -634,6 +651,11 @@ spatial_variable_result_features <- function(df, fallback) {
 #' spatial variable feature result are used.
 #' @param nfeatures Number of top features used when `features = NULL`.
 #' @param score_col Result column used for the summary x-axis.
+#' @param assay,layer Expression assay and layer for surfaces. When `NULL`, use
+#' the saved analysis settings; explicit values override them.
+#' @param image Image for surfaces. When `NULL`, use the saved analysis image.
+#' @param coord.cols Metadata coordinate columns for surfaces. When omitted,
+#' use the saved analysis columns.
 #' @param legend.position Legend position for surface plots.
 #'
 #' @return A `ggplot` or `patchwork` object.
@@ -686,6 +708,9 @@ SpatialVariableFeaturePlot <- function(
   image.scale <- match.arg(image.scale)
   stored <- spatial_variable_get_stored_result(srt)
   spatial_require_coordinate_contract(stored, "RunSpatialVariableFeatures()")
+  assay <- assay %||% stored$parameters$assay
+  image <- image %||% stored$parameters$image
+  if (missing(coord.cols)) coord.cols <- stored$parameters$coord.cols %||% coord.cols
   result <- stored$result
   features <- spatial_variable_plot_features(result, features = features, nfeatures = nfeatures)
   if (identical(plot_type, "summary")) {

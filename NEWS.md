@@ -1,5 +1,9 @@
 # scop (development version)
 
+* **fix**: PRECAST consumes the explicitly selected raw-count matrix and defaults to distance-based six-neighbor adjacency instead of interpreting image pixels as array indices. Empty/invalid spatial graphs and non-finite integration outputs fail before results are written; stored parameters include the actual backend arguments and edge counts.
+* **fix**: SpatialCellChat recognizes imported Visium HD and HD bin assays, requires explicit HD pixel-to-micron calibration and tolerance, and does not classify Visium spot/bin images as segmented cells merely because they inherit FOV.
+* **fix**: Spatial variable feature surfaces inherit their saved assay, layer, image and coordinate columns. Backend feature IDs and p/q ranges are validated; missing BH-adjusted values use the complete supplied p-value family.
+
 * **feat**: `FeatureDimPlot()` defaults assay-gene headings to italic and supports `title.face` plus scalar or feature-named `title.color`, preserving numeric metadata headings and expression palettes.
 
 * **refactor**: Use the thisplot Pastel1 palette for volcano enrichment overlays instead of a hard-coded palette.
