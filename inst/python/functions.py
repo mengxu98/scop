@@ -1268,6 +1268,9 @@ def CellRank(
     kernel_type="velocity",
     time_key="dpt_pseudotime",
     time_field="Time",
+    time_values=None,
+    moscot_args=None,
+    realtime_args=None,
     growth_iters=3,
     tmap_out="tmaps/tmap_out",
     recalculate=False,
@@ -1285,6 +1288,7 @@ def CellRank(
     driver_lineages=None,
     compute_lineage_drivers=True,
     recompute_neighbors=True,
+    max_dense_gib=8,
     save_plot=False,
     plot_format="png",
     plot_dpi=600,
@@ -1435,7 +1439,11 @@ def CellRank(
             log_message("{.arg group_by} must be provided", message_type="error")
             exit()
 
-        if linear_reduction is None and nonlinear_reduction is None:
+        if (
+            linear_reduction is None
+            and nonlinear_reduction is None
+            and kernel_type != "moscot"
+        ):
             log_message(
                 "{.arg linear_reduction} or {.arg nonlinear_reduction} must be provided at least one",
                 message_type="error",
@@ -1445,6 +1453,10 @@ def CellRank(
         if basis is None:
             if nonlinear_reduction is not None:
                 basis = nonlinear_reduction
+            elif kernel_type == "moscot":
+                # The OT and RealTimeKernel path does not require an embedding.
+                # A basis can still be supplied explicitly for Python plots.
+                basis = None
             else:
                 basis = "basis"
                 adata.obsm["basis"] = adata.obsm[linear_reduction][:, 0:2]
@@ -1486,6 +1498,8 @@ def CellRank(
         use_pseudotime = False
         use_cytotrace = False
         use_wot = False
+        use_moscot = False
+        temporal_metadata = None
 
         def has_scanpy_neighbors():
             if "neighbors" not in adata.uns:
@@ -1659,6 +1673,36 @@ def CellRank(
             use_wot = True
             log_message(
                 "Using {.pkg RealTimeKernel} from {.pkg Waddington-OT} transport maps...",
+                message_type="info",
+                verbose=verbose,
+            )
+
+        elif kernel_type == "moscot":
+            use_moscot = True
+            if time_field is None or time_field not in adata.obs:
+                raise ValueError(
+                    f"{time_field!r} must be a column in adata.obs when kernel_type='moscot'"
+                )
+            if realtime_args is None:
+                realtime_args = {}
+            if moscot_args is None:
+                moscot_args = {}
+            if not hasattr(moscot_args, "items"):
+                raise TypeError("moscot_args must be a named mapping")
+            if not hasattr(realtime_args, "items"):
+                raise TypeError("realtime_args must be a named mapping")
+            unknown_moscot = set(moscot_args).difference({"growth", "prepare", "solve"})
+            unknown_realtime = set(realtime_args).difference({"from_moscot", "transition"})
+            if unknown_moscot:
+                raise ValueError(
+                    "Unknown moscot_args section(s): " + ", ".join(sorted(unknown_moscot))
+                )
+            if unknown_realtime:
+                raise ValueError(
+                    "Unknown realtime_args section(s): " + ", ".join(sorted(unknown_realtime))
+                )
+            log_message(
+                "Using {.pkg moscot} TemporalProblem with {.pkg RealTimeKernel}...",
                 message_type="info",
                 verbose=verbose,
             )
@@ -1908,6 +1952,211 @@ def CellRank(
                 )
                 raise
 
+        elif use_moscot:
+            log_message(
+                "Creating {.pkg TemporalProblem} and solving adjacent experimental time points...",
+                message_type="info",
+                verbose=verbose,
+            )
+            try:
+                from moscot.problems.time import TemporalProblem
+
+                def _mapping(value, name):
+                    if value is None:
+                        return None
+                    if hasattr(value, "items"):
+                        return dict(value)
+                    try:
+                        return dict(value)
+                    except Exception as exc:
+                        raise TypeError(f"{name} must be a named mapping") from exc
+
+                # RealTimeKernel requires categorical time values.  Keep the
+                # numeric order supplied by the user instead of factor-code order.
+                raw_time = adata.obs[time_field]
+                time_mapping = _mapping(time_values, "time_values")
+                if time_mapping is not None:
+                    mapped = raw_time.map(time_mapping)
+                    if mapped.isna().any():
+                        missing = sorted(set(raw_time[mapped.isna()].astype(str)))
+                        raise ValueError(
+                            f"time_values has no numeric value for labels: {missing}"
+                        )
+                    numeric_time = pd.to_numeric(mapped, errors="coerce")
+                else:
+                    numeric_time = pd.to_numeric(raw_time, errors="coerce")
+                    if numeric_time.isna().any():
+                        raise ValueError(
+                            f"{time_field!r} contains non-numeric labels; provide time_values"
+                        )
+                if not np.isfinite(numeric_time.to_numpy(dtype=float)).all():
+                    raise ValueError(f"{time_field!r} contains missing or non-finite values")
+                ordered_time = sorted(set(float(x) for x in numeric_time))
+                if len(ordered_time) < 2:
+                    raise ValueError("moscot requires at least two experimental time points")
+                moscot_time_key = "cellrank_moscot_time"
+                adata.obs[moscot_time_key] = pd.Categorical(
+                    numeric_time.astype(float), categories=ordered_time, ordered=True
+                )
+
+                sections = {
+                    "growth": _mapping(moscot_args.get("growth"), "moscot_args$growth"),
+                    "prepare": _mapping(moscot_args.get("prepare"), "moscot_args$prepare"),
+                    "solve": _mapping(moscot_args.get("solve"), "moscot_args$solve"),
+                }
+                tp = TemporalProblem(adata)
+                growth_cfg = sections["growth"]
+                if growth_cfg:
+                    tp = tp.score_genes_for_marginals(**growth_cfg)
+
+                prepare_cfg = dict(sections["prepare"] or {})
+                if "time_key" in prepare_cfg and prepare_cfg["time_key"] != moscot_time_key:
+                    raise ValueError(
+                        "moscot_args$prepare$time_key is controlled by time_field/time_values"
+                    )
+                prepare_cfg["time_key"] = moscot_time_key
+                policy = prepare_cfg.get("policy", "sequential")
+                if policy != "sequential":
+                    raise ValueError(
+                        "The SCOP moscot entry point currently supports only policy='sequential'"
+                    )
+                prepare_cfg["policy"] = "sequential"
+                tp = tp.prepare(**prepare_cfg)
+
+                # Prepared moscot problems expose their source/target shapes;
+                # use them to reject clearly unsafe dense OT work before solve.
+                memory_limit = float(max_dense_gib)
+                if not np.isfinite(memory_limit) or memory_limit <= 0:
+                    raise ValueError("max_dense_gib must be a positive finite number")
+                pair_shapes = []
+                prepared_problems = getattr(tp, "problems", {})
+                problem_items = (
+                    prepared_problems.items()
+                    if hasattr(prepared_problems, "items")
+                    else []
+                )
+                for pair_key, problem in problem_items:
+                    shape = getattr(problem, "shape", None)
+                    if shape is not None and len(shape) == 2:
+                        pair_shapes.append((str(pair_key), int(shape[0]), int(shape[1])))
+                if pair_shapes:
+                    largest_pair = max(pair_shapes, key=lambda x: x[1] * x[2])
+                    estimated_gib = (
+                        largest_pair[1] * largest_pair[2] * 8 * 3 / (1024**3)
+                    )
+                    if estimated_gib > memory_limit:
+                        raise MemoryError(
+                            "moscot OT pair "
+                            f"{largest_pair[0]} ({largest_pair[1]} x {largest_pair[2]}) "
+                            f"would require about {estimated_gib:.3f} GiB, exceeding max_dense_gib={memory_limit:.3f}"
+                        )
+
+                solve_cfg = {
+                    "epsilon": 0.05,
+                    "tau_a": 0.95,
+                    "tau_b": 1.0,
+                    "scale_cost": "mean",
+                }
+                solve_cfg.update(dict(sections["solve"] or {}))
+                tp = tp.solve(**solve_cfg)
+
+                from_cfg = _mapping(
+                    realtime_args.get("from_moscot"), "realtime_args$from_moscot"
+                ) or {}
+                transition_cfg = {
+                    "self_transitions": "all",
+                    "conn_weight": 0.2,
+                    "threshold": "auto",
+                }
+                transition_cfg.update(
+                    _mapping(realtime_args.get("transition"), "realtime_args$transition")
+                    or {}
+                )
+                if transition_cfg.get("self_transitions") in ("all",) and not (
+                    0 < float(transition_cfg.get("conn_weight", 0.2)) < 1
+                ):
+                    raise ValueError(
+                        "realtime_args$transition$conn_weight must be between 0 and 1 when self_transitions='all'"
+                    )
+
+                # RealTimeKernel uses molecular similarity for within-time
+                # transitions.  Build the graph only when that transition mode
+                # needs it; OT itself still uses moscot's per-pair local PCA.
+                self_transition_mode = transition_cfg.get("self_transitions")
+                needs_connectivities = self_transition_mode == "all" or isinstance(
+                    self_transition_mode, (list, tuple)
+                )
+                if needs_connectivities and not has_scanpy_neighbors():
+                    if linear_reduction and linear_reduction in adata.obsm:
+                        neighbors_rep = linear_reduction
+                    else:
+                        pca_n = min(
+                            int(n_pcs),
+                            max(1, int(adata.n_obs) - 1),
+                            max(1, int(adata.n_vars)),
+                        )
+                        sc.pp.pca(adata, n_comps=pca_n, random_state=0)
+                        neighbors_rep = "X_pca"
+                    neighbors_n = min(
+                        max(1, int(n_neighbors)), max(1, int(adata.n_obs) - 1)
+                    )
+                    sc.pp.neighbors(
+                        adata,
+                        n_neighbors=neighbors_n,
+                        use_rep=neighbors_rep,
+                        random_state=0,
+                    )
+                    log_message(
+                        "Computed molecular-similarity neighbors for {.pkg RealTimeKernel} self-transitions",
+                        message_type="info",
+                        verbose=verbose,
+                    )
+
+                rtk = cr.kernels.RealTimeKernel.from_moscot(tp, **from_cfg)
+                # Do not route this through the generic SCOP transition
+                # repair helper: it may add self-loops or renormalize an OT
+                # matrix.  The strict moscot validation below must see the
+                # RealTimeKernel output unchanged.
+                rtk.compute_transition_matrix(**transition_cfg)
+                main_kernel = rtk
+                temporal_metadata = {
+                    "time_field": str(time_field),
+                    "time_key": moscot_time_key,
+                    "time_values": ordered_time,
+                    "time_pairs": [
+                        [ordered_time[i], ordered_time[i + 1]]
+                        for i in range(len(ordered_time) - 1)
+                    ],
+                    "pair_shapes": [
+                        {
+                            "pair": pair_key,
+                            "source": source_n,
+                            "target": target_n,
+                        }
+                        for pair_key, source_n, target_n in pair_shapes
+                    ],
+                    "growth": growth_cfg or {},
+                    "prepare": prepare_cfg,
+                    "solve": solve_cfg,
+                    "from_moscot": from_cfg,
+                    "transition": transition_cfg,
+                    "n_cells": int(adata.n_obs),
+                    "max_dense_gib": memory_limit,
+                }
+                adata.uns["scop_cellrank_temporal"] = temporal_metadata
+                log_message(
+                    "{.pkg RealTimeKernel} from {.pkg moscot} created successfully",
+                    message_type="success",
+                    verbose=verbose,
+                )
+            except Exception as e:
+                log_message(
+                    "{.pkg moscot} real-time analysis failed: {.val {e}}",
+                    message_type="error",
+                    verbose=verbose,
+                )
+                raise
+
         elif use_velocity:
             if velocity_weight <= 0 and connectivity_weight <= 0:
                 log_message(
@@ -2001,6 +2250,7 @@ def CellRank(
         if (
             main_kernel is not None
             and use_connectivity_kernel
+            and not use_moscot
             and connectivity_weight > 0
         ):
             try:
@@ -2055,6 +2305,28 @@ def CellRank(
             tmat = final_kernel.transition_matrix
             matrix_modified = False
 
+            if use_moscot:
+                # The moscot/RealTimeKernel path must fail loudly rather than
+                # changing the OT Markov chain with generic self-loop or row
+                # normalization repairs.
+                raw_values = tmat.data if issparse(tmat) else np.asarray(tmat)
+                if (
+                    np.any(~np.isfinite(raw_values))
+                    or np.any(raw_values < -1e-12)
+                ):
+                    raise ValueError(
+                        "moscot RealTimeKernel produced non-finite or negative transition values"
+                    )
+                strict_row_sums = np.asarray(tmat.sum(axis=1)).reshape(-1)
+                if not np.all(np.isfinite(strict_row_sums)) or np.any(strict_row_sums <= 0):
+                    raise ValueError(
+                        "moscot RealTimeKernel produced zero or non-finite transition rows"
+                    )
+                if not np.allclose(strict_row_sums, 1.0, rtol=1e-6, atol=1e-8):
+                    raise ValueError(
+                        "moscot RealTimeKernel transition rows are not normalized"
+                    )
+
             log_message(
                 "Validating and fixing transition matrix for {.pkg GPCCA} compatibility...",
                 message_type="info",
@@ -2105,7 +2377,7 @@ def CellRank(
             if issparse(tmat):
                 diag_values = tmat.diagonal()
                 min_self_loop = 0.01
-                needs_self_loop = diag_values < min_self_loop
+                needs_self_loop = (diag_values < min_self_loop) if not use_moscot else np.zeros_like(diag_values, dtype=bool)
 
                 if np.any(needs_self_loop):
                     log_message(
@@ -2123,7 +2395,7 @@ def CellRank(
             row_sums = np.array(tmat.sum(axis=1)).flatten()
             zero_rows = row_sums < 1e-10
 
-            if np.any(zero_rows):
+            if np.any(zero_rows) and not use_moscot:
                 log_message(
                     "Found {.val {zero_rows.sum()}} zero rows. Setting to self-loops...",
                     message_type="warning",
@@ -2143,7 +2415,7 @@ def CellRank(
                 row_sums = np.array(tmat.sum(axis=1)).flatten()
                 matrix_modified = True
 
-            if not np.allclose(row_sums, 1.0, rtol=1e-6, atol=1e-8):
+            if not np.allclose(row_sums, 1.0, rtol=1e-6, atol=1e-8) and not use_moscot:
                 log_message(
                     "Normalizing rows (current range: {.val {format(row_sums.min(), '.8f')}} - {.val {format(row_sums.max(), '.8f')}})...",
                     message_type="info",
@@ -2197,6 +2469,8 @@ def CellRank(
                 )
 
         except Exception as e:
+            if use_moscot:
+                raise
             log_message(
                 "Matrix validation encountered error: {.val {e}}. Proceeding with original matrix...",
                 message_type="warning",
@@ -2379,7 +2653,7 @@ def CellRank(
             )
             estimator.compute_eigendecomposition()
 
-            predict_method = "kmeans" if kernel_type == "wot" else "leiden"
+            predict_method = "kmeans" if kernel_type in ("wot", "moscot") else "leiden"
             log_message(
                 "Predicting terminal states (use={.val {n_macrostates}}, method={.val {predict_method}})...",
                 message_type="info",
@@ -2408,7 +2682,7 @@ def CellRank(
         )
         fate_probabilities_available = True
         try:
-            if kernel_type == "wot":
+            if kernel_type in ("wot", "moscot"):
                 estimator.compute_fate_probabilities(solver="direct", use_petsc=False)
             else:
                 estimator.compute_fate_probabilities()
@@ -2418,10 +2692,10 @@ def CellRank(
                 and "negative" not in str(e).lower()
             ):
                 raise
-            if kernel_type == "wot":
+            if kernel_type in ("wot", "moscot"):
                 fate_probabilities_available = False
                 log_message(
-                    "Skipping fate probabilities for {.pkg Waddington-OT} kernel because CellRank could not normalize absorption probabilities: {.val {e}}",
+                    "Skipping fate probabilities for {.val {kernel_type}} real-time kernel because CellRank could not normalize absorption probabilities: {.val {e}}",
                     message_type="warning",
                     verbose=verbose,
                 )
@@ -3132,10 +3406,11 @@ def CellRank(
             "compute_lineage_drivers": bool(compute_lineage_drivers),
             "recompute_neighbors": bool(recompute_neighbors),
         },
+        "temporal": temporal_metadata,
         "transition_key": "cellrank_transition",
         "versions": {},
     }
-    for package_name in ("cellrank", "scanpy", "palantir", "pandas"):
+    for package_name in ("cellrank", "scanpy", "palantir", "pandas", "moscot"):
         try:
             from importlib.metadata import version as package_version
             payload["versions"][package_name] = package_version(package_name)
