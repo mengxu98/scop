@@ -221,7 +221,7 @@ does not run an optional deconvolution or domain backend.</p>
 <span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-17 06:44:35] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-09-20 15:22:16] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="inspect-stored-results-before-plotting">Inspect stored results before plotting<a class="anchor" aria-label="anchor" href="#inspect-stored-results-before-plotting"></a>
@@ -309,10 +309,13 @@ automatically a domain marker or a cell-type marker.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="spatial-main-workflow_files/figure-html/plot-results-3.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
 <p><code>combine = FALSE</code> returns named plots for independent
-editing. Spatial feature plots read the stored result; they do not rerun
-the backend. A saved Seurat object can be reloaded and plotted again as
-long as the stored result and the selected spatial context remain
-complete.</p>
+editing, including long-format point maps and dominant deconvolution
+maps. Long-format <code>plot.data</code> accepts explicit cutoffs and
+quantiles; its default range remains the full data range. Plotting reads
+stored results or the explicitly selected assay/layer; it does not rerun
+QC or spatial-feature detection. A saved Seurat object can be reloaded
+and plotted again as long as the stored result and the selected spatial
+context remain complete.</p>
 </div>
 <div class="section level2">
 <h2 id="proportion-and-empty-panel-display">Proportion and empty-panel display<a class="anchor" aria-label="anchor" href="#proportion-and-empty-panel-display"></a>
