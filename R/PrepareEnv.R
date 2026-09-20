@@ -534,6 +534,7 @@ supported_env_modules <- function() {
     "scvelo",
     "cellrank",
     "wot",
+    "moscot",
     "phate",
     "pacmap",
     "trimap",
@@ -559,6 +560,7 @@ default_env_modules <- function() {
     "cell2fate",
     "commot",
     "spatialdm",
+    "moscot",
     "sccoda",
     "scomm",
     "scenic",
@@ -582,7 +584,8 @@ optional_env_modules <- function() {
     "cellphonedb",
     "magic",
     "scrublet",
-    "doubletdetection"
+    "doubletdetection",
+    "moscot"
   )
 }
 
@@ -596,6 +599,7 @@ env_module_dependencies <- function() {
     scvelo = "scanpy",
     cellrank = c("scanpy", "scvelo"),
     wot = "scanpy",
+    moscot = "cellrank",
     scvi = "scanpy",
     glue = "scanpy",
     scanorama = "scanpy",
@@ -730,6 +734,7 @@ env_module_requirements <- function() {
     scvelo = env_python_spec(c("scvelo" = "scvelo==0.3.3")),
     cellrank = env_python_spec(c("cellrank" = "cellrank==2.3.2")),
     wot = env_python_spec(c("wot" = "wot==1.0.8.post2")),
+    moscot = env_python_spec(c("moscot" = "moscot==0.5.2")),
     phate = env_python_spec(c("phate" = "phate==1.0.11")),
     pacmap = env_python_spec(c("pacmap" = "pacmap==0.8.0")),
     trimap = env_python_spec(c("trimap" = "trimap==1.1.4")),
@@ -1888,7 +1893,7 @@ env_requirements <- function(
     package_aliases <- c(package_aliases, req_i$package_aliases)
   }
 
-  if (any(c("scanpy", "palantir", "cellrank") %in% modules) &&
+  if (any(c("scanpy", "palantir", "cellrank", "moscot") %in% modules) &&
     !"scmalignantfinder" %in% modules) {
     if (!version %in% c("3.10-1", "3.11-1", "3.12-1")) {
       log_message(
@@ -1908,6 +1913,18 @@ env_requirements <- function(
     }
     if ("cellrank" %in% modules) {
       trajectory_packages[["cellrank"]] <- if (modern) "cellrank==2.3.2" else "cellrank==2.0.7"
+    }
+    if ("moscot" %in% modules) {
+      trajectory_packages[["moscot"]] <- if (identical(version, "3.10-1")) "moscot==0.4.3" else "moscot==0.5.2"
+      if (!identical(version, "3.10-1")) {
+        # CellRank 2.3.2 imports private anndata IO aliases removed in
+        # anndata 0.13; moscot's unconstrained JAX stack also needs the
+        # versions used by its 0.5.2 lockfile.
+        trajectory_packages[["anndata"]] <- "anndata==0.12.19"
+        trajectory_packages[["jax"]] <- if (modern) "jax==0.11.1" else "jax==0.10.2"
+        trajectory_packages[["jaxlib"]] <- if (modern) "jaxlib==0.11.1" else "jaxlib==0.10.2"
+        trajectory_packages[["flax"]] <- if (modern) "flax==0.12.9" else "flax==0.12.8"
+      }
     }
     package_versions[names(trajectory_packages)] <- trajectory_packages
     package_install_methods[names(trajectory_packages)] <- "pip"

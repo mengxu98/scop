@@ -769,6 +769,13 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
       "from pathlib import Path",
       "for name in ('anndata', 'numpy', 'pandas'):",
       "    sys.modules[name] = types.ModuleType(name)",
+      "# Exercise runner behavior independently of the R logger installation.",
+      "log_module = types.ModuleType('log_message')",
+      "def test_log_message(message, message_type='info', **kwargs):",
+      "    if message_type == 'error':",
+      "        raise RuntimeError(message)",
+      "log_module.log_message = test_log_message",
+      "sys.modules['log_message'] = log_module",
       "class FakeArray:",
       "    def __init__(self, shape, finite=True):",
       "        self.shape = shape",
@@ -961,28 +968,12 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
     ),
     script
   )
-  status <- local({
-    old_pythonpath <- Sys.getenv("PYTHONPATH", unset = NA_character_)
-    Sys.setenv(
-      PYTHONPATH = system.file("python", package = "thisutils", mustWork = TRUE)
-    )
-    on.exit(
-      {
-        if (is.na(old_pythonpath)) {
-          Sys.unsetenv("PYTHONPATH")
-        } else {
-          Sys.setenv(PYTHONPATH = old_pythonpath)
-        }
-      },
-      add = TRUE
-    )
-    system2(
-      python,
-      c(shQuote(script), shQuote(runner)),
-      stdout = output,
-      stderr = output
-    )
-  })
+  status <- system2(
+    python,
+    c(shQuote(script), shQuote(runner)),
+    stdout = output,
+    stderr = output
+  )
 
   expect_identical(
     status,

@@ -32,9 +32,12 @@ RunCellRank(
   calculate_velocity_genes = FALSE,
   denoise = FALSE,
   kinetics = FALSE,
-  kernel_type = c("velocity", "pseudotime", "cytotrace", "wot"),
+  kernel_type = c("velocity", "pseudotime", "cytotrace", "wot", "moscot"),
   time_key = "dpt_pseudotime",
   time_field = "Time",
+  time_values = NULL,
+  moscot_args = list(),
+  realtime_args = list(),
   growth_iters = 3L,
   tmap_out = "tmaps/tmap_out",
   recalculate = FALSE,
@@ -144,12 +147,23 @@ Each cell in the grid can have, at most, one traversing streamline.}
 \item{kernel_type}{Type of kernel to use: \code{"velocity"} (default, requires spliced/unspliced),
 \code{"pseudotime"} (requires pre-computed pseudotime or auto-computes DPT),
 \code{"cytotrace"} (auto-computes CytoTRACE score, suitable for RNA-only data),
-or \code{"wot"} (uses Waddington-OT transport maps through CellRank's RealTimeKernel).}
+or \code{"wot"} (uses Waddington-OT transport maps through CellRank's RealTimeKernel),
+or \code{"moscot"} (uses moscot's TemporalProblem through RealTimeKernel).}
 
 \item{time_key}{Key in metadata for pseudotime. Used when \code{kernel_type = "pseudotime"}.
 If the key doesn't exist, DPT pseudotime will be computed automatically.}
 
-\item{time_field}{Key in metadata for experimental time. Used when \code{kernel_type = "wot"}.}
+\item{time_field}{Key in metadata for experimental time. Used when \code{kernel_type \%in\% c("wot", "moscot")}.}
+
+\item{time_values}{Optional named mapping from non-numeric experimental-time
+labels to numeric values used to order moscot time points. Numeric columns do
+not need a mapping.}
+
+\item{moscot_args}{Named lists for moscot's \code{growth}, \code{prepare}, and \code{solve}
+stages. Only used when \code{kernel_type = "moscot"}.}
+
+\item{realtime_args}{Named lists for \code{RealTimeKernel}'s \code{from_moscot} and
+\code{transition} stages. Only used when \code{kernel_type = "moscot"}.}
 
 \item{growth_iters}{Number of growth iterations passed to \code{wot.ot.OTModel}.}
 
