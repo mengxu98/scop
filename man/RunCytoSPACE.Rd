@@ -71,7 +71,7 @@ duplicate sampling.}
 \item{prefix}{Prefix for metadata columns.}
 
 \item{store_results}{Whether to store detailed assignment results in
-\code{srt@tools}.}
+\code{object@tools}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

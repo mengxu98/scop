@@ -29,6 +29,7 @@ RunPCA.default <- function(
   reduction.key = "PC_",
   seed.use = 42,
   approx = TRUE,
+  cores = NULL,
   feature.names = rownames(object),
   cell.names = colnames(object),
   ...
@@ -93,7 +94,12 @@ RunPCA.default <- function(
   if (identical(backend, "cpp") || native_auto) {
     native_npcs <- if (native_auto) npcs + 1L else npcs
     nv <- tryCatch(
-      pca_backend_run(obj, as.integer(native_npcs), isTRUE(weight.by.var)),
+      pca_backend_run(
+        obj,
+        as.integer(native_npcs),
+        isTRUE(weight.by.var),
+        n_threads = scop_n_threads(cores)
+      ),
       error = function(e) NULL
     )
     if (
@@ -154,6 +160,7 @@ RunPCA.StdAssay <- function(
   nfeatures.print = 30,
   reduction.key = "PC_",
   seed.use = 42,
+  cores = NULL,
   ...
 ) {
   if (
@@ -190,6 +197,7 @@ RunPCA.StdAssay <- function(
     nfeatures.print = nfeatures.print,
     reduction.key = reduction.key,
     seed.use = seed.use,
+    cores = cores,
     feature.names = feature.names,
     cell.names = cell.names,
     ...
@@ -210,6 +218,7 @@ RunPCA.Seurat <- function(
   reduction.name = "pca",
   reduction.key = "PC_",
   seed.use = 42,
+  cores = NULL,
   ...
 ) {
   extra <- list(...)
@@ -258,6 +267,7 @@ RunPCA.Seurat <- function(
       nfeatures.print = nfeatures.print,
       reduction.key = reduction.key,
       seed.use = seed.use,
+      cores = cores,
       ...
     ),
     error = function(e) NULL
@@ -272,7 +282,10 @@ RunPCA.Seurat <- function(
 #' Run principal component analysis
 #'
 #' @param object Object containing expression data.
-#' @param ... Passed to methods.
+#' @param ... Passed to methods. The `"cpp"` backend of the `matrix` and assay
+#' methods accepts `cores` to bound its BLAS calls; `NULL` keeps the process
+#' default. The `Seurat` method also accepts `features`, `layer`,
+#' `reduction.name` and the remaining `Seurat::RunPCA()` arguments.
 #'
 #' @return PCA results or an object containing PCA results.
 #' @export

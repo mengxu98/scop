@@ -36,7 +36,7 @@ RunSPOTlight(
 
 \item{reference_label}{Metadata column in \code{reference} with cell type labels.}
 
-\item{assay}{Assay used in \code{srt}. If \code{NULL}, the default assay is used.}
+\item{assay}{Assay used in \code{object}. If \code{NULL}, the default assay is used.}
 
 \item{reference_assay}{Assay used in \code{reference}.}
 

@@ -90,7 +90,7 @@ available.}
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
 \item{store_results}{Whether to store detailed BANKSY results in
-\code{srt@tools}.}
+\code{object@tools}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

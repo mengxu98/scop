@@ -1,11 +1,16 @@
 scop_python_import <- function(module, convert = TRUE) {
-  python_dir <- system.file("python", package = "thisutils", mustWork = FALSE)
-  if (!nzchar(python_dir)) {
+  python_files <- c(
+    system.file("scripts", "log_message.py", package = "thisutils"),
+    system.file("python", "log_message.py", package = "thisutils")
+  )
+  python_files <- python_files[nzchar(python_files) & file.exists(python_files)]
+  if (!length(python_files)) {
     log_message(
-      "thisutils ({.code >= 0.4.8}) does not provide a Python {.file log_message} module",
+      "thisutils does not provide {.file log_message.py} under {.file scripts} or {.file python}. Reinstall thisutils.",
       message_type = "error"
     )
   }
+  python_dir <- dirname(python_files[[1L]])
   if (isFALSE(reticulate::py_available(initialize = FALSE))) {
     configured_python <- normalize_python_runtime_path(
       Sys.getenv("RETICULATE_PYTHON", unset = "")
@@ -111,10 +116,14 @@ runner_system2 <- function(command, args, env, stdout, stderr) {
       message_type = "error"
     )
   }
-  log_message_dir <- system.file("python", package = "thisutils", mustWork = FALSE)
-  if (nzchar(log_message_dir)) {
+  log_message_files <- c(
+    system.file("scripts", "log_message.py", package = "thisutils"),
+    system.file("python", "log_message.py", package = "thisutils")
+  )
+  log_message_files <- log_message_files[nzchar(log_message_files) & file.exists(log_message_files)]
+  if (length(log_message_files)) {
     python_path <- unique(c(
-      log_message_dir,
+      dirname(log_message_files[[1L]]),
       strsplit(Sys.getenv("PYTHONPATH", unset = ""), .Platform$path.sep, fixed = TRUE)[[1]]
     ))
     python_path <- python_path[nzchar(python_path)]

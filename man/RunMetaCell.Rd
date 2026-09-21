@@ -44,7 +44,7 @@ metacells from crossing group boundaries.}
 
 \item{conda}{Conda executable path (SEACells only).}
 
-\item{prefix}{Prefix for metadata columns written to \code{srt}.}
+\item{prefix}{Prefix for metadata columns written to \code{object}.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry.}
 

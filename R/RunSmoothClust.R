@@ -28,7 +28,6 @@
 #' units; `truncate` is the backend's dimensionless kernel cutoff, and `k` and
 #' are unitless counts.
 #' @param cores Number of workers passed to `smoothclust::smoothclust()`.
-#' @param n_threads Deprecated alias for `cores`.
 #' @param n_clusters Number of spatial domains for k-means clustering. This
 #' must be supplied explicitly.
 #' @param n_pcs Number of principal components used for k-means.
@@ -89,7 +88,6 @@ RunSmoothClust <- function(
   k = 18,
   truncate = 0.05,
   cores = 1,
-  n_threads = NULL,
   n_clusters,
   n_pcs = 15,
   center = TRUE,
@@ -126,10 +124,6 @@ RunSmoothClust <- function(
   nfeatures <- smoothclust_assert_positive_integer(nfeatures, "nfeatures")
   min_spots <- smoothclust_assert_positive_integer(min_spots, "min_spots")
   k <- smoothclust_assert_positive_integer(k, "k")
-  if (!is.null(n_threads)) {
-    .Deprecated(msg = "'n_threads' is deprecated; use 'cores' instead")
-    cores <- n_threads
-  }
   cores <- smoothclust_assert_positive_integer(cores, "cores")
   if (missing(n_clusters)) {
     log_message(

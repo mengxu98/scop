@@ -137,7 +137,7 @@ If \code{NULL}, the ligand with the highest total score is used.}
 restrict to. If \code{NULL}, all receptors paired with \code{ligand} are shown.}
 
 \item{reg.by}{For \code{plot_type = "bipartite"}: optional metadata column in
-\code{srt} used to color edges by regulation status (e.g. up/down). If \code{NULL},
+\code{object} used to color edges by regulation status (e.g. up/down). If \code{NULL},
 edges are colored by sender cell type.}
 
 \item{reg_palette}{For \code{plot_type = "bipartite"}: named character vector or

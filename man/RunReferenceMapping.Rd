@@ -85,7 +85,7 @@ finding/integration.}
 
 \item{evaluate}{Whether to compute mapping metrics against a truth label.}
 
-\item{truth_col}{Metadata column in \code{srt} used as the truth label when
+\item{truth_col}{Metadata column in \code{object} used as the truth label when
 \code{evaluate = TRUE}.}
 
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}

@@ -871,7 +871,7 @@ ensure_external_wrapper_r_packages <- function(modules, verbose = TRUE) {
   repos <- c(
     secact = "data2intelligence/SecAct",
     scpagwas = "sulab-wmu/scPagwas",
-    choir = "corceslab/CHOIR"
+    choir = "corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
   )
   modules <- intersect(names(repos), modules)
   if (length(modules) == 0) {
@@ -929,7 +929,7 @@ env_r_packages <- function(modules = NULL) {
   module_packages <- c(
     secact = "data2intelligence/SecAct",
     scpagwas = "sulab-wmu/scPagwas",
-    choir = "corceslab/CHOIR"
+    choir = "corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
   )
   unique(c(
     description_packages,

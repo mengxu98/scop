@@ -68,8 +68,7 @@ ScaleData.Seurat <- function(
   ...
 ) {
   dots <- list(...)
-  n_threads <- dots$n_threads %||% dots$cores
-  dots$n_threads <- NULL
+  n_threads <- dots$cores
   dots$cores <- NULL
   if (
     !identical(model.use, "linear") ||
@@ -346,8 +345,7 @@ ScaleData.default <- function(
   ...
 ) {
   dots <- list(...)
-  n_threads <- dots$n_threads %||% dots$cores
-  dots$n_threads <- NULL
+  n_threads <- dots$cores
   dots$cores <- NULL
   fallback <- function() {
     do.call(

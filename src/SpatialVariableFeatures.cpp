@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <thisutils/log_message.h>
+#include "numeric_utils.h"
 #include "thread_utils.h"
 #include <R_ext/Random.h>
 

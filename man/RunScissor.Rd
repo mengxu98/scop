@@ -52,7 +52,7 @@ the second sorted level is used.}
 \item{bulk_assay}{Assay name used when \code{bulk_dataset} is a
 \code{SummarizedExperiment}.}
 
-\item{layer}{Assay layer used from \code{srt}.}
+\item{layer}{Assay layer used from \code{object}.}
 
 \item{features}{Optional genes used before intersecting bulk and
 single-cell features.}
@@ -86,7 +86,7 @@ built.}
 \item{tool_name}{Name of the \code{srt@tools} entry.}
 
 \item{store_inputs}{Whether to store Scissor regression inputs in
-\code{srt@tools}. Default is \code{FALSE} to avoid large objects.}
+\code{object@tools}. Default is \code{FALSE} to avoid large objects.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

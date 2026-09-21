@@ -18,7 +18,7 @@ jobs:
       matrix:
         include:
           - suite: monocle2
-            filter: monocle2-cpp
+            filter: monocle2
             packages: |-
               mengxu98/monocle@ed3e7698f80ebdda8fb86be94a948e0c1353a769
               DDRTree@0.1.6
@@ -34,7 +34,7 @@ jobs:
               Giotto
               geometry
           - suite: tage
-            filter: runtage-preprocessing
+            filter: runtage-preprocessing|tage-cpp
             packages: Gladyshev-Lab/tAge@d2bae09a2409deb42031f2b31aa3d9f391d5e2ab
             required: tAge
           - suite: cibersort

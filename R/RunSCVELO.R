@@ -32,7 +32,9 @@
 #' and store the graph only when terminal states or pseudotime are requested.
 #' The velocity embedding itself is always graph-projected, matching
 #' `scv.tl.velocity_embedding`.
-#' @param compute_terminal_states Whether to compute terminal states (root and end points).
+#' @param compute_terminal_states Whether to compute terminal states (root and end
+#' points). The C++ backend needs the optional `RSpectra` package for this step
+#' and for `compute_pseudotime`.
 #' @param compute_pseudotime Whether to compute velocity pseudotime.
 #' @param compute_paga Whether to compute PAGA (Partition-based graph abstraction).
 #' @param top_n The number of top features to plot.
@@ -850,6 +852,15 @@ run_scanpy_cpp <- function(
       key = paste0(gsub("_", "", velocity_reduction), "_")
     )
 
+    if (isTRUE(compute_terminal_states) || isTRUE(compute_pseudotime)) {
+      check_r("RSpectra", verbose = FALSE)
+      if (!requireNamespace("RSpectra", quietly = TRUE)) {
+        log_message(
+          "The {.arg backend = 'cpp'} terminal state and pseudotime steps need the optional {.pkg RSpectra} package. Install it with {.code install.packages('RSpectra')}.",
+          message_type = "error"
+        )
+      }
+    }
     if (isTRUE(compute_terminal_states)) {
       if (!isTRUE(compute_velocity_graph)) {
         log_message(

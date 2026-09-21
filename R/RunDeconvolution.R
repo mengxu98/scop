@@ -52,6 +52,16 @@
 #' )
 #'
 #' DeconvolutionPlot(islet_bulk, plot_type = "box")
+#'
+#' \dontrun{
+#' # MuSiC needs the optional MuSiC backend pre-installed.
+#' data(panc8_sub)
+#' islet_bulk <- RunDeconvolution(
+#'   islet_bulk, reference = panc8_sub,
+#'   method = "MuSiC", group.by = "celltype", verbose = FALSE
+#' )
+#' DeconvolutionPlot(islet_bulk, plot_type = "bar")
+#' }
 RunDeconvolution <- function(object, ...) {
   if (methods::is(object, "SummarizedExperiment")) {
     return(RunDeconvolution.SummarizedExperiment(object, ...))
@@ -509,13 +519,13 @@ RunBayesPrism <- function(
   outlier.cut = 0.01,
   outlier.fraction = 0.1,
   pseudo.min = 1e-8,
-  n.cores = 1,
+  cores = 1,
   update.gibbs = TRUE,
   gibbs.control = list(),
   opt.control = list(),
   verbose = TRUE
 ) {
-  n_cores_missing <- missing(n.cores)
+  cores_missing <- missing(cores)
   backend <- match_backend(
     backend = backend,
     cpp_available = TRUE,
@@ -566,7 +576,7 @@ RunBayesPrism <- function(
     bp_fit <- tryCatch(
       run_prism(
         prism = prism_obj,
-        n.cores = n.cores,
+        n.cores = cores,
         update.gibbs = update.gibbs,
         gibbs.control = gibbs.control,
         opt.control = opt.control
@@ -593,10 +603,10 @@ RunBayesPrism <- function(
       proportion_matrix = prop_matrix
     )
   } else {
-    effective_n_cores <- if (isTRUE(n_cores_missing)) {
+    effective_n_cores <- if (isTRUE(cores_missing)) {
       thisutils::detect_cores(max_threads = 4L, logical = FALSE)
     } else {
-      as.integer(n.cores)
+      as.integer(cores)
     }
     if (!"n.cores" %in% names(gibbs.control)) {
       gibbs.control$n.cores <- effective_n_cores
@@ -761,7 +771,7 @@ RunBayesPrism <- function(
       n.cores = if (identical(backend, "cpp")) {
         as.integer(gibbs.control$n.cores)
       } else {
-        n.cores
+        cores
       },
       update.gibbs = update.gibbs
     )
@@ -794,8 +804,7 @@ RunBayesPrism <- function(
 #' implementation. `"r"` is an optional reference backend from
 #' `Moonerss/CIBERSORT`.
 #' @param cores Number of CPU cores used by the C++ backend. `NULL` uses up to
-#' 4 local cores. `n_threads` passed through `...` is accepted as a
-#' backward-compatible alias when `cores = NULL`.
+#' 4 local cores.
 #' @param seed Random seed used by the C++ permutation backend.
 #'
 #' @return A deconvolution result bundle for matrix input, or the modified
@@ -853,6 +862,12 @@ RunCIBERSORT <- function(
   ...
 ) {
   backend <- match.arg(backend)
+  if (!is.null(object) && !is.null(count_matrix)) {
+    log_message(
+      "Supply only one of {.arg object} and {.arg count_matrix}.",
+      message_type = "error"
+    )
+  }
   input_object <- object
   if (is.null(count_matrix)) {
     if (methods::is(object, "SummarizedExperiment")) {
@@ -926,10 +941,6 @@ run_cibersort_bundle <- function(
 ) {
   backend <- match.arg(backend)
   dots <- list(...)
-  if (is.null(cores) && "n_threads" %in% names(dots)) {
-    cores <- dots$n_threads
-    dots$n_threads <- NULL
-  }
   perm <- as.integer(perm)
   cores <- resolve_cibersort_cores(cores)
   seed <- as.integer(seed)

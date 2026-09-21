@@ -17,7 +17,7 @@
 #' default creates `scomm_prediction`, `scomm_score.<class>`, and
 #' `scomm_score.max`.
 #' @param evaluate Whether to compute prediction metrics against a truth label.
-#' @param truth_col Metadata column in `srt` used as the truth label when
+#' @param truth_col Metadata column in `object` used as the truth label when
 #' `evaluate = TRUE`.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param rare_threshold Maximum class proportion used to define rare classes

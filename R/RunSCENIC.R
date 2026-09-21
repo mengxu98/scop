@@ -1359,17 +1359,16 @@ cistarget2 <- function(
   gc()
 
   if (length(rank_matrices) == 0) {
+    if (!requireNamespace("arrow", quietly = TRUE)) {
+      log_message(
+        "The cistarget backend reads its ranking databases with the optional {.pkg arrow} package. Install it with {.code install.packages('arrow')}.",
+        message_type = "error"
+      )
+    }
     log_message(
-      "Failed to read any ranking databases. Falling back to rank-based approximation.",
-      message_type = "warning",
-      verbose = verbose
+      "None of the ranking databases in the resolved cistarget directory could be read, so the regulons cannot be scored.",
+      message_type = "error"
     )
-    return(build_regulons(
-      adjacency,
-      max_targets,
-      min_regulon_size,
-      suffix = "(+)"
-    ))
   }
 
   gene_to_clusters <- list()

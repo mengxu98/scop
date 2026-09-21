@@ -134,7 +134,7 @@ test_that("MERINGUE retains permutation p values when permutations are requested
   expect_true(all(is.finite(out@tools$MERINGUE$autocorrelation$q_value)))
 })
 
-test_that("RunMERINGUE maps cores and its legacy alias at both permutation boundaries", {
+test_that("RunMERINGUE maps cores to the MERINGUE argument at both permutation boundaries", {
   seen <- list()
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
@@ -155,12 +155,7 @@ test_that("RunMERINGUE maps cores and its legacy alias at both permutation bound
     cross_cor_params = list(test = TRUE, n = 5), backend = "r", verbose = FALSE
   )
   for (mode in c("autocorrelation", "cross_correlation")) {
-    current <- do.call(RunMERINGUE, c(args, list(mode = mode, cores = 2)))
-    expect_warning(
-      legacy <- do.call(RunMERINGUE, c(args, list(mode = mode, ncores = 2))),
-      "deprecated"
-    )
-    expect_identical(current@tools$MERINGUE[[mode]], legacy@tools$MERINGUE[[mode]])
+    do.call(RunMERINGUE, c(args, list(mode = mode, cores = 2)))
   }
   expect_setequal(vapply(seen, `[[`, "", "fun"), c("moranPermutationTest", "spatialCrossCorTest"))
   expect_true(all(vapply(seen, function(x) identical(x$ncores, 2L), logical(1))))

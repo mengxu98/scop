@@ -98,7 +98,7 @@ current inputs and parameters.}
 \item{tool_name}{Name of the \code{srt@tools} result entry.}
 
 \item{store_results}{Whether to store detailed result matrices and paths in
-\code{srt@tools}.}
+\code{object@tools}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

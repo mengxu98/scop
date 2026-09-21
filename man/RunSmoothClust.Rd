@@ -18,7 +18,6 @@ RunSmoothClust(
   k = 18,
   truncate = 0.05,
   cores = 1,
-  n_threads = NULL,
   n_clusters,
   n_pcs = 15,
   center = TRUE,
@@ -68,8 +67,6 @@ units; \code{truncate} is the backend's dimensionless kernel cutoff, and \code{k
 are unitless counts.}
 
 \item{cores}{Number of workers passed to \code{smoothclust::smoothclust()}.}
-
-\item{n_threads}{Deprecated alias for \code{cores}.}
 
 \item{n_clusters}{Number of spatial domains for k-means clustering. This
 must be supplied explicitly.}

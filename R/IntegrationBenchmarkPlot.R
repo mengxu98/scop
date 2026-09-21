@@ -28,52 +28,23 @@
 #' @export
 #'
 #' @examples
-#' srt <- SeuratObject::CreateSeuratObject(
-#'   counts = Matrix::Matrix(
-#'     matrix(1:20, nrow = 2, dimnames = list(c("g1", "g2"), paste0("c", 1:10))),
-#'     sparse = TRUE
-#'   )
-#' )
-#' set.seed(1)
-#' srt$Uncorrected_tech_LISI <- stats::runif(10, 1.0, 1.4)
-#' srt$Harmony_tech_LISI <- stats::runif(10, 2.0, 2.8)
-#' srt$Uncorrected_celltype_LISI <- stats::runif(10, 1.0, 1.2)
-#' srt$Harmony_celltype_LISI <- stats::runif(10, 1.0, 1.3)
-#' srt@tools$IntegrationBenchmark <- list(
-#'   summary = data.frame(
-#'     method = c("Uncorrected", "Harmony"),
-#'     bio = c(0.80, 0.82),
-#'     batch = c(0.20, 0.70),
-#'     overall = c(0.56, 0.77),
-#'     status = "success",
-#'     stringsAsFactors = FALSE
-#'   ),
-#'   metrics = data.frame(
-#'     method = rep(c("Uncorrected", "Harmony"), each = 2),
-#'     metric = rep(c("iLISI", "cLISI"), 2),
-#'     category = rep(c("batch", "bio"), 2),
-#'     value = c(1.2, 1.1, 2.4, 1.2),
-#'     scaled = c(0.1, 0.9, 0.7, 0.85),
-#'     direction = "higher",
-#'     stringsAsFactors = FALSE
-#'   ),
-#'   runs = data.frame(
-#'     method = c("Uncorrected", "Harmony"),
-#'     status = "success",
-#'     umap = NA_character_,
-#'     stringsAsFactors = FALSE
-#'   ),
+#' \dontrun{
+#' data(panc8_sub)
+#' panc8_sub <- RunIntegrationBenchmark(
+#'   panc8_sub,
 #'   batch = "tech",
-#'   celltype = "celltype"
+#'   celltype = "celltype",
+#'   methods = c("Uncorrected", "Harmony"),
+#'   nHVF = 500,
+#'   linear_reduction_dims = 20,
+#'   linear_reduction_dims_use = 1:10,
+#'   perplexity = 10
 #' )
-#' thisplot::print_colored_table(
-#'   srt@tools$IntegrationBenchmark$summary,
-#'   by = "row",
-#'   palette = "Chinese"
-#' )
-#' IntegrationBenchmarkPlot(srt, plot_type = "box")
-#' IntegrationBenchmarkPlot(srt, plot_type = "heatmap")
-#' IntegrationBenchmarkPlot(srt, plot_type = "scatter")
+#' IntegrationBenchmarkPlot(panc8_sub)
+#' IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
+#' IntegrationBenchmarkPlot(panc8_sub, plot_type = "heatmap")
+#' IntegrationBenchmarkPlot(panc8_sub, plot_type = "scatter")
+#' }
 IntegrationBenchmarkPlot <- function(
   object,
   plot_type = c("auto", "box", "heatmap", "scatter", "umap"),

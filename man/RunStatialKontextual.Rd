@@ -72,7 +72,7 @@ units.}
 \item{store_results}{Whether to store results in \code{srt@tools}.}
 
 \item{store_input}{Whether to store the backend input cell table in
-\code{srt@tools}.}
+\code{object@tools}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

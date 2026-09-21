@@ -49,7 +49,7 @@ test_that("external wrapper R packages remain optional explicit installs", {
     c(
       "data2intelligence/SecAct",
       "sulab-wmu/scPagwas",
-      "corceslab/CHOIR"
+      "corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
     )
   )
   expect_equal(
@@ -61,7 +61,7 @@ test_that("external wrapper R packages remain optional explicit installs", {
 test_that("PrepareEnv exposes CHOIR as an optional R module", {
   packages <- getFromNamespace("env_r_packages", "scop")("choir")
 
-  expect_true("corceslab/CHOIR" %in% packages)
+  expect_true("corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc" %in% packages)
 })
 
 test_that("PrepareEnv supports explicit R and Python components", {

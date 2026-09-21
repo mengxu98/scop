@@ -1100,7 +1100,6 @@ ui <- fluidPage(
   theme = page_theme,
   navbarPage(
     title = title,
-    # ---------- 1. Cell dimensional reduction plot ----------
     tabPanel(
       title = "Cell dimensional reduction plot",
       sidebarLayout(
@@ -1268,7 +1267,6 @@ ui <- fluidPage(
         )
       )
     ),
-    # ---------- 2. Feature dimensional reduction plot ----------
     tabPanel(
       title = "Feature dimensional reduction plot",
       sidebarLayout(
@@ -1481,7 +1479,6 @@ ui <- fluidPage(
         )
       )
     ),
-    # ---------- 3. Cell statistical plot ----------
     tabPanel(
       title = "Cell statistical plot",
       sidebarLayout(
@@ -1710,7 +1707,6 @@ ui <- fluidPage(
         )
       )
     ),
-    # ---------- 4. Feature statistical plot ----------
     tabPanel(
       title = "Feature statistical plot",
       sidebarLayout(
@@ -1986,7 +1982,6 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  # ---------- Initial ----------
   promisedData <- reactiveValues()
 
   get_attr <- function(x, attr, verbose = FALSE) {
@@ -2014,7 +2009,6 @@ server <- function(input, output, session) {
     }
   }
 
-  # ---------- change dataset ----------
   observe({
     meta_groups_name <- rhdf5::h5read(meta_file, name = paste0("/", input$dataset1, "/metadata.stat/asgroups"))
     reduction_name <- meta_struc[meta_struc$group == paste0("/", input$dataset1, "/reductions"), "name"]
@@ -2105,7 +2099,6 @@ server <- function(input, output, session) {
     }
   }) %>% bindEvent(input$group4, ignoreNULL = TRUE, ignoreInit = FALSE)
 
-  # ---------- submit1 ----------
   r1 <- reactive({
     dataset1 <- input$dataset1
     reduction1 <- input$reduction1
@@ -2224,7 +2217,6 @@ server <- function(input, output, session) {
     contentType = "application/zip"
   )
 
-  # ---------- submit2 ----------
   r2 <- reactive({
     dataset2 <- input$dataset2
     reduction2 <- input$reduction2
@@ -2363,7 +2355,6 @@ server <- function(input, output, session) {
       })
   }) %>% bindEvent(input$submit2, ignoreNULL = FALSE, ignoreInit = FALSE)
 
-  # ---------- submit3 ----------
   r3 <- reactive({
     dataset3 <- input$dataset3
     plottype3 <- input$plottype3
@@ -2423,7 +2414,7 @@ server <- function(input, output, session) {
           object = srt_tmp, stat.by = stat3, group.by = group3, split.by = split3, cells = cells,
           plot_type = plottype3, stat_type = stattype3, position = position3,
           label = label3, label.size = labelsize3, flip = flip3, palette = palette3, theme_use = theme3,
-          aspect.ratio = as.numeric(aspect.ratio), # must be class of numeric instead of integer
+          aspect.ratio = as.numeric(aspect.ratio),
           ncol = ncol3, byrow = byrow3, force = TRUE
         )
 
@@ -2494,7 +2485,6 @@ server <- function(input, output, session) {
     contentType = "application/zip"
   )
 
-  # ---------- submit4 ----------
   r4 <- reactive({
     dataset4 <- input$dataset4
     group4 <- input$group4
@@ -2574,7 +2564,7 @@ server <- function(input, output, session) {
           calculate_coexp = coExp4, stack = stack4, flip = flip4,
           add_box = addbox4, add_point = addpoint4, add_trend = addtrend4,
           plot.by = plotby4, fill.by = fillby4, palette = palette4, theme_use = theme4, same.y.lims = sameylims4,
-          aspect.ratio = as.numeric(aspect.ratio), # must be class of numeric instead of integer
+          aspect.ratio = as.numeric(aspect.ratio),
           ncol = ncol4, byrow = byrow4, force = TRUE
         )
 

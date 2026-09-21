@@ -52,7 +52,7 @@ gene symbols. When \code{species} is not \code{"Homo_sapiens"} and \code{convert
 \link{GeneConvert} is used to map human genes to the target species via biomaRt homolog
 tables.}
 
-\item{IDtype}{Type of gene IDs in the \code{srt} object or \code{geneID} argument.
+\item{IDtype}{Type of gene IDs in the \code{object} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
 \item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}

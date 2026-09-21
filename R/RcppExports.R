@@ -277,8 +277,8 @@ paga_root_cell_cpp <- function(embedding, groups, root_group) {
     .Call(`_scop_paga_root_cell_cpp`, embedding, groups, root_group)
 }
 
-pca_backend_run <- function(X, npcs, weight_by_var = TRUE) {
-    .Call(`_scop_pca_backend_run`, X, npcs, weight_by_var)
+pca_backend_run <- function(X, npcs, weight_by_var = TRUE, n_threads = 0L) {
+    .Call(`_scop_pca_backend_run`, X, npcs, weight_by_var, n_threads)
 }
 
 cca_crossprod_matrix <- function(X1, X2) {
@@ -485,8 +485,8 @@ scanpy_deterministic_cpp <- function(Ms, Mu, knn_idx, embedding, fit_offset = FA
     .Call(`_scop_scanpy_deterministic_cpp`, Ms, Mu, knn_idx, embedding, fit_offset, perc, n_threads)
 }
 
-scanpy_stochastic_cpp <- function(Ms, Mu, Mss, Mus, knn_idx, embedding, n_threads = 0L) {
-    .Call(`_scop_scanpy_stochastic_cpp`, Ms, Mu, Mss, Mus, knn_idx, embedding, n_threads)
+scanpy_stochastic_cpp <- function(Ms, Mu, Mss, Mus, knn_idx, embedding, perc = 95.0, n_threads = 0L) {
+    .Call(`_scop_scanpy_stochastic_cpp`, Ms, Mu, Mss, Mus, knn_idx, embedding, perc, n_threads)
 }
 
 scanpy_velocity_graph_cpp <- function(Ms, Mu, residual, knn_idx, n_neighbors_velo = -1L, softmax_scale = 4.0, sqrt_transform = FALSE, n_recurse_neighbors = 1L, n_threads = 0L) {

@@ -13,7 +13,6 @@
 #' @param umap.method `"uwot"` or `"naive"`.
 #' @param spread Spread of the embedding (the effective scale of embedded
 #' points).
-#' @param n_threads Deprecated alias for `cores`.
 #' @param reduction.model Pre-trained UMAP `DimReduc` used to embed new data.
 #' @param return.model Store the UMAP model.
 #' @param n.neighbors,n.components,metric,n.epochs UMAP layout parameters.
@@ -60,7 +59,6 @@ RunUMAP2.Seurat <- function(
   layer = "data",
   umap.method = "uwot",
   reduction.model = NULL,
-  n_threads = NULL,
   return.model = FALSE,
   n.neighbors = 30L,
   n.components = 2L,
@@ -82,10 +80,6 @@ RunUMAP2.Seurat <- function(
   spread = 1,
   ...
 ) {
-  if (!is.null(n_threads)) {
-    .Deprecated(msg = "'n_threads' is deprecated; use 'cores' instead")
-    cores <- n_threads
-  }
   if (
     sum(c(
       is.null(dims),
@@ -204,7 +198,6 @@ RunUMAP2.default <- function(
   assay = NULL,
   umap.method = "uwot",
   reduction.model = NULL,
-  n_threads = NULL,
   return.model = FALSE,
   n.neighbors = 30L,
   n.components = 2L,
@@ -225,10 +218,6 @@ RunUMAP2.default <- function(
   spread = 1,
   ...
 ) {
-  if (!is.null(n_threads)) {
-    .Deprecated(msg = "'n_threads' is deprecated; use 'cores' instead")
-    cores <- n_threads
-  }
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }

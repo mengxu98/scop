@@ -137,7 +137,7 @@ when \code{plot_type = "stat"}.}
 significant target genes labeled in \code{"targets"} plots.}
 
 \item{reduction}{Reduction used by \code{"dim"} plots. If \code{NULL}, the default
-reduction of \code{srt} is used.}
+reduction of \code{object} is used.}
 
 \item{bar_width}{Width of bars in \code{"bar"} plots.}
 
