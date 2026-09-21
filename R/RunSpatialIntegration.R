@@ -36,7 +36,8 @@
 #' @param ... Named backend argument lists: `create_params`, `adj_params`,
 #' `par_params`, `run_params`, and `select_params`. The default adjacency is
 #' `adj_params = list(type = "fixed_number", number = 6)`, using distances in
-#' the selected coordinate space. PRECAST's fixed-distance Visium/ST array-index
+#' the selected coordinate space and SCOP's exact spatial KNN implementation.
+#' PRECAST's fixed-distance Visium/ST array-index
 #' mode is not compatible with these coordinates and is rejected. For generic
 #' distance-based adjacency, explicitly choose `platform = "Other_SRT"`.
 #'
@@ -685,7 +686,6 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
   }
   check_r("feiyoung/PRECAST", verbose = FALSE)
   create_fun <- get_namespace_fun("PRECAST", "CreatePRECASTObject")
-  adj_fun <- get_namespace_fun("PRECAST", "AddAdjList")
   par_fun <- get_namespace_fun("PRECAST", "AddParSetting")
   run_fun <- get_namespace_fun("PRECAST", "PRECAST")
   select_fun <- get_namespace_fun("PRECAST", "SelectModel")
@@ -711,10 +711,7 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
     )
   )
   spatial_integration_validate_neighbor_count(obj, adj_params)
-  obj <- spatial_integration_call(
-    adj_fun,
-    c(list(PRECASTObj = obj), adj_params)
-  )
+  obj <- spatial_integration_set_precast_adjacency(obj, input, adj_params)
   edge_counts <- spatial_integration_validate_adjacency(obj)
   obj <- spatial_integration_call(
     par_fun,
@@ -730,6 +727,9 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
   )
   result <- spatial_integration_extract_precast(obj, input)
   result$backend_parameters <- utils::modifyList(params, list(adj_params = adj_params))
+  result$adjacency_builder <- if (adj_params$type == "fixed_number") {
+    "scop::spatial_graph_compute"
+  } else "PRECAST::AddAdjList"
   result$adjacency_summary <- edge_counts
   result$backend_version <- tryCatch(as.character(utils::packageVersion("PRECAST")),
     error = function(e) NA_character_)
@@ -739,11 +739,37 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
 spatial_integration_validate_neighbor_count <- function(object, adj_params) {
   if (adj_params$type == "fixed_number") {
     sizes <- vapply(object@seulist, ncol, numeric(1))
-    if (!length(sizes) || any(sizes < 24 | sizes <= adj_params$number)) {
-      stop("PRECAST fixed_number requires at least 24 retained spots per sample and fewer neighbors than spots", call. = FALSE)
+    if (!length(sizes) || any(sizes < 2 | sizes <= adj_params$number)) {
+      stop("PRECAST fixed_number requires fewer neighbors than retained spots in every sample", call. = FALSE)
     }
   }
   invisible(NULL)
+}
+
+spatial_integration_set_precast_adjacency <- function(object, input, adj_params) {
+  if (adj_params$type != "fixed_number") {
+    return(spatial_integration_call(get_namespace_fun("PRECAST", "AddAdjList"),
+      c(list(PRECASTObj = object), adj_params)))
+  }
+  if (length(setdiff(names(adj_params), c("type", "number", "platform")))) {
+    stop("fixed_number adjacency accepts only type, number and platform", call. = FALSE)
+  }
+  # Native PRECAST fixed_number restricts candidates along one axis. Use the
+  # shared exact KNN graph so rotation and long rows cannot omit closer spots.
+  object@AdjList <- lapply(seq_along(object@seulist), function(i) {
+    cells <- colnames(object@seulist[[i]])
+    coords <- input$coords_list[[i]][cells, , drop = FALSE]
+    if (anyNA(coords$cell_id) || !identical(as.character(coords$cell_id), cells)) {
+      stop("PRECAST graph coordinates must align with retained spot IDs", call. = FALSE)
+    }
+    graph <- spatial_graph_compute(coords, method = "knn", k = adj_params$number,
+      directed = TRUE, weight = "binary")
+    # PRECAST consumes the neighbors of spot i from column i, not row i.
+    Matrix::sparseMatrix(i = graph$edges$to, j = graph$edges$from, x = 1,
+      dims = c(length(cells), length(cells)), dimnames = list(cells, cells))
+  })
+  names(object@AdjList) <- names(object@seulist)
+  object
 }
 
 spatial_integration_validate_adjacency <- function(object) {
@@ -833,6 +859,7 @@ spatial_integration_standardize_result <- function(backend, input, method) {
     features = input$features,
     backend_parameters = backend$backend_parameters,
     adjacency_summary = backend$adjacency_summary,
+    adjacency_builder = backend$adjacency_builder,
     backend_version = backend$backend_version,
     raw_result = backend$raw_result %||% backend
   )
@@ -1037,6 +1064,7 @@ spatial_integration_apply_result <- function(
     backend_parameters = result$backend_parameters,
     backend_version = result$backend_version,
     adjacency_summary = result$adjacency_summary,
+    adjacency_builder = result$adjacency_builder,
     reduction.name = reduction.name,
     cluster_colname = cluster_colname,
     aligned_coord_cols = aligned_coord_cols,

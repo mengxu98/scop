@@ -187,11 +187,6 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
           observed$features <<- customGenelist
           list(step = "created")
         },
-        AddAdjList = function(PRECASTObj, type, number, ...) {
-          expect_identical(type, "fixed_number")
-          expect_equal(number, 6)
-          PRECASTObj
-        },
         AddParSetting = function(PRECASTObj, ...) PRECASTObj,
         PRECAST = function(PRECASTObj, ...) PRECASTObj,
         SelectModel = function(obj, ...) {
@@ -202,6 +197,11 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
       )
     },
     spatial_integration_validate_neighbor_count = function(object, adj_params) invisible(NULL),
+    spatial_integration_set_precast_adjacency = function(object, input, adj_params) {
+      expect_identical(adj_params$type, "fixed_number")
+      expect_equal(adj_params$number, 6)
+      object
+    },
     spatial_integration_validate_adjacency = function(object) c(S1 = 6, S2 = 6),
     spatial_integration_extract_precast = function(raw_result, input) raw_result
   )

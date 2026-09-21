@@ -395,7 +395,14 @@ test_that("RunSpatialIntegration PRECAST domains match the original PRECAST pipe
     project = "spatial_integration",
     customGenelist = common_genes
   )
-  precast <- get_namespace_fun("PRECAST", "AddAdjList")(precast, type = "fixed_number", number = 6)
+  # Compare the original model on the same exact graph; independent distance
+  # assertions for this graph are in test-spatial-precast-native.R.
+  precast@AdjList <- lapply(precast@seulist, function(sample) {
+    coords <- data.frame(cell_id = colnames(sample), x = sample$col, y = sample$row)
+    graph <- spatial_graph_compute(coords, method = "knn", k = 6, directed = TRUE)
+    Matrix::sparseMatrix(i = graph$edges$to, j = graph$edges$from, x = 1,
+      dims = c(ncol(sample), ncol(sample)))
+  })
   precast <- get_namespace_fun("PRECAST", "AddParSetting")(precast)
   precast <- get_namespace_fun("PRECAST", "PRECAST")(precast)
   precast <- get_namespace_fun("PRECAST", "SelectModel")(precast)

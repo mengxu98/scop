@@ -23,6 +23,7 @@ test_that("real PRECAST receives selected counts and a nonempty distance graph",
   expect_setequal(names(bundle$domains), colnames(object))
   expect_identical(bundle$parameters$backend_parameters$adj_params$type, "fixed_number")
   expect_true(all(bundle$parameters$adjacency_summary > 0))
+  expect_identical(bundle$parameters$adjacency_builder, "scop::spatial_graph_compute")
   raw <- bundle$raw_result
   for (sample in seq_along(raw@seulist)) {
     native <- raw@seulist[[sample]]
@@ -30,15 +31,44 @@ test_that("real PRECAST receives selected counts and a nonempty distance graph",
     expect_equal(as.matrix(GetAssayData5(native, layer = "counts")),
       counts[, colnames(native), drop = FALSE] * 2)
     graph <- raw@AdjList[[sample]]
-    expect_true(all(Matrix::rowSums(graph) > 0))
-    # Independent physical assertion: with a 55-pixel lattice the default
-    # nearest-neighbor graph must include first-neighbor connections.
-    ij <- which(as.matrix(graph) != 0, arr.ind = TRUE)
+    expect_equal(as.numeric(Matrix::colSums(graph)), rep(6, ncol(native)))
+    # Independently verify every column against Euclidean nearest distances.
     xy <- cbind(native$col, native$row)
-    distance <- sqrt(rowSums((xy[ij[, 1], , drop = FALSE] - xy[ij[, 2], , drop = FALSE])^2))
-    expect_true(any(abs(distance - 55) < 1e-8))
+    correct <- vapply(seq_len(nrow(xy)), function(i) {
+      d2 <- rowSums(sweep(xy, 2, xy[i, ], "-")^2)
+      d2[i] <- Inf
+      neighbors <- which(as.numeric(graph[, i]) != 0)
+      all(d2[neighbors] <= sort(d2, partial = 6)[6] + 1e-8)
+    }, logical(1))
+    expect_true(all(correct))
   }
   expect_identical(object, before)
+  # Long rows defeat PRECAST's native single-axis candidate restriction.
+  # The exact graph must also be invariant to swapping axes and translation.
+  long_input <- list(coords_list = lapply(raw@seulist, function(sample) {
+    data.frame(cell_id = colnames(sample), x = seq_len(ncol(sample)) * 55,
+      y = 0, row.names = colnames(sample))
+  }))
+  long_graph <- spatial_integration_set_precast_adjacency(raw, long_input,
+    list(type = "fixed_number", number = 6))
+  rotated <- long_input
+  rotated$coords_list <- lapply(rotated$coords_list, function(coords) {
+    coords$y <- coords$x + 10000
+    coords$x <- 20000
+    coords
+  })
+  rotated_graph <- spatial_integration_set_precast_adjacency(raw, rotated,
+    list(type = "fixed_number", number = 6))
+  expect_identical(long_graph@AdjList, rotated_graph@AdjList)
+  for (graph in long_graph@AdjList) {
+    correct <- vapply(seq_len(ncol(graph)), function(i) {
+      d <- abs(seq_len(ncol(graph)) - i)
+      d[i] <- Inf
+      neighbors <- which(as.numeric(graph[, i]) != 0)
+      length(neighbors) == 6 && all(d[neighbors] <= sort(d, partial = 6)[6])
+    }, logical(1))
+    expect_true(all(correct))
+  }
   expect_error(spatial_integration_validate_neighbor_count(raw,
     list(type = "fixed_number", number = 60)), "fewer neighbors")
   broken <- raw
