@@ -53,6 +53,23 @@ test_that("PRECAST rejects coordinate-incompatible and managed backend arguments
     adj_params = list(number = -1), verbose = FALSE), "positive integer")
 })
 
+test_that("PRECAST rejects non-finite counts before backend execution", {
+  object <- input_contract_object()
+  testthat::local_mocked_bindings(
+    spatial_integration_run_backend = function(...) stop("backend must not execute")
+  )
+  for (invalid in c(NA_real_, NaN, Inf, -Inf)) {
+    bad <- object
+    counts <- GetAssayData5(bad, assay = "Spatial", layer = "counts")
+    counts[1, 1] <- invalid
+    bad <- SeuratObject::SetAssayData(bad, assay = "Spatial", layer = "counts", new.data = counts)
+    before <- bad
+    expect_error(RunSpatialIntegration(bad, assay = "Spatial", sample.by = "sample",
+      verbose = FALSE), "finite non-negative integer counts")
+    expect_identical(bad, before)
+  }
+})
+
 test_that("invalid integration payloads fail before object mutation", {
   object <- input_contract_object()
   before <- object
