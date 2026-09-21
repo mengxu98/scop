@@ -22,8 +22,9 @@
 #' implementation. `"cpp"` supports `method = "ssgsea"`,
 #' `method = "zscore"`, `method = "plage"`, and `method = "gsva"` with
 #' `kcdf = "Gaussian"`, `kcdf = "Poisson"`, or `kcdf = "none"`. Gaussian
-#' GSVA uses the native C++ KDE/ranking kernel; the other GSVA kernels retain
-#' the validated GSVA implementation. PLAGE scores are oriented to have non-negative
+#' GSVA uses the native C++ KDE/ranking kernel, tracking the sparse scoring
+#' walk of the installed GSVA release; other GSVA kernels keep the validated
+#' GSVA implementation. PLAGE scores are oriented to have non-negative
 #' dot product with the gene set mean z-score so SVD signs are deterministic.
 #' @param cpp_chunk_size Optional cell chunk size for C++ GSVA kernels. `NULL`
 #' or `"auto"` automatically chunks large matrices to reduce peak dense
@@ -250,6 +251,7 @@ RunGSVA <- function(
     }
     expr_row_sums <- if (inherits(expr, "Matrix")) Matrix::rowSums(expr) else rowSums(expr)
     expr <- expr[expr_row_sums > 0, , drop = FALSE]
+    expr <- gene_set_scoring_drop_stored_zeros(expr)
     if (nrow(expr) == 0 || ncol(expr) == 0) {
       log_message(
         "No expression values available for single-cell GSVA",
@@ -381,6 +383,7 @@ RunGSVA <- function(
     }
     expr_row_sums <- if (inherits(expr, "Matrix")) Matrix::rowSums(expr) else rowSums(expr)
     expr <- expr[expr_row_sums > 0, , drop = FALSE]
+    expr <- gene_set_scoring_drop_stored_zeros(expr)
     if (nrow(expr) == 0 || ncol(expr) == 0) {
       log_message(
         "No aggregated expression values available for {.val {group.by}}",

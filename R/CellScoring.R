@@ -596,6 +596,7 @@ CellScoring <- function(
         check_r("GSVA", verbose = FALSE)
         if (identical(method, "GSVA") && inherits(expr_sp, "sparseMatrix")) {
           expr_mat <- gene_set_scoring_to_dgC(expr_sp)
+          expr_mat <- gene_set_scoring_drop_stored_zeros(expr_mat)
           expr_mat <- expr_mat[Matrix::rowSums(expr_mat) > 0, , drop = FALSE]
         } else {
           expr_mat <- as_matrix(expr_sp)

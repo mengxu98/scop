@@ -21,7 +21,7 @@ test_that("NMF dense feature variances match base R", {
   )
 })
 
-test_that("RunNMF works when RcppML has no global thread setter", {
+test_that("RunNMF handles sparse input on CRAN and GitHub RcppML builds", {
   skip_if_not_installed("RcppML")
 
   set.seed(11)
@@ -29,6 +29,7 @@ test_that("RunNMF works when RcppML has no global thread setter", {
   x@x <- abs(x@x)
   rownames(x) <- paste0("gene_", seq_len(nrow(x)))
   colnames(x) <- paste0("cell_", seq_len(ncol(x)))
+  matrix_attached <- "package:Matrix" %in% search()
 
   fit <- RunNMF.default(
     x,
@@ -40,4 +41,5 @@ test_that("RunNMF works when RcppML has no global thread setter", {
 
   expect_equal(dim(fit@cell.embeddings), c(ncol(x), 5L))
   expect_equal(dim(fit@feature.loadings), c(nrow(x), 5L))
+  expect_identical("package:Matrix" %in% search(), matrix_attached)
 })

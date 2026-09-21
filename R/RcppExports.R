@@ -169,8 +169,8 @@ plage_dense <- function(expr, gene_sets, min_size = 1L, max_size = 2147483647L, 
     .Call(`_scop_plage_dense`, expr, gene_sets, min_size, max_size, dense_standardize)
 }
 
-gsva_gaussian_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = FALSE, tau = 1.0, chunk_size = 0L, n_threads = 0L) {
-    .Call(`_scop_gsva_gaussian_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size, n_threads)
+gsva_gaussian_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = FALSE, tau = 1.0, chunk_size = 0L, n_threads = 0L, legacy_zero_walk = FALSE) {
+    .Call(`_scop_gsva_gaussian_dense`, expr, gene_sets, max_diff, abs_ranking, tau, chunk_size, n_threads, legacy_zero_walk)
 }
 
 gsva_poisson_dense <- function(expr, gene_sets, max_diff = TRUE, abs_ranking = FALSE, tau = 1.0, chunk_size = 0L, n_threads = 0L) {

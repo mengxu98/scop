@@ -2187,7 +2187,8 @@ NumericMatrix gsva_gaussian_dense(
   bool abs_ranking = false,
   double tau = 1.0,
   int chunk_size = 0,
-  int n_threads = 0
+  int n_threads = 0,
+  bool legacy_zero_walk = false
 ) {
 
   IntegerVector dims = expr.slot("Dim");
@@ -2232,17 +2233,22 @@ NumericMatrix gsva_gaussian_dense(
   std::vector<int>().swap(row_cursor);
 
   std::vector<std::vector<int> > sets(n_sets);
-  for (int set_i = 0; set_i < n_sets; ++set_i) {
-    IntegerVector genes = gene_sets[set_i];
-    sets[set_i].reserve(genes.size());
-    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
-      const int gene = genes[gene_i] - 1;
-      if (gene >= 0 && gene < n_genes) {
-        sets[set_i].push_back(gene);
+  {
+    std::vector<char> set_seen(n_genes, 0);
+    for (int set_i = 0; set_i < n_sets; ++set_i) {
+      IntegerVector genes = gene_sets[set_i];
+      sets[set_i].reserve(genes.size());
+      for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
+        const int gene = genes[gene_i] - 1;
+        if (gene >= 0 && gene < n_genes && !set_seen[gene]) {
+          set_seen[gene] = 1;
+          sets[set_i].push_back(gene);
+        }
+      }
+      for (std::size_t gene_i = 0; gene_i < sets[set_i].size(); ++gene_i) {
+        set_seen[sets[set_i][gene_i]] = 0;
       }
     }
-    std::sort(sets[set_i].begin(), sets[set_i].end());
-    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
   }
 
   const std::vector<double>& pnorm_table = gsva_gaussian_pnorm_table();
@@ -2303,10 +2309,10 @@ NumericMatrix gsva_gaussian_dense(
     rank_entries.reserve(n_genes);
     std::vector<int> decordstat(n_genes, 0);
     std::vector<double> symrnkstat(n_genes, 0.0);
-    std::vector<double> stepcdfin(n_genes, 0.0);
-    std::vector<int> stepcdfout(n_genes, 1);
     std::vector<int> zero_prefix(n_genes, 0);
     std::vector<char> expressed(n_genes, 0);
+    std::vector<std::pair<int, double> > walk_hits;
+    std::vector<int> set_zero_genes;
 
 #ifdef _OPENMP
 #pragma omp for schedule(static)
@@ -2358,16 +2364,18 @@ NumericMatrix gsva_gaussian_dense(
       symrnkstat[gene] = std::fabs(nnz1div2 - static_cast<double>(r + 1));
     }
 
-    std::fill(expressed.begin(), expressed.end(), 0);
-    for (int rank_i = 0; rank_i < nnz; ++rank_i) {
-      expressed[rank_entries[rank_i].second] = 1;
-    }
-    int zero_run = 0;
-    for (int gene = 0; gene < n_genes; ++gene) {
-      if (!expressed[gene]) {
-        ++zero_run;
+    if (legacy_zero_walk) {
+      std::fill(expressed.begin(), expressed.end(), 0);
+      for (int rank_i = 0; rank_i < nnz; ++rank_i) {
+        expressed[rank_entries[rank_i].second] = 1;
       }
-      zero_prefix[gene] = zero_run;
+      int zero_run = 0;
+      for (int gene = 0; gene < n_genes; ++gene) {
+        if (!expressed[gene]) {
+          ++zero_run;
+        }
+        zero_prefix[gene] = zero_run;
+      }
     }
 
     for (int set_i = 0; set_i < n_sets; ++set_i) {
@@ -2377,53 +2385,106 @@ NumericMatrix gsva_gaussian_dense(
         scores(cell, set_i) = R_NaN;
         continue;
       }
-      std::fill(stepcdfin.begin(), stepcdfin.end(), 0.0);
-      std::fill(stepcdfout.begin(), stepcdfout.end(), 1);
+      walk_hits.clear();
+      set_zero_genes.clear();
+      const double zero_stat = (tau == 1.0)
+        ? zerosymrnkstat
+        : std::pow(zerosymrnkstat, tau);
       for (std::vector<int>::const_iterator it = set.begin(); it != set.end(); ++it) {
         const int gene = *it;
-        int pos;
-        double stat;
         if (decordstat[gene] <= nnz) {
-          pos = decordstat[gene];
-          stat = (tau == 1.0)
+          const double stat = (tau == 1.0)
             ? symrnkstat[gene]
             : std::pow(symrnkstat[gene], tau);
+          walk_hits.push_back(std::make_pair(decordstat[gene], stat));
         } else {
-          pos = n_genes - zero_prefix[gene] + 1;
-          stat = (tau == 1.0)
-            ? zerosymrnkstat
-            : std::pow(zerosymrnkstat, tau);
+          set_zero_genes.push_back(gene);
         }
-        stepcdfout[pos - 1] = 0;
-        stepcdfin[pos - 1] = stat;
       }
 
-      for (int i = 1; i < n_genes; ++i) {
-        stepcdfin[i] += stepcdfin[i - 1];
-        stepcdfout[i] += stepcdfout[i - 1];
+      const int set_zero_count = static_cast<int>(set_zero_genes.size());
+      if (set_zero_count > 0) {
+        if (legacy_zero_walk) {
+          for (std::vector<int>::const_iterator it = set_zero_genes.begin();
+               it != set_zero_genes.end(); ++it) {
+            walk_hits.push_back(std::make_pair(
+              n_genes - zero_prefix[*it] + 1,
+              zero_stat
+            ));
+          }
+        } else {
+          const int nzeros = n_genes - nnz;
+          const double step = set_zero_count > 1
+            ? static_cast<double>(nzeros - 1) /
+              static_cast<double>(set_zero_count - 1)
+            : 0.0;
+          for (int zero_i = 0; zero_i < set_zero_count; ++zero_i) {
+            walk_hits.push_back(std::make_pair(
+              nnz + static_cast<int>(std::round(
+                static_cast<double>(zero_i) * step + 1.0
+              )),
+              zero_stat
+            ));
+          }
+        }
       }
 
       double score = R_NaN;
-      const double total_in = stepcdfin[n_genes - 1];
-      const double total_out = static_cast<double>(stepcdfout[n_genes - 1]);
-      if (total_in > 0.0 && total_out > 0.0) {
-        double walk_pos = 0.0;
-        double walk_neg = 0.0;
-        for (int i = 0; i < n_genes; ++i) {
-          const double wlk =
-            stepcdfin[i] / total_in -
-            static_cast<double>(stepcdfout[i]) / total_out;
-          if (wlk > walk_pos) {
-            walk_pos = wlk;
+      if (!walk_hits.empty()) {
+        std::sort(
+          walk_hits.begin(),
+          walk_hits.end(),
+          [](const std::pair<int, double>& a, const std::pair<int, double>& b) {
+            return a.first < b.first;
           }
-          if (wlk < walk_neg) {
-            walk_neg = wlk;
-          }
+        );
+        double total_in = 0.0;
+        for (std::size_t hit_i = 0; hit_i < walk_hits.size(); ++hit_i) {
+          total_in += walk_hits[hit_i].second;
         }
-        if (max_diff) {
-          score = abs_ranking ? (walk_pos - walk_neg) : (walk_pos + walk_neg);
-        } else {
-          score = (walk_pos > std::fabs(walk_neg)) ? walk_pos : walk_neg;
+        const double total_out =
+          static_cast<double>(n_genes - static_cast<int>(walk_hits.size()));
+        if (total_in > 0.0 && total_out > 0.0) {
+          double walk_pos = 0.0;
+          double walk_neg = 0.0;
+          double prefix_in = 0.0;
+          if (walk_hits[0].first > 1) {
+            const double wlk = 0.0 / total_in - 1.0 / total_out;
+            if (wlk > walk_pos) {
+              walk_pos = wlk;
+            }
+            if (wlk < walk_neg) {
+              walk_neg = wlk;
+            }
+          }
+          for (std::size_t hit_i = 0; hit_i < walk_hits.size(); ++hit_i) {
+            const int pos = walk_hits[hit_i].first;
+            const int hits_before = static_cast<int>(hit_i);
+            if (pos > 1) {
+              const double wlk = prefix_in / total_in -
+                static_cast<double>(pos - 1 - hits_before) / total_out;
+              if (wlk > walk_pos) {
+                walk_pos = wlk;
+              }
+              if (wlk < walk_neg) {
+                walk_neg = wlk;
+              }
+            }
+            prefix_in += walk_hits[hit_i].second;
+            const double wlk = prefix_in / total_in -
+              static_cast<double>(pos - hits_before - 1) / total_out;
+            if (wlk > walk_pos) {
+              walk_pos = wlk;
+            }
+            if (wlk < walk_neg) {
+              walk_neg = wlk;
+            }
+          }
+          if (max_diff) {
+            score = abs_ranking ? (walk_pos - walk_neg) : (walk_pos + walk_neg);
+          } else {
+            score = (walk_pos > std::fabs(walk_neg)) ? walk_pos : walk_neg;
+          }
         }
       }
       scores(cell, set_i) = score;

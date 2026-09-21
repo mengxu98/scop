@@ -120,3 +120,61 @@ jobs:
           build_args: '"--no-manual"'
           error-on: '"error"'
           upload-snapshots: true
+
+  suggests-contract:
+    runs-on: ubuntu-latest
+    name: ubuntu-latest (release, key Suggests)
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Capture R library path 🔍
+        id: r-info
+        shell: bash
+        run: |
+          echo "r-version=$(Rscript -e 'cat(as.character(getRversion()))')" >> "$GITHUB_OUTPUT"
+          echo "r-lib=$(Rscript -e 'cat(.libPaths()[1])')" >> "$GITHUB_OUTPUT"
+
+      - name: Restore R package cache ♻️
+        id: r-pkg-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-suggests-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            r-suggests-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-
+            r-hard-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          GITHUB_PAT: ${{ github.token }}
+        with:
+          extra-packages: |
+            any::testthat
+            any::pkgload
+            any::Seurat
+            bioc::GSVA
+            any::RcppML
+          needs: check
+          dependencies: '"hard"'
+          cache: false
+
+      - name: Save R package cache 💾
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ steps.r-info.outputs.r-lib }}
+          key: r-suggests-v1-${{ runner.os }}-r${{ steps.r-info.outputs.r-version }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Gene-set scoring contract tests 🧪
+        shell: Rscript {0}
+        run: |
+          testthat::test_local(
+            filter = "gene-set-scoring-cpp|gene-set-speed-consistency|run-nmf-rcppml-compat",
+            reporter = "summary",
+            load_package = "source",
+            stop_on_failure = TRUE
+          )

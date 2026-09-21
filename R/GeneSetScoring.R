@@ -11,6 +11,16 @@ gene_set_scoring_to_dgC <- function(expr) {
   }
 }
 
+gene_set_scoring_drop_stored_zeros <- function(expr) {
+  if (!inherits(expr, "sparseMatrix")) {
+    return(expr)
+  }
+  if (inherits(expr, "dgCMatrix") && !any(expr@x == 0)) {
+    return(expr)
+  }
+  Matrix::drop0(expr)
+}
+
 normalize_gene_set_scoring_method <- function(method, arg_name = "method") {
   method_map <- c(
     "seurat" = "Seurat",
@@ -544,6 +554,7 @@ run_gsva_scores <- function(
   }
 
   expr_counts <- gene_set_scoring_to_dgC(expr_counts)
+  expr_counts <- gene_set_scoring_drop_stored_zeros(expr_counts)
   keep_features <- Matrix::rowSums(expr_counts) > 0
   expr_counts <- expr_counts[keep_features, , drop = FALSE]
   if (nrow(expr_counts) > 0L && inherits(expr_counts, "dgCMatrix")) {
@@ -596,7 +607,8 @@ run_gsva_scores <- function(
       abs_ranking = abs_ranking,
       tau = tau,
       chunk_size = chunk_size,
-      n_threads = scop_n_threads(cores)
+      n_threads = scop_n_threads(cores),
+      legacy_zero_walk = gsva_uses_legacy_sparse_walk()
     )
     dimnames(scores) <- list(colnames(expr_counts), names(gene_set_idx))
     return(scores)
@@ -877,4 +889,11 @@ run_vision_scores <- function(
 gsva_standardize <- function() {
   check_r("GSVA", verbose = FALSE)
   utils::packageVersion("GSVA") >= "2.6.0"
+}
+
+gsva_uses_legacy_sparse_walk <- function() {
+  if (!requireNamespace("GSVA", quietly = TRUE)) {
+    return(FALSE)
+  }
+  utils::packageVersion("GSVA") < "2.6.0"
 }

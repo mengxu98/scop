@@ -209,10 +209,20 @@ RunNMF.default <- function(
   }
   nbes <- min(nbes, nrow(x = object) - 1)
   if (nmf.method == "RcppML") {
-    check_r("zdebruine/RcppML", verbose = FALSE)
+    check_r("RcppML", verbose = FALSE)
     old_rcppml_verbose <- getOption("RcppML.verbose", default = TRUE)
     options("RcppML.verbose" = FALSE)
     on.exit(options("RcppML.verbose" = old_rcppml_verbose), add = TRUE)
+    needs_matrix_attached <- inherits(object, "sparseMatrix") &&
+      !"package:Matrix" %in% search() &&
+      utils::packageVersion("RcppML") < "1.0.0"
+    if (needs_matrix_attached) {
+      attachNamespace("Matrix")
+      on.exit(
+        detach("package:Matrix", unload = FALSE, character.only = FALSE),
+        add = TRUE
+      )
+    }
     set_threads <- get0(
       "setRcppMLthreads",
       envir = asNamespace("RcppML"),

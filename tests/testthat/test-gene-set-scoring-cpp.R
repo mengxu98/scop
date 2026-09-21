@@ -398,6 +398,39 @@ test_that("native Gaussian GSVA is an opt-in result-compatible kernel", {
   )
 })
 
+test_that("native Gaussian GSVA matches the reference for sparse edge cases", {
+  skip_if_not_installed("GSVA")
+  set.seed(20260821)
+  expr <- matrix(stats::rlnorm(60 * 45, meanlog = -1, sdlog = 0.7), nrow = 60)
+  expr[expr < 0.5] <- 0
+  rownames(expr) <- paste0("g", seq_len(nrow(expr)))
+  colnames(expr) <- paste0("c", seq_len(ncol(expr)))
+  expr_sparse <- methods::as(Matrix::Matrix(expr, sparse = TRUE), "dgCMatrix")
+  expr_sparse@x[seq_len(20L)] <- 0
+  expect_gt(sum(expr_sparse@x == 0), 0)
+
+  set.seed(11)
+  gene_sets <- list(
+    shuffled = sample(rownames(expr)[1:30]),
+    overlapping = sample(rownames(expr)[20:50]),
+    duplicated = rownames(expr)[c(1:12, 3L, 5L, 40:44)]
+  )
+  args <- list(
+    expr_counts = expr_sparse,
+    gene_sets = gene_sets,
+    kcdf = "Gaussian",
+    min_gs_size = 1L,
+    max_gs_size = 100L,
+    sparse = TRUE
+  )
+
+  native <- do.call(run_gsva_scores, c(args, list(kernel = "native")))
+  delegated <- do.call(run_gsva_scores, c(args, list(kernel = "delegated")))
+
+  expect_identical(dim(native), dim(delegated))
+  expect_equal(as.numeric(native), as.numeric(delegated), tolerance = 1e-12)
+})
+
 test_that("RunGSVA selects the native Gaussian kernel through backend", {
   set.seed(20260714)
   counts <- matrix(
