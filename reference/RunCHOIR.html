@@ -106,7 +106,7 @@ summary to <code>srt@tools[[tool_name]]</code>.</p>
 <span>  reduction <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  var_features <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  atac <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  n_cores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  store_tool <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -200,7 +200,7 @@ otherwise.</p></dd>
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
 <dd><p>Optional existing dimensional reduction supplied to CHOIR.
-This can be a reduction name in <code>srt</code> or a cell-by-dimension matrix.</p></dd>
+This can be a reduction name in <code>object</code> or a cell-by-dimension matrix.</p></dd>
 
 
 <dt id="arg-var-features">var_features<a class="anchor" aria-label="anchor" href="#arg-var-features"></a></dt>
@@ -212,7 +212,7 @@ reduction is supplied, variable features from <code>assay</code> are used.</p></
 <dd><p>Whether the selected assay contains ATAC-seq data.</p></dd>
 
 
-<dt id="arg-n-cores">n_cores<a class="anchor" aria-label="anchor" href="#arg-n-cores"></a></dt>
+<dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
 <dd><p>Number of cores used by CHOIR. The pinned backend supports
 macOS and Linux; Windows execution is rejected before installation.</p></dd>
 
@@ -267,7 +267,7 @@ Nature Genetics, 57(5), 1309-1319. doi:10.1038/s41588-025-02148-8</p>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunCHOIR</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"RNA"</span>,</span></span>
-<span class="r-in"><span>  n_cores <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>  cores <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, group.by <span class="op">=</span> <span class="st">"CHOIR_cluster"</span><span class="op">)</span></span></span>

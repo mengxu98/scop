@@ -85,7 +85,6 @@ spatial module analysis for a spatial <code>Seurat</code> object.</p>
 <span>  alternative <span class="op">=</span> <span class="st">"greater"</span>,</span>
 <span>  nperm <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  ncores <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pairwise_features <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  set_variable_features <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  store_results <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -168,11 +167,7 @@ default <code>0</code> skips p-value calculation.</p></dd>
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
 <dd><p>Number of cores passed to MERINGUE permutation tests.
-Mapped to <code>ncores</code> for the R backend and <code>n_threads</code> for the native backend.</p></dd>
-
-
-<dt id="arg-ncores">ncores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>
-<dd><p>Deprecated alias for <code>cores</code>; supply exactly one of the two. It
+Mapped to <code>ncores</code> for the R backend and <code>n_threads</code> for the native backend.
 will be removed in scop 1.0.0.</p></dd>
 
 

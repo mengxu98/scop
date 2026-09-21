@@ -91,7 +91,6 @@
 <span>  iterations <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  minibatch <span class="op">=</span> <span class="fl">5000</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  ncores <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  grid.size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">radius</span> <span class="op">*</span> <span class="fl">1.4</span><span class="op">)</span>,</span>
 <span>  filter.region.by.celltypes <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">20</span>,</span>
@@ -230,11 +229,7 @@ meta-cell.</p></dd>
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
 <dd><p>Number of CPU cores used by <code>SpatialEcoTyper</code>.
-Passed to the selected backend as <code>ncores</code>.</p></dd>
-
-
-<dt id="arg-ncores">ncores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>
-<dd><p>Deprecated alias for <code>cores</code>; supply exactly one of the two. It
+Passed to the selected backend as <code>ncores</code>.
 will be removed in scop 1.0.0.</p></dd>
 
 

@@ -90,7 +90,6 @@ files are not bundled with <code>scop</code>; provide a directory containing
 <span>  norm_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  use_raw <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  n_thread <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  prefix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  return_seurat <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">srt</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -158,11 +157,7 @@ input. If <code>NULL</code>, defaults to <code>TRUE</code> only for Seurat count
 
 
 <dt id="arg-cores">cores<a class="anchor" aria-label="anchor" href="#arg-cores"></a></dt>
-<dd><p>Number of threads used by <code>scMalignantFinder</code>.</p></dd>
-
-
-<dt id="arg-n-thread">n_thread<a class="anchor" aria-label="anchor" href="#arg-n-thread"></a></dt>
-<dd><p>Deprecated alias for <code>cores</code>; supply exactly one of the two. It
+<dd><p>Number of threads used by <code>scMalignantFinder</code>.
 will be removed in scop 1.0.0.</p></dd>
 
 
