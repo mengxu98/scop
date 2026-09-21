@@ -11,13 +11,13 @@
 #' If specified, the genes and groups will be extracted from the object automatically.
 #' If not specified, the `geneID` and `geneID_groups` arguments must be provided.
 #' @param test.use Test to be used in differential expression analysis.
-#' This argument is only used if `srt` is specified.
+#' This argument is only used if `object` is specified.
 #' @param DE_threshold Filter condition for differential expression analysis.
-#' This argument is only used if `srt` is specified.
+#' This argument is only used if `object` is specified.
 #' @param geneID Gene IDs.
 #' @param geneID_groups A factor vector specifying the group labels for each gene.
 #' @param geneID_exclude Gene IDs to be excluded from the analysis.
-#' @param IDtype Type of gene IDs in the `srt` object or `geneID` argument.
+#' @param IDtype Type of gene IDs in the `object` object or `geneID` argument.
 #' This argument is used to convert the gene IDs to a different type if `IDtype` is different from `result_IDtype`.
 #' @param result_IDtype Desired type of gene ID to be used in the output.
 #' This argument is used to convert the gene IDs from `IDtype` to `result_IDtype`.

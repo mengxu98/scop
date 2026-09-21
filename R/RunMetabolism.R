@@ -413,7 +413,8 @@ RunMetabolism <- function(
       scores_mat <- run_aucell_official_scores(
         expr_counts = expr_counts,
         gene_sets = gene_sets,
-        tie_method = "first"
+        tie_method = "first",
+        cores = scop_n_threads(cores)
       )
     }
   } else if (method %in% c("GSVA", "ssGSEA")) {

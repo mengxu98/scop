@@ -39,7 +39,7 @@ scTenifoldKnkPlot(
 }
 \arguments{
 \item{object}{A Seurat object containing a scTenifoldKnk result in
-\code{srt@tools}.}
+\code{object@tools}.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry created by
 \link{RunscTenifoldKnk}.}

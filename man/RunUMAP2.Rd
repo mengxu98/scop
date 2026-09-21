@@ -19,7 +19,6 @@ RunUMAP2(object, ...)
   layer = "data",
   umap.method = "uwot",
   reduction.model = NULL,
-  n_threads = NULL,
   return.model = FALSE,
   n.neighbors = 30L,
   n.components = 2L,
@@ -47,7 +46,6 @@ RunUMAP2(object, ...)
   assay = NULL,
   umap.method = "uwot",
   reduction.model = NULL,
-  n_threads = NULL,
   return.model = FALSE,
   n.neighbors = 30L,
   n.components = 2L,
@@ -90,8 +88,6 @@ RunUMAP2(object, ...)
 \item{umap.method}{\code{"uwot"} or \code{"naive"}.}
 
 \item{reduction.model}{Pre-trained UMAP \code{DimReduc} used to embed new data.}
-
-\item{n_threads}{Deprecated alias for \code{cores}.}
 
 \item{return.model}{Store the UMAP model.}
 

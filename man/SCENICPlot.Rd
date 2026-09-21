@@ -238,12 +238,12 @@ will be removed in scop 1.0.0.}
 Plot, or a list with \code{rss_matrix}, \code{rank_table}, \code{top_table}, \code{plots}, and \code{plot} when \code{return_data = TRUE}.
 }
 \description{
-Plot regulon specificity scores (RSS) and regulon activity scores (RAS) from \code{\link[=RunSCENIC]{RunSCENIC()}} or \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}.
-Use \code{\link[=SCENICPlusPlot]{SCENICPlusPlot()}} for SCENIC+ defaults. Network \code{palette = "RdYlBu"}
-uses \code{"Chinese"}. \code{"network"} draws one hub per TF. Network plots have no
-title. When one TF has multiple regulons, network legends show the regulon
-with the highest RSS; the corresponding cell type and score remain available
-in the returned annotation table.
+Plot regulon specificity scores (RSS) and regulon activity scores (RAS) from
+\code{\link[=RunSCENIC]{RunSCENIC()}} or \code{\link[=RunSCENICPlus]{RunSCENICPlus()}}. Use \code{\link[=SCENICPlusPlot]{SCENICPlusPlot()}} for SCENIC+ defaults.
+Network \code{palette = "RdYlBu"} uses \code{"Chinese"}. \code{"network"} draws one hub per TF.
+Network plots have no title. When one TF has multiple regulons, network legends
+show the regulon with the highest RSS; the corresponding cell type and score
+remain available in the returned annotation table.
 }
 \examples{
 \dontrun{

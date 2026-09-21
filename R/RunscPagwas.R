@@ -12,8 +12,10 @@
 #' @inheritParams thisutils::log_message
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
-#' @param object Optional Seurat object used as single-cell input.
-#' @param single_data Optional Seurat object or path to a Seurat `.rds` file.
+#' @param object The single-cell input. Supply a `Seurat` object or a path to
+#' a Seurat `.rds` file.
+#' @param single_data Deprecated alias for `object`. It will be removed in scop
+#' 1.0.0.
 #' @param gwas_data GWAS summary statistics as a data frame or delimited text
 #' file. Required columns are `chrom`, `pos`, `rsid`, `se`, `beta`, and `maf`.
 #' @param group.by Optional Seurat metadata column used to set cell identities.
@@ -44,18 +46,32 @@ RunscPagwas <- function(
   block_annotation = c("hg38", "hg37", "custom"),
   output.dirs = tempdir(),
   cleanup_soar = TRUE,
-  return_seurat = !is.null(srt) || inherits(single_data, "Seurat"),
+  return_seurat = !is.null(srt) || inherits(single_data, "Seurat") ||
+    !is.null(object),
   verbose = TRUE,
   ...,
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  if (!is.null(single_data)) {
+    if (!is.null(srt)) {
+      log_message(
+        "Supply only one of {.arg object} and the deprecated {.arg single_data}.",
+        message_type = "error"
+      )
+    }
+    .Deprecated(msg = paste0(
+      "`single_data` is deprecated; pass the single-cell input as `object` ",
+      "instead. It will be removed in scop 1.0.0."
+    ))
+    srt <- single_data
+  }
   block_annotation <- scpagwas_validate_block_annotation_selector(block_annotation)
   if (missing(gwas_data) || is.null(gwas_data)) {
     log_message("{.arg gwas_data} is required", message_type = "error")
   }
   gwas_data <- scpagwas_resolve_gwas_data(gwas_data)
-  single_data <- scpagwas_resolve_single_data(srt = srt, single_data = single_data)
+  single_data <- scpagwas_resolve_single_data(object = srt, single_data = single_data)
   if (is.null(assay)) {
     assay <- if (inherits(single_data, "Seurat")) {
       SeuratObject::DefaultAssay(single_data)
@@ -418,13 +434,10 @@ scpagwas_output_context <- function(output.dirs) {
   )
 }
 
-scpagwas_resolve_single_data <- function(srt = NULL, single_data = NULL) {
-  if (!is.null(srt) && !is.null(single_data)) {
-    log_message("Provide only one of {.arg srt} or {.arg single_data}", message_type = "error")
-  }
-  single_data <- single_data %||% srt
+scpagwas_resolve_single_data <- function(object = NULL, single_data = NULL) {
+  single_data <- object %||% single_data
   if (is.null(single_data)) {
-    log_message("Provide {.arg srt} or {.arg single_data}", message_type = "error")
+    log_message("{.arg object} or {.arg single_data} is required", message_type = "error")
   }
   if (is.character(single_data)) {
     if (length(single_data) != 1L || is.na(single_data) || !nzchar(single_data)) {

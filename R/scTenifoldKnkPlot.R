@@ -8,7 +8,7 @@
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A Seurat object containing a scTenifoldKnk result in
-#' `srt@tools`.
+#' `object@tools`.
 #' @param tool_name Name of the `srt@tools` entry created by
 #' [RunscTenifoldKnk].
 #' @param plot_type Plot type. `"qq"` shows the common scTenifoldKnk

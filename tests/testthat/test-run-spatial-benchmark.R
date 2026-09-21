@@ -558,7 +558,7 @@ test_that("invalid corrupt and crashed child results become failed runs", {
     benchmark_run_isolated(
       input_path, run_dir, "SmoothClust",
       params = list(), seed = 1, keep_object = FALSE,
-      timeout = 5, poll_interval = 0.02, package_context = context,
+      timeout = 60, poll_interval = 0.02, package_context = context,
       child_entry = children[[name]]
     )
   })

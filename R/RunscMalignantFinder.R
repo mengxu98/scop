@@ -30,7 +30,6 @@
 #' input. If `NULL`, defaults to `TRUE` only for Seurat counts input.
 #' @param use_raw Whether to use `adata.raw.X` when available.
 #' @param cores Number of threads used by `scMalignantFinder`.
-#' @param n_thread Deprecated alias for `cores`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param prefix Optional prefix for output metadata columns. Default preserves
 #' the original `scMalignantFinder` column names.
@@ -72,18 +71,12 @@ RunscMalignantFinder <- function(
   norm_type = NULL,
   use_raw = FALSE,
   cores = 1,
-  n_thread = NULL,
   prefix = "",
   return_seurat = !is.null(srt),
   verbose = TRUE,
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
-  if (!is.null(n_thread)) {
-    .Deprecated(msg = paste0("`n_thread` is deprecated; use `cores` instead. ",
-      "It will be removed in scop 1.0.0."))
-    cores <- n_thread
-  }
   model_method <- match.arg(model_method)
   scmf_check_one_input(srt = srt, adata = adata, h5ad = h5ad)
   norm_type <- scmf_resolve_norm_type(norm_type, srt = srt, layer = layer)

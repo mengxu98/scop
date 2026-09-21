@@ -22,7 +22,6 @@
 #' @param alternative Alternative hypothesis passed to MERINGUE Moran tests.
 #' @param cores Number of cores passed to MERINGUE permutation tests.
 #' Mapped to `ncores` for the R backend and `n_threads` for the native backend.
-#' @param ncores Deprecated alias for `cores`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param pairwise_features Features used for spatial cross-correlation. If
 #' `NULL`, top spatially autocorrelated features are used.
@@ -69,7 +68,6 @@ RunMERINGUE <- function(
   alternative = "greater",
   nperm = 0,
   cores = 1,
-  ncores = NULL,
   pairwise_features = NULL,
   set_variable_features = FALSE,
   store_results = TRUE,
@@ -84,14 +82,6 @@ RunMERINGUE <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
-  if (!is.null(ncores)) {
-    if (!missing(cores)) {
-      stop("Supply only one of `cores` and `ncores`.", call. = FALSE)
-    }
-    .Deprecated(msg = paste0("`ncores` is deprecated; use `cores` instead. ",
-      "It will be removed in scop 1.0.0."))
-    cores <- ncores
-  }
   coordinate_space <- match.arg(coordinate_space)
   backend <- match.arg(backend)
   if (!inherits(srt, "Seurat")) {

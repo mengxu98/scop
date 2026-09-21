@@ -223,7 +223,10 @@ cnv_plot_heatmap <- function(
 
   mat[mat > 1] <- 1
   mat[mat < -1] <- -1
-  colors <- heatmap_palcolor %||% c("#3B6FB6", "#9ECAE1", "#F7F7F7", "#F4A261", "#C43C39")
+  colors <- palette_colors(
+    palette = heatmap_palette,
+    palcolor = heatmap_palcolor
+  )
   col_fun <- circlize::colorRamp2(
     seq(-1, 1, length.out = length(colors)),
     colors

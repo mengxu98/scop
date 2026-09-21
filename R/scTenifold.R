@@ -26,10 +26,10 @@
 #' high-consistency path. `cpp` runs all steps with scop's native kernels and is
 #' much faster on large gene sets.
 #' @param store_networks Whether to keep WT/KO tensor networks in
-#' `srt@tools`. This only controls what is stored; the network ensemble is
+#' `object@tools`. This only controls what is stored; the network ensemble is
 #' always built the same way.
 #' @param store_manifold Whether to keep manifold-alignment coordinates in
-#' `srt@tools`.
+#' `object@tools`.
 #' @param tool_name Name of the `srt@tools` entry.
 #'
 #' @return A `Seurat` object with scTenifoldKnk results stored in
@@ -555,6 +555,19 @@ sctenifold_manifold_cpp <- function(x, y, d, cores) {
   x <- as.matrix(x[shared_genes, shared_genes, drop = FALSE])
   y <- as.matrix(y[shared_genes, shared_genes, drop = FALSE])
   w <- sctenifold_manifold_matrix(x, y)
+  previous_omp <- RhpcBLASctl::omp_get_max_threads()
+  previous_blas <- RhpcBLASctl::blas_get_num_procs()
+  on.exit(
+    {
+      if (is.finite(previous_omp) && previous_omp > 0) {
+        RhpcBLASctl::omp_set_num_threads(as.integer(previous_omp))
+      }
+      if (is.finite(previous_blas) && previous_blas > 0) {
+        RhpcBLASctl::blas_set_num_threads(as.integer(previous_blas))
+      }
+    },
+    add = TRUE
+  )
   RhpcBLASctl::omp_set_num_threads(as.integer(cores))
   RhpcBLASctl::blas_set_num_threads(as.integer(cores))
   eig <- suppressWarnings(RSpectra::eigs(w, as.integer(d) * 2L, "SR"))

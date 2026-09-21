@@ -66,7 +66,7 @@ RunSingleR <- function(
     "Start {.pkg SingleR} annotation",
     verbose = verbose
   )
-  check_r(c("SingleR", "scrapper"), verbose = FALSE)
+  check_r("SingleR", verbose = FALSE)
   if (is.null(ref_group)) {
     log_message(
       "{.arg ref_group} must be provided",

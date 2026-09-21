@@ -254,7 +254,7 @@ test_that("SPOTlight stored results use SpatialDeconvolutionPlot", {
 
 test_that("standard spatial workflow dispatches to RunSPOTlight", {
   skip_if(
-    isTRUE(thisutils::check_r("SPOTlight", install = FALSE, verbose = FALSE)),
+    requireNamespace("SPOTlight", quietly = TRUE),
     "SPOTlight backend is installed; avoid running real deconvolution in dispatch test"
   )
   pair <- make_spotlight_seurat_pair()

@@ -41,11 +41,11 @@
 #'   `NULL`, `"Harmony"` is selected when `batch.by` is supplied and `"none"`
 #'   otherwise.
 #' @param reduction Optional existing dimensional reduction supplied to CHOIR.
-#'   This can be a reduction name in `srt` or a cell-by-dimension matrix.
+#'   This can be a reduction name in `object` or a cell-by-dimension matrix.
 #' @param var_features Features associated with `reduction`. If `NULL` and a
 #'   reduction is supplied, variable features from `assay` are used.
 #' @param atac Whether the selected assay contains ATAC-seq data.
-#' @param n_cores Number of cores used by CHOIR. The pinned backend supports
+#' @param cores Number of cores used by CHOIR. The pinned backend supports
 #'   macOS and Linux; Windows execution is rejected before installation.
 #' @param seed Random seed passed to CHOIR.
 #' @param store_tool Whether to store a lightweight result summary in
@@ -75,7 +75,7 @@
 #' pancreas_sub <- RunCHOIR(
 #'   pancreas_sub,
 #'   assay = "RNA",
-#'   n_cores = 2,
+#'   cores = 2,
 #'   verbose = FALSE
 #' )
 #' CellDimPlot(pancreas_sub, group.by = "CHOIR_cluster")
@@ -101,7 +101,7 @@ RunCHOIR <- function(
   reduction = NULL,
   var_features = NULL,
   atac = FALSE,
-  n_cores = 1,
+  cores = 1,
   seed = 1,
   store_tool = TRUE,
   verbose = TRUE,
@@ -132,7 +132,7 @@ RunCHOIR <- function(
   min_accuracy <- choir_assert_probability(min_accuracy, "min_accuracy")
   n_iterations <- validate_scalar_integer(n_iterations, "n_iterations")
   n_trees <- validate_scalar_integer(n_trees, "n_trees")
-  n_cores <- validate_scalar_integer(n_cores, "n_cores")
+  cores <- validate_scalar_integer(cores, "cores")
   seed <- validate_scalar_integer(
     seed,
     "seed",
@@ -204,7 +204,7 @@ RunCHOIR <- function(
   } else {
     check_r(
       c(
-        "corceslab/CHOIR", "BiocGenerics", "bluster", "dplyr", "ggplot2",
+        paste0("corceslab/CHOIR@", expected_commit), "BiocGenerics", "bluster", "dplyr", "ggplot2",
         "ggtree", "harmony", "magrittr", "Matrix", "pengminshi/mrtree",
         "plyr", "progress", "ranger", "Seurat", "spatstat.univar",
         "stringr", "tidyr"
@@ -216,7 +216,10 @@ RunCHOIR <- function(
     observed_commit <- choir_installed_commit()
     if (!identical(observed_commit, expected_commit)) {
       log_message(
-        "Unable to install the pinned optional {.pkg CHOIR} backend",
+        paste0(
+          "The pinned {.pkg CHOIR} backend is unavailable. Install it with ",
+          "{.code pak::pkg_install(c('corceslab/CHOIR@{expected_commit}', 'pengminshi/mrtree'))}."
+        ),
         message_type = "error"
       )
     }
@@ -250,7 +253,7 @@ RunCHOIR <- function(
       reduction = reduction_input$reduction,
       var_features = reduction_input$var_features,
       atac = atac,
-      n_cores = n_cores,
+      n_cores = cores,
       random_seed = seed,
       verbose = verbose
     ),
@@ -307,7 +310,7 @@ RunCHOIR <- function(
         batch_correction_method = batch$method,
         reduction = reduction_input$name,
         atac = atac,
-        n_cores = n_cores,
+        n_cores = cores,
         seed = seed,
         overwrite = overwrite
       )

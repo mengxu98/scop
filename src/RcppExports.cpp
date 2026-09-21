@@ -1019,15 +1019,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // pca_backend_run
-Rcpp::List pca_backend_run(const arma::mat& X, int npcs, bool weight_by_var);
-RcppExport SEXP _scop_pca_backend_run(SEXP XSEXP, SEXP npcsSEXP, SEXP weight_by_varSEXP) {
+Rcpp::List pca_backend_run(const arma::mat& X, int npcs, bool weight_by_var, int n_threads);
+RcppExport SEXP _scop_pca_backend_run(SEXP XSEXP, SEXP npcsSEXP, SEXP weight_by_varSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< int >::type npcs(npcsSEXP);
     Rcpp::traits::input_parameter< bool >::type weight_by_var(weight_by_varSEXP);
-    rcpp_result_gen = Rcpp::wrap(pca_backend_run(X, npcs, weight_by_var));
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(pca_backend_run(X, npcs, weight_by_var, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1805,8 +1806,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // scanpy_stochastic_cpp
-List scanpy_stochastic_cpp(NumericMatrix Ms, NumericMatrix Mu, NumericMatrix Mss, NumericMatrix Mus, IntegerMatrix knn_idx, NumericMatrix embedding, int n_threads);
-RcppExport SEXP _scop_scanpy_stochastic_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP MssSEXP, SEXP MusSEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP, SEXP n_threadsSEXP) {
+List scanpy_stochastic_cpp(NumericMatrix Ms, NumericMatrix Mu, NumericMatrix Mss, NumericMatrix Mus, IntegerMatrix knn_idx, NumericMatrix embedding, double perc, int n_threads);
+RcppExport SEXP _scop_scanpy_stochastic_cpp(SEXP MsSEXP, SEXP MuSEXP, SEXP MssSEXP, SEXP MusSEXP, SEXP knn_idxSEXP, SEXP embeddingSEXP, SEXP percSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1816,8 +1817,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type Mus(MusSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type embedding(embeddingSEXP);
+    Rcpp::traits::input_parameter< double >::type perc(percSEXP);
     Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(scanpy_stochastic_cpp(Ms, Mu, Mss, Mus, knn_idx, embedding, n_threads));
+    rcpp_result_gen = Rcpp::wrap(scanpy_stochastic_cpp(Ms, Mu, Mss, Mus, knn_idx, embedding, perc, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2956,7 +2958,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_cell_dpt_pseudotime_cpp", (DL_FUNC) &_scop_cell_dpt_pseudotime_cpp, 4},
     {"_scop_paga_velocity_transitions_cpp", (DL_FUNC) &_scop_paga_velocity_transitions_cpp, 5},
     {"_scop_paga_root_cell_cpp", (DL_FUNC) &_scop_paga_root_cell_cpp, 3},
-    {"_scop_pca_backend_run", (DL_FUNC) &_scop_pca_backend_run, 3},
+    {"_scop_pca_backend_run", (DL_FUNC) &_scop_pca_backend_run, 4},
     {"_scop_cca_crossprod_matrix", (DL_FUNC) &_scop_cca_crossprod_matrix, 2},
     {"_scop_matrix_product", (DL_FUNC) &_scop_matrix_product, 2},
     {"_scop_phate_graphtools_affinity_data_cpp", (DL_FUNC) &_scop_phate_graphtools_affinity_data_cpp, 5},
@@ -3008,7 +3010,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scanpy_moments_connectivities_cpp", (DL_FUNC) &_scop_scanpy_moments_connectivities_cpp, 5},
     {"_scop_scanpy_second_order_moments_cpp", (DL_FUNC) &_scop_scanpy_second_order_moments_cpp, 4},
     {"_scop_scanpy_deterministic_cpp", (DL_FUNC) &_scop_scanpy_deterministic_cpp, 7},
-    {"_scop_scanpy_stochastic_cpp", (DL_FUNC) &_scop_scanpy_stochastic_cpp, 7},
+    {"_scop_scanpy_stochastic_cpp", (DL_FUNC) &_scop_scanpy_stochastic_cpp, 8},
     {"_scop_scanpy_velocity_graph_cpp", (DL_FUNC) &_scop_scanpy_velocity_graph_cpp, 9},
     {"_scop_scanpy_project_velocity_embedding_cpp", (DL_FUNC) &_scop_scanpy_project_velocity_embedding_cpp, 10},
     {"_scop_scanpy_velocity_confidence_cpp", (DL_FUNC) &_scop_scanpy_velocity_confidence_cpp, 3},

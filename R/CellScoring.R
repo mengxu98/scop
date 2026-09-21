@@ -524,7 +524,8 @@ CellScoring <- function(
             list(
               expr_counts = expr_sp,
               gene_sets = features,
-              tie_method = "first"
+              tie_method = "first",
+              cores = scop_n_threads(cores)
             ),
             dots
           )

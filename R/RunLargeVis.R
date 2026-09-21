@@ -61,7 +61,6 @@ RunLargeVis.Seurat <- function(
   n_trees = 50,
   search_k = 2 * n_neighbors * n_trees,
   cores = NULL,
-  n_threads = NULL,
   n_sgd_threads = 0,
   grain_size = 1,
   kernel = "gauss",
@@ -79,10 +78,6 @@ RunLargeVis.Seurat <- function(
   seed.use = 11L,
   ...
 ) {
-  if (!is.null(n_threads)) {
-    .Deprecated(msg = "'n_threads' is deprecated; use 'cores' instead")
-    cores <- n_threads
-  }
   if (sum(c(is.null(dims), is.null(features))) == 3) {
     log_message(
       "Please specify only one of the following arguments: dims, features",
@@ -191,7 +186,6 @@ RunLargeVis.default <- function(
   n_trees = 50,
   search_k = 2 * n_neighbors * n_trees,
   cores = NULL,
-  n_threads = NULL,
   n_sgd_threads = 0,
   grain_size = 1,
   kernel = "gauss",
@@ -208,10 +202,6 @@ RunLargeVis.default <- function(
   seed.use = 11L,
   ...
 ) {
-  if (!is.null(n_threads)) {
-    .Deprecated(msg = "'n_threads' is deprecated; use 'cores' instead")
-    cores <- n_threads
-  }
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
   }

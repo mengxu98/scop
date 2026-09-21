@@ -401,7 +401,7 @@ PrepareDB <- function(
         check_r(c(org_sp, "GO.db", "GOSemSim"), verbose = FALSE)
         if (!isTRUE(all(unlist(check_r(org_sp, install = FALSE, verbose = FALSE), use.names = FALSE)))) {
           log_message(
-            "Annotation package {.pkg {org_sp}} does not exist",
+            "Annotation package {.pkg {org_sp}} is not installed. Install it with {.code BiocManager::install('{org_sp}')}.",
             message_type = "warning"
           )
           if (isTRUE(convert_species)) {

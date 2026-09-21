@@ -294,19 +294,31 @@ inline bool gaussian_elimination_solve(
 }
 
 
-inline void build_velocity_transition(
+struct TransitionTriplets {
+    std::vector<int> rows;
+    std::vector<int> cols;
+    std::vector<double> vals;
+    int n;
+
+    TransitionTriplets() : n(0) {}
+};
+
+inline void build_velocity_transition_sparse(
     const NumericMatrix& velocity_embedding,
     const NumericMatrix& embedding,
     const IntegerMatrix& knn_idx,
     int n_neighbors_velo,
-    std::vector<double>& T)
+    TransitionTriplets& out)
 {
     int n_cells = embedding.nrow();
     int n_dims = embedding.ncol();
     int n_k = knn_idx.ncol();
     int nk = std::min(n_neighbors_velo, n_k);
 
-    T.assign(n_cells * n_cells, 0.0);
+    out.rows.clear();
+    out.cols.clear();
+    out.vals.clear();
+    out.n = n_cells;
 
     for (int i = 0; i < n_cells; ++i) {
         double vn = 0.0;
@@ -356,11 +368,96 @@ inline void build_velocity_transition(
         }
 
         if (row_sum > 0) {
-            for (int j = 0; j < n_cells; ++j)
-                T[i + j * n_cells] = row[j] / row_sum;
+            for (int j = 0; j < n_cells; ++j) {
+                if (row[j] != 0.0) {
+                    out.rows.push_back(i + 1);
+                    out.cols.push_back(j + 1);
+                    out.vals.push_back(row[j] / row_sum);
+                }
+            }
         }
     }
 }
+
+inline void transition_sort_by_row(
+    const TransitionTriplets& t,
+    std::vector<int>& order)
+{
+    order.resize(t.vals.size());
+    for (std::size_t k = 0; k < order.size(); ++k) {
+        order[k] = static_cast<int>(k);
+    }
+    std::stable_sort(order.begin(), order.end(), [&](int a, int b) {
+        if (t.rows[a] != t.rows[b]) return t.rows[a] < t.rows[b];
+        return t.cols[a] < t.cols[b];
+    });
+}
+
+inline void transition_sort_by_col(
+    const TransitionTriplets& t,
+    std::vector<int>& order)
+{
+    order.resize(t.vals.size());
+    for (std::size_t k = 0; k < order.size(); ++k) {
+        order[k] = static_cast<int>(k);
+    }
+    std::stable_sort(order.begin(), order.end(), [&](int a, int b) {
+        if (t.cols[a] != t.cols[b]) return t.cols[a] < t.cols[b];
+        return t.rows[a] < t.rows[b];
+    });
+}
+
+inline NumericVector stationary_distribution_sparse(
+    const TransitionTriplets& t, int max_iter = 1000, double tol = 1e-10)
+{
+    int n = t.n;
+    NumericVector pi(n, 1.0 / n);
+
+    std::vector<int> order;
+    transition_sort_by_col(t, order);
+
+    std::vector<int> col_end(n + 1, 0);
+    for (std::size_t k = 0; k < order.size(); ++k) {
+        col_end[t.cols[order[k]]] += 1;
+    }
+    for (int j = 1; j <= n; ++j) col_end[j] += col_end[j - 1];
+
+    std::vector<int> col_rows(order.size());
+    std::vector<double> col_vals(order.size());
+    {
+        std::vector<int> cursor(col_end.size(), 0);
+        for (int j = 1; j <= n; ++j) cursor[j] = col_end[j - 1];
+        for (std::size_t k = 0; k < order.size(); ++k) {
+            const int entry = order[k];
+            const int col = t.cols[entry];
+            const int slot = cursor[col];
+            col_rows[slot] = t.rows[entry] - 1;
+            col_vals[slot] = t.vals[entry];
+            cursor[col] += 1;
+        }
+    }
+
+    for (int iter = 0; iter < max_iter; ++iter) {
+        NumericVector next_pi(n);
+        for (int j = 1; j <= n; ++j) {
+            double s = 0.0;
+            for (int k = col_end[j - 1]; k < col_end[j]; ++k) {
+                s += pi[col_rows[k]] * col_vals[k];
+            }
+            next_pi[j - 1] = s;
+        }
+        double sum = 0.0;
+        for (int i = 0; i < n; ++i) sum += next_pi[i];
+        if (sum < 1e-15) { next_pi = NumericVector(n, 1.0/n); sum = 1.0; }
+        for (int i = 0; i < n; ++i) next_pi[i] /= sum;
+        double delta = 0.0;
+        for (int i = 0; i < n; ++i) delta = std::max(delta, std::abs(next_pi[i] - pi[i]));
+        pi = next_pi;
+        if (delta < tol) break;
+    }
+    return pi;
+}
+
 
 
 inline NumericVector stationary_distribution(

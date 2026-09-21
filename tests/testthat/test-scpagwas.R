@@ -49,7 +49,7 @@ with_mock_scpagwas <- function(fun, code, backend_funs = list()) {
 
 test_that("RunscPagwas validates required GWAS columns early", {
   expect_error(
-    RunscPagwas(single_data = "input.rds", gwas_data = data.frame(chrom = "1")),
+    RunscPagwas(object = "input.rds", gwas_data = data.frame(chrom = "1")),
     "missing required"
   )
 })
@@ -128,7 +128,7 @@ test_that("RunscPagwas supports RDS paths, custom block annotation, and list att
 
   with_mock_scpagwas(runner, {
     out <- RunscPagwas(
-      single_data = single_data,
+      object = single_data,
       gwas_data = gwas,
       block_annotation = block,
       return_seurat = FALSE,
@@ -171,7 +171,7 @@ test_that("RunscPagwas accepts and validates GWAS file paths", {
 
   with_mock_scpagwas(runner, {
     out <- RunscPagwas(
-      single_data = single_data,
+      object = single_data,
       gwas_data = gwas_file,
       block_annotation = block,
       return_seurat = FALSE,
@@ -193,7 +193,7 @@ test_that("RunscPagwas rejects GWAS files with missing columns early", {
   )
 
   expect_error(
-    RunscPagwas(single_data = "input.rds", gwas_data = gwas_file),
+    RunscPagwas(object = "input.rds", gwas_data = gwas_file),
     "missing required"
   )
 })
@@ -242,7 +242,7 @@ test_that("RunscPagwas supplies upstream default package data explicitly", {
 test_that("RunscPagwas does not accept bare custom block selector", {
   expect_error(
     RunscPagwas(
-      single_data = "input.rds",
+      object = "input.rds",
       gwas_data = make_scpagwas_gwas(),
       block_annotation = "custom"
     ),

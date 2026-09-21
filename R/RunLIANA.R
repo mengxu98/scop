@@ -681,7 +681,7 @@ ccc_to_liana <- function(
 #' @md
 #' @inheritParams ccc_to_liana
 #' @param liana_res Optional precomputed LIANA-like data frame. If supplied,
-#' `srt` is not required.
+#' `object` is not required.
 #' @param score_key Column in `liana_res` used for `layers[["means"]]`.
 #' @param pvalue_key Column in `liana_res` used for `layers[["pvalues"]]`.
 #' @param inverse_score Whether smaller `score_key` values should be converted

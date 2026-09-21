@@ -197,7 +197,7 @@ test_that("RunCIBERSORT cpp backend supports permutations and quantile normaliza
     backend = "cpp",
     perm = 10,
     QN = TRUE,
-    n_threads = 2,
+    cores = 2,
     seed = 99,
     verbose = FALSE
   )

@@ -46,7 +46,7 @@ more metacell partitions in columns. Row names should be cell names. If row
 names are missing and the row count equals \code{ncol(srt)}, cells are matched in
 \code{colnames(srt)} order.}
 
-\item{metacell.by}{Metadata column(s) in \code{srt} used as metacell partitions
+\item{metacell.by}{Metadata column(s) in \code{object} used as metacell partitions
 when \code{cell_membership = NULL}.}
 
 \item{mode}{McRigor task. \code{"detect"} calls \code{mcRigor_DETECT()} for one
@@ -82,7 +82,7 @@ to \code{mcRigor_OPTIMIZE()}.}
 \item{draw, pur_metric, check_purity, fields, step_save}{Plotting, purity, and
 intermediate-save parameters forwarded to mcRigor.}
 
-\item{prefix}{Prefix for metadata columns written to \code{srt}.}
+\item{prefix}{Prefix for metadata columns written to \code{object}.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry used to store results.}
 

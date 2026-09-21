@@ -53,7 +53,7 @@ results of differential expression analysis.}
 \item{test.use}{Type of statistical test to use.}
 
 \item{res}{A \code{data.frame} or \code{data.table} with differential expression results.
-When \code{res} is provided, \code{srt} will be ignored.
+When \code{res} is provided, \code{object} will be ignored.
 The data.frame must contain columns: \code{gene}, \code{group1} (factor or character),
 \code{avg_log2FC}, \code{p_val_adj}, and optionally \code{pct.1} and \code{pct.2} for calculating \code{diff_pct}.}
 

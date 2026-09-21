@@ -54,7 +54,7 @@ spatial spots are used where applicable.}
 \item{mode}{C-SIDE mode. \code{"auto"} dispatches to \code{"general"}, \code{"regions"},
 \code{"single"}, or \code{"intercept"} based on the supplied design inputs.}
 
-\item{assay}{Assay used in \code{srt}. If \code{NULL}, the default assay is used.}
+\item{assay}{Assay used in \code{object}. If \code{NULL}, the default assay is used.}
 
 \item{layer}{Assay layer used as the spatial expression source.}
 

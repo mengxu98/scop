@@ -1,7 +1,19 @@
 # scop (development version)
 
+* **breaking**: Thread counts are named `cores` throughout. `RunLargeVis()`, `RunUMAP2()`, `RunSmoothClust()`, `RunscMalignantFinder()`, `RunSecAct()`, `RunMERINGUE()`, `RunSpatialEcoTyper()` and `RunCHOIR()` no longer accept the backend-specific `n_threads`, `n_thread`, `ncores` and `n_cores` argument names, and the `n_threads`/`n_thread` values that `RunCIBERSORT()` and the AUCell scoring path previously accepted through `...` are gone as well; `cores` is forwarded to each backend under the name that backend expects.
 * **feat**: `FeatureDimPlot()` defaults assay-gene headings to italic and supports `title.face` plus scalar or feature-named `title.color`, preserving numeric metadata headings and expression palettes.
 
+* **fix**: Resolve the thisutils Python logger from `scripts/`, with compatibility for older installations using `python/`, in both reticulate imports and subprocess runners.
+
+* **fix**: Dependency checks use the default `check_r()` behavior, allowing missing packages to be installed during analysis. Dependencies can also be installed ahead of time through `PrepareEnv()`.
+* **perf**: The scVelo backend builds the velocity transition, the terminal states and the pseudotime as sparse matrices instead of dense cell-by-cell ones; at 50,000 cells the velocity graph drops from about 56 GiB to 11 MiB. The terminal states and pseudotime now use iterative eigensolvers, which can return fewer regions than the previous dense implementation when the graph contains several near-closed classes, and this path requires `RSpectra`.
+* **fix**: `CNVPlot(plot_type = "heatmap")` honours its documented `heatmap_palette` through `thisplot::palette_colors()` instead of ignoring it, and `SCENICPlot()` resolves its automatic reduction through `DefaultReduction()`.
+* **docs**: `IntegrationBenchmarkPlot()` documents its real workflow, and `RunDeconvolution()` documents the MuSiC path.
+* **fix**: Align the C++ ports with their reference implementations: `RunPalantir(backend = "cpp")` uses the reference Markov-chain bandwidth and pins the start waypoint pseudotime to zero, `RunCellRank(backend = "cpp")` reports lineage-driver p-values from the Fisher z transform instead of a Cauchy tail, and `RunSCVELO(backend = "cpp", mode = "stochastic")` applies the reference 95% percentile weighting mask. Existing results for these methods change accordingly.
+* **fix**: `RunPCA()` takes `cores` and forwards it to the native backend, which bounds its BLAS calls instead of always using the process default. The bound only applies when the linked BLAS exposes a thread-count setting (OpenBLAS or MKL); the Windows reference BLAS has none.
+* **fix**: `RunscTenifoldKnk()` restores the previous OpenMP and BLAS thread counts on exit instead of leaving them changed for the rest of the session.
+* **fix**: `RunCHOIR()` checks and installs its pinned backend when needed, and reports installation failures.
+* **fix**: `RunSCENIC()` requires `arrow` for its ranking databases and reports the missing package instead of silently falling back to a rank-based approximation.
 * **refactor**: Use the thisplot Pastel1 palette for volcano enrichment overlays instead of a hard-coded palette.
 
 * **refactor**: Keep fixed method lists, resource filenames, and internal contract values at their use sites instead of package-level static constants.
@@ -51,7 +63,7 @@
 * **fix**: Forward `theme_use` and `theme_args` in all SpaTalk and COMMOT CCC plot views. Consolidate SpaTalk result preparation and remove duplicate coordinate checks and redundant plot-call wrappers.
 
 * **breaking**: `RunMonocle2()` drops the `backend = "cpp"` path and its `n_neighbors` parameter. Monocle now accelerates the DDRTree ordering hot paths natively in C++, so the separate scop implementation is no longer needed; `backend` and `n_neighbors` are accepted with a deprecation warning and ignored. The `group.by`-based `root_state` resolution that only the C++ backend supported is removed with it, and `root_state` must be a trajectory State as with the previous `"r"` backend.
-* **perf**: `RunMonocle2()` DDRTree ordering now runs on monocle's native C++ fast paths (cell-to-MST projection, projected-cell minimum spanning tree, tree ordering traversal, and state-based root selection, ported from the former scop backend into mengxu98/monocle). Ordering a 3,000-cell dataset drops from ~9.3 s to ~1.2 s, and the ordering step no longer scales quadratically with cell number. Pseudotime, states, and the root cell are unchanged. The updated monocle is installed automatically through `check_r()`.
+* **perf**: `RunMonocle2()` DDRTree ordering now runs on monocle's native C++ fast paths (cell-to-MST projection, projected-cell minimum spanning tree, tree ordering traversal, and state-based root selection, ported from the former scop backend into mengxu98/monocle). Ordering a 3,000-cell dataset drops from ~9.3 s to ~1.2 s, and the ordering step no longer scales quadratically with cell number. Pseudotime, states, and the root cell are unchanged. The updated monocle is declared through `check_r()` and installed by `PrepareEnv()`.
 
 * **breaking**: Public APIs take the data object as `object=` rather than `srt=`. Every exported function that took `srt=` now takes `object=`; `srt=` remains accepted as a deprecated alias that warns on use and is removed in scop 1.0.0. `RunVECTOR()`, `VECTORPlot()`, `RuntAge()`, `tAgePlot()`, `RunscTenifoldNet()`, and `PrepareSCExplorer()` take `object=` only.
 * **breaking**: Remove unverified `RunSpatialDWLS()` and its plotting path rather than presenting clipped least-squares output as SpatialDWLS. Use `RunRCTD()`, `RunCARD()`, or `RunSPOTlight()` with `SpatialDeconvolutionPlot()`.
@@ -85,7 +97,7 @@
 * **normalization**: Explicit `do_normalization = FALSE` is respected by preprocessing, including externally normalized data that the heuristic cannot classify. The SpaNorm workflow retains matched original counts for library QC alongside normalized expression.
 * **dependencies**: Declare the existing direct lifecycle dependency used by PseudobulkExpression; no optional Remotes backend is promoted to Imports.
 * **data**: Remove the derivative `pbmc_celltypist_sub`, `visium_human_pancreas_results_sub`, `visium_human_pancreas_pair_sub`, and `xenium_human_pancreas_boundaries_sub` datasets and one-off data migration scripts. Examples reuse `pbmcmultiome_sub` and `visium_human_pancreas_sub`, computing results when needed; specialized workflows document their required inputs without placeholder files. Existing scripts using the removed `data()` names must be updated.
-* **chore**: Optional-package probes in package code now use `check_r(install = FALSE)` and `get_namespace_fun()` instead of `requireNamespace()`. Documented examples call public functions under `\dontrun` and do not invoke `check_r`.
+* **chore**: Optional-package probes in package code now use `check_r()` and `get_namespace_fun()` instead of `requireNamespace()`. Documented examples call public functions under `\dontrun` and do not invoke `check_r`.
 * **chore**: Cleared the remaining R CMD check findings across plot wrappers and integration benchmarks.
 * **docs**: Synced the `RunMonocle3()` `use_partition` default and the `RunDoubletCalling()` backend default with their sources, and bolded the README headings to match the other packages.
 * **test**: Dropped the stale AUCell namespace expectation from the consistency tests.

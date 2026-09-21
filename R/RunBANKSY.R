@@ -34,7 +34,7 @@
 #' @param cluster_colname Metadata column used for BANKSY clusters.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param store_results Whether to store detailed BANKSY results in
-#' `srt@tools`.
+#' `object@tools`.
 #' @param coordinate_space Coordinate space used for BANKSY spatial input.
 #' The default is raw acquisition coordinates, so geometry and distance
 #' weighting use raw coordinate units. Use `"legacy_display"` explicitly to

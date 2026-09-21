@@ -19,7 +19,6 @@ RunMERINGUE(
   alternative = "greater",
   nperm = 0,
   cores = 1,
-  ncores = NULL,
   pairwise_features = NULL,
   set_variable_features = FALSE,
   store_results = TRUE,
@@ -71,9 +70,7 @@ units.}
 default \code{0} skips p-value calculation.}
 
 \item{cores}{Number of cores passed to MERINGUE permutation tests.
-Mapped to \code{ncores} for the R backend and \code{n_threads} for the native backend.}
-
-\item{ncores}{Deprecated alias for \code{cores}; supply exactly one of the two. It
+Mapped to \code{ncores} for the R backend and \code{n_threads} for the native backend.
 will be removed in scop 1.0.0.}
 
 \item{pairwise_features}{Features used for spatial cross-correlation. If

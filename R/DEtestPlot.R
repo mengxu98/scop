@@ -8,7 +8,7 @@
 #' @param object A `Seurat` object or `SummarizedExperiment` object containing the
 #' results of differential expression analysis.
 #' @param res A `data.frame` or `data.table` with differential expression results.
-#' When `res` is provided, `srt` will be ignored.
+#' When `res` is provided, `object` will be ignored.
 #' The data.frame must contain columns: `gene`, `group1` (factor or character),
 #' `avg_log2FC`, `p_val_adj`, and optionally `pct.1` and `pct.2` for calculating `diff_pct`.
 #' @param test.use Type of statistical test to use.

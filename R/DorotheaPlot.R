@@ -69,7 +69,7 @@
 #' @param nlabel Number of significant TFs labeled in `"volcano"` plots, or
 #' significant target genes labeled in `"targets"` plots.
 #' @param reduction Reduction used by `"dim"` plots. If `NULL`, the default
-#' reduction of `srt` is used.
+#' reduction of `object` is used.
 #' @param bar_width Width of bars in `"bar"` plots.
 #' @param pt.size Point size in `"lollipop"`, `"volcano"`, and
 #' `"targets"` plots.

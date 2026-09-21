@@ -1603,8 +1603,10 @@ List cellrank_lineage_drivers_cpp(
       if (r < -1.0) r = -1.0;
       corr(g, li) = r;
 
-      double t_stat = n_cells > 3 ? r * std::sqrt((n_cells - 2.0) / (1.0 - r * r + 1e-15)) : 0.0;
-      pval(g, li) = t_stat > 0 ? 1.0 / (1.0 + t_stat * t_stat) : 1.0;
+      const double z_score = n_cells > 3 ?
+        std::atanh(r) * std::sqrt(static_cast<double>(n_cells) - 3.0) : 0.0;
+      pval(g, li) = n_cells > 3 ?
+        2.0 * R::pnorm(-std::fabs(z_score), 0.0, 1.0, true, false) : 1.0;
     }
   }
 

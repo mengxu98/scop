@@ -17,7 +17,7 @@
 #' @param envname Python environment name (SEACells only). Passed to
 #' `reticulate::use_condaenv()` when `method = "seacells"`.
 #' @param conda Conda executable path (SEACells only).
-#' @param prefix Prefix for metadata columns written to `srt`.
+#' @param prefix Prefix for metadata columns written to `object`.
 #' @param tool_name Name of the `srt@tools` entry.
 #' @param ... Additional arguments passed to the underlying metacell method.
 #'

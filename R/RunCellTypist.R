@@ -235,7 +235,7 @@ RunCellTypist <- function(
 #' @inheritParams RunCellTypist
 #' @param h5ad Optional path to an input `.h5ad` file.
 #' @param labels Cell labels used for training. Can be a metadata column name when
-#' `srt`/`adata` is supplied, or a vector aligned with cells.
+#' `object`/`adata` is supplied, or a vector aligned with cells.
 #' @param genes Optional gene names. Usually inferred from the input object.
 #' @param transpose_input Whether to transpose the input matrix before training.
 #' @param with_mean Whether to center features during scaling.

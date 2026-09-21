@@ -2347,15 +2347,7 @@ scenic_select_reduction <- function(srt, reduction = NULL) {
     }
     return(reduction)
   }
-  preferred <- c("StandardUMAP2D", "umap", "UMAP", "tsne", "TSNE", "pca", "PCA")
-  reduction <- scenic_first(intersect(preferred, reductions), scenic_first(reductions))
-  if (is.null(reduction)) {
-    log_message(
-      "No dimensional reduction found in {.arg srt}",
-      message_type = "error"
-    )
-  }
-  reduction
+  DefaultReduction(srt, verbose = FALSE)
 }
 
 scenic_get_regulon_list <- function(srt, tool_name) {

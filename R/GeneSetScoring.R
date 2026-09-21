@@ -339,7 +339,7 @@ run_aucell_official_scores <- function(
       strategy = "topk",
       tie_method = "first",
       auc_threshold = auc_thr,
-      cores = dots[["n_threads"]] %||% dots[["cores"]]
+      cores = dots[["cores"]]
     ))
   }
 

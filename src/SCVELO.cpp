@@ -2,6 +2,7 @@
 #include <thisutils/log_message.h>
 #include "velocity_utils.h"
 #include "thread_utils.h"
+#include <map>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -441,6 +442,7 @@ List scanpy_stochastic_cpp(
     NumericMatrix Mus,
     IntegerMatrix knn_idx,
     NumericMatrix embedding,
+    double perc = 95.0,
     int n_threads = 0)
 {
   const int n_genes = Ms.nrow();
@@ -468,6 +470,8 @@ List scanpy_stochastic_cpp(
   IntegerVector velocity_genes(n_genes, 1);
   std::vector<double> deterministic_res_std(n_genes, 1.0);
   std::vector<char> stochastic_update_gene(n_genes, 1);
+  std::vector<char> stochastic_weight(static_cast<std::size_t>(n_genes) *
+    static_cast<std::size_t>(n_cells), 1);
   const int threads = omp_thread_count(n_threads, n_genes);
   #ifdef _OPENMP
   #pragma omp parallel for num_threads(threads) schedule(dynamic, 16)
@@ -493,7 +497,19 @@ List scanpy_stochastic_cpp(
         ? s / s_scale + u / u_scale
         : -std::numeric_limits<double>::infinity();
     }
-    const double cutoff = scanpy_quantile_linear(normalized, 0.95);
+    const double cutoff = scanpy_quantile_linear(normalized, perc / 100.0);
+    std::vector<double> ms_values(n_cells);
+    for (int c = 0; c < n_cells; ++c) {
+      const double value = Ms_ptr[c * n_genes + g];
+      ms_values[c] = std::isfinite(value) ?
+        value : -std::numeric_limits<double>::infinity();
+    }
+    const double ms_cutoff = scanpy_quantile_linear(ms_values, perc / 100.0);
+    for (int c = 0; c < n_cells; ++c) {
+      const int idx = c * n_genes + g;
+      stochastic_weight[idx] =
+        (normalized[c] >= cutoff || Ms_ptr[idx] >= ms_cutoff) ? 1 : 0;
+    }
 
     double num_det = 0.0, den_det = 0.0;
     for (int c = 0; c < n_cells; ++c) {
@@ -636,7 +652,7 @@ List scanpy_stochastic_cpp(
       const double y1 = Mu_ptr[idx] / res_std;
       const double x2 = var_ss / res2_std;
       const double y2 = cov_us / res2_std;
-      if (std::isfinite(x1) && std::isfinite(y1)) {
+      if (stochastic_weight[idx] && std::isfinite(x1) && std::isfinite(y1)) {
         num += x1 * y1;
         den += x1 * x1;
       }
@@ -1033,38 +1049,58 @@ List scanpy_terminal_states_cpp(
   if (velocity_embedding.nrow() != n_cells || velocity_embedding.ncol() != n_dims)
     thisutils::log_message("velocity_embedding must have same dimensions as embedding", "error");
 
-  std::vector<double> T;
-  scop_util::build_velocity_transition(velocity_embedding, embedding, knn_idx, n_neighbors_velo, T);
+  scop_util::TransitionTriplets T;
+  scop_util::build_velocity_transition_sparse(
+    velocity_embedding, embedding, knn_idx, n_neighbors_velo, T);
 
-  NumericMatrix T_forward(n_cells, n_cells);
-  NumericMatrix T_backward(n_cells, n_cells);
-  for (int i = 0; i < n_cells; ++i) {
-    double row_sum = 0.0;
-    for (int j = 0; j < n_cells; ++j) {
-      double value = T[i + j * n_cells];
-      T_forward(i, j) = value;
-      row_sum += value;
-    }
-    if (row_sum <= 1e-12) {
-      T_forward(i, i) = 1.0;
-    }
+  std::vector<int> by_row;
+  scop_util::transition_sort_by_row(T, by_row);
+  std::vector<double> row_sum(n_cells, 0.0);
+  for (std::size_t k = 0; k < by_row.size(); ++k) {
+    row_sum[T.rows[by_row[k]] - 1] += T.vals[by_row[k]];
   }
+
+  scop_util::TransitionTriplets forward(T);
   for (int i = 0; i < n_cells; ++i) {
-    double row_sum = 0.0;
-    for (int j = 0; j < n_cells; ++j) {
-      double value = T[j + i * n_cells];
-      T_backward(i, j) = value;
-      row_sum += value;
-    }
-    if (row_sum > 1e-12) {
-      for (int j = 0; j < n_cells; ++j) T_backward(i, j) /= row_sum;
-    } else {
-      T_backward(i, i) = 1.0;
+    if (row_sum[i] <= 1e-12) {
+      forward.rows.push_back(i + 1);
+      forward.cols.push_back(i + 1);
+      forward.vals.push_back(1.0);
     }
   }
 
-  NumericVector roots_raw = scop_util::stationary_distribution(T_backward, 1000, 1e-10);
-  NumericVector ends_raw = scop_util::stationary_distribution(T_forward, 1000, 1e-10);
+  std::vector<int> by_col;
+  scop_util::transition_sort_by_col(T, by_col);
+  std::vector<double> col_sum(n_cells, 0.0);
+  for (std::size_t k = 0; k < by_col.size(); ++k) {
+    col_sum[T.cols[by_col[k]] - 1] += T.vals[by_col[k]];
+  }
+
+  scop_util::TransitionTriplets backward;
+  backward.n = n_cells;
+  for (std::size_t k = 0; k < by_col.size(); ++k) {
+    const int entry = by_col[k];
+    const int col = T.cols[entry] - 1;
+    if (col_sum[col] > 1e-12) {
+      backward.rows.push_back(T.cols[entry]);
+      backward.cols.push_back(T.rows[entry]);
+      backward.vals.push_back(T.vals[entry] / col_sum[col]);
+    } else if (T.rows[entry] != T.cols[entry]) {
+      backward.rows.push_back(T.cols[entry]);
+      backward.cols.push_back(T.rows[entry]);
+      backward.vals.push_back(T.vals[entry]);
+    }
+  }
+  for (int j = 0; j < n_cells; ++j) {
+    if (!(col_sum[j] > 1e-12)) {
+      backward.rows.push_back(j + 1);
+      backward.cols.push_back(j + 1);
+      backward.vals.push_back(1.0);
+    }
+  }
+
+  NumericVector roots_raw = scop_util::stationary_distribution_sparse(backward, 1000, 1e-10);
+  NumericVector ends_raw = scop_util::stationary_distribution_sparse(forward, 1000, 1e-10);
 
   NumericVector root_cells = scanpy_clip_scale(scanpy_smooth_connectivities(roots_raw, knn_idx));
   NumericVector end_points = scanpy_clip_scale(scanpy_smooth_connectivities(ends_raw, knn_idx));
@@ -1083,7 +1119,7 @@ List scanpy_terminal_states_cpp(
   );
 }
 
-static NumericMatrix scanpy_graph_transition_matrix(
+static scop_util::TransitionTriplets scanpy_eigen_oriented_transition(
     IntegerVector graph_rows,
     IntegerVector graph_cols,
     NumericVector graph_vals,
@@ -1094,34 +1130,96 @@ static NumericMatrix scanpy_graph_transition_matrix(
     bool backward,
     double scale = 10.0)
 {
-  NumericMatrix T(n_cells, n_cells);
+  std::map<std::pair<int, int>, double> accumulated;
+  std::vector<double> row_sum(n_cells, 0.0);
+  std::vector<double> col_sum(n_cells, 0.0);
+
   for (int k = 0; k < graph_rows.size(); ++k) {
     int i = graph_rows[k], j = graph_cols[k];
     if (i >= 0 && i < n_cells && j >= 0 && j < n_cells) {
-      T(i, j) += std::expm1(graph_vals[k] * scale);
+      accumulated[std::make_pair(i, j)] += std::expm1(graph_vals[k] * scale);
     }
   }
   for (int k = 0; k < graph_neg_rows.size(); ++k) {
     int i = graph_neg_rows[k], j = graph_neg_cols[k];
     if (i >= 0 && i < n_cells && j >= 0 && j < n_cells) {
-      T(i, j) += std::exp(graph_neg_vals[k] * scale);
+      accumulated[std::make_pair(i, j)] += std::exp(graph_neg_vals[k] * scale);
     }
   }
-  if (backward) {
-    NumericMatrix Tb(n_cells, n_cells);
-    for (int i = 0; i < n_cells; ++i)
-      for (int j = 0; j < n_cells; ++j)
-        Tb(i, j) = T(j, i);
-    T = Tb;
+
+  for (std::map<std::pair<int, int>, double>::const_iterator it = accumulated.begin();
+       it != accumulated.end(); ++it) {
+    row_sum[it->first.first] += it->second;
+    col_sum[it->first.second] += it->second;
   }
-  for (int i = 0; i < n_cells; ++i) {
-    double row_sum = 0.0;
-    for (int j = 0; j < n_cells; ++j) row_sum += T(i, j);
-    if (row_sum > 1e-12 && std::isfinite(row_sum)) {
-      for (int j = 0; j < n_cells; ++j) T(i, j) /= row_sum;
-    }
+
+  scop_util::TransitionTriplets out;
+  out.n = n_cells;
+  for (std::map<std::pair<int, int>, double>::const_iterator it = accumulated.begin();
+       it != accumulated.end(); ++it) {
+    const int a = it->first.first;
+    const int b = it->first.second;
+    const int row = backward ? a : b;
+    const int col = backward ? b : a;
+    const double divisor = backward ? col_sum[col] : row_sum[col];
+    const bool usable = divisor > 1e-12 && std::isfinite(divisor);
+    out.rows.push_back(row + 1);
+    out.cols.push_back(col + 1);
+    out.vals.push_back(usable ? it->second / divisor : it->second);
   }
-  return T;
+  return out;
+}
+
+static S4 scanpy_sparse_from_triplets(const scop_util::TransitionTriplets& t) {
+  const int n = t.n;
+  std::vector<int> order;
+  scop_util::transition_sort_by_col(t, order);
+  const int nnz = static_cast<int>(order.size());
+  IntegerVector rows(nnz);
+  IntegerVector col_ptr(n + 1, 0);
+  NumericVector values(nnz);
+  for (int k = 0; k < nnz; ++k) {
+    col_ptr[t.cols[order[k]]] += 1;
+  }
+  for (int j = 1; j <= n; ++j) col_ptr[j] += col_ptr[j - 1];
+  std::vector<int> cursor(col_ptr.size(), 0);
+  for (int j = 1; j <= n; ++j) cursor[j] = col_ptr[j - 1];
+  for (int k = 0; k < nnz; ++k) {
+    const int entry = order[k];
+    const int col = t.cols[entry];
+    const int slot = cursor[col]++;
+    rows[slot] = t.rows[entry] - 1;
+    values[slot] = t.vals[entry];
+  }
+  S4 out("dgCMatrix");
+  out.slot("i") = rows;
+  out.slot("p") = col_ptr;
+  out.slot("x") = values;
+  out.slot("Dim") = IntegerVector::create(n, n);
+  out.slot("Dimnames") = List::create(R_NilValue, R_NilValue);
+  return out;
+}
+
+static List scanpy_leading_eigenpairs_sym(
+    const scop_util::TransitionTriplets& input, int n_requested) {
+  const int n = input.n;
+  const int n_components = std::min(std::max(1, n_requested), std::max(1, n - 1));
+  if (n > n_components + 1) {
+    Environment rspectra = Environment::namespace_env("RSpectra");
+    Function eigs_sym = rspectra["eigs_sym"];
+    return eigs_sym(
+      scanpy_sparse_from_triplets(input),
+      Named("k", n_components),
+      Named("which", "LA")
+    );
+  }
+  NumericMatrix dense(n, n);
+  for (std::size_t k = 0; k < input.vals.size(); ++k) {
+    dense(input.rows[k] - 1, input.cols[k] - 1) += input.vals[k];
+  }
+  Environment base("package:base");
+  Function eigen_fun = base["eigen"];
+  return eigen_fun(dense, Named("symmetric", true));
 }
 
 static double scanpy_percentile(std::vector<double> x, double pct) {
@@ -1135,16 +1233,29 @@ static double scanpy_percentile(std::vector<double> x, double pct) {
   return x[lo] * (1.0 - w) + x[hi] * w;
 }
 
-static NumericMatrix scanpy_terminal_eigvecs(NumericMatrix T, double eps) {
-  const int n_cells = T.nrow();
-  NumericMatrix TT(n_cells, n_cells);
-  for (int i = 0; i < n_cells; ++i)
-    for (int j = 0; j < n_cells; ++j)
-      TT(i, j) = T(j, i);
+static NumericMatrix scanpy_terminal_eigvecs(
+    const scop_util::TransitionTriplets& eigen_input, double eps) {
+  const int n_cells = eigen_input.n;
+  const int n_components = std::min(10, std::max(1, n_cells - 1));
 
-  Environment base("package:base");
-  Function eigen_fun = base["eigen"];
-  List eig = eigen_fun(TT, Named("symmetric", false));
+  List eig;
+  if (n_cells > n_components + 1) {
+    Environment rspectra = Environment::namespace_env("RSpectra");
+    Function eigs_fun = rspectra["eigs"];
+    eig = eigs_fun(
+      scanpy_sparse_from_triplets(eigen_input),
+      Named("k", n_components),
+      Named("which", "LR")
+    );
+  } else {
+    NumericMatrix dense(n_cells, n_cells);
+    for (std::size_t k = 0; k < eigen_input.vals.size(); ++k) {
+      dense(eigen_input.rows[k] - 1, eigen_input.cols[k] - 1) += eigen_input.vals[k];
+    }
+    Environment base("package:base");
+    Function eigen_fun = base["eigen"];
+    eig = eigen_fun(dense, Named("symmetric", false));
+  }
   ComplexVector evals = eig["values"];
   ComplexMatrix evecs = eig["vectors"];
 
@@ -1192,7 +1303,7 @@ List scanpy_terminal_states_graph_cpp(
 {
   const int n_cells = knn_idx.nrow();
 
-  NumericMatrix T_backward = scanpy_graph_transition_matrix(
+  scop_util::TransitionTriplets T_backward = scanpy_eigen_oriented_transition(
     graph_rows, graph_cols, graph_vals,
     graph_neg_rows, graph_neg_cols, graph_neg_vals,
     n_cells, true);
@@ -1203,7 +1314,7 @@ List scanpy_terminal_states_graph_cpp(
       roots_raw[i] += root_eig(i, comp);
   NumericVector root_cells = scanpy_clip_scale(scanpy_smooth_connectivities(roots_raw, knn_idx));
 
-  NumericMatrix T_forward = scanpy_graph_transition_matrix(
+  scop_util::TransitionTriplets T_forward = scanpy_eigen_oriented_transition(
     graph_rows, graph_cols, graph_vals,
     graph_neg_rows, graph_neg_cols, graph_neg_vals,
     n_cells, false);
@@ -1242,8 +1353,9 @@ List scanpy_pseudotime_cpp(
   if (end_points.size() != n_cells)
     thisutils::log_message("end_points length must match n_cells", "error");
 
-  std::vector<double> T;
-  scop_util::build_velocity_transition(velocity_embedding, embedding, knn_idx, n_neighbors_velo, T);
+  scop_util::TransitionTriplets T;
+  scop_util::build_velocity_transition_sparse(
+    velocity_embedding, embedding, knn_idx, n_neighbors_velo, T);
 
   int root = 0;
   double rv = root_cells[0];
@@ -1254,25 +1366,33 @@ List scanpy_pseudotime_cpp(
   for (int i = 1; i < n_cells; ++i)
     if (end_points[i] > ev) { ev = end_points[i]; end = i; }
 
-  NumericMatrix D(n_cells, n_cells);
-  for (int i = 0; i < n_cells; ++i) {
-    for (int j = 0; j < n_cells; ++j) {
-      D(i, j) = (T[i + j * n_cells] + T[j + i * n_cells]) / 2.0;
-    }
+  std::map<std::pair<int, int>, double> symmetric;
+  for (std::size_t k = 0; k < T.vals.size(); ++k) {
+    const int i = T.rows[k] - 1;
+    const int j = T.cols[k] - 1;
+    const double half = T.vals[k] / 2.0;
+    symmetric[std::make_pair(i, j)] += half;
+    symmetric[std::make_pair(j, i)] += half;
+  }
+  scop_util::TransitionTriplets D;
+  D.n = n_cells;
+  for (std::map<std::pair<int, int>, double>::const_iterator it = symmetric.begin();
+       it != symmetric.end(); ++it) {
+    D.rows.push_back(it->first.first + 1);
+    D.cols.push_back(it->first.second + 1);
+    D.vals.push_back(it->second);
   }
 
-  Environment base("package:base");
-  Function eigen_fun = base["eigen"];
-  List eig = eigen_fun(D, Named("symmetric", true));
+  List eig = scanpy_leading_eigenpairs_sym(D, 10);
   NumericVector evals_c = eig["values"];
   NumericMatrix evecs_c = eig["vectors"];
 
   std::vector<std::pair<double, int>> pairs;
-  for (int i = 0; i < n_cells; ++i)
+  for (int i = 0; i < evals_c.size(); ++i)
     pairs.push_back({evals_c[i], i});
   std::sort(pairs.begin(), pairs.end(), std::greater<std::pair<double,int>>());
 
-  int k = std::min(10, n_cells);
+  const int k = std::min(std::min(10, n_cells), static_cast<int>(pairs.size()));
   NumericMatrix dc(n_cells, k);
   for (int comp = 0; comp < k; ++comp) {
     int idx = pairs[comp].second;
@@ -1345,58 +1465,75 @@ List scanpy_pseudotime_graph_cpp(
   if (end_points.size() != n_cells)
     thisutils::log_message("end_points length must match number of cells", "error");
 
-  NumericMatrix C(n_cells, n_cells);
+  std::map<std::pair<int, int>, double> accumulated;
   for (int k = 0; k < graph_rows.size(); ++k) {
     int i = graph_rows[k], j = graph_cols[k];
     if (i >= 0 && i < n_cells && j >= 0 && j < n_cells) {
-      C(i, j) += graph_vals[k];
-      C(j, i) += graph_vals[k];
+      accumulated[std::make_pair(i, j)] += graph_vals[k];
+      accumulated[std::make_pair(j, i)] += graph_vals[k];
     }
   }
   for (int k = 0; k < graph_neg_rows.size(); ++k) {
     int i = graph_neg_rows[k], j = graph_neg_cols[k];
     if (i >= 0 && i < n_cells && j >= 0 && j < n_cells) {
       double value = std::abs(graph_neg_vals[k]);
-      C(i, j) += value;
-      C(j, i) += value;
+      accumulated[std::make_pair(i, j)] += value;
+      accumulated[std::make_pair(j, i)] += value;
     }
   }
 
   NumericVector q(n_cells);
+  for (std::map<std::pair<int, int>, double>::const_iterator it = accumulated.begin();
+       it != accumulated.end(); ++it) {
+    q[it->first.second] += it->second;
+  }
   for (int j = 0; j < n_cells; ++j) {
-    for (int i = 0; i < n_cells; ++i) q[j] += C(i, j);
     if (q[j] <= 0.0 || !std::isfinite(q[j])) q[j] = 1.0;
   }
 
-  NumericMatrix K(n_cells, n_cells);
   NumericVector z(n_cells);
-  for (int i = 0; i < n_cells; ++i) {
-    for (int j = 0; j < n_cells; ++j) {
-      K(i, j) = C(i, j) / (q[i] * q[j]);
-      z[j] += K(i, j);
-    }
+  std::vector<double> scaled_values(accumulated.size(), 0.0);
+  std::vector<int> scaled_rows(accumulated.size(), 0);
+  std::vector<int> scaled_cols(accumulated.size(), 0);
+  int scaled_n = 0;
+  for (std::map<std::pair<int, int>, double>::const_iterator it = accumulated.begin();
+       it != accumulated.end(); ++it) {
+    const int i = it->first.first;
+    const int j = it->first.second;
+    const double scaled = it->second / (q[i] * q[j]);
+    z[j] += scaled;
+    scaled_rows[scaled_n] = i;
+    scaled_cols[scaled_n] = j;
+    scaled_values[scaled_n] = scaled;
+    ++scaled_n;
   }
   for (int j = 0; j < n_cells; ++j) {
     z[j] = (z[j] > 0.0 && std::isfinite(z[j])) ? std::sqrt(z[j]) : 1.0;
   }
+  scop_util::TransitionTriplets D;
+  D.n = n_cells;
+  for (int k = 0; k < scaled_n; ++k) {
+    const int i = scaled_rows[k];
+    const int j = scaled_cols[k];
+    if (scaled_values[k] == 0.0) continue;
+    D.rows.push_back(i + 1);
+    D.cols.push_back(j + 1);
+    D.vals.push_back(scaled_values[k] / (z[i] * z[j]));
+  }
 
-  NumericMatrix D(n_cells, n_cells);
-  for (int i = 0; i < n_cells; ++i)
-    for (int j = 0; j < n_cells; ++j)
-      D(i, j) = K(i, j) / (z[i] * z[j]);
-
-  Environment base("package:base");
-  Function eigen_fun = base["eigen"];
-  List eig = eigen_fun(D, Named("symmetric", true));
+  List eig = scanpy_leading_eigenpairs_sym(D, std::max(1, n_dcs));
   NumericVector evals_c = eig["values"];
   NumericMatrix evecs_c = eig["vectors"];
 
   std::vector<std::pair<double, int>> pairs;
-  for (int i = 0; i < n_cells; ++i)
+  for (int i = 0; i < evals_c.size(); ++i)
     pairs.push_back({evals_c[i], i});
   std::sort(pairs.begin(), pairs.end(), std::greater<std::pair<double,int>>());
 
-  int k_use = std::min(std::max(1, n_dcs), n_cells);
+  const int k_use = std::min(
+    std::min(std::max(1, n_dcs), n_cells),
+    static_cast<int>(pairs.size())
+  );
   NumericVector evals(k_use);
   NumericMatrix dc(n_cells, k_use);
   for (int comp = 0; comp < k_use; ++comp) {

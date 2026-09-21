@@ -61,7 +61,7 @@ method-suffixed assay before dynamic-feature fitting.}
 
 \item{padjust}{The p-value adjustment threshold.}
 
-\item{IDtype}{Type of gene IDs in the \code{srt} object or \code{geneID} argument.
+\item{IDtype}{Type of gene IDs in the \code{object} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
 \item{species}{\code{"Homo_sapiens"} or \code{"Mus_musculus"}.}

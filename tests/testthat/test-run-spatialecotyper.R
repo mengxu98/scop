@@ -322,17 +322,16 @@ test_that("RunSpatialEcoTyper returns deconvolution matrix for matrix input", {
   }
 
   with_mock_spatialecotyper(list(DeconvoluteSE = fake_deconv), {
-    expect_warning(
-      out <- RunSpatialEcoTyper(expr, mode = "deconvolute", ncores = 2, verbose = FALSE),
-      "deprecated"
-    )
+    out <- RunSpatialEcoTyper(expr, mode = "deconvolute", cores = 2, verbose = FALSE)
   })
 
   expect_equal(dim(out), c(2, 2))
   expect_equal(rownames(out), c("SE1", "SE2"))
 })
 
-test_that("spatial backends reject conflicting parallel parameter aliases", {
-  expect_error(RunSpatialEcoTyper(object = NULL, cores = 2, ncores = 3), "only one")
-  expect_error(RunMERINGUE(object = NULL, cores = 2, ncores = 3), "only one")
+test_that("spatial backends take a single cores argument", {
+  expect_true("cores" %in% names(formals(RunMERINGUE)))
+  expect_false("ncores" %in% names(formals(RunMERINGUE)))
+  expect_true("cores" %in% names(formals(RunSpatialEcoTyper)))
+  expect_false("ncores" %in% names(formals(RunSpatialEcoTyper)))
 })

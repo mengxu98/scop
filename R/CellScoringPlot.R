@@ -14,7 +14,7 @@
 #'   recorded by [CellScoring()] is used. Older AUCell objects fall back to
 #'   numeric metadata.
 #' @param scores Optional score matrix or data frame, with features by cells or
-#'   cells by features. When `NULL`, scores are read from `srt` metadata or the
+#'   cells by features. When `NULL`, scores are read from `object` metadata or the
 #'   matching [CellScoring()] record.
 #' @param group.by Metadata column used for cell groups. `NULL` uses active
 #'   Seurat identities.

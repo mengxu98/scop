@@ -1,3 +1,49 @@
+test_that("Python logger imports and runners support both thisutils layouts", {
+  root <- tempfile("thisutils-layout-")
+  dir.create(root)
+  root <- normalizePath(root, winslash = "/", mustWork = TRUE)
+  on.exit(unlink(root, recursive = TRUE), add = TRUE)
+  for (layout in c("scripts", "python")) {
+    dir.create(file.path(root, layout))
+  }
+  system_file <- base::system.file
+  scope <- new.env(parent = asNamespace("scop"))
+  scope$system.file <- function(..., package, mustWork = FALSE) {
+    if (identical(package, "thisutils")) return(file.path(root, ...))
+    system_file(..., package = package, mustWork = mustWork)
+  }
+  scope$system2 <- function(...) Sys.getenv("PYTHONPATH")
+  import <- scop_python_import
+  run <- runner_system2
+  environment(import) <- environment(run) <- scope
+  imported <- NULL
+  testthat::local_mocked_bindings(
+    py_available = function(initialize = FALSE) TRUE,
+    py_eval = function(code, convert = TRUE) FALSE,
+    import_from_path = function(module, path, convert = TRUE) {
+      if (identical(module, "log_message")) imported <<- path
+      invisible(NULL)
+    },
+    .package = "reticulate"
+  )
+  for (layout in c("python", "scripts")) {
+    file.create(file.path(root, layout, "log_message.py"))
+    import("functions")
+    expect_identical(imported, file.path(root, layout))
+    for (previous in c(NA_character_, "existing-path")) {
+      withr::with_envvar(c(PYTHONPATH = previous), {
+        observed <- run("unused", character(), character(), TRUE, TRUE)
+        expected <- paste(c(file.path(root, layout), previous[!is.na(previous)]),
+          collapse = .Platform$path.sep)
+        expect_identical(observed, expected)
+        expect_identical(Sys.getenv("PYTHONPATH", unset = NA_character_), previous)
+      })
+    }
+  }
+  unlink(file.path(root, c("scripts", "python"), "log_message.py"))
+  expect_error(import("functions"), "log_message.py")
+})
+
 test_that("runner_system2 supports an empty environment override", {
   output <- tempfile()
   error_output <- tempfile()

@@ -51,7 +51,6 @@
 #' @param minibatch Number of columns processed per mini-batch in SNF.
 #' @param cores Number of CPU cores used by `SpatialEcoTyper`.
 #' Passed to the selected backend as `ncores`.
-#' @param ncores Deprecated alias for `cores`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param grid.size Spatial grid size used to discretize coordinates.
 #' @param filter.region.by.celltypes Optional cell types used to restrict spatial
@@ -122,7 +121,6 @@ RunSpatialEcoTyper <- function(
   iterations = 10,
   minibatch = 5000,
   cores = 4,
-  ncores = NULL,
   grid.size = round(radius * 1.4),
   filter.region.by.celltypes = NULL,
   k = 20,
@@ -153,14 +151,6 @@ RunSpatialEcoTyper <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
-  if (!is.null(ncores)) {
-    if (!missing(cores)) {
-      stop("Supply only one of `cores` and `ncores`.", call. = FALSE)
-    }
-    .Deprecated(msg = paste0("`ncores` is deprecated; use `cores` instead. ",
-      "It will be removed in scop 1.0.0."))
-    cores <- ncores
-  }
   mode <- match.arg(mode)
 
   has_seurat <- inherits(srt, "Seurat")

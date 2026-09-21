@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <thread>
+#include "dynload.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -36,6 +37,42 @@ inline int omp_thread_count(int requested, int n_tasks = -1) {
     n = 1;
   }
   return n;
+}
+
+inline void blas_set_num_threads(int n) {
+  typedef void (*set_fn)(int);
+  static set_fn fn = NULL;
+  static bool loaded = false;
+  if (!loaded) {
+    loaded = true;
+    void* self = scop_dlopen(NULL);
+    if (self != NULL) {
+      fn = reinterpret_cast<set_fn>(scop_dlsym(self, "openblas_set_num_threads"));
+      if (fn == NULL) {
+        fn = reinterpret_cast<set_fn>(scop_dlsym(self, "MKL_Set_Num_Threads"));
+      }
+    }
+  }
+  if (fn != NULL && n > 0) {
+    fn(n);
+  }
+}
+
+inline int blas_get_num_threads() {
+  typedef int (*get_fn)();
+  static get_fn fn = NULL;
+  static bool loaded = false;
+  if (!loaded) {
+    loaded = true;
+    void* self = scop_dlopen(NULL);
+    if (self != NULL) {
+      fn = reinterpret_cast<get_fn>(scop_dlsym(self, "openblas_get_num_threads"));
+      if (fn == NULL) {
+        fn = reinterpret_cast<get_fn>(scop_dlsym(self, "MKL_Get_Max_Threads"));
+      }
+    }
+  }
+  return fn == NULL ? 0 : fn();
 }
 
 #endif

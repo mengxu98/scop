@@ -23,8 +23,8 @@ RunSpatialBenchmark(
 \arguments{
 \item{object}{A spatial \code{Seurat} object.}
 
-\item{gold_standard}{Either one metadata column in \code{srt} or a named vector
-whose names match the spot names in \code{srt}.}
+\item{gold_standard}{Either one metadata column in \code{object} or a named vector
+whose names match the spot names in \code{object}.}
 
 \item{methods}{Spatial domain methods to benchmark. \code{NULL} uses every
 benchmarked producer (\code{BayesSpace}, \code{BANKSY}, and \code{SmoothClust}). Method

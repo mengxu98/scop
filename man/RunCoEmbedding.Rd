@@ -41,7 +41,7 @@ RunCoEmbedding(
 
 \item{gene_activity_assay}{Name of the gene activity assay used for mapping.}
 
-\item{weight_reduction}{Reduction in \code{srt} used to weight transferred labels.
+\item{weight_reduction}{Reduction in \code{object} used to weight transferred labels.
 If \code{NULL}, an ATAC linear reduction is resolved automatically from
 \code{ATAC_default_linear_reduction}, \verb{\{prefix\}lsi}, \verb{\{prefix\}svd}, or the current
 default reduction.}

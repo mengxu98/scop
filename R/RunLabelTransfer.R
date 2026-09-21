@@ -16,7 +16,7 @@
 #' @param reference_label Metadata column in the reference used as transfer labels.
 #' @param add_gene_activity Whether to calculate a gene activity assay for the query.
 #' @param gene_activity_assay Name of the gene activity assay used for mapping.
-#' @param weight_reduction Reduction in `srt` used to weight transferred labels.
+#' @param weight_reduction Reduction in `object` used to weight transferred labels.
 #' If `NULL`, an ATAC linear reduction is resolved automatically from
 #' `ATAC_default_linear_reduction`, `{prefix}lsi`, `{prefix}svd`, or the current
 #' default reduction.
@@ -28,7 +28,7 @@
 #' for `method = "scOMM"`.
 #' @param k.weight Number of neighbors used when weighting transfer anchors.
 #' @param evaluate Whether to compute mapping metrics against a truth label.
-#' @param truth_col Metadata column in `srt` used as the truth label when
+#' @param truth_col Metadata column in `object` used as the truth label when
 #' `evaluate = TRUE`.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param rare_threshold Maximum class proportion used to define rare classes

@@ -73,7 +73,7 @@ temporary folder is used.}
 \item{store_results}{Whether to store results in \code{srt@tools}.}
 
 \item{store_views}{Whether to store the mistyR view composition in
-\code{srt@tools}. This can be large.}
+\code{object@tools}. This can be large.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
