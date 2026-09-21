@@ -39,7 +39,9 @@ test_that("real PRECAST receives selected counts and a nonempty distance graph",
       d2 <- rowSums(sweep(xy, 2, xy[i, ], "-")^2)
       d2[i] <- Inf
       neighbors <- which(as.numeric(graph[, i]) != 0)
-      all(d2[neighbors] <= sort(d2, partial = 6)[6] + 1e-8)
+      cutoff <- sort(d2, partial = 6)[6]
+      all(d2[neighbors] <= cutoff + 1e-8) &&
+        all(which(d2 < cutoff - 1e-8) %in% neighbors)
     }, logical(1))
     expect_true(all(correct))
   }
