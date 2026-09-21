@@ -634,8 +634,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // gsva_gaussian_dense
-NumericMatrix gsva_gaussian_dense(S4 expr, List gene_sets, bool max_diff, bool abs_ranking, double tau, int chunk_size, int n_threads);
-RcppExport SEXP _scop_gsva_gaussian_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP max_diffSEXP, SEXP abs_rankingSEXP, SEXP tauSEXP, SEXP chunk_sizeSEXP, SEXP n_threadsSEXP) {
+NumericMatrix gsva_gaussian_dense(S4 expr, List gene_sets, bool max_diff, bool abs_ranking, double tau, int chunk_size, int n_threads, bool legacy_zero_walk);
+RcppExport SEXP _scop_gsva_gaussian_dense(SEXP exprSEXP, SEXP gene_setsSEXP, SEXP max_diffSEXP, SEXP abs_rankingSEXP, SEXP tauSEXP, SEXP chunk_sizeSEXP, SEXP n_threadsSEXP, SEXP legacy_zero_walkSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -646,7 +646,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< int >::type chunk_size(chunk_sizeSEXP);
     Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(gsva_gaussian_dense(expr, gene_sets, max_diff, abs_ranking, tau, chunk_size, n_threads));
+    Rcpp::traits::input_parameter< bool >::type legacy_zero_walk(legacy_zero_walkSEXP);
+    rcpp_result_gen = Rcpp::wrap(gsva_gaussian_dense(expr, gene_sets, max_diff, abs_ranking, tau, chunk_size, n_threads, legacy_zero_walk));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2931,7 +2932,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_ssgsea_rank_dense", (DL_FUNC) &_scop_ssgsea_rank_dense, 4},
     {"_scop_zscore_dense", (DL_FUNC) &_scop_zscore_dense, 6},
     {"_scop_plage_dense", (DL_FUNC) &_scop_plage_dense, 5},
-    {"_scop_gsva_gaussian_dense", (DL_FUNC) &_scop_gsva_gaussian_dense, 7},
+    {"_scop_gsva_gaussian_dense", (DL_FUNC) &_scop_gsva_gaussian_dense, 8},
     {"_scop_gsva_poisson_dense", (DL_FUNC) &_scop_gsva_poisson_dense, 7},
     {"_scop_dense_row_has_variable_finite", (DL_FUNC) &_scop_dense_row_has_variable_finite, 1},
     {"_scop_sparse_row_has_variable_finite", (DL_FUNC) &_scop_sparse_row_has_variable_finite, 1},
