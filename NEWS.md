@@ -1,5 +1,6 @@
 # scop (development version)
 
+* **fix**: `RunSpatialNeighborhood()` returns observed label-pair tables in a deterministic, backend-independent row order, so the cpp and reference R backends produce `identical()` results; a backend parity regression test is added.
 * **fix**: PRECAST consumes the explicitly selected raw-count matrix and defaults to SCOP's exact distance-based six-neighbor adjacency instead of interpreting image pixels as array indices or using PRECAST's axis-restricted neighbor candidates. The matrix follows PRECAST's column-neighbor convention. Empty/invalid spatial graphs and non-finite integration outputs fail before results are written; stored parameters include the graph builder, backend arguments and edge counts.
 * **fix**: SpatialCellChat recognizes imported Visium HD and HD bin assays, requires explicit HD pixel-to-micron calibration and tolerance, and does not classify Visium spot/bin images as segmented cells merely because they inherit FOV.
 * **fix**: Spatial variable feature surfaces inherit their saved assay, layer, image and coordinate columns. Backend feature IDs and p/q ranges are validated; missing BH-adjusted values use the complete supplied p-value family.

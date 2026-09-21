@@ -643,6 +643,13 @@ spatial_neighborhood_observed_pairs <- function(
     "statistic", "pval", "FDR", "direction", "sample", "subject",
     "count", "total", "fraction"
   ), drop = FALSE]
+  # Deterministic, backend-independent row order: the cpp aggregation returns
+  # std::map key order while the reference R path returns stats::aggregate +
+  # merge order. Sorting here makes cpp/r pair tables `identical()` and keeps
+  # position-based downstream comparisons meaningful across backends.
+  count_df <- count_df[order(count_df$sample, count_df$condition, count_df$subject,
+    count_df$from, count_df$to), , drop = FALSE]
+  rownames(count_df) <- NULL
 
   list(pair_table = count_df, edge_table = edge_table)
 }
