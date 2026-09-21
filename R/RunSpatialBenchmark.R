@@ -12,8 +12,8 @@
 #' @param srt Deprecated alias for `object`; supply exactly one of the two. It
 #' will be removed in scop 1.0.0.
 #' @param object A spatial `Seurat` object.
-#' @param gold_standard Either one metadata column in `srt` or a named vector
-#' whose names match the spot names in `srt`.
+#' @param gold_standard Either one metadata column in `object` or a named vector
+#' whose names match the spot names in `object`.
 #' @param methods Spatial domain methods to benchmark. `NULL` uses every
 #' benchmarked producer (`BayesSpace`, `BANKSY`, and `SmoothClust`). Method
 #' names may be written with or without the `Run` prefix.

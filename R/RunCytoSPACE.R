@@ -27,7 +27,7 @@
 #' duplicate sampling.
 #' @param prefix Prefix for metadata columns.
 #' @param store_results Whether to store detailed assignment results in
-#' `srt@tools`.
+#' `object@tools`.
 #' @param image Optional Seurat image used for spatial coordinates.
 #' @param coord.cols Metadata coordinate columns used when no image is selected.
 #' @param coordinate_space Coordinate space used for assignment locations. The

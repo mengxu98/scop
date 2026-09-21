@@ -57,7 +57,7 @@ ccc_to_adata(
 \item{thresh}{Significance threshold used when extracting communication results.}
 
 \item{liana_res}{Optional precomputed LIANA-like data frame. If supplied,
-\code{srt} is not required.}
+\code{object} is not required.}
 
 \item{score_key}{Column in \code{liana_res} used for \code{layers[["means"]]}.}
 

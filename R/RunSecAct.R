@@ -34,7 +34,6 @@
 #' @param is.filter.sig,is.group.sig,is.group.cor,lambda,nrand,backend,rng_method
 #' Parameters passed to SecAct activity inference.
 #' @param cores Number of workers passed to SecAct activity inference.
-#' @param ncores Deprecated alias for `cores`.
 #' @param batch_size,output_h5 Optional large-matrix controls passed only to
 #' `SecAct.activity.inference`.
 #' @param activity Activity matrix to store as a Seurat assay when possible.
@@ -85,7 +84,6 @@ RunSecAct <- function(
   lambda = 5e+05,
   nrand = 1000,
   cores = 1L,
-  ncores = NULL,
   backend = "auto",
   rng_method = "mt19937",
   batch_size = NULL,
@@ -102,10 +100,6 @@ RunSecAct <- function(
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   mode <- match.arg(mode)
   activity <- match.arg(activity)
-  if (!is.null(ncores)) {
-    .Deprecated(msg = "'ncores' is deprecated; use 'cores' instead")
-    cores <- ncores
-  }
   check_r("data2intelligence/SecAct", dependencies = NA, verbose = verbose)
   if (!is.function(get_namespace_fun("SecAct", "SecAct.activity.inference"))) {
     log_message(

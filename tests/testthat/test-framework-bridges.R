@@ -216,10 +216,7 @@ make_live_giotto_seurat <- function() {
 }
 
 test_that("srt_to_giotto and giotto_to_srt round-trip with a real GiottoClass", {
-  giotto_class <- thisutils::check_r("GiottoClass", install = FALSE, verbose = FALSE)
-  if (!isTRUE(all(unlist(giotto_class, use.names = FALSE)))) {
-    skip("GiottoClass is not installed")
-  }
+  skip_if_not_installed("GiottoClass")
   skip_if_not_installed("geometry")
 
   old <- options(giotto.use_conda = FALSE, giotto.check_version = FALSE)

@@ -25,7 +25,7 @@ RunCHOIR(
   reduction = NULL,
   var_features = NULL,
   atac = FALSE,
-  n_cores = 1,
+  cores = 1,
   seed = 1,
   store_tool = TRUE,
   verbose = TRUE,
@@ -80,14 +80,14 @@ layer. The pinned backend does not support \code{"SCTransform"} for Seurat v5
 otherwise.}
 
 \item{reduction}{Optional existing dimensional reduction supplied to CHOIR.
-This can be a reduction name in \code{srt} or a cell-by-dimension matrix.}
+This can be a reduction name in \code{object} or a cell-by-dimension matrix.}
 
 \item{var_features}{Features associated with \code{reduction}. If \code{NULL} and a
 reduction is supplied, variable features from \code{assay} are used.}
 
 \item{atac}{Whether the selected assay contains ATAC-seq data.}
 
-\item{n_cores}{Number of cores used by CHOIR. The pinned backend supports
+\item{cores}{Number of cores used by CHOIR. The pinned backend supports
 macOS and Linux; Windows execution is rejected before installation.}
 
 \item{seed}{Random seed passed to CHOIR.}
@@ -129,7 +129,7 @@ pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
 pancreas_sub <- RunCHOIR(
   pancreas_sub,
   assay = "RNA",
-  n_cores = 2,
+  cores = 2,
   verbose = FALSE
 )
 CellDimPlot(pancreas_sub, group.by = "CHOIR_cluster")

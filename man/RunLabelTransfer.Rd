@@ -58,7 +58,7 @@ RunLabelTransfer(
 
 \item{gene_activity_assay}{Name of the gene activity assay used for mapping.}
 
-\item{weight_reduction}{Reduction in \code{srt} used to weight transferred labels.
+\item{weight_reduction}{Reduction in \code{object} used to weight transferred labels.
 If \code{NULL}, an ATAC linear reduction is resolved automatically from
 \code{ATAC_default_linear_reduction}, \verb{\{prefix\}lsi}, \verb{\{prefix\}svd}, or the current
 default reduction.}
@@ -76,7 +76,7 @@ for \code{method = "scOMM"}.}
 
 \item{evaluate}{Whether to compute mapping metrics against a truth label.}
 
-\item{truth_col}{Metadata column in \code{srt} used as the truth label when
+\item{truth_col}{Metadata column in \code{object} used as the truth label when
 \code{evaluate = TRUE}.}
 
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}

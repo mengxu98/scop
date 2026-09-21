@@ -76,7 +76,7 @@ by default, while database-derived results stay assay-only when \code{new_assay 
 
 \item{species}{\code{"Homo_sapiens"} or \code{"Mus_musculus"}.}
 
-\item{IDtype}{Type of gene IDs in the \code{srt} object or \code{geneID} argument.
+\item{IDtype}{Type of gene IDs in the \code{object} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
 \item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}

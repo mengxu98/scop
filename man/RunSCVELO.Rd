@@ -158,7 +158,9 @@ and store the graph only when terminal states or pseudotime are requested.
 The velocity embedding itself is always graph-projected, matching
 \code{scv.tl.velocity_embedding}.}
 
-\item{compute_terminal_states}{Whether to compute terminal states (root and end points).}
+\item{compute_terminal_states}{Whether to compute terminal states (root and end
+points). The C++ backend needs the optional \code{RSpectra} package for this step
+and for \code{compute_pseudotime}.}
 
 \item{compute_pseudotime}{Whether to compute velocity pseudotime.}
 

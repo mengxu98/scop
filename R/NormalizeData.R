@@ -37,8 +37,7 @@ NormalizeData.Seurat <- function(
   ...
 ) {
   dots <- list(...)
-  n_threads <- dots$n_threads %||% dots$cores
-  dots$n_threads <- NULL
+  n_threads <- dots$cores
   dots$cores <- NULL
   delegate <- function() {
     do.call(
@@ -224,8 +223,7 @@ NormalizeData.default <- function(
   ...
 ) {
   dots <- list(...)
-  n_threads <- dots$n_threads %||% dots$cores
-  dots$n_threads <- NULL
+  n_threads <- dots$cores
   dots$cores <- NULL
   method <- normalization.method[[1L]]
   native <- inherits(object, "dgCMatrix") &&

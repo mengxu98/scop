@@ -10,7 +10,7 @@
 #' more metacell partitions in columns. Row names should be cell names. If row
 #' names are missing and the row count equals `ncol(srt)`, cells are matched in
 #' `colnames(srt)` order.
-#' @param metacell.by Metadata column(s) in `srt` used as metacell partitions
+#' @param metacell.by Metadata column(s) in `object` used as metacell partitions
 #' when `cell_membership = NULL`.
 #' @param mode McRigor task. `"detect"` calls `mcRigor_DETECT()` for one
 #' partition; `"optimize"` calls `mcRigor_OPTIMIZE()` across candidate
@@ -34,7 +34,7 @@
 #' to `mcRigor_OPTIMIZE()`.
 #' @param draw,pur_metric,check_purity,fields,step_save Plotting, purity, and
 #' intermediate-save parameters forwarded to mcRigor.
-#' @param prefix Prefix for metadata columns written to `srt`.
+#' @param prefix Prefix for metadata columns written to `object`.
 #' @param tool_name Name of the `srt@tools` entry used to store results.
 #'
 #' @return A `Seurat` object with mcRigor metadata and a result list stored in

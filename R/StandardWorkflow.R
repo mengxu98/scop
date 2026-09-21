@@ -500,7 +500,8 @@ RunStandardWorkflow <- function(
         reduction.name = paste0(prefix, lr),
         reduction.key = paste0(prefix, "PC_"),
         verbose = FALSE,
-        seed.use = seed
+        seed.use = seed,
+        cores = cores
       )
       srt@misc[["Default_reduction"]] <- paste0(prefix, lr)
     } else {

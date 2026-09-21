@@ -11,7 +11,7 @@
 #' @param object Spatial `Seurat` object used as the RCTD query.
 #' @param reference Reference `Seurat` object containing annotated single cells.
 #' @param reference_label Metadata column in `reference` with cell type labels.
-#' @param assay Assay used in `srt`. If `NULL`, the default assay is used.
+#' @param assay Assay used in `object`. If `NULL`, the default assay is used.
 #' @param reference_assay Assay used in `reference`.
 #' @param layer,reference_layer Assay layers used for spatial and reference
 #' raw counts.

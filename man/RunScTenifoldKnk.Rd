@@ -74,11 +74,11 @@ high-consistency path. \code{cpp} runs all steps with scop's native kernels and 
 much faster on large gene sets.}
 
 \item{store_networks}{Whether to keep WT/KO tensor networks in
-\code{srt@tools}. This only controls what is stored; the network ensemble is
+\code{object@tools}. This only controls what is stored; the network ensemble is
 always built the same way.}
 
 \item{store_manifold}{Whether to keep manifold-alignment coordinates in
-\code{srt@tools}.}
+\code{object@tools}.}
 
 \item{tool_name}{Name of the \code{srt@tools} entry.}
 

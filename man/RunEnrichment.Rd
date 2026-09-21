@@ -47,10 +47,10 @@ If not specified, the \code{geneID} and \code{geneID_groups} arguments must be p
 \item{group.by}{Metadata column(s) used to color cells.}
 
 \item{test.use}{Test to be used in differential expression analysis.
-This argument is only used if \code{srt} is specified.}
+This argument is only used if \code{object} is specified.}
 
 \item{DE_threshold}{Filter condition for differential expression analysis.
-This argument is only used if \code{srt} is specified.}
+This argument is only used if \code{object} is specified.}
 
 \item{geneID}{Gene IDs.}
 
@@ -58,7 +58,7 @@ This argument is only used if \code{srt} is specified.}
 
 \item{geneID_exclude}{Gene IDs to be excluded from the analysis.}
 
-\item{IDtype}{Type of gene IDs in the \code{srt} object or \code{geneID} argument.
+\item{IDtype}{Type of gene IDs in the \code{object} object or \code{geneID} argument.
 This argument is used to convert the gene IDs to a different type if \code{IDtype} is different from \code{result_IDtype}.}
 
 \item{result_IDtype}{Desired type of gene ID to be used in the output.

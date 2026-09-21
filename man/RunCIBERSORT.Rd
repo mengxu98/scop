@@ -43,8 +43,7 @@ implementation. \code{"r"} is an optional reference backend from
 \code{Moonerss/CIBERSORT}.}
 
 \item{cores}{Number of CPU cores used by the C++ backend. \code{NULL} uses up to
-4 local cores. \code{n_threads} passed through \code{...} is accepted as a
-backward-compatible alias when \code{cores = NULL}.}
+4 local cores.}
 
 \item{seed}{Random seed used by the C++ permutation backend.}
 

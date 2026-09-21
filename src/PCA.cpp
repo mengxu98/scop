@@ -1,6 +1,7 @@
 #include <RcppArmadillo.h>
 #include <thisutils/log_message.h>
 #include "dynload.h"
+#include "thread_utils.h"
 
 static int component_count(int requested, int features, int cells) {
   int limit = std::min(features, cells - 1);
@@ -9,6 +10,25 @@ static int component_count(int requested, int features, int cells) {
 }
 
 namespace {
+
+class BlasThreadGuard {
+ public:
+  BlasThreadGuard(int requested, int previous) : previous_(previous) {
+    if (requested > 0) {
+      blas_set_num_threads(requested);
+    }
+  }
+
+  ~BlasThreadGuard() {
+    if (previous_ > 0) {
+      blas_set_num_threads(previous_);
+    }
+  }
+
+ private:
+  int previous_;
+};
+
 enum {
   scop_cblas_col_major = 102,
   scop_cblas_no_trans = 111,
@@ -230,13 +250,17 @@ static bool fast_top_eigen(arma::mat& gram,
 // [[Rcpp::export]]
 Rcpp::List pca_backend_run(const arma::mat& X,
                            int npcs,
-                           bool weight_by_var = true) {
+                           bool weight_by_var = true,
+                           int n_threads = 0) {
   const int features = X.n_rows;
   const int cells = X.n_cols;
   const int keep = component_count(npcs, features, cells);
   if (keep < 1) {
     thisutils::log_message("pca_backend_run: matrix is too small", "error");
   }
+
+  const int previous_blas = blas_get_num_threads();
+  BlasThreadGuard blas_thread_guard(n_threads, previous_blas);
 
   arma::mat gram;
   if (!fast_gram(X, gram)) {

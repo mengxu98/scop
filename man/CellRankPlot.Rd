@@ -56,7 +56,7 @@ If `NULL`, the first stored non-empty database is used.}
 \item{start_cells}{Optional cell names used as random-walk starts. For a
 moscot result, omitted starts default to cells in the earliest time point.}
 
-\item{cluster}{Starting group for \code{plot_type = "flow"}.}
+\item{cluster}{Starting group for `plot_type = "flow"`.}
 
 \item{clusters}{Optional groups to display in a real-time flow plot.}
 

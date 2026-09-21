@@ -83,6 +83,16 @@ DeconvolutionPlot(
 )
 
 DeconvolutionPlot(islet_bulk, plot_type = "box")
+
+\dontrun{
+# MuSiC needs the optional MuSiC backend pre-installed.
+data(panc8_sub)
+islet_bulk <- RunDeconvolution(
+  islet_bulk, reference = panc8_sub,
+  method = "MuSiC", group.by = "celltype", verbose = FALSE
+)
+DeconvolutionPlot(islet_bulk, plot_type = "bar")
+}
 }
 \seealso{
 \link{DeconvolutionPlot}

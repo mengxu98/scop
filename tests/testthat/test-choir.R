@@ -60,11 +60,13 @@ with_mock_choir <- function(code,
   }
 
   checked <- character()
+  installation_allowed <- NULL
   testthat::local_mocked_bindings(
     .package = "scop",
-    check_r = function(packages, dependencies, verbose, ...) {
+    check_r = function(packages, dependencies, verbose, ..., install = TRUE) {
       checked <<- c(checked, packages)
       expect_identical(dependencies, NA)
+      installation_allowed <<- isTRUE(install)
       invisible(TRUE)
     },
     get_namespace_fun = function(package, name) {
@@ -77,7 +79,7 @@ with_mock_choir <- function(code,
     choir_loaded_commit = function() loaded_commit
   )
   result <- force(code)
-  list(received = received, checked = checked, result = result)
+  list(received = received, checked = checked, installation_allowed = installation_allowed, result = result)
 }
 
 test_that("CHOIR rejects unsafe numeric cluster limits", {
@@ -132,7 +134,7 @@ test_that("RunCHOIR calls the optional backend and standardizes results", {
       batch.by = "batch",
       n_iterations = 20,
       n_trees = 10,
-      n_cores = 2,
+      cores = 2,
       distance_awareness = 1.8,
       verbose = FALSE
     )
@@ -142,7 +144,7 @@ test_that("RunCHOIR calls the optional backend and standardizes results", {
   expect_setequal(
     mocked$checked,
     c(
-      "corceslab/CHOIR",
+      "corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc",
       "BiocGenerics", "bluster", "dplyr", "ggplot2", "ggtree",
       "harmony", "magrittr", "Matrix", "pengminshi/mrtree", "plyr",
       "progress", "ranger", "Seurat", "spatstat.univar", "stringr", "tidyr"
@@ -438,7 +440,7 @@ test_that("RunCHOIR rejects invalid cluster labels", {
   )
 })
 
-test_that("RunCHOIR installs and verifies the pinned backend through check_r", {
+test_that("RunCHOIR verifies the pinned backend through check_r with installation enabled", {
   srt <- make_choir_seurat()
   mocked <- with_mock_choir({
     out <- RunCHOIR(srt, verbose = FALSE)
@@ -447,13 +449,14 @@ test_that("RunCHOIR installs and verifies the pinned backend through check_r", {
   expect_setequal(
     mocked$checked,
     c(
-      "corceslab/CHOIR",
+      "corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc",
       "BiocGenerics", "bluster", "dplyr", "ggplot2", "ggtree",
       "harmony", "magrittr", "Matrix", "pengminshi/mrtree", "plyr",
       "progress", "ranger", "Seurat", "spatstat.univar", "stringr", "tidyr"
     )
   )
   expect_s4_class(mocked$result, "Seurat")
+  expect_true(mocked$installation_allowed)
 })
 
 test_that("RunCHOIR errors when the pinned backend cannot be verified", {
@@ -465,7 +468,7 @@ test_that("RunCHOIR errors when the pinned backend cannot be verified", {
       },
       installed_commit = NULL
     ),
-    "Unable to install the pinned optional"
+    "backend is unavailable"
   )
 })
 

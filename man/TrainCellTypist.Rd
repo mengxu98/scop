@@ -53,7 +53,7 @@ If provided, \code{adata} will be ignored.}
 \item{layer}{Assay layer to use.}
 
 \item{labels}{Cell labels used for training. Can be a metadata column name when
-\code{srt}/\code{adata} is supplied, or a vector aligned with cells.}
+\code{object}/\code{adata} is supplied, or a vector aligned with cells.}
 
 \item{genes}{Optional gene names. Usually inferred from the input object.}
 

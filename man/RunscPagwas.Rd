@@ -15,16 +15,18 @@ RunscPagwas(
   block_annotation = c("hg38", "hg37", "custom"),
   output.dirs = tempdir(),
   cleanup_soar = TRUE,
-  return_seurat = !is.null(srt) || inherits(single_data, "Seurat"),
+  return_seurat = !is.null(srt) || inherits(single_data, "Seurat") || !is.null(object),
   verbose = TRUE,
   ...,
   srt = NULL
 )
 }
 \arguments{
-\item{object}{Optional Seurat object used as single-cell input.}
+\item{object}{The single-cell input. Supply a \code{Seurat} object or a path to
+a Seurat \code{.rds} file.}
 
-\item{single_data}{Optional Seurat object or path to a Seurat \code{.rds} file.}
+\item{single_data}{Deprecated alias for \code{object}. It will be removed in scop
+1.0.0.}
 
 \item{gwas_data}{GWAS summary statistics as a data frame or delimited text
 file. Required columns are \code{chrom}, \code{pos}, \code{rsid}, \code{se}, \code{beta}, and \code{maf}.}

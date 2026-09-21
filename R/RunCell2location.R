@@ -45,7 +45,7 @@
 #' @param prefix Prefix used for abundance/proportion metadata columns.
 #' @param tool_name Name of the `srt@tools` result entry.
 #' @param store_results Whether to store detailed result matrices and paths in
-#' `srt@tools`.
+#' `object@tools`.
 #'
 #' @details
 #' Requires raw spatial counts and an annotated single-cell reference or

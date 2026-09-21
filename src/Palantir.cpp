@@ -496,7 +496,10 @@ List palantir_pseudotime_cpp(
       for (int s = 0; s < n_wp; ++s) {
         double t_wp = pseudotime[wp_offsets[s]];
         double sign = (pseudotime[i] < t_wp) ? -1.0 : 1.0;
-        if (s == start_row) sign = 1.0;
+        if (s == start_row) {
+          sign = 1.0;
+          t_wp = 0.0;
+        }
         double P_si = D(s, i) * sign + t_wp;
         t_i += P_si * W(s, i);
       }
@@ -605,8 +608,9 @@ List palantir_markov_chain_cpp(
       double pt_j = pseudotime[j];
       if (pt_j < cutoff) continue;
 
-      double w = std::exp(-0.5 * dist_ij * dist_ij /
-        (adaptive_std[i] * adaptive_std[j]));
+      double w = std::exp(-0.5 * dist_ij * dist_ij *
+        (1.0 / (adaptive_std[i] * adaptive_std[i]) +
+         1.0 / (adaptive_std[j] * adaptive_std[j])));
       local_w.push_back(w);
       local_j.push_back(j);
       row_sum += w;

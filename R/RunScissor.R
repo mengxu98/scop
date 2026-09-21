@@ -18,7 +18,7 @@
 #' the second sorted level is used.
 #' @param bulk_assay Assay name used when `bulk_dataset` is a
 #' `SummarizedExperiment`.
-#' @param layer Assay layer used from `srt`.
+#' @param layer Assay layer used from `object`.
 #' @param features Optional genes used before intersecting bulk and
 #' single-cell features.
 #' @param family Regression family passed to Scissor.
@@ -39,7 +39,7 @@
 #' @param prefix Prefix for metadata column names.
 #' @param tool_name Name of the `srt@tools` entry.
 #' @param store_inputs Whether to store Scissor regression inputs in
-#' `srt@tools`. Default is `FALSE` to avoid large objects.
+#' `object@tools`. Default is `FALSE` to avoid large objects.
 #'
 #' @return A `Seurat` object with Scissor status and coefficient columns in
 #' metadata and a Scissor result bundle in `srt@tools[[tool_name]]`.

@@ -9,6 +9,7 @@
 #include <thread>
 #include <vector>
 #include "dynload.h"
+#include "thread_utils.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -68,39 +69,6 @@ static matrix_multiply_f32 runtime_sgemm() {
     }
   }
   return fn;
-}
-
-static void blas_set_num_threads(int n) {
-  typedef void (*set_fn)(int);
-  static set_fn fn = NULL;
-  static bool loaded = false;
-  if (!loaded) {
-    loaded = true;
-    void* self = scop_dlopen(NULL);
-    if (self != NULL) {
-      fn = reinterpret_cast<set_fn>(scop_dlsym(self, "openblas_set_num_threads"));
-      if (fn == NULL) {
-        fn = reinterpret_cast<set_fn>(scop_dlsym(self, "MKL_Set_Num_Threads"));
-      }
-    }
-  }
-  if (fn != NULL && n > 0) {
-    fn(n);
-  }
-}
-
-static int blas_get_num_threads() {
-  typedef int (*get_fn)();
-  static get_fn fn = NULL;
-  static bool loaded = false;
-  if (!loaded) {
-    loaded = true;
-    void* self = scop_dlopen(NULL);
-    if (self != NULL) {
-      fn = reinterpret_cast<get_fn>(scop_dlsym(self, "openblas_get_num_threads"));
-    }
-  }
-  return fn == NULL ? 0 : fn();
 }
 
 static void sorted_from_heap(std::vector<Candidate>& heap,

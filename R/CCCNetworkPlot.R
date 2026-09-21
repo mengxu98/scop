@@ -13,7 +13,7 @@
 #' @param receptor For `plot_type = "bipartite"`: optional receptor names to
 #'   restrict to. If `NULL`, all receptors paired with `ligand` are shown.
 #' @param reg.by For `plot_type = "bipartite"`: optional metadata column in
-#'   `srt` used to color edges by regulation status (e.g. up/down). If `NULL`,
+#'   `object` used to color edges by regulation status (e.g. up/down). If `NULL`,
 #'   edges are colored by sender cell type.
 #' @param reg_palette For `plot_type = "bipartite"`: named character vector or
 #'   palette name for regulation categories.

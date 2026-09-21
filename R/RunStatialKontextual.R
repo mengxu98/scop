@@ -35,7 +35,7 @@
 #' @param tool_name Name used to store results in `srt@tools`.
 #' @param store_results Whether to store results in `srt@tools`.
 #' @param store_input Whether to store the backend input cell table in
-#' `srt@tools`.
+#' `object@tools`.
 #' @param ... Additional named arguments passed to `Statial::Kontextual()`.
 #'
 #' @return A `Seurat` object with Statial results stored in

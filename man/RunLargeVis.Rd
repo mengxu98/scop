@@ -30,7 +30,6 @@ RunLargeVis(object, ...)
   n_trees = 50,
   search_k = 2 * n_neighbors * n_trees,
   cores = NULL,
-  n_threads = NULL,
   n_sgd_threads = 0,
   grain_size = 1,
   kernel = "gauss",
@@ -67,7 +66,6 @@ RunLargeVis(object, ...)
   n_trees = 50,
   search_k = 2 * n_neighbors * n_trees,
   cores = NULL,
-  n_threads = NULL,
   n_sgd_threads = 0,
   grain_size = 1,
   kernel = "gauss",
@@ -289,12 +287,14 @@ neighbors are found. Otherwise, approximate nearest neighbors are used.
 You may also pass precalculated nearest neighbor data to this argument. It
 must be a list consisting of two elements:
 \itemize{
-  \item \code{"idx"}. A \code{n_vertices x n_neighbors} matrix
-  containing the integer indexes of the nearest neighbors in \code{X}. Each
-  vertex is considered to be its own nearest neighbor, i.e.
-  \code{idx[, 1] == 1:n_vertices}.
-  \item \code{"dist"}. A \code{n_vertices x n_neighbors} matrix
-  containing the distances of the nearest neighbors.
+  \item \code{"idx"} (or \code{"index"}). A \code{n_vertices x n_neighbors}
+  matrix containing the integer indexes of the nearest neighbors in
+  \code{X}.
+  \emph{Each vertex is considered to be its own nearest neighbor, i.e.
+  \code{idx[, 1] == 1:n_vertices}}.
+  \item \code{"dist"} (or \code{"distance"}). A
+  \code{n_vertices x n_neighbors} matrix containing the distances of the
+  nearest neighbors.
 }
 Multiple nearest neighbor data (e.g. from two different precomputed
 metrics) can be passed by passing a list containing the nearest neighbor
@@ -314,13 +314,6 @@ With \code{n_trees}, determines the accuracy of the Annoy nearest neighbor
 search. Only used if the \code{nn_method} is \code{"annoy"}.}
 
 \item{cores}{Number of CPU cores.}
-
-\item{n_threads}{Number of threads to use (except during stochastic gradient
-descent). Default is half the number of concurrent threads supported by the
-system. For nearest neighbor search, only applies if
-\code{nn_method = "annoy"}. If \code{n_threads > 1}, then the Annoy index
-will be temporarily written to disk in the location determined by
-\code{\link[base]{tempfile}}.}
 
 \item{n_sgd_threads}{Number of threads to use during stochastic gradient
 descent. If set to > 1, then be aware that if \code{batch = FALSE}, results

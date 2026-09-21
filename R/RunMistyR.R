@@ -35,7 +35,7 @@
 #' @param tool_name Name used to store results in `srt@tools`.
 #' @param store_results Whether to store results in `srt@tools`.
 #' @param store_views Whether to store the mistyR view composition in
-#' `srt@tools`. This can be large.
+#' `object@tools`. This can be large.
 #' @param ... Additional named arguments passed to `mistyR::run_misty()`.
 #'
 #' @return A `Seurat` object with results stored in `srt@tools[[tool_name]]`
