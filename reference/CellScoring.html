@@ -256,23 +256,23 @@ will be removed in scop 1.0.0.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:46] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:46] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-21 06:59:46] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:17] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:17] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-21 16:52:17] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 1/1 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:46] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:46] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:47] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:47] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:47] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:47] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:47] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:47] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:47] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:47] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:47] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:47] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 06:59:53] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:17] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:17] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:17] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:17] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:17] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:17] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:18] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:18] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:18] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:18] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:18] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 16:52:24] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">features_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">CellScoring</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -283,10 +283,10 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"AUCell"</span>,</span></span>
 <span class="r-in"><span>  name <span class="op">=</span> <span class="st">"test"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:53] Start cell scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:53] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:53] Number of feature lists to be scored: <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 06:59:54] Cell scoring completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:24] Start cell scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:24] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:24] Number of feature lists to be scored: <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 16:52:24] Cell scoring completed</span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="st">"test_classification"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="CellScoring-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -301,15 +301,15 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">features_all</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">]</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AUCell"</span>, <span class="st">"GSVA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:55] Start cell scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:55] Start cell scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:55] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:55] Number of feature lists to be scored: <span style="color: #0000BB;">1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 06:59:56] Cell scoring completed</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:56] Start cell scoring</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:56] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 06:59:56] Number of feature lists to be scored: <span style="color: #0000BB;">1</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 07:00:26] Cell scoring completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:26] Start cell scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:26] Start cell scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:27] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:27] Number of feature lists to be scored: <span style="color: #0000BB;">1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 16:52:27] Cell scoring completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:27] Start cell scoring</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:27] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:27] Number of feature lists to be scored: <span style="color: #0000BB;">1</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 16:52:41] Cell scoring completed</span>
 <span class="r-in"><span><span class="fu"><a href="FeatureStatPlot.html">FeatureStatPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AUCell_A"</span>, <span class="st">"GSVA_A"</span><span class="op">)</span>,</span></span>
@@ -318,7 +318,7 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  plot_type <span class="op">=</span> <span class="st">"violin"</span>,</span></span>
 <span class="r-in"><span>  stack <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 07:00:26] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 16:52:41] Setting `group.by` to <span style="color: #0000BB;">"Features"</span> as `plot.by` is set to <span style="color: #0000BB;">"feature"</span></span>
 <span class="r-plt img"><img src="CellScoring-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span></span>
@@ -338,22 +338,22 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-plt img"><img src="CellScoring-5.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $g_tree</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gTree[GRID.gTree.17427] </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gTree[GRID.gTree.17440] </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $matrix_list</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $matrix_list$CellType</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             Ductal Ngn3-high-EP   Endocrine Ngn3-low-EP Pre-endocrine</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AUCell_A -0.882137    0.3521051 -0.09190844  -0.8923595     1.5142998</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GSVA_A    1.284271   -0.7833688 -0.48805934   0.8592283    -0.8720707</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sox9      1.428872   -0.6125486 -0.79466665   0.6788737    -0.7005309</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Anxa2     1.146725   -0.6170844 -0.78673632   1.0374551    -0.7803596</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bicc1     1.110978   -0.6764747 -0.73759372   1.0784037    -0.7753133</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              Ductal Ngn3-high-EP   Endocrine Ngn3-low-EP Pre-endocrine</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AUCell_A -0.8821370    0.3521051 -0.09190844  -0.8923595     1.5142998</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GSVA_A   -0.9127938    0.8500125 -0.29535294  -0.8916622     1.2497965</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sox9      1.4288723   -0.6125486 -0.79466665   0.6788737    -0.7005309</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Anxa2     1.1467252   -0.6170844 -0.78673632   1.0374551    -0.7803596</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bicc1     1.1109781   -0.6764747 -0.73759372   1.0784037    -0.7753133</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"scaled:center")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    AUCell_A      GSVA_A        Sox9       Anxa2       Bicc1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  0.02608917 -0.91687608  1.96420268  2.04845477  1.94117464 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0.02608917 -0.09541451  1.96420268  2.04845477  1.94117464 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"scaled:scale")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    AUCell_A      GSVA_A        Sox9       Anxa2       Bicc1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 0.002103202 0.015210486 2.163337655 2.542869069 2.379710010 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.002103202 0.009417160 2.163337655 2.542869069 2.379710010 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $feature_split</span>

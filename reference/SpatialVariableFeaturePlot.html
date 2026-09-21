@@ -3,11 +3,15 @@
 summary view shows feature ranks and, when finite p- or q-values are stored,
 significance. Results without permutation statistics are shown without a
 significance size mapping or legend. The surface view reuses
-SpatialSpotPlot() to draw spatial expression for selected features."><meta property="og:description" content="Visualize normalized results produced by RunSpatialVariableFeatures(). The
+SpatialSpotPlot() to draw spatial expression for selected features. Unless
+explicitly overridden, surfaces inherit the saved assay, layer, image and
+coordinate columns, even if the object's default assay has changed."><meta property="og:description" content="Visualize normalized results produced by RunSpatialVariableFeatures(). The
 summary view shows feature ranks and, when finite p- or q-values are stored,
 significance. Results without permutation statistics are shown without a
 significance size mapping or legend. The surface view reuses
-SpatialSpotPlot() to draw spatial expression for selected features."></head><body>
+SpatialSpotPlot() to draw spatial expression for selected features. Unless
+explicitly overridden, surfaces inherit the saved assay, layer, image and
+coordinate columns, even if the object's default assay has changed."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -74,7 +78,9 @@ SpatialSpotPlot() to draw spatial expression for selected features."></head><bod
 summary view shows feature ranks and, when finite p- or q-values are stored,
 significance. Results without permutation statistics are shown without a
 significance size mapping or legend. The surface view reuses
-<code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code> to draw spatial expression for selected features.</p>
+<code><a href="SpatialSpotPlot.html">SpatialSpotPlot()</a></code> to draw spatial expression for selected features. Unless
+explicitly overridden, surfaces inherit the saved assay, layer, image and
+coordinate columns, even if the object's default assay has changed.</p>
     </div>
 
     <div class="section level2">
@@ -134,17 +140,13 @@ spatial variable feature result are used.</p></dd>
 <dd><p>Result column used for the summary x-axis.</p></dd>
 
 
-<dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
-
-
-<dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Assay layer to use.</p></dd>
+<dt id="arg-assay-layer">assay, layer<a class="anchor" aria-label="anchor" href="#arg-assay-layer"></a></dt>
+<dd><p>Expression assay and layer for surfaces. When <code>NULL</code>, use
+the saved analysis settings; explicit values override them.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
-<dd><p>Spatial image name. Required when multiple images are present;
-a single image is selected automatically when <code>NULL</code>.</p></dd>
+<dd><p>Image for surfaces. When <code>NULL</code>, use the saved analysis image.</p></dd>
 
 
 <dt id="arg-overlay-image-image-alpha">overlay_image, image.alpha<a class="anchor" aria-label="anchor" href="#arg-overlay-image-image-alpha"></a></dt>
@@ -152,7 +154,8 @@ a single image is selected automatically when <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
-<dd><p>Metadata coordinate columns used when no image is available.</p></dd>
+<dd><p>Metadata coordinate columns for surfaces. When omitted,
+use the saved analysis columns.</p></dd>
 
 
 <dt id="arg-flip-y">flip.y<a class="anchor" aria-label="anchor" href="#arg-flip-y"></a></dt>
@@ -188,7 +191,7 @@ radius at <code>raster.dpi = c(512, 512)</code> and scale with <code>raster.dpi<
 
 
 <dt id="arg-combine-nrow-ncol-byrow">combine, nrow, ncol, byrow<a class="anchor" aria-label="anchor" href="#arg-combine-nrow-ncol-byrow"></a></dt>
-<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code>
+<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork::patchwork</a>. <code>combine = FALSE</code>
 returns a list of ggplots.</p></dd>
 
 

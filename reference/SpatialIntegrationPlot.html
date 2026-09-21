@@ -194,12 +194,12 @@ overlay. This plotting option does not perform image registration.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Template: visium_S1 and visium_S2 are existing spatial Seurat samples.</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSpatialIntegration.html">RunSpatialIntegration</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">visium_human_pancreas_sub</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S1 <span class="op">=</span> <span class="va">visium_S1</span>, S2 <span class="op">=</span> <span class="va">visium_S2</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"PRECAST"</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
-<span class="r-in"><span>  sample.by <span class="op">=</span> <span class="st">"Sample"</span></span></span>
+<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
+<span class="r-in"><span>  image <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S1 <span class="op">=</span> <span class="st">"slice1"</span>, S2 <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">SpatialIntegrationPlot</span><span class="op">(</span><span class="va">spatial</span>, method <span class="op">=</span> <span class="st">"PRECAST"</span>, plot_type <span class="op">=</span> <span class="st">"spatial"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>

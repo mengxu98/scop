@@ -114,7 +114,8 @@ object. For list input, list names are copied into this column.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>Assay layer used for expression values.</p></dd>
+<dd><p>Layer containing finite, non-negative integer counts. PRECAST
+normalizes this selected matrix internally; normalized expression is rejected.</p></dd>
 
 
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
@@ -171,7 +172,13 @@ and aligned-coordinate input. The default is raw acquisition coordinates;
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional backend-specific arguments.</p></dd>
+<dd><p>Named backend argument lists: <code>create_params</code>, <code>adj_params</code>,
+<code>par_params</code>, <code>run_params</code>, and <code>select_params</code>. The default adjacency is
+<code>adj_params = list(type = "fixed_number", number = 6)</code>, using distances in
+the selected coordinate space and SCOP's exact spatial KNN implementation.
+PRECAST's fixed-distance Visium/ST array-index
+mode is not compatible with these coordinates and is rejected. For generic
+distance-based adjacency, explicitly choose <code>platform = "Other_SRT"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

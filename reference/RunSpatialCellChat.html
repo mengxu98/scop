@@ -190,13 +190,15 @@ selection uses technology-specific rules.</p></dd>
 
 <dt id="arg-ratio">ratio<a class="anchor" aria-label="anchor" href="#arg-ratio"></a></dt>
 <dd><p>Positive raw-coordinate-to-micron multiplier. It must be `1`
-for micron coordinates. For Visium pixels, it may be omitted when one
-trusted `spot_diameter_fullres` value is available.</p></dd>
+for micron coordinates. For ordinary Visium pixels, it may be omitted when
+one trusted `spot_diameter_fullres` value is available. Visium HD pixels
+always require an explicit calibrated value.</p></dd>
 
 
 <dt id="arg-tol">tol<a class="anchor" aria-label="anchor" href="#arg-tol"></a></dt>
-<dd><p>Positive spatial tolerance in microns. Visium defaults to `32.5`;
-cell-resolved and generic technologies require an explicit value.</p></dd>
+<dd><p>Positive spatial tolerance in microns. Ordinary Visium defaults to
+`32.5`; Visium HD, cell-resolved and generic technologies require an
+explicit value appropriate for the selected observation size.</p></dd>
 
 
 <dt id="arg-interaction-range">interaction.range<a class="anchor" aria-label="anchor" href="#arg-interaction-range"></a></dt>
@@ -289,7 +291,10 @@ distances are never calculated across tissue sections.</p>
 Micron coordinates use `ratio = 1`. Pixel coordinates require a positive
 raw-unit-to-micron `ratio`; for Visium data, the function can derive this as
 `65 / spot_diameter_fullres` when exactly one trusted full-resolution spot
-diameter is available. `tol`, `interaction.range`, and `contact.range` are
+diameter is available for ordinary Visium. Visium HD pixels require an
+explicit calibrated `ratio` and `tol` for the selected bin/cell resolution;
+the ordinary Visium 65-micron diameter is never applied to HD. `tol`,
+`interaction.range`, and `contact.range` are
 always expressed in microns. Display coordinates are retained only for
 plotting stored results.</p>
 <p>Objects with multiple images require an explicit `image` selection. When
