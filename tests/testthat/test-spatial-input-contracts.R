@@ -76,6 +76,7 @@ test_that("invalid integration payloads fail before object mutation", {
 })
 
 test_that("SVG surfaces inherit the saved assay, layer and custom coordinates", {
+  skip_if_not_installed("BiocNeighbors")
   object <- input_contract_object()
   object$custom_x <- object$x + 100
   object$custom_y <- object$y + 200
@@ -124,6 +125,7 @@ test_that("SVG backend identity and statistics are checked before storage", {
 })
 
 test_that("SVG surfaces resolve the saved selection in a multiple-image object", {
+  skip_if_not_installed("BiocNeighbors")
   data(visium_human_pancreas_sub, package = "scop")
   object <- suppressWarnings(visium_human_pancreas_sub[1:8, 1:12])
   object[["slice2"]] <- object[["slice1"]]

@@ -1,5 +1,6 @@
 test_that("real PRECAST receives selected counts and a nonempty distance graph", {
   skip_if_not_installed("PRECAST")
+  skip_if_not_installed("BiocNeighbors")
   check_r("feiyoung/PRECAST", verbose = FALSE)
   set.seed(42)
   counts <- matrix(rpois(40 * 120, 6) + 1, 40,
