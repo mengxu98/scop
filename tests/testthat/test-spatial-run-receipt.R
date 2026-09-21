@@ -808,10 +808,8 @@ test_that("RunSpatialVariableFeatures Plot hint preserves resolved plotting cont
     out@tools[["SpatialVariableFeatures"]]$parameters$assay,
     "ALT"
   )
-  expect_error(
-    SpatialVariableFeaturePlot(out, plot_type = "combined"),
-    "Multiple spatial images"
-  )
+  expect_no_error(SpatialVariableFeaturePlot(out, plot_type = "combined"))
+  expect_identical(out@tools$SpatialVariableFeatures$parameters$image, "slice1")
   executable_call <- sub("<returned_object>", "out", plot_call, fixed = TRUE)
   expect_no_error(eval(parse(text = executable_call)))
 })

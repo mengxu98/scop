@@ -88,12 +88,12 @@ overlay. This plotting option does not perform image registration.
 }
 \examples{
 \dontrun{
-data(visium_human_pancreas_sub)
+# Template: visium_S1 and visium_S2 are existing spatial Seurat samples.
 spatial <- RunSpatialIntegration(
-  visium_human_pancreas_sub,
+  list(S1 = visium_S1, S2 = visium_S2),
   method = "PRECAST",
-  group.by = "CellType",
-  sample.by = "Sample"
+  assay = "Spatial",
+  image = c(S1 = "slice1", S2 = "slice1")
 )
 SpatialIntegrationPlot(spatial, method = "PRECAST", plot_type = "spatial")
 }

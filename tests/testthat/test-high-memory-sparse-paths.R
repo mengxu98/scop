@@ -31,7 +31,7 @@ test_that("SCENICPlus sparse coercion preserves values and dimnames", {
   expect_equal(as_matrix(out), as_matrix(mat))
 })
 
-test_that("spatial sparse matrix coercion preserves matrix values", {
+test_that("spatial sparse matrix coercion preserves values without imputing non-finite data", {
   mat <- matrix(c(1, 0, NA, 4, Inf, 0), nrow = 2)
   rownames(mat) <- c("g1", "g2")
   colnames(mat) <- paste0("c", seq_len(ncol(mat)))
@@ -40,12 +40,9 @@ test_that("spatial sparse matrix coercion preserves matrix values", {
 
   expect_s4_class(out, "dgCMatrix")
   expect_equal(dimnames(out), dimnames(mat))
-  expect_true(all(is.finite(out@x)))
-  expect_equal(as_matrix(out), matrix(
-    c(1, 0, 0, 4, 0, 0),
-    nrow = 2,
-    dimnames = dimnames(mat)
-  ))
+  expect_equal(as_matrix(out), mat)
+  expect_true(is.na(out[1, 2]))
+  expect_identical(out[1, 3], Inf)
 })
 
 test_that("spatial integration prepares merged objects without SplitObject", {
