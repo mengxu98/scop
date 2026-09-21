@@ -35,7 +35,8 @@ object. For list input, list names are copied into this column.}
 
 \item{assay}{Assay to use. \code{NULL} uses the default assay.}
 
-\item{layer}{Assay layer used for expression values.}
+\item{layer}{Layer containing finite, non-negative integer counts. PRECAST
+normalizes this selected matrix internally; normalized expression is rejected.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image is available.}
 
@@ -70,7 +71,13 @@ Default is \code{TRUE}.}
 and aligned-coordinate input. The default is raw acquisition coordinates;
 \code{"legacy_display"} remains an explicit compatibility option.}
 
-\item{...}{Additional backend-specific arguments.}
+\item{...}{Named backend argument lists: \code{create_params}, \code{adj_params},
+\code{par_params}, \code{run_params}, and \code{select_params}. The default adjacency is
+\code{adj_params = list(type = "fixed_number", number = 6)}, using distances in
+the selected coordinate space and SCOP's exact spatial KNN implementation.
+PRECAST's fixed-distance Visium/ST array-index
+mode is not compatible with these coordinates and is rejected. For generic
+distance-based adjacency, explicitly choose \code{platform = "Other_SRT"}.}
 }
 \value{
 A \code{Seurat} object with spatial integration results stored in

@@ -352,6 +352,7 @@ test_that("RunSpotSweeper local outliers match the original SpotSweeper pipeline
 test_that("RunSpatialIntegration PRECAST domains match the original PRECAST pipeline", {
   skip_on_cran()
   skip_if_not_installed("PRECAST")
+  check_r("feiyoung/PRECAST", verbose = FALSE)
 
   data(visium_human_pancreas_sub)
   srt <- visium_human_pancreas_sub
@@ -389,15 +390,22 @@ test_that("RunSpatialIntegration PRECAST domains match the original PRECAST pipe
   s2$row <- coords2[colnames(s2), "y"]
   s2$col <- coords2[colnames(s2), "x"]
   set.seed(1)
-  precast <- PRECAST::CreatePRECASTObject(
+  precast <- get_namespace_fun("PRECAST", "CreatePRECASTObject")(
     seuList = list(s1, s2),
     project = "spatial_integration",
     customGenelist = common_genes
   )
-  precast <- PRECAST::AddAdjList(precast)
-  precast <- PRECAST::AddParSetting(precast)
-  precast <- PRECAST::PRECAST(precast)
-  precast <- PRECAST::SelectModel(precast)
+  # Compare the original model on the same exact graph; independent distance
+  # assertions for this graph are in test-spatial-precast-native.R.
+  precast@AdjList <- lapply(precast@seulist, function(sample) {
+    coords <- data.frame(cell_id = colnames(sample), x = sample$col, y = sample$row)
+    graph <- spatial_graph_compute(coords, method = "knn", k = 6, directed = TRUE)
+    Matrix::sparseMatrix(i = graph$edges$to, j = graph$edges$from, x = 1,
+      dims = c(ncol(sample), ncol(sample)))
+  })
+  precast <- get_namespace_fun("PRECAST", "AddParSetting")(precast)
+  precast <- get_namespace_fun("PRECAST", "PRECAST")(precast)
+  precast <- get_namespace_fun("PRECAST", "SelectModel")(precast)
   original_domains <- unlist(lapply(seq_along(precast@resList$cluster), function(k) {
     cl <- precast@resList$cluster[[k]]
     cl <- as.character(cl)

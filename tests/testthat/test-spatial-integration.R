@@ -175,10 +175,8 @@ test_that("SpatialIntegrationPlot reuses SCOP plot helpers", {
 
 
 test_that("PRECAST receives selected features and its SelectModel object argument", {
-  input <- list(
-    srt_list = list(S1 = "slice-1", S2 = "slice-2"),
-    features = c("Gene1", "Gene2")
-  )
+  input <- spatial_integration_prepare_input(make_spatial_integration_seurat(),
+    "sample", "RNA", "counts", c("Gene1", "Gene2"), NULL, c("col", "row"))
   observed <- list()
   testthat::local_mocked_bindings(
     check_r = function(...) invisible(TRUE),
@@ -189,7 +187,6 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
           observed$features <<- customGenelist
           list(step = "created")
         },
-        AddAdjList = function(PRECASTObj, ...) PRECASTObj,
         AddParSetting = function(PRECASTObj, ...) PRECASTObj,
         PRECAST = function(PRECASTObj, ...) PRECASTObj,
         SelectModel = function(obj, ...) {
@@ -199,11 +196,20 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
         stop("unexpected PRECAST function")
       )
     },
+    spatial_integration_validate_neighbor_count = function(object, adj_params) invisible(NULL),
+    spatial_integration_set_precast_adjacency = function(object, input, adj_params) {
+      expect_identical(adj_params$type, "fixed_number")
+      expect_equal(adj_params$number, 6)
+      object
+    },
+    spatial_integration_validate_adjacency = function(object) c(S1 = 6, S2 = 6),
     spatial_integration_extract_precast = function(raw_result, input) raw_result
   )
 
   out <- spatial_integration_run_backend("PRECAST", input, verbose = FALSE)
   expect_identical(observed$features, input$features)
   expect_identical(observed$selected, list(step = "created"))
-  expect_identical(out, list(step = "created"))
+  expect_identical(out$step, "created")
+  expect_identical(out$backend_parameters$adj_params$type, "fixed_number")
+  expect_equal(out$adjacency_summary, c(S1 = 6, S2 = 6))
 })

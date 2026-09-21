@@ -112,7 +112,13 @@ spatialcellchat_detect_technology <- function(srt, technology, image = NULL) {
   evidence <- character()
   if (!is.null(image) && image %in% tryCatch(SeuratObject::Images(srt), error = function(e) character())) {
     image_object <- srt[[image]]
-    if (inherits(image_object, c("VisiumV1", "VisiumV2"))) evidence <- c(evidence, "visium")
+    image_assay <- SeuratObject::DefaultAssay(image_object)
+    input_record <- srt@misc$scop_spatial_input[[image]]
+    is_hd <- identical(input_record$technology, "visium_hd") ||
+      grepl("[.]\\d+um$", image_assay)
+    if (inherits(image_object, c("VisiumV1", "VisiumV2"))) {
+      evidence <- c(evidence, if (is_hd) "visium_hd" else "visium")
+    }
   }
   values <- c(
     srt@misc$technology %||% character(),
@@ -154,7 +160,7 @@ spatialcellchat_detect_level <- function(srt, analysis.level, technology, compos
     image %in% tryCatch(SeuratObject::Images(srt), error = function(e) character()) &&
     (
       "segmentation" %in% tryCatch(SeuratObject::Boundaries(srt[[image]]), error = function(e) character()) ||
-        inherits(srt[[image]], "FOV")
+      (inherits(srt[[image]], "FOV") && !inherits(srt[[image]], c("VisiumV1", "VisiumV2")))
     )
   if (has_segmentation || technology %in% c("xenium", "cosmx", "merfish")) {
     return("cell")
@@ -294,7 +300,10 @@ spatialcellchat_metric_coordinates <- function(
     ratio <- 1
     unit_source <- if (technology %in% c("xenium", "cosmx", "merfish")) "technology" else "user"
   } else if (is.null(ratio)) {
-    if (!technology %in% c("visium", "visium_hd")) {
+    if (identical(technology, "visium_hd")) {
+      log_message("Visium HD pixel coordinates require an explicit calibrated {.arg ratio}; the 65-micron Visium diameter does not apply", message_type = "error")
+    }
+    if (!identical(technology, "visium")) {
       log_message("Pixel coordinates require an explicit positive {.arg ratio}", message_type = "error")
     }
     diameter <- spatialcellchat_visium_spot_diameter(srt, image)
@@ -309,11 +318,11 @@ spatialcellchat_metric_coordinates <- function(
   }
   spatialcellchat_validate_scalar(ratio, "ratio", positive = TRUE)
   if (is.null(tol)) {
-    if (technology %in% c("visium", "visium_hd")) {
+    if (identical(technology, "visium")) {
       tol <- 32.5
     } else {
       log_message(
-        "Cell-resolved or generic data require {.arg tol} in microns unless a trusted size is available",
+        "Visium HD, cell-resolved or generic data require an explicit {.arg tol} in microns for the selected observation size",
         message_type = "error"
       )
     }
@@ -822,7 +831,10 @@ spatialcellchat_run_one <- function(
 #' Micron coordinates use `ratio = 1`. Pixel coordinates require a positive
 #' raw-unit-to-micron `ratio`; for Visium data, the function can derive this as
 #' `65 / spot_diameter_fullres` when exactly one trusted full-resolution spot
-#' diameter is available. `tol`, `interaction.range`, and `contact.range` are
+#' diameter is available for ordinary Visium. Visium HD pixels require an
+#' explicit calibrated `ratio` and `tol` for the selected bin/cell resolution;
+#' the ordinary Visium 65-micron diameter is never applied to HD. `tol`,
+#' `interaction.range`, and `contact.range` are
 #' always expressed in microns. Display coordinates are retained only for
 #' plotting stored results.
 #'
@@ -867,10 +879,12 @@ spatialcellchat_run_one <- function(
 #' @param coordinate.unit Unit of the raw input coordinates. Automatic unit
 #'   selection uses technology-specific rules.
 #' @param ratio Positive raw-coordinate-to-micron multiplier. It must be `1`
-#'   for micron coordinates. For Visium pixels, it may be omitted when one
-#'   trusted `spot_diameter_fullres` value is available.
-#' @param tol Positive spatial tolerance in microns. Visium defaults to `32.5`;
-#'   cell-resolved and generic technologies require an explicit value.
+#'   for micron coordinates. For ordinary Visium pixels, it may be omitted when
+#'   one trusted `spot_diameter_fullres` value is available. Visium HD pixels
+#'   always require an explicit calibrated value.
+#' @param tol Positive spatial tolerance in microns. Ordinary Visium defaults to
+#'   `32.5`; Visium HD, cell-resolved and generic technologies require an
+#'   explicit value appropriate for the selected observation size.
 #' @param interaction.range Maximum signaling range in microns.
 #' @param contact.dependent Whether to infer contact-dependent signaling. This
 #'   is rejected for spot-level analysis.
