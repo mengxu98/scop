@@ -309,6 +309,26 @@ complete native PRECAST object; domains, embedding, aligned coordinates,
 parameters, source information, and standard plots remain stored. Keep
 the default <code>TRUE</code> when a later native PRECAST analysis needs
 the full object.</p>
+<p>PRECAST receives a fresh backend object built from the selected
+<code>assay</code> and <code>layer</code>, which must contain finite,
+non-negative integer counts; it normalizes these counts internally. The
+default adjacency uses six nearest neighbors in the selected coordinate
+space
+(<code>adj_params = list(type = "fixed_number", number = 6)</code>).
+SCOP constructs this graph with its shared exact KNN implementation and
+adapts it to PRECAST’s column-neighbor matrix convention. Each sample
+must retain more spots than the requested neighbor count. PRECAST’s
+fixed-distance Visium/ST mode expects array indices and is rejected for
+SCOP’s analysis coordinates. Empty or invalid graphs stop before
+training. Effective backend arguments and per-sample nonzero edge counts
+are saved under the method bundle’s <code>parameters</code>.</p>
+<p>For SpatialCellChat on Visium HD, supply a calibrated pixel-to-micron
+<code>ratio</code> and a <code>tol</code> in microns appropriate for the
+selected bin or cell size. The ordinary Visium 65-micron spot conversion
+is not valid for HD. Imported HD provenance and assay names such as
+<code>Spatial.008um</code> inform automatic technology detection; an
+explicit <code>technology = "visium_hd"</code> is needed when that
+evidence is absent.</p>
 </div>
 <div class="section level2">
 <h2 id="deconvolution-and-cell2location-storage-choices">Deconvolution and cell2location storage choices<a class="anchor" aria-label="anchor" href="#deconvolution-and-cell2location-storage-choices"></a>
