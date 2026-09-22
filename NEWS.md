@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **fix**: Preserve scCODA's `"automatic"` reference-cell selection in
+  `RunscCODA()` and reject unknown explicit references instead of silently
+  using the first cell type.
 * **fix**: `RunNMF()` supports the CRAN `RcppML` release: sparse input no longer needs `Matrix` attached by the caller, the attach is scoped to the call, and `check_r()` no longer replaces an installed CRAN build with the GitHub one.
 * **fix**: The native Gaussian GSVA kernel follows the sparse scoring walk of the installed `GSVA` release (<= 2.4 and >= 2.6), so `RunGSVA()` and `CellScoring()` match `backend = "r"` on either engine; explicitly stored zeros are dropped before scoring.
 * **perf**: The native Gaussian GSVA walk only evaluates the running-sum extremes at the gene-set hit positions: ~2.8x faster than the previous walk and ~50x faster than the delegated GSVA path on a 2,000 x 1,000 matrix with 400 gene sets.
