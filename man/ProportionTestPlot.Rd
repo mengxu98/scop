@@ -8,7 +8,7 @@ ProportionTestPlot(
   object,
   comparison = NULL,
   proportion_method = NULL,
-  result_level = c("group"),
+  result_level = c("group", "neighborhood"),
   plot_type = c("effect", "umap"),
   umap_mode = c("discrete", "continuous"),
   reduction = "UMAP",
@@ -61,7 +61,9 @@ If \code{NULL}, plots all comparisons.}
 \code{srt@tools[['ProportionTest']][['methods']]}.
 If \code{NULL}, uses the active/most recent method.}
 
-\item{result_level}{Result level to draw. Currently only \code{"group"} is used.}
+\item{result_level}{Result level to draw. Use \code{"group"} for group-level
+results or \code{"neighborhood"} for Milo neighborhood-level results when
+available.}
 
 \item{plot_type}{Plot type. One of \code{"effect"} or \code{"umap"}.}
 
