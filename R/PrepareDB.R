@@ -13,9 +13,13 @@
 #' `"HPO"`, `"PFAM"`, `"CSPA"`, `"Surfaceome"`, `"SPRomeDB"`, `"VerSeDa"`,
 #' `"TFLink"`, `"hTFtarget"`, `"TRRUST"`, `"JASPAR"`, `"ENCODE"`, `"MSigDB"`,
 #' `"CellTalk"`, `"CellChat"`, `"Chromosome"`, `"GeneType"`, `"Enzyme"`, `"TF"`,
-#' `"CytoTRACE2"`. MSigDB subcollections use `"MSigDB_<collection>"` (e.g.
-#' `"MSigDB_H"`). `"CytoTRACE2"` is species-independent and is required by
-#' [RunCytoTRACE].
+#' `"CytoTRACE2"`. MSigDB collections use `"MSigDB_<collection>"`, with `:`
+#' replaced by `_`. Top-level names such as `"MSigDB_H"` (human hallmark),
+#' `"MSigDB_MH"` (mouse hallmark) and `"MSigDB_M2"` stay available and include
+#' their nested collections. Nested names include each prefix, for example
+#' `"MSigDB_M2_CGP"`, `"MSigDB_M2_CP"` and `"MSigDB_M2_CP_BIOCARTA"`. Colon
+#' forms such as `"MSigDB_M2:CGP"` are accepted. `"CytoTRACE2"` is
+#' species-independent and is required by [RunCytoTRACE].
 #' @param db_IDtypes Gene ID types to include.
 #' @param db_version Database version to retrieve.
 #' @param db_update Force a refresh. `FALSE` loads the cache when available.
@@ -257,6 +261,12 @@ PrepareDB <- function(
       db_list[["CytoTRACE2"]] <- cyto_cache
     }
   }
+
+  if (!is.null(db)) {
+    db <- as.character(db)
+  }
+  db_requested <- db
+  db <- normalize_msigdb_db_names(db)
 
   for (sps in species) {
     log_message(
@@ -2381,8 +2391,10 @@ PrepareDB <- function(
           }
         }
 
+        msigdb_requested <- db[grepl("^MSigDB($|_)", db)]
         if (
-          any(grepl("^MSigDB($|_)", db)) && (!"MSigDB" %in% names(db_list[[sps]]))
+          length(msigdb_requested) > 0L &&
+            any(!msigdb_requested %in% names(db_list[[sps]]))
         ) {
           if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
             if (isTRUE(convert_species)) {
@@ -2490,7 +2502,6 @@ PrepareDB <- function(
                 perl = TRUE
               )
             ))
-            term_collection <- gsub(":.*", "", term_collection)
             term_list[[idx]] <- c(
               id = term_id,
               "name" = term_name,
@@ -2531,48 +2542,40 @@ PrepareDB <- function(
             )
           }
 
-          for (collection in unique(TERM2NAME[["Collection"]])) {
-            db_species[paste0("MSigDB_", collection)] <- db_species["MSigDB"]
-            default_id_types[[paste0(
-              "MSigDB_",
-              collection
-            )]] <- default_id_types[["MSigDB"]]
-            TERM2NAME_sub <- TERM2NAME[
-              TERM2NAME[["Collection"]] == collection, ,
-              drop = FALSE
-            ]
-            TERM2GENE_sub <- TERM2GENE[
-              TERM2GENE[["Term"]] %in% TERM2NAME_sub[["Term"]], ,
-              drop = FALSE
-            ]
-            db_list[[db_species["MSigDB"]]][[paste0("MSigDB_", collection)]][[
+          msigdb_subsets <- preparedb_msigdb_collection_subsets(
+            TERM2GENE = TERM2GENE,
+            TERM2NAME = TERM2NAME
+          )
+          for (collection_db in names(msigdb_subsets)) {
+            db_species[collection_db] <- db_species["MSigDB"]
+            default_id_types[[collection_db]] <- default_id_types[["MSigDB"]]
+            TERM2NAME_sub <- msigdb_subsets[[collection_db]][["TERM2NAME"]]
+            TERM2GENE_sub <- msigdb_subsets[[collection_db]][["TERM2GENE"]]
+            db_list[[db_species["MSigDB"]]][[collection_db]][[
               "TERM2GENE"
             ]] <- TERM2GENE_sub
-            db_list[[db_species["MSigDB"]]][[paste0("MSigDB_", collection)]][[
+            db_list[[db_species["MSigDB"]]][[collection_db]][[
               "TERM2NAME"
             ]] <- TERM2NAME_sub
-            db_list[[db_species["MSigDB"]]][[paste0("MSigDB_", collection)]][[
+            db_list[[db_species["MSigDB"]]][[collection_db]][[
               "version"
             ]] <- version
             if (sps == db_species["MSigDB"]) {
               R.cache::saveCache(
-                db_list[[db_species["MSigDB"]]][[paste0(
-                  "MSigDB_",
-                  collection
-                )]],
+                db_list[[db_species["MSigDB"]]][[collection_db]],
                 key = list(
                   version,
                   as.character(db_species["MSigDB"]),
-                  paste0("MSigDB_", collection)
+                  collection_db
                 ),
                 comment = paste0(
                   version,
                   " nterm:",
-                  length(TERM2NAME[[1]]),
+                  length(TERM2NAME_sub[[1]]),
                   "|",
                   db_species["MSigDB"],
-                  "-MSigDB_",
-                  collection
+                  "-",
+                  collection_db
                 )
               )
             }
@@ -2641,6 +2644,13 @@ PrepareDB <- function(
       }
     }
 
+    db_list <- preparedb_ensure_msigdb_parent(
+      db_list = db_list,
+      species = sps,
+      db_version = db_version,
+      verbose = verbose
+    )
+
     if (!all(db_species == sps)) {
       for (term in names(db_species[db_species != sps])) {
         log_message(
@@ -2659,8 +2669,11 @@ PrepareDB <- function(
           TERM2GENE = TERM2GENE,
           default_id_types = default_id_types
         )
-        if (grepl("MSigDB_", term)) {
+        TERM2GENE_map <- NULL
+        if (grepl("^MSigDB_", term)) {
           TERM2GENE_map <- db_list[[sps]][["MSigDB"]][["TERM2GENE"]]
+        }
+        if (!is.null(TERM2GENE_map)) {
           TERM2GENE <- TERM2GENE_map[
             TERM2GENE_map[["Term"]] %in% TERM2GENE[["Term"]], ,
             drop = FALSE
@@ -2754,8 +2767,12 @@ PrepareDB <- function(
           TERM2GENE = TERM2GENE,
           default_id_types = default_id_types
         )
-        if (grepl("MSigDB_", term)) {
-          map <- db_list[[sps]][["MSigDB"]][["TERM2GENE"]][, -1, drop = FALSE]
+        parent_term2gene <- preparedb_msigdb_parent_term2gene(
+          parent = db_list[[sps]][["MSigDB"]][["TERM2GENE"]],
+          id_types = IDtypes
+        )
+        if (grepl("^MSigDB_", term) && !is.null(parent_term2gene)) {
+          map <- parent_term2gene[, -1, drop = FALSE]
           map <- stats::aggregate(
             map,
             by = list(map[[1]]),
@@ -2823,7 +2840,23 @@ PrepareDB <- function(
         )
       }
     }
+    preparedb_require_msigdb_names(
+      db_list = db_list,
+      species = sps,
+      db = db
+    )
+    db_list <- preparedb_alias_requested_msigdb(
+      db_list = db_list,
+      species = sps,
+      db_requested = db_requested,
+      db_normalized = db
+    )
   }
+  db_list <- preparedb_keep_requested_dbs(
+    db_list = db_list,
+    species = species,
+    db_names = unique(c(db, db_requested))
+  )
   return(db_list)
 }
 
@@ -2868,6 +2901,202 @@ preparedb_normalize_term2gene_id_columns <- function(TERM2GENE) {
     colnames(TERM2GENE)[colnames(TERM2GENE) == legacy_msigdb_col] <- "symbol"
   }
   TERM2GENE
+}
+
+normalize_msigdb_db_names <- function(db) {
+  if (is.null(db) || length(db) == 0L) {
+    return(db)
+  }
+  db <- as.character(db)
+  nested <- grepl(
+    "^MSigDB_[A-Za-z0-9_]+(?::[A-Za-z0-9_]+)+$",
+    db,
+    perl = TRUE
+  )
+  db[nested] <- gsub(":", "_", db[nested], fixed = TRUE)
+  db
+}
+
+msigdb_collection_db_names <- function(collection) {
+  collections <- as.character(collection)
+  unlist(lapply(collections, function(x) {
+    if (is.na(x) || !nzchar(x)) {
+      return(character(0))
+    }
+    parts <- strsplit(x, ":", fixed = TRUE)[[1]]
+    parts <- parts[nzchar(parts)]
+    if (length(parts) == 0L) {
+      return(character(0))
+    }
+    vapply(seq_along(parts), function(i) {
+      paste0("MSigDB_", paste(parts[seq_len(i)], collapse = "_"))
+    }, character(1))
+  }), use.names = FALSE)
+}
+
+preparedb_msigdb_collection_subsets <- function(TERM2GENE, TERM2NAME) {
+  collections <- unique(as.character(TERM2NAME[["Collection"]]))
+  collections <- collections[!is.na(collections) & nzchar(collections)]
+  db_names <- unique(msigdb_collection_db_names(collections))
+  normalized <- gsub(":", "_", as.character(TERM2NAME[["Collection"]]), fixed = TRUE)
+  stats::setNames(lapply(db_names, function(db_name) {
+    suffix <- sub("^MSigDB_", "", db_name)
+    keep <- !is.na(normalized) & (
+      normalized == suffix | startsWith(normalized, paste0(suffix, "_"))
+    )
+    term2name <- TERM2NAME[keep, , drop = FALSE]
+    term2gene <- TERM2GENE[
+      TERM2GENE[["Term"]] %in% term2name[["Term"]], ,
+      drop = FALSE
+    ]
+    list(TERM2GENE = term2gene, TERM2NAME = term2name)
+  }), db_names)
+}
+
+preparedb_require_msigdb_names <- function(db_list, species, db) {
+  requested <- as.character(db)
+  requested <- requested[grepl("^MSigDB($|_)", requested)]
+  if (length(requested) == 0L) {
+    return(invisible(NULL))
+  }
+  available_names <- names(db_list[[species]])
+  missing <- requested[!requested %in% available_names]
+  if (length(missing) == 0L) {
+    return(invisible(NULL))
+  }
+  available <- grep("^MSigDB($|_)", available_names, value = TRUE)
+  if (length(available) == 0L) {
+    available <- "(none)"
+  }
+  log_message(
+    paste0(
+      "MSigDB database {.val {missing}} is not available. ",
+      "Nested collections use underscores, for example {.val MSigDB_M2_CGP}, ",
+      "{.val MSigDB_M2_CP} and {.val MSigDB_M2_CP_BIOCARTA}. ",
+      "Available MSigDB databases: {.val {available}}."
+    ),
+    message_type = "error"
+  )
+}
+
+preparedb_load_cache_entry <- function(
+  species,
+  db,
+  db_version = "latest",
+  verbose = TRUE
+) {
+  dbinfo <- list_db_cache_entries(species = species, db = db)
+  if (is.null(dbinfo) || nrow(dbinfo) == 0L) {
+    return(NULL)
+  }
+  if (identical(as.character(db_version), "latest")) {
+    pathname <- dbinfo[
+      order(dbinfo[["timestamp"]], decreasing = TRUE)[1],
+      "file"
+    ]
+  } else {
+    pathname <- dbinfo[
+      grep(db_version, dbinfo[["db_version"]], fixed = TRUE)[1],
+      "file"
+    ]
+    if (is.na(pathname)) {
+      log_message(
+        "There is no {.val {db_version}} version of the database. Use the latest version",
+        message_type = "warning",
+        verbose = verbose
+      )
+      pathname <- dbinfo[
+        order(dbinfo[["timestamp"]], decreasing = TRUE)[1],
+        "file"
+      ]
+    }
+  }
+  if (length(pathname) == 0L || is.na(pathname)) {
+    return(NULL)
+  }
+  header <- R.cache::readCacheHeader(pathname)
+  cached_version <- strsplit(header[["comment"]], "\\|")[[1]][1]
+  timestamp <- format(header[["timestamp"]], "%Y-%m-%d %H:%M:%S")
+  log_message(
+    "Loading cached: {.pkg {db}} version: {.pkg {cached_version}} created: {.pkg {timestamp}}",
+    verbose = verbose
+  )
+  R.cache::loadCache(pathname = pathname)
+}
+
+preparedb_ensure_msigdb_parent <- function(
+  db_list,
+  species,
+  db_version = "latest",
+  verbose = TRUE
+) {
+  present <- names(db_list[[species]])
+  needs_parent <- any(grepl("^MSigDB_", present)) && !"MSigDB" %in% present
+  if (!isTRUE(needs_parent)) {
+    return(db_list)
+  }
+  parent <- preparedb_load_cache_entry(
+    species = species,
+    db = "MSigDB",
+    db_version = db_version,
+    verbose = verbose
+  )
+  if (!is.null(parent)) {
+    db_list[[species]][["MSigDB"]] <- parent
+  }
+  db_list
+}
+
+preparedb_msigdb_parent_term2gene <- function(parent, id_types) {
+  if (
+    is.null(parent) ||
+      !is.data.frame(parent) ||
+      length(id_types) == 0L ||
+      !all(id_types %in% colnames(parent))
+  ) {
+    return(NULL)
+  }
+  parent
+}
+
+preparedb_keep_requested_dbs <- function(db_list, species, db_names) {
+  db_names <- unique(as.character(db_names))
+  db_names <- db_names[!is.na(db_names) & nzchar(db_names)]
+  if (length(db_names) == 0L) {
+    return(db_list)
+  }
+  for (sps in intersect(as.character(species), names(db_list))) {
+    keep <- intersect(names(db_list[[sps]]), db_names)
+    db_list[[sps]] <- db_list[[sps]][keep]
+  }
+  drop <- setdiff(names(db_list), c(as.character(species), "CytoTRACE2"))
+  if (length(drop) > 0L) {
+    db_list[drop] <- NULL
+  }
+  db_list
+}
+
+preparedb_alias_requested_msigdb <- function(
+  db_list,
+  species,
+  db_requested,
+  db_normalized
+) {
+  if (length(db_requested) == 0L || is.null(db_list[[species]])) {
+    return(db_list)
+  }
+  for (i in seq_along(db_requested)) {
+    requested <- db_requested[[i]]
+    normalized <- db_normalized[[i]]
+    if (identical(requested, normalized)) {
+      next
+    }
+    entry <- db_list[[species]][[normalized]]
+    if (!is.null(entry)) {
+      db_list[[species]][[requested]] <- entry
+    }
+  }
+  db_list
 }
 
 preparedb_local_source_file <- function(
