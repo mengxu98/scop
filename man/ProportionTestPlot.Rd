@@ -61,15 +61,20 @@ If \code{NULL}, plots all comparisons.}
 \code{srt@tools[['ProportionTest']][['methods']]}.
 If \code{NULL}, uses the active/most recent method.}
 
-\item{result_level}{Result level to draw. Use \code{"group"} for group-level
-results or \code{"neighborhood"} for Milo neighborhood-level results when
-available.}
+\item{result_level}{Result level to draw. \code{"group"} uses one result per
+cell group. \code{"neighborhood"} uses stored Milo neighborhood results.
+Neighborhood UMAP colors each cell from the neighborhoods it belongs to.
+A cell in several neighborhoods takes the significant neighborhood with
+the largest absolute log2 fold-difference. Cells outside every
+neighborhood stay non-significant.}
 
 \item{plot_type}{Plot type. One of \code{"effect"} or \code{"umap"}.}
 
 \item{umap_mode}{UMAP projection mode for \code{plot_type = "umap"}.
 \code{"discrete"} maps cells to DA direction categories;
-\code{"continuous"} maps cells to group-level \code{obs_log2FD}.}
+\code{"continuous"} maps cells to \code{obs_log2FD}. For
+\code{result_level = "neighborhood"} those values come from Milo neighborhood
+membership, not from \code{group.by}.}
 
 \item{reduction}{Reduction name used by UMAP projection.}
 

@@ -119,3 +119,92 @@ test_that("ProportionTestPlot accepts Milo neighborhood result level", {
   expect_identical(result_levels, c("group", "neighborhood"))
   expect_identical(match.arg("neighborhood", result_levels), "neighborhood")
 })
+
+make_neighborhood_plot_srt <- function(members = TRUE) {
+  counts <- matrix(1, nrow = 2, ncol = 4, dimnames = list(c("g1", "g2"), paste0("cell", 1:4)))
+  srt <- Seurat::CreateSeuratObject(counts = Matrix::Matrix(counts, sparse = TRUE))
+  srt$CellType <- c("T", "T", "B", "NK")
+  nhood <- data.frame(
+    clusters = c("nhood_1", "nhood_2", "nhood_3"),
+    neighborhood = c("nhood_1", "nhood_2", "nhood_3"),
+    obs_log2FD = c(2, 0.1, -2),
+    FDR = c(0.001, 0.8, 0.001),
+    pval = c(0.001, 0.8, 0.001),
+    stringsAsFactors = FALSE
+  )
+  group <- data.frame(
+    clusters = c("T", "B", "NK"),
+    obs_log2FD = c(2, 0.1, -2),
+    FDR = c(0.001, 0.8, 0.001),
+    pval = c(0.001, 0.8, 0.001),
+    stringsAsFactors = FALSE
+  )
+  stored_members <- if (isTRUE(members)) {
+    list(
+      nhood_1 = c("cell1", "cell2"),
+      nhood_2 = "cell3",
+      nhood_3 = "cell4"
+    )
+  } else {
+    NULL
+  }
+  srt@tools[["ProportionTest"]] <- list(
+    active_method = "milo",
+    parameters = list(group.by = "CellType"),
+    methods = list(
+      milo = list(
+        results = list(Treat_vs_Ctrl = group),
+        neighborhood_results = list(Treat_vs_Ctrl = nhood),
+        parameters = list(group.by = "CellType"),
+        details = list(
+          milo_graph_data = list(.metadata = list(members = stored_members))
+        )
+      )
+    )
+  )
+  srt
+}
+
+test_that("neighborhood DA maps onto member cells instead of cell-group labels", {
+  project <- getFromNamespace("project_neighborhood_da_to_cells", "scop")
+  srt <- make_neighborhood_plot_srt()
+  nhood <- srt@tools$ProportionTest$methods$milo$neighborhood_results$Treat_vs_Ctrl
+  members <- srt@tools$ProportionTest$methods$milo$details$milo_graph_data$.metadata$members
+  members$nhood_1 <- c("cell1", "cell2", "cell4")
+
+  projected <- project(
+    nhood,
+    members,
+    colnames(srt),
+    FDR_threshold = 0.05,
+    log2FD_threshold = log2(1.5)
+  )
+
+  expect_identical(as.character(projected$direction), c("Increased", "Increased", "NS", "Increased"))
+  expect_equal(projected$obs_log2FD, c(2, 2, 0.1, 2))
+})
+
+test_that("missing Milo neighborhood results are not replaced with group results", {
+  get_results <- getFromNamespace("get_proportion_plot_results", "scop")
+  srt <- make_neighborhood_plot_srt()
+  srt@tools$ProportionTest$methods$milo$neighborhood_results <- NULL
+
+  expect_error(
+    get_results(srt, result_level = "neighborhood"),
+    "Neighborhood-level results are not available"
+  )
+})
+
+test_that("neighborhood UMAP requires stored neighborhood membership", {
+  srt <- make_neighborhood_plot_srt(members = FALSE)
+
+  expect_error(
+    ProportionTestPlot(
+      srt,
+      result_level = "neighborhood",
+      plot_type = "umap",
+      verbose = FALSE
+    ),
+    "RunMilo"
+  )
+})

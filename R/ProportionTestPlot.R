@@ -16,13 +16,18 @@
 #' @param proportion_method Optional method to select from
 #' `srt@tools[['ProportionTest']][['methods']]`.
 #' If `NULL`, uses the active/most recent method.
-#' @param result_level Result level to draw. Use `"group"` for group-level
-#' results or `"neighborhood"` for Milo neighborhood-level results when
-#' available.
+#' @param result_level Result level to draw. `"group"` uses one result per
+#' cell group. `"neighborhood"` uses stored Milo neighborhood results.
+#' Neighborhood UMAP colors each cell from the neighborhoods it belongs to.
+#' A cell in several neighborhoods takes the significant neighborhood with
+#' the largest absolute log2 fold-difference. Cells outside every
+#' neighborhood stay non-significant.
 #' @param plot_type Plot type. One of `"effect"` or `"umap"`.
 #' @param umap_mode UMAP projection mode for `plot_type = "umap"`.
 #' `"discrete"` maps cells to DA direction categories;
-#' `"continuous"` maps cells to group-level `obs_log2FD`.
+#' `"continuous"` maps cells to `obs_log2FD`. For
+#' `result_level = "neighborhood"` those values come from Milo neighborhood
+#' membership, not from `group.by`.
 #' @param reduction Reduction name used by UMAP projection.
 #' @param projection_args Additional arguments passed to [CellDimPlot]
 #' (`umap_mode = "discrete"`) or [FeatureDimPlot]
@@ -137,6 +142,10 @@ ProportionTestPlot <- function(
   effect_color_mode <- match.arg(effect_color_mode)
 
   target_level <- match.arg(result_level)
+  effect_xlab <- xlab
+  if (identical(target_level, "neighborhood") && identical(effect_xlab, "Cell Type")) {
+    effect_xlab <- "Neighborhood"
+  }
 
   resolved <- get_proportion_plot_results(
     srt = srt,
@@ -208,7 +217,7 @@ ProportionTestPlot <- function(
     label.bg = label.bg,
     label.bg.r = label.bg.r,
     label.size = label.size,
-    xlab = xlab,
+    xlab = effect_xlab,
     ylab = ylab,
     aspect.ratio = aspect.ratio,
     legend.position = legend.position,
@@ -224,6 +233,7 @@ ProportionTestPlot <- function(
       srt = srt,
       std_results = std_results,
       method_bundle = method_bundle,
+      result_level = target_level,
       umap_mode = umap_mode,
       reduction = reduction,
       projection_args = projection_args,
@@ -449,10 +459,120 @@ plot_proportion_effect <- function(
     )
 }
 
+proportion_milo_members <- function(method_bundle) {
+  members <- method_bundle[["details"]][["milo_graph_data"]][[".metadata"]][["members"]]
+  if (!is.list(members) || length(members) == 0L) {
+    return(NULL)
+  }
+  if (is.null(names(members)) || any(!nzchar(names(members)))) {
+    names(members) <- paste0("nhood_", seq_along(members))
+  }
+  members
+}
+
+project_neighborhood_da_to_cells <- function(
+  df,
+  members,
+  cells,
+  FDR_threshold,
+  log2FD_threshold
+) {
+  if (!is.list(members) || length(members) == 0L) {
+    log_message(
+      "Cannot map neighborhood DA onto cells without Milo neighborhood membership. Re-run {.fn RunMilo} so neighborhood members are stored.",
+      message_type = "error"
+    )
+  }
+
+  nhood_id <- if ("neighborhood" %in% colnames(df)) {
+    ifelse(
+      !is.na(df$neighborhood) & nzchar(as.character(df$neighborhood)),
+      as.character(df$neighborhood),
+      as.character(df$clusters)
+    )
+  } else {
+    as.character(df$clusters)
+  }
+  stats <- data.frame(
+    nhood = nhood_id,
+    effect = suppressWarnings(as.numeric(df$obs_log2FD)),
+    fdr = suppressWarnings(as.numeric(df$FDR)),
+    stringsAsFactors = FALSE
+  )
+  stats <- stats[!is.na(stats$nhood) & nzchar(stats$nhood), , drop = FALSE]
+  if (nrow(stats) == 0L) {
+    log_message(
+      "Neighborhood results do not contain neighborhood ids",
+      message_type = "error"
+    )
+  }
+  stats <- do.call(rbind, lapply(split(stats, stats$nhood), function(x) {
+    data.frame(
+      nhood = x$nhood[[1]],
+      effect = if (all(is.na(x$effect))) NA_real_ else mean(x$effect, na.rm = TRUE),
+      fdr = if (all(is.na(x$fdr))) NA_real_ else min(x$fdr, na.rm = TRUE),
+      stringsAsFactors = FALSE
+    )
+  }))
+
+  member_names <- names(members)
+  nhood_ids <- rep(member_names, lengths(members))
+  cell_ids <- unlist(lapply(members, as.character), use.names = FALSE)
+  known <- nhood_ids %in% stats$nhood & cell_ids %in% cells
+  nhood_ids <- nhood_ids[known]
+  cell_ids <- cell_ids[known]
+  if (length(cell_ids) == 0L) {
+    log_message(
+      "Milo neighborhood membership does not match any cells in this object",
+      message_type = "error"
+    )
+  }
+
+  effects <- stats$effect[match(nhood_ids, stats$nhood)]
+  fdrs <- stats$fdr[match(nhood_ids, stats$nhood)]
+  significant <- !is.na(fdrs) &
+    !is.na(effects) &
+    fdrs < FDR_threshold &
+    abs(effects) > log2FD_threshold
+
+  picked <- lapply(split(seq_along(cell_ids), cell_ids), function(idx) {
+    if (any(significant[idx])) {
+      use <- idx[significant[idx]]
+      best <- use[[which.max(abs(effects[use]))]]
+      direction <- if (effects[[best]] > 0) "Increased" else "Decreased"
+      effect <- effects[[best]]
+    } else {
+      effect <- effects[idx]
+      effect <- if (all(is.na(effect))) NA_real_ else mean(effect, na.rm = TRUE)
+      direction <- "NS"
+    }
+    data.frame(
+      cell = cell_ids[[idx[[1]]]],
+      obs_log2FD = effect,
+      direction = direction,
+      stringsAsFactors = FALSE
+    )
+  })
+  mapped <- do.call(rbind, picked)
+
+  out <- data.frame(
+    cell = cells,
+    obs_log2FD = NA_real_,
+    direction = NA_character_,
+    stringsAsFactors = FALSE
+  )
+  hit <- match(mapped$cell, out$cell)
+  out$obs_log2FD[hit] <- mapped$obs_log2FD
+  out$direction[hit] <- mapped$direction
+  out$direction <- factor(out$direction, levels = c("Increased", "Decreased", "NS"))
+  out
+}
+
 plot_proportion_umap <- function(
   srt,
   std_results,
   method_bundle,
+  result_level = c("group", "neighborhood"),
   umap_mode = c("discrete", "continuous"),
   reduction = "UMAP",
   projection_args = list(),
@@ -470,30 +590,42 @@ plot_proportion_umap <- function(
   theme_args = list()
 ) {
   umap_mode <- match.arg(umap_mode)
+  result_level <- match.arg(result_level)
+  use_neighborhood <- identical(result_level, "neighborhood")
+  if (use_neighborhood && is.null(proportion_milo_members(method_bundle))) {
+    log_message(
+      "Cannot map neighborhood DA onto cells without Milo neighborhood membership. Re-run {.fn RunMilo} so neighborhood members are stored.",
+      message_type = "error"
+    )
+  }
   reduction_use <- if (is.null(reduction)) {
     DefaultReduction(srt)
   } else {
     DefaultReduction(srt, pattern = reduction)
   }
 
-  group.by <- method_bundle[["parameters"]][["group.by"]] %||%
-    srt@tools[["ProportionTest"]][["parameters"]][["group.by"]]
+  if (use_neighborhood) {
+    cluster_by_cell <- NULL
+  } else {
+    group.by <- method_bundle[["parameters"]][["group.by"]] %||%
+      srt@tools[["ProportionTest"]][["parameters"]][["group.by"]]
 
-  if (is.null(group.by) || !nzchar(group.by)) {
-    log_message(
-      "Cannot determine {.arg group.by} from proportion test metadata for {.val plot_type = 'umap'}",
-      message_type = "error"
-    )
-  }
-  if (!group.by %in% colnames(srt@meta.data)) {
-    log_message(
-      "{.arg group.by} {.val {group.by}} is not in {.cls Seurat} meta.data",
-      message_type = "error"
-    )
+    if (is.null(group.by) || !nzchar(group.by)) {
+      log_message(
+        "Cannot determine {.arg group.by} from proportion test metadata for {.val plot_type = 'umap'}",
+        message_type = "error"
+      )
+    }
+    if (!group.by %in% colnames(srt@meta.data)) {
+      log_message(
+        "{.arg group.by} {.val {group.by}} is not in {.cls Seurat} meta.data",
+        message_type = "error"
+      )
+    }
+    cluster_by_cell <- as.character(srt@meta.data[[group.by]])
   }
 
   projection_args <- projection_args %||% list()
-  cluster_by_cell <- as.character(srt@meta.data[[group.by]])
   legend_discrete <- if (is.null(legend.title) || identical(legend.title, "Significance")) {
     "DA Direction"
   } else {
@@ -508,27 +640,40 @@ plot_proportion_umap <- function(
 
   for (comp_name in names(std_results)) {
     df_comp <- std_results[[comp_name]]
-    proj_df <- summarize_proportion_projection(
-      df = df_comp,
-      FDR_threshold = FDR_threshold,
-      log2FD_threshold = log2FD_threshold
-    )
-
-    effect_map <- stats::setNames(proj_df$obs_log2FD, proj_df$clusters)
-    direction_map <- stats::setNames(as.character(proj_df$direction), proj_df$clusters)
+    if (use_neighborhood) {
+      projected <- project_neighborhood_da_to_cells(
+        df = df_comp,
+        members = proportion_milo_members(method_bundle),
+        cells = colnames(srt),
+        FDR_threshold = FDR_threshold,
+        log2FD_threshold = log2FD_threshold
+      )
+      direction_values <- projected$direction[match(colnames(srt), projected$cell)]
+      effect_values <- projected$obs_log2FD[match(colnames(srt), projected$cell)]
+    } else {
+      proj_df <- summarize_proportion_projection(
+        df = df_comp,
+        FDR_threshold = FDR_threshold,
+        log2FD_threshold = log2FD_threshold
+      )
+      effect_map <- stats::setNames(proj_df$obs_log2FD, proj_df$clusters)
+      direction_map <- stats::setNames(as.character(proj_df$direction), proj_df$clusters)
+      direction_values <- direction_map[cluster_by_cell]
+      effect_values <- effect_map[cluster_by_cell]
+    }
 
     suffix <- proportion_projection_suffix(comp_name)
     direction_col <- paste0(".proportion_da_direction_", suffix)
     effect_col <- paste0(".proportion_da_log2fd_", suffix)
 
-    srt@meta.data[[direction_col]] <- direction_map[cluster_by_cell]
+    srt@meta.data[[direction_col]] <- direction_values
     srt@meta.data[[direction_col]][is.na(srt@meta.data[[direction_col]])] <- "NS"
     srt@meta.data[[direction_col]] <- factor(
       srt@meta.data[[direction_col]],
       levels = c("Increased", "Decreased", "NS")
     )
 
-    srt@meta.data[[effect_col]] <- effect_map[cluster_by_cell]
+    srt@meta.data[[effect_col]] <- effect_values
     srt@meta.data[[effect_col]][is.na(srt@meta.data[[effect_col]])] <- 0
 
     title_use <- proportion_title(df_comp)
@@ -761,6 +906,12 @@ get_proportion_plot_results <- function(
 
   if (is.null(methods_store) || length(methods_store) == 0) {
     results <- pt[["results"]]
+    if (identical(result_level, "neighborhood")) {
+      log_message(
+        "Neighborhood-level results are not available. Perform {.fn RunMilo} first",
+        message_type = "error"
+      )
+    }
     if (is.null(results) || length(results) == 0) {
       log_message(
         "No proportion test results found",
@@ -795,10 +946,9 @@ get_proportion_plot_results <- function(
       method_bundle[["details"]][["neighborhood_results"]]
     if (is.null(results) || length(results) == 0) {
       log_message(
-        "Neighborhood-level results are not available for method {.val {method_use}}. Use group-level results.",
-        message_type = "warning"
+        "Neighborhood-level results are not available for method {.val {method_use}}",
+        message_type = "error"
       )
-      result_level <- "group"
     }
   }
 

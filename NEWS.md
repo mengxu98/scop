@@ -1,7 +1,10 @@
 # scop (development version)
 
-* **fix**: `ProportionTestPlot()` accepts `result_level = "neighborhood"`
-  for stored Milo neighborhood-level results.
+* **fix**: `ProportionTestPlot()` draws stored Milo neighborhood results.
+  Neighborhood UMAP colors cells from neighborhood membership instead of
+  treating neighborhood ids as cell groups, and a missing neighborhood
+  result or membership is an error instead of a group-level or all
+  non-significant plot.
 * **fix**: Preserve scCODA's `"automatic"` reference-cell selection in
   `RunscCODA()` and reject unknown explicit references instead of silently
   using the first cell type.
