@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **fix**: `ProportionTestPlot()` accepts `result_level = "neighborhood"`
+  for stored Milo neighborhood-level results.
 * **fix**: Preserve scCODA's `"automatic"` reference-cell selection in
   `RunscCODA()` and reject unknown explicit references instead of silently
   using the first cell type.
