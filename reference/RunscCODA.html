@@ -73,7 +73,7 @@
 <span>  <span class="va">split.by</span>,</span>
 <span>  <span class="va">sample.by</span>,</span>
 <span>  comparison <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  reference_cell_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  reference_cell_type <span class="op">=</span> <span class="st">"automatic"</span>,</span>
 <span>  credible_effect_threshold <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  n_mcmc_samples <span class="op">=</span> <span class="fl">20000L</span>,</span>
 <span>  reuse_reverse_comparisons <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -120,7 +120,10 @@ generated in both directions.</p></dd>
 
 
 <dt id="arg-reference-cell-type">reference_cell_type<a class="anchor" aria-label="anchor" href="#arg-reference-cell-type"></a></dt>
-<dd><p>Optional reference cell type for scCODA.</p></dd>
+<dd><p>Reference cell type for scCODA. The default
+<code>"automatic"</code> lets scCODA select the cell type with the lowest relative
+abundance dispersion among sufficiently prevalent cell types. A cell-type
+name can be supplied to use an explicit reference.</p></dd>
 
 
 <dt id="arg-credible-effect-threshold">credible_effect_threshold<a class="anchor" aria-label="anchor" href="#arg-credible-effect-threshold"></a></dt>
