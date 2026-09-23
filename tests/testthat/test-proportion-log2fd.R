@@ -112,3 +112,10 @@ test_that("proportion plot title follows group1 vs group2", {
   df <- data.frame(group1 = "A", group2 = "B", stringsAsFactors = FALSE)
   expect_identical(title_fun(df), "A vs B")
 })
+
+test_that("ProportionTestPlot accepts Milo neighborhood result level", {
+  result_levels <- eval(formals(ProportionTestPlot)$result_level)
+
+  expect_identical(result_levels, c("group", "neighborhood"))
+  expect_identical(match.arg("neighborhood", result_levels), "neighborhood")
+})

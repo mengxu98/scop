@@ -16,7 +16,9 @@
 #' @param proportion_method Optional method to select from
 #' `srt@tools[['ProportionTest']][['methods']]`.
 #' If `NULL`, uses the active/most recent method.
-#' @param result_level Result level to draw. Currently only `"group"` is used.
+#' @param result_level Result level to draw. Use `"group"` for group-level
+#' results or `"neighborhood"` for Milo neighborhood-level results when
+#' available.
 #' @param plot_type Plot type. One of `"effect"` or `"umap"`.
 #' @param umap_mode UMAP projection mode for `plot_type = "umap"`.
 #' `"discrete"` maps cells to DA direction categories;
@@ -86,7 +88,7 @@ ProportionTestPlot <- function(
   object,
   comparison = NULL,
   proportion_method = NULL,
-  result_level = c("group"),
+  result_level = c("group", "neighborhood"),
   plot_type = c("effect", "umap"),
   umap_mode = c("discrete", "continuous"),
   reduction = "UMAP",
