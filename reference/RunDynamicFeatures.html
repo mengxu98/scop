@@ -205,22 +205,22 @@ Genome Biol (2026). https://doi.org/10.1186/s13059-026-03994-3</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:48] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:48] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-21 17:40:48] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:49] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:49] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:49] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:49] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:49] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:49] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:49] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:50] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:50] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:50] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:40:50] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:40:58] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:52] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:52] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-23 08:05:52] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:52] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:52] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:52] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:52] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:52] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:52] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:52] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:53] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:53] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:53] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:53] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:05:53] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:06:01] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunSlingshot.html">RunSlingshot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"SubCellType"</span>,</span></span>
@@ -234,26 +234,27 @@ Genome Biol (2026). https://doi.org/10.1186/s13059-026-03994-3</p>
 <span class="r-in"><span>  n_candidates <span class="op">=</span> <span class="fl">200</span>,</span></span>
 <span class="r-in"><span>  fit_method <span class="op">=</span> <span class="st">"gam"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:00] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:00] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:01] Number of candidate features (union): <span style="color: #0000BB;">242</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:01] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:01] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:01] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-09-21 17:41:01] Running for <span style="color: #0000BB;">Gcg </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">242</span>]              0% | ETA: <span style="color: #0000BB;"> 8s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-09-21 17:41:01] Running for <span style="color: #0000BB;">Cyr61 </span>[<span style="color: #0000BB;">80</span>/<span style="color: #0000BB;">242</span>] <span style="color: #00BB00;">■■■</span>         33% | ETA: <span style="color: #0000BB;"> 4s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠸</span> [2026-09-21 17:41:01] Running for <span style="color: #0000BB;">Tyms </span>[<span style="color: #0000BB;">194</span>/<span style="color: #0000BB;">242</span>] <span style="color: #00BB00;">■■■■■■■■</span>    80% | ETA: <span style="color: #0000BB;"> 1s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:41:01] Completed <span style="color: #0000BB;">242</span> tasks in <span style="color: #0000BB;">6.6s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:03] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:03] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:04] Number of candidate features (union): <span style="color: #0000BB;">242</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:05] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:05] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:05] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-09-23 08:06:05] Running for <span style="color: #0000BB;">Gcg </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">242</span>]              0% | ETA: <span style="color: #0000BB;">10s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-09-23 08:06:05] Running for <span style="color: #0000BB;">Tuba1c </span>[<span style="color: #0000BB;">68</span>/<span style="color: #0000BB;">242</span>] <span style="color: #00BB00;">■■</span>          28% | ETA: <span style="color: #0000BB;"> 6s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠸</span> [2026-09-23 08:06:05] Running for <span style="color: #0000BB;">Tspan7 </span>[<span style="color: #0000BB;">158</span>/<span style="color: #0000BB;">242</span>] <span style="color: #00BB00;">■■■■■■</span>      65% | ETA: <span style="color: #0000BB;"> 3s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠼</span> [2026-09-23 08:06:05] Running for <span style="color: #0000BB;">Nupr1 </span>[<span style="color: #0000BB;">240</span>/<span style="color: #0000BB;">242</span>] <span style="color: #00BB00;">■■■■■■■■■</span>   99% | ETA: <span style="color: #0000BB;"> 0s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:06:05] Completed <span style="color: #0000BB;">242</span> tasks in <span style="color: #0000BB;">8.3s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:01] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:08] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:08] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-09-21 17:41:08] Running for <span style="color: #0000BB;">Kirrel2 </span>[<span style="color: #0000BB;">55</span>/<span style="color: #0000BB;">242</span>] <span style="color: #00BB00;">■■</span>          23% | ETA: <span style="color: #0000BB;"> 5s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-09-21 17:41:08] Running for <span style="color: #0000BB;">Cdkn1c </span>[<span style="color: #0000BB;">164</span>/<span style="color: #0000BB;">242</span>] <span style="color: #00BB00;">■■■■■■</span>      68% | ETA: <span style="color: #0000BB;"> 2s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:41:08] Completed <span style="color: #0000BB;">242</span> tasks in <span style="color: #0000BB;">6.5s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:05] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:13] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:13] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-09-23 08:06:13] Running for <span style="color: #0000BB;">Cartpt </span>[<span style="color: #0000BB;">85</span>/<span style="color: #0000BB;">242</span>] <span style="color: #00BB00;">■■■</span>         35% | ETA: <span style="color: #0000BB;"> 5s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-09-23 08:06:13] Running for <span style="color: #0000BB;">Tk1 </span>[<span style="color: #0000BB;">170</span>/<span style="color: #0000BB;">242</span>] <span style="color: #00BB00;">■■■■■■■</span>     70% | ETA: <span style="color: #0000BB;"> 2s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:06:13] Completed <span style="color: #0000BB;">242</span> tasks in <span style="color: #0000BB;">8.2s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:08] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:41:14] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:13] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:06:21] Find dynamic features done</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DynamicFeatures_Lineage1</span></span></span>
@@ -284,9 +285,9 @@ Genome Biol (2026). https://doi.org/10.1186/s13059-026-03994-3</p>
 <span class="r-in"><span>  n_split <span class="op">=</span> <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>  reverse_ht <span class="op">=</span> <span class="st">"Lineage1"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:14] [1] 182 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:21] [1] 182 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Gcg,Ghrl,Iapp,Pyy,Rbp4,Lrpprc,Slc38a5,Cck,Cdkn1a,Chga...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:15] </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:22] </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       The size of the heatmap is fixed because certain elements are not scalable.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       The width and height of the heatmap are determined by the size of the current viewport.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
@@ -301,28 +302,25 @@ Genome Biol (2026). https://doi.org/10.1186/s13059-026-03994-3</p>
 <span class="r-in"><span>  compare_lineages <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  compare_features <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:17] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:17] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:17] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:17] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:17] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:17] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-09-21 17:41:17] Running for <span style="color: #0000BB;">Arxes1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:41:17] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">115ms</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:24] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:25] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:25] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:25] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:25] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:25] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-09-23 08:06:25] Running for <span style="color: #0000BB;">Arxes1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:06:25] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">139ms</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:17] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:41:18] Find dynamic features done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:18] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:18] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:18] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:18] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:18] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:19] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-09-21 17:41:19] Running for <span style="color: #0000BB;">Arxes1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:41:19] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">122ms</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:19] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:41:19] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:25] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:06:26] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:26] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:26] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:26] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:27] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:27] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:27] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:27] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:06:27] Find dynamic features done</span>
 <span class="r-plt img"><img src="RunDynamicFeatures-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunDynamicFeatures</span><span class="op">(</span></span></span>
@@ -331,13 +329,13 @@ Genome Biol (2026). https://doi.org/10.1186/s13059-026-03994-3</p>
 <span class="r-in"><span>  n_candidates <span class="op">=</span> <span class="fl">200</span>,</span></span>
 <span class="r-in"><span>  fit_method <span class="op">=</span> <span class="st">"pretsa"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:19] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:20] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:21] Number of candidate features (union): <span style="color: #0000BB;">242</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:21] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:21] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:21] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:41:21] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:28] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:28] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:29] Number of candidate features (union): <span style="color: #0000BB;">242</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:29] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:29] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:30] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:06:30] Find dynamic features done</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">DynamicFeatures_Lineage1</span><span class="op">$</span><span class="va">DynamicFeatures</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
@@ -362,9 +360,9 @@ Genome Biol (2026). https://doi.org/10.1186/s13059-026-03994-3</p>
 <span class="r-in"><span>  n_split <span class="op">=</span> <span class="fl">3</span>,</span></span>
 <span class="r-in"><span>  reverse_ht <span class="op">=</span> <span class="st">"Lineage1"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:21] [1] 176 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:30] [1] 176 features from Lineage1,Lineage2 passed the threshold (exp_ncells&gt;[1] 20 &amp; r.sq&gt;[1] 0.2 &amp; dev.expl&gt;[1] 0.2 &amp; padjust&lt;[1] 0.05): </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Ppy,Cck...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:21] </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:30] </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       The size of the heatmap is fixed because certain elements are not scalable.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       The width and height of the heatmap are determined by the size of the current viewport.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>                       If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.</span>
@@ -379,25 +377,25 @@ Genome Biol (2026). https://doi.org/10.1186/s13059-026-03994-3</p>
 <span class="r-in"><span>  compare_lineages <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  compare_features <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:23] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:24] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:24] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:24] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:24] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:24] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-09-21 17:41:24] Running for <span style="color: #0000BB;">Arxes1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:41:24] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">115ms</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:33] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:33] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:33] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:34] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:34] Calculating dynamic features for <span style="color: #0000BB;">"Lineage1"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:34] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-09-23 08:06:34] Running for <span style="color: #0000BB;">Arxes1 </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">2</span>] <span style="color: #00BB00;">■■■■■</span>       50% | ETA: <span style="color: #0000BB;"> 0s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:06:34] Completed <span style="color: #0000BB;">2</span> tasks in <span style="color: #0000BB;">137ms</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:24] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:41:24] Find dynamic features done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:24] Start find dynamic features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:25] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:25] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:25] Data type is raw counts</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:25] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:25] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-21 17:41:25] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-21 17:41:25] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:34] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:06:34] Find dynamic features done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:34] Start find dynamic features</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:34] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:35] Number of candidate features (union): <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:35] Data type is raw counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:35] Calculating dynamic features for <span style="color: #0000BB;">"Lineage2"</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:35] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:06:35] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:06:35] Find dynamic features done</span>
 <span class="r-plt img"><img src="RunDynamicFeatures-5.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
