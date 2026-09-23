@@ -10,7 +10,7 @@ RunscCODA(
   split.by,
   sample.by,
   comparison = NULL,
-  reference_cell_type = NULL,
+  reference_cell_type = "automatic",
   credible_effect_threshold = 0.95,
   n_mcmc_samples = 20000L,
   reuse_reverse_comparisons = TRUE,
@@ -42,7 +42,10 @@ or identical to \code{split.by}, virtual samples are created within each
 type is more abundant in \code{group1}. If \code{NULL}, all pairwise comparisons are
 generated in both directions.}
 
-\item{reference_cell_type}{Optional reference cell type for scCODA.}
+\item{reference_cell_type}{Reference cell type for scCODA. The default
+\code{"automatic"} lets scCODA select the cell type with the lowest relative
+abundance dispersion among sufficiently prevalent cell types. A cell-type
+name can be supplied to use an explicit reference.}
 
 \item{credible_effect_threshold}{Inclusion probability threshold for
 credible effects.}

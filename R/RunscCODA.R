@@ -2,7 +2,10 @@
 #'
 #' @md
 #' @inheritParams RunProportionTest
-#' @param reference_cell_type Optional reference cell type for scCODA.
+#' @param reference_cell_type Reference cell type for scCODA. The default
+#' `"automatic"` lets scCODA select the cell type with the lowest relative
+#' abundance dispersion among sufficiently prevalent cell types. A cell-type
+#' name can be supplied to use an explicit reference.
 #' @param credible_effect_threshold Inclusion probability threshold for
 #' credible effects.
 #' @param n_mcmc_samples Number of MCMC samples requested in scCODA.
@@ -23,7 +26,7 @@ RunscCODA <- function(
   split.by,
   sample.by,
   comparison = NULL,
-  reference_cell_type = NULL,
+  reference_cell_type = "automatic",
   credible_effect_threshold = 0.95,
   n_mcmc_samples = 20000L,
   reuse_reverse_comparisons = TRUE,
@@ -137,7 +140,7 @@ RunscCODA <- function(
     condition_key = "condition",
     sample_key = "sample",
     comparisons = comparison_pairs,
-    reference_cell_type = reference_cell_type %||% "",
+    reference_cell_type = reference_cell_type,
     credible_effect_threshold = as.double(credible_effect_threshold),
     random_seed = as.integer(seed),
     mcmc_samples = as.integer(n_mcmc_samples),

@@ -1,5 +1,6 @@
 test_that("scCODA preserves sample-condition pairs", {
   expect_true(isTRUE(formals(RunscCODA)$reuse_reverse_comparisons))
+  expect_identical(formals(RunscCODA)$reference_cell_type, "automatic")
   build_inputs <- getFromNamespace("build_sccoda_sample_inputs", "scop")
   dat <- data.frame(
     cluster = c("T", "B", "T", "B", "T", "B"),
@@ -44,6 +45,17 @@ test_that("scCODA Python helpers accept structured comparisons and quoted groups
       "parse = module['_sccoda_parse_comparison']",
       "formula = module['_sccoda_formula']",
       "reverse = module['_sccoda_reverse_result_rows']",
+      "resolve_reference = module['_sccoda_resolve_reference']",
+      "assert resolve_reference('automatic', ['B', 'T']) == 'automatic'",
+      "assert resolve_reference('', ['B', 'T']) == 'automatic'",
+      "assert resolve_reference(None, ['B', 'T']) == 'automatic'",
+      "assert resolve_reference('T', ['B', 'T']) == 'T'",
+      "try:",
+      "    resolve_reference('missing', ['B', 'T'])",
+      "except ValueError:",
+      "    pass",
+      "else:",
+      "    raise AssertionError('invalid reference cell type was accepted')",
       "assert parse([\"10x 3' v3\", \"10x 5' v1\"]) == (\"10x 3' v3\", \"10x 5' v1\")",
       "assert parse('A_vs_B') == ('A', 'B')",
       "value = formula('condition', \"10x 3' v3\")",

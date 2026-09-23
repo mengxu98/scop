@@ -5470,6 +5470,22 @@ def _sccoda_set_random_seed(seed):
         pass
 
 
+def _sccoda_resolve_reference(reference_cell_type, cell_types):
+    if reference_cell_type is None:
+        ref_cell = "automatic"
+    else:
+        ref_cell = str(reference_cell_type).strip()
+        if ref_cell in ("", "None"):
+            ref_cell = "automatic"
+
+    if ref_cell != "automatic" and ref_cell not in cell_types:
+        raise ValueError(
+            "Unknown scCODA reference cell type "
+            f"'{ref_cell}'. Choose one of {list(cell_types)} or 'automatic'."
+        )
+    return ref_cell
+
+
 def _sccoda_fallback_pair(
     counts_df,
     meta_df,
@@ -5550,7 +5566,7 @@ def ScCODA(
     condition_key="condition",
     sample_key="sample",
     comparisons=None,
-    reference_cell_type="",
+    reference_cell_type="automatic",
     credible_effect_threshold=0.95,
     random_seed=11,
     mcmc_samples=20000,
@@ -5641,9 +5657,10 @@ def ScCODA(
             covariate_columns=[condition_key],
         )
 
-        ref_cell = str(reference_cell_type).strip()
-        if ref_cell == "" or ref_cell not in sub_counts.columns:
-            ref_cell = str(sub_counts.columns[0])
+        ref_cell = _sccoda_resolve_reference(
+            reference_cell_type,
+            sub_counts.columns,
+        )
 
         model = comp_ana.CompositionalAnalysis(
             cdata,
