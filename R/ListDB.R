@@ -25,6 +25,7 @@ ListDB <- function(
   species = c("Homo_sapiens", "Mus_musculus"),
   db = NULL
 ) {
+  db <- normalize_msigdb_db_names(db)
   dbinfo <- list_db_cache_entries(species = species, db = db)
   if (is.null(dbinfo) || nrow(dbinfo) == 0L) {
     return(data.frame(
