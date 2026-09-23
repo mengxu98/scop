@@ -1,5 +1,6 @@
 # scop (development version)
 
+* **fix**: `PrepareDB()` returns only the requested MSigDB collections after caching the other generated subsets. A cached subset loads the base `MSigDB` database before converting gene IDs, and falls back to the normal ID conversion when that database does not contain the requested columns.
 * **fix**: `PrepareDB()` keeps nested MSigDB collections. Names such as `MSigDB_M2_CGP`, `MSigDB_M2_CP` and `MSigDB_M2_CP_BIOCARTA` select those subsets, parent names such as `MSigDB_M2` still include every nested collection, and colon forms such as `MSigDB_M2:CGP` are accepted. An unknown MSigDB name reports the available collections instead of failing in `complete.cases()`. A cached top-level collection stays usable; requesting a nested name that is not cached rebuilds MSigDB.
 * **fix**: `RunNMF()` supports the CRAN `RcppML` release: sparse input no longer needs `Matrix` attached by the caller, the attach is scoped to the call, and `check_r()` no longer replaces an installed CRAN build with the GitHub one.
 * **fix**: The native Gaussian GSVA kernel follows the sparse scoring walk of the installed `GSVA` release (<= 2.4 and >= 2.6), so `RunGSVA()` and `CellScoring()` match `backend = "r"` on either engine; explicitly stored zeros are dropped before scoring.

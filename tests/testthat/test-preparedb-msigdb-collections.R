@@ -94,6 +94,46 @@ test_that("unknown MSigDB names fail with the available collections", {
   )
 })
 
+test_that("PrepareDB keeps requested MSigDB names and drops siblings", {
+  db_list <- list(
+    Mus_musculus = list(
+      MSigDB = list(TERM2GENE = "all"),
+      MSigDB_M2 = list(TERM2GENE = "m2"),
+      MSigDB_M2_CGP = list(TERM2GENE = "cgp"),
+      MSigDB_M2_CP = list(TERM2GENE = "cp"),
+      GO_BP = list(TERM2GENE = "go"),
+      "MSigDB_M2:CGP" = list(TERM2GENE = "cgp")
+    ),
+    Homo_sapiens = list(MSigDB = list(TERM2GENE = "human")),
+    CytoTRACE2 = list(version = "1.1.0")
+  )
+  out <- preparedb_keep_requested_dbs(
+    db_list = db_list,
+    species = "Mus_musculus",
+    db_names = c("MSigDB_M2_CGP", "MSigDB_M2:CGP", "GO_BP")
+  )
+  expect_identical(
+    names(out[["Mus_musculus"]]),
+    c("MSigDB_M2_CGP", "GO_BP", "MSigDB_M2:CGP")
+  )
+  expect_false("Homo_sapiens" %in% names(out))
+  expect_identical(out[["CytoTRACE2"]][["version"]], "1.1.0")
+})
+
+test_that("MSigDB parent map is used only when it has the requested IDs", {
+  parent <- data.frame(
+    Term = c("CGP1", "CGP1"),
+    symbol = c("A", "B"),
+    stringsAsFactors = FALSE
+  )
+  expect_null(preparedb_msigdb_parent_term2gene(NULL, "entrez_id"))
+  expect_null(preparedb_msigdb_parent_term2gene(parent, "entrez_id"))
+  expect_identical(
+    preparedb_msigdb_parent_term2gene(parent, "symbol"),
+    parent
+  )
+})
+
 test_that("colon MSigDB requests alias the underscore database", {
   entry <- list(TERM2GENE = data.frame(Term = "CGP1", symbol = "A"))
   db_list <- list(Mus_musculus = list(MSigDB_M2_CGP = entry))
