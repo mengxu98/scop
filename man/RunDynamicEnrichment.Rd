@@ -71,9 +71,13 @@ This argument is used to convert the gene IDs to a different type if \code{IDtyp
 \code{"HPO"}, \code{"PFAM"}, \code{"CSPA"}, \code{"Surfaceome"}, \code{"SPRomeDB"}, \code{"VerSeDa"},
 \code{"TFLink"}, \code{"hTFtarget"}, \code{"TRRUST"}, \code{"JASPAR"}, \code{"ENCODE"}, \code{"MSigDB"},
 \code{"CellTalk"}, \code{"CellChat"}, \code{"Chromosome"}, \code{"GeneType"}, \code{"Enzyme"}, \code{"TF"},
-\code{"CytoTRACE2"}. MSigDB subcollections use \code{"MSigDB_<collection>"} (e.g.
-\code{"MSigDB_H"}). \code{"CytoTRACE2"} is species-independent and is required by
-\link{RunCytoTRACE}.}
+\code{"CytoTRACE2"}. MSigDB collections use \code{"MSigDB_<collection>"}, with \code{:}
+replaced by \code{_}. Top-level names such as \code{"MSigDB_H"} (human hallmark),
+\code{"MSigDB_MH"} (mouse hallmark) and \code{"MSigDB_M2"} stay available and include
+their nested collections. Nested names include each prefix, for example
+\code{"MSigDB_M2_CGP"}, \code{"MSigDB_M2_CP"} and \code{"MSigDB_M2_CP_BIOCARTA"}. Colon
+forms such as \code{"MSigDB_M2:CGP"} are accepted. \code{"CytoTRACE2"} is
+species-independent and is required by \link{RunCytoTRACE}.}
 
 \item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
