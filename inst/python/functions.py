@@ -1687,6 +1687,11 @@ def CellRank(
                 realtime_args = {}
             if moscot_args is None:
                 moscot_args = {}
+            # reticulate converts an empty R list() to an empty Python list.
+            if isinstance(moscot_args, (list, tuple)) and not moscot_args:
+                moscot_args = {}
+            if isinstance(realtime_args, (list, tuple)) and not realtime_args:
+                realtime_args = {}
             if not hasattr(moscot_args, "items"):
                 raise TypeError("moscot_args must be a named mapping")
             if not hasattr(realtime_args, "items"):
