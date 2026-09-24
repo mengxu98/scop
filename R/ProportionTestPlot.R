@@ -17,18 +17,26 @@
 #' `srt@tools[['ProportionTest']][['methods']]`.
 #' If `NULL`, uses the active/most recent method.
 #' @param result_level Result level to draw. Use `"group"` for group-level
-#' results or `"neighborhood"` for Milo neighborhood-level results when
-#' available.
+#' results or `"neighborhood"` for stored Milo neighborhood-level results.
+#' A missing requested level is an error. Milo group results are sample-level
+#' cell-type proportion tests, distinct from the Milo neighborhood test.
 #' @param plot_type Plot type. One of `"effect"` or `"umap"`.
 #' @param umap_mode UMAP projection mode for `plot_type = "umap"`.
 #' `"discrete"` maps cells to DA direction categories;
-#' `"continuous"` maps cells to group-level `obs_log2FD`.
+#' `"continuous"` maps group-level `obs_log2FD` or the mean effect of
+#' overlapping Milo neighborhoods to cells. Neighborhood directions are based
+#' on significant memberships: opposite directions are `"Mixed"`, while cells
+#' in no neighborhood are `"Uncovered"`. This is a member-cell projection,
+#' not a separate Milo test per cell.
 #' @param reduction Reduction name used by UMAP projection.
 #' @param projection_args Additional arguments passed to [CellDimPlot]
 #' (`umap_mode = "discrete"`) or [FeatureDimPlot]
 #' (`umap_mode = "continuous"`).
-#' @param FDR_threshold FDR value cutoff for significance.
-#' @param log2FD_threshold Absolute value of log2FD cutoff for significance.
+#' @param FDR_threshold FDR value cutoff for frequentist methods. Milo
+#' neighborhood results use `SpatialFDR`. scCODA uses its stored `credible`
+#' decision instead.
+#' @param log2FD_threshold Absolute value of log2FD cutoff for frequentist
+#' methods; not applied to scCODA credibility.
 #' @param order_by Method to order clusters.
 #' Options: `"name"` (alphabetical), `"value"` (by log2FD value).
 #' @param palette Color palette name for continuous effect coloring.
@@ -146,6 +154,7 @@ ProportionTestPlot <- function(
   results <- resolved$results
   method_used <- resolved$method
   method_bundle <- resolved$method_bundle
+  result_level <- resolved$result_level
 
   if (!is.null(comparison)) {
     comparison <- normalize_plot_comparison_input(comparison)
@@ -184,6 +193,7 @@ ProportionTestPlot <- function(
       nlabel = nlabel,
       features_label = features_label,
       label = label,
+      credible_threshold = method_bundle[["parameters"]][["credible_effect_threshold"]] %||% 0.95,
       seed = seed
     )
     std_results[[comp_name]] <- plot_data
@@ -208,8 +218,16 @@ ProportionTestPlot <- function(
     label.bg = label.bg,
     label.bg.r = label.bg.r,
     label.size = label.size,
-    xlab = xlab,
-    ylab = ylab,
+    xlab = if (identical(result_level, "neighborhood") && identical(xlab, "Cell Type")) {
+      "Milo neighborhood"
+    } else {
+      xlab
+    },
+    ylab = if (identical(result_level, "neighborhood") && identical(ylab, "log2 (FD)")) {
+      "Milo log2 FC"
+    } else {
+      ylab
+    },
     aspect.ratio = aspect.ratio,
     legend.position = legend.position,
     legend.direction = legend.direction,
@@ -224,6 +242,7 @@ ProportionTestPlot <- function(
       srt = srt,
       std_results = std_results,
       method_bundle = method_bundle,
+      result_level = result_level,
       umap_mode = umap_mode,
       reduction = reduction,
       projection_args = projection_args,
@@ -265,6 +284,7 @@ prepare_proportion_plot_data <- function(
   nlabel,
   features_label,
   label,
+  credible_threshold = 0.95,
   seed = 11
 ) {
   plot_data$clusters <- as.character(plot_data$clusters)
@@ -278,38 +298,41 @@ prepare_proportion_plot_data <- function(
   plot_data$hdi_97.5 <- suppressWarnings(as.numeric(plot_data$hdi_97.5))
   plot_data$inclusion_prob <- suppressWarnings(as.numeric(plot_data$inclusion_prob))
 
-  sig_label <- proportion_sig_label(FDR_threshold, log2FD_threshold)
-  plot_data$significance <- ifelse(
-    !is.na(plot_data$FDR) &
-      !is.na(plot_data$obs_log2FD) &
+  method <- unique(as.character(plot_data$method))
+  is_sccoda <- length(method) == 1L && identical(method, "sccoda")
+  not_tested <- if ("inference_valid" %in% colnames(plot_data)) {
+    !is.na(plot_data$inference_valid) & !as.logical(plot_data$inference_valid)
+  } else {
+    rep(FALSE, nrow(plot_data))
+  }
+  if (is_sccoda) {
+    credible <- as.logical(plot_data$credible)
+    missing_credible <- is.na(credible)
+    credible[missing_credible] <- !is.na(plot_data$inclusion_prob[missing_credible]) &
+      plot_data$inclusion_prob[missing_credible] >= credible_threshold
+    significant <- credible & is.finite(plot_data$obs_log2FD) & plot_data$obs_log2FD != 0
+    sig_label <- "Credible effect"
+    stat_p <- pmax(1 - plot_data$inclusion_prob, .Machine$double.eps)
+  } else {
+    significant <- !is.na(plot_data$FDR) & is.finite(plot_data$obs_log2FD) &
       plot_data$FDR < FDR_threshold &
-      abs(plot_data$obs_log2FD) > log2FD_threshold,
-    sig_label,
-    "n.s."
-  )
-  plot_data$significance <- factor(plot_data$significance, levels = c(sig_label, "n.s."))
+      abs(plot_data$obs_log2FD) > log2FD_threshold
+    sig_label <- proportion_sig_label(FDR_threshold, log2FD_threshold)
+    stat_p <- ifelse(is.finite(plot_data$FDR), plot_data$FDR, plot_data$pval)
+  }
+  plot_data$significance <- ifelse(not_tested, "Not tested",
+    ifelse(significant, sig_label, "n.s."))
+  plot_data$significance <- factor(plot_data$significance,
+    levels = c(sig_label, "n.s.", "Not tested"))
 
-  plot_data$direction <- ifelse(
-    !is.na(plot_data$FDR) &
-      !is.na(plot_data$obs_log2FD) &
-      plot_data$FDR < FDR_threshold &
-      plot_data$obs_log2FD > log2FD_threshold,
-    "Increased",
-    ifelse(
-      !is.na(plot_data$FDR) &
-        !is.na(plot_data$obs_log2FD) &
-        plot_data$FDR < FDR_threshold &
-        plot_data$obs_log2FD < -log2FD_threshold,
-      "Decreased",
-      "NS"
-    )
-  )
+  plot_data$direction <- ifelse(not_tested, "Not tested",
+    ifelse(significant & plot_data$obs_log2FD > 0, "Increased",
+      ifelse(significant & plot_data$obs_log2FD < 0, "Decreased", "NS")))
   plot_data$direction <- factor(
     plot_data$direction,
-    levels = c("Increased", "Decreased", "NS")
+    levels = c("Increased", "Decreased", "NS", "Not tested")
   )
 
-  stat_p <- ifelse(is.finite(plot_data$FDR), plot_data$FDR, plot_data$pval)
   stat_p[!is.finite(stat_p) | stat_p <= 0] <- 1
   plot_data$minus_log10 <- -log10(stat_p)
 
@@ -372,7 +395,11 @@ plot_proportion_effect <- function(
   ...
 ) {
   effect_color_mode <- match.arg(effect_color_mode)
-  sig_label <- proportion_sig_label(FDR_threshold, log2FD_threshold)
+  sig_label <- if (identical(unique(as.character(df$method)), "sccoda")) {
+    "Credible effect"
+  } else {
+    proportion_sig_label(FDR_threshold, log2FD_threshold)
+  }
   has_ci <- any(is.finite(df$boot_CI_2.5) & is.finite(df$boot_CI_97.5))
 
   p <- ggplot(df, aes(x = clusters, y = obs_log2FD))
@@ -398,8 +425,9 @@ plot_proportion_effect <- function(
     p <- p +
       scale_color_manual(
         name = legend.title %||% "Significance",
-        labels = c(sig_label, "n.s."),
-        values = stats::setNames(c(cols.sig, cols.ns), c(sig_label, "n.s.")),
+        labels = c(sig_label, "n.s.", "Not tested"),
+        values = stats::setNames(c(cols.sig, cols.ns, cols.ns),
+          c(sig_label, "n.s.", "Not tested")),
         drop = FALSE
       )
   } else {
@@ -427,16 +455,38 @@ plot_proportion_effect <- function(
         values = c(
           Increased = cols.increase,
           Decreased = cols.decrease,
-          NS = cols.ns
+          NS = cols.ns,
+          `Not tested` = cols.ns
         ),
         drop = FALSE
       )
   }
 
+  thresholds <- if (identical(unique(as.character(df$method)), "sccoda")) 0 else
+    c(-log2FD_threshold, 0, log2FD_threshold)
+  subtitle <- if ("inference_valid" %in% colnames(df) &&
+      any(!is.na(df$inference_valid) & !as.logical(df$inference_valid))) {
+    "Descriptive virtual samples; no inferential test"
+  } else if (identical(unique(as.character(df$method)), "milo")) {
+    if (any(!is.na(df$neighborhood))) {
+      "Milo neighborhood test; spatial FDR"
+    } else {
+      "Sample-level cell-type summary"
+    }
+  } else if (identical(unique(as.character(df$method)), "propeller")) {
+    "Internal logit-transformed sample-proportion test"
+  } else if (identical(unique(as.character(df$method)), "sccoda")) {
+    "scCODA credible effects"
+  } else {
+    NULL
+  }
   p +
-    geom_hline(yintercept = c(-log2FD_threshold, 0, log2FD_threshold), linetype = c(2, 1, 2), color = c("grey", "black", "grey")) +
+    geom_hline(yintercept = thresholds,
+      linetype = if (length(thresholds) == 1L) 1 else c(2, 1, 2),
+      color = if (length(thresholds) == 1L) "black" else c("grey", "black", "grey")) +
     labs(
       title = proportion_title(df),
+      subtitle = subtitle,
       x = xlab,
       y = ylab
     ) +
@@ -453,6 +503,7 @@ plot_proportion_umap <- function(
   srt,
   std_results,
   method_bundle,
+  result_level = "group",
   umap_mode = c("discrete", "continuous"),
   reduction = "UMAP",
   projection_args = list(),
@@ -476,31 +527,35 @@ plot_proportion_umap <- function(
     DefaultReduction(srt, pattern = reduction)
   }
 
-  group.by <- method_bundle[["parameters"]][["group.by"]] %||%
-    srt@tools[["ProportionTest"]][["parameters"]][["group.by"]]
-
-  if (is.null(group.by) || !nzchar(group.by)) {
-    log_message(
-      "Cannot determine {.arg group.by} from proportion test metadata for {.val plot_type = 'umap'}",
-      message_type = "error"
-    )
-  }
-  if (!group.by %in% colnames(srt@meta.data)) {
-    log_message(
-      "{.arg group.by} {.val {group.by}} is not in {.cls Seurat} meta.data",
-      message_type = "error"
-    )
+  if (identical(result_level, "group")) {
+    group.by <- method_bundle[["parameters"]][["group.by"]] %||%
+      srt@tools[["ProportionTest"]][["parameters"]][["group.by"]]
+    if (is.null(group.by) || !nzchar(group.by) ||
+        !group.by %in% colnames(srt@meta.data)) {
+      log_message(
+        "Cannot determine a valid {.arg group.by} from proportion test metadata for {.val plot_type = 'umap'}",
+        message_type = "error"
+      )
+    }
+    cluster_by_cell <- as.character(srt@meta.data[[group.by]])
+  } else {
+    members <- method_bundle[["details"]][["milo_graph_data"]][[".metadata"]][["members"]]
+    if (is.null(members) || length(members) == 0L) {
+      log_message(
+        "Milo neighborhood membership is unavailable; rerun {.fn RunProportionTest} before projecting neighborhood results",
+        message_type = "error"
+      )
+    }
   }
 
   projection_args <- projection_args %||% list()
-  cluster_by_cell <- as.character(srt@meta.data[[group.by]])
   legend_discrete <- if (is.null(legend.title) || identical(legend.title, "Significance")) {
     "DA Direction"
   } else {
     legend.title
   }
   legend_continuous <- if (is.null(legend.title) || identical(legend.title, "Significance")) {
-    "log2 (FD)"
+    if (identical(result_level, "neighborhood")) "Mean neighborhood log2 FC" else "log2 (FD)"
   } else {
     legend.title
   }
@@ -508,42 +563,53 @@ plot_proportion_umap <- function(
 
   for (comp_name in names(std_results)) {
     df_comp <- std_results[[comp_name]]
-    proj_df <- summarize_proportion_projection(
-      df = df_comp,
-      FDR_threshold = FDR_threshold,
-      log2FD_threshold = log2FD_threshold
-    )
-
-    effect_map <- stats::setNames(proj_df$obs_log2FD, proj_df$clusters)
-    direction_map <- stats::setNames(as.character(proj_df$direction), proj_df$clusters)
+    if (identical(result_level, "neighborhood")) {
+      projected <- project_milo_neighborhood_to_cells(
+        df_comp, members, rownames(srt@meta.data)
+      )
+      cell_direction <- projected$direction
+      cell_effect <- projected$effect
+    } else {
+      proj_df <- summarize_proportion_projection(
+        df = df_comp,
+        FDR_threshold = FDR_threshold,
+        log2FD_threshold = log2FD_threshold
+      )
+      effect_map <- stats::setNames(proj_df$obs_log2FD, proj_df$clusters)
+      direction_map <- stats::setNames(as.character(proj_df$direction), proj_df$clusters)
+      cell_direction <- direction_map[cluster_by_cell]
+      cell_direction[is.na(cell_direction)] <- "Uncovered"
+      cell_effect <- effect_map[cluster_by_cell]
+    }
 
     suffix <- proportion_projection_suffix(comp_name)
     direction_col <- paste0(".proportion_da_direction_", suffix)
     effect_col <- paste0(".proportion_da_log2fd_", suffix)
 
-    srt@meta.data[[direction_col]] <- direction_map[cluster_by_cell]
-    srt@meta.data[[direction_col]][is.na(srt@meta.data[[direction_col]])] <- "NS"
+    srt@meta.data[[direction_col]] <- cell_direction
     srt@meta.data[[direction_col]] <- factor(
       srt@meta.data[[direction_col]],
-      levels = c("Increased", "Decreased", "NS")
+      levels = c("Increased", "Decreased", "Mixed", "NS", "Not tested", "Uncovered")
     )
 
-    srt@meta.data[[effect_col]] <- effect_map[cluster_by_cell]
-    srt@meta.data[[effect_col]][is.na(srt@meta.data[[effect_col]])] <- 0
+    srt@meta.data[[effect_col]] <- cell_effect
 
     title_use <- proportion_title(df_comp)
     if (identical(umap_mode, "discrete")) {
       plot_call <- utils::modifyList(
         projection_args,
         list(
-          srt = srt,
+          object = srt,
           group.by = direction_col,
           reduction = reduction_use,
           palette = "Set1",
-          palcolor = c(cols.increase, cols.decrease, cols.ns),
+          palcolor = c(cols.increase, cols.decrease, "#7b3294", cols.ns,
+            "grey65", "grey95"),
           show_stat = FALSE,
           title = title_use,
-          subtitle = NULL,
+          subtitle = if (identical(result_level, "neighborhood")) {
+            "Overlapping Milo neighborhoods projected to member cells"
+          } else NULL,
           xlab = xlab,
           ylab = ylab,
           legend.title = legend_discrete,
@@ -560,7 +626,7 @@ plot_proportion_umap <- function(
       plot_call <- utils::modifyList(
         projection_args,
         list(
-          srt = srt,
+          object = srt,
           features = effect_col,
           reduction = reduction_use,
           palette = palette,
@@ -568,7 +634,9 @@ plot_proportion_umap <- function(
           bg_cutoff = -Inf,
           show_stat = FALSE,
           title = title_use,
-          subtitle = NULL,
+          subtitle = if (identical(result_level, "neighborhood")) {
+            "Mean effect of overlapping Milo neighborhoods"
+          } else NULL,
           xlab = xlab,
           ylab = ylab,
           legend.title = legend_continuous,
@@ -589,6 +657,57 @@ plot_proportion_umap <- function(
   plist
 }
 
+project_milo_neighborhood_to_cells <- function(df, members, cells) {
+  if (is.null(names(members)) || any(!nzchar(names(members)))) {
+    log_message("Milo neighborhood membership must have neighborhood IDs", message_type = "error")
+  }
+  neighborhood <- as.character(df$neighborhood)
+  if (anyNA(neighborhood) || any(!neighborhood %in% names(members))) {
+    log_message(
+      "Milo neighborhood result IDs do not match stored cell membership",
+      message_type = "error"
+    )
+  }
+  effect_sum <- numeric(length(cells))
+  effect_count <- integer(length(cells))
+  covered <- rep(FALSE, length(cells))
+  increased <- rep(FALSE, length(cells))
+  decreased <- rep(FALSE, length(cells))
+  not_tested <- rep(FALSE, length(cells))
+  for (i in seq_len(nrow(df))) {
+    cell_idx <- match(as.character(members[[neighborhood[[i]]]]), cells)
+    cell_idx <- unique(cell_idx[!is.na(cell_idx)])
+    if (length(cell_idx) == 0L) next
+    covered[cell_idx] <- TRUE
+    value <- as.numeric(df$obs_log2FD[[i]])
+    if (is.finite(value)) {
+      effect_sum[cell_idx] <- effect_sum[cell_idx] + value
+      effect_count[cell_idx] <- effect_count[cell_idx] + 1L
+    }
+    direction <- as.character(df$direction[[i]])
+    if (identical(direction, "Increased")) increased[cell_idx] <- TRUE
+    if (identical(direction, "Decreased")) decreased[cell_idx] <- TRUE
+    if (identical(direction, "Not tested")) not_tested[cell_idx] <- TRUE
+  }
+  if (!any(covered)) {
+    log_message(
+      "No Milo neighborhood members match cells in the object",
+      message_type = "error"
+    )
+  }
+  effect <- rep(NA_real_, length(cells))
+  effect[effect_count > 0L] <- effect_sum[effect_count > 0L] / effect_count[effect_count > 0L]
+  direction <- rep("NS", length(cells))
+  direction[not_tested] <- "Not tested"
+  direction[increased] <- "Increased"
+  direction[decreased] <- "Decreased"
+  direction[increased & decreased] <- "Mixed"
+  direction[!covered] <- "Uncovered"
+  names(effect) <- cells
+  names(direction) <- cells
+  list(effect = effect, direction = direction)
+}
+
 summarize_proportion_projection <- function(
   df,
   FDR_threshold,
@@ -605,6 +724,7 @@ summarize_proportion_projection <- function(
     clusters = as.character(df$clusters),
     obs_log2FD = suppressWarnings(as.numeric(df$obs_log2FD)),
     FDR = suppressWarnings(as.numeric(df$FDR)),
+    direction = as.character(df$direction),
     stringsAsFactors = FALSE
   )
   tmp <- tmp[!is.na(tmp$clusters) & nzchar(tmp$clusters), , drop = FALSE]
@@ -624,13 +744,10 @@ summarize_proportion_projection <- function(
     lapply(split(tmp, tmp$clusters), function(x) {
       effect <- if (all(is.na(x$obs_log2FD))) NA_real_ else mean(x$obs_log2FD, na.rm = TRUE)
       fdr <- if (all(is.na(x$FDR))) NA_real_ else min(x$FDR, na.rm = TRUE)
-      direction <- if (!is.na(fdr) && !is.na(effect) && fdr < FDR_threshold && effect > log2FD_threshold) {
-        "Increased"
-      } else if (!is.na(fdr) && !is.na(effect) && fdr < FDR_threshold && effect < -log2FD_threshold) {
-        "Decreased"
-      } else {
-        "NS"
-      }
+      direction <- if (all(c("Increased", "Decreased") %in% x$direction)) "Mixed" else
+        if ("Increased" %in% x$direction) "Increased" else
+          if ("Decreased" %in% x$direction) "Decreased" else
+            if ("Not tested" %in% x$direction) "Not tested" else "NS"
 
       data.frame(
         clusters = x$clusters[1],
@@ -645,7 +762,8 @@ summarize_proportion_projection <- function(
   merged$clusters <- factor(merged$clusters, levels = cluster_order)
   merged <- merged[order(merged$clusters), , drop = FALSE]
   merged$clusters <- as.character(merged$clusters)
-  merged$direction <- factor(merged$direction, levels = c("Increased", "Decreased", "NS"))
+  merged$direction <- factor(merged$direction,
+    levels = c("Increased", "Decreased", "Mixed", "NS", "Not tested", "Uncovered"))
   rownames(merged) <- NULL
   merged
 }
@@ -760,6 +878,9 @@ get_proportion_plot_results <- function(
   methods_store <- pt[["methods"]]
 
   if (is.null(methods_store) || length(methods_store) == 0) {
+    if (identical(result_level, "neighborhood")) {
+      log_message("Legacy proportion results do not contain neighborhood results", message_type = "error")
+    }
     results <- pt[["results"]]
     if (is.null(results) || length(results) == 0) {
       log_message(
@@ -795,10 +916,9 @@ get_proportion_plot_results <- function(
       method_bundle[["details"]][["neighborhood_results"]]
     if (is.null(results) || length(results) == 0) {
       log_message(
-        "Neighborhood-level results are not available for method {.val {method_use}}. Use group-level results.",
-        message_type = "warning"
+        "Neighborhood-level results are not available for method {.val {method_use}}",
+        message_type = "error"
       )
-      result_level <- "group"
     }
   }
 
