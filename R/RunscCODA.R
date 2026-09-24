@@ -2,6 +2,10 @@
 #'
 #' @md
 #' @inheritParams RunProportionTest
+#' @param sample.by Metadata column identifying biological samples. Required
+#' when calling `RunscCODA()` directly. Repeated donor IDs across conditions
+#' are kept as separate sample-condition units; the scCODA model does not
+#' include a donor pairing term.
 #' @param reference_cell_type Reference cell type for scCODA. The default
 #' `"automatic"` lets scCODA select the cell type with the lowest relative
 #' abundance dispersion among sufficiently prevalent cell types. A cell-type

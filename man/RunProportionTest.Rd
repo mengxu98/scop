@@ -12,6 +12,7 @@ RunProportionTest(
   proportion_method,
   sample.by = NULL,
   pseudo_sample_n = 3L,
+  allow_pseudo_samples = FALSE,
   n_permutations = 1000,
   FDR_threshold = 0.05,
   log2FD_threshold = log2(1.5),
@@ -29,8 +30,9 @@ RunProportionTest(
 
 \item{split.by}{Metadata column that identifies the condition groups to
 compare. For sample-level methods, if \code{split.by} is omitted and \code{sample.by}
-is provided, \code{sample.by} is treated as the condition column and virtual
-samples are created within each condition.}
+is provided, \code{sample.by} is treated as the condition column; a separate
+biological sample column is still required unless descriptive virtual
+samples are explicitly enabled.}
 
 \item{comparison}{Optional pairs of condition labels. Each pair is
 \code{c(group1, group2)}. \code{obs_log2FD} is \code{log2(group1 / group2)}, matching
@@ -45,12 +47,19 @@ Alias values such as \code{"permutation_test"} and \code{"perm"} are accepted an
 normalized to \code{"permutation"}.}
 
 \item{sample.by}{Metadata column that identifies biological samples.
-For \code{"milo"}, \code{"sccoda"}, and \code{"propeller"}, when \code{sample.by} is omitted
-or identical to \code{split.by}, virtual samples are created within each
-\code{split.by} group for convenience.}
+Required for \code{"milo"}, \code{"sccoda"}, and \code{"propeller"} unless
+\code{allow_pseudo_samples = TRUE}. For Milo and Propeller, sample IDs may recur
+across two conditions for a fully paired design; partially paired
+comparisons are rejected.}
 
 \item{pseudo_sample_n}{Number of virtual samples per \code{split.by} group when
-a sample-level method has no usable \code{sample.by}.}
+a sample-level method has no usable \code{sample.by} and
+\code{allow_pseudo_samples = TRUE}. Virtual samples are descriptive only;
+inferential statistics are set to \code{NA}.}
+
+\item{allow_pseudo_samples}{Explicitly allow descriptive virtual samples
+when biological sample IDs are unavailable. The default is \code{FALSE} because
+partitioning cells does not create biological replicates.}
 
 \item{n_permutations}{Number of permutations for permutation-based test.}
 
@@ -61,7 +70,7 @@ a sample-level method has no usable \code{sample.by}.}
 \item{include_all_cells}{Whether to include all cell types in the complete grid
 for permutation mode.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed, including for permutation testing.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

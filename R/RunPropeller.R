@@ -3,11 +3,15 @@
 #' @description
 #' Method-specific implementation used by [RunProportionTest] when
 #' `proportion_method = "propeller"`.
-#' This implementation works on sample-level proportions using a propeller-style
-#' transformed test and stores standardized outputs for plotting.
+#' This implementation uses an internal logit-transformed sample-proportion
+#' t-test (paired when sample IDs occur in both conditions), not the speckle
+#' implementation of propeller. It stores standardized outputs for plotting.
 #'
 #' @md
 #' @inheritParams RunProportionTest
+#' @param sample.by Metadata column identifying biological samples. Required
+#' when calling `RunPropeller()` directly. Fully paired sample IDs across two
+#' conditions use a paired test; partially paired comparisons are rejected.
 #' @param n_bootstrap Number of bootstrap iterations for confidence intervals.
 #'
 #' @return A method result bundle used internally by [RunProportionTest].
@@ -40,7 +44,7 @@ RunPropeller <- function(
     include_bidirectional = TRUE
   )
 
-  engine <- "internal"
+  engine <- "internal_logit_ttest"
 
   results_list <- list()
   for (i in seq_len(nrow(comparisons_condition))) {

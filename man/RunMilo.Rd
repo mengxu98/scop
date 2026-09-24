@@ -27,13 +27,13 @@ RunMilo(
 
 \item{split.by}{Metadata column that identifies the condition groups to
 compare. For sample-level methods, if \code{split.by} is omitted and \code{sample.by}
-is provided, \code{sample.by} is treated as the condition column and virtual
-samples are created within each condition.}
+is provided, \code{sample.by} is treated as the condition column; a separate
+biological sample column is still required unless descriptive virtual
+samples are explicitly enabled.}
 
-\item{sample.by}{Metadata column that identifies biological samples.
-For \code{"milo"}, \code{"sccoda"}, and \code{"propeller"}, when \code{sample.by} is omitted
-or identical to \code{split.by}, virtual samples are created within each
-\code{split.by} group for convenience.}
+\item{sample.by}{Metadata column identifying biological samples. Required
+when calling \code{RunMilo()} directly. Fully paired sample IDs across two
+conditions are supported; partially paired comparisons are rejected.}
 
 \item{comparison}{Optional pairs of condition labels. Each pair is
 \code{c(group1, group2)}. \code{obs_log2FD} is \code{log2(group1 / group2)}, matching
@@ -55,7 +55,7 @@ neighborhood-level quasi-likelihood test.}
 
 \item{n_bootstrap}{Number of bootstrap iterations used by the group-level summary.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed, including for permutation testing.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -71,4 +71,7 @@ Method-specific implementation used by \link{RunProportionTest} when
 \code{proportion_method = "milo"}.
 The function always returns a group-level summary and additionally stores a
 neighborhood-level result list under \code{neighborhood_results}.
+The group summary uses sample-level cell-type proportions; its p-values are
+not Milo neighborhood test p-values. Neighborhood results use the Milo test
+and \code{SpatialFDR} as their standardized \code{FDR}.
 }

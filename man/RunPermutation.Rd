@@ -11,6 +11,7 @@ RunPermutation(
   comparison = NULL,
   n_permutations = 1000,
   include_all_cells = FALSE,
+  seed = 11,
   verbose = TRUE,
   srt = NULL
 )
@@ -22,8 +23,9 @@ RunPermutation(
 
 \item{split.by}{Metadata column that identifies the condition groups to
 compare. For sample-level methods, if \code{split.by} is omitted and \code{sample.by}
-is provided, \code{sample.by} is treated as the condition column and virtual
-samples are created within each condition.}
+is provided, \code{sample.by} is treated as the condition column; a separate
+biological sample column is still required unless descriptive virtual
+samples are explicitly enabled.}
 
 \item{comparison}{Optional pairs of condition labels. Each pair is
 \code{c(group1, group2)}. \code{obs_log2FD} is \code{log2(group1 / group2)}, matching
@@ -35,6 +37,8 @@ generated in both directions.}
 
 \item{include_all_cells}{Whether to include all cell types in the complete grid
 for permutation mode.}
+
+\item{seed}{Random seed, including for permutation testing.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}

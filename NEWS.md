@@ -1,5 +1,15 @@
 # scop (development version)
 
+* **fix**: Differential-abundance plots now project Milo neighborhoods through
+  stored member cells, use `SpatialFDR` for Milo neighborhood significance,
+  and use scCODA credibility for scCODA plots. Milo group summaries and the
+  internal Propeller-style test now report their statistical provenance.
+* **fix**: Sample-level abundance tests preserve sample-condition units and
+  support fully paired donor IDs in Milo and the internal Propeller-style
+  test. Permutation testing now honors `seed`.
+* **change**: Milo, scCODA, and Propeller require biological `sample.by` by
+  default. `allow_pseudo_samples = TRUE` retains virtual samples for
+  descriptive effects, with inferential statistics marked unavailable.
 * **fix**: `ProportionTestPlot()` accepts `result_level = "neighborhood"`
   for stored Milo neighborhood-level results.
 * **fix**: Preserve scCODA's `"automatic"` reference-cell selection in

@@ -26,8 +26,21 @@ test_that("scCODA preserves sample-condition pairs", {
 
 test_that("scCODA Python helpers accept structured comparisons and quoted groups", {
   python <- unname(Sys.which(c("python3", "python")))
-  python <- python[nzchar(python)][1]
-  skip_if(is.na(python), "Python is not available")
+  python <- python[nzchar(python)]
+  working_python <- NULL
+  for (candidate in python) {
+    probe <- tryCatch(
+      suppressWarnings(system2(candidate, c("-c", shQuote("pass")),
+        stdout = TRUE, stderr = TRUE)),
+      error = function(e) structure(character(), status = 1L)
+    )
+    if (identical(as.integer(attr(probe, "status") %||% 0L), 0L)) {
+      working_python <- candidate
+      break
+    }
+  }
+  skip_if(is.null(working_python), "Python is not available")
+  python <- working_python
   runner <- getFromNamespace("runner_script_path", "scop")(
     "functions.py",
     "scCODA"

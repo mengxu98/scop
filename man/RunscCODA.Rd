@@ -28,13 +28,14 @@ RunscCODA(
 
 \item{split.by}{Metadata column that identifies the condition groups to
 compare. For sample-level methods, if \code{split.by} is omitted and \code{sample.by}
-is provided, \code{sample.by} is treated as the condition column and virtual
-samples are created within each condition.}
+is provided, \code{sample.by} is treated as the condition column; a separate
+biological sample column is still required unless descriptive virtual
+samples are explicitly enabled.}
 
-\item{sample.by}{Metadata column that identifies biological samples.
-For \code{"milo"}, \code{"sccoda"}, and \code{"propeller"}, when \code{sample.by} is omitted
-or identical to \code{split.by}, virtual samples are created within each
-\code{split.by} group for convenience.}
+\item{sample.by}{Metadata column identifying biological samples. Required
+when calling \code{RunscCODA()} directly. Repeated donor IDs across conditions
+are kept as separate sample-condition units; the scCODA model does not
+include a donor pairing term.}
 
 \item{comparison}{Optional pairs of condition labels. Each pair is
 \code{c(group1, group2)}. \code{obs_log2FD} is \code{log2(group1 / group2)}, matching
@@ -62,7 +63,7 @@ from the default Python environment.}
 
 \item{conda}{The path or command name of a conda-compatible executable.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed, including for permutation testing.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
