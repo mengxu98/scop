@@ -89,6 +89,7 @@ observed log2 fold-differences (<code>log2(group1 / group2)</code>).</p>
 <span>  comparison <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_permutations <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  include_all_cells <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">11</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -109,8 +110,9 @@ observed log2 fold-differences (<code>log2(group1 / group2)</code>).</p>
 <dt id="arg-split-by">split.by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>
 <dd><p>Metadata column that identifies the condition groups to
 compare. For sample-level methods, if <code>split.by</code> is omitted and <code>sample.by</code>
-is provided, <code>sample.by</code> is treated as the condition column and virtual
-samples are created within each condition.</p></dd>
+is provided, <code>sample.by</code> is treated as the condition column; a separate
+biological sample column is still required unless descriptive virtual
+samples are explicitly enabled.</p></dd>
 
 
 <dt id="arg-comparison">comparison<a class="anchor" aria-label="anchor" href="#arg-comparison"></a></dt>
@@ -128,6 +130,10 @@ generated in both directions.</p></dd>
 <dt id="arg-include-all-cells">include_all_cells<a class="anchor" aria-label="anchor" href="#arg-include-all-cells"></a></dt>
 <dd><p>Whether to include all cell types in the complete grid
 for permutation mode.</p></dd>
+
+
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
+<dd><p>Random seed, including for permutation testing.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
