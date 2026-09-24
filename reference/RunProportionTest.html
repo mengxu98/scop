@@ -81,6 +81,7 @@ implementations: permutation, milo, sccoda, or propeller.</p>
 <span>  <span class="va">proportion_method</span>,</span>
 <span>  sample.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pseudo_sample_n <span class="op">=</span> <span class="fl">3L</span>,</span>
+<span>  allow_pseudo_samples <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  n_permutations <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  FDR_threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  log2FD_threshold <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fl">1.5</span><span class="op">)</span>,</span>
@@ -107,8 +108,9 @@ implementations: permutation, milo, sccoda, or propeller.</p>
 <dt id="arg-split-by">split.by<a class="anchor" aria-label="anchor" href="#arg-split-by"></a></dt>
 <dd><p>Metadata column that identifies the condition groups to
 compare. For sample-level methods, if <code>split.by</code> is omitted and <code>sample.by</code>
-is provided, <code>sample.by</code> is treated as the condition column and virtual
-samples are created within each condition.</p></dd>
+is provided, <code>sample.by</code> is treated as the condition column; a separate
+biological sample column is still required unless descriptive virtual
+samples are explicitly enabled.</p></dd>
 
 
 <dt id="arg-comparison">comparison<a class="anchor" aria-label="anchor" href="#arg-comparison"></a></dt>
@@ -129,14 +131,23 @@ normalized to <code>"permutation"</code>.</p></dd>
 
 <dt id="arg-sample-by">sample.by<a class="anchor" aria-label="anchor" href="#arg-sample-by"></a></dt>
 <dd><p>Metadata column that identifies biological samples.
-For <code>"milo"</code>, <code>"sccoda"</code>, and <code>"propeller"</code>, when <code>sample.by</code> is omitted
-or identical to <code>split.by</code>, virtual samples are created within each
-<code>split.by</code> group for convenience.</p></dd>
+Required for <code>"milo"</code>, <code>"sccoda"</code>, and <code>"propeller"</code> unless
+<code>allow_pseudo_samples = TRUE</code>. For Milo and Propeller, sample IDs may recur
+across two conditions for a fully paired design; partially paired
+comparisons are rejected.</p></dd>
 
 
 <dt id="arg-pseudo-sample-n">pseudo_sample_n<a class="anchor" aria-label="anchor" href="#arg-pseudo-sample-n"></a></dt>
 <dd><p>Number of virtual samples per <code>split.by</code> group when
-a sample-level method has no usable <code>sample.by</code>.</p></dd>
+a sample-level method has no usable <code>sample.by</code> and
+<code>allow_pseudo_samples = TRUE</code>. Virtual samples are descriptive only;
+inferential statistics are set to <code>NA</code>.</p></dd>
+
+
+<dt id="arg-allow-pseudo-samples">allow_pseudo_samples<a class="anchor" aria-label="anchor" href="#arg-allow-pseudo-samples"></a></dt>
+<dd><p>Explicitly allow descriptive virtual samples
+when biological sample IDs are unavailable. The default is <code>FALSE</code> because
+partitioning cells does not create biological replicates.</p></dd>
 
 
 <dt id="arg-n-permutations">n_permutations<a class="anchor" aria-label="anchor" href="#arg-n-permutations"></a></dt>
@@ -157,7 +168,7 @@ for permutation mode.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Random seed.</p></dd>
+<dd><p>Random seed, including for permutation testing.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -201,10 +212,10 @@ doi:10.1158/0008-5472.CAN-20-3562</p>
 <span class="r-in"><span>  proportion_method <span class="op">=</span> <span class="st">"permutation"</span>,</span></span>
 <span class="r-in"><span>  comparison <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G2M"</span>, <span class="st">"G1"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:20:58] Start proportion test (<span style="color: #0000BB;">"permutation"</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:20:58] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"G1"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 08:20:58] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 08:20:58] Proportion test completed (<span style="color: #0000BB;">"permutation"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:30] Start proportion test (<span style="color: #0000BB;">"permutation"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:30] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"G1"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:30] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-24 03:35:30] Proportion test completed (<span style="color: #0000BB;">"permutation"</span>)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ProportionTestPlot.html">ProportionTestPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span></span></span>

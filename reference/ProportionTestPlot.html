@@ -142,8 +142,9 @@ If <code>NULL</code>, uses the active/most recent method.</p></dd>
 
 <dt id="arg-result-level">result_level<a class="anchor" aria-label="anchor" href="#arg-result-level"></a></dt>
 <dd><p>Result level to draw. Use <code>"group"</code> for group-level
-results or <code>"neighborhood"</code> for Milo neighborhood-level results when
-available.</p></dd>
+results or <code>"neighborhood"</code> for stored Milo neighborhood-level results.
+A missing requested level is an error. Milo group results are sample-level
+cell-type proportion tests, distinct from the Milo neighborhood test.</p></dd>
 
 
 <dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
@@ -153,7 +154,11 @@ available.</p></dd>
 <dt id="arg-umap-mode">umap_mode<a class="anchor" aria-label="anchor" href="#arg-umap-mode"></a></dt>
 <dd><p>UMAP projection mode for <code>plot_type = "umap"</code>.
 <code>"discrete"</code> maps cells to DA direction categories;
-<code>"continuous"</code> maps cells to group-level <code>obs_log2FD</code>.</p></dd>
+<code>"continuous"</code> maps group-level <code>obs_log2FD</code> or the mean effect of
+overlapping Milo neighborhoods to cells. Neighborhood directions are based
+on significant memberships: opposite directions are <code>"Mixed"</code>, while cells
+in no neighborhood are <code>"Uncovered"</code>. This is a member-cell projection,
+not a separate Milo test per cell.</p></dd>
 
 
 <dt id="arg-reduction">reduction<a class="anchor" aria-label="anchor" href="#arg-reduction"></a></dt>
@@ -167,11 +172,14 @@ available.</p></dd>
 
 
 <dt id="arg-fdr-threshold">FDR_threshold<a class="anchor" aria-label="anchor" href="#arg-fdr-threshold"></a></dt>
-<dd><p>FDR value cutoff for significance.</p></dd>
+<dd><p>FDR value cutoff for frequentist methods. Milo
+neighborhood results use <code>SpatialFDR</code>. scCODA uses its stored <code>credible</code>
+decision instead.</p></dd>
 
 
 <dt id="arg-log-fd-threshold">log2FD_threshold<a class="anchor" aria-label="anchor" href="#arg-log-fd-threshold"></a></dt>
-<dd><p>Absolute value of log2FD cutoff for significance.</p></dd>
+<dd><p>Absolute value of log2FD cutoff for frequentist
+methods; not applied to scCODA credibility.</p></dd>
 
 
 <dt id="arg-order-by">order_by<a class="anchor" aria-label="anchor" href="#arg-order-by"></a></dt>
@@ -286,7 +294,7 @@ one of <code>"none"</code>, <code>"left"</code>, <code>"right"</code>, <code>"bo
 
 
 <dt id="arg-combine-nrow-ncol-byrow">combine, nrow, ncol, byrow<a class="anchor" aria-label="anchor" href="#arg-combine-nrow-ncol-byrow"></a></dt>
-<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a>. <code>combine = FALSE</code>
+<dd><p>Combine plots with <a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork::patchwork</a>. <code>combine = FALSE</code>
 returns a list of ggplots.</p></dd>
 
 
@@ -312,37 +320,37 @@ will be removed in scop 1.0.0.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:13] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:13] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-23 13:07:14] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:17] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:17] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-24 03:35:18] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data 1/1 of the `srt_list` is "unknown"</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:14] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:14] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:14] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:14] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:15] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:15] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:15] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:15] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:15] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:16] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:17] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:17] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 13:07:22] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:18] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:18] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:18] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:18] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:18] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:18] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:19] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:19] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:20] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:20] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-24 03:35:25] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunProportionTest.html">RunProportionTest</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  split.by <span class="op">=</span> <span class="st">"Phase"</span>,</span></span>
 <span class="r-in"><span>  proportion_method <span class="op">=</span> <span class="st">"permutation"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:22] Start proportion test (<span style="color: #0000BB;">"permutation"</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:22] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"S"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:22] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:22] Running comparison: <span style="color: #0000BB;">"S"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:22] Running comparison: <span style="color: #0000BB;">"S"</span> vs <span style="color: #0000BB;">"G1"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:22] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"G1"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-23 13:07:22] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"S"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-23 13:07:22] Proportion test completed (<span style="color: #0000BB;">"permutation"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:25] Start proportion test (<span style="color: #0000BB;">"permutation"</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:25] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"S"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:25] Running comparison: <span style="color: #0000BB;">"G1"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:25] Running comparison: <span style="color: #0000BB;">"S"</span> vs <span style="color: #0000BB;">"G2M"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:25] Running comparison: <span style="color: #0000BB;">"S"</span> vs <span style="color: #0000BB;">"G1"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:25] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"G1"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-24 03:35:25] Running comparison: <span style="color: #0000BB;">"G2M"</span> vs <span style="color: #0000BB;">"S"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-24 03:35:25] Proportion test completed (<span style="color: #0000BB;">"permutation"</span>)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">ProportionTestPlot</span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="ProportionTestPlot-1.png" alt="" width="700" height="433"></span>
@@ -354,12 +362,6 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span></span>
 <span class="r-in"><span>  ylab <span class="op">=</span> <span class="st">"UMAP_2"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`srt` is deprecated; use `object` instead. It will be removed in scop 1.0.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`srt` is deprecated; use `object` instead. It will be removed in scop 1.0.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`srt` is deprecated; use `object` instead. It will be removed in scop 1.0.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`srt` is deprecated; use `object` instead. It will be removed in scop 1.0.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`srt` is deprecated; use `object` instead. It will be removed in scop 1.0.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`srt` is deprecated; use `object` instead. It will be removed in scop 1.0.0.</span>
 <span class="r-plt img"><img src="ProportionTestPlot-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
