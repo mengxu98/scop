@@ -5,9 +5,15 @@
 #' `proportion_method = "milo"`.
 #' The function always returns a group-level summary and additionally stores a
 #' neighborhood-level result list under `neighborhood_results`.
+#' The group summary uses sample-level cell-type proportions; its p-values are
+#' not Milo neighborhood test p-values. Neighborhood results use the Milo test
+#' and `SpatialFDR` as their standardized `FDR`.
 #'
 #' @md
 #' @inheritParams RunProportionTest
+#' @param sample.by Metadata column identifying biological samples. Required
+#' when calling `RunMilo()` directly. Fully paired sample IDs across two
+#' conditions are supported; partially paired comparisons are rejected.
 #' @param milo_k Number of nearest neighbors used for Milo graph building.
 #' @param milo_d Number of dimensions used by Milo.
 #' @param reduction Dimensional reduction used for Milo graph construction.
@@ -153,6 +159,8 @@ RunMilo <- function(
     details = list(
       neighborhood_results = neighborhood_results,
       milo_graph_data = milo_graph_data,
+      group_result_method = "sample_proportion_test",
+      neighborhood_result_method = if (identical(backend, "r")) "miloR" else "edgeR_QL",
       backend = backend
     ),
     parameters = list(
@@ -242,17 +250,22 @@ run_milo_da_r <- function(
         unique(cdata[[split.by]])
       )
       cdata[[safe_split_by]] <- unname(condition_map[cdata[[split.by]]])
+      sample_info <- proportion_sample_condition_keys(cdata, sample.by, split.by)
+      cdata[[".scop_milo_sample"]] <- sample_info$cell_keys
 
       milo_obj <- miloR::countCells(
         milo_obj,
         meta.data = cdata,
-        sample = sample.by
+        samples = ".scop_milo_sample"
       )
 
       nhood_metadata <- extract_milo_r_neighborhood_metadata(milo_obj)
+      nhood_metadata$sample_mapping <- sample_info$pairs
 
-      design_df <- unique(cdata[, c(sample.by, safe_split_by), drop = FALSE])
-      rownames(design_df) <- design_df[[sample.by]]
+      design_df <- sample_info$pairs
+      design_df[[safe_split_by]] <- unname(condition_map[design_df$condition])
+      rownames(design_df) <- design_df$sample_key
+      design_df <- design_df[colnames(miloR::nhoodCounts(milo_obj)), , drop = FALSE]
       design_df[[safe_split_by]] <- as.factor(design_df[[safe_split_by]])
 
       output <- list()
@@ -268,7 +281,14 @@ run_milo_da_r <- function(
           next
         }
 
-        design_formula <- stats::as.formula(paste0("~ 0 + ", safe_split_by))
+        paired <- proportion_pair_is_paired(dsub, cluster_1, cluster_2)
+        if (paired) {
+          dsub[[".scop_milo_donor"]] <- as.factor(dsub$sample)
+        }
+        design_formula <- stats::as.formula(paste0(
+          "~ 0 + ", safe_split_by,
+          if (paired) " + .scop_milo_donor" else ""
+        ))
         design_cols <- colnames(stats::model.matrix(design_formula, dsub))
         contrast_cols <- stats::setNames(design_cols, levels(dsub[[safe_split_by]]))
         contrast <- paste0(
@@ -407,12 +427,13 @@ run_milo_da_cpp <- function(
         unique(meta_data[[split.by]])
       )
       meta_data[[safe_split_by]] <- unname(condition_map[meta_data[[split.by]]])
-      samples <- unique(meta_data[[sample.by]])
+      sample_info <- proportion_sample_condition_keys(meta_data, sample.by, split.by)
+      samples <- sample_info$pairs$sample_key
 
       nhood <- milo_nhood_counts_cpp(
         knn_idx = knn[["idx"]],
         sampled_vertices = sampled_vertices,
-        sample_id = match(meta_data[[sample.by]], samples),
+        sample_id = match(sample_info$cell_keys, samples),
         n_samples = length(samples),
         k_dist = knn[["dist"]][, knn_k]
       )
@@ -429,13 +450,15 @@ run_milo_da_cpp <- function(
         members = nhood_members,
         counts = count_matrix,
         sample_names = samples,
+        sample_mapping = sample_info$pairs,
         cell_names = rownames(coords),
         k_distance = nhood[["k_distance"]],
         random_vertices = random_vertices
       )
 
-      design_df <- unique(meta_data[, c(sample.by, safe_split_by), drop = FALSE])
-      rownames(design_df) <- design_df[[sample.by]]
+      design_df <- sample_info$pairs
+      design_df[[safe_split_by]] <- unname(condition_map[design_df$condition])
+      rownames(design_df) <- design_df$sample_key
       design_df <- design_df[colnames(count_matrix), , drop = FALSE]
       design_df[[safe_split_by]] <- as.factor(design_df[[safe_split_by]])
 
@@ -454,7 +477,14 @@ run_milo_da_cpp <- function(
         counts_sub <- count_matrix[, rownames(dsub), drop = FALSE]
         cell_sizes <- colSums(counts_sub)
 
-        design_formula <- stats::as.formula(paste0("~ 0 + ", safe_split_by))
+        paired <- proportion_pair_is_paired(dsub, cluster_1, cluster_2)
+        if (paired) {
+          dsub[[".scop_milo_donor"]] <- as.factor(dsub$sample)
+        }
+        design_formula <- stats::as.formula(paste0(
+          "~ 0 + ", safe_split_by,
+          if (paired) " + .scop_milo_donor" else ""
+        ))
         x_model <- stats::model.matrix(design_formula, dsub)
         contrast_cols <- stats::setNames(colnames(x_model), levels(dsub[[safe_split_by]]))
         contrast <- paste0(

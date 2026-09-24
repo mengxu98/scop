@@ -23,13 +23,13 @@ RunPropeller(
 
 \item{split.by}{Metadata column that identifies the condition groups to
 compare. For sample-level methods, if \code{split.by} is omitted and \code{sample.by}
-is provided, \code{sample.by} is treated as the condition column and virtual
-samples are created within each condition.}
+is provided, \code{sample.by} is treated as the condition column; a separate
+biological sample column is still required unless descriptive virtual
+samples are explicitly enabled.}
 
-\item{sample.by}{Metadata column that identifies biological samples.
-For \code{"milo"}, \code{"sccoda"}, and \code{"propeller"}, when \code{sample.by} is omitted
-or identical to \code{split.by}, virtual samples are created within each
-\code{split.by} group for convenience.}
+\item{sample.by}{Metadata column identifying biological samples. Required
+when calling \code{RunPropeller()} directly. Fully paired sample IDs across two
+conditions use a paired test; partially paired comparisons are rejected.}
 
 \item{comparison}{Optional pairs of condition labels. Each pair is
 \code{c(group1, group2)}. \code{obs_log2FD} is \code{log2(group1 / group2)}, matching
@@ -39,7 +39,7 @@ generated in both directions.}
 
 \item{n_bootstrap}{Number of bootstrap iterations for confidence intervals.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed, including for permutation testing.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -53,6 +53,7 @@ A method result bundle used internally by \link{RunProportionTest}.
 \description{
 Method-specific implementation used by \link{RunProportionTest} when
 \code{proportion_method = "propeller"}.
-This implementation works on sample-level proportions using a propeller-style
-transformed test and stores standardized outputs for plotting.
+This implementation uses an internal logit-transformed sample-proportion
+t-test (paired when sample IDs occur in both conditions), not the speckle
+implementation of propeller. It stores standardized outputs for plotting.
 }

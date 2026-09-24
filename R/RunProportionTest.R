@@ -20,20 +20,27 @@
 #' normalized to `"permutation"`.
 #' @param split.by Metadata column that identifies the condition groups to
 #' compare. For sample-level methods, if `split.by` is omitted and `sample.by`
-#' is provided, `sample.by` is treated as the condition column and virtual
-#' samples are created within each condition.
+#' is provided, `sample.by` is treated as the condition column; a separate
+#' biological sample column is still required unless descriptive virtual
+#' samples are explicitly enabled.
 #' @param sample.by Metadata column that identifies biological samples.
-#' For `"milo"`, `"sccoda"`, and `"propeller"`, when `sample.by` is omitted
-#' or identical to `split.by`, virtual samples are created within each
-#' `split.by` group for convenience.
+#' Required for `"milo"`, `"sccoda"`, and `"propeller"` unless
+#' `allow_pseudo_samples = TRUE`. For Milo and Propeller, sample IDs may recur
+#' across two conditions for a fully paired design; partially paired
+#' comparisons are rejected.
 #' @param pseudo_sample_n Number of virtual samples per `split.by` group when
-#' a sample-level method has no usable `sample.by`.
+#' a sample-level method has no usable `sample.by` and
+#' `allow_pseudo_samples = TRUE`. Virtual samples are descriptive only;
+#' inferential statistics are set to `NA`.
+#' @param allow_pseudo_samples Explicitly allow descriptive virtual samples
+#' when biological sample IDs are unavailable. The default is `FALSE` because
+#' partitioning cells does not create biological replicates.
 #' @param n_permutations Number of permutations for permutation-based test.
 #' @param FDR_threshold FDR value cutoff for significance.
 #' @param log2FD_threshold Absolute value of log2FD cutoff for significance.
 #' @param include_all_cells Whether to include all cell types in the complete grid
 #' for permutation mode.
-#' @param seed Random seed.
+#' @param seed Random seed, including for permutation testing.
 #' @param ... Additional arguments passed to the selected method function.
 #'
 #' @export
@@ -74,6 +81,7 @@ RunProportionTest <- function(
   proportion_method,
   sample.by = NULL,
   pseudo_sample_n = 3L,
+  allow_pseudo_samples = FALSE,
   n_permutations = 1000,
   FDR_threshold = 0.05,
   log2FD_threshold = log2(1.5),
@@ -106,6 +114,12 @@ RunProportionTest <- function(
         !nzchar(sample.by) ||
         identical(sample.by, split.by))
   ) {
+    if (!isTRUE(allow_pseudo_samples)) {
+      log_message(
+        "{.arg sample.by} must identify biological samples for {.val {proportion_method}}. Set {.arg allow_pseudo_samples = TRUE} only for descriptive effects without inferential statistics.",
+        message_type = "error"
+      )
+    }
     pseudo <- add_proportion_pseudo_samples(
       srt = srt,
       split.by = split.by,
@@ -173,6 +187,21 @@ RunProportionTest <- function(
     )
   }
 
+  if (isTRUE(pseudo_sample_info$enabled)) {
+    method_bundle$results <- lapply(method_bundle$results, mask_pseudo_sample_inference)
+    if (!is.null(method_bundle$neighborhood_results)) {
+      method_bundle$neighborhood_results <- lapply(
+        method_bundle$neighborhood_results, mask_pseudo_sample_inference
+      )
+      if (!is.null(method_bundle$details$neighborhood_results)) {
+        method_bundle$details$neighborhood_results <- method_bundle$neighborhood_results
+      }
+    }
+    method_bundle$inference_valid <- FALSE
+  } else {
+    method_bundle$inference_valid <- TRUE
+  }
+
   method_bundle$method <- proportion_method
   method_bundle$result_levels <- method_bundle$result_levels %||% "group"
 
@@ -182,6 +211,7 @@ RunProportionTest <- function(
     sample.by = sample.by,
     pseudo_sample_n = pseudo_sample_n,
     pseudo_sample = pseudo_sample_info,
+    inference_valid = !isTRUE(pseudo_sample_info$enabled),
     comparison = comparison,
     n_permutations = n_permutations,
     FDR_threshold = FDR_threshold,
@@ -243,10 +273,14 @@ RunPermutation <- function(
   comparison = NULL,
   n_permutations = 1000,
   include_all_cells = FALSE,
+  seed = 11,
   verbose = TRUE,
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
   meta_data <- validate_proportion_inputs(
     srt = srt,
     group.by = group.by,
@@ -477,6 +511,23 @@ add_proportion_pseudo_samples <- function(
   )
 }
 
+mask_pseudo_sample_inference <- function(df) {
+  statistics <- c(
+    "pval", "p_val", "p.value", "PValue", "P.Value", "F",
+    "FDR", "SpatialFDR", "BH_FDR", "adj.P.Val", "q_value", "qval",
+    "inclusion_prob", "boot_CI_2.5", "boot_CI_97.5",
+    "hdi_2.5", "hdi_97.5"
+  )
+  for (column in intersect(statistics, colnames(df))) {
+    df[[column]] <- NA_real_
+  }
+  if ("credible" %in% colnames(df)) {
+    df$credible <- NA
+  }
+  df$inference_valid <- FALSE
+  df
+}
+
 parse_proportion_comparisons <- function(
   meta_data,
   split.by,
@@ -568,6 +619,42 @@ parse_proportion_comparisons <- function(
   pairs
 }
 
+proportion_sample_condition_keys <- function(meta_data, sample.by, split.by) {
+  sample <- as.character(meta_data[[sample.by]])
+  condition <- as.character(meta_data[[split.by]])
+  if (anyNA(sample) || anyNA(condition) || any(!nzchar(sample)) || any(!nzchar(condition))) {
+    log_message(
+      "{.arg sample.by} and {.arg split.by} must contain non-missing, non-empty values",
+      message_type = "error"
+    )
+  }
+
+  pairs <- unique(data.frame(sample = sample, condition = condition, stringsAsFactors = FALSE))
+  pairs <- pairs[order(pairs$sample, pairs$condition), , drop = FALSE]
+  rownames(pairs) <- NULL
+  pairs$sample_key <- sprintf(".scop_sample_%06d", seq_len(nrow(pairs)))
+  encode <- function(sample, condition) {
+    paste0(nchar(sample), ":", sample, nchar(condition), ":", condition)
+  }
+  cell_keys <- pairs$sample_key[match(
+    encode(sample, condition), encode(pairs$sample, pairs$condition)
+  )]
+  list(pairs = pairs, cell_keys = cell_keys)
+}
+
+proportion_pair_is_paired <- function(pairs, cluster_1, cluster_2) {
+  selected <- pairs[pairs$condition %in% c(cluster_1, cluster_2), , drop = FALSE]
+  group_counts <- table(selected$sample)
+  paired <- any(group_counts > 1L)
+  if (paired && !all(group_counts == 2L)) {
+    log_message(
+      "Only fully paired or fully independent samples are supported for {.val {cluster_1}} vs {.val {cluster_2}}; some sample IDs occur in both conditions and others do not",
+      message_type = "error"
+    )
+  }
+  paired
+}
+
 sample_level_proportion_test <- function(
   meta_data,
   group.by,
@@ -591,20 +678,15 @@ sample_level_proportion_test <- function(
 
   dat <- dat[dat$condition %in% c(cluster_1, cluster_2), , drop = FALSE]
 
-  sample_condition <- stats::aggregate(
-    condition ~ sample,
-    data = dat,
-    FUN = function(x) {
-      ux <- unique(x)
-      ux[1]
-    }
-  )
-  rownames(sample_condition) <- sample_condition$sample
+  sample_info <- proportion_sample_condition_keys(dat, "sample", "condition")
+  sample_condition <- sample_info$pairs
+  dat$sample_key <- sample_info$cell_keys
+  paired <- proportion_pair_is_paired(sample_condition, cluster_1, cluster_2)
 
-  sample_levels <- sample_condition$sample
+  sample_levels <- sample_condition$sample_key
   cluster_levels <- sort(unique(dat$clusters))
 
-  count_tab <- stats::xtabs(~ sample + clusters, data = dat)
+  count_tab <- stats::xtabs(~ sample_key + clusters, data = dat)
   count_mat <- matrix(
     0,
     nrow = length(sample_levels),
@@ -617,8 +699,8 @@ sample_level_proportion_test <- function(
   sample_totals[sample_totals == 0] <- 1
   prop_mat <- count_mat / sample_totals
 
-  samples_1 <- sample_condition$sample[sample_condition$condition == cluster_1]
-  samples_2 <- sample_condition$sample[sample_condition$condition == cluster_2]
+  samples_1 <- sample_condition$sample_key[sample_condition$condition == cluster_1]
+  samples_2 <- sample_condition$sample_key[sample_condition$condition == cluster_2]
 
   trans_fun <- switch(transform,
     raw = function(x) x,
@@ -648,22 +730,34 @@ sample_level_proportion_test <- function(
         } else if (length(unique(c(v1, v2))) <= 1) {
           1
         } else if (length(v1) >= 2 && length(v2) >= 2) {
-          stats::t.test(t1, t2)$p.value
+          stats::t.test(t1, t2, paired = paired)$p.value
         } else {
-          stats::wilcox.test(t1, t2, exact = FALSE)$p.value
+          stats::wilcox.test(t1, t2, paired = paired, exact = FALSE)$p.value
         }
       },
       error = function(e) NA_real_
     )
 
     if (n_bootstrap > 0 && length(v1) > 0 && length(v2) > 0) {
-      boot_result <- proportion_bootstrap_stats(
-        v1 = v1,
-        v2 = v2,
-        n_bootstrap = n_bootstrap,
-        pseudocount = pseudocount,
-        verbose = verbose
-      )
+      boot_result <- if (paired) {
+        boot <- replicate(n_bootstrap, {
+          idx <- sample.int(length(v1), length(v1), replace = TRUE)
+          log2((mean(v1[idx]) + pseudocount) / (mean(v2[idx]) + pseudocount))
+        })
+        list(
+          boot_mean_log2FD = mean(boot),
+          boot_CI_2.5 = as.numeric(stats::quantile(boot, 0.025)),
+          boot_CI_97.5 = as.numeric(stats::quantile(boot, 0.975))
+        )
+      } else {
+        proportion_bootstrap_stats(
+          v1 = v1,
+          v2 = v2,
+          n_bootstrap = n_bootstrap,
+          pseudocount = pseudocount,
+          verbose = verbose
+        )
+      }
       boot_mean_log2FD <- boot_result[["boot_mean_log2FD"]]
       boot_CI_2.5 <- boot_result[["boot_CI_2.5"]]
       boot_CI_97.5 <- boot_result[["boot_CI_97.5"]]
@@ -743,15 +837,23 @@ standardize_proportion_result <- function(
     df$pval <- suppressWarnings(as.numeric(df[[pval_col]]))
   }
 
-  fdr_col <- find_first_col(
-    df,
-    c("FDR", "adj.P.Val", "SpatialFDR", "q_value", "qval")
-  )
+  if (identical(method, "milo") && "SpatialFDR" %in% colnames(df)) {
+    if ("FDR" %in% colnames(df) && !"BH_FDR" %in% colnames(df)) {
+      df$BH_FDR <- suppressWarnings(as.numeric(df$FDR))
+    }
+    fdr_col <- "SpatialFDR"
+  } else {
+    fdr_col <- find_first_col(
+      df,
+      c("FDR", "adj.P.Val", "SpatialFDR", "q_value", "qval")
+    )
+  }
   if (is.null(fdr_col)) {
     df$FDR <- stats::p.adjust(df$pval, method = "fdr")
   } else {
     df$FDR <- suppressWarnings(as.numeric(df[[fdr_col]]))
   }
+  df$FDR_source <- if (is.null(fdr_col)) "BH-adjusted pval" else fdr_col
 
   boot_mean_col <- find_first_col(
     df,

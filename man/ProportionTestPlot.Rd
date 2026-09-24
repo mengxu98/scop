@@ -62,14 +62,19 @@ If \code{NULL}, plots all comparisons.}
 If \code{NULL}, uses the active/most recent method.}
 
 \item{result_level}{Result level to draw. Use \code{"group"} for group-level
-results or \code{"neighborhood"} for Milo neighborhood-level results when
-available.}
+results or \code{"neighborhood"} for stored Milo neighborhood-level results.
+A missing requested level is an error. Milo group results are sample-level
+cell-type proportion tests, distinct from the Milo neighborhood test.}
 
 \item{plot_type}{Plot type. One of \code{"effect"} or \code{"umap"}.}
 
 \item{umap_mode}{UMAP projection mode for \code{plot_type = "umap"}.
 \code{"discrete"} maps cells to DA direction categories;
-\code{"continuous"} maps cells to group-level \code{obs_log2FD}.}
+\code{"continuous"} maps group-level \code{obs_log2FD} or the mean effect of
+overlapping Milo neighborhoods to cells. Neighborhood directions are based
+on significant memberships: opposite directions are \code{"Mixed"}, while cells
+in no neighborhood are \code{"Uncovered"}. This is a member-cell projection,
+not a separate Milo test per cell.}
 
 \item{reduction}{Reduction name used by UMAP projection.}
 
@@ -77,9 +82,12 @@ available.}
 (\code{umap_mode = "discrete"}) or \link{FeatureDimPlot}
 (\code{umap_mode = "continuous"}).}
 
-\item{FDR_threshold}{FDR value cutoff for significance.}
+\item{FDR_threshold}{FDR value cutoff for frequentist methods. Milo
+neighborhood results use \code{SpatialFDR}. scCODA uses its stored \code{credible}
+decision instead.}
 
-\item{log2FD_threshold}{Absolute value of log2FD cutoff for significance.}
+\item{log2FD_threshold}{Absolute value of log2FD cutoff for frequentist
+methods; not applied to scCODA credibility.}
 
 \item{order_by}{Method to order clusters.
 Options: \code{"name"} (alphabetical), \code{"value"} (by log2FD value).}
@@ -140,7 +148,7 @@ one of \code{"none"}, \code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top
 
 \item{legend.title}{Title of the legend.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{seed}{Random seed.}
