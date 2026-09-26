@@ -681,51 +681,40 @@ sctenifold_plot_network <- function(
   ]
   edge_mat[cbind(edge_df$from, edge_df$to)] <- edge_df$abs_weight
 
-  graph_theme_use <- if (inherits(theme_use, "theme")) {
-    function(...) theme_use
-  } else {
-    resolve_plot_theme_use(theme_use)
-  }
-  p <- thisplot::GraphPlot(
+  node_plot$name <- node_plot$gene
+  p <- thisplot::NetworkPlot(
+    edge = edge_df,
     node = node_plot,
-    edge = edge_mat,
-    node_coord = c("x", "y"),
+    from = "from",
+    to = "to",
+    weight = "weight",
+    node_name = "name",
     node_group = "status",
     node_palcolor = sctenifold_status_colors(cols.sig, cols.ns, cols.ko),
     node_size = "node_size",
-    node_alpha = 0.95,
-    node_highlight = highlight_genes,
-    node_highlight_color = cols.ko,
-    label = FALSE,
-    edge_threshold = 0,
-    use_triangular = "both",
-    edge_line = "straight",
-    edge_color = "grey45",
-    edge_size = c(0.25, 1.8),
+    highlight = highlight_genes,
+    highlight.color = cols.ko,
+    layout = "none",
+    node_coord = c("x", "y"),
+    edge_width = c(0.25, 1.8),
     edge_alpha = 0.55,
+    label = isTRUE(label),
+    label_nodes = if (isTRUE(label)) node_plot$gene else NULL,
+    label.size = label.size,
     aspect.ratio = 1,
     title = title %||% paste0(result_label, " ", network_label, " network"),
-    xlab = NULL,
-    ylab = NULL,
     legend.position = "right",
-    theme_use = graph_theme_use,
-    theme_args = theme_args
+    theme_use = "theme_void"
   )
-  if (isTRUE(label)) {
-    p <- p +
-      ggrepel::geom_text_repel(
-        data = node_plot,
-        ggplot2::aes(x = x, y = y, label = gene),
-        inherit.aes = FALSE,
-        size = label.size,
-        color = "black",
-        bg.color = "white",
-        bg.r = 0.1,
-        max.overlaps = Inf,
-        box.padding = 0.35,
-        show.legend = FALSE
-      )
-  }
+  p <- p +
+    apply_plot_theme(theme_use, theme_args, fallback = ggplot2::theme) +
+    ggplot2::theme(
+      axis.line = ggplot2::element_blank(),
+      axis.text = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      axis.title = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank()
+    )
   p
 }
 
