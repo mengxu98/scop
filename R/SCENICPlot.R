@@ -1979,6 +1979,10 @@ scenic_plot_feature_heatmap_from_matrix <- function(
 ) {
   colnames(mat) <- group_names
   mat_sparse <- methods::as(as.matrix(mat), "dgCMatrix")
+  original_features <- rownames(mat_sparse)
+  assay_features <- make.unique(gsub("[_|]", "-", original_features))
+  rownames(mat_sparse) <- assay_features
+  plot_features <- assay_features[match(features, original_features)]
   srt_heatmap <- Seurat::CreateSeuratObject(
     counts = mat_sparse,
     assay = "SCENICHeatmap"
@@ -1994,7 +1998,7 @@ scenic_plot_feature_heatmap_from_matrix <- function(
     FeatureHeatmap,
     args = list(
       srt = srt_heatmap,
-      features = features,
+      features = plot_features,
       cells = group_names,
       group.by = "SCENIC_group",
       max_cells = Inf,
@@ -2019,6 +2023,7 @@ scenic_plot_feature_heatmap_from_matrix <- function(
       heatmap_palcolor = heatmap_palcolor,
       group_palette = group_palette,
       group_palcolor = group_palcolor,
+      ht_params = list(row_labels = features),
       verbose = FALSE
     ),
     extra_args = heatmap_args
