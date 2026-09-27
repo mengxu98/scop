@@ -21,7 +21,6 @@ RunMERINGUE(
   alternative = "greater",
   nperm = 0,
   cores = 1,
-  ncores = NULL,
   pairwise_features = NULL,
   set_variable_features = FALSE,
   store_results = TRUE,
@@ -103,11 +102,7 @@ RunMERINGUE(
 
   Number of cores passed to MERINGUE permutation tests. Mapped to
   `ncores` for the R backend and `n_threads` for the native backend.
-
-- ncores:
-
-  Deprecated alias for `cores`; supply exactly one of the two. It will
-  be removed in scop 1.0.0.
+  will be removed in scop 1.0.0.
 
 - pairwise_features:
 

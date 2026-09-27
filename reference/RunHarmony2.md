@@ -84,22 +84,22 @@ RunHarmony2(
 ``` r
 data(panc8_sub)
 panc8_sub <- RunStandardWorkflow(panc8_sub)
-#> ℹ [2026-09-20 22:19:09] Start standard processing workflow...
-#> ℹ [2026-09-20 22:19:09] Checking a list of <Seurat>...
-#> ! [2026-09-20 22:19:09] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-20 22:19:09] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-20 22:19:09] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-20 22:19:10] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-20 22:19:10] Number of available HVF: 2000
-#> ℹ [2026-09-20 22:19:10] Finished check
-#> ℹ [2026-09-20 22:19:10] Perform `ScaleData()`
-#> ℹ [2026-09-20 22:19:10] Perform pca linear dimension reduction
-#> ℹ [2026-09-20 22:19:10] Use stored estimated dimensions 1:26 for Standardpca
-#> ℹ [2026-09-20 22:19:11] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-20 22:19:11] Reorder clusters...
-#> ℹ [2026-09-20 22:19:11] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-20 22:19:11] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-20 22:19:19] Standard processing workflow completed
+#> ℹ [2026-09-27 22:10:59] Start standard processing workflow...
+#> ℹ [2026-09-27 22:10:59] Checking a list of <Seurat>...
+#> ! [2026-09-27 22:10:59] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-27 22:10:59] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-27 22:10:59] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-27 22:10:59] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-27 22:10:59] Number of available HVF: 2000
+#> ℹ [2026-09-27 22:10:59] Finished check
+#> ℹ [2026-09-27 22:10:59] Perform `ScaleData()`
+#> ℹ [2026-09-27 22:10:59] Perform pca linear dimension reduction
+#> ℹ [2026-09-27 22:10:59] Use stored estimated dimensions 1:26 for Standardpca
+#> ℹ [2026-09-27 22:11:00] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-27 22:11:00] Reorder clusters...
+#> ℹ [2026-09-27 22:11:00] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 22:11:00] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-27 22:11:08] Standard processing workflow completed
 panc8_sub <- RunHarmony2(
   panc8_sub,
   group.by.vars = "tech",
@@ -140,22 +140,22 @@ panc8_sub <- RunStandardWorkflow(
   prefix = "Harmony",
   linear_reduction = "Harmony"
 )
-#> ℹ [2026-09-20 22:20:09] Start standard processing workflow...
-#> ℹ [2026-09-20 22:20:09] Checking a list of <Seurat>...
-#> ℹ [2026-09-20 22:20:09] Data 1/1 of the `srt_list` has been log-normalized
-#> ℹ [2026-09-20 22:20:09] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-20 22:20:10] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-20 22:20:10] Number of available HVF: 2000
-#> ℹ [2026-09-20 22:20:10] Finished check
-#> ℹ [2026-09-20 22:20:10] Perform `ScaleData()`
-#> ℹ [2026-09-20 22:20:10] Perform Harmony linear dimension reduction
-#> ℹ [2026-09-20 22:20:10] `linear_reduction` Harmony is already existed. Skip calculation
-#> ℹ [2026-09-20 22:20:10] Use stored estimated dimensions 1:14 for HarmonyHarmony
-#> ℹ [2026-09-20 22:20:10] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-20 22:20:10] Reorder clusters...
-#> ℹ [2026-09-20 22:20:10] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-20 22:20:10] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-20 22:20:18] Standard processing workflow completed
+#> ℹ [2026-09-27 22:11:39] Start standard processing workflow...
+#> ℹ [2026-09-27 22:11:39] Checking a list of <Seurat>...
+#> ℹ [2026-09-27 22:11:39] Data 1/1 of the `srt_list` has been log-normalized
+#> ℹ [2026-09-27 22:11:39] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-27 22:11:39] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-27 22:11:39] Number of available HVF: 2000
+#> ℹ [2026-09-27 22:11:40] Finished check
+#> ℹ [2026-09-27 22:11:40] Perform `ScaleData()`
+#> ℹ [2026-09-27 22:11:40] Perform Harmony linear dimension reduction
+#> ℹ [2026-09-27 22:11:40] `linear_reduction` Harmony is already existed. Skip calculation
+#> ℹ [2026-09-27 22:11:40] Use stored estimated dimensions 1:14 for HarmonyHarmony
+#> ℹ [2026-09-27 22:11:40] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-27 22:11:40] Reorder clusters...
+#> ℹ [2026-09-27 22:11:40] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 22:11:40] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-27 22:11:48] Standard processing workflow completed
 
 CellDimPlot(
   panc8_sub,

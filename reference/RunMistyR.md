@@ -107,8 +107,8 @@ RunMistyR(
 
 - store_views:
 
-  Whether to store the mistyR view composition in `srt@tools`. This can
-  be large.
+  Whether to store the mistyR view composition in `object@tools`. This
+  can be large.
 
 - verbose:
 

@@ -49,7 +49,7 @@ RunRCTD(
 
 - assay:
 
-  Assay used in `srt`. If `NULL`, the default assay is used.
+  Assay used in `object`. If `NULL`, the default assay is used.
 
 - reference_assay:
 
@@ -195,9 +195,9 @@ spatial <- RunRCTD(
 #> get_de_genes: total DE genes: 90
 #> fitBulk: decomposing bulk
 #> chooseSigma: using initial Q_mat with sigma =  1
-#> Likelihood value: 1065.34481069009
+#> Likelihood value: 1065.34481069014
 #> Sigma value:  0.84
-#> Likelihood value: 1043.70504794368
+#> Likelihood value: 1043.70504794372
 #> Sigma value:  0.69
 #> Likelihood value: 1027.37241216243
 #> Sigma value:  0.61

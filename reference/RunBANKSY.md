@@ -142,7 +142,7 @@ RunBANKSY(
 
 - store_results:
 
-  Whether to store detailed BANKSY results in `srt@tools`.
+  Whether to store detailed BANKSY results in `object@tools`.
 
 - verbose:
 

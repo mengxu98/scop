@@ -63,7 +63,7 @@ RunCoEmbedding(
 
 - weight_reduction:
 
-  Reduction in `srt` used to weight transferred labels. If `NULL`, an
+  Reduction in `object` used to weight transferred labels. If `NULL`, an
   ATAC linear reduction is resolved automatically from
   `ATAC_default_linear_reduction`, `{prefix}lsi`, `{prefix}svd`, or the
   current default reduction.
@@ -129,8 +129,8 @@ pbmcmultiome_sub <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ℹ [2026-09-20 22:02:54] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-20 22:03:00] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 22:00:00] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 22:00:08] Skip `log1p()` because `layer = data` is not "counts"
 coembed <- RunCoEmbedding(
   object = pbmcmultiome_sub,
   reference = pbmcmultiome_sub,

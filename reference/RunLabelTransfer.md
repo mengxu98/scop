@@ -87,7 +87,7 @@ RunLabelTransfer(
 
 - weight_reduction:
 
-  Reduction in `srt` used to weight transferred labels. If `NULL`, an
+  Reduction in `object` used to weight transferred labels. If `NULL`, an
   ATAC linear reduction is resolved automatically from
   `ATAC_default_linear_reduction`, `{prefix}lsi`, `{prefix}svd`, or the
   current default reduction.
@@ -117,7 +117,7 @@ RunLabelTransfer(
 
 - truth_col:
 
-  Metadata column in `srt` used as the truth label when
+  Metadata column in `object` used as the truth label when
   `evaluate = TRUE`.
 
 - tool_name:
@@ -164,7 +164,7 @@ pbmcmultiome_sub <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ℹ [2026-09-20 22:38:34] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 22:25:42] Skip `log1p()` because `layer = data` is not "counts"
 reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:120])
 query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[121:200])
 query <- RunStandardWorkflow(
@@ -174,7 +174,7 @@ query <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ! [2026-09-20 22:38:41] Only one cluster found
+#> ! [2026-09-27 22:25:50] Only one cluster found
 query <- RunLabelTransfer(
   object = query,
   reference = reference,
@@ -206,7 +206,7 @@ head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = 
 #> CAAGGCTGTGTTTGCT-1                      0.05208446                    0.0000000
 #> CAAGGGAGTGGTTCCC-1                      0.00000000                    0.8809738
 #> CAAGGTAAGCCACATG-1                      0.00000000                    0.0000000
-#> CAAGTAACAACAGGAT-1                      0.55003767                    0.0000000
+#> CAAGTAACAACAGGAT-1                      0.55049225                    0.0000000
 #> CAAGTAACACAACAGG-1                      0.00000000                    0.0000000
 #>                    predicted_prediction.score.CD4.T
 #> CAAGGCCTCTAGCGTG-1                       0.00000000
@@ -220,6 +220,6 @@ head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = 
 #> CAAGGCTGTGTTTGCT-1                  0.0003947406                      0.5342408
 #> CAAGGGAGTGGTTCCC-1                  0.0781832706                      0.8809738
 #> CAAGGTAAGCCACATG-1                  0.0000000000                      0.5602397
-#> CAAGTAACAACAGGAT-1                  0.4499623257                      0.5500377
+#> CAAGTAACAACAGGAT-1                  0.4495077499                      0.5504923
 #> CAAGTAACACAACAGG-1                  0.0000000000                      0.5865782
 ```

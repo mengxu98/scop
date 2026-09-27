@@ -12,7 +12,7 @@ ProportionTestPlot(
   object,
   comparison = NULL,
   proportion_method = NULL,
-  result_level = c("group"),
+  result_level = c("group", "neighborhood"),
   plot_type = c("effect", "umap"),
   umap_mode = c("discrete", "continuous"),
   reduction = "UMAP",
@@ -74,7 +74,10 @@ ProportionTestPlot(
 
 - result_level:
 
-  Result level to draw. Currently only `"group"` is used.
+  Result level to draw. Use `"group"` for group-level results or
+  `"neighborhood"` for stored Milo neighborhood-level results. A missing
+  requested level is an error. Milo group results are sample-level
+  cell-type proportion tests, distinct from the Milo neighborhood test.
 
 - plot_type:
 
@@ -83,8 +86,12 @@ ProportionTestPlot(
 - umap_mode:
 
   UMAP projection mode for `plot_type = "umap"`. `"discrete"` maps cells
-  to DA direction categories; `"continuous"` maps cells to group-level
-  `obs_log2FD`.
+  to DA direction categories; `"continuous"` maps group-level
+  `obs_log2FD` or the mean effect of overlapping Milo neighborhoods to
+  cells. Neighborhood directions are based on significant memberships:
+  opposite directions are `"Mixed"`, while cells in no neighborhood are
+  `"Uncovered"`. This is a member-cell projection, not a separate Milo
+  test per cell.
 
 - reduction:
 
@@ -100,11 +107,13 @@ ProportionTestPlot(
 
 - FDR_threshold:
 
-  FDR value cutoff for significance.
+  FDR value cutoff for frequentist methods. Milo neighborhood results
+  use `SpatialFDR`. scCODA uses its stored `credible` decision instead.
 
 - log2FD_threshold:
 
-  Absolute value of log2FD cutoff for significance.
+  Absolute value of log2FD cutoff for frequentist methods; not applied
+  to scCODA credibility.
 
 - order_by:
 
@@ -220,7 +229,7 @@ ProportionTestPlot(
 - combine, nrow, ncol, byrow:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [patchwork::patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
   `combine = FALSE` returns a list of ggplots.
 
 - seed:
@@ -245,36 +254,36 @@ ProportionTestPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-20 21:59:44] Start standard processing workflow...
-#> ℹ [2026-09-20 21:59:44] Checking a list of <Seurat>...
-#> ! [2026-09-20 21:59:44] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-20 21:59:44] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-20 21:59:44] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-20 21:59:44] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-20 21:59:44] Number of available HVF: 2000
-#> ℹ [2026-09-20 21:59:44] Finished check
-#> ℹ [2026-09-20 21:59:44] Perform `ScaleData()`
-#> ℹ [2026-09-20 21:59:45] Perform pca linear dimension reduction
-#> ℹ [2026-09-20 21:59:45] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-20 21:59:45] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-20 21:59:45] Reorder clusters...
-#> ℹ [2026-09-20 21:59:45] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-20 21:59:45] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-20 21:59:51] Standard processing workflow completed
+#> ℹ [2026-09-27 21:57:26] Start standard processing workflow...
+#> ℹ [2026-09-27 21:57:26] Checking a list of <Seurat>...
+#> ! [2026-09-27 21:57:26] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-27 21:57:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-27 21:57:26] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-27 21:57:26] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-27 21:57:26] Number of available HVF: 2000
+#> ℹ [2026-09-27 21:57:26] Finished check
+#> ℹ [2026-09-27 21:57:26] Perform `ScaleData()`
+#> ℹ [2026-09-27 21:57:26] Perform pca linear dimension reduction
+#> ℹ [2026-09-27 21:57:26] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-27 21:57:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-27 21:57:27] Reorder clusters...
+#> ℹ [2026-09-27 21:57:27] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 21:57:27] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-27 21:57:33] Standard processing workflow completed
 pancreas_sub <- RunProportionTest(
   pancreas_sub,
   group.by = "CellType",
   split.by = "Phase",
   proportion_method = "permutation"
 )
-#> ℹ [2026-09-20 21:59:51] Start proportion test ("permutation")
-#> ℹ [2026-09-20 21:59:51] Running comparison: "G1" vs "S"
-#> ℹ [2026-09-20 21:59:53] Running comparison: "G1" vs "G2M"
-#> ℹ [2026-09-20 21:59:55] Running comparison: "S" vs "G2M"
-#> ℹ [2026-09-20 21:59:55] Running comparison: "S" vs "G1"
-#> ℹ [2026-09-20 21:59:55] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-09-20 21:59:55] Running comparison: "G2M" vs "S"
-#> ✔ [2026-09-20 21:59:55] Proportion test completed ("permutation")
+#> ℹ [2026-09-27 21:57:33] Start proportion test ("permutation")
+#> ℹ [2026-09-27 21:57:33] Running comparison: "G1" vs "S"
+#> ℹ [2026-09-27 21:57:35] Running comparison: "G1" vs "G2M"
+#> ℹ [2026-09-27 21:57:38] Running comparison: "S" vs "G2M"
+#> ℹ [2026-09-27 21:57:38] Running comparison: "S" vs "G1"
+#> ℹ [2026-09-27 21:57:38] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-09-27 21:57:38] Running comparison: "G2M" vs "S"
+#> ✔ [2026-09-27 21:57:38] Proportion test completed ("permutation")
 
 ProportionTestPlot(pancreas_sub)
 

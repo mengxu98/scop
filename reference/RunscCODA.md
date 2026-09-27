@@ -11,7 +11,7 @@ RunscCODA(
   split.by,
   sample.by,
   comparison = NULL,
-  reference_cell_type = NULL,
+  reference_cell_type = "automatic",
   credible_effect_threshold = 0.95,
   n_mcmc_samples = 20000L,
   reuse_reverse_comparisons = TRUE,
@@ -37,15 +37,16 @@ RunscCODA(
 
   Metadata column that identifies the condition groups to compare. For
   sample-level methods, if `split.by` is omitted and `sample.by` is
-  provided, `sample.by` is treated as the condition column and virtual
-  samples are created within each condition.
+  provided, `sample.by` is treated as the condition column; a separate
+  biological sample column is still required unless descriptive virtual
+  samples are explicitly enabled.
 
 - sample.by:
 
-  Metadata column that identifies biological samples. For `"milo"`,
-  `"sccoda"`, and `"propeller"`, when `sample.by` is omitted or
-  identical to `split.by`, virtual samples are created within each
-  `split.by` group for convenience.
+  Metadata column identifying biological samples. Required when calling
+  `RunscCODA()` directly. Repeated donor IDs across conditions are kept
+  as separate sample-condition units; the scCODA model does not include
+  a donor pairing term.
 
 - comparison:
 
@@ -58,7 +59,10 @@ RunscCODA(
 
 - reference_cell_type:
 
-  Optional reference cell type for scCODA.
+  Reference cell type for scCODA. The default `"automatic"` lets scCODA
+  select the cell type with the lowest relative abundance dispersion
+  among sufficiently prevalent cell types. A cell-type name can be
+  supplied to use an explicit reference.
 
 - credible_effect_threshold:
 
@@ -86,7 +90,7 @@ RunscCODA(
 
 - seed:
 
-  Random seed.
+  Random seed, including for permutation testing.
 
 - verbose:
 

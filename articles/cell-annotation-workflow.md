@@ -28,52 +28,52 @@ data(pancreas_sub)
 data(panc8_sub)
 
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-09-20 23:01:12] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 22:42:57] Skip `log1p()` because `layer = data` is not "counts"
 panc8_sub <- RunIntegration(
   srt_merge = panc8_sub,
   batch = "tech",
   integration_methods = "Harmony"
 )
-#> ◌ [2026-09-20 23:01:16] Run integration workflow...
-#> ℹ [2026-09-20 23:01:16] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-09-20 23:01:17] Checking a list of <Seurat>...
-#> ! [2026-09-20 23:01:17] Data 1/5 of the `srt_list` is "unknown"
+#> ◌ [2026-09-27 22:43:00] Run integration workflow...
+#> ℹ [2026-09-27 22:43:01] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-09-27 22:43:01] Checking a list of <Seurat>...
+#> ! [2026-09-27 22:43:01] Data 1/5 of the `srt_list` is "unknown"
 #> Warning: Data 1/5 of the `srt_list` is "unknown"
-#> ℹ [2026-09-20 23:01:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
-#> ℹ [2026-09-20 23:01:17] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ! [2026-09-20 23:01:17] Data 2/5 of the `srt_list` is "unknown"
+#> ℹ [2026-09-27 22:43:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/5 of `srt_list`...
+#> ℹ [2026-09-27 22:43:01] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ! [2026-09-27 22:43:01] Data 2/5 of the `srt_list` is "unknown"
 #> Warning: Data 2/5 of the `srt_list` is "unknown"
-#> ℹ [2026-09-20 23:01:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
-#> ℹ [2026-09-20 23:01:17] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ! [2026-09-20 23:01:17] Data 3/5 of the `srt_list` is "unknown"
+#> ℹ [2026-09-27 22:43:01] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 2/5 of `srt_list`...
+#> ℹ [2026-09-27 22:43:01] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ! [2026-09-27 22:43:02] Data 3/5 of the `srt_list` is "unknown"
 #> Warning: Data 3/5 of the `srt_list` is "unknown"
-#> ℹ [2026-09-20 23:01:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
-#> ℹ [2026-09-20 23:01:18] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ! [2026-09-20 23:01:18] Data 4/5 of the `srt_list` is "unknown"
+#> ℹ [2026-09-27 22:43:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 3/5 of `srt_list`...
+#> ℹ [2026-09-27 22:43:02] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ! [2026-09-27 22:43:02] Data 4/5 of the `srt_list` is "unknown"
 #> Warning: Data 4/5 of the `srt_list` is "unknown"
-#> ℹ [2026-09-20 23:01:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
-#> ℹ [2026-09-20 23:01:18] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ! [2026-09-20 23:01:18] Data 5/5 of the `srt_list` is "unknown"
+#> ℹ [2026-09-27 22:43:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 4/5 of `srt_list`...
+#> ℹ [2026-09-27 22:43:02] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ! [2026-09-27 22:43:02] Data 5/5 of the `srt_list` is "unknown"
 #> Warning: Data 5/5 of the `srt_list` is "unknown"
-#> ℹ [2026-09-20 23:01:18] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
-#> ℹ [2026-09-20 23:01:18] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-09-20 23:01:19] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-20 23:01:19] Number of available HVF: 2000
-#> ℹ [2026-09-20 23:01:19] Finished check
+#> ℹ [2026-09-27 22:43:02] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 5/5 of `srt_list`...
+#> ℹ [2026-09-27 22:43:02] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-09-27 22:43:03] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-27 22:43:03] Number of available HVF: 2000
+#> ℹ [2026-09-27 22:43:03] Finished check
 #> Warning: No layers found matching search pattern provided
 #> Warning: Layer 'scale.data' is empty
-#> ℹ [2026-09-20 23:01:23] Perform `Seurat::ScaleData()`
-#> ℹ [2026-09-20 23:01:24] Perform linear dimension reduction("pca")
-#> ℹ [2026-09-20 23:01:25] Perform Harmony integration
-#> ℹ [2026-09-20 23:01:25] Using "Harmonypca" (1:20) as input
-#> ℹ [2026-09-20 23:01:25] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-09-20 23:01:25] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-09-20 23:01:26] Reorder clusters...
-#> ℹ [2026-09-20 23:01:26] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-20 23:01:26] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-09-20 23:01:29] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-09-20 23:01:31] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
-#> ✔ [2026-09-20 23:01:35] Harmony integration completed
+#> ℹ [2026-09-27 22:43:06] Perform `Seurat::ScaleData()`
+#> ℹ [2026-09-27 22:43:08] Perform linear dimension reduction("pca")
+#> ℹ [2026-09-27 22:43:08] Perform Harmony integration
+#> ℹ [2026-09-27 22:43:08] Using "Harmonypca" (1:20) as input
+#> ℹ [2026-09-27 22:43:08] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-09-27 22:43:08] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-09-27 22:43:08] Reorder clusters...
+#> ℹ [2026-09-27 22:43:08] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 22:43:08] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-09-27 22:43:11] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-09-27 22:43:14] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
+#> ✔ [2026-09-27 22:43:17] Harmony integration completed
 ```
 
 When query and reference use different gene-name conventions,
@@ -99,7 +99,7 @@ panc8_rename <- RenameFeatures(
   newnames = genenames,
   assays = "RNA"
 )
-#> ℹ [2026-09-20 23:01:35] Rename features for the assay: RNA
+#> ℹ [2026-09-27 22:43:17] Rename features for the assay: RNA
 ```
 
 ## Project Query Cells Onto a Reference
@@ -114,12 +114,12 @@ srt_query <- RunKNNMap(
   srt_ref = panc8_rename,
   ref_umap = "HarmonyUMAP2D"
 )
-#> ℹ [2026-09-20 23:01:35] Use the features to calculate distance metric
-#> ℹ [2026-09-20 23:01:35] Data type is log-normalized
-#> ℹ [2026-09-20 23:01:36] Data type is log-normalized
-#> ℹ [2026-09-20 23:01:36] Use 638 features to calculate distance
-#> ℹ [2026-09-20 23:01:36] Use raw method to find neighbors
-#> ℹ [2026-09-20 23:01:36] Running UMAP projection
+#> ℹ [2026-09-27 22:43:17] Use the features to calculate distance metric
+#> ℹ [2026-09-27 22:43:17] Data type is log-normalized
+#> ℹ [2026-09-27 22:43:18] Data type is log-normalized
+#> ℹ [2026-09-27 22:43:18] Use 637 features to calculate distance
+#> ℹ [2026-09-27 22:43:18] Use raw method to find neighbors
+#> ℹ [2026-09-27 22:43:18] Running UMAP projection
 
 ProjectionPlot(
   srt_query = srt_query,
@@ -135,9 +135,9 @@ ProjectionPlot(
 #> Adding another scale for x, which will replace the existing scale.
 #> Scale for y is already present.
 #> Adding another scale for y, which will replace the existing scale.
-#> Warning: Removed 4 rows containing missing values or values outside the scale range
+#> Warning: Removed 7 rows containing missing values or values outside the scale range
 #> (`geom_point()`).
-#> Removed 4 rows containing missing values or values outside the scale range
+#> Removed 7 rows containing missing values or values outside the scale range
 #> (`geom_point()`).
 ```
 
@@ -166,12 +166,12 @@ pancreas_sub <- RunKNNPredict(
   bulk_ref = ref_scMCA,
   filter_lowfreq = 20
 )
-#> ℹ [2026-09-20 23:01:39] Use [1] 549 features to calculate distance.
-#> ℹ [2026-09-20 23:01:39] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-09-20 23:01:39] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-09-20 23:01:39] Calculate similarity...
-#> ℹ [2026-09-20 23:01:39] Use raw method to find neighbors
-#> ℹ [2026-09-20 23:01:39] Predict cell type...
+#> ℹ [2026-09-27 22:43:19] Use [1] 549 features to calculate distance.
+#> ℹ [2026-09-27 22:43:19] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-09-27 22:43:19] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-09-27 22:43:19] Calculate similarity...
+#> ℹ [2026-09-27 22:43:19] Use raw method to find neighbors
+#> ℹ [2026-09-27 22:43:20] Predict cell type...
 
 CellDimPlot(
   pancreas_sub,
@@ -202,18 +202,18 @@ pancreas_sub <- RunKNNPredict(
   ref_group = "celltype",
   filter_lowfreq = 20
 )
-#> ℹ [2026-09-20 23:01:40] Use the HVF to calculate distance metric
-#> ℹ [2026-09-20 23:01:40] Use [1] 638 features to calculate distance.
+#> ℹ [2026-09-27 22:43:20] Use the HVF to calculate distance metric
+#> ℹ [2026-09-27 22:43:20] Use [1] 637 features to calculate distance.
 #> As of Seurat v5, we recommend using AggregateExpression to perform pseudo-bulk analysis.
-#> ℹ [2026-09-20 23:01:40] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-09-27 22:43:20] Detected query data type: "log_normalized_counts"
 #> 
-#> ℹ [2026-09-20 23:01:40] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-09-27 22:43:20] Detected reference data type: "log_normalized_counts"
 #> 
-#> ℹ [2026-09-20 23:01:40] Calculate similarity...
+#> ℹ [2026-09-27 22:43:20] Calculate similarity...
 #> 
-#> ℹ [2026-09-20 23:01:40] Use raw method to find neighbors
+#> ℹ [2026-09-27 22:43:20] Use raw method to find neighbors
 #> 
-#> ℹ [2026-09-20 23:01:40] Predict cell type...
+#> ℹ [2026-09-27 22:43:20] Predict cell type...
 #> 
 #> This message is displayed once per session.
 
@@ -246,13 +246,13 @@ ht <- CellCorHeatmap(
   show_row_names = TRUE,
   show_column_names = TRUE
 )
-#> ℹ [2026-09-20 23:01:41] Use the HVF to calculate distance metric
-#> ℹ [2026-09-20 23:01:41] Use [1] 638 features to calculate distance.
-#> ℹ [2026-09-20 23:01:41] Detected query data type: "log_normalized_counts"
-#> ℹ [2026-09-20 23:01:41] Detected reference data type: "log_normalized_counts"
-#> ℹ [2026-09-20 23:01:41] Calculate similarity...
-#> ℹ [2026-09-20 23:01:41] Use raw method to find neighbors
-#> ℹ [2026-09-20 23:01:41] Predict cell type...
+#> ℹ [2026-09-27 22:43:20] Use the HVF to calculate distance metric
+#> ℹ [2026-09-27 22:43:20] Use [1] 637 features to calculate distance.
+#> ℹ [2026-09-27 22:43:21] Detected query data type: "log_normalized_counts"
+#> ℹ [2026-09-27 22:43:21] Detected reference data type: "log_normalized_counts"
+#> ℹ [2026-09-27 22:43:21] Calculate similarity...
+#> ℹ [2026-09-27 22:43:21] Use raw method to find neighbors
+#> ℹ [2026-09-27 22:43:21] Predict cell type...
 print(ht$plot)
 ```
 

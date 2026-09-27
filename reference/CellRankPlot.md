@@ -83,7 +83,7 @@ CellRankPlot(
 
 - cluster:
 
-  Starting group for `plot_type = "flow"`.
+  Starting group for \`plot_type = "flow"\`.
 
 - clusters:
 

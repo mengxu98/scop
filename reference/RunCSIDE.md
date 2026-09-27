@@ -79,7 +79,7 @@ RunCSIDE(
 
 - assay:
 
-  Assay used in `srt`. If `NULL`, the default assay is used.
+  Assay used in `object`. If `NULL`, the default assay is used.
 
 - layer:
 

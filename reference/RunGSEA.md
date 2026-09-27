@@ -59,12 +59,12 @@ RunGSEA(
 - test.use:
 
   Test to be used in differential expression analysis. This argument is
-  only used if `srt` is specified.
+  only used if `object` is specified.
 
 - DE_threshold:
 
   Filter condition for differential expression analysis. This argument
-  is only used if `srt` is specified.
+  is only used if `object` is specified.
 
 - scoreType:
 
@@ -93,7 +93,7 @@ RunGSEA(
 
 - IDtype:
 
-  Type of gene IDs in the `srt` object or `geneID` argument. This
+  Type of gene IDs in the `object` object or `geneID` argument. This
   argument is used to convert the gene IDs to a different type if
   `IDtype` is different from `result_IDtype`.
 
@@ -113,9 +113,14 @@ RunGSEA(
   `"DO"`, `"HPO"`, `"PFAM"`, `"CSPA"`, `"Surfaceome"`, `"SPRomeDB"`,
   `"VerSeDa"`, `"TFLink"`, `"hTFtarget"`, `"TRRUST"`, `"JASPAR"`,
   `"ENCODE"`, `"MSigDB"`, `"CellTalk"`, `"CellChat"`, `"Chromosome"`,
-  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CytoTRACE2"`. MSigDB
-  subcollections use `"MSigDB_<collection>"` (e.g. `"MSigDB_H"`).
-  `"CytoTRACE2"` is species-independent and is required by
+  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CytoTRACE2"`. MSigDB collections
+  use `"MSigDB_<collection>"`, with `:` replaced by `_`. Top-level names
+  such as `"MSigDB_H"` (human hallmark), `"MSigDB_MH"` (mouse hallmark)
+  and `"MSigDB_M2"` stay available and include their nested collections.
+  Nested names include each prefix, for example `"MSigDB_M2_CGP"`,
+  `"MSigDB_M2_CP"` and `"MSigDB_M2_CP_BIOCARTA"`. Colon forms such as
+  `"MSigDB_M2:CGP"` are accepted. `"CytoTRACE2"` is species-independent
+  and is required by
   [RunCytoTRACE](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md).
 
 - db_update:
@@ -262,14 +267,14 @@ gsea_out <- RunGSEA(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-09-20 22:18:36] Start GSEA analysis
-#> ! [2026-09-20 22:18:36] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-09-20 22:18:36] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-09-20 22:18:36] Prepared 15 ranked gene rows after ID mapping.
-#> ℹ [2026-09-20 22:18:36] Running GSEA for 1 group/database combination(s) ...
-#> ℹ [2026-09-20 22:18:36] Running GSEA: group "Cluster1", database "custom", genes 15 ...
-#> ℹ [2026-09-20 22:18:36] Finished GSEA: group "Cluster1", database "custom".
-#> ✔ [2026-09-20 22:18:36] GSEA analysis done
+#> ℹ [2026-09-27 22:10:34] Start GSEA analysis
+#> ! [2026-09-27 22:10:34] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-09-27 22:10:34] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-09-27 22:10:34] Prepared 15 ranked gene rows after ID mapping.
+#> ℹ [2026-09-27 22:10:34] Running GSEA for 1 group/database combination(s) ...
+#> ℹ [2026-09-27 22:10:34] Running GSEA: group "Cluster1", database "custom", genes 15 ...
+#> ℹ [2026-09-27 22:10:34] Finished GSEA: group "Cluster1", database "custom".
+#> ✔ [2026-09-27 22:10:34] GSEA analysis done
 GSEAPlot(
   res = gsea_out,
   db = "custom",

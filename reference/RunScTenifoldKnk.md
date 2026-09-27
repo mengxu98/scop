@@ -107,13 +107,13 @@ RunscTenifoldKnk(
 
 - store_networks:
 
-  Whether to keep WT/KO tensor networks in `srt@tools`. This only
+  Whether to keep WT/KO tensor networks in `object@tools`. This only
   controls what is stored; the network ensemble is always built the same
   way.
 
 - store_manifold:
 
-  Whether to keep manifold-alignment coordinates in `srt@tools`.
+  Whether to keep manifold-alignment coordinates in `object@tools`.
 
 - tool_name:
 
@@ -161,9 +161,9 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-09-20 22:46:11] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
+#> ℹ [2026-09-27 22:31:31] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
 #> ℹ Building 3 gene regulatory networks (200 cells each)
-#> Networks ■■■■■■■■■■■                       33% | ETA:  5s
+#> Networks ■■■■■■■■■■■                       33% | ETA:  3s
 #> Networks ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s
 #> ✔ Network construction complete: 3 networks
 #> ℹ [X] Tensor: 301 x 301 x 3 (K=3)
@@ -172,17 +172,17 @@ pancreas_sub <- RunscTenifoldKnk(
 #> ✔ Manifold alignment complete: 2 dimensions
 #> ℹ Computing distances for 301 genes
 #> ✔ Differential regulation complete: 1/301 significant genes (FDR < 0.05)
-#> ✔ [2026-09-20 22:46:22] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ✔ [2026-09-27 22:31:38] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
 head(dr)
 #>       gene     distance        Z          FC      p.value        p.adj
-#> 1     Pdx1 6.754982e-04 3.963089 289.3616215 6.849419e-65 2.061675e-62
-#> 292   Cd81 7.505946e-05 2.316055   3.5727569 5.873472e-02 1.000000e+00
-#> 256   Myl6 3.581292e-05 1.864745   0.8133400 3.671346e-01 1.000000e+00
-#> 84   Actg1 3.437486e-05 1.841072   0.7493322 3.866877e-01 1.000000e+00
-#> 148   Ssr2 2.780289e-05 1.720629   0.4901989 4.838386e-01 1.000000e+00
-#> 156 Sec61b 2.552481e-05 1.673092   0.4131593 5.203703e-01 1.000000e+00
+#> 1     Pdx1 6.754982e-04 3.970550 289.3616215 6.849419e-65 2.061675e-62
+#> 292   Cd81 7.505946e-05 2.320024   3.5727569 5.873472e-02 1.000000e+00
+#> 256   Myl6 3.581292e-05 1.867758   0.8133400 3.671346e-01 1.000000e+00
+#> 84   Actg1 3.437486e-05 1.844035   0.7493322 3.866877e-01 1.000000e+00
+#> 148   Ssr2 2.780289e-05 1.723337   0.4901989 4.838386e-01 1.000000e+00
+#> 156 Sec61b 2.552481e-05 1.675699   0.4131593 5.203703e-01 1.000000e+00
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "effect")
 ```

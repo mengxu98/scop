@@ -68,7 +68,7 @@ TrainCellTypist(
 - labels:
 
   Cell labels used for training. Can be a metadata column name when
-  `srt`/`adata` is supplied, or a vector aligned with cells.
+  `object`/`adata` is supplied, or a vector aligned with cells.
 
 - genes:
 

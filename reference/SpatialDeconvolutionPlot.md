@@ -128,11 +128,11 @@ spatial <- RunRCTD(
 #> get_de_genes: total DE genes: 90
 #> fitBulk: decomposing bulk
 #> chooseSigma: using initial Q_mat with sigma =  1
-#> Likelihood value: 14055.4563689972
+#> Likelihood value: 14055.4563689971
 #> Sigma value:  0.84
-#> Likelihood value: 13872.0157413349
+#> Likelihood value: 13872.0157413348
 #> Sigma value:  0.69
-#> Likelihood value: 13777.9531790351
+#> Likelihood value: 13777.9531790348
 #> Sigma value:  0.65
 #> Likelihood value: 13771.1936781319
 #> Sigma value:  0.64

@@ -2,11 +2,181 @@
 
 ## scop (development version)
 
+- **fix**: Differential-abundance plots now project Milo neighborhoods
+  through stored member cells, use `SpatialFDR` for Milo neighborhood
+  significance, and use scCODA credibility for scCODA plots. Milo group
+  summaries and the internal Propeller-style test now report their
+  statistical provenance.
+
+- **fix**: Sample-level abundance tests preserve sample-condition units
+  and support fully paired donor IDs in Milo and the internal
+  Propeller-style test. Permutation testing now honors `seed`.
+
+- **change**: Milo, scCODA, and Propeller require biological `sample.by`
+  by default. `allow_pseudo_samples = TRUE` retains virtual samples for
+  descriptive effects, with inferential statistics marked unavailable.
+
+- **fix**:
+  [`ProportionTestPlot()`](https://mengxu98.github.io/scop/reference/ProportionTestPlot.md)
+  accepts `result_level = "neighborhood"` for stored Milo
+  neighborhood-level results.
+
+- **fix**: Preserve scCODA’s `"automatic"` reference-cell selection in
+  [`RunscCODA()`](https://mengxu98.github.io/scop/reference/RunscCODA.md)
+  and reject unknown explicit references instead of silently using the
+  first cell type.
+
+- **fix**:
+  [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md)
+  returns only the requested MSigDB collections after caching the other
+  generated subsets. A cached subset loads the base `MSigDB` database
+  before converting gene IDs, and falls back to the normal ID conversion
+  when that database does not contain the requested columns.
+
+- **fix**:
+  [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md)
+  keeps nested MSigDB collections. Names such as `MSigDB_M2_CGP`,
+  `MSigDB_M2_CP` and `MSigDB_M2_CP_BIOCARTA` select those subsets,
+  parent names such as `MSigDB_M2` still include every nested
+  collection, and colon forms such as `MSigDB_M2:CGP` are accepted. An
+  unknown MSigDB name reports the available collections instead of
+  failing in
+  [`complete.cases()`](https://rdrr.io/r/stats/complete.cases.html). A
+  cached top-level collection stays usable; requesting a nested name
+  that is not cached rebuilds MSigDB.
+
+- **fix**:
+  [`RunNMF()`](https://mengxu98.github.io/scop/reference/RunNMF.md)
+  supports the CRAN `RcppML` release: sparse input no longer needs
+  `Matrix` attached by the caller, the attach is scoped to the call, and
+  `check_r()` no longer replaces an installed CRAN build with the GitHub
+  one.
+
+- **fix**: The native Gaussian GSVA kernel follows the sparse scoring
+  walk of the installed `GSVA` release (\<= 2.4 and \>= 2.6), so
+  [`RunGSVA()`](https://mengxu98.github.io/scop/reference/RunGSVA.md)
+  and
+  [`CellScoring()`](https://mengxu98.github.io/scop/reference/CellScoring.md)
+  match `backend = "r"` on either engine; explicitly stored zeros are
+  dropped before scoring.
+
+- **perf**: The native Gaussian GSVA walk only evaluates the running-sum
+  extremes at the gene-set hit positions: ~2.8x faster than the previous
+  walk and ~50x faster than the delegated GSVA path on a 2,000 x 1,000
+  matrix with 400 gene sets.
+
+- **fix**:
+  [`RunSpatialNeighborhood()`](https://mengxu98.github.io/scop/reference/RunSpatialNeighborhood.md)
+  returns observed label-pair tables in a deterministic,
+  backend-independent row order, so the cpp and reference R backends
+  produce [`identical()`](https://rdrr.io/r/base/identical.html)
+  results; a backend parity regression test is added.
+
+- **fix**: PRECAST consumes the explicitly selected raw-count matrix and
+  defaults to SCOP’s exact distance-based six-neighbor adjacency instead
+  of interpreting image pixels as array indices or using PRECAST’s
+  axis-restricted neighbor candidates. The matrix follows PRECAST’s
+  column-neighbor convention. Empty/invalid spatial graphs and
+  non-finite integration outputs fail before results are written; stored
+  parameters include the graph builder, backend arguments and edge
+  counts.
+
+- **fix**: SpatialCellChat recognizes imported Visium HD and HD bin
+  assays, requires explicit HD pixel-to-micron calibration and
+  tolerance, and does not classify Visium spot/bin images as segmented
+  cells merely because they inherit FOV.
+
+- **fix**: Spatial variable feature surfaces inherit their saved assay,
+  layer, image and coordinate columns. Backend feature IDs and p/q
+  ranges are validated; missing BH-adjusted values use the complete
+  supplied p-value family.
+
+- **breaking**: Thread counts are named `cores` throughout.
+  [`RunLargeVis()`](https://mengxu98.github.io/scop/reference/RunLargeVis.md),
+  [`RunUMAP2()`](https://mengxu98.github.io/scop/reference/RunUMAP2.md),
+  [`RunSmoothClust()`](https://mengxu98.github.io/scop/reference/RunSmoothClust.md),
+  [`RunscMalignantFinder()`](https://mengxu98.github.io/scop/reference/RunscMalignantFinder.md),
+  [`RunSecAct()`](https://mengxu98.github.io/scop/reference/RunSecAct.md),
+  [`RunMERINGUE()`](https://mengxu98.github.io/scop/reference/RunMERINGUE.md),
+  [`RunSpatialEcoTyper()`](https://mengxu98.github.io/scop/reference/RunSpatialEcoTyper.md)
+  and
+  [`RunCHOIR()`](https://mengxu98.github.io/scop/reference/RunCHOIR.md)
+  no longer accept the backend-specific `n_threads`, `n_thread`,
+  `ncores` and `n_cores` argument names, and the `n_threads`/`n_thread`
+  values that
+  [`RunCIBERSORT()`](https://mengxu98.github.io/scop/reference/RunCIBERSORT.md)
+  and the AUCell scoring path previously accepted through `...` are gone
+  as well; `cores` is forwarded to each backend under the name that
+  backend expects.
+
 - **feat**:
   [`FeatureDimPlot()`](https://mengxu98.github.io/scop/reference/FeatureDimPlot.md)
   defaults assay-gene headings to italic and supports `title.face` plus
   scalar or feature-named `title.color`, preserving numeric metadata
   headings and expression palettes.
+
+- **fix**: Resolve the thisutils Python logger from `scripts/`, with
+  compatibility for older installations using `python/`, in both
+  reticulate imports and subprocess runners.
+
+- **fix**: Dependency checks use the default `check_r()` behavior,
+  allowing missing packages to be installed during analysis.
+  Dependencies can also be installed ahead of time through
+  [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md).
+
+- **perf**: The scVelo backend builds the velocity transition, the
+  terminal states and the pseudotime as sparse matrices instead of dense
+  cell-by-cell ones; at 50,000 cells the velocity graph drops from about
+  56 GiB to 11 MiB. The terminal states and pseudotime now use iterative
+  eigensolvers, which can return fewer regions than the previous dense
+  implementation when the graph contains several near-closed classes,
+  and this path requires `RSpectra`.
+
+- **fix**: `CNVPlot(plot_type = "heatmap")` honours its documented
+  `heatmap_palette` through
+  [`thisplot::palette_colors()`](https://mengxu98.github.io/thisplot/reference/palette_colors.html)
+  instead of ignoring it, and
+  [`SCENICPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlot.md)
+  resolves its automatic reduction through
+  [`DefaultReduction()`](https://mengxu98.github.io/scop/reference/DefaultReduction.md).
+
+- **docs**:
+  [`IntegrationBenchmarkPlot()`](https://mengxu98.github.io/scop/reference/IntegrationBenchmarkPlot.md)
+  documents its real workflow, and
+  [`RunDeconvolution()`](https://mengxu98.github.io/scop/reference/RunDeconvolution.md)
+  documents the MuSiC path.
+
+- **fix**: Align the C++ ports with their reference implementations:
+  `RunPalantir(backend = "cpp")` uses the reference Markov-chain
+  bandwidth and pins the start waypoint pseudotime to zero,
+  `RunCellRank(backend = "cpp")` reports lineage-driver p-values from
+  the Fisher z transform instead of a Cauchy tail, and
+  `RunSCVELO(backend = "cpp", mode = "stochastic")` applies the
+  reference 95% percentile weighting mask. Existing results for these
+  methods change accordingly.
+
+- **fix**:
+  [`RunPCA()`](https://mengxu98.github.io/scop/reference/RunPCA.md)
+  takes `cores` and forwards it to the native backend, which bounds its
+  BLAS calls instead of always using the process default. The bound only
+  applies when the linked BLAS exposes a thread-count setting (OpenBLAS
+  or MKL); the Windows reference BLAS has none.
+
+- **fix**:
+  [`RunscTenifoldKnk()`](https://mengxu98.github.io/scop/reference/RunScTenifoldKnk.md)
+  restores the previous OpenMP and BLAS thread counts on exit instead of
+  leaving them changed for the rest of the session.
+
+- **fix**:
+  [`RunCHOIR()`](https://mengxu98.github.io/scop/reference/RunCHOIR.md)
+  checks and installs its pinned backend when needed, and reports
+  installation failures.
+
+- **fix**:
+  [`RunSCENIC()`](https://mengxu98.github.io/scop/reference/RunSCENIC.md)
+  requires `arrow` for its ranking databases and reports the missing
+  package instead of silently falling back to a rank-based
+  approximation.
 
 - **refactor**: Use the thisplot Pastel1 palette for volcano enrichment
   overlays instead of a hard-coded palette.
@@ -137,8 +307,9 @@
   former scop backend into mengxu98/monocle). Ordering a 3,000-cell
   dataset drops from ~9.3 s to ~1.2 s, and the ordering step no longer
   scales quadratically with cell number. Pseudotime, states, and the
-  root cell are unchanged. The updated monocle is installed
-  automatically through `check_r()`.
+  root cell are unchanged. The updated monocle is declared through
+  `check_r()` and installed by
+  [`PrepareEnv()`](https://mengxu98.github.io/scop/reference/PrepareEnv.md).
 
 - **breaking**: Public APIs take the data object as `object=` rather
   than `srt=`. Every exported function that took `srt=` now takes
@@ -351,8 +522,8 @@
   placeholder files. Existing scripts using the removed
   [`data()`](https://rdrr.io/r/utils/data.html) names must be updated.
 
-- **chore**: Optional-package probes in package code now use
-  `check_r(install = FALSE)` and `get_namespace_fun()` instead of
+- **chore**: Optional-package probes in package code now use `check_r()`
+  and `get_namespace_fun()` instead of
   [`requireNamespace()`](https://rdrr.io/r/base/ns-load.html).
   Documented examples call public functions under `\dontrun` and do not
   invoke `check_r`.

@@ -33,7 +33,7 @@ RunCHOIR(
   reduction = NULL,
   var_features = NULL,
   atac = FALSE,
-  n_cores = 1,
+  cores = 1,
   seed = 1,
   store_tool = TRUE,
   verbose = TRUE,
@@ -124,7 +124,7 @@ RunCHOIR(
 - reduction:
 
   Optional existing dimensional reduction supplied to CHOIR. This can be
-  a reduction name in `srt` or a cell-by-dimension matrix.
+  a reduction name in `object` or a cell-by-dimension matrix.
 
 - var_features:
 
@@ -135,7 +135,7 @@ RunCHOIR(
 
   Whether the selected assay contains ATAC-seq data.
 
-- n_cores:
+- cores:
 
   Number of cores used by CHOIR. The pinned backend supports macOS and
   Linux; Windows execution is rejected before installation.
@@ -190,7 +190,7 @@ pancreas_sub <- Seurat::NormalizeData(pancreas_sub, verbose = FALSE)
 pancreas_sub <- RunCHOIR(
   pancreas_sub,
   assay = "RNA",
-  n_cores = 2,
+  cores = 2,
   verbose = FALSE
 )
 CellDimPlot(pancreas_sub, group.by = "CHOIR_cluster")

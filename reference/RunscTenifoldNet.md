@@ -144,8 +144,8 @@ pancreas_sub <- RunscTenifoldNet(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-09-20 22:56:38] Run scTenifoldNet comparison using upstream implementation
-#> Error in get(fun, envir = ns, inherits = FALSE): lazy-load database '/tmp/RtmpDRt1H6/temp_libpath8b637068ccea/scTenifoldNet/R/scTenifoldNet.rdb' is corrupt
+#> ℹ [2026-09-27 22:39:17] Run scTenifoldNet comparison using upstream implementation
+#> Error in get(fun, envir = ns, inherits = FALSE): lazy-load database '/tmp/RtmpkndhMH/temp_libpath89fe11e15558/scTenifoldNet/R/scTenifoldNet.rdb' is corrupt
 
 dr <- pancreas_sub@tools$scTenifoldNet$diffRegulation
 head(dr)

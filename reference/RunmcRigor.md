@@ -55,7 +55,7 @@ RunmcRigor(
 
 - metacell.by:
 
-  Metadata column(s) in `srt` used as metacell partitions when
+  Metadata column(s) in `object` used as metacell partitions when
   `cell_membership = NULL`.
 
 - mode:
@@ -114,7 +114,7 @@ RunmcRigor(
 
 - prefix:
 
-  Prefix for metadata columns written to `srt`.
+  Prefix for metadata columns written to `object`.
 
 - tool_name:
 
@@ -154,16 +154,16 @@ pancreas_sub <- RunStandardWorkflow(
   nonlinear_reduction_dims = 2,
   verbose = FALSE
 )
-#> ℹ [2026-09-20 22:53:54] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 22:37:28] Skip `log1p()` because `layer = data` is not "counts"
 mc <- RunMetaCell(
   pancreas_sub,
   method = "supercell",
   gamma = 25
 )
-#> ℹ [2026-09-20 22:54:02] Running SuperCell with gamma = 25, k.knn = 5 on 1000 cells
-#> ℹ [2026-09-20 22:54:03] `RunMetaCell()` ("supercell") built 40 metacells from 1000 cells
-#> ℹ [2026-09-20 22:54:03] Metacell size summary: min 5, median 20, mean 25, max 74 cells
-#> ✔ [2026-09-20 22:54:03] `RunMetaCell()` returned metacell Seurat with 40 metacells. Original cells in `@misc[["original_srt"]]`
+#> ℹ [2026-09-27 22:37:36] Running SuperCell with gamma = 25, k.knn = 5 on 1000 cells
+#> ℹ [2026-09-27 22:37:36] `RunMetaCell()` ("supercell") built 40 metacells from 1000 cells
+#> ℹ [2026-09-27 22:37:36] Metacell size summary: min 5, median 20, mean 25, max 74 cells
+#> ✔ [2026-09-27 22:37:36] `RunMetaCell()` returned metacell Seurat with 40 metacells. Original cells in `@misc[["original_srt"]]`
 
 membership <- data.frame(
   Metacell = mc@misc[["cell_membership"]],
@@ -177,14 +177,14 @@ pancreas_sub <- RunmcRigor(
   feature_use = 100,
   draw = FALSE
 )
-#> ℹ [2026-09-20 22:56:28] Run mcRigor in "detect" mode with 1 partition
+#> ℹ [2026-09-27 22:39:09] Run mcRigor in "detect" mode with 1 partition
 #> Normalizing data...
 #> gamma = 1 
 #>   |                                                                              |                                                                      |   0%  |                                                                              |==                                                                    |   2%  |                                                                              |====                                                                  |   5%  |                                                                              |=====                                                                 |   8%  |                                                                              |=======                                                               |  10%  |                                                                              |=========                                                             |  12%  |                                                                              |==========                                                            |  15%  |                                                                              |============                                                          |  18%  |                                                                              |==============                                                        |  20%  |                                                                              |================                                                      |  22%  |                                                                              |==================                                                    |  25%  |                                                                              |===================                                                   |  28%  |                                                                              |=====================                                                 |  30%  |                                                                              |=======================                                               |  32%  |                                                                              |========================                                              |  35%  |                                                                              |==========================                                            |  38%  |                                                                              |============================                                          |  40%  |                                                                              |==============================                                        |  42%  |                                                                              |================================                                      |  45%  |                                                                              |=================================                                     |  48%  |                                                                              |===================================                                   |  50%  |                                                                              |=====================================                                 |  52%  |                                                                              |======================================                                |  55%  |                                                                              |========================================                              |  57%  |                                                                              |==========================================                            |  60%  |                                                                              |============================================                          |  62%  |                                                                              |==============================================                        |  65%  |                                                                              |===============================================                       |  68%  |                                                                              |=================================================                     |  70%  |                                                                              |===================================================                   |  72%  |                                                                              |====================================================                  |  75%  |                                                                              |======================================================                |  78%  |                                                                              |========================================================              |  80%  |                                                                              |==========================================================            |  82%  |                                                                              |============================================================          |  85%  |                                                                              |=============================================================         |  88%  |                                                                              |===============================================================       |  90%  |                                                                              |=================================================================     |  92%  |                                                                              |==================================================================    |  95%  |                                                                              |====================================================================  |  98%  |                                                                              |======================================================================| 100%
 #> 
 #>     dubious trustworthy 
 #>          27          13 
-#> ✔ [2026-09-20 22:56:33] mcRigor results stored in `srt@tools[[mcRigor]]`
+#> ✔ [2026-09-27 22:39:14] mcRigor results stored in `srt@tools[[mcRigor]]`
 
 table(pancreas_sub$mcRigor_status)
 #> 
