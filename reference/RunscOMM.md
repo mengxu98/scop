@@ -68,7 +68,7 @@ RunscOMM(
 
 - truth_col:
 
-  Metadata column in `srt` used as the truth label when
+  Metadata column in `object` used as the truth label when
   `evaluate = TRUE`.
 
 - tool_name:

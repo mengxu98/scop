@@ -4,7 +4,10 @@ Method-specific implementation used by
 [RunProportionTest](https://mengxu98.github.io/scop/reference/RunProportionTest.md)
 when `proportion_method = "milo"`. The function always returns a
 group-level summary and additionally stores a neighborhood-level result
-list under `neighborhood_results`.
+list under `neighborhood_results`. The group summary uses sample-level
+cell-type proportions; its p-values are not Milo neighborhood test
+p-values. Neighborhood results use the Milo test and `SpatialFDR` as
+their standardized `FDR`.
 
 ## Usage
 
@@ -40,15 +43,15 @@ RunMilo(
 
   Metadata column that identifies the condition groups to compare. For
   sample-level methods, if `split.by` is omitted and `sample.by` is
-  provided, `sample.by` is treated as the condition column and virtual
-  samples are created within each condition.
+  provided, `sample.by` is treated as the condition column; a separate
+  biological sample column is still required unless descriptive virtual
+  samples are explicitly enabled.
 
 - sample.by:
 
-  Metadata column that identifies biological samples. For `"milo"`,
-  `"sccoda"`, and `"propeller"`, when `sample.by` is omitted or
-  identical to `split.by`, virtual samples are created within each
-  `split.by` group for convenience.
+  Metadata column identifying biological samples. Required when calling
+  `RunMilo()` directly. Fully paired sample IDs across two conditions
+  are supported; partially paired comparisons are rejected.
 
 - comparison:
 
@@ -85,7 +88,7 @@ RunMilo(
 
 - seed:
 
-  Random seed.
+  Random seed, including for permutation testing.
 
 - verbose:
 

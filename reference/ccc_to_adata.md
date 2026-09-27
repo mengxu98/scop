@@ -87,8 +87,8 @@ ccc_to_adata(
 
 - liana_res:
 
-  Optional precomputed LIANA-like data frame. If supplied, `srt` is not
-  required.
+  Optional precomputed LIANA-like data frame. If supplied, `object` is
+  not required.
 
 - score_key:
 

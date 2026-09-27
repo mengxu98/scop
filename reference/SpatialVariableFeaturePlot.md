@@ -6,7 +6,9 @@ The summary view shows feature ranks and, when finite p- or q-values are
 stored, significance. Results without permutation statistics are shown
 without a significance size mapping or legend. The surface view reuses
 [`SpatialSpotPlot()`](https://mengxu98.github.io/scop/reference/SpatialSpotPlot.md)
-to draw spatial expression for selected features.
+to draw spatial expression for selected features. Unless explicitly
+overridden, surfaces inherit the saved assay, layer, image and
+coordinate columns, even if the object's default assay has changed.
 
 ## Usage
 
@@ -64,18 +66,14 @@ SpatialVariableFeaturePlot(
 
   Result column used for the summary x-axis.
 
-- assay:
+- assay, layer:
 
-  Assay to use. `NULL` uses the default assay.
-
-- layer:
-
-  Assay layer to use.
+  Expression assay and layer for surfaces. When `NULL`, use the saved
+  analysis settings; explicit values override them.
 
 - image:
 
-  Spatial image name. Required when multiple images are present; a
-  single image is selected automatically when `NULL`.
+  Image for surfaces. When `NULL`, use the saved analysis image.
 
 - overlay_image, image.alpha:
 
@@ -83,7 +81,8 @@ SpatialVariableFeaturePlot(
 
 - coord.cols:
 
-  Metadata coordinate columns used when no image is available.
+  Metadata coordinate columns for surfaces. When omitted, use the saved
+  analysis columns.
 
 - flip.y:
 
@@ -123,7 +122,7 @@ SpatialVariableFeaturePlot(
 - combine, nrow, ncol, byrow:
 
   Combine plots with
-  [patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
+  [patchwork::patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html).
   `combine = FALSE` returns a list of ggplots.
 
 - srt:

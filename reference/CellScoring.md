@@ -66,7 +66,7 @@ CellScoring(
 
 - IDtype:
 
-  Type of gene IDs in the `srt` object or `geneID` argument. This
+  Type of gene IDs in the `object` object or `geneID` argument. This
   argument is used to convert the gene IDs to a different type if
   `IDtype` is different from `result_IDtype`.
 
@@ -81,9 +81,14 @@ CellScoring(
   `"DO"`, `"HPO"`, `"PFAM"`, `"CSPA"`, `"Surfaceome"`, `"SPRomeDB"`,
   `"VerSeDa"`, `"TFLink"`, `"hTFtarget"`, `"TRRUST"`, `"JASPAR"`,
   `"ENCODE"`, `"MSigDB"`, `"CellTalk"`, `"CellChat"`, `"Chromosome"`,
-  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CytoTRACE2"`. MSigDB
-  subcollections use `"MSigDB_<collection>"` (e.g. `"MSigDB_H"`).
-  `"CytoTRACE2"` is species-independent and is required by
+  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CytoTRACE2"`. MSigDB collections
+  use `"MSigDB_<collection>"`, with `:` replaced by `_`. Top-level names
+  such as `"MSigDB_H"` (human hallmark), `"MSigDB_MH"` (mouse hallmark)
+  and `"MSigDB_M2"` stay available and include their nested collections.
+  Nested names include each prefix, for example `"MSigDB_M2_CGP"`,
+  `"MSigDB_M2_CP"` and `"MSigDB_M2_CP_BIOCARTA"`. Colon forms such as
+  `"MSigDB_M2:CGP"` are accepted. `"CytoTRACE2"` is species-independent
+  and is required by
   [RunCytoTRACE](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md).
 
 - termnames:
@@ -191,23 +196,23 @@ CellScoring(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-20 21:14:18] Start standard processing workflow...
-#> ℹ [2026-09-20 21:14:18] Checking a list of <Seurat>...
-#> ! [2026-09-20 21:14:19] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-27 21:30:40] Start standard processing workflow...
+#> ℹ [2026-09-27 21:30:40] Checking a list of <Seurat>...
+#> ! [2026-09-27 21:30:40] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-20 21:14:19] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-20 21:14:19] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-20 21:14:19] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-20 21:14:19] Number of available HVF: 2000
-#> ℹ [2026-09-20 21:14:19] Finished check
-#> ℹ [2026-09-20 21:14:19] Perform `ScaleData()`
-#> ℹ [2026-09-20 21:14:19] Perform pca linear dimension reduction
-#> ℹ [2026-09-20 21:14:19] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-20 21:14:19] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-20 21:14:19] Reorder clusters...
-#> ℹ [2026-09-20 21:14:20] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-20 21:14:20] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-20 21:14:24] Standard processing workflow completed
+#> ℹ [2026-09-27 21:30:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-27 21:30:40] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-27 21:30:40] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-27 21:30:40] Number of available HVF: 2000
+#> ℹ [2026-09-27 21:30:40] Finished check
+#> ℹ [2026-09-27 21:30:40] Perform `ScaleData()`
+#> ℹ [2026-09-27 21:30:40] Perform pca linear dimension reduction
+#> ℹ [2026-09-27 21:30:41] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-27 21:30:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-27 21:30:41] Reorder clusters...
+#> ℹ [2026-09-27 21:30:41] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 21:30:41] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-27 21:30:46] Standard processing workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -218,10 +223,10 @@ pancreas_sub <- CellScoring(
   method = "AUCell",
   name = "test"
 )
-#> ℹ [2026-09-20 21:14:24] Start cell scoring
-#> ℹ [2026-09-20 21:14:24] Data type is log-normalized
-#> ℹ [2026-09-20 21:14:24] Number of feature lists to be scored: 2
-#> ✔ [2026-09-20 21:14:24] Cell scoring completed
+#> ℹ [2026-09-27 21:30:46] Start cell scoring
+#> ℹ [2026-09-27 21:30:46] Data type is log-normalized
+#> ℹ [2026-09-27 21:30:46] Number of feature lists to be scored: 2
+#> ✔ [2026-09-27 21:30:46] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 
 
@@ -236,15 +241,15 @@ pancreas_sub <- CellScoring(
   features = list(A = features_all[1:100]),
   method = c("AUCell", "GSVA")
 )
-#> ℹ [2026-09-20 21:14:25] Start cell scoring
-#> ℹ [2026-09-20 21:14:25] Start cell scoring
-#> ℹ [2026-09-20 21:14:25] Data type is log-normalized
-#> ℹ [2026-09-20 21:14:25] Number of feature lists to be scored: 1
-#> ✔ [2026-09-20 21:14:25] Cell scoring completed
-#> ℹ [2026-09-20 21:14:25] Start cell scoring
-#> ℹ [2026-09-20 21:14:25] Data type is log-normalized
-#> ℹ [2026-09-20 21:14:26] Number of feature lists to be scored: 1
-#> ✔ [2026-09-20 21:14:28] Cell scoring completed
+#> ℹ [2026-09-27 21:30:46] Start cell scoring
+#> ℹ [2026-09-27 21:30:46] Start cell scoring
+#> ℹ [2026-09-27 21:30:46] Data type is log-normalized
+#> ℹ [2026-09-27 21:30:46] Number of feature lists to be scored: 1
+#> ✔ [2026-09-27 21:30:46] Cell scoring completed
+#> ℹ [2026-09-27 21:30:46] Start cell scoring
+#> ℹ [2026-09-27 21:30:47] Data type is log-normalized
+#> ℹ [2026-09-27 21:30:47] Number of feature lists to be scored: 1
+#> ✔ [2026-09-27 21:30:49] Cell scoring completed
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("AUCell_A", "GSVA_A"),
@@ -253,7 +258,7 @@ FeatureStatPlot(
   plot_type = "violin",
   stack = TRUE
 )
-#> ℹ [2026-09-20 21:14:28] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-09-27 21:30:49] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureDimPlot(
@@ -273,22 +278,22 @@ GroupHeatmap(
 
 #> 
 #> $g_tree
-#> gTree[GRID.gTree.17427] 
+#> gTree[GRID.gTree.17410] 
 #> 
 #> $matrix_list
 #> $matrix_list$CellType
-#>             Ductal Ngn3-high-EP   Endocrine Ngn3-low-EP Pre-endocrine
-#> AUCell_A -0.882137    0.3521051 -0.09190844  -0.8923595     1.5142998
-#> GSVA_A    1.284271   -0.7833688 -0.48805934   0.8592283    -0.8720707
-#> Sox9      1.428872   -0.6125486 -0.79466665   0.6788737    -0.7005309
-#> Anxa2     1.146725   -0.6170844 -0.78673632   1.0374551    -0.7803596
-#> Bicc1     1.110978   -0.6764747 -0.73759372   1.0784037    -0.7753133
+#>              Ductal Ngn3-high-EP   Endocrine Ngn3-low-EP Pre-endocrine
+#> AUCell_A -0.8821370    0.3521051 -0.09190844  -0.8923595     1.5142998
+#> GSVA_A   -0.9127938    0.8500125 -0.29535294  -0.8916622     1.2497965
+#> Sox9      1.4288723   -0.6125486 -0.79466665   0.6788737    -0.7005309
+#> Anxa2     1.1467252   -0.6170844 -0.78673632   1.0374551    -0.7803596
+#> Bicc1     1.1109781   -0.6764747 -0.73759372   1.0784037    -0.7753133
 #> attr(,"scaled:center")
 #>    AUCell_A      GSVA_A        Sox9       Anxa2       Bicc1 
-#>  0.02608917 -0.91687608  1.96420268  2.04845477  1.94117464 
+#>  0.02608917 -0.09541451  1.96420268  2.04845477  1.94117464 
 #> attr(,"scaled:scale")
 #>    AUCell_A      GSVA_A        Sox9       Anxa2       Bicc1 
-#> 0.002103202 0.015210486 2.163337655 2.542869069 2.379710010 
+#> 0.002103202 0.009417160 2.163337655 2.542869069 2.379710010 
 #> 
 #> 
 #> $feature_split

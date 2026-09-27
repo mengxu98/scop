@@ -563,22 +563,22 @@ DynamicHeatmap(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-20 21:33:31] Start standard processing workflow...
-#> ℹ [2026-09-20 21:33:31] Checking a list of <Seurat>...
-#> ! [2026-09-20 21:33:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-20 21:33:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-20 21:33:32] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-20 21:33:32] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-20 21:33:32] Number of available HVF: 2000
-#> ℹ [2026-09-20 21:33:32] Finished check
-#> ℹ [2026-09-20 21:33:32] Perform `ScaleData()`
-#> ℹ [2026-09-20 21:33:32] Perform pca linear dimension reduction
-#> ℹ [2026-09-20 21:33:32] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-20 21:33:32] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-20 21:33:33] Reorder clusters...
-#> ℹ [2026-09-20 21:33:33] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-20 21:33:33] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-20 21:33:38] Standard processing workflow completed
+#> ℹ [2026-09-27 21:42:26] Start standard processing workflow...
+#> ℹ [2026-09-27 21:42:26] Checking a list of <Seurat>...
+#> ! [2026-09-27 21:42:26] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-09-27 21:42:26] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-09-27 21:42:26] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-09-27 21:42:27] Use the separate HVF from `srt_list`
+#> ℹ [2026-09-27 21:42:27] Number of available HVF: 2000
+#> ℹ [2026-09-27 21:42:27] Finished check
+#> ℹ [2026-09-27 21:42:27] Perform `ScaleData()`
+#> ℹ [2026-09-27 21:42:27] Perform pca linear dimension reduction
+#> ℹ [2026-09-27 21:42:27] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-09-27 21:42:27] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-09-27 21:42:27] Reorder clusters...
+#> ℹ [2026-09-27 21:42:27] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 21:42:27] Perform umap nonlinear dimension reduction
+#> ✔ [2026-09-27 21:42:33] Standard processing workflow completed
 
 pancreas_sub <- RunSlingshot(
   pancreas_sub,
@@ -592,13 +592,13 @@ pancreas_sub <- RunDynamicFeatures(
   fit_method = "pretsa",
   n_candidates = 200
 )
-#> ℹ [2026-09-20 21:33:40] Start find dynamic features
-#> ℹ [2026-09-20 21:33:41] Data type is raw counts
-#> ℹ [2026-09-20 21:33:41] Number of candidate features (union): 242
-#> ℹ [2026-09-20 21:33:42] Data type is raw counts
-#> ℹ [2026-09-20 21:33:42] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-09-20 21:33:42] Calculating dynamic features for "Lineage2"...
-#> ✔ [2026-09-20 21:33:42] Find dynamic features done
+#> ℹ [2026-09-27 21:42:34] Start find dynamic features
+#> ℹ [2026-09-27 21:42:35] Data type is raw counts
+#> ℹ [2026-09-27 21:42:35] Number of candidate features (union): 234
+#> ℹ [2026-09-27 21:42:36] Data type is raw counts
+#> ℹ [2026-09-27 21:42:36] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-09-27 21:42:36] Calculating dynamic features for "Lineage2"...
+#> ✔ [2026-09-27 21:42:36] Find dynamic features done
 
 ht1 <- DynamicHeatmap(
   pancreas_sub,
@@ -610,8 +610,8 @@ ht1 <- DynamicHeatmap(
   width = 2,
   height = 3
 )
-#> ℹ [2026-09-20 21:33:42] [1] 154 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Ppy,Cck...
+#> ℹ [2026-09-27 21:42:36] [1] 156 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Lrpprc,Chgb,Slc38a5,Ppy,Cck...
 ht1$plot
 
 
@@ -633,20 +633,20 @@ ht2 <- DynamicHeatmap(
   ),
   cell_annotation = "SubCellType"
 )
-#> ℹ [2026-09-20 21:33:45] Start find dynamic features
-#> ℹ [2026-09-20 21:33:45] Data type is raw counts
-#> ℹ [2026-09-20 21:33:45] Number of candidate features (union): 2
-#> ℹ [2026-09-20 21:33:46] Data type is raw counts
-#> ! [2026-09-20 21:33:46] Negative values detected
-#> ! [2026-09-20 21:33:46] Negative values detected
-#> ℹ [2026-09-20 21:33:46] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-09-20 21:33:46] Using 1 core
-#> ⠙ [2026-09-20 21:33:46] Running for S_score [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-09-20 21:33:46] Completed 2 tasks in 82ms
+#> ℹ [2026-09-27 21:42:37] Start find dynamic features
+#> ℹ [2026-09-27 21:42:39] Data type is raw counts
+#> ℹ [2026-09-27 21:42:39] Number of candidate features (union): 2
+#> ℹ [2026-09-27 21:42:39] Data type is raw counts
+#> ! [2026-09-27 21:42:39] Negative values detected
+#> ! [2026-09-27 21:42:39] Negative values detected
+#> ℹ [2026-09-27 21:42:39] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-09-27 21:42:39] Using 1 core
+#> ⠙ [2026-09-27 21:42:39] Running for S_score [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-09-27 21:42:39] Completed 2 tasks in 50ms
 #> 
-#> ℹ [2026-09-20 21:33:46] Building results
-#> ✔ [2026-09-20 21:33:46] Find dynamic features done
-#> ℹ [2026-09-20 21:33:46] Some features were missing in at least one lineage: 
+#> ℹ [2026-09-27 21:42:39] Building results
+#> ✔ [2026-09-27 21:42:39] Find dynamic features done
+#> ℹ [2026-09-27 21:42:39] Some features were missing in at least one lineage: 
 #> ℹ                       Isl1,Neurod2,Pyy,Rbp4,Sox9...
 ht2$plot
 
@@ -663,8 +663,8 @@ ht3 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-09-20 21:33:46] [1] 176 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Ppy,Cck...
+#> ℹ [2026-09-27 21:42:39] [1] 173 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Lrpprc,Chgb,Slc38a5,Ppy,Cck...
 ht3$plot
 
 
@@ -683,13 +683,13 @@ ht4 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-09-20 21:33:51] [1] 176 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Ppy,Cck...
-#> ℹ [2026-09-20 21:33:51] Start Enrichment analysis
-#> ℹ [2026-09-20 21:33:51] Species: "Mus_musculus"
-#> ℹ [2026-09-20 21:33:51] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-20 21:23:40
-#> ℹ [2026-09-20 21:33:53] Permform enrichment...
-#> ✔ [2026-09-20 21:33:55] Enrichment analysis done
+#> ℹ [2026-09-27 21:42:42] [1] 173 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Lrpprc,Chgb,Slc38a5,Ppy,Cck...
+#> ℹ [2026-09-27 21:42:42] Start Enrichment analysis
+#> ℹ [2026-09-27 21:42:42] Species: "Mus_musculus"
+#> ℹ [2026-09-27 21:42:42] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-27 21:36:56
+#> ℹ [2026-09-27 21:42:43] Permform enrichment...
+#> ✔ [2026-09-27 21:42:45] Enrichment analysis done
 
 ht5 <- DynamicHeatmap(
   pancreas_sub,
@@ -714,22 +714,22 @@ ht5 <- DynamicHeatmap(
   features_width = grid::unit(0.5, "in"),
   features_fontsize = c(3, 6)
 )
-#> ℹ [2026-09-20 21:33:58] [1] 154 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Ppy,Cck...
-#> ℹ [2026-09-20 21:33:59] Start Enrichment analysis
-#> ℹ [2026-09-20 21:33:59] Species: "Mus_musculus"
-#> ℹ [2026-09-20 21:33:59] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-20 21:23:40
-#> ℹ [2026-09-20 21:34:00] Permform enrichment...
-#> ✔ [2026-09-20 21:34:02] Enrichment analysis done
+#> ℹ [2026-09-27 21:42:46] [1] 156 features from Lineage1 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Lrpprc,Chgb,Slc38a5,Ppy,Cck...
+#> ℹ [2026-09-27 21:42:47] Start Enrichment analysis
+#> ℹ [2026-09-27 21:42:47] Species: "Mus_musculus"
+#> ℹ [2026-09-27 21:42:47] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-27 21:36:56
+#> ℹ [2026-09-27 21:42:48] Permform enrichment...
+#> ✔ [2026-09-27 21:42:49] Enrichment analysis done
 
 pancreas_sub <- AnnotateFeatures(
   pancreas_sub,
   species = "Mus_musculus",
   db = c("CSPA", "TF")
 )
-#> ℹ [2026-09-20 21:34:20] Species: "Mus_musculus"
-#> ℹ [2026-09-20 21:34:20] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-09-20 21:04:17
-#> ℹ [2026-09-20 21:34:21] Preparing database: CSPA
+#> ℹ [2026-09-27 21:43:00] Species: "Mus_musculus"
+#> ℹ [2026-09-27 21:43:00] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-09-27 21:24:10
+#> ℹ [2026-09-27 21:43:01] Preparing database: CSPA
 ht6 <- DynamicHeatmap(
   pancreas_sub,
   exp_legend_title = "Z-score",
@@ -765,34 +765,31 @@ ht6 <- DynamicHeatmap(
   width = 1,
   height = 2
 )
-#> ℹ [2026-09-20 21:34:23] [1] 176 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Ppy,Cck...
-#> ℹ [2026-09-20 21:34:24] Start find dynamic features
-#> ℹ [2026-09-20 21:34:24] Data type is raw counts
-#> ℹ [2026-09-20 21:34:25] Number of candidate features (union): 2
-#> ℹ [2026-09-20 21:34:25] Data type is raw counts
-#> ℹ [2026-09-20 21:34:25] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-09-20 21:34:25] Using 1 core
-#> ⠙ [2026-09-20 21:34:25] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-09-20 21:34:25] Completed 2 tasks in 263ms
+#> ℹ [2026-09-27 21:43:02] [1] 173 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Lrpprc,Chgb,Slc38a5,Ppy,Cck...
+#> ℹ [2026-09-27 21:43:02] Start find dynamic features
+#> ℹ [2026-09-27 21:43:03] Data type is raw counts
+#> ℹ [2026-09-27 21:43:03] Number of candidate features (union): 2
+#> ℹ [2026-09-27 21:43:03] Data type is raw counts
+#> ℹ [2026-09-27 21:43:03] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-09-27 21:43:03] Using 1 core
+#> ⠙ [2026-09-27 21:43:03] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-09-27 21:43:03] Completed 2 tasks in 96ms
 #> 
-#> ℹ [2026-09-20 21:34:25] Building results
-#> ✔ [2026-09-20 21:34:25] Find dynamic features done
-#> ℹ [2026-09-20 21:34:26] Start find dynamic features
-#> ℹ [2026-09-20 21:34:26] Data type is raw counts
-#> ℹ [2026-09-20 21:34:26] Number of candidate features (union): 2
-#> ℹ [2026-09-20 21:34:27] Data type is raw counts
-#> ℹ [2026-09-20 21:34:27] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-09-20 21:34:27] Using 1 core
-#> ⠙ [2026-09-20 21:34:27] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-09-20 21:34:27] Completed 2 tasks in 228ms
-#> 
-#> ℹ [2026-09-20 21:34:27] Building results
-#> ✔ [2026-09-20 21:34:27] Find dynamic features done
-#> Picking joint bandwidth of 19.9
-#> Picking joint bandwidth of 17.5
-#> Picking joint bandwidth of 19.9
-#> Picking joint bandwidth of 17.5
+#> ℹ [2026-09-27 21:43:03] Building results
+#> ✔ [2026-09-27 21:43:03] Find dynamic features done
+#> ℹ [2026-09-27 21:43:03] Start find dynamic features
+#> ℹ [2026-09-27 21:43:04] Data type is raw counts
+#> ℹ [2026-09-27 21:43:04] Number of candidate features (union): 2
+#> ℹ [2026-09-27 21:43:04] Data type is raw counts
+#> ℹ [2026-09-27 21:43:04] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-09-27 21:43:04] Using 1 core
+#> ℹ [2026-09-27 21:43:04] Building results
+#> ✔ [2026-09-27 21:43:04] Find dynamic features done
+#> Picking joint bandwidth of 19.7
+#> Picking joint bandwidth of 20.4
+#> Picking joint bandwidth of 19.7
+#> Picking joint bandwidth of 20.4
 
 ht7 <- DynamicHeatmap(
   pancreas_sub,
@@ -827,32 +824,29 @@ ht7 <- DynamicHeatmap(
   width = 2,
   height = 1
 )
-#> ℹ [2026-09-20 21:34:32] [1] 176 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
-#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Chgb,Lrpprc,Slc38a5,Ppy,Cck...
-#> ℹ [2026-09-20 21:34:32] Start find dynamic features
-#> ℹ [2026-09-20 21:34:33] Data type is raw counts
-#> ℹ [2026-09-20 21:34:33] Number of candidate features (union): 2
-#> ℹ [2026-09-20 21:34:33] Data type is raw counts
-#> ℹ [2026-09-20 21:34:33] Calculating dynamic features for "Lineage1"...
-#> ℹ [2026-09-20 21:34:33] Using 1 core
-#> ⠙ [2026-09-20 21:34:33] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-09-20 21:34:33] Completed 2 tasks in 225ms
+#> ℹ [2026-09-27 21:43:07] [1] 173 features from Lineage1,Lineage2 passed the threshold (exp_ncells>[1] 20 & r.sq>[1] 0.2 & dev.expl>[1] 0.2 & padjust<[1] 0.05): 
+#> ℹ                       Gcg,Iapp,Pyy,Rbp4,Gast,Lrpprc,Chgb,Slc38a5,Ppy,Cck...
+#> ℹ [2026-09-27 21:43:07] Start find dynamic features
+#> ℹ [2026-09-27 21:43:08] Data type is raw counts
+#> ℹ [2026-09-27 21:43:08] Number of candidate features (union): 2
+#> ℹ [2026-09-27 21:43:08] Data type is raw counts
+#> ℹ [2026-09-27 21:43:08] Calculating dynamic features for "Lineage1"...
+#> ℹ [2026-09-27 21:43:08] Using 1 core
+#> ⠙ [2026-09-27 21:43:08] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
+#> ✔ [2026-09-27 21:43:08] Completed 2 tasks in 94ms
 #> 
-#> ℹ [2026-09-20 21:34:33] Building results
-#> ✔ [2026-09-20 21:34:34] Find dynamic features done
-#> ℹ [2026-09-20 21:34:34] Start find dynamic features
-#> ℹ [2026-09-20 21:34:34] Data type is raw counts
-#> ℹ [2026-09-20 21:34:36] Number of candidate features (union): 2
-#> ℹ [2026-09-20 21:34:36] Data type is raw counts
-#> ℹ [2026-09-20 21:34:36] Calculating dynamic features for "Lineage2"...
-#> ℹ [2026-09-20 21:34:36] Using 1 core
-#> ⠙ [2026-09-20 21:34:36] Running for Arxes1 [1/2] ■■■■■       50% | ETA:  0s
-#> ✔ [2026-09-20 21:34:36] Completed 2 tasks in 144ms
-#> 
-#> ℹ [2026-09-20 21:34:36] Building results
-#> ✔ [2026-09-20 21:34:36] Find dynamic features done
-#> Picking joint bandwidth of 19.9
-#> Picking joint bandwidth of 17.5
-#> Picking joint bandwidth of 19.9
-#> Picking joint bandwidth of 17.5
+#> ℹ [2026-09-27 21:43:08] Building results
+#> ✔ [2026-09-27 21:43:08] Find dynamic features done
+#> ℹ [2026-09-27 21:43:08] Start find dynamic features
+#> ℹ [2026-09-27 21:43:09] Data type is raw counts
+#> ℹ [2026-09-27 21:43:09] Number of candidate features (union): 2
+#> ℹ [2026-09-27 21:43:09] Data type is raw counts
+#> ℹ [2026-09-27 21:43:09] Calculating dynamic features for "Lineage2"...
+#> ℹ [2026-09-27 21:43:09] Using 1 core
+#> ℹ [2026-09-27 21:43:09] Building results
+#> ✔ [2026-09-27 21:43:09] Find dynamic features done
+#> Picking joint bandwidth of 19.7
+#> Picking joint bandwidth of 20.4
+#> Picking joint bandwidth of 19.7
+#> Picking joint bandwidth of 20.4
 ```

@@ -100,7 +100,7 @@ RunCytoSPACE(
 
 - store_results:
 
-  Whether to store detailed assignment results in `srt@tools`.
+  Whether to store detailed assignment results in `object@tools`.
 
 - verbose:
 

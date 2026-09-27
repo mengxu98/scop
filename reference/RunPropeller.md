@@ -2,9 +2,10 @@
 
 Method-specific implementation used by
 [RunProportionTest](https://mengxu98.github.io/scop/reference/RunProportionTest.md)
-when `proportion_method = "propeller"`. This implementation works on
-sample-level proportions using a propeller-style transformed test and
-stores standardized outputs for plotting.
+when `proportion_method = "propeller"`. This implementation uses an
+internal logit-transformed sample-proportion t-test (paired when sample
+IDs occur in both conditions), not the speckle implementation of
+propeller. It stores standardized outputs for plotting.
 
 ## Usage
 
@@ -36,15 +37,16 @@ RunPropeller(
 
   Metadata column that identifies the condition groups to compare. For
   sample-level methods, if `split.by` is omitted and `sample.by` is
-  provided, `sample.by` is treated as the condition column and virtual
-  samples are created within each condition.
+  provided, `sample.by` is treated as the condition column; a separate
+  biological sample column is still required unless descriptive virtual
+  samples are explicitly enabled.
 
 - sample.by:
 
-  Metadata column that identifies biological samples. For `"milo"`,
-  `"sccoda"`, and `"propeller"`, when `sample.by` is omitted or
-  identical to `split.by`, virtual samples are created within each
-  `split.by` group for convenience.
+  Metadata column identifying biological samples. Required when calling
+  `RunPropeller()` directly. Fully paired sample IDs across two
+  conditions use a paired test; partially paired comparisons are
+  rejected.
 
 - comparison:
 
@@ -61,7 +63,7 @@ RunPropeller(
 
 - seed:
 
-  Random seed.
+  Random seed, including for permutation testing.
 
 - verbose:
 

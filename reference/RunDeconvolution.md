@@ -101,7 +101,7 @@ islet_bulk <- RunDeconvolution(
   backend = "cpp",
   perm = 0
 )
-#> ℹ [2026-09-20 22:13:53] Use 400 shared genes for CIBERSORT
+#> ℹ [2026-09-27 22:06:57] Use 400 shared genes for CIBERSORT
 DeconvolutionPlot(islet_bulk, plot_type = "bar")
 
 
@@ -114,4 +114,15 @@ DeconvolutionPlot(
 
 
 DeconvolutionPlot(islet_bulk, plot_type = "box")
+
+
+if (FALSE) { # \dontrun{
+# MuSiC needs the optional MuSiC backend pre-installed.
+data(panc8_sub)
+islet_bulk <- RunDeconvolution(
+  islet_bulk, reference = panc8_sub,
+  method = "MuSiC", group.by = "celltype", verbose = FALSE
+)
+DeconvolutionPlot(islet_bulk, plot_type = "bar")
+} # }
 ```

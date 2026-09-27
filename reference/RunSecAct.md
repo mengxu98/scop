@@ -29,7 +29,6 @@ RunSecAct(
   lambda = 5e+05,
   nrand = 1000,
   cores = 1L,
-  ncores = NULL,
   backend = "auto",
   rng_method = "mt19937",
   batch_size = NULL,
@@ -107,10 +106,6 @@ RunSecAct(
 - cores:
 
   Number of workers passed to SecAct activity inference.
-
-- ncores:
-
-  Deprecated alias for `cores`.
 
 - batch_size, output_h5:
 

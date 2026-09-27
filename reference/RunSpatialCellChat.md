@@ -122,13 +122,15 @@ RunSpatialCellChat(
 - ratio:
 
   Positive raw-coordinate-to-micron multiplier. It must be \`1\` for
-  micron coordinates. For Visium pixels, it may be omitted when one
-  trusted \`spot_diameter_fullres\` value is available.
+  micron coordinates. For ordinary Visium pixels, it may be omitted when
+  one trusted \`spot_diameter_fullres\` value is available. Visium HD
+  pixels always require an explicit calibrated value.
 
 - tol:
 
-  Positive spatial tolerance in microns. Visium defaults to \`32.5\`;
-  cell-resolved and generic technologies require an explicit value.
+  Positive spatial tolerance in microns. Ordinary Visium defaults to
+  \`32.5\`; Visium HD, cell-resolved and generic technologies require an
+  explicit value appropriate for the selected observation size.
 
 - interaction.range:
 
@@ -224,10 +226,12 @@ Distance-sensitive calculations use raw coordinates converted to
 microns. Micron coordinates use \`ratio = 1\`. Pixel coordinates require
 a positive raw-unit-to-micron \`ratio\`; for Visium data, the function
 can derive this as \`65 / spot_diameter_fullres\` when exactly one
-trusted full-resolution spot diameter is available. \`tol\`,
-\`interaction.range\`, and \`contact.range\` are always expressed in
-microns. Display coordinates are retained only for plotting stored
-results.
+trusted full-resolution spot diameter is available for ordinary Visium.
+Visium HD pixels require an explicit calibrated \`ratio\` and \`tol\`
+for the selected bin/cell resolution; the ordinary Visium 65-micron
+diameter is never applied to HD. \`tol\`, \`interaction.range\`, and
+\`contact.range\` are always expressed in microns. Display coordinates
+are retained only for plotting stored results.
 
 Objects with multiple images require an explicit \`image\` selection.
 When \`sample.by\` contains multiple samples, supply a named character

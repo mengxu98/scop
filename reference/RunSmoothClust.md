@@ -21,7 +21,6 @@ RunSmoothClust(
   k = 18,
   truncate = 0.05,
   cores = 1,
-  n_threads = NULL,
   n_clusters,
   n_pcs = 15,
   center = TRUE,
@@ -97,10 +96,6 @@ RunSmoothClust(
 
   Number of workers passed to
   [`smoothclust::smoothclust()`](https://rdrr.io/pkg/smoothclust/man/smoothclust.html).
-
-- n_threads:
-
-  Deprecated alias for `cores`.
 
 - n_clusters:
 
@@ -186,7 +181,7 @@ spatial <- RunSmoothClust(
   cores = 1,
   verbose = FALSE
 )
-#> ! [2026-09-20 22:49:04] Function "smoothness_metric" not found in smoothclust namespace
+#> ! [2026-09-27 22:33:57] Function "smoothness_metric" not found in smoothclust namespace
 SpatialSpotPlot(
   spatial,
   group.by = "SmoothClust_cluster",

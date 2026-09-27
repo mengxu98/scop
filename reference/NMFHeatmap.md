@@ -382,54 +382,54 @@ pancreas_sub <- RunNMF(
   nbes = 5,
   maxit = 50
 )
-#> ℹ [2026-09-20 21:48:31] Running NMF...
+#> ℹ [2026-09-27 21:52:57] Running NMF...
 #> ℹ BE_ 1 
-#> ℹ Positive:  Spp1, Clu, Ttr, Krt18, Ptma, Rpl12, Sparc, Dbi, Gapdh, Mt1 
-#> ℹ      Cd24a, Mgst1, H19, Pebp1, Myl12a, Cldn3, Clps, Atp1b1, Sox4, Gnas 
-#> ℹ      Vim, Ambp, Cdkn1c, Jun, Mdk, Serpinh1, Eno1, Anxa2, Acot1, Tmsb4x 
-#> ℹ Negative:  Fgf8, Mapk12, Lrrc6, Spock1, Lrrc9, Fam71b, Il1r2, Serpini1, Gng4, Cdca2 
-#> ℹ      Sulf2, Pgf, Dusp26, Ucn3, Entpd3, Gm13373, Megf11, Acvr1c, Krtap16-1, Nrp2 
-#> ℹ      Mmel1, Pabpn1l, Sept3, Hepacam2, Rnf138rt1, Scn9a, Tex36, Syt13, Bace2, Igsf21 
+#> ℹ Positive:  Spp1, Clu, Krt18, Ttr, Ptma, Rpl12, Sparc, Dbi, Gapdh, Mt1 
+#> ℹ      Cd24a, Mgst1, H19, Pebp1, Myl12a, Gnas, Cldn3, Clps, Sox4, Atp1b1 
+#> ℹ      Vim, Jun, Ambp, Cdkn1c, Mdk, Serpinh1, Eno1, Anxa2, Acot1, Tmsb4x 
+#> ℹ Negative:  Doc2a, Klk11, Gm42984, Fam198b, Lrrc6, Fam71b, Il1r2, Serpini1, Gng4, Cdca2 
+#> ℹ      Sulf2, Pgf, Ucn3, Dusp26, Entpd3, Gm13373, Megf11, Kctd8, Krtap16-1, Mdm1 
+#> ℹ      Mmel1, Nrp2, Pax6os1, Pabpn1l, Sept3, Hepacam2, Rnf138rt1, Scn9a, Tex36, Syt13 
 #> ℹ BE_ 2 
-#> ℹ Positive:  Gnas, Pyy, Rbp4, Chgb, Chga, Cpe, Slc25a5, Hmgn3, Ttr, Pcsk1n 
-#> ℹ      Bex2, Isl1, Aplp1, Fam183b, Rap1b, Glud1, Lrpprc, Fev, Slc38a5, Mid1ip1 
-#> ℹ      Akr1c19, Cck, Gch1, Tm4sf4, Ptma, Map1b, Sec61b, Clps, Tuba1a, 1700086L19Rik 
-#> ℹ Negative:  Fam124a, 1810034E14Rik, 5730507C01Rik, Tmem100, Fam71b, Sycp3, Fscn1, Cdca2, Traip, Gm8113 
-#> ℹ      C2cd4c, Plpp2, Sulf2, Ucn3, Col1a1, Megf11, Bcl2, Gm28875, Ugt2b35, Ugt2b36 
-#> ℹ      A730098A19Rik, Serpinb6b, Eya2, AA986860, Palmd, Vps8, Crybb1, Pabpn1l, Il18, Gjb1 
+#> ℹ Positive:  Gnas, Pyy, Rbp4, Chgb, Slc25a5, Ttr, Chga, Cpe, Hmgn3, Pcsk1n 
+#> ℹ      Bex2, Isl1, Aplp1, Rap1b, Fam183b, Glud1, Lrpprc, Fev, Slc38a5, Mid1ip1 
+#> ℹ      Ptma, Akr1c19, Clps, Gch1, Sec61b, Tm4sf4, Cck, Map1b, Meis2, 1700086L19Rik 
+#> ℹ Negative:  Klk11, Gsg1l, 1810034E14Rik, Tmem100, Fam71b, Fscn1, Cdca2, Traip, Gm8113, C2cd4c 
+#> ℹ      Sulf2, Ucn3, Col1a1, Megf11, Bcl2, Gm28875, Ugt2b35, Ugt2b36, A730098A19Rik, Serpinb6b 
+#> ℹ      Eya2, AA986860, Palmd, Vps8, Crybb1, Pabpn1l, Il18, Gjb1, Pdlim1, Hist1h2ae 
 #> ℹ BE_ 3 
-#> ℹ Positive:  Tmsb4x, Neurog3, Mdk, Cck, Sox4, Btg2, Btbd17, Gadd45a, Ptma, Selm 
-#> ℹ      Krt7, Gnas, Hn1, Cdkn1a, Hes6, Cd24a, Smarcd2, Camk2n1, Rpl12, Cotl1 
-#> ℹ      Cldn6, Map1b, Clps, Aplp1, Tubb3, Pax4, Slc25a5, Gpx2, Igfbpl1, Nkx6-1 
-#> ℹ Negative:  Mapk12, Lrrc6, Ccl28, Spock1, Hoxb2, Tmem100, Il1r2, Wdr86, Angptl4, Cdca2 
-#> ℹ      Traip, Slc16a10, Dusp26, Ucn3, Entpd3, Gmfg, Acvr1c, Col27a1, Kctd8, Mdm1 
-#> ℹ      Adora2b, C530044C16Rik, Gm28875, Ugt2b35, Ugt2b36, Fosb, A730098A19Rik, Serpinb6b, Pax6os1, Nrsn1 
+#> ℹ Positive:  Tmsb4x, Neurog3, Mdk, Cck, Sox4, Ptma, Btg2, Btbd17, Gadd45a, Gnas 
+#> ℹ      Selm, Krt7, Hn1, Cd24a, Rpl12, Cdkn1a, Hes6, Clps, Camk2n1, Slc25a5 
+#> ℹ      Smarcd2, Cldn6, Map1b, Cotl1, Aplp1, Tubb5, Tubb3, Nkx6-1, Pax4, Jun 
+#> ℹ Negative:  Gm6410, RP23-182F18.2, Doc2a, Fam198b, Nlgn1, Afap1l2, Lrrc6, Hoxb2, Tmem100, Il1r2 
+#> ℹ      Angptl4, Cdca2, Traip, Slc16a10, Dusp26, Entpd3, Gmfg, Acvr1c, Col27a1, Kctd8 
+#> ℹ      Mdm1, C530044C16Rik, Gm28875, Adora2b, Ugt2b35, Ugt2b36, Fosb, A730098A19Rik, Serpinb6b, Pax6os1 
 #> ℹ BE_ 4 
-#> ℹ Positive:  Iapp, Pyy, Nnat, Ins2, Ins1, Rbp4, Gnas, Ttr, Dlk1, Sec61b 
-#> ℹ      Pcsk2, Calr, Ppp1r1a, Hspa5, Pdia6, Sdf2l1, Hsp90b1, Gng12, Tuba1a, Pcsk1n 
-#> ℹ      Hadh, Cpe, Clps, Ptma, Mafb, Chgb, Scg2, Gapdh, Fkbp2, Chga 
-#> ℹ Negative:  Fgf8, Mapk12, Ccl28, Lrrc9, Hoxb2, Tmem100, Serpini1, Lrrn1, Angptl4, Traip 
-#> ℹ      Cmtm3, Pgf, Gm13373, Gmfg, Nrp2, Mmel1, Ugt2b35, Ugt2b36, A730098A19Rik, Serpinb6b 
-#> ℹ      Tyrobp, AA986860, Palmd, Lmo4, Gjb1, Pdlim1, Scara3, Tex36, P2ry14, Cdc42ep1 
+#> ℹ Positive:  Iapp, Pyy, Nnat, Rbp4, Gnas, Ins2, Ins1, Ttr, Dlk1, Sec61b 
+#> ℹ      Pcsk2, Calr, Hspa5, Pdia6, Ppp1r1a, Tuba1a, Pcsk1n, Sdf2l1, Hsp90b1, Gng12 
+#> ℹ      Chgb, Cpe, Hadh, Ptma, Clps, Mafb, Chga, Scg2, Gapdh, 1700086L19Rik 
+#> ℹ Negative:  Klk11, Gsg1l, Fam198b, Hoxb2, Tmem100, Serpini1, Lrrn1, Angptl4, Traip, Gm8113 
+#> ℹ      Cmtm3, Pgf, Col1a1, Gm13373, Gmfg, Megf11, Mmel1, Nrp2, Ugt2b35, Ugt2b36 
+#> ℹ      A730098A19Rik, Serpinb6b, Eya2, AA986860, Palmd, Lmo4, Crybb1, Il18, Gjb1, Pdlim1 
 #> ℹ BE_ 5 
-#> ℹ Positive:  Tuba1b, Hmgb2, Tubb5, 2810417H13Rik, Ptma, H2afz, Ran, H2afx, Ranbp1, Tubb4b 
-#> ℹ      Birc5, Cks1b, Mif, Slc25a5, H1f0, Spc24, Hn1, Gapdh, Cks2, Mdk 
-#> ℹ      Rpl12, Spp1, Cdk1, Dut, Hmgb1, Snrpd1, Anp32b, Ldha, Hspe1, Cdca3 
-#> ℹ Negative:  Lrrc6, Ccl28, 1810034E14Rik, Tmem100, Fam71b, Sycp3, Kiss1r, Gng4, Prodh2, Lingo1 
-#> ℹ      Mpzl1, Angptl4, Slc16a10, Gm8113, C2cd4c, Dpysl3, Entpd3, Col1a1, Rem2, Acvr1c 
-#> ℹ      Bcl2, Kctd8, Adora2b, C530044C16Rik, Gm28875, C1qa, Serpinb6b, Camk2n1, Pax6os1, Nrsn1 
-#> ✔ [2026-09-20 21:53:23] NMF compute completed
+#> ℹ Positive:  Tuba1b, Hmgb2, Tubb5, Ptma, 2810417H13Rik, Ran, H2afz, Ranbp1, H2afx, Tubb4b 
+#> ℹ      Spp1, Birc5, Mif, Cks1b, Gapdh, Slc25a5, H1f0, Rpl12, Mdk, Hn1 
+#> ℹ      Spc24, Cks2, Dut, Hmgb1, Cdk1, Ldha, Anp32b, Snrpd1, Hspe1, Tpi1 
+#> ℹ Negative:  Gm6410, RP23-182F18.2, Doc2a, Klk11, Gsg1l, Nlgn1, Afap1l2, Lrrc6, 1810034E14Rik, Tmem100 
+#> ℹ      Fam71b, Il1r2, Gng4, Prodh2, Lingo1, Angptl4, Gm8113, C2cd4c, Ucn3, Dpysl3 
+#> ℹ      Entpd3, Col1a1, Rem2, Acvr1c, Kctd8, Mmel1, Gm28875, Nrp2, Serpinb6b, Camk2n1 
+#> ✔ [2026-09-27 21:52:57] NMF compute completed
 ht_cells <- NMFHeatmap(
   pancreas_sub,
   plot_type = "cells",
   cell_annotation = "CellType"
 )
-#> ℹ [2026-09-20 21:53:23] `NMFHeatmap()` input: 1000 cells x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
-#> ℹ [2026-09-20 21:53:23] Ordering `NMFHeatmap()` rows and columns ...
-#> ℹ [2026-09-20 21:53:23] Building ComplexHeatmap object for `NMFHeatmap()` ...
-#> ℹ [2026-09-20 21:53:23] Calculating `NMFHeatmap()` render size ...
-#> ℹ [2026-09-20 21:53:23] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
-#> ℹ [2026-09-20 21:53:24] Assembling `NMFHeatmap()` plot object ...
+#> ℹ [2026-09-27 21:52:57] `NMFHeatmap()` input: 1000 cells x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
+#> ℹ [2026-09-27 21:52:57] Ordering `NMFHeatmap()` rows and columns ...
+#> ℹ [2026-09-27 21:52:57] Building ComplexHeatmap object for `NMFHeatmap()` ...
+#> ℹ [2026-09-27 21:52:57] Calculating `NMFHeatmap()` render size ...
+#> ℹ [2026-09-27 21:52:57] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
+#> ℹ [2026-09-27 21:52:58] Assembling `NMFHeatmap()` plot object ...
 ht_cells$plot
 
 
@@ -437,11 +437,11 @@ ht_features <- NMFHeatmap(
   pancreas_sub,
   plot_type = "features"
 )
-#> ℹ [2026-09-20 21:53:25] `NMFHeatmap()` input: 1000 features x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
-#> ℹ [2026-09-20 21:53:25] Ordering `NMFHeatmap()` rows and columns ...
-#> ℹ [2026-09-20 21:53:25] Building ComplexHeatmap object for `NMFHeatmap()` ...
-#> ℹ [2026-09-20 21:53:25] Calculating `NMFHeatmap()` render size ...
-#> ℹ [2026-09-20 21:53:25] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
-#> ℹ [2026-09-20 21:53:26] Assembling `NMFHeatmap()` plot object ...
+#> ℹ [2026-09-27 21:52:58] `NMFHeatmap()` input: 1000 features x 5 NMF dimensions. Computing a 1000 x 1000 similarity matrix (~0.01 GiB dense numeric matrix).
+#> ℹ [2026-09-27 21:52:58] Ordering `NMFHeatmap()` rows and columns ...
+#> ℹ [2026-09-27 21:52:58] Building ComplexHeatmap object for `NMFHeatmap()` ...
+#> ℹ [2026-09-27 21:52:58] Calculating `NMFHeatmap()` render size ...
+#> ℹ [2026-09-27 21:52:58] Drawing `NMFHeatmap()`; this can take time for large similarity matrices ...
+#> ℹ [2026-09-27 21:52:59] Assembling `NMFHeatmap()` plot object ...
 ht_features$plot
 ```

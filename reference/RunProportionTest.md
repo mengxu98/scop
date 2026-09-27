@@ -16,6 +16,7 @@ RunProportionTest(
   proportion_method,
   sample.by = NULL,
   pseudo_sample_n = 3L,
+  allow_pseudo_samples = FALSE,
   n_permutations = 1000,
   FDR_threshold = 0.05,
   log2FD_threshold = log2(1.5),
@@ -41,8 +42,9 @@ RunProportionTest(
 
   Metadata column that identifies the condition groups to compare. For
   sample-level methods, if `split.by` is omitted and `sample.by` is
-  provided, `sample.by` is treated as the condition column and virtual
-  samples are created within each condition.
+  provided, `sample.by` is treated as the condition column; a separate
+  biological sample column is still required unless descriptive virtual
+  samples are explicitly enabled.
 
 - comparison:
 
@@ -62,15 +64,24 @@ RunProportionTest(
 
 - sample.by:
 
-  Metadata column that identifies biological samples. For `"milo"`,
-  `"sccoda"`, and `"propeller"`, when `sample.by` is omitted or
-  identical to `split.by`, virtual samples are created within each
-  `split.by` group for convenience.
+  Metadata column that identifies biological samples. Required for
+  `"milo"`, `"sccoda"`, and `"propeller"` unless
+  `allow_pseudo_samples = TRUE`. For Milo and Propeller, sample IDs may
+  recur across two conditions for a fully paired design; partially
+  paired comparisons are rejected.
 
 - pseudo_sample_n:
 
   Number of virtual samples per `split.by` group when a sample-level
-  method has no usable `sample.by`.
+  method has no usable `sample.by` and `allow_pseudo_samples = TRUE`.
+  Virtual samples are descriptive only; inferential statistics are set
+  to `NA`.
+
+- allow_pseudo_samples:
+
+  Explicitly allow descriptive virtual samples when biological sample
+  IDs are unavailable. The default is `FALSE` because partitioning cells
+  does not create biological replicates.
 
 - n_permutations:
 
@@ -91,7 +102,7 @@ RunProportionTest(
 
 - seed:
 
-  Random seed.
+  Random seed, including for permutation testing.
 
 - verbose:
 
@@ -137,10 +148,10 @@ pancreas_sub <- RunProportionTest(
   proportion_method = "permutation",
   comparison = list(c("G2M", "G1"))
 )
-#> ℹ [2026-09-20 22:41:16] Start proportion test ("permutation")
-#> ℹ [2026-09-20 22:41:16] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-09-20 22:41:16] Running comparison: "G1" vs "G2M"
-#> ✔ [2026-09-20 22:41:16] Proportion test completed ("permutation")
+#> ℹ [2026-09-27 22:27:58] Start proportion test ("permutation")
+#> ℹ [2026-09-27 22:27:58] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-09-27 22:27:58] Running comparison: "G1" vs "G2M"
+#> ✔ [2026-09-27 22:27:58] Proportion test completed ("permutation")
 
 ProportionTestPlot(
   pancreas_sub

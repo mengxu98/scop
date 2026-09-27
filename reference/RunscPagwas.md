@@ -21,7 +21,7 @@ RunscPagwas(
   block_annotation = c("hg38", "hg37", "custom"),
   output.dirs = tempdir(),
   cleanup_soar = TRUE,
-  return_seurat = !is.null(srt) || inherits(single_data, "Seurat"),
+  return_seurat = !is.null(srt) || inherits(single_data, "Seurat") || !is.null(object),
   verbose = TRUE,
   ...,
   srt = NULL
@@ -32,11 +32,12 @@ RunscPagwas(
 
 - object:
 
-  Optional Seurat object used as single-cell input.
+  The single-cell input. Supply a `Seurat` object or a path to a Seurat
+  `.rds` file.
 
 - single_data:
 
-  Optional Seurat object or path to a Seurat `.rds` file.
+  Deprecated alias for `object`. It will be removed in scop 1.0.0.
 
 - gwas_data:
 

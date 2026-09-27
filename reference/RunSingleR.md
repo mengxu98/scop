@@ -57,49 +57,6 @@ RunSingleR(
   Assay to be used for the reference data. Default is the default assay
   of the `srt_ref` object.
 
-- genes:
-
-  A string containing `"de"`, indicating that markers should be
-  calculated from `ref`. For back compatibility, other string values are
-  allowed but will be ignored with a deprecation warning.
-
-  Alternatively, if `ref` is *not* a list, `genes` can be either:
-
-  - A list of lists of character vectors containing DE genes between
-    pairs of labels.
-
-  - A list of character vectors containing marker genes for each label.
-
-  If `ref` *is* a list, `genes` can be a list of length equal to `ref`.
-  Each element of the list should be one of the two above choices
-  described for non-list `ref`, containing markers for labels in the
-  corresponding entry of `ref`.
-
-- de.method:
-
-  String specifying how DE genes should be detected between pairs of
-  labels. Defaults to `"classic"`, which sorts genes by the log-fold
-  changes and takes the top `de.n`. Other options are `"wilcox"` and
-  `"t"`, see Details. Ignored if `genes` is a list of markers/DE genes.
-
-- sd.thresh:
-
-  Deprecated and ignored.
-
-- de.n:
-
-  An integer scalar specifying the number of DE genes to use when
-  `genes="de"`. If `de.method="classic"`, defaults to
-  `500 * (2/3) ^ log2(N)` where `N` is the number of unique labels.
-  Otherwise, defaults to 10. Ignored if `genes` is a list of markers/DE
-  genes.
-
-- aggr.ref, aggr.args:
-
-  Arguments controlling the aggregation of the references prior to
-  annotation, see
-  [`trainSingleR`](https://rdrr.io/pkg/SingleR/man/trainSingleR.html).
-
 - quantile:
 
   "quantile" parameter in
@@ -156,12 +113,12 @@ query <- RunSingleR(
   srt_query = query, srt_ref = reference,
   ref_group = "celltype", genes = "de", cores = 1, verbose = FALSE
 )
-#> ℹ [2026-09-20 22:48:03] Data type is log-normalized
-#> ℹ [2026-09-20 22:48:03] Detected `srt_query` data type: "log_normalized_counts"
-#> ℹ [2026-09-20 22:48:03] Data type is log-normalized
-#> ℹ [2026-09-20 22:48:03] Detected `srt_ref` data type: "log_normalized_counts"
+#> ℹ [2026-09-27 22:33:07] Data type is log-normalized
+#> ℹ [2026-09-27 22:33:07] Detected `srt_query` data type: "log_normalized_counts"
+#> ℹ [2026-09-27 22:33:07] Data type is log-normalized
+#> ℹ [2026-09-27 22:33:07] Detected `srt_ref` data type: "log_normalized_counts"
 query <- RunStandardWorkflow(query, verbose = FALSE, linear_reduction_dims = 10)
-#> ℹ [2026-09-20 22:48:04] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-09-27 22:33:08] Skip `log1p()` because `layer = data` is not "counts"
 CellDimPlot(
   query,
   group.by = "singler_annotation",

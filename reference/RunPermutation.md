@@ -18,6 +18,7 @@ RunPermutation(
   comparison = NULL,
   n_permutations = 1000,
   include_all_cells = FALSE,
+  seed = 11,
   verbose = TRUE,
   srt = NULL
 )
@@ -37,8 +38,9 @@ RunPermutation(
 
   Metadata column that identifies the condition groups to compare. For
   sample-level methods, if `split.by` is omitted and `sample.by` is
-  provided, `sample.by` is treated as the condition column and virtual
-  samples are created within each condition.
+  provided, `sample.by` is treated as the condition column; a separate
+  biological sample column is still required unless descriptive virtual
+  samples are explicitly enabled.
 
 - comparison:
 
@@ -57,6 +59,10 @@ RunPermutation(
 
   Whether to include all cell types in the complete grid for permutation
   mode.
+
+- seed:
+
+  Random seed, including for permutation testing.
 
 - verbose:
 

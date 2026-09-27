@@ -35,8 +35,8 @@ RunSpatialBenchmark(
 
 - gold_standard:
 
-  Either one metadata column in `srt` or a named vector whose names
-  match the spot names in `srt`.
+  Either one metadata column in `object` or a named vector whose names
+  match the spot names in `object`.
 
 - methods:
 

@@ -108,7 +108,7 @@ RunStatialKontextual(
 
 - store_input:
 
-  Whether to store the backend input cell table in `srt@tools`.
+  Whether to store the backend input cell table in `object@tools`.
 
 - verbose:
 

@@ -67,8 +67,7 @@ RunCIBERSORT(
 - cores:
 
   Number of CPU cores used by the C++ backend. `NULL` uses up to 4 local
-  cores. `n_threads` passed through `...` is accepted as a
-  backward-compatible alias when `cores = NULL`.
+  cores.
 
 - seed:
 

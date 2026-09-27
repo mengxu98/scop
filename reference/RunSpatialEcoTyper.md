@@ -29,7 +29,6 @@ RunSpatialEcoTyper(
   iterations = 10,
   minibatch = 5000,
   cores = 4,
-  ncores = NULL,
   grid.size = round(radius * 1.4),
   filter.region.by.celltypes = NULL,
   k = 20,
@@ -164,12 +163,7 @@ RunSpatialEcoTyper(
 - cores:
 
   Number of CPU cores used by `SpatialEcoTyper`. Passed to the selected
-  backend as `ncores`.
-
-- ncores:
-
-  Deprecated alias for `cores`; supply exactly one of the two. It will
-  be removed in scop 1.0.0.
+  backend as `ncores`. will be removed in scop 1.0.0.
 
 - grid.size:
 

@@ -143,7 +143,7 @@ RunCell2location(
 
 - store_results:
 
-  Whether to store detailed result matrices and paths in `srt@tools`.
+  Whether to store detailed result matrices and paths in `object@tools`.
 
 - verbose:
 

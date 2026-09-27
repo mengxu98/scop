@@ -22,7 +22,6 @@ RunscMalignantFinder(
   norm_type = NULL,
   use_raw = FALSE,
   cores = 1,
-  n_thread = NULL,
   prefix = "",
   return_seurat = !is.null(srt),
   verbose = TRUE,
@@ -88,12 +87,8 @@ RunscMalignantFinder(
 
 - cores:
 
-  Number of threads used by `scMalignantFinder`.
-
-- n_thread:
-
-  Deprecated alias for `cores`; supply exactly one of the two. It will
-  be removed in scop 1.0.0.
+  Number of threads used by `scMalignantFinder`. will be removed in scop
+  1.0.0.
 
 - prefix:
 
