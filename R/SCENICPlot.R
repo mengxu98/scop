@@ -1209,8 +1209,11 @@ scenic_plot_activity_heatmap <- function(
   } else {
     regulons <- scenic_order_heatmap_features(avg_mat, regulons, heatmap_order)
   }
+  feature_map <- scenic_make_assay_feature_map(rownames(auc_mat))
+  assay_regulons <- unname(feature_map[regulons])
   if (!is.null(feature_split)) {
     feature_split <- feature_split[regulons]
+    names(feature_split) <- assay_regulons
     heatmap_args[["feature_split"]] <- feature_split
   }
   avg_mat <- avg_mat[regulons, , drop = FALSE]
@@ -1237,7 +1240,7 @@ scenic_plot_activity_heatmap <- function(
     GroupHeatmap,
     args = list(
       srt = srt_use,
-      features = regulons,
+      features = assay_regulons,
       group.by = group.by,
       aggregate_fun = base::mean,
       border = border,
@@ -1261,6 +1264,7 @@ scenic_plot_activity_heatmap <- function(
       heatmap_palcolor = heatmap_palcolor,
       group_palette = group_palette,
       group_palcolor = group_palcolor,
+      ht_params = list(row_labels = regulons),
       verbose = FALSE
     ),
     extra_args = heatmap_args
@@ -1304,12 +1308,13 @@ scenic_plot_activity_violin <- function(
   )
   plot_data[["group"]] <- factor(plot_data[["group"]], levels = unique(group_annotation))
 
+  feature_map <- scenic_make_assay_feature_map(rownames(auc_mat))
   srt_use <- scenic_attach_auc_assay(srt = srt, auc_mat = auc_mat, assay = assay)
   plot <- scenic_call_with_args(
     FeatureStatPlot,
     args = list(
       srt = srt_use,
-      stat.by = regulons,
+      stat.by = unname(feature_map[regulons]),
       group.by = group.by,
       assay = assay,
       layer = layer,
@@ -1370,7 +1375,7 @@ scenic_plot_activity_dim <- function(
     )
   }
   srt_use <- scenic_attach_auc_assay(srt = srt, auc_mat = auc_mat, assay = assay)
-  assay_features <- tryCatch(rownames(srt_use[[assay]]), error = function(...) character())
+  feature_map <- scenic_make_assay_feature_map(rownames(auc_mat))
   region_auc <- NULL
   if (isTRUE(include_region_auc)) {
     region_auc <- scenic_get_region_auc_matrix(srt, tool_name)
@@ -1388,7 +1393,7 @@ scenic_plot_activity_dim <- function(
   if (!isTRUE(compare_expression) && is.null(region_auc)) {
     plots <- FeatureDimPlot(
       object = srt_use,
-      features = scenic_assay_features(regulons, assay_features),
+      features = unname(feature_map[regulons]),
       assay = assay,
       layer = layer,
       reduction = reduction,
@@ -1422,7 +1427,7 @@ scenic_plot_activity_dim <- function(
   feat_formals <- names(formals(FeatureDimPlot))
 
   tf_plots <- lapply(regulons, function(regulon) {
-    assay_feature <- scenic_assay_feature(regulon, assay_features)
+    assay_feature <- unname(feature_map[regulon])
     if (is.na(assay_feature)) {
       log_message(
         "Regulon {.val {regulon}} is not present in assay {.val {assay}}",
@@ -1482,13 +1487,10 @@ scenic_plot_activity_dim <- function(
         auc_mat = region_auc,
         assay = region_assay
       )
-      region_features <- tryCatch(
-        rownames(srt_region[[region_assay]]),
-        error = function(...) character()
-      )
+      region_feature_map <- scenic_make_assay_feature_map(rownames(region_auc))
       region_args <- act_args
       region_args$object <- srt_region
-      region_args$features <- scenic_assay_feature(regulon, region_features)
+      region_args$features <- unname(region_feature_map[regulon])
       region_args$assay <- region_assay
       region_args$title <- paste(regulon, "region AUC")
       region_args$legend.title <- "Region AUC"
@@ -1979,6 +1981,10 @@ scenic_plot_feature_heatmap_from_matrix <- function(
 ) {
   colnames(mat) <- group_names
   mat_sparse <- methods::as(as.matrix(mat), "dgCMatrix")
+  original_features <- rownames(mat_sparse)
+  feature_map <- scenic_make_assay_feature_map(original_features)
+  rownames(mat_sparse) <- unname(feature_map)
+  plot_features <- unname(feature_map[features])
   srt_heatmap <- Seurat::CreateSeuratObject(
     counts = mat_sparse,
     assay = "SCENICHeatmap"
@@ -1994,7 +2000,7 @@ scenic_plot_feature_heatmap_from_matrix <- function(
     FeatureHeatmap,
     args = list(
       srt = srt_heatmap,
-      features = features,
+      features = plot_features,
       cells = group_names,
       group.by = "SCENIC_group",
       max_cells = Inf,
@@ -2019,6 +2025,7 @@ scenic_plot_feature_heatmap_from_matrix <- function(
       heatmap_palcolor = heatmap_palcolor,
       group_palette = group_palette,
       group_palcolor = group_palcolor,
+      ht_params = list(row_labels = features),
       verbose = FALSE
     ),
     extra_args = heatmap_args
@@ -2075,6 +2082,7 @@ scenic_attach_auc_assay <- function(srt, auc_mat, assay = "scenic") {
   }
   auc_mat <- auc_mat[, colnames(srt), drop = FALSE]
   auc_mat <- Matrix::Matrix(auc_mat, sparse = TRUE)
+  rownames(auc_mat) <- unname(scenic_make_assay_feature_map(rownames(auc_mat)))
   assay_object <- Seurat::CreateAssayObject(
     counts = auc_mat,
     check.matrix = FALSE
@@ -2572,6 +2580,11 @@ scenic_assay_feature <- function(feature, assay_features) {
     gsub("_", "-", as.character(feature), fixed = TRUE),
     assay_features
   )
+}
+
+scenic_make_assay_feature_map <- function(features) {
+  features <- as.character(features)
+  stats::setNames(make.unique(gsub("[_|]", "-", features)), features)
 }
 
 scenic_assay_features <- function(features, assay_features) {
