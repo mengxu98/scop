@@ -213,6 +213,28 @@ test_that("SCENICPlusPlot rss heatmap keeps regulons with underscores", {
   expect_equal(nrow(out$heatmap$matrix_list[[1]]), length(original))
 })
 
+test_that("SCENICPlusPlot activity heatmap keeps regulons with underscores", {
+  dat <- make_scenicplus_plot_mock()
+  original <- c("TF_1(+)", "TF_2(+)", "TF_5(+)")
+  rownames(dat$srt@tools$SCENICPlus$scores) <- original
+  dat$srt$CellType <- rep(c("A", "B"), each = 6)
+
+  out <- SCENICPlusPlot(
+    dat$srt,
+    group.by = "CellType",
+    plot_type = "activity_heatmap",
+    features = original,
+    activity_scale = TRUE,
+    heatmap_show_row_names = TRUE,
+    heatmap_order = "group",
+    return_data = TRUE,
+    verbose = FALSE
+  )
+
+  expect_s3_class(out$plot, "ggplot")
+  expect_setequal(as.character(unique(out$plot_data$regulon)), original)
+})
+
 test_that("SCENICPlot activity heatmap returns drawable plot object", {
   dat <- make_scenic_plot_mock(seed = 2)
   out <- SCENICPlot(
