@@ -17,18 +17,14 @@ test_that("dynamic_features_gam preserves failed feature slots", {
   family <- c(good = "gaussian", partial = "gaussian", bad = "gaussian")
   y_libsize <- stats::setNames(rep(1, length(cells)), cells)
 
-  out <- dynamic_features_gam(
-    y_ordered = y_ordered,
-    t_ordered = t_ordered,
-    features = rownames(y_ordered),
-    gene = rownames(y_ordered),
-    meta = character(),
-    family = family,
-    layer = "data",
-    y_libsize = y_libsize,
-    padjust_method = "fdr",
-    cores = 1,
-    verbose = FALSE
+  shared <- thisutils::fit_trends(
+    y_ordered, t_ordered,
+    method = "gam", family = family,
+    exposure = y_libsize, verbose = FALSE
+  )
+  out <- list(
+    fitted_matrix = cbind(pseudotime = t_ordered, t(shared$fitted)),
+    DynamicFeatures = shared$statistics
   )
 
   expect_equal(
