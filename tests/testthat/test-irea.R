@@ -208,3 +208,19 @@ test_that("published NK polarization score statistics remain concordant", {
   wrong <- .irea_score_table(fixture$score,groups)
   expect_gt(max(abs(wrong$effect-expected[["Enrichment Score"]])),0.4)
 })
+
+test_that("Wilcoxon extreme tails remain positive and symmetric", {
+  a <- 101:200
+  b <- 1:100
+  # Fully separated samples: U = 10000, E(U) = 5000, no ties.
+  expected <- 2 * stats::pnorm(-(5000 - 0.5) / sqrt(100 * 100 * 201 / 12))
+  actual <- .irea_wilcox(a,b)
+  expect_gt(actual,0)
+  expect_equal(actual/expected,1,tolerance=1e-12)
+  expect_equal(.irea_wilcox(b,a)/expected,1,tolerance=1e-12)
+  expect_equal(.irea_wilcox(c(1,1,2,3),c(1,2,2,4)),
+               2 * stats::wilcox.test(c(1,1,2,3),c(1,2,2,4),
+                 alternative="less",exact=FALSE,correct=TRUE,digits.rank=Inf)$p.value)
+  expect_equal(.irea_wilcox(rep(1,5),rep(1,8)),1)
+  expect_true(is.na(.irea_wilcox(numeric(),1:3)))
+})

@@ -55,6 +55,12 @@ P values and FDR values to the exported precision. This evidence covers that
 mouse NK gene-list example only: it does not establish equivalence for human
 mapping, other cell types, hypergeometric analysis or matrix projection.
 
+The Wilcoxon helper requests both one-sided asymptotic tail probabilities and
+returns twice the smaller tail, capped at one, with continuity/tie corrections
+and explicit full-precision ranking. This avoids cancellation in R 4.6.1's
+two-sided `1 - pnorm(z)` path, which otherwise turns the NK-a fixture's P value
+of approximately 4.88e-208 into zero. The strict portal tolerances are retained.
+
 The matrix portal tables also pool P values across the two example contrasts
 when applying BH correction. Matrix files/data frames now default to joint
 adjustment across all supplied columns before returning the requested

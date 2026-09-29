@@ -140,7 +140,14 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
 .irea_wilcox <- function(a, b) {
   if (!length(a) || !length(b)) return(NA_real_)
   if (length(unique(c(a,b))) == 1L) return(1)
-  suppressWarnings(stats::wilcox.test(a, b, exact=FALSE)$p.value)
+  # R 4.6's two-sided asymptotic path can use 1 - pnorm(z), losing
+  # small upper-tail probabilities to cancellation. Request both tails
+  # directly and retain the continuity/tie corrections of stats::wilcox.test.
+  tails <- suppressWarnings(vapply(c("less", "greater"), function(alternative) {
+    stats::wilcox.test(a, b, alternative=alternative, exact=FALSE,
+                      correct=TRUE, digits.rank=Inf)$p.value
+  }, numeric(1)))
+  min(1, 2 * min(tails))
 }
 
 .irea_groups <- function(reference, cells, analysis) {
