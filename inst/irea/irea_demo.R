@@ -20,8 +20,7 @@ for (analysis in c("cytokine_response", "cell_polarization")) {
     grDevices::dev.off()
   }
   for (column in names(example)[-1]) {
-    out <- RunIREA(ref, matrix = data.frame(gene=example[[1]],contrast=example[[column]]),
-                   analysis = analysis)
+    out <- RunIREA(ref, matrix = example, contrast = column, analysis = analysis)
     stem <- paste("NK", column, analysis, sep = "_")
     utils::write.csv(out$table, file.path(output_dir,paste0(stem,".csv")),row.names=FALSE)
     grDevices::pdf(file.path(output_dir,paste0(stem,".pdf")),width=11,height=8)

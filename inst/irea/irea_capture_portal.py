@@ -25,7 +25,8 @@ genes = "\n".join(("Ifitm3", "Isg15", "Ifit3", "Bst2", "Slfn5",
 
 def write_table(table, stem):
     table = BeautifulSoup(str(table), "html.parser")
-    rows = [[cell.get_text(" ", strip=True) for cell in tr.find_all(("th", "td"))]
+    rows = [[cell.get("data-sort-value", cell.get_text(" ", strip=True))
+             for cell in tr.find_all(("th", "td"))]
             for tr in table.select("tr")]
     with (dest / f"{stem}.csv").open("w", encoding="utf-8", newline="") as stream:
         csv.writer(stream).writerows(rows)

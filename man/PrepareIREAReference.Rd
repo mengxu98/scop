@@ -10,14 +10,14 @@ PrepareIREAReference(directory, cell_type, species = c("Mouse", "Human"))
 \item{directory}{Directory containing the original portal downloads, or the
 flattened filenames used by the companion download script.}
 
-\item{cell_type}{One of the portal cell-type identifiers, such as `NK_cell`.}
+\item{cell_type}{One of the portal cell-type identifiers, such as \code{NK_cell}.}
 
-\item{species}{`"Mouse"` or `"Human"`. Human gene-list analysis uses the
-portal's human orthologue spreadsheets. Matrix analysis uses mouse genes
-unless an explicit orthologue mapping is supplied.}
+\item{species}{\code{"Mouse"} or \code{"Human"}. Human symbols in both input modes
+are mapped to mouse genes using the portal's signature spreadsheets.
+This is a partial mapping; unmapped or ambiguous symbols are omitted.}
 }
 \value{
-An `irea_reference` object with source paths and checksums.
+An \code{irea_reference} object with source paths and checksums.
 }
 \description{
 Reads the cell-type Seurat object and signature spreadsheets distributed by

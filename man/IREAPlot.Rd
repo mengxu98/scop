@@ -11,12 +11,14 @@ IREAPlot(
 )
 }
 \arguments{
-\item{result}{An `irea_result`, a Seurat object containing
-`object@tools$IREA`, or a named list of results for dotplots and heatmaps.}
+\item{result}{An \code{irea_result}, a Seurat object containing
+\code{object@tools$IREA}, or a named list of results for dotplots and heatmaps.}
 
-\item{type}{One of `"compass"`, `"radar"`, `"dotplot"`, or `"heatmap"`.}
+\item{type}{One of \code{"compass"}, \code{"radar"}, \code{"dotplot"}, or \code{"heatmap"}.}
 
-\item{fdr_cutoff}{Significance threshold used for plot colouring.}
+\item{fdr_cutoff}{Significance threshold used for compass colouring and the
+radar display. Radar scores are zero when no positive effect meets this
+threshold; otherwise all positive effects are divided by their maximum.}
 }
 \value{
 An editable ggplot object.

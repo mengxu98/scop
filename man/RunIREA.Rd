@@ -17,11 +17,12 @@ RunIREA(
   layer = "data",
   analysis = c("cytokine_response", "cell_polarization"),
   method = c("score", "hypergeometric"),
-  gene_diff_cutoff = 0.25
+  gene_diff_cutoff = 0.25,
+  fdr_scope = c("all_contrasts", "selected_contrast")
 )
 }
 \arguments{
-\item{reference}{Output from [PrepareIREAReference()].}
+\item{reference}{Output from \code{\link[=PrepareIREAReference]{PrepareIREAReference()}}.}
 
 \item{genes}{Character vector for gene-list analysis.}
 
@@ -29,26 +30,41 @@ RunIREA(
 one-column matrix, or path to a portal-format matrix file. Positive values
 mean higher in the case condition.}
 
+\item{object}{Optional Seurat object used to construct a mean-expression
+contrast from \code{case} and \code{control}.}
+
 \item{contrast}{Column name to analyse when the matrix has multiple contrasts.}
 
-\item{object}{Optional Seurat object used to construct a mean-expression
-contrast from `case` and `control`.}
+\item{group_by, case, control}{Metadata column and group names for \code{object}.}
 
-\item{group_by, case, control}{Metadata column and group names for `object`.}
+\item{assay, layer}{Assay and exact expression layer name for \code{object}. Split
+layers must be joined first to compare cells across those layers.}
 
-\item{assay, layer}{Assay and expression layer for `object`.}
+\item{analysis}{\code{"cytokine_response"} or \code{"cell_polarization"}.}
 
-\item{analysis}{`"cytokine_response"` or `"cell_polarization"`.}
-
-\item{method}{`"score"` or `"hypergeometric"` for gene lists;
+\item{method}{\code{"score"} or \code{"hypergeometric"} for gene lists;
 matrix input uses cosine projection.}
 
 \item{gene_diff_cutoff}{Minimum mean reference-gene expression for projection.}
+
+\item{fdr_scope}{\code{"all_contrasts"} (default) adjusts across all contrast
+columns supplied, then returns the selected \code{contrast}. \code{"selected_contrast"}
+adjusts only its reference terms. A vector or Seurat comparison has one
+contrast. This argument does not change gene-list calculations.}
 }
 \value{
-An `irea_result`, or a Seurat object with the result in
-  `object@tools$IREA` when `object` is supplied.
+An \code{irea_result}, or a Seurat object with the result in
+\code{object@tools$IREA} when \code{object} is supplied.
 }
 \description{
-Analyse cytokine responses or immune-cell polarization
+Experimental reconstruction of IREA. Numerical equivalence to the portal
+has not been established for all modes. Score and projection compare target
+reference cells against PBS-treated reference cells, including polarization.
+These P values describe reference-cell distributions, not biological-replicate
+inference about the user's case and control samples.
+By default FDR is adjusted jointly across reference terms and all contrast
+columns in a supplied data frame or file, matching the adjustment family in
+the portal's multiple-contrast matrix example. Matrix numerical concordance
+has not been established. Reference RNA data and the
+selected Seurat input layer must already be appropriately normalized.
 }

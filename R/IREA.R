@@ -7,9 +7,9 @@
 #' @param directory Directory containing the original portal downloads, or the
 #'   flattened filenames used by the companion download script.
 #' @param cell_type One of the portal cell-type identifiers, such as `NK_cell`.
-#' @param species `"Mouse"` or `"Human"`. Human gene-list analysis uses the
-#'   portal's human orthologue spreadsheets. Matrix analysis uses mouse genes
-#'   unless an explicit orthologue mapping is supplied.
+#' @param species `"Mouse"` or `"Human"`. Human symbols in both input modes
+#'   are mapped to mouse genes using the portal's signature spreadsheets.
+#'   This is a partial mapping; unmapped or ambiguous symbols are omitted.
 #' @return An `irea_reference` object with source paths and checksums.
 #' @export
 PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Human")) {
@@ -60,12 +60,21 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
   sort(setdiff(unique(as.character(reference$object@meta.data$sample)), "PBS"))
 }
 
+.irea_layer <- function(object, assay, layer) {
+  available <- SeuratObject::Layers(object, assay=assay, search=NA)
+  if (length(layer) != 1L || is.na(layer) || !layer %in% available)
+    stop("Select one existing expression layer by its exact name; join split layers first when needed.",
+         call.=FALSE)
+  SeuratObject::LayerData(object, assay=assay, layer=layer)
+}
+
 .irea_input <- function(genes, matrix, object, group_by, case, control, assay, layer, contrast) {
+  contrast_inputs <- NULL
   provided <- sum(!vapply(list(genes, matrix, object), is.null, logical(1)))
   if (provided != 1L) stop("Supply exactly one of genes, matrix, or object.", call. = FALSE)
   if (!is.null(genes)) {
     if (!is.character(genes)) stop("genes must be a character vector.", call. = FALSE)
-    genes <- trimws(genes[nzchar(trimws(genes))])
+    genes <- trimws(genes[!is.na(genes) & nzchar(trimws(genes))])
     duplicates <- sum(duplicated(genes))
     genes <- unique(genes)
     if (!length(genes)) stop("No usable input genes.", call. = FALSE)
@@ -76,11 +85,17 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
     if (is.null(group_by) || is.null(case) || is.null(control) ||
         !group_by %in% colnames(object@meta.data))
       stop("A Seurat input needs group_by, case, and control.", call. = FALSE)
-    labels <- as.character(object@meta.data[[group_by]])
-    if (!all(c(case, control) %in% labels)) stop("Both groups need cells.", call. = FALSE)
-    dat <- SeuratObject::LayerData(object, assay=assay, layer=layer)
-    matrix <- Matrix::rowMeans(dat[, labels == case, drop=FALSE]) -
-      Matrix::rowMeans(dat[, labels == control, drop=FALSE])
+    if (length(case) != 1L || length(control) != 1L || anyNA(c(case, control)) ||
+        identical(as.character(case), as.character(control)))
+      stop("case and control must be distinct, nonmissing single group names.", call. = FALSE)
+    dat <- .irea_layer(object, assay, layer)
+    labels <- as.character(object@meta.data[colnames(dat), group_by])
+    case_cells <- which(!is.na(labels) & labels == case)
+    control_cells <- which(!is.na(labels) & labels == control)
+    if (!length(case_cells) || !length(control_cells))
+      stop("Both groups need cells in the selected assay/layer.", call. = FALSE)
+    matrix <- Matrix::rowMeans(dat[, case_cells, drop=FALSE]) -
+      Matrix::rowMeans(dat[, control_cells, drop=FALSE])
     names(matrix) <- rownames(dat)
   }
   if (is.character(matrix) && length(matrix) == 1L && file.exists(matrix)) {
@@ -99,6 +114,12 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
       stop("Select a contrast column from this matrix.",call.=FALSE)
     column <- if (is.null(contrast)) 2L else match(contrast,names(matrix))
     if (is.na(column) || column == 1L) stop("Unknown contrast column.",call.=FALSE)
+    if (anyDuplicated(names(matrix)) || any(!nzchar(names(matrix))))
+      stop("Matrix columns must have unique, nonempty names.",call.=FALSE)
+    contrast <- names(matrix)[column]
+    contrast_inputs <- lapply(matrix[-1], function(values) {
+      stats::setNames(as.numeric(values), as.character(matrix[[1]]))
+    })
     v <- as.numeric(matrix[[column]])
     names(v) <- as.character(matrix[[1]])
     matrix <- v
@@ -113,7 +134,7 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
   matrix <- matrix[keep]
   if (anyDuplicated(names(matrix))) stop("Matrix has duplicate gene names.", call. = FALSE)
   if (!length(matrix) || all(matrix == 0)) stop("No nonzero finite gene contrasts.", call. = FALSE)
-  list(mode="projection", matrix=matrix)
+  list(mode="projection", matrix=matrix, contrast=contrast, contrast_inputs=contrast_inputs)
 }
 
 .irea_wilcox <- function(a, b) {
@@ -122,25 +143,42 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
   suppressWarnings(stats::wilcox.test(a, b, exact=FALSE)$p.value)
 }
 
+.irea_groups <- function(reference, cells, analysis) {
+  meta <- reference$object@meta.data[cells, , drop=FALSE]
+  sample <- as.character(meta$sample)
+  group <- if (analysis == "cytokine_response") sample else as.character(meta$polarization)
+  terms <- sort(setdiff(unique(group), c("PBS", "None", "", NA_character_)))
+  baseline <- which(!is.na(sample) & sample == "PBS")
+  if (!length(baseline)) stop("Reference has no required PBS baseline cells.", call. = FALSE)
+  if (!length(terms)) stop("Reference has no target groups.", call. = FALSE)
+  list(group=group, terms=terms, baseline=baseline)
+}
+
+.irea_score_table <- function(score, groups) {
+  out <- do.call(rbind, lapply(groups$terms, function(term) {
+    a <- score[which(!is.na(groups$group) & groups$group == term)]
+    b <- score[groups$baseline]
+    data.frame(term=term, effect=mean(a)-mean(b), p_value=.irea_wilcox(a,b),
+               n_target=length(a), n_control=length(b))
+  }))
+  out$fdr <- stats::p.adjust(out$p_value, method="BH")
+  out
+}
+
+.irea_radar_score <- function(effect, fdr, cutoff=0.05) {
+  positive <- ifelse(is.finite(effect), pmax(effect, 0), 0)
+  significant <- !is.na(fdr) & fdr < cutoff & positive > 0
+  if (any(significant) && max(positive) > 0) positive/max(positive) else rep(0, length(effect))
+}
+
 .irea_gene_score <- function(reference, genes, analysis) {
   x <- reference$object
-  d <- SeuratObject::LayerData(x, assay="RNA", layer="data")
+  d <- .irea_layer(x, "RNA", "data")
   matched <- intersect(genes, rownames(d))
   if (!length(matched)) stop("No input genes match the reference.", call. = FALSE)
   score <- Matrix::colSums(d[matched,,drop=FALSE])
-  group <- if (analysis == "cytokine_response") as.character(x@meta.data$sample) else
-    as.character(x@meta.data$polarization)
-  terms <- if (analysis == "cytokine_response") .irea_sample_names(reference) else
-    sort(setdiff(unique(group), c("None", "", NA_character_)))
-  baseline <- if (analysis == "cytokine_response") "PBS" else "None"
-  if (!any(group == baseline)) stop("Reference has no required baseline cells.", call. = FALSE)
-  rows <- lapply(terms, function(term) {
-    a <- score[group == term]; b <- score[group == baseline]
-    data.frame(term=term, effect=mean(a)-mean(b), p_value=.irea_wilcox(a,b),
-               n_target=length(a), n_control=length(b))
-  })
-  out <- do.call(rbind, rows)
-  out$fdr <- stats::p.adjust(out$p_value, method="BH")
+  groups <- .irea_groups(reference, colnames(d), analysis)
+  out <- .irea_score_table(score, groups)
   list(table=out, matched_genes=matched)
 }
 
@@ -174,7 +212,7 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
 
 .irea_projection <- function(reference, contrast, analysis, gene_diff_cutoff) {
   x <- reference$object
-  d <- SeuratObject::LayerData(x, assay="RNA", layer="data")
+  d <- .irea_layer(x, "RNA", "data")
   candidates <- intersect(names(contrast), rownames(d))
   matched <- candidates[Matrix::rowMeans(d[candidates,,drop=FALSE]) > gene_diff_cutoff]
   if (!length(matched)) stop("No genes survive matching and the difference cutoff.", call. = FALSE)
@@ -184,18 +222,8 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
   norm <- sqrt(Matrix::colSums(sub^2))
   projection <- as.numeric(Matrix::crossprod(sub, v))/(norm * sqrt(sum(v^2)))
   projection[!is.finite(projection)] <- 0
-  group <- if (analysis == "cytokine_response") as.character(x@meta.data$sample) else
-    as.character(x@meta.data$polarization)
-  terms <- if (analysis == "cytokine_response") .irea_sample_names(reference) else
-    sort(setdiff(unique(group), c("None", "", NA_character_)))
-  baseline <- if (analysis == "cytokine_response") "PBS" else "None"
-  if (!any(group == baseline)) stop("Reference has no required baseline cells.", call. = FALSE)
-  out <- do.call(rbind, lapply(terms, function(t) {
-    a <- projection[group==t]; b <- projection[group==baseline]
-    data.frame(term=t,effect=mean(a)-mean(b),p_value=.irea_wilcox(a,b),
-               n_target=length(a),n_control=length(b))
-  }))
-  out$fdr <- stats::p.adjust(out$p_value,method="BH")
+  groups <- .irea_groups(reference, colnames(d), analysis)
+  out <- .irea_score_table(projection, groups)
   list(table=out,matched_genes=matched)
 }
 
@@ -231,6 +259,17 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
 
 #' Analyse cytokine responses or immune-cell polarization
 #'
+#' Experimental reconstruction of IREA. Numerical equivalence to the portal
+#' has not been established for all modes. Score and projection compare target
+#' reference cells against PBS-treated reference cells, including polarization.
+#' These P values describe reference-cell distributions, not biological-replicate
+#' inference about the user's case and control samples.
+#' By default FDR is adjusted jointly across reference terms and all contrast
+#' columns in a supplied data frame or file, matching the adjustment family in
+#' the portal's multiple-contrast matrix example. Matrix numerical concordance
+#' has not been established. Reference RNA data and the
+#' selected Seurat input layer must already be appropriately normalized.
+#'
 #' @param reference Output from [PrepareIREAReference()].
 #' @param genes Character vector for gene-list analysis.
 #' @param matrix A named gene contrast vector, two-column data frame, or
@@ -240,22 +279,29 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
 #' @param object Optional Seurat object used to construct a mean-expression
 #'   contrast from `case` and `control`.
 #' @param group_by,case,control Metadata column and group names for `object`.
-#' @param assay,layer Assay and expression layer for `object`.
+#' @param assay,layer Assay and exact expression layer name for `object`. Split
+#'   layers must be joined first to compare cells across those layers.
 #' @param analysis `"cytokine_response"` or `"cell_polarization"`.
 #' @param method `"score"` or `"hypergeometric"` for gene lists;
 #'   matrix input uses cosine projection.
 #' @param gene_diff_cutoff Minimum mean reference-gene expression for projection.
+#' @param fdr_scope `"all_contrasts"` (default) adjusts across all contrast
+#'   columns supplied, then returns the selected `contrast`. `"selected_contrast"`
+#'   adjusts only its reference terms. A vector or Seurat comparison has one
+#'   contrast. This argument does not change gene-list calculations.
 #' @return An `irea_result`, or a Seurat object with the result in
 #'   `object@tools$IREA` when `object` is supplied.
 #' @export
 RunIREA <- function(reference, genes=NULL, matrix=NULL, object=NULL, contrast=NULL,
                     group_by=NULL, case=NULL, control=NULL, assay="RNA", layer="data",
                     analysis=c("cytokine_response","cell_polarization"),
-                    method=c("score","hypergeometric"), gene_diff_cutoff=0.25) {
+                    method=c("score","hypergeometric"), gene_diff_cutoff=0.25,
+                    fdr_scope=c("all_contrasts","selected_contrast")) {
   if (!inherits(reference,"irea_reference")) stop("reference must be an irea_reference.",call.=FALSE)
   analysis <- match.arg(analysis); method <- match.arg(method)
+  fdr_scope <- match.arg(fdr_scope)
   if (!is.numeric(gene_diff_cutoff) || length(gene_diff_cutoff)!=1L ||
-      is.na(gene_diff_cutoff) || gene_diff_cutoff < 0)
+      !is.finite(gene_diff_cutoff) || gene_diff_cutoff < 0)
     stop("gene_diff_cutoff must be nonnegative.",call.=FALSE)
   input <- .irea_input(genes,matrix,object,group_by,case,control,assay,layer,contrast)
   original_genes <- if (input$mode == "gene_list") input$genes else names(input$matrix)
@@ -264,21 +310,40 @@ RunIREA <- function(reference, genes=NULL, matrix=NULL, object=NULL, contrast=NU
     if (method == "score") .irea_gene_score(reference,input$genes,analysis)
     else .irea_hypergeom(reference,input$genes,analysis)
   } else .irea_projection(reference,input$matrix,analysis,gene_diff_cutoff)
+  adjusted_contrasts <- input$contrast
+  fdr_family <- "reference_terms_within_selected_contrast"
+  if (input$mode == "projection" && fdr_scope == "all_contrasts" &&
+      length(input$contrast_inputs) > 1L) {
+    all_cores <- lapply(names(input$contrast_inputs), function(name) {
+      if (name == input$contrast) return(core)
+      other <- .irea_input(NULL,input$contrast_inputs[[name]],NULL,NULL,NULL,NULL,
+                           assay,layer,NULL)
+      if (reference$species == "Human") other <- .irea_map_human(reference,other)
+      .irea_projection(reference,other$matrix,analysis,gene_diff_cutoff)
+    })
+    sizes <- vapply(all_cores, function(x) nrow(x$table), integer(1))
+    family <- rep(names(input$contrast_inputs), sizes)
+    adjusted <- stats::p.adjust(unlist(lapply(all_cores,function(x) x$table$p_value)),"BH")
+    core$table$fdr <- adjusted[family == input$contrast]
+    adjusted_contrasts <- names(input$contrast_inputs)
+    fdr_family <- "reference_terms_across_all_supplied_contrasts"
+  }
   table <- core$table
   table$status <- ifelse(is.na(table$p_value),"not_computable",
                          ifelse(table$fdr < 0.05,"significant","not_significant"))
   if (analysis == "cell_polarization") {
-    significant <- is.finite(table$effect) & table$fdr < 0.05 & table$effect > 0
-    positive <- pmax(table$effect,0)
-    table$radar_score <- if (any(significant) && max(positive)>0)
-      positive/max(positive) else rep(0,nrow(table))
+    table$radar_score <- .irea_radar_score(table$effect, table$fdr)
   }
   result <- structure(list(table=table, matched_genes=core$matched_genes,
                            input_genes=original_genes,
                            gene_mapping=if (reference$species == "Human") input$mapping else NULL,
                            parameters=list(cell_type=reference$cell_type,species=reference$species,
                              analysis=analysis,mode=input$mode,method=if(input$mode=="gene_list") method else "projection",
-                             gene_diff_cutoff=gene_diff_cutoff),
+                             gene_diff_cutoff=gene_diff_cutoff,
+                             baseline=if(input$mode=="gene_list" && method=="hypergeometric")
+                               "signature_universe" else "PBS",
+                             fdr_family=fdr_family, fdr_scope=fdr_scope,
+                             contrasts_adjusted=adjusted_contrasts),
                            reference=list(paths=reference$paths,checksum_md5=reference$checksum_md5,
                                           provenance=reference$provenance),
                            validation="method_reconstructed; portal numeric concordance not established"),

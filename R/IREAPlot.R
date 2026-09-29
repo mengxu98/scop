@@ -3,7 +3,9 @@
 #' @param result An `irea_result`, a Seurat object containing
 #'   `object@tools$IREA`, or a named list of results for dotplots and heatmaps.
 #' @param type One of `"compass"`, `"radar"`, `"dotplot"`, or `"heatmap"`.
-#' @param fdr_cutoff Significance threshold used for plot colouring.
+#' @param fdr_cutoff Significance threshold used for compass colouring and the
+#'   radar display. Radar scores are zero when no positive effect meets this
+#'   threshold; otherwise all positive effects are divided by their maximum.
 #' @return An editable ggplot object.
 #' @export
 IREAPlot <- function(result, type=c("compass","radar","dotplot","heatmap"),
@@ -18,6 +20,14 @@ IREAPlot <- function(result, type=c("compass","radar","dotplot","heatmap"),
       stop("Every list element must be an IREA result.",call.=FALSE)
     if (length(unique(vapply(result,function(x)x$parameters$analysis,character(1)))) != 1L)
       stop("Comparison results must use the same analysis.",call.=FALSE)
+    for (field in c("method", "mode", "species")) {
+      values <- vapply(result, function(x) {
+        value <- x$parameters[[field]]
+        if (is.null(value)) NA_character_ else as.character(value)
+      }, character(1))
+      if (anyNA(values) || length(unique(values)) != 1L)
+        stop("Comparison results must use the same ", field, ".", call.=FALSE)
+    }
     groups <- names(result)
     if (is.null(groups) || any(!nzchar(groups))) groups <- paste0("Result ",seq_along(result))
     dat <- do.call(rbind,Map(function(x,name) transform(x$table,group=name),result,groups))
@@ -29,6 +39,7 @@ IREAPlot <- function(result, type=c("compass","radar","dotplot","heatmap"),
   if (!is.numeric(fdr_cutoff) || length(fdr_cutoff)!=1L || is.na(fdr_cutoff) ||
       fdr_cutoff <= 0 || fdr_cutoff > 1) stop("Invalid fdr_cutoff.",call.=FALSE)
   dat$significant <- !is.na(dat$fdr) & dat$fdr < fdr_cutoff
+  caption <- "Experimental IREA reconstruction; portal equivalence is not established for all modes."
   if (type == "compass") {
     if (result$parameters$analysis != "cytokine_response")
       stop("Compass plot requires a cytokine response result.",call.=FALSE)
@@ -40,11 +51,12 @@ IREAPlot <- function(result, type=c("compass","radar","dotplot","heatmap"),
       ggplot2::scale_fill_manual(values=c(Positive="#BC3C29",Negative="#2878B5",
                                           `Not significant`="#B8B8B8")) +
       ggplot2::theme(axis.text.x=ggplot2::element_text(size=5)) +
-      ggplot2::labs(x=NULL,y="Absolute enrichment effect",fill="Response"))
+      ggplot2::labs(x=NULL,y="Absolute enrichment effect",fill="Response",caption=caption))
   }
   if (type == "radar") {
     if (result$parameters$analysis != "cell_polarization")
       stop("Radar plot requires a cell polarization result.",call.=FALSE)
+    dat$radar_score <- .irea_radar_score(dat$effect, dat$fdr, fdr_cutoff)
     theta <- pi/2 - 2*pi*(seq_len(nrow(dat))-1)/nrow(dat)
     dat$x <- dat$radar_score*cos(theta)
     dat$y <- dat$radar_score*sin(theta)
@@ -62,7 +74,7 @@ IREAPlot <- function(result, type=c("compass","radar","dotplot","heatmap"),
       ggplot2::geom_text(data=axes,ggplot2::aes(x=1.13*.data$x,y=1.13*.data$y,label=.data$term),size=3) +
       ggplot2::coord_fixed(xlim=c(-1.25,1.25),ylim=c(-1.25,1.25)) +
       ggplot2::theme_void() +
-      ggplot2::labs(title="Cell polarization",subtitle="Normalized score (0 to 1)"))
+      ggplot2::labs(title="Cell polarization",subtitle="Normalized score (0 to 1)",caption=caption))
   }
   dat$term <- factor(dat$term,levels=unique(dat$term[order(dat$effect)]))
   if (type == "dotplot") {
@@ -70,9 +82,9 @@ IREAPlot <- function(result, type=c("compass","radar","dotplot","heatmap"),
       ggplot2::geom_point(ggplot2::aes(size=-log10(pmax(.data$fdr,.Machine$double.xmin)),
                                         color=.data$effect)) +
       ggplot2::scale_color_gradient2() +
-      ggplot2::labs(x=NULL,y=NULL,size="-log10(FDR)",color="Effect"))
+      ggplot2::labs(x=NULL,y=NULL,size="-log10(FDR)",color="Effect",caption=caption))
   }
   ggplot2::ggplot(dat,ggplot2::aes(x=.data$group,y=.data$term,fill=.data$effect)) +
     ggplot2::geom_tile() + ggplot2::scale_fill_gradient2() +
-    ggplot2::labs(x=NULL,y=NULL,fill="Enrichment effect")
+    ggplot2::labs(x=NULL,y=NULL,fill="Enrichment effect",caption=caption)
 }

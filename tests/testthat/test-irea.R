@@ -106,3 +106,105 @@ test_that("sparse and dense reference layers give the same scores", {
   expect_equal(a$table$effect,b$table$effect)
   expect_equal(a$table$p_value,b$table$p_value)
 })
+
+test_that("polarization compares against PBS rather than unpolarized treated cells", {
+  r <- make_irea_fixture()
+  d <- SeuratObject::LayerData(r$object, assay="RNA", layer="data")
+  score <- as.numeric(d["G1",])
+  actual <- RunIREA(r,genes="G1",analysis="cell_polarization")$table
+  target <- score[r$object$polarization == "NK-e"]
+  control <- score[r$object$sample == "PBS"]
+  expect_equal(actual$effect, mean(target)-mean(control))
+  expect_equal(actual$p_value, stats::wilcox.test(target,control,exact=FALSE)$p.value)
+  expect_equal(actual$n_control, 4L)
+  expect_false(isTRUE(all.equal(actual$effect,
+    mean(target)-mean(score[r$object$polarization == "None"]))))
+  r$object$sample[r$object$sample == "PBS"] <- "Other"
+  expect_error(RunIREA(r,genes="G1",analysis="cell_polarization"),"PBS baseline")
+})
+
+test_that("Seurat group labels are aligned to cells in the requested layer", {
+  r <- make_irea_fixture()
+  o <- r$object
+  counts <- SeuratObject::LayerData(o, assay="RNA", layer="counts")
+  selected <- c(1,2,5,6)
+  o[["partial"]] <- SeuratObject::CreateAssay5Object(counts=counts[,selected])
+  actual <- .irea_input(NULL,NULL,o,"sample","IL12","PBS","partial","counts",NULL)
+  expected <- Matrix::rowMeans(counts[,5:6])-Matrix::rowMeans(counts[,1:2])
+  expect_equal(actual$matrix, expected)
+  expect_error(.irea_input(NULL,NULL,o,"sample","IL15","PBS","partial","counts",NULL),
+               "selected assay/layer")
+  o$sample[3] <- NA_character_
+  actual <- .irea_input(NULL,NULL,o,"sample","IL12","PBS","RNA","counts",NULL)
+  expect_equal(actual$matrix, Matrix::rowMeans(counts[,5:8])-Matrix::rowMeans(counts[,c(1,2,4)]))
+  expect_error(RunIREA(r,object=o,group_by="sample",case="PBS",control="PBS"),"distinct")
+})
+
+test_that("comparison plots reject incompatible effect scales", {
+  r <- make_irea_fixture()
+  a <- RunIREA(r,genes="G1")
+  b <- RunIREA(r,genes="G1",method="hypergeometric")
+  expect_error(IREAPlot(list(a=a,b=b),"heatmap"),"same method")
+  expect_error(IREAPlot(list(a=a,b=b),"dotplot"),"same method")
+})
+
+test_that("radar thresholds are recomputed without changing result statistics", {
+  r <- RunIREA(make_irea_fixture(),genes="G4",analysis="cell_polarization")
+  r$table <- data.frame(term=c("A","B","C"),effect=c(2,1,-1),
+                        fdr=c(0.03,0.2,0.8),radar_score=c(1,0.5,0))
+  before <- r$table
+  loose <- IREAPlot(r,"radar",fdr_cutoff=0.05)$layers[[3]]$data
+  strict <- IREAPlot(r,"radar",fdr_cutoff=0.01)$layers[[3]]$data
+  expect_equal(loose$radar_score,c(1,0.5,0))
+  expect_equal(strict$radar_score,c(0,0,0))
+  expect_equal(r$table,before)
+  expect_equal(.irea_radar_score(c(NA,1),c(NA,0.03)),c(0,1))
+})
+
+test_that("missing list genes and nonfinite cutoffs are handled explicitly", {
+  r <- make_irea_fixture()
+  expect_equal(RunIREA(r,genes=c(NA,"G1",""))$matched_genes,"G1")
+  expect_error(RunIREA(r,genes=NA_character_),"No usable")
+  expect_error(RunIREA(r,genes="G1",gene_diff_cutoff=Inf),"nonnegative")
+})
+
+test_that("split layer names cannot silently select the first batch", {
+  r <- make_irea_fixture()
+  counts <- SeuratObject::LayerData(r$object,assay="RNA",layer="counts")
+  o <- SeuratObject::CreateSeuratObject(counts=list(first=counts[,1:6],second=counts[,7:12]))
+  o$sample <- r$object$sample
+  expect_error(.irea_input(NULL,NULL,o,"sample","IL12","PBS","RNA","counts",NULL),
+               "exact name")
+})
+
+test_that("multiple matrix columns share the specified BH family", {
+  r <- make_irea_fixture()
+  input <- data.frame(gene=c("G1","G2","G3"),a=c(1,-1,0),b=c(0,0,1))
+  a <- RunIREA(r,matrix=input,contrast="a",gene_diff_cutoff=0)
+  b <- RunIREA(r,matrix=input,contrast="b",gene_diff_cutoff=0)
+  expected <- stats::p.adjust(c(a$table$p_value,b$table$p_value),"BH")
+  expect_equal(c(a$table$fdr,b$table$fdr),expected)
+  expect_equal(a$parameters$contrasts_adjusted,c("a","b"))
+  single <- RunIREA(r,matrix=input,contrast="a",gene_diff_cutoff=0,
+                    fdr_scope="selected_contrast")
+  expect_equal(single$table$fdr,stats::p.adjust(single$table$p_value,"BH"))
+  expect_equal(single$table$p_value,a$table$p_value)
+  expect_equal(single$table$effect,a$table$effect)
+  expect_equal(a$parameters$fdr_family,"reference_terms_across_all_supplied_contrasts")
+})
+
+test_that("published NK polarization score statistics remain concordant", {
+  fixture <- readRDS(test_path("fixtures","irea","nk_polarization_score.rds"))
+  groups <- list(group=fixture$polarization,
+                 terms=sort(setdiff(unique(fixture$polarization),"None")),
+                 baseline=which(fixture$sample == "PBS"))
+  actual <- .irea_score_table(fixture$score,groups)
+  expected <- fixture$expected[match(actual$term,fixture$expected$Polarization),]
+  expect_equal(actual$effect,expected[["Enrichment Score"]],tolerance=1e-8)
+  expect_true(all(abs(actual$p_value/expected$pval-1) < 1e-8))
+  expect_true(all(abs(actual$fdr/expected$padj-1) < 1e-8))
+  # The earlier None comparator must not pass this external numerical fixture.
+  groups$baseline <- which(fixture$polarization == "None")
+  wrong <- .irea_score_table(fixture$score,groups)
+  expect_gt(max(abs(wrong$effect-expected[["Enrichment Score"]])),0.4)
+})
