@@ -1,8 +1,8 @@
-#' @title Prepare gene annotation databases
+#' @title Prepare databases and reference resources
 #'
 #' @description
-#' Build TERM2GENE / TERM2NAME (and GO semantic-similarity) databases for a
-#' species from annotation packages, cached downloads, or local files.
+#' Prepare species-specific databases and reference resources from annotation
+#' packages, cached downloads, or supplied files.
 #'
 #' @md
 #' @inheritParams GeneConvert
@@ -33,26 +33,15 @@
 #' @param custom_species,custom_IDtype,custom_version Metadata for a custom database.
 #' @param ... Passed to helper functions.
 #'
-#' @details Select Immune Dictionary references with database names such as
-#' `"IREA_NK_cell"` or `"IREA_Macrophage"`, in a separate call from annotation
-#' databases. Multiple IREA references can be selected together. Named `data_dir`
-#' lists may use the requested database name or the shared `"IREA"` key.
-#' Download missing source files from the
-#' official portal to `data_dir` or the user data cache. A checksum manifest
-#' detects changed cache contents; `db_update = TRUE` explicitly refreshes files.
-#' The portal assets are unversioned; the stored checksums identify their contents.
-#' No reference files are bundled in the package.
-#' @return For IREA databases, a named species list with an `irea_reference`
-#' under each requested database name, for example
-#' `[["Mus_musculus"]][["IREA_NK_cell"]]`; see [PrepareIREAReference()].
-#' Otherwise, a list containing the prepared gene annotation databases:
+#' @return A list of prepared resources named by species and database. Gene
+#' annotation entries contain:
 #' \itemize{
 #'   \item `TERM2GENE`: mapping of gene identifiers to terms.
 #'   \item `TERM2NAME`: mapping of terms to their names.
 #'   \item `semData`: semantic similarity data for gene sets (only for Gene Ontology terms).
 #' }
 #'
-#' @seealso [ListDB]
+#' @seealso [ListDB], [PrepareIREAReference]
 #'
 #' @export
 #'
@@ -164,38 +153,6 @@ PrepareDB <- function(
   verbose = TRUE,
   ...
 ) {
-  if (any(db %in% "IREA" | startsWith(as.character(db), "IREA_"), na.rm = TRUE)) {
-    if (anyNA(db) || !all(startsWith(as.character(db), "IREA_"))) {
-      stop("Select IREA_<cell type> databases in a separate PrepareDB call.", call. = FALSE)
-    }
-    if (length(list(...))) stop("Unused IREA preparation arguments; select references with db.", call. = FALSE)
-    db <- unique(as.character(db))
-    species <- normalize_species_name(species)
-    result <- lapply(species, function(sps) {
-      if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
-        stop("IREA supports Homo_sapiens or Mus_musculus.", call. = FALSE)
-      }
-      references <- lapply(db, function(db_name) {
-        directory <- data_dir
-        if (is.list(data_dir)) {
-          directory <- data_dir[[db_name]]
-          if (is.null(directory)) directory <- data_dir[["IREA"]]
-          if (is.null(directory)) {
-            stop("data_dir needs a path for ", db_name, " or IREA.", call. = FALSE)
-          }
-        }
-        if (is.null(directory)) directory <- file.path(tools::R_user_dir("scop", "data"), "IREA")
-        preparedb_irea_reference(
-          directory, db_name,
-          if (sps == "Homo_sapiens") "Human" else "Mouse", db_update
-        )
-      })
-      names(references) <- db
-      references
-    })
-    names(result) <- species
-    return(result)
-  }
   check_r("R.cache", verbose = FALSE)
   species <- normalize_species_name(species)
   db_list <- list()
@@ -308,6 +265,7 @@ PrepareDB <- function(
 
   if (!is.null(db)) {
     db <- as.character(db)
+    if (anyNA(db)) log_message("{.arg db} cannot contain missing values", message_type = "error")
   }
   db_requested <- db
   db <- normalize_msigdb_db_names(db)
@@ -369,6 +327,7 @@ PrepareDB <- function(
 
     if (isFALSE(db_update) && is.null(custom_TERM2GENE)) {
       for (term in db) {
+        if (grepl("^IREA($|_)", term)) next
         dbinfo <- list_db_cache_entries(species = sps, db = term)
         if (nrow(dbinfo) > 0 && !is.null(dbinfo)) {
           if (db_version == "latest") {
@@ -489,6 +448,12 @@ PrepareDB <- function(
       }
 
       if (is.null(custom_TERM2GENE)) {
+        for (term in unique(db[grepl("^IREA($|_)", db)])) {
+          db_list[[sps]][[term]] <- preparedb_irea_reference(
+            directory = data_dir, db = term, species = sps,
+            update = db_update, verbose = verbose, ...
+          )
+        }
         go_categories <- c("GO", "GO_BP", "GO_CC", "GO_MF")
         if (any(db %in% go_categories) &&
           any(!intersect(db, go_categories) %in% names(db_list[[sps]]))
@@ -2792,6 +2757,7 @@ PrepareDB <- function(
     }
 
     for (term in names(db_list[[sps]])) {
+      if (is.null(db_list[[sps]][[term]][["TERM2GENE"]])) next
       db_list[[sps]][[term]][["TERM2GENE"]] <-
         preparedb_normalize_term2gene_id_columns(
           db_list[[sps]][[term]][["TERM2GENE"]]
@@ -3375,6 +3341,18 @@ kegg_release_from_relnote <- function(url = "https://www.kegg.jp/kegg/docs/relno
 #'
 #' @param directory Directory containing files prepared by [PrepareDB()] with
 #'   an IREA database selector, or the original portal downloads.
+#' @details Prepare these references through [PrepareDB()] using the same
+#' `db` selector and `"Mus_musculus"` or `"Homo_sapiens"` as `species`.
+#' Multiple references and annotation databases can be requested together.
+#' A directory is searched under its database subdirectory before the directory
+#' itself; named `data_dir` lists use the requested selector or the shared
+#' `"IREA"` key. Missing files are downloaded from the official portal into
+#' the selected directory or the user data cache. A checksum manifest detects
+#' changes; `db_update = TRUE` refreshes the files. The portal assets are
+#' unversioned, so stored checksums identify their contents. References are not
+#' bundled with the package. Each prepared entry is an `irea_reference` under
+#' its requested species and database name.
+#'
 #' @param db IREA reference selector, such as `"IREA_NK_cell"` or
 #'   `"IREA_Macrophage"`. The suffix is the exact portal cell-type identifier.
 #' @param species `"Mouse"` or `"Human"`. Human symbols in both input modes
@@ -3400,20 +3378,21 @@ kegg_release_from_relnote <- function(url = "https://www.kegg.jp/kegg/docs/relno
 #' @export
 PrepareIREAReference <- function(directory, db, species = c("Mouse", "Human")) {
   species <- match.arg(species)
-  if (!dir.exists(directory)) stop("Reference directory does not exist.", call. = FALSE)
+  if (!dir.exists(directory)) log_message("Reference directory does not exist.", message_type = "error")
   valid <- c(
     "B_cell", "cDC1", "cDC2", "Langerhans", "Macrophage",
     "MigDC", "Monocyte", "Neutrophil", "NK_cell", "pDC",
     "T_cell_CD4", "T_cell_CD8", "T_cell_gd", "Treg"
   )
   if (length(db) != 1L || is.na(db) || !db %in% paste0("IREA_", valid)) {
-    stop("Unsupported IREA database selector: ", db, call. = FALSE)
+    log_message("Unsupported IREA database selector: ", db, "; use IREA_<cell type>.", message_type = "error")
   }
   cell_type <- substring(db, 6L)
   find_file <- function(relative) {
-    candidates <- file.path(directory, c(relative, gsub("/", "_", relative, fixed = TRUE)))
+    filenames <- c(relative, gsub("/", "_", relative, fixed = TRUE))
+    candidates <- c(file.path(directory, db, filenames), file.path(directory, filenames))
     hit <- candidates[file.exists(candidates)]
-    if (!length(hit)) stop("Missing reference file: ", relative, call. = FALSE)
+    if (!length(hit)) log_message("Missing reference file: ", relative, message_type = "error")
     normalizePath(hit[[1]], winslash = "/", mustWork = TRUE)
   }
   object_path <- find_file(paste0("downloadableData/ligands-seurat-", cell_type, ".RDS"))
@@ -3422,9 +3401,9 @@ PrepareIREAReference <- function(directory, db, species = c("Mouse", "Human")) {
   polarization_path <- find_file(paste0("dataFiles/SuppTable7_Polarization_Signatures", suffix, ".xlsx"))
   thisutils::check_r("readxl", install = FALSE, verbose = FALSE)
   x <- readRDS(object_path)
-  if (!inherits(x, "Seurat")) stop("The reference RDS is not a Seurat object.", call. = FALSE)
+  if (!inherits(x, "Seurat")) log_message("The reference RDS is not a Seurat object.", message_type = "error")
   if (!all(c("sample", "polarization") %in% colnames(x@meta.data))) {
-    stop("Reference object lacks sample or polarization metadata.", call. = FALSE)
+    log_message("Reference object lacks sample or polarization metadata.", message_type = "error")
   }
   cy <- as.data.frame(readxl::read_excel(cytokine_path, sheet = cell_type))
   polar_names <- c(
@@ -3439,7 +3418,7 @@ PrepareIREAReference <- function(directory, db, species = c("Mouse", "Human")) {
     polar_sheet <- readxl::excel_sheets(polarization_path)[[4]]
   }
   if (is.na(polar_sheet) || !polar_sheet %in% readxl::excel_sheets(polarization_path)) {
-    stop("No polarization signature sheet for ", cell_type, call. = FALSE)
+    log_message("No polarization signature sheet for ", cell_type, message_type = "error")
   }
   po <- as.data.frame(readxl::read_excel(polarization_path, sheet = polar_sheet))
   paths <- c(object = object_path, cytokine = cytokine_path, polarization = polarization_path)
@@ -3454,17 +3433,22 @@ PrepareIREAReference <- function(directory, db, species = c("Mouse", "Human")) {
   )
 }
 
-preparedb_irea_reference <- function(directory, db, species, update) {
+preparedb_irea_reference <- function(directory, db, species, update, verbose = TRUE, ...) {
+  if (length(list(...))) log_message("Unused preparation arguments; select references with db.", message_type = "error")
+  if (length(species) != 1L || !species %in% c("Homo_sapiens", "Mus_musculus")) {
+    log_message("IREA supports Homo_sapiens or Mus_musculus.", message_type = "error")
+  }
+  species <- if (species == "Homo_sapiens") "Human" else "Mouse"
   valid <- c(
     "B_cell", "cDC1", "cDC2", "Langerhans", "Macrophage", "MigDC",
     "Monocyte", "Neutrophil", "NK_cell", "pDC", "T_cell_CD4", "T_cell_CD8", "T_cell_gd", "Treg"
   )
   if (length(db) != 1L || is.na(db) || !db %in% paste0("IREA_", valid)) {
-    stop("Unsupported IREA database selector: ", db, call. = FALSE)
+    log_message("Unsupported IREA database selector: ", db, "; use IREA_<cell type>.", message_type = "error")
   }
   cell_type <- substring(db, 6L)
   if (!is.logical(update) || length(update) != 1L || is.na(update)) {
-    stop("db_update must be TRUE or FALSE.", call. = FALSE)
+    log_message("db_update must be TRUE or FALSE.", message_type = "error")
   }
   thisutils::check_r("readxl", install = FALSE, verbose = FALSE)
   suffix <- if (species == "Human") "_Human" else ""
@@ -3473,6 +3457,15 @@ preparedb_irea_reference <- function(directory, db, species, update) {
     paste0("dataFiles/SuppTable3_Cytokine_Signatures", suffix, ".xlsx"),
     paste0("dataFiles/SuppTable7_Polarization_Signatures", suffix, ".xlsx")
   )
+  if (is.list(directory)) {
+    directory <- directory[[db]] %||% directory[["IREA"]]
+    if (is.null(directory)) log_message("data_dir needs a path for ", db, " or IREA.", message_type = "error")
+  }
+  if (is.null(directory)) directory <- file.path(tools::R_user_dir("scop", "data"), "IREA")
+  if (!is.character(directory) || length(directory) != 1L || is.na(directory) || !nzchar(directory)) {
+    log_message("{.arg data_dir} must be one directory path or a named list of paths", message_type = "error")
+  }
+  log_message("Preparing database: {.pkg {db}}", verbose = verbose)
   dir.create(directory, recursive = TRUE, showWarnings = FALSE)
   directory <- normalizePath(directory, winslash = "/", mustWork = TRUE)
   manifest_path <- file.path(directory, "reference_manifest.csv")
@@ -3486,29 +3479,30 @@ preparedb_irea_reference <- function(directory, db, species, update) {
   }
   if (!all(c("source_url", "file", "bytes", "checksum_md5", "checked_at") %in% names(manifest)) ||
     anyDuplicated(manifest$file)) {
-    stop("Invalid IREA cache manifest; use a separate cache directory.", call. = FALSE)
+    log_message("Invalid IREA cache manifest; use a separate cache directory.", message_type = "error")
   }
   old_timeout <- getOption("timeout")
   options(timeout = max(600, old_timeout))
   on.exit(options(timeout = old_timeout), add = TRUE)
   for (path in paths) {
-    candidates <- file.path(directory, c(path, gsub("/", "_", path, fixed = TRUE)))
+    filenames <- c(path, gsub("/", "_", path, fixed = TRUE))
+    candidates <- c(file.path(directory, db, filenames), file.path(directory, filenames))
     existing <- candidates[file.exists(candidates)]
-    target <- if (length(existing)) existing[[1]] else candidates[[2]]
+    target <- if (length(existing)) existing[[1]] else candidates[[4]]
     relative <- substring(target, nchar(directory) + 2L)
     prior <- manifest[manifest$file == relative, , drop = FALSE]
     if (!update && file.exists(target) && nrow(prior) &&
       !identical(unname(tools::md5sum(target)), prior$checksum_md5)) {
-      stop("IREA cache checksum mismatch: ", relative, "; use db_update = TRUE to refresh.", call. = FALSE)
+      log_message("IREA cache checksum mismatch: ", relative, "; use db_update = TRUE to refresh.", message_type = "error")
     }
     url <- paste0("https://www.immune-dictionary.org/static/", path)
     if (update || !file.exists(target)) {
       dir.create(dirname(target), recursive = TRUE, showWarnings = FALSE)
       temporary <- tempfile(tmpdir = dirname(target))
       on.exit(unlink(temporary), add = TRUE)
-      utils::download.file(url, temporary, mode = "wb", quiet = TRUE)
+      log_message("Downloading {.path {path}}", expr = utils::download.file(url, temporary, mode = "wb", quiet = TRUE), verbose = verbose)
       if (file.info(temporary)$size <= 0 || !file.copy(temporary, target, overwrite = TRUE)) {
-        stop("Failed to cache IREA reference: ", path, call. = FALSE)
+        log_message("Failed to cache IREA reference: ", path, message_type = "error")
       }
       unlink(temporary)
     }

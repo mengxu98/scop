@@ -29,6 +29,19 @@ Reads the cell-type Seurat object and signature spreadsheets distributed by
 the Immune Dictionary portal. The experimental reference is mouse lymph-node
 cells, including when a human orthologue table is selected.
 }
+\details{
+Prepare these references through \code{\link[=PrepareDB]{PrepareDB()}} using the same
+\code{db} selector and \code{"Mus_musculus"} or \code{"Homo_sapiens"} as \code{species}.
+Multiple references and annotation databases can be requested together.
+A directory is searched under its database subdirectory before the directory
+itself; named \code{data_dir} lists use the requested selector or the shared
+\code{"IREA"} key. Missing files are downloaded from the official portal into
+the selected directory or the user data cache. A checksum manifest detects
+changes; \code{db_update = TRUE} refreshes the files. The portal assets are
+unversioned, so stored checksums identify their contents. References are not
+bundled with the package. Each prepared entry is an \code{irea_reference} under
+its requested species and database name.
+}
 \examples{
 \dontrun{
 reference <- PrepareDB(

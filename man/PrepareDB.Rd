@@ -2,7 +2,7 @@
 % Please edit documentation in R/PrepareDB.R
 \name{PrepareDB}
 \alias{PrepareDB}
-\title{Prepare gene annotation databases}
+\title{Prepare databases and reference resources}
 \usage{
 PrepareDB(
   species = c("Homo_sapiens", "Mus_musculus"),
@@ -76,10 +76,8 @@ Default is \code{TRUE}.}
 \item{...}{Passed to helper functions.}
 }
 \value{
-For IREA databases, a named species list with an \code{irea_reference}
-under each requested database name, for example
-\verb{[["Mus_musculus"]][["IREA_NK_cell"]]}; see \code{\link[=PrepareIREAReference]{PrepareIREAReference()}}.
-Otherwise, a list containing the prepared gene annotation databases:
+A list of prepared resources named by species and database. Gene
+annotation entries contain:
 \itemize{
 \item \code{TERM2GENE}: mapping of gene identifiers to terms.
 \item \code{TERM2NAME}: mapping of terms to their names.
@@ -87,19 +85,8 @@ Otherwise, a list containing the prepared gene annotation databases:
 }
 }
 \description{
-Build TERM2GENE / TERM2NAME (and GO semantic-similarity) databases for a
-species from annotation packages, cached downloads, or local files.
-}
-\details{
-Select Immune Dictionary references with database names such as
-\code{"IREA_NK_cell"} or \code{"IREA_Macrophage"}, in a separate call from annotation
-databases. Multiple IREA references can be selected together. Named \code{data_dir}
-lists may use the requested database name or the shared \code{"IREA"} key.
-Download missing source files from the
-official portal to \code{data_dir} or the user data cache. A checksum manifest
-detects changed cache contents; \code{db_update = TRUE} explicitly refreshes files.
-The portal assets are unversioned; the stored checksums identify their contents.
-No reference files are bundled in the package.
+Prepare species-specific databases and reference resources from annotation
+packages, cached downloads, or supplied files.
 }
 \examples{
 db_list <- PrepareDB(
@@ -161,5 +148,5 @@ head(
 )
 }
 \seealso{
-\link{ListDB}
+\link{ListDB}, \link{PrepareIREAReference}
 }

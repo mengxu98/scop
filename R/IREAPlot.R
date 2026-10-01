@@ -3,8 +3,8 @@
 #' @description Display enrichment effects and reference-cell significance.
 #' @param object An `irea_result`, a Seurat object containing
 #'   `object@tools$IREA`, or a named list of results for dotplots and heatmaps.
-#' @param type One of `"compass"`, `"radar"`, `"dotplot"`, or `"heatmap"`.
-#' @param fdr_cutoff Significance threshold used for compass colouring and the
+#' @param plot_type One of `"compass"`, `"radar"`, `"dotplot"`, or `"heatmap"`.
+#' @param padjustCutoff Significance threshold used for compass colouring and the
 #'   radar display. Radar scores are zero when no positive effect meets this
 #'   threshold; otherwise all positive effects are divided by their maximum.
 #' @param palette,palcolor Palette name and optional custom colours passed to
@@ -23,23 +23,23 @@
 #' IREAPlot(result, palette = "Chinese")
 #' }
 #' @export
-IREAPlot <- function(object, type = c("compass", "radar", "dotplot", "heatmap"),
-                     fdr_cutoff = 0.05, palette = "Chinese", palcolor = NULL,
+IREAPlot <- function(object, plot_type = c("compass", "radar", "dotplot", "heatmap"),
+                     padjustCutoff = 0.05, palette = "Chinese", palcolor = NULL,
                      theme_use = "theme_scop") {
   result <- object
   plot_theme <- apply_plot_theme(theme_use)
-  type <- match.arg(type)
+  plot_type <- match.arg(plot_type)
   if (inherits(result, "Seurat")) result <- result@tools$IREA
   multi <- is.list(result) && !inherits(result, "irea_result")
   if (multi) {
-    if (type %in% c("compass", "radar")) {
-      stop("Compass and radar plots require one IREA result.", call. = FALSE)
+    if (plot_type %in% c("compass", "radar")) {
+      log_message("Compass and radar plots require one IREA result.", message_type = "error")
     }
     if (!length(result) || !all(vapply(result, inherits, logical(1), "irea_result"))) {
-      stop("Every list element must be an IREA result.", call. = FALSE)
+      log_message("Every list element must be an IREA result.", message_type = "error")
     }
     if (length(unique(vapply(result, function(x) x$parameters$analysis, character(1)))) != 1L) {
-      stop("Comparison results must use the same analysis.", call. = FALSE)
+      log_message("Comparison results must use the same analysis.", message_type = "error")
     }
     for (field in c("method", "mode", "species")) {
       values <- vapply(result, function(x) {
@@ -47,26 +47,26 @@ IREAPlot <- function(object, type = c("compass", "radar", "dotplot", "heatmap"),
         if (is.null(value)) NA_character_ else as.character(value)
       }, character(1))
       if (anyNA(values) || length(unique(values)) != 1L) {
-        stop("Comparison results must use the same ", field, ".", call. = FALSE)
+        log_message("Comparison results must use the same ", field, ".", message_type = "error")
       }
     }
     groups <- names(result)
     if (is.null(groups) || any(!nzchar(groups))) groups <- paste0("Result ", seq_along(result))
     dat <- do.call(rbind, Map(function(x, name) transform(x$table, group = name), result, groups))
   } else {
-    if (!inherits(result, "irea_result")) stop("result must be an IREA result.", call. = FALSE)
+    if (!inherits(result, "irea_result")) log_message("result must be an IREA result.", message_type = "error")
     dat <- result$table
     dat$group <- "Result"
   }
-  if (!is.numeric(fdr_cutoff) || length(fdr_cutoff) != 1L || is.na(fdr_cutoff) ||
-    fdr_cutoff <= 0 || fdr_cutoff > 1) {
-    stop("Invalid fdr_cutoff.", call. = FALSE)
+  if (!is.numeric(padjustCutoff) || length(padjustCutoff) != 1L || is.na(padjustCutoff) ||
+    padjustCutoff <= 0 || padjustCutoff > 1) {
+    log_message("Invalid padjustCutoff.", message_type = "error")
   }
-  dat$significant <- !is.na(dat$fdr) & dat$fdr < fdr_cutoff
+  dat$significant <- !is.na(dat$fdr) & dat$fdr < padjustCutoff
   caption <- "Experimental IREA; numerical equivalence to the portal is not established."
-  if (type == "compass") {
+  if (plot_type == "compass") {
     if (result$parameters$analysis != "cytokine_response") {
-      stop("Compass plot requires a cytokine response result.", call. = FALSE)
+      log_message("Compass plot requires a cytokine response result.", message_type = "error")
     }
     dat$direction <- ifelse(!dat$significant, "Not significant",
       ifelse(dat$effect >= 0, "Positive", "Negative")
@@ -85,11 +85,11 @@ IREAPlot <- function(object, type = c("compass", "radar", "dotplot", "heatmap"),
       ) +
       ggplot2::labs(x = NULL, y = "Absolute enrichment effect", fill = "Response", caption = caption))
   }
-  if (type == "radar") {
+  if (plot_type == "radar") {
     if (result$parameters$analysis != "cell_polarization") {
-      stop("Radar plot requires a cell polarization result.", call. = FALSE)
+      log_message("Radar plot requires a cell polarization result.", message_type = "error")
     }
-    dat$radar_score <- irea_radar_score(dat$effect, dat$fdr, fdr_cutoff)
+    dat$radar_score <- irea_radar_score(dat$effect, dat$fdr, padjustCutoff)
     colors <- thisplot::palette_colors(c("Response", "Grid"), palette = palette, palcolor = palcolor)
     theta <- pi / 2 - 2 * pi * (seq_len(nrow(dat)) - 1) / nrow(dat)
     dat$x <- dat$radar_score * cos(theta)
@@ -118,7 +118,7 @@ IREAPlot <- function(object, type = c("compass", "radar", "dotplot", "heatmap"),
       ggplot2::labs(title = "Cell polarization", subtitle = "Normalized score (0 to 1)", caption = caption))
   }
   dat$term <- factor(dat$term, levels = unique(dat$term[order(dat$effect)]))
-  if (type == "dotplot") {
+  if (plot_type == "dotplot") {
     return(ggplot2::ggplot(dat, ggplot2::aes(x = .data$group, y = .data$term)) +
       ggplot2::geom_point(ggplot2::aes(
         size = -log10(pmax(.data$fdr, .Machine$double.xmin)),

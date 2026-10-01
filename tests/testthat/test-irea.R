@@ -168,8 +168,10 @@ test_that("radar thresholds are recomputed without changing result statistics", 
     fdr = c(0.03, 0.2, 0.8), radar_score = c(1, 0.5, 0)
   )
   before <- r$table
-  loose <- IREAPlot(r, "radar", fdr_cutoff = 0.05)$layers[[3]]$data
-  strict <- IREAPlot(r, "radar", fdr_cutoff = 0.01)$layers[[3]]$data
+  loose <- IREAPlot(r, "radar", padjustCutoff = 0.05)$layers[[3]]$data
+  strict <- IREAPlot(r, "radar", padjustCutoff = 0.01)$layers[[3]]$data
+  expect_equal(IREAPlot(r, plot_type = "radar", padjustCutoff = 0.05)$layers[[3]]$data, loose)
+  expect_error(IREAPlot(r, plot_type = "radar", padjustCutoff = NA_real_), "padjustCutoff")
   expect_equal(loose$radar_score, c(1, 0.5, 0))
   expect_equal(strict$radar_score, c(0, 0, 0))
   expect_equal(r$table, before)
@@ -317,6 +319,45 @@ test_that("IREA preparation reads cached sources and detects changed contents", 
     data_dir = list(IREA = directory), verbose = FALSE
   )[["Mus_musculus"]][["IREA_NK_cell"]]
   expect_equal(RunIREA("G1", reference = first)$table, RunIREA("G1", reference = second)$table)
+  annotation <- list(
+    TERM2GENE = data.frame(Term = "T", symbol = "G1"),
+    TERM2NAME = data.frame(Term = "T", Name = "Example"), version = "test"
+  )
+  local_mocked_bindings(
+    list_db_cache_entries = function(species, db, exact_db = FALSE) {
+      expect_identical(db, "CachedAnnotation")
+      data.frame(timestamp = as.POSIXct("2026-01-01", tz = "UTC"), file = "cached-annotation")
+    },
+    .package = "scop"
+  )
+  local_mocked_bindings(
+    readCacheHeader = function(pathname, ...) {
+      list(comment = "test|Mus_musculus-CachedAnnotation", timestamp = as.POSIXct("2026-01-01", tz = "UTC"))
+    },
+    loadCache = function(pathname, ...) annotation,
+    .package = "R.cache"
+  )
+  mixed <- PrepareDB(
+    db = c("CachedAnnotation", "IREA_NK_cell"), species = "Mus_musculus",
+    db_IDtypes = "symbol", data_dir = list(IREA = directory), verbose = FALSE
+  )[["Mus_musculus"]]
+  expect_setequal(names(mixed), c("CachedAnnotation", "IREA_NK_cell"))
+  expect_equal(mixed[["CachedAnnotation"]], annotation)
+  expect_equal(mixed[["IREA_NK_cell"]]$paths, first$paths)
+  expect_equal(RunIREA("G1", reference = mixed[["IREA_NK_cell"]])$table, RunIREA("G1", reference = first)$table)
+  nested <- tempfile("irea-directory-")
+  dir.create(file.path(nested, "IREA_NK_cell"), recursive = TRUE)
+  nested <- normalizePath(nested, winslash = "/", mustWork = TRUE)
+  on.exit(unlink(nested, recursive = TRUE), add = TRUE)
+  file.copy(first$paths, nested)
+  file.copy(first$paths[["object"]], file.path(nested, "IREA_NK_cell"))
+  nested_reference <- PrepareDB(
+    db = "IREA_NK_cell", species = "Mus_musculus", data_dir = nested, verbose = FALSE
+  )[["Mus_musculus"]][["IREA_NK_cell"]]
+  expect_equal(dirname(nested_reference$paths[["object"]]), file.path(nested, "IREA_NK_cell"))
+  expect_equal(dirname(nested_reference$paths[["cytokine"]]), nested)
+  expect_equal(nested_reference$cytokine, first$cytokine)
+  expect_equal(RunIREA("G1", reference = nested_reference)$table, RunIREA("G1", reference = first)$table)
   manifest <- utils::read.csv(file.path(directory, "reference_manifest.csv"))
   r$object$sample[1] <- "Changed"
   saveRDS(r$object, first$paths[["object"]])
@@ -330,9 +371,10 @@ test_that("IREA preparation reads cached sources and detects changed contents", 
 
 test_that("IREA database selectors reject ambiguous or unused options", {
   expect_error(PrepareDB(db = "IREA", verbose = FALSE), "IREA_<cell type>")
-  expect_error(PrepareDB(db = c("IREA_NK_cell", "GO_BP"), verbose = FALSE), "separate")
   expect_error(PrepareDB(db = "IREA_unknown", verbose = FALSE), "Unsupported IREA database selector")
   expect_error(PrepareDB(db = "IREA_NK_cell", cell_type = "NK_cell", verbose = FALSE), "Unused")
+  expect_error(PrepareDB(db = c("IREA_NK_cell", NA_character_), verbose = FALSE), "missing")
+  expect_error(PrepareDB(db = "IREA_NK_cell", species = "Danio_rerio", verbose = FALSE), "supports")
   expect_error(PrepareDB(
     db = "IREA_NK_cell", data_dir = list(Other = tempdir()),
     verbose = FALSE

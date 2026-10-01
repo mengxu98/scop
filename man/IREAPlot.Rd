@@ -6,8 +6,8 @@
 \usage{
 IREAPlot(
   object,
-  type = c("compass", "radar", "dotplot", "heatmap"),
-  fdr_cutoff = 0.05,
+  plot_type = c("compass", "radar", "dotplot", "heatmap"),
+  padjustCutoff = 0.05,
   palette = "Chinese",
   palcolor = NULL,
   theme_use = "theme_scop"
@@ -17,9 +17,9 @@ IREAPlot(
 \item{object}{An \code{irea_result}, a Seurat object containing
 \code{object@tools$IREA}, or a named list of results for dotplots and heatmaps.}
 
-\item{type}{One of \code{"compass"}, \code{"radar"}, \code{"dotplot"}, or \code{"heatmap"}.}
+\item{plot_type}{One of \code{"compass"}, \code{"radar"}, \code{"dotplot"}, or \code{"heatmap"}.}
 
-\item{fdr_cutoff}{Significance threshold used for compass colouring and the
+\item{padjustCutoff}{Significance threshold used for compass colouring and the
 radar display. Radar scores are zero when no positive effect meets this
 threshold; otherwise all positive effects are divided by their maximum.}
 

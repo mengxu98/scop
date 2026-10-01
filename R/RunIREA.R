@@ -1,8 +1,8 @@
 irea_layer <- function(object, assay, layer) {
   available <- SeuratObject::Layers(object, assay = assay, search = NA)
   if (length(layer) != 1L || is.na(layer) || !layer %in% available) {
-    stop("Select one existing expression layer by its exact name; join split layers first when needed.",
-      call. = FALSE
+    log_message("Select one existing expression layer by its exact name; join split layers first when needed.",
+      message_type = "error"
     )
   }
   SeuratObject::LayerData(object, assay = assay, layer = layer)
@@ -14,7 +14,7 @@ irea_input <- function(object, contrast = NULL) {
   if (is.character(object)) {
     if (length(object) == 1L && !is.na(object) &&
       tolower(tools::file_ext(object)) %in% c("txt", "csv", "xls", "xlsx")) {
-      if (!file.exists(object)) stop("Matrix file does not exist.", call. = FALSE)
+      if (!file.exists(object)) log_message("Matrix file does not exist.", message_type = "error")
       source_file <- normalizePath(object, winslash = "/", mustWork = TRUE)
       ext <- tolower(tools::file_ext(object))
       if (ext %in% c("xlsx", "xls")) {
@@ -29,26 +29,26 @@ irea_input <- function(object, contrast = NULL) {
       genes <- trimws(object[!is.na(object) & nzchar(trimws(object))])
       duplicates <- sum(duplicated(genes))
       genes <- unique(genes)
-      if (!length(genes)) stop("No usable input genes.", call. = FALSE)
+      if (!length(genes)) log_message("No usable input genes.", message_type = "error")
       return(list(mode = "gene_list", genes = genes, duplicate_count = duplicates))
     }
   }
   if (is.data.frame(object)) {
-    if (ncol(object) < 2L) stop("Matrix input needs gene and contrast columns.", call. = FALSE)
+    if (ncol(object) < 2L) log_message("Matrix input needs gene and contrast columns.", message_type = "error")
     if (is.null(contrast) && ncol(object) > 2L) {
-      stop("Select a contrast column from this matrix.", call. = FALSE)
+      log_message("Select a contrast column from this matrix.", message_type = "error")
     }
     if (anyDuplicated(names(object)) || anyNA(names(object)) || any(!nzchar(names(object)))) {
-      stop("Matrix columns must have unique, nonempty names.", call. = FALSE)
+      log_message("Matrix columns must have unique, nonempty names.", message_type = "error")
     }
     if (!all(vapply(object[-1], is.numeric, logical(1)))) {
-      stop("Contrast columns must be numeric; factors and text are not accepted.", call. = FALSE)
+      log_message("Contrast columns must be numeric; factors and text are not accepted.", message_type = "error")
     }
     if (!is.null(contrast) && (length(contrast) != 1L || is.na(contrast))) {
-      stop("Select one contrast column by name.", call. = FALSE)
+      log_message("Select one contrast column by name.", message_type = "error")
     }
     column <- if (is.null(contrast)) 2L else match(contrast, names(object))
-    if (is.na(column) || column == 1L) stop("Unknown contrast column.", call. = FALSE)
+    if (is.na(column) || column == 1L) log_message("Unknown contrast column.", message_type = "error")
     contrast <- names(object)[column]
     contrast_inputs <- lapply(object[-1], function(values) {
       stats::setNames(values, as.character(object[[1]]))
@@ -56,18 +56,18 @@ irea_input <- function(object, contrast = NULL) {
     object <- contrast_inputs[[contrast]]
   }
   if (is.matrix(object)) {
-    if (ncol(object) != 1L) stop("Select one contrast column from the matrix.", call. = FALSE)
-    if (!is.numeric(object)) stop("Contrast matrix must be numeric.", call. = FALSE)
+    if (ncol(object) != 1L) log_message("Select one contrast column from the matrix.", message_type = "error")
+    if (!is.numeric(object)) log_message("Contrast matrix must be numeric.", message_type = "error")
     if (is.null(contrast) && !is.null(colnames(object))) contrast <- colnames(object)[[1]]
     object <- stats::setNames(object[, 1], rownames(object))
   }
   if (!is.numeric(object) || is.null(names(object))) {
-    stop("object must be genes, a named numeric contrast, a contrast table/file, or Seurat.", call. = FALSE)
+    log_message("object must be genes, a named numeric contrast, a contrast table/file, or Seurat.", message_type = "error")
   }
   keep <- !is.na(names(object)) & nzchar(names(object)) & is.finite(object)
   object <- object[keep]
-  if (anyDuplicated(names(object))) stop("Matrix has duplicate gene names.", call. = FALSE)
-  if (!length(object) || all(object == 0)) stop("No nonzero finite gene contrasts.", call. = FALSE)
+  if (anyDuplicated(names(object))) log_message("Matrix has duplicate gene names.", message_type = "error")
+  if (!length(object) || all(object == 0)) log_message("No nonzero finite gene contrasts.", message_type = "error")
   list(
     mode = "projection", matrix = object, contrast = contrast,
     contrast_inputs = contrast_inputs, source_file = source_file
@@ -96,8 +96,8 @@ irea_groups <- function(reference, cells, analysis) {
   group <- if (analysis == "cytokine_response") sample else as.character(meta$polarization)
   terms <- sort(setdiff(unique(group), c("PBS", "None", "", NA_character_)))
   baseline <- which(!is.na(sample) & sample == "PBS")
-  if (!length(baseline)) stop("Reference has no required PBS baseline cells.", call. = FALSE)
-  if (!length(terms)) stop("Reference has no target groups.", call. = FALSE)
+  if (!length(baseline)) log_message("Reference has no required PBS baseline cells.", message_type = "error")
+  if (!length(terms)) log_message("Reference has no target groups.", message_type = "error")
   list(group = group, terms = terms, baseline = baseline)
 }
 
@@ -124,7 +124,7 @@ irea_gene_score <- function(reference, genes, analysis) {
   x <- reference$object
   d <- irea_layer(x, "RNA", "data")
   matched <- intersect(genes, rownames(d))
-  if (!length(matched)) stop("No input genes match the reference.", call. = FALSE)
+  if (!length(matched)) log_message("No input genes match the reference.", message_type = "error")
   score <- Matrix::colSums(d[matched, , drop = FALSE])
   groups <- irea_groups(reference, colnames(d), analysis)
   out <- irea_score_table(score, groups)
@@ -135,20 +135,20 @@ irea_hypergeom <- function(reference, genes, analysis) {
   tab <- if (analysis == "cytokine_response") reference$cytokine else reference$polarization
   if (analysis == "cytokine_response") {
     if (!all(c("Cytokine_Str", "Gene", "FDR") %in% names(tab))) {
-      stop("Unrecognized cytokine signature columns.", call. = FALSE)
+      log_message("Unrecognized cytokine signature columns.", message_type = "error")
     }
     term <- tab$Cytokine_Str
     significant <- tab$FDR < 0.01
   } else {
     if (!all(c("Polarization", "Gene", "P_adj") %in% names(tab))) {
-      stop("Unrecognized polarization signature columns.", call. = FALSE)
+      log_message("Unrecognized polarization signature columns.", message_type = "error")
     }
     term <- tab$Polarization
     significant <- tab$P_adj < 0.05
   }
   universe <- rownames(reference$object)
   query <- intersect(genes, universe)
-  if (!length(query)) stop("No input genes match the signature universe.", call. = FALSE)
+  if (!length(query)) log_message("No input genes match the signature universe.", message_type = "error")
   sets <- split(tab$Gene[!is.na(significant) & significant], term[!is.na(significant) & significant])
   terms <- if (analysis == "cytokine_response") sort(setdiff(unique(as.character(reference$object@meta.data$sample)), "PBS")) else sort(unique(term))
   out <- do.call(rbind, lapply(terms, function(t) {
@@ -176,9 +176,9 @@ irea_projection <- function(reference, contrast, analysis, gene_diff_cutoff) {
   d <- irea_layer(x, "RNA", "data")
   candidates <- intersect(names(contrast), rownames(d))
   matched <- candidates[Matrix::rowMeans(d[candidates, , drop = FALSE]) > gene_diff_cutoff]
-  if (!length(matched)) stop("No genes survive matching and the difference cutoff.", call. = FALSE)
+  if (!length(matched)) log_message("No genes survive matching and the difference cutoff.", message_type = "error")
   v <- contrast[matched]
-  if (sum(v^2) == 0) stop("Projection vector has zero magnitude.", call. = FALSE)
+  if (sum(v^2) == 0) log_message("Projection vector has zero magnitude.", message_type = "error")
   sub <- d[matched, , drop = FALSE]
   norm <- sqrt(Matrix::colSums(sub^2))
   projection <- as.numeric(Matrix::crossprod(sub, v)) / (norm * sqrt(sum(v^2)))
@@ -201,7 +201,7 @@ irea_map_human <- function(reference, input) {
   if (input$mode == "gene_list") {
     keep <- input$genes %in% names(lookup)
     mapped <- unique(unname(lookup[input$genes[keep]]))
-    if (!length(mapped)) stop("No unambiguous human orthologues match the reference.", call. = FALSE)
+    if (!length(mapped)) log_message("No unambiguous human orthologues match the reference.", message_type = "error")
     input$genes <- mapped
   } else {
     keep <- names(input$matrix) %in% names(lookup)
@@ -210,7 +210,7 @@ irea_map_human <- function(reference, input) {
     unique_mouse <- !duplicated(mapped) & !duplicated(mapped, fromLast = TRUE)
     val <- val[unique_mouse]
     names(val) <- mapped[unique_mouse]
-    if (!length(val)) stop("No unambiguous human orthologues match the reference.", call. = FALSE)
+    if (!length(val)) log_message("No unambiguous human orthologues match the reference.", message_type = "error")
     input$matrix <- val
   }
   input$mapping <- pairs
@@ -298,14 +298,14 @@ RunIREA.default <- function(object, reference, contrast = NULL,
                             analysis = c("cytokine_response", "cell_polarization"),
                             method = c("score", "hypergeometric"), gene_diff_cutoff = 0.25,
                             fdr_scope = c("all_contrasts", "selected_contrast"), ...) {
-  if (length(list(...))) stop("Unused RunIREA arguments.", call. = FALSE)
-  if (!inherits(reference, "irea_reference")) stop("reference must be an irea_reference.", call. = FALSE)
+  if (length(list(...))) log_message("Unused RunIREA arguments.", message_type = "error")
+  if (!inherits(reference, "irea_reference")) log_message("reference must be an irea_reference.", message_type = "error")
   analysis <- match.arg(analysis)
   method <- match.arg(method)
   fdr_scope <- match.arg(fdr_scope)
   if (!is.numeric(gene_diff_cutoff) || length(gene_diff_cutoff) != 1L ||
     !is.finite(gene_diff_cutoff) || gene_diff_cutoff < 0) {
-    stop("gene_diff_cutoff must be nonnegative.", call. = FALSE)
+    log_message("gene_diff_cutoff must be nonnegative.", message_type = "error")
   }
   input <- irea_input(object, contrast)
   original_genes <- if (input$mode == "gene_list") input$genes else names(input$matrix)
@@ -380,18 +380,18 @@ RunIREA.Seurat <- function(object, reference, group.by, case, control,
                            assay = "RNA", layer = "data", ...) {
   if (length(group.by) != 1L || is.na(group.by) ||
     !group.by %in% colnames(object@meta.data)) {
-    stop("A Seurat input needs an existing group.by metadata column.", call. = FALSE)
+    log_message("A Seurat input needs an existing group.by metadata column.", message_type = "error")
   }
   if (length(case) != 1L || length(control) != 1L || anyNA(c(case, control)) ||
     identical(as.character(case), as.character(control))) {
-    stop("case and control must be distinct, nonmissing single group names.", call. = FALSE)
+    log_message("case and control must be distinct, nonmissing single group names.", message_type = "error")
   }
   dat <- irea_layer(object, assay, layer)
   labels <- as.character(object@meta.data[colnames(dat), group.by])
   case_cells <- which(!is.na(labels) & labels == case)
   control_cells <- which(!is.na(labels) & labels == control)
   if (!length(case_cells) || !length(control_cells)) {
-    stop("Both groups need cells in the selected assay/layer.", call. = FALSE)
+    log_message("Both groups need cells in the selected assay/layer.", message_type = "error")
   }
   values <- Matrix::rowMeans(dat[, case_cells, drop = FALSE]) -
     Matrix::rowMeans(dat[, control_cells, drop = FALSE])
