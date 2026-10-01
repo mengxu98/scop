@@ -4,13 +4,14 @@
 \alias{PrepareIREAReference}
 \title{Read an Immune Dictionary reference}
 \usage{
-PrepareIREAReference(directory, cell_type, species = c("Mouse", "Human"))
+PrepareIREAReference(directory, db, species = c("Mouse", "Human"))
 }
 \arguments{
 \item{directory}{Directory containing files prepared by \code{\link[=PrepareDB]{PrepareDB()}} with
-\code{db = "IREA"}, or the original portal downloads.}
+an IREA database selector, or the original portal downloads.}
 
-\item{cell_type}{One of the portal cell-type identifiers, such as \code{NK_cell}.}
+\item{db}{IREA reference selector, such as \code{"IREA_NK_cell"} or
+\code{"IREA_Macrophage"}. The suffix is the exact portal cell-type identifier.}
 
 \item{species}{\code{"Mouse"} or \code{"Human"}. Human symbols in both input modes
 are mapped to mouse genes using the portal's signature spreadsheets.
@@ -31,10 +32,9 @@ cells, including when a human orthologue table is selected.
 \examples{
 \dontrun{
 reference <- PrepareDB(
-  db = "IREA", species = "Mus_musculus",
-  cell_type = "NK_cell"
-)[["Mus_musculus"]][["IREA"]]
-reference <- PrepareIREAReference(dirname(reference$paths[["object"]]), "NK_cell")
+  db = "IREA_NK_cell", species = "Mus_musculus"
+)[["Mus_musculus"]][["IREA_NK_cell"]]
+reference <- PrepareIREAReference(dirname(reference$paths[["object"]]), db = "IREA_NK_cell")
 }
 }
 \references{

@@ -276,9 +276,8 @@ irea_map_human <- function(reference, input) {
 #' @examples
 #' \dontrun{
 #' reference <- PrepareDB(
-#'   db = "IREA", species = "Homo_sapiens",
-#'   cell_type = "Macrophage"
-#' )[["Homo_sapiens"]][["IREA"]]
+#'   db = "IREA_Macrophage", species = "Homo_sapiens"
+#' )[["Homo_sapiens"]][["IREA_Macrophage"]]
 #' data(panc8_sub)
 #' counts <- SeuratObject::LayerData(panc8_sub, assay = "RNA", layer = "counts")
 #' macrophage <- which(panc8_sub$celltype == "macrophage")

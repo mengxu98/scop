@@ -31,17 +31,20 @@
 #' @param Ensembl_version Ensembl version. `NULL` uses the latest.
 #' @param custom_TERM2GENE,custom_TERM2NAME Custom mappings for `custom_species`.
 #' @param custom_species,custom_IDtype,custom_version Metadata for a custom database.
-#' @param cell_type Portal cell-type identifier for `db = "IREA"`.
 #' @param ... Passed to helper functions.
 #'
-#' @details With `db = "IREA"`, prepare an Immune Dictionary reference in a
-#' separate call using `cell_type`. Download missing source files from the
+#' @details Select Immune Dictionary references with database names such as
+#' `"IREA_NK_cell"` or `"IREA_Macrophage"`, in a separate call from annotation
+#' databases. Multiple IREA references can be selected together. Named `data_dir`
+#' lists may use the requested database name or the shared `"IREA"` key.
+#' Download missing source files from the
 #' official portal to `data_dir` or the user data cache. A checksum manifest
 #' detects changed cache contents; `db_update = TRUE` explicitly refreshes files.
 #' The portal assets are unversioned; the stored checksums identify their contents.
 #' No reference files are bundled in the package.
-#' @return For `db = "IREA"`, a named species list with an `irea_reference`
-#' under `[[species]][["IREA"]]`, as documented in [PrepareIREAReference()].
+#' @return For IREA databases, a named species list with an `irea_reference`
+#' under each requested database name, for example
+#' `[["Mus_musculus"]][["IREA_NK_cell"]]`; see [PrepareIREAReference()].
 #' Otherwise, a list containing the prepared gene annotation databases:
 #' \itemize{
 #'   \item `TERM2GENE`: mapping of gene identifiers to terms.
@@ -159,22 +162,36 @@ PrepareDB <- function(
   custom_IDtype = NULL,
   custom_version = NULL,
   verbose = TRUE,
-  cell_type = NULL,
   ...
 ) {
-  if ("IREA" %in% db) {
-    if (length(db) != 1L) stop("Prepare IREA in a separate PrepareDB call.", call. = FALSE)
+  if (any(db %in% "IREA" | startsWith(as.character(db), "IREA_"), na.rm = TRUE)) {
+    if (anyNA(db) || !all(startsWith(as.character(db), "IREA_"))) {
+      stop("Select IREA_<cell type> databases in a separate PrepareDB call.", call. = FALSE)
+    }
+    if (length(list(...))) stop("Unused IREA preparation arguments; select references with db.", call. = FALSE)
+    db <- unique(as.character(db))
     species <- normalize_species_name(species)
     result <- lapply(species, function(sps) {
       if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
         stop("IREA supports Homo_sapiens or Mus_musculus.", call. = FALSE)
       }
-      directory <- if (is.list(data_dir)) data_dir[["IREA"]] else data_dir
-      if (is.null(directory)) directory <- file.path(tools::R_user_dir("scop", "data"), "IREA")
-      list(IREA = preparedb_irea_reference(
-        directory, cell_type,
-        if (sps == "Homo_sapiens") "Human" else "Mouse", db_update
-      ))
+      references <- lapply(db, function(db_name) {
+        directory <- data_dir
+        if (is.list(data_dir)) {
+          directory <- data_dir[[db_name]]
+          if (is.null(directory)) directory <- data_dir[["IREA"]]
+          if (is.null(directory)) {
+            stop("data_dir needs a path for ", db_name, " or IREA.", call. = FALSE)
+          }
+        }
+        if (is.null(directory)) directory <- file.path(tools::R_user_dir("scop", "data"), "IREA")
+        preparedb_irea_reference(
+          directory, db_name,
+          if (sps == "Homo_sapiens") "Human" else "Mouse", db_update
+        )
+      })
+      names(references) <- db
+      references
     })
     names(result) <- species
     return(result)
@@ -3357,8 +3374,9 @@ kegg_release_from_relnote <- function(url = "https://www.kegg.jp/kegg/docs/relno
 #' cells, including when a human orthologue table is selected.
 #'
 #' @param directory Directory containing files prepared by [PrepareDB()] with
-#'   `db = "IREA"`, or the original portal downloads.
-#' @param cell_type One of the portal cell-type identifiers, such as `NK_cell`.
+#'   an IREA database selector, or the original portal downloads.
+#' @param db IREA reference selector, such as `"IREA_NK_cell"` or
+#'   `"IREA_Macrophage"`. The suffix is the exact portal cell-type identifier.
 #' @param species `"Mouse"` or `"Human"`. Human symbols in both input modes
 #'   are mapped to mouse genes using the portal's signature spreadsheets.
 #'   This is a partial mapping; unmapped or ambiguous symbols are omitted.
@@ -3375,13 +3393,12 @@ kegg_release_from_relnote <- function(url = "https://www.kegg.jp/kegg/docs/relno
 #' @examples
 #' \dontrun{
 #' reference <- PrepareDB(
-#'   db = "IREA", species = "Mus_musculus",
-#'   cell_type = "NK_cell"
-#' )[["Mus_musculus"]][["IREA"]]
-#' reference <- PrepareIREAReference(dirname(reference$paths[["object"]]), "NK_cell")
+#'   db = "IREA_NK_cell", species = "Mus_musculus"
+#' )[["Mus_musculus"]][["IREA_NK_cell"]]
+#' reference <- PrepareIREAReference(dirname(reference$paths[["object"]]), db = "IREA_NK_cell")
 #' }
 #' @export
-PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Human")) {
+PrepareIREAReference <- function(directory, db, species = c("Mouse", "Human")) {
   species <- match.arg(species)
   if (!dir.exists(directory)) stop("Reference directory does not exist.", call. = FALSE)
   valid <- c(
@@ -3389,9 +3406,10 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
     "MigDC", "Monocyte", "Neutrophil", "NK_cell", "pDC",
     "T_cell_CD4", "T_cell_CD8", "T_cell_gd", "Treg"
   )
-  if (length(cell_type) != 1L || is.na(cell_type) || !cell_type %in% valid) {
-    stop("Unsupported IREA cell type: ", cell_type, call. = FALSE)
+  if (length(db) != 1L || is.na(db) || !db %in% paste0("IREA_", valid)) {
+    stop("Unsupported IREA database selector: ", db, call. = FALSE)
   }
+  cell_type <- substring(db, 6L)
   find_file <- function(relative) {
     candidates <- file.path(directory, c(relative, gsub("/", "_", relative, fixed = TRUE)))
     hit <- candidates[file.exists(candidates)]
@@ -3436,14 +3454,15 @@ PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Hum
   )
 }
 
-preparedb_irea_reference <- function(directory, cell_type, species, update) {
+preparedb_irea_reference <- function(directory, db, species, update) {
   valid <- c(
     "B_cell", "cDC1", "cDC2", "Langerhans", "Macrophage", "MigDC",
     "Monocyte", "Neutrophil", "NK_cell", "pDC", "T_cell_CD4", "T_cell_CD8", "T_cell_gd", "Treg"
   )
-  if (length(cell_type) != 1L || is.na(cell_type) || !cell_type %in% valid) {
-    stop("Select one supported IREA cell_type.", call. = FALSE)
+  if (length(db) != 1L || is.na(db) || !db %in% paste0("IREA_", valid)) {
+    stop("Unsupported IREA database selector: ", db, call. = FALSE)
   }
+  cell_type <- substring(db, 6L)
   if (!is.logical(update) || length(update) != 1L || is.na(update)) {
     stop("db_update must be TRUE or FALSE.", call. = FALSE)
   }
@@ -3500,7 +3519,7 @@ preparedb_irea_reference <- function(directory, cell_type, species, update) {
       checked_at = as.character(Sys.time())
     ))
   }
-  reference <- PrepareIREAReference(directory, cell_type, species)
+  reference <- PrepareIREAReference(directory, db, species)
   utils::write.csv(manifest, manifest_path, row.names = FALSE)
   reference
 }

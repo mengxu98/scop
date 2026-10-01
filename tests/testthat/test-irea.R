@@ -294,28 +294,83 @@ test_that("IREA preparation reads cached sources and detects changed contents", 
   )
   before <- getOption("timeout")
   first <- PrepareDB(
-    db = "IREA", species = "Mus_musculus", cell_type = "NK_cell",
+    db = "IREA_NK_cell", species = "Mus_musculus",
     data_dir = directory, verbose = FALSE
-  )[["Mus_musculus"]][["IREA"]]
+  )[["Mus_musculus"]][["IREA_NK_cell"]]
   expect_s3_class(first, "irea_reference")
   expect_equal(getOption("timeout"), before)
   expect_equal(first$cytokine, r$cytokine)
   expect_equal(first$polarization, r$polarization)
+  manual <- PrepareIREAReference(directory, db = "IREA_NK_cell")
+  expect_equal(RunIREA("G1", reference = first)$table, RunIREA("G1", reference = manual)$table)
+  selected <- PrepareDB(
+    db = "IREA_NK_cell", species = "Mus_musculus",
+    data_dir = list(IREA_NK_cell = directory, IREA = file.path(directory, "unused")),
+    verbose = FALSE
+  )[["Mus_musculus"]][["IREA_NK_cell"]]
+  expect_equal(selected$paths, first$paths)
   manifest <- utils::read.csv(file.path(directory, "reference_manifest.csv"))
   expect_equal(nrow(manifest), 3L)
   expect_equal(manifest$checksum_md5, unname(tools::md5sum(first$paths)))
   second <- PrepareDB(
-    db = "IREA", species = "Mus_musculus", cell_type = "NK_cell",
+    db = "IREA_NK_cell", species = "Mus_musculus",
     data_dir = list(IREA = directory), verbose = FALSE
-  )[["Mus_musculus"]][["IREA"]]
+  )[["Mus_musculus"]][["IREA_NK_cell"]]
   expect_equal(RunIREA("G1", reference = first)$table, RunIREA("G1", reference = second)$table)
   manifest <- utils::read.csv(file.path(directory, "reference_manifest.csv"))
   r$object$sample[1] <- "Changed"
   saveRDS(r$object, first$paths[["object"]])
   expect_error(PrepareDB(
-    db = "IREA", species = "Mus_musculus", cell_type = "NK_cell",
+    db = "IREA_NK_cell", species = "Mus_musculus",
     data_dir = directory, verbose = FALSE
   ), "checksum mismatch")
   expect_equal(getOption("timeout"), before)
   expect_equal(utils::read.csv(file.path(directory, "reference_manifest.csv")), manifest)
+})
+
+test_that("IREA database selectors reject ambiguous or unused options", {
+  expect_error(PrepareDB(db = "IREA", verbose = FALSE), "IREA_<cell type>")
+  expect_error(PrepareDB(db = c("IREA_NK_cell", "GO_BP"), verbose = FALSE), "separate")
+  expect_error(PrepareDB(db = "IREA_unknown", verbose = FALSE), "Unsupported IREA database selector")
+  expect_error(PrepareDB(db = "IREA_NK_cell", cell_type = "NK_cell", verbose = FALSE), "Unused")
+  expect_error(PrepareDB(
+    db = "IREA_NK_cell", data_dir = list(Other = tempdir()),
+    verbose = FALSE
+  ), "path for IREA_NK_cell")
+})
+
+test_that("IREA selectors preserve complete identifiers and named reference results", {
+  skip_if_not_installed("readxl")
+  skip_if_not_installed("openxlsx")
+  r <- make_irea_reference()
+  directory <- tempfile("irea-selection-")
+  dir.create(directory)
+  on.exit(unlink(directory, recursive = TRUE), add = TRUE)
+  for (type in c("NK_cell", "T_cell_CD4")) {
+    saveRDS(r$object, file.path(directory, paste0("downloadableData_ligands-seurat-", type, ".RDS")))
+  }
+  other <- r$cytokine
+  other$Gene <- c("G2", "G3")
+  openxlsx::write.xlsx(
+    list(NK_cell = r$cytokine, T_cell_CD4 = other),
+    file.path(directory, "dataFiles_SuppTable3_Cytokine_Signatures.xlsx")
+  )
+  openxlsx::write.xlsx(
+    list(`NK cell` = r$polarization, `CD4+ T cell` = r$polarization),
+    file.path(directory, "dataFiles_SuppTable7_Polarization_Signatures.xlsx")
+  )
+  databases <- c("IREA_T_cell_CD4", "IREA_NK_cell")
+  prepared <- PrepareDB(
+    db = databases, species = "Mus_musculus",
+    data_dir = list(IREA = directory), verbose = FALSE
+  )[["Mus_musculus"]]
+  expect_identical(names(prepared), databases)
+  expect_identical(prepared[["IREA_T_cell_CD4"]]$cell_type, "T_cell_CD4")
+  expect_identical(prepared[["IREA_NK_cell"]]$cell_type, "NK_cell")
+  expect_equal(prepared[["IREA_T_cell_CD4"]]$cytokine, other)
+  expect_equal(prepared[["IREA_NK_cell"]]$cytokine, r$cytokine)
+  expect_equal(
+    RunIREA("G1", reference = prepared[["IREA_NK_cell"]])$table,
+    RunIREA("G1", reference = r)$table
+  )
 })

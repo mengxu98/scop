@@ -25,7 +25,6 @@ PrepareDB(
   custom_IDtype = NULL,
   custom_version = NULL,
   verbose = TRUE,
-  cell_type = NULL,
   ...
 )
 }
@@ -74,13 +73,12 @@ Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
-\item{cell_type}{Portal cell-type identifier for \code{db = "IREA"}.}
-
 \item{...}{Passed to helper functions.}
 }
 \value{
-For \code{db = "IREA"}, a named species list with an \code{irea_reference}
-under \verb{[[species]][["IREA"]]}, as documented in \code{\link[=PrepareIREAReference]{PrepareIREAReference()}}.
+For IREA databases, a named species list with an \code{irea_reference}
+under each requested database name, for example
+\verb{[["Mus_musculus"]][["IREA_NK_cell"]]}; see \code{\link[=PrepareIREAReference]{PrepareIREAReference()}}.
 Otherwise, a list containing the prepared gene annotation databases:
 \itemize{
 \item \code{TERM2GENE}: mapping of gene identifiers to terms.
@@ -93,8 +91,11 @@ Build TERM2GENE / TERM2NAME (and GO semantic-similarity) databases for a
 species from annotation packages, cached downloads, or local files.
 }
 \details{
-With \code{db = "IREA"}, prepare an Immune Dictionary reference in a
-separate call using \code{cell_type}. Download missing source files from the
+Select Immune Dictionary references with database names such as
+\code{"IREA_NK_cell"} or \code{"IREA_Macrophage"}, in a separate call from annotation
+databases. Multiple IREA references can be selected together. Named \code{data_dir}
+lists may use the requested database name or the shared \code{"IREA"} key.
+Download missing source files from the
 official portal to \code{data_dir} or the user data cache. A checksum manifest
 detects changed cache contents; \code{db_update = TRUE} explicitly refreshes files.
 The portal assets are unversioned; the stored checksums identify their contents.

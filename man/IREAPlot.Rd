@@ -38,9 +38,8 @@ Display enrichment effects and reference-cell significance.
 \examples{
 \dontrun{
 reference <- PrepareDB(
-  db = "IREA", species = "Homo_sapiens",
-  cell_type = "Macrophage"
-)[["Homo_sapiens"]][["IREA"]]
+  db = "IREA_Macrophage", species = "Homo_sapiens"
+)[["Homo_sapiens"]][["IREA_Macrophage"]]
 result <- RunIREA(c("ISG15", "IFIT3", "BST2"), reference = reference)
 IREAPlot(result, palette = "Chinese")
 }
