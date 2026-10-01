@@ -816,7 +816,7 @@ test_that("SCENICPlot overlap returns pairwise Jaccard values", {
   expect_true(all(out$plot_data$jaccard[diag] == 1))
 })
 
-test_that("SCENIC network_graph legend omits RSS cell types", {
+test_that("SCENIC network_graph restores top RSS group legend labels", {
   dat <- make_scenic_plot_mock()
   out <- SCENICPlot(
     dat$srt,
@@ -836,8 +836,8 @@ test_that("SCENIC network_graph legend omits RSS cell types", {
     }
     sc$get_breaks()
   }))
-  expect_false(any(grepl("\\([ABC]\\)", labels)))
-  expect_true(any(labels %in% paste0("TF", seq_len(6))))
+  expect_true(any(grepl("\\([ABC]\\)", labels)))
+  expect_true(any(grepl("^TF[1-6]", labels)))
 })
 
 test_that("SCENIC network_graph hub layout keeps TFs off a single line", {
@@ -933,4 +933,138 @@ test_that("SCENICPlusPlot coverage resolves TF features to target genes", {
 
   expect_true(all(out$plot_data$TF == "TF1"))
   expect_true("Gene1" %in% out$plot_data$gene)
+})
+
+test_that("network_graph honors network_tf with the same neighbor selection as features", {
+  dat <- make_scenic_plot_mock()
+  by_tf <- SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+                     network_tf = "TF1", verbose = FALSE)
+  by_feature <- SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+                          features = "TF1", verbose = FALSE)
+  expect_equal(by_tf$plot_data$edges, by_feature$plot_data$edges)
+  expect_setequal(by_tf$plot_data$nodes$name, c("TF1", "Gene1", "Gene2"))
+  precedence <- SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+                           features = "TF3", network_tf = "TF1", verbose = FALSE)
+  expect_equal(precedence$plot_data$edges, by_tf$plot_data$edges)
+})
+
+test_that("network_graph limits SCENIC+ triplets to the selected TF neighborhood", {
+  dat <- make_scenicplus_plot_mock()
+  out <- SCENICPlusPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+                        network_tf = "TF1", verbose = FALSE)
+  expect_true(all(out$plot_data$edges$from[out$plot_data$edges$edge_type == "tf_region"] == "TF1"))
+  expect_false("TF5" %in% out$plot_data$nodes$name)
+})
+
+test_that("automatic network labels include focal TFs and shared targets", {
+  dat <- make_scenic_plot_mock()
+  dat$srt@tools$SCENIC$adjacency <- rbind(dat$srt@tools$SCENIC$adjacency,
+    data.frame(TF = "TF2", target = "Gene1", importance = 2))
+  out <- SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+                    network_tf = c("TF1", "TF2"), verbose = FALSE)
+  layers <- Filter(function(x) inherits(x$geom, c("GeomText", "GeomTextRepel")), out$plot$layers)
+  labels <- unlist(lapply(layers, function(x) as.character(x$data[["name"]])))
+  expect_setequal(labels, c("TF1", "TF2", "Gene1"))
+})
+
+test_that("network_graph respects its label budget and explicit all or none", {
+  dat <- make_scenic_plot_mock()
+  labels <- function(out) {
+    layers <- Filter(function(x) inherits(x$geom, c("GeomText", "GeomTextRepel")), out$plot$layers)
+    unlist(lapply(layers, function(x) as.character(x$data[["name"]])))
+  }
+  out <- SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+                    network_label_top_n = 2, verbose = FALSE)
+  expect_lte(length(labels(out)), 2L)
+  all <- SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+                    network_label_top_n = 2, label_nodes = "all", verbose = FALSE)
+  expect_setequal(labels(all), all$plot_data$nodes$name)
+  none <- SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+                     label_nodes = "none", verbose = FALSE)
+  expect_length(labels(none), 0)
+})
+
+test_that("SCENIC restores TF and gene circles from its historical renderer", {
+  dat <- make_scenic_plot_mock()
+  out <- SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+                    network_tf = "TF1", verbose = FALSE)
+  built <- ggplot2::ggplot_build(out$plot)
+  point_idx <- which(vapply(out$plot$layers, function(x) inherits(x$geom, "GeomPoint"), logical(1)))
+  shapes <- unlist(lapply(unname(point_idx), function(idx) {
+    stats::setNames(built$data[[idx]]$shape, out$plot$layers[[idx]]$data$name)
+  }))
+  expect_equal(unname(shapes["TF1"]), 21)
+  expect_true(all(shapes[c("Gene1", "Gene2")] == 21))
+})
+
+test_that("large TF legends cannot squeeze the network viewport to zero", {
+  edge_data <- data.frame(
+    from = paste0("LongTranscriptionFactor", seq_len(350)), to = "Target",
+    weight = 1, edge_type = "tf_gene", edge_sign = "positive"
+  )
+  net <- scenic_network_plot_data(edge_data, layout = "fr")
+  labels <- scenic_network_label_data(net$nodes, label_nodes = "tfs", top_n = 20)
+  plot <- scenic_network_ggplot(net$nodes, net$edge_plot, net$edges,
+                                label_data = labels, label_nodes = "auto", layout = "fr")
+  file <- tempfile(fileext = ".pdf")
+  grDevices::pdf(file, width = 10, height = 10)
+  on.exit({ grDevices::dev.off(); unlink(file) })
+  expect_error(print(plot), NA)
+  expect_equal(nrow(net$nodes), 351L)
+  expect_equal(nrow(net$edges), 350L)
+})
+
+test_that("SCENIC rendering keeps both directions of reciprocal edges", {
+  edges <- data.frame(from = c("TF1", "TF2"), to = c("TF2", "TF1"),
+                      weight = c(1, -2), edge_type = "tf_gene",
+                      edge_sign = c("positive", "negative"))
+  net <- scenic_network_plot_data(edges, layout = "fr")
+  plot <- scenic_network_ggplot(net$nodes, net$edge_plot, net$edges,
+                                label_data = net$nodes, label_nodes = "all", curvature = 0.08)
+  layer <- Filter(function(x) inherits(x$geom, "GeomCurve"), plot$layers)[[1]]
+  expect_equal(nrow(layer$data), 2L)
+  expect_setequal(paste(layer$data$from, layer$data$to), c("TF1 TF2", "TF2 TF1"))
+  expect_equal(length(unique(layer$data[["edge_color"]])), 2L)
+})
+
+test_that("compact display keeps weak shared targets and reciprocal TF links", {
+  edges <- data.frame(
+    from = c(rep("TF1", 4), rep("TF2", 4), "OtherTF"),
+    to = c("A", "B", "Shared", "TF2", "C", "D", "Shared", "TF1", "TF1"),
+    weight = c(9, 8, 0.1, 0.05, 9, 8, 0.2, -0.05, 20),
+    edge_type = "tf_gene",
+    edge_sign = c(rep("positive", 7), "negative", "positive")
+  )
+  compact <- scenic_network_display_data(edges, c("TF1", "TF2"), target_limit = 1)
+  expect_equal(compact$edges, edges[c(1, 3, 4, 5, 7, 8), ])
+  expect_setequal(compact$nodes$name, c("TF1", "TF2", "A", "C", "Shared"))
+  expect_equal(scenic_network_display_data(edges, c("TF1", "TF2"), target_limit = Inf)$edges, edges)
+  expect_error(scenic_network_display_data(edges, "TF1", target_limit = 0), "positive integer")
+  expect_error(scenic_network_display_data(edges, "TF1", target_limit = 1.5), "positive integer")
+
+  dat <- make_scenic_plot_mock()
+  dat$srt@tools$SCENIC$adjacency <- data.frame(TF = edges$from,
+    target = edges$to, importance = edges$weight)
+  out <- SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+    network_tf = c("TF1", "TF2"), network_display_targets = 1, verbose = FALSE)
+  expect_equal(nrow(out$plot_data$edges), nrow(edges))
+  expect_equal(nrow(out$plot_data$display_edges), 6L)
+  expect_true("OtherTF" %in% out$plot_data$nodes$name)
+  expect_false("OtherTF" %in% out$plot_data$display_nodes$name)
+  layer <- Filter(function(x) inherits(x$geom, "GeomCurve"), out$plot$layers)[[1]]
+  expect_equal(nrow(layer$data), 6L)
+  full <- SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+    network_tf = c("TF1", "TF2"), network_display_targets = Inf, verbose = FALSE)
+  expect_equal(full$plot_data$display_edges, full$plot_data$edges)
+})
+
+test_that("compact SCENIC+ display keeps downstream genes for selected regions", {
+  edges <- data.frame(from = c("TF1", "TF1", "TF2", "R1", "R2", "R3"),
+    to = c("R1", "R2", "R3", "Gene1", "Gene2", "Gene3"),
+    weight = c(3, 1, 2, 1, 1, 1),
+    edge_type = c(rep("tf_region", 3), rep("region_gene", 3)),
+    edge_sign = "positive")
+  compact <- scenic_network_display_data(edges, c("TF1", "TF2"), target_limit = 1)
+  expect_equal(compact$edges, edges[c(1, 3, 4, 6), ])
+  expect_setequal(compact$nodes$name, c("TF1", "TF2", "R1", "R3", "Gene1", "Gene3"))
 })
