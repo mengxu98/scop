@@ -4,9 +4,15 @@
 #' Plot regulon specificity scores (RSS) and regulon activity scores (RAS) from
 #' [RunSCENIC()] or [RunSCENICPlus()]. Use [SCENICPlusPlot()] for SCENIC+ defaults.
 #' Network `palette = "RdYlBu"` uses `"Chinese"`. `"network"` draws one hub per TF.
-#' Network plots have no title. When one TF has multiple regulons, network legends
-#' show the regulon with the highest RSS; the corresponding cell type and score
-#' remain available in the returned annotation table.
+#' Network plots restore the historical colored TF circles, gray gene circles,
+#' source-TF edge colors and radial labels for single-TF networks. The default
+#' legend shows each TF's top RSS group when available. Explicit regulon labels
+#' remain supported; full regulon, group and RSS annotations are returned.
+#' Legends with more than 20 TFs are omitted to keep the plotting viewport usable.
+#' The network is displayed in full by default. A compact target subset can be
+#' requested with `network_display_targets`; returned data disclose that subset.
+#' Without an explicit TF list, sources with at least one quarter of the maximum
+#' outgoing degree are used to select automatic labels. Widths retain edge weights.
 #'
 #' @md
 #' @inheritParams CellDimPlot
@@ -36,7 +42,8 @@
 #' @param cor_label Whether to label dumbbell points.
 #' @param top_n Top regulons per group.
 #' @param regulon_label Label source for RSS rank plots and network legends.
-#'   `"auto"` keeps TF-only labels when a TF has one regulon and shows the
+#'   In network legends, `"auto"` shows TF names and their top RSS groups.
+#'   For RSS rank plots, `"auto"` keeps TF-only labels when a TF has one regulon and shows the
 #'   regulon name when multiple regulons share a TF; `"regulon"` always shows
 #'   regulon names; `"tf"` always shows TF names.
 #' @param rss_rank_yscale Use a `"shared"` y-axis across RSS rank panels for
@@ -66,11 +73,20 @@
 #' @param ... Extra heatmap arguments such as `width` and `height`.
 #' @param max_targets Max targets per TF in network plots.
 #' @param max_edges Max edges in `"network_graph"`.
-#' @param network_layout `"auto"`, `"star"`, `"kk"`, `"hub"`, `"tripartite"`, `"fr"`. `"network"` uses `"star"` for one TF and `"hub"` for several.
-#' @param network_tf TFs for `"network"` / `"egrn"`.
+#' @param network_layout `"auto"`, `"star"`, `"kk"`, `"hub"`, `"tripartite"`, `"fr"`. `"network_graph"` uses the historical weighted `"kk"` layout by default; `"network"` uses `"star"` for one TF and `"hub"` for several.
+#' @param network_tf Focal TFs for network plots; takes precedence over `features`. `"network_graph"` retains both incoming and outgoing neighbors of these TFs.
+#'   TFs use colored circles, genes use gray circles, and edges use their source
+#'   TF color. The default legend includes each TF's top RSS group when available.
 #' @param network_include_regions Use SCENIC+ triplets when stored.
-#' @param label_nodes `"auto"`, `"tfs"`, `"all"`, or `"none"`.
-#' @param network_label_top_n Max TF labels in `"network_graph"`.
+#' @param label_nodes `"auto"`, `"tfs"`, `"all"`, or `"none"`. In `"network_graph"`, `"auto"` labels focal TFs and up to six shared target genes. Other network views retain their layout-dependent automatic labels. Explicit `"all"` labels all non-coordinate nodes.
+#' @param network_label_top_n Max automatic or TF labels in `"network_graph"`. Highlighted TFs are always included, except with `label_nodes = "none"`. TF legends with more than 20 entries are omitted; full annotations are returned in `plot_data$annotations`.
+#' @param network_display_targets Optional display limit per focal TF in `"network_graph"`. The default `Inf`
+#'   displays the full network. Use `6` to show six direct targets per TF by
+#'   absolute edge weight, together with
+#'   all shared targets and TF-to-TF links. Selected regions retain their downstream
+#'   genes. `plot_data$edges` and
+#'   `plot_data$nodes` retain the network selected by `max_targets` and `max_edges`;
+#'   the actual display subset is in `plot_data$display_edges` and `plot_data$display_nodes`.
 #' @param return_data Return RSS tables with plots.
 #' @param title Optional combined-plot title. Ignored by `"network"`, `"network_graph"`, and `"egrn"`.
 #' @param point_color Rank-plot point color.
@@ -190,7 +206,8 @@ SCENICPlot <- function(
   ...,
   srt = NULL,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  network_display_targets = Inf
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!is.null(point_alpha)) {
@@ -601,12 +618,14 @@ SCENICPlot <- function(
       srt = srt,
       tool_name = tool_name,
       features = features,
+      network_tf = network_tf,
       highlight_tf = highlight_tf,
       max_targets = max_targets,
       max_edges = max_edges,
       network_layout = network_layout,
       label_nodes = label_nodes,
       network_label_top_n = network_label_top_n,
+      network_display_targets = network_display_targets,
       network_include_regions = network_include_regions,
       palette = palette,
       palcolor = palcolor,
