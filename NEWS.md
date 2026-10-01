@@ -1,5 +1,9 @@
 # scop (development version)
 
+* **feat**: Add experimental IREA analysis and plots with unified object inputs,
+  explicit contrast provenance and checksum-checked reference preparation through
+  `PrepareDB()`. Numerical equivalence to the official portal remains unestablished.
+
 * **fix**: Differential-abundance plots now project Milo neighborhoods through
   stored member cells, use `SpatialFDR` for Milo neighborhood significance,
   and use scCODA credibility for scCODA plots. Milo group summaries and the

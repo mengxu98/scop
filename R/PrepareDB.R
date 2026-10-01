@@ -31,9 +31,18 @@
 #' @param Ensembl_version Ensembl version. `NULL` uses the latest.
 #' @param custom_TERM2GENE,custom_TERM2NAME Custom mappings for `custom_species`.
 #' @param custom_species,custom_IDtype,custom_version Metadata for a custom database.
+#' @param cell_type Portal cell-type identifier for `db = "IREA"`.
 #' @param ... Passed to helper functions.
 #'
-#' @return A list containing the prepared gene annotation databases:
+#' @details With `db = "IREA"`, prepare an Immune Dictionary reference in a
+#' separate call using `cell_type`. Download missing source files from the
+#' official portal to `data_dir` or the user data cache. A checksum manifest
+#' detects changed cache contents; `db_update = TRUE` explicitly refreshes files.
+#' The portal assets are unversioned; the stored checksums identify their contents.
+#' No reference files are bundled in the package.
+#' @return For `db = "IREA"`, a named species list with an `irea_reference`
+#' under `[[species]][["IREA"]]`, as documented in [PrepareIREAReference()].
+#' Otherwise, a list containing the prepared gene annotation databases:
 #' \itemize{
 #'   \item `TERM2GENE`: mapping of gene identifiers to terms.
 #'   \item `TERM2NAME`: mapping of terms to their names.
@@ -150,8 +159,26 @@ PrepareDB <- function(
   custom_IDtype = NULL,
   custom_version = NULL,
   verbose = TRUE,
+  cell_type = NULL,
   ...
 ) {
+  if ("IREA" %in% db) {
+    if (length(db) != 1L) stop("Prepare IREA in a separate PrepareDB call.", call. = FALSE)
+    species <- normalize_species_name(species)
+    result <- lapply(species, function(sps) {
+      if (!sps %in% c("Homo_sapiens", "Mus_musculus")) {
+        stop("IREA supports Homo_sapiens or Mus_musculus.", call. = FALSE)
+      }
+      directory <- if (is.list(data_dir)) data_dir[["IREA"]] else data_dir
+      if (is.null(directory)) directory <- file.path(tools::R_user_dir("scop", "data"), "IREA")
+      list(IREA = preparedb_irea_reference(
+        directory, cell_type,
+        if (sps == "Homo_sapiens") "Human" else "Mouse", db_update
+      ))
+    })
+    names(result) <- species
+    return(result)
+  }
   check_r("R.cache", verbose = FALSE)
   species <- normalize_species_name(species)
   db_list <- list()
@@ -3321,4 +3348,159 @@ kegg_release_from_relnote <- function(url = "https://www.kegg.jp/kegg/docs/relno
   page <- paste0(page, collapse = "")
   release <- regmatches(page, regexpr("Release [0-9]+\\.[0-9]+", page))
   if (length(release) == 0) NULL else release
+}
+
+#' @title Read an Immune Dictionary reference
+#'
+#' @description Reads the cell-type Seurat object and signature spreadsheets distributed by
+#' the Immune Dictionary portal. The experimental reference is mouse lymph-node
+#' cells, including when a human orthologue table is selected.
+#'
+#' @param directory Directory containing files prepared by [PrepareDB()] with
+#'   `db = "IREA"`, or the original portal downloads.
+#' @param cell_type One of the portal cell-type identifiers, such as `NK_cell`.
+#' @param species `"Mouse"` or `"Human"`. Human symbols in both input modes
+#'   are mapped to mouse genes using the portal's signature spreadsheets.
+#'   This is a partial mapping; unmapped or ambiguous symbols are omitted.
+#' @return An `irea_reference` list containing the reference Seurat `object`,
+#'   `cytokine` and `polarization` signature tables, `cell_type`, `species`,
+#'   named source `paths`, corresponding `checksum_md5` values and `provenance`.
+#'   Expression rows are mouse genes and columns are reference cells in their
+#'   original order. Human input uses the signature tables' partial orthologue map.
+#' @md
+#' @references Cui, Ang; Huang, Teddy; Li, Shuqiang; Ma, Aileen; Perez, Jorge L.;
+#'   Sander, Chris; Keskin, Derin B.; Wu, Catherine J.; Fraenkel, Ernest;
+#'   Hacohen, Nir. Dictionary of immune responses to cytokines at single-cell
+#'   resolution. Nature 625, 377-384 (2024). doi:10.1038/s41586-023-06816-9.
+#' @examples
+#' \dontrun{
+#' reference <- PrepareDB(
+#'   db = "IREA", species = "Mus_musculus",
+#'   cell_type = "NK_cell"
+#' )[["Mus_musculus"]][["IREA"]]
+#' reference <- PrepareIREAReference(dirname(reference$paths[["object"]]), "NK_cell")
+#' }
+#' @export
+PrepareIREAReference <- function(directory, cell_type, species = c("Mouse", "Human")) {
+  species <- match.arg(species)
+  if (!dir.exists(directory)) stop("Reference directory does not exist.", call. = FALSE)
+  valid <- c(
+    "B_cell", "cDC1", "cDC2", "Langerhans", "Macrophage",
+    "MigDC", "Monocyte", "Neutrophil", "NK_cell", "pDC",
+    "T_cell_CD4", "T_cell_CD8", "T_cell_gd", "Treg"
+  )
+  if (length(cell_type) != 1L || is.na(cell_type) || !cell_type %in% valid) {
+    stop("Unsupported IREA cell type: ", cell_type, call. = FALSE)
+  }
+  find_file <- function(relative) {
+    candidates <- file.path(directory, c(relative, gsub("/", "_", relative, fixed = TRUE)))
+    hit <- candidates[file.exists(candidates)]
+    if (!length(hit)) stop("Missing reference file: ", relative, call. = FALSE)
+    normalizePath(hit[[1]], winslash = "/", mustWork = TRUE)
+  }
+  object_path <- find_file(paste0("downloadableData/ligands-seurat-", cell_type, ".RDS"))
+  suffix <- if (species == "Human") "_Human" else ""
+  cytokine_path <- find_file(paste0("dataFiles/SuppTable3_Cytokine_Signatures", suffix, ".xlsx"))
+  polarization_path <- find_file(paste0("dataFiles/SuppTable7_Polarization_Signatures", suffix, ".xlsx"))
+  thisutils::check_r("readxl", install = FALSE, verbose = FALSE)
+  x <- readRDS(object_path)
+  if (!inherits(x, "Seurat")) stop("The reference RDS is not a Seurat object.", call. = FALSE)
+  if (!all(c("sample", "polarization") %in% colnames(x@meta.data))) {
+    stop("Reference object lacks sample or polarization metadata.", call. = FALSE)
+  }
+  cy <- as.data.frame(readxl::read_excel(cytokine_path, sheet = cell_type))
+  polar_names <- c(
+    B_cell = "B cell", cDC1 = "cDC1", cDC2 = "cDC2",
+    Langerhans = "Langerhans", Macrophage = "Macrophage", MigDC = "MigDC",
+    Monocyte = "Monocyte", Neutrophil = "Neutrophil", NK_cell = "NK cell",
+    pDC = "pDC", T_cell_CD4 = "CD4+ T cell", T_cell_CD8 = "CD8+ T cell",
+    T_cell_gd = "", Treg = "Treg"
+  )
+  polar_sheet <- unname(polar_names[cell_type])
+  if (cell_type == "T_cell_gd") {
+    polar_sheet <- readxl::excel_sheets(polarization_path)[[4]]
+  }
+  if (is.na(polar_sheet) || !polar_sheet %in% readxl::excel_sheets(polarization_path)) {
+    stop("No polarization signature sheet for ", cell_type, call. = FALSE)
+  }
+  po <- as.data.frame(readxl::read_excel(polarization_path, sheet = polar_sheet))
+  paths <- c(object = object_path, cytokine = cytokine_path, polarization = polarization_path)
+  structure(
+    list(
+      object = x, cytokine = cy, polarization = po,
+      cell_type = cell_type, species = species, paths = paths,
+      checksum_md5 = unname(tools::md5sum(paths)),
+      provenance = "Immune Dictionary portal; mouse in-vivo lymph-node perturbation reference"
+    ),
+    class = "irea_reference"
+  )
+}
+
+preparedb_irea_reference <- function(directory, cell_type, species, update) {
+  valid <- c(
+    "B_cell", "cDC1", "cDC2", "Langerhans", "Macrophage", "MigDC",
+    "Monocyte", "Neutrophil", "NK_cell", "pDC", "T_cell_CD4", "T_cell_CD8", "T_cell_gd", "Treg"
+  )
+  if (length(cell_type) != 1L || is.na(cell_type) || !cell_type %in% valid) {
+    stop("Select one supported IREA cell_type.", call. = FALSE)
+  }
+  if (!is.logical(update) || length(update) != 1L || is.na(update)) {
+    stop("db_update must be TRUE or FALSE.", call. = FALSE)
+  }
+  thisutils::check_r("readxl", install = FALSE, verbose = FALSE)
+  suffix <- if (species == "Human") "_Human" else ""
+  paths <- c(
+    paste0("downloadableData/ligands-seurat-", cell_type, ".RDS"),
+    paste0("dataFiles/SuppTable3_Cytokine_Signatures", suffix, ".xlsx"),
+    paste0("dataFiles/SuppTable7_Polarization_Signatures", suffix, ".xlsx")
+  )
+  dir.create(directory, recursive = TRUE, showWarnings = FALSE)
+  directory <- normalizePath(directory, winslash = "/", mustWork = TRUE)
+  manifest_path <- file.path(directory, "reference_manifest.csv")
+  manifest <- if (file.exists(manifest_path)) {
+    utils::read.csv(manifest_path, stringsAsFactors = FALSE)
+  } else {
+    data.frame(
+      source_url = character(), file = character(), bytes = numeric(),
+      checksum_md5 = character(), checked_at = character()
+    )
+  }
+  if (!all(c("source_url", "file", "bytes", "checksum_md5", "checked_at") %in% names(manifest)) ||
+    anyDuplicated(manifest$file)) {
+    stop("Invalid IREA cache manifest; use a separate cache directory.", call. = FALSE)
+  }
+  old_timeout <- getOption("timeout")
+  options(timeout = max(600, old_timeout))
+  on.exit(options(timeout = old_timeout), add = TRUE)
+  for (path in paths) {
+    candidates <- file.path(directory, c(path, gsub("/", "_", path, fixed = TRUE)))
+    existing <- candidates[file.exists(candidates)]
+    target <- if (length(existing)) existing[[1]] else candidates[[2]]
+    relative <- substring(target, nchar(directory) + 2L)
+    prior <- manifest[manifest$file == relative, , drop = FALSE]
+    if (!update && file.exists(target) && nrow(prior) &&
+      !identical(unname(tools::md5sum(target)), prior$checksum_md5)) {
+      stop("IREA cache checksum mismatch: ", relative, "; use db_update = TRUE to refresh.", call. = FALSE)
+    }
+    url <- paste0("https://www.immune-dictionary.org/static/", path)
+    if (update || !file.exists(target)) {
+      dir.create(dirname(target), recursive = TRUE, showWarnings = FALSE)
+      temporary <- tempfile(tmpdir = dirname(target))
+      on.exit(unlink(temporary), add = TRUE)
+      utils::download.file(url, temporary, mode = "wb", quiet = TRUE)
+      if (file.info(temporary)$size <= 0 || !file.copy(temporary, target, overwrite = TRUE)) {
+        stop("Failed to cache IREA reference: ", path, call. = FALSE)
+      }
+      unlink(temporary)
+    }
+    manifest <- manifest[manifest$file != relative, , drop = FALSE]
+    manifest <- rbind(manifest, data.frame(
+      source_url = url, file = relative,
+      bytes = unname(file.info(target)$size), checksum_md5 = unname(tools::md5sum(target)),
+      checked_at = as.character(Sys.time())
+    ))
+  }
+  reference <- PrepareIREAReference(directory, cell_type, species)
+  utils::write.csv(manifest, manifest_path, row.names = FALSE)
+  reference
 }

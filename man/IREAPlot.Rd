@@ -5,13 +5,16 @@
 \title{Plot IREA response or polarization results}
 \usage{
 IREAPlot(
-  result,
+  object,
   type = c("compass", "radar", "dotplot", "heatmap"),
-  fdr_cutoff = 0.05
+  fdr_cutoff = 0.05,
+  palette = "Chinese",
+  palcolor = NULL,
+  theme_use = "theme_scop"
 )
 }
 \arguments{
-\item{result}{An \code{irea_result}, a Seurat object containing
+\item{object}{An \code{irea_result}, a Seurat object containing
 \code{object@tools$IREA}, or a named list of results for dotplots and heatmaps.}
 
 \item{type}{One of \code{"compass"}, \code{"radar"}, \code{"dotplot"}, or \code{"heatmap"}.}
@@ -19,10 +22,32 @@ IREAPlot(
 \item{fdr_cutoff}{Significance threshold used for compass colouring and the
 radar display. Radar scores are zero when no positive effect meets this
 threshold; otherwise all positive effects are divided by their maximum.}
+
+\item{palette, palcolor}{Palette name and optional custom colours passed to
+\code{\link[thisplot:palette_colors]{thisplot::palette_colors()}}. For compass plots, colours map to Positive,
+Negative and Not significant, in that order.}
+
+\item{theme_use}{Theme name, function or ggplot theme, as in other package plots.}
 }
 \value{
-An editable ggplot object.
+An editable ggplot object; plotting does not change result statistics.
 }
 \description{
-Plot IREA response or polarization results
+Display enrichment effects and reference-cell significance.
+}
+\examples{
+\dontrun{
+reference <- PrepareDB(
+  db = "IREA", species = "Homo_sapiens",
+  cell_type = "Macrophage"
+)[["Homo_sapiens"]][["IREA"]]
+result <- RunIREA(c("ISG15", "IFIT3", "BST2"), reference = reference)
+IREAPlot(result, palette = "Chinese")
+}
+}
+\references{
+Cui, Ang; Huang, Teddy; Li, Shuqiang; Ma, Aileen; Perez, Jorge L.;
+Sander, Chris; Keskin, Derin B.; Wu, Catherine J.; Fraenkel, Ernest;
+Hacohen, Nir. Dictionary of immune responses to cytokines at single-cell
+resolution. Nature 625, 377-384 (2024). doi:10.1038/s41586-023-06816-9.
 }

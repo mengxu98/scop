@@ -25,6 +25,7 @@ PrepareDB(
   custom_IDtype = NULL,
   custom_version = NULL,
   verbose = TRUE,
+  cell_type = NULL,
   ...
 )
 }
@@ -37,7 +38,7 @@ PrepareDB(
 \code{"TFLink"}, \code{"hTFtarget"}, \code{"TRRUST"}, \code{"JASPAR"}, \code{"ENCODE"}, \code{"MSigDB"},
 \code{"CellTalk"}, \code{"CellChat"}, \code{"Chromosome"}, \code{"GeneType"}, \code{"Enzyme"}, \code{"TF"},
 \code{"CytoTRACE2"}. MSigDB collections use \code{"MSigDB_<collection>"}, with \code{:}
-replaced by \code{_}. Top-level names such as \code{"MSigDB_H"} (human hallmark),
+replaced by \verb{_}. Top-level names such as \code{"MSigDB_H"} (human hallmark),
 \code{"MSigDB_MH"} (mouse hallmark) and \code{"MSigDB_M2"} stay available and include
 their nested collections. Nested names include each prefix, for example
 \code{"MSigDB_M2_CGP"}, \code{"MSigDB_M2_CP"} and \code{"MSigDB_M2_CP_BIOCARTA"}. Colon
@@ -73,10 +74,14 @@ Possible options include \code{"ensembl"}, \code{"protists_mart"}, \code{"fungi_
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
 
+\item{cell_type}{Portal cell-type identifier for \code{db = "IREA"}.}
+
 \item{...}{Passed to helper functions.}
 }
 \value{
-A list containing the prepared gene annotation databases:
+For \code{db = "IREA"}, a named species list with an \code{irea_reference}
+under \verb{[[species]][["IREA"]]}, as documented in \code{\link[=PrepareIREAReference]{PrepareIREAReference()}}.
+Otherwise, a list containing the prepared gene annotation databases:
 \itemize{
 \item \code{TERM2GENE}: mapping of gene identifiers to terms.
 \item \code{TERM2NAME}: mapping of terms to their names.
@@ -86,6 +91,14 @@ A list containing the prepared gene annotation databases:
 \description{
 Build TERM2GENE / TERM2NAME (and GO semantic-similarity) databases for a
 species from annotation packages, cached downloads, or local files.
+}
+\details{
+With \code{db = "IREA"}, prepare an Immune Dictionary reference in a
+separate call using \code{cell_type}. Download missing source files from the
+official portal to \code{data_dir} or the user data cache. A checksum manifest
+detects changed cache contents; \code{db_update = TRUE} explicitly refreshes files.
+The portal assets are unversioned; the stored checksums identify their contents.
+No reference files are bundled in the package.
 }
 \examples{
 db_list <- PrepareDB(
