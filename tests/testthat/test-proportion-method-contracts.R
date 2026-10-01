@@ -146,6 +146,7 @@ test_that("virtual samples require opt-in and suppress inferential columns", {
     group.by = "CellType", split.by = "Condition",
     proportion_method = "propeller", n_bootstrap = 0L, verbose = FALSE),
     "sample.by")
+  skip_if_not_installed("speckle")
   out <- suppressWarnings(RunProportionTest(srt,
     group.by = "CellType", split.by = "Condition",
     proportion_method = "propeller", allow_pseudo_samples = TRUE,

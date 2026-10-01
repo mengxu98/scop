@@ -1,5 +1,11 @@
 # scop (development version)
 
+* **change**: `RunPropeller()` now uses speckle's transformed proportions and
+  empirical Bayes moderated tests instead of the internal logit t-test.
+  It supports `transform`, `robust`, and `trend`, records backend results and
+  designs, and blocks on donor IDs for fully paired comparisons. At least
+  two samples per condition are required. SCOP bootstrap intervals remain
+  descriptive intervals for the untransformed proportion ratio.
 * **fix**: Differential-abundance plots now project Milo neighborhoods through
   stored member cells, use `SpatialFDR` for Milo neighborhood significance,
   and use scCODA credibility for scCODA plots. Milo group summaries and the

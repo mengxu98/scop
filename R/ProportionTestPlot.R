@@ -474,7 +474,11 @@ plot_proportion_effect <- function(
       "Sample-level cell-type summary"
     }
   } else if (identical(unique(as.character(df$method)), "propeller")) {
-    "Internal logit-transformed sample-proportion test"
+    if ("engine" %in% colnames(df) && all(df$engine == "speckle")) {
+      "Speckle propeller; empirical Bayes moderated test"
+    } else {
+      "Internal logit-transformed sample-proportion test"
+    }
   } else if (identical(unique(as.character(df$method)), "sccoda")) {
     "scCODA credible effects"
   } else {
