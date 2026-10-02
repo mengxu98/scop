@@ -279,6 +279,7 @@ test_that("plots use custom colours and themes without changing numerical result
 })
 
 test_that("IREA preparation reads cached sources and detects changed contents", {
+  skip_if_not_installed("R.cache")
   skip_if_not_installed("readxl")
   skip_if_not_installed("openxlsx")
   r <- make_irea_reference()
@@ -370,6 +371,7 @@ test_that("IREA preparation reads cached sources and detects changed contents", 
 })
 
 test_that("IREA database selectors reject ambiguous or unused options", {
+  skip_if_not_installed("R.cache")
   expect_error(PrepareDB(db = "IREA", verbose = FALSE), "IREA_<cell type>")
   expect_error(PrepareDB(db = "IREA_unknown", verbose = FALSE), "Unsupported IREA database selector")
   expect_error(PrepareDB(db = "IREA_NK_cell", cell_type = "NK_cell", verbose = FALSE), "Unused")
@@ -382,6 +384,7 @@ test_that("IREA database selectors reject ambiguous or unused options", {
 })
 
 test_that("IREA selectors preserve complete identifiers and named reference results", {
+  skip_if_not_installed("R.cache")
   skip_if_not_installed("readxl")
   skip_if_not_installed("openxlsx")
   r <- make_irea_reference()
