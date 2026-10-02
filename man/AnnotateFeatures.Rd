@@ -33,18 +33,14 @@ AnnotateFeatures(
 \item{IDtype}{Type of identifier to use for annotation.
 Options are \code{"symbol"}, \code{"ensembl_id"}, or \code{"entrez_id"}.}
 
-\item{db}{Annotation sources. One or more of \code{"GO"}, \code{"GO_BP"}, \code{"GO_CC"},
-\code{"GO_MF"}, \code{"KEGG"}, \code{"WikiPathway"}, \code{"Reactome"}, \code{"CORUM"}, \code{"MP"}, \code{"DO"},
-\code{"HPO"}, \code{"PFAM"}, \code{"CSPA"}, \code{"Surfaceome"}, \code{"SPRomeDB"}, \code{"VerSeDa"},
+\item{db}{Character vector of database or resource selectors: \code{"GO"},
+\code{"GO_BP"}, \code{"GO_CC"}, \code{"GO_MF"}, \code{"KEGG"}, \code{"WikiPathway"}, \code{"Reactome"},
+\code{"CORUM"}, \code{"MP"}, \code{"DO"}, \code{"HPO"}, \code{"PFAM"}, \code{"Chromosome"}, \code{"GeneType"},
+\code{"Enzyme"}, \code{"TF"}, \code{"CSPA"}, \code{"Surfaceome"}, \code{"SPRomeDB"}, \code{"VerSeDa"},
 \code{"TFLink"}, \code{"hTFtarget"}, \code{"TRRUST"}, \code{"JASPAR"}, \code{"ENCODE"}, \code{"MSigDB"},
-\code{"CellTalk"}, \code{"CellChat"}, \code{"Chromosome"}, \code{"GeneType"}, \code{"Enzyme"}, \code{"TF"},
-\code{"CytoTRACE2"}. MSigDB collections use \code{"MSigDB_<collection>"}, with \code{:}
-replaced by \code{_}. Top-level names such as \code{"MSigDB_H"} (human hallmark),
-\code{"MSigDB_MH"} (mouse hallmark) and \code{"MSigDB_M2"} stay available and include
-their nested collections. Nested names include each prefix, for example
-\code{"MSigDB_M2_CGP"}, \code{"MSigDB_M2_CP"} and \code{"MSigDB_M2_CP_BIOCARTA"}. Colon
-forms such as \code{"MSigDB_M2:CGP"} are accepted. \code{"CytoTRACE2"} is
-species-independent and is required by \link{RunCytoTRACE}.}
+\code{"CellTalk"}, \code{"CellChat"}, \code{"CytoTRACE2"} or
+\code{"MSigDB_<collection>"}. A vector may combine sources. See the corresponding
+preparation function for source-specific settings.}
 
 \item{db_update}{Force a refresh. \code{FALSE} loads the cache when available.}
 
