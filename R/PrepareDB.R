@@ -41,7 +41,7 @@
 #'   \item `semData`: semantic similarity data for gene sets (only for Gene Ontology terms).
 #' }
 #'
-#' @seealso [ListDB], [PrepareIREAReference]
+#' @seealso [ListDB], [PrepareIREA]
 #'
 #' @export
 #'
@@ -449,10 +449,10 @@ PrepareDB <- function(
 
       if (is.null(custom_TERM2GENE)) {
         for (term in unique(db[grepl("^IREA($|_)", db)])) {
-          db_list[[sps]][[term]] <- preparedb_irea_reference(
-            directory = data_dir, db = term, species = sps,
-            update = db_update, verbose = verbose, ...
-          )
+          db_list[[sps]][[term]] <- PrepareIREA(
+            species = sps, db = term, db_update = db_update,
+            data_dir = data_dir, verbose = verbose, ...
+          )[[sps]][[term]]
         }
         go_categories <- c("GO", "GO_BP", "GO_CC", "GO_MF")
         if (any(db %in% go_categories) &&
@@ -3333,50 +3333,56 @@ kegg_release_from_relnote <- function(url = "https://www.kegg.jp/kegg/docs/relno
   if (length(release) == 0) NULL else release
 }
 
-#' @title Read an Immune Dictionary reference
-#'
-#' @description Reads the cell-type Seurat object and signature spreadsheets distributed by
-#' the Immune Dictionary portal. The experimental reference is mouse lymph-node
-#' cells, including when a human orthologue table is selected.
-#'
-#' @param directory Directory containing files prepared by [PrepareDB()] with
-#'   an IREA database selector, or the original portal downloads.
-#' @details Prepare these references through [PrepareDB()] using the same
-#' `db` selector and `"Mus_musculus"` or `"Homo_sapiens"` as `species`.
-#' Multiple references and annotation databases can be requested together.
-#' A directory is searched under its database subdirectory before the directory
-#' itself; named `data_dir` lists use the requested selector or the shared
-#' `"IREA"` key. Missing files are downloaded from the official portal into
-#' the selected directory or the user data cache. A checksum manifest detects
-#' changes; `db_update = TRUE` refreshes the files. The portal assets are
-#' unversioned, so stored checksums identify their contents. References are not
-#' bundled with the package. Each prepared entry is an `irea_reference` under
-#' its requested species and database name.
-#'
-#' @param db IREA reference selector, such as `"IREA_NK_cell"` or
-#'   `"IREA_Macrophage"`. The suffix is the exact portal cell-type identifier.
-#' @param species `"Mouse"` or `"Human"`. Human symbols in both input modes
-#'   are mapped to mouse genes using the portal's signature spreadsheets.
-#'   This is a partial mapping; unmapped or ambiguous symbols are omitted.
-#' @return An `irea_reference` list containing the reference Seurat `object`,
-#'   `cytokine` and `polarization` signature tables, `cell_type`, `species`,
-#'   named source `paths`, corresponding `checksum_md5` values and `provenance`.
-#'   Expression rows are mouse genes and columns are reference cells in their
-#'   original order. Human input uses the signature tables' partial orthologue map.
+#' @title Prepare Immune Dictionary references
+#' @description Prepare cell-type reference objects and signatures used by [RunIREA()].
+#' @inheritParams PrepareDB
+#' @param db Reference selectors such as `"IREA_NK_cell"` or `"IREA_Macrophage"`.
+#' The suffix is the exact portal cell-type identifier.
+#' @details Missing files are downloaded from the official portal. Source assets
+#' are unversioned; the cache manifest records their checksums and rejects changed
+#' files unless `db_update = TRUE`. Named `data_dir` lists may use the selector
+#' or `"IREA"`. Each file is searched under the selector subdirectory before
+#' the parent directory. Human input uses partial orthologue mappings; the
+#' expression reference remains mouse lymph-node cells. Files are not bundled.
+#' @return A named species list with an `irea_reference` under each selector.
+#' Each reference contains `object`, `cytokine`, `polarization`, `cell_type`,
+#' `species`, `paths`, `checksum_md5` and `provenance`. Expression rows are mouse
+#' genes; columns are reference cells in their original order.
 #' @md
 #' @references Cui, Ang; Huang, Teddy; Li, Shuqiang; Ma, Aileen; Perez, Jorge L.;
-#'   Sander, Chris; Keskin, Derin B.; Wu, Catherine J.; Fraenkel, Ernest;
-#'   Hacohen, Nir. Dictionary of immune responses to cytokines at single-cell
-#'   resolution. Nature 625, 377-384 (2024). doi:10.1038/s41586-023-06816-9.
+#' Sander, Chris; Keskin, Derin B.; Wu, Catherine J.; Fraenkel, Ernest;
+#' Hacohen, Nir. Dictionary of immune responses to cytokines at single-cell
+#' resolution. Nature 625, 377-384 (2024). doi:10.1038/s41586-023-06816-9.
+#' @seealso [PrepareDB], [RunIREA]
+#' @export
 #' @examples
 #' \dontrun{
-#' reference <- PrepareDB(
-#'   db = "IREA_NK_cell", species = "Mus_musculus"
-#' )[["Mus_musculus"]][["IREA_NK_cell"]]
-#' reference <- PrepareIREAReference(dirname(reference$paths[["object"]]), db = "IREA_NK_cell")
+#' references <- PrepareIREA(db = "IREA_NK_cell", species = "Mus_musculus")
+#' result <- RunIREA(c("Isg15", "Ifit3", "Bst2"),
+#'   reference = references[["Mus_musculus"]][["IREA_NK_cell"]],
+#'   analysis = "cell_polarization"
+#' )
+#' IREAPlot(result, plot_type = "radar")
 #' }
-#' @export
-PrepareIREAReference <- function(directory, db, species = c("Mouse", "Human")) {
+PrepareIREA <- function(species = c("Homo_sapiens", "Mus_musculus"),
+                        db = "IREA_NK_cell", db_update = FALSE,
+                        data_dir = NULL, verbose = TRUE, ...) {
+  species <- normalize_species_name(species)
+  if (!is.character(db) || !length(db) || anyNA(db) || !all(grepl("^IREA($|_)", db))) {
+    log_message("Unsupported {.arg db} selector for PrepareIREA", message_type = "error")
+  }
+  db_list <- list()
+  for (sps in species) {
+    for (term in unique(db)) {
+      db_list[[sps]][[term]] <- preparedb_irea_reference(
+        data_dir, term, sps, db_update, verbose, ...
+      )
+    }
+  }
+  db_list
+}
+
+preparedb_read_irea <- function(directory, db, species = c("Mouse", "Human")) {
   species <- match.arg(species)
   if (!dir.exists(directory)) log_message("Reference directory does not exist.", message_type = "error")
   valid <- c(
@@ -3432,6 +3438,7 @@ PrepareIREAReference <- function(directory, db, species = c("Mouse", "Human")) {
     class = "irea_reference"
   )
 }
+
 
 preparedb_irea_reference <- function(directory, db, species, update, verbose = TRUE, ...) {
   if (length(list(...))) log_message("Unused preparation arguments; select references with db.", message_type = "error")
@@ -3513,7 +3520,7 @@ preparedb_irea_reference <- function(directory, db, species, update, verbose = T
       checked_at = as.character(Sys.time())
     ))
   }
-  reference <- PrepareIREAReference(directory, db, species)
+  reference <- preparedb_read_irea(directory, db, species)
   utils::write.csv(manifest, manifest_path, row.names = FALSE)
   reference
 }

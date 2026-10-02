@@ -148,5 +148,5 @@ head(
 )
 }
 \seealso{
-\link{ListDB}, \link{PrepareIREAReference}
+\link{ListDB}, \link{PrepareIREA}
 }

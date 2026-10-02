@@ -347,7 +347,7 @@ reference:
   - RunGSEA
   - RunGSVA
   - RunMetabolism
-  - PrepareIREAReference
+  - PrepareIREA
   - RunIREA
 
 - subtitle: "Enrichment Analysis Plot"

@@ -235,7 +235,7 @@ irea_map_human <- function(reference, input) {
 #'   or a Seurat object. Positive contrasts mean higher expression in the case.
 #'   Factors and text contrast columns are rejected. Missing/empty gene names and
 #'   nonfinite contrasts are omitted; duplicated contrast gene names are rejected.
-#' @param reference An `irea_reference` from [PrepareDB()] or [PrepareIREAReference()].
+#' @param reference An `irea_reference` from [PrepareDB()] or [PrepareIREA()].
 #' @param contrast Column name to analyse in a table with multiple contrasts.
 #' @param group.by,case,control Metadata column and distinct group names for Seurat.
 #' @param assay,layer Seurat assay and exact expression layer name. Split layers
@@ -270,7 +270,7 @@ irea_map_human <- function(reference, input) {
 #'     Seurat results additionally record grouping, case/control and assay/layer.
 #'   * `reference`: source paths, corresponding checksums and provenance.
 #'   * `validation`: experimental numerical-validation status.
-#' @inherit PrepareIREAReference references
+#' @inherit PrepareIREA references
 #' @seealso [IREAPlot], [PrepareDB]
 #' @export
 #' @examples

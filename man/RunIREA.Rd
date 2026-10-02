@@ -40,7 +40,7 @@ nonfinite contrasts are omitted; duplicated contrast gene names are rejected.}
 
 \item{...}{Arguments passed to the dispatched method.}
 
-\item{reference}{An \code{irea_reference} from \code{\link[=PrepareDB]{PrepareDB()}} or \code{\link[=PrepareIREAReference]{PrepareIREAReference()}}.}
+\item{reference}{An \code{irea_reference} from \code{\link[=PrepareDB]{PrepareDB()}} or \code{\link[=PrepareIREA]{PrepareIREA()}}.}
 
 \item{contrast}{Column name to analyse in a table with multiple contrasts.}
 

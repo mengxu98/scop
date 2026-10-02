@@ -92,7 +92,7 @@ test_that("no positively enriched polarization has a zero radar score", {
   out <- RunIREA("G3", reference = r, analysis = "cell_polarization")
   expect_true(all(out$table$radar_score == 0))
   expect_true(all(out$table$effect <= 0))
-  expect_error(PrepareIREAReference(tempdir(), "unknown"), "Unsupported")
+  expect_error(PrepareIREA(db = "unknown", data_dir = tempdir()), "Unsupported")
 })
 
 test_that("multiple results can be compared without dropping terms", {
@@ -303,7 +303,7 @@ test_that("IREA preparation reads cached sources and detects changed contents", 
   expect_equal(getOption("timeout"), before)
   expect_equal(first$cytokine, r$cytokine)
   expect_equal(first$polarization, r$polarization)
-  manual <- PrepareIREAReference(directory, db = "IREA_NK_cell")
+  manual <- PrepareIREA(species = "Mus_musculus", data_dir = directory, db = "IREA_NK_cell")[["Mus_musculus"]][["IREA_NK_cell"]]
   expect_equal(RunIREA("G1", reference = first)$table, RunIREA("G1", reference = manual)$table)
   selected <- PrepareDB(
     db = "IREA_NK_cell", species = "Mus_musculus",
@@ -326,7 +326,7 @@ test_that("IREA preparation reads cached sources and detects changed contents", 
   local_mocked_bindings(
     list_db_cache_entries = function(species, db, exact_db = FALSE) {
       expect_identical(db, "CachedAnnotation")
-      data.frame(timestamp = as.POSIXct("2026-01-01", tz = "UTC"), file = "cached-annotation")
+      data.frame(DB = db, Species = species, timestamp = as.POSIXct("2026-01-01", tz = "UTC"), file = "cached-annotation")
     },
     .package = "scop"
   )
