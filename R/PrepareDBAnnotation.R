@@ -615,9 +615,7 @@ PrepareChromosome <- function(
         any(db == "Chromosome") && (!"Chromosome" %in% names(db_list[[sps]]))
       ) {
         log_message("Preparing {.pkg Chromosome} database", verbose = verbose)
-        orgdbCHR <- get(
-          paste0(gsub(pattern = ".db", "", org_sp), "CHR")
-        )
+        orgdbCHR <- get_namespace_fun(org_sp, sub("\\.db$", "CHR", org_sp))
         chr <- as.data.frame(
           orgdbCHR[AnnotationDbi::mappedkeys(orgdbCHR)]
         )

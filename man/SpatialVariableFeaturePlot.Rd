@@ -73,7 +73,7 @@ radius at \code{raster.dpi = c(512, 512)} and scale with \code{raster.dpi}.}
 
 \item{theme_args}{Theme name or function, plus extra theme arguments.}
 
-\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork]{patchwork}. \code{combine = FALSE}
+\item{combine, nrow, ncol, byrow}{Combine plots with \link[patchwork:patchwork-package]{patchwork::patchwork}. \code{combine = FALSE}
 returns a list of ggplots.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It

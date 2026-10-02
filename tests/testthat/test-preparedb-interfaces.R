@@ -131,6 +131,36 @@ test_that("version selection and fallback share one cache policy", {
   expect_identical(fallback$Mus_musculus$KEGG$version, "v2")
 })
 
+test_that("chromosome preparation uses namespace mappings before caching", {
+  skip_if_not_installed("R.cache")
+  skip_if_not_installed("org.Hs.eg.db")
+  skip_if_not_installed("GO.db")
+  skip_if_not_installed("GOSemSim")
+  mapping <- get_namespace_fun("org.Hs.eg.db", "org.Hs.egCHR")
+  expected <- as.data.frame(mapping[AnnotationDbi::mappedkeys(mapping)])
+  expected <- data.frame(Term = paste0("chr", expected[[2]]), entrez_id = expected[[1]])
+  expected <- stats::na.omit(unique(expected))
+  saved <- NULL
+  local_mocked_bindings(saveCache = function(object, key, comment, ...) {
+    saved <<- list(object = object, key = key, comment = comment)
+  }, .package = "R.cache")
+  fresh <- PrepareChromosome(species = "Homo_sapiens", db_IDtypes = "entrez_id", db_update = TRUE, verbose = FALSE)
+  expect_equal(fresh$Homo_sapiens$Chromosome$TERM2GENE, expected)
+  expect_identical(saved$key, list(utils::packageVersion("org.Hs.eg.db"), "Homo_sapiens", "Chromosome"))
+  dispatched <- PrepareDB(species = "Homo_sapiens", db = "Chromosome", db_IDtypes = "entrez_id", db_update = TRUE, verbose = FALSE)
+  expect_identical(dispatched, fresh)
+  local_mocked_bindings(list_db_cache_entries = function(species, db) {
+    data.frame(Species = species, DB = db, timestamp = as.POSIXct("2026-01-01", tz = "UTC"), file = "chromosome-cache")
+  }, .package = "scop")
+  local_mocked_bindings(
+    readCacheHeader = function(pathname, ...) list(comment = saved$comment, timestamp = as.POSIXct("2026-01-01", tz = "UTC")),
+    loadCache = function(pathname, ...) saved$object,
+    .package = "R.cache"
+  )
+  expect_identical(PrepareChromosome(species = "Homo_sapiens", db_IDtypes = "entrez_id", verbose = FALSE), fresh)
+  expect_identical(PrepareDB(species = "Homo_sapiens", db = "Chromosome", db_IDtypes = "entrez_id", verbose = FALSE), fresh)
+})
+
 test_that("an unavailable species can skip preparation without losing earlier resources", {
   skip_if_not_installed("R.cache")
   skip_if_not_installed("httr")
