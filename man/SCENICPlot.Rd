@@ -186,7 +186,7 @@ direct score comparison, or \code{"free"} for the legacy per-panel scale.}
 
 \item{max_edges}{Max edges in \code{"network_graph"}.}
 
-\item{network_layout}{\code{"auto"}, \code{"star"}, \code{"kk"}, \code{"hub"}, \code{"tripartite"}, \code{"fr"}. \code{"network_graph"} uses the historical weighted \code{"kk"} layout by default; \code{"network"} uses \code{"star"} for one TF and \code{"hub"} for several.}
+\item{network_layout}{\code{"auto"}, \code{"star"}, \code{"kk"}, \code{"hub"}, \code{"tripartite"}, \code{"fr"}. \code{"network_graph"} uses the weighted force-directed \code{"fr"} layout by default; \code{"kk"} remains available explicitly. \code{"network"} uses \code{"star"} for one TF and \code{"hub"} for several.}
 
 \item{network_tf}{Focal TFs for network plots; takes precedence over \code{features}. \code{"network_graph"} retains both incoming and outgoing neighbors of these TFs.
 TFs use colored circles, genes use gray circles, and edges use their source

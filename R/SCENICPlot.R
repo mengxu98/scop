@@ -73,7 +73,7 @@
 #' @param ... Extra heatmap arguments such as `width` and `height`.
 #' @param max_targets Max targets per TF in network plots.
 #' @param max_edges Max edges in `"network_graph"`.
-#' @param network_layout `"auto"`, `"star"`, `"kk"`, `"hub"`, `"tripartite"`, `"fr"`. `"network_graph"` uses the historical weighted `"kk"` layout by default; `"network"` uses `"star"` for one TF and `"hub"` for several.
+#' @param network_layout `"auto"`, `"star"`, `"kk"`, `"hub"`, `"tripartite"`, `"fr"`. `"network_graph"` uses the weighted force-directed `"fr"` layout by default; `"kk"` remains available explicitly. `"network"` uses `"star"` for one TF and `"hub"` for several.
 #' @param network_tf Focal TFs for network plots; takes precedence over `features`. `"network_graph"` retains both incoming and outgoing neighbors of these TFs.
 #'   TFs use colored circles, genes use gray circles, and edges use their source
 #'   TF color. The default legend includes each TF's top RSS group when available.
