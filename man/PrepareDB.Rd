@@ -89,5 +89,5 @@ ListDB(species = "Homo_sapiens", db = c("GO_BP", "KEGG"))
 }
 }
 \seealso{
-\link{ListDB}, \link{PrepareGO}, \link{PrepareKEGG}, \link{PrepareMSigDB}
+\link{ListDB}, \link{PrepareGO}, \link{PrepareKEGG}, \link{PrepareMSigDB}, \link{PrepareIREA}
 }

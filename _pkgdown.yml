@@ -347,6 +347,8 @@ reference:
   - RunGSEA
   - RunGSVA
   - RunMetabolism
+  - PrepareIREA
+  - RunIREA
 
 - subtitle: "Enrichment Analysis Plot"
 - contents:
@@ -357,6 +359,7 @@ reference:
   - GSEAPlot
   - GSVAPlot
   - MetabolismPlot
+  - IREAPlot
 
 - subtitle: "Metabolic Flux Analysis"
 - contents:

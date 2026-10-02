@@ -109,6 +109,7 @@ Suggests:
     Rfast,
     RcppML,
     R.cache,
+    readxl,
     R.utils,
     reshape2,
     RhpcBLASctl,
