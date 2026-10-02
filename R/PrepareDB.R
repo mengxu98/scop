@@ -34,7 +34,7 @@
 #' `TERM2NAME` (term names) and `version`. Additional resource fields follow the
 #' return contract of the corresponding preparation function.
 #'
-#' @seealso [ListDB], [PrepareGO], [PrepareKEGG], [PrepareMSigDB]
+#' @seealso [ListDB], [PrepareGO], [PrepareKEGG], [PrepareMSigDB], [PrepareIREA]
 #'
 #' @export
 #'
@@ -153,9 +153,11 @@ PrepareDB <- function(
     ENCODE = PrepareENCODE,
     MSigDB = PrepareMSigDB,
     CellTalk = PrepareCellTalk,
-    CellChat = PrepareCellChat
+    CellChat = PrepareCellChat,
+    IREA = PrepareIREA
   )
   source_names <- ifelse(grepl("^MSigDB_", annotation_db), "MSigDB", annotation_db)
+  source_names[grepl("^IREA($|_)", source_names)] <- "IREA"
   source_names[source_names %in% c("GO", "GO_BP", "GO_CC", "GO_MF")] <- "GO"
   prepared_sources <- unique(source_names)
   prepared_sources <- c(intersect(names(sources), prepared_sources), setdiff(prepared_sources, names(sources)))
@@ -163,12 +165,15 @@ PrepareDB <- function(
     selected <- annotation_db[source_names == source]
     prepare <- sources[[source]]
     if (is.null(prepare)) prepare <- preparedb_annotation
-    prepared <- prepare(
+    arguments <- list(
       species = species, db = selected, db_IDtypes = db_IDtypes,
       db_version = db_version, db_update = db_update, data_dir = data_dir,
       convert_species = convert_species, Ensembl_version = Ensembl_version,
-      mirror = mirror, biomart = biomart, max_tries = max_tries, verbose = verbose, ...
+      mirror = mirror, biomart = biomart, max_tries = max_tries, verbose = verbose
     )
+    parameters <- setdiff(names(formals(prepare)), "...")
+    if (length(parameters)) arguments <- arguments[names(arguments) %in% parameters]
+    prepared <- do.call(prepare, c(arguments, list(...)))
     for (sps in names(prepared)) {
       db_list[[sps]] <- c(db_list[[sps]], prepared[[sps]])
     }
@@ -1226,4 +1231,196 @@ PrepareCytoTRACE2 <- function(db_update = FALSE, verbose = TRUE) {
     db_list[["CytoTRACE2"]] <- cyto_cache
   }
   db_list
+}
+
+#' @title Prepare Immune Dictionary references
+#' @description Prepare cell-type reference objects and signatures used by [RunIREA()].
+#' @inheritParams PrepareDB
+#' @param db Reference selectors such as `"IREA_NK_cell"` or `"IREA_Macrophage"`.
+#' The suffix is the exact portal cell-type identifier.
+#' @details Missing files are downloaded from the official portal. Source assets
+#' are unversioned; the cache manifest records their checksums and rejects changed
+#' files unless `db_update = TRUE`. Named `data_dir` lists may use the selector
+#' or `"IREA"`. Each file is searched under the selector subdirectory before
+#' the parent directory. Human input uses partial orthologue mappings; the
+#' expression reference remains mouse lymph-node cells. Files are not bundled.
+#' @return A named species list with an `irea_reference` under each selector.
+#' Each reference contains `object`, `cytokine`, `polarization`, `cell_type`,
+#' `species`, `paths`, `checksum_md5` and `provenance`. Expression rows are mouse
+#' genes; columns are reference cells in their original order.
+#' @md
+#' @references Cui, Ang; Huang, Teddy; Li, Shuqiang; Ma, Aileen; Perez, Jorge L.;
+#' Sander, Chris; Keskin, Derin B.; Wu, Catherine J.; Fraenkel, Ernest;
+#' Hacohen, Nir. Dictionary of immune responses to cytokines at single-cell
+#' resolution. Nature 625, 377-384 (2024). doi:10.1038/s41586-023-06816-9.
+#' @seealso [PrepareDB], [RunIREA]
+#' @export
+#' @examples
+#' \dontrun{
+#' references <- PrepareIREA(db = "IREA_NK_cell", species = "Mus_musculus")
+#' result <- RunIREA(c("Isg15", "Ifit3", "Bst2"),
+#'   reference = references[["Mus_musculus"]][["IREA_NK_cell"]],
+#'   analysis = "cell_polarization"
+#' )
+#' IREAPlot(result, plot_type = "radar")
+#' }
+PrepareIREA <- function(species = c("Homo_sapiens", "Mus_musculus"),
+                        db = "IREA_NK_cell", db_update = FALSE,
+                        data_dir = NULL, verbose = TRUE, ...) {
+  species <- normalize_species_name(species)
+  if (!is.character(db) || !length(db) || anyNA(db) || !all(grepl("^IREA($|_)", db))) {
+    log_message("Unsupported {.arg db} selector for PrepareIREA", message_type = "error")
+  }
+  db_list <- list()
+  for (sps in species) {
+    for (term in unique(db)) {
+      db_list[[sps]][[term]] <- preparedb_irea_reference(
+        data_dir, term, sps, db_update, verbose, ...
+      )
+    }
+  }
+  db_list
+}
+
+preparedb_read_irea <- function(directory, db, species = c("Mouse", "Human")) {
+  species <- match.arg(species)
+  if (!dir.exists(directory)) log_message("Reference directory does not exist.", message_type = "error")
+  valid <- c(
+    "B_cell", "cDC1", "cDC2", "Langerhans", "Macrophage",
+    "MigDC", "Monocyte", "Neutrophil", "NK_cell", "pDC",
+    "T_cell_CD4", "T_cell_CD8", "T_cell_gd", "Treg"
+  )
+  if (length(db) != 1L || is.na(db) || !db %in% paste0("IREA_", valid)) {
+    log_message("Unsupported IREA database selector: ", db, "; use IREA_<cell type>.", message_type = "error")
+  }
+  cell_type <- substring(db, 6L)
+  find_file <- function(relative) {
+    filenames <- c(relative, gsub("/", "_", relative, fixed = TRUE))
+    candidates <- c(file.path(directory, db, filenames), file.path(directory, filenames))
+    hit <- candidates[file.exists(candidates)]
+    if (!length(hit)) log_message("Missing reference file: ", relative, message_type = "error")
+    normalizePath(hit[[1]], winslash = "/", mustWork = TRUE)
+  }
+  object_path <- find_file(paste0("downloadableData/ligands-seurat-", cell_type, ".RDS"))
+  suffix <- if (species == "Human") "_Human" else ""
+  cytokine_path <- find_file(paste0("dataFiles/SuppTable3_Cytokine_Signatures", suffix, ".xlsx"))
+  polarization_path <- find_file(paste0("dataFiles/SuppTable7_Polarization_Signatures", suffix, ".xlsx"))
+  thisutils::check_r("readxl", install = FALSE, verbose = FALSE)
+  x <- readRDS(object_path)
+  if (!inherits(x, "Seurat")) log_message("The reference RDS is not a Seurat object.", message_type = "error")
+  if (!all(c("sample", "polarization") %in% colnames(x@meta.data))) {
+    log_message("Reference object lacks sample or polarization metadata.", message_type = "error")
+  }
+  cy <- as.data.frame(readxl::read_excel(cytokine_path, sheet = cell_type))
+  polar_names <- c(
+    B_cell = "B cell", cDC1 = "cDC1", cDC2 = "cDC2",
+    Langerhans = "Langerhans", Macrophage = "Macrophage", MigDC = "MigDC",
+    Monocyte = "Monocyte", Neutrophil = "Neutrophil", NK_cell = "NK cell",
+    pDC = "pDC", T_cell_CD4 = "CD4+ T cell", T_cell_CD8 = "CD8+ T cell",
+    T_cell_gd = "", Treg = "Treg"
+  )
+  polar_sheet <- unname(polar_names[cell_type])
+  if (cell_type == "T_cell_gd") {
+    polar_sheet <- readxl::excel_sheets(polarization_path)[[4]]
+  }
+  if (is.na(polar_sheet) || !polar_sheet %in% readxl::excel_sheets(polarization_path)) {
+    log_message("No polarization signature sheet for ", cell_type, message_type = "error")
+  }
+  po <- as.data.frame(readxl::read_excel(polarization_path, sheet = polar_sheet))
+  paths <- c(object = object_path, cytokine = cytokine_path, polarization = polarization_path)
+  structure(
+    list(
+      object = x, cytokine = cy, polarization = po,
+      cell_type = cell_type, species = species, paths = paths,
+      checksum_md5 = unname(tools::md5sum(paths)),
+      provenance = "Immune Dictionary portal; mouse in-vivo lymph-node perturbation reference"
+    ),
+    class = "irea_reference"
+  )
+}
+
+
+preparedb_irea_reference <- function(directory, db, species, update, verbose = TRUE, ...) {
+  if (length(list(...))) log_message("Unused preparation arguments; select references with db.", message_type = "error")
+  if (length(species) != 1L || !species %in% c("Homo_sapiens", "Mus_musculus")) {
+    log_message("IREA supports Homo_sapiens or Mus_musculus.", message_type = "error")
+  }
+  species <- if (species == "Homo_sapiens") "Human" else "Mouse"
+  valid <- c(
+    "B_cell", "cDC1", "cDC2", "Langerhans", "Macrophage", "MigDC",
+    "Monocyte", "Neutrophil", "NK_cell", "pDC", "T_cell_CD4", "T_cell_CD8", "T_cell_gd", "Treg"
+  )
+  if (length(db) != 1L || is.na(db) || !db %in% paste0("IREA_", valid)) {
+    log_message("Unsupported IREA database selector: ", db, "; use IREA_<cell type>.", message_type = "error")
+  }
+  cell_type <- substring(db, 6L)
+  if (!is.logical(update) || length(update) != 1L || is.na(update)) {
+    log_message("db_update must be TRUE or FALSE.", message_type = "error")
+  }
+  thisutils::check_r("readxl", install = FALSE, verbose = FALSE)
+  suffix <- if (species == "Human") "_Human" else ""
+  paths <- c(
+    paste0("downloadableData/ligands-seurat-", cell_type, ".RDS"),
+    paste0("dataFiles/SuppTable3_Cytokine_Signatures", suffix, ".xlsx"),
+    paste0("dataFiles/SuppTable7_Polarization_Signatures", suffix, ".xlsx")
+  )
+  if (is.list(directory)) {
+    directory <- directory[[db]] %||% directory[["IREA"]]
+    if (is.null(directory)) log_message("data_dir needs a path for ", db, " or IREA.", message_type = "error")
+  }
+  if (is.null(directory)) directory <- file.path(tools::R_user_dir("scop", "data"), "IREA")
+  if (!is.character(directory) || length(directory) != 1L || is.na(directory) || !nzchar(directory)) {
+    log_message("{.arg data_dir} must be one directory path or a named list of paths", message_type = "error")
+  }
+  log_message("Preparing database: {.pkg {db}}", verbose = verbose)
+  dir.create(directory, recursive = TRUE, showWarnings = FALSE)
+  directory <- normalizePath(directory, winslash = "/", mustWork = TRUE)
+  manifest_path <- file.path(directory, "reference_manifest.csv")
+  manifest <- if (file.exists(manifest_path)) {
+    utils::read.csv(manifest_path, stringsAsFactors = FALSE)
+  } else {
+    data.frame(
+      source_url = character(), file = character(), bytes = numeric(),
+      checksum_md5 = character(), checked_at = character()
+    )
+  }
+  if (!all(c("source_url", "file", "bytes", "checksum_md5", "checked_at") %in% names(manifest)) ||
+    anyDuplicated(manifest$file)) {
+    log_message("Invalid IREA cache manifest; use a separate cache directory.", message_type = "error")
+  }
+  old_timeout <- getOption("timeout")
+  options(timeout = max(600, old_timeout))
+  on.exit(options(timeout = old_timeout), add = TRUE)
+  for (path in paths) {
+    filenames <- c(path, gsub("/", "_", path, fixed = TRUE))
+    candidates <- c(file.path(directory, db, filenames), file.path(directory, filenames))
+    existing <- candidates[file.exists(candidates)]
+    target <- if (length(existing)) existing[[1]] else candidates[[4]]
+    relative <- substring(target, nchar(directory) + 2L)
+    prior <- manifest[manifest$file == relative, , drop = FALSE]
+    if (!update && file.exists(target) && nrow(prior) &&
+      !identical(unname(tools::md5sum(target)), prior$checksum_md5)) {
+      log_message("IREA cache checksum mismatch: ", relative, "; use db_update = TRUE to refresh.", message_type = "error")
+    }
+    url <- paste0("https://www.immune-dictionary.org/static/", path)
+    if (update || !file.exists(target)) {
+      dir.create(dirname(target), recursive = TRUE, showWarnings = FALSE)
+      temporary <- tempfile(tmpdir = dirname(target))
+      on.exit(unlink(temporary), add = TRUE)
+      log_message("Downloading {.path {path}}", expr = utils::download.file(url, temporary, mode = "wb", quiet = TRUE), verbose = verbose)
+      if (file.info(temporary)$size <= 0 || !file.copy(temporary, target, overwrite = TRUE)) {
+        log_message("Failed to cache IREA reference: ", path, message_type = "error")
+      }
+      unlink(temporary)
+    }
+    manifest <- manifest[manifest$file != relative, , drop = FALSE]
+    manifest <- rbind(manifest, data.frame(
+      source_url = url, file = relative,
+      bytes = unname(file.info(target)$size), checksum_md5 = unname(tools::md5sum(target)),
+      checked_at = as.character(Sys.time())
+    ))
+  }
+  reference <- preparedb_read_irea(directory, db, species)
+  utils::write.csv(manifest, manifest_path, row.names = FALSE)
+  reference
 }
