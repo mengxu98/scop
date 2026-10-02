@@ -17,7 +17,7 @@ scenic_plot_network_graph <- function(
   network_display_targets = Inf
 ) {
   layout_use <- if (is.null(network_layout) || identical(network_layout, "auto")) {
-    "kk"
+    "fr"
   } else {
     network_layout
   }

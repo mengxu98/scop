@@ -935,6 +935,24 @@ test_that("SCENICPlusPlot coverage resolves TF features to target genes", {
   expect_true("Gene1" %in% out$plot_data$gene)
 })
 
+test_that("network_graph defaults to FR and still supports explicit KK", {
+  dat <- make_scenic_plot_mock()
+  draw <- function(...) {
+    set.seed(42)
+    SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
+               network_tf = c("TF1", "TF2", "TF3"), verbose = FALSE, ...)
+  }
+  automatic <- draw()
+  explicit_fr <- draw(network_layout = "fr")
+  explicit_kk <- draw(network_layout = "kk")
+  expect_equal(automatic$plot_data$nodes[, c("name", "x", "y")],
+               explicit_fr$plot_data$nodes[, c("name", "x", "y")])
+  expect_false(isTRUE(all.equal(explicit_fr$plot_data$nodes[, c("x", "y")],
+                               explicit_kk$plot_data$nodes[, c("x", "y")])))
+  expect_equal(automatic$plot_data$edges, explicit_kk$plot_data$edges)
+  expect_equal(automatic$plot_data$display_edges, automatic$plot_data$edges)
+})
+
 test_that("network_graph honors network_tf with the same neighbor selection as features", {
   dat <- make_scenic_plot_mock()
   by_tf <- SCENICPlot(dat$srt, group.by = "CellType", plot_type = "network_graph",
