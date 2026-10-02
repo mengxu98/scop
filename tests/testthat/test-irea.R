@@ -326,8 +326,9 @@ test_that("IREA preparation reads cached sources and detects changed contents", 
   )
   local_mocked_bindings(
     list_db_cache_entries = function(species, db, exact_db = FALSE) {
-      expect_identical(db, "CachedAnnotation")
-      data.frame(DB = db, Species = species, timestamp = as.POSIXct("2026-01-01", tz = "UTC"), file = "cached-annotation")
+      expect_true(all(db %in% c("CachedAnnotation", "IREA_NK_cell")))
+      cached <- data.frame(DB = "CachedAnnotation", Species = species, timestamp = as.POSIXct("2026-01-01", tz = "UTC"), file = "cached-annotation")
+      cached[cached$DB %in% db, , drop = FALSE]
     },
     .package = "scop"
   )
@@ -346,6 +347,15 @@ test_that("IREA preparation reads cached sources and detects changed contents", 
   expect_equal(mixed[["CachedAnnotation"]], annotation)
   expect_equal(mixed[["IREA_NK_cell"]]$paths, first$paths)
   expect_equal(RunIREA("G1", reference = mixed[["IREA_NK_cell"]])$table, RunIREA("G1", reference = first)$table)
+  model <- list(data_dir = tempdir(), files = "model_parameters.rds", version = "1.1.0")
+  local_mocked_bindings(PrepareCytoTRACE2 = function(db_update = FALSE, verbose = TRUE) list(CytoTRACE2 = model), .package = "scop")
+  combined <- PrepareDB(
+    db = c("CytoTRACE2", "CachedAnnotation", "IREA_NK_cell"), species = "Mus_musculus",
+    db_IDtypes = "symbol", data_dir = list(IREA = directory), verbose = FALSE
+  )
+  expect_identical(names(combined), c("CytoTRACE2", "Mus_musculus"))
+  expect_identical(combined$CytoTRACE2, model)
+  expect_equal(combined$Mus_musculus, mixed)
   nested <- tempfile("irea-directory-")
   dir.create(file.path(nested, "IREA_NK_cell"), recursive = TRUE)
   nested <- normalizePath(nested, winslash = "/", mustWork = TRUE)

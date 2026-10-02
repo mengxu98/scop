@@ -1278,33 +1278,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// pretsa_fit_block_cpp
-List pretsa_fit_block_cpp(const NumericMatrix& expression, const List& bases, const List& inverses, const IntegerVector& knots);
-RcppExport SEXP _scop_pretsa_fit_block_cpp(SEXP expressionSEXP, SEXP basesSEXP, SEXP inversesSEXP, SEXP knotsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type expression(expressionSEXP);
-    Rcpp::traits::input_parameter< const List& >::type bases(basesSEXP);
-    Rcpp::traits::input_parameter< const List& >::type inverses(inversesSEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type knots(knotsSEXP);
-    rcpp_result_gen = Rcpp::wrap(pretsa_fit_block_cpp(expression, bases, inverses, knots));
-    return rcpp_result_gen;
-END_RCPP
-}
-// pretsa_curve_summary_cpp
-List pretsa_curve_summary_cpp(const NumericMatrix& fitted, const NumericMatrix& expression, const NumericVector& pseudotime);
-RcppExport SEXP _scop_pretsa_curve_summary_cpp(SEXP fittedSEXP, SEXP expressionSEXP, SEXP pseudotimeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type fitted(fittedSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type expression(expressionSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type pseudotime(pseudotimeSEXP);
-    rcpp_result_gen = Rcpp::wrap(pretsa_curve_summary_cpp(fitted, expression, pseudotime));
-    return rcpp_result_gen;
-END_RCPP
-}
 // scanpy_filter_genes_cpp
 IntegerVector scanpy_filter_genes_cpp(NumericMatrix spliced, NumericMatrix unspliced, int min_counts, int min_counts_u, int n_threads);
 RcppExport SEXP _scop_scanpy_filter_genes_cpp(SEXP splicedSEXP, SEXP unsplicedSEXP, SEXP min_countsSEXP, SEXP min_counts_uSEXP, SEXP n_threadsSEXP) {
@@ -2978,8 +2951,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_palantir_terminal_states_cpp", (DL_FUNC) &_scop_palantir_terminal_states_cpp, 5},
     {"_scop_palantir_absorption_cpp", (DL_FUNC) &_scop_palantir_absorption_cpp, 5},
     {"_scop_palantir_row_entropy_cpp", (DL_FUNC) &_scop_palantir_row_entropy_cpp, 1},
-    {"_scop_pretsa_fit_block_cpp", (DL_FUNC) &_scop_pretsa_fit_block_cpp, 4},
-    {"_scop_pretsa_curve_summary_cpp", (DL_FUNC) &_scop_pretsa_curve_summary_cpp, 3},
     {"_scop_scanpy_filter_genes_cpp", (DL_FUNC) &_scop_scanpy_filter_genes_cpp, 5},
     {"_scop_scanpy_normalize_cpp", (DL_FUNC) &_scop_scanpy_normalize_cpp, 4},
     {"_scop_scanpy_knn_cpp", (DL_FUNC) &_scop_scanpy_knn_cpp, 4},

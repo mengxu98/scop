@@ -2,6 +2,7 @@ scenic_plot_network_graph <- function(
   srt,
   tool_name,
   features = NULL,
+  network_tf = NULL,
   highlight_tf = NULL,
   max_targets = 30,
   max_edges = Inf,
@@ -12,17 +13,18 @@ scenic_plot_network_graph <- function(
   palette = "RdYlBu",
   palcolor = NULL,
   rank_table = NULL,
-  regulon_label = "auto"
+  regulon_label = "auto",
+  network_display_targets = Inf
 ) {
   layout_use <- if (is.null(network_layout) || identical(network_layout, "auto")) {
-    "kk"
+    "fr"
   } else {
     network_layout
   }
   scenic_plot_one_network(
     srt = srt,
     tool_name = tool_name,
-    tfs = scenic_network_tf_candidates(features),
+    tfs = scenic_network_tf_candidates(network_tf %||% features),
     max_targets = max_targets,
     max_edges = max_edges,
     network_layout = layout_use,
@@ -35,7 +37,8 @@ scenic_plot_network_graph <- function(
     curvature = if (layout_use %in% c("star", "hub", "kk", "fr")) 0.08 else 0.12,
     rank_table = rank_table,
     regulon_label = regulon_label,
-    label_top_n = network_label_top_n
+    label_top_n = network_label_top_n,
+    display_targets = network_display_targets
   )
 }
 
@@ -202,7 +205,8 @@ scenic_plot_one_network <- function(
   curvature,
   rank_table = NULL,
   regulon_label = "auto",
-  label_top_n = Inf
+  label_top_n = Inf,
+  display_targets = Inf
 ) {
   edge_data <- scenic_network_edges(
     srt = srt,
@@ -214,20 +218,21 @@ scenic_plot_one_network <- function(
     filter_tfs = filter_tfs
   )
   network_data <- scenic_network_plot_data(edge_data = edge_data, layout = network_layout)
-  has_regions <- any(edge_data[["edge_type"]] %in% c("tf_region", "region_gene"))
-  default_labels <- if (
-    network_layout %in% c("star", "tripartite") || isTRUE(has_regions)
-  ) {
-    "all"
+  focal_tfs <- scenic_network_focal_tfs(network_data[["nodes"]], tfs)
+  display_data <- if (identical(display_targets, Inf)) {
+    network_data
   } else {
-    "tfs"
+    scenic_network_display_data(edge_data, focal_tfs, network_layout, display_targets)
   }
+  has_regions <- any(edge_data[["edge_type"]] %in% c("tf_region", "region_gene"))
+  default_labels <- if (network_layout %in% c("star", "tripartite") || has_regions) "all" else "tfs"
   label_data <- scenic_network_label_data(
-    node_data = network_data[["nodes"]],
+    node_data = display_data[["nodes"]],
     label_nodes = label_nodes,
     highlight_tf = highlight_tf,
     top_n = label_top_n,
-    default = default_labels
+    default = default_labels,
+    focal_tfs = if (isTRUE(filter_tfs)) NULL else focal_tfs
   )
   tf_annotations <- scenic_network_tf_annotations(
     rank_table = rank_table,
@@ -238,9 +243,9 @@ scenic_plot_one_network <- function(
     regulon_label = regulon_label
   )
   plot <- scenic_network_ggplot(
-    node_data = network_data[["nodes"]],
-    edge_plot = network_data[["edge_plot"]],
-    edge_data = network_data[["edges"]],
+    node_data = display_data[["nodes"]],
+    edge_plot = display_data[["edge_plot"]],
+    edge_data = display_data[["edges"]],
     label_data = label_data,
     label_nodes = label_nodes,
     layout = network_layout,
@@ -257,9 +262,40 @@ scenic_plot_one_network <- function(
     data = list(
       edges = network_data[["edges"]],
       nodes = network_data[["nodes"]],
-      annotations = tf_annotations
+      annotations = tf_annotations,
+      display_edges = display_data[["edges"]],
+      display_nodes = display_data[["nodes"]],
+      display_targets = display_targets
     )
   )
+}
+
+scenic_network_display_data <- function(edge_data, focal_tfs, layout = "fr", target_limit = 6) {
+  if (!is.numeric(target_limit) || length(target_limit) != 1L ||
+      is.na(target_limit) || target_limit <= 0 ||
+      (is.finite(target_limit) && target_limit != floor(target_limit))) {
+    stop("network_display_targets must be a positive integer or Inf.", call. = FALSE)
+  }
+  if (is.infinite(target_limit)) {
+    return(scenic_network_plot_data(edge_data, layout))
+  }
+  direct <- which(edge_data$from %in% focal_tfs &
+                    edge_data$edge_type %in% c("tf_gene", "tf_region"))
+  if (!length(direct)) {
+    return(scenic_network_plot_data(edge_data, layout))
+  }
+  pairs <- unique(edge_data[direct, c("from", "to"), drop = FALSE])
+  shared <- names(which(table(pairs$to) > 1L))
+  ranked <- direct[order(-abs(edge_data$weight[direct]),
+                         edge_data$from[direct], edge_data$to[direct])]
+  top <- unlist(lapply(split(ranked, edge_data$from[ranked]), utils::head,
+                       n = target_limit), use.names = FALSE)
+  # Retain weak shared-target and TF-to-TF connections as well as top targets.
+  keep <- union(top, direct[edge_data$to[direct] %in% c(shared, focal_tfs)])
+  regions <- edge_data$to[keep][edge_data$edge_type[keep] == "tf_region"]
+  keep <- union(keep, which(edge_data$edge_type == "region_gene" & edge_data$from %in% regions))
+  # The input table and direction/sign fields remain intact in original row order.
+  scenic_network_plot_data(edge_data[sort(keep), , drop = FALSE], layout)
 }
 
 scenic_network_tf_candidates <- function(...) {
@@ -301,11 +337,16 @@ scenic_network_edges <- function(
   }
   use_triplets <- !is.null(triplets)
   if (isTRUE(use_triplets) && length(tfs) > 0L) {
-    use_triplets <- any(triplets[["TF"]] %in% tfs)
+    use_triplets <- any(triplets[["TF"]] %in% tfs) ||
+      (!isTRUE(filter_tfs) && any(triplets[["gene"]] %in% tfs))
   }
   if (isTRUE(use_triplets)) {
-    if (isTRUE(filter_tfs) && length(tfs) > 0L) {
-      triplets <- triplets[triplets[["TF"]] %in% tfs, , drop = FALSE]
+    if (length(tfs) > 0L) {
+      keep <- triplets[["TF"]] %in% tfs
+      if (!isTRUE(filter_tfs)) {
+        keep <- keep | triplets[["gene"]] %in% tfs
+      }
+      triplets <- triplets[keep, , drop = FALSE]
     }
     if (nrow(triplets) == 0L) {
       use_triplets <- FALSE
@@ -775,8 +816,10 @@ scenic_network_label_data <- function(
   label_nodes = c("auto", "tfs", "all", "none"),
   highlight_tf = NULL,
   top_n = 60,
-  default = "tfs"
+  default = "tfs",
+  focal_tfs = NULL
 ) {
+  auto <- identical(label_nodes, "auto") && !is.null(focal_tfs)
   if (identical(label_nodes, "auto")) {
     label_nodes <- default
   }
@@ -794,12 +837,37 @@ scenic_network_label_data <- function(
     none = node_data[FALSE, , drop = FALSE],
     node_data
   )
-  if (!is.null(highlight_tf)) {
+  if (isTRUE(auto)) {
+    tf_nodes <- node_data[node_data[["name"]] %in% focal_tfs, , drop = FALSE]
+    tf_nodes <- tf_nodes[order(-tf_nodes[["degree"]], tf_nodes[["name"]]), , drop = FALSE]
+    tf_nodes <- utils::head(tf_nodes, top_n)
+    targets <- node_data[
+      as.character(node_data[["node_type"]]) == "gene" & node_data[["in_degree"]] > 1,
+      , drop = FALSE
+    ]
+    targets <- targets[order(-targets[["in_degree"]], -targets[["degree"]], targets[["name"]]), , drop = FALSE]
+    target_n <- min(6, max(0, top_n - nrow(tf_nodes)))
+    label_data <- rbind(tf_nodes, utils::head(targets, target_n))
+  }
+  if (!is.null(highlight_tf) && !identical(label_nodes, "none")) {
     highlight_tf <- scenic_tf_from_regulon(highlight_tf)
     highlight_data <- node_data[node_data[["name"]] %in% highlight_tf, , drop = FALSE]
     label_data <- unique(rbind(label_data, highlight_data))
   }
   label_data
+}
+
+scenic_network_focal_tfs <- function(node_data, tfs = NULL) {
+  tf_nodes <- node_data[as.character(node_data[["node_type"]]) == "TF", , drop = FALSE]
+  selected <- intersect(as.character(tfs), tf_nodes[["name"]])
+  if (length(selected) > 0L || nrow(tf_nodes) == 0L) {
+    return(selected)
+  }
+  if (!"out_degree" %in% colnames(tf_nodes)) {
+    return(tf_nodes[["name"]])
+  }
+  # Without explicit TFs, emphasize sources with substantial outgoing degree.
+  tf_nodes[["name"]][tf_nodes[["out_degree"]] >= max(1, max(tf_nodes[["out_degree"]]) / 4)]
 }
 
 
@@ -1040,112 +1108,206 @@ scenic_network_ggplot <- function(
   node_data <- styled[["nodes"]]
   edge_plot <- styled[["edges"]]
   tf_cols <- styled[["tf_cols"]]
-  if (is.null(label_data) || !"name" %in% colnames(label_data)) {
+  if (length(edge_width_range) == 2L) {
+    edge_plot[["linewidth_scaled"]] <- scenic_network_edge_width(
+      edge_plot[["weight"]],
+      width_range = edge_width_range
+    )
+  }
+
+  if (is.null(label_data) || !"name" %in% names(label_data)) {
     label_data <- node_data
   }
-  color_identity <- function(values) {
-    values <- unique(as.character(values))
-    stats::setNames(values, values)
+  tf_nodes <- node_data[as.character(node_data[["node_type"]]) == "TF", , drop = FALSE]
+  tf_labels <- tf_nodes[tf_nodes$name %in% label_data$name, , drop = FALSE]
+  region_nodes <- node_data[as.character(node_data[["node_type"]]) == "region", , drop = FALSE]
+  gene_nodes <- node_data[as.character(node_data[["node_type"]]) == "gene", , drop = FALSE]
+  use_radial <- identical(layout, "star") && nrow(tf_nodes) == 1L
+  show_gene_text <- !identical(label_nodes, "none") && !identical(label_nodes, "tfs")
+  if (identical(label_nodes, "tfs")) {
+    show_gene_text <- FALSE
   }
-  node_df <- data.frame(
-    name = as.character(node_data[["name"]]),
-    x = as.numeric(node_data[["x"]]),
-    y = as.numeric(node_data[["y"]]),
-    fill = as.character(node_data[["node_color"]]),
-    shape = as.character(node_data[["node_type"]]),
-    size = as.numeric(node_data[["node_size"]]),
-    stringsAsFactors = FALSE
-  )
-  node_df$shape[node_df$shape == "region"] <- "region"
-  node_df$shape[node_df$shape == "TF"] <- "TF"
-  node_df$shape[node_df$shape == "gene"] <- "gene"
-  node_df$label <- as.character(node_data[["label"]])
-  label_nodes_use <- as.character(label_data[["name"]])
-  edge_df <- data.frame(
-    from = as.character(edge_plot[["from"]]),
-    to = as.character(edge_plot[["to"]]),
-    weight = abs(as.numeric(edge_plot[["weight"]])),
-    edge_color = as.character(edge_plot[["edge_color"]]),
-    stringsAsFactors = FALSE
-  )
-  edge_df <- edge_df[
-    edge_df$from %in% node_df$name & edge_df$to %in% node_df$name, ,
-    drop = FALSE
-  ]
-  node_types <- node_df$shape
-  tf_names <- node_df$name[node_types == "TF"]
-  gene_names <- node_df$name[node_types == "gene"]
-  region_names <- node_df$name[node_types == "region"]
-  region_names <- region_names[!grepl("^(chr|CHR)[^[:space:]]*[:_-][0-9]", region_names)]
-  label_nodes_use <- switch(as.character(label_nodes),
-    none = character(0),
-    tfs = tf_names,
-    all = c(tf_names, gene_names, region_names),
-    c(tf_names, gene_names)
-  )
-  label_df <- node_df[node_df$name %in% label_nodes_use, , drop = FALSE]
-  label_sizes <- stats::setNames(
-    ifelse(label_df$shape == "TF", 3.4, 2.7),
-    label_df$name
-  )
-  label_faces <- stats::setNames(
-    ifelse(label_df$shape == "TF", "bold", "plain"),
-    label_df$name
-  )
-  p <- thisplot::NetworkPlot(
-    edge = edge_df,
-    node = node_df,
-    from = "from",
-    to = "to",
-    weight = "weight",
-    node_name = "name",
-    edge_group = "edge_color",
-    edge_palcolor = color_identity(edge_df$edge_color),
-    node_group = "fill",
-    node_palcolor = color_identity(node_df$fill),
-    node_shape = "shape",
-    node_shape_values = c(TF = 21, gene = 21, region = 23),
-    node_size = "size",
-    label = TRUE,
-    label_nodes = label_df$name,
-    label_size = label_sizes,
-    label_face = label_faces,
-    layout = "none",
-    node_coord = c("x", "y"),
-    edge_width = edge_width_range,
-    edge_curvature = curvature,
-    aspect.ratio = 1,
-    legend.position = "none"
-  )
-  p <- p + ggplot2::guides(fill = "none", colour = "none")
-  limits <- scenic_network_limits(node_df, label_df, use_radial = FALSE)
-  p <- p + ggplot2::coord_equal(
-    xlim = limits[["x"]],
-    ylim = limits[["y"]],
-    clip = "off"
-  )
-  if (is.null(tf_annotations)) {
-    tf_annotations <- scenic_network_tf_annotations(
-      rank_table = rank_table,
-      tfs = names(tf_cols),
-      regulon_label = regulon_label
+
+  p <- ggplot2::ggplot()
+  if (abs(curvature) < 1e-8) {
+    p <- p + ggplot2::geom_segment(
+      data = edge_plot,
+      ggplot2::aes(
+        x = .data[["x"]],
+        y = .data[["y"]],
+        xend = .data[["x_end"]],
+        yend = .data[["y_end"]],
+        color = .data[["edge_color"]],
+        linewidth = .data[["linewidth_scaled"]]
+      ),
+      alpha = 0.62,
+      lineend = "round",
+      show.legend = FALSE
+    )
+  } else {
+    p <- p + ggplot2::geom_curve(
+      data = edge_plot,
+      ggplot2::aes(
+        x = .data[["x"]],
+        y = .data[["y"]],
+        xend = .data[["x_end"]],
+        yend = .data[["y_end"]],
+        color = .data[["edge_color"]],
+        linewidth = .data[["linewidth_scaled"]]
+      ),
+      curvature = curvature,
+      alpha = 0.55,
+      lineend = "round",
+      show.legend = FALSE
     )
   }
-  tf_annotations <- tf_annotations[
-    match(names(tf_cols), tf_annotations[["TF"]]), ,
-    drop = FALSE
-  ]
-  has_annotation <- nrow(tf_annotations) > 0L &&
-    any(tf_annotations[["show_regulon"]])
-  if (length(tf_cols) > 1L || has_annotation) {
+
+  if (nrow(region_nodes) > 0L) {
+    p <- p + ggplot2::geom_point(
+      data = region_nodes,
+      ggplot2::aes(
+        x = .data[["x"]],
+        y = .data[["y"]],
+        fill = .data[["node_color"]],
+        color = .data[["border_color"]],
+        size = .data[["node_size"]]
+      ),
+      shape = 23,
+      stroke = 0.35,
+      show.legend = FALSE
+    )
+  }
+  if (nrow(gene_nodes) > 0L) {
+    p <- p + ggplot2::geom_point(
+      data = gene_nodes,
+      ggplot2::aes(
+        x = .data[["x"]],
+        y = .data[["y"]],
+        fill = .data[["node_color"]],
+        color = .data[["border_color"]],
+        size = .data[["node_size"]]
+      ),
+      shape = 21,
+      stroke = 0.45,
+      show.legend = FALSE
+    )
+  }
+  if (nrow(tf_nodes) > 0L) {
+    p <- p + ggplot2::geom_point(
+      data = tf_nodes,
+      ggplot2::aes(
+        x = .data[["x"]],
+        y = .data[["y"]],
+        fill = .data[["node_color"]],
+        size = .data[["node_size"]]
+      ),
+      shape = 21,
+      color = "#1A1A1A",
+      stroke = 0.9,
+      show.legend = FALSE
+    )
+  }
+
+  if (nrow(tf_labels) > 0L && !identical(label_nodes, "none")) {
+    p <- p + ggplot2::geom_text(
+      data = tf_labels,
+      ggplot2::aes(
+        x = .data[["x"]],
+        y = .data[["y"]],
+        label = .data[["label"]],
+        color = .data[["label_color"]]
+      ),
+      fontface = "bold",
+      size = 2.6,
+      show.legend = FALSE
+    )
+  }
+
+  gene_labels <- gene_nodes[gene_nodes$name %in% label_data$name, , drop = FALSE]
+  if (!isTRUE(show_gene_text)) {
+    gene_labels <- gene_nodes[FALSE, , drop = FALSE]
+  }
+  region_labels <- region_nodes[region_nodes$name %in% label_data$name, , drop = FALSE]
+  if (identical(label_nodes, "all")) {
+    region_labels <- region_labels[!grepl("^(chr|CHR)[^[:space:]]*[:_-][0-9]", region_labels[["name"]]), , drop = FALSE]
+  } else {
+    region_labels <- region_nodes[FALSE, , drop = FALSE]
+  }
+  other_labels <- rbind(gene_labels, region_labels)
+  if (nrow(other_labels) > 0L) {
+    if (isTRUE(use_radial)) {
+      origin <- c(tf_nodes[["x"]][[1]], tf_nodes[["y"]][[1]])
+      other_labels <- scenic_radial_label_coords(other_labels, origin = origin, expand = 1.22)
+      p <- p + ggplot2::geom_text(
+        data = other_labels,
+        ggplot2::aes(
+          x = .data[["label_x"]],
+          y = .data[["label_y"]],
+          label = .data[["label"]],
+          hjust = .data[["hjust"]]
+        ),
+        size = 2.85,
+        color = "grey15",
+        show.legend = FALSE
+      )
+    } else {
+      p <- p + ggrepel::geom_text_repel(
+        data = other_labels,
+        ggplot2::aes(x = .data[["x"]], y = .data[["y"]], label = .data[["label"]]),
+        size = 2.7,
+        color = "grey20",
+        max.overlaps = Inf,
+        box.padding = 0.18,
+        point.padding = 0.22,
+        segment.color = "grey75",
+        segment.size = 0.15,
+        min.segment.length = 0.08,
+        show.legend = FALSE
+      )
+    }
+  }
+
+  # Historical legends are restored, with a cap to avoid a zero-sized viewport.
+  # The complete TF annotations remain in the returned plot_data.
+  show_legend <- length(tf_cols) > 1L ||
+    (identical(regulon_label, "regulon") && !is.null(tf_annotations))
+  if (show_legend && length(tf_cols) <= 20L) {
+    tf_groups <- if (!is.null(tf_annotations) && "group" %in% names(tf_annotations)) {
+      stats::setNames(tf_annotations$group, tf_annotations$TF)
+    } else {
+      scenic_network_tf_groups(rank_table, names(tf_cols))
+    }
+    tfs <- names(tf_cols)
+    groups <- unname(tf_groups[tfs])
+    legend_labels <- ifelse(
+      is.na(groups) | !nzchar(groups),
+      tfs,
+      paste0(tfs, " (", groups, ")")
+    )
+    if (identical(regulon_label, "tf")) {
+      legend_labels <- tfs
+    } else if (identical(regulon_label, "regulon") && !is.null(tf_annotations)) {
+      annotation_idx <- match(tfs, tf_annotations$TF)
+      regulons <- tf_annotations$regulon[annotation_idx]
+      has_regulon <- !is.na(regulons) & nzchar(regulons)
+      legend_labels[has_regulon] <- regulons[has_regulon]
+    }
     legend_df <- data.frame(
-      x = mean(node_df[["x"]]),
-      y = mean(node_df[["y"]]),
-      label = tf_annotations[["legend_label"]],
+      x = mean(node_data[["x"]]),
+      y = mean(node_data[["y"]]),
+      label = legend_labels,
       stringsAsFactors = FALSE
     )
-    legend_name <- if (has_annotation) "Top regulon" else "TF"
+    legend_name <- if (identical(regulon_label, "regulon")) {
+      "Top regulon"
+    } else if (identical(regulon_label, "auto") && any(!is.na(unname(tf_groups)) & nzchar(unname(tf_groups)))) {
+      "TF (top cell type)"
+    } else {
+      "TF"
+    }
     p <- p +
+      ggplot2::scale_color_identity(guide = "none") +
+      ggplot2::scale_fill_identity(guide = "none") +
       ggnewscale::new_scale_fill() +
       ggplot2::geom_point(
         data = legend_df,
@@ -1159,14 +1321,56 @@ scenic_network_ggplot <- function(
       ) +
       ggplot2::scale_fill_manual(
         name = legend_name,
-        values = stats::setNames(unname(tf_cols), tf_annotations[["legend_label"]]),
+        values = stats::setNames(unname(tf_cols), legend_labels),
         guide = ggplot2::guide_legend(
           override.aes = list(alpha = 1, size = 4, shape = 21, color = "#1A1A1A")
         )
-      ) +
-      ggplot2::theme(legend.position = "right")
+      )
+  } else {
+    p <- p + ggplot2::scale_color_identity(guide = "none") + ggplot2::scale_fill_identity(guide = "none")
   }
-  p
+
+  extra <- NULL
+  if (isTRUE(use_radial) && nrow(other_labels) > 0L && "label_x" %in% colnames(other_labels)) {
+    extra <- other_labels
+  }
+  limits <- scenic_network_limits(node_data, extra %||% other_labels, use_radial = isTRUE(use_radial))
+  p +
+    ggplot2::scale_size_identity() +
+    ggplot2::scale_linewidth_identity(guide = "none") +
+    ggplot2::coord_equal(xlim = limits[["x"]], ylim = limits[["y"]], clip = "off") +
+    theme_scop() +
+    ggplot2::theme(
+      plot.title = ggplot2::element_blank(),
+      plot.subtitle = ggplot2::element_blank(),
+      axis.text = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      axis.title = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank(),
+      panel.background = ggplot2::element_blank(),
+      panel.grid = ggplot2::element_blank(),
+      legend.title = ggplot2::element_text(size = 11),
+      legend.text = ggplot2::element_text(size = 10),
+      legend.position = "right",
+      plot.margin = ggplot2::margin(8, 16, 8, 16)
+    ) +
+    ggplot2::labs(title = NULL, subtitle = NULL, x = NULL, y = NULL)
+}
+
+scenic_radial_label_coords <- function(label_data, origin = c(0, 0), expand = 1.18) {
+  dx <- label_data[["x"]] - origin[[1]]
+  dy <- label_data[["y"]] - origin[[2]]
+  r <- sqrt(dx^2 + dy^2)
+  center <- r < 1e-8
+  r[center] <- 1
+  label_data[["label_x"]] <- origin[[1]] + dx / r * (r * expand)
+  label_data[["label_y"]] <- origin[[2]] + dy / r * (r * expand)
+  label_data[["label_x"]][center] <- origin[[1]]
+  label_data[["label_y"]][center] <- origin[[2]]
+  label_data[["hjust"]] <- ifelse(label_data[["label_x"]] >= origin[[1]], 0, 1)
+  label_data[["hjust"]][center] <- 0.5
+  label_data[["vjust"]] <- 0.5
+  label_data
 }
 
 scenic_network_limits <- function(node_data, label_data, use_radial = FALSE) {

@@ -353,14 +353,6 @@ palantir_row_entropy_cpp <- function(probabilities) {
     .Call(`_scop_palantir_row_entropy_cpp`, probabilities)
 }
 
-pretsa_fit_block_cpp <- function(expression, bases, inverses, knots) {
-    .Call(`_scop_pretsa_fit_block_cpp`, expression, bases, inverses, knots)
-}
-
-pretsa_curve_summary_cpp <- function(fitted, expression, pseudotime) {
-    .Call(`_scop_pretsa_curve_summary_cpp`, fitted, expression, pseudotime)
-}
-
 scanpy_filter_genes_cpp <- function(spliced, unspliced, min_counts = 3L, min_counts_u = 3L, n_threads = 0L) {
     .Call(`_scop_scanpy_filter_genes_cpp`, spliced, unspliced, min_counts, min_counts_u, n_threads)
 }

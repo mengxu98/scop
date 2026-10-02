@@ -18,7 +18,6 @@ RunDynamicFeatures(
   fit_method = c("gam", "pretsa"),
   knot = 0,
   max_knot_allowed = 10,
-  pretsa_backend = c("cpp", "r"),
   padjust_method = "fdr",
   cores = 1,
   verbose = TRUE,
@@ -62,9 +61,6 @@ Either \code{"gam"} (generalized additive models) or \code{"pretsa"} (Pattern re
 \item{knot}{For \code{fit_method = "pretsa"}: B-spline knots. \code{0} or \code{"auto"}.}
 
 \item{max_knot_allowed}{For \code{fit_method = "pretsa"} when \code{knot = "auto"}: max knots.}
-
-\item{pretsa_backend}{PreTSA fitting backend. \code{"cpp"} batches model selection
-and fitting; \code{"r"} retains the reference implementation.}
 
 \item{padjust_method}{The method used for p-value adjustment.}
 
