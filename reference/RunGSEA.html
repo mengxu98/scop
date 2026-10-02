@@ -168,18 +168,14 @@ This argument is used to convert the gene IDs from <code>IDtype</code> to <code>
 
 
 <dt id="arg-db">db<a class="anchor" aria-label="anchor" href="#arg-db"></a></dt>
-<dd><p>Annotation sources. One or more of <code>"GO"</code>, <code>"GO_BP"</code>, <code>"GO_CC"</code>,
-<code>"GO_MF"</code>, <code>"KEGG"</code>, <code>"WikiPathway"</code>, <code>"Reactome"</code>, <code>"CORUM"</code>, <code>"MP"</code>, <code>"DO"</code>,
-<code>"HPO"</code>, <code>"PFAM"</code>, <code>"CSPA"</code>, <code>"Surfaceome"</code>, <code>"SPRomeDB"</code>, <code>"VerSeDa"</code>,
+<dd><p>Character vector of database or resource selectors: <code>"GO"</code>,
+<code>"GO_BP"</code>, <code>"GO_CC"</code>, <code>"GO_MF"</code>, <code>"KEGG"</code>, <code>"WikiPathway"</code>, <code>"Reactome"</code>,
+<code>"CORUM"</code>, <code>"MP"</code>, <code>"DO"</code>, <code>"HPO"</code>, <code>"PFAM"</code>, <code>"Chromosome"</code>, <code>"GeneType"</code>,
+<code>"Enzyme"</code>, <code>"TF"</code>, <code>"CSPA"</code>, <code>"Surfaceome"</code>, <code>"SPRomeDB"</code>, <code>"VerSeDa"</code>,
 <code>"TFLink"</code>, <code>"hTFtarget"</code>, <code>"TRRUST"</code>, <code>"JASPAR"</code>, <code>"ENCODE"</code>, <code>"MSigDB"</code>,
-<code>"CellTalk"</code>, <code>"CellChat"</code>, <code>"Chromosome"</code>, <code>"GeneType"</code>, <code>"Enzyme"</code>, <code>"TF"</code>,
-<code>"CytoTRACE2"</code>. MSigDB collections use <code>"MSigDB_&lt;collection&gt;"</code>, with <code>:</code>
-replaced by <code>_</code>. Top-level names such as <code>"MSigDB_H"</code> (human hallmark),
-<code>"MSigDB_MH"</code> (mouse hallmark) and <code>"MSigDB_M2"</code> stay available and include
-their nested collections. Nested names include each prefix, for example
-<code>"MSigDB_M2_CGP"</code>, <code>"MSigDB_M2_CP"</code> and <code>"MSigDB_M2_CP_BIOCARTA"</code>. Colon
-forms such as <code>"MSigDB_M2:CGP"</code> are accepted. <code>"CytoTRACE2"</code> is
-species-independent and is required by <a href="RunCytoTRACE.html">RunCytoTRACE</a>.</p></dd>
+<code>"CellTalk"</code>, <code>"CellChat"</code>, <code>"CytoTRACE2"</code> or
+<code>"MSigDB_&lt;collection&gt;"</code>. A vector may combine sources. See the corresponding
+preparation function for source-specific settings.</p></dd>
 
 
 <dt id="arg-db-update">db_update<a class="anchor" aria-label="anchor" href="#arg-db-update"></a></dt>
@@ -308,14 +304,14 @@ Enrichment result is a list with the following component:</p><ul><li><p><code>en
 <span class="r-in"><span>  TERM2GENE <span class="op">=</span> <span class="va">term2gene</span>,</span></span>
 <span class="r-in"><span>  minGSSize <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-29 14:03:55] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-09-29 14:03:55] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-29 14:03:55] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-29 14:03:55] Prepared <span style="color: #0000BB;">15</span> ranked gene rows after ID mapping.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-29 14:03:55] Running GSEA for <span style="color: #0000BB;">1</span> group/database combination(s) ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-29 14:03:55] Running GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>, genes <span style="color: #0000BB;">15</span> ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-09-29 14:03:55] Finished GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-09-29 14:03:55] <span style="color: #0000BB;">GSEA</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-02 13:24:12] Start <span style="color: #0000BB;">GSEA</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-10-02 13:24:12] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-02 13:24:12] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-02 13:24:12] Prepared <span style="color: #0000BB;">15</span> ranked gene rows after ID mapping.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-02 13:24:12] Running GSEA for <span style="color: #0000BB;">1</span> group/database combination(s) ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-02 13:24:12] Running GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>, genes <span style="color: #0000BB;">15</span> ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-02 13:24:13] Finished GSEA: group <span style="color: #0000BB;">"Cluster1"</span>, database <span style="color: #0000BB;">"custom"</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-02 13:24:13] <span style="color: #0000BB;">GSEA</span> analysis done</span>
 <span class="r-in"><span><span class="fu"><a href="GSEAPlot.html">GSEAPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  res <span class="op">=</span> <span class="va">gsea_out</span>,</span></span>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"custom"</span>,</span></span>
