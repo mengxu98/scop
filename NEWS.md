@@ -3,6 +3,7 @@
 * **change**: Database preparation now exposes independent `PrepareGO()`,
   `PrepareKEGG()`, `PrepareMSigDB()` and other source interfaces. `PrepareDB()`
   dispatches to these interfaces, with shared annotation caching and conversion.
+  Combined model and custom annotation requests retain their existing structure.
 
 * **fix**: Differential-abundance plots now project Milo neighborhoods through
   stored member cells, use `SpatialFDR` for Milo neighborhood significance,

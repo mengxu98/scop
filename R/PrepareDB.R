@@ -99,20 +99,20 @@ PrepareDB <- function(
     db <- as.character(db)
     if (anyNA(db)) log_message("{.arg db} cannot contain missing values", message_type = "error")
   }
-  if (!is.null(custom_TERM2GENE)) {
-    return(PrepareCustomDB(
-      species, db, db_IDtypes, db_version, db_update, data_dir,
-      convert_species, Ensembl_version, mirror, biomart, max_tries, custom_TERM2GENE,
-      custom_TERM2NAME, custom_species, custom_IDtype, custom_version, verbose, ...
-    ))
-  }
-  db_requested <- db
-  db <- normalize_msigdb_db_names(db)
   db_list <- list()
   if ("CytoTRACE2" %in% db) {
     db_list <- PrepareCytoTRACE2(db_update = db_update, verbose = verbose)
     db <- setdiff(db, "CytoTRACE2")
   }
+  if (!is.null(custom_TERM2GENE)) {
+    return(c(db_list, PrepareCustomDB(
+      species, db, db_IDtypes, db_version, db_update, data_dir,
+      convert_species, Ensembl_version, mirror, biomart, max_tries, custom_TERM2GENE,
+      custom_TERM2NAME, custom_species, custom_IDtype, custom_version, verbose, ...
+    )))
+  }
+  db_requested <- db
+  db <- normalize_msigdb_db_names(db)
   annotation_db <- db
   cached_order <- list()
   if (length(annotation_db) && isFALSE(db_update)) {

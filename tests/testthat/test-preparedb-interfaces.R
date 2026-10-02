@@ -206,3 +206,34 @@ test_that("custom preparation has an independent public entry point", {
   expect_identical(saved$key, list("v1", "Mus_musculus", "Cycle"))
   expect_error(PrepareCustomDB(db = c("Cycle", "Other"), custom_TERM2GENE = mappings, verbose = FALSE), "length")
 })
+
+test_that("custom annotations can be prepared alongside model resources", {
+  skip_if_not_installed("R.cache")
+  model <- list(data_dir = tempdir(), files = "model_parameters.rds", version = "1.1.0")
+  local_mocked_bindings(
+    PrepareCytoTRACE2 = function(db_update, verbose) {
+      expect_true(db_update)
+      expect_false(verbose)
+      list(CytoTRACE2 = model)
+    }, .package = "scop"
+  )
+  saved <- NULL
+  local_mocked_bindings(saveCache = function(object, key, comment, ...) saved <<- list(key = key, comment = comment), .package = "R.cache")
+  mappings <- data.frame(Term = c("Cycle", "Cycle"), symbol = c("G1", "G2"))
+  custom <- PrepareCustomDB(
+    species = "Mus_musculus", db = "Cycle", db_IDtypes = "symbol", db_update = TRUE,
+    custom_TERM2GENE = mappings, custom_species = "Mus_musculus", custom_IDtype = "symbol", custom_version = "v1", verbose = FALSE
+  )
+  expect_identical(PrepareDB(
+    species = "Mus_musculus", db = "Cycle", db_IDtypes = "symbol", db_update = TRUE,
+    custom_TERM2GENE = mappings, custom_species = "Mus_musculus", custom_IDtype = "symbol", custom_version = "v1", verbose = FALSE
+  ), custom)
+  for (selectors in list(c("CytoTRACE2", "Cycle"), c("Cycle", "CytoTRACE2"))) {
+    combined <- PrepareDB(
+      species = "Mus_musculus", db = selectors, db_IDtypes = "symbol", db_update = TRUE,
+      custom_TERM2GENE = mappings, custom_species = "Mus_musculus", custom_IDtype = "symbol", custom_version = "v1", verbose = FALSE
+    )
+    expect_identical(combined, c(list(CytoTRACE2 = model), custom))
+    expect_identical(saved$key, list("v1", "Mus_musculus", "Cycle"))
+  }
+})
