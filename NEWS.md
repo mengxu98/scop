@@ -1,5 +1,11 @@
 # scop (development version)
 
+* **change**: Database preparation now exposes independent `PrepareGO()`,
+  `PrepareKEGG()`, `PrepareMSigDB()` and other source interfaces. `PrepareDB()`
+  dispatches to these interfaces, with shared annotation caching and conversion.
+  Combined model and custom annotation requests retain their existing structure.
+  Chromosome mappings are resolved from the annotation namespace on first use.
+
 * **fix**: Differential-abundance plots now project Milo neighborhoods through
   stored member cells, use `SpatialFDR` for Milo neighborhood significance,
   and use scCODA credibility for scCODA plots. Milo group summaries and the
