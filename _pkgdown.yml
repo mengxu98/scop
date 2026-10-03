@@ -347,6 +347,8 @@ reference:
   - RunGSEA
   - RunGSVA
   - RunMetabolism
+  - PrepareIREA
+  - RunIREA
 
 - subtitle: "Enrichment Analysis Plot"
 - contents:
@@ -357,6 +359,7 @@ reference:
   - GSEAPlot
   - GSVAPlot
   - MetabolismPlot
+  - IREAPlot
 
 - subtitle: "Metabolic Flux Analysis"
 - contents:
@@ -498,6 +501,33 @@ reference:
 - contents:
   - ListDB
   - PrepareDB
+  - PrepareGO
+  - PrepareMP
+  - PrepareDO
+  - PrepareHPO
+  - PreparePFAM
+  - PrepareChromosome
+  - PrepareGeneType
+  - PrepareEnzyme
+  - PrepareKEGG
+  - PrepareWikiPathway
+  - PrepareReactome
+  - PrepareMSigDB
+  - PrepareCORUM
+  - PrepareTF
+  - PrepareCSPA
+  - PrepareSurfaceome
+  - PrepareSPRomeDB
+  - PrepareVerSeDa
+  - PrepareTFLink
+  - PrepareHTFtarget
+  - PrepareTRRUST
+  - PrepareJASPAR
+  - PrepareENCODE
+  - PrepareCellTalk
+  - PrepareCellChat
+  - PrepareCytoTRACE2
+  - PrepareCustomDB
   - RunCisTarget
 
 - subtitle: "Data"
