@@ -1,5 +1,12 @@
 # scop (development version)
 
+* **change**: `RunPropeller()` now uses speckle's transformed proportions and
+  empirical Bayes moderated tests instead of the internal logit t-test.
+  It supports `transform`, `robust`, and `trend`, records backend results and
+  designs, and blocks on donor IDs for fully paired comparisons. At least
+  two samples per condition are required. SCOP bootstrap intervals remain
+  descriptive intervals for the untransformed proportion ratio.
+
 * **change**: Database preparation now exposes independent `PrepareGO()`,
   `PrepareKEGG()`, `PrepareMSigDB()` and other source interfaces. `PrepareDB()`
   dispatches to these interfaces, with shared annotation caching and conversion.

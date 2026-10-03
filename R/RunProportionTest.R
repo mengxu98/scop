@@ -4,6 +4,8 @@
 #' [RunProportionTest] performs differential abundance testing for cell proportions.
 #' The function acts as a dispatcher and routes to one of the method-specific
 #' implementations: permutation, milo, sccoda, or propeller.
+#' `"propeller"` uses the optional speckle backend for pairwise empirical
+#' Bayes moderated tests; see [RunPropeller] for transformations and parameters.
 #'
 #' @md
 #' @inheritParams thisutils::log_message
@@ -189,6 +191,15 @@ RunProportionTest <- function(
 
   if (isTRUE(pseudo_sample_info$enabled)) {
     method_bundle$results <- lapply(method_bundle$results, mask_pseudo_sample_inference)
+    if (identical(proportion_method, "propeller") &&
+        !is.null(method_bundle$details$backend_results)) {
+      method_bundle$details$backend_results <- lapply(
+        method_bundle$details$backend_results, function(x) {
+          x$results <- mask_pseudo_sample_inference(x$results)
+          x
+        }
+      )
+    }
     if (!is.null(method_bundle$neighborhood_results)) {
       method_bundle$neighborhood_results <- lapply(
         method_bundle$neighborhood_results, mask_pseudo_sample_inference
@@ -513,7 +524,7 @@ add_proportion_pseudo_samples <- function(
 
 mask_pseudo_sample_inference <- function(df) {
   statistics <- c(
-    "pval", "p_val", "p.value", "PValue", "P.Value", "F",
+    "pval", "p_val", "p.value", "PValue", "P.Value", "F", "Tstatistic",
     "FDR", "SpatialFDR", "BH_FDR", "adj.P.Val", "q_value", "qval",
     "inclusion_prob", "boot_CI_2.5", "boot_CI_97.5",
     "hdi_2.5", "hdi_97.5"
