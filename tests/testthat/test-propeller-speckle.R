@@ -159,3 +159,70 @@ test_that("virtual propeller samples mask upstream statistics too", {
   expect_true(all(is.na(bundle$results$A_vs_B$Tstatistic)))
   expect_true(all(is.na(bundle$details$backend_results$A_vs_B$results$P.Value)))
 })
+
+make_propeller_robust_srt <- function() {
+  # Fixed counts avoid RNG/version dependence. Most types vary mildly, while
+  # the last two alternate between rare and abundant within both conditions.
+  tab <- outer(seq_len(12L), seq_len(30L), function(i, j) {
+    40L + 2L * j + ((i * (j + 3L) + i^2) %% 13L)
+  })
+  tab[7:12, 1:6] <- tab[7:12, 1:6] + 25L
+  tab[, 29L] <- rep(c(1L, 400L, 5L, 300L, 2L, 500L), 2L)
+  tab[, 30L] <- rep(c(350L, 2L, 450L, 1L, 250L, 3L), 2L)
+  dat <- do.call(rbind, lapply(seq_len(nrow(tab)), function(i) {
+    data.frame(CellType = rep(sprintf("type%02d", seq_len(ncol(tab))), tab[i, ]),
+      Condition = if (i <= 6L) "A" else "B", Sample = sprintf("sample%02d", i))
+  }))
+  counts <- Matrix::sparseMatrix(i = rep(1L, nrow(dat)), j = seq_len(nrow(dat)), x = 1,
+    dims = c(2L, nrow(dat)),
+    dimnames = list(c("gene1", "gene2"), paste0("cell", seq_len(nrow(dat)))))
+  srt <- SeuratObject::CreateSeuratObject(counts)
+  rownames(dat) <- colnames(srt)
+  SeuratObject::AddMetaData(srt, dat)
+}
+
+test_that("propeller exercises limma robust estimation with variance outliers", {
+  skip_if_not_installed("speckle")
+  getFromNamespace("propeller_check_r", "scop")()
+  srt <- make_propeller_robust_srt()
+  expect_equal(length(unique(srt$CellType)), 30L)
+  real_fit <- getFromNamespace("fitFDistRobustly", "limma")
+  fits <- list()
+  testthat::local_mocked_bindings(
+    fitFDistRobustly = function(...) {
+      # Delegate unchanged to limma and retain its diagnostics. Small-input
+      # non-robust fallback has no tail.p.value, even when robust=TRUE.
+      fit <- real_fit(...)
+      fits[[length(fits) + 1L]] <<- fit
+      fit
+    }, .package = "limma")
+  upstream <- thisutils::get_namespace_fun("speckle", "propeller")
+  for (transform in c("logit", "asin")) {
+    for (trend in c(FALSE, TRUE)) {
+      fits <- list()
+      result <- RunPropeller(srt, "CellType", "Condition", "Sample",
+        comparison = list(c("A", "B")), n_bootstrap = 0L,
+        transform = transform, robust = TRUE, trend = trend,
+        verbose = FALSE)$results$A_vs_B
+      # RunPropeller also evaluates the reverse comparison.
+      expect_length(fits, 2L)
+      fit <- fits[[1L]]
+      expect_length(fit$tail.p.value, 30L)
+      expect_true(all(is.finite(fit$tail.p.value)))
+      expect_true(any(fit$tail.p.value < 0.01))
+      expect_gt(length(unique(fit$df2.shrunk)), 1L)
+      ref <- upstream(clusters = factor(srt$CellType), sample = factor(srt$Sample),
+        group = factor(srt$Condition, levels = c("A", "B")),
+        transform = transform, robust = TRUE, trend = trend)
+      ref <- ref[match(result$clusters, rownames(ref)), , drop = FALSE]
+      expect_equal(result$pval, ref$P.Value, tolerance = 1e-12)
+      expect_equal(result$FDR, ref$FDR, tolerance = 1e-12)
+      expect_equal(result$Tstatistic, ref$Tstatistic, tolerance = 1e-12)
+      nonrobust <- RunPropeller(srt, "CellType", "Condition", "Sample",
+        comparison = list(c("A", "B")), n_bootstrap = 0L,
+        transform = transform, robust = FALSE, trend = trend,
+        verbose = FALSE)$results$A_vs_B
+      expect_gt(max(abs(result$pval - nonrobust$pval)), 1e-6)
+    }
+  }
+})

@@ -64,10 +64,24 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::rcmdcheck, any::testthat, any::callr, any::ps, github::immunogenomics/presto
+          extra-packages: any::rcmdcheck, any::testthat, any::callr, any::ps, github::immunogenomics/presto, bioc::speckle
           needs: check
           dependencies: '"hard"'
           cache: false
+
+      - name: Verify speckle propeller backend
+        shell: Rscript {0}
+        run: |
+          stopifnot(requireNamespace("speckle", quietly = TRUE))
+          pkgload::load_all(".", quiet = TRUE)
+          for (path in c("tests/testthat/test-propeller-speckle.R",
+                         "tests/testthat/test-proportion-method-contracts.R")) {
+            desc <- if (grepl("method-contracts", path))
+              "virtual samples require opt-in and suppress inferential columns" else NULL
+            results <- testthat::test_file(path, desc = desc, reporter = "summary",
+                                          stop_on_failure = TRUE)
+            stopifnot(!any(as.data.frame(results)$skipped))
+          }
 
       # Presto is deliberately runtime-optional and therefore is not exposed
       # as a declared dependency inside R CMD check. Exercise the real GitHub
