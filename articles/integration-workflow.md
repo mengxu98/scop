@@ -51,7 +51,7 @@ without erasing cell-type structure.
 ``` r
 
 panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
-#> ℹ [2026-09-27 22:47:17] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-04 23:08:58] Skip `log1p()` because `layer = data` is not "counts"
 
 CellDimPlot(
   panc8_sub,
@@ -75,36 +75,36 @@ panc8_harmony <- RunIntegration(
   batch = "tech",
   integration_methods = "Harmony"
 )
-#> ◌ [2026-09-27 22:47:21] Run integration workflow...
-#> ℹ [2026-09-27 22:47:23] Split `srt_merge` into `srt_list` by "tech"
-#> ℹ [2026-09-27 22:47:23] Checking a list of <Seurat>...
-#> ℹ [2026-09-27 22:47:23] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-09-27 22:47:23] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-09-27 22:47:24] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-09-27 22:47:24] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-09-27 22:47:24] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-09-27 22:47:24] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-09-27 22:47:24] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-09-27 22:47:24] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-09-27 22:47:24] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-09-27 22:47:25] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-09-27 22:47:25] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-27 22:47:25] Number of available HVF: 2000
-#> ℹ [2026-09-27 22:47:25] Finished check
-#> ℹ [2026-09-27 22:47:25] Perform `Seurat::ScaleData()`
+#> ◌ [2026-10-04 23:09:03] Run integration workflow...
+#> ℹ [2026-10-04 23:09:04] Split `srt_merge` into `srt_list` by "tech"
+#> ℹ [2026-10-04 23:09:05] Checking a list of <Seurat>...
+#> ℹ [2026-10-04 23:09:05] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-04 23:09:05] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-10-04 23:09:06] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-04 23:09:06] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-10-04 23:09:06] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-04 23:09:06] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-10-04 23:09:06] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-04 23:09:06] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-10-04 23:09:06] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-04 23:09:06] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-10-04 23:09:06] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-04 23:09:07] Number of available HVF: 2000
+#> ℹ [2026-10-04 23:09:07] Finished check
+#> ℹ [2026-10-04 23:09:07] Perform `Seurat::ScaleData()`
 #> Warning: Different features in new layer data than already exists for
 #> scale.data
-#> ℹ [2026-09-27 22:47:25] Perform linear dimension reduction("pca")
-#> ℹ [2026-09-27 22:47:26] Perform Harmony integration
-#> ℹ [2026-09-27 22:47:26] Using "Harmonypca" (1:20) as input
-#> ℹ [2026-09-27 22:47:26] Adjust neighbor k from 20 to 20 for small-sample clustering
-#> ℹ [2026-09-27 22:47:26] Perform `Seurat::FindClusters()` with "louvain"
-#> ℹ [2026-09-27 22:47:26] Reorder clusters...
-#> ℹ [2026-09-27 22:47:26] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-27 22:47:26] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-09-27 22:47:29] Perform umap nonlinear dimension reduction using Harmony (1:20)
-#> ℹ [2026-09-27 22:47:32] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
-#> ✔ [2026-09-27 22:47:34] Harmony integration completed
+#> ℹ [2026-10-04 23:09:07] Perform linear dimension reduction("pca")
+#> ℹ [2026-10-04 23:09:08] Perform Harmony integration
+#> ℹ [2026-10-04 23:09:08] Using "Harmonypca" (1:20) as input
+#> ℹ [2026-10-04 23:09:09] Adjust neighbor k from 20 to 20 for small-sample clustering
+#> ℹ [2026-10-04 23:09:09] Perform `Seurat::FindClusters()` with "louvain"
+#> ℹ [2026-10-04 23:09:09] Reorder clusters...
+#> ℹ [2026-10-04 23:09:09] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-04 23:09:09] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-10-04 23:09:12] Perform umap nonlinear dimension reduction using Harmony (1:20)
+#> ℹ [2026-10-04 23:09:15] Perform umap nonlinear dimension reduction using Harmonypca (1:20)
+#> ✔ [2026-10-04 23:09:18] Harmony integration completed
 
 SeuratObject::Reductions(panc8_harmony)
 #> [1] "Standardpca"       "StandardpcaUMAP2D" "StandardUMAP2D"   
@@ -152,25 +152,25 @@ panc8_uncorrected <- RunIntegration(
   integration_methods = "Uncorrected",
   verbose = FALSE
 )
-#> ℹ [2026-09-27 22:47:36] Checking a list of <Seurat>...
-#> ℹ [2026-09-27 22:47:36] Data 1/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-09-27 22:47:36] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
-#> ℹ [2026-09-27 22:47:36] Data 2/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-09-27 22:47:36] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
-#> ℹ [2026-09-27 22:47:36] Data 3/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-09-27 22:47:36] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
-#> ℹ [2026-09-27 22:47:37] Data 4/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-09-27 22:47:37] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
-#> ℹ [2026-09-27 22:47:37] Data 5/5 of the `srt_list` has been log-normalized
-#> ℹ [2026-09-27 22:47:37] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
-#> ℹ [2026-09-27 22:47:37] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-27 22:47:37] Number of available HVF: 2000
-#> ℹ [2026-09-27 22:47:37] Finished check
-#> ℹ [2026-09-27 22:47:37] Perform Uncorrected integration
+#> ℹ [2026-10-04 23:09:20] Checking a list of <Seurat>...
+#> ℹ [2026-10-04 23:09:21] Data 1/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-04 23:09:21] Perform `FindVariableFeatures()` on 1/5 of `srt_list`...
+#> ℹ [2026-10-04 23:09:21] Data 2/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-04 23:09:21] Perform `FindVariableFeatures()` on 2/5 of `srt_list`...
+#> ℹ [2026-10-04 23:09:21] Data 3/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-04 23:09:21] Perform `FindVariableFeatures()` on 3/5 of `srt_list`...
+#> ℹ [2026-10-04 23:09:21] Data 4/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-04 23:09:21] Perform `FindVariableFeatures()` on 4/5 of `srt_list`...
+#> ℹ [2026-10-04 23:09:22] Data 5/5 of the `srt_list` has been log-normalized
+#> ℹ [2026-10-04 23:09:22] Perform `FindVariableFeatures()` on 5/5 of `srt_list`...
+#> ℹ [2026-10-04 23:09:22] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-04 23:09:22] Number of available HVF: 2000
+#> ℹ [2026-10-04 23:09:22] Finished check
+#> ℹ [2026-10-04 23:09:22] Perform Uncorrected integration
 #> Warning: Different features in new layer data than already exists for
 #> scale.data
-#> ℹ [2026-09-27 22:47:38] Reorder clusters...
-#> ℹ [2026-09-27 22:47:38] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-04 23:09:23] Reorder clusters...
+#> ℹ [2026-10-04 23:09:23] Skip `log1p()` because `layer = data` is not "counts"
 ```
 
 Other methods follow the same entry-point pattern, but may require
@@ -230,7 +230,7 @@ FeatureDimPlot(
   features = c("INS", "GCG", "SST", "KRT19"),
   reduction = "HarmonyUMAP"
 )
-#> ! [2026-09-27 22:47:47] "INS" are not in the features of <Seurat>
+#> ! [2026-10-04 23:09:33] "INS" are not in the features of <Seurat>
 #> Warning: "INS" are not in the features of <Seurat>
 ```
 

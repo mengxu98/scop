@@ -108,20 +108,15 @@ RunGSEA(
 
 - db:
 
-  Annotation sources. One or more of `"GO"`, `"GO_BP"`, `"GO_CC"`,
-  `"GO_MF"`, `"KEGG"`, `"WikiPathway"`, `"Reactome"`, `"CORUM"`, `"MP"`,
-  `"DO"`, `"HPO"`, `"PFAM"`, `"CSPA"`, `"Surfaceome"`, `"SPRomeDB"`,
-  `"VerSeDa"`, `"TFLink"`, `"hTFtarget"`, `"TRRUST"`, `"JASPAR"`,
-  `"ENCODE"`, `"MSigDB"`, `"CellTalk"`, `"CellChat"`, `"Chromosome"`,
-  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CytoTRACE2"`. MSigDB collections
-  use `"MSigDB_<collection>"`, with `:` replaced by `_`. Top-level names
-  such as `"MSigDB_H"` (human hallmark), `"MSigDB_MH"` (mouse hallmark)
-  and `"MSigDB_M2"` stay available and include their nested collections.
-  Nested names include each prefix, for example `"MSigDB_M2_CGP"`,
-  `"MSigDB_M2_CP"` and `"MSigDB_M2_CP_BIOCARTA"`. Colon forms such as
-  `"MSigDB_M2:CGP"` are accepted. `"CytoTRACE2"` is species-independent
-  and is required by
-  [RunCytoTRACE](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md).
+  Character vector of database or resource selectors: `"GO"`, `"GO_BP"`,
+  `"GO_CC"`, `"GO_MF"`, `"KEGG"`, `"WikiPathway"`, `"Reactome"`,
+  `"CORUM"`, `"MP"`, `"DO"`, `"HPO"`, `"PFAM"`, `"Chromosome"`,
+  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CSPA"`, `"Surfaceome"`,
+  `"SPRomeDB"`, `"VerSeDa"`, `"TFLink"`, `"hTFtarget"`, `"TRRUST"`,
+  `"JASPAR"`, `"ENCODE"`, `"MSigDB"`, `"CellTalk"`, `"CellChat"`,
+  `"CytoTRACE2"` or `"MSigDB_<collection>"`. A vector may combine
+  sources. See the corresponding preparation function for
+  source-specific settings.
 
 - db_update:
 
@@ -267,14 +262,14 @@ gsea_out <- RunGSEA(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-09-27 22:10:34] Start GSEA analysis
-#> ! [2026-09-27 22:10:34] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-09-27 22:10:34] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-09-27 22:10:34] Prepared 15 ranked gene rows after ID mapping.
-#> ℹ [2026-09-27 22:10:34] Running GSEA for 1 group/database combination(s) ...
-#> ℹ [2026-09-27 22:10:34] Running GSEA: group "Cluster1", database "custom", genes 15 ...
-#> ℹ [2026-09-27 22:10:34] Finished GSEA: group "Cluster1", database "custom".
-#> ✔ [2026-09-27 22:10:34] GSEA analysis done
+#> ℹ [2026-10-04 22:24:46] Start GSEA analysis
+#> ! [2026-10-04 22:24:46] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-10-04 22:24:46] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-10-04 22:24:46] Prepared 15 ranked gene rows after ID mapping.
+#> ℹ [2026-10-04 22:24:46] Running GSEA for 1 group/database combination(s) ...
+#> ℹ [2026-10-04 22:24:46] Running GSEA: group "Cluster1", database "custom", genes 15 ...
+#> ℹ [2026-10-04 22:24:46] Finished GSEA: group "Cluster1", database "custom".
+#> ✔ [2026-10-04 22:24:46] GSEA analysis done
 GSEAPlot(
   res = gsea_out,
   db = "custom",

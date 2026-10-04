@@ -213,39 +213,39 @@ A `ggplot` object.
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-27 21:48:32] Start standard processing workflow...
-#> ℹ [2026-09-27 21:48:32] Checking a list of <Seurat>...
-#> ! [2026-09-27 21:48:32] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-27 21:48:32] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-27 21:48:32] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-27 21:48:32] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-27 21:48:32] Number of available HVF: 2000
-#> ℹ [2026-09-27 21:48:32] Finished check
-#> ℹ [2026-09-27 21:48:32] Perform `ScaleData()`
-#> ℹ [2026-09-27 21:48:32] Perform pca linear dimension reduction
-#> ℹ [2026-09-27 21:48:33] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-27 21:48:33] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-27 21:48:33] Reorder clusters...
-#> ℹ [2026-09-27 21:48:33] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-27 21:48:33] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-27 21:48:40] Standard processing workflow completed
+#> ℹ [2026-10-04 22:03:10] Start standard processing workflow...
+#> ℹ [2026-10-04 22:03:10] Checking a list of <Seurat>...
+#> ! [2026-10-04 22:03:10] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-04 22:03:10] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-04 22:03:10] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-04 22:03:10] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-04 22:03:10] Number of available HVF: 2000
+#> ℹ [2026-10-04 22:03:10] Finished check
+#> ℹ [2026-10-04 22:03:10] Perform `ScaleData()`
+#> ℹ [2026-10-04 22:03:10] Perform pca linear dimension reduction
+#> ℹ [2026-10-04 22:03:10] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-04 22:03:11] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-04 22:03:11] Reorder clusters...
+#> ℹ [2026-10-04 22:03:11] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-04 22:03:11] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-04 22:03:18] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-09-27 21:48:40] Data type is log-normalized
-#> ℹ [2026-09-27 21:48:40] Start differential expression test
-#> ℹ [2026-09-27 21:48:40] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-09-27 21:48:40] Using 1 core
-#> ⠙ [2026-09-27 21:48:40] Running for Ductal [1/5] ■■          20% | ETA: 25s
-#> ⠹ [2026-09-27 21:48:40] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA: 1…
-#> ⠸ [2026-09-27 21:48:40] Running for Endocrine [3/5] ■■■■■■      60% | ETA: 10s
-#> ⠼ [2026-09-27 21:48:40] Running for Ngn3-low-EP [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-09-27 21:48:40] Completed 5 tasks in 24s
+#> ℹ [2026-10-04 22:03:18] Data type is log-normalized
+#> ℹ [2026-10-04 22:03:18] Start differential expression test
+#> ℹ [2026-10-04 22:03:18] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-10-04 22:03:18] Using 1 core
+#> ⠙ [2026-10-04 22:03:18] Running for Ductal [1/5] ■■          20% | ETA: 25s
+#> ⠹ [2026-10-04 22:03:18] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA: 1…
+#> ⠸ [2026-10-04 22:03:18] Running for Endocrine [3/5] ■■■■■■      60% | ETA: 11s
+#> ⠼ [2026-10-04 22:03:18] Running for Ngn3-low-EP [4/5] ■■■■■■■■    80% | ETA:  5s
+#> ✔ [2026-10-04 22:03:18] Completed 5 tasks in 25.1s
 #> 
-#> ℹ [2026-09-27 21:48:40] Building results
-#> ✔ [2026-09-27 21:49:04] Differential expression test completed
+#> ℹ [2026-10-04 22:03:18] Building results
+#> ✔ [2026-10-04 22:03:43] Differential expression test completed
 
 de_df <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 de_df <- de_df[
@@ -260,11 +260,11 @@ enrich_out <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-09-27 21:49:04] Start Enrichment analysis
-#> ℹ [2026-09-27 21:49:04] Species: "Mus_musculus"
-#> ℹ [2026-09-27 21:49:04] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-27 21:44:19
-#> ℹ [2026-09-27 21:49:05] Permform enrichment...
-#> ✔ [2026-09-27 21:49:07] Enrichment analysis done
+#> ℹ [2026-10-04 22:03:43] Start Enrichment analysis
+#> ℹ [2026-10-04 22:03:43] Species: "Mus_musculus"
+#> ℹ [2026-10-04 22:03:43] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-04 21:57:32
+#> ℹ [2026-10-04 22:03:44] Permform enrichment...
+#> ✔ [2026-10-04 22:03:46] Enrichment analysis done
 FerrisWheelPlot(
   res = enrich_out,
   de_results = de_df

@@ -225,31 +225,31 @@ DEtestManhattanPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-27 21:32:04] Start standard processing workflow...
-#> ℹ [2026-09-27 21:32:04] Checking a list of <Seurat>...
-#> ! [2026-09-27 21:32:04] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-27 21:32:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-27 21:32:05] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-27 21:32:05] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-27 21:32:05] Number of available HVF: 2000
-#> ℹ [2026-09-27 21:32:05] Finished check
-#> ℹ [2026-09-27 21:32:05] Perform `ScaleData()`
-#> ℹ [2026-09-27 21:32:05] Perform pca linear dimension reduction
-#> ℹ [2026-09-27 21:32:05] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-27 21:32:05] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-27 21:32:05] Reorder clusters...
-#> ℹ [2026-09-27 21:32:05] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-27 21:32:05] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-27 21:32:11] Standard processing workflow completed
+#> ℹ [2026-10-04 21:43:07] Start standard processing workflow...
+#> ℹ [2026-10-04 21:43:07] Checking a list of <Seurat>...
+#> ! [2026-10-04 21:43:07] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-04 21:43:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-04 21:43:07] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-04 21:43:07] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-04 21:43:07] Number of available HVF: 2000
+#> ℹ [2026-10-04 21:43:07] Finished check
+#> ℹ [2026-10-04 21:43:07] Perform `ScaleData()`
+#> ℹ [2026-10-04 21:43:07] Perform pca linear dimension reduction
+#> ℹ [2026-10-04 21:43:07] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-04 21:43:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-04 21:43:08] Reorder clusters...
+#> ℹ [2026-10-04 21:43:08] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-04 21:43:08] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-04 21:43:14] Standard processing workflow completed
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   only.pos = FALSE
 )
-#> ℹ [2026-09-27 21:32:11] Data type is log-normalized
-#> ℹ [2026-09-27 21:32:11] Start differential expression test
-#> ℹ [2026-09-27 21:32:11] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-09-27 21:32:11] Using 1 core
+#> ℹ [2026-10-04 21:43:14] Data type is log-normalized
+#> ℹ [2026-10-04 21:43:14] Start differential expression test
+#> ℹ [2026-10-04 21:43:14] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-10-04 21:43:14] Using 1 core
 #> For a (much!) faster implementation of the Wilcoxon Rank Sum Test,
 #> (default method for FindMarkers) please install the presto package
 #> --------------------------------------------
@@ -259,14 +259,14 @@ pancreas_sub <- RunDEtest(
 #> After installation of presto, Seurat will automatically use the more 
 #> efficient implementation (no further action necessary).
 #> This message will be shown once per session
-#> ⠙ [2026-09-27 21:32:11] Running for Ductal [1/5] ■■          20% | ETA: 25s
-#> ⠹ [2026-09-27 21:32:11] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA: 1…
-#> ⠸ [2026-09-27 21:32:11] Running for Endocrine [3/5] ■■■■■■      60% | ETA: 10s
-#> ⠼ [2026-09-27 21:32:11] Running for Ngn3-low-EP [4/5] ■■■■■■■■    80% | ETA:  5s
-#> ✔ [2026-09-27 21:32:11] Completed 5 tasks in 23.4s
+#> ⠙ [2026-10-04 21:43:14] Running for Ductal [1/5] ■■          20% | ETA: 26s
+#> ⠹ [2026-10-04 21:43:14] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA: 1…
+#> ⠸ [2026-10-04 21:43:14] Running for Endocrine [3/5] ■■■■■■      60% | ETA: 11s
+#> ⠼ [2026-10-04 21:43:14] Running for Ngn3-low-EP [4/5] ■■■■■■■■    80% | ETA:  5s
+#> ✔ [2026-10-04 21:43:14] Completed 5 tasks in 25.2s
 #> 
-#> ℹ [2026-09-27 21:32:11] Building results
-#> ✔ [2026-09-27 21:32:35] Differential expression test completed
+#> ℹ [2026-10-04 21:43:14] Building results
+#> ✔ [2026-10-04 21:43:40] Differential expression test completed
 DEtestManhattanPlot(
   pancreas_sub,
   group.by = "CellType"

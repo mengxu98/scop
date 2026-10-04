@@ -76,20 +76,15 @@ CellScoring(
 
 - db:
 
-  Annotation sources. One or more of `"GO"`, `"GO_BP"`, `"GO_CC"`,
-  `"GO_MF"`, `"KEGG"`, `"WikiPathway"`, `"Reactome"`, `"CORUM"`, `"MP"`,
-  `"DO"`, `"HPO"`, `"PFAM"`, `"CSPA"`, `"Surfaceome"`, `"SPRomeDB"`,
-  `"VerSeDa"`, `"TFLink"`, `"hTFtarget"`, `"TRRUST"`, `"JASPAR"`,
-  `"ENCODE"`, `"MSigDB"`, `"CellTalk"`, `"CellChat"`, `"Chromosome"`,
-  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CytoTRACE2"`. MSigDB collections
-  use `"MSigDB_<collection>"`, with `:` replaced by `_`. Top-level names
-  such as `"MSigDB_H"` (human hallmark), `"MSigDB_MH"` (mouse hallmark)
-  and `"MSigDB_M2"` stay available and include their nested collections.
-  Nested names include each prefix, for example `"MSigDB_M2_CGP"`,
-  `"MSigDB_M2_CP"` and `"MSigDB_M2_CP_BIOCARTA"`. Colon forms such as
-  `"MSigDB_M2:CGP"` are accepted. `"CytoTRACE2"` is species-independent
-  and is required by
-  [RunCytoTRACE](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md).
+  Character vector of database or resource selectors: `"GO"`, `"GO_BP"`,
+  `"GO_CC"`, `"GO_MF"`, `"KEGG"`, `"WikiPathway"`, `"Reactome"`,
+  `"CORUM"`, `"MP"`, `"DO"`, `"HPO"`, `"PFAM"`, `"Chromosome"`,
+  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CSPA"`, `"Surfaceome"`,
+  `"SPRomeDB"`, `"VerSeDa"`, `"TFLink"`, `"hTFtarget"`, `"TRRUST"`,
+  `"JASPAR"`, `"ENCODE"`, `"MSigDB"`, `"CellTalk"`, `"CellChat"`,
+  `"CytoTRACE2"` or `"MSigDB_<collection>"`. A vector may combine
+  sources. See the corresponding preparation function for
+  source-specific settings.
 
 - termnames:
 
@@ -196,23 +191,23 @@ CellScoring(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-27 21:30:40] Start standard processing workflow...
-#> ℹ [2026-09-27 21:30:40] Checking a list of <Seurat>...
-#> ! [2026-09-27 21:30:40] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-04 21:41:17] Start standard processing workflow...
+#> ℹ [2026-10-04 21:41:17] Checking a list of <Seurat>...
+#> ! [2026-10-04 21:41:17] Data 1/1 of the `srt_list` is "unknown"
 #> Warning: Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-27 21:30:40] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-27 21:30:40] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-27 21:30:40] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-27 21:30:40] Number of available HVF: 2000
-#> ℹ [2026-09-27 21:30:40] Finished check
-#> ℹ [2026-09-27 21:30:40] Perform `ScaleData()`
-#> ℹ [2026-09-27 21:30:40] Perform pca linear dimension reduction
-#> ℹ [2026-09-27 21:30:41] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-27 21:30:41] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-27 21:30:41] Reorder clusters...
-#> ℹ [2026-09-27 21:30:41] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-27 21:30:41] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-27 21:30:46] Standard processing workflow completed
+#> ℹ [2026-10-04 21:41:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-04 21:41:17] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-04 21:41:17] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-04 21:41:17] Number of available HVF: 2000
+#> ℹ [2026-10-04 21:41:17] Finished check
+#> ℹ [2026-10-04 21:41:17] Perform `ScaleData()`
+#> ℹ [2026-10-04 21:41:17] Perform pca linear dimension reduction
+#> ℹ [2026-10-04 21:41:18] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-04 21:41:18] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-04 21:41:18] Reorder clusters...
+#> ℹ [2026-10-04 21:41:18] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-04 21:41:18] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-04 21:41:23] Standard processing workflow completed
 features_all <- rownames(pancreas_sub)
 pancreas_sub <- CellScoring(
   pancreas_sub,
@@ -223,10 +218,10 @@ pancreas_sub <- CellScoring(
   method = "AUCell",
   name = "test"
 )
-#> ℹ [2026-09-27 21:30:46] Start cell scoring
-#> ℹ [2026-09-27 21:30:46] Data type is log-normalized
-#> ℹ [2026-09-27 21:30:46] Number of feature lists to be scored: 2
-#> ✔ [2026-09-27 21:30:46] Cell scoring completed
+#> ℹ [2026-10-04 21:41:23] Start cell scoring
+#> ℹ [2026-10-04 21:41:23] Data type is log-normalized
+#> ℹ [2026-10-04 21:41:23] Number of feature lists to be scored: 2
+#> ✔ [2026-10-04 21:41:23] Cell scoring completed
 CellDimPlot(pancreas_sub, "test_classification")
 
 
@@ -241,15 +236,15 @@ pancreas_sub <- CellScoring(
   features = list(A = features_all[1:100]),
   method = c("AUCell", "GSVA")
 )
-#> ℹ [2026-09-27 21:30:46] Start cell scoring
-#> ℹ [2026-09-27 21:30:46] Start cell scoring
-#> ℹ [2026-09-27 21:30:46] Data type is log-normalized
-#> ℹ [2026-09-27 21:30:46] Number of feature lists to be scored: 1
-#> ✔ [2026-09-27 21:30:46] Cell scoring completed
-#> ℹ [2026-09-27 21:30:46] Start cell scoring
-#> ℹ [2026-09-27 21:30:47] Data type is log-normalized
-#> ℹ [2026-09-27 21:30:47] Number of feature lists to be scored: 1
-#> ✔ [2026-09-27 21:30:49] Cell scoring completed
+#> ℹ [2026-10-04 21:41:24] Start cell scoring
+#> ℹ [2026-10-04 21:41:24] Start cell scoring
+#> ℹ [2026-10-04 21:41:24] Data type is log-normalized
+#> ℹ [2026-10-04 21:41:24] Number of feature lists to be scored: 1
+#> ✔ [2026-10-04 21:41:24] Cell scoring completed
+#> ℹ [2026-10-04 21:41:24] Start cell scoring
+#> ℹ [2026-10-04 21:41:24] Data type is log-normalized
+#> ℹ [2026-10-04 21:41:24] Number of feature lists to be scored: 1
+#> ✔ [2026-10-04 21:41:27] Cell scoring completed
 FeatureStatPlot(
   pancreas_sub,
   stat.by = c("AUCell_A", "GSVA_A"),
@@ -258,7 +253,7 @@ FeatureStatPlot(
   plot_type = "violin",
   stack = TRUE
 )
-#> ℹ [2026-09-27 21:30:49] Setting `group.by` to "Features" as `plot.by` is set to "feature"
+#> ℹ [2026-10-04 21:41:27] Setting `group.by` to "Features" as `plot.by` is set to "feature"
 
 
 FeatureDimPlot(

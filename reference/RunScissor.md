@@ -162,7 +162,7 @@ Nature Biotechnology, 40(4), 527-538. doi:10.1038/s41587-021-01091-3
 data(panc8_sub)
 data(islet_bulk)
 panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
-#> ℹ [2026-09-27 22:31:51] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-04 22:51:17] Skip `log1p()` because `layer = data` is not "counts"
 panc8_sub <- RunScissor(
   panc8_sub,
   bulk_dataset = islet_bulk,
@@ -178,8 +178,8 @@ panc8_sub <- RunScissor(
   alpha = 0.2,
   cutoff = 0.5
 )
-#> ℹ [2026-09-27 22:32:07] Scissor alpha 0.2 selected 1 positive and 491 negative cells (30.75%)
-#> ✔ [2026-09-27 22:32:07] Scissor stored 1 Scissor+ and 491 Scissor- cells
+#> ℹ [2026-10-04 22:51:37] Scissor alpha 0.2 selected 1 positive and 491 negative cells (30.75%)
+#> ✔ [2026-10-04 22:51:37] Scissor stored 1 Scissor+ and 491 Scissor- cells
 
 ScissorPlot(
   panc8_sub,

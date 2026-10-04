@@ -168,8 +168,8 @@ spatial <- RunSpatialVariableFeatures(
   assay = "Spatial",
   nfeatures = 50
 )
-#> ◌ [2026-09-27 22:34:48] Running spatial variable feature detection
-#> ✔ [2026-09-27 22:34:48] Spatial variable features completed: 100 tested, 50 ranked in the top set
+#> ◌ [2026-10-04 22:54:38] Running spatial variable feature detection
+#> ✔ [2026-10-04 22:54:38] Spatial variable features completed: 100 tested, 50 ranked in the top set
 #> ℹ   Scope method "moran" ("cpp" backend); assay "Spatial", layer "data"; 1986 spots; coordinates "raw"
 #> ℹ   Saved 50 top features as assay `VariableFeatures`; full result in returned object tool bundle `SpatialVariableFeatures`
 #> ℹ   Plot returned object `SpatialVariableFeaturePlot(<returned_object>, plot_type = "combined", assay = "Spatial", image = "slice1", coord.cols = c("x", "y"))`

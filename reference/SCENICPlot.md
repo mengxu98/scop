@@ -8,10 +8,17 @@ or
 Use
 [`SCENICPlusPlot()`](https://mengxu98.github.io/scop/reference/SCENICPlusPlot.md)
 for SCENIC+ defaults. Network `palette = "RdYlBu"` uses `"Chinese"`.
-`"network"` draws one hub per TF. Network plots have no title. When one
-TF has multiple regulons, network legends show the regulon with the
-highest RSS; the corresponding cell type and score remain available in
-the returned annotation table.
+`"network"` draws one hub per TF. Network plots restore the historical
+colored TF circles, gray gene circles, source-TF edge colors and radial
+labels for single-TF networks. The default legend shows each TF's top
+RSS group when available. Explicit regulon labels remain supported; full
+regulon, group and RSS annotations are returned. Legends with more than
+20 TFs are omitted to keep the plotting viewport usable. The network is
+displayed in full by default. A compact target subset can be requested
+with `network_display_targets`; returned data disclose that subset.
+Without an explicit TF list, sources with at least one quarter of the
+maximum outgoing degree are used to select automatic labels. Widths
+retain edge weights.
 
 ## Usage
 
@@ -97,7 +104,8 @@ SCENICPlot(
   ...,
   srt = NULL,
   theme_use = "theme_scop",
-  theme_args = list()
+  theme_args = list(),
+  network_display_targets = Inf
 )
 ```
 
@@ -181,10 +189,11 @@ SCENICPlot(
 
 - regulon_label:
 
-  Label source for RSS rank plots and network legends. `"auto"` keeps
-  TF-only labels when a TF has one regulon and shows the regulon name
-  when multiple regulons share a TF; `"regulon"` always shows regulon
-  names; `"tf"` always shows TF names.
+  Label source for RSS rank plots and network legends. In network
+  legends, `"auto"` shows TF names and their top RSS groups. For RSS
+  rank plots, `"auto"` keeps TF-only labels when a TF has one regulon
+  and shows the regulon name when multiple regulons share a TF;
+  `"regulon"` always shows regulon names; `"tf"` always shows TF names.
 
 - rss_rank_yscale:
 
@@ -293,11 +302,17 @@ SCENICPlot(
 - network_layout:
 
   `"auto"`, `"star"`, `"kk"`, `"hub"`, `"tripartite"`, `"fr"`.
-  `"network"` uses `"star"` for one TF and `"hub"` for several.
+  `"network_graph"` uses the weighted force-directed `"fr"` layout by
+  default; `"kk"` remains available explicitly. `"network"` uses
+  `"star"` for one TF and `"hub"` for several.
 
 - network_tf:
 
-  TFs for `"network"` / `"egrn"`.
+  Focal TFs for network plots; takes precedence over `features`.
+  `"network_graph"` retains both incoming and outgoing neighbors of
+  these TFs. TFs use colored circles, genes use gray circles, and edges
+  use their source TF color. The default legend includes each TF's top
+  RSS group when available.
 
 - network_include_regions:
 
@@ -305,11 +320,27 @@ SCENICPlot(
 
 - label_nodes:
 
-  `"auto"`, `"tfs"`, `"all"`, or `"none"`.
+  `"auto"`, `"tfs"`, `"all"`, or `"none"`. In `"network_graph"`,
+  `"auto"` labels focal TFs and up to six shared target genes. Other
+  network views retain their layout-dependent automatic labels. Explicit
+  `"all"` labels all non-coordinate nodes.
 
 - network_label_top_n:
 
-  Max TF labels in `"network_graph"`.
+  Max automatic or TF labels in `"network_graph"`. Highlighted TFs are
+  always included, except with `label_nodes = "none"`. TF legends with
+  more than 20 entries are omitted; full annotations are returned in
+  `plot_data$annotations`.
+
+- network_display_targets:
+
+  Optional display limit per focal TF in `"network_graph"`. The default
+  `Inf` displays the full network. Use `6` to show six direct targets
+  per TF by absolute edge weight, together with all shared targets and
+  TF-to-TF links. Selected regions retain their downstream genes.
+  `plot_data$edges` and `plot_data$nodes` retain the network selected by
+  `max_targets` and `max_edges`; the actual display subset is in
+  `plot_data$display_edges` and `plot_data$display_nodes`.
 
 - combine:
 

@@ -1,7 +1,7 @@
-# Prepare gene annotation databases
+# Prepare databases and reference resources
 
-Build TERM2GENE / TERM2NAME (and GO semantic-similarity) databases for a
-species from annotation packages, cached downloads, or local files.
+Prepare species-specific databases and reference resources from
+annotation packages, cached downloads, or supplied files.
 
 ## Usage
 
@@ -39,20 +39,15 @@ PrepareDB(
 
 - db:
 
-  Annotation sources. One or more of `"GO"`, `"GO_BP"`, `"GO_CC"`,
-  `"GO_MF"`, `"KEGG"`, `"WikiPathway"`, `"Reactome"`, `"CORUM"`, `"MP"`,
-  `"DO"`, `"HPO"`, `"PFAM"`, `"CSPA"`, `"Surfaceome"`, `"SPRomeDB"`,
-  `"VerSeDa"`, `"TFLink"`, `"hTFtarget"`, `"TRRUST"`, `"JASPAR"`,
-  `"ENCODE"`, `"MSigDB"`, `"CellTalk"`, `"CellChat"`, `"Chromosome"`,
-  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CytoTRACE2"`. MSigDB collections
-  use `"MSigDB_<collection>"`, with `:` replaced by `_`. Top-level names
-  such as `"MSigDB_H"` (human hallmark), `"MSigDB_MH"` (mouse hallmark)
-  and `"MSigDB_M2"` stay available and include their nested collections.
-  Nested names include each prefix, for example `"MSigDB_M2_CGP"`,
-  `"MSigDB_M2_CP"` and `"MSigDB_M2_CP_BIOCARTA"`. Colon forms such as
-  `"MSigDB_M2:CGP"` are accepted. `"CytoTRACE2"` is species-independent
-  and is required by
-  [RunCytoTRACE](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md).
+  Character vector of database or resource selectors: `"GO"`, `"GO_BP"`,
+  `"GO_CC"`, `"GO_MF"`, `"KEGG"`, `"WikiPathway"`, `"Reactome"`,
+  `"CORUM"`, `"MP"`, `"DO"`, `"HPO"`, `"PFAM"`, `"Chromosome"`,
+  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CSPA"`, `"Surfaceome"`,
+  `"SPRomeDB"`, `"VerSeDa"`, `"TFLink"`, `"hTFtarget"`, `"TRRUST"`,
+  `"JASPAR"`, `"ENCODE"`, `"MSigDB"`, `"CellTalk"`, `"CellChat"`,
+  `"CytoTRACE2"` or `"MSigDB_<collection>"`. A vector may combine
+  sources. See the corresponding preparation function for
+  source-specific settings.
 
 - db_IDtypes:
 
@@ -113,160 +108,25 @@ PrepareDB(
 
 ## Value
 
-A list containing the prepared gene annotation databases:
-
-- `TERM2GENE`: mapping of gene identifiers to terms.
-
-- `TERM2NAME`: mapping of terms to their names.
-
-- `semData`: semantic similarity data for gene sets (only for Gene
-  Ontology terms).
+A named list of prepared resources. Gene annotation databases are nested
+by species and database, with `TERM2GENE` (gene-to-term mappings),
+`TERM2NAME` (term names) and `version`. Additional resource fields
+follow the return contract of the corresponding preparation function.
 
 ## See also
 
-[ListDB](https://mengxu98.github.io/scop/reference/ListDB.md)
+[ListDB](https://mengxu98.github.io/scop/reference/ListDB.md),
+[PrepareGO](https://mengxu98.github.io/scop/reference/PrepareGO.md),
+[PrepareKEGG](https://mengxu98.github.io/scop/reference/PrepareKEGG.md),
+[PrepareMSigDB](https://mengxu98.github.io/scop/reference/PrepareMSigDB.md),
+[PrepareIREA](https://mengxu98.github.io/scop/reference/PrepareIREA.md)
 
 ## Examples
 
 ``` r
-db_list <- PrepareDB(
-  species = "Homo_sapiens",
-  db = "GO_BP"
-)
-#> ℹ [2026-09-27 21:53:14] Species: "Homo_sapiens"
-#> 
-#> ℹ [2026-09-27 21:56:09] Preparing database: GO_BP
-#> ℹ [2026-09-27 21:56:17] Convert ID types for the GO_BP database
-#> ℹ [2026-09-27 21:56:17] Converted ID types using local annotation package org.Hs.eg.db
-ListDB(
-  species = "Homo_sapiens",
-  db = "GO_BP"
-)
-#>   Database      Species            Version                       Date
-#> 1    GO_BP Homo_sapiens 3.23.1 nterm:14209 2026-09-27 21:56:18.428554
-head(
-  db_list[["Homo_sapiens"]][["GO_BP"]][["TERM2GENE"]]
-)
-#>         Term entrez_id symbol      ensembl_id
-#> 1 GO:0000012      2074  ERCC6 ENSG00000225830
-#> 2 GO:0000012      7515  XRCC1 ENSG00000073050
-#> 3 GO:0000012       142  PARP1 ENSG00000143799
-#> 4 GO:0000012      1161  ERCC8 ENSG00000049167
-#> 5 GO:0000012     11284   PNKP ENSG00000039650
-#> 6 GO:0000012     55775   TDP1 ENSG00000042088
-
-# Based on homologous gene conversion,
-# prepare a gene annotation database that originally does not exist in the species.
-db_list <- PrepareDB(
-  species = "Homo_sapiens",
-  db = "MP"
-)
-#> ℹ [2026-09-27 21:56:19] Species: "Homo_sapiens"
-#> ! [2026-09-27 21:56:19] Use the mouse annotation to create the MP database for "Homo_sapiens"
-#> ℹ [2026-09-27 21:56:19] Preparing MP database
-#> ℹ [2026-09-27 21:56:27] Convert species for the MP database
-#> ℹ [2026-09-27 21:56:27] Connect to the Ensembl archives...
-#> ℹ [2026-09-27 21:56:28] Using the 116 version of ensembl database...
-#> ℹ [2026-09-27 21:56:28] Downloading the ensembl database from https://jun2026.archive.ensembl.org...
-#> ℹ [2026-09-27 21:56:29] Searching the dataset mmusculus ...
-#> ℹ [2026-09-27 21:56:29] Connecting to the dataset mmusculus_gene_ensembl ...
-#> ℹ [2026-09-27 21:56:29] Converting the geneIDs...
-#> ℹ [2026-09-27 21:56:40] 14170 genes mapped with "ensembl_symbol"
-#> ℹ [2026-09-27 21:56:41] 3 genes mapped with "entrez_symbol"
-#> ℹ [2026-09-27 21:56:42] 12 genes mapped with "uniprot_symbol"
-#> ℹ [2026-09-27 21:56:42] ==============================
-#> ℹ                       14185 genes mapped
-#> ℹ                       49 genes unmapped
-#> ℹ                       ==============================
-#> ℹ [2026-09-27 21:56:46] Convert ID types for the MP database
-#> ℹ [2026-09-27 21:56:46] Converted ID types using local annotation package org.Hs.eg.db
-ListDB(
-  species = "Homo_sapiens",
-  db = "MP"
-)
-#>   Database      Species                                             Version
-#> 1       MP Homo_sapiens 2026-09-27(converted from Mus_musculus) nterm:10826
-#>                         Date
-#> 1 2026-09-27 21:56:46.557625
-head(
-  db_list[["Homo_sapiens"]][["MP"]][["TERM2GENE"]]
-)
-#>         Term      ensembl_id symbol entrez_id
-#> 1 MP:0000600 ENSG00000139687    RB1      5925
-#> 2 MP:0001716 ENSG00000139687    RB1      5925
-#> 3 MP:0001698 ENSG00000139687    RB1      5925
-#> 4 MP:0001092 ENSG00000139687    RB1      5925
-#> 5 MP:0000961 ENSG00000139687    RB1      5925
-#> 6 MP:0000828 ENSG00000139687    RB1      5925
-
-# You can also build a custom database based on the gene sets you have
-ccgenes <- CycGenePrefetch("Homo_sapiens")
-#> ℹ [2026-09-27 21:56:46] Prefetching cell cycle genes for "Homo_sapiens" ...
-#> ✔ [2026-09-27 21:56:46] Cell cycle gene prefetching completed "Homo_sapiens"
-custom_TERM2GENE <- rbind(
-  data.frame(
-    term = "S_genes",
-    gene = ccgenes[["cc_S_genes"]]
-  ),
-  data.frame(
-    term = "G2M_genes",
-    gene = ccgenes[["cc_G2M_genes"]]
-  )
-)
-str(custom_TERM2GENE)
-#> 'data.frame':    97 obs. of  2 variables:
-#>  $ term: chr  "S_genes" "S_genes" "S_genes" "S_genes" ...
-#>  $ gene: chr  "MCM5" "PCNA" "TYMS" "FEN1" ...
-
-# Set convert_species = TRUE to build a custom database for both species,
-# with the name "CellCycle"
-db_list <- PrepareDB(
-  species = c("Homo_sapiens", "Mus_musculus"),
-  db = "CellCycle",
-  convert_species = TRUE,
-  custom_TERM2GENE = custom_TERM2GENE,
-  custom_species = "Homo_sapiens",
-  custom_IDtype = "symbol",
-  custom_version = "Seurat_v5"
-)
-#> ℹ [2026-09-27 21:56:46] Species: "Homo_sapiens"
-#> ℹ [2026-09-27 21:56:46] Convert ID types for the CellCycle database
-#> ℹ [2026-09-27 21:56:46] Converted ID types using local annotation package org.Hs.eg.db
-#> ℹ [2026-09-27 21:56:46] Species: "Mus_musculus"
-#> ! [2026-09-27 21:56:46] Use the "Homo_sapiens" annotation to create the "CellCycle" database for "Mus_musculus"
-#> ℹ [2026-09-27 21:56:46] Convert species for the CellCycle database
-#> ℹ [2026-09-27 21:56:46] Connect to the Ensembl archives...
-#> ℹ [2026-09-27 21:56:47] Using the 116 version of ensembl database...
-#> ℹ [2026-09-27 21:56:47] Downloading the ensembl database from https://jun2026.archive.ensembl.org...
-#> ℹ [2026-09-27 21:56:47] Searching the dataset hsapiens ...
-#> ℹ [2026-09-27 21:56:47] Connecting to the dataset hsapiens_gene_ensembl ...
-#> ℹ [2026-09-27 21:56:47] Converting the geneIDs...
-#> ℹ [2026-09-27 21:56:48] 97 genes mapped with "ensembl_symbol"
-#> ℹ [2026-09-27 21:56:48] ==============================
-#> ℹ                       97 genes mapped
-#> ℹ                       0 genes unmapped
-#> ℹ                       ==============================
-#> ℹ [2026-09-27 21:56:48] Convert ID types for the CellCycle database
-#> ℹ [2026-09-27 21:56:48] Converted ID types using local annotation package org.Mm.eg.db
-ListDB(db = "CellCycle")
-#>    Database      Species                                        Version
-#> 1 CellCycle Homo_sapiens                              Seurat_v5 nterm:2
-#> 2 CellCycle Mus_musculus Seurat_v5(converted from Homo_sapiens) nterm:2
-#>                         Date
-#> 1 2026-09-27 21:56:46.871954
-#> 2 2026-09-27 21:56:48.817198
-
-db_list <- PrepareDB(species = "Mus_musculus", db = "CellCycle")
-#> ℹ [2026-09-27 21:56:48] Species: "Mus_musculus"
-#> ℹ [2026-09-27 21:56:48] Loading cached: CellCycle version: Seurat_v5(converted from Homo_sapiens) nterm:2 created: 2026-09-27 21:56:48
-head(
-  db_list[["Mus_musculus"]][["CellCycle"]][["TERM2GENE"]]
-)
-#>      Term         ensembl_id symbol entrez_id
-#> 1 S_genes ENSMUSG00000005410   Mcm5     17218
-#> 2 S_genes ENSMUSG00000027342   Pcna     18538
-#> 3 S_genes ENSMUSG00000025747   Tyms     22171
-#> 4 S_genes ENSMUSG00000024742   Fen1     14156
-#> 5 S_genes ENSMUSG00000029730   Mcm7     17220
-#> 6 S_genes ENSMUSG00000022673   Mcm4     17217
+if (FALSE) { # \dontrun{
+databases <- PrepareDB(species = "Homo_sapiens", db = c("GO_BP", "KEGG"))
+names(databases[["Homo_sapiens"]])
+ListDB(species = "Homo_sapiens", db = c("GO_BP", "KEGG"))
+} # }
 ```

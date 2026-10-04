@@ -66,13 +66,13 @@ bench <- RunSpatialBenchmark(
 
 bench$summary
 #>        method      workflow ARI NMI purity runtime_s baseline_memory_mb
-#> 1  BayesSpace SpatialDomain   1   1      1     7.955           615.0742
-#> 2      BANKSY SpatialDomain  NA  NA     NA     2.749           615.2578
-#> 3 SmoothClust SpatialDomain   1   1      1     2.614           615.1992
+#> 1  BayesSpace SpatialDomain   1   1      1    10.038           615.2734
+#> 2      BANKSY SpatialDomain  NA  NA     NA     3.251           615.5273
+#> 3 SmoothClust SpatialDomain   1   1      1     2.976           615.4648
 #>   peak_memory_mb memory_delta_mb n_evaluated n_clusters  status
-#> 1      1308.9492        693.8750          36          3 success
-#> 2       880.4570        265.1992           0         NA  failed
-#> 3       871.5156        256.3164          36          3 success
+#> 1      1309.0898        693.8164          36          3 success
+#> 2       883.8672        268.3398           0         NA  failed
+#> 3       875.5312        260.0664          36          3 success
 #>                               error
 #> 1                                  
 #> 2 Not enough neighbors in data set!
@@ -97,10 +97,10 @@ str(bench$summary, max.level = 1)
 #>  $ ARI               : num  1 NA 1
 #>  $ NMI               : num  1 NA 1
 #>  $ purity            : num  1 NA 1
-#>  $ runtime_s         : num  7.95 2.75 2.61
-#>  $ baseline_memory_mb: num  615 615 615
-#>  $ peak_memory_mb    : num  1309 880 872
-#>  $ memory_delta_mb   : num  694 265 256
+#>  $ runtime_s         : num  10.04 3.25 2.98
+#>  $ baseline_memory_mb: num  615 616 615
+#>  $ peak_memory_mb    : num  1309 884 876
+#>  $ memory_delta_mb   : num  694 268 260
 #>  $ n_evaluated       : int  36 0 36
 #>  $ n_clusters        : int  3 NA 3
 #>  $ status            : chr  "success" "failed" "success"

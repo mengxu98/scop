@@ -18,7 +18,7 @@ library(scop)
 
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-#> ℹ [2026-09-27 22:43:33] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-04 23:05:11] Skip `log1p()` because `layer = data` is not "counts"
 
 table(pancreas_sub$CellType)
 #> 
@@ -42,10 +42,10 @@ pancreas_sub <- RunDEtest(
   fc.threshold = 1,
   only.pos = FALSE
 )
-#> ℹ [2026-09-27 22:43:37] Data type is log-normalized
-#> ℹ [2026-09-27 22:43:37] Start differential expression test
-#> ℹ [2026-09-27 22:43:37] Find all markers(wilcox) among [1] 5 groups...
-#> ℹ [2026-09-27 22:43:37] Using 1 core
+#> ℹ [2026-10-04 23:05:15] Data type is log-normalized
+#> ℹ [2026-10-04 23:05:15] Start differential expression test
+#> ℹ [2026-10-04 23:05:15] Find all markers(wilcox) among [1] 5 groups...
+#> ℹ [2026-10-04 23:05:16] Using 1 core
 #> For a (much!) faster implementation of the Wilcoxon Rank Sum Test,
 #> (default method for FindMarkers) please install the presto package
 #> --------------------------------------------
@@ -55,14 +55,14 @@ pancreas_sub <- RunDEtest(
 #> After installation of presto, Seurat will automatically use the more 
 #> efficient implementation (no further action necessary).
 #> This message will be shown once per session
-#> ⠙ [2026-09-27 22:43:37] Running for Ductal [1/5] ■■          20% | ETA:  2m
-#> ⠹ [2026-09-27 22:43:37] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
-#> ⠸ [2026-09-27 22:43:37] Running for Endocrine [3/5] ■■■■■■      60% | ETA:  1m
-#> ⠼ [2026-09-27 22:43:37] Running for Ngn3-low-EP [4/5] ■■■■■■■■    80% | ETA: 27s
-#> ✔ [2026-09-27 22:43:37] Completed 5 tasks in 2m 11.9s
+#> ⠙ [2026-10-04 23:05:16] Running for Ductal [1/5] ■■          20% | ETA:  2m
+#> ⠹ [2026-10-04 23:05:16] Running for Ngn3-high-EP [2/5] ■■■■        40% | ETA:  …
+#> ⠸ [2026-10-04 23:05:16] Running for Endocrine [3/5] ■■■■■■      60% | ETA: 47s
+#> ⠼ [2026-10-04 23:05:16] Running for Ngn3-low-EP [4/5] ■■■■■■■■    80% | ETA: 24s
+#> ✔ [2026-10-04 23:05:16] Completed 5 tasks in 1m 58s
 #> 
-#> ℹ [2026-09-27 22:43:37] Building results
-#> ✔ [2026-09-27 22:45:49] Differential expression test completed
+#> ℹ [2026-10-04 23:05:16] Building results
+#> ✔ [2026-10-04 23:07:14] Differential expression test completed
 
 names(pancreas_sub@tools)
 #> [1] "DEtest_CellType"
@@ -154,11 +154,11 @@ pancreas_sub <- RunEnrichment(
   db = "GO_BP",
   species = "Mus_musculus"
 )
-#> ℹ [2026-09-27 22:46:01] Start Enrichment analysis
-#> ℹ [2026-09-27 22:46:01] Species: "Mus_musculus"
-#> ℹ [2026-09-27 22:46:01] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-27 21:44:19
-#> ℹ [2026-09-27 22:46:02] Permform enrichment...
-#> ✔ [2026-09-27 22:46:05] Enrichment analysis done
+#> ℹ [2026-10-04 23:07:30] Start Enrichment analysis
+#> ℹ [2026-10-04 23:07:30] Species: "Mus_musculus"
+#> ℹ [2026-10-04 23:07:30] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-04 21:57:32
+#> ℹ [2026-10-04 23:07:30] Permform enrichment...
+#> ✔ [2026-10-04 23:07:35] Enrichment analysis done
 
 DEtestPlot(
   pancreas_sub,
@@ -195,9 +195,10 @@ pancreas_sub <- AnnotateFeatures(
   species = "Mus_musculus",
   db = c("TF", "CSPA")
 )
-#> ℹ [2026-09-27 22:46:10] Species: "Mus_musculus"
-#> ℹ [2026-09-27 22:46:10] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-09-27 21:24:10
-#> ℹ [2026-09-27 22:46:10] Loading cached: CSPA version: CSPA nterm:1 created: 2026-09-27 21:43:02
+#> ℹ [2026-10-04 23:07:40] Species: "Mus_musculus"
+#> ℹ [2026-10-04 23:07:40] Loading cached: TF version: AnimalTFDB4 nterm:2 created: 2026-10-04 21:33:15
+#> ℹ [2026-10-04 23:07:40] Species: "Mus_musculus"
+#> ℹ [2026-10-04 23:07:41] Loading cached: CSPA version: CSPA nterm:1 created: 2026-10-04 21:55:49
 
 ht <- FeatureHeatmap(
   pancreas_sub,
@@ -210,19 +211,19 @@ ht <- FeatureHeatmap(
   anno_terms = TRUE,
   feature_annotation = c("TF", "CSPA")
 )
-#> ℹ [2026-09-27 22:46:13] Start Enrichment analysis
-#> ℹ [2026-09-27 22:46:13] Species: "Mus_musculus"
-#> ℹ [2026-09-27 22:46:13] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-27 21:44:19
-#> ℹ [2026-09-27 22:46:14] Permform enrichment...
-#> ✔ [2026-09-27 22:46:16] Enrichment analysis done
+#> ℹ [2026-10-04 23:07:42] Start Enrichment analysis
+#> ℹ [2026-10-04 23:07:42] Species: "Mus_musculus"
+#> ℹ [2026-10-04 23:07:42] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-04 21:57:32
+#> ℹ [2026-10-04 23:07:43] Permform enrichment...
+#> ✔ [2026-10-04 23:07:47] Enrichment analysis done
 #> `use_raster` is automatically set to TRUE for a matrix with more than
 #> 2000 rows. You can control `use_raster` argument by explicitly setting
 #> TRUE/FALSE to it.
 #> 
 #> Set `ht_opt$message = FALSE` to turn off this message.
-#> ℹ [2026-09-27 22:46:16] The size of the heatmap is fixed because certain elements are not scalable.
-#> ℹ [2026-09-27 22:46:16] The width and height of the heatmap are determined by the size of the current viewport.
-#> ℹ [2026-09-27 22:46:16] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
+#> ℹ [2026-10-04 23:07:47] The size of the heatmap is fixed because certain elements are not scalable.
+#> ℹ [2026-10-04 23:07:47] The width and height of the heatmap are determined by the size of the current viewport.
+#> ℹ [2026-10-04 23:07:47] If you want to have more control over the size, you can manually set the parameters 'width' and 'height'.
 print(ht$plot)
 ```
 
@@ -245,11 +246,11 @@ pancreas_sub <- RunEnrichment(
   species = "Mus_musculus",
   DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05"
 )
-#> ℹ [2026-09-27 22:46:23] Start Enrichment analysis
-#> ℹ [2026-09-27 22:46:23] Species: "Mus_musculus"
-#> ℹ [2026-09-27 22:46:23] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-09-27 21:44:19
-#> ℹ [2026-09-27 22:46:24] Permform enrichment...
-#> ✔ [2026-09-27 22:46:26] Enrichment analysis done
+#> ℹ [2026-10-04 23:07:57] Start Enrichment analysis
+#> ℹ [2026-10-04 23:07:57] Species: "Mus_musculus"
+#> ℹ [2026-10-04 23:07:57] Loading cached: GO_BP version: 3.23.0 nterm:14957 created: 2026-10-04 21:57:32
+#> ℹ [2026-10-04 23:07:58] Permform enrichment...
+#> ✔ [2026-10-04 23:08:01] Enrichment analysis done
 
 EnrichmentPlot(
   pancreas_sub,
@@ -277,7 +278,7 @@ EnrichmentPlot(
 #> Also defined by 'BiocGenerics'
 #> Found more than one class "dist" in cache; using the first, from namespace 'spam'
 #> Also defined by 'BiocGenerics'
-#> ✔ [2026-09-27 22:46:27] shadowtext installed successfully
+#> ✔ [2026-10-04 23:08:02] shadowtext installed successfully
 ```
 
 ![](differential-enrichment-workflow_files/figure-html/enrichment-plots-1.png)

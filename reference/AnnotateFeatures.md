@@ -45,20 +45,15 @@ AnnotateFeatures(
 
 - db:
 
-  Annotation sources. One or more of `"GO"`, `"GO_BP"`, `"GO_CC"`,
-  `"GO_MF"`, `"KEGG"`, `"WikiPathway"`, `"Reactome"`, `"CORUM"`, `"MP"`,
-  `"DO"`, `"HPO"`, `"PFAM"`, `"CSPA"`, `"Surfaceome"`, `"SPRomeDB"`,
-  `"VerSeDa"`, `"TFLink"`, `"hTFtarget"`, `"TRRUST"`, `"JASPAR"`,
-  `"ENCODE"`, `"MSigDB"`, `"CellTalk"`, `"CellChat"`, `"Chromosome"`,
-  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CytoTRACE2"`. MSigDB collections
-  use `"MSigDB_<collection>"`, with `:` replaced by `_`. Top-level names
-  such as `"MSigDB_H"` (human hallmark), `"MSigDB_MH"` (mouse hallmark)
-  and `"MSigDB_M2"` stay available and include their nested collections.
-  Nested names include each prefix, for example `"MSigDB_M2_CGP"`,
-  `"MSigDB_M2_CP"` and `"MSigDB_M2_CP_BIOCARTA"`. Colon forms such as
-  `"MSigDB_M2:CGP"` are accepted. `"CytoTRACE2"` is species-independent
-  and is required by
-  [RunCytoTRACE](https://mengxu98.github.io/scop/reference/RunCytoTRACE.md).
+  Character vector of database or resource selectors: `"GO"`, `"GO_BP"`,
+  `"GO_CC"`, `"GO_MF"`, `"KEGG"`, `"WikiPathway"`, `"Reactome"`,
+  `"CORUM"`, `"MP"`, `"DO"`, `"HPO"`, `"PFAM"`, `"Chromosome"`,
+  `"GeneType"`, `"Enzyme"`, `"TF"`, `"CSPA"`, `"Surfaceome"`,
+  `"SPRomeDB"`, `"VerSeDa"`, `"TFLink"`, `"hTFtarget"`, `"TRRUST"`,
+  `"JASPAR"`, `"ENCODE"`, `"MSigDB"`, `"CellTalk"`, `"CellChat"`,
+  `"CytoTRACE2"` or `"MSigDB_<collection>"`. A vector may combine
+  sources. See the corresponding preparation function for
+  source-specific settings.
 
 - db_update:
 
@@ -130,8 +125,8 @@ pancreas_sub <- AnnotateFeatures(
   species = "Mus_musculus",
   db = "TF"
 )
-#> ℹ [2026-09-27 21:24:09] Species: "Mus_musculus"
-#> ℹ [2026-09-27 21:24:09] Preparing database: TF
+#> ℹ [2026-10-04 21:33:14] Species: "Mus_musculus"
+#> ℹ [2026-10-04 21:33:14] Preparing database: TF
 head(
   GetFeaturesData(
     pancreas_sub

@@ -337,17 +337,17 @@ gsea_out <- RunGSEA(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-09-27 21:49:34] Start GSEA analysis
-#> ! [2026-09-27 21:49:34] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-09-27 21:49:34] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-09-27 21:49:34] Prepared 10 ranked gene rows after ID mapping.
-#> ℹ [2026-09-27 21:49:34] Running GSEA for 1 group/database combination(s) ...
-#> ℹ [2026-09-27 21:49:34] Running GSEA: group "Cluster1", database "custom", genes 10 ...
+#> ℹ [2026-10-04 22:04:17] Start GSEA analysis
+#> ! [2026-10-04 22:04:17] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-10-04 22:04:17] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-10-04 22:04:17] Prepared 10 ranked gene rows after ID mapping.
+#> ℹ [2026-10-04 22:04:17] Running GSEA for 1 group/database combination(s) ...
+#> ℹ [2026-10-04 22:04:17] Running GSEA: group "Cluster1", database "custom", genes 10 ...
 #> Registered S3 method overwritten by 'ggtree':
 #>   method         from     
 #>   fortify.igraph ggnetwork
-#> ℹ [2026-09-27 21:49:34] Finished GSEA: group "Cluster1", database "custom".
-#> ✔ [2026-09-27 21:49:34] GSEA analysis done
+#> ℹ [2026-10-04 22:04:17] Finished GSEA: group "Cluster1", database "custom".
+#> ✔ [2026-10-04 22:04:17] GSEA analysis done
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison")
 
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar")

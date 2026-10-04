@@ -135,8 +135,8 @@ mdic3 <- RunMDIC3(
   max_lag = 1,
   max_edges_per_target = 2
 )
-#> ℹ [2026-09-27 22:26:15] Running GNIPLR with `backend = cpp` on 5 genes and 8 cells
-#> ℹ [2026-09-27 22:26:15] Running MDIC3 with `backend = cpp` and `grn_method = gniplr` on 5 genes and 8 cells
+#> ℹ [2026-10-04 22:44:40] Running GNIPLR with `backend = cpp` on 5 genes and 8 cells
+#> ℹ [2026-10-04 22:44:40] Running MDIC3 with `backend = cpp` and `grn_method = gniplr` on 5 genes and 8 cells
 mdic3$celltype_communication
 #>                Ductal Ngn3-high-EP      Beta Ngn3-low-EP
 #> Ductal       0.000000    0.0000000 1.7308490   0.0000000

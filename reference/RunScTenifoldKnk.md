@@ -161,9 +161,9 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = FALSE,
   store_manifold = TRUE
 )
-#> ℹ [2026-09-27 22:31:31] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
+#> ℹ [2026-10-04 22:50:56] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
 #> ℹ Building 3 gene regulatory networks (200 cells each)
-#> Networks ■■■■■■■■■■■                       33% | ETA:  3s
+#> Networks ■■■■■■■■■■■                       33% | ETA:  4s
 #> Networks ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s
 #> ✔ Network construction complete: 3 networks
 #> ℹ [X] Tensor: 301 x 301 x 3 (K=3)
@@ -172,7 +172,7 @@ pancreas_sub <- RunscTenifoldKnk(
 #> ✔ Manifold alignment complete: 2 dimensions
 #> ℹ Computing distances for 301 genes
 #> ✔ Differential regulation complete: 1/301 significant genes (FDR < 0.05)
-#> ✔ [2026-09-27 22:31:38] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ✔ [2026-10-04 22:51:05] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 dr <- pancreas_sub@tools$scTenifoldKnk$diffRegulation
 head(dr)

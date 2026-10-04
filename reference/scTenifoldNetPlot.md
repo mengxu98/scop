@@ -197,8 +197,8 @@ pancreas_sub <- RunscTenifoldNet(
   store_networks = TRUE,
   store_manifold = TRUE
 )
-#> ℹ [2026-09-27 22:42:31] Run scTenifoldNet comparison using upstream implementation
-#> Error in get(fun, envir = ns, inherits = FALSE): lazy-load database '/tmp/RtmpkndhMH/temp_libpath89fe11e15558/scTenifoldNet/R/scTenifoldNet.rdb' is corrupt
+#> ℹ [2026-10-04 23:04:01] Run scTenifoldNet comparison using upstream implementation
+#> Error in get(fun, envir = ns, inherits = FALSE): lazy-load database '/tmp/RtmpXC89GV/temp_libpath8d0f76e4a5c7/scTenifoldNet/R/scTenifoldNet.rdb' is corrupt
 
 scTenifoldNetPlot(pancreas_sub, plot_type = "effect")
 #> Error in scTenifoldNetPlot(pancreas_sub, plot_type = "effect"): Cannot find scTenifoldNet result "scTenifoldNet" in `srt@tools`

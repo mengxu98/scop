@@ -55,7 +55,7 @@ panc8_rename <- RenameFeatures(
   panc8_sub,
   newnames = genenames
 )
-#> ℹ [2026-09-27 21:58:11] Rename features for the assay: RNA
+#> ℹ [2026-10-04 22:10:24] Rename features for the assay: RNA
 head(rownames(panc8_rename))
 #> [1] "A1cf"   "A4galt" "Aaas"   "Aacs"   "Aadac"  "Aadat" 
 ```

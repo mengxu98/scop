@@ -497,6 +497,10 @@
   Perform Gene Set Variation Analysis (GSVA)
 - [`RunMetabolism()`](https://mengxu98.github.io/scop/reference/RunMetabolism.md)
   : Run metabolism pathway scoring
+- [`PrepareIREA()`](https://mengxu98.github.io/scop/reference/PrepareIREA.md)
+  : Prepare Immune Dictionary references
+- [`RunIREA()`](https://mengxu98.github.io/scop/reference/RunIREA.md) :
+  Analyse cytokine responses or immune-cell polarization
 
 ### Enrichment Analysis Plot
 
@@ -514,6 +518,8 @@
   : Plots for GSVA (Gene Set Variation Analysis)
 - [`MetabolismPlot()`](https://mengxu98.github.io/scop/reference/MetabolismPlot.md)
   : Plots for metabolism pathway scoring
+- [`IREAPlot()`](https://mengxu98.github.io/scop/reference/IREAPlot.md)
+  : Plot IREA response or polarization results
 
 ### Metabolic Flux Analysis
 
@@ -785,7 +791,61 @@
 - [`ListDB()`](https://mengxu98.github.io/scop/reference/ListDB.md) :
   List cached gene annotation databases
 - [`PrepareDB()`](https://mengxu98.github.io/scop/reference/PrepareDB.md)
-  : Prepare gene annotation databases
+  : Prepare databases and reference resources
+- [`PrepareGO()`](https://mengxu98.github.io/scop/reference/PrepareGO.md)
+  : Prepare GO databases
+- [`PrepareMP()`](https://mengxu98.github.io/scop/reference/PrepareMP.md)
+  : Prepare MP databases
+- [`PrepareDO()`](https://mengxu98.github.io/scop/reference/PrepareDO.md)
+  : Prepare DO databases
+- [`PrepareHPO()`](https://mengxu98.github.io/scop/reference/PrepareHPO.md)
+  : Prepare HPO databases
+- [`PreparePFAM()`](https://mengxu98.github.io/scop/reference/PreparePFAM.md)
+  : Prepare PFAM databases
+- [`PrepareChromosome()`](https://mengxu98.github.io/scop/reference/PrepareChromosome.md)
+  : Prepare Chromosome databases
+- [`PrepareGeneType()`](https://mengxu98.github.io/scop/reference/PrepareGeneType.md)
+  : Prepare GeneType databases
+- [`PrepareEnzyme()`](https://mengxu98.github.io/scop/reference/PrepareEnzyme.md)
+  : Prepare Enzyme databases
+- [`PrepareKEGG()`](https://mengxu98.github.io/scop/reference/PrepareKEGG.md)
+  : Prepare KEGG databases
+- [`PrepareWikiPathway()`](https://mengxu98.github.io/scop/reference/PrepareWikiPathway.md)
+  : Prepare WikiPathway databases
+- [`PrepareReactome()`](https://mengxu98.github.io/scop/reference/PrepareReactome.md)
+  : Prepare Reactome databases
+- [`PrepareMSigDB()`](https://mengxu98.github.io/scop/reference/PrepareMSigDB.md)
+  : Prepare MSigDB databases
+- [`PrepareCORUM()`](https://mengxu98.github.io/scop/reference/PrepareCORUM.md)
+  : Prepare CORUM databases
+- [`PrepareTF()`](https://mengxu98.github.io/scop/reference/PrepareTF.md)
+  : Prepare TF databases
+- [`PrepareCSPA()`](https://mengxu98.github.io/scop/reference/PrepareCSPA.md)
+  : Prepare CSPA databases
+- [`PrepareSurfaceome()`](https://mengxu98.github.io/scop/reference/PrepareSurfaceome.md)
+  : Prepare Surfaceome databases
+- [`PrepareSPRomeDB()`](https://mengxu98.github.io/scop/reference/PrepareSPRomeDB.md)
+  : Prepare SPRomeDB databases
+- [`PrepareVerSeDa()`](https://mengxu98.github.io/scop/reference/PrepareVerSeDa.md)
+  : Prepare VerSeDa databases
+- [`PrepareTFLink()`](https://mengxu98.github.io/scop/reference/PrepareTFLink.md)
+  : Prepare TFLink databases
+- [`PrepareHTFtarget()`](https://mengxu98.github.io/scop/reference/PrepareHTFtarget.md)
+  : Prepare hTFtarget databases
+- [`PrepareTRRUST()`](https://mengxu98.github.io/scop/reference/PrepareTRRUST.md)
+  : Prepare TRRUST databases
+- [`PrepareJASPAR()`](https://mengxu98.github.io/scop/reference/PrepareJASPAR.md)
+  : Prepare JASPAR databases
+- [`PrepareENCODE()`](https://mengxu98.github.io/scop/reference/PrepareENCODE.md)
+  : Prepare ENCODE databases
+- [`PrepareCellTalk()`](https://mengxu98.github.io/scop/reference/PrepareCellTalk.md)
+  : Prepare CellTalk databases
+- [`PrepareCellChat()`](https://mengxu98.github.io/scop/reference/PrepareCellChat.md)
+  : Prepare CellChat databases
+- [`PrepareCytoTRACE2()`](https://mengxu98.github.io/scop/reference/PrepareCytoTRACE2.md)
+  : Prepare CytoTRACE2 model resources
+- [`PrepareCustomDB()`](https://mengxu98.github.io/scop/reference/PrepareCustomDB.md)
+  : Prepare custom gene annotation databases
 - [`RunCisTarget()`](https://mengxu98.github.io/scop/reference/RunCisTarget.md)
   : Run cisTarget motif enrichment on a GRN adjacency table
 

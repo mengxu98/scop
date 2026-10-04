@@ -195,22 +195,22 @@ tools slot `Metabolism_<group.by>_<method>` for
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-09-27 22:26:36] Start standard processing workflow...
-#> ℹ [2026-09-27 22:26:36] Checking a list of <Seurat>...
-#> ! [2026-09-27 22:26:36] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-09-27 22:26:36] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-09-27 22:26:36] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-09-27 22:26:36] Use the separate HVF from `srt_list`
-#> ℹ [2026-09-27 22:26:36] Number of available HVF: 2000
-#> ℹ [2026-09-27 22:26:36] Finished check
-#> ℹ [2026-09-27 22:26:36] Perform `ScaleData()`
-#> ℹ [2026-09-27 22:26:36] Perform pca linear dimension reduction
-#> ℹ [2026-09-27 22:26:37] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-09-27 22:26:37] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-09-27 22:26:37] Reorder clusters...
-#> ℹ [2026-09-27 22:26:37] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-09-27 22:26:37] Perform umap nonlinear dimension reduction
-#> ✔ [2026-09-27 22:26:44] Standard processing workflow completed
+#> ℹ [2026-10-04 22:45:05] Start standard processing workflow...
+#> ℹ [2026-10-04 22:45:05] Checking a list of <Seurat>...
+#> ! [2026-10-04 22:45:05] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-04 22:45:05] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-04 22:45:05] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-04 22:45:05] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-04 22:45:05] Number of available HVF: 2000
+#> ℹ [2026-10-04 22:45:05] Finished check
+#> ℹ [2026-10-04 22:45:05] Perform `ScaleData()`
+#> ℹ [2026-10-04 22:45:05] Perform pca linear dimension reduction
+#> ℹ [2026-10-04 22:45:06] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-04 22:45:06] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-04 22:45:06] Reorder clusters...
+#> ℹ [2026-10-04 22:45:06] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-04 22:45:06] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-04 22:45:14] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   assay = "RNA",
@@ -221,15 +221,15 @@ pancreas_sub <- RunMetabolism(
   method = "AUCell",
   use_preparedb = FALSE
 )
-#> ℹ [2026-09-27 22:26:44] Start metabolism pathway scoring
-#> ℹ [2026-09-27 22:26:45] Data type is raw counts
-#> ℹ [2026-09-27 22:26:45] Averaging expression by "CellType" ...
-#> ℹ [2026-09-27 22:26:45] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-09-27 22:26:45] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
-#> ℹ [2026-09-27 22:26:45] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
-#> ! [2026-09-27 22:26:45] `GeneConvert()` failed: "variable names are limited to 10000 bytes". Falling back to direct symbol matching.
-#> ℹ [2026-09-27 22:26:45] Total metabolism gene sets to score: 127
-#> ✔ [2026-09-27 22:26:45] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
+#> ℹ [2026-10-04 22:45:14] Start metabolism pathway scoring
+#> ℹ [2026-10-04 22:45:14] Data type is raw counts
+#> ℹ [2026-10-04 22:45:14] Averaging expression by "CellType" ...
+#> ℹ [2026-10-04 22:45:14] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-10-04 22:45:14] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
+#> ℹ [2026-10-04 22:45:14] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
+#> ! [2026-10-04 22:45:14] `GeneConvert()` failed: "variable names are limited to 10000 bytes". Falling back to direct symbol matching.
+#> ℹ [2026-10-04 22:45:14] Total metabolism gene sets to score: 127
+#> ✔ [2026-10-04 22:45:14] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 ht <- MetabolismPlot(
   pancreas_sub,
   group.by = "CellType",

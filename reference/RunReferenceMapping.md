@@ -177,7 +177,7 @@ pbmcmultiome_sub <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ℹ [2026-09-27 22:30:01] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-04 22:49:09] Skip `log1p()` because `layer = data` is not "counts"
 reference <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[1:120])
 query <- subset(pbmcmultiome_sub, cells = colnames(pbmcmultiome_sub)[121:200])
 query <- RunStandardWorkflow(
@@ -187,7 +187,7 @@ query <- RunStandardWorkflow(
   linear_reduction_dims = 10,
   verbose = FALSE
 )
-#> ! [2026-09-27 22:30:09] Only one cluster found
+#> ! [2026-10-04 22:49:18] Only one cluster found
 query <- RunReferenceMapping(
   object = query,
   reference = reference,
@@ -206,10 +206,10 @@ query <- RunReferenceMapping(
 #> Finding integration vectors
 #> Finding integration vector weights
 #> Integrating data
-#> ℹ [2026-09-27 22:30:18] No UMAP model detected. Set the `projection_method` to "knn"
-#> ℹ [2026-09-27 22:30:18] Use the reduction to calculate distance metric
-#> ℹ [2026-09-27 22:30:18] Use raw method to find neighbors
-#> ℹ [2026-09-27 22:30:19] Predicting cell types based on ref_group
+#> ℹ [2026-10-04 22:49:28] No UMAP model detected. Set the `projection_method` to "knn"
+#> ℹ [2026-10-04 22:49:28] Use the reduction to calculate distance metric
+#> ℹ [2026-10-04 22:49:28] Use raw method to find neighbors
+#> ℹ [2026-10-04 22:49:28] Predicting cell types based on ref_group
 head(query[[]][, grep("^predicted_", colnames(query[[]]), value = TRUE), drop = FALSE])
 #>                    predicted_predicted.id predicted_prediction.score.NK
 #> CAAGGCCTCTAGCGTG-1                      B                    0.03359597
