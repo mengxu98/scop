@@ -586,7 +586,6 @@ spatial_dim_pie_plot <- function(
   theme_use = "theme_spatial",
   theme_args = list()
 ) {
-  check_r("scatterpie", verbose = FALSE)
   image.scale <- match.arg(image.scale)
   coords <- spatial_dim_coords(
     srt = srt,
@@ -626,6 +625,7 @@ spatial_dim_pie_plot <- function(
       )
     )
   }
+  check_r("scatterpie", verbose = FALSE)
   mat <- sweep(mat, 1, rowSums(mat), "/")
   plot_dat <- cbind(dat, as.data.frame(mat, check.names = FALSE))
 
