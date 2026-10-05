@@ -184,26 +184,24 @@ test_that("unsupported cache.index and non-euclidean Annoy fall back to Seurat",
     .package = "scop"
   )
 
-  expect_s4_class(
-    FindNeighbors(
-      x,
-      k.param = 2,
-      annoy.metric = "cosine",
-      return.neighbor = TRUE,
-      verbose = FALSE
-    ),
-    "Neighbor"
+  # Some testthat versions evaluate expect_s4_class's expression twice.
+  # Materialize each call so the strict dispatch count measures our methods.
+  cosine <- FindNeighbors(
+    x,
+    k.param = 2,
+    annoy.metric = "cosine",
+    return.neighbor = TRUE,
+    verbose = FALSE
   )
-  expect_s4_class(
-    FindNeighbors(
-      x,
-      k.param = 2,
-      cache.index = TRUE,
-      return.neighbor = TRUE,
-      verbose = FALSE
-    ),
-    "Neighbor"
+  cached <- FindNeighbors(
+    x,
+    k.param = 2,
+    cache.index = TRUE,
+    return.neighbor = TRUE,
+    verbose = FALSE
   )
+  expect_s4_class(cosine, "Neighbor")
+  expect_s4_class(cached, "Neighbor")
   expect_identical(fallback_calls, 2L)
 })
 

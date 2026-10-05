@@ -38,6 +38,14 @@ test_that("RunPCA default output is identical to Seurat", {
     SeuratObject::Embeddings(scop_pca[["pca_scop"]]),
     SeuratObject::Embeddings(seurat_pca[["pca_seurat"]])
   )
+  expect_identical(
+    SeuratObject::Loadings(scop_pca[["pca_scop"]]),
+    SeuratObject::Loadings(seurat_pca[["pca_seurat"]])
+  )
+  expect_identical(
+    scop_pca[["pca_scop"]]@stdev,
+    seurat_pca[["pca_seurat"]]@stdev
+  )
 })
 
 test_that("RunPCA cpp backend remains an explicit override", {
@@ -138,16 +146,127 @@ test_that("RunPCA matrix fallback retains exact and reverse PCA branches", {
   }
 
   sparse <- methods::as(Matrix::Matrix(x, sparse = TRUE), "dgCMatrix")
-  expect_error(
-    RunPCA(sparse, npcs = 5L, verbose = FALSE),
-    "unused argument"
-  )
+  # Older Seurat releases rejected sparse PCA; current releases support it.
+  # Follow the installed upstream contract, including every numerical output.
+  for (args in list(
+    list(),
+    list(weight.by.var = FALSE),
+    list(rev.pca = TRUE),
+    list(tol = 1e-7)
+  )) {
+    common <- c(
+      list(object = sparse, assay = "RNA", npcs = 5L, verbose = FALSE),
+      args
+    )
+    expected <- tryCatch(
+      do.call(get("RunPCA.default", asNamespace("Seurat")), common),
+      error = identity
+    )
+    actual <- tryCatch(do.call(RunPCA, common), error = identity)
+    if (inherits(expected, "error")) {
+      expect_s3_class(actual, "error")
+      if (inherits(actual, "error")) {
+        expect_identical(conditionMessage(actual), conditionMessage(expected))
+      }
+    } else {
+      expect_identical(actual, expected)
+      expect_identical(dim(SeuratObject::Embeddings(actual)), c(ncol(x), 5L))
+      expect_identical(dim(SeuratObject::Loadings(actual)), c(nrow(x), 5L))
+    }
+  }
   expect_no_error(RunPCA(
     sparse,
     npcs = 5L,
     backend = "cpp",
     verbose = FALSE
   ))
+})
+
+test_that("RunPCA auto fallback tracks Seurat's current matrix solver", {
+  set.seed(20261005)
+  x <- matrix(stats::rnorm(40L * 30L), nrow = 40L)
+  dimnames(x) <- list(paste0("g", seq_len(nrow(x))), paste0("c", seq_len(ncol(x))))
+  # The small shape must use the upstream fallback, whose default solver can
+  # change between Seurat releases. Extra solver arguments must also survive.
+  for (args in list(list(), list(weight.by.var = FALSE), list(tol = 1e-7))) {
+    common <- c(list(object = x, assay = "RNA", npcs = 5L, verbose = FALSE), args)
+    expected <- do.call(get("RunPCA.default", asNamespace("Seurat")), common)
+    expected_seed <- .Random.seed
+    actual <- do.call(RunPCA, common)
+    expect_identical(actual, expected)
+    expect_identical(.Random.seed, expected_seed)
+  }
+
+  # Assay5 provides feature and cell names separately from its internal layer.
+  unnamed <- unname(x)
+  expected <- seurat_reference_method("RunPCA", "default", x,
+    assay = "RNA", npcs = 5L, verbose = FALSE
+  )
+  actual <- RunPCA(unnamed,
+    assay = "RNA", npcs = 5L, feature.names = rownames(x),
+    cell.names = colnames(x), verbose = FALSE
+  )
+  expect_identical(actual, expected)
+})
+
+test_that("RunPCA auto fallback preserves upstream rank boundary handling", {
+  set.seed(20261008)
+  x <- matrix(stats::rnorm(20L * 8L), nrow = 20L)
+  dimnames(x) <- list(paste0("g", seq_len(nrow(x))), paste0("c", seq_len(ncol(x))))
+  for (npcs in c(ncol(x), ncol(x) + 5L, nrow(x) + 5L)) {
+    common <- list(object = x, assay = "RNA", npcs = npcs, verbose = FALSE)
+    expected <- tryCatch(
+      suppressWarnings(do.call(get("RunPCA.default", asNamespace("Seurat")), common)),
+      error = identity
+    )
+    actual <- tryCatch(suppressWarnings(do.call(RunPCA, common)), error = identity)
+    if (inherits(expected, "error")) {
+      expect_s3_class(actual, "error")
+      if (inherits(actual, "error")) {
+        expect_identical(conditionMessage(actual), conditionMessage(expected))
+      }
+    } else {
+      expect_identical(actual, expected)
+    }
+  }
+})
+
+test_that("RunPCA rejected native candidates return the exact Seurat fallback", {
+  set.seed(20261006)
+  x <- matrix(stats::rnorm(20L * 200L), nrow = 20L)
+  dimnames(x) <- list(paste0("g", seq_len(nrow(x))), paste0("c", seq_len(ncol(x))))
+  expected <- seurat_reference_method("RunPCA", "default", x,
+    assay = "RNA", npcs = 5L, verbose = FALSE
+  )
+  called <- 0L
+  testthat::local_mocked_bindings(
+    pca_backend_run = function(...) {
+      called <<- called + 1L
+      list(eigvals = rep(1, 6L))
+    },
+    .package = "scop"
+  )
+  actual <- RunPCA(x, assay = "RNA", npcs = 5L, verbose = FALSE)
+  expect_identical(called, 1L)
+  expect_identical(actual, expected)
+})
+
+test_that("RunPCA irlba remains an explicit solver override", {
+  set.seed(20261007)
+  x <- matrix(stats::rnorm(40L * 30L), nrow = 40L)
+  dimnames(x) <- list(paste0("g", seq_len(nrow(x))), paste0("c", seq_len(ncol(x))))
+  for (weighted in c(TRUE, FALSE)) {
+    set.seed(42)
+    expected <- irlba::irlba(t(x), nv = 5L)
+    actual <- RunPCA(x,
+      assay = "RNA", npcs = 5L, backend = "irlba",
+      weight.by.var = weighted, verbose = FALSE
+    )
+    embeddings <- if (weighted) expected$u %*% diag(expected$d) else expected$u
+    expect_identical(unname(SeuratObject::Embeddings(actual)), embeddings)
+    expect_identical(unname(SeuratObject::Loadings(actual)), expected$v)
+    expect_identical(actual@stdev, expected$d / sqrt(ncol(x) - 1L))
+  }
 })
 
 test_that("RunPCA native auto path preserves a separated PCA subspace", {
