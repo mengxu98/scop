@@ -81,6 +81,12 @@ print.scop_logo <- function(x, ...) {
   invisible(x)
 }
 
+.onLoad <- function(libname, pkgname) {
+  # Adapt at namespace load, including after a Seurat upgrade or downgrade that
+  # did not rebuild scop's lazy-load database.
+  sct_register_default_method(environment(.onLoad))
+}
+
 .onAttach <- function(libname, pkgname) {
   options(scop_env_cache = NULL)
 
