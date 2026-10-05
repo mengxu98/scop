@@ -13,7 +13,10 @@ RunPropeller(
   n_bootstrap = 1000,
   seed = 11,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  transform = c("logit", "asin"),
+  robust = TRUE,
+  trend = FALSE
 )
 }
 \arguments{
@@ -29,7 +32,9 @@ samples are explicitly enabled.}
 
 \item{sample.by}{Metadata column identifying biological samples. Required
 when calling \code{RunPropeller()} directly. Fully paired sample IDs across two
-conditions use a paired test; partially paired comparisons are rejected.}
+conditions add a sample blocking effect to the speckle design matrix;
+partially paired comparisons are rejected. At least two biological samples
+per condition are required.}
 
 \item{comparison}{Optional pairs of condition labels. Each pair is
 \code{c(group1, group2)}. \code{obs_log2FD} is \code{log2(group1 / group2)}, matching
@@ -37,7 +42,9 @@ conditions use a paired test; partially paired comparisons are rejected.}
 type is more abundant in \code{group1}. If \code{NULL}, all pairwise comparisons are
 generated in both directions.}
 
-\item{n_bootstrap}{Number of bootstrap iterations for confidence intervals.}
+\item{n_bootstrap}{Number of sample bootstrap iterations for descriptive
+confidence intervals. Paired samples are resampled together. Use zero to
+omit bootstrap intervals.}
 
 \item{seed}{Random seed, including for permutation testing.}
 
@@ -46,6 +53,13 @@ Default is \code{TRUE}.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{transform}{Proportion transformation, \code{"logit"} (default) or \code{"asin"}.
+Logit uses speckle's count pseudocount of 0.5 before computing proportions.}
+
+\item{robust}{Whether speckle uses robust empirical Bayes variance shrinkage.}
+
+\item{trend}{Whether speckle fits a mean-variance trend.}
 }
 \value{
 A method result bundle used internally by \link{RunProportionTest}.
@@ -53,7 +67,11 @@ A method result bundle used internally by \link{RunProportionTest}.
 \description{
 Method-specific implementation used by \link{RunProportionTest} when
 \code{proportion_method = "propeller"}.
-This implementation uses an internal logit-transformed sample-proportion
-t-test (paired when sample IDs occur in both conditions), not the speckle
-implementation of propeller. It stores standardized outputs for plotting.
+Uses the optional speckle backend: \code{getTransformedProps()} computes the
+transformed proportions and \code{propeller.ttest()} performs limma empirical
+Bayes moderated tests. Each requested comparison is a two-group test;
+multiple conditions produce pairwise results, not an omnibus ANOVA.
+P-values, FDR, and \code{Tstatistic} come from speckle. \code{obs_log2FD} and bootstrap
+intervals describe the ratio of mean untransformed sample proportions,
+with a \code{1e-5} pseudocount; these intervals are not moderated-test intervals.
 }
