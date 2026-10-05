@@ -303,7 +303,9 @@ test_that("FindAllMarkers accelerates Seurat-compatible sampling", {
     return.thresh = Inf,
     verbose = FALSE
   )
-  expected <- suppressWarnings(do.call(seurat_reference_find_all_markers, args))
+  expect_warning(expected <- do.call(seurat_reference_find_all_markers, args), NA)
+  expect_gt(nrow(expected), 0L)
+  expect_setequal(as.character(unique(expected$cluster)), c("A", "B", "C", "D"))
   native_calls <- 0L
   native <- get("marker_all_from_context", asNamespace("scop"))
   testthat::local_mocked_bindings(
