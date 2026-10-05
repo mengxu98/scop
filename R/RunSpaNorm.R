@@ -201,7 +201,12 @@ spanorm_prepare_input <- function(
   if (!inherits(counts, "dgCMatrix")) {
     counts <- methods::as(counts, "dgCMatrix")
   }
-  counts@x[!is.finite(counts@x) | counts@x < 0] <- 0
+  if (any(!is.finite(counts@x) | counts@x < 0 | counts@x %% 1 != 0)) {
+    log_message(
+      "SpaNorm counts must contain only finite, non-negative integer values",
+      message_type = "error"
+    )
+  }
   counts <- Matrix::drop0(counts)
   if (nrow(counts) == 0L || ncol(counts) == 0L) {
     log_message(
