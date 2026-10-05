@@ -77,12 +77,14 @@ sct_fast_path_supported <- function(
   variable.features.n,
   variable.features.rv.th,
   clip.range,
-  regression_ok = TRUE
+  regression_ok = TRUE,
+  defer.residual.matrix = FALSE
 ) {
   is.null(reference.SCT.model) &&
     is.logical(do.correct.umi) && length(do.correct.umi) == 1L && !is.na(do.correct.umi) &&
     is.null(residual.features) &&
     isFALSE(conserve.memory) &&
+    isFALSE(defer.residual.matrix) &&
     identical(vst.flavor, "v2") &&
     all(vapply(
       list(do.scale, do.center, return.only.var.genes),
@@ -146,11 +148,17 @@ SCTransform.default <- function(
   vst.flavor = "v2",
   conserve.memory = FALSE,
   return.only.var.genes = TRUE,
+  defer.residual.matrix = FALSE,
   seed.use = 1448145,
   verbose = TRUE,
   cores = 1L,
   ...
 ) {
+  # Seurat < 5.6 has no deferred-residual formal. The load hook removes it
+  # from this method as well, so keep the original eager behavior there.
+  if (!exists("defer.residual.matrix", inherits = FALSE)) {
+    defer.residual.matrix <- FALSE
+  }
   extra_args <- list(...)
   cores <- validate_scalar_integer(cores, "cores")
   sct_delegates <- !sct_fast_path_supported(
@@ -167,6 +175,7 @@ SCTransform.default <- function(
     variable.features.n = variable.features.n,
     variable.features.rv.th = variable.features.rv.th,
     clip.range = clip.range,
+    defer.residual.matrix = defer.residual.matrix,
     regression_ok = sct_regression_supported(
       vars.to.regress = vars.to.regress,
       latent.data = latent.data,
@@ -180,7 +189,7 @@ SCTransform.default <- function(
       message_type = "info"
     )
     seurat_sct <- utils::getFromNamespace("SCTransform.default", "Seurat")
-    return(seurat_sct(
+    delegate_args <- list(
       object = object,
       cell.attr = cell.attr,
       reference.SCT.model = reference.SCT.model,
@@ -198,9 +207,12 @@ SCTransform.default <- function(
       conserve.memory = conserve.memory,
       return.only.var.genes = return.only.var.genes,
       seed.use = seed.use,
-      verbose = verbose,
-      ...
-    ))
+      verbose = verbose
+    )
+    if ("defer.residual.matrix" %in% names(formals(seurat_sct))) {
+      delegate_args$defer.residual.matrix <- defer.residual.matrix
+    }
+    return(do.call(seurat_sct, c(delegate_args, extra_args)))
   }
   sct_latent_df <- NULL
   if (!is.null(vars.to.regress) && !is.null(cell.attr)) {
@@ -421,6 +433,31 @@ SCTransform.default <- function(
   vst.out
 }
 
+# Expose only the known version-dependent argument. Do not copy arbitrary new
+# upstream formals: the strict API tests should still catch unsupported changes.
+sct_adapt_default_formals <- function(method, reference) {
+  method_formals <- formals(method)
+  method_formals$defer.residual.matrix <- NULL
+  if ("defer.residual.matrix" %in% names(formals(reference))) {
+    method_formals <- as.pairlist(append(
+      as.list(method_formals),
+      list(defer.residual.matrix = FALSE),
+      after = match("return.only.var.genes", names(method_formals))
+    ))
+  }
+  formals(method) <- method_formals
+  method
+}
+
+sct_register_default_method <- function(namespace) {
+  method <- sct_adapt_default_formals(
+    get("SCTransform.default", envir = namespace, inherits = FALSE),
+    utils::getFromNamespace("SCTransform.default", "Seurat")
+  )
+  assign("SCTransform.default", method, envir = namespace)
+  registerS3method("SCTransform", "default", method, envir = namespace)
+}
+
 #' @export
 SCTransform.Seurat <- function(
   object,
@@ -473,6 +510,17 @@ SCTransform.Seurat <- function(
       cells = colnames(object[[assay]])
     )
   )
+  # The legacy StdAssay pipeline always fits corrected counts, even when
+  # do.correct.umi is FALSE. Preserve its version-specific counts/data output;
+  # Seurat's deferred-residual API marks the replacement StdAssay pipeline.
+  if (
+    isFALSE(do.correct.umi) && inherits(object[[assay]], "StdAssay") &&
+      !"defer.residual.matrix" %in% names(formals(
+        utils::getFromNamespace("SCTransform.default", "Seurat")
+      ))
+  ) {
+    sct_delegates <- TRUE
+  }
   if (sct_delegates) {
     log_message(
       "{.fn SCTransform} received arguments beyond the validated native path; delegating to Seurat.",
@@ -594,8 +642,10 @@ SCTransform.Seurat <- function(
 #' @details
 #' The validated sparse `vst.flavor = "v2"` path uses native corrected-count
 #' and residual kernels. Reference models, specified residual features,
-#' memory-conserving mode, unsupported regression designs, custom VST arguments,
-#' and other flavors transparently delegate to `Seurat::SCTransform`.
+#' memory-conserving or deferred-residual mode, unsupported regression designs,
+#' custom VST arguments, and other flavors transparently delegate to
+#' `Seurat::SCTransform`. Legacy Seurat v5 assays with
+#' `do.correct.umi = FALSE` also delegate to preserve their output semantics.
 #'
 #' @param object Object containing count data.
 #' @param ... Passed to methods.
