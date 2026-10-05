@@ -41,6 +41,31 @@ RunPCA.default <- function(
   backend <- dots[["backend"]] %||% "auto"
   backend <- match.arg(backend, c("auto", "irlba", "cpp"))
   dots[["backend"]] <- NULL
+  seurat_npcs <- npcs
+  run_seurat <- function() {
+    # Assay5 layers can omit dimnames, which are supplied separately by the
+    # assay method. Restore them before calling Seurat's matrix implementation.
+    dimnames(object) <- list(feature.names, cell.names)
+    do.call(
+      utils::getFromNamespace("RunPCA.default", "Seurat"),
+      c(
+        list(
+          object = object,
+          assay = assay %||% "RNA",
+          npcs = seurat_npcs,
+          rev.pca = rev.pca,
+          weight.by.var = weight.by.var,
+          verbose = verbose,
+          ndims.print = ndims.print,
+          nfeatures.print = nfeatures.print,
+          reduction.key = reduction.key,
+          seed.use = seed.use,
+          approx = approx
+        ),
+        dots
+      )
+    )
+  }
   logical_flags <- list(rev.pca, weight.by.var, approx)
   if (
     !all(vapply(
@@ -53,25 +78,7 @@ RunPCA.default <- function(
       isTRUE(rev.pca) || !isTRUE(approx) ||
       (inherits(object, "Matrix") && !identical(backend, "cpp"))
   ) {
-    return(do.call(
-      utils::getFromNamespace("RunPCA.default", "Seurat"),
-      c(
-        list(
-          object = object,
-          assay = assay,
-          npcs = npcs,
-          rev.pca = rev.pca,
-          weight.by.var = weight.by.var,
-          verbose = verbose,
-          ndims.print = ndims.print,
-          nfeatures.print = nfeatures.print,
-          reduction.key = reduction.key,
-          seed.use = seed.use,
-          approx = approx
-        ),
-        dots
-      )
-    ))
+    return(run_seurat())
   }
   if (!is.null(seed.use)) {
     set.seed(seed = seed.use)
@@ -116,6 +123,11 @@ RunPCA.default <- function(
     cell.embeddings <- nv$embeddings[, keep, drop = FALSE]
     sdev <- as.numeric(nv$sdev[keep])
   } else {
+    if (identical(backend, "auto")) {
+      # Seurat can change its default solver (e.g. EigenGramPCA in 5.6).
+      # Keep fallback results exact rather than hard-coding an irlba solver.
+      return(run_seurat())
+    }
     pca <- do.call(
       irlba::irlba,
       c(list(A = Matrix::t(obj), nv = npcs), dots)
