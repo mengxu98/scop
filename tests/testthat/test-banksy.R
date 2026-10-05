@@ -119,3 +119,48 @@ test_that("BANKSY clusters reuse SCOP SpatialSpotPlot", {
   )
   expect_s3_class(p, "ggplot")
 })
+
+test_that("BANKSY sample guard rejects independent samples before backend work", {
+  srt <- make_banksy_seurat()
+  calls <- 0L
+  testthat::local_mocked_bindings(banksy_run_backend = function(...) {
+    calls <<- calls + 1L
+    stop("backend reached")
+  }, .package = "scop")
+  run <- function(object = srt, sample.by = "sample", ...) {
+    RunBANKSY(object, layer = "counts", sample.by = sample.by, verbose = FALSE, ...)
+  }
+  expect_error(run(group = "sample"), "requires one sample")
+  for (column in list("missing", "", NA_character_, c("sample", "other"), 1L)) {
+    expect_error(run(sample.by = column), "sample.by")
+  }
+  for (missing_id in c(NA_character_, "")) {
+    bad <- srt
+    bad$sample[2] <- missing_id
+    expect_error(run(bad), "non-missing, non-empty")
+  }
+  expect_identical(calls, 0L)
+  expect_error(run(sample.by = NULL, group = "sample"), "backend reached")
+  single <- srt[, 1:2]
+  single$sample <- factor(c("S1", "S1"), levels = c("S1", "unused"))
+  expect_error(run(single), "backend reached")
+  expect_identical(calls, 2L)
+})
+
+test_that("BANKSY sample guard records the selected metadata field", {
+  srt <- make_banksy_seurat()[, 1:2]
+  seen <- NULL
+  testthat::local_mocked_bindings(banksy_run_backend = function(expr, coords, coldata, ...) {
+    seen <<- list(cells = colnames(expr), coords = coords)
+    coldata$guard_test_cluster <- c("1", "2")
+    list(se = SummarizedExperiment::SummarizedExperiment(
+      assays = list(counts = expr), colData = S4Vectors::DataFrame(coldata)),
+      before_cols = setdiff(colnames(coldata), "guard_test_cluster"))
+  }, .package = "scop")
+  out <- RunBANKSY(srt, layer = "counts", sample.by = "sample",
+    cluster_source = "guard_test_cluster", verbose = FALSE)
+  expect_identical(seen$cells, colnames(srt))
+  expect_identical(rownames(seen$coords), colnames(srt))
+  expect_identical(out@tools$BANKSY$parameters$sample.by, "sample")
+  expect_equal(unname(out$BANKSY_cluster), c("1", "2"))
+})
