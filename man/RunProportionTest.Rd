@@ -84,6 +84,8 @@ will be removed in scop 1.0.0.}
 \link{RunProportionTest} performs differential abundance testing for cell proportions.
 The function acts as a dispatcher and routes to one of the method-specific
 implementations: permutation, milo, sccoda, or propeller.
+\code{"propeller"} uses the optional speckle backend for pairwise empirical
+Bayes moderated tests; see \link{RunPropeller} for transformations and parameters.
 }
 \examples{
 data(pancreas_sub)
