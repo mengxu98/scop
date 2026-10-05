@@ -9,17 +9,56 @@ test_that("neighborhood significance is recomputed for the requested threshold",
 })
 
 test_that("multiple sample neighborhoods require explicit selection without aggregation", {
-  object <- SeuratObject::CreateSeuratObject(matrix(1, 2, 4,
-    dimnames = list(c("g1", "g2"), letters[1:4])))
-  object$col <- c(0, 1, 0, 1); object$row <- 0
-  object$label <- c("MG", "OL", "MG", "OL")
-  object$sample <- c("S1", "S1", "S2", "S2")
-  object <- RunSpatialNeighborhood(object, "label", sample.by = "sample",
-    k = 1, backend = "r", verbose = FALSE)
+  make_saved_object <- function(samples = c("S1", "S2")) {
+    n_cells <- 2L * length(samples)
+    object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(matrix(1, 2, n_cells,
+      dimnames = list(c("g1", "g2"), letters[seq_len(n_cells)])), sparse = TRUE))
+    object$col <- rep(c(0, 1), length(samples)); object$row <- 0
+    object$label <- rep(c("MG", "OL"), length(samples))
+    object$sample <- rep(samples, each = 2L)
+
+    # Each two-cell sample has MG -> OL and OL -> MG edges at k = 1.
+    # Use the standardized saved pair-table contract so these plotting tests
+    # do not require BiocNeighbors to recompute the neighborhood graph.
+    pair_table <- data.frame(
+      method = "observed", comparison = "all", condition = "all",
+      from = rep(c("MG", "OL"), length(samples)),
+      to = rep(c("OL", "MG"), length(samples)), estimate = .5,
+      statistic = NA_real_, pval = NA_real_, FDR = NA_real_,
+      direction = "observed", sample = rep(samples, each = 2L),
+      subject = rep(samples, each = 2L), count = 1L, total = 2L, fraction = .5
+    )
+    bundle <- scop:::spatial_tag_coordinate_contract(list(
+      method = "observed", pair_table = pair_table,
+      parameters = list(method = "observed", coordinate_space = "raw",
+        group.by = "label", sample.by = "sample", k = 1L)
+    ))
+    object@tools$SpatialNeighborhood <- scop:::spatial_tag_coordinate_contract(list(
+      method = "SpatialNeighborhood", active_method = "observed",
+      methods = list(observed = bundle), pair_table = pair_table,
+      parameters = bundle$parameters
+    ))
+    object
+  }
+
+  object <- make_saved_object()
+  single <- make_saved_object("S1")
   for (type in c("heatmap", "stat", "network")) {
     expect_error(SpatialNeighborhoodPlot(object, plot_type = type), "sample")
-    p <- SpatialNeighborhoodPlot(object, plot_type = type, sample = "S1")
-    expect_s3_class(p, "ggplot")
+    for (sample in c("S1", "S2")) {
+      p <- SpatialNeighborhoodPlot(object, plot_type = type, sample = sample)
+      expect_s3_class(p, "ggplot")
+      expect_equal(nrow(ggplot2::ggplot_build(p)$data[[1]]), 2)
+      if (type != "network") {
+        expect_identical(unique(p$data$sample), sample)
+        expect_equal(p$data$fraction, c(.5, .5))
+      } else {
+        expect_equal(p$layers[[1]]$data$weight, c(.5, .5))
+      }
+    }
+    p_single <- SpatialNeighborhoodPlot(single, plot_type = type)
+    expect_s3_class(p_single, "ggplot")
+    expect_equal(nrow(ggplot2::ggplot_build(p_single)$data[[1]]), 2)
   }
   p <- SpatialNeighborhoodPlot(object, sample = "S1")
   expect_identical(unique(p$data$sample), "S1")
@@ -27,8 +66,9 @@ test_that("multiple sample neighborhoods require explicit selection without aggr
   expect_equal(nrow(ggplot2::ggplot_build(p)$data[[1]]), 2)
   expect_error(SpatialNeighborhoodPlot(object, sample = "typo"), "sample")
   expect_error(SpatialNeighborhoodPlot(object, sample = c("S1", "S2")), "sample")
-  single <- RunSpatialNeighborhood(object[, 1:2], "label", sample.by = "sample",
-    k = 1, backend = "r", verbose = FALSE)
+  for (sample in list(NA_character_, character(), "", 1)) {
+    expect_error(SpatialNeighborhoodPlot(object, sample = sample), "sample")
+  }
   expect_s3_class(SpatialNeighborhoodPlot(single), "ggplot")
   expect_error(SpatialNeighborhoodPlot(object, plot_type = "spatial", sample = "S1"), "sample")
 })
