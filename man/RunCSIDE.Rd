@@ -33,7 +33,8 @@ RunCSIDE(
 \code{srt@tools[["RCTD"]]$object} from \code{\link[=RunRCTD]{RunRCTD()}} is used.}
 
 \item{explanatory.variable}{Named numeric vector used by
-\code{spacexr::run.CSIDE.single()}. Names must match spatial spot names.}
+\code{spacexr::run.CSIDE.single()}. Names must match spatial spot names.
+Spots with missing or non-finite values are excluded before backend dispatch.}
 
 \item{group.by}{Metadata column used to build C-SIDE regions when
 \code{region_list} is not supplied.}

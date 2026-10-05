@@ -11,6 +11,7 @@
 #' `srt@tools[["RCTD"]]$object` from [RunRCTD()] is used.
 #' @param explanatory.variable Named numeric vector used by
 #' `spacexr::run.CSIDE.single()`. Names must match spatial spot names.
+#' Spots with missing or non-finite values are excluded before backend dispatch.
 #' @param group.by Metadata column used to build C-SIDE regions when
 #' `region_list` is not supplied.
 #' @param condition.by Binary metadata column converted to a 0/1 explanatory
@@ -415,7 +416,7 @@ cside_prepare_single_input <- function(
     )
   }
   list(
-    explanatory.variable = explanatory.variable,
+    explanatory.variable = explanatory.variable[keep],
     barcodes = names(explanatory.variable)[keep],
     condition_levels = condition_levels,
     design = NULL,
