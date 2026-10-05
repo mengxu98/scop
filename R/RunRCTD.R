@@ -453,7 +453,12 @@ rctd_get_count_matrix <- function(
   if (!inherits(mat, "dgCMatrix")) {
     mat <- methods::as(mat, "dgCMatrix")
   }
-  mat@x[!is.finite(mat@x) | mat@x < 0] <- 0
+  if (any(!is.finite(mat@x) | mat@x < 0)) {
+    log_message(
+      "{.val {data_label}} counts must contain only finite, non-negative values",
+      message_type = "error"
+    )
+  }
   non_integer <- abs(mat@x - round(mat@x)) > sqrt(.Machine$double.eps)
   if (any(non_integer)) {
     if (!isTRUE(round_counts)) {
