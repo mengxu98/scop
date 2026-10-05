@@ -97,7 +97,12 @@ will be removed in scop 1.0.0.}
 }
 \value{
 A \code{Seurat} object with CytoSPACE metadata columns and detailed
-results stored in \code{srt@tools[["CytoSPACE"]]}.
+results stored in \code{srt@tools[["CytoSPACE"]]}. Cell-type count and fraction
+columns in the stored tables retain the original reference labels. Metadata
+uses unique syntactic suffixes, recorded in \code{metadata_cell_type_suffixes}.
+The total-count column is recorded in \code{total_cells_column}; its name is
+\code{"Total cells"} unless that conflicts with a reference label. Spots with no
+assigned cells have zero fractions and an \code{NA} dominant type.
 }
 \description{
 Run CytoSPACE spatial assignment
