@@ -281,7 +281,14 @@ prep_ref <- function(
     assay = assay_use,
     layer = layer
   )
+  ref_cells <- colnames(ref_counts)
   ref_meta <- reference_srt@meta.data
+  if (is.null(ref_cells) || anyNA(ref_cells) || any(!nzchar(ref_cells)) ||
+      anyDuplicated(ref_cells) || !all(ref_cells %in% rownames(ref_meta))) {
+    log_message("Reference counts must have unique cell IDs present in reference metadata", message_type = "error")
+  }
+  # Assay5 layers may contain a subset or a different order of object cells.
+  ref_meta <- ref_meta[ref_cells, , drop = FALSE]
   sample_col_source <- infer_ref_sample_col(
     ref_meta,
     sample.by = sample.by
