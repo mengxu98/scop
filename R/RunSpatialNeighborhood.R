@@ -251,6 +251,9 @@ RunSpatialNeighborhood <- function(
 #' @param value Column used as the plotted effect value. Spatial plots default
 #' to and only support `"count"`: saved observed outgoing edges to the target
 #' type, not a spicyR effect. Other plot types retain the `"estimate"` default.
+#' @param sample Optional single sample ID for non-spatial plots. Results from
+#' multiple samples require explicit selection; no samples are aggregated.
+#' Use `comparison` and `condition` to resolve other repeated label pairs.
 #' @param FDR_threshold FDR cutoff used to mark significant pairs.
 #' @param top_n Number of pairs to show for network and statistic plots.
 #' @param layout Network layout.
@@ -305,7 +308,8 @@ SpatialNeighborhoodPlot <- function(
   verbose = TRUE,
   ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  sample = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -323,6 +327,9 @@ SpatialNeighborhoodPlot <- function(
   spatial_require_coordinate_contract(bundle, "RunSpatialNeighborhood()")
 
   if (identical(plot_type, "spatial")) {
+    if (!is.null(sample)) {
+      stop("sample is only supported for non-spatial plots; use image or split.by for spatial plots", call. = FALSE)
+    }
     if (!identical(value, "count")) {
       stop("Spatial neighborhood plots support only value = 'count'", call. = FALSE)
     }
@@ -360,6 +367,19 @@ SpatialNeighborhoodPlot <- function(
     comparison = comparison,
     condition = condition
   )
+  if (!is.null(sample)) {
+    if (!is.character(sample) || length(sample) != 1L || is.na(sample) ||
+      !nzchar(sample) || !"sample" %in% names(df) || !sample %in% df$sample) {
+      stop("sample must name one sample in the filtered results", call. = FALSE)
+    }
+    df <- df[!is.na(df$sample) & df$sample == sample, , drop = FALSE]
+  }
+  if ("sample" %in% names(df) && length(unique(df$sample[!is.na(df$sample)])) > 1L) {
+    stop("Results contain multiple samples; select one with sample", call. = FALSE)
+  }
+  if (anyDuplicated(df[, c("from", "to"), drop = FALSE])) {
+    stop("Repeated label pairs remain; select one comparison, condition, or sample before plotting", call. = FALSE)
+  }
   if (nrow(df) == 0L) {
     return(spatial_empty_plot(
       "No spatial neighborhood records remain after filtering",
@@ -807,7 +827,7 @@ spatial_neighborhood_prepare_plot_table <- function(df, value, FDR_threshold) {
     ifelse(
       !is.na(df$FDR) & df$FDR <= FDR_threshold & df[[value]] < 0,
       "depleted",
-      ifelse(is.na(df$direction) | !nzchar(df$direction), "ns", df$direction)
+      ifelse(!is.na(df$direction) & df$direction == "observed", "observed", "ns")
     )
   )
   df$pair <- paste(df$from, df$to, sep = "|")
