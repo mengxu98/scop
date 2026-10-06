@@ -38,7 +38,8 @@ SpatialNeighborhoodPlot(
   verbose = TRUE,
   ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  sample = NULL
 )
 }
 \arguments{
@@ -57,6 +58,10 @@ reject \code{comparison}; use statistical plots for differential comparisons.}
 \item{value}{Column used as the plotted effect value. Spatial plots default
 to and only support \code{"count"}: saved observed outgoing edges to the target
 type, not a spicyR effect. Other plot types retain the \code{"estimate"} default.}
+
+\item{sample}{Optional single sample ID for non-spatial plots. Results from
+multiple samples require explicit selection; no samples are aggregated.
+Use \code{comparison} and \code{condition} to resolve other repeated label pairs.}
 
 \item{FDR_threshold}{FDR cutoff used to mark significant pairs.}
 
