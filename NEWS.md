@@ -1,5 +1,8 @@
 # scop (development version)
 
+* **chore**: Remove `Rfast` from `Suggests` after confirming it has no SCOP
+  source, test, documentation, native, build-script, or CI use.
+
 * **change**: `RunPropeller()` now uses speckle's transformed proportions and
   empirical Bayes moderated tests instead of the internal logit t-test.
   It supports `transform`, `robust`, and `trend`, records backend results and
