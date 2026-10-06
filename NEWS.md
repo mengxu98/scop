@@ -3,6 +3,10 @@
 * **change**: Migration: `RunBANKSY(assay = NULL)` now prefers the selected image's assay,
   then `Spatial`, `RNA`, and `DefaultAssay`; set `assay` explicitly to reproduce
   analyses that used a different assay.
+* **change**: Migration: `RunBANKSY()` now reports its actual inputs and result
+  locations and `GetSpatialResult()` reads clusters, parameters, and summaries;
+  use `verbose = FALSE` to suppress receipts or `store_results = FALSE` to omit
+  detailed stored results.
 
 * **change**: `RunPropeller()` now uses speckle's transformed proportions and
   empirical Bayes moderated tests instead of the internal logit t-test.

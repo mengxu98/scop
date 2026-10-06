@@ -44,7 +44,8 @@
 #' @param cluster_colname Metadata column used for BANKSY clusters.
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param store_results Whether to store detailed BANKSY results in
-#' `object@tools`.
+#' `object@tools`; cluster assignments are still written to metadata when
+#' `FALSE`.
 #' @param coordinate_space Coordinate space used for BANKSY spatial input.
 #' The default is raw acquisition coordinates, so geometry and distance
 #' weighting use raw coordinate units. Use `"legacy_display"` explicitly to
@@ -52,7 +53,9 @@
 #'
 #' @return A `Seurat` object with BANKSY clusters in metadata. When
 #' `store_results = TRUE`, detailed results are stored in
-#' `srt@tools[[tool_name]]`.
+#' `srt@tools[[tool_name]]`; when `FALSE`, only cluster assignments are written
+#' to metadata.
+#' @seealso [GetSpatialResult()]
 #' @export
 #'
 #' @examples
@@ -111,6 +114,7 @@ RunBANKSY <- function(
   }
   validate_scalar_string(cluster_colname, "cluster_colname", require_character = FALSE)
   validate_scalar_string(tool_name, "tool_name", require_character = FALSE)
+  validate_scalar_flag(store_results, "store_results")
   validate_named_param_list(compute_banksy_params, "compute_banksy_params", require_list = TRUE)
   validate_named_param_list(run_pca_params, "run_pca_params", require_list = TRUE)
   validate_named_param_list(cluster_banksy_params, "cluster_banksy_params", require_list = TRUE)
@@ -242,6 +246,9 @@ RunBANKSY <- function(
   )
   colnames(cluster_df) <- cluster_colname
   srt <- Seurat::AddMetaData(srt, metadata = cluster_df)
+  domain_summary <- spatial_domain_summary(cluster_df[[cluster_colname]])
+  n_spots <- nrow(cluster_df)
+  n_domains <- nrow(domain_summary)
 
   if (isTRUE(store_results)) {
     srt@tools[[tool_name]] <- list(
@@ -252,8 +259,8 @@ RunBANKSY <- function(
       features = rownames(expr),
       se = backend$se,
       summary = list(
-        n_spots = nrow(cluster_df),
-        domains = spatial_domain_summary(cluster_df[[cluster_colname]])
+        n_spots = n_spots,
+        domains = domain_summary
       ),
       parameters = list(
         assay = assay,
@@ -281,11 +288,85 @@ RunBANKSY <- function(
       )
     )
     srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
+  } else {
+    srt@tools[[tool_name]] <- NULL
   }
 
-  log_message(
-    "{.pkg BANKSY} clusters stored in metadata column {.val {cluster_colname}}",
-    verbose = verbose
+  image_use <- coordinate_source$image
+  if (length(image_use) != 1L || is.na(image_use) || !nzchar(image_use)) {
+    image_use <- NULL
+  }
+  has_image <- !is.null(image_use)
+  display_scale <- if (has_image && isTRUE(thisutils::get_verbose(verbose))) {
+    spatial_run_receipt_display_scale(srt, image_use)
+  } else {
+    NULL
+  }
+  plot_args <- paste0(
+    "group.by = ",
+    spatial_run_receipt_quote(cluster_colname, "cluster_colname")
+  )
+  if (has_image && !is.null(display_scale)) {
+    plot_args <- c(plot_args, paste0("image = ", spatial_run_receipt_quote(image_use, "image")))
+    if (identical(display_scale, "hires")) {
+      plot_args <- c(
+        plot_args,
+        paste0("image.scale = ", spatial_run_receipt_quote(display_scale, "image.scale"))
+      )
+    }
+  } else if (!has_image) {
+    plot_args <- c(
+      plot_args,
+      paste0(
+        "coord.cols = ",
+        deparse1(unname(as.character(coord_cols_use)), width.cutoff = 500L)
+      )
+    )
+  }
+  plot_call <- if (!has_image || !is.null(display_scale)) {
+    paste0("SpatialSpotPlot(<returned_object>, ", paste(plot_args, collapse = ", "), ")")
+  } else {
+    NULL
+  }
+  inspect_call <- if (has_image && is.null(display_scale)) {
+    paste0(
+      "GetSpatialResult(<returned_object>, ",
+      spatial_run_receipt_quote(tool_name, "tool_name"),
+      ")"
+    )
+  } else {
+    NULL
+  }
+  saved <- if (isTRUE(store_results)) {
+    paste0(
+      "metadata column {.var ", cluster_colname,
+      "} and returned object's {.code @tools} entry {.var ", tool_name,
+      "}; use GetSpatialResult(<returned_object>, ",
+      spatial_run_receipt_quote(tool_name, "tool_name"),
+      ") for clusters, parameters, and summary"
+    )
+  } else {
+    paste0(
+      "metadata column {.var ", cluster_colname,
+      "}; detailed results were not stored, and GetSpatialResult() returns metadata clusters with domain counts"
+    )
+  }
+  scope <- paste0(
+    "assay {.val ", assay, "}, ",
+    if (has_image) paste0("image {.val ", image_use, "}, ") else "",
+    "coordinates {.val ", coordinate_label, "} ({coordinate_space} space)"
+  )
+  spatial_run_receipt(
+    done = paste0(
+      "{.pkg BANKSY} completed ({.val ", n_domains, "} domains detected; ",
+      "{.val ", n_spots, "} spots)"
+    ),
+    scope = scope,
+    saved = saved,
+    plot = plot_call,
+    inspect = inspect_call,
+    verbose = verbose,
+    .envir = environment()
   )
   srt
 }

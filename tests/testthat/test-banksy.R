@@ -84,7 +84,14 @@ test_that("RunBANKSY writes cluster metadata and tool results", {
   expect_equal(out@tools$BANKSY$cluster_source, "BANKSY_leiden")
   expect_equal(out@tools$BANKSY$parameters$group, "sample")
   expect_identical(out@tools$BANKSY$parameters$coordinate_space, "raw")
+  expect_false("per_sample" %in% names(out@tools$BANKSY))
   expect_named(out@tools$BANKSY$summary, c("n_spots", "domains"))
+
+  result <- GetSpatialResult(out, "BANKSY")
+  expect_named(result, c("clusters", "parameters", "summary"))
+  expect_equal(result$clusters, out@tools$BANKSY$clusters)
+  expect_equal(result$parameters, out@tools$BANKSY$parameters)
+  expect_equal(result$summary, out@tools$BANKSY$summary)
 })
 
 test_that("RunBANKSY validates inputs before backend work", {
@@ -153,6 +160,40 @@ test_that("RunBANKSY auto-selects its single image and associated assay", {
   expect_identical(out@tools$BANKSY$parameters$assay, "Spatial")
   expect_identical(out@tools$BANKSY$parameters$image, "slice1")
   expect_identical(out@tools$BANKSY$parameters$coord.cols, expected_coords)
+})
+
+test_that("BANKSY keeps metadata clusters accessible without detailed storage", {
+  srt <- make_banksy_seurat()
+  with_mock_banksy({
+    out <- RunBANKSY(
+      srt,
+      layer = "counts",
+      group = "sample",
+      store_results = FALSE,
+      verbose = FALSE
+    )
+  })
+
+  expect_false("BANKSY" %in% names(out@tools))
+  result <- GetSpatialResult(out, "BANKSY")
+  expect_null(result$parameters)
+  expect_equal(unname(result$clusters$BANKSY_cluster), unname(out$BANKSY_cluster))
+  expect_equal(result$summary$n_spots, 4L)
+  expect_equal(result$summary$domains$domain, c("1", "2"))
+})
+
+test_that("BANKSY receipt shows resolved inputs, stored results, and a plot call", {
+  srt <- make_banksy_seurat()
+  messages <- testthat::capture_messages(with_mock_banksy({
+    RunBANKSY(srt, layer = "counts", group = "sample", verbose = TRUE)
+  }))
+  plain <- cli::ansi_strip(paste(messages, collapse = "\n"))
+
+  expect_match(plain, "Using assay")
+  expect_match(plain, "Using coordinates")
+  expect_match(plain, "BANKSY completed")
+  expect_match(plain, "GetSpatialResult")
+  expect_match(plain, "SpatialSpotPlot")
 })
 
 test_that("BANKSY clusters reuse SCOP SpatialSpotPlot", {

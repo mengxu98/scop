@@ -97,7 +97,8 @@ available.}
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
 \item{store_results}{Whether to store detailed BANKSY results in
-\code{object@tools}.}
+\code{object@tools}; cluster assignments are still written to metadata when
+\code{FALSE}.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -113,11 +114,15 @@ will be removed in scop 1.0.0.}
 \value{
 A \code{Seurat} object with BANKSY clusters in metadata. When
 \code{store_results = TRUE}, detailed results are stored in
-\code{srt@tools[[tool_name]]}.
+\code{srt@tools[[tool_name]]}. When \code{FALSE}, only cluster assignments are
+written to metadata.
 }
 \description{
 Build neighborhood-augmented BANKSY features from a spatial \code{Seurat} object
 and store spatial domain or microenvironment clusters in metadata.
+}
+\seealso{
+\code{\link{GetSpatialResult}}
 }
 \examples{
 data(visium_human_pancreas_sub)
