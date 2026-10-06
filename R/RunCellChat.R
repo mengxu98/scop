@@ -527,12 +527,12 @@ DoCellChat <- function(
       replacement <- paste0(replacement, "_")
     }
     cell_labels[cell_labels == "0"] <- replacement
-    warning(
+    log_message(
       sprintf(
         "Cell labels contain the CellChat-reserved value \"0\"; remapped to \"%s\"",
         replacement
       ),
-      call. = FALSE
+      message_type = "warning", verbose = TRUE
     )
   }
   metadata <- data.frame(label = cell_labels)

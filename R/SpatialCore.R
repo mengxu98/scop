@@ -645,8 +645,8 @@ spatial_segmentation_name <- function(image, required = FALSE) {
   conventional <- intersect(c("segmentation", "segmentations"), candidates)
   if (length(conventional) == 1L) return(conventional)
   if (length(candidates) == 1L) return(candidates)
-  if (length(candidates) > 1L) stop("Multiple segmentation boundaries; supply an explicit boundaries table", call. = FALSE)
-  if (isTRUE(required)) stop("The selected image does not contain segmentation boundaries", call. = FALSE)
+  if (length(candidates) > 1L) log_message("Multiple segmentation boundaries; supply an explicit boundaries table", message_type = "error")
+  if (isTRUE(required)) log_message("The selected image does not contain segmentation boundaries", message_type = "error")
   NULL
 }
 

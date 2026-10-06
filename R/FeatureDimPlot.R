@@ -400,10 +400,13 @@ FeatureDimPlot <- function(
         (!is.null(names(title.color)) &&
           (anyNA(names(title.color)) || any(!nzchar(names(title.color))) ||
             anyDuplicated(names(title.color))))) {
-      stop("title.color must be one unnamed color or a uniquely named feature-color vector.")
+      log_message(
+        "{.emph title.color} must be one unnamed color or a uniquely named feature-color vector.",
+        message_type = "error"
+      )
     }
     tryCatch(grDevices::col2rgb(title.color), error = function(e) {
-      stop("title.color contains an invalid color.")
+      log_message("{.emph title.color} contains an invalid color.", message_type = "error")
     })
   }
   color_blend_mode <- match.arg(color_blend_mode)

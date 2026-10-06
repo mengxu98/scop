@@ -1172,9 +1172,9 @@ cistarget2 <- function(
     identical(parallel_backend, "fork") &&
       identical(.Platform$OS.type, "windows")
   ) {
-    stop(
+    log_message(
       "The fork parallel backend is unavailable on Windows; use parallel_backend = \"psock\" or \"auto\".",
-      call. = FALSE
+      message_type = "error"
     )
   }
   cores_kernel <- cores
