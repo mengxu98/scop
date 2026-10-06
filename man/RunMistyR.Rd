@@ -31,6 +31,7 @@ RunMistyR(
   store_views = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
+  sample.by = NULL,
   ...,
   srt = NULL
 )
@@ -40,7 +41,8 @@ RunMistyR(
 
 \item{assay}{Assay used for expression. If \code{NULL}, the default assay is used.}
 
-\item{layer}{Assay layer used for expression values.}
+\item{layer}{Assay layer used for expression values. Values must be finite;
+missing or infinite values are rejected rather than replaced by zero.}
 
 \item{features}{Features used by MISTy. If \code{NULL}, variable features are used
 when available; otherwise all assay features are used.}
@@ -66,7 +68,10 @@ units; \code{para_nn} is a unitless neighbor count.}
 \item{results_folder}{Folder passed to \code{mistyR::run_misty()}. If \code{NULL}, a
 temporary folder is used.}
 
-\item{seed, target_subset, bypass_intra, cv_folds, model_cached, append}{Parameters passed to \code{mistyR::run_misty()}.}
+\item{target_subset}{Original feature names or numeric indices of selected
+features to model. Character names are mapped to the internal MISTy names.}
+
+\item{seed, bypass_intra, cv_folds, model_cached, append}{Parameters passed to \code{mistyR::run_misty()}.}
 
 \item{tool_name}{Name used to store results in \code{srt@tools}.}
 
@@ -81,6 +86,11 @@ Default is \code{TRUE}.}
 \item{coordinate_space}{Coordinate system used to build MISTy views. The
 default is raw acquisition coordinates; \code{"legacy_display"} remains an
 explicit compatibility option.}
+
+\item{sample.by}{Optional metadata column identifying independent samples.
+The selected cells must belong to one sample. Split independent samples into
+separate runs; when NULL, the caller is responsible for supplying one spatial
+coordinate field.}
 
 \item{...}{Additional named arguments passed to \code{mistyR::run_misty()}.}
 
