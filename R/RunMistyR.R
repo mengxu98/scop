@@ -10,7 +10,8 @@
 #' will be removed in scop 1.0.0.
 #' @param object A `Seurat` object.
 #' @param assay Assay used for expression. If `NULL`, the default assay is used.
-#' @param layer Assay layer used for expression values.
+#' @param layer Assay layer used for expression values. Values must be finite;
+#' missing or infinite values are rejected rather than replaced by zero.
 #' @param features Features used by MISTy. If `NULL`, variable features are used
 #' when available; otherwise all assay features are used.
 #' @param image Name of the Seurat spatial image. Required when multiple images
@@ -20,6 +21,10 @@
 #' @param coordinate_space Coordinate system used to build MISTy views. The
 #' default is raw acquisition coordinates; `"legacy_display"` remains an
 #' explicit compatibility option.
+#' @param sample.by Optional metadata column identifying independent samples.
+#' The selected cells must belong to one sample. Split independent samples into
+#' separate runs; when NULL, the caller is responsible for supplying one spatial
+#' coordinate field.
 #' @param views Spatial views to add besides the required intraview. One or both
 #' of `"para"` and `"juxta"`.
 #' @param para_l,para_zoi,para_family,para_approx,para_nn Parameters passed to
@@ -30,7 +35,9 @@
 #' @param view_cached Whether generated mistyR views should use cache.
 #' @param results_folder Folder passed to `mistyR::run_misty()`. If `NULL`, a
 #' temporary folder is used.
-#' @param seed,target_subset,bypass_intra,cv_folds,model_cached,append
+#' @param target_subset Original feature names or numeric indices of selected
+#' features to model. Character names are mapped to the internal MISTy names.
+#' @param seed,bypass_intra,cv_folds,model_cached,append
 #' Parameters passed to `mistyR::run_misty()`.
 #' @param tool_name Name used to store results in `srt@tools`.
 #' @param store_results Whether to store results in `srt@tools`.
@@ -82,6 +89,7 @@ RunMistyR <- function(
   store_views = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
+  sample.by = NULL,
   ...,
   srt = NULL
 ) {
@@ -135,6 +143,18 @@ RunMistyR <- function(
     coordinate_space = coordinate_space
   )
 
+  if (!is.null(sample.by)) {
+    validate_scalar_string(sample.by, "sample.by")
+    if (!sample.by %in% colnames(srt@meta.data)) {
+      log_message("{.arg sample.by} must identify a metadata column", message_type = "error")
+    }
+    samples <- as.character(srt@meta.data[input$cells, sample.by])
+    if (anyNA(samples) || any(!nzchar(samples)) || length(unique(samples)) != 1L) {
+      log_message("RunMistyR requires a single sample; split independent samples into separate runs", message_type = "error")
+    }
+  }
+  targets <- mistyr_resolve_targets(target_subset, input$feature_map)
+
   check_r("mistyR", verbose = FALSE)
   create_initial_view <- get_namespace_fun("mistyR", "create_initial_view")
   add_paraview <- get_namespace_fun("mistyR", "add_paraview")
@@ -171,7 +191,7 @@ RunMistyR <- function(
     views = misty_views,
     results.folder = results_folder,
     seed = seed,
-    target.subset = target_subset,
+    target.subset = targets,
     bypass.intra = bypass_intra,
     cv.folds = cv_folds,
     cached = model_cached,
@@ -207,6 +227,7 @@ RunMistyR <- function(
         results_folder = results_folder,
         seed = seed,
         target_subset = target_subset,
+        sample.by = sample.by,
         bypass_intra = bypass_intra,
         cv_folds = cv_folds,
         model_cached = model_cached,
@@ -263,7 +284,9 @@ mistyr_prepare_input <- function(
   features <- mistyr_resolve_features(srt, assay = assay, features = features)
   expr <- expr[features, cells, drop = FALSE]
   expr <- as.matrix(expr)
-  expr[!is.finite(expr)] <- 0
+  if (any(!is.finite(expr))) {
+    log_message("MISTy expression must contain only finite values; missing observations are not zero expression", message_type = "error")
+  }
   expression <- as.data.frame(t(expr), check.names = FALSE)
   original_features <- colnames(expression)
   colnames(expression) <- make.names(colnames(expression), unique = TRUE)
@@ -431,4 +454,15 @@ mistyr_assert_nonnegative_number <- function(x, arg) {
     log_message("{.arg {arg}} must be a non-negative finite number", message_type = "error")
   }
   as.numeric(x)
+}
+
+mistyr_resolve_targets <- function(target_subset, feature_map) {
+  if (is.null(target_subset) || is.numeric(target_subset)) {
+    return(target_subset)
+  }
+  if (!is.character(target_subset) || anyNA(target_subset) ||
+      any(!target_subset %in% unname(feature_map))) {
+    log_message("{.arg target_subset} must name selected original features or use numeric indices", message_type = "error")
+  }
+  unname(names(feature_map)[match(target_subset, unname(feature_map))])
 }
