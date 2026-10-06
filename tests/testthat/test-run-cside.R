@@ -169,6 +169,45 @@ test_that("RunCSIDE condition.by dispatches to single backend", {
   expect_identical(out@tools$CSIDE$cells, colnames(out))
 })
 
+test_that("RunCSIDE single mode aligns finite covariates with its retained barcodes", {
+  srt <- make_cside_seurat()
+  cases <- list(
+    c(Spot4 = 1, Spot2 = NA_real_, Spot1 = 0, Spot3 = 0.5),
+    c(Spot4 = 1, Spot2 = Inf, Spot1 = 0, Spot3 = -Inf),
+    c(Spot4 = 1, Spot1 = 0)
+  )
+  for (covariate in cases) {
+    expected_ids <- colnames(srt)[colnames(srt) %in% names(covariate)[is.finite(covariate)]]
+    expected <- covariate[expected_ids]
+    seen <- NULL
+    with_mock_cside(list("run.CSIDE.single" = function(myRCTD, explanatory.variable, ...) {
+      seen <<- explanatory.variable
+      expect_identical(explanatory.variable, expected)
+      expect_true(all(is.finite(explanatory.variable)))
+      mock_cside_result()
+    }), {
+      out <- RunCSIDE(srt, explanatory.variable = covariate, verbose = FALSE)
+    })
+    expect_identical(out@tools$CSIDE$barcodes, names(seen))
+    expect_identical(colnames(out), colnames(srt))
+  }
+})
+
+test_that("RunCSIDE single mode excludes missing conditions before backend dispatch", {
+  srt <- make_cside_seurat()
+  srt$condition <- c("A", NA_character_, "A", "B")
+  with_mock_cside(list("run.CSIDE.single" = function(myRCTD, explanatory.variable, ...) {
+    expect_identical(explanatory.variable, c(Spot1 = 0, Spot3 = 0, Spot4 = 1))
+    mock_cside_result()
+  }), {
+    out <- RunCSIDE(srt, condition.by = "condition", verbose = FALSE)
+    expect_error(RunCSIDE(srt, explanatory.variable = c(0, NA, Inf, NaN), verbose = FALSE),
+      "at least two finite values")
+  })
+  expect_identical(out@tools$CSIDE$barcodes, c("Spot1", "Spot3", "Spot4"))
+  expect_identical(out@tools$CSIDE$parameters$condition_levels, c("A", "B"))
+})
+
 test_that("RunCSIDE group.by builds region_list and dispatches to regions backend", {
   srt <- make_cside_seurat()
   fake_regions <- function(myRCTD, region_list, cell_types, ...) {
