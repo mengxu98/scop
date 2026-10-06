@@ -37,20 +37,20 @@ RunBANKSY(
 \arguments{
 \item{object}{A \code{Seurat} object.}
 
-\item{assay}{Assay to use. \code{NULL} uses the default assay.}
+\item{assay}{Expression assay used by BANKSY. When \code{NULL}, the assay linked
+to the selected image is used first, followed by \code{Spatial}, \code{RNA}, and the
+object's default assay.}
 
 \item{layer}{Assay layer used as BANKSY input.}
 
 \item{features}{Optional features to use. If \code{NULL}, all assay features are
 used after zero-count filtering.}
 
-\item{image}{Name of the Seurat spatial image used to recover spot
-coordinates when they are not already present in metadata. For regular
-Visium data with only pixel \code{x}/\code{y} coordinates, BayesSpace array
-coordinates are inferred from the spatial grid.}
+\item{image}{Spatial image used to recover coordinates. A single available
+image is selected automatically; choose one explicitly when several exist.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image coordinate
-source is available.}
+source is available. The default is resolved from common coordinate names.}
 
 \item{lambda}{BANKSY spatial weighting parameter.}
 
@@ -123,22 +123,18 @@ and store spatial domain or microenvironment clusters in metadata.
 data(visium_human_pancreas_sub)
 keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
 spatial <- visium_human_pancreas_sub[, keep_spots]
-spatial <- RunBANKSY(
-  spatial,
-  assay = "Spatial",
-  layer = "counts",
-  coord.cols = c("x", "y"),
-  features = rownames(spatial)[1:200],
-  lambda = 0.2,
-  k_geom = 8,
-  resolution = 0.6,
-  verbose = FALSE
-)
-SpatialSpotPlot(
-  spatial,
-  group.by = "BANKSY_cluster",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  pt.size = 1.5
-)
+if (check_r("Banksy", verbose = FALSE)) {
+  spatial <- RunBANKSY(
+    spatial,
+    layer = "counts",
+    features = rownames(spatial)[1:200],
+    resolution = 0.6,
+    verbose = FALSE
+  )
+  SpatialSpotPlot(
+    spatial,
+    group.by = "BANKSY_cluster",
+    pt.size = 1.5
+  )
+}
 }

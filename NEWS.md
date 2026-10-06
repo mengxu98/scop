@@ -1,5 +1,9 @@
 # scop (development version)
 
+* **change**: Migration: `RunBANKSY(assay = NULL)` now prefers the selected image's assay,
+  then `Spatial`, `RNA`, and `DefaultAssay`; set `assay` explicitly to reproduce
+  analyses that used a different assay.
+
 * **change**: `RunPropeller()` now uses speckle's transformed proportions and
   empirical Bayes moderated tests instead of the internal logit t-test.
   It supports `transform`, `robust`, and `trend`, records backend results and

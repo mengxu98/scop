@@ -6,11 +6,16 @@
 #'
 #' @md
 #' @inheritParams RunBayesSpace
+#' @param assay Expression assay used by BANKSY. When `NULL`, the assay linked
+#' to the selected image is used first, followed by `Spatial`, `RNA`, and the
+#' object's default assay.
 #' @param layer Assay layer used as BANKSY input.
+#' @param image Spatial image used to recover coordinates. A single available
+#' image is selected automatically; choose one explicitly when several exist.
 #' @param features Optional features to use. If `NULL`, all assay features are
 #' used after zero-count filtering.
 #' @param coord.cols Metadata coordinate columns used when no image coordinate
-#' source is available.
+#' source is available. The default is resolved from common coordinate names.
 #' @param lambda BANKSY spatial weighting parameter.
 #' @param k_geom Unitless number of spatial neighbors used by BANKSY.
 #' @param M Highest azimuthal Fourier harmonic passed to BANKSY.
@@ -54,24 +59,20 @@
 #' data(visium_human_pancreas_sub)
 #' keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
 #' spatial <- visium_human_pancreas_sub[, keep_spots]
-#' spatial <- RunBANKSY(
-#'   spatial,
-#'   assay = "Spatial",
-#'   layer = "counts",
-#'   coord.cols = c("x", "y"),
-#'   features = rownames(spatial)[1:200],
-#'   lambda = 0.2,
-#'   k_geom = 8,
-#'   resolution = 0.6,
-#'   verbose = FALSE
-#' )
-#' SpatialSpotPlot(
-#'   spatial,
-#'   group.by = "BANKSY_cluster",
-#'   overlay_image = FALSE,
-#'   coord.cols = c("x", "y"),
-#'   pt.size = 1.5
-#' )
+#' if (check_r("Banksy", verbose = FALSE)) {
+#'   spatial <- RunBANKSY(
+#'     spatial,
+#'     layer = "counts",
+#'     features = rownames(spatial)[1:200],
+#'     resolution = 0.6,
+#'     verbose = FALSE
+#'   )
+#'   SpatialSpotPlot(
+#'     spatial,
+#'     group.by = "BANKSY_cluster",
+#'     pt.size = 1.5
+#'   )
+#' }
 RunBANKSY <- function(
   object,
   assay = NULL,
@@ -115,7 +116,14 @@ RunBANKSY <- function(
   validate_named_param_list(cluster_banksy_params, "cluster_banksy_params", require_list = TRUE)
   coordinate_space <- match.arg(coordinate_space)
 
-  assay <- assay %||% SeuratObject::DefaultAssay(srt)
+  image_use <- spatial_image_resolve(
+    srt = srt,
+    image = image,
+    image_policy = "strict"
+  )$image
+  assay_info <- banksy_resolve_assay(srt, assay = assay, image = image_use)
+  assay <- assay_info$assay
+  banksy_require_layer(srt, assay = assay, layer = layer)
   features_use <- features %||% rownames(srt[[assay]])
   features_use <- intersect(features_use, rownames(srt[[assay]]))
   if (length(features_use) == 0L) {
@@ -155,9 +163,39 @@ RunBANKSY <- function(
   coords <- resolve_spatial_spot_coords(
     srt = srt,
     spot_ids = colnames(expr),
-    image = image,
+    image = image_use,
     coord.cols = coord.cols,
     coordinate_space = coordinate_space
+  )
+  coordinate_source <- attr(coords, "spatial_source", exact = TRUE)
+  coord_cols_use <- coordinate_source$coord.cols %||% coord.cols
+
+  if (is.null(assay_info$requested)) {
+    log_message(
+      "Using assay: {.val {assay}} ({assay_info$source})",
+      level = 2,
+      timestamp = FALSE,
+      verbose = verbose
+    )
+  }
+  if (is.null(image) && !is.null(image_use)) {
+    log_message(
+      "Using image: {.val {image_use}} (auto-selected)",
+      level = 2,
+      timestamp = FALSE,
+      verbose = verbose
+    )
+  }
+  coordinate_label <- if (length(coordinate_source$coord.cols) > 0L) {
+    paste(coordinate_source$coord.cols, collapse = ", ")
+  } else {
+    paste(coord_cols_use, collapse = ", ")
+  }
+  log_message(
+    "Using coordinates: {.val {coordinate_label}} ({coordinate_space} space)",
+    level = 2,
+    timestamp = FALSE,
+    verbose = verbose
   )
   coldata <- banksy_coldata(
     srt = srt,
@@ -220,8 +258,8 @@ RunBANKSY <- function(
       parameters = list(
         assay = assay,
         layer = layer,
-        image = image,
-        coord.cols = coord.cols,
+        image = image_use,
+        coord.cols = coord_cols_use,
         coordinate_space = coordinate_space,
         lambda = lambda,
         k_geom = k_geom,
@@ -250,6 +288,82 @@ RunBANKSY <- function(
     verbose = verbose
   )
   srt
+}
+
+banksy_resolve_assay <- function(srt, assay = NULL, image = NULL) {
+  available <- SeuratObject::Assays(srt)
+  requested <- assay
+  if (!is.null(assay)) {
+    if (!is.character(assay) || length(assay) != 1L || is.na(assay) || !nzchar(assay)) {
+      log_message("{.arg assay} must be one non-empty assay name", message_type = "error")
+    }
+    if (!assay %in% available) {
+      log_message(
+        "Assay {.val {assay}} is not present; available assays: {.val {available}}",
+        message_type = "error"
+      )
+    }
+    return(list(assay = assay, requested = requested, source = "explicitly selected"))
+  }
+
+  if (!is.null(image)) {
+    image_assay <- tryCatch(
+      methods::slot(srt[[image]], "assay"),
+      error = function(e) NULL
+    )
+    if (is.character(image_assay) && length(image_assay) == 1L && !is.na(image_assay) && nzchar(image_assay)) {
+      if (!image_assay %in% available) {
+        log_message(
+          "Image {.val {image}} refers to assay {.val {image_assay}}, which is not present in {.arg srt}",
+          message_type = "error"
+        )
+      }
+      return(list(
+        assay = image_assay,
+        requested = requested,
+        source = paste0("from image ", image)
+      ))
+    }
+  }
+  if ("Spatial" %in% available) {
+    return(list(assay = "Spatial", requested = requested, source = "Spatial assay"))
+  }
+  if ("RNA" %in% available) {
+    return(list(assay = "RNA", requested = requested, source = "RNA assay"))
+  }
+  default_assay <- SeuratObject::DefaultAssay(srt)
+  if (!default_assay %in% available) {
+    log_message("The default assay is not present in {.arg srt}", message_type = "error")
+  }
+  list(assay = default_assay, requested = requested, source = "DefaultAssay")
+}
+
+banksy_require_layer <- function(srt, assay, layer) {
+  if (!is.character(layer) || length(layer) != 1L || is.na(layer) || !nzchar(layer)) {
+    log_message("{.arg layer} must be one non-empty layer name", message_type = "error")
+  }
+  assay_object <- srt[[assay]]
+  available <- tryCatch(SeuratObject::Layers(assay_object), error = function(e) character())
+  if (length(available) == 0L) {
+    slots <- intersect(c("counts", "data", "scale.data"), methods::slotNames(assay_object))
+    available <- slots[vapply(slots, function(slot_name) {
+      value <- methods::slot(assay_object, slot_name)
+      !is.null(value) && length(dim(value)) == 2L && all(dim(value) > 0L)
+    }, logical(1))]
+  }
+  matches <- available == layer | startsWith(available, paste0(layer, "."))
+  if (!any(matches)) {
+    available_label <- if (length(available) == 0L) "none" else paste(available, collapse = ", ")
+    log_message(
+      paste0(
+        "Layer ", shQuote(layer), " is not present in assay ", shQuote(assay),
+        "; available layers: ", available_label,
+        ". Supply an existing {.arg layer}; RunBANKSY does not normalize data or switch layers automatically."
+      ),
+      message_type = "error"
+    )
+  }
+  invisible(available)
 }
 
 banksy_run_backend <- function(

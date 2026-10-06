@@ -19,7 +19,7 @@ make_banksy_seurat <- function() {
   srt
 }
 
-with_mock_banksy <- function(code) {
+with_mock_banksy <- function(code, expected_group = "sample") {
   compute_fun <- function(se, assay_name, coord_names, compute_agf, M, k_geom, ...) {
     expect_s4_class(se, "SpatialExperiment")
     expect_equal(assay_name, "scop_input")
@@ -29,11 +29,11 @@ with_mock_banksy <- function(code) {
     expect_equal(k_geom, 15)
     se
   }
-  pca_fun <- function(se, assay_name, M, lambda, npcs, use_agf, group, seed, ...) {
+  pca_fun <- function(se, assay_name, M, lambda, npcs, use_agf, group = NULL, seed, ...) {
     expect_equal(lambda, 0.2)
     expect_equal(npcs, 20)
     expect_false(use_agf)
-    expect_equal(group, "sample")
+    expect_equal(group, expected_group)
     expect_equal(seed, 1)
     se
   }
@@ -107,6 +107,52 @@ test_that("RunBANKSY validates inputs before backend work", {
       "named arguments"
     )
   })
+})
+
+test_that("BANKSY chooses a spatial assay before RNA and respects explicit assays", {
+  srt <- make_banksy_seurat()
+  suppressWarnings(srt[["Spatial"]] <- srt[["RNA"]])
+  SeuratObject::DefaultAssay(srt) <- "RNA"
+
+  expect_identical(banksy_resolve_assay(srt)$assay, "Spatial")
+  expect_identical(banksy_resolve_assay(srt, assay = "RNA")$assay, "RNA")
+  expect_identical(banksy_resolve_assay(srt)$source, "Spatial assay")
+})
+
+test_that("BANKSY uses an image-associated assay and reports a missing layer", {
+  data(visium_human_pancreas_sub)
+  srt <- visium_human_pancreas_sub
+
+  expect_identical(
+    banksy_resolve_assay(srt, image = "slice1")$assay,
+    "Spatial"
+  )
+  expect_error(
+    RunBANKSY(make_banksy_seurat(), verbose = FALSE),
+    "Layer .* is not present"
+  )
+})
+
+test_that("RunBANKSY auto-selects its single image and associated assay", {
+  data(visium_human_pancreas_sub)
+  srt <- suppressWarnings(visium_human_pancreas_sub[, seq_len(4)])
+  expected_coords <- suppressWarnings(attr(
+    resolve_spatial_spot_coords(srt, colnames(srt), image = "slice1"),
+    "spatial_source",
+    exact = TRUE
+  )$coord.cols)
+  suppressWarnings(with_mock_banksy({
+    out <- RunBANKSY(
+      srt,
+      layer = "counts",
+      features = rownames(srt)[seq_len(5)],
+      verbose = FALSE
+    )
+  }, expected_group = NULL))
+
+  expect_identical(out@tools$BANKSY$parameters$assay, "Spatial")
+  expect_identical(out@tools$BANKSY$parameters$image, "slice1")
+  expect_identical(out@tools$BANKSY$parameters$coord.cols, expected_coords)
 })
 
 test_that("BANKSY clusters reuse SCOP SpatialSpotPlot", {
