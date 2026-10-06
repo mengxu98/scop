@@ -10,7 +10,13 @@
 #' Visium data with only pixel `x`/`y` coordinates, BayesSpace array
 #' coordinates are inferred from the spatial grid.
 #' @param coord.cols Two metadata columns containing raw x/y coordinates when
-#' no spatial image is available.
+#' no spatial image is available. Non-default selections also determine the
+#' coordinates passed to BayesSpace, overriding other metadata coordinate
+#' columns. The default selection preserves existing `array_col`/`array_row`
+#' or `col`/`row` indices when available. Standard array names (`col`/`row`,
+#' `array_col`/`array_row`, or `arraycol`/`arrayrow`, case-insensitive) preserve
+#' native array indices; other column names are treated as pixel coordinates
+#' from which a regular array grid is inferred.
 #' @param use_reduction Optional Seurat reduction to pass to BayesSpace as PCA.
 #' @param dims Dimensions from `use_reduction` to use.
 #' @param preprocess Whether to run `BayesSpace::spatialPreprocess()`.
@@ -362,11 +368,27 @@ bayesspace_add_spatial_coords <- function(
   )
   bayesspace_require_all_spots(raw$data$cell_id, cells)
 
-  coords <- if (all(c("array_row", "array_col") %in% colnames(cdata))) {
+  coords <- if (
+    is.null(resolved_image$image) && !identical(coord.cols, c("col", "row"))
+  ) {
+    # Normalize only the selected, parsed pair. Unrelated metadata coordinate
+    # names must not override coord.cols or disagree with the raw provenance.
+    metadata_coords <- raw$data[, c("x", "y"), drop = FALSE]
+    selected_cols <- tolower(raw$source$coord.cols)
+    if (
+      selected_cols[[1L]] %in% c("array_col", "col", "arraycol") &&
+        selected_cols[[2L]] %in% c("array_row", "row", "arrayrow")
+    ) {
+      colnames(metadata_coords) <- c("col", "row")
+    }
+    metadata_coords
+  } else if (all(c("array_row", "array_col") %in% colnames(cdata))) {
     cdata
   } else if (!is.null(resolved_image$image)) {
     bayesspace_get_seurat_coords(srt, image = resolved_image$image)
   } else {
+    # The default pair is an auto-selection sentinel. Retain its native-grid
+    # preference even when raw provenance is recovered from pixel columns.
     srt[[]]
   }
   coords <- bayesspace_normalize_coords(coords, platform = platform)
