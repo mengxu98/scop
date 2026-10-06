@@ -41,7 +41,12 @@
 #' working matrices.
 #'
 #' @return A `Seurat` object with CytoSPACE metadata columns and detailed
-#' results stored in `srt@tools[["CytoSPACE"]]`.
+#' results stored in `srt@tools[["CytoSPACE"]]`. Cell-type count and fraction
+#' columns in the stored tables retain the original reference labels. Metadata
+#' uses unique syntactic suffixes, recorded in `metadata_cell_type_suffixes`.
+#' The total-count column is recorded in `total_cells_column`; its name is
+#' `"Total cells"` unless that conflicts with a reference label. Spots with no
+#' assigned cells have zero fractions and an `NA` dominant type.
 #' @export
 #'
 #' @examples
@@ -263,6 +268,8 @@ RunCytoSPACE <- function(
       assigned_locations = assignments,
       cell_type_assignments_by_spot = spot_summary$counts,
       fractional_abundances_by_spot = spot_summary$fractions,
+      total_cells_column = spot_summary$total_cells_column,
+      metadata_cell_type_suffixes = spot_summary$metadata_cell_type_suffixes,
       assigned_expression = assigned_expression,
       spatial_coords = coords,
       n_cells_per_spot = n_cells,
@@ -620,9 +627,12 @@ cytospace_sample_reference_cells <- function(
       next
     }
     if (desired > length(idx)) {
-      chosen <- c(idx, sample(idx, desired - length(idx), replace = TRUE))
+      chosen <- c(
+        idx,
+        idx[sample.int(length(idx), desired - length(idx), replace = TRUE)]
+      )
     } else {
-      chosen <- sample(idx, desired, replace = FALSE)
+      chosen <- idx[sample.int(length(idx), desired, replace = FALSE)]
     }
     sampled_index <- c(sampled_index, chosen)
   }
@@ -647,14 +657,14 @@ cytospace_build_assignment_table <- function(
   cell_index <- result[["cell_index"]]
   spot_index <- result[["spot_index"]]
   assigned <- data.frame(
-    UniqueCID = paste0(
+    UniqueCID = if (length(cell_index) > 0L) paste0(
       "UCID",
       formatC(
         seq_along(cell_index) - 1L,
         width = nchar(length(cell_index)),
         flag = "0"
       )
-    ),
+    ) else character(),
     OriginalCID = sampled_cells[cell_index],
     CellType = sampled_labels[cell_index],
     SpotID = spot_ids[spot_index],
@@ -672,13 +682,24 @@ cytospace_build_spot_summary <- function(assignments, spot_ids, cell_types) {
     factor(assignments$CellType, levels = cell_types)
   )
   counts <- as.data.frame.matrix(counts)
-  counts[["Total cells"]] <- rowSums(counts)
-  fractions <- counts[, cell_types, drop = FALSE]
-  totals <- counts[["Total cells"]]
+  totals <- rowSums(counts)
+  fractions <- counts
   fractions[] <- lapply(fractions, function(x) {
     ifelse(totals > 0, x / totals, 0)
   })
-  list(counts = counts, fractions = fractions)
+  total_cells_column <- make.unique(c(cell_types, "Total cells"))[
+    length(cell_types) + 1L
+  ]
+  counts[[total_cells_column]] <- totals
+  list(
+    counts = counts,
+    fractions = fractions,
+    total_cells_column = total_cells_column,
+    metadata_cell_type_suffixes = stats::setNames(
+      make.names(cell_types, unique = TRUE),
+      cell_types
+    )
+  )
 }
 
 cytospace_build_assigned_expression <- function(sampled_expr, assignments) {
@@ -690,21 +711,24 @@ cytospace_build_assigned_expression <- function(sampled_expr, assignments) {
 cytospace_add_metadata <- function(srt, spot_summary, prefix = "CytoSPACE") {
   counts <- spot_summary$counts
   fractions <- spot_summary$fractions
+  totals <- counts[[spot_summary$total_cells_column]]
   meta <- data.frame(
-    total_cells = counts[["Total cells"]],
+    total_cells = totals,
     row.names = rownames(counts),
     check.names = FALSE
   )
   colnames(meta) <- paste0(prefix, "_total_cells")
   for (ct in colnames(fractions)) {
-    suffix <- make.names(ct)
+    suffix <- spot_summary$metadata_cell_type_suffixes[[ct]]
     meta[[paste0(prefix, "_count_", suffix)]] <- counts[[ct]]
     meta[[paste0(prefix, "_frac_", suffix)]] <- fractions[[ct]]
   }
   if (ncol(fractions) > 0L) {
-    meta[[paste0(prefix, "_dominant_type")]] <- colnames(fractions)[
+    dominant_type <- colnames(fractions)[
       max.col(as.matrix(fractions), ties.method = "first")
     ]
+    dominant_type[totals == 0] <- NA_character_
+    meta[[paste0(prefix, "_dominant_type")]] <- dominant_type
   }
   Seurat::AddMetaData(srt, metadata = meta)
 }
