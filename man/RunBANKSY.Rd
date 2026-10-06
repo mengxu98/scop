@@ -30,7 +30,8 @@ RunBANKSY(
   store_results = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  srt = NULL
+  srt = NULL,
+  sample.by = NULL
 )
 }
 \arguments{
@@ -68,7 +69,13 @@ source is available.}
 \item{resolution}{Graph clustering resolution.}
 
 \item{group}{Optional metadata column used by BANKSY for multi-sample
-scaling. It is copied into the \code{SpatialExperiment} colData.}
+scaling. It is copied into the \code{SpatialExperiment} colData.
+This scaling option does not separate spatial neighbor searches by sample.}
+
+\item{sample.by}{Optional metadata column identifying independent spatial
+samples. When supplied, analyzed spots must belong to one non-missing sample.
+Subset independent samples and run BANKSY separately; this guard does not
+implement multi-sample neighbor construction. \code{NULL} retains existing behavior.}
 
 \item{seed}{Optional seed for PCA and clustering.}
 
