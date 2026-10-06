@@ -7,6 +7,12 @@
   two samples per condition are required. SCOP bootstrap intervals remain
   descriptive intervals for the untransformed proportion ratio.
 
+* **fix**: `RunCytoSPACE()` samples singleton reference types without selecting
+  cells from other types, preserves cell labels that collide after metadata
+  name conversion or with the total-count column, and reports no dominant type
+  for zero-cell spots. Empty assignments are supported; stored results record
+  the collision-safe metadata suffixes and total-count column name.
+
 * **change**: Database preparation now exposes independent `PrepareGO()`,
   `PrepareKEGG()`, `PrepareMSigDB()` and other source interfaces. `PrepareDB()`
   dispatches to these interfaces, with shared annotation caching and conversion.
