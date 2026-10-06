@@ -117,6 +117,10 @@ test_that("BANKSY uses an image-associated assay and reports a missing layer", {
     "Spatial"
   )
   expect_error(
+    banksy_resolve_assay(srt, image = "missing_slice"),
+    "is not present"
+  )
+  expect_error(
     RunBANKSY(make_banksy_seurat(), verbose = FALSE),
     "Layer .* is not present"
   )
@@ -273,6 +277,23 @@ test_that("RunBANKSY validates inputs before backend work", {
       "named arguments"
     )
   })
+})
+
+test_that("GetSpatialResult correctly handles similar sample names", {
+  srt <- make_banksy_seurat()
+  # Simulate samples S1 and S10 to test prefix matching
+  srt$BANKSY_cluster <- c("S1_Domain_1", "S1_Domain_2", "S10_Domain_1", "S10_Domain_2")
+  names(srt$BANKSY_cluster) <- colnames(srt)
+
+  # S1 should only get S1's domains, not S10's
+  result_s1 <- GetSpatialResult(srt, "BANKSY", sample = "S1")
+  expect_equal(nrow(result_s1$clusters), 2L)
+  expect_equal(unname(result_s1$clusters$BANKSY_cluster), c("Domain_1", "Domain_2"))
+
+  # S10 should only get S10's domains
+  result_s10 <- GetSpatialResult(srt, "BANKSY", sample = "S10")
+  expect_equal(nrow(result_s10$clusters), 2L)
+  expect_equal(unname(result_s10$clusters$BANKSY_cluster), c("Domain_1", "Domain_2"))
 })
 
 test_that("BANKSY clusters reuse SCOP SpatialSpotPlot", {

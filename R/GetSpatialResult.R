@@ -71,7 +71,12 @@ GetSpatialResult <- function(object, method, sample = NULL) {
     values <- object@meta.data[[cluster_colname]]
     names(values) <- rownames(object@meta.data)
     if (!is.null(sample)) {
-      keep <- !is.na(values) & startsWith(as.character(values), paste0(sample, "_"))
+      # Use exact prefix match to avoid "S1" matching "S10_Domain_1"
+      prefix <- paste0(sample, "_")
+      char_values <- as.character(values)
+      keep <- !is.na(values) &
+        nchar(char_values) > nchar(prefix) &
+        substring(char_values, 1L, nchar(prefix)) == prefix
       values <- values[keep]
       if (length(values) == 0L) {
         log_message(
@@ -80,7 +85,7 @@ GetSpatialResult <- function(object, method, sample = NULL) {
         )
       }
       cell_ids <- names(values)
-      values <- substring(as.character(values), nchar(sample) + 2L)
+      values <- substring(as.character(values), nchar(prefix) + 1L)
       names(values) <- cell_ids
     }
     clusters <- data.frame(

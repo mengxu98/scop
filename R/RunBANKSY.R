@@ -404,6 +404,12 @@ banksy_resolve_assay <- function(srt, assay = NULL, image = NULL) {
   }
 
   if (!is.null(image)) {
+    if (!image %in% names(srt@images)) {
+      log_message(
+        "Image {.val {image}} is not present in {.arg srt}; available images: {.val {names(srt@images)}}",
+        message_type = "error"
+      )
+    }
     image_assay <- tryCatch(
       methods::slot(srt[[image]], "assay"),
       error = function(e) NULL
@@ -448,7 +454,11 @@ banksy_require_layer <- function(srt, assay, layer) {
       !is.null(value) && length(dim(value)) == 2L && all(dim(value) > 0L)
     }, logical(1))]
   }
-  matches <- available == layer | startsWith(available, paste0(layer, "."))
+  # A layer may be split into sample-specific layers such as "data.sample1".
+  exact_match <- available == layer
+  prefix_match <- startsWith(available, paste0(layer, "."))
+  matches <- exact_match | prefix_match
+
   if (!any(matches)) {
     available_label <- if (length(available) == 0L) "none" else paste(available, collapse = ", ")
     log_message(
