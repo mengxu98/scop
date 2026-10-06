@@ -47,7 +47,8 @@ object's default assay.}
 used after zero-count filtering.}
 
 \item{image}{Spatial image used to recover coordinates. A single available
-image is selected automatically; choose one explicitly when several exist.}
+image is selected automatically; choose one explicitly when several exist,
+or provide a named sample-to-image map with \code{sample.by}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image coordinate
 source is available. The default is resolved from common coordinate names.}
@@ -68,14 +69,12 @@ source is available. The default is resolved from common coordinate names.}
 
 \item{resolution}{Graph clustering resolution.}
 
-\item{group}{Optional metadata column used by BANKSY for multi-sample
-scaling. It is copied into the \code{SpatialExperiment} colData.
-This scaling option does not separate spatial neighbor searches by sample.}
+\item{group}{Optional metadata column passed to BANKSY for multi-sample
+scaling. It is an algorithm parameter and does not split sample fits.}
 
-\item{sample.by}{Optional metadata column identifying independent spatial
-samples. When supplied, analyzed spots must belong to one non-missing sample.
-Subset independent samples and run BANKSY separately; this guard does not
-implement multi-sample neighbor construction. \code{NULL} retains existing behavior.}
+\item{sample.by}{Optional metadata column for independent per-sample fits.
+Combined labels are prefixed with the sample name; domains are not aligned
+across samples.}
 
 \item{seed}{Optional seed for PCA and clustering.}
 

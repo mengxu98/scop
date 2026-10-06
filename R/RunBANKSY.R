@@ -11,7 +11,8 @@
 #' object's default assay.
 #' @param layer Assay layer used as BANKSY input.
 #' @param image Spatial image used to recover coordinates. A single available
-#' image is selected automatically; choose one explicitly when several exist.
+#' image is selected automatically; choose one explicitly when several exist,
+#' or provide a named sample-to-image map with `sample.by`.
 #' @param features Optional features to use. If `NULL`, all assay features are
 #' used after zero-count filtering.
 #' @param coord.cols Metadata coordinate columns used when no image coordinate
@@ -24,13 +25,11 @@
 #' @param algo Clustering algorithm passed to `Banksy::clusterBanksy()`.
 #' @param k_neighbors Number of neighbors for graph clustering.
 #' @param resolution Graph clustering resolution.
-#' @param group Optional metadata column used by BANKSY for multi-sample
-#' scaling. It is copied into the `SpatialExperiment` colData.
-#' This scaling option does not separate spatial neighbor searches by sample.
-#' @param sample.by Optional metadata column identifying independent spatial
-#' samples. When supplied, analyzed spots must belong to one non-missing sample.
-#' Subset independent samples and run BANKSY separately; this guard does not
-#' implement multi-sample neighbor construction. `NULL` retains existing behavior.
+#' @param group Optional metadata column passed to BANKSY for multi-sample
+#' scaling. It is an algorithm parameter and does not split sample fits.
+#' @param sample.by Optional metadata column for independent per-sample fits.
+#' Combined labels are prefixed with the sample name; domains are not aligned
+#' across samples.
 #' @param seed Optional seed for PCA and clustering.
 #' @param compute_banksy_params Additional parameters passed to
 #' `Banksy::computeBanksy()`.
@@ -120,6 +119,37 @@ RunBANKSY <- function(
   validate_named_param_list(cluster_banksy_params, "cluster_banksy_params", require_list = TRUE)
   coordinate_space <- match.arg(coordinate_space)
 
+  if (!is.null(sample.by)) {
+    return(banksy_run_by_sample(
+      srt = srt,
+      assay = assay,
+      layer = layer,
+      features = features,
+      image = image,
+      coord.cols = coord.cols,
+      lambda = lambda,
+      k_geom = k_geom,
+      M = M,
+      npcs = npcs,
+      use_agf = use_agf,
+      algo = algo,
+      k_neighbors = k_neighbors,
+      resolution = resolution,
+      group = group,
+      sample.by = sample.by,
+      seed = seed,
+      compute_banksy_params = compute_banksy_params,
+      run_pca_params = run_pca_params,
+      cluster_banksy_params = cluster_banksy_params,
+      cluster_source = cluster_source,
+      cluster_colname = cluster_colname,
+      tool_name = tool_name,
+      store_results = store_results,
+      verbose = verbose,
+      coordinate_space = coordinate_space
+    ))
+  }
+
   image_use <- spatial_image_resolve(
     srt = srt,
     image = image,
@@ -150,19 +180,6 @@ RunBANKSY <- function(
       "No non-zero features or spots remain for {.fn RunBANKSY}",
       message_type = "error"
     )
-  }
-  if (!is.null(sample.by)) {
-    validate_scalar_string(sample.by, "sample.by")
-    if (!sample.by %in% colnames(srt[[]])) {
-      stop("sample.by must name a metadata column", call. = FALSE)
-    }
-    samples <- as.character(srt[[]][colnames(expr), sample.by])
-    if (anyNA(samples) || any(!nzchar(samples))) {
-      stop("sample.by must contain non-missing, non-empty sample IDs for analyzed spots", call. = FALSE)
-    }
-    if (length(unique(samples)) > 1L) {
-      stop("RunBANKSY requires one sample when sample.by is supplied; subset independent samples and run them separately. group controls scaling, not spatial neighbor isolation.", call. = FALSE)
-    }
   }
   coords <- resolve_spatial_spot_coords(
     srt = srt,
@@ -277,7 +294,6 @@ RunBANKSY <- function(
         k_neighbors = k_neighbors,
         resolution = resolution,
         group = group,
-        sample.by = sample.by,
         seed = seed,
         compute_banksy_params = compute_banksy_params,
         run_pca_params = run_pca_params,
@@ -445,6 +461,269 @@ banksy_require_layer <- function(srt, assay, layer) {
     )
   }
   invisible(available)
+}
+
+banksy_run_by_sample <- function(
+  srt,
+  assay,
+  layer,
+  features,
+  image,
+  coord.cols,
+  lambda,
+  k_geom,
+  M,
+  npcs,
+  use_agf,
+  algo,
+  k_neighbors,
+  resolution,
+  group,
+  sample.by,
+  seed,
+  compute_banksy_params,
+  run_pca_params,
+  cluster_banksy_params,
+  cluster_source,
+  cluster_colname,
+  tool_name,
+  store_results,
+  verbose,
+  coordinate_space
+) {
+  if (!is.character(sample.by) || length(sample.by) != 1L || is.na(sample.by) ||
+    !nzchar(sample.by) || !sample.by %in% colnames(srt@meta.data)) {
+    log_message(
+      "{.arg sample.by} must be one metadata column in {.arg srt}",
+      message_type = "error"
+    )
+  }
+  sample_values <- as.character(srt@meta.data[[sample.by]])
+  if (length(sample_values) != ncol(srt) || anyNA(sample_values) || any(!nzchar(sample_values))) {
+    log_message("{.arg sample.by} must identify every cell or spot", message_type = "error")
+  }
+  names(sample_values) <- rownames(srt@meta.data)
+  samples <- unique(sample_values)
+  image_map <- spatial_resolve_sample_images(srt, sample.by, image = image)
+
+  combined <- stats::setNames(rep(NA_character_, ncol(srt)), colnames(srt))
+  sample_results <- stats::setNames(vector("list", length(samples)), samples)
+  sample_summaries <- stats::setNames(vector("list", length(samples)), samples)
+  assay_by_sample <- stats::setNames(character(length(samples)), samples)
+  coordinate_sources <- stats::setNames(vector("list", length(samples)), samples)
+
+  for (sample_name in samples) {
+    cells <- colnames(srt)[sample_values[colnames(srt)] == sample_name]
+    sample_srt <- srt[, cells]
+    image_use <- image_map[[sample_name]]
+    if (is.na(image_use)) image_use <- NULL
+    sample_output <- tryCatch({
+      assay_info <- banksy_resolve_assay(sample_srt, assay = assay, image = image_use)
+      coords <- resolve_spatial_spot_coords(
+        srt = sample_srt,
+        spot_ids = cells,
+        image = image_use,
+        coord.cols = coord.cols,
+        coordinate_space = coordinate_space
+      )
+      result <- RunBANKSY(
+        object = sample_srt,
+        assay = assay,
+        layer = layer,
+        features = features,
+        image = image_use,
+        coord.cols = coord.cols,
+        lambda = lambda,
+        k_geom = k_geom,
+        M = M,
+        npcs = npcs,
+        use_agf = use_agf,
+        algo = algo,
+        k_neighbors = k_neighbors,
+        resolution = resolution,
+        group = group,
+        seed = seed,
+        compute_banksy_params = compute_banksy_params,
+        run_pca_params = run_pca_params,
+        cluster_banksy_params = cluster_banksy_params,
+        cluster_source = cluster_source,
+        cluster_colname = cluster_colname,
+        tool_name = tool_name,
+        store_results = store_results,
+        verbose = FALSE,
+        coordinate_space = coordinate_space
+      )
+      list(
+        result = result,
+        assay = assay_info$assay,
+        coordinate_source = attr(coords, "spatial_source", exact = TRUE)
+      )
+    },
+      error = function(e) {
+        log_message(
+          paste0("BANKSY failed for sample ", shQuote(sample_name), ": ", conditionMessage(e)),
+          message_type = "error"
+        )
+      }
+    )
+    sample_result <- sample_output$result
+    assay_by_sample[[sample_name]] <- sample_output$assay
+    coordinate_sources[[sample_name]] <- sample_output$coordinate_source
+    sample_clusters <- as.character(sample_result@meta.data[cells, cluster_colname, drop = TRUE])
+    names(sample_clusters) <- cells
+    assigned <- !is.na(sample_clusters) & nzchar(sample_clusters)
+    combined[cells[assigned]] <- paste(sample_name, sample_clusters[assigned], sep = "_")
+    sample_summaries[[sample_name]] <- list(
+      n_spots = sum(assigned),
+      domains = spatial_domain_summary(sample_clusters)
+    )
+    if (isTRUE(store_results)) {
+      sample_results[[sample_name]] <- sample_result@tools[[tool_name]]
+    }
+  }
+
+  combined_df <- data.frame(
+    stats::setNames(list(unname(combined)), cluster_colname),
+    row.names = names(combined),
+    stringsAsFactors = FALSE
+  )
+  srt <- Seurat::AddMetaData(srt, metadata = combined_df)
+  domains <- spatial_domain_summary(combined)
+  n_spots <- sum(!is.na(combined) & nzchar(combined))
+  n_domains <- nrow(domains)
+
+  if (isTRUE(store_results)) {
+    parameters <- list(
+      assay = assay,
+      assay_by_sample = assay_by_sample,
+      layer = layer,
+      image = image_map,
+      coord.cols = lapply(coordinate_sources, function(source) source$coord.cols),
+      coordinate_space = coordinate_space,
+      lambda = lambda,
+      k_geom = k_geom,
+      M = M,
+      npcs = npcs,
+      use_agf = use_agf,
+      algo = algo,
+      k_neighbors = k_neighbors,
+      resolution = resolution,
+      group = group,
+      sample.by = sample.by,
+      seed = seed,
+      compute_banksy_params = compute_banksy_params,
+      run_pca_params = run_pca_params,
+      cluster_banksy_params = cluster_banksy_params,
+      cluster_source = cluster_source,
+      cluster_colname = cluster_colname,
+      tool_name = tool_name
+    )
+    srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(list(
+      clusters = combined_df,
+      per_sample = sample_results,
+      summary = list(n_spots = n_spots, domains = domains),
+      parameters = parameters
+    ))
+  } else {
+    srt@tools[[tool_name]] <- NULL
+  }
+
+  if (isTRUE(thisutils::get_verbose(verbose))) {
+    for (sample_name in samples) {
+      sample_summary <- sample_summaries[[sample_name]]
+      log_message(
+        paste0(
+          sample_name, ": ", nrow(sample_summary$domains), " domains (",
+          sample_summary$n_spots, " spots)"
+        ),
+        message_type = "success",
+        verbose = TRUE
+      )
+    }
+  }
+
+  assay_scope <- paste(
+    paste0(samples, "=", vapply(assay_by_sample, function(x) {
+      spatial_run_receipt_quote(x, "assay")
+    }, character(1))),
+    collapse = ", "
+  )
+  image_labels <- ifelse(is.na(image_map), "metadata coordinates", unname(image_map))
+  image_scope <- paste(paste0(samples, "=", image_labels), collapse = ", ")
+  coordinate_labels <- vapply(coordinate_sources, function(source) {
+    paste(source$coord.cols, collapse = ", ")
+  }, character(1))
+  coordinate_scope <- paste(
+    paste0(samples, "=", coordinate_labels),
+    collapse = ", "
+  )
+  scope <- c(
+    paste0(
+      "sample.by ", spatial_run_receipt_quote(sample.by, "sample.by"), ": ",
+      paste(samples, collapse = ", ")
+    ),
+    paste0("assay by sample: ", assay_scope),
+    paste0("image by sample: ", image_scope),
+    paste0("coordinates by sample: ", coordinate_scope, " (", coordinate_space, " space)")
+  )
+  saved <- if (isTRUE(store_results)) {
+    paste0(
+      "metadata column {.var ", cluster_colname,
+      "} and per-sample tool results; for example, call GetSpatialResult(<returned_object>, ",
+      spatial_run_receipt_quote(tool_name, "tool_name"),
+      ", sample = ", spatial_run_receipt_quote(samples[[1L]], "sample"), ")"
+    )
+  } else {
+    paste0(
+      "metadata column {.var ", cluster_colname,
+      "}; detailed results were not stored"
+    )
+  }
+
+  images_use <- unique(unname(image_map[!is.na(image_map)]))
+  one_shared_image <- length(images_use) == 1L && all(!is.na(image_map))
+  display_scale <- if (one_shared_image && isTRUE(thisutils::get_verbose(verbose))) {
+    spatial_run_receipt_display_scale(srt, images_use[[1L]])
+  } else {
+    NULL
+  }
+  plot_call <- if (one_shared_image && !is.null(display_scale)) {
+    plot_args <- c(
+      paste0("group.by = ", spatial_run_receipt_quote(cluster_colname, "cluster_colname")),
+      paste0("image = ", spatial_run_receipt_quote(images_use[[1L]], "image"))
+    )
+    if (identical(display_scale, "hires")) {
+      plot_args <- c(
+        plot_args,
+        paste0("image.scale = ", spatial_run_receipt_quote(display_scale, "image.scale"))
+      )
+    }
+    paste0("SpatialSpotPlot(<returned_object>, ", paste(plot_args, collapse = ", "), ")")
+  } else {
+    NULL
+  }
+  inspect_call <- if (is.null(plot_call)) {
+    paste0(
+      "GetSpatialResult(<returned_object>, ",
+      spatial_run_receipt_quote(tool_name, "tool_name"),
+      ")"
+    )
+  } else {
+    NULL
+  }
+  spatial_run_receipt(
+    done = paste0(
+      "{.pkg BANKSY} completed across {.val ", length(samples), "} samples ({.val ",
+      n_domains, "} domains; {.val ", n_spots, "} spots)"
+    ),
+    scope = scope,
+    saved = saved,
+    plot = plot_call,
+    inspect = inspect_call,
+    verbose = verbose,
+    .envir = environment()
+  )
+  srt
 }
 
 banksy_run_backend <- function(

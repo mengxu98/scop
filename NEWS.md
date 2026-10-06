@@ -7,6 +7,8 @@
   locations and `GetSpatialResult()` reads clusters, parameters, and summaries;
   use `verbose = FALSE` to suppress receipts or `store_results = FALSE` to omit
   detailed stored results.
+* **change**: Migration: set `sample.by` to fit BANKSY separately by sample;
+  combined domain labels are sample-prefixed and are not aligned across samples.
 
 * **change**: `RunPropeller()` now uses speckle's transformed proportions and
   empirical Bayes moderated tests instead of the internal logit t-test.

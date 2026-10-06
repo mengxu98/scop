@@ -19,7 +19,7 @@ make_banksy_seurat <- function() {
   srt
 }
 
-with_mock_banksy <- function(code, expected_group = "sample") {
+with_mock_banksy <- function(code, fail_sample = NULL, expected_group = "sample") {
   compute_fun <- function(se, assay_name, coord_names, compute_agf, M, k_geom, ...) {
     expect_s4_class(se, "SpatialExperiment")
     expect_equal(assay_name, "scop_input")
@@ -43,7 +43,11 @@ with_mock_banksy <- function(code, expected_group = "sample") {
     expect_equal(k_neighbors, 50)
     expect_equal(resolution, 0.6)
     cdata <- as.data.frame(SummarizedExperiment::colData(se))
-    cdata$BANKSY_leiden <- c("1", "1", "2", "2")
+    if (!is.null(fail_sample) && "sample" %in% colnames(cdata) &&
+      any(as.character(cdata$sample) == fail_sample)) {
+      stop("mock backend failure", call. = FALSE)
+    }
+    cdata$BANKSY_leiden <- rep(c("1", "1", "2", "2"), length.out = nrow(cdata))
     SummarizedExperiment::colData(se) <- S4Vectors::DataFrame(cdata)
     se
   }
@@ -94,28 +98,6 @@ test_that("RunBANKSY writes cluster metadata and tool results", {
   expect_equal(result$summary, out@tools$BANKSY$summary)
 })
 
-test_that("RunBANKSY validates inputs before backend work", {
-  srt <- make_banksy_seurat()
-  expect_error(
-    RunBANKSY(matrix(1, nrow = 2), verbose = FALSE),
-    "Seurat"
-  )
-  with_mock_banksy({
-    expect_error(
-      RunBANKSY(srt, layer = "counts", features = "AbsentGene", verbose = FALSE),
-      "No features"
-    )
-    expect_error(
-      RunBANKSY(srt, layer = "counts", group = "missing", verbose = FALSE),
-      "group"
-    )
-    expect_error(
-      RunBANKSY(srt, layer = "counts", run_pca_params = list(1), verbose = FALSE),
-      "named arguments"
-    )
-  })
-})
-
 test_that("BANKSY chooses a spatial assay before RNA and respects explicit assays", {
   srt <- make_banksy_seurat()
   suppressWarnings(srt[["Spatial"]] <- srt[["RNA"]])
@@ -164,7 +146,7 @@ test_that("RunBANKSY auto-selects its single image and associated assay", {
 
 test_that("BANKSY keeps metadata clusters accessible without detailed storage", {
   srt <- make_banksy_seurat()
-  with_mock_banksy({
+  suppressWarnings(with_mock_banksy({
     out <- RunBANKSY(
       srt,
       layer = "counts",
@@ -172,7 +154,7 @@ test_that("BANKSY keeps metadata clusters accessible without detailed storage", 
       store_results = FALSE,
       verbose = FALSE
     )
-  })
+  }))
 
   expect_false("BANKSY" %in% names(out@tools))
   result <- GetSpatialResult(out, "BANKSY")
@@ -196,6 +178,103 @@ test_that("BANKSY receipt shows resolved inputs, stored results, and a plot call
   expect_match(plain, "SpatialSpotPlot")
 })
 
+make_banksy_multi_image_seurat <- function() {
+  srt <- make_banksy_seurat()
+  suppressWarnings(srt[["slice1"]] <- SeuratObject::CreateFOV(
+    data.frame(x = c(1, 2), y = c(1, 1), row.names = c("Spot1", "Spot2")),
+    type = "centroids",
+    assay = "RNA",
+    key = "banksy1_"
+  ))
+  suppressWarnings(srt[["slice2"]] <- SeuratObject::CreateFOV(
+    data.frame(x = c(1, 2), y = c(2, 2), row.names = c("Spot3", "Spot4")),
+    type = "centroids",
+    assay = "RNA",
+    key = "banksy2_"
+  ))
+  srt
+}
+
+test_that("BANKSY fits samples independently and returns prefixed labels", {
+  srt <- make_banksy_multi_image_seurat()
+  suppressWarnings(with_mock_banksy({
+    out <- RunBANKSY(
+      srt,
+      layer = "counts",
+      group = "sample",
+      sample.by = "sample",
+      image = c(S1 = "slice1", S2 = "slice2"),
+      verbose = FALSE
+    )
+  }))
+
+  expect_equal(
+    unname(out$BANKSY_cluster),
+    c("S1_1", "S1_1", "S2_1", "S2_1")
+  )
+  expect_named(out@tools$BANKSY$per_sample, c("S1", "S2"))
+  expect_identical(out@tools$BANKSY$parameters$sample.by, "sample")
+  expect_identical(out@tools$BANKSY$parameters$image, c(S1 = "slice1", S2 = "slice2"))
+  expect_equal(
+    unname(GetSpatialResult(out, "BANKSY", sample = "S1")$clusters$BANKSY_cluster),
+    c("1", "1")
+  )
+
+  suppressWarnings(with_mock_banksy({
+    out_without_details <- RunBANKSY(
+      srt,
+      layer = "counts",
+      group = "sample",
+      sample.by = "sample",
+      image = c(S1 = "slice1", S2 = "slice2"),
+      store_results = FALSE,
+      verbose = FALSE
+    )
+  }))
+  expect_false("BANKSY" %in% names(out_without_details@tools))
+  sample_result <- GetSpatialResult(out_without_details, "BANKSY", sample = "S1")
+  expect_equal(unname(sample_result$clusters$BANKSY_cluster), c("1", "1"))
+  expect_equal(sample_result$summary$n_spots, 2L)
+})
+
+test_that("BANKSY sample failures are reported without returning partial results", {
+  srt <- make_banksy_seurat()
+  expect_error(
+    with_mock_banksy({
+      RunBANKSY(
+        srt,
+        layer = "counts",
+        group = "sample",
+        sample.by = "sample",
+        verbose = FALSE
+      )
+    }, fail_sample = "S2"),
+    "BANKSY failed for sample.*S2.*mock backend failure"
+  )
+})
+
+test_that("RunBANKSY validates inputs before backend work", {
+  srt <- make_banksy_seurat()
+  expect_error(
+    RunBANKSY(matrix(1, nrow = 2), verbose = FALSE),
+    "Seurat"
+  )
+  with_mock_banksy({
+    expect_error(
+      RunBANKSY(srt, layer = "counts", features = "AbsentGene", verbose = FALSE),
+      "No features"
+    )
+    expect_error(
+      RunBANKSY(srt, layer = "counts", group = "missing", verbose = FALSE),
+      "group"
+    )
+    expect_error(
+      RunBANKSY(srt, layer = "counts", run_pca_params = list(1), verbose = FALSE),
+      "named arguments"
+    )
+  })
+})
+
 test_that("BANKSY clusters reuse SCOP SpatialSpotPlot", {
   srt <- make_banksy_seurat()
   srt$BANKSY_cluster <- c("1", "1", "2", "2")
@@ -205,49 +284,4 @@ test_that("BANKSY clusters reuse SCOP SpatialSpotPlot", {
     overlay_image = FALSE
   )
   expect_s3_class(p, "ggplot")
-})
-
-test_that("BANKSY sample guard rejects independent samples before backend work", {
-  srt <- make_banksy_seurat()
-  calls <- 0L
-  testthat::local_mocked_bindings(banksy_run_backend = function(...) {
-    calls <<- calls + 1L
-    stop("backend reached")
-  }, .package = "scop")
-  run <- function(object = srt, sample.by = "sample", ...) {
-    RunBANKSY(object, layer = "counts", sample.by = sample.by, verbose = FALSE, ...)
-  }
-  expect_error(run(group = "sample"), "requires one sample")
-  for (column in list("missing", "", NA_character_, c("sample", "other"), 1L)) {
-    expect_error(run(sample.by = column), "sample.by")
-  }
-  for (missing_id in c(NA_character_, "")) {
-    bad <- srt
-    bad$sample[2] <- missing_id
-    expect_error(run(bad), "non-missing, non-empty")
-  }
-  expect_identical(calls, 0L)
-  expect_error(run(sample.by = NULL, group = "sample"), "backend reached")
-  single <- srt[, 1:2]
-  single$sample <- factor(c("S1", "S1"), levels = c("S1", "unused"))
-  expect_error(run(single), "backend reached")
-  expect_identical(calls, 2L)
-})
-
-test_that("BANKSY sample guard records the selected metadata field", {
-  srt <- make_banksy_seurat()[, 1:2]
-  seen <- NULL
-  testthat::local_mocked_bindings(banksy_run_backend = function(expr, coords, coldata, ...) {
-    seen <<- list(cells = colnames(expr), coords = coords)
-    coldata$guard_test_cluster <- c("1", "2")
-    list(se = SummarizedExperiment::SummarizedExperiment(
-      assays = list(counts = expr), colData = S4Vectors::DataFrame(coldata)),
-      before_cols = setdiff(colnames(coldata), "guard_test_cluster"))
-  }, .package = "scop")
-  out <- RunBANKSY(srt, layer = "counts", sample.by = "sample",
-    cluster_source = "guard_test_cluster", verbose = FALSE)
-  expect_identical(seen$cells, colnames(srt))
-  expect_identical(rownames(seen$coords), colnames(srt))
-  expect_identical(out@tools$BANKSY$parameters$sample.by, "sample")
-  expect_equal(unname(out$BANKSY_cluster), c("1", "2"))
 })
