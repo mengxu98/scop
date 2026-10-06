@@ -20,6 +20,10 @@
 #'   generated from the image, method, and method parameter.
 #' @param overwrite Whether an existing graph with the same name may be
 #'   replaced.
+#' @param sample.by Optional metadata column identifying independent spatial
+#'   samples. The selected image/coordinate nodes must belong to one non-missing
+#'   sample. Subset independent samples and build their graphs separately;
+#'   this guard does not split graphs. `NULL` retains existing behavior.
 #'
 #' @return The input `Seurat` object with a `SpatialNetwork` result in
 #'   `srt@tools`.
@@ -41,7 +45,8 @@ RunSpatialNetwork <- function(
   graph.name = NULL,
   overwrite = FALSE,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  sample.by = NULL
 ) {
   srt <- spatial_resolve_object(object = object, srt = srt)
   if (!is.null(image) && (!is.character(image) || length(image) != 1L || is.na(image) || !nzchar(image))) {
@@ -62,6 +67,19 @@ RunSpatialNetwork <- function(
   rownames(coords) <- coords$cell_id
   if (length(cells) < 2L) {
     log_message("At least two cells or spots with finite spatial coordinates are required", message_type = "error")
+  }
+  if (!is.null(sample.by)) {
+    validate_scalar_string(sample.by, "sample.by")
+    if (!sample.by %in% colnames(srt[[]])) {
+      stop("sample.by must name a metadata column", call. = FALSE)
+    }
+    samples <- as.character(srt[[]][cells, sample.by])
+    if (anyNA(samples) || any(!nzchar(samples))) {
+      stop("sample.by must contain non-missing, non-empty sample IDs for selected nodes", call. = FALSE)
+    }
+    if (length(unique(samples)) > 1L) {
+      stop("RunSpatialNetwork requires one sample when sample.by is supplied; subset independent samples and build their graphs separately.", call. = FALSE)
+    }
   }
 
   if (identical(method, "knn")) {
@@ -101,6 +119,7 @@ RunSpatialNetwork <- function(
   parameters <- graph$parameters
   parameters$coordinate_space <- "raw"
   parameters$coordinate_contract_version <- 3L
+  parameters$sample.by <- sample.by
 
   sanitize_name <- function(x) {
     x <- gsub("[^A-Za-z0-9]+", "_", x)
