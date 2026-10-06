@@ -19,6 +19,12 @@ make_banksy_seurat <- function() {
   srt
 }
 
+skip_if_missing_banksy_test_dependencies <- function() {
+  testthat::skip_if_not_installed("SpatialExperiment")
+  testthat::skip_if_not_installed("SummarizedExperiment")
+  testthat::skip_if_not_installed("S4Vectors")
+}
+
 with_mock_banksy <- function(code, fail_sample = NULL, expected_group = "sample") {
   compute_fun <- function(se, assay_name, coord_names, compute_agf, M, k_geom, ...) {
     expect_s4_class(se, "SpatialExperiment")
@@ -127,6 +133,7 @@ test_that("BANKSY uses an image-associated assay and reports a missing layer", {
 })
 
 test_that("RunBANKSY auto-selects its single image and associated assay", {
+  skip_if_missing_banksy_test_dependencies()
   data(visium_human_pancreas_sub)
   srt <- suppressWarnings(visium_human_pancreas_sub[, seq_len(4)])
   expected_coords <- suppressWarnings(attr(
@@ -149,6 +156,7 @@ test_that("RunBANKSY auto-selects its single image and associated assay", {
 })
 
 test_that("BANKSY keeps metadata clusters accessible without detailed storage", {
+  skip_if_missing_banksy_test_dependencies()
   srt <- make_banksy_seurat()
   suppressWarnings(with_mock_banksy({
     out <- RunBANKSY(
@@ -169,6 +177,7 @@ test_that("BANKSY keeps metadata clusters accessible without detailed storage", 
 })
 
 test_that("BANKSY receipt shows resolved inputs, stored results, and a plot call", {
+  skip_if_missing_banksy_test_dependencies()
   srt <- make_banksy_seurat()
   messages <- testthat::capture_messages(with_mock_banksy({
     RunBANKSY(srt, layer = "counts", group = "sample", verbose = TRUE)
@@ -200,6 +209,7 @@ make_banksy_multi_image_seurat <- function() {
 }
 
 test_that("BANKSY fits samples independently and returns prefixed labels", {
+  skip_if_missing_banksy_test_dependencies()
   srt <- make_banksy_multi_image_seurat()
   suppressWarnings(with_mock_banksy({
     out <- RunBANKSY(
@@ -242,6 +252,7 @@ test_that("BANKSY fits samples independently and returns prefixed labels", {
 })
 
 test_that("BANKSY sample failures are reported without returning partial results", {
+  skip_if_missing_banksy_test_dependencies()
   srt <- make_banksy_seurat()
   expect_error(
     with_mock_banksy({
