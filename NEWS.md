@@ -1,5 +1,12 @@
 # scop (development version)
 
+* **fix**: `RunDEtest()` and native spatial APIs now distinguish an omitted
+  `object` from an explicitly supplied `object = NULL` when resolving the
+  deprecated `srt=` alias. A non-`NULL` `srt=` supplied alongside `object`
+  follows the shared duplicate-input error behavior. The alias remains
+  supported with a deprecation warning until scop 1.0.0, when its removal is
+  scheduled.
+
 * **change**: `RunPropeller()` now uses speckle's transformed proportions and
   empirical Bayes moderated tests instead of the internal logit t-test.
   It supports `transform`, `robust`, and `trend`, records backend results and

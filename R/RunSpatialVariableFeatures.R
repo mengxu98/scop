@@ -94,7 +94,11 @@ RunSpatialVariableFeatures <- function(
   ...,
   srt = NULL
 ) {
-  srt <- spatial_resolve_object(object = object, srt = srt)
+  srt <- spatial_resolve_object(
+    object = object,
+    srt = srt,
+    object_missing = missing(object)
+  )
   backend_missing <- missing(backend)
   coordinate_space <- match.arg(coordinate_space)
   log_message(
@@ -703,7 +707,11 @@ SpatialVariableFeaturePlot <- function(
   srt = NULL,
   image.scale = c("lowres", "hires")
 ) {
-  srt <- spatial_resolve_object(object = object, srt = srt)
+  srt <- spatial_resolve_object(
+    object = object,
+    srt = srt,
+    object_missing = missing(object)
+  )
   plot_type <- match.arg(plot_type)
   image.scale <- match.arg(image.scale)
   stored <- spatial_variable_get_stored_result(srt)

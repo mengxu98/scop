@@ -1,7 +1,7 @@
 
-spatial_resolve_object <- function(object = NULL, srt = NULL) {
-  input_arg <- if (is.null(object)) "srt" else "object"
-  resolved <- resolve_deprecated_srt(object, srt, is.null(object))
+spatial_resolve_object <- function(object, srt, object_missing) {
+  input_arg <- if (object_missing) "srt" else "object"
+  resolved <- resolve_deprecated_srt(object, srt, object_missing)
   if (is.null(resolved)) {
     log_message(
       "Provide a {.cls Seurat} object through {.arg object} or {.arg srt}",
