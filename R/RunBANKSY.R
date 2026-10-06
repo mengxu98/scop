@@ -21,6 +21,11 @@
 #' @param resolution Graph clustering resolution.
 #' @param group Optional metadata column used by BANKSY for multi-sample
 #' scaling. It is copied into the `SpatialExperiment` colData.
+#' This scaling option does not separate spatial neighbor searches by sample.
+#' @param sample.by Optional metadata column identifying independent spatial
+#' samples. When supplied, analyzed spots must belong to one non-missing sample.
+#' Subset independent samples and run BANKSY separately; this guard does not
+#' implement multi-sample neighbor construction. `NULL` retains existing behavior.
 #' @param seed Optional seed for PCA and clustering.
 #' @param compute_banksy_params Additional parameters passed to
 #' `Banksy::computeBanksy()`.
@@ -93,7 +98,8 @@ RunBANKSY <- function(
   store_results = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  srt = NULL
+  srt = NULL,
+  sample.by = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -132,6 +138,19 @@ RunBANKSY <- function(
       "No non-zero features or spots remain for {.fn RunBANKSY}",
       message_type = "error"
     )
+  }
+  if (!is.null(sample.by)) {
+    validate_scalar_string(sample.by, "sample.by")
+    if (!sample.by %in% colnames(srt[[]])) {
+      stop("sample.by must name a metadata column", call. = FALSE)
+    }
+    samples <- as.character(srt[[]][colnames(expr), sample.by])
+    if (anyNA(samples) || any(!nzchar(samples))) {
+      stop("sample.by must contain non-missing, non-empty sample IDs for analyzed spots", call. = FALSE)
+    }
+    if (length(unique(samples)) > 1L) {
+      stop("RunBANKSY requires one sample when sample.by is supplied; subset independent samples and run them separately. group controls scaling, not spatial neighbor isolation.", call. = FALSE)
+    }
   }
   coords <- resolve_spatial_spot_coords(
     srt = srt,
@@ -213,6 +232,7 @@ RunBANKSY <- function(
         k_neighbors = k_neighbors,
         resolution = resolution,
         group = group,
+        sample.by = sample.by,
         seed = seed,
         compute_banksy_params = compute_banksy_params,
         run_pca_params = run_pca_params,
