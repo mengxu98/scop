@@ -67,7 +67,13 @@ in \code{srt@tools}.}
 Default is \code{TRUE}.}
 
 \item{coord.cols}{Two metadata columns containing raw x/y coordinates when
-no spatial image is available.}
+no spatial image is available. Non-default selections also determine the
+coordinates passed to BayesSpace, overriding other metadata coordinate
+columns. The default selection preserves existing \code{array_col}/\code{array_row}
+or \code{col}/\code{row} indices when available. Standard array names (\code{col}/\code{row},
+\code{array_col}/\code{array_row}, or \code{arraycol}/\code{arrayrow}, case-insensitive) preserve
+native array indices; other column names are treated as pixel coordinates
+from which a regular array grid is inferred.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
