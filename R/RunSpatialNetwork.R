@@ -48,7 +48,11 @@ RunSpatialNetwork <- function(
   srt = NULL,
   sample.by = NULL
 ) {
-  srt <- spatial_resolve_object(object = object, srt = srt)
+  srt <- spatial_resolve_object(
+    object = object,
+    srt = srt,
+    object_missing = missing(object)
+  )
   if (!is.null(image) && (!is.character(image) || length(image) != 1L || is.na(image) || !nzchar(image))) {
     log_message("{.arg image} must be one non-empty image name", message_type = "error")
   }

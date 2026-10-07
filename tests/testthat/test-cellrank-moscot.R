@@ -63,17 +63,21 @@ test_that("RunCellRank forwards the moscot and real-time configuration", {
     adata_to_srt = function(...) adata_out
   )
 
-  out <- RunCellRank(
-    object = srt,
-    group.by = "cluster",
-    kernel_type = "moscot",
-    backend = "python",
-    time_field = "day",
-    time_values = c(D0 = 0, D1 = 1),
-    moscot_args = list(solve = list(epsilon = 0.05, tau_a = 0.95)),
-    realtime_args = list(transition = list(self_transitions = "all", conn_weight = 0.2)),
-    show_plot = FALSE,
-    verbose = FALSE
+  out <- NULL
+  expect_warning(
+    out <- RunCellRank(
+      srt = srt,
+      group.by = "cluster",
+      kernel_type = "moscot",
+      backend = "python",
+      time_field = "day",
+      time_values = c(D0 = 0, D1 = 1),
+      moscot_args = list(solve = list(epsilon = 0.05, tau_a = 0.95)),
+      realtime_args = list(transition = list(self_transitions = "all", conn_weight = 0.2)),
+      show_plot = FALSE,
+      verbose = FALSE
+    ),
+    "`srt` is deprecated"
   )
 
   expect_identical(captured$layer_x, "data")
@@ -82,6 +86,7 @@ test_that("RunCellRank forwards the moscot and real-time configuration", {
   expect_equal(unlist(captured$args$time_values, use.names = FALSE), c(0, 1))
   expect_equal(captured$args$moscot_args$solve$epsilon, 0.05)
   expect_identical(captured$args$realtime_args$transition$self_transitions, "all")
+  expect_false(any(names(captured$args) %in% c("object", "srt")))
   expect_identical(out@tools$CellRank$temporal$time_key, "cellrank_moscot_time")
   expect_identical(out@tools$CellRank$versions$moscot, "0.5.2")
 })
