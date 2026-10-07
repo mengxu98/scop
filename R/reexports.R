@@ -1,4 +1,26 @@
-#' @import ggplot2 Seurat thisutils thisplot
+#' @import thisutils thisplot
+#' @importFrom Seurat IntegrateEmbeddings
+#' @importFrom SeuratObject AddMetaData CreateAssayObject CreateDimReducObject
+#'   DefaultAssay DefaultAssay<- Embeddings FetchData Idents Idents<-
+#' @importFrom ggplot2 .pt aes after_stat alpha annotate coord_cartesian coord_flip
+#'   coord_polar draw_key_point element_blank element_line element_rect
+#'   element_text expand_limits expansion facet_grid facet_null facet_wrap
+#'   geom_bar geom_blank geom_boxplot geom_col geom_count geom_density_2d
+#'   geom_hex geom_hline geom_label geom_line geom_linerange geom_path geom_point
+#'   geom_pointrange geom_rect geom_ribbon geom_rug geom_segment geom_smooth
+#'   geom_text geom_tile geom_violin geom_vline ggplot ggplot_build ggtitle
+#'   guide_colorbar guide_legend guide_none guides labs layer_data layer_scales
+#'   margin mean_sdl position_dodge position_jitterdodge scale_alpha_continuous
+#'   scale_alpha_manual scale_color_gradientn scale_color_identity
+#'   scale_color_manual scale_color_viridis_c scale_colour_gradient
+#'   scale_fill_gradient scale_fill_gradientn scale_fill_identity
+#'   scale_fill_manual scale_linetype_manual scale_linewidth
+#'   scale_linewidth_continuous scale_shape_identity scale_size scale_size_area
+#'   scale_x_continuous scale_x_discrete scale_y_continuous scale_y_discrete
+#'   stat_density2d stat_density_2d stat_summary stat_summary_hex theme
+#'   theme_bw theme_classic theme_dark theme_gray theme_grey theme_light
+#'   theme_linedraw theme_minimal theme_test theme_void
+#'   xlab ylab
 #' @importFrom ComplexHeatmap %v%
 #' @importFrom ggrepel GeomTextRepel
 #' @importFrom Signac RunSVD
