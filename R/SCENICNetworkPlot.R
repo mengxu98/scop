@@ -274,7 +274,7 @@ scenic_network_display_data <- function(edge_data, focal_tfs, layout = "fr", tar
   if (!is.numeric(target_limit) || length(target_limit) != 1L ||
       is.na(target_limit) || target_limit <= 0 ||
       (is.finite(target_limit) && target_limit != floor(target_limit))) {
-    stop("network_display_targets must be a positive integer or Inf.", call. = FALSE)
+    log_message("{.emph network_display_targets} must be a positive integer or Inf.", message_type = "error")
   }
   if (is.infinite(target_limit)) {
     return(scenic_network_plot_data(edge_data, layout))

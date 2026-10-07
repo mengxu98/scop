@@ -131,7 +131,7 @@ RunSpatialGradientFeatures <- function(
   for (flag in c("store_results", "set_variable_features")) {
     value <- get(flag)
     if (!is.logical(value) || length(value) != 1L || is.na(value)) {
-      stop(paste0(flag, " must be a single non-missing logical value"), call. = FALSE)
+      log_message("{.emph {flag}} must be a single non-missing logical value", message_type = "error")
     }
   }
   if (!inherits(srt, "Seurat")) {
@@ -228,7 +228,7 @@ RunSpatialGradientFeatures <- function(
 
   vars <- sgf_validate_result(result)
   if (isTRUE(set_variable_features) && any(!vars %in% rownames(srt[[assay]]))) {
-    stop("Spatial gradient result contains variables absent from the target assay", call. = FALSE)
+    log_message("Spatial gradient result contains variables absent from the target assay", message_type = "error")
   }
   if (isTRUE(store_results)) {
     source <- result$source %||% list(
@@ -786,10 +786,13 @@ sgf_validate_result <- function(result) {
   }
   vars <- result$top_variables$variable
   if (!is.character(vars) || anyNA(vars) || any(!nzchar(vars))) {
-    stop("Spatial gradient top_variables must contain a character variable column without missing or empty names", call. = FALSE)
+    log_message(
+      "Spatial gradient top_variables must contain a character variable column without missing or empty names",
+      message_type = "error"
+    )
   }
   if (!is.null(result$source) && !is.list(result$source)) {
-    stop("Spatial gradient result source must be a list", call. = FALSE)
+    log_message("Spatial gradient result source must be a list", message_type = "error")
   }
   unique(vars)
 }

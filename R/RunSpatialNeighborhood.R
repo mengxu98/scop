@@ -128,7 +128,7 @@ RunSpatialNeighborhood <- function(
   for (labels in list(from, to)) {
     if (!is.null(labels) && (!is.character(labels) || anyNA(labels) ||
       any(!labels %in% input$cells$group))) {
-      stop("from/to must contain labels present in the analysis input", call. = FALSE)
+      log_message("{.emph from/to} must contain labels present in the analysis input", message_type = "error")
     }
   }
   observed <- spatial_neighborhood_observed_pairs(
@@ -328,13 +328,13 @@ SpatialNeighborhoodPlot <- function(
 
   if (identical(plot_type, "spatial")) {
     if (!is.null(sample)) {
-      stop("sample is only supported for non-spatial plots; use image or split.by for spatial plots", call. = FALSE)
+      log_message("{.emph sample} is only supported for non-spatial plots; use image or split.by for spatial plots", message_type = "error")
     }
     if (!identical(value, "count")) {
-      stop("Spatial neighborhood plots support only value = 'count'", call. = FALSE)
+      log_message("Spatial neighborhood plots support only value = 'count'", message_type = "error")
     }
     if (!is.null(comparison)) {
-      stop("comparison is not supported for spatial plots; use a statistical plot", call. = FALSE)
+      log_message("{.emph comparison} is not supported for spatial plots; use a statistical plot", message_type = "error")
     }
     return(spatial_neighborhood_spatial_plot(
       srt = srt,
@@ -370,15 +370,15 @@ SpatialNeighborhoodPlot <- function(
   if (!is.null(sample)) {
     if (!is.character(sample) || length(sample) != 1L || is.na(sample) ||
       !nzchar(sample) || !"sample" %in% names(df) || !sample %in% df$sample) {
-      stop("sample must name one sample in the filtered results", call. = FALSE)
+      log_message("{.emph sample} must name one sample in the filtered results", message_type = "error")
     }
     df <- df[!is.na(df$sample) & df$sample == sample, , drop = FALSE]
   }
   if ("sample" %in% names(df) && length(unique(df$sample[!is.na(df$sample)])) > 1L) {
-    stop("Results contain multiple samples; select one with sample", call. = FALSE)
+    log_message("Results contain multiple samples; select one with sample", message_type = "error")
   }
   if (anyDuplicated(df[, c("from", "to"), drop = FALSE])) {
-    stop("Repeated label pairs remain; select one comparison, condition, or sample before plotting", call. = FALSE)
+    log_message("Repeated label pairs remain; select one comparison, condition, or sample before plotting", message_type = "error")
   }
   if (nrow(df) == 0L) {
     return(spatial_empty_plot(
@@ -1067,27 +1067,27 @@ spatial_neighborhood_spatial_plot <- function(
   input <- bundle$input
   if (!is.data.frame(input) || !all(c("cell", "group", "condition") %in% names(input)) ||
     !is.data.frame(edges) || !all(c("cell", "neighbor", "from", "to", "condition") %in% names(edges))) {
-    stop("Saved analysis input or edge table is incomplete; rerun RunSpatialNeighborhood()", call. = FALSE)
+    log_message("Saved analysis input or edge table is incomplete; rerun RunSpatialNeighborhood()", message_type = "error")
   }
   if (anyNA(input$cell) || anyDuplicated(input$cell) || anyNA(input$group) ||
     anyNA(input$condition) || anyNA(edges$cell) || any(!edges$cell %in% input$cell)) {
-    stop("Saved neighborhood identifiers are invalid; rerun RunSpatialNeighborhood()", call. = FALSE)
+    log_message("Saved neighborhood identifiers are invalid; rerun RunSpatialNeighborhood()", message_type = "error")
   }
   if (!is.null(condition)) {
     if (!is.character(condition) || anyNA(condition) || any(!condition %in% input$condition)) {
-      stop("condition must name a condition in the saved analysis input", call. = FALSE)
+      log_message("{.emph condition} must name a condition in the saved analysis input", message_type = "error")
     }
     input <- input[input$condition %in% condition, , drop = FALSE]
     edges <- edges[edges$cell %in% input$cell, , drop = FALSE]
   }
   if (is.null(pair) && nrow(edges) == 0L) {
-    stop("No observed edges remain; specify pair explicitly", call. = FALSE)
+    log_message("No observed edges remain; specify pair explicitly", message_type = "error")
   }
   pair_use <- spatial_neighborhood_resolve_pair(pair, edges)
   if (anyNA(pair_use) || any(!nzchar(pair_use)) || any(!pair_use %in% bundle$input$group) ||
     (!is.null(bundle$parameters$from) && !pair_use[1L] %in% bundle$parameters$from) ||
     (!is.null(bundle$parameters$to) && !pair_use[2L] %in% bundle$parameters$to)) {
-    stop("pair must contain known labels within the saved from/to scope", call. = FALSE)
+    log_message("{.emph pair} must contain known labels within the saved from/to scope", message_type = "error")
   }
   hit <- edges$from == pair_use[1L] & edges$to == pair_use[2L]
   score <- stats::setNames(rep(NA_real_, ncol(srt)), colnames(srt))
