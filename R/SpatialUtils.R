@@ -458,7 +458,7 @@ spatial_set_active_variable_features <- function(srt, assay, features) {
   if (length(features) > 0L) {
     features <- intersect(features, rownames(assay_object))
     if (length(features) == 0L) {
-      stop("None of the features specified are present in this assay", call. = FALSE)
+      log_message("None of the features specified are present in this assay", message_type = "error")
     }
   }
   if (inherits(assay_object, "StdAssay")) {

@@ -142,14 +142,20 @@ RunBANKSY <- function(
   if (!is.null(sample.by)) {
     validate_scalar_string(sample.by, "sample.by")
     if (!sample.by %in% colnames(srt[[]])) {
-      stop("sample.by must name a metadata column", call. = FALSE)
+      log_message("{.emph sample.by} must name a metadata column", message_type = "error")
     }
     samples <- as.character(srt[[]][colnames(expr), sample.by])
     if (anyNA(samples) || any(!nzchar(samples))) {
-      stop("sample.by must contain non-missing, non-empty sample IDs for analyzed spots", call. = FALSE)
+      log_message(
+        "{.emph sample.by} must contain non-missing, non-empty sample IDs for analyzed spots",
+        message_type = "error"
+      )
     }
     if (length(unique(samples)) > 1L) {
-      stop("RunBANKSY requires one sample when sample.by is supplied; subset independent samples and run them separately. group controls scaling, not spatial neighbor isolation.", call. = FALSE)
+      log_message(
+        "RunBANKSY requires one sample when sample.by is supplied; subset independent samples and run them separately. group controls scaling, not spatial neighbor isolation.",
+        message_type = "error"
+      )
     }
   }
   coords <- resolve_spatial_spot_coords(

@@ -47,7 +47,7 @@ RunPropeller <- function(
   transform <- match.arg(transform)
   if (length(n_bootstrap) != 1L || is.na(n_bootstrap) || !is.finite(n_bootstrap) ||
       n_bootstrap < 0 || n_bootstrap != as.integer(n_bootstrap)) {
-    stop("n_bootstrap must be a non-negative integer.", call. = FALSE)
+    log_message("{.emph n_bootstrap} must be a non-negative integer.", message_type = "error")
   }
   meta_data <- validate_proportion_inputs(
     srt = srt,
@@ -122,7 +122,7 @@ RunPropeller <- function(
 propeller_check_r <- function() {
   status <- check_r("speckle", verbose = FALSE)
   if (!isTRUE(status[["speckle"]])) {
-    stop("RunPropeller requires the optional Bioconductor package 'speckle'.", call. = FALSE)
+    log_message("RunPropeller requires the optional Bioconductor package 'speckle'.", message_type = "error")
   }
   invisible(TRUE)
 }
@@ -130,7 +130,7 @@ propeller_check_r <- function() {
 propeller_get_fun <- function(fun) {
   out <- get_namespace_fun("speckle", fun)
   if (!is.function(out)) {
-    stop(sprintf("The installed speckle backend does not provide '%s'.", fun), call. = FALSE)
+    log_message(sprintf("The installed speckle backend does not provide '%s'.", fun), message_type = "error")
   }
   out
 }
@@ -144,16 +144,16 @@ run_propeller_speckle <- function(
   dat <- dat[dat$condition %in% c(cluster_1, cluster_2), , drop = FALSE]
   dat[] <- lapply(dat, as.character)
   if (anyNA(dat$clusters) || any(!nzchar(dat$clusters))) {
-    stop("Propeller cell type labels must be non-missing and non-empty.", call. = FALSE)
+    log_message("Propeller cell type labels must be non-missing and non-empty.", message_type = "error")
   }
   sample_info <- proportion_sample_condition_keys(dat, "sample", "condition")
   pairs <- sample_info$pairs
   paired <- proportion_pair_is_paired(pairs, cluster_1, cluster_2)
   if (any(table(factor(pairs$condition, levels = c(cluster_1, cluster_2))) < 2L)) {
-    stop("Propeller requires at least two biological samples per condition.", call. = FALSE)
+    log_message("Propeller requires at least two biological samples per condition.", message_type = "error")
   }
   if (length(unique(dat$clusters)) < 2L) {
-    stop("Propeller requires at least two cell types in the comparison.", call. = FALSE)
+    log_message("Propeller requires at least two cell types in the comparison.", message_type = "error")
   }
 
   props <- propeller_get_fun("getTransformedProps")(
