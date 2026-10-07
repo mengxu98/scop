@@ -1,5 +1,11 @@
 # scop (development version)
 
+* **fix**: `RunGSVA()`, `CellScoring()`, `RunDynamicEnrichment()`,
+  `RunCellRankEnrichment()`, `AnnotateFeatures()` and `RunMetabolism()` normalize
+  Latin species names before database lookup. Lowercase names and space, dot or
+  hyphen separators now resolve to the same annotations as `Homo_sapiens` and
+  `Mus_musculus`, avoiding missing-input errors and silently skipped databases.
+
 * **change**: `RunPropeller()` now uses speckle's transformed proportions and
   empirical Bayes moderated tests instead of the internal logit t-test.
   It supports `transform`, `robust`, `trend`, records backend results and

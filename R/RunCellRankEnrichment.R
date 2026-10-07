@@ -44,6 +44,7 @@ RunCellRankEnrichment <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  species <- normalize_species_name(species)
   if (!inherits(srt, "Seurat")) {
     log_message("{.arg srt} must be a Seurat object", message_type = "error")
   }

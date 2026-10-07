@@ -70,6 +70,7 @@ AnnotateFeatures <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  species <- normalize_species_name(species)
   IDtype <- match.arg(IDtype)
   if (is.null(db) && is.null(gtf)) {
     log_message(
