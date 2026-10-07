@@ -14,6 +14,7 @@
 (^|/)\.claude($|/)
 ^README\.Rmd$
 ^LICENSE\.md$
+^CONTRIBUTING[.]md$
 ^SCExplorer$
 ^README$
 ^README.md$
