@@ -1,5 +1,18 @@
 # scop (development version)
 
+* **change**: Migration: `RunBANKSY(assay = NULL)` now prefers the selected image's assay,
+  then `Spatial`, `RNA`, and `DefaultAssay`; set `assay` explicitly to reproduce
+  analyses that used a different assay.
+* **change**: Migration: `RunBANKSY()` now reports its actual inputs and result
+  locations and `GetSpatialResult()` reads clusters, parameters, and summaries;
+  use `verbose = FALSE` to suppress receipts or `store_results = FALSE` to omit
+  detailed stored results. A lightweight retrieval index still records custom
+  cluster columns and exact sample membership, including overlapping names such
+  as `S1` and `S1_A`. Sample-specific access to legacy metadata without an index
+  requires rerunning BANKSY; cluster labels alone cannot identify samples safely.
+* **change**: Migration: set `sample.by` to fit BANKSY separately by sample;
+  combined domain labels are sample-prefixed and are not aligned across samples.
+
 * **fix**: C++ gene-set scoring uses GSVA >= 2.6 defaults when the optional
   GSVA package is absent, avoiding version-probe errors in sparse `RunGSVA()`
   z-score and PLAGE scoring. Installed GSVA versions retain their existing

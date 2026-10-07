@@ -37,20 +37,21 @@ RunBANKSY(
 \arguments{
 \item{object}{A \code{Seurat} object.}
 
-\item{assay}{Assay to use. \code{NULL} uses the default assay.}
+\item{assay}{Expression assay used by BANKSY. When \code{NULL}, the assay linked
+to the selected image is used first, followed by \code{Spatial}, \code{RNA}, and the
+object's default assay.}
 
 \item{layer}{Assay layer used as BANKSY input.}
 
 \item{features}{Optional features to use. If \code{NULL}, all assay features are
 used after zero-count filtering.}
 
-\item{image}{Name of the Seurat spatial image used to recover spot
-coordinates when they are not already present in metadata. For regular
-Visium data with only pixel \code{x}/\code{y} coordinates, BayesSpace array
-coordinates are inferred from the spatial grid.}
+\item{image}{Spatial image used to recover coordinates. A single available
+image is selected automatically; choose one explicitly when several exist,
+or provide a named sample-to-image map with \code{sample.by}.}
 
 \item{coord.cols}{Metadata coordinate columns used when no image coordinate
-source is available.}
+source is available. The default is resolved from common coordinate names.}
 
 \item{lambda}{BANKSY spatial weighting parameter.}
 
@@ -68,14 +69,8 @@ source is available.}
 
 \item{resolution}{Graph clustering resolution.}
 
-\item{group}{Optional metadata column used by BANKSY for multi-sample
-scaling. It is copied into the \code{SpatialExperiment} colData.
-This scaling option does not separate spatial neighbor searches by sample.}
-
-\item{sample.by}{Optional metadata column identifying independent spatial
-samples. When supplied, analyzed spots must belong to one non-missing sample.
-Subset independent samples and run BANKSY separately; this guard does not
-implement multi-sample neighbor construction. \code{NULL} retains existing behavior.}
+\item{group}{Optional metadata column passed to BANKSY for multi-sample
+scaling. It is an algorithm parameter and does not split sample fits.}
 
 \item{seed}{Optional seed for PCA and clustering.}
 
@@ -97,7 +92,8 @@ available.}
 \item{tool_name}{Name used to store detailed results in \code{srt@tools}.}
 
 \item{store_results}{Whether to store detailed BANKSY results in
-\code{object@tools}.}
+\code{object@tools}; cluster assignments are still written to metadata when
+\code{FALSE}; a lightweight index retains the result column and analyzed cells.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -109,11 +105,16 @@ reproduce the display-scaled coordinates used before scop 0.9.0.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{sample.by}{Optional metadata column for independent per-sample fits.
+Combined labels are prefixed with the sample name; domains are not aligned
+across samples.}
 }
 \value{
 A \code{Seurat} object with BANKSY clusters in metadata. When
 \code{store_results = TRUE}, detailed results are stored in
-\code{srt@tools[[tool_name]]}.
+\code{srt@tools[[tool_name]]}; when \code{FALSE}, clusters remain in metadata and only
+their lightweight retrieval index is retained in the tool entry.
 }
 \description{
 Build neighborhood-augmented BANKSY features from a spatial \code{Seurat} object
@@ -123,22 +124,21 @@ and store spatial domain or microenvironment clusters in metadata.
 data(visium_human_pancreas_sub)
 keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
 spatial <- visium_human_pancreas_sub[, keep_spots]
-spatial <- RunBANKSY(
-  spatial,
-  assay = "Spatial",
-  layer = "counts",
-  coord.cols = c("x", "y"),
-  features = rownames(spatial)[1:200],
-  lambda = 0.2,
-  k_geom = 8,
-  resolution = 0.6,
-  verbose = FALSE
-)
-SpatialSpotPlot(
-  spatial,
-  group.by = "BANKSY_cluster",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
-  pt.size = 1.5
-)
+if (check_r("Banksy", install = FALSE, verbose = FALSE)) {
+  spatial <- RunBANKSY(
+    spatial,
+    layer = "counts",
+    features = rownames(spatial)[1:200],
+    resolution = 0.6,
+    verbose = FALSE
+  )
+  SpatialSpotPlot(
+    spatial,
+    group.by = "BANKSY_cluster",
+    pt.size = 1.5
+  )
+}
+}
+\seealso{
+\code{\link[=GetSpatialResult]{GetSpatialResult()}}
 }
