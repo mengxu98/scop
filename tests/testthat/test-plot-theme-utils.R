@@ -20,6 +20,18 @@ test_that("apply_plot_theme handles NULL and unknown names", {
   expect_s3_class(apply_plot_theme("not_a_theme_name"), "theme")
 })
 
+test_that("ggplot2 theme names retain their theme and arguments", {
+  theme_names <- c(
+    "theme_bw", "theme_classic", "theme_dark", "theme_gray", "theme_grey",
+    "theme_light", "theme_linedraw", "theme_minimal", "theme_test", "theme_void"
+  )
+  for (theme_name in theme_names) {
+    expected <- getExportedValue("ggplot2", theme_name)(base_size = 13)
+    actual <- apply_plot_theme(theme_name, list(base_size = 13))
+    expect_equal(actual, expected, info = theme_name)
+  }
+})
+
 test_that("deprecated enrlichmap_nlabel stays as a NULL fallback", {
   for (fun in c("EnrichmentPlot", "GSEAPlot", "GSVAPlot")) {
     fmls <- formals(get(fun, envir = asNamespace("scop")))
