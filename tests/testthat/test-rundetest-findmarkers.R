@@ -64,6 +64,52 @@ test_that("RunDEtest uses scop FindMarkers-compatible sparse Wilcoxon path", {
   expect_equal(cell_fm$pct.2, markers$pct.2, tolerance = 0)
 })
 
+test_that("RunDEtest resolves object aliases before Seurat S3 dispatch", {
+  skip_if_not_installed("Seurat")
+  skip_if_not_installed("Matrix")
+
+  set.seed(10)
+  counts <- Matrix::Matrix(rpois(40 * 12, lambda = 2), nrow = 40, sparse = TRUE)
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+  object <- Seurat::CreateSeuratObject(counts)
+  object <- Seurat::NormalizeData(object, verbose = FALSE)
+  cells1 <- colnames(object)[1:6]
+  cells2 <- colnames(object)[7:12]
+  features <- rownames(object)[1:30]
+  args <- list(
+    cells1 = cells1,
+    cells2 = cells2,
+    features = features,
+    fc.threshold = 1,
+    min.pct = 0,
+    only.pos = FALSE,
+    verbose = FALSE
+  )
+
+  by_object <- do.call(RunDEtest, c(list(object = object), args))
+  by_position <- do.call(RunDEtest, c(list(object), args))
+  by_srt <- NULL
+  expect_warning(
+    by_srt <- do.call(RunDEtest, c(list(srt = object), args)),
+    "`srt` is deprecated"
+  )
+
+  expect_identical(
+    by_object@tools$DEtest_custom$AllMarkers_wilcox,
+    by_position@tools$DEtest_custom$AllMarkers_wilcox
+  )
+  expect_identical(
+    by_object@tools$DEtest_custom$AllMarkers_wilcox,
+    by_srt@tools$DEtest_custom$AllMarkers_wilcox
+  )
+  expect_error(
+    RunDEtest(object = NULL, srt = object),
+    "only one of.*object.*srt"
+  )
+  expect_error(RunDEtest(), "no applicable method")
+})
+
 test_that("FindMarkers native branches exactly match the Seurat method", {
   set.seed(20260909)
   counts <- Matrix::rsparsematrix(
