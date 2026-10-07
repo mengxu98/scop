@@ -21,10 +21,10 @@ test_that("RunGSVA accepts species aliases in grouped and single-cell database m
   for (group in list("Sample_Origin", NULL)) {
     run <- function(species, combine = FALSE) RunGSVA(object,
       group.by = group, db = "MSigDB_H", species = species,
-      db_combine = combine, method = "zscore", layer = "counts",
+      db_combine = combine, method = "ssgsea", backend = "cpp", layer = "counts",
       new_assay = FALSE, store_metadata = FALSE, verbose = FALSE)
     canonical <- run("Homo_sapiens")
-    key <- if (is.null(group)) "GSVA_cell_zscore" else "GSVA_Sample_Origin_zscore"
+    key <- if (is.null(group)) "GSVA_cell_ssgsea" else "GSVA_Sample_Origin_ssgsea"
     for (alias in c("homo_sapiens", "HOMO SAPIENS", " Homo.sapiens ", "Homo-sapiens")) {
       out <- run(alias)
       expect_equal(out@tools[[key]]$scores, canonical@tools[[key]]$scores)
