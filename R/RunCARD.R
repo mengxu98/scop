@@ -6,6 +6,7 @@
 #'
 #' @md
 #' @inheritParams RunRCTD
+#' @param features Features used for CARD. If `NULL`, shared features are used.
 #' @param sample_varname Optional metadata column in `reference` containing
 #' sample labels. When `NULL`, all reference cells are assigned to one sample.
 #' @param minCountGene,minCountSpot Filtering parameters passed to
@@ -104,26 +105,6 @@ RunCARD <- function(
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
 
-  labels <- resolve_reference_labels(reference, reference_label)
-  names(labels) <- colnames(reference)
-  keep_ref <- !is.na(labels) & nzchar(as.character(labels))
-  if (!all(keep_ref)) {
-    log_message(
-      "Drop {.val {sum(!keep_ref)}} reference cells with missing {.arg reference_label}",
-      verbose = verbose
-    )
-    reference <- reference[, keep_ref]
-    labels <- labels[keep_ref]
-    names(labels) <- colnames(reference)
-  }
-  labels <- factor(as.character(labels), levels = unique(as.character(labels)))
-  if (length(levels(labels)) == 0L) {
-    log_message(
-      "{.arg reference_label} must contain at least one non-missing class",
-      message_type = "error"
-    )
-  }
-
   features_use <- resolve_common_features(
     srt = srt,
     reference = reference,
@@ -155,6 +136,11 @@ RunCARD <- function(
     round_counts = round_counts,
     verbose = verbose
   )
+  reference_input <- deconv_align_reference(
+    ref_counts, reference, reference_label, verbose = verbose
+  )
+  ref_counts <- reference_input$counts
+  labels <- reference_input$labels
   keep_features <- Matrix::rowSums(st_counts) > 0 & Matrix::rowSums(ref_counts) > 0
   if (!any(keep_features)) {
     log_message(
@@ -175,8 +161,7 @@ RunCARD <- function(
   keep_ref_cells <- Matrix::colSums(ref_counts) > 0
   st_counts <- st_counts[, keep_spots, drop = FALSE]
   ref_counts <- ref_counts[, keep_ref_cells, drop = FALSE]
-  labels <- labels[keep_ref_cells]
-  names(labels) <- colnames(ref_counts)
+  labels <- droplevels(labels[colnames(ref_counts)])
   if (ncol(st_counts) == 0L || ncol(ref_counts) == 0L) {
     log_message(
       "No spatial spots or reference cells remain after zero-count filtering",
@@ -208,6 +193,8 @@ RunCARD <- function(
     "Run {.pkg CARD} with {.val {nrow(st_counts)}} features, {.val {ncol(st_counts)}} spatial spots, and {.val {ncol(ref_counts)}} reference cells",
     verbose = verbose
   )
+  deconv_check_cell_order(st_counts, rownames(coords), "Spatial coordinates")
+  deconv_check_cell_order(ref_counts, rownames(ref_meta), "Reference metadata")
   backend <- card_run_backend(
     st_counts = st_counts,
     ref_counts = ref_counts,

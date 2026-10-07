@@ -1,5 +1,11 @@
 # scop (development version)
 
+* **fix**: `RunRCTD()`, `RunCARD()` and `RunSPOTlight()` align reference labels
+  and metadata to selected-assay cell IDs before filtering, including assays
+  containing only part of a Seurat object. Ambiguous IDs are rejected. RCTD
+  preserves full selected-assay library depths through analysis-gene selection;
+  zero-count filtering still uses the selected shared features.
+
 * **change**: Migration: `RunBANKSY(assay = NULL)` now prefers the selected image's assay,
   then `Spatial`, `RNA`, and `DefaultAssay`; set `assay` explicitly to reproduce
   analyses that used a different assay.

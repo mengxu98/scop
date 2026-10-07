@@ -38,12 +38,13 @@ RunSPOTlight(
 
 \item{assay}{Assay used in \code{object}. If \code{NULL}, the default assay is used.}
 
-\item{reference_assay}{Assay used in \code{reference}.}
+\item{reference_assay}{Assay used in \code{reference}. Only cells present in this
+assay are used, with reference labels aligned by cell ID.}
 
 \item{layer, reference_layer}{Assay layers used for spatial and reference
 raw counts.}
 
-\item{features}{Features used for RCTD. If \code{NULL}, shared features are used.}
+\item{features}{Features used for SPOTlight. If \code{NULL}, shared features are used.}
 
 \item{mgs}{Optional marker-gene table passed to \code{SPOTlight}. It must contain
 columns named by \code{gene_id}, \code{group_id}, and \code{weight_id}. If \code{NULL}, a simple
