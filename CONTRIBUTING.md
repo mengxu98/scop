@@ -1,0 +1,29 @@
+# Contributing to scop
+
+This guide records the development conventions used in this repository. Keep changes focused, reuse existing helpers, and make behavior visible in the code that owns it.
+
+## Development principles
+
+- Reuse existing helpers and validate at necessary boundaries. Avoid repeating defensive checks for the same invariant.
+- Do not add silent fallbacks or hidden behavior switches. Do not add `Sys.getenv()` switches or hidden `options()` switches. If a temporary option change is necessary, save its prior value and restore it with `on.exit()` in the same local scope, and explain why it is needed.
+- Do not add unconditional global `options()` or `Sys.setenv()` changes during package load.
+- Keep general refactors and feature development in separate pull requests.
+
+## Logging and package startup
+
+- In ordinary business code, use the existing `log_message()` helper for user-facing progress and status messages. Report errors with its error type so they terminate, and report warnings with its warning type so they retain warning semantics.
+- `R/scop-package.R` is an explicit startup exception: code there is not required to use `log_message()`. Package startup notices may use `packageStartupMessage()` with `cli` formatting. Do not add a logging proxy, a dependency-availability probe, or multiple fallbacks to make startup messages go through `log_message()`.
+- `print.scop_logo()` uses `cat()` for normal print output. Keep that behavior; it is not a business log message.
+- `.onAttach()` currently clears `options(scop_env_cache = NULL)`. This is an existing reset of SCOP's process-level Python environment cache. The cache records the environment specification and can include its resolved Python path; `PrepareEnv()` validates and reuses matching cached environment information, while Python-backed helpers may read the cached Python path or module list. Keep this behavior as-is in this documentation change. Do not move it to `.onLoad()`: that would still modify a global option while changing when it is modified. See [R/scop-package.R](R/scop-package.R) and [R/PrepareEnv.R](R/PrepareEnv.R).
+
+## Optional packages listed in `Remotes`
+
+- In [DESCRIPTION](DESCRIPTION), every `Remotes` package except `thisplot` and `thisutils` is a runtime-optional backend. Do not add one to `Imports`, `Depends`, or `Suggests` just to silence an `R CMD check` warning.
+- Before executing an optional backend, check availability with `check_r("<repo-or-package>", verbose = FALSE)` or its existing `<backend>_check_r()` helper. Resolve optional package functions with `get_namespace_fun("<pkg>", "<fun>")` before calling them.
+- Except for `thisplot` and `thisutils`, executable package code and runnable examples must not call an optional package with `pkg::fun()`, `pkg:::fun()`, `library()`, `require()`, or `requireNamespace()`. Explanatory prose may mention `pkg::fun()`; keep that distinct from executable code.
+- When adding an optional backend, centralize its repository/package names, availability check, and function lookup in `<backend>_check_r()` and `<backend>_get_fun()` helpers.
+- If roxygen examples change, regenerate the matching `man/*.Rd` files.
+
+## Pull requests and documentation
+
+Keep each pull request scoped to one coherent purpose. Edit source documentation rather than generated website files under `docs/`. Review the final diff for scope and consistency before opening a pull request.
