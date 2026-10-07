@@ -389,39 +389,39 @@ will be removed in scop 1.0.0.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:07] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:07] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-10-05 14:22:08] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:08] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:08] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:08] Use the separate HVF from `srt_list`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:08] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:08] Finished check</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:08] Perform `ScaleData()`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:08] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:08] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:09] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:09] Reorder clusters...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:09] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:09] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-05 14:22:15] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:45] <span style="color: #0000BB;">Start standard processing workflow...</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:45] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> [2026-10-07 12:49:45] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:45] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:45] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">1</span> of `srt_list`...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:45] Use the separate HVF from `srt_list`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:45] Number of available HVF: <span style="color: #0000BB;">2000</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:45] Finished check</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:45] Perform `ScaleData()`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:45] Perform <span style="color: #0000BB;">pca</span> linear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:46] Use stored estimated dimensions <span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">23</span> for <span style="color: #0000BB;">Standardpca</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:46] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:46] Reorder clusters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:46] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:46] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-07 12:49:53] <span style="color: #00BB00;">Standard processing workflow completed</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunDEtest.html">RunDEtest</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>
 <span class="r-in"><span>  only.pos <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:16] Data type is log-normalized</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:16] Start differential expression test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:16] Find all markers(wilcox) among [1] 5 groups...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:16] Using <span style="color: #0000BB;">1</span> core</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-10-05 14:22:16] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;">47s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-10-05 14:22:16] Running for <span style="color: #0000BB;">Ngn3-high-EP </span>[<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■</span>        40% | ETA: <span style="color: #0000BB;">3</span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠸</span> [2026-10-05 14:22:16] Running for <span style="color: #0000BB;">Endocrine </span>[<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■</span>      60% | ETA: <span style="color: #0000BB;">20s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠼</span> [2026-10-05 14:22:16] Running for <span style="color: #0000BB;">Ngn3-low-EP </span>[<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■■■</span>    80% | ETA: <span style="color: #0000BB;">10s</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-05 14:22:16] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">45.3s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:53] Data type is log-normalized</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:53] Start differential expression test</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:53] Find all markers(wilcox) among [1] 5 groups...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:53] Using <span style="color: #0000BB;">1</span> core</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠙</span> [2026-10-07 12:49:53] Running for <span style="color: #0000BB;">Ductal </span>[<span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■</span>          20% | ETA: <span style="color: #0000BB;">16s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠹</span> [2026-10-07 12:49:53] Running for <span style="color: #0000BB;">Ngn3-high-EP </span>[<span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■</span>        40% | ETA: <span style="color: #0000BB;">1</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠸</span> [2026-10-07 12:49:53] Running for <span style="color: #0000BB;">Endocrine </span>[<span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■</span>      60% | ETA: <span style="color: #0000BB;"> 7s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #FFAF00;">⠼</span> [2026-10-07 12:49:53] Running for <span style="color: #0000BB;">Ngn3-low-EP </span>[<span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span>] <span style="color: #00BB00;">■■■■■■■■</span>    80% | ETA: <span style="color: #0000BB;"> 4s</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-07 12:49:53] Completed <span style="color: #0000BB;">5</span> tasks in <span style="color: #0000BB;">18s</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:22:16] Building results</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-05 14:23:01] Differential expression test completed</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:49:53] Building results</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-07 12:50:11] Differential expression test completed</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">DEtestPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
@@ -468,15 +468,15 @@ will be removed in scop 1.0.0.</p></dd>
 <span class="r-in"><span>  db <span class="op">=</span> <span class="st">"GO_BP"</span>,</span></span>
 <span class="r-in"><span>  species <span class="op">=</span> <span class="st">"Mus_musculus"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:23:08] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:23:08] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:50:15] Start <span style="color: #0000BB;">Enrichment</span> analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:50:16] Species: <span style="color: #0000BB;">"Mus_musculus"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:27:25] Preparing database: <span style="color: #0000BB;">GO_BP</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:27:54] Convert ID types for the <span style="color: #0000BB;">GO_BP</span> database</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:27:55] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-05 14:27:56] Permform enrichment...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-05 14:28:07] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:53:28] Preparing database: <span style="color: #0000BB;">GO_BP</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:53:49] Convert ID types for the <span style="color: #0000BB;">GO_BP</span> database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:53:49] Converted ID types using local annotation package <span style="color: #0000BB;">org.Mm.eg.db</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-07 12:53:51] Permform enrichment...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> [2026-10-07 12:53:58] <span style="color: #0000BB;">Enrichment</span> analysis done</span>
 <span class="r-in"><span><span class="fu">DEtestPlot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"CellType"</span>,</span></span>

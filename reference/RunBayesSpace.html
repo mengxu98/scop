@@ -167,7 +167,13 @@ Default is <code>TRUE</code>.</p></dd>
 
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
 <dd><p>Two metadata columns containing raw x/y coordinates when
-no spatial image is available.</p></dd>
+no spatial image is available. Non-default selections also determine the
+coordinates passed to BayesSpace, overriding other metadata coordinate
+columns. The default selection preserves existing <code>array_col</code>/<code>array_row</code>
+or <code>col</code>/<code>row</code> indices when available. Standard array names (<code>col</code>/<code>row</code>,
+<code>array_col</code>/<code>array_row</code>, or <code>arraycol</code>/<code>arrayrow</code>, case-insensitive) preserve
+native array indices; other column names are treated as pixel coordinates
+from which a regular array grid is inferred.</p></dd>
 
 
 <dt id="arg-srt">srt<a class="anchor" aria-label="anchor" href="#arg-srt"></a></dt>

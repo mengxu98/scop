@@ -108,7 +108,8 @@ associated with spatial regions or covariates.</p>
 
 <dt id="arg-explanatory-variable">explanatory.variable<a class="anchor" aria-label="anchor" href="#arg-explanatory-variable"></a></dt>
 <dd><p>Named numeric vector used by
-<code>spacexr::run.CSIDE.single()</code>. Names must match spatial spot names.</p></dd>
+<code>spacexr::run.CSIDE.single()</code>. Names must match spatial spot names.
+Spots with missing or non-finite values are excluded before backend dispatch.</p></dd>
 
 
 <dt id="arg-group-by">group.by<a class="anchor" aria-label="anchor" href="#arg-group-by"></a></dt>

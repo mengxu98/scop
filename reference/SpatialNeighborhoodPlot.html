@@ -104,7 +104,8 @@ statistical, and network plotting conventions.</p>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  image.scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lowres"</span>, <span class="st">"hires"</span><span class="op">)</span>,</span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sample <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -136,6 +137,12 @@ reject <code>comparison</code>; use statistical plots for differential compariso
 <dd><p>Column used as the plotted effect value. Spatial plots default
 to and only support <code>"count"</code>: saved observed outgoing edges to the target
 type, not a spicyR effect. Other plot types retain the <code>"estimate"</code> default.</p></dd>
+
+
+<dt id="arg-sample">sample<a class="anchor" aria-label="anchor" href="#arg-sample"></a></dt>
+<dd><p>Optional single sample ID for non-spatial plots. Results from
+multiple samples require explicit selection; no samples are aggregated.
+Use <code>comparison</code> and <code>condition</code> to resolve other repeated label pairs.</p></dd>
 
 
 <dt id="arg-fdr-threshold">FDR_threshold<a class="anchor" aria-label="anchor" href="#arg-fdr-threshold"></a></dt>

@@ -96,7 +96,8 @@ and store spatial domain or microenvironment clusters in metadata.</p>
 <span>  store_results <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  coordinate_space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw"</span>, <span class="st">"legacy_display"</span><span class="op">)</span>,</span>
-<span>  srt <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  srt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sample.by <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -109,7 +110,9 @@ and store spatial domain or microenvironment clusters in metadata.</p>
 
 
 <dt id="arg-assay">assay<a class="anchor" aria-label="anchor" href="#arg-assay"></a></dt>
-<dd><p>Assay to use. <code>NULL</code> uses the default assay.</p></dd>
+<dd><p>Expression assay used by BANKSY. When <code>NULL</code>, the assay linked
+to the selected image is used first, followed by <code>Spatial</code>, <code>RNA</code>, and the
+object's default assay.</p></dd>
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
@@ -122,15 +125,14 @@ used after zero-count filtering.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
-<dd><p>Name of the Seurat spatial image used to recover spot
-coordinates when they are not already present in metadata. For regular
-Visium data with only pixel <code>x</code>/<code>y</code> coordinates, BayesSpace array
-coordinates are inferred from the spatial grid.</p></dd>
+<dd><p>Spatial image used to recover coordinates. A single available
+image is selected automatically; choose one explicitly when several exist,
+or provide a named sample-to-image map with <code>sample.by</code>.</p></dd>
 
 
 <dt id="arg-coord-cols">coord.cols<a class="anchor" aria-label="anchor" href="#arg-coord-cols"></a></dt>
 <dd><p>Metadata coordinate columns used when no image coordinate
-source is available.</p></dd>
+source is available. The default is resolved from common coordinate names.</p></dd>
 
 
 <dt id="arg-lambda">lambda<a class="anchor" aria-label="anchor" href="#arg-lambda"></a></dt>
@@ -166,8 +168,8 @@ source is available.</p></dd>
 
 
 <dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
-<dd><p>Optional metadata column used by BANKSY for multi-sample
-scaling. It is copied into the <code>SpatialExperiment</code> colData.</p></dd>
+<dd><p>Optional metadata column passed to BANKSY for multi-sample
+scaling. It is an algorithm parameter and does not split sample fits.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -205,7 +207,8 @@ available.</p></dd>
 
 <dt id="arg-store-results">store_results<a class="anchor" aria-label="anchor" href="#arg-store-results"></a></dt>
 <dd><p>Whether to store detailed BANKSY results in
-<code>object@tools</code>.</p></dd>
+<code>object@tools</code>; cluster assignments are still written to metadata when
+<code>FALSE</code>; a lightweight index retains the result column and analyzed cells.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -224,12 +227,23 @@ reproduce the display-scaled coordinates used before scop 0.9.0.</p></dd>
 <dd><p>Deprecated alias for <code>object</code>; supply exactly one of the two. It
 will be removed in scop 1.0.0.</p></dd>
 
+
+<dt id="arg-sample-by">sample.by<a class="anchor" aria-label="anchor" href="#arg-sample-by"></a></dt>
+<dd><p>Optional metadata column for independent per-sample fits.
+Combined labels are prefixed with the sample name; domains are not aligned
+across samples.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>Seurat</code> object with BANKSY clusters in metadata. When
 <code>store_results = TRUE</code>, detailed results are stored in
-<code>srt@tools[[tool_name]]</code>.</p>
+<code>srt@tools[[tool_name]]</code>; when <code>FALSE</code>, clusters remain in metadata and only
+their lightweight retrieval index is retained in the tool entry.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="GetSpatialResult.html">GetSpatialResult()</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -237,38 +251,21 @@ will be removed in scop 1.0.0.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">keep_spots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">400</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span><span class="op">[</span>, <span class="va">keep_spots</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunBANKSY</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span></span>
-<span class="r-in"><span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
-<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  lambda <span class="op">=</span> <span class="fl">0.2</span>,</span></span>
-<span class="r-in"><span>  k_geom <span class="op">=</span> <span class="fl">8</span>,</span></span>
-<span class="r-in"><span>  resolution <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
-<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN_median</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom=8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN_median</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom=8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Centering</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using seed=1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using seed=1</span>
-<span class="r-in"><span><span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
-<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"BANKSY_cluster"</span>,</span></span>
-<span class="r-in"><span>  overlay_image <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  coord.cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  pt.size <span class="op">=</span> <span class="fl">1.5</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="RunBANKSY-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu">check_r</span><span class="op">(</span><span class="st">"Banksy"</span>, install <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">spatial</span> <span class="op">&lt;-</span> <span class="fu">RunBANKSY</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">spatial</span>,</span></span>
+<span class="r-in"><span>    layer <span class="op">=</span> <span class="st">"counts"</span>,</span></span>
+<span class="r-in"><span>    features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">spatial</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>    resolution <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
+<span class="r-in"><span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">spatial</span>,</span></span>
+<span class="r-in"><span>    group.by <span class="op">=</span> <span class="st">"BANKSY_cluster"</span>,</span></span>
+<span class="r-in"><span>    pt.size <span class="op">=</span> <span class="fl">1.5</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_r("Banksy", install = FALSE, verbose = FALSE):</span> could not find function "check_r"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

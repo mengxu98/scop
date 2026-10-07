@@ -209,7 +209,12 @@ will be removed in scop 1.0.0.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>Seurat</code> object with CytoSPACE metadata columns and detailed
-results stored in <code>srt@tools[["CytoSPACE"]]</code>.</p>
+results stored in <code>srt@tools[["CytoSPACE"]]</code>. Cell-type count and fraction
+columns in the stored tables retain the original reference labels. Metadata
+uses unique syntactic suffixes, recorded in <code>metadata_cell_type_suffixes</code>.
+The total-count column is recorded in <code>total_cells_column</code>; its name is
+<code>"Total cells"</code> unless that conflicts with a reference label. Spots with no
+assigned cells have zero fractions and an <code>NA</code> dominant type.</p>
     </div>
 
     <div class="section level2">
