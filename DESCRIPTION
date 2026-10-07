@@ -106,7 +106,6 @@ Suggests:
     proxyC,
     qlcMatrix,
     RANN,
-    Rfast,
     RcppML,
     R.cache,
     readxl,
