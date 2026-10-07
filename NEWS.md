@@ -6,6 +6,9 @@
   hyphen separators now resolve to the same annotations as `Homo_sapiens` and
   `Mus_musculus`, avoiding missing-input errors and silently skipped databases.
 
+* **chore**: Remove `Rfast` from `Suggests` after confirming it has no SCOP
+  source, test, documentation, native, build-script, or CI use.
+
 * **change**: `RunPropeller()` now uses speckle's transformed proportions and
   empirical Bayes moderated tests instead of the internal logit t-test.
   It supports `transform`, `robust`, `trend`, records backend results and
