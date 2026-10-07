@@ -3507,7 +3507,7 @@ ccc_dim_network_plot <- function(
 ) {
   dots <- list(...)
   label_top <- isTRUE(dots[["label"]])
-  label_insitu <- isTRUE(dots[["label_insitu"]])
+  label_insitu <- dots[["label_insitu"]] %||% TRUE
   label_repel <- isTRUE(dots[["label_repel"]])
   label_size <- dots[["label.size"]] %||% 4
   label_fg <- dots[["label.fg"]] %||% "white"
@@ -3749,7 +3749,7 @@ ccc_dim_network_plot_data <- function(
 
 ccc_dim_network_label_layer <- function(
   plot_data,
-  label_insitu = FALSE,
+  label_insitu = TRUE,
   label_repel = FALSE,
   label_size = 4,
   label_fg = "white",

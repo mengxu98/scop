@@ -23,7 +23,7 @@ PAGAPlot(
   label.fg = "white",
   label.bg = "black",
   label.bg.r = 0.1,
-  label_insitu = FALSE,
+  label_insitu = TRUE,
   label_repel = FALSE,
   label_repulsion = 20,
   label_point_size = 1,
@@ -220,14 +220,12 @@ PAGAPlot(
 
 PAGAPlot(
   pancreas_sub,
-  label = TRUE,
-  label_insitu = TRUE
+  label = TRUE
 )
 
 PAGAPlot(
   pancreas_sub,
   label = TRUE,
-  label_insitu = TRUE,
   label_repel = TRUE
 )
 

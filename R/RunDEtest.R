@@ -1571,9 +1571,9 @@ RunDEtestStopOnParallelErrors <- function(results, context) {
     function(result) result$error %||% "Unknown worker error",
     character(1)
   ))
-  stop(
-    paste0(context, " failed: ", paste(messages, collapse = "; ")),
-    call. = FALSE
+  log_message(
+    "{.emph {context}} failed: {paste(messages, collapse = '; ')}",
+    message_type = "error"
   )
 }
 

@@ -149,10 +149,13 @@ FindMarkers.Seurat <- function(
         !all(cells.1.use %in% cellnames.use) ||
           !all(cells.2.use %in% cellnames.use)
       ) {
-        stop("Cells in one or both requested groups are not present in the selected data.", call. = FALSE)
+        log_message(
+          "Cells in one or both requested groups are not present in the selected data.",
+          message_type = "error"
+        )
       }
       if (length(intersect(cells.1.use, cells.2.use)) > 0L) {
-        stop("The requested cell groups must not overlap.", call. = FALSE)
+        log_message("The requested cell groups must not overlap.", message_type = "error")
       }
       temporary_idents <- stats::setNames(
         rep(".scop_other", ncol(object.use)),

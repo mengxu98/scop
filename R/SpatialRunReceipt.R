@@ -4,7 +4,7 @@ spatial_run_receipt_lines <- function(x, name) {
     return(character())
   }
   if (!is.character(x)) {
-    stop(sprintf("%s must be NULL or a character vector", name), call. = FALSE)
+    log_message("{.emph {name}} must be NULL or a character vector", message_type = "error")
   }
   x <- x[!is.na(x) & nzchar(x)]
   if (length(x) == 0L) {
@@ -15,7 +15,7 @@ spatial_run_receipt_lines <- function(x, name) {
 
 spatial_run_receipt_quote <- function(x, name) {
   if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    stop(sprintf("%s must be one non-empty character string", name), call. = FALSE)
+    log_message("{.emph {name}} must be one non-empty character string", message_type = "error")
   }
   deparse1(x, width.cutoff = 500L)
 }
@@ -79,23 +79,23 @@ spatial_run_receipt <- function(
 
   status <- match.arg(status)
   if (!is.character(done) || length(done) != 1L || is.na(done) || !nzchar(done)) {
-    stop("done must be one non-empty character string", call. = FALSE)
+    log_message("{.emph done} must be one non-empty character string", message_type = "error")
   }
   scope <- spatial_run_receipt_lines(scope, "scope")
   saved <- spatial_run_receipt_lines(saved, "saved")
   plot <- spatial_run_receipt_lines(plot, "plot")
   inspect <- spatial_run_receipt_lines(inspect, "inspect")
   if (length(plot) > 1L) {
-    stop("plot must contain at most one non-empty string", call. = FALSE)
+    log_message("{.emph plot} must contain at most one non-empty string", message_type = "error")
   }
   if (length(inspect) > 1L) {
-    stop("inspect must contain at most one non-empty string", call. = FALSE)
+    log_message("{.emph inspect} must contain at most one non-empty string", message_type = "error")
   }
   if (!is.logical(replaced) || length(replaced) != 1L || is.na(replaced)) {
-    stop("replaced must be one non-missing logical value", call. = FALSE)
+    log_message("{.emph replaced} must be one non-missing logical value", message_type = "error")
   }
   if (!is.environment(.envir)) {
-    stop(".envir must be an environment", call. = FALSE)
+    log_message(".envir must be an environment", message_type = "error")
   }
 
   message_type <- if (identical(status, "completed")) "success" else "running"
