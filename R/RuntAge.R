@@ -723,9 +723,17 @@ tage_map_genes_fast <- function(eset, species, gene_mapping_type, verbose = TRUE
   if (isTRUE(verbose)) {
     ortholog_unmapped <- sum(!ortho_valid)
     if (ortholog_unmapped > 0) {
-      message(sprintf("Warning: %d orthologs could not be mapped and will be dropped", ortholog_unmapped))
+      log_message(
+        sprintf("Warning: %d orthologs could not be mapped and will be dropped", ortholog_unmapped),
+        message_type = "info",
+        verbose = verbose
+      )
     }
-    message(sprintf("Mapped %d genes to mouse orthologs", sum(ortho_valid)))
+    log_message(
+      sprintf("Mapped %d genes to mouse orthologs", sum(ortho_valid)),
+      message_type = "info",
+      verbose = verbose
+    )
   }
   expr_valid <- expr_agg[ortho_valid, , drop = FALSE]
   mouse_valid <- mouse_ids[ortho_valid]

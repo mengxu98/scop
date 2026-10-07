@@ -986,10 +986,13 @@ run_standard_spatial_workflow <- function(
       validate_named_list(spatial_cluster_params, "spatial_cluster_params")
       validate_named_list(bayesspace_params, "bayesspace_params")
       if (length(bayesspace_params) && (spatial_cluster_method != "BayesSpace" || length(spatial_cluster_params))) {
-        stop("Use bayesspace_params only for BayesSpace and do not combine it with spatial_cluster_params", call. = FALSE)
+        log_message(
+          "Use bayesspace_params only for BayesSpace and do not combine it with spatial_cluster_params",
+          message_type = "error"
+        )
       }
       if (spatial_cluster_method == "BANKSY" && !is.null(spatial_q)) {
-        stop("BANKSY uses spatial_cluster_params$resolution; spatial_q is not supported", call. = FALSE)
+        log_message("BANKSY uses spatial_cluster_params$resolution; spatial_q is not supported", message_type = "error")
       }
       standard_spatial_fixed_args(
         if (length(spatial_cluster_params)) spatial_cluster_params else bayesspace_params,
@@ -1028,23 +1031,42 @@ run_standard_spatial_workflow <- function(
       !all(coord.cols %in% names(srt[[]]))) NULL else coord.cols,
     data_type = spatial_data_type)
   if (input_info$data_type == "cell" && do_spatial_cluster && spatial_cluster_method == "BayesSpace") {
-    run_stage_setup("spatial_clustering", stop("BayesSpace requires a spot/bin array; use BANKSY or SmoothClust for cells", call. = FALSE), cluster_producer)
+    run_stage_setup(
+      "spatial_clustering",
+      log_message(
+        "BayesSpace requires a spot/bin array; use BANKSY or SmoothClust for cells",
+        message_type = "error"
+      ),
+      cluster_producer
+    )
   }
   if (input_info$data_type == "cell" && isTRUE(do_deconvolution)) {
-    run_stage_setup("deconvolution", stop("Cell observations use annotation, not spot deconvolution in this workflow", call. = FALSE), deconv_producer)
+    run_stage_setup(
+      "deconvolution",
+      log_message(
+        "Cell observations use annotation, not spot deconvolution in this workflow",
+        message_type = "error"
+      ),
+      deconv_producer
+    )
   }
   if (do_spatial_qc) run_stage_setup("spatial_quality_control", {
     validate_named_list(spatial_qc_params, "spatial_qc_params")
     standard_spatial_fixed_args(spatial_qc_params, c("srt", "object", "assay", "image", "coord.cols", "return_filtered", "store_results"))
-    if (input_info$data_type == "cell") stop("SpotSweeper is a spot/bin QC stage; use segmentation QC for cells", call. = FALSE)
+    if (input_info$data_type == "cell") log_message("SpotSweeper is a spot/bin QC stage; use segmentation QC for cells", message_type = "error")
   }, "RunSpotSweeper")
   use_spanorm <- identical(normalization_method, "SpaNorm")
   if (use_spanorm) run_stage_setup("spatial_normalization", {
     validate_named_list(spanorm_params, "spanorm_params")
     standard_spatial_fixed_args(spanorm_params, c("srt", "object", "assay", "image", "coord.cols", "layer", "store_results"))
-    if (identical(do_normalization, FALSE)) stop("SpaNorm requested with do_normalization = FALSE", call. = FALSE)
-    if (is_atac_assay) stop("SpaNorm workflow requires RNA counts", call. = FALSE)
-    if ((spanorm_params$new_assay %||% "SpaNorm") %in% SeuratObject::Assays(srt)) stop("SpaNorm new_assay already exists; choose a new assay name", call. = FALSE)
+    if (identical(do_normalization, FALSE)) log_message("SpaNorm requested with do_normalization = FALSE", message_type = "error")
+    if (is_atac_assay) log_message("SpaNorm workflow requires RNA counts", message_type = "error")
+    if ((spanorm_params$new_assay %||% "SpaNorm") %in% SeuratObject::Assays(srt)) {
+      log_message(
+        "SpaNorm new_assay already exists; choose a new assay name",
+        message_type = "error"
+      )
+    }
   }, "RunSpaNorm")
 
   stage_params <- function(params, name, stage, producer, requested) {
@@ -1311,7 +1333,7 @@ run_standard_spatial_workflow <- function(
       features = rownames(normalized_assay), cells = colnames(normalized_assay))
     if (!identical(rownames(original_counts), rownames(normalized_assay)) ||
         !identical(colnames(original_counts), colnames(normalized_assay))) {
-      run_stage_setup("spatial_normalization", stop("SpaNorm output does not align with original counts", call. = FALSE), "RunSpaNorm")
+      run_stage_setup("spatial_normalization", log_message("SpaNorm output does not align with original counts", message_type = "error"), "RunSpaNorm")
     }
     normalized_assay <- SeuratObject::SetAssayData(normalized_assay, layer = "counts", new.data = original_counts)
     srt[[analysis_assay]] <- normalized_assay
@@ -1637,7 +1659,7 @@ run_standard_spatial_workflow <- function(
         args$cores <- args$cores %||% cores
         args$n_clusters <- args$n_clusters %||% spatial_q
         if (is.null(args$n_clusters)) {
-          if (!cluster_col %in% names(srt[[]])) stop("Supply spatial_q or spatial_cluster_params$n_clusters", call. = FALSE)
+          if (!cluster_col %in% names(srt[[]])) log_message("Supply spatial_q or spatial_cluster_params$n_clusters", message_type = "error")
           args$n_clusters <- length(unique(stats::na.omit(srt[[]][[cluster_col]])))
         }
       }

@@ -62,7 +62,7 @@ FindNeighbors.Seurat <- function(
       return(run_seurat())
     }
     if (max(dims) > ncol(data.use)) {
-      stop("More dimensions specified in dims than have been computed")
+      log_message("More dimensions specified in dims than have been computed", message_type = "error")
     }
     data.use <- data.use[, dims, drop = FALSE]
     neighbor.graphs <- FindNeighbors.default(
@@ -109,7 +109,11 @@ FindNeighbors.Seurat <- function(
     paste0(assay.use, "_", names(neighbor.graphs))
   }
   if (length(graph.name) == 1L && isTRUE(verbose)) {
-    message("Only one graph name supplied, storing nearest-neighbor graph only")
+    log_message(
+      "Only one graph name supplied, storing nearest-neighbor graph only",
+      message_type = "info",
+      verbose = verbose
+    )
   }
   for (ii in seq_along(graph.name)) {
     value <- neighbor.graphs[[ii]]
@@ -408,9 +412,10 @@ FindNeighbors.default <- function(
       return(fallback())
     }
     if (isTRUE(k_adjusted)) {
-      warning(
-        "k.param set larger than number of cells. Setting k.param to number of cells - 1.",
-        call. = FALSE
+      log_message(
+        "{.emph k.param} set larger than number of cells. Setting k.param to number of cells - 1.",
+        message_type = "warning",
+        verbose = TRUE
       )
     }
     graphs <- find_neighbors_as_graphs(
@@ -453,9 +458,10 @@ FindNeighbors.default <- function(
     return(fallback())
   }
   if (isTRUE(k_adjusted)) {
-    warning(
-      "k.param set larger than number of cells. Setting k.param to number of cells - 1.",
-      call. = FALSE
+    log_message(
+      "{.emph k.param} set larger than number of cells. Setting k.param to number of cells - 1.",
+      message_type = "warning",
+      verbose = TRUE
     )
   }
 

@@ -441,7 +441,7 @@ spatial_integration_prepare_input <- function(
   count_values <- if (inherits(expr, "sparseMatrix")) expr@x else as.vector(expr)
   if (!is.numeric(count_values) || any(!is.finite(count_values)) ||
       any(count_values < 0 | abs(count_values - round(count_values)) > 1e-8)) {
-    stop("PRECAST requires finite non-negative integer counts in the selected assay/layer", call. = FALSE)
+    log_message("PRECAST requires finite non-negative integer counts in the selected assay/layer", message_type = "error")
   }
   features_use <- if (is.null(srt_list)) {
     spatial_integration_features_merged(
@@ -663,7 +663,7 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
   validate_named_list(params, "...")
   allowed <- c("create_params", "adj_params", "par_params", "run_params", "select_params")
   if (length(setdiff(names(params), allowed))) {
-    stop("PRECAST arguments must be supplied in create_params, adj_params, par_params, run_params or select_params", call. = FALSE)
+    log_message("PRECAST arguments must be supplied in create_params, adj_params, par_params, run_params or select_params", message_type = "error")
   }
   for (name in names(params)) validate_named_list(params[[name]], name)
   standard_spatial_fixed_args(params$create_params, c("seuList", "customGenelist"))
@@ -679,10 +679,13 @@ spatial_integration_run_backend <- function(method, input, verbose = TRUE, ...) 
     number <- adj_params$number
     if (!is.numeric(number) || length(number) != 1L || !is.finite(number) ||
         number < 1 || number != floor(number)) {
-      stop("adj_params$number must be a positive integer", call. = FALSE)
+      log_message("{.emph adj_params$number} must be a positive integer", message_type = "error")
     }
   } else if (tolower(adj_params$platform %||% "Visium") %in% c("visium", "st")) {
-    stop("PRECAST fixed_distance Visium/ST requires array indices, not analysis coordinates; use fixed_number or platform = 'Other_SRT'", call. = FALSE)
+    log_message(
+      "PRECAST fixed_distance Visium/ST requires array indices, not analysis coordinates; use fixed_number or platform = 'Other_SRT'",
+      message_type = "error"
+    )
   }
   check_r("feiyoung/PRECAST", verbose = FALSE)
   create_fun <- get_namespace_fun("PRECAST", "CreatePRECASTObject")
@@ -740,7 +743,7 @@ spatial_integration_validate_neighbor_count <- function(object, adj_params) {
   if (adj_params$type == "fixed_number") {
     sizes <- vapply(object@seulist, ncol, numeric(1))
     if (!length(sizes) || any(sizes < 2 | sizes <= adj_params$number)) {
-      stop("PRECAST fixed_number requires fewer neighbors than retained spots in every sample", call. = FALSE)
+      log_message("PRECAST fixed_number requires fewer neighbors than retained spots in every sample", message_type = "error")
     }
   }
   invisible(NULL)
@@ -752,7 +755,7 @@ spatial_integration_set_precast_adjacency <- function(object, input, adj_params)
       c(list(PRECASTObj = object), adj_params)))
   }
   if (length(setdiff(names(adj_params), c("type", "number", "platform")))) {
-    stop("fixed_number adjacency accepts only type, number and platform", call. = FALSE)
+    log_message("{.emph fixed_number} adjacency accepts only type, number and platform", message_type = "error")
   }
   # Native PRECAST fixed_number restricts candidates along one axis. Use the
   # shared exact KNN graph so rotation and long rows cannot omit closer spots.
@@ -760,7 +763,7 @@ spatial_integration_set_precast_adjacency <- function(object, input, adj_params)
     cells <- colnames(object@seulist[[i]])
     coords <- input$coords_list[[i]][cells, , drop = FALSE]
     if (anyNA(coords$cell_id) || !identical(as.character(coords$cell_id), cells)) {
-      stop("PRECAST graph coordinates must align with retained spot IDs", call. = FALSE)
+      log_message("PRECAST graph coordinates must align with retained spot IDs", message_type = "error")
     }
     graph <- spatial_graph_compute(coords, method = "knn", k = adj_params$number,
       directed = TRUE, weight = "binary")
@@ -776,7 +779,7 @@ spatial_integration_validate_adjacency <- function(object) {
   samples <- object@seulist
   graphs <- object@AdjList
   if (!is.list(graphs) || length(graphs) != length(samples) || !length(graphs)) {
-    stop("PRECAST must return one adjacency matrix per sample", call. = FALSE)
+    log_message("PRECAST must return one adjacency matrix per sample", message_type = "error")
   }
   edges <- vapply(seq_along(samples), function(i) {
     graph <- graphs[[i]]
@@ -785,11 +788,11 @@ spatial_integration_validate_adjacency <- function(object) {
     if (!(is.matrix(graph) || inherits(graph, "Matrix")) ||
         !all(dim(graph) == c(n, n)) || n < 2L ||
         !is.numeric(values) || any(!is.finite(values)) || any(values < 0) || any(Matrix::diag(graph) != 0)) {
-      stop("PRECAST returned an invalid adjacency matrix", call. = FALSE)
+      log_message("PRECAST returned an invalid adjacency matrix", message_type = "error")
     }
     count <- Matrix::nnzero(graph)
     if (!is.finite(count) || count == 0) {
-      stop("PRECAST adjacency has no edges; check coordinates and adj_params before training", call. = FALSE)
+      log_message("PRECAST adjacency has no edges; check coordinates and adj_params before training", message_type = "error")
     }
     as.double(count)
   }, numeric(1))
@@ -808,7 +811,10 @@ spatial_integration_extract_precast <- function(raw_result, input) {
     sample <- input$samples[[i]]
     cells <- colnames(raw_result@seulist[[i]])
     if (!setequal(cells, colnames(input$srt_list[[sample]]))) {
-      stop("PRECAST filtering changed the sample's spots; adjust create_params to retain the selected input spots", call. = FALSE)
+      log_message(
+        "PRECAST filtering changed the sample's spots; adjust create_params to retain the selected input spots",
+        message_type = "error"
+      )
     }
     cluster <- as.vector(clusters[[i]])
     if (length(cluster) != length(cells)) {
@@ -871,7 +877,7 @@ spatial_integration_standardize_embedding <- function(embedding, cells) {
   }
   embedding <- as.matrix(embedding)
   if (!is.numeric(embedding) || !ncol(embedding) || any(!is.finite(embedding))) {
-    stop("Backend embedding must contain finite numeric values and at least one dimension", call. = FALSE)
+    log_message("Backend embedding must contain finite numeric values and at least one dimension", message_type = "error")
   }
   if (is.null(rownames(embedding))) {
     if (nrow(embedding) != length(cells)) {
@@ -917,7 +923,7 @@ spatial_integration_standardize_named_vector <- function(x, cells) {
   }
   x <- as.character(x)
   if (anyNA(x) || any(!nzchar(trimws(x)))) {
-    stop("Backend domain labels must be non-missing and non-empty", call. = FALSE)
+    log_message("Backend domain labels must be non-missing and non-empty", message_type = "error")
   }
   if (is.null(source_names) || !length(source_names)) {
     if (length(x) != length(cells)) {
@@ -994,7 +1000,7 @@ spatial_integration_standardize_coords <- function(coords, cells) {
   out$x <- as.numeric(out$x)
   out$y <- as.numeric(out$y)
   if (any(!is.finite(out$x)) || any(!is.finite(out$y))) {
-    stop("Backend aligned coordinates must be finite numeric values", call. = FALSE)
+    log_message("Backend aligned coordinates must be finite numeric values", message_type = "error")
   }
   out
 }

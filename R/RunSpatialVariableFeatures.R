@@ -115,7 +115,7 @@ RunSpatialVariableFeatures <- function(
   backend <- match.arg(backend)
   if (!is.numeric(max_dense_gb) || length(max_dense_gb) != 1L ||
       !is.finite(max_dense_gb) || max_dense_gb <= 0) {
-    stop("max_dense_gb must be positive and finite", call. = FALSE)
+    log_message("{.emph max_dense_gb} must be positive and finite", message_type = "error")
   }
   native_method <- method %in% c("moran", "geary")
   backend_name <- if (isTRUE(native_method)) {
@@ -232,7 +232,7 @@ RunSpatialVariableFeatures <- function(
     }
   } else {
     if (8 * as.double(nrow(expr)) * ncol(expr) / 1024^3 > max_dense_gb) {
-      stop("Expression conversion exceeds max_dense_gb; select fewer features or a sparse backend", call. = FALSE)
+      log_message("Expression conversion exceeds max_dense_gb; select fewer features or a sparse backend", message_type = "error")
     }
     as.matrix(expr)
   }
@@ -547,7 +547,7 @@ spatial_variable_finalize_result <- function(result, expr, expressed_spots, meth
   result$feature <- as.character(result$feature)
   if (anyNA(result$feature) || any(!nzchar(result$feature)) ||
       anyDuplicated(result$feature) || any(!result$feature %in% rownames(expr))) {
-    stop("Spatial variable feature result must contain unique known feature IDs", call. = FALSE)
+    log_message("Spatial variable feature result must contain unique known feature IDs", message_type = "error")
   }
   if (nrow(result) == 0L) {
     log_message(
@@ -562,14 +562,14 @@ spatial_variable_finalize_result <- function(result, expr, expressed_spots, meth
     original <- result[[col]]
     value <- if (is.numeric(original)) original else suppressWarnings(as.numeric(as.character(original)))
     if (any(!is.na(original) & is.na(value))) {
-      stop(paste("Spatial variable feature result has non-numeric", col), call. = FALSE)
+      log_message(paste("Spatial variable feature result has non-numeric", col), message_type = "error")
     }
     result[[col]] <- value
   }
   for (col in c("p_value", "q_value")) {
     value <- result[[col]]
     if (any(!is.na(value) & (!is.finite(value) | value < 0 | value > 1))) {
-      stop(paste("Spatial variable feature", col, "must be NA or in [0, 1]"), call. = FALSE)
+      log_message(paste("Spatial variable feature", col, "must be NA or in [0, 1]"), message_type = "error")
     }
   }
   missing_q <- is.na(result$q_value) & is.finite(result$p_value)
@@ -626,7 +626,7 @@ spatial_variable_result_features <- function(df, fallback) {
       (!identical(rn, as.character(seq_len(nrow(df)))) || all(rn %in% fallback))) {
     return(as.character(rn))
   }
-  stop("Spatial variable feature backend must return explicit feature IDs", call. = FALSE)
+  log_message("Spatial variable feature backend must return explicit feature IDs", message_type = "error")
 }
 
 
