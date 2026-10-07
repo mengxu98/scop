@@ -72,10 +72,6 @@ source is available. The default is resolved from common coordinate names.}
 \item{group}{Optional metadata column passed to BANKSY for multi-sample
 scaling. It is an algorithm parameter and does not split sample fits.}
 
-\item{sample.by}{Optional metadata column for independent per-sample fits.
-Combined labels are prefixed with the sample name; domains are not aligned
-across samples.}
-
 \item{seed}{Optional seed for PCA and clustering.}
 
 \item{compute_banksy_params}{Additional parameters passed to
@@ -97,7 +93,7 @@ available.}
 
 \item{store_results}{Whether to store detailed BANKSY results in
 \code{object@tools}; cluster assignments are still written to metadata when
-\code{FALSE}.}
+\code{FALSE}; a lightweight index retains the result column and analyzed cells.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
@@ -109,25 +105,26 @@ reproduce the display-scaled coordinates used before scop 0.9.0.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{sample.by}{Optional metadata column for independent per-sample fits.
+Combined labels are prefixed with the sample name; domains are not aligned
+across samples.}
 }
 \value{
 A \code{Seurat} object with BANKSY clusters in metadata. When
 \code{store_results = TRUE}, detailed results are stored in
-\code{srt@tools[[tool_name]]}. When \code{FALSE}, only cluster assignments are
-written to metadata.
+\code{srt@tools[[tool_name]]}; when \code{FALSE}, clusters remain in metadata and only
+their lightweight retrieval index is retained in the tool entry.
 }
 \description{
 Build neighborhood-augmented BANKSY features from a spatial \code{Seurat} object
 and store spatial domain or microenvironment clusters in metadata.
 }
-\seealso{
-\code{\link{GetSpatialResult}}
-}
 \examples{
 data(visium_human_pancreas_sub)
 keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
 spatial <- visium_human_pancreas_sub[, keep_spots]
-if (check_r("Banksy", verbose = FALSE)) {
+if (check_r("Banksy", install = FALSE, verbose = FALSE)) {
   spatial <- RunBANKSY(
     spatial,
     layer = "counts",
@@ -141,4 +138,7 @@ if (check_r("Banksy", verbose = FALSE)) {
     pt.size = 1.5
   )
 }
+}
+\seealso{
+\code{\link[=GetSpatialResult]{GetSpatialResult()}}
 }

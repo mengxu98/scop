@@ -98,6 +98,7 @@ RunMetabolism <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  species <- normalize_species_name(species)
   log_message(
     "Start {.pkg metabolism pathway} scoring",
     verbose = verbose
@@ -774,6 +775,7 @@ build_metabolism_gene_sets_from_preparedb <- function(
   maxGSSize,
   verbose
 ) {
+  species <- normalize_species_name(species)
   db_terms <- intersect(db_prepare, c("KEGG", "Reactome"))
   if (length(db_terms) == 0) {
     return(list(gene_sets = list(), term_names = character(0)))

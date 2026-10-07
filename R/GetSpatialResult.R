@@ -4,7 +4,11 @@
 #' Read the cluster assignments, parameters, and summary for a spatial method
 #' from a Seurat object's stored tool result. If detailed results were not
 #' stored, cluster assignments are read from the corresponding metadata column.
+#' BANKSY retains a lightweight index for custom result columns and exact sample
+#' membership. Sample retrieval requires this index or stored per-sample results;
+#' sample identity is never inferred from cluster labels.
 #'
+#' @md
 #' @param object A `Seurat` object returned by a spatial method.
 #' @param method Name of the method or tool entry, such as `"BANKSY"`.
 #' @param sample Optional BANKSY sample label, or a sample label for another
@@ -18,7 +22,7 @@
 #' @examples
 #' data(visium_human_pancreas_sub)
 #' # RunBANKSY requires the optional Banksy backend and a suitable layer.
-#' if (check_r("Banksy", verbose = FALSE)) {
+#' if (check_r("Banksy", install = FALSE, verbose = FALSE)) {
 #'   spatial <- RunBANKSY(
 #'     visium_human_pancreas_sub,
 #'     layer = "counts",
@@ -41,27 +45,35 @@ GetSpatialResult <- function(object, method, sample = NULL) {
   }
 
   bundle <- object@tools[[method]]
+  index <- bundle$result_index
   selected <- bundle
-  if (!is.null(sample) && !is.null(bundle)) {
-    if (!is.list(bundle$per_sample) || is.null(names(bundle$per_sample))) {
+  if (!is.null(sample)) {
+    if (is.list(bundle$per_sample) && !is.null(names(bundle$per_sample))) {
+      if (!sample %in% names(bundle$per_sample)) {
+        log_message(
+          "No {.val {method}} results were stored for sample {.val {sample}}",
+          message_type = "error"
+        )
+      }
+      selected <- bundle$per_sample[[sample]]
+    } else if (is.null(index$samples)) {
       log_message(
-        "Stored results for {.val {method}} do not contain per-sample results",
+        "No exact sample membership was stored for {.val {method}}; rerun the method with {.arg sample.by}",
         message_type = "error"
       )
-    }
-    if (!sample %in% names(bundle$per_sample)) {
+    } else if (!sample %in% index$samples) {
       log_message(
         "No {.val {method}} results were stored for sample {.val {sample}}",
         message_type = "error"
       )
     }
-    selected <- bundle$per_sample[[sample]]
   }
 
   clusters <- selected$clusters %||% NULL
   parameters <- selected$parameters %||% NULL
   if (is.null(clusters)) {
-    cluster_colname <- parameters$cluster_colname %||% paste0(method, "_cluster")
+    cluster_colname <- index$cluster_colname %||%
+      parameters$cluster_colname %||% paste0(method, "_cluster")
     if (!cluster_colname %in% colnames(object@meta.data)) {
       log_message(
         "No cluster results for {.val {method}} were found in stored tools or metadata",
@@ -71,22 +83,16 @@ GetSpatialResult <- function(object, method, sample = NULL) {
     values <- object@meta.data[[cluster_colname]]
     names(values) <- rownames(object@meta.data)
     if (!is.null(sample)) {
-      # Use exact prefix match to avoid "S1" matching "S10_Domain_1"
-      prefix <- paste0(sample, "_")
-      char_values <- as.character(values)
-      keep <- !is.na(values) &
-        nchar(char_values) > nchar(prefix) &
-        substring(char_values, 1L, nchar(prefix)) == prefix
-      values <- values[keep]
-      if (length(values) == 0L) {
-        log_message(
-          "No {.val {method}} cluster labels were found for sample {.val {sample}}",
-          message_type = "error"
-        )
-      }
+      # Membership comes from the analyzed cells, never a cluster-label prefix.
+      cells <- names(index$samples)[index$samples == sample]
+      cells <- cells[cells %in% names(values)]
+      values <- values[cells]
       cell_ids <- names(values)
-      values <- substring(as.character(values), nchar(prefix) + 1L)
+      values <- substring(as.character(values), nchar(sample) + 2L)
       names(values) <- cell_ids
+    } else if (!is.null(index$cells)) {
+      cells <- index$cells[index$cells %in% names(values)]
+      values <- values[cells]
     }
     clusters <- data.frame(
       stats::setNames(list(as.character(values)), cluster_colname),
@@ -96,7 +102,7 @@ GetSpatialResult <- function(object, method, sample = NULL) {
   }
 
   summary <- selected$summary %||% NULL
-  if (is.null(summary) && identical(method, "BANKSY")) {
+  if (is.null(summary) && (identical(method, "BANKSY") || identical(index$method, "BANKSY"))) {
     labels <- spatial_result_cluster_labels(clusters)
     if (!is.null(labels)) {
       summary <- list(

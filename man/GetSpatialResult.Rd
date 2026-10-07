@@ -15,18 +15,22 @@ GetSpatialResult(object, method, sample = NULL)
 method that stored per-sample results.}
 }
 \value{
-A list with \code{clusters}, \code{parameters}, and \code{summary}. Values that
-were not stored by the method are returned as \code{NULL}; BANKSY summaries are
+A list with \code{clusters}, \code{parameters}, and \code{summary}. Values that were
+not stored by the method are returned as \code{NULL}; BANKSY summaries are
 derived from the returned cluster assignments when necessary.
 }
 \description{
 Read the cluster assignments, parameters, and summary for a spatial method
 from a Seurat object's stored tool result. If detailed results were not
 stored, cluster assignments are read from the corresponding metadata column.
+BANKSY retains a lightweight index for custom result columns and exact sample
+membership. Sample retrieval requires this index or stored per-sample results;
+sample identity is never inferred from cluster labels.
 }
 \examples{
 data(visium_human_pancreas_sub)
-if (check_r("Banksy", verbose = FALSE)) {
+# RunBANKSY requires the optional Banksy backend and a suitable layer.
+if (check_r("Banksy", install = FALSE, verbose = FALSE)) {
   spatial <- RunBANKSY(
     visium_human_pancreas_sub,
     layer = "counts",

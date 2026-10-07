@@ -249,8 +249,7 @@
 #'   pt.size = 1,
 #'   compare_features = TRUE,
 #'   color_blend_mode = "blend",
-#'   label = TRUE,
-#'   label_insitu = TRUE
+#'   label = TRUE
 #' )
 #'
 #' FeatureDimPlot(
@@ -261,8 +260,7 @@
 #'   compare_features = TRUE,
 #'   color_blend_mode = "blend",
 #'   title = "blend",
-#'   label = TRUE,
-#'   label_insitu = TRUE
+#'   label = TRUE
 #' )
 #'
 #' FeatureDimPlot(
@@ -273,8 +271,7 @@
 #'   compare_features = TRUE,
 #'   color_blend_mode = "average",
 #'   title = "average",
-#'   label = TRUE,
-#'   label_insitu = TRUE
+#'   label = TRUE
 #' )
 #'
 #' FeatureDimPlot(
@@ -285,8 +282,7 @@
 #'   compare_features = TRUE,
 #'   color_blend_mode = "screen",
 #'   title = "screen",
-#'   label = TRUE,
-#'   label_insitu = TRUE
+#'   label = TRUE
 #' )
 #'
 #' FeatureDimPlot(
@@ -297,8 +293,7 @@
 #'   compare_features = TRUE,
 #'   color_blend_mode = "multiply",
 #'   title = "multiply",
-#'   label = TRUE,
-#'   label_insitu = TRUE
+#'   label = TRUE
 #' )
 FeatureDimPlot <- function(
   object,
@@ -339,7 +334,7 @@ FeatureDimPlot <- function(
   label.fg = "white",
   label.bg = "black",
   label.bg.r = 0.1,
-  label_insitu = FALSE,
+  label_insitu = TRUE,
   label_repel = FALSE,
   label_repulsion = 20,
   label_point_size = 1,
@@ -400,10 +395,13 @@ FeatureDimPlot <- function(
         (!is.null(names(title.color)) &&
           (anyNA(names(title.color)) || any(!nzchar(names(title.color))) ||
             anyDuplicated(names(title.color))))) {
-      stop("title.color must be one unnamed color or a uniquely named feature-color vector.")
+      log_message(
+        "{.emph title.color} must be one unnamed color or a uniquely named feature-color vector.",
+        message_type = "error"
+      )
     }
     tryCatch(grDevices::col2rgb(title.color), error = function(e) {
-      stop("title.color contains an invalid color.")
+      log_message("{.emph title.color} contains an invalid color.", message_type = "error")
     })
   }
   color_blend_mode <- match.arg(color_blend_mode)

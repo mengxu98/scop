@@ -168,7 +168,7 @@ test_that("BANKSY keeps metadata clusters accessible without detailed storage", 
     )
   }))
 
-  expect_false("BANKSY" %in% names(out@tools))
+  expect_named(out@tools$BANKSY, "result_index")
   result <- GetSpatialResult(out, "BANKSY")
   expect_null(result$parameters)
   expect_equal(unname(result$clusters$BANKSY_cluster), unname(out$BANKSY_cluster))
@@ -245,7 +245,7 @@ test_that("BANKSY fits samples independently and returns prefixed labels", {
       verbose = FALSE
     )
   }))
-  expect_false("BANKSY" %in% names(out_without_details@tools))
+  expect_named(out_without_details@tools$BANKSY, "result_index")
   sample_result <- GetSpatialResult(out_without_details, "BANKSY", sample = "S1")
   expect_equal(unname(sample_result$clusters$BANKSY_cluster), c("1", "1"))
   expect_equal(sample_result$summary$n_spots, 2L)
@@ -254,18 +254,18 @@ test_that("BANKSY fits samples independently and returns prefixed labels", {
 test_that("BANKSY sample failures are reported without returning partial results", {
   skip_if_missing_banksy_test_dependencies()
   srt <- make_banksy_seurat()
-  expect_error(
-    with_mock_banksy({
-      RunBANKSY(
-        srt,
-        layer = "counts",
-        group = "sample",
-        sample.by = "sample",
-        verbose = FALSE
-      )
-    }, fail_sample = "S2"),
-    "BANKSY failed for sample.*S2.*mock backend failure"
-  )
+  srt$BANKSY_cluster <- "old"
+  original <- srt
+  for (store in c(TRUE, FALSE)) {
+    expect_error(
+      with_mock_banksy({
+        RunBANKSY(srt, layer = "counts", group = "sample", sample.by = "sample",
+          store_results = store, verbose = FALSE)
+      }, fail_sample = "S2"),
+      "BANKSY failed for sample.*S2.*mock backend failure"
+    )
+    expect_identical(srt, original)
+  }
 })
 
 test_that("RunBANKSY validates inputs before backend work", {
@@ -290,21 +290,106 @@ test_that("RunBANKSY validates inputs before backend work", {
   })
 })
 
-test_that("GetSpatialResult correctly handles similar sample names", {
+test_that("BANKSY lightweight results retain exact samples and custom columns", {
+  skip_if_missing_banksy_test_dependencies()
   srt <- make_banksy_seurat()
-  # Simulate samples S1 and S10 to test prefix matching
-  srt$BANKSY_cluster <- c("S1_Domain_1", "S1_Domain_2", "S10_Domain_1", "S10_Domain_2")
-  names(srt$BANKSY_cluster) <- colnames(srt)
+  srt$sample <- c("S1", "S1", "S1_A", "S1_A")
+  srt$BANKSY_cluster <- rep("stale", 4)
+  # An earlier default result must not override the newest custom column.
+  srt@tools$BANKSY <- list(clusters = data.frame(
+    BANKSY_cluster = rep("stale", 4), row.names = colnames(srt)
+  ))
+  for (tool in c("BANKSY", "custom_fit")) {
+    with_mock_banksy({
+      detailed <- RunBANKSY(srt, layer = "counts", group = "sample",
+        sample.by = "sample", cluster_colname = "domains", tool_name = tool,
+        store_results = TRUE, verbose = FALSE)
+      compact <- RunBANKSY(detailed, layer = "counts", group = "sample",
+        sample.by = "sample", cluster_colname = "domains", tool_name = tool,
+        store_results = FALSE, verbose = FALSE)
+    })
+    expect_named(compact@tools[[tool]], "result_index")
+    expect_identical(compact@tools[[tool]]$result_index$samples,
+      stats::setNames(srt$sample, colnames(srt)))
+    expect_equal(GetSpatialResult(compact, tool)$clusters,
+      GetSpatialResult(detailed, tool)$clusters)
+    for (sample_name in c("S1", "S1_A")) {
+      result <- GetSpatialResult(compact, tool, sample = sample_name)
+      expected <- GetSpatialResult(detailed, tool, sample = sample_name)
+      expect_equal(result$clusters, expected$clusters)
+      expect_equal(result$summary, expected$summary)
+      expect_equal(rownames(result$clusters), colnames(srt)[srt$sample == sample_name])
+      expect_equal(unname(result$clusters$domains), c("1", "1"))
+      expect_null(result$parameters)
+    }
+    expect_error(GetSpatialResult(compact, tool, sample = "S"), "No .* results")
+    expect_error(GetSpatialResult(compact, tool, sample = "missing"), "No .* results")
+    # Retrieval uses the captured run membership even after metadata changes.
+    compact$sample <- "changed"
+    expect_equal(nrow(GetSpatialResult(compact, tool, sample = "S1")$clusters), 2L)
+  }
+})
 
-  # S1 should only get S1's domains, not S10's
-  result_s1 <- GetSpatialResult(srt, "BANKSY", sample = "S1")
-  expect_equal(nrow(result_s1$clusters), 2L)
-  expect_equal(unname(result_s1$clusters$BANKSY_cluster), c("Domain_1", "Domain_2"))
+test_that("BANKSY compact single fits resolve custom columns without stale labels", {
+  skip_if_missing_banksy_test_dependencies()
+  for (previous in c(FALSE, TRUE)) {
+    srt <- make_banksy_seurat()
+    if (previous) srt$BANKSY_cluster <- "stale"
+    with_mock_banksy({
+      detailed <- RunBANKSY(srt, layer = "counts", group = "sample",
+        cluster_colname = "domains", tool_name = "custom_fit", verbose = FALSE)
+      compact <- RunBANKSY(detailed, layer = "counts", group = "sample",
+        cluster_colname = "domains", tool_name = "custom_fit",
+        store_results = FALSE, verbose = FALSE)
+    })
+    result <- GetSpatialResult(compact, "custom_fit")
+    expect_equal(result$clusters, GetSpatialResult(detailed, "custom_fit")$clusters)
+    expect_equal(result$summary, GetSpatialResult(detailed, "custom_fit")$summary)
+    expect_named(compact@tools$custom_fit, "result_index")
+    expect_null(result$parameters)
+    expect_error(GetSpatialResult(compact, "custom_fit", sample = "S1"),
+      "No exact sample membership")
+  }
+})
 
-  # S10 should only get S10's domains
-  result_s10 <- GetSpatialResult(srt, "BANKSY", sample = "S10")
-  expect_equal(nrow(result_s10$clusters), 2L)
-  expect_equal(unname(result_s10$clusters$BANKSY_cluster), c("Domain_1", "Domain_2"))
+test_that("BANKSY reruns clear stale labels from unanalyzed zero-count cells", {
+  skip_if_missing_banksy_test_dependencies()
+  srt <- make_banksy_seurat()
+  counts <- Seurat::GetAssayData(srt, layer = "counts")
+  counts[, "Spot2"] <- 0
+  srt <- Seurat::CreateSeuratObject(counts = counts, meta.data = srt[[]])
+  srt$sample <- c("S1", "S1", "S1_A", "S1_A")
+  srt$BANKSY_cluster <- "stale"
+  with_mock_banksy({
+    detailed <- RunBANKSY(srt, layer = "counts", group = "sample",
+      sample.by = "sample", verbose = FALSE)
+    compact <- RunBANKSY(srt, layer = "counts", group = "sample",
+      sample.by = "sample", store_results = FALSE, verbose = FALSE)
+  })
+  expect_equal(GetSpatialResult(compact, "BANKSY", sample = "S1")$clusters,
+    GetSpatialResult(detailed, "BANKSY", sample = "S1")$clusters)
+  expect_identical(rownames(GetSpatialResult(compact, "BANKSY", sample = "S1")$clusters), "Spot1")
+  expect_false("Spot2" %in% names(compact@tools$BANKSY$result_index$samples))
+  expect_true(is.na(compact$BANKSY_cluster[["Spot2"]]))
+  expect_equal(GetSpatialResult(compact, "BANKSY")$clusters,
+    GetSpatialResult(detailed, "BANKSY")$clusters)
+  expect_equal(GetSpatialResult(compact, "BANKSY")$summary$n_spots, 3L)
+  with_mock_banksy({
+    single <- RunBANKSY(srt, layer = "counts", group = "sample",
+      store_results = FALSE, verbose = FALSE)
+  })
+  expect_true(is.na(single$BANKSY_cluster[["Spot2"]]))
+  expect_identical(rownames(GetSpatialResult(single, "BANKSY")$clusters),
+    c("Spot1", "Spot3", "Spot4"))
+
+})
+
+test_that("GetSpatialResult does not guess sample membership in legacy metadata", {
+  srt <- make_banksy_seurat()
+  srt$BANKSY_cluster <- c("S1_Domain_1", "S1_Domain_2", "S1_A_Domain_1", "S1_A_Domain_2")
+  expect_equal(nrow(GetSpatialResult(srt, "BANKSY")$clusters), 4L)
+  expect_error(GetSpatialResult(srt, "BANKSY", sample = "S1"),
+    "No exact sample membership")
 })
 
 test_that("BANKSY clusters reuse SCOP SpatialSpotPlot", {

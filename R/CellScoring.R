@@ -118,6 +118,7 @@ CellScoring <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  species <- normalize_species_name(species)
   log_message(
     "Start cell scoring",
     verbose = verbose

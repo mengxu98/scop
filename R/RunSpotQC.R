@@ -65,7 +65,11 @@ RunSpotQC <- function(
   seed = 11,
   srt = NULL
 ) {
-  srt <- spatial_resolve_object(object = object, srt = srt)
+  srt <- spatial_resolve_object(
+    object = object,
+    srt = srt,
+    object_missing = missing(object)
+  )
   log_message(
     "Running spot-level quality control",
     message_type = "running",

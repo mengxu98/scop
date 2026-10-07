@@ -6,13 +6,31 @@
 * **change**: Migration: `RunBANKSY()` now reports its actual inputs and result
   locations and `GetSpatialResult()` reads clusters, parameters, and summaries;
   use `verbose = FALSE` to suppress receipts or `store_results = FALSE` to omit
-  detailed stored results.
+  detailed stored results. A lightweight retrieval index still records custom
+  cluster columns and exact sample membership, including overlapping names such
+  as `S1` and `S1_A`. Sample-specific access to legacy metadata without an index
+  requires rerunning BANKSY; cluster labels alone cannot identify samples safely.
 * **change**: Migration: set `sample.by` to fit BANKSY separately by sample;
   combined domain labels are sample-prefixed and are not aligned across samples.
+* **fix**: `RunDEtest()` and native spatial APIs now distinguish an omitted
+  `object` from an explicitly supplied `object = NULL` when resolving the
+  deprecated `srt=` alias. A non-`NULL` `srt=` supplied alongside `object`
+  follows the shared duplicate-input error behavior. The alias remains
+  supported with a deprecation warning until scop 1.0.0, when its removal is
+  scheduled.
+
+* **fix**: `RunGSVA()`, `CellScoring()`, `RunDynamicEnrichment()`,
+  `RunCellRankEnrichment()`, `AnnotateFeatures()` and `RunMetabolism()` normalize
+  Latin species names before database lookup. Lowercase names and space, dot or
+  hyphen separators now resolve to the same annotations as `Homo_sapiens` and
+  `Mus_musculus`, avoiding missing-input errors and silently skipped databases.
+
+* **chore**: Remove `Rfast` from `Suggests` after confirming it has no SCOP
+  source, test, documentation, native, build-script, or CI use.
 
 * **change**: `RunPropeller()` now uses speckle's transformed proportions and
   empirical Bayes moderated tests instead of the internal logit t-test.
-  It supports `transform`, `robust`, and `trend`, records backend results and
+  It supports `transform`, `robust`, `trend`, records backend results and
   designs, and blocks on donor IDs for fully paired comparisons. At least
   two samples per condition are required. SCOP bootstrap intervals remain
   descriptive intervals for the untransformed proportion ratio.
@@ -35,6 +53,11 @@
   reuse `plot_type` and `padjustCutoff`; diagnostics use the shared logging interface.
   Numerical equivalence to the official portal remains unestablished.
 
+* **change**: `label_insitu` now defaults to `TRUE` in `CellDimPlot()`,
+  `FeatureDimPlot()`, `PAGAPlot()`, and CCC embedding-network plots, so
+  `label = TRUE` shows group names (or cluster IDs) directly on the plot
+  instead of renumbered labels that must be matched through the legend.
+  Set `label_insitu = FALSE` to restore the numbered labels.
 * **fix**: Differential-abundance plots now project Milo neighborhoods through
   stored member cells, use `SpatialFDR` for Milo neighborhood significance,
   and use scCODA credibility for scCODA plots. Milo group summaries and the

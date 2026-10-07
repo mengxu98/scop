@@ -44,7 +44,7 @@
 #' @param tool_name Name used to store detailed results in `srt@tools`.
 #' @param store_results Whether to store detailed BANKSY results in
 #' `object@tools`; cluster assignments are still written to metadata when
-#' `FALSE`.
+#' `FALSE`; a lightweight index retains the result column and analyzed cells.
 #' @param coordinate_space Coordinate space used for BANKSY spatial input.
 #' The default is raw acquisition coordinates, so geometry and distance
 #' weighting use raw coordinate units. Use `"legacy_display"` explicitly to
@@ -52,8 +52,8 @@
 #'
 #' @return A `Seurat` object with BANKSY clusters in metadata. When
 #' `store_results = TRUE`, detailed results are stored in
-#' `srt@tools[[tool_name]]`; when `FALSE`, only cluster assignments are written
-#' to metadata.
+#' `srt@tools[[tool_name]]`; when `FALSE`, clusters remain in metadata and only
+#' their lightweight retrieval index is retained in the tool entry.
 #' @seealso [GetSpatialResult()]
 #' @export
 #'
@@ -61,7 +61,7 @@
 #' data(visium_human_pancreas_sub)
 #' keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
 #' spatial <- visium_human_pancreas_sub[, keep_spots]
-#' if (check_r("Banksy", verbose = FALSE)) {
+#' if (check_r("Banksy", install = FALSE, verbose = FALSE)) {
 #'   spatial <- RunBANKSY(
 #'     spatial,
 #'     layer = "counts",
@@ -262,7 +262,11 @@ RunBANKSY <- function(
     stringsAsFactors = FALSE
   )
   colnames(cluster_df) <- cluster_colname
-  srt <- Seurat::AddMetaData(srt, metadata = cluster_df)
+  # Replace the whole metadata column so a rerun cannot retain labels for
+  # cells excluded by this run (for example, zero-count spots).
+  metadata_clusters <- stats::setNames(rep(NA_character_, ncol(srt)), colnames(srt))
+  metadata_clusters[rownames(cluster_df)] <- cluster_df[[cluster_colname]]
+  srt <- Seurat::AddMetaData(srt, metadata = metadata_clusters, col.name = cluster_colname)
   domain_summary <- spatial_domain_summary(cluster_df[[cluster_colname]])
   n_spots <- nrow(cluster_df)
   n_domains <- nrow(domain_summary)
@@ -305,8 +309,12 @@ RunBANKSY <- function(
     )
     srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   } else {
-    srt@tools[[tool_name]] <- NULL
+    srt@tools[[tool_name]] <- list()
   }
+
+  srt@tools[[tool_name]]$result_index <- list(
+    method = "BANKSY", cluster_colname = cluster_colname, cells = colnames(expr)
+  )
 
   image_use <- coordinate_source$image
   if (length(image_use) != 1L || is.na(image_use) || !nzchar(image_use)) {
@@ -517,6 +525,7 @@ banksy_run_by_sample <- function(
   image_map <- spatial_resolve_sample_images(srt, sample.by, image = image)
 
   combined <- stats::setNames(rep(NA_character_, ncol(srt)), colnames(srt))
+  analyzed_samples <- stats::setNames(character(), character())
   sample_results <- stats::setNames(vector("list", length(samples)), samples)
   sample_summaries <- stats::setNames(vector("list", length(samples)), samples)
   assay_by_sample <- stats::setNames(character(length(samples)), samples)
@@ -579,6 +588,8 @@ banksy_run_by_sample <- function(
     sample_result <- sample_output$result
     assay_by_sample[[sample_name]] <- sample_output$assay
     coordinate_sources[[sample_name]] <- sample_output$coordinate_source
+    analyzed_cells <- sample_result@tools[[tool_name]]$result_index$cells
+    analyzed_samples[analyzed_cells] <- sample_name
     sample_clusters <- as.character(sample_result@meta.data[cells, cluster_colname, drop = TRUE])
     names(sample_clusters) <- cells
     assigned <- !is.na(sample_clusters) & nzchar(sample_clusters)
@@ -635,8 +646,13 @@ banksy_run_by_sample <- function(
       parameters = parameters
     ))
   } else {
-    srt@tools[[tool_name]] <- NULL
+    srt@tools[[tool_name]] <- list()
   }
+
+  srt@tools[[tool_name]]$result_index <- list(
+    method = "BANKSY", cluster_colname = cluster_colname,
+    samples = analyzed_samples
+  )
 
   if (isTRUE(thisutils::get_verbose(verbose))) {
     for (sample_name in samples) {

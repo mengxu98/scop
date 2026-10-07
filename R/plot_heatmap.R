@@ -170,6 +170,9 @@ heatmap_enrichment <- function(
   geneID_groups,
   feature_split_palette = "simspec",
   feature_split_palcolor = NULL,
+  feature_annotation_border = TRUE,
+  feature_annotation_border_color = "black",
+  feature_annotation_border_size = 1,
   ha_right = NULL,
   flip = FALSE,
   anno_terms = FALSE,
@@ -349,7 +352,10 @@ heatmap_enrichment <- function(
               lgd[[paste0(enrich, "_terms_score")]] <-
                 heatmap_enrichment_score_legend_from_terms(
                   terms = terms_list,
-                  title = paste0(enrich, " terms\n-log10(", metric, ")")
+                  title = paste0(enrich, " terms\n-log10(", metric, ")"),
+                  border = terms_border,
+                  border_color = terms_border_palcolor,
+                  border_size = terms_border_size
                 )
             }
             terms_annotation <- if (isTRUE(use_graphic_terms)) {
@@ -386,7 +392,13 @@ heatmap_enrichment <- function(
                 max_width = terms_width,
                 word_wrap = TRUE,
                 add_new_line = TRUE,
-                background_gp = grid::gpar(fill = "grey98", col = "black"),
+                background_gp = do.call(
+                  grid::gpar,
+                  c(
+                    list(fill = scales::alpha(terms_background_palcolor, terms_background_alpha)),
+                    heatmap_border_gp(terms_border, terms_border_palcolor, terms_border_size)
+                  )
+                ),
                 round_corners = TRUE,
                 which = "row"
               )
@@ -399,7 +411,10 @@ heatmap_enrichment <- function(
                   which = "row"
                 ),
                 "terms_split" = ComplexHeatmap::anno_block(
-                  gp = grid::gpar(fill = fill_split),
+                  gp = heatmap_discrete_legend_gp(
+                    fill_split, feature_annotation_border,
+                    feature_annotation_border_color, feature_annotation_border_size
+                  ),
                   width = grid::unit(0.1, "in"),
                   which = "row"
                 ),
@@ -526,7 +541,10 @@ heatmap_enrichment <- function(
                   which = "row"
                 ),
                 "keys_split" = ComplexHeatmap::anno_block(
-                  gp = grid::gpar(fill = fill_split),
+                  gp = heatmap_discrete_legend_gp(
+                    fill_split, feature_annotation_border,
+                    feature_annotation_border_color, feature_annotation_border_size
+                  ),
                   width = grid::unit(0.1, "in"),
                   which = "row"
                 ),
@@ -601,7 +619,10 @@ heatmap_enrichment <- function(
                   which = "row"
                 ),
                 "features_split" = ComplexHeatmap::anno_block(
-                  gp = grid::gpar(fill = fill_split),
+                  gp = heatmap_discrete_legend_gp(
+                    fill_split, feature_annotation_border,
+                    feature_annotation_border_color, feature_annotation_border_size
+                  ),
                   width = grid::unit(0.1, "in"),
                   which = "row"
                 ),
@@ -1377,7 +1398,9 @@ heatmap_enrichment_score_colors <- function(score, palette = "Spectral", limits 
   out
 }
 
-heatmap_enrichment_score_legend_from_terms <- function(terms, title) {
+heatmap_enrichment_score_legend_from_terms <- function(
+  terms, title, border = TRUE, border_color = "black", border_size = 0.8
+) {
   score <- unlist(lapply(terms, function(data) {
     data[["term_score"]]
   }), use.names = FALSE)
@@ -1391,10 +1414,11 @@ heatmap_enrichment_score_legend_from_terms <- function(terms, title) {
     at <- at[unique(round(seq(1, length(at), length.out = 6)))]
   }
   cols <- heatmap_enrichment_score_colors(at, limits = range(score))
+  border_gp <- heatmap_border_gp(border, border_color, border_size)
   ComplexHeatmap::Legend(
     title = title,
     labels = heatmap_enrichment_format_stat(at, digits = 2),
-    legend_gp = grid::gpar(fill = cols, col = cols),
-    border = TRUE
+    legend_gp = do.call(grid::gpar, c(list(fill = cols), border_gp)),
+    border = border_gp$col
   )
 }

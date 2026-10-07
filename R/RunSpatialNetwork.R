@@ -48,7 +48,11 @@ RunSpatialNetwork <- function(
   srt = NULL,
   sample.by = NULL
 ) {
-  srt <- spatial_resolve_object(object = object, srt = srt)
+  srt <- spatial_resolve_object(
+    object = object,
+    srt = srt,
+    object_missing = missing(object)
+  )
   if (!is.null(image) && (!is.character(image) || length(image) != 1L || is.na(image) || !nzchar(image))) {
     log_message("{.arg image} must be one non-empty image name", message_type = "error")
   }
@@ -71,14 +75,20 @@ RunSpatialNetwork <- function(
   if (!is.null(sample.by)) {
     validate_scalar_string(sample.by, "sample.by")
     if (!sample.by %in% colnames(srt[[]])) {
-      stop("sample.by must name a metadata column", call. = FALSE)
+      log_message("{.emph sample.by} must name a metadata column", message_type = "error")
     }
     samples <- as.character(srt[[]][cells, sample.by])
     if (anyNA(samples) || any(!nzchar(samples))) {
-      stop("sample.by must contain non-missing, non-empty sample IDs for selected nodes", call. = FALSE)
+      log_message(
+        "{.emph sample.by} must contain non-missing, non-empty sample IDs for selected nodes",
+        message_type = "error"
+      )
     }
     if (length(unique(samples)) > 1L) {
-      stop("RunSpatialNetwork requires one sample when sample.by is supplied; subset independent samples and build their graphs separately.", call. = FALSE)
+      log_message(
+        "RunSpatialNetwork requires one sample when sample.by is supplied; subset independent samples and build their graphs separately.",
+        message_type = "error"
+      )
     }
   }
 

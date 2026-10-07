@@ -230,7 +230,7 @@ various options for DE analysis.
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 pancreas_sub <- RunDEtest(
-  pancreas_sub,
+  object = pancreas_sub,
   group.by = "SubCellType",
   only.pos = FALSE
 )
@@ -261,7 +261,7 @@ ht2 <- GroupHeatmap(
 ht2$plot
 
 pancreas_sub <- RunDEtest(
-  pancreas_sub,
+  object = pancreas_sub,
   group.by = "SubCellType",
   markers_type = "paired",
   cores = 2
@@ -394,7 +394,7 @@ pancreas_sub[["condition"]] <- ifelse(
   "case"
 )
 pancreas_sub <- RunDEtest(
-  pancreas_sub,
+  object = pancreas_sub,
   group.by = "CellType",
   sample_col = "sample",
   condition_col = "condition",
@@ -414,7 +414,7 @@ DEtestPlot(
 )
 
 pancreas_sub <- RunDEtest(
-  pancreas_sub,
+  object = pancreas_sub,
   group.by = "CellType",
   sample_col = "sample",
   condition_col = "condition",
@@ -437,7 +437,7 @@ DEtestPlot(
 
 data(islet_bulk)
 bulk_out <- RunDEtest(
-  islet_bulk,
+  object = islet_bulk,
   condition_col = "condition",
   group1 = "control",
   group2 = "bfa",

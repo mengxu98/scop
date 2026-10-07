@@ -131,6 +131,7 @@ RunGSVA <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  species <- normalize_species_name(species)
   log_message("Start {.pkg GSVA} analysis", verbose = verbose)
 
   dots <- list(...)

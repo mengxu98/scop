@@ -246,3 +246,41 @@ test_that("dist and Assay inputs retain the complete Seurat workflow", {
   )
   expect_s4_class(assay_out, "Neighbor")
 })
+
+test_that("neighbor warnings remain catchable and status messages follow verbose", {
+  find_neighbors_default <- get("FindNeighbors.default", asNamespace("scop"))
+  expect_warning(
+    suppressMessages(find_neighbors_default(
+      make_native_neighbor_matrix(),
+      k.param = 20,
+      compute.SNN = FALSE,
+      verbose = FALSE
+    )),
+    "k.param set larger",
+    class = "warning"
+  )
+
+  object <- make_native_seurat_object()
+  capture_messages <- function(verbose) {
+    messages <- character()
+    suppressWarnings(withCallingHandlers(
+      FindNeighbors(
+        object,
+        reduction = "pca",
+        dims = 1:3,
+        k.param = 2,
+        compute.SNN = FALSE,
+        verbose = verbose
+      ),
+      message = function(condition) {
+        messages <<- c(messages, conditionMessage(condition))
+        invokeRestart("muffleMessage")
+      }
+    ))
+    messages
+  }
+
+  message_text <- "Only one graph name supplied, storing nearest-neighbor graph only"
+  expect_false(any(grepl(message_text, capture_messages(FALSE), fixed = TRUE)))
+  expect_true(any(grepl(message_text, capture_messages(TRUE), fixed = TRUE)))
+})

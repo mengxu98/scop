@@ -1571,9 +1571,9 @@ RunDEtestStopOnParallelErrors <- function(results, context) {
     function(result) result$error %||% "Unknown worker error",
     character(1)
   ))
-  stop(
-    paste0(context, " failed: ", paste(messages, collapse = "; ")),
-    call. = FALSE
+  log_message(
+    "{.emph {context}} failed: {paste(messages, collapse = '; ')}",
+    message_type = "error"
   )
 }
 
@@ -2122,7 +2122,7 @@ RunDEtest_pseudobulk <- function(
 #' data(pancreas_sub)
 #' pancreas_sub <- RunStandardWorkflow(pancreas_sub)
 #' pancreas_sub <- RunDEtest(
-#'   pancreas_sub,
+#'   object = pancreas_sub,
 #'   group.by = "SubCellType",
 #'   only.pos = FALSE
 #' )
@@ -2153,7 +2153,7 @@ RunDEtest_pseudobulk <- function(
 #' ht2$plot
 #'
 #' pancreas_sub <- RunDEtest(
-#'   pancreas_sub,
+#'   object = pancreas_sub,
 #'   group.by = "SubCellType",
 #'   markers_type = "paired",
 #'   cores = 2
@@ -2286,7 +2286,7 @@ RunDEtest_pseudobulk <- function(
 #'   "case"
 #' )
 #' pancreas_sub <- RunDEtest(
-#'   pancreas_sub,
+#'   object = pancreas_sub,
 #'   group.by = "CellType",
 #'   sample_col = "sample",
 #'   condition_col = "condition",
@@ -2306,7 +2306,7 @@ RunDEtest_pseudobulk <- function(
 #' )
 #'
 #' pancreas_sub <- RunDEtest(
-#'   pancreas_sub,
+#'   object = pancreas_sub,
 #'   group.by = "CellType",
 #'   sample_col = "sample",
 #'   condition_col = "condition",
@@ -2329,7 +2329,7 @@ RunDEtest_pseudobulk <- function(
 #'
 #' data(islet_bulk)
 #' bulk_out <- RunDEtest(
-#'   islet_bulk,
+#'   object = islet_bulk,
 #'   condition_col = "condition",
 #'   group1 = "control",
 #'   group2 = "bfa",
@@ -2349,7 +2349,7 @@ RunDEtest <- function(
   ...,
   srt = NULL
 ) {
-  object_missing <- is.null(object)
+  object_missing <- missing(object)
   object <- resolve_deprecated_srt(object, srt, object_missing)
   if (methods::is(object, "SummarizedExperiment")) {
     return(RunDEtest.SummarizedExperiment(object, ...))
