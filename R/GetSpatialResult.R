@@ -21,15 +21,14 @@
 #' @export
 #' @examples
 #' data(visium_human_pancreas_sub)
-#' # RunBANKSY requires the optional Banksy backend and a suitable layer.
-#' if (check_r("Banksy", install = FALSE, verbose = FALSE)) {
-#'   spatial <- RunBANKSY(
-#'     visium_human_pancreas_sub,
-#'     layer = "counts",
-#'     features = rownames(visium_human_pancreas_sub)[1:200],
-#'     verbose = FALSE
-#'   )
-#'   GetSpatialResult(spatial, "BANKSY")
+#' \dontrun{
+#' spatial <- RunBANKSY(
+#'   visium_human_pancreas_sub,
+#'   layer = "counts",
+#'   features = rownames(visium_human_pancreas_sub)[1:200],
+#'   verbose = FALSE
+#' )
+#' GetSpatialResult(spatial, "BANKSY")
 #' }
 GetSpatialResult <- function(object, method, sample = NULL) {
   if (!inherits(object, "Seurat")) {
