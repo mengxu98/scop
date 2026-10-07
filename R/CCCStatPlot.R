@@ -2412,3 +2412,744 @@ ccc_generic_stat_comparison_plot <- function(
     font.size = font.size
   )
 }
+
+
+finalize_cc_plot <- function(
+  p,
+  title = NULL,
+  subtitle = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  legend.title = NULL,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  aspect.ratio = NULL,
+  font.size = NULL
+) {
+  if (!inherits(p, c("gg", "ggplot"))) {
+    return(p)
+  }
+  theme_obj <- apply_plot_theme(
+    theme_use = theme_use,
+    theme_args = theme_args,
+    allow_null = TRUE
+  )
+
+  p <- p +
+    ggplot2::labs(
+      title = title,
+      subtitle = subtitle,
+      x = xlab,
+      y = ylab,
+      color = legend.title,
+      fill = legend.title,
+      size = legend.title
+    ) +
+    ggplot2::theme(
+      legend.position = legend.position,
+      legend.direction = legend.direction
+    )
+  if (!is.null(theme_obj)) {
+    p <- p + theme_obj
+  }
+  if (!is.null(aspect.ratio)) {
+    p <- p + ggplot2::theme(aspect.ratio = aspect.ratio)
+  }
+  if (!is.null(font.size)) {
+    p <- p +
+      ggplot2::theme(
+        axis.text = ggplot2::element_text(size = font.size),
+        axis.title = ggplot2::element_text(size = font.size + 1),
+        plot.title = ggplot2::element_text(size = font.size + 2, face = "bold"),
+        plot.subtitle = ggplot2::element_text(size = font.size),
+        legend.text = ggplot2::element_text(size = font.size),
+        legend.title = ggplot2::element_text(size = font.size + 1)
+      )
+  }
+  p
+}
+
+get_group_by <- function(srt, method) {
+  method <- detect_method(srt = srt, method = method)
+  if (identical(method, "CCC")) {
+    return(NULL)
+  }
+  if (identical(method, "CellChat")) {
+    store <- get_cc_obj(srt)
+    return(store$parameters$group.by %||% NULL)
+  }
+  bundle <- get_bundle(srt, method = method)
+  bundle$parameters$group.by %||% NULL
+}
+
+ccc_plot_data <- function(
+  srt,
+  method = NULL,
+  condition = NULL,
+  dataset = 1,
+  slot.name = "net",
+  signaling = NULL,
+  pairLR.use = NULL,
+  sender.use = NULL,
+  receiver.use = NULL,
+  ligand.use = NULL,
+  receptor.use = NULL,
+  interaction.use = NULL,
+  value = "score",
+  thresh = 0.05
+) {
+  method <- detect_method(srt = srt, method = method)
+  long_df <- ccc_long_table_for_method(
+    srt = srt,
+    method = method,
+    condition = condition,
+    dataset = dataset,
+    slot.name = slot.name,
+    signaling = signaling,
+    pairLR.use = pairLR.use,
+    sources.use = sender.use,
+    targets.use = receiver.use,
+    thresh = thresh
+  )
+  long_df <- standardize_long_df(long_df)
+  long_df <- filter_long_df(
+    df = long_df,
+    sender.use = sender.use,
+    receiver.use = receiver.use,
+    ligand.use = ligand.use,
+    receptor.use = receptor.use,
+    interaction.use = interaction.use,
+    signaling = signaling,
+    pairLR.use = pairLR.use
+  )
+  long_df <- ccc_assign_plot_score(df = long_df, value = value)
+  long_df <- ccc_mark_significance(long_df, thresh = thresh)
+  long_df <- prepare_plot_df(long_df)
+  list(
+    method = method,
+    long_df = long_df,
+    pair_df = pair_plot_df(long_df),
+    interaction_df = interaction_plot_df(long_df)
+  )
+}
+
+ccc_context_column <- function(df, sample_col = NULL) {
+  sample_col <- ccc_resolve_sample_col(df, sample_col = sample_col)
+  if (!is.null(sample_col)) {
+    return(list(column = sample_col, type = sample_col))
+  }
+  if ("method" %in% colnames(df)) {
+    methods <- unique(as.character(df$method))
+    methods <- methods[!is.na(methods) & nzchar(methods)]
+    if (length(methods) > 1L) {
+      return(list(column = "method", type = "method"))
+    }
+  }
+  list(column = NULL, type = NULL)
+}
+
+ccc_resolve_context_spec <- function(df, comparison = c(1, 2), sample_col = NULL) {
+  context <- ccc_context_column(df, sample_col = sample_col)
+  context_col <- context$column
+  if (is.null(context_col)) {
+    log_message(
+      paste0(
+        "CCC comparison plotting requires a context column. Add one of ",
+        "{.val sample}, {.val context}, {.val condition}, or {.val dataset}; ",
+        "pass {.arg sample_col}; or compare a unified CCC table with multiple ",
+        "{.arg method} values."
+      ),
+      message_type = "error"
+    )
+  }
+
+  context_values <- as.character(df[[context_col]])
+  context_values[is.na(context_values)] <- ""
+  context_names <- unique(context_values[nzchar(context_values)])
+  if (length(context_names) == 0L) {
+    log_message(
+      "The CCC comparison context column {.val {context_col}} does not contain any non-empty labels",
+      message_type = "error"
+    )
+  }
+
+  if (is.numeric(comparison)) {
+    comp_idx <- suppressWarnings(as.integer(comparison))
+    if (
+      any(is.na(comp_idx)) ||
+        any(comp_idx < 1L) ||
+        any(comp_idx > length(context_names))
+    ) {
+      log_message(
+        "comparison indices out of range for available contexts: {.val {context_names}}",
+        message_type = "error"
+      )
+    }
+    return(list(
+      names = context_names[comp_idx],
+      column = context_col,
+      type = context$type
+    ))
+  }
+
+  comparison <- as.character(comparison)
+  missing <- setdiff(comparison, context_names)
+  if (length(missing) > 0L) {
+    log_message(
+      "comparison names not found: {.val {missing}}. Available contexts: {.val {context_names}}",
+      message_type = "error"
+    )
+  }
+  list(
+    names = comparison,
+    column = context_col,
+    type = context$type
+  )
+}
+
+ccc_pair_matrix <- function(pair_df, value_col = "sum", all_groups = NULL) {
+  if (is.null(pair_df) || nrow(pair_df) == 0L) {
+    groups <- all_groups %||% character(0)
+    return(matrix(
+      0,
+      nrow = length(groups),
+      ncol = length(groups),
+      dimnames = list(groups, groups)
+    ))
+  }
+
+  groups <- unique(c(
+    all_groups %||% character(0),
+    as.character(pair_df$sender),
+    as.character(pair_df$receiver)
+  ))
+  groups <- groups[!is.na(groups) & nzchar(groups)]
+  mat <- matrix(
+    0,
+    nrow = length(groups),
+    ncol = length(groups),
+    dimnames = list(groups, groups)
+  )
+  idx <- cbind(
+    match(as.character(pair_df$sender), groups),
+    match(as.character(pair_df$receiver), groups)
+  )
+  values <- suppressWarnings(as.numeric(pair_df[[value_col]]))
+  values[!is.finite(values)] <- 0
+  mat[idx] <- values
+  mat
+}
+
+ccc_context_comparison_data <- function(
+  long_df,
+  comparison = c(1, 2),
+  sample_col = NULL,
+  measure = c("count", "weight"),
+  compare_by = c("overall", "celltype"),
+  pattern = c("all", "outgoing", "incoming")
+) {
+  measure <- match.arg(measure)
+  compare_by <- match.arg(compare_by)
+  pattern <- match.arg(pattern)
+  if (is.null(long_df) || nrow(long_df) == 0L) {
+    log_message(
+      "No CCC records are available for comparison plotting",
+      message_type = "error"
+    )
+  }
+
+  context <- ccc_resolve_context_spec(
+    df = long_df,
+    comparison = comparison,
+    sample_col = sample_col
+  )
+  context_names <- context$names
+  context_col <- context$column
+  ylab <- if (identical(measure, "count")) {
+    "Number of inferred interactions"
+  } else {
+    "Interaction strength"
+  }
+
+  if (identical(compare_by, "overall")) {
+    plot_df <- do.call(
+      rbind,
+      lapply(context_names, function(context_name) {
+        context_df <- long_df[as.character(long_df[[context_col]]) == context_name, , drop = FALSE]
+        value <- if (identical(measure, "count")) {
+          sum(as.numeric(context_df$significant), na.rm = TRUE)
+        } else {
+          sum(suppressWarnings(as.numeric(context_df$score)), na.rm = TRUE)
+        }
+        data.frame(
+          dataset = context_name,
+          group = context_name,
+          value = value,
+          context_type = context$type,
+          stringsAsFactors = FALSE
+        )
+      })
+    )
+    rownames(plot_df) <- NULL
+    return(list(
+      data = plot_df,
+      context_names = context_names,
+      context_col = context_col,
+      context_type = context$type,
+      measure = measure,
+      compare_by = compare_by,
+      pattern = pattern,
+      ylab = ylab
+    ))
+  }
+
+  pair_tables <- lapply(context_names, function(context_name) {
+    context_df <- long_df[as.character(long_df[[context_col]]) == context_name, , drop = FALSE]
+    aggregate_ccc_long(context_df, backend = "r")
+  })
+  all_celltypes <- unique(unlist(lapply(pair_tables, function(x) {
+    unique(c(as.character(x$sender), as.character(x$receiver)))
+  }), use.names = FALSE))
+  all_celltypes <- all_celltypes[!is.na(all_celltypes) & nzchar(all_celltypes)]
+
+  plot_df <- do.call(
+    rbind,
+    lapply(seq_along(context_names), function(i) {
+      value_col <- if (identical(measure, "count")) "count" else "sum"
+      mat <- ccc_pair_matrix(
+        pair_df = pair_tables[[i]],
+        value_col = value_col,
+        all_groups = all_celltypes
+      )
+      value <- switch(pattern,
+        outgoing = rowSums(mat, na.rm = TRUE),
+        incoming = colSums(mat, na.rm = TRUE),
+        all = rowSums(mat, na.rm = TRUE) +
+          colSums(mat, na.rm = TRUE) -
+          diag(mat)
+      )
+      data.frame(
+        dataset = context_names[i],
+        group = context_names[i],
+        celltype = all_celltypes,
+        value = as.numeric(value),
+        context_type = context$type,
+        stringsAsFactors = FALSE
+      )
+    })
+  )
+  rownames(plot_df) <- NULL
+  list(
+    data = plot_df,
+    context_names = context_names,
+    context_col = context_col,
+    context_type = context$type,
+    measure = measure,
+    compare_by = compare_by,
+    pattern = pattern,
+    ylab = ylab
+  )
+}
+
+ccc_scatter_df <- function(pair_df) {
+  if (is.null(pair_df) || nrow(pair_df) == 0L) {
+    return(data.frame())
+  }
+  value_col <- c("sum", "mean", "max", "count")
+  value_col <- value_col[value_col %in% colnames(pair_df)][1]
+  value_col <- value_col %||% "score"
+  if (!value_col %in% colnames(pair_df)) {
+    pair_df[[value_col]] <- 0
+  }
+
+  sender_df <- stats::aggregate(
+    pair_df[[value_col]],
+    by = list(cell = pair_df$sender),
+    FUN = sum,
+    na.rm = TRUE
+  )
+  colnames(sender_df)[2] <- "outgoing"
+
+  receiver_df <- stats::aggregate(
+    pair_df[[value_col]],
+    by = list(cell = pair_df$receiver),
+    FUN = sum,
+    na.rm = TRUE
+  )
+  colnames(receiver_df)[2] <- "incoming"
+
+  degree_df <- stats::aggregate(
+    rep(1, nrow(pair_df)),
+    by = list(cell = pair_df$sender),
+    FUN = sum,
+    na.rm = TRUE
+  )
+  colnames(degree_df)[2] <- "outgoing_links"
+
+  degree_in_df <- stats::aggregate(
+    rep(1, nrow(pair_df)),
+    by = list(cell = pair_df$receiver),
+    FUN = sum,
+    na.rm = TRUE
+  )
+  colnames(degree_in_df)[2] <- "incoming_links"
+
+  out <- merge(sender_df, receiver_df, by = "cell", all = TRUE)
+  out <- merge(out, degree_df, by = "cell", all = TRUE)
+  out <- merge(out, degree_in_df, by = "cell", all = TRUE)
+  out[is.na(out)] <- 0
+  out$total_strength <- out$outgoing + out$incoming
+  out$total_links <- out$outgoing_links + out$incoming_links
+  out
+}
+
+ccc_scatter_plot <- function(
+  srt,
+  method,
+  pair_df,
+  condition = NULL,
+  dataset = 1,
+  signaling = NULL,
+  title = NULL,
+  subtitle = NULL,
+  cell_palette = "Chinese",
+  cell_palcolor = NULL,
+  link_palette = "Dark2",
+  link_palcolor = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  font.size = 10,
+  theme_use = "theme_scop",
+  theme_args = list(),
+  ...
+) {
+  dots <- list(...)
+  dot_alpha <- dots[["dot.alpha"]] %||% 0.6
+  dot_size <- dots[["dot.size"]] %||% c(2, 6)
+  label_size <- dots[["label.size"]] %||% 3
+  do_label <- if (is.null(dots[["do.label"]])) TRUE else isTRUE(dots[["do.label"]])
+  show_legend <- if (is.null(dots[["show.legend"]])) TRUE else isTRUE(dots[["show.legend"]])
+  show_axes <- if (is.null(dots[["show.axes"]])) TRUE else isTRUE(dots[["show.axes"]])
+  xlabel <- dots[["xlabel"]] %||% "Outgoing interaction strength"
+  ylabel <- dots[["ylabel"]] %||% "Incoming interaction strength"
+  weight_minmax <- dots[["weight.MinMax"]] %||% NULL
+
+  plot_df <- ccc_scatter_df(pair_df)
+  if (is.null(plot_df) || nrow(plot_df) == 0L) {
+    log_message(
+      "No aggregated sender-receiver interactions are available for role scatter plotting",
+      message_type = "error"
+    )
+  }
+
+  cell_levels <- unique(as.character(plot_df$cell))
+  cell_cols <- palette_colors(
+    cell_levels,
+    palette = cell_palette,
+    palcolor = cell_palcolor,
+    NA_keep = TRUE
+  )
+  plot_df$cell <- factor(plot_df$cell, levels = cell_levels)
+
+  p <- ggplot2::ggplot(
+    plot_df,
+    ggplot2::aes(
+      x = outgoing,
+      y = incoming,
+      size = total_links,
+      fill = cell
+    )
+  ) +
+    ggplot2::geom_point(
+      shape = 21,
+      color = "grey20",
+      stroke = 0.8,
+      alpha = dot_alpha
+    ) +
+    ggplot2::scale_fill_manual(values = cell_cols[cell_levels], drop = FALSE) +
+    ggplot2::scale_size_continuous(
+      range = dot_size,
+      limits = weight_minmax
+    ) +
+    ggplot2::labs(
+      x = xlabel,
+      y = ylabel,
+      fill = "Cell type",
+      size = "Link count"
+    )
+  if (isTRUE(do_label)) {
+    p <- p + ggrepel::geom_text_repel(
+      ggplot2::aes(label = cell),
+      show.legend = FALSE,
+      box.padding = 0.3,
+      point.padding = 0.2,
+      segment.size = 0.2,
+      segment.alpha = 0.5,
+      seed = 1,
+      size = label_size,
+      color = "grey15"
+    )
+  }
+
+  p <- p +
+    ggplot2::labs(title = title, subtitle = subtitle) +
+    apply_plot_theme(theme_use = theme_use, theme_args = theme_args, allow_null = TRUE) +
+    ggplot2::theme(
+      text = ggplot2::element_text(size = font.size),
+      legend.key.height = grid::unit(0.15, "in"),
+      plot.title = ggplot2::element_text(size = font.size, face = "plain"),
+      plot.subtitle = ggplot2::element_text(size = font.size),
+      legend.position = legend.position,
+      legend.direction = legend.direction,
+      axis.line.x = ggplot2::element_line(linewidth = 0.25),
+      axis.line.y = ggplot2::element_line(linewidth = 0.25)
+    )
+  if (!isTRUE(show_legend)) {
+    p <- p + ggplot2::theme(legend.position = "none")
+  }
+  if (!isTRUE(show_axes)) {
+    p <- p + ggplot2::theme_void(base_size = font.size)
+  }
+  p
+}
+
+ccc_sankey_plot <- function(
+  pair_df,
+  interaction_df = NULL,
+  display_by = "aggregation",
+  top_n = 20,
+  edge_value = "sum",
+  min_receiver_flow = 0,
+  cell_palette = "RdBu",
+  cell_palcolor = NULL,
+  link_palette = "RdBu",
+  link_palcolor = NULL,
+  title = NULL,
+  subtitle = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  font.size = 10,
+  theme_use = "theme_scop",
+  theme_args = list()
+) {
+  check_r("thisplot", verbose = FALSE)
+  plot_theme_use <- resolve_plot_theme_use(theme_use)
+  min_receiver_flow <- suppressWarnings(as.numeric(min_receiver_flow)[1])
+  if (!is.finite(min_receiver_flow) || min_receiver_flow < 0) {
+    min_receiver_flow <- 0
+  }
+
+  if (identical(display_by, "interaction")) {
+    plot_df <- top_interactions(
+      interaction_df,
+      top_n = top_n,
+      value_col = "score"
+    )
+    if (is.null(plot_df) || nrow(plot_df) == 0L) {
+      log_message(
+        "No interaction-level CCC records are available for sankey plotting",
+        message_type = "error"
+      )
+    }
+    if (min_receiver_flow > 0) {
+      receiver_weight <- tapply(
+        suppressWarnings(as.numeric(plot_df$score)),
+        as.character(plot_df$receiver),
+        sum,
+        na.rm = TRUE
+      )
+      keep_receivers <- names(receiver_weight)[receiver_weight >= min_receiver_flow]
+      plot_df <- plot_df[
+        as.character(plot_df$receiver) %in% keep_receivers, ,
+        drop = FALSE
+      ]
+      if (nrow(plot_df) == 0L) {
+        log_message(
+          "No interaction-level communication flows remain after applying {.arg min_receiver_flow}",
+          message_type = "error"
+        )
+      }
+    }
+    meta_data <- plot_df[, c("sender", "interaction_label", "receiver"), drop = FALSE]
+    colnames(meta_data) <- c("Sender", "Interaction", "Receiver")
+    stat_by <- c("Sender", "Interaction", "Receiver")
+    ylab_use <- "Interaction count"
+  } else {
+    plot_df <- top_pairs(pair_df, top_n = top_n, value_col = edge_value)
+    if (is.null(plot_df) || nrow(plot_df) == 0L) {
+      log_message(
+        "No aggregated CCC records are available for sankey plotting",
+        message_type = "error"
+      )
+    }
+    receiver_value_col <- edge_value
+    if (!receiver_value_col %in% colnames(plot_df)) {
+      receiver_value_col <- if ("count" %in% colnames(plot_df)) "count" else "sum"
+    }
+    if (min_receiver_flow > 0 && receiver_value_col %in% colnames(plot_df)) {
+      receiver_weight <- tapply(
+        suppressWarnings(as.numeric(plot_df[[receiver_value_col]])),
+        as.character(plot_df$receiver),
+        sum,
+        na.rm = TRUE
+      )
+      keep_receivers <- names(receiver_weight)[receiver_weight >= min_receiver_flow]
+      plot_df <- plot_df[
+        as.character(plot_df$receiver) %in% keep_receivers, ,
+        drop = FALSE
+      ]
+      if (nrow(plot_df) == 0L) {
+        log_message(
+          "No communication flows remain after applying {.arg min_receiver_flow}",
+          message_type = "error"
+        )
+      }
+    }
+    if (!"count" %in% colnames(plot_df)) {
+      plot_df$count <- 1
+    }
+    if (!identical(edge_value, "count")) {
+      log_message(
+        paste0(
+          "{.fn thisplot::StatPlot} sankey is count-based. ",
+          "For {.fn CCCStatPlot} with {.code plot_type = 'sankey'}, ",
+          "{.arg edge_value} is used to rank/filter pairs, but flow width is shown by interaction count."
+        ),
+        message_type = "warning"
+      )
+    }
+    repeat_n <- pmax(1L, round(as.numeric(plot_df$count)))
+    meta_data <- plot_df[rep(seq_len(nrow(plot_df)), repeat_n), c("sender", "receiver"), drop = FALSE]
+    rownames(meta_data) <- NULL
+    colnames(meta_data) <- c("Sender", "Receiver")
+    stat_by <- c("Sender", "Receiver")
+    ylab_use <- "Interaction count"
+  }
+
+  StatPlot(
+    meta.data = meta_data,
+    stat.by = stat_by,
+    plot_type = "sankey",
+    stat_type = "count",
+    palette = cell_palette,
+    palcolor = cell_palcolor,
+    title = title,
+    subtitle = subtitle,
+    ylab = ylab_use,
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    theme_use = plot_theme_use,
+    theme_args = theme_args,
+    combine = TRUE
+  )
+}
+
+ccc_distribution_plot <- function(
+  interaction_df,
+  plot_type = c("box", "violin"),
+  top_n = 20,
+  interaction.use = NULL,
+  pairLR.use = NULL,
+  facet_by = NULL,
+  x_text_angle = 90,
+  cell_palette = "RdBu",
+  cell_palcolor = NULL,
+  title = NULL,
+  subtitle = NULL,
+  legend.position = "right",
+  legend.direction = "vertical",
+  font.size = 10,
+  theme_use = "theme_scop",
+  theme_args = list()
+) {
+  plot_type <- match.arg(plot_type)
+  top_n_use <- if (!is.null(interaction.use) || !is.null(pairLR.use)) {
+    NULL
+  } else {
+    top_n
+  }
+  plot_df <- top_interactions(
+    interaction_df,
+    top_n = top_n_use,
+    value_col = "score"
+  )
+  if (is.null(plot_df) || nrow(plot_df) == 0L) {
+    log_message(
+      "No interaction-level CCC records are available for distribution plotting",
+      message_type = "error"
+    )
+  }
+  facet_by <- facet_by %||% "sender"
+  if (!facet_by %in% c("sender", "receiver", "pair")) {
+    facet_by <- "sender"
+  }
+  group_var <- if (identical(facet_by, "sender")) {
+    "receiver"
+  } else if (identical(facet_by, "receiver")) {
+    "sender"
+  } else {
+    "pair"
+  }
+  fill_levels <- unique(plot_df[[group_var]])
+  fill_cols <- palette_colors(
+    fill_levels,
+    palette = cell_palette,
+    palcolor = cell_palcolor
+  )
+
+  if (identical(plot_type, "violin")) {
+    p <- ggplot2::ggplot(
+      plot_df,
+      ggplot2::aes(
+        x = .data[[group_var]],
+        y = score,
+        fill = .data[[group_var]]
+      )
+    ) +
+      ggplot2::geom_violin(scale = "width", trim = FALSE, alpha = 0.8) +
+      ggplot2::geom_boxplot(width = 0.15, outlier.size = 0.2, alpha = 0.5) +
+      ggplot2::labs(x = group_var, y = "score", fill = group_var)
+    if (!identical(facet_by, "pair")) {
+      p <- p +
+        ggplot2::facet_wrap(
+          stats::as.formula(paste("~", facet_by)),
+          scales = "free_x"
+        )
+    }
+  } else {
+    p <- ggplot2::ggplot(
+      plot_df,
+      ggplot2::aes(
+        x = .data[[group_var]],
+        y = score,
+        fill = .data[[group_var]]
+      )
+    ) +
+      ggplot2::geom_boxplot(alpha = 0.85, outlier.size = 0.3) +
+      ggplot2::labs(x = group_var, y = "score", fill = group_var)
+    if (!identical(facet_by, "pair")) {
+      p <- p +
+        ggplot2::facet_wrap(
+          stats::as.formula(paste("~", facet_by)),
+          scales = "free_x"
+        )
+    }
+  }
+  p <- p +
+    ggplot2::scale_fill_manual(values = fill_cols[fill_levels], drop = FALSE) +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(angle = x_text_angle, hjust = 1)
+    )
+  finalize_cc_plot(
+    p,
+    title = title,
+    subtitle = subtitle,
+    legend.position = legend.position,
+    legend.direction = legend.direction,
+    theme_use = theme_use,
+    theme_args = theme_args,
+    font.size = font.size
+  )
+}
