@@ -173,6 +173,9 @@ jobs:
             any::Seurat
             bioc::GSVA
             any::RcppML
+            bioc::Banksy
+            bioc::SpatialExperiment
+            bioc::BiocNeighbors
           needs: check
           dependencies: '"hard"'
           cache: false
@@ -192,3 +195,39 @@ jobs:
             load_package = "source",
             stop_on_failure = TRUE
           )
+
+      - name: BANKSY result and real backend contracts 🧪
+        shell: Rscript {0}
+        env:
+          NOT_CRAN: "true"
+        run: |
+          for (package in c("Banksy", "SpatialExperiment", "BiocNeighbors")) {
+            stopifnot(requireNamespace(package, quietly = TRUE))
+          }
+          pkgload::load_all(".", quiet = TRUE, compile = FALSE)
+          for (path in c("tests/testthat/test-banksy.R",
+                         "tests/testthat/test-banksy-multisample-backend.R")) {
+            results <- testthat::test_file(path, reporter = "summary",
+                                          stop_on_failure = TRUE)
+            results <- as.data.frame(results)
+            stopifnot(nrow(results) > 0L, !any(results$skipped))
+          }
+          results <- testthat::test_file(
+            "tests/testthat/test-spatial-original-consistency2.R",
+            desc = "RunBANKSY clusters match the original Banksy pipeline",
+            reporter = "summary", stop_on_failure = TRUE
+          )
+          results <- as.data.frame(results)
+          stopifnot(nrow(results) > 0L, !any(results$skipped))
+
+      - name: Spatial object alias contracts 🧪
+        shell: Rscript {0}
+        run: |
+          stopifnot(requireNamespace("BiocNeighbors", quietly = TRUE))
+          pkgload::load_all(".", quiet = TRUE, compile = FALSE)
+          results <- testthat::test_file(
+            "tests/testthat/test-spatial-object-alias.R",
+            reporter = "summary", stop_on_failure = TRUE
+          )
+          results <- as.data.frame(results)
+          stopifnot(nrow(results) > 0L, !any(results$skipped))

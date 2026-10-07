@@ -214,6 +214,7 @@ reference:
   - ReadSpatialData
   - SetSpatialImageAxes
   - GetSpatialGraph
+  - GetSpatialResult
 
 - subtitle: "Spatial QC and Normalization"
 - contents:
