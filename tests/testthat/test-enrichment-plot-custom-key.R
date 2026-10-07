@@ -192,6 +192,17 @@ test_that("EnrichmentPlot and GSEAPlot plot results passed through `res`", {
   )
   expect_s3_class(gsea_plot, "ggplot")
 
+  gsea_line <- GSEAPlot(
+    res = gsea_out,
+    db = "custom",
+    plot_type = "line",
+    id_use = as.character(gsea_out[["enrichment"]][["ID"]][1]),
+    theme_use = "theme_minimal",
+    verbose = FALSE
+  )
+  expect_s3_class(gsea_line, "ggplot")
+  expect_no_error(ggplot2::ggplot_build(gsea_line))
+
   expect_error(EnrichmentPlot(db = "custom", verbose = FALSE), "Either")
   expect_error(GSEAPlot(db = "custom", verbose = FALSE), "Either")
 })

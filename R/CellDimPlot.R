@@ -141,8 +141,7 @@
 #'   pancreas_sub,
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
-#'   label = TRUE,
-#'   label_insitu = TRUE
+#'   label = TRUE
 #' )
 #'
 #' CellDimPlot(
@@ -150,7 +149,6 @@
 #'   group.by = "SubCellType",
 #'   reduction = "UMAP",
 #'   label = TRUE,
-#'   label_insitu = TRUE,
 #'   label_repel = TRUE,
 #'   label_segment_color = "red"
 #' )
@@ -375,7 +373,6 @@
 #'   pt.alpha = 0.2,
 #'   label = TRUE,
 #'   label_repel = TRUE,
-#'   label_insitu = TRUE,
 #'   label_segment_color = "transparent",
 #'   paga = pancreas_sub@tools[["PAGA"]],
 #'   paga_edge_threshold = 0.1,
@@ -442,7 +439,6 @@
 #'   pt.size = 5,
 #'   pt.alpha = 0.2,
 #'   label = TRUE,
-#'   label_insitu = TRUE,
 #'   velocity = "stochastic",
 #'   velocity_plot_type = "stream",
 #'   velocity_arrow_color = "yellow",
@@ -475,7 +471,7 @@ CellDimPlot <- function(
   label.fg = "white",
   label.bg = "black",
   label.bg.r = 0.1,
-  label_insitu = FALSE,
+  label_insitu = TRUE,
   label_repel = FALSE,
   label_repulsion = 20,
   label_point_size = 1,

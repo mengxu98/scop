@@ -373,7 +373,7 @@ sct_mvp_info <- function(data_mat,
       x = feature.mean[feature.mean > 0],
       probs = seq.int(from = 0, to = 1, length.out = num.bin)
     )),
-    stop("Unknown binning method: ", binning.method)
+    log_message("Unknown binning method: ", binning.method, message_type = "error")
   )
   data.x.bin <- cut(x = feature.mean, breaks = data.x.breaks)
   mean.y <- tapply(X = feature.dispersion, INDEX = data.x.bin, FUN = mean)

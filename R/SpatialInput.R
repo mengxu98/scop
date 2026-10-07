@@ -1,20 +1,23 @@
 spatial_input_info <- function(object, assay = NULL, image = NULL,
                             coord.cols = c("col", "row"), data_type = "auto",
                             coordinate_units = NULL) {
-  if (!inherits(object, "Seurat")) stop("object must be a Seurat object", call. = FALSE)
+  if (!inherits(object, "Seurat")) log_message("{.emph object} must be a Seurat object", message_type = "error")
   assay <- assay %||% SeuratObject::DefaultAssay(object)
   validate_scalar_string(assay, "assay")
-  if (!assay %in% SeuratObject::Assays(object)) stop("assay is not present", call. = FALSE)
+  if (!assay %in% SeuratObject::Assays(object)) log_message("{.emph assay} is not present", message_type = "error")
   data_type <- match.arg(data_type, c("auto", "spot", "bin", "cell"))
   resolved <- SpatialCoordinates(object, image = image, coord.cols = coord.cols, space = "raw")
   image <- resolved$source$image %||% image
   ids <- resolved$data$cell_id
   if (!length(ids) || anyNA(ids) || anyDuplicated(ids) || any(!nzchar(ids))) {
-    stop("Spatial context must contain unique, nonmissing cell IDs", call. = FALSE)
+    log_message("Spatial context must contain unique, nonmissing cell IDs", message_type = "error")
   }
   assay_cells <- colnames(object[[assay]])
   if (!all(ids %in% assay_cells)) {
-    stop("Selected image/context contains cells absent from assay; select the matching assay and resolution", call. = FALSE)
+    log_message(
+      "Selected image/context contains cells absent from assay; select the matching assay and resolution",
+      message_type = "error"
+    )
   }
   record <- object@misc$scop_spatial_input[[image %||% assay]]
   if (!is.null(record) && (!identical(record$assay, assay) ||
@@ -35,7 +38,7 @@ spatial_input_info <- function(object, assay = NULL, image = NULL,
   }
   if (data_type != "auto") {
     if (inferred != "unknown" && inferred != data_type) {
-      stop("data_type conflicts with image/import evidence", call. = FALSE)
+      log_message("{.emph data_type} conflicts with image/import evidence", message_type = "error")
     }
     inferred <- data_type
     evidence <- paste(evidence, "explicit data_type", sep = "; ")
@@ -43,7 +46,10 @@ spatial_input_info <- function(object, assay = NULL, image = NULL,
   if (!is.null(coordinate_units)) {
     coordinate_units <- match.arg(coordinate_units, c("pixel", "micron", "unknown"))
     if (units != "unknown" && coordinate_units != units) {
-      stop("coordinate_units conflicts with import/image evidence; transform coordinates explicitly", call. = FALSE)
+      log_message(
+        "{.emph coordinate_units} conflicts with import/image evidence; transform coordinates explicitly",
+        message_type = "error"
+      )
     }
     units <- coordinate_units
   }
@@ -76,13 +82,13 @@ ReadSpatialData <- function(data.dir, technology = c("visium", "visium_hd", "xen
   technology <- match.arg(technology)
   validate_scalar_string(data.dir, "data.dir")
   validate_scalar_string(sample_id, "sample_id")
-  if (!dir.exists(data.dir)) stop("data.dir does not exist", call. = FALSE)
+  if (!dir.exists(data.dir)) log_message("{.emph data.dir} does not exist", message_type = "error")
   extra <- list(...)
   validate_named_list(extra, "...")
   standard_spatial_fixed_args(extra, c("data.dir", "bin.size"))
   if (technology == "visium_hd" && (!is.numeric(bin.size) || !length(bin.size) ||
       any(!is.finite(bin.size)) || any(bin.size <= 0 | bin.size != as.integer(bin.size)) || anyDuplicated(bin.size))) {
-    stop("bin.size must contain unique positive integers", call. = FALSE)
+    log_message("{.emph bin.size} must contain unique positive integers", message_type = "error")
   }
   if (technology == "xenium") {
     args <- merge_call_args(list(data.dir = data.dir, segmentations = "cell",
@@ -94,13 +100,13 @@ ReadSpatialData <- function(data.dir, technology = c("visium", "visium_hd", "xen
     out <- do.call(Seurat::Load10X_Spatial, args)
   }
   images <- SeuratObject::Images(out)
-  if (!length(images)) stop("Loader returned no spatial images", call. = FALSE)
+  if (!length(images)) log_message("Loader returned no spatial images", message_type = "error")
   records <- stats::setNames(vector("list", length(images)), images)
   for (image in images) {
     assay <- SeuratObject::DefaultAssay(out[[image]])
     info <- spatial_input_info(out, assay = assay, image = image)
     resolution <- if (technology == "visium_hd") {
-      if (!grepl("[.]\\d+um$", assay)) stop("HD assay has no explicit bin resolution", call. = FALSE)
+      if (!grepl("[.]\\d+um$", assay)) log_message("HD assay has no explicit bin resolution", message_type = "error")
       as.numeric(sub(".*[.](\\d+)um$", "\\1", assay))
     } else NA_real_
     records[[image]] <- list(technology = technology, assay = assay, image = image,
@@ -112,7 +118,7 @@ ReadSpatialData <- function(data.dir, technology = c("visium", "visium_hd", "xen
       data.dir = normalizePath(data.dir, winslash = "/", mustWork = TRUE))
   }
   if (technology == "visium_hd" && !setequal(vapply(records, `[[`, numeric(1), "resolution_um"), bin.size)) {
-    stop("Loader did not return every requested HD resolution", call. = FALSE)
+    log_message("Loader did not return every requested HD resolution", message_type = "error")
   }
   out$spatial_sample <- sample_id
   out@misc$scop_spatial_input <- records
@@ -121,6 +127,6 @@ ReadSpatialData <- function(data.dir, technology = c("visium", "visium_hd", "xen
 
 standard_spatial_fixed_args <- function(args, managed) {
   bad <- intersect(names(args), managed)
-  if (length(bad)) stop(paste("Arguments managed by the workflow:", paste(bad, collapse = ", ")), call. = FALSE)
+  if (length(bad)) log_message(paste("Arguments managed by the workflow:", paste(bad, collapse = ", ")), message_type = "error")
   invisible(TRUE)
 }

@@ -151,7 +151,6 @@ FeatureDimPlot(
   features = c("Ins1", "Gcg", "Sst", "Ghrl"),
   compare_features = TRUE,
   label = TRUE,
-  label_insitu = TRUE,
   reduction = "UMAP"
 )
 ```

@@ -85,6 +85,7 @@ RunDynamicEnrichment <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
+  species <- normalize_species_name(species)
   set.seed(seed)
   dots <- list(...)
   backend_missing <- missing(backend)

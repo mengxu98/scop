@@ -241,17 +241,17 @@ RunscCODA <- function(
 build_sccoda_sample_inputs <- function(dat) {
   required <- c("cluster", "condition", "sample")
   if (!all(required %in% colnames(dat))) {
-    stop(
+    log_message(
       "scCODA sample input requires columns: ",
       paste(required, collapse = ", "),
-      call. = FALSE
+      message_type = "error"
     )
   }
 
   dat <- as.data.frame(dat[, required, drop = FALSE], stringsAsFactors = FALSE)
   dat[] <- lapply(dat, as.character)
   if (any(!stats::complete.cases(dat))) {
-    stop("scCODA sample input cannot contain missing values", call. = FALSE)
+    log_message("scCODA sample input cannot contain missing values", message_type = "error")
   }
 
   sample_pairs <- unique(dat[, c("sample", "condition"), drop = FALSE])
@@ -269,7 +269,7 @@ build_sccoda_sample_inputs <- function(dat) {
     dat$sample_key[matches] <- sample_pairs$sample_key[[i]]
   }
   if (anyNA(dat$sample_key)) {
-    stop("Failed to map scCODA sample-condition pairs", call. = FALSE)
+    log_message("Failed to map scCODA sample-condition pairs", message_type = "error")
   }
 
   sample_meta <- data.frame(
