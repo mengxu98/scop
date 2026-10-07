@@ -231,6 +231,97 @@ test_that("PLAGE leading-eigen path is deterministic and matches full SVD", {
   expect_equal(first, reference, tolerance = 1e-12, ignore_attr = TRUE)
 })
 
+test_that("GSVA compatibility probes preserve installed version behavior", {
+  local_mocked_bindings(
+    check_r = function(packages, install = TRUE, verbose = TRUE) {
+      expect_identical(packages, "GSVA")
+      expect_false(install)
+      expect_false(verbose)
+      list(GSVA = TRUE)
+    },
+    .package = "scop"
+  )
+  version <- "2.5.9"
+  local_mocked_bindings(
+    packageVersion = function(pkg, lib.loc = NULL) {
+      expect_identical(pkg, "GSVA")
+      numeric_version(version)
+    },
+    .package = "utils"
+  )
+
+  expect_false(gsva_standardize())
+  expect_true(gsva_uses_legacy_sparse_walk())
+  for (version in c("2.6.0", "2.7.0")) {
+    expect_true(gsva_standardize())
+    expect_false(gsva_uses_legacy_sparse_walk())
+  }
+})
+
+test_that("RunGSVA cpp zscore and PLAGE score sparse counts without GSVA", {
+  local_mocked_bindings(
+    check_r = function(packages, install = TRUE, verbose = TRUE) {
+      expect_identical(packages, "GSVA")
+      expect_false(install)
+      expect_false(verbose)
+      list(GSVA = FALSE)
+    },
+    .package = "scop"
+  )
+  package_version <- utils::packageVersion
+  local_mocked_bindings(
+    packageVersion = function(pkg, lib.loc = NULL) {
+      expect_false(identical(pkg, "GSVA"))
+      package_version(pkg, lib.loc = lib.loc)
+    },
+    .package = "utils"
+  )
+
+  expect_true(gsva_standardize())
+  expect_false(gsva_uses_legacy_sparse_walk())
+  counts <- rbind(
+    g1 = c(0, 2, 4, 0, 1, 3),
+    g2 = c(3, 0, 1, 5, 0, 2),
+    g3 = c(1, 4, 0, 2, 3, 0),
+    g4 = c(0, 3, 2, 0, 5, 1),
+    g5 = c(2, 1, 0, 4, 0, 3),
+    g6 = c(4, 0, 3, 1, 2, 0)
+  )
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+  object <- SeuratObject::CreateSeuratObject(Matrix::Matrix(counts, sparse = TRUE))
+  gene_sets <- list(a = c("g1", "g2", "g3"), b = c("g4", "g5", "g6"))
+  standardized <- t(scale(t(counts)))
+
+  for (method in c("zscore", "plage")) {
+    out <- RunGSVA(
+      object,
+      features = gene_sets,
+      method = method,
+      backend = "cpp",
+      layer = "counts",
+      minGSSize = 1L,
+      min.sz = 1L,
+      new_assay = FALSE,
+      store_metadata = FALSE,
+      verbose = FALSE
+    )
+    scores <- out@tools[[paste0("GSVA_cell_", method)]]$scores
+    reference <- t(vapply(gene_sets, function(genes) {
+      z <- standardized[genes, , drop = FALSE]
+      if (identical(method, "zscore")) {
+        return(colSums(z) / sqrt(length(genes)))
+      }
+      score <- svd(z, nu = 0, nv = 1)$v[, 1]
+      if (sum(score * colMeans(z)) < 0) -score else score
+    }, numeric(ncol(counts))))
+    colnames(reference) <- colnames(counts)
+
+    expect_true(all(is.finite(scores)))
+    expect_identical(dimnames(scores), dimnames(reference))
+    expect_equal(as.numeric(scores), as.numeric(reference), tolerance = 1e-10)
+  }
+})
+
 test_that("PLAGE sparse standardization matches GSVA", {
   skip_if_not_installed("GSVA")
   set.seed(20260711)

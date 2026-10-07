@@ -1,5 +1,10 @@
 # scop (development version)
 
+* **fix**: C++ gene-set scoring uses GSVA >= 2.6 defaults when the optional
+  GSVA package is absent, avoiding version-probe errors in sparse `RunGSVA()`
+  z-score and PLAGE scoring. Installed GSVA versions retain their existing
+  standardization and sparse-walk behavior.
+
 * **fix**: `RunDEtest()` and native spatial APIs now distinguish an omitted
   `object` from an explicitly supplied `object = NULL` when resolving the
   deprecated `srt=` alias. A non-`NULL` `srt=` supplied alongside `object`
