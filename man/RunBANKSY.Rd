@@ -114,7 +114,10 @@ across samples.}
 A \code{Seurat} object with BANKSY clusters in metadata. When
 \code{store_results = TRUE}, detailed results are stored in
 \code{srt@tools[[tool_name]]}; when \code{FALSE}, clusters remain in metadata and only
-their lightweight retrieval index is retained in the tool entry.
+their lightweight retrieval index is retained in the tool entry. Both modes
+also retain one private metadata identity column per result, allowing
+\code{\link[=GetSpatialResult]{GetSpatialResult()}} to follow subsets and renamed cells. Preserve this
+column; its name is recorded in \code{result_index$cell_id_colname}.
 }
 \description{
 Build neighborhood-augmented BANKSY features from a spatial \code{Seurat} object

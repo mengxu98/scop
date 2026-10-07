@@ -17,7 +17,7 @@ method that stored per-sample results.}
 \value{
 A list with \code{clusters}, \code{parameters}, and \code{summary}. Values that were
 not stored by the method are returned as \code{NULL}; BANKSY summaries are
-derived from the returned cluster assignments when necessary.
+recomputed from the returned cluster assignments, including empty results.
 }
 \description{
 Read the cluster assignments, parameters, and summary for a spatial method
@@ -26,6 +26,19 @@ stored, cluster assignments are read from the corresponding metadata column.
 BANKSY retains a lightweight index for custom result columns and exact sample
 membership. Sample retrieval requires this index or stored per-sample results;
 sample identity is never inferred from cluster labels.
+
+Results describe cells present in \code{object}, in its current cell order, rather
+than the original fit's full cell set. BANKSY counts are recomputed from the
+returned assignments; parameters still describe the original fit. Other
+methods' stored summaries are omitted when their cell set changes.
+
+New BANKSY fits retain a private metadata identity column, named by the
+result index. Preserve this column to retrieve results after \code{subset()} or
+\code{RenameCells()}; names are mapped by these saved identities, never by order
+or sample prefixes. Missing, duplicate, or unknown identities cause an
+informative error. Legacy results support exact-ID subsets, but cannot
+reliably detect renames that permute an unchanged set of IDs. Rerun BANKSY
+to establish identity tracking for these older objects.
 }
 \examples{
 data(visium_human_pancreas_sub)

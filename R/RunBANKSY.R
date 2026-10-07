@@ -53,7 +53,10 @@
 #' @return A `Seurat` object with BANKSY clusters in metadata. When
 #' `store_results = TRUE`, detailed results are stored in
 #' `srt@tools[[tool_name]]`; when `FALSE`, clusters remain in metadata and only
-#' their lightweight retrieval index is retained in the tool entry.
+#' their lightweight retrieval index is retained in the tool entry. Both modes
+#' also retain one private metadata identity column per result, allowing
+#' [GetSpatialResult()] to follow subsets and renamed cells. Preserve this
+#' column; its name is recorded in `result_index$cell_id_colname`.
 #' @seealso [GetSpatialResult()]
 #' @export
 #'
@@ -118,6 +121,14 @@ RunBANKSY <- function(
   validate_named_param_list(run_pca_params, "run_pca_params", require_list = TRUE)
   validate_named_param_list(cluster_banksy_params, "cluster_banksy_params", require_list = TRUE)
   coordinate_space <- match.arg(coordinate_space)
+
+  previous_index <- srt@tools[[tool_name]]$result_index
+  if (cluster_colname %in% banksy_other_identity_columns(srt, tool_name)) {
+    log_message(
+      "{.arg cluster_colname} is an identity metadata column for another stored result; choose a different output column",
+      message_type = "error"
+    )
+  }
 
   if (!is.null(sample.by)) {
     return(banksy_run_by_sample(
@@ -315,6 +326,7 @@ RunBANKSY <- function(
   srt@tools[[tool_name]]$result_index <- list(
     method = "BANKSY", cluster_colname = cluster_colname, cells = colnames(expr)
   )
+  srt <- banksy_record_cell_identity(srt, tool_name, previous_index)
 
   image_use <- coordinate_source$image
   if (length(image_use) != 1L || is.na(image_use) || !nzchar(image_use)) {
@@ -516,6 +528,7 @@ banksy_run_by_sample <- function(
       message_type = "error"
     )
   }
+  previous_index <- srt@tools[[tool_name]]$result_index
   sample_values <- as.character(srt@meta.data[[sample.by]])
   if (length(sample_values) != ncol(srt) || anyNA(sample_values) || any(!nzchar(sample_values))) {
     log_message("{.arg sample.by} must identify every cell or spot", message_type = "error")
@@ -653,6 +666,7 @@ banksy_run_by_sample <- function(
     method = "BANKSY", cluster_colname = cluster_colname,
     samples = analyzed_samples
   )
+  srt <- banksy_record_cell_identity(srt, tool_name, previous_index)
 
   if (isTRUE(thisutils::get_verbose(verbose))) {
     for (sample_name in samples) {
@@ -905,4 +919,37 @@ banksy_do_call <- function(fun, se, args) {
     args <- args[names(args) %in% fmls]
   }
   do.call(fun, c(list(se), args))
+}
+
+# A metadata value follows its cell through Seurat subset/RenameCells. The tool
+# index alone does not, so retain both the locator and the original identities.
+banksy_record_cell_identity <- function(srt, tool_name, previous_index = NULL) {
+  index <- srt@tools[[tool_name]]$result_index
+  column <- previous_index$cell_id_colname
+  other_columns <- banksy_other_identity_columns(srt, tool_name)
+  # Reuse only our own tracked field, never a result/user field or another fit's.
+  reusable <- length(column) == 1L && !is.na(column) &&
+    !is.null(previous_index$object_cells) &&
+    column %in% colnames(srt@meta.data) &&
+    !column %in% c(index$cluster_colname, other_columns)
+  if (reusable) {
+    previous_ids <- as.character(srt@meta.data[[column]])
+    reusable <- !anyNA(previous_ids) && !anyDuplicated(previous_ids) &&
+      all(previous_ids %in% previous_index$object_cells)
+  }
+  if (!reusable) {
+    base <- paste0(".scop_", make.names(tool_name), "_cell_id")
+    column <- tail(make.unique(c(colnames(srt@meta.data), base)), 1L)
+  }
+  srt@meta.data[[column]] <- rownames(srt@meta.data)
+  index$cell_id_colname <- column
+  index$object_cells <- colnames(srt)
+  srt@tools[[tool_name]]$result_index <- index
+  srt
+}
+
+banksy_other_identity_columns <- function(srt, tool_name) {
+  unlist(lapply(srt@tools[setdiff(names(srt@tools), tool_name)], function(tool) {
+    if (is.list(tool) && is.list(tool$result_index)) tool$result_index$cell_id_colname
+  }), use.names = FALSE)
 }
