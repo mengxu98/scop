@@ -69,34 +69,6 @@ double moran_i_centered(
   return (static_cast<double>(n) / S0) * (cv / v);
 }
 
-double moran_i_centered_edges(
-    const double* values,
-    double mean_z,
-    int n,
-    const std::vector<double>& row_std,
-    const std::vector<int>& edges,
-    double S0
-) {
-  std::vector<double> centered(n);
-  long double v_l = 0.0L;
-  for (int i = 0; i < n; ++i) {
-    centered[i] = values[i] - mean_z;
-    v_l += static_cast<long double>(centered[i]) * centered[i];
-  }
-  double v = static_cast<double>(v_l);
-  if (v <= 0.0) {
-    return NA_REAL;
-  }
-  long double cv_l = 0.0L;
-  for (std::size_t e = 0; e < edges.size(); e += 2) {
-    const int i = edges[e];
-    const int j = edges[e + 1];
-    double wn = row_std[static_cast<std::size_t>(i) * n + j];
-    cv_l += static_cast<long double>(wn) * centered[i] * centered[j];
-  }
-  double cv = static_cast<double>(cv_l);
-  return (static_cast<double>(n) / S0) * (cv / v);
-}
 
 double moran_i_centered_edges_fast(
     const double* values,

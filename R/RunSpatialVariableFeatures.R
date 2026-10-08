@@ -118,7 +118,7 @@ RunSpatialVariableFeatures <- function(
   method <- match.arg(method)
   backend <- match.arg(backend)
   if (!is.numeric(max_dense_gb) || length(max_dense_gb) != 1L ||
-      !is.finite(max_dense_gb) || max_dense_gb <= 0) {
+    !is.finite(max_dense_gb) || max_dense_gb <= 0) {
     log_message("{.emph max_dense_gb} must be positive and finite", message_type = "error")
   }
   native_method <- method %in% c("moran", "geary")
@@ -497,8 +497,6 @@ spatial_variable_run_sparkx <- function(expr, coords, ...) {
 
 spatial_variable_run_nnsvg <- function(expr, coords, assay, ...) {
   check_r("SpatialExperiment", verbose = FALSE)
-  check_r("SummarizedExperiment", verbose = FALSE)
-  check_r("S4Vectors", verbose = FALSE)
   check_r("nnSVG", verbose = FALSE)
   spe <- spatial_variable_make_spe(expr = expr, coords = coords, assay = assay)
   extra_args <- list(...)
@@ -550,7 +548,7 @@ spatial_variable_finalize_result <- function(result, expr, expressed_spots, meth
   }
   result$feature <- as.character(result$feature)
   if (anyNA(result$feature) || any(!nzchar(result$feature)) ||
-      anyDuplicated(result$feature) || any(!result$feature %in% rownames(expr))) {
+    anyDuplicated(result$feature) || any(!result$feature %in% rownames(expr))) {
     log_message("Spatial variable feature result must contain unique known feature IDs", message_type = "error")
   }
   if (nrow(result) == 0L) {
@@ -627,7 +625,7 @@ spatial_variable_result_features <- function(df, fallback) {
   }
   rn <- rownames(df)
   if (!is.null(rn) && length(rn) == nrow(df) &&
-      (!identical(rn, as.character(seq_len(nrow(df)))) || all(rn %in% fallback))) {
+    (!identical(rn, as.character(seq_len(nrow(df)))) || all(rn %in% fallback))) {
     return(as.character(rn))
   }
   log_message("Spatial variable feature backend must return explicit feature IDs", message_type = "error")

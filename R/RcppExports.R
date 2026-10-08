@@ -53,10 +53,6 @@ cellrank_connectivity_kernel_cpp <- function(knn_idx, knn_dist) {
     .Call(`_scop_cellrank_connectivity_kernel_cpp`, knn_idx, knn_dist)
 }
 
-cellrank_velocity_kernel_gene_cpp <- function(gene_velocity, expression, knn_idx, backward = FALSE, softmax_scale = 4.0, n_neighbors_velo = -1L) {
-    .Call(`_scop_cellrank_velocity_kernel_gene_cpp`, gene_velocity, expression, knn_idx, backward, softmax_scale, n_neighbors_velo)
-}
-
 cellrank_pseudotime_kernel_cpp <- function(pseudotime, knn_idx, cell_weights, bandwidth = 1.0, backward = FALSE) {
     .Call(`_scop_cellrank_pseudotime_kernel_cpp`, pseudotime, knn_idx, cell_weights, bandwidth, backward)
 }
@@ -217,10 +213,6 @@ wilcox_rank_sum_sparse <- function(mat, n_group1, min_expression = 0.0, n_thread
     .Call(`_scop_wilcox_rank_sum_sparse`, mat, n_group1, min_expression, n_threads)
 }
 
-wilcox_rank_sum_sparse_all_cells <- function(mat, n_group1, n_threads = 0L) {
-    .Call(`_scop_wilcox_rank_sum_sparse_all_cells`, mat, n_group1, n_threads)
-}
-
 milo_neighborhood_medians_cpp <- function(coords, knn_idx) {
     .Call(`_scop_milo_neighborhood_medians_cpp`, coords, knn_idx)
 }
@@ -293,10 +285,6 @@ phate_graphtools_affinity_data_cpp <- function(data, knn, decay, thresh = 1e-4, 
     .Call(`_scop_phate_graphtools_affinity_data_cpp`, data, knn, decay, thresh, knn_max)
 }
 
-phate_affinity_cpp <- function(knn_dist, knn_idx, alpha_decay = 1.0, bandwidth_k = -1L) {
-    .Call(`_scop_phate_affinity_cpp`, knn_dist, knn_idx, alpha_decay, bandwidth_k)
-}
-
 phate_diffusion_operator_cpp <- function(rows, cols, vals, n_cells, t_max = 10L) {
     .Call(`_scop_phate_diffusion_operator_cpp`, rows, cols, vals, n_cells, t_max)
 }
@@ -339,10 +327,6 @@ palantir_pseudotime_cpp <- function(ms_data, start_cell, waypoints, knn, max_ite
 
 palantir_markov_chain_cpp <- function(wp_data, knn, pseudotime) {
     .Call(`_scop_palantir_markov_chain_cpp`, wp_data, knn, pseudotime)
-}
-
-palantir_terminal_states_cpp <- function(T_i, T_j, T_x, n, wp_data) {
-    .Call(`_scop_palantir_terminal_states_cpp`, T_i, T_j, T_x, n, wp_data)
 }
 
 palantir_absorption_cpp <- function(T_i, T_j, T_x, n, terminal_state_indices) {
@@ -445,10 +429,6 @@ scenic_ctx_auc_avg2sd <- function(ranks, total_genes, rank_threshold, rank_cutof
     .Call(`_scop_scenic_ctx_auc_avg2sd`, ranks, total_genes, rank_threshold, rank_cutoff)
 }
 
-scenic_ctx_auc_nes <- function(ranks, nes_threshold, rank_cutoff) {
-    .Call(`_scop_scenic_ctx_auc_nes`, ranks, nes_threshold, rank_cutoff)
-}
-
 scenicplus_region_gene_cor <- function(atac_log, rna_log, region_idx, gene_idx) {
     .Call(`_scop_scenicplus_region_gene_cor`, atac_log, rna_log, region_idx, gene_idx)
 }
@@ -513,10 +493,6 @@ scanpy_stochastic_embedding_cpp <- function(spliced, unspliced, knn_idx, embeddi
     .Call(`_scop_scanpy_stochastic_embedding_cpp`, spliced, unspliced, knn_idx, embedding)
 }
 
-sctenifold_pcnet_covariance_raw <- function(x, n_comp = 3L, ncv = 0L, maxit = 1000L, tol = 1e-10, cores = 1L) {
-    .Call(`_scop_sctenifold_pcnet_covariance_raw`, x, n_comp, ncv, maxit, tol, cores)
-}
-
 sctenifold_pcnet_covariance_sparse <- function(x, n_comp = 3L, scale_scores = TRUE, symmetric = FALSE, q = 0.0, ncv = 0L, maxit = 1000L, tol = 1e-10, cores = 1L) {
     .Call(`_scop_sctenifold_pcnet_covariance_sparse`, x, n_comp, scale_scores, symmetric, q, ncv, maxit, tol, cores)
 }
@@ -545,52 +521,12 @@ scibet_fit_predict_sparse <- function(ref, query, labels, n_labels, n_top, addit
     .Call(`_scop_scibet_fit_predict_sparse`, ref, query, labels, n_labels, n_top, additional_per_label, return_probabilities)
 }
 
-scibet_predict <- function(query, core, feature_index) {
-    .Call(`_scop_scibet_predict`, query, core, feature_index)
-}
-
-scaleC <- function(X) {
-    .Call(`_scop_scaleC`, X)
-}
-
 OmegaC <- function(Omega, sgn) {
     .Call(`_scop_OmegaC`, Omega, sgn)
 }
 
 OmegaSC <- function(OmegaS, sgn) {
     .Call(`_scop_OmegaSC`, OmegaS, sgn)
-}
-
-maxLambdaLmC <- function(X, y, alpha, wbeta, N0, p) {
-    .Call(`_scop_maxLambdaLmC`, X, y, alpha, wbeta, N0, p)
-}
-
-cvTrimLmC <- function(beta, nn, nn2, loco, XF, yF, NF, a0) {
-    .Call(`_scop_cvTrimLmC`, beta, nn, nn2, loco, XF, yF, NF, a0)
-}
-
-EnetLmC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, p, N0, thresh, maxit, thresh2) {
-    .Call(`_scop_EnetLmC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, p, N0, thresh, maxit, thresh2)
-}
-
-cvEnetLmC <- function(X, y, alpha, lambda, nlambda, wbeta, N, p, thresh, maxit, XF, yF, NF, thresh2) {
-    .Call(`_scop_cvEnetLmC`, X, y, alpha, lambda, nlambda, wbeta, N, p, thresh, maxit, XF, yF, NF, thresh2)
-}
-
-NetLmC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, p, N0, thresh, maxit, thresh2) {
-    .Call(`_scop_NetLmC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, p, N0, thresh, maxit, thresh2)
-}
-
-cvNetLmC <- function(X, y, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, p, thresh, maxit, XF, yF, NF, thresh2) {
-    .Call(`_scop_cvNetLmC`, X, y, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, p, thresh, maxit, XF, yF, NF, thresh2)
-}
-
-maxLambdaCoxC <- function(X, tevent, N, nevent, nevent1, loc1, n, alpha, wbeta, N0, p) {
-    .Call(`_scop_maxLambdaCoxC`, X, tevent, N, nevent, nevent1, loc1, n, alpha, wbeta, N0, p)
-}
-
-pletaCm <- function(xb, exb, nevent, nevent1, loc1, n, ifast, itwo) {
-    .Call(`_scop_pletaCm`, xb, exb, nevent, nevent1, loc1, n, ifast, itwo)
 }
 
 cvTrimCoxC <- function(beta, nn, nn2, loco, XF, NF, neventF, nevent1F, loc1F, nF, X, N, nevent, nevent1, loc1, n, ifast, itwo) {
@@ -611,30 +547,6 @@ NetCoxC <- function(X, tevent, alpha, lambda, nlambda, ilambda, wbeta, Omega, lo
 
 cvNetCoxC <- function(X, tevent, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF) {
     .Call(`_scop_cvNetCoxC`, X, tevent, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF)
-}
-
-maxLambdaLogC <- function(X, Z, alpha, wbeta, N0, p) {
-    .Call(`_scop_maxLambdaLogC`, X, Z, alpha, wbeta, N0, p)
-}
-
-cvTrimLogC <- function(beta, nn, nn2, loco, XF, yF, NF, threshP) {
-    .Call(`_scop_cvTrimLogC`, beta, nn, nn2, loco, XF, yF, NF, threshP)
-}
-
-EnetLogC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, p, N0, thresh, maxit, threshP) {
-    .Call(`_scop_EnetLogC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, p, N0, thresh, maxit, threshP)
-}
-
-cvEnetLogC <- function(X, y, alpha, lambda, nlambda, wbeta, wbetai, p, N0, thresh, maxit, XF, yF, NF, threshP) {
-    .Call(`_scop_cvEnetLogC`, X, y, alpha, lambda, nlambda, wbeta, wbetai, p, N0, thresh, maxit, XF, yF, NF, threshP)
-}
-
-NetLogC <- function(X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, threshP) {
-    .Call(`_scop_NetLogC`, X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, threshP)
-}
-
-cvNetLogC <- function(X, y, alpha, lambda, nlambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, XF, yF, NF, threshP) {
-    .Call(`_scop_cvNetLogC`, X, y, alpha, lambda, nlambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, XF, yF, NF, threshP)
 }
 
 scissor_gaussian_net_fit_cpp <- function(x, y, omega, alpha, lambda = NULL, nlambda = 100L, foldid = NULL, inzero = TRUE, isd = FALSE, thresh = 1e-7, maxit = 100000L, threshP = 1e-5) {

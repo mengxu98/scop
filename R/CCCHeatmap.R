@@ -1012,7 +1012,6 @@ ccc_heatmap_full_plot <- function(
   theme_use = "theme_scop",
   theme_args = list()
 ) {
-  check_r("ComplexHeatmap", verbose = FALSE)
   check_r("circlize", verbose = FALSE)
   bar_value <- ccc_match_bar_value(bar_value)
   top_anno <- ccc_match_side_anno(top_anno)
@@ -1815,7 +1814,6 @@ ccc_ligand_target_heatmap <- function(
   theme_use = "theme_scop",
   theme_args = list()
 ) {
-  check_r("ComplexHeatmap", verbose = FALSE)
   check_r("circlize", verbose = FALSE)
   bar_value <- ccc_match_bar_value(bar_value)
   top_anno <- ccc_match_side_anno(top_anno)
@@ -2494,7 +2492,6 @@ ccc_matrix_heatmap_plot <- function(
   theme_args = list(),
   symmetric = FALSE
 ) {
-  check_r("ComplexHeatmap", verbose = FALSE)
   check_r("circlize", verbose = FALSE)
   top_anno <- ccc_match_side_anno(top_anno)
   right_anno <- ccc_match_side_anno(right_anno)

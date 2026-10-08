@@ -13,61 +13,6 @@ using namespace Rcpp;
 namespace scop_util {
 
 
-inline void power_iteration_topk(
-    const std::vector<double>& mat,
-    int n, int k, int max_iter,
-    std::vector<double>& eigvals,
-    std::vector<double>& eigvecs)
-{
-    eigvals.assign(k, 0.0);
-    eigvecs.assign(n * k, 0.0);
-    if (n <= 0 || k <= 0) return;
-
-    for (int comp = 0; comp < k && comp < n; ++comp) {
-        int off = comp * n;
-        for (int i = 0; i < n; ++i)
-            eigvecs[off + i] = (i * 1103515245L + 12345L + comp * 777L) % 10000 / 10000.0;
-        double norm = 0.0;
-        for (int i = 0; i < n; ++i) norm += eigvecs[off + i] * eigvecs[off + i];
-        norm = std::sqrt(norm);
-        if (norm > 0) for (int i = 0; i < n; ++i) eigvecs[off + i] /= norm;
-
-        double lambda = 0.0;
-        std::vector<double> Av(n);
-        for (int iter = 0; iter < max_iter; ++iter) {
-            for (int i = 0; i < n; ++i) {
-                double sum = 0.0;
-                for (int j = 0; j < n; ++j)
-                    sum += mat[j * n + i] * eigvecs[off + j];
-                Av[i] = sum;
-            }
-            for (int p = 0; p < comp; ++p) {
-                int poff = p * n;
-                double dot = 0.0;
-                for (int i = 0; i < n; ++i) dot += eigvecs[poff + i] * Av[i];
-                for (int i = 0; i < n; ++i) Av[i] -= dot * eigvecs[poff + i];
-            }
-            norm = 0.0;
-            for (int i = 0; i < n; ++i) norm += Av[i] * Av[i];
-            norm = std::sqrt(norm);
-            if (norm < 1e-15) break;
-            for (int i = 0; i < n; ++i) eigvecs[off + i] = Av[i] / norm;
-
-            double num = 0.0, den = 0.0;
-            for (int i = 0; i < n; ++i) {
-                double s = 0.0;
-                for (int j = 0; j < n; ++j)
-                    s += mat[j * n + i] * eigvecs[off + j];
-                num += eigvecs[off + i] * s;
-                den += eigvecs[off + i] * eigvecs[off + i];
-            }
-            double nl = den > 0 ? num / den : 0.0;
-            if (std::abs(nl - lambda) < 1e-10) break;
-            lambda = nl;
-        }
-        eigvals[comp] = lambda;
-    }
-}
 
 
 inline void cosine_projection_embedding(
@@ -192,23 +137,6 @@ inline void velocity_confidence_py(
 }
 
 
-inline void ols_gamma_origin(
-    const NumericMatrix& Ms,
-    const NumericMatrix& Mu,
-    NumericVector& gamma)
-{
-    int n_genes = Ms.nrow();
-    int n_cells = Ms.ncol();
-    for (int g = 0; g < n_genes; ++g) {
-        double num = 0.0, den = 0.0;
-        for (int c = 0; c < n_cells; ++c) {
-            double s = Ms(g, c);
-            num += s * Mu(g, c);
-            den += s * s;
-        }
-        gamma[g] = den > 1e-12 ? num / den : 0.0;
-    }
-}
 
 
 struct DSU {

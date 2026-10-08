@@ -295,122 +295,8 @@ NumericMatrix build_log_probability_core_sparse(
   return core;
 }
 
-NumericMatrix predict_probabilities(
-    const NumericMatrix& query,
-    const NumericMatrix& core,
-    const std::vector<int>& genes) {
-  const int n_query = query.ncol();
-  const int n_labels = core.ncol();
-  const int n_gene = genes.size();
-  NumericMatrix prob(n_query, n_labels);
-  const double log2 = std::log(2.0);
 
-  for (int cell = 0; cell < n_query; ++cell) {
-    double max_score = -std::numeric_limits<double>::infinity();
-    for (int lab = 0; lab < n_labels; ++lab) {
-      double score = 0.0;
-      for (int g = 0; g < n_gene; ++g) {
-        double value = query(genes[g], cell);
-        if (!R_finite(value) || value < 0.0) {
-          value = 0.0;
-        }
-        score += (std::log(value + 1.0) / log2) * core(g, lab);
-      }
-      prob(cell, lab) = score;
-      if (score > max_score) {
-        max_score = score;
-      }
-    }
 
-    double sum_exp = 0.0;
-    for (int lab = 0; lab < n_labels; ++lab) {
-      const double val = std::exp(prob(cell, lab) - max_score);
-      prob(cell, lab) = val;
-      sum_exp += val;
-    }
-    if (sum_exp > 0.0) {
-      for (int lab = 0; lab < n_labels; ++lab) {
-        prob(cell, lab) /= sum_exp;
-      }
-    }
-  }
-  return prob;
-}
-
-NumericMatrix predict_probabilities_sparse(
-    const DgcMatrixView& query,
-    const NumericMatrix& core,
-    const std::vector<int>& genes) {
-  const int n_query = query.n_cell;
-  const int n_labels = core.ncol();
-  NumericMatrix prob(n_query, n_labels);
-  std::vector<int> gene_to_selected(query.n_gene, -1);
-  std::vector<double> scores(n_labels, 0.0);
-  const double log2 = std::log(2.0);
-
-  for (int g = 0; g < static_cast<int>(genes.size()); ++g) {
-    gene_to_selected[genes[g]] = g;
-  }
-
-  for (int cell = 0; cell < n_query; ++cell) {
-    std::fill(scores.begin(), scores.end(), 0.0);
-    for (int ptr = query.col_ptr[cell]; ptr < query.col_ptr[cell + 1]; ++ptr) {
-      const int gene = query.row_idx[ptr];
-      if (gene < 0 || gene >= query.n_gene) {
-        continue;
-      }
-      const int g = gene_to_selected[gene];
-      if (g < 0) {
-        continue;
-      }
-      double value = query.values[ptr];
-      if (!R_finite(value) || value < 0.0) {
-        value = 0.0;
-      }
-      const double log_value = std::log(value + 1.0) / log2;
-      for (int lab = 0; lab < n_labels; ++lab) {
-        scores[lab] += log_value * core(g, lab);
-      }
-    }
-
-    double max_score = -std::numeric_limits<double>::infinity();
-    for (int lab = 0; lab < n_labels; ++lab) {
-      if (scores[lab] > max_score) {
-        max_score = scores[lab];
-      }
-    }
-    double sum_exp = 0.0;
-    for (int lab = 0; lab < n_labels; ++lab) {
-      const double val = std::exp(scores[lab] - max_score);
-      prob(cell, lab) = val;
-      sum_exp += val;
-    }
-    if (sum_exp > 0.0) {
-      for (int lab = 0; lab < n_labels; ++lab) {
-        prob(cell, lab) /= sum_exp;
-      }
-    }
-  }
-  return prob;
-}
-
-IntegerVector max_label_indices(const NumericMatrix& prob) {
-  const int n_query = prob.nrow();
-  const int n_labels = prob.ncol();
-  IntegerVector out(n_query);
-  for (int cell = 0; cell < n_query; ++cell) {
-    int best = 0;
-    double best_value = prob(cell, 0);
-    for (int lab = 1; lab < n_labels; ++lab) {
-      if (prob(cell, lab) > best_value) {
-        best_value = prob(cell, lab);
-        best = lab;
-      }
-    }
-    out[cell] = best + 1;
-  }
-  return out;
-}
 
 List predict_labels_and_scores(
     const NumericMatrix& query,
@@ -674,13 +560,4 @@ List scibet_fit_predict_sparse(
     _["predicted_index"] = prediction["predicted_index"],
     _["max_probability"] = prediction["max_probability"]
   );
-}
-
-// [[Rcpp::export]]
-NumericMatrix scibet_predict(NumericMatrix query, NumericMatrix core, IntegerVector feature_index) {
-  std::vector<int> genes(feature_index.size());
-  for (int i = 0; i < feature_index.size(); ++i) {
-    genes[i] = feature_index[i] - 1;
-  }
-  return predict_probabilities(query, core, genes);
 }

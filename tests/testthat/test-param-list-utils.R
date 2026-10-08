@@ -152,3 +152,11 @@ test_that("resolve_common_features preserves feature order and filtering", {
     "gene2"
   )
 })
+
+test_that("case-insensitive column selection follows candidate priority", {
+  df <- data.frame(VALUE = 1, Value = 2, Gene_ID = 3, check.names = FALSE)
+  expect_identical(pick_case_insensitive_column(df, c("gene_id", "value")), "Gene_ID")
+  expect_identical(pick_case_insensitive_column(df, c("value", "gene_id")), "VALUE")
+  expect_null(pick_case_insensitive_column(df, character()))
+  expect_null(pick_case_insensitive_column(data.frame(), "value"))
+})

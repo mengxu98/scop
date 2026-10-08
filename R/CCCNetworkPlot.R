@@ -1985,7 +1985,6 @@ ccc_diff_network_plot <- function(
   theme_use = "theme_scop",
   theme_args = list()
 ) {
-  check_r("igraph", verbose = FALSE)
   dat <- ccc_cellchat_diff_network_data(
     srt = srt,
     condition = condition,
@@ -2152,7 +2151,6 @@ ccc_circle_plot <- function(
   label.bg = "black",
   label.bg.r = 0.1
 ) {
-  check_r("igraph", verbose = FALSE)
   value_col <- ccc_circle_value_col(value)
   plot_df <- ccc_network_df(
     pair_df = pair_df,

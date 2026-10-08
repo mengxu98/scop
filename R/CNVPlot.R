@@ -173,7 +173,6 @@ cnv_plot_heatmap <- function(
   use_raster = TRUE,
   ...
 ) {
-  check_r("ComplexHeatmap", verbose = FALSE)
   check_r("circlize", verbose = FALSE)
   mat <- cnv_require_matrix(bundle)
   cells <- intersect(colnames(mat), colnames(srt))

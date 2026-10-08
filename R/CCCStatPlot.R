@@ -2934,7 +2934,6 @@ ccc_sankey_plot <- function(
   theme_use = "theme_scop",
   theme_args = list()
 ) {
-  check_r("thisplot", verbose = FALSE)
   plot_theme_use <- resolve_plot_theme_use(theme_use)
   min_receiver_flow <- suppressWarnings(as.numeric(min_receiver_flow)[1])
   if (!is.finite(min_receiver_flow) || min_receiver_flow < 0) {

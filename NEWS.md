@@ -1,5 +1,9 @@
 # scop (development version)
 
+* **refactor**: Remove unused internal helpers and Rcpp bridges, share spatial
+  neighborhood filtering and heatmap border preprocessing, and drop redundant
+  Imports checks and obsolete ggplot2 compatibility code.
+
 * **change**: Migration: `RunBANKSY(assay = NULL)` now prefers the selected image's assay,
   then `Spatial`, `RNA`, and `DefaultAssay`; set `assay` explicitly to reproduce
   analyses that used a different assay.

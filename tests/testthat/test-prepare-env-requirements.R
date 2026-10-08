@@ -16,3 +16,11 @@ test_that("PrepareEnv resolves scvelo through modules rather than a dedicated he
   expect_false(exists("scvelo_python_requirements", envir = asNamespace("scop"), inherits = FALSE))
   expect_false(exists("scanpy_python_requirements", envir = asNamespace("scop"), inherits = FALSE))
 })
+
+test_that("PrepareEnv retains Imports without per-method checks", {
+  packages <- env_r_packages()
+  expect_true(all(c(
+    "reticulate", "ComplexHeatmap", "igraph", "Signac",
+    "SummarizedExperiment", "S4Vectors", "thisplot"
+  ) %in% packages))
+})

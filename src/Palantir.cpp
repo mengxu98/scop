@@ -638,21 +638,6 @@ List palantir_markov_chain_cpp(
 }
 
 
-// [[Rcpp::export]]
-List palantir_terminal_states_cpp(
-    IntegerVector T_i,
-    IntegerVector T_j,
-    NumericVector T_x,
-    int n,
-    NumericMatrix wp_data)
-{
-
-
-
-  return List::create(
-    _["n"] = n
-  );
-}
 
 
 // [[Rcpp::export]]

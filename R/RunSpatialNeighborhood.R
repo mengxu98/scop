@@ -156,17 +156,17 @@ RunSpatialNeighborhood <- function(
     observed = observed$pair_table,
     method = method
   )
-  pair_table <- spatial_neighborhood_filter_pairs(
+  pair_table <- spatial_neighborhood_filter(
     pair_table,
     from = from,
     to = to
   )
-  observed$pair_table <- spatial_neighborhood_filter_pairs(
+  observed$pair_table <- spatial_neighborhood_filter(
     observed$pair_table,
     from = from,
     to = to
   )
-  observed$edge_table <- spatial_neighborhood_filter_edges(
+  observed$edge_table <- spatial_neighborhood_filter(
     observed$edge_table,
     from = from,
     to = to
@@ -519,17 +519,7 @@ spatial_neighborhood_input <- function(
   list(cells = out, assay = assay)
 }
 
-spatial_neighborhood_filter_pairs <- function(df, from = NULL, to = NULL) {
-  if (!is.null(from)) {
-    df <- df[df$from %in% from, , drop = FALSE]
-  }
-  if (!is.null(to)) {
-    df <- df[df$to %in% to, , drop = FALSE]
-  }
-  df
-}
-
-spatial_neighborhood_filter_edges <- function(df, from = NULL, to = NULL) {
+spatial_neighborhood_filter <- function(df, from = NULL, to = NULL) {
   if (!is.null(from)) {
     df <- df[df$from %in% from, , drop = FALSE]
   }
@@ -667,8 +657,10 @@ spatial_neighborhood_observed_pairs <- function(
   # std::map key order while the reference R path returns stats::aggregate +
   # merge order. Sorting here makes cpp/r pair tables `identical()` and keeps
   # position-based downstream comparisons meaningful across backends.
-  count_df <- count_df[order(count_df$sample, count_df$condition, count_df$subject,
-    count_df$from, count_df$to), , drop = FALSE]
+  count_df <- count_df[order(
+    count_df$sample, count_df$condition, count_df$subject,
+    count_df$from, count_df$to
+  ), , drop = FALSE]
   rownames(count_df) <- NULL
 
   list(pair_table = count_df, edge_table = edge_table)
@@ -722,9 +714,9 @@ spatial_neighborhood_standardize_pair_table <- function(backend, observed, metho
   }
 
   df <- as.data.frame(raw_df, stringsAsFactors = FALSE, check.names = FALSE)
-  from_col <- spatial_neighborhood_first_col(df, c("from", "cellType1", "cell_type1", "source", "sender"))
-  to_col <- spatial_neighborhood_first_col(df, c("to", "cellType2", "cell_type2", "target", "receiver"))
-  pair_col <- spatial_neighborhood_first_col(df, c("pair", "testPair", "cellTypePair", "contrast"))
+  from_col <- pick_case_insensitive_column(df, c("from", "cellType1", "cell_type1", "source", "sender"))
+  to_col <- pick_case_insensitive_column(df, c("to", "cellType2", "cell_type2", "target", "receiver"))
+  pair_col <- pick_case_insensitive_column(df, c("pair", "testPair", "cellTypePair", "contrast"))
   if ((is.null(from_col) || is.null(to_col)) && !is.null(pair_col)) {
     parts <- strsplit(as.character(df[[pair_col]]), "[|:~_]", perl = TRUE)
     df$from <- vapply(parts, function(x) x[1L] %||% NA_character_, character(1))
@@ -739,11 +731,11 @@ spatial_neighborhood_standardize_pair_table <- function(backend, observed, metho
     )
   }
 
-  estimate_col <- spatial_neighborhood_first_col(df, c("estimate", "coefficient", "coef", "logFC", "effect"))
-  statistic_col <- spatial_neighborhood_first_col(df, c("statistic", "t", "t.value", "z", "z.value"))
-  pval_col <- spatial_neighborhood_first_col(df, c("pval", "p.value", "p_value", "PValue", "P.Value"))
-  fdr_col <- spatial_neighborhood_first_col(df, c("FDR", "fdr", "adj.P.Val", "q.value", "qval"))
-  comparison_col <- spatial_neighborhood_first_col(df, c("comparison", "contrast", "condition"))
+  estimate_col <- pick_case_insensitive_column(df, c("estimate", "coefficient", "coef", "logFC", "effect"))
+  statistic_col <- pick_case_insensitive_column(df, c("statistic", "t", "t.value", "z", "z.value"))
+  pval_col <- pick_case_insensitive_column(df, c("pval", "p.value", "p_value", "PValue", "P.Value"))
+  fdr_col <- pick_case_insensitive_column(df, c("FDR", "fdr", "adj.P.Val", "q.value", "qval"))
+  comparison_col <- pick_case_insensitive_column(df, c("comparison", "contrast", "condition"))
 
   out <- data.frame(
     method = method,
@@ -847,10 +839,7 @@ spatial_neighborhood_heatmap_plot <- function(
 ) {
   cols <- spatial_palette_colors(type = "continuous", palette = palette, palcolor = palcolor)
   ggplot2::ggplot(df, ggplot2::aes(x = .data$to, y = .data$from, fill = .data[[value]])) +
-    do.call(ggplot2::geom_tile, c(list(color = "white"), {
-      .inline0 <- 0.2
-      stats::setNames(list(.inline0), spatial_neighborhood_linewidth_name())
-    })) +
+    ggplot2::geom_tile(color = "white", linewidth = 0.2) +
     ggplot2::scale_fill_gradientn(colors = cols, na.value = "grey90") +
     ggplot2::labs(x = "To", y = "From", fill = legend.title %||% value) +
     apply_plot_theme(theme_use, theme_args, allow_null = TRUE) +
@@ -916,14 +905,10 @@ spatial_neighborhood_network_plot <- function(
     y = .data$y,
     xend = .data$x_end,
     yend = .data$y_end,
-    color = .data$direction
+    color = .data$direction,
+    linewidth = .data$abs_weight
   )
-  edge_aes[[spatial_neighborhood_linewidth_name()]] <- rlang::expr(.data$abs_weight)
-  edge_scale <- if (identical(spatial_neighborhood_linewidth_name(), "linewidth")) {
-    ggplot2::scale_linewidth_continuous(range = edge_size, guide = "none")
-  } else {
-    ggplot2::scale_size_continuous(range = edge_size, guide = "none")
-  }
+  edge_scale <- ggplot2::scale_linewidth_continuous(range = edge_size, guide = "none")
 
   curve_layer <- if (nrow(edge_plot) > 0L) {
     ggplot2::geom_curve(
@@ -1136,7 +1121,6 @@ spatial_neighborhood_resolve_pair <- function(pair, edges) {
 }
 
 spatial_neighborhood_network_plot_data <- function(edges, layout = "fr", seed = 11) {
-  check_r("igraph", verbose = FALSE)
   edges <- edges[!is.na(edges$from) & nzchar(edges$from) & !is.na(edges$to) & nzchar(edges$to), , drop = FALSE]
   if (nrow(edges) == 0L) {
     log_message("No spatial neighborhood network edges are available", message_type = "error")
@@ -1215,25 +1199,9 @@ spatial_neighborhood_as_data_frame <- function(x) {
   tryCatch(as.data.frame(x), error = function(e) NULL)
 }
 
-spatial_neighborhood_first_col <- function(df, candidates) {
-  hit <- candidates[tolower(candidates) %in% tolower(colnames(df))]
-  if (length(hit) == 0L) {
-    return(NULL)
-  }
-  colnames(df)[match(tolower(hit[1L]), tolower(colnames(df)))]
-}
-
 spatial_neighborhood_numeric_col <- function(df, col) {
   if (is.null(col)) {
     return(rep(NA_real_, nrow(df)))
   }
   suppressWarnings(as.numeric(df[[col]]))
-}
-
-spatial_neighborhood_linewidth_name <- function() {
-  if (utils::packageVersion("ggplot2") >= "3.4.0") {
-    "linewidth"
-  } else {
-    "size"
-  }
 }

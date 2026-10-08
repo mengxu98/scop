@@ -211,14 +211,18 @@ SCENICPlot <- function(
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!is.null(point_alpha)) {
-    .Deprecated(msg = paste0("`point_alpha` is deprecated; use `pt.alpha` instead. ",
-      "It will be removed in scop 1.0.0."))
+    .Deprecated(msg = paste0(
+      "`point_alpha` is deprecated; use `pt.alpha` instead. ",
+      "It will be removed in scop 1.0.0."
+    ))
     pt.alpha <- point_alpha
   }
   point_alpha <- pt.alpha
   if (!is.null(point_size)) {
-    .Deprecated(msg = paste0("`point_size` is deprecated; use `pt.size` instead. ",
-      "It will be removed in scop 1.0.0."))
+    .Deprecated(msg = paste0(
+      "`point_size` is deprecated; use `pt.size` instead. ",
+      "It will be removed in scop 1.0.0."
+    ))
     pt.size <- point_size
   }
   point_size <- pt.size
@@ -2604,15 +2608,6 @@ scenic_assay_feature <- function(feature, assay_features) {
 scenic_make_assay_feature_map <- function(features) {
   features <- as.character(features)
   stats::setNames(make.unique(gsub("[_|]", "-", features)), features)
-}
-
-scenic_assay_features <- function(features, assay_features) {
-  vapply(
-    as.character(features),
-    scenic_assay_feature,
-    character(1),
-    assay_features = assay_features
-  )
 }
 
 scenic_group_tf_expression <- function(
