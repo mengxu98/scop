@@ -224,3 +224,33 @@ test_that("RunSpatialNeighborhood validates spatial inputs clearly", {
     "should be one of"
   )
 })
+
+test_that("shared neighborhood filtering preserves order and empty schemas", {
+  pairs <- data.frame(
+    from = c("T", "B", "T", "B"),
+    to = c("B", "T", "T", "B"),
+    estimate = c(0.5, NA_real_, 0.2, -0.1),
+    row.names = c("p3", "p1", "p4", "p2")
+  )
+  edges <- pairs
+  edges$cell <- c("c3", "c1", "c4", "c2")
+  for (df in list(pairs, edges)) {
+    expect_identical(spatial_neighborhood_filter(df), df)
+    expect_identical(
+      spatial_neighborhood_filter(df, from = "B"),
+      df[c(2L, 4L), , drop = FALSE]
+    )
+    expect_identical(
+      spatial_neighborhood_filter(df, from = "B", to = "T"),
+      df[2L, , drop = FALSE]
+    )
+    expect_identical(
+      spatial_neighborhood_filter(df, from = character()),
+      df[FALSE, , drop = FALSE]
+    )
+    expect_identical(
+      spatial_neighborhood_filter(df, to = "missing"),
+      df[FALSE, , drop = FALSE]
+    )
+  }
+})
