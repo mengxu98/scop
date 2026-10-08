@@ -1,5 +1,11 @@
 # scop (development version)
 
+* **fix**: `GetSpatialResult()` returns current-object cells in their current
+  order and recomputes BANKSY domain counts after subsetting, in both storage
+  modes. New BANKSY fits retain a private per-cell identity column so renamed
+  cells map exactly to their fitted results. Missing or invalid provenance
+  reports a clear error; legacy exact-ID subsets remain supported.
+
 * **refactor**: Remove unused internal helpers and Rcpp bridges, share spatial
   neighborhood filtering and heatmap border preprocessing, and drop redundant
   Imports checks and obsolete ggplot2 compatibility code.
