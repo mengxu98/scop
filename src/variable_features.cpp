@@ -7,63 +7,7 @@
 #endif
 using namespace Rcpp;
 
-struct RowAccumulation {
-  std::vector<double> sum;
-  std::vector<double> sumsq;
-  std::vector<int> count;
 
-  explicit RowAccumulation(int rows) : sum(rows, 0.0), sumsq(rows, 0.0),
-    count(rows, 0) {}
-};
-
-static RowAccumulation accumulate_rows(const int* colptr, const int* row_index,
-                                       const double* values, int rows,
-                                       int columns) {
-  RowAccumulation out(rows);
-#ifdef _OPENMP
-  const int max_threads = omp_get_max_threads();
-  if (max_threads > 1 && columns >= max_threads * 64) {
-    std::vector<RowAccumulation> local;
-    local.reserve(max_threads);
-    for (int t = 0; t < max_threads; ++t) {
-      local.push_back(RowAccumulation(rows));
-    }
-#pragma omp parallel
-    {
-      const int tid = omp_get_thread_num();
-      RowAccumulation& acc = local[tid];
-#pragma omp for schedule(static)
-      for (int col = 0; col < columns; ++col) {
-        for (int pos = colptr[col]; pos < colptr[col + 1]; ++pos) {
-          const int row = row_index[pos];
-          const double value = values[pos];
-          acc.sum[row] += value;
-          acc.sumsq[row] += value * value;
-          acc.count[row] += 1;
-        }
-      }
-    }
-    for (int t = 0; t < max_threads; ++t) {
-      for (int row = 0; row < rows; ++row) {
-        out.sum[row] += local[t].sum[row];
-        out.sumsq[row] += local[t].sumsq[row];
-        out.count[row] += local[t].count[row];
-      }
-    }
-    return out;
-  }
-#endif
-  for (int col = 0; col < columns; ++col) {
-    for (int pos = colptr[col]; pos < colptr[col + 1]; ++pos) {
-      const int row = row_index[pos];
-      const double value = values[pos];
-      out.sum[row] += value;
-      out.sumsq[row] += value * value;
-      out.count[row] += 1;
-    }
-  }
-  return out;
-}
 
 // [[Rcpp::export]]
 List sparse_row_mean_var(IntegerVector p, IntegerVector i, NumericVector x,
@@ -159,20 +103,6 @@ List sparse_row_mean_var_dgc_list(List mats, int nrow) {
                       Named("ncol") = ncol_total);
 }
 
-static void prepare_standardization(NumericVector mu, NumericVector sd,
-                                    std::vector<double>& inv_sd,
-                                    std::vector<double>& zero_offset) {
-  const int rows = mu.size();
-  for (int row = 0; row < rows; ++row) {
-    if (sd[row] == 0.0) {
-      inv_sd[row] = 0.0;
-      zero_offset[row] = 0.0;
-    } else {
-      inv_sd[row] = 1.0 / sd[row];
-      zero_offset[row] = mu[row] * inv_sd[row];
-    }
-  }
-}
 
 // [[Rcpp::export]]
 NumericVector sparse_row_var_std(IntegerVector p, IntegerVector i, NumericVector x,

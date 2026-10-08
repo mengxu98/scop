@@ -654,31 +654,6 @@ static S4 sctenifold_dgCMatrix_from_dense_threshold(
   return out;
 }
 
-// [[Rcpp::export]]
-NumericMatrix sctenifold_pcnet_covariance_raw(
-  NumericMatrix x,
-  int n_comp = 3,
-  int ncv = 0,
-  int maxit = 1000,
-  double tol = 1e-10,
-  int cores = 1
-) {
-  Eigen::MatrixXd coefficients = sctenifold_pcnet_raw_eigen(
-    x,
-    n_comp,
-    ncv,
-    maxit,
-    tol,
-    cores
-  );
-  NumericMatrix out(coefficients.rows(), coefficients.cols());
-  for (int j = 0; j < coefficients.cols(); ++j) {
-    for (int i = 0; i < coefficients.rows(); ++i) {
-      out(i, j) = coefficients(i, j);
-    }
-  }
-  return out;
-}
 
 // [[Rcpp::export]]
 S4 sctenifold_pcnet_covariance_sparse(

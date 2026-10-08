@@ -1925,23 +1925,6 @@ NumericMatrix plage_dense(
 
 
 
-static std::vector<std::vector<int> > gsva_sets_from_list(List gene_sets, int n_genes) {
-  const int n_sets = gene_sets.size();
-  std::vector<std::vector<int> > sets(n_sets);
-  for (int set_i = 0; set_i < n_sets; ++set_i) {
-    IntegerVector genes = gene_sets[set_i];
-    sets[set_i].reserve(genes.size());
-    for (int gene_i = 0; gene_i < genes.size(); ++gene_i) {
-      const int gene = genes[gene_i] - 1;
-      if (gene >= 0 && gene < n_genes) {
-        sets[set_i].push_back(gene);
-      }
-    }
-    std::sort(sets[set_i].begin(), sets[set_i].end());
-    sets[set_i].erase(std::unique(sets[set_i].begin(), sets[set_i].end()), sets[set_i].end());
-  }
-  return sets;
-}
 
 
 static void gsva_score_z_chunk(

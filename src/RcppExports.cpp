@@ -203,22 +203,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cellrank_velocity_kernel_gene_cpp
-NumericMatrix cellrank_velocity_kernel_gene_cpp(NumericMatrix gene_velocity, NumericMatrix expression, IntegerMatrix knn_idx, bool backward, double softmax_scale, int n_neighbors_velo);
-RcppExport SEXP _scop_cellrank_velocity_kernel_gene_cpp(SEXP gene_velocitySEXP, SEXP expressionSEXP, SEXP knn_idxSEXP, SEXP backwardSEXP, SEXP softmax_scaleSEXP, SEXP n_neighbors_veloSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type gene_velocity(gene_velocitySEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type expression(expressionSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
-    Rcpp::traits::input_parameter< bool >::type backward(backwardSEXP);
-    Rcpp::traits::input_parameter< double >::type softmax_scale(softmax_scaleSEXP);
-    Rcpp::traits::input_parameter< int >::type n_neighbors_velo(n_neighbors_veloSEXP);
-    rcpp_result_gen = Rcpp::wrap(cellrank_velocity_kernel_gene_cpp(gene_velocity, expression, knn_idx, backward, softmax_scale, n_neighbors_velo));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cellrank_pseudotime_kernel_cpp
 NumericMatrix cellrank_pseudotime_kernel_cpp(NumericVector pseudotime, IntegerMatrix knn_idx, NumericVector cell_weights, double bandwidth, bool backward);
 RcppExport SEXP _scop_cellrank_pseudotime_kernel_cpp(SEXP pseudotimeSEXP, SEXP knn_idxSEXP, SEXP cell_weightsSEXP, SEXP bandwidthSEXP, SEXP backwardSEXP) {
@@ -812,19 +796,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// wilcox_rank_sum_sparse_all_cells
-NumericVector wilcox_rank_sum_sparse_all_cells(S4 mat, int n_group1, int n_threads);
-RcppExport SEXP _scop_wilcox_rank_sum_sparse_all_cells(SEXP matSEXP, SEXP n_group1SEXP, SEXP n_threadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< S4 >::type mat(matSEXP);
-    Rcpp::traits::input_parameter< int >::type n_group1(n_group1SEXP);
-    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(wilcox_rank_sum_sparse_all_cells(mat, n_group1, n_threads));
-    return rcpp_result_gen;
-END_RCPP
-}
 // milo_neighborhood_medians_cpp
 NumericMatrix milo_neighborhood_medians_cpp(NumericMatrix coords, IntegerMatrix knn_idx);
 RcppExport SEXP _scop_milo_neighborhood_medians_cpp(SEXP coordsSEXP, SEXP knn_idxSEXP) {
@@ -1072,20 +1043,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// phate_affinity_cpp
-List phate_affinity_cpp(NumericMatrix knn_dist, IntegerMatrix knn_idx, double alpha_decay, int bandwidth_k);
-RcppExport SEXP _scop_phate_affinity_cpp(SEXP knn_distSEXP, SEXP knn_idxSEXP, SEXP alpha_decaySEXP, SEXP bandwidth_kSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type knn_dist(knn_distSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix >::type knn_idx(knn_idxSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha_decay(alpha_decaySEXP);
-    Rcpp::traits::input_parameter< int >::type bandwidth_k(bandwidth_kSEXP);
-    rcpp_result_gen = Rcpp::wrap(phate_affinity_cpp(knn_dist, knn_idx, alpha_decay, bandwidth_k));
-    return rcpp_result_gen;
-END_RCPP
-}
 // phate_diffusion_operator_cpp
 NumericMatrix phate_diffusion_operator_cpp(IntegerVector rows, IntegerVector cols, NumericVector vals, int n_cells, int t_max);
 RcppExport SEXP _scop_phate_diffusion_operator_cpp(SEXP rowsSEXP, SEXP colsSEXP, SEXP valsSEXP, SEXP n_cellsSEXP, SEXP t_maxSEXP) {
@@ -1234,21 +1191,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type knn(knnSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type pseudotime(pseudotimeSEXP);
     rcpp_result_gen = Rcpp::wrap(palantir_markov_chain_cpp(wp_data, knn, pseudotime));
-    return rcpp_result_gen;
-END_RCPP
-}
-// palantir_terminal_states_cpp
-List palantir_terminal_states_cpp(IntegerVector T_i, IntegerVector T_j, NumericVector T_x, int n, NumericMatrix wp_data);
-RcppExport SEXP _scop_palantir_terminal_states_cpp(SEXP T_iSEXP, SEXP T_jSEXP, SEXP T_xSEXP, SEXP nSEXP, SEXP wp_dataSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type T_i(T_iSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type T_j(T_jSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type T_x(T_xSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type wp_data(wp_dataSEXP);
-    rcpp_result_gen = Rcpp::wrap(palantir_terminal_states_cpp(T_i, T_j, T_x, n, wp_data));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1660,19 +1602,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// scenic_ctx_auc_nes
-List scenic_ctx_auc_nes(IntegerMatrix ranks, double nes_threshold, int rank_cutoff);
-RcppExport SEXP _scop_scenic_ctx_auc_nes(SEXP ranksSEXP, SEXP nes_thresholdSEXP, SEXP rank_cutoffSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerMatrix >::type ranks(ranksSEXP);
-    Rcpp::traits::input_parameter< double >::type nes_threshold(nes_thresholdSEXP);
-    Rcpp::traits::input_parameter< int >::type rank_cutoff(rank_cutoffSEXP);
-    rcpp_result_gen = Rcpp::wrap(scenic_ctx_auc_nes(ranks, nes_threshold, rank_cutoff));
-    return rcpp_result_gen;
-END_RCPP
-}
 // scenicplus_region_gene_cor
 NumericVector scenicplus_region_gene_cor(NumericMatrix atac_log, NumericMatrix rna_log, IntegerVector region_idx, IntegerVector gene_idx);
 RcppExport SEXP _scop_scenicplus_region_gene_cor(SEXP atac_logSEXP, SEXP rna_logSEXP, SEXP region_idxSEXP, SEXP gene_idxSEXP) {
@@ -1932,22 +1861,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sctenifold_pcnet_covariance_raw
-NumericMatrix sctenifold_pcnet_covariance_raw(NumericMatrix x, int n_comp, int ncv, int maxit, double tol, int cores);
-RcppExport SEXP _scop_sctenifold_pcnet_covariance_raw(SEXP xSEXP, SEXP n_compSEXP, SEXP ncvSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP coresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type n_comp(n_compSEXP);
-    Rcpp::traits::input_parameter< int >::type ncv(ncvSEXP);
-    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
-    rcpp_result_gen = Rcpp::wrap(sctenifold_pcnet_covariance_raw(x, n_comp, ncv, maxit, tol, cores));
-    return rcpp_result_gen;
-END_RCPP
-}
 // sctenifold_pcnet_covariance_sparse
 S4 sctenifold_pcnet_covariance_sparse(NumericMatrix x, int n_comp, bool scale_scores, bool symmetric, double q, int ncv, int maxit, double tol, int cores);
 RcppExport SEXP _scop_sctenifold_pcnet_covariance_sparse(SEXP xSEXP, SEXP n_compSEXP, SEXP scale_scoresSEXP, SEXP symmetricSEXP, SEXP qSEXP, SEXP ncvSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP coresSEXP) {
@@ -2051,30 +1964,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// scibet_predict
-NumericMatrix scibet_predict(NumericMatrix query, NumericMatrix core, IntegerVector feature_index);
-RcppExport SEXP _scop_scibet_predict(SEXP querySEXP, SEXP coreSEXP, SEXP feature_indexSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type query(querySEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type core(coreSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type feature_index(feature_indexSEXP);
-    rcpp_result_gen = Rcpp::wrap(scibet_predict(query, core, feature_index));
-    return rcpp_result_gen;
-END_RCPP
-}
-// scaleC
-List scaleC(Eigen::MatrixXd X);
-RcppExport SEXP _scop_scaleC(SEXP XSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(scaleC(X));
-    return rcpp_result_gen;
-END_RCPP
-}
 // OmegaC
 List OmegaC(Eigen::MatrixXd& Omega, Eigen::VectorXi& sgn);
 RcppExport SEXP _scop_OmegaC(SEXP OmegaSEXP, SEXP sgnSEXP) {
@@ -2096,177 +1985,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::SparseMatrix<double>& >::type OmegaS(OmegaSSEXP);
     Rcpp::traits::input_parameter< Eigen::VectorXi& >::type sgn(sgnSEXP);
     rcpp_result_gen = Rcpp::wrap(OmegaSC(OmegaS, sgn));
-    return rcpp_result_gen;
-END_RCPP
-}
-// maxLambdaLmC
-double maxLambdaLmC(Eigen::MatrixXd X, Eigen::VectorXd y, double alpha, Eigen::VectorXd wbeta, int N0, int p);
-RcppExport SEXP _scop_maxLambdaLmC(SEXP XSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP wbetaSEXP, SEXP N0SEXP, SEXP pSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type wbeta(wbetaSEXP);
-    Rcpp::traits::input_parameter< int >::type N0(N0SEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    rcpp_result_gen = Rcpp::wrap(maxLambdaLmC(X, y, alpha, wbeta, N0, p));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cvTrimLmC
-Eigen::VectorXd cvTrimLmC(Eigen::VectorXd beta, int nn, int nn2, Eigen::VectorXi loco, Eigen::MatrixXd XF, Eigen::VectorXd yF, int NF, double a0);
-RcppExport SEXP _scop_cvTrimLmC(SEXP betaSEXP, SEXP nnSEXP, SEXP nn2SEXP, SEXP locoSEXP, SEXP XFSEXP, SEXP yFSEXP, SEXP NFSEXP, SEXP a0SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< int >::type nn(nnSEXP);
-    Rcpp::traits::input_parameter< int >::type nn2(nn2SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type loco(locoSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type XF(XFSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type yF(yFSEXP);
-    Rcpp::traits::input_parameter< int >::type NF(NFSEXP);
-    Rcpp::traits::input_parameter< double >::type a0(a0SEXP);
-    rcpp_result_gen = Rcpp::wrap(cvTrimLmC(beta, nn, nn2, loco, XF, yF, NF, a0));
-    return rcpp_result_gen;
-END_RCPP
-}
-// EnetLmC
-List EnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y, double alpha, Eigen::VectorXd lambda, int nlambda, int ilambda, Eigen::VectorXd wbeta, int p, int N0, double thresh, int maxit, double thresh2);
-RcppExport SEXP _scop_EnetLmC(SEXP XSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP ilambdaSEXP, SEXP wbetaSEXP, SEXP pSEXP, SEXP N0SEXP, SEXP threshSEXP, SEXP maxitSEXP, SEXP thresh2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type nlambda(nlambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type ilambda(ilambdaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type wbeta(wbetaSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type N0(N0SEXP);
-    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
-    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< double >::type thresh2(thresh2SEXP);
-    rcpp_result_gen = Rcpp::wrap(EnetLmC(X, y, alpha, lambda, nlambda, ilambda, wbeta, p, N0, thresh, maxit, thresh2));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cvEnetLmC
-List cvEnetLmC(Eigen::MatrixXd X, Eigen::VectorXd y, double alpha, Eigen::VectorXd lambda, int nlambda, Eigen::VectorXd wbeta, int N, int p, double thresh, int maxit, Eigen::MatrixXd XF, Eigen::VectorXd yF, int NF, double thresh2);
-RcppExport SEXP _scop_cvEnetLmC(SEXP XSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP wbetaSEXP, SEXP NSEXP, SEXP pSEXP, SEXP threshSEXP, SEXP maxitSEXP, SEXP XFSEXP, SEXP yFSEXP, SEXP NFSEXP, SEXP thresh2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type nlambda(nlambdaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type wbeta(wbetaSEXP);
-    Rcpp::traits::input_parameter< int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
-    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type XF(XFSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type yF(yFSEXP);
-    Rcpp::traits::input_parameter< int >::type NF(NFSEXP);
-    Rcpp::traits::input_parameter< double >::type thresh2(thresh2SEXP);
-    rcpp_result_gen = Rcpp::wrap(cvEnetLmC(X, y, alpha, lambda, nlambda, wbeta, N, p, thresh, maxit, XF, yF, NF, thresh2));
-    return rcpp_result_gen;
-END_RCPP
-}
-// NetLmC
-List NetLmC(Eigen::MatrixXd& X, Eigen::VectorXd& y, double alpha, Eigen::VectorXd lambda, int nlambda, int ilambda, Eigen::VectorXd wbeta, Eigen::SparseMatrix<double>& Omega, Eigen::MatrixXd loc, Eigen::VectorXi nadj, int p, int N0, double thresh, int maxit, double thresh2);
-RcppExport SEXP _scop_NetLmC(SEXP XSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP ilambdaSEXP, SEXP wbetaSEXP, SEXP OmegaSEXP, SEXP locSEXP, SEXP nadjSEXP, SEXP pSEXP, SEXP N0SEXP, SEXP threshSEXP, SEXP maxitSEXP, SEXP thresh2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type nlambda(nlambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type ilambda(ilambdaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type wbeta(wbetaSEXP);
-    Rcpp::traits::input_parameter< Eigen::SparseMatrix<double>& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type loc(locSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type nadj(nadjSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type N0(N0SEXP);
-    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
-    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< double >::type thresh2(thresh2SEXP);
-    rcpp_result_gen = Rcpp::wrap(NetLmC(X, y, alpha, lambda, nlambda, ilambda, wbeta, Omega, loc, nadj, p, N0, thresh, maxit, thresh2));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cvNetLmC
-List cvNetLmC(Eigen::MatrixXd& X, Eigen::VectorXd& y, double alpha, Eigen::VectorXd lambda, int nlambda, Eigen::VectorXd wbeta, Eigen::SparseMatrix<double>& Omega, Eigen::MatrixXd loc, Eigen::VectorXi nadj, int N, int p, double thresh, int maxit, Eigen::MatrixXd XF, Eigen::VectorXd yF, int NF, double thresh2);
-RcppExport SEXP _scop_cvNetLmC(SEXP XSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP wbetaSEXP, SEXP OmegaSEXP, SEXP locSEXP, SEXP nadjSEXP, SEXP NSEXP, SEXP pSEXP, SEXP threshSEXP, SEXP maxitSEXP, SEXP XFSEXP, SEXP yFSEXP, SEXP NFSEXP, SEXP thresh2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type nlambda(nlambdaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type wbeta(wbetaSEXP);
-    Rcpp::traits::input_parameter< Eigen::SparseMatrix<double>& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type loc(locSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type nadj(nadjSEXP);
-    Rcpp::traits::input_parameter< int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
-    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type XF(XFSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type yF(yFSEXP);
-    Rcpp::traits::input_parameter< int >::type NF(NFSEXP);
-    Rcpp::traits::input_parameter< double >::type thresh2(thresh2SEXP);
-    rcpp_result_gen = Rcpp::wrap(cvNetLmC(X, y, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, p, thresh, maxit, XF, yF, NF, thresh2));
-    return rcpp_result_gen;
-END_RCPP
-}
-// maxLambdaCoxC
-double maxLambdaCoxC(Eigen::MatrixXd X, Eigen::VectorXd tevent, int N, Eigen::VectorXi nevent, Eigen::VectorXi nevent1, Eigen::VectorXi loc1, int n, double alpha, Eigen::VectorXd wbeta, int N0, int p);
-RcppExport SEXP _scop_maxLambdaCoxC(SEXP XSEXP, SEXP teventSEXP, SEXP NSEXP, SEXP neventSEXP, SEXP nevent1SEXP, SEXP loc1SEXP, SEXP nSEXP, SEXP alphaSEXP, SEXP wbetaSEXP, SEXP N0SEXP, SEXP pSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type tevent(teventSEXP);
-    Rcpp::traits::input_parameter< int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type nevent(neventSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type nevent1(nevent1SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type loc1(loc1SEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type wbeta(wbetaSEXP);
-    Rcpp::traits::input_parameter< int >::type N0(N0SEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    rcpp_result_gen = Rcpp::wrap(maxLambdaCoxC(X, tevent, N, nevent, nevent1, loc1, n, alpha, wbeta, N0, p));
-    return rcpp_result_gen;
-END_RCPP
-}
-// pletaCm
-double pletaCm(Eigen::VectorXd& xb, Eigen::VectorXd& exb, Eigen::VectorXi& nevent, Eigen::VectorXi& nevent1, Eigen::VectorXi& loc1, int& n, int& ifast, int& itwo);
-RcppExport SEXP _scop_pletaCm(SEXP xbSEXP, SEXP exbSEXP, SEXP neventSEXP, SEXP nevent1SEXP, SEXP loc1SEXP, SEXP nSEXP, SEXP ifastSEXP, SEXP itwoSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type xb(xbSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type exb(exbSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi& >::type nevent(neventSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi& >::type nevent1(nevent1SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi& >::type loc1(loc1SEXP);
-    Rcpp::traits::input_parameter< int& >::type n(nSEXP);
-    Rcpp::traits::input_parameter< int& >::type ifast(ifastSEXP);
-    Rcpp::traits::input_parameter< int& >::type itwo(itwoSEXP);
-    rcpp_result_gen = Rcpp::wrap(pletaCm(xb, exb, nevent, nevent1, loc1, n, ifast, itwo));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2419,142 +2137,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::VectorXi >::type loc1F(loc1FSEXP);
     Rcpp::traits::input_parameter< int >::type nF(nFSEXP);
     rcpp_result_gen = Rcpp::wrap(cvNetCoxC(X, tevent, alpha, lambda, nlambda, wbeta, Omega, loc, nadj, N, nevent, nevent1, loc1, n, p, N0, thresh, maxit, ifast, XF, NF, neventF, nevent1F, loc1F, nF));
-    return rcpp_result_gen;
-END_RCPP
-}
-// maxLambdaLogC
-double maxLambdaLogC(Eigen::MatrixXd X, Eigen::VectorXd Z, double alpha, Eigen::VectorXd wbeta, int N0, int p);
-RcppExport SEXP _scop_maxLambdaLogC(SEXP XSEXP, SEXP ZSEXP, SEXP alphaSEXP, SEXP wbetaSEXP, SEXP N0SEXP, SEXP pSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type Z(ZSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type wbeta(wbetaSEXP);
-    Rcpp::traits::input_parameter< int >::type N0(N0SEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    rcpp_result_gen = Rcpp::wrap(maxLambdaLogC(X, Z, alpha, wbeta, N0, p));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cvTrimLogC
-Eigen::VectorXd cvTrimLogC(Eigen::VectorXd beta, int nn, int nn2, Eigen::VectorXi loco, Eigen::MatrixXd XF, Eigen::VectorXd yF, int NF, double threshP);
-RcppExport SEXP _scop_cvTrimLogC(SEXP betaSEXP, SEXP nnSEXP, SEXP nn2SEXP, SEXP locoSEXP, SEXP XFSEXP, SEXP yFSEXP, SEXP NFSEXP, SEXP threshPSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< int >::type nn(nnSEXP);
-    Rcpp::traits::input_parameter< int >::type nn2(nn2SEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type loco(locoSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type XF(XFSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type yF(yFSEXP);
-    Rcpp::traits::input_parameter< int >::type NF(NFSEXP);
-    Rcpp::traits::input_parameter< double >::type threshP(threshPSEXP);
-    rcpp_result_gen = Rcpp::wrap(cvTrimLogC(beta, nn, nn2, loco, XF, yF, NF, threshP));
-    return rcpp_result_gen;
-END_RCPP
-}
-// EnetLogC
-List EnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y, double alpha, Eigen::VectorXd lambda, int nlambda, int ilambda, Eigen::ArrayXd wbeta, Eigen::ArrayXd wbetai, int p, int N0, double thresh, int maxit, double threshP);
-RcppExport SEXP _scop_EnetLogC(SEXP XSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP ilambdaSEXP, SEXP wbetaSEXP, SEXP wbetaiSEXP, SEXP pSEXP, SEXP N0SEXP, SEXP threshSEXP, SEXP maxitSEXP, SEXP threshPSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type nlambda(nlambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type ilambda(ilambdaSEXP);
-    Rcpp::traits::input_parameter< Eigen::ArrayXd >::type wbeta(wbetaSEXP);
-    Rcpp::traits::input_parameter< Eigen::ArrayXd >::type wbetai(wbetaiSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type N0(N0SEXP);
-    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
-    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< double >::type threshP(threshPSEXP);
-    rcpp_result_gen = Rcpp::wrap(EnetLogC(X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, p, N0, thresh, maxit, threshP));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cvEnetLogC
-List cvEnetLogC(Eigen::MatrixXd X, Eigen::VectorXd y, double alpha, Eigen::VectorXd lambda, int nlambda, Eigen::ArrayXd wbeta, Eigen::ArrayXd wbetai, int p, int N0, double thresh, int maxit, Eigen::MatrixXd XF, Eigen::VectorXd yF, int NF, double threshP);
-RcppExport SEXP _scop_cvEnetLogC(SEXP XSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP wbetaSEXP, SEXP wbetaiSEXP, SEXP pSEXP, SEXP N0SEXP, SEXP threshSEXP, SEXP maxitSEXP, SEXP XFSEXP, SEXP yFSEXP, SEXP NFSEXP, SEXP threshPSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type nlambda(nlambdaSEXP);
-    Rcpp::traits::input_parameter< Eigen::ArrayXd >::type wbeta(wbetaSEXP);
-    Rcpp::traits::input_parameter< Eigen::ArrayXd >::type wbetai(wbetaiSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type N0(N0SEXP);
-    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
-    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type XF(XFSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type yF(yFSEXP);
-    Rcpp::traits::input_parameter< int >::type NF(NFSEXP);
-    Rcpp::traits::input_parameter< double >::type threshP(threshPSEXP);
-    rcpp_result_gen = Rcpp::wrap(cvEnetLogC(X, y, alpha, lambda, nlambda, wbeta, wbetai, p, N0, thresh, maxit, XF, yF, NF, threshP));
-    return rcpp_result_gen;
-END_RCPP
-}
-// NetLogC
-List NetLogC(Eigen::MatrixXd X, Eigen::VectorXd y, double alpha, Eigen::VectorXd lambda, int nlambda, int ilambda, Eigen::ArrayXd wbeta, Eigen::ArrayXd wbetai, Eigen::SparseMatrix<double>& Omega, Eigen::MatrixXd loc, Eigen::VectorXi nadj, int p, int N0, double thresh, int maxit, double threshP);
-RcppExport SEXP _scop_NetLogC(SEXP XSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP ilambdaSEXP, SEXP wbetaSEXP, SEXP wbetaiSEXP, SEXP OmegaSEXP, SEXP locSEXP, SEXP nadjSEXP, SEXP pSEXP, SEXP N0SEXP, SEXP threshSEXP, SEXP maxitSEXP, SEXP threshPSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type nlambda(nlambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type ilambda(ilambdaSEXP);
-    Rcpp::traits::input_parameter< Eigen::ArrayXd >::type wbeta(wbetaSEXP);
-    Rcpp::traits::input_parameter< Eigen::ArrayXd >::type wbetai(wbetaiSEXP);
-    Rcpp::traits::input_parameter< Eigen::SparseMatrix<double>& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type loc(locSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type nadj(nadjSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type N0(N0SEXP);
-    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
-    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< double >::type threshP(threshPSEXP);
-    rcpp_result_gen = Rcpp::wrap(NetLogC(X, y, alpha, lambda, nlambda, ilambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, threshP));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cvNetLogC
-List cvNetLogC(Eigen::MatrixXd X, Eigen::VectorXd y, double alpha, Eigen::VectorXd lambda, int nlambda, Eigen::ArrayXd wbeta, Eigen::ArrayXd wbetai, Eigen::SparseMatrix<double>& Omega, Eigen::MatrixXd loc, Eigen::VectorXi nadj, int p, int N0, double thresh, int maxit, Eigen::MatrixXd XF, Eigen::VectorXd yF, int NF, double threshP);
-RcppExport SEXP _scop_cvNetLogC(SEXP XSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP nlambdaSEXP, SEXP wbetaSEXP, SEXP wbetaiSEXP, SEXP OmegaSEXP, SEXP locSEXP, SEXP nadjSEXP, SEXP pSEXP, SEXP N0SEXP, SEXP threshSEXP, SEXP maxitSEXP, SEXP XFSEXP, SEXP yFSEXP, SEXP NFSEXP, SEXP threshPSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type X(XSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< int >::type nlambda(nlambdaSEXP);
-    Rcpp::traits::input_parameter< Eigen::ArrayXd >::type wbeta(wbetaSEXP);
-    Rcpp::traits::input_parameter< Eigen::ArrayXd >::type wbetai(wbetaiSEXP);
-    Rcpp::traits::input_parameter< Eigen::SparseMatrix<double>& >::type Omega(OmegaSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type loc(locSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXi >::type nadj(nadjSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type N0(N0SEXP);
-    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
-    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type XF(XFSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type yF(yFSEXP);
-    Rcpp::traits::input_parameter< int >::type NF(NFSEXP);
-    Rcpp::traits::input_parameter< double >::type threshP(threshPSEXP);
-    rcpp_result_gen = Rcpp::wrap(cvNetLogC(X, y, alpha, lambda, nlambda, wbeta, wbetai, Omega, loc, nadj, p, N0, thresh, maxit, XF, yF, NF, threshP));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -2876,7 +2458,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_cellrank_auto_n_states_cpp", (DL_FUNC) &_scop_cellrank_auto_n_states_cpp, 3},
     {"_scop_cellrank_velocity_kernel_cpp", (DL_FUNC) &_scop_cellrank_velocity_kernel_cpp, 6},
     {"_scop_cellrank_connectivity_kernel_cpp", (DL_FUNC) &_scop_cellrank_connectivity_kernel_cpp, 2},
-    {"_scop_cellrank_velocity_kernel_gene_cpp", (DL_FUNC) &_scop_cellrank_velocity_kernel_gene_cpp, 6},
     {"_scop_cellrank_pseudotime_kernel_cpp", (DL_FUNC) &_scop_cellrank_pseudotime_kernel_cpp, 5},
     {"_scop_cellrank_cytotrace_kernel_cpp", (DL_FUNC) &_scop_cellrank_cytotrace_kernel_cpp, 4},
     {"_scop_cellrank_cflare_cpp", (DL_FUNC) &_scop_cellrank_cflare_cpp, 4},
@@ -2917,7 +2498,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_pacmap_optimize_cpp", (DL_FUNC) &_scop_pacmap_optimize_cpp, 9},
     {"_scop_trimap_optimize_cpp", (DL_FUNC) &_scop_trimap_optimize_cpp, 10},
     {"_scop_wilcox_rank_sum_sparse", (DL_FUNC) &_scop_wilcox_rank_sum_sparse, 4},
-    {"_scop_wilcox_rank_sum_sparse_all_cells", (DL_FUNC) &_scop_wilcox_rank_sum_sparse_all_cells, 3},
     {"_scop_milo_neighborhood_medians_cpp", (DL_FUNC) &_scop_milo_neighborhood_medians_cpp, 2},
     {"_scop_milo_nhood_counts_cpp", (DL_FUNC) &_scop_milo_nhood_counts_cpp, 5},
     {"_scop_milo_weighted_fdr_cpp", (DL_FUNC) &_scop_milo_weighted_fdr_cpp, 2},
@@ -2936,7 +2516,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_cca_crossprod_matrix", (DL_FUNC) &_scop_cca_crossprod_matrix, 2},
     {"_scop_matrix_product", (DL_FUNC) &_scop_matrix_product, 2},
     {"_scop_phate_graphtools_affinity_data_cpp", (DL_FUNC) &_scop_phate_graphtools_affinity_data_cpp, 5},
-    {"_scop_phate_affinity_cpp", (DL_FUNC) &_scop_phate_affinity_cpp, 4},
     {"_scop_phate_diffusion_operator_cpp", (DL_FUNC) &_scop_phate_diffusion_operator_cpp, 5},
     {"_scop_phate_potential_distance_cpp", (DL_FUNC) &_scop_phate_potential_distance_cpp, 2},
     {"_scop_phate_metric_mds_cpp", (DL_FUNC) &_scop_phate_metric_mds_cpp, 2},
@@ -2948,7 +2527,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_palantir_maxmin_waypoints_cpp", (DL_FUNC) &_scop_palantir_maxmin_waypoints_cpp, 3},
     {"_scop_palantir_pseudotime_cpp", (DL_FUNC) &_scop_palantir_pseudotime_cpp, 8},
     {"_scop_palantir_markov_chain_cpp", (DL_FUNC) &_scop_palantir_markov_chain_cpp, 3},
-    {"_scop_palantir_terminal_states_cpp", (DL_FUNC) &_scop_palantir_terminal_states_cpp, 5},
     {"_scop_palantir_absorption_cpp", (DL_FUNC) &_scop_palantir_absorption_cpp, 5},
     {"_scop_palantir_row_entropy_cpp", (DL_FUNC) &_scop_palantir_row_entropy_cpp, 1},
     {"_scop_scanpy_filter_genes_cpp", (DL_FUNC) &_scop_scanpy_filter_genes_cpp, 5},
@@ -2974,7 +2552,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_grnboost_tree_node_candidates", (DL_FUNC) &_scop_grnboost_tree_node_candidates, 13},
     {"_scop_scenic_ctx_recovery", (DL_FUNC) &_scop_scenic_ctx_recovery, 3},
     {"_scop_scenic_ctx_auc_avg2sd", (DL_FUNC) &_scop_scenic_ctx_auc_avg2sd, 4},
-    {"_scop_scenic_ctx_auc_nes", (DL_FUNC) &_scop_scenic_ctx_auc_nes, 3},
     {"_scop_scenicplus_region_gene_cor", (DL_FUNC) &_scop_scenicplus_region_gene_cor, 4},
     {"_scop_scenicplus_triplets_cpp", (DL_FUNC) &_scop_scenicplus_triplets_cpp, 9},
     {"_scop_scanpy_normalize_log_cpp", (DL_FUNC) &_scop_scanpy_normalize_log_cpp, 3},
@@ -2991,7 +2568,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_scanpy_pseudotime_cpp", (DL_FUNC) &_scop_scanpy_pseudotime_cpp, 6},
     {"_scop_scanpy_pseudotime_graph_cpp", (DL_FUNC) &_scop_scanpy_pseudotime_graph_cpp, 10},
     {"_scop_scanpy_stochastic_embedding_cpp", (DL_FUNC) &_scop_scanpy_stochastic_embedding_cpp, 4},
-    {"_scop_sctenifold_pcnet_covariance_raw", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_raw, 6},
     {"_scop_sctenifold_pcnet_covariance_sparse", (DL_FUNC) &_scop_sctenifold_pcnet_covariance_sparse, 9},
     {"_scop_sctenifold_tensor_decomposition", (DL_FUNC) &_scop_sctenifold_tensor_decomposition, 5},
     {"_scop_sctenifold_strict_direction", (DL_FUNC) &_scop_sctenifold_strict_direction, 2},
@@ -2999,29 +2575,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_sctenifold_pair_distances", (DL_FUNC) &_scop_sctenifold_pair_distances, 1},
     {"_scop_scibet_fit_predict", (DL_FUNC) &_scop_scibet_fit_predict, 7},
     {"_scop_scibet_fit_predict_sparse", (DL_FUNC) &_scop_scibet_fit_predict_sparse, 7},
-    {"_scop_scibet_predict", (DL_FUNC) &_scop_scibet_predict, 3},
-    {"_scop_scaleC", (DL_FUNC) &_scop_scaleC, 1},
     {"_scop_OmegaC", (DL_FUNC) &_scop_OmegaC, 2},
     {"_scop_OmegaSC", (DL_FUNC) &_scop_OmegaSC, 2},
-    {"_scop_maxLambdaLmC", (DL_FUNC) &_scop_maxLambdaLmC, 6},
-    {"_scop_cvTrimLmC", (DL_FUNC) &_scop_cvTrimLmC, 8},
-    {"_scop_EnetLmC", (DL_FUNC) &_scop_EnetLmC, 12},
-    {"_scop_cvEnetLmC", (DL_FUNC) &_scop_cvEnetLmC, 14},
-    {"_scop_NetLmC", (DL_FUNC) &_scop_NetLmC, 15},
-    {"_scop_cvNetLmC", (DL_FUNC) &_scop_cvNetLmC, 17},
-    {"_scop_maxLambdaCoxC", (DL_FUNC) &_scop_maxLambdaCoxC, 11},
-    {"_scop_pletaCm", (DL_FUNC) &_scop_pletaCm, 8},
     {"_scop_cvTrimCoxC", (DL_FUNC) &_scop_cvTrimCoxC, 18},
     {"_scop_EnetCoxC", (DL_FUNC) &_scop_EnetCoxC, 17},
     {"_scop_cvEnetCoxC", (DL_FUNC) &_scop_cvEnetCoxC, 22},
     {"_scop_NetCoxC", (DL_FUNC) &_scop_NetCoxC, 20},
     {"_scop_cvNetCoxC", (DL_FUNC) &_scop_cvNetCoxC, 25},
-    {"_scop_maxLambdaLogC", (DL_FUNC) &_scop_maxLambdaLogC, 6},
-    {"_scop_cvTrimLogC", (DL_FUNC) &_scop_cvTrimLogC, 8},
-    {"_scop_EnetLogC", (DL_FUNC) &_scop_EnetLogC, 13},
-    {"_scop_cvEnetLogC", (DL_FUNC) &_scop_cvEnetLogC, 15},
-    {"_scop_NetLogC", (DL_FUNC) &_scop_NetLogC, 16},
-    {"_scop_cvNetLogC", (DL_FUNC) &_scop_cvNetLogC, 18},
     {"_scop_scissor_gaussian_net_fit_cpp", (DL_FUNC) &_scop_scissor_gaussian_net_fit_cpp, 12},
     {"_scop_scissor_binomial_net_fit_cpp", (DL_FUNC) &_scop_scissor_binomial_net_fit_cpp, 12},
     {"_scop_spatial_gradient_screening_cpp", (DL_FUNC) &_scop_spatial_gradient_screening_cpp, 10},

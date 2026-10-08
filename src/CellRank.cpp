@@ -1166,65 +1166,6 @@ NumericMatrix cellrank_connectivity_kernel_cpp(
 }
 
 
-// [[Rcpp::export]]
-NumericMatrix cellrank_velocity_kernel_gene_cpp(
-    NumericMatrix gene_velocity,
-    NumericMatrix expression,
-    IntegerMatrix knn_idx,
-    bool backward = false,
-    double softmax_scale = 4.0,
-    int n_neighbors_velo = -1)
-{
-  const int n_genes = gene_velocity.nrow();
-  const int n_cells = gene_velocity.ncol();
-  const int n_neighbors = knn_idx.ncol();
-  if (n_neighbors_velo <= 0) n_neighbors_velo = n_neighbors;
-
-  std::vector<double> vn_cells(n_cells, 0.0);
-  for (int c = 0; c < n_cells; ++c) {
-    double sq = 0.0;
-    for (int g = 0; g < n_genes; ++g)
-      sq += gene_velocity(g, c) * gene_velocity(g, c);
-    vn_cells[c] = std::sqrt(sq);
-  }
-
-  NumericMatrix T(n_cells, n_cells);
-
-  for (int cell = 0; cell < n_cells; ++cell) {
-    if (vn_cells[cell] < 1e-10) { T(cell, cell) = 1.0; continue; }
-
-    double row_sum = 0.0;
-    for (int col = 0; col < n_neighbors_velo && col < n_neighbors; ++col) {
-      int nb = knn_idx(cell, col);
-      if (nb == NA_INTEGER) continue;
-      nb -= 1;
-      if (nb < 0 || nb >= n_cells || nb == cell) continue;
-
-      double dot = 0.0, ndsq = 0.0;
-      for (int g = 0; g < n_genes; ++g) {
-        double delta = expression(g, nb) - expression(g, cell);
-        double v = backward ? -gene_velocity(g, cell) : gene_velocity(g, cell);
-        dot += v * delta;
-        ndsq += delta * delta;
-      }
-      double nd = std::sqrt(ndsq);
-      if (nd < 1e-10) continue;
-
-      double cosine = dot / (vn_cells[cell] * nd);
-      if (!std::isfinite(cosine)) continue;
-      double weight = std::exp(cosine / softmax_scale);
-      T(cell, nb) = weight;
-      row_sum += weight;
-    }
-    if (row_sum > 0) {
-      for (int j = 0; j < n_cells; ++j) T(cell, j) /= row_sum;
-    } else {
-      T(cell, cell) = 1.0;
-    }
-  }
-
-  return T;
-}
 
 
 // [[Rcpp::export]]

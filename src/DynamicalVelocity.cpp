@@ -35,12 +35,6 @@ inline double spliced(double tau, double s0, double u0,
 }
 
 
-inline double tau_inv_u(double u, double uinf, double u0, double beta) {
-  if (std::abs(beta) < 1e-12 || std::abs(u - uinf) < 1e-12)
-    return 0.0;
-  double arg = std::max((u - uinf) / (u0 - uinf), 1e-12);
-  return -std::log(arg) / beta;
-}
 
 
 struct NMState {
@@ -64,11 +58,6 @@ static std::vector<double> nm_unpack_simplex(
   return std::vector<double>(simplex.begin() + idx * n, simplex.begin() + (idx + 1) * n);
 }
 
-static double nm_norm(const std::vector<double>& v) {
-  double s = 0.0;
-  for (double vi : v) s += vi * vi;
-  return std::sqrt(s);
-}
 
 std::vector<double> nelder_mead(
     NMState& state, NMFun fun,
