@@ -51,7 +51,6 @@ RunscCODA <- function(
       message_type = "error"
     )
   }
-  check_r("reticulate", verbose = FALSE)
   PrepareEnv(envname = envname, conda = conda, modules = "sccoda")
   conda <- resolve_conda(conda)
   envname <- get_envname(envname)

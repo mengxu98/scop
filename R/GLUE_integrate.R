@@ -70,7 +70,6 @@ GLUE_integrate <- function(
   verbose = TRUE,
   seed = 11
 ) {
-  check_r("Signac", verbose = FALSE)
   if (!is.list(GLUE_params)) {
     log_message(
       "{.arg GLUE_params} must be a list",

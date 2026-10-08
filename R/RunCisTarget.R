@@ -320,7 +320,6 @@ cisTarget_python <- function(
   verbose,
   ...
 ) {
-  check_r("reticulate", verbose = FALSE)
   envname <- envname %||% "scenic_env"
   PrepareEnv(
     envname = envname,

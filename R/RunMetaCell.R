@@ -657,7 +657,6 @@ metacell_metacell <- function(
 
     adj <- metacell_knn_adjacency(knn_idx, n)
 
-    check_r("igraph", verbose = FALSE)
     g <- igraph::graph_from_adjacency_matrix(
       adj,
       mode = "undirected",
