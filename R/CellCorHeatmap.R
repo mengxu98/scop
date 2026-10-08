@@ -319,27 +319,27 @@ CellCorHeatmap <- function(
   verbose = TRUE
 ) {
   set.seed(seed)
-  heatmap_border <- heatmap_border %||% border
-  cell_annotation_border <- cell_annotation_border %||% border
-  feature_annotation_border <- feature_annotation_border %||% border
-  heatmap_border_color <- heatmap_border_color(
-    heatmap_border,
-    heatmap_border_palcolor
+  borders <- prepare_heatmap_borders(
+    border = border,
+    heatmap_border = heatmap_border,
+    cell_annotation_border = cell_annotation_border,
+    feature_annotation_border = feature_annotation_border,
+    heatmap_border_palcolor = heatmap_border_palcolor,
+    cell_annotation_border_palcolor = cell_annotation_border_palcolor,
+    feature_annotation_border_palcolor = feature_annotation_border_palcolor,
+    heatmap_border_size = heatmap_border_size,
+    cell_annotation_border_size = cell_annotation_border_size,
+    feature_annotation_border_size = feature_annotation_border_size
   )
-  cell_annotation_border_color <- heatmap_border_color(
-    cell_annotation_border,
-    cell_annotation_border_palcolor
-  )
-  feature_annotation_border_color <- heatmap_border_color(
-    feature_annotation_border,
-    feature_annotation_border_palcolor
-  )
-  heatmap_border_size <- heatmap_border_size_value(heatmap_border_size)
-  cell_annotation_border_size <- heatmap_border_size_value(cell_annotation_border_size)
-  feature_annotation_border_size <- heatmap_border_size_value(feature_annotation_border_size)
-  heatmap_border <- heatmap_border_enabled(heatmap_border)
-  cell_annotation_border <- heatmap_border_enabled(cell_annotation_border)
-  feature_annotation_border <- heatmap_border_enabled(feature_annotation_border)
+  heatmap_border <- borders$heatmap_border
+  cell_annotation_border <- borders$cell_annotation_border
+  feature_annotation_border <- borders$feature_annotation_border
+  heatmap_border_color <- borders$heatmap_border_color
+  cell_annotation_border_color <- borders$cell_annotation_border_color
+  feature_annotation_border_color <- borders$feature_annotation_border_color
+  heatmap_border_size <- borders$heatmap_border_size
+  cell_annotation_border_size <- borders$cell_annotation_border_size
+  feature_annotation_border_size <- borders$feature_annotation_border_size
   if (isTRUE(raster_by_magick)) {
     check_r("magick", verbose = FALSE)
   }

@@ -203,3 +203,52 @@ test_that("CellCorHeatmap border settings also control group legends", {
     expect_identical(legends[[title]]$legend_gp$lwd, 2.5)
   }
 })
+
+test_that("shared heatmap border preprocessing preserves defaults and overrides", {
+  borders <- prepare_heatmap_borders(
+    border = FALSE,
+    heatmap_border = NULL,
+    cell_annotation_border = "navy",
+    feature_annotation_border = TRUE,
+    heatmap_border_palcolor = "red",
+    cell_annotation_border_palcolor = "green",
+    feature_annotation_border_palcolor = "purple",
+    heatmap_border_size = -1,
+    cell_annotation_border_size = 2.5,
+    feature_annotation_border_size = NA_real_
+  )
+  expect_identical(borders, list(
+    heatmap_border = FALSE,
+    cell_annotation_border = TRUE,
+    feature_annotation_border = TRUE,
+    heatmap_border_color = "red",
+    cell_annotation_border_color = "navy",
+    feature_annotation_border_color = "purple",
+    heatmap_border_size = 1,
+    cell_annotation_border_size = 2.5,
+    feature_annotation_border_size = 1
+  ))
+  defaults <- prepare_heatmap_borders(
+    border = TRUE,
+    heatmap_border = NULL,
+    cell_annotation_border = NULL,
+    feature_annotation_border = NULL,
+    heatmap_border_palcolor = "black",
+    cell_annotation_border_palcolor = "black",
+    feature_annotation_border_palcolor = "black",
+    heatmap_border_size = 1,
+    cell_annotation_border_size = 1,
+    feature_annotation_border_size = 1
+  )
+  expect_identical(defaults, list(
+    heatmap_border = TRUE,
+    cell_annotation_border = TRUE,
+    feature_annotation_border = TRUE,
+    heatmap_border_color = "black",
+    cell_annotation_border_color = "black",
+    feature_annotation_border_color = "black",
+    heatmap_border_size = 1,
+    cell_annotation_border_size = 1,
+    feature_annotation_border_size = 1
+  ))
+})

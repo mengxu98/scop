@@ -1,3 +1,49 @@
+prepare_heatmap_borders <- function(
+  border,
+  heatmap_border,
+  cell_annotation_border,
+  feature_annotation_border,
+  heatmap_border_palcolor,
+  cell_annotation_border_palcolor,
+  feature_annotation_border_palcolor,
+  heatmap_border_size,
+  cell_annotation_border_size,
+  feature_annotation_border_size
+) {
+  heatmap_border <- heatmap_border %||% border
+  cell_annotation_border <- cell_annotation_border %||% border
+  feature_annotation_border <- feature_annotation_border %||% border
+  heatmap_border_color <- heatmap_border_color(
+    heatmap_border,
+    heatmap_border_palcolor
+  )
+  cell_annotation_border_color <- heatmap_border_color(
+    cell_annotation_border,
+    cell_annotation_border_palcolor
+  )
+  feature_annotation_border_color <- heatmap_border_color(
+    feature_annotation_border,
+    feature_annotation_border_palcolor
+  )
+  heatmap_border_size <- heatmap_border_size_value(heatmap_border_size)
+  cell_annotation_border_size <- heatmap_border_size_value(cell_annotation_border_size)
+  feature_annotation_border_size <- heatmap_border_size_value(feature_annotation_border_size)
+  heatmap_border <- heatmap_border_enabled(heatmap_border)
+  cell_annotation_border <- heatmap_border_enabled(cell_annotation_border)
+  feature_annotation_border <- heatmap_border_enabled(feature_annotation_border)
+  list(
+    heatmap_border = heatmap_border,
+    cell_annotation_border = cell_annotation_border,
+    feature_annotation_border = feature_annotation_border,
+    heatmap_border_color = heatmap_border_color,
+    cell_annotation_border_color = cell_annotation_border_color,
+    feature_annotation_border_color = feature_annotation_border_color,
+    heatmap_border_size = heatmap_border_size,
+    cell_annotation_border_size = cell_annotation_border_size,
+    feature_annotation_border_size = feature_annotation_border_size
+  )
+}
+
 compact_heatmap_feature_annotation <- function(values, annotation_name) {
   if (is.numeric(values) || is.logical(values)) {
     return(values)
