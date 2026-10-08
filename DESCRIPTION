@@ -157,7 +157,7 @@ Suggests:
     withr
 Remotes:
     mengxu98/thisplot,
-    mengxu98/thisutils@bb62888fbf17e5988d71012677df3c47693290b2
+    mengxu98/thisutils
 LinkingTo:
     cli,
     Rcpp,
