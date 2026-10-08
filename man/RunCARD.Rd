@@ -40,12 +40,13 @@ RunCARD(
 
 \item{assay}{Assay used in \code{object}. If \code{NULL}, the default assay is used.}
 
-\item{reference_assay}{Assay used in \code{reference}.}
+\item{reference_assay}{Assay used in \code{reference}. Only cells present in this
+assay are used, with reference labels aligned by cell ID.}
 
 \item{layer, reference_layer}{Assay layers used for spatial and reference
 raw counts.}
 
-\item{features}{Features used for RCTD. If \code{NULL}, shared features are used.}
+\item{features}{Features used for CARD. If \code{NULL}, shared features are used.}
 
 \item{image}{Name of the Seurat spatial image used to recover coordinates
 when \code{coord.cols} are not available.}

@@ -12,10 +12,13 @@
 #' @param reference Reference `Seurat` object containing annotated single cells.
 #' @param reference_label Metadata column in `reference` with cell type labels.
 #' @param assay Assay used in `object`. If `NULL`, the default assay is used.
-#' @param reference_assay Assay used in `reference`.
+#' @param reference_assay Assay used in `reference`. Only cells present in this
+#' assay are used, with reference labels aligned by cell ID.
 #' @param layer,reference_layer Assay layers used for spatial and reference
 #' raw counts.
 #' @param features Features used for RCTD. If `NULL`, shared features are used.
+#' Total UMI depths are computed from each full selected assay/layer before
+#' feature filtering (and after optional count rounding), not from this subset.
 #' @param image Name of the Seurat spatial image used to recover coordinates
 #' when `coord.cols` are not available.
 #' @param coord.cols Metadata coordinate columns used when no image coordinate
@@ -28,7 +31,8 @@
 #' Visium spot deconvolution.
 #' @param max_cores Number of cores passed to `spacexr`.
 #' @param min_cells Minimum number of reference cells required for each cell
-#' type. Old `spacexr` RCTD requires at least 25 cells per type.
+#' type after selected-assay alignment and zero-count filtering. Old `spacexr`
+#' RCTD requires at least 25 cells per type.
 #' @param prefix Prefix for metadata columns.
 #' @param tool_name Name used to store the plain result bundle in `srt@tools`.
 #' @param store_results Whether to store detailed RCTD results in `srt@tools`.
@@ -143,35 +147,6 @@ RunRCTD <- function(
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
   reference_assay <- reference_assay %||% SeuratObject::DefaultAssay(reference)
 
-  labels <- resolve_reference_labels(reference, reference_label)
-  names(labels) <- colnames(reference)
-  keep_ref <- !is.na(labels) & nzchar(as.character(labels))
-  if (!all(keep_ref)) {
-    log_message(
-      "Drop {.val {sum(!keep_ref)}} reference cells with missing {.arg reference_label}",
-      verbose = verbose
-    )
-    reference <- reference[, keep_ref]
-    labels <- labels[keep_ref]
-    names(labels) <- colnames(reference)
-  }
-  if (length(labels) == 0L) {
-    log_message(
-      "{.arg reference_label} must contain at least one non-missing class",
-      message_type = "error"
-    )
-  }
-  labels <- rctd_filter_labels_by_min_cells(
-    labels = labels,
-    min_cells = min_cells,
-    verbose = verbose
-  )
-  dropped_cell_types <- attr(labels, "dropped_cell_types")
-  reference <- reference[, names(labels)]
-  labels <- factor(as.character(labels), levels = unique(as.character(labels)))
-  names(labels) <- colnames(reference)
-  label_map <- rctd_backend_label_map(labels)
-
   features_use <- resolve_common_features(
     srt = srt,
     reference = reference,
@@ -190,7 +165,7 @@ RunRCTD <- function(
     srt,
     assay = assay,
     layer = layer,
-    features = features_use,
+    features = NULL,
     data_label = "Spatial",
     round_counts = round_counts,
     verbose = verbose
@@ -199,11 +174,27 @@ RunRCTD <- function(
     reference,
     assay = reference_assay,
     layer = reference_layer,
-    features = features_use,
+    features = NULL,
     data_label = "Reference",
     round_counts = round_counts,
     verbose = verbose
   )
+  reference_input <- deconv_align_reference(
+    ref_counts, reference, reference_label, verbose = verbose
+  )
+  labels <- rctd_filter_labels_by_min_cells(
+    reference_input$labels, min_cells = min_cells, verbose = verbose
+  )
+  dropped_cell_types <- attr(labels, "dropped_cell_types")
+  labels <- droplevels(labels)
+  ref_counts <- reference_input$counts[, names(labels), drop = FALSE]
+
+  # spacexr's nUMI is the full selected-assay library depth, including genes
+  # excluded from the analysis. Selected-feature sums only decide zero counts.
+  st_numi <- Matrix::colSums(st_counts)
+  ref_numi <- Matrix::colSums(ref_counts)
+  st_counts <- st_counts[features_use, , drop = FALSE]
+  ref_counts <- ref_counts[features_use, , drop = FALSE]
   count_quality <- rctd_sparse_quality_cpp(
     st_counts = st_counts,
     ref_counts = ref_counts
@@ -224,17 +215,14 @@ RunRCTD <- function(
   st_counts <- st_counts[nonzero_features, , drop = FALSE]
   ref_counts <- ref_counts[nonzero_features, , drop = FALSE]
 
-  ref_numi <- count_quality$ref_numi
-  names(ref_numi) <- colnames(ref_counts)
-  keep_ref_numi <- is.finite(ref_numi) & ref_numi > 0
+  keep_ref_numi <- count_quality$ref_numi > 0
   if (!all(keep_ref_numi)) {
     log_message(
-      "Drop {.val {sum(!keep_ref_numi)}} reference cells with zero UMI",
+      "Drop {.val {sum(!keep_ref_numi)}} reference cells with zero counts in the selected shared features",
       verbose = verbose
     )
     ref_counts <- ref_counts[, keep_ref_numi, drop = FALSE]
-    labels <- labels[keep_ref_numi]
-    names(labels) <- colnames(ref_counts)
+    labels <- labels[colnames(ref_counts)]
     labels <- rctd_filter_labels_by_min_cells(
       labels = labels,
       min_cells = min_cells,
@@ -246,9 +234,6 @@ RunRCTD <- function(
     )
     ref_counts <- ref_counts[, names(labels), drop = FALSE]
     ref_numi <- ref_numi[names(labels)]
-    labels <- factor(as.character(labels), levels = unique(as.character(labels)))
-    names(labels) <- colnames(ref_counts)
-    label_map <- rctd_backend_label_map(labels)
   }
   if (ncol(ref_counts) == 0L) {
     log_message(
@@ -257,16 +242,16 @@ RunRCTD <- function(
     )
   }
 
-  st_numi <- count_quality$st_numi
-  names(st_numi) <- colnames(st_counts)
-  keep_spots <- is.finite(st_numi) & st_numi > 0
+  label_map <- rctd_backend_label_map(labels)
+
+  keep_spots <- count_quality$st_numi > 0
   if (!all(keep_spots)) {
     log_message(
-      "Drop {.val {sum(!keep_spots)}} spatial spots with zero UMI for RCTD",
+      "Drop {.val {sum(!keep_spots)}} spatial spots with zero counts in the selected shared features for RCTD",
       verbose = verbose
     )
     st_counts <- st_counts[, keep_spots, drop = FALSE]
-    st_numi <- st_numi[keep_spots]
+    st_numi <- st_numi[colnames(st_counts)]
   }
   if (ncol(st_counts) == 0L) {
     log_message(
@@ -292,6 +277,10 @@ RunRCTD <- function(
     "Run {.pkg spacexr} RCTD with {.val {nrow(st_counts)}} features, {.val {ncol(st_counts)}} spatial spots, and {.val {ncol(ref_counts)}} reference cells",
     verbose = verbose
   )
+  deconv_check_cell_order(st_counts, rownames(coords), "Spatial coordinates")
+  deconv_check_cell_order(st_counts, names(st_numi), "Spatial library depths")
+  deconv_check_cell_order(ref_counts, names(label_map$labels), "Reference labels")
+  deconv_check_cell_order(ref_counts, names(ref_numi), "Reference library depths")
   backend <- rctd_run_spacexr(
     st_counts = st_counts,
     coords = coords,
@@ -440,13 +429,16 @@ rctd_get_count_matrix <- function(
   srt,
   assay,
   layer,
-  features,
+  features = NULL,
   data_label = "Input",
   round_counts = TRUE,
   verbose = TRUE
 ) {
   mat <- GetAssayData5(srt, assay = assay, layer = layer)
-  mat <- mat[features, , drop = FALSE]
+  if (!is.null(features)) {
+    mat <- mat[features, , drop = FALSE]
+  }
+  deconv_validate_cell_ids(colnames(mat), paste(data_label, "counts"))
   if (!inherits(mat, "Matrix")) {
     mat <- Matrix::Matrix(mat, sparse = TRUE)
   }

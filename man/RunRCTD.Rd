@@ -39,12 +39,15 @@ RunRCTD(
 
 \item{assay}{Assay used in \code{object}. If \code{NULL}, the default assay is used.}
 
-\item{reference_assay}{Assay used in \code{reference}.}
+\item{reference_assay}{Assay used in \code{reference}. Only cells present in this
+assay are used, with reference labels aligned by cell ID.}
 
 \item{layer, reference_layer}{Assay layers used for spatial and reference
 raw counts.}
 
-\item{features}{Features used for RCTD. If \code{NULL}, shared features are used.}
+\item{features}{Features used for RCTD. If \code{NULL}, shared features are used.
+Total UMI depths are computed from each full selected assay/layer before
+feature filtering (and after optional count rounding), not from this subset.}
 
 \item{image}{Name of the Seurat spatial image used to recover coordinates
 when \code{coord.cols} are not available.}
@@ -58,7 +61,8 @@ Visium spot deconvolution.}
 \item{max_cores}{Number of cores passed to \code{spacexr}.}
 
 \item{min_cells}{Minimum number of reference cells required for each cell
-type. Old \code{spacexr} RCTD requires at least 25 cells per type.}
+type after selected-assay alignment and zero-count filtering. Old \code{spacexr}
+RCTD requires at least 25 cells per type.}
 
 \item{prefix}{Prefix for metadata columns.}
 
