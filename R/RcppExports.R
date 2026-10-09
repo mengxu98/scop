@@ -389,6 +389,22 @@ scenic_edge_correlation_cpp <- function(expr, tf_index, target_index, n_threads 
     .Call(`_scop_scenic_edge_correlation_cpp`, expr, tf_index, target_index, n_threads)
 }
 
+scenicplus_order_cpp <- function(values, decreasing = FALSE) {
+    .Call(`_scop_scenicplus_order_cpp`, values, decreasing)
+}
+
+scenicplus_rank_cpp <- function(expression, random_seed = 123L, cores = 1L) {
+    .Call(`_scop_scenicplus_rank_cpp`, expression, random_seed, cores)
+}
+
+scenicplus_region_gbm_cpp <- function(accessibility, expression, candidates, n_rounds = 500L, max_features = 0.1, random_seed = 666L, cores = 1L) {
+    .Call(`_scop_scenicplus_region_gbm_cpp`, accessibility, expression, candidates, n_rounds, max_features, random_seed, cores)
+}
+
+scenicplus_gsea_cpp <- function(rankings, hits, n_perm = 1000L, random_seed = 666L, cores = 1L) {
+    .Call(`_scop_scenicplus_gsea_cpp`, rankings, hits, n_perm, random_seed, cores)
+}
+
 grnboost_tree <- function(expr, regulator_idx, target_idx, n_rounds = 5000L, learning_rate = 0.01, max_edges_per_target = 0L, max_depth = 3L, max_features = 0.1, subsample = 0.9, early_stop_window_length = 25L, random_seed = 1234L, exclude_self = TRUE) {
     .Call(`_scop_grnboost_tree`, expr, regulator_idx, target_idx, n_rounds, learning_rate, max_edges_per_target, max_depth, max_features, subsample, early_stop_window_length, random_seed, exclude_self)
 }

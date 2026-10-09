@@ -43,7 +43,7 @@ RunSCENICPlus(
   grn_max_depth = 3,
   grn_max_features = 0.1,
   grn_subsample = 0.9,
-  grn_early_stop_window_length = 0,
+  grn_early_stop_window_length = 25,
   seed = 666,
   cores = NULL,
   assay_name = "scenicplus",
@@ -53,7 +53,10 @@ RunSCENICPlus(
   envname = "scenicplus_env",
   conda = "auto",
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  egrn_method = c("gsea", "leading_edge"),
+  egrn_n_perm = 1000L,
+  region_auc_rankings = NULL
 )
 }
 \arguments{
@@ -93,11 +96,14 @@ unambiguous.}
 
 \item{tf_gene_prior}{Optional precomputed TF-gene table with columns \code{TF},
 \code{target}, and \code{importance}. When supplied with \code{backend = "cpp"}, C++
-GRN inference is skipped and the table is used as the TF-gene evidence layer.}
+GRN inference is skipped and the table is used as the TF-gene evidence layer.
+If a \code{rho} column is absent, correlations are computed from RNA when native
+GSEA is requested.}
 
 \item{region_gene_prior}{Optional precomputed region-gene table with columns
 \code{region}, \code{gene}, and \code{score}. When supplied with \code{backend = "cpp"}, C++
-peak-to-gene correlation is skipped.}
+importance fitting is skipped. If a \code{rho} column is absent, correlations are
+computed from RNA and ATAC when native GSEA is requested.}
 
 \item{tf_region_prior}{Optional precomputed TF-region table with columns
 \code{TF}, \code{region}, and \code{score}. When supplied with \code{backend = "cpp"}, existing
@@ -183,8 +189,8 @@ tree split.}
 round.}
 
 \item{grn_early_stop_window_length}{Out-of-bag improvement window used for
-C++ GRNBoost2 early stopping. The RunSCENICPlus default is \code{0}, which
-disables early stopping to match official SCENIC+ \code{SGBM_KWARGS}.}
+C++ GRNBoost2 early stopping. The default is \code{25}, matching the monitor
+explicitly used by official SCENIC+. Set \code{0} to disable early stopping.}
 
 \item{seed}{Random seed used by the C++ stochastic boosting code. The
 default matches official SCENIC+ command-line wrappers.}
@@ -213,6 +219,15 @@ Default is \code{TRUE}.}
 
 \item{srt}{Deprecated alias for \code{object}; supply exactly one of the two. It
 will be removed in scop 1.0.0.}
+
+\item{egrn_method}{Local eModule filtering. \code{"gsea"} computes weighted
+permutation GSEA, NES and BH-adjusted p-values in native code. \code{"leading_edge"}
+retains the older approximation and its unfiltered fallback.}
+
+\item{egrn_n_perm}{Number of gene-set permutations per GSEA module.}
+
+\item{region_auc_rankings}{Optional cell-by-region 0-based rankings for
+region signature AUC. If absent, rankings are computed locally from ATAC.}
 }
 \value{
 A Seurat object with SCENICPlus-style results.
@@ -221,6 +236,14 @@ A Seurat object with SCENICPlus-style results.
 Build an approximate eRegulon result from paired RNA and chromatin assays.
 The C++ workflow is not an exact re-run of the official SCENIC+ Python
 workflow and requires explicit opt-in.
+}
+\details{
+The C++ route runs locally without importing or invoking Python. Native GSEA
+filters modules before merging; it does not substitute unfiltered triplets
+when no module passes. The tool result includes module \code{gsea_statistics},
+\code{region_regulon_list} and \code{region_auc} alongside gene AUC. Locally computed
+gene and region rankings use PCG tie-breaking with fixed seed 123; the
+inference and GSEA seed is controlled separately by \code{seed}.
 }
 \examples{
 \dontrun{
