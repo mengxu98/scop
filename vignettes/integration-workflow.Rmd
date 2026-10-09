@@ -7,25 +7,45 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   eval = TRUE,
+  error = FALSE,
+  message = FALSE,
   fig.align = "center",
+  fig.width = 12, fig.height = 8,
   dpi = 144,
-  out.width = "92%"
+  out.width = "100%"
 )
 ```
 
-This article shows how to run and inspect dataset integration in `scop`.
-Integration should be used when technical batches, platforms, donors, or
-experiments obscure the biological structure that should be compared across
-datasets.
+## What you will do
 
-`RunIntegration()` provides a common entry point for several integration
-methods. The key practical decisions are the batch column, the integration
-method, the reduction names to inspect, and whether the integrated structure
-preserves known biology.
+- **Question:** does correction reduce technology effects while retaining cell types?
+- **Input:** All 1,600 cells and 12,932 supplied genes in `panc8_sub`; `tech` identifies five technologies and `celltype` supplies evaluation labels.
+- **Output:** Uncorrected and Harmony reductions on the same cells, marker checks and a reloadable integrated object.
+- **How to run:** start a fresh R session and run the chunks in order. Printed tables and figures below are generated from that run; code-only alternatives are identified explicitly.
 
-Integration is not a required step for every dataset. Use it when technical
-structure prevents comparison across samples or platforms. Keep an unintegrated
-baseline so the report can show what changed after correction.
+
+
+Use integration when technical structure prevents comparison across samples or
+platforms, and retain an unintegrated baseline. If every condition occurs in
+only one batch, batch and biology are confounded: no attractive embedding can
+resolve that experimental-design problem.
+
+## Prepare the required Harmony source
+
+SCOP's `RunHarmony2()` checks the official GitHub package origin. A CRAN
+installation with the same package name does not satisfy that check and can
+trigger an installation attempt in the middle of an analysis. Install the
+exact source before starting this page, then restart R:
+
+```r
+remotes::install_github(
+  "immunogenomics/harmony@df19af23ae0639bd6ea2da63898f973f08c85862",
+  upgrade = "never"
+)
+```
+
+The tutorial's dependency preflight is read-only. It fails with a clear setup
+requirement instead of allowing an implicit installation during fitting.
 
 ## Prepare a Merged Object
 
@@ -36,8 +56,18 @@ to force during integration.
 
 ```{r load-object}
 library(scop)
+set.seed(11)
+harmony_source <- utils::packageDescription("harmony")
+stopifnot(identical(harmony_source$RemoteUsername, "immunogenomics"),
+          identical(harmony_source$RemoteSha, "df19af23ae0639bd6ea2da63898f973f08c85862"))
+data.frame(package = "harmony", version = harmony_source$Version,
+           source = paste(harmony_source$RemoteUsername, harmony_source$RemoteRepo, sep = "/"),
+           revision = harmony_source$RemoteSha)
 
 data(panc8_sub)
+input_cells <- colnames(panc8_sub)
+stopifnot(!anyNA(panc8_sub$tech), !anyNA(panc8_sub$celltype))
+data.frame(genes = nrow(panc8_sub), cells = ncol(panc8_sub))
 table(panc8_sub$tech)
 table(panc8_sub$celltype)
 ```
@@ -47,7 +77,8 @@ baseline for deciding whether integration removes technical structure without
 erasing cell-type structure.
 
 ```{r unintegrated-check}
-panc8_sub <- RunStandardWorkflow(panc8_sub, verbose = FALSE)
+panc8_sub <- RunStandardWorkflow(panc8_sub, assay = "RNA", seed = 11, cores = 1,
+                                 verbose = FALSE)
 
 CellDimPlot(
   panc8_sub,
@@ -66,14 +97,17 @@ object with a batch column.
 panc8_harmony <- RunIntegration(
   srt_merge = panc8_sub,
   batch = "tech",
-  integration_methods = "Harmony"
+  integration_methods = "Harmony",
+  nonlinear_reduction_dims = 2,
+  seed = 11, verbose = FALSE
 )
 
+stopifnot(identical(colnames(panc8_harmony), input_cells))
 SeuratObject::Reductions(panc8_harmony)
 ```
 
 Use the method-specific integrated UMAP for plotting. The exact reduction name
-depends on the selected method; for Harmony, the examples use `HarmonyUMAP`.
+depends on the selected method; for Harmony, the examples use `HarmonyUMAP2D`.
 When comparing methods, report the reduction name explicitly. A plot labeled
 only as UMAP is ambiguous once an object contains uncorrected and integrated
 embeddings.
@@ -82,7 +116,7 @@ embeddings.
 CellDimPlot(
   panc8_harmony,
   group.by = c("tech", "celltype"),
-  reduction = "HarmonyUMAP",
+  reduction = "HarmonyUMAP2D",
   theme_use = "theme_blank"
 )
 ```
@@ -100,15 +134,10 @@ Use method choice to match the data and dependency budget:
 - `Uncorrected` is useful as a baseline and should be kept in reports when
   showing that integration changed the object.
 
-```{r method-examples}
-panc8_uncorrected <- RunIntegration(
-  srt_merge = panc8_harmony,
-  batch = "tech",
-  integration_methods = "Uncorrected",
-  verbose = FALSE
-)
-```
 
+
+The following alternatives are recipes, not additional measured results in this
+page. To compare executed methods, use the [integration benchmark](integration-benchmark-workflow.html).
 Other methods follow the same entry-point pattern, but may require additional
 runtime dependencies or matrix backends:
 
@@ -135,22 +164,23 @@ marker genes, and whether rare cell types remain separated.
 CellDimPlot(
   panc8_harmony,
   group.by = "tech",
-  reduction = "HarmonyUMAP",
+  reduction = "HarmonyUMAP2D",
   theme_use = "theme_blank"
 )
 
 CellDimPlot(
   panc8_harmony,
   group.by = "celltype",
-  reduction = "HarmonyUMAP",
+  reduction = "HarmonyUMAP2D",
   label = TRUE,
+  label_repel = TRUE, label.size = 3,
   theme_use = "theme_blank"
 )
 
 FeatureDimPlot(
   panc8_harmony,
-  features = c("INS", "GCG", "SST", "KRT19"),
-  reduction = "HarmonyUMAP"
+  features = c("GCG", "SST", "KRT19"),
+  reduction = "HarmonyUMAP2D"
 )
 ```
 
@@ -160,6 +190,92 @@ unintegrated baseline is useful because it shows what the integration changed.
 Good integration mixes batches within the same biological state while keeping
 distinct cell types and marker programs separated. Overcorrection is visible
 when expected marker-defined groups collapse together.
+
+
+
+INS is absent from the supplied feature-filtered object, so this marker
+check uses measured GCG, SST and KRT19. Missing input genes must not be
+interpreted as measured zero expression.
+
+## Save, reload, and check the hand-off
+
+The build uses a temporary directory so repeated rendering cannot overwrite a
+previous analysis. For your work, replace it with a new persistent output folder.
+Save the object **and** plain-text metadata; a figure alone cannot reproduce the
+analysis. No cells are sampled for this export.
+
+```{r export-reload}
+output_dir <- file.path(tempdir(), "integration-workflow")
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+result_file <- file.path(output_dir, "analysis.rds")
+saveRDS(panc8_harmony, result_file)
+utils::write.csv(panc8_harmony@meta.data, file.path(output_dir, "cell-metadata.csv"))
+reloaded <- readRDS(result_file)
+stopifnot(identical(colnames(reloaded), colnames(panc8_harmony)),
+          identical(reloaded@meta.data, panc8_harmony@meta.data),
+          identical(SeuratObject::Reductions(reloaded),
+                    SeuratObject::Reductions(panc8_harmony)))
+data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
+           bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
+```
+
+## Use your own data and recover common errors
+
+- Replace the `data(...)` input with `readRDS("your-object.rds")`, or create a
+  Seurat object from a gene-by-cell raw-count matrix. Check that cell IDs are
+  unique and metadata row names equal the expression column names.
+- Set the assay and grouping columns explicitly. Species, gene identifiers and
+  reference labels must match your experiment; do not copy pancreas labels to
+  unrelated tissue.
+- If a reduction or metadata column is missing, inspect
+  `SeuratObject::Reductions(object)` and `colnames(object@meta.data)`, then run
+  its producer chunk. A plot does not create the result it needs.
+- If a dependency is unavailable, install it in the analysis environment,
+  restart R and rerun from the input chunk. A skipped or failed method is not
+  evidence that it worked. Preserve warnings and the exact error in your report.
+
+## Build and analysis provenance
+
+The receipt records the R seed. Python methods retain their documented backend
+seeds and parameters; setting the R seed alone does not control every backend.
+Package versions, BLAS libraries and backend changes can alter numerical results. Keep
+this receipt with the exported object. It describes this page's actual render.
+
+```{r provenance}
+source_revision <- Sys.getenv("GITHUB_SHA")
+if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
+  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
+                                      stderr = FALSE)[1], error = function(e) NA_character_)
+}
+article_source <- knitr::current_input(dir = TRUE)
+build_receipt <- data.frame(
+  article = "integration-workflow",
+  built_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
+  scop = as.character(utils::packageVersion("scop")),
+  R = as.character(getRversion()),
+  source_revision = source_revision,
+  source_has_local_changes = if (nzchar(Sys.which("git")))
+    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0 else NA,
+  article_md5 = unname(tools::md5sum(article_source)),
+  R_seed = 11,
+  cells_retained = ncol(panc8_harmony),
+  genes_in_active_assay = nrow(panc8_harmony),
+  stringsAsFactors = FALSE
+)
+build_receipt
+utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
+                 row.names = FALSE)
+writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
+```
+
+<details>
+<summary>Show the complete R session used for this page</summary>
+
+```{r session-info}
+sessionInfo()
+```
+
+</details>
 
 ## What to Report
 
