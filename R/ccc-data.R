@@ -991,3 +991,214 @@ ccc_resolve_sample_col <- function(df, sample_col = NULL) {
     hit
   }
 }
+
+
+ccc_matrix_group_values_from_matrix <- function(mat, margin = c("col", "row")) {
+  margin <- match.arg(margin)
+  if (is.null(mat) || length(mat) == 0L) {
+    return(NULL)
+  }
+  idx <- if (identical(margin, "col")) {
+    seq_len(ncol(mat))
+  } else {
+    seq_len(nrow(mat))
+  }
+  values <- lapply(idx, function(i) {
+    v <- if (identical(margin, "col")) mat[, i] else mat[i, ]
+    v[is.finite(v)]
+  })
+  names(values) <- if (identical(margin, "col")) {
+    colnames(mat)
+  } else {
+    rownames(mat)
+  }
+  values
+}
+
+
+ccc_matrix_bar_stats_from_values <- function(values_list, metrics = "sum") {
+  if (is.null(values_list) || length(values_list) == 0L) {
+    return(NULL)
+  }
+  metrics <- ccc_match_bar_value(metrics)
+  out <- lapply(metrics, function(metric) {
+    stats::setNames(
+      vapply(
+        values_list,
+        function(v) {
+          if (length(v) == 0L) {
+            return(0)
+          }
+          switch(metric,
+            count = sum(is.finite(v)),
+            sum = sum(v, na.rm = TRUE),
+            mean = mean(v, na.rm = TRUE),
+            max = max(v, na.rm = TRUE)
+          )
+        },
+        numeric(1)
+      ),
+      names(values_list)
+    )
+  })
+  names(out) <- metrics
+  out
+}
+
+
+ccc_matrix_summary_from_values <- function(values_list, metric = "mean") {
+  if (is.null(values_list) || length(values_list) == 0L) {
+    return(NULL)
+  }
+  stats::setNames(
+    vapply(
+      values_list,
+      function(v) {
+        if (length(v) == 0L) {
+          return(NA_real_)
+        }
+        switch(metric,
+          mean = mean(v, na.rm = TRUE),
+          max = max(v, na.rm = TRUE),
+          sum = sum(v, na.rm = TRUE)
+        )
+      },
+      numeric(1)
+    ),
+    names(values_list)
+  )
+}
+
+
+ccc_cellchat_role_matrix <- function(
+  object,
+  signaling = NULL,
+  pattern = c("outgoing", "incoming", "all"),
+  scale_rows = TRUE
+) {
+  pattern <- match.arg(pattern)
+  if (length(object@netP$centr) == 0L) {
+    log_message(
+      "Please run CellChat centrality computation before plotting role heatmaps",
+      message_type = "error"
+    )
+  }
+  centr <- object@netP$centr
+  groups <- levels(object@idents)
+  outgoing <- matrix(0, nrow = length(centr), ncol = length(groups))
+  incoming <- matrix(0, nrow = length(centr), ncol = length(groups))
+  dimnames(outgoing) <- list(names(centr), groups)
+  dimnames(incoming) <- dimnames(outgoing)
+  for (i in seq_along(centr)) {
+    outgoing[i, ] <- centr[[i]]$outdeg
+    incoming[i, ] <- centr[[i]]$indeg
+  }
+  mat <- switch(pattern,
+    outgoing = outgoing,
+    incoming = incoming,
+    all = outgoing + incoming
+  )
+  if (!is.null(signaling)) {
+    signaling <- unique(as.character(signaling))
+    mat1 <- mat[rownames(mat) %in% signaling, , drop = FALSE]
+    mat <- matrix(
+      0,
+      nrow = length(signaling),
+      ncol = ncol(mat),
+      dimnames = list(signaling, colnames(mat))
+    )
+    idx <- match(rownames(mat1), signaling)
+    mat[idx[!is.na(idx)], ] <- mat1
+  }
+  raw_mat <- mat
+  if (isTRUE(scale_rows)) {
+    row_max <- apply(mat, 1, max, na.rm = TRUE)
+    row_max[!is.finite(row_max) | row_max == 0] <- 1
+    mat <- sweep(mat, 1L, row_max, "/", check.margin = FALSE)
+    mat[mat == 0] <- NA_real_
+  }
+  list(raw = raw_mat, scaled = mat)
+}
+
+
+ccc_heatmap_value_spec <- function(df, color.by = "score", value = "sum") {
+  value <- value %||% "sum"
+  spec <- scale_var(df = df, color.by = color.by, agg_value = value)
+  spec$label <- if (identical(spec$var, "specificity")) {
+    "-log10(p)"
+  } else {
+    spec$label
+  }
+  spec
+}
+
+
+ccc_ligand_target_matrix <- function(plot_df, ligand_levels, target_levels) {
+  mat <- matrix(
+    NA_real_,
+    nrow = length(ligand_levels),
+    ncol = length(target_levels),
+    dimnames = list(ligand_levels, target_levels)
+  )
+  ligand_index <- match(as.character(plot_df$ligand), ligand_levels)
+  target_index <- match(as.character(plot_df$target), target_levels)
+  weights <- as.numeric(plot_df$weight)
+  valid <- !is.na(ligand_index) & !is.na(target_index) & is.finite(weights)
+  if (!any(valid)) {
+    return(mat)
+  }
+  matrix_index <- ligand_index[valid] +
+    (target_index[valid] - 1L) * nrow(mat)
+  sums <- rowsum(weights[valid], group = matrix_index, reorder = FALSE)
+  mat[as.integer(rownames(sums))] <- sums[, 1L]
+  mat
+}
+
+
+ccc_pivot_matrix <- function(df, row_var, col_var, val_var) {
+  ordered_levels <- function(x) {
+    if (is.factor(x)) {
+      lev <- levels(x)
+      lev[lev %in% as.character(x)]
+    } else {
+      unique(as.character(x))
+    }
+  }
+  rows <- ordered_levels(df[[row_var]])
+  cols <- ordered_levels(df[[col_var]])
+  rows <- rows[!is.na(rows) & nzchar(rows)]
+  cols <- cols[!is.na(cols) & nzchar(cols)]
+  mat <- matrix(
+    NA_real_,
+    nrow = length(rows),
+    ncol = length(cols),
+    dimnames = list(rows, cols)
+  )
+
+  row_index <- match(as.character(df[[row_var]]), rows)
+  col_index <- match(as.character(df[[col_var]]), cols)
+  valid <- !is.na(row_index) & !is.na(col_index)
+  values <- df[[val_var]]
+  if (any(valid) && is.numeric(values) && !anyNA(values[valid])) {
+    matrix_index <- row_index[valid] +
+      (col_index[valid] - 1L) * nrow(mat)
+    sums <- rowsum(values[valid], group = matrix_index, reorder = FALSE)
+    mat[as.integer(rownames(sums))] <- sums[, 1L]
+    return(mat)
+  }
+
+  for (k in seq_len(nrow(df))) {
+    r <- as.character(df[[row_var]][k])
+    c <- as.character(df[[col_var]][k])
+    v <- df[[val_var]][k]
+    if (!is.na(r) && !is.na(c) && r %in% rows && c %in% cols) {
+      existing <- mat[r, c]
+      mat[r, c] <- if (is.na(existing)) {
+        as.numeric(v)
+      } else {
+        existing + as.numeric(v)
+      }
+    }
+  }
+  mat
+}
