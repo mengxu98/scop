@@ -7,11 +7,23 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   eval = TRUE,
+  error = FALSE,
+  message = FALSE,
   fig.align = "center",
+  fig.width = 12, fig.height = 8,
   dpi = 144,
-  out.width = "92%"
+  out.width = "100%"
 )
 ```
+
+## What you will do
+
+- **Question:** which genes distinguish cell states, and which pathways summarize those differences?
+- **Input:** All 1,000 cells in the bundled mouse pancreas object, with `CellType` labels. Cells are observational units for this marker example, not biological replicates.
+- **Output:** A complete marker table, over-representation and ranked enrichment results, diagnostic plots and reusable tables.
+- **How to run:** start a fresh R session and run the chunks in order. Printed tables and figures below are generated from that run; code-only alternatives are identified explicitly.
+
+
 
 This article shows how to organize differential expression, marker visualization,
 and pathway enrichment in `scop`. The main distinction is between testing genes,
@@ -22,13 +34,28 @@ Differential expression is gene-level evidence. Enrichment is a summary of a
 gene list or ranked statistic against a named database. Keep those two evidence
 layers separate in the text of a report.
 
+Before the first analysis chunk, install the extra packages in the same R
+library as SCOP. Use BiocManager for `AnnotationDbi`, `org.Mm.eg.db`, `GO.db`
+and `clusterProfiler`, and CRAN for `shadowtext` (used by the network plot).
+These setup commands are run once, outside the analysis render:
+
+```r
+BiocManager::install(c("AnnotationDbi", "org.Mm.eg.db", "GO.db", "clusterProfiler"))
+install.packages("shadowtext")
+```
+
 ## Prepare the Object
 
 ```{r prepare-object}
 library(scop)
+set.seed(11)
 
 data(pancreas_sub)
-pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
+input_cells <- colnames(pancreas_sub)
+pancreas_sub <- RunStandardWorkflow(pancreas_sub, assay = "RNA",
+                                   seed = 11, cores = 1, verbose = FALSE)
+stopifnot(identical(colnames(pancreas_sub), input_cells))
+data.frame(cells = ncol(pancreas_sub), genes = nrow(pancreas_sub))
 
 table(pancreas_sub$CellType)
 ```
@@ -45,12 +72,24 @@ pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
   fc.threshold = 1,
-  only.pos = FALSE
+  only.pos = FALSE,
+  assay = "RNA", layer = "data", test.use = "wilcox",
+  max.cells.per.ident = Inf, min.pct = 0.1,
+  p.adjust.method = "bonferroni", cores = 1, seed = 11
 )
 
-names(pancreas_sub@tools)
-head(pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox)
+de <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
+stopifnot(nrow(de) > 0, all(c("gene", "group1", "avg_log2FC", "p_val_adj") %in% names(de)))
+data.frame(rows = nrow(de), unique_genes = length(unique(de$gene)),
+           contrasts = length(unique(de$group1)))
+head(de)
 ```
+
+`fc.threshold = 1` is a fold-change ratio of one (log2 cutoff zero), not a
+log2-fold-change cutoff of one. Both directions are retained, with no cell
+subsampling. The detection filter is 10% in at least one group and adjusted
+p-values use Bonferroni here. An adjusted p-value displayed as zero reflects
+numerical underflow, not certainty.
 
 Keep the contrast, grouping column, test method, and threshold in the report.
 Those choices define the meaning of each marker table.
@@ -62,6 +101,13 @@ against the remaining cells unless a specific contrast is stated.
 Use volcano, Manhattan, and ring views for different levels of detail. Volcano
 plots are useful for one group or contrast; Manhattan and ring plots are useful
 when scanning many groups.
+
+In the first volcano view, the horizontal coordinate is the difference in
+detected-cell fractions (`pct.1 - pct.2`), not log-fold change. The vertical
+coordinate is signed significance: downregulated genes are drawn below zero;
+its magnitude is `-log10(p_val_adj)`. Colour shows log2-fold change. The
+enrichment-annotated volcano below instead uses the conventional log2-fold
+change horizontal coordinate and unsigned significance.
 
 ```{r detest-plots}
 DEtestPlot(
@@ -86,18 +132,62 @@ DEtestPlot(
 )
 ```
 
+## Prepare a tested-gene GO background
+
+Install the mouse annotation resources in advance (`org.Mm.eg.db`, `GO.db`
+and `AnnotationDbi`), `clusterProfiler` for GSEA and `shadowtext` for network labels. The native ORA backend does
+not need clusterProfiler. This chunk reads real, locally installed GO Biological
+Process annotations and records their versions. The common background contains
+only genes returned by every DE comparison, before significance filtering.
+This conservative shared universe avoids treating genes excluded from the tests
+as eligible negative results. No database downloads or invented pathway
+memberships occur during this step.
+
+```{r prepare-go}
+tested_by_group <- split(de$gene, de$group1)
+measured_genes <- Reduce(intersect, tested_by_group)
+stopifnot(length(measured_genes) > 0)
+valid_symbols <- intersect(measured_genes,
+                           AnnotationDbi::keys(org.Mm.eg.db::org.Mm.eg.db, keytype = "SYMBOL"))
+go_map <- AnnotationDbi::select(org.Mm.eg.db::org.Mm.eg.db,
+                                keys = valid_symbols, keytype = "SYMBOL",
+                                columns = c("GOALL", "ONTOLOGYALL"))
+go_term2gene <- unique(go_map[!is.na(go_map$GOALL) & go_map$ONTOLOGYALL == "BP",
+                               c("GOALL", "SYMBOL")])
+colnames(go_term2gene) <- c("Term", "symbol")
+go_term2name <- AnnotationDbi::select(GO.db::GO.db,
+                                      keys = unique(go_term2gene$Term),
+                                      keytype = "GOID", columns = "TERM")
+go_term2name <- unique(go_term2name[stats::complete.cases(go_term2name), ])
+colnames(go_term2name) <- c("Term", "Name")
+go_version <- paste("org.Mm.eg.db", utils::packageVersion("org.Mm.eg.db"),
+                     "; GO.db", utils::packageVersion("GO.db"))
+stopifnot(nrow(go_term2gene) > 0)
+data.frame(database = "GO_BP", version = go_version,
+           genes_tested_in_every_group = length(measured_genes),
+           GO_annotated_background = length(unique(go_term2gene$symbol)),
+           terms = length(unique(go_term2gene$Term)))
+```
+
+The ORA universe is the union of genes in this restricted GO mapping, not the
+whole genome. Genes outside the common tested set or without GO annotation
+cannot contribute. Because we supply `TERM2GENE`, SCOP stores the database key
+as `custom`; its biological source remains the versioned GO_BP mapping above.
+Keep that source information with the exported result.
+
 When enrichment results are available, volcano plots can annotate enriched
 terms to connect marker genes with pathway-level interpretation.
 The enrichment overlay circles genes that belong to selected enriched terms.
 The legend title is the analysis layer (`Enrichment`), and the legend item is
-the database, for example `GO_BP`.
+the database, here `custom` for the explicitly supplied GO_BP mapping.
 
-```{r annotated-volcano, fig.width=10, fig.height=8}
+```{r annotated-volcano, fig.width=14, fig.height=9}
 pancreas_sub <- RunEnrichment(
   pancreas_sub,
   group.by = "CellType",
-  db = "GO_BP",
-  species = "Mus_musculus"
+  species = "Mus_musculus",
+  TERM2GENE = go_term2gene, TERM2NAME = go_term2name,
+  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05"
 )
 
 DEtestPlot(
@@ -108,41 +198,44 @@ DEtestPlot(
   hyperbola_c = 6,
   annotate_enrichment = TRUE,
   enrich_from = "Enrichment",
-  enrich_db = "GO_BP",
+  enrich_db = "custom",
   enrich_top_terms = 3,
-  enrich_nlabel = 15,
+  enrich_nlabel = 5,
   label.size = 2
 )
 ```
+
+Only five enrichment-associated gene labels per cell group are shown to
+keep the panels readable; the full marker and enrichment tables are exported.
+The dashed hyperbolic guide is a display selection rule, not an additional
+statistical test or the cutoff used to create the ORA input.
 
 ## Summarize Markers in Heatmaps
 
 Feature heatmaps are useful after markers have been filtered. Keep the filter
 explicit and avoid showing very large marker sets without grouping or splitting.
-`TF` marks transcription-factor annotations and `CSPA` marks cell-surface
-protein annotations. They help prioritize marker genes for follow-up, but they
-do not change the DE statistics.
+The complete DE table is retained. Only the ten strongest positive markers per
+group are selected for this readable figure; this is a declared display choice,
+not a change to the test or its cell population. All cells remain in the plot.
 
 ```{r feature-heatmap}
 DEGs <- pancreas_sub@tools$DEtest_CellType$AllMarkers_wilcox
 DEGs <- DEGs[with(DEGs, avg_log2FC > 1 & p_val_adj < 0.05), ]
 
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  species = "Mus_musculus",
-  db = c("TF", "CSPA")
-)
+display_markers <- do.call(rbind, lapply(split(DEGs, DEGs$group1), function(x) {
+  head(x[order(x$avg_log2FC, decreasing = TRUE), ], 10)
+}))
+display_markers <- display_markers[!duplicated(display_markers$gene), ]
+stopifnot(nrow(display_markers) > 0)
 
 ht <- FeatureHeatmap(
   pancreas_sub,
   group.by = "CellType",
-  features = DEGs$gene,
-  feature_split = DEGs$group1,
+  features = display_markers$gene,
+  feature_split = display_markers$group1,
+  max_cells = Inf,
   exp_legend_title = "Z-score",
-  species = "Mus_musculus",
-  db = "GO_BP",
-  anno_terms = TRUE,
-  feature_annotation = c("TF", "CSPA")
+  anno_terms = FALSE
 )
 print(ht$plot)
 ```
@@ -155,16 +248,16 @@ the selected database.
 rows shown by `EnrichmentPlot()`.
 
 ```{r ora}
-pancreas_sub <- RunEnrichment(
-  pancreas_sub,
-  group.by = "CellType",
-  db = "GO_BP",
-  species = "Mus_musculus",
-  DE_threshold = "avg_log2FC > log2(1.5) & p_val_adj < 0.05"
-)
+ora <- pancreas_sub@tools$Enrichment_CellType_wilcox$enrichment
+head(ora)
+data.frame(group = unique(ora$Groups), significant_terms = vapply(
+  unique(ora$Groups), function(g) sum(ora$p.adjust[ora$Groups == g] < 0.05,
+                                    na.rm = TRUE), integer(1)))
+# Reuse the measured result above; plotting does not rerun enrichment.
 
 EnrichmentPlot(
   pancreas_sub,
+  db = "custom",
   group.by = "CellType",
   group_use = c("Ductal", "Endocrine"),
   plot_type = "bar"
@@ -174,10 +267,14 @@ EnrichmentPlot(
 Use different plot types for different questions: bar or lollipop plots for
 ranked terms, word clouds for broad themes, and networks or enrichmaps for term
 relationships.
+The exported table includes tested terms that did not pass adjusted p < 0.05;
+its row count is not a count of significant pathways. Related GO terms often
+share genes, so several similar terms are not independent biological findings.
 
 ```{r enrichment-plots}
 EnrichmentPlot(
   pancreas_sub,
+  db = "custom",
   group.by = "CellType",
   group_use = "Ngn3-low-EP",
   plot_type = "network"
@@ -185,11 +282,19 @@ EnrichmentPlot(
 
 EnrichmentPlot(
   pancreas_sub,
+  db = "custom",
   group.by = "CellType",
   plot_type = "comparison",
   topTerm = 3
 )
 ```
+
+In the network, numbered circles refer to the GO terms in the legend;
+rectangles are genes and edges are annotation membership. This is not an
+inferred gene-regulatory network. Its axes are layout coordinates, not
+expression or pseudotime. In the comparison plot, dot size is GeneRatio and
+colour shows adjusted significance; use the exported table to distinguish
+nonsignificant terms from missing results.
 
 ## Run GSEA
 
@@ -197,39 +302,157 @@ Use GSEA when ranked gene statistics are more appropriate than a hard marker
 cutoff.
 ORA depends on a marker cutoff, while GSEA uses a ranked gene list. Use GSEA
 when many genes shift modestly and a binary marker threshold would discard
-useful signal.
+useful signal. This run ranks all finite tested log2-fold changes in both
+directions; it does not prefilter genes by significance. Positive NES supports
+enrichment toward the positive end of that group-versus-rest ranking, negative
+NES toward the other end. Statistical significance and effect direction must
+both be read from the real result table. GSEA performs substantial permutation
+work and can take longer than DE or plotting.
 
-```{r gsea, eval=FALSE}
+```{r gsea}
 pancreas_sub <- RunGSEA(
   pancreas_sub,
   group.by = "CellType",
-  db = "GO_BP",
   species = "Mus_musculus",
-  DE_threshold = "p_val_adj < 0.05"
+  TERM2GENE = go_term2gene, TERM2NAME = go_term2name,
+  DE_threshold = "is.finite(avg_log2FC)"
 )
 
 gsea_endocrine <- subset(
   pancreas_sub@tools$GSEA_CellType_wilcox$enrichment,
-  Groups == "Endocrine" & Database == "GO_BP"
+  Groups == "Endocrine" & Database == "custom"
 )
+if (nrow(gsea_endocrine) > 0 && any(gsea_endocrine$p.adjust < 0.05, na.rm = TRUE)) {
 gsea_id <- gsea_endocrine$ID[which.min(gsea_endocrine$p.adjust)]
+print(head(gsea_endocrine[order(gsea_endocrine$p.adjust),
+                         c("ID", "Description", "NES", "p.adjust")], 5))
 
-GSEAPlot(
+print(GSEAPlot(
   pancreas_sub,
+  db = "custom",
   group.by = "CellType",
   group_use = "Endocrine",
   id_use = gsea_id
-)
+))
 
-GSEAPlot(
+print(GSEAPlot(
   pancreas_sub,
+  db = "custom",
   group.by = "CellType",
   group_use = "Endocrine",
   plot_type = "bar",
   direction = "both",
   topTerm = 10
-)
+))
+} else {
+  cat("No Endocrine GO terms passed adjusted p < 0.05; inspect the complete GSEA table and input overlap.\n")
+}
 ```
+
+
+
+In the running-score plot, black ticks locate gene-set members in the ranked
+gene list; the green curve is the cumulative enrichment score. The lower
+panel is the log2-fold-change ranking statistic. The horizontal coordinate is
+a gene rank, not cell order or developmental time. Read the signed NES and
+adjusted p-value together with the term's contributing genes.
+
+## Save, reload, and check the hand-off
+
+The build uses a temporary directory so repeated rendering cannot overwrite a
+previous analysis. For your work, replace it with a new persistent output folder.
+Save the object **and** plain-text metadata; a figure alone cannot reproduce the
+analysis. No cells are sampled for this export.
+
+```{r export-reload}
+output_dir <- file.path(tempdir(), "differential-enrichment-workflow")
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+result_file <- file.path(output_dir, "analysis.rds")
+saveRDS(pancreas_sub, result_file)
+utils::write.csv(de, file.path(output_dir, "all-markers.csv"), row.names = FALSE)
+utils::write.csv(go_term2gene, file.path(output_dir, "GO-BP-measured-background.csv"), row.names = FALSE)
+writeLines(paste("GO_BP", go_version), file.path(output_dir, "GO-source.txt"))
+utils::write.csv(pancreas_sub@tools$Enrichment_CellType_wilcox$enrichment,
+                 file.path(output_dir, "ORA.csv"), row.names = FALSE)
+utils::write.csv(pancreas_sub@tools$GSEA_CellType_wilcox$enrichment,
+                 file.path(output_dir, "GSEA.csv"), row.names = FALSE)
+utils::write.csv(pancreas_sub@meta.data, file.path(output_dir, "cell-metadata.csv"))
+reloaded <- readRDS(result_file)
+stopifnot(identical(colnames(reloaded), colnames(pancreas_sub)),
+          identical(reloaded@meta.data, pancreas_sub@meta.data),
+          identical(SeuratObject::Reductions(reloaded),
+                    SeuratObject::Reductions(pancreas_sub)),
+          identical(GetAssayData5(reloaded, assay = "RNA", layer = "counts"),
+                    GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")))
+stopifnot(identical(reloaded@tools$DEtest_CellType$AllMarkers_wilcox, de),
+          identical(reloaded@tools$Enrichment_CellType_wilcox$enrichment,
+                    pancreas_sub@tools$Enrichment_CellType_wilcox$enrichment),
+          identical(reloaded@tools$GSEA_CellType_wilcox$enrichment,
+                    pancreas_sub@tools$GSEA_CellType_wilcox$enrichment))
+data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
+           bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
+```
+
+## Use your own data and recover common errors
+
+- Replace the `data(...)` input with `readRDS("your-object.rds")`, or create a
+  Seurat object from a gene-by-cell raw-count matrix. Check that cell IDs are
+  unique and metadata row names equal the expression column names.
+- Set the assay and grouping columns explicitly. Species, gene identifiers and
+  reference labels must match your experiment; do not copy pancreas labels to
+  unrelated tissue.
+- If a reduction or metadata column is missing, inspect
+  `SeuratObject::Reductions(object)` and `colnames(object@meta.data)`, then run
+  its producer chunk. A plot does not create the result it needs.
+- If GO returns no terms, inspect gene identifiers, overlap, set-size filters
+  and the actual adjusted p-values. Do not loosen thresholds merely to force a
+  positive result. A valid empty result and an unavailable database are different.
+- If a dependency is unavailable, install it in the analysis environment,
+  restart R and rerun from the input chunk. A skipped or failed method is not
+  evidence that it worked. Preserve warnings and the exact error in your report.
+
+## Build and analysis provenance
+
+The receipt records the R seed. Python methods retain their documented backend
+seeds and parameters; setting the R seed alone does not control every backend.
+Package versions, BLAS libraries and backend changes can alter numerical results. Keep
+this receipt with the exported object. It describes this page's actual render.
+
+```{r provenance}
+source_revision <- Sys.getenv("GITHUB_SHA")
+if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
+  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
+                                      stderr = FALSE)[1], error = function(e) NA_character_)
+}
+article_source <- knitr::current_input(dir = TRUE)
+build_receipt <- data.frame(
+  article = "differential-enrichment-workflow",
+  built_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
+  scop = as.character(utils::packageVersion("scop")),
+  R = as.character(getRversion()),
+  source_revision = source_revision,
+  source_has_local_changes = if (nzchar(Sys.which("git")))
+    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0 else NA,
+  article_md5 = unname(tools::md5sum(article_source)),
+  R_seed = 11,
+  cells_retained = ncol(pancreas_sub),
+  genes_in_active_assay = nrow(pancreas_sub),
+  stringsAsFactors = FALSE
+)
+build_receipt
+utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
+                 row.names = FALSE)
+writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
+```
+
+<details>
+<summary>Show the complete R session used for this page</summary>
+
+```{r session-info}
+sessionInfo()
+```
+
+</details>
 
 ## What to Report
 

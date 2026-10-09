@@ -167,7 +167,11 @@ LinkingTo:
     RcppParallel,
     RSpectra,
     thisutils
-Config/Needs/website: mengxu98/thistemplate
+Config/Needs/website:
+    mengxu98/thistemplate,
+    bioc::org.Mm.eg.db,
+    bioc::GO.db,
+    any::shadowtext
 URL: https://mengxu98.github.io/scop/
 BugReports: https://github.com/mengxu98/scop/issues
 Config/roxygen2/version: 8.1.0
