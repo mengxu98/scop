@@ -35,9 +35,12 @@
 #' @param tf_gene_prior Optional precomputed TF-gene table with columns `TF`,
 #' `target`, and `importance`. When supplied with `backend = "cpp"`, C++
 #' GRN inference is skipped and the table is used as the TF-gene evidence layer.
+#' If a `rho` column is absent, correlations are computed from RNA when native
+#' GSEA is requested.
 #' @param region_gene_prior Optional precomputed region-gene table with columns
 #' `region`, `gene`, and `score`. When supplied with `backend = "cpp"`, C++
-#' peak-to-gene correlation is skipped.
+#' importance fitting is skipped. If a `rho` column is absent, correlations are
+#' computed from RNA and ATAC when native GSEA is requested.
 #' @param tf_region_prior Optional precomputed TF-region table with columns
 #' `TF`, `region`, and `score`. When supplied with `backend = "cpp"`, existing
 #' motif incidence is not required.
@@ -56,6 +59,8 @@
 #' columns should be genes; a gene-by-cell matrix is accepted and transposed when
 #' cell names make the orientation unambiguous. This is mainly useful for
 #' official SCENIC+ parity tests because SCENIC+ uses seeded random tie-breaking.
+#' @param region_auc_rankings Optional cell-by-region 0-based rankings for
+#' region signature AUC. If absent, rankings are computed locally from ATAC.
 #' @param region_gene_window Maximum peak-to-gene distance in base pairs.
 #' @param region_gene_search_space Optional search-space table with columns
 #' `region`/`Name` and `gene`/`Gene`. When supplied, C++ region-gene scoring
@@ -77,6 +82,10 @@
 #' additional candidate eModules before TF-gene leading-edge filtering.
 #' @param egrn_min_target_genes Minimum leading-edge target genes required for
 #' an eRegulon module. The default follows the official SCENIC+ CLI workflow.
+#' @param egrn_method Local eModule filtering. `"gsea"` computes weighted
+#' permutation GSEA, NES and BH-adjusted p-values in native code. `"leading_edge"`
+#' retains the older approximation and its unfiltered fallback.
+#' @param egrn_n_perm Number of gene-set permutations per GSEA module.
 #' @param group.by Optional metadata column used to calculate eRegulon
 #' specificity scores.
 #' @param grn_top_targets Maximum TF-gene edges retained per target. The
@@ -97,8 +106,8 @@
 #' @param grn_subsample Fraction of cells sampled for each C++ boosting
 #' round.
 #' @param grn_early_stop_window_length Out-of-bag improvement window used for
-#' C++ GRNBoost2 early stopping. The RunSCENICPlus default is `0`, which
-#' disables early stopping to match official SCENIC+ `SGBM_KWARGS`.
+#' C++ GRNBoost2 early stopping. The default is `25`, matching the monitor
+#' explicitly used by official SCENIC+. Set `0` to disable early stopping.
 #' @param seed Random seed used by the C++ stochastic boosting code. The
 #' default matches official SCENIC+ command-line wrappers.
 #' @param cores Number of workers used by C++ TF-gene GRN inference. `NULL`
@@ -113,6 +122,14 @@
 #' standardization. Used only for `backend = "python"`.
 #' @param envname Python environment used when `backend = "python"`.
 #' @param conda Conda-compatible executable used when `backend = "python"`.
+#'
+#' @details
+#' The C++ route runs locally without importing or invoking Python. Native GSEA
+#' filters modules before merging; it does not substitute unfiltered triplets
+#' when no module passes. The tool result includes module `gsea_statistics`,
+#' `region_regulon_list` and `region_auc` alongside gene AUC. Locally computed
+#' gene and region rankings use PCG tie-breaking with fixed seed 123; the
+#' inference and GSEA seed is controlled separately by `seed`.
 #'
 #' @return A Seurat object with SCENICPlus-style results.
 #' @export
@@ -183,7 +200,7 @@ RunSCENICPlus <- function(
   grn_max_depth = 3,
   grn_max_features = 0.1,
   grn_subsample = 0.9,
-  grn_early_stop_window_length = 0,
+  grn_early_stop_window_length = 25,
   seed = 666,
   cores = NULL,
   assay_name = "scenicplus",
@@ -193,7 +210,10 @@ RunSCENICPlus <- function(
   envname = "scenicplus_env",
   conda = "auto",
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  egrn_method = c("gsea", "leading_edge"),
+  egrn_n_perm = 1000L,
+  region_auc_rankings = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (!inherits(srt, "Seurat")) {
@@ -226,6 +246,12 @@ RunSCENICPlus <- function(
       group.by = group.by,
       verbose = verbose
     ))
+  }
+  egrn_method <- match.arg(egrn_method)
+  if (length(egrn_n_perm) != 1L || !is.finite(egrn_n_perm) ||
+      egrn_n_perm < 1 || egrn_n_perm > .Machine$integer.max ||
+      egrn_n_perm != as.integer(egrn_n_perm)) {
+    stop("egrn_n_perm must be a positive integer", call. = FALSE)
   }
   if (!rna_assay %in% names(srt@assays)) {
     log_message(
@@ -278,6 +304,10 @@ RunSCENICPlus <- function(
   auc_rankings <- scenicplus_prep_auc_rank(
     auc_rankings = auc_rankings,
     auc_counts = auc_counts
+  )
+  region_auc_rankings <- scenicplus_prep_auc_rank(
+    auc_rankings = region_auc_rankings,
+    auc_counts = atac_counts
   )
 
   tf_region_prior <- scenicplus_standardize_prior(
@@ -348,7 +378,9 @@ RunSCENICPlus <- function(
       search_space = region_gene_search_space,
       method = region_gene_method,
       n_rounds = region_gene_n_rounds,
-      max_features = grn_max_features
+      max_features = grn_max_features,
+      cores = cores,
+      seed = seed
     )
   }
   grn_targets <- scenicplus_select_grn_targets(
@@ -390,6 +422,20 @@ RunSCENICPlus <- function(
       verbose = verbose
     )
   }
+  if (identical(egrn_method, "gsea") && is.null(eregulons_prior)) {
+    if (!"rho" %in% colnames(tf_gene)) {
+      tf_gene <- scenicplus_add_tfg_cor(tf_gene, rna_counts, cores = cores)
+    }
+    if (!"rho" %in% colnames(region_gene)) {
+      acc_regions <- unique(region_gene[["region"]])
+      rna_genes <- unique(region_gene[["gene"]])
+      region_gene[["rho"]] <- scenicplus_edge_spearman(
+        as_matrix(Matrix::t(atac_counts[acc_regions, , drop = FALSE])),
+        as_matrix(Matrix::t(rna_counts[rna_genes, , drop = FALSE])),
+        match(region_gene[["region"]], acc_regions),
+        match(region_gene[["gene"]], rna_genes), cores = cores)
+    }
+  }
   tf_region <- motif_links[
     motif_links[["TF"]] %in% unique(tf_gene[["TF"]]), ,
     drop = FALSE
@@ -422,7 +468,11 @@ RunSCENICPlus <- function(
       rho_threshold = egrn_rho_threshold,
       quantiles = egrn_quantiles,
       top_n_region_gene = egrn_top_n_region_gene,
-      min_target_genes = egrn_min_target_genes
+      min_target_genes = egrn_min_target_genes,
+      method = egrn_method,
+      n_perm = egrn_n_perm,
+      seed = seed,
+      cores = cores
     )
     triplets <- eregulon_info[["triplets"]]
     eregulons <- eregulon_info[["regulon_list"]]
@@ -446,18 +496,20 @@ RunSCENICPlus <- function(
       gene_sets = eregulons
     )
   } else {
-    run_aucell_scores(
-      expr_counts = auc_counts,
-      gene_sets = eregulons,
-      strategy = "full",
-      algorithm = "ctxcore",
-      cores = scop_n_threads(cores)
-    )
+    scenicplus_native_auc(auc_counts, eregulons, cores = cores)
   }
   auc <- as.data.frame(auc, check.names = FALSE)[
     colnames(auc_counts), ,
     drop = FALSE
   ]
+  region_sets <- scenicplus_region_signatures(eregulons, triplets, tf_gene, region_gene)
+  region_auc <- if (length(region_sets) == 0L) {
+    data.frame(row.names = colnames(atac_counts))
+  } else if (!is.null(region_auc_rankings)) {
+    as.data.frame(run_aucell_scores_from_rankings(region_auc_rankings, region_sets), check.names = FALSE)
+  } else {
+    as.data.frame(scenicplus_native_auc(atac_counts, region_sets, cores = cores), check.names = FALSE)
+  }
   auc_mat <- as_matrix(auc)
   scores <- Matrix::t(methods::as(Matrix::Matrix(auc_mat, sparse = TRUE), "dgCMatrix"))
   rss <- scenicplus_calc_rss(
@@ -475,6 +527,9 @@ RunSCENICPlus <- function(
     eregulons = eregulon_table,
     regulon_list = eregulons,
     auc = auc,
+    region_auc = region_auc,
+    region_regulon_list = region_sets,
+    gsea_statistics = eregulon_info[["statistics"]],
     rss = rss[["rss"]],
     rss_matrix = rss[["rss_matrix"]],
     scores = scores,
@@ -484,6 +539,12 @@ RunSCENICPlus <- function(
       exact_reference = FALSE,
       scope = "package eGRN approximation",
       grn_method = grn_method,
+      grn_n_rounds = grn_n_rounds,
+      grn_learning_rate = grn_learning_rate,
+      grn_max_depth = grn_max_depth,
+      grn_max_features = grn_max_features,
+      grn_subsample = grn_subsample,
+      grn_early_stop_window_length = grn_early_stop_window_length,
       rna_assay = rna_assay,
       atac_assay = atac_assay,
       region_gene_window = region_gene_window,
@@ -496,6 +557,9 @@ RunSCENICPlus <- function(
       egrn_quantiles = egrn_quantiles,
       egrn_top_n_region_gene = egrn_top_n_region_gene,
       egrn_min_target_genes = egrn_min_target_genes,
+      egrn_method = match.arg(egrn_method),
+      egrn_n_perm = egrn_n_perm,
+      egrn_used_fallback = isTRUE(eregulon_info[["used_fallback"]]),
       max_grn_targets = max_grn_targets,
       grn_target_scope = grn_target_scope,
       grn_target_count = length(grn_targets),
@@ -509,6 +573,8 @@ RunSCENICPlus <- function(
       ),
       auc_expr = if (is.null(auc_expr)) "rna_counts" else "custom",
       auc_rankings = !is.null(auc_rankings),
+      region_auc_rankings = !is.null(region_auc_rankings),
+      auc_ranking_seed = 123L,
       group.by = group.by
     )
   )
@@ -595,6 +661,13 @@ run_scenicplus_python <- function(
     assay_name = assay_name,
     tool_name = tool_name
   )
+}
+
+scenicplus_native_auc <- function(counts, signatures, cores = 1L) {
+  rankings <- scenicplus_rank_cpp(as_matrix(counts), random_seed = 123L,
+                                  cores = scop_n_threads(cores))
+  dimnames(rankings) <- list(colnames(counts), rownames(counts))
+  run_aucell_scores_from_rankings(rankings, signatures)
 }
 
 scenicplus_store_result <- function(srt, result, assay_name, tool_name) {
@@ -1185,6 +1258,20 @@ scenicplus_regulon_tbl <- function(
   out
 }
 
+scenicplus_region_signatures <- function(eregulons, triplets, tf_gene, region_gene) {
+  signed <- scenicplus_add_eregulon_signs(triplets, tf_gene, region_gene)
+  if (nrow(signed) == 0L) return(list())
+  keys <- paste0(signed$TF, "_direct_", signed$tf_sign, "/", signed$r2g_sign)
+  out <- lapply(names(eregulons), function(name) {
+    base <- sub("_\\([0-9]+g\\)$", "", name)
+    unique(signed$region[keys == base & signed$gene %in% eregulons[[name]]])
+  })
+  keep <- lengths(out) > 0L
+  names(out) <- paste0(sub("_\\([0-9]+g\\)$", "", names(eregulons)),
+                        "_(", lengths(out), "r)")
+  out[keep]
+}
+
 scenicplus_calc_rss <- function(auc, srt, cells, group.by = NULL) {
   empty <- list(
     rss = data.frame(
@@ -1234,6 +1321,8 @@ scenicplus_tf_gene_native <- function(
   verbose = TRUE
 ) {
   grn_method <- match.arg(grn_method)
+  # Feature sampling depends on matrix order, not on the order of the TF filter.
+  regulators <- intersect(rownames(rna_counts), regulators)
   adjacency <- RunGRN(
     object = Matrix::t(rna_counts),
     regulators = regulators,
@@ -1250,7 +1339,7 @@ scenicplus_tf_gene_native <- function(
     subsample = subsample,
     early_stop_window_length = early_stop_window_length,
     seed = seed,
-    exclude_self = FALSE,
+    exclude_self = TRUE,
     cores = cores,
     envname = envname,
     conda = conda,
@@ -1260,6 +1349,7 @@ scenicplus_tf_gene_native <- function(
   if (!identical(grn_method, "grnboost2")) {
     return(adjacency)
   }
+  adjacency <- scenicplus_order_tf_edges(adjacency, rownames(rna_counts), regulators)
   adjacency <- scenicplus_add_tfg_cor(
     adjacency,
     rna_counts = rna_counts,
@@ -1270,6 +1360,28 @@ scenicplus_tf_gene_native <- function(
     rna_counts = rna_counts,
     cores = scop_n_threads(cores)
   )
+}
+
+scenicplus_order_tf_edges <- function(adjacency, targets, regulators) {
+  if (nrow(adjacency) == 0L) return(adjacency)
+  target_index <- match(adjacency[["target"]], targets)
+  regulator_index <- match(adjacency[["TF"]], regulators)
+  if (anyNA(target_index) || anyNA(regulator_index)) {
+    stop("TF edge names must match the fitted input", call. = FALSE)
+  }
+  # Reconstruct model output order before the two reference table sorts. Equal
+  # weights depend on this order when GSEA uses an unstable descending sort.
+  base_order <- order(target_index, regulator_index)
+  adjacency <- adjacency[base_order, , drop = FALSE]
+  groups <- split(seq_len(nrow(adjacency)), target_index[base_order])
+  per_model <- lapply(groups, function(index) {
+    index[scenicplus_order_cpp(adjacency[["importance"]][index], decreasing = TRUE)]
+  })
+  adjacency <- adjacency[unlist(per_model, use.names = FALSE), , drop = FALSE]
+  adjacency <- adjacency[scenicplus_order_cpp(adjacency[["importance"]], decreasing = TRUE), , drop = FALSE]
+  adjacency <- adjacency[scenicplus_order_cpp(adjacency[["TF"]]), , drop = FALSE]
+  rownames(adjacency) <- NULL
+  adjacency
 }
 
 scenicplus_add_tfg_cor <- function(
@@ -1329,6 +1441,7 @@ scenicplus_inject_tf_self <- function(
   increase_importance_by = 0.00001,
   cores = NULL
 ) {
+  adjacency <- adjacency[adjacency[["TF"]] != adjacency[["target"]], , drop = FALSE]
   if (nrow(adjacency) == 0L) {
     return(adjacency)
   }
@@ -1368,7 +1481,9 @@ scenicplus_region_gene_native <- function(
   search_space = NULL,
   method = c("gbm", "correlation"),
   n_rounds = 500,
-  max_features = 0.1
+  max_features = 0.1,
+  cores = 1,
+  seed = 666
 ) {
   method <- match.arg(method)
   hits <- if (!is.null(search_space)) {
@@ -1395,7 +1510,9 @@ scenicplus_region_gene_native <- function(
       atac_counts = atac_counts,
       max_region_gene = max_region_gene,
       n_rounds = n_rounds,
-      max_features = max_features
+      max_features = max_features,
+      cores = cores,
+      seed = seed
     ))
   }
   hit_regions <- unique(hits[["region"]])
@@ -1492,13 +1609,31 @@ scenicplus_std_search <- function(search_space) {
   unique(out)
 }
 
+scenicplus_edge_spearman <- function(accessibility, expression, edge_regions, edge_genes, cores = 1L) {
+  if (all(is.finite(accessibility)) && all(is.finite(expression))) {
+    ranked <- cbind(apply(accessibility, 2L, rank, ties.method = "average"),
+                    apply(expression, 2L, rank, ties.method = "average"))
+    scenic_edge_correlation_cpp(
+      expr = ranked, tf_index = as.integer(edge_regions),
+      target_index = as.integer(ncol(accessibility) + edge_genes),
+      n_threads = scop_n_threads(cores))
+  } else {
+    vapply(seq_along(edge_regions), function(index) {
+      suppressWarnings(stats::cor(accessibility[, edge_regions[index]],
+        expression[, edge_genes[index]], method = "spearman", use = "complete.obs"))
+    }, numeric(1))
+  }
+}
+
 scenicplus_rg_gbm <- function(
   hits,
   rna_counts,
   atac_counts,
   max_region_gene = 5,
   n_rounds = 500,
-  max_features = 0.1
+  max_features = 0.1,
+  cores = 1,
+  seed = 666
 ) {
   hits <- hits[
     hits[["region"]] %in%
@@ -1514,56 +1649,36 @@ scenicplus_rg_gbm <- function(
   }
   atac_mat <- atac_counts[unique(hits[["region"]]), , drop = FALSE]
   rna_mat <- rna_counts[unique(hits[["gene"]]), , drop = FALSE]
-  rows <- lapply(split(hits, hits[["gene"]]), function(df) {
+  hits <- hits[scenicplus_order_cpp(hits[["gene"]]), , drop = FALSE]
+  groups <- split(hits, hits[["gene"]])
+  genes <- names(groups)
+  candidates <- lapply(groups, function(df) unique(match(df[["region"]], rownames(atac_mat))))
+  accessibility <- as_matrix(Matrix::t(atac_mat))
+  expression <- as_matrix(Matrix::t(rna_mat[genes, , drop = FALSE]))
+  weights <- scenicplus_region_gbm_cpp(
+    accessibility = accessibility,
+    expression = expression,
+    candidates = candidates,
+    n_rounds = as.integer(max(1L, n_rounds)),
+    max_features = max_features,
+    random_seed = as.integer(seed),
+    cores = scop_n_threads(cores)
+  )
+  edge_regions <- unlist(candidates, use.names = FALSE)
+  edge_genes <- rep(seq_along(genes), lengths(candidates))
+  rho_all <- scenicplus_edge_spearman(accessibility, expression,
+                                       edge_regions, edge_genes, cores = cores)
+  rho_by_gene <- split(rho_all, factor(edge_genes, levels = seq_along(genes)))
+  rows <- lapply(seq_along(groups), function(index) {
+    df <- groups[[index]]
     regions <- unique(df[["region"]])
     gene <- df[["gene"]][[1L]]
     regions <- intersect(regions, rownames(atac_mat))
     if (length(regions) == 0L || !gene %in% rownames(rna_mat)) {
       return(NULL)
     }
-    expr <- cbind(
-      as_matrix(Matrix::t(atac_mat[regions, , drop = FALSE])),
-      target = as.numeric(rna_mat[gene, ])
-    )
-    edge_idx <- grnboost_tree(
-      expr = expr,
-      regulator_idx = seq_along(regions),
-      target_idx = length(regions) + 1L,
-      n_rounds = as.integer(max(1L, n_rounds)),
-      learning_rate = 0.01,
-      max_edges_per_target = 0L,
-      max_depth = 3L,
-      max_features = max_features,
-      subsample = 1,
-      early_stop_window_length = 25L,
-      random_seed = 666L
-    )
-    if (nrow(edge_idx) == 0L) {
-      importance <- stats::setNames(rep(0, length(regions)), regions)
-    } else {
-      importance <- stats::setNames(
-        as.numeric(edge_idx[["importance"]]),
-        regions[edge_idx[["regulator"]]]
-      )
-      importance <- importance[regions]
-      importance[is.na(importance)] <- 0
-      total <- sum(importance)
-      if (is.finite(total) && total > 0) {
-        importance <- importance / total
-      }
-    }
-    rho <- vapply(
-      regions,
-      function(region) {
-        suppressWarnings(stats::cor(
-          as.numeric(atac_mat[region, ]),
-          as.numeric(rna_mat[gene, ]),
-          method = "spearman",
-          use = "complete.obs"
-        ))
-      },
-      numeric(1)
-    )
+    importance <- stats::setNames(weights[[index]], regions)
+    rho <- rho_by_gene[[index]]
     score <- as.numeric(importance) * abs(as.numeric(rho))
     out <- data.frame(
       region = regions,
@@ -1839,8 +1954,13 @@ scenicplus_eregulon_build <- function(
   rho_threshold = 0.05,
   quantiles = c(0.85, 0.90, 0.95),
   top_n_region_gene = c(5L, 10L, 15L),
-  min_target_genes = 10L
+  min_target_genes = 10L,
+  method = c("gsea", "leading_edge"),
+  n_perm = 1000L,
+  seed = 666L,
+  cores = 1L
 ) {
+  method <- match.arg(method)
   triplets <- scenicplus_add_eregulon_signs(
     triplets = triplets,
     tf_gene = tf_gene,
@@ -1854,9 +1974,16 @@ scenicplus_eregulon_build <- function(
     rho_threshold = rho_threshold,
     quantiles = quantiles,
     top_n_region_gene = top_n_region_gene,
-    min_target_genes = min_target_genes
+    min_target_genes = min_target_genes,
+    method = method,
+    n_perm = n_perm,
+    seed = seed,
+    cores = cores
   )
-  if (nrow(filtered_triplets) == 0L) {
+  statistics <- attr(filtered_triplets, "gsea_statistics")
+  used_fallback <- isTRUE(attr(filtered_triplets, "used_fallback")) ||
+    (nrow(filtered_triplets) == 0L && identical(method, "leading_edge"))
+  if (nrow(filtered_triplets) == 0L && used_fallback) {
     filtered_triplets <- triplets
   }
   split_key <- paste(
@@ -1876,7 +2003,9 @@ scenicplus_eregulon_build <- function(
         c("TF", "region", "gene", "score"),
         drop = FALSE
       ],
-      regulon_list = genes_by_key
+      regulon_list = genes_by_key,
+      statistics = statistics,
+      used_fallback = used_fallback
     ))
   }
   retained_keys <- names(genes_by_key)
@@ -1908,7 +2037,8 @@ scenicplus_eregulon_build <- function(
     drop = FALSE
   ])
   rownames(filtered_triplets) <- NULL
-  list(triplets = filtered_triplets, regulon_list = genes_by_key)
+  list(triplets = filtered_triplets, regulon_list = genes_by_key,
+       statistics = statistics, used_fallback = used_fallback)
 }
 
 scenicplus_le_triplets <- function(
@@ -1918,19 +2048,31 @@ scenicplus_le_triplets <- function(
   rho_threshold = 0.05,
   quantiles = c(0.85, 0.90, 0.95),
   top_n_region_gene = c(5L, 10L, 15L),
-  min_target_genes = 10L
+  min_target_genes = 10L,
+  method = c("gsea", "leading_edge"),
+  n_perm = 1000L,
+  seed = 666L,
+  cores = 1L
 ) {
+  method <- match.arg(method)
+  unfiltered <- function() {
+    attr(triplets, "used_fallback") <- TRUE
+    triplets
+  }
   if (
     is.null(tf_gene) ||
       is.null(region_gene) ||
       !"rho" %in% colnames(tf_gene) ||
       !"rho" %in% colnames(region_gene)
   ) {
-    return(triplets)
+    if (identical(method, "gsea")) {
+      stop("Native GSEA requires TF-gene and region-gene correlations", call. = FALSE)
+    }
+    return(unfiltered())
   }
   region_gene <- region_gene[is.finite(region_gene[["rho"]]), , drop = FALSE]
   if (nrow(region_gene) == 0L) {
-    return(triplets)
+    return(if (identical(method, "gsea")) triplets[FALSE, , drop = FALSE] else unfiltered())
   }
   if (!"importance" %in% colnames(region_gene)) {
     region_gene[["importance"]] <- abs(as.numeric(region_gene[["score"]]))
@@ -1951,8 +2093,17 @@ scenicplus_le_triplets <- function(
   tf_pos <- tf_pos[vapply(tf_pos, nrow, integer(1)) >= min_target_genes]
   tf_neg <- tf_neg[vapply(tf_neg, nrow, integer(1)) >= min_target_genes]
   if (length(tf_pos) == 0L && length(tf_neg) == 0L) {
-    return(triplets)
+    return(if (identical(method, "gsea")) triplets[FALSE, , drop = FALSE] else unfiltered())
   }
+  prepare_ranking <- function(df) {
+    ranking <- stats::setNames(df[["importance"]], df[["target"]])
+    if (identical(method, "gsea")) {
+      ranking <- ranking[scenicplus_order_cpp(unname(ranking), decreasing = TRUE)]
+    }
+    ranking
+  }
+  tf_pos <- lapply(tf_pos, prepare_ranking)
+  tf_neg <- lapply(tf_neg, prepare_ranking)
 
   modules <- scenicplus_region_gene_modules(
     region_gene = region_gene,
@@ -1961,10 +2112,11 @@ scenicplus_le_triplets <- function(
     top_n_region_gene = top_n_region_gene
   )
   if (length(modules) == 0L) {
-    return(triplets)
+    return(if (identical(method, "gsea")) triplets[FALSE, , drop = FALSE] else unfiltered())
   }
 
   out <- vector("list", 0L)
+  jobs <- vector("list", 0L)
   for (tf in intersect(names(tf_regions), unique(tf_gene[["TF"]]))) {
     regions <- unique(tf_regions[[tf]])
     for (module in modules) {
@@ -1977,11 +2129,14 @@ scenicplus_le_triplets <- function(
       }
       gene_set <- unique(emodule[["gene"]])
       if (tf %in% names(tf_pos)) {
-        ranking <- stats::setNames(
-          tf_pos[[tf]][["importance"]],
-          tf_pos[[tf]][["target"]]
-        )
-        leading_edge <- scenicplus_gsea_leading_edge(ranking, gene_set)
+        ranking <- tf_pos[[tf]]
+        if (identical(method, "gsea")) {
+          jobs[[length(jobs) + 1L]] <- list(tf = tf, sign = "+", module = module,
+            ranking = ranking, hits = which(names(ranking) %in% gene_set))
+          leading_edge <- character()
+        } else {
+          leading_edge <- scenicplus_gsea_leading_edge(ranking, gene_set)
+        }
         if (length(leading_edge) >= min_target_genes) {
           out[[length(out) + 1L]] <- scenicplus_fmt_le_tri(
             tf,
@@ -1993,11 +2148,14 @@ scenicplus_le_triplets <- function(
         }
       }
       if (tf %in% names(tf_neg)) {
-        ranking <- stats::setNames(
-          tf_neg[[tf]][["importance"]],
-          tf_neg[[tf]][["target"]]
-        )
-        leading_edge <- scenicplus_gsea_leading_edge(ranking, gene_set)
+        ranking <- tf_neg[[tf]]
+        if (identical(method, "gsea")) {
+          jobs[[length(jobs) + 1L]] <- list(tf = tf, sign = "-", module = module,
+            ranking = ranking, hits = which(names(ranking) %in% gene_set))
+          leading_edge <- character()
+        } else {
+          leading_edge <- scenicplus_gsea_leading_edge(ranking, gene_set)
+        }
         if (length(leading_edge) >= min_target_genes) {
           out[[length(out) + 1L]] <- scenicplus_fmt_le_tri(
             tf,
@@ -2010,8 +2168,39 @@ scenicplus_le_triplets <- function(
       }
     }
   }
+  if (identical(method, "gsea") && length(jobs) > 0L) {
+    statistics <- scenicplus_gsea_cpp(
+      rankings = lapply(jobs, function(job) unname(job$ranking)),
+      hits = lapply(jobs, function(job) as.integer(job$hits)),
+      n_perm = as.integer(n_perm), random_seed = as.integer(seed),
+      cores = scop_n_threads(cores)
+    )
+    valid <- is.finite(statistics$NES) & is.finite(statistics$pval)
+    adjusted <- rep(NA_real_, length(jobs))
+    adjusted[valid] <- stats::p.adjust(statistics$pval[valid], method = "BH")
+    module_statistics <- data.frame(
+      TF = vapply(jobs, function(job) job$tf, character(1)),
+      tf_sign = vapply(jobs, function(job) job$sign, character(1)),
+      r2g_sign = vapply(jobs, function(job) job$module$sign, character(1)),
+      ES = statistics$ES, NES = statistics$NES,
+      pval = statistics$pval, padj = adjusted,
+      leading_edge_genes = lengths(statistics$leading_edge)
+    )
+    passing <- which(valid & adjusted < 1 & statistics$NES > 0)
+    for (index in passing) {
+      job <- jobs[[index]]
+      leading_edge <- unique(names(job$ranking)[statistics$leading_edge[[index]]])
+      if (length(leading_edge) >= min_target_genes) {
+        emodule <- job$module$data[job$module$data$region %in% tf_regions[[job$tf]], , drop = FALSE]
+        out[[length(out) + 1L]] <- scenicplus_fmt_le_tri(
+          job$tf, job$sign, job$module$sign, emodule, leading_edge)
+      }
+    }
+  }
   if (length(out) == 0L) {
-    return(triplets[FALSE, , drop = FALSE])
+    out <- triplets[FALSE, , drop = FALSE]
+    if (exists("module_statistics", inherits = FALSE)) attr(out, "gsea_statistics") <- module_statistics
+    return(out)
   }
   out <- unique(do.call(rbind, out))
   out <- out[
@@ -2025,6 +2214,7 @@ scenicplus_le_triplets <- function(
     drop = FALSE
   ]
   rownames(out) <- NULL
+  if (exists("module_statistics", inherits = FALSE)) attr(out, "gsea_statistics") <- module_statistics
   out
 }
 

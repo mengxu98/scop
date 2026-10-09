@@ -20,6 +20,12 @@
 #include <omp.h>
 #endif
 
+// Keep split and impurity arithmetic as separate IEEE operations on Clang.
+// Fused multiply-add can change equal-gain feature attribution across compilers.
+#ifdef __clang__
+#pragma clang fp contract(off)
+#endif
+
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -103,7 +109,6 @@ NumericVector scenic_edge_correlation_cpp(
 }
 
 static const double SCENIC_FEATURE_THRESHOLD = 1e-7;
-static const double SCENIC_PROXY_REL_TOL = 64.0 * std::numeric_limits<double>::epsilon();
 static const int SCENIC_RAND_R_MAX = 2147483647;
 
 struct ScenicEdge {
@@ -211,11 +216,7 @@ struct ScenicScopeTimer {
 };
 
 static bool scenic_proxy_improves(double candidate, double current) {
-  if (!R_finite(candidate)) return false;
-  if (!R_finite(current) || current <= 0.0) return candidate > current;
-  const double scale = std::max(std::fabs(candidate), std::fabs(current));
-  const double tol = SCENIC_PROXY_REL_TOL * std::max(1.0, scale);
-  return candidate > current + tol;
+  return R_finite(candidate) && candidate > current;
 }
 
 static bool scenic_edge_before(const ScenicEdge& a, const ScenicEdge& b) {
@@ -230,13 +231,34 @@ static double scenic_sse_from_sums(double sum, double sum_sq, int n) {
   return sse > 0.0 ? sse : 0.0;
 }
 
-static double scenic_tree_feature_value(const NumericMatrix& expr, int row, int feature) {
+static double scenic_target_value(const NumericMatrix& expr, int row, int feature) {
   double x = expr.begin()[row + feature * expr.nrow()];
   if (!R_finite(x)) x = 0.0;
-  return static_cast<double>(static_cast<float>(x));
+  return x;
 }
 
-static double scenic_tree_feature_value(const ScenicSparseDgcMatrix& expr, int row, int feature) {
+static double scenic_tree_feature_value(const NumericMatrix& expr, int row, int feature) {
+  return static_cast<double>(static_cast<float>(scenic_target_value(expr, row, feature)));
+}
+
+// Read-only columns keep per-gene candidate matrices inside the existing GBM kernel.
+struct ScenicColumnView {
+  int rows;
+  std::vector<const double*> columns;
+  int nrow() const { return rows; }
+  int ncol() const { return static_cast<int>(columns.size()); }
+};
+
+static double scenic_target_value(const ScenicColumnView& expr, int row, int feature) {
+  const double value = expr.columns[feature][row];
+  return R_finite(value) ? value : 0.0;
+}
+
+static double scenic_tree_feature_value(const ScenicColumnView& expr, int row, int feature) {
+  return static_cast<double>(static_cast<float>(scenic_target_value(expr, row, feature)));
+}
+
+static double scenic_target_value(const ScenicSparseDgcMatrix& expr, int row, int feature) {
   if (row < 0 || row >= expr.nrow() || feature < 0 || feature >= expr.ncol()) {
     return 0.0;
   }
@@ -249,7 +271,42 @@ static double scenic_tree_feature_value(const ScenicSparseDgcMatrix& expr, int r
   if (found == i + end || *found != row) return 0.0;
   double value = x[found - i];
   if (!R_finite(value)) value = 0.0;
-  return static_cast<double>(static_cast<float>(value));
+  return value;
+}
+
+static double scenic_tree_feature_value(const ScenicSparseDgcMatrix& expr, int row, int feature) {
+  return static_cast<double>(static_cast<float>(scenic_target_value(expr, row, feature)));
+}
+
+struct ScenicSparseTreeView {
+  const ScenicSparseDgcMatrix& matrix;
+  const std::vector<std::vector<double> >& values;
+  const std::vector<std::vector<int> >& ranks;
+  int nrow() const { return matrix.nrow(); }
+};
+
+template <typename Expr>
+static const Expr& scenic_tree_view(
+    const Expr& expr,
+    const std::vector<std::vector<double> >&,
+    const std::vector<std::vector<int> >&) {
+  return expr;
+}
+
+static ScenicSparseTreeView scenic_tree_view(
+    const ScenicSparseDgcMatrix& expr,
+    const std::vector<std::vector<double> >& values,
+    const std::vector<std::vector<int> >& ranks) {
+  return ScenicSparseTreeView{expr, values, ranks};
+}
+
+static double scenic_tree_feature_value(const ScenicSparseTreeView& view, int row, int feature) {
+  if (feature >= 0 && feature < static_cast<int>(view.ranks.size()) &&
+      static_cast<int>(view.ranks[feature].size()) == view.nrow()) {
+    const int rank = view.ranks[feature][row];
+    return rank < 0 ? 0.0 : view.values[feature][rank];
+  }
+  return scenic_tree_feature_value(view.matrix, row, feature);
 }
 
 static double scenic_node_mean(
@@ -291,121 +348,60 @@ static double scenic_node_sse(
   return scenic_sse_from_sums(sum, sum_sq, end - start);
 }
 
-template <typename Expr>
-static void scenic_sort_samples_by_feature(
-    const Expr& expr,
-    std::vector<int>& samples,
-    std::vector<double>& feature_values,
-    int start,
-    int end,
-    int feature) {
-  std::vector<std::pair<double, int> > values;
-  values.reserve(end - start);
-  for (int i = start; i < end; ++i) {
-    values.push_back(std::make_pair(scenic_tree_feature_value(expr, samples[i], feature), samples[i]));
+// Three-way introsort preserves the reference dense splitter's tie partition order.
+static void scenic_sample_swap(std::vector<double>& values, std::vector<int>& samples, int a, int b) {
+  std::swap(values[a], values[b]);
+  std::swap(samples[a], samples[b]);
+}
+
+static void scenic_sample_sift(std::vector<double>& values, std::vector<int>& samples, int offset, int root, int end) {
+  while (true) {
+    const int child = root * 2 + 1;
+    int largest = root;
+    if (child < end && values[offset + largest] < values[offset + child]) largest = child;
+    if (child + 1 < end && values[offset + largest] < values[offset + child + 1]) largest = child + 1;
+    if (largest == root) return;
+    scenic_sample_swap(values, samples, offset + root, offset + largest);
+    root = largest;
   }
-  std::sort(values.begin(), values.end(), [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
-    if (a.first != b.first) return a.first < b.first;
-    return a.second < b.second;
-  });
-  for (int i = start; i < end; ++i) {
-    const std::pair<double, int>& value = values[static_cast<std::size_t>(i - start)];
-    feature_values[i] = value.first;
-    samples[i] = value.second;
+}
+
+static void scenic_sample_sort(std::vector<double>& values, std::vector<int>& samples, int start, int count, int depth) {
+  while (count > 1) {
+    if (depth <= 0) {
+      for (int root = (count - 2) / 2; root >= 0; --root) scenic_sample_sift(values, samples, start, root, count);
+      for (int end = count - 1; end > 0; --end) {
+        scenic_sample_swap(values, samples, start, start + end);
+        scenic_sample_sift(values, samples, start, 0, end);
+      }
+      return;
+    }
+    --depth;
+    const double a = values[start], b = values[start + count / 2], c = values[start + count - 1];
+    const double pivot = a < b ? (b < c ? b : (a < c ? c : a)) : (b < c ? (a < c ? a : c) : b);
+    int i = 0, left = 0, right = count;
+    while (i < right) {
+      if (values[start + i] < pivot) {
+        scenic_sample_swap(values, samples, start + i, start + left);
+        ++i; ++left;
+      } else if (values[start + i] > pivot) {
+        --right;
+        scenic_sample_swap(values, samples, start + i, start + right);
+      } else ++i;
+    }
+    scenic_sample_sort(values, samples, start, left, depth);
+    start += right;
+    count -= right;
   }
 }
 
 template <typename Expr>
-static void scenic_order_samples_by_feature(
-    const Expr& expr,
-    const std::vector<std::vector<int> >& feature_orders,
-    const std::vector<std::vector<double> >& feature_order_values,
-    const std::vector<std::vector<int> >& feature_order_ranks,
-    std::vector<int>& samples,
-    std::vector<double>& feature_values,
-    int start,
-    int end,
-    int feature,
-    std::vector<int>& row_marks,
-    int row_mark) {
-  if (
-      feature < 0 ||
-      feature >= static_cast<int>(feature_orders.size()) ||
-      feature >= static_cast<int>(feature_order_values.size()) ||
-      feature_orders[feature].empty()) {
-    scenic_sort_samples_by_feature(expr, samples, feature_values, start, end, feature);
-    return;
-  }
-  int pos = start;
-  const std::vector<int>& order = feature_orders[feature];
-  const std::vector<double>& values = feature_order_values[feature];
-  if (
-      static_cast<int>(order.size()) < expr.nrow() &&
-      values.size() == order.size()) {
-    std::vector<int> original(samples.begin() + start, samples.begin() + end);
-    std::vector<std::pair<int, double> > positive_nonzero;
-    std::vector<int> emitted_nonzero;
-    positive_nonzero.reserve(order.size());
-    emitted_nonzero.reserve(order.size());
-    for (std::size_t i = 0; i < order.size(); ++i) {
-      const int row = order[i];
-      if (row_marks[row] != row_mark) continue;
-      row_marks[row] = row_mark + 1;
-      emitted_nonzero.push_back(row);
-      const double value = values[i];
-      if (value < -SCENIC_FEATURE_THRESHOLD) {
-        feature_values[pos] = value;
-        samples[pos] = row;
-        ++pos;
-      } else {
-        positive_nonzero.push_back(std::make_pair(row, value));
-      }
-    }
-    for (std::size_t i = 0; i < original.size(); ++i) {
-      const int row = original[i];
-      if (row_marks[row] == row_mark) {
-        feature_values[pos] = 0.0;
-        samples[pos] = row;
-        ++pos;
-      }
-    }
-    for (std::size_t i = 0; i < positive_nonzero.size(); ++i) {
-      feature_values[pos] = positive_nonzero[i].second;
-      samples[pos] = positive_nonzero[i].first;
-      ++pos;
-    }
-    for (std::size_t i = 0; i < emitted_nonzero.size(); ++i) {
-      row_marks[emitted_nonzero[i]] = row_mark;
-    }
-    if (pos != end) {
-      scenic_sort_samples_by_feature(expr, samples, feature_values, start, end, feature);
-    }
-    return;
-  }
-  if (
-      feature < static_cast<int>(feature_order_ranks.size()) &&
-      !feature_order_ranks[feature].empty() &&
-      (end - start) * 8 < static_cast<int>(order.size())) {
-    const std::vector<int>& ranks = feature_order_ranks[feature];
-    std::sort(samples.begin() + start, samples.begin() + end, [&](int a, int b) {
-      return ranks[a] < ranks[b];
-    });
-    for (int i = start; i < end; ++i) {
-      feature_values[i] = values[ranks[samples[i]]];
-    }
-    return;
-  }
-  for (std::size_t i = 0; i < order.size() && pos < end; ++i) {
-    const int row = order[i];
-    if (row_marks[row] == row_mark) {
-      feature_values[pos] = values[i];
-      samples[pos] = row;
-      ++pos;
-    }
-  }
-  if (pos != end) {
-    scenic_sort_samples_by_feature(expr, samples, feature_values, start, end, feature);
-  }
+static void scenic_sort_samples_by_feature(
+    const Expr& expr, std::vector<int>& samples, std::vector<double>& feature_values,
+    int start, int end, int feature) {
+  for (int i = start; i < end; ++i) feature_values[i] = scenic_tree_feature_value(expr, samples[i], feature);
+  const int count = end - start;
+  if (count > 1) scenic_sample_sort(feature_values, samples, start, count, 2 * static_cast<int>(std::log(count)));
 }
 
 template <typename Expr>
@@ -426,11 +422,8 @@ static int scenic_partition_samples_final(
       --partition_end;
     }
   }
-  int n_left = 0;
-  for (int i = start; i < end; ++i) {
-    if (scenic_tree_feature_value(expr, samples[i], feature) <= threshold) ++n_left;
-  }
-  return start + n_left;
+  // Everything before p is on the left; only the meeting sample remains.
+  return p + (p < end && scenic_tree_feature_value(expr, samples[p], feature) <= threshold ? 1 : 0);
 }
 
 static int scenic_rand_int(std::uint32_t& split_seed) {
@@ -535,7 +528,7 @@ static std::vector<std::vector<int> > scenic_feature_orders(
     nonzero.reserve(n_samples);
     for (int i = 0; i < n_samples; ++i) {
       const double value = scenic_tree_feature_value(expr, i, g);
-      if (!R_finite(value) || std::fabs(value) <= SCENIC_FEATURE_THRESHOLD) {
+      if (!R_finite(value) || static_cast<float>(value) == 0.0f) {
         continue;
       }
       nonzero.push_back(std::make_pair(
@@ -555,6 +548,11 @@ static std::vector<std::vector<int> > scenic_feature_orders(
     }
     if (order_values != nullptr) {
       (*order_values)[g] = values;
+    }
+    if (order_ranks != nullptr) {
+      std::vector<int>& ranks = (*order_ranks)[g];
+      ranks.assign(expr.nrow(), -1);
+      for (std::size_t i = 0; i < order.size(); ++i) ranks[order[i]] = static_cast<int>(i);
     }
     orders[g] = order;
   }
@@ -585,7 +583,7 @@ static std::vector<std::vector<int> > scenic_feature_orders(
     nonzero.reserve(p[g + 1] - p[g]);
     for (int ptr = p[g]; ptr < p[g + 1]; ++ptr) {
       double value = x[ptr];
-      if (!R_finite(value) || std::fabs(value) <= SCENIC_FEATURE_THRESHOLD) continue;
+      if (!R_finite(value) || static_cast<float>(value) == 0.0f) continue;
       nonzero.push_back(std::make_pair(
         static_cast<double>(static_cast<float>(value)),
         row_idx[ptr]
@@ -600,6 +598,11 @@ static std::vector<std::vector<int> > scenic_feature_orders(
     for (std::size_t i = 0; i < nonzero.size(); ++i) {
       order[i] = nonzero[i].second;
       values[i] = nonzero[i].first;
+    }
+    if (order_ranks != nullptr) {
+      std::vector<int>& ranks = (*order_ranks)[g];
+      ranks.assign(expr.nrow(), -1);
+      for (std::size_t i = 0; i < order.size(); ++i) ranks[order[i]] = static_cast<int>(i);
     }
     orders[g] = order;
     if (order_values != nullptr) {
@@ -633,19 +636,10 @@ static ScenicSplit scenic_best_split(
     ScenicGrnProfile* profile,
     ScenicCandidateTrace* candidate_trace = nullptr) {
   if (profile != nullptr) ++profile->best_split_calls;
-  ScenicSplit best{-1, 0.0, 0.0, 0.0};
+  ScenicSplit best{-1, 0.0, -std::numeric_limits<double>::infinity(), 0.0};
   if (end - start < 2 || feature_pool.empty()) return best;
 
   if (parent_sse <= 0.0) return best;
-  ++row_mark;
-  if (row_mark == std::numeric_limits<int>::max()) {
-    std::fill(row_marks.begin(), row_marks.end(), 0);
-    row_mark = 1;
-  }
-  for (int i = start; i < end; ++i) {
-    row_marks[samples[i]] = row_mark;
-  }
-
   const int n_features = static_cast<int>(feature_pool.size());
   int f_i = n_features;
   int n_visited = 0;
@@ -675,153 +669,70 @@ static ScenicSplit scenic_best_split(
     double feature_best_threshold = 0.0;
     int feature_best_left = 0;
     int feature_best_right = 0;
-    bool have_group = false;
-    double current_x = 0.0;
-    double group_sum = 0.0;
-    int group_n = 0;
     double left_sum = 0.0;
     int n_left = 0;
-    int selected_n = 0;
-    double min_x = 0.0;
-    double max_x = 0.0;
-
-    const bool use_order_stream =
-      feature >= 0 &&
-      feature < static_cast<int>(feature_orders.size()) &&
-      feature < static_cast<int>(feature_order_values.size()) &&
-      static_cast<int>(feature_orders[feature].size()) == expr.nrow() &&
-      feature_order_values[feature].size() == feature_orders[feature].size();
-    if (use_order_stream) {
-      const std::vector<int>& order = feature_orders[feature];
+    // Reuse cached float32 values, while sorting the current node sample order.
+    const bool cached = feature >= 0 && feature < static_cast<int>(feature_order_ranks.size()) &&
+      static_cast<int>(feature_order_ranks[feature].size()) == expr.nrow();
+    if (cached) {
+      const std::vector<int>& ranks = feature_order_ranks[feature];
       const std::vector<double>& values = feature_order_values[feature];
-      for (std::size_t oi = 0; oi < order.size(); ++oi) {
-        const int row = order[oi];
-        if (row_marks[row] != row_mark) continue;
-        const double x = values[oi];
-        if (selected_n == 0) min_x = x;
-        max_x = x;
-        ++selected_n;
-        const double y = residual[row];
-        if (!have_group) {
-          have_group = true;
-          current_x = x;
-          group_sum = y;
-          group_n = 1;
-          continue;
-        }
-        if (x <= current_x + SCENIC_FEATURE_THRESHOLD) {
-          group_sum += y;
-          ++group_n;
-          continue;
-        }
-
-        left_sum += group_sum;
-        n_left += group_n;
-        const int n_right = end - start - n_left;
-        if (n_left < 1 || n_right < 1) continue;
-        if (profile != nullptr) ++profile->split_threshold_visits;
-
-        const double right_sum = parent_sum - left_sum;
-        const double diff =
-          static_cast<double>(n_right) * left_sum - static_cast<double>(n_left) * right_sum;
-        const double proxy_gain =
-          2.0 * diff * diff /
-          (static_cast<double>(n_left + n_right) *
-           static_cast<double>(n_left) * static_cast<double>(n_right));
-        const bool feature_improves = scenic_proxy_improves(proxy_gain, feature_best_proxy);
-        const bool global_improves = scenic_proxy_improves(proxy_gain, best.proxy_gain);
-        if (feature_improves || global_improves) {
-          const double importance_gain = 0.5 * proxy_gain;
-          const double threshold = (current_x + x) / 2.0;
-          double split_threshold = threshold;
-          if (split_threshold == static_cast<double>(x) || !R_finite(split_threshold)) {
-            split_threshold = current_x;
-          }
-          if (feature_improves) {
-            feature_best_proxy = proxy_gain;
-            feature_best_importance = importance_gain;
-            feature_best_threshold = split_threshold;
-            feature_best_left = n_left;
-            feature_best_right = n_right;
-          }
-          if (global_improves) {
-            best.feature = feature;
-            best.threshold = split_threshold;
-            best.proxy_gain = proxy_gain;
-            best.importance_gain = importance_gain;
-          }
-        }
-        current_x = x;
-        group_sum = y;
-        group_n = 1;
+      for (int i = start; i < end; ++i) {
+        const int rank = ranks[samples[i]];
+        feature_values[i] = rank < 0 ? 0.0 : values[rank];
       }
+      const int count = end - start;
+      if (count > 1) scenic_sample_sort(feature_values, samples, start, count, 2 * static_cast<int>(std::log(count)));
     } else {
-      scenic_order_samples_by_feature(
-        expr, feature_orders, feature_order_values, feature_order_ranks,
-        samples, feature_values, start, end, feature,
-        row_marks, row_mark);
-      selected_n = end - start;
-      min_x = feature_values[start];
-      max_x = feature_values[end - 1];
-      for (int pos = start; pos < end; ++pos) {
-        const int row = samples[pos];
-        const double x = feature_values[pos];
-        const double y = residual[row];
-        if (!have_group) {
-          have_group = true;
-          current_x = x;
-          group_sum = y;
-          group_n = 1;
-          continue;
+      scenic_sort_samples_by_feature(expr, samples, feature_values, start, end, feature);
+    }
+    const int selected_n = end - start;
+    const double min_x = feature_values[start], max_x = feature_values[end - 1];
+    // Match sequential prefix updates and reverse suffix updates, including
+    // floating-point tie decisions. A relative gain tolerance changes TF attribution.
+    int previous_pos = start;
+    int pos = start;
+    while (pos < end) {
+      while (pos + 1 < end && static_cast<float>(feature_values[pos + 1]) <=
+             static_cast<float>(static_cast<float>(feature_values[pos]) + static_cast<float>(SCENIC_FEATURE_THRESHOLD))) ++pos;
+      const int boundary = pos;
+      ++pos;
+      if (pos == end) continue;
+      n_left = pos - start;
+      const int n_right = end - pos;
+      if (profile != nullptr) ++profile->split_threshold_visits;
+      if (pos - previous_pos <= end - pos) {
+        for (int row = previous_pos; row < pos; ++row) left_sum += residual[samples[row]];
+      } else {
+        left_sum = parent_sum;
+        for (int row = end - 1; row >= pos; --row) left_sum -= residual[samples[row]];
+      }
+      previous_pos = pos;
+      const double right_sum = parent_sum - left_sum;
+      const double diff = static_cast<double>(n_right) * left_sum - static_cast<double>(n_left) * right_sum;
+      const double proxy_gain = diff * diff / (static_cast<double>(n_left) * static_cast<double>(n_right));
+      const bool feature_improves = scenic_proxy_improves(proxy_gain, feature_best_proxy);
+      const bool global_improves = scenic_proxy_improves(proxy_gain, best.proxy_gain);
+      if (feature_improves || global_improves) {
+        const double importance_gain = proxy_gain / static_cast<double>(n_left + n_right);
+        double split_threshold = feature_values[boundary] / 2.0 + feature_values[pos] / 2.0;
+        if (split_threshold == feature_values[pos] || !R_finite(split_threshold)) split_threshold = feature_values[boundary];
+        if (feature_improves) {
+          feature_best_proxy = proxy_gain;
+          feature_best_importance = importance_gain;
+          feature_best_threshold = split_threshold;
+          feature_best_left = n_left;
+          feature_best_right = n_right;
         }
-        if (x <= current_x + SCENIC_FEATURE_THRESHOLD) {
-          group_sum += y;
-          ++group_n;
-          continue;
+        if (global_improves) {
+          best.feature = feature;
+          best.threshold = split_threshold;
+          best.proxy_gain = proxy_gain;
+          best.importance_gain = importance_gain;
         }
-
-        left_sum += group_sum;
-        n_left += group_n;
-        const int n_right = end - start - n_left;
-        if (n_left < 1 || n_right < 1) continue;
-        if (profile != nullptr) ++profile->split_threshold_visits;
-
-        const double right_sum = parent_sum - left_sum;
-        const double diff =
-          static_cast<double>(n_right) * left_sum - static_cast<double>(n_left) * right_sum;
-        const double proxy_gain =
-          2.0 * diff * diff /
-          (static_cast<double>(n_left + n_right) *
-           static_cast<double>(n_left) * static_cast<double>(n_right));
-        const bool feature_improves = scenic_proxy_improves(proxy_gain, feature_best_proxy);
-        const bool global_improves = scenic_proxy_improves(proxy_gain, best.proxy_gain);
-        if (feature_improves || global_improves) {
-          const double importance_gain = 0.5 * proxy_gain;
-          const double threshold = (current_x + x) / 2.0;
-          double split_threshold = threshold;
-          if (split_threshold == static_cast<double>(x) || !R_finite(split_threshold)) {
-            split_threshold = current_x;
-          }
-          if (feature_improves) {
-            feature_best_proxy = proxy_gain;
-            feature_best_importance = importance_gain;
-            feature_best_threshold = split_threshold;
-            feature_best_left = n_left;
-            feature_best_right = n_right;
-          }
-          if (global_improves) {
-            best.feature = feature;
-            best.threshold = split_threshold;
-            best.proxy_gain = proxy_gain;
-            best.importance_gain = importance_gain;
-          }
-        }
-        current_x = x;
-        group_sum = y;
-        group_n = 1;
       }
     }
-    if (selected_n < 2 || max_x <= min_x + SCENIC_FEATURE_THRESHOLD) {
+    if (selected_n < 2 || static_cast<float>(max_x) <= static_cast<float>(static_cast<float>(min_x) + static_cast<float>(SCENIC_FEATURE_THRESHOLD))) {
       std::swap(feature_pool[f_j], feature_pool[n_total_constants]);
       ++n_found_constants;
       ++n_total_constants;
@@ -872,17 +783,22 @@ static int scenic_build_tree(
     std::vector<ScenicTreeNode>& nodes,
     std::vector<double>& importance,
     ScenicGrnProfile* profile,
-    ScenicCandidateTrace* candidate_trace = nullptr) {
+    ScenicCandidateTrace* candidate_trace = nullptr,
+    double inherited_impurity = std::numeric_limits<double>::quiet_NaN()) {
   ScenicTreeNode node;
   node.feature = -1;
   node.threshold = 0.0;
-  node.value = scenic_node_mean(samples, start, end, residual);
   node.left = -1;
   node.right = -1;
   node.n_rows = end - start;
   double node_sum = 0.0;
   double node_sum_sq = 0.0;
-  node.sse = scenic_node_sse(samples, start, end, residual, &node_sum, &node_sum_sq);
+  scenic_node_sse(samples, start, end, residual, &node_sum, &node_sum_sq);
+  const double count = static_cast<double>(end - start);
+  node.value = end > start ? node_sum / count : 0.0;
+  const double impurity = std::isnan(inherited_impurity) ?
+    node_sum_sq / count - (node_sum / count) * (node_sum / count) : inherited_impurity;
+  node.sse = count * impurity;
   node.importance_gain = 0.0;
   const int node_index = static_cast<int>(nodes.size());
   nodes.push_back(node);
@@ -909,27 +825,43 @@ static int scenic_build_tree(
   }
   if (split.feature < 0) return node_index;
 
-  const int split_pos = scenic_partition_samples_final(expr, samples, start, end, split.feature, split.threshold);
+  const auto& partition_view = scenic_tree_view(expr, feature_order_values, feature_order_ranks);
+  const int split_pos = scenic_partition_samples_final(
+    partition_view, samples, start, end, split.feature, split.threshold);
   if (split_pos <= start || split_pos >= end) return node_index;
 
-  if (!near_zero_leaf) {
-    importance[split.feature] += split.importance_gain;
+  double left_sum = 0.0, left_sq = 0.0;
+  if (split_pos - start <= end - split_pos) {
+    for (int i = start; i < split_pos; ++i) left_sum += residual[samples[i]];
+  } else {
+    left_sum = node_sum;
+    for (int i = end - 1; i >= split_pos; --i) left_sum -= residual[samples[i]];
   }
+  for (int i = start; i < split_pos; ++i) {
+    const double value = residual[samples[i]];
+    left_sq += value * value;
+  }
+  const double nl = split_pos - start, nr = end - split_pos;
+  const double right_sum = node_sum - left_sum;
+  const double left_impurity = left_sq / nl - (left_sum / nl) * (left_sum / nl);
+  const double right_impurity = (node_sum_sq - left_sq) / nr - (right_sum / nr) * (right_sum / nr);
+  const double importance_gain = count * impurity - nl * left_impurity - nr * right_impurity;
+  importance[split.feature] += importance_gain;
   const int left = scenic_build_tree(
     expr, residual, samples, feature_values, start, split_pos, feature_pool, constant_features,
     n_total_constants, depth + 1, max_depth, mtry, split_seed, feature_orders,
     feature_order_values, feature_order_ranks, row_marks, row_mark, nodes, importance, profile,
-    candidate_trace);
+    candidate_trace, left_impurity);
   const int right = scenic_build_tree(
     expr, residual, samples, feature_values, split_pos, end, feature_pool, constant_features,
     n_total_constants, depth + 1, max_depth, mtry, split_seed, feature_orders,
     feature_order_values, feature_order_ranks, row_marks, row_mark, nodes, importance, profile,
-    candidate_trace);
+    candidate_trace, right_impurity);
   nodes[node_index].feature = split.feature;
   nodes[node_index].threshold = split.threshold;
   nodes[node_index].left = left;
   nodes[node_index].right = right;
-  nodes[node_index].importance_gain = split.importance_gain;
+  nodes[node_index].importance_gain = importance_gain;
   return node_index;
 }
 
@@ -946,6 +878,27 @@ static double scenic_predict_tree(
     node_index = (x <= node.threshold) ? node.left : node.right;
   }
   return 0.0;
+}
+
+// Accumulate fitted predictions, then derive residuals from the original response.
+// The same update is used by production fitting and diagnostic tree traces.
+template <typename Expr>
+static void scenic_boost_update(
+    const Expr& expr, const std::vector<ScenicTreeNode>& nodes,
+    const std::vector<double>& response, std::vector<double>& prediction,
+    std::vector<double>& residual, const std::vector<unsigned char>& is_train,
+    int sample_size, double learning_rate, double& initial_loss, double& new_loss,
+    int& n_oob) {
+  for (int i = 0; i < expr.nrow(); ++i) {
+    const double old_residual = residual[i];
+    prediction[i] += learning_rate * scenic_predict_tree(expr, nodes, i);
+    residual[i] = response[i] - prediction[i];
+    if (sample_size < expr.nrow() && !is_train[i]) {
+      initial_loss += old_residual * old_residual;
+      new_loss += residual[i] * residual[i];
+      ++n_oob;
+    }
+  }
 }
 
 static void scenic_profile_add_elapsed(
@@ -981,10 +934,12 @@ static void scenic_grnboost_run_targets(
     ScenicGrnProfile* profile,
     bool check_interrupt,
     std::vector<ScenicEdge>& edges) {
+  const auto& prediction_view = scenic_tree_view(expr, feature_order_values, feature_order_ranks);
   const int n_samples = expr.nrow();
   const int n_genes = expr.ncol();
   const int sample_size = std::max(1, static_cast<int>(std::floor(subsample * n_samples)));
   std::vector<double> residual(n_samples);
+  std::vector<double> response(n_samples), prediction(n_samples);
   std::vector<double> importance(n_genes);
   std::vector<double> tree_importance(n_genes);
   std::vector<double> feature_values(n_samples);
@@ -997,9 +952,21 @@ static void scenic_grnboost_run_targets(
     if (profile != nullptr) target_setup_start = std::chrono::steady_clock::now();
 
     std::fill(importance.begin(), importance.end(), 0.0);
+    const double first_target = scenic_target_value(expr, 0, target);
+    bool constant_target = true;
     for (int i = 0; i < n_samples; ++i) {
-      double y = scenic_tree_feature_value(expr, i, target);
+      double y = scenic_target_value(expr, i, target);
+      if (y != first_target) constant_target = false;
+      response[i] = y;
+      prediction[i] = means[target];
       residual[i] = y - means[target];
+    }
+    // A constant response cannot yield a split or a nonzero importance. The
+    // OOB monitor otherwise repeats all rounds because its improvement is zero.
+    if (constant_target) {
+      scenic_profile_add_elapsed(
+        profile, &ScenicGrnProfile::target_setup_seconds, target_setup_start);
+      continue;
     }
     std::vector<int> features;
     features.reserve(regs.size());
@@ -1074,17 +1041,8 @@ static void scenic_grnboost_run_targets(
         ScenicScopeTimer update_timer(
           profile == nullptr ? nullptr : &profile->update_predict_seconds
         );
-        for (int i = 0; i < n_samples; ++i) {
-          const double old_resid = residual[i];
-          const double pred = scenic_predict_tree(expr, nodes, i);
-          const double new_resid = old_resid - learning_rate * pred;
-          if (sample_size < n_samples && !is_train[i]) {
-            initial_oob_loss += old_resid * old_resid;
-            new_oob_loss += new_resid * new_resid;
-            ++n_oob;
-          }
-          residual[i] = new_resid;
-        }
+        scenic_boost_update(prediction_view, nodes, response, prediction, residual, is_train,
+                            sample_size, learning_rate, initial_oob_loss, new_oob_loss, n_oob);
       }
       ++actual_rounds;
 
@@ -1143,6 +1101,386 @@ static void scenic_grnboost_run_targets(
   }
 }
 
+// Index introsort keeps the deterministic partition order for equal group keys.
+template <typename Value>
+static std::vector<int> scenic_argsort(const std::vector<Value>& values) {
+  std::vector<int> order(values.size());
+  std::iota(order.begin(), order.end(), 0);
+  if (order.empty()) return order;
+  struct Partition { int first, last, depth; };
+  int depth = 0;
+  for (std::size_t size = values.size(); size > 1; size >>= 1) depth += 2;
+  std::vector<Partition> stack{{0, static_cast<int>(order.size()) - 1, depth}};
+  auto less = [&](int left, int right) { return values[left] < values[right]; };
+  while (!stack.empty()) {
+    auto part = stack.back();
+    stack.pop_back();
+    int first = part.first, last = part.last;
+    depth = part.depth;
+    if (depth < 0) {
+      std::make_heap(order.begin() + first, order.begin() + last + 1, less);
+      std::sort_heap(order.begin() + first, order.begin() + last + 1, less);
+      continue;
+    }
+    while (last - first > 15) {
+      const int middle = first + (last - first) / 2;
+      if (less(order[middle], order[first])) std::swap(order[middle], order[first]);
+      if (less(order[last], order[middle])) std::swap(order[last], order[middle]);
+      if (less(order[middle], order[first])) std::swap(order[middle], order[first]);
+      const Value pivot = values[order[middle]];
+      std::swap(order[middle], order[last - 1]);
+      int left = first, right = last - 1;
+      while (true) {
+        do { ++left; } while (values[order[left]] < pivot);
+        do { --right; } while (pivot < values[order[right]]);
+        if (left >= right) break;
+        std::swap(order[left], order[right]);
+      }
+      std::swap(order[left], order[last - 1]);
+      --depth;
+      if (left - first < last - left) {
+        stack.push_back({left + 1, last, depth});
+        last = left - 1;
+      } else {
+        stack.push_back({first, left - 1, depth});
+        first = left + 1;
+      }
+    }
+    for (int i = first + 1; i <= last; ++i) {
+      const int value = order[i];
+      int j = i;
+      while (j > first && less(value, order[j - 1])) {
+        order[j] = order[j - 1];
+        --j;
+      }
+      order[j] = value;
+    }
+  }
+  return order;
+}
+
+// [[Rcpp::export]]
+IntegerVector scenicplus_order_cpp(SEXP values, bool decreasing = false) {
+  std::vector<int> order;
+  if (TYPEOF(values) == STRSXP) {
+    CharacterVector groups(values);
+    std::vector<std::string> keys;
+    keys.reserve(groups.size());
+    for (String group : groups) {
+      if (group == NA_STRING) stop("Order keys must not contain missing names");
+      keys.push_back(group.get_cstring());
+    }
+    if (decreasing) std::reverse(keys.begin(), keys.end());
+    order = scenic_argsort(keys);
+  } else if (TYPEOF(values) == REALSXP || TYPEOF(values) == INTSXP) {
+    NumericVector input = as<NumericVector>(values);
+    std::vector<double> keys(input.begin(), input.end());
+    for (double key : keys) if (!std::isfinite(key)) stop("Order keys must be finite");
+    if (decreasing) std::reverse(keys.begin(), keys.end());
+    order = scenic_argsort(keys);
+  } else {
+    stop("Order keys must be numeric or character");
+  }
+  // Reverse both the input and output for descending order, preserving the
+  // reference tie permutation rather than treating equal scores as stable.
+  if (decreasing) {
+    std::reverse(order.begin(), order.end());
+    for (int& index : order) index = order.size() - 1 - index;
+  }
+  for (int& index : order) ++index;
+  return wrap(order);
+}
+
+template <typename Function>
+static void scenic_parallel_tasks(int n_tasks, int cores, Function run) {
+  const int workers = worker_count(cores, n_tasks);
+  // Bounded batches allow interrupts without calling R from worker threads.
+  for (int first = 0; first < n_tasks; first += workers * 4) {
+    const int last = std::min(n_tasks, first + workers * 4);
+    std::atomic<int> next(first);
+    std::vector<std::exception_ptr> errors(workers);
+    std::vector<std::thread> pool;
+    if (workers == 1) {
+      for (int task = first; task < last; ++task) run(task);
+    } else {
+      for (int worker = 0; worker < workers; ++worker) pool.emplace_back([&, worker]() {
+        try {
+          while (true) {
+            const int task = next.fetch_add(1);
+            if (task >= last) break;
+            run(task);
+          }
+        } catch (...) { errors[worker] = std::current_exception(); }
+      });
+      for (auto& worker : pool) worker.join();
+      for (const auto& error : errors) if (error) std::rethrow_exception(error);
+    }
+    Rcpp::checkUserInterrupt();
+  }
+}
+
+// PCG XSL-RR with a four-word seed mixer. Two limbs avoid compiler-specific
+// 128-bit types; this stream is used only for SCENIC+ ranking ties.
+class ScenicRankRng {
+  uint64_t high = 0, low = 0, inc_high, inc_low;
+  uint32_t spare = 0;
+  bool has_spare = false;
+  static uint64_t product_high(uint64_t a, uint64_t b) {
+    const uint64_t a0 = static_cast<uint32_t>(a), a1 = a >> 32;
+    const uint64_t b0 = static_cast<uint32_t>(b), b1 = b >> 32;
+    const uint64_t carry = ((a0 * b0) >> 32) + static_cast<uint32_t>(a1 * b0) +
+      static_cast<uint32_t>(a0 * b1);
+    return a1 * b1 + (a1 * b0 >> 32) + (a0 * b1 >> 32) + (carry >> 32);
+  }
+  void step() {
+    constexpr uint64_t m0 = 0x4385df649fccf645ULL, m1 = 0x2360ed051fc65da4ULL;
+    const uint64_t next_low = low * m0;
+    high = high * m0 + low * m1 + product_high(low, m0) + inc_high;
+    low = next_low + inc_low;
+    high += low < next_low;
+  }
+  uint32_t next32() {
+    if (has_spare) { has_spare = false; return spare; }
+    step();
+    const uint64_t value = high ^ low;
+    const unsigned int rotation = high >> 58;
+    const uint64_t rotated = (value >> rotation) | (value << ((64 - rotation) & 63));
+    spare = rotated >> 32;
+    has_spare = true;
+    return static_cast<uint32_t>(rotated);
+  }
+public:
+  explicit ScenicRankRng(uint32_t seed) {
+    uint32_t constant = 0x43b0d7e5U;
+    auto hash = [&](uint32_t value) {
+      value ^= constant;
+      constant *= 0x931e8875U;
+      value *= constant;
+      return value ^ (value >> 16);
+    };
+    uint32_t pool[4];
+    for (int i = 0; i < 4; ++i) pool[i] = hash(i == 0 ? seed : 0U);
+    for (int source = 0; source < 4; ++source) {
+      for (int target = 0; target < 4; ++target) if (source != target) {
+        const uint32_t mixed = 0xca01f9ddU * pool[target] - 0x4973f715U * hash(pool[source]);
+        pool[target] = mixed ^ (mixed >> 16);
+      }
+    }
+    uint32_t words[8];
+    constant = 0x8b51f9ddU;
+    for (int i = 0; i < 8; ++i) {
+      uint32_t value = pool[i % 4] ^ constant;
+      constant *= 0x58f38dedU;
+      value *= constant;
+      words[i] = value ^ (value >> 16);
+    }
+    uint64_t seed_words[4];
+    for (int i = 0; i < 4; ++i) seed_words[i] = words[2 * i] | (uint64_t(words[2 * i + 1]) << 32);
+    inc_high = (seed_words[2] << 1) | (seed_words[3] >> 63);
+    inc_low = (seed_words[3] << 1) | 1U;
+    step();
+    const uint64_t previous = low;
+    low += seed_words[1];
+    high += seed_words[0] + (low < previous);
+    step();
+  }
+  uint32_t interval(uint32_t maximum) {
+    uint32_t mask = maximum;
+    mask |= mask >> 1; mask |= mask >> 2; mask |= mask >> 4;
+    mask |= mask >> 8; mask |= mask >> 16;
+    uint32_t value;
+    do { value = next32() & mask; } while (value > maximum);
+    return value;
+  }
+};
+
+// [[Rcpp::export]]
+IntegerMatrix scenicplus_rank_cpp(NumericMatrix expression, int random_seed = 123, int cores = 1) {
+  const int features = expression.nrow(), cells = expression.ncol();
+  if (features < 1 || cells < 1 || random_seed < 0) stop("Rankings require nonempty expression and a nonnegative seed");
+  const double* expr = expression.begin();
+  for (R_xlen_t i = 0; i < expression.size(); ++i) if (!std::isfinite(expr[i])) stop("Rankings require finite expression");
+  IntegerMatrix result(cells, features);
+  int* ranks = result.begin();
+  ScenicRankRng rng(static_cast<uint32_t>(random_seed));
+  const int batch_size = worker_count(cores, cells) * 4;
+  for (int first = 0; first < cells; first += batch_size) {
+    const int count = std::min(batch_size, cells - first);
+    std::vector<std::vector<int> > permutations(count, std::vector<int>(features));
+    // Generate in cell order so scheduling and core count cannot change ties.
+    for (auto& permutation : permutations) {
+      std::iota(permutation.begin(), permutation.end(), 0);
+      for (int i = features - 1; i > 0; --i) std::swap(permutation[i], permutation[rng.interval(i)]);
+    }
+    scenic_parallel_tasks(count, cores, [&](int task) {
+      const int cell = first + task;
+      const auto& permutation = permutations[task];
+      std::vector<double> values(features);
+      for (int feature = 0; feature < features; ++feature) values[feature] = -expr[cell * features + permutation[feature]];
+      const auto order = scenic_argsort(values);
+      for (int rank = 0; rank < features; ++rank) ranks[cell + cells * permutation[order[rank]]] = rank;
+    });
+  }
+  return result;
+}
+
+// [[Rcpp::export]]
+List scenicplus_region_gbm_cpp(
+    NumericMatrix accessibility,
+    NumericMatrix expression,
+    List candidates,
+    int n_rounds = 500,
+    double max_features = 0.1,
+    int random_seed = 666,
+    int cores = 1) {
+  const int n_cells = accessibility.nrow();
+  const int n_tasks = expression.ncol();
+  if (n_cells < 2 || expression.nrow() != n_cells || candidates.size() != n_tasks) {
+    stop("Region GBM requires matching cells and one candidate list per gene");
+  }
+  std::vector<std::vector<int> > indices(n_tasks);
+  for (int task = 0; task < n_tasks; ++task) {
+    IntegerVector values = as<IntegerVector>(candidates[task]);
+    for (int index : values) {
+      if (index == NA_INTEGER || index < 1 || index > accessibility.ncol()) {
+        stop("Region GBM candidate index is out of bounds");
+      }
+      indices[task].push_back(index - 1);
+    }
+    if (indices[task].empty()) stop("Region GBM candidate lists must not be empty");
+  }
+  n_rounds = std::max(1, n_rounds);
+  if (!R_finite(max_features) || max_features <= 0.0) max_features = 0.1;
+  const double* acc = accessibility.begin();
+  const double* rna = expression.begin();
+  std::vector<std::vector<double> > weights(n_tasks);
+  auto run = [&](int task) {
+    const int n_regions = indices[task].size();
+    ScenicColumnView view{n_cells, {}};
+    view.columns.reserve(n_regions + 1);
+    for (int region : indices[task]) view.columns.push_back(acc + region * n_cells);
+    view.columns.push_back(rna + task * n_cells);
+    std::vector<int> regs(n_regions);
+    std::iota(regs.begin(), regs.end(), 0);
+    std::vector<double> means(n_regions + 1, 0.0);
+    const double first_response = scenic_target_value(view, 0, n_regions);
+    bool constant_response = true;
+    for (int cell = 0; cell < n_cells; ++cell) {
+      const double response = scenic_target_value(view, cell, n_regions);
+      means[n_regions] += response;
+      if (response != first_response) constant_response = false;
+    }
+    means[n_regions] /= static_cast<double>(n_cells);
+    weights[task].assign(n_regions, 0.0);
+    // A constant target has no edges; avoid preparing predictor caches for it.
+    if (constant_response) return;
+    std::vector<std::vector<double> > values;
+    std::vector<std::vector<int> > ranks;
+    const auto orders = scenic_feature_orders(view, regs, &values, &ranks);
+    std::vector<int> targets{n_regions};
+    std::vector<ScenicEdge> edges;
+    scenic_grnboost_run_targets(view, regs, targets, 0, 1, means, orders,
+      values, ranks, n_rounds, 0.01, 0, 3, max_features, 1.0, 25,
+      random_seed, true, nullptr, false, edges);
+    weights[task].assign(n_regions, 0.0);
+    for (const ScenicEdge& edge : edges) weights[task][edge.regulator - 1] = edge.importance;
+    const double total = std::accumulate(weights[task].begin(), weights[task].end(), 0.0);
+    if (total > 0.0) for (double& value : weights[task]) value /= total;
+  };
+  scenic_parallel_tasks(n_tasks, cores, run);
+  List out(n_tasks);
+  for (int task = 0; task < n_tasks; ++task) out[task] = wrap(weights[task]);
+  return out;
+}
+
+// [[Rcpp::export]]
+List scenicplus_gsea_cpp(
+    List rankings,
+    List hits,
+    int n_perm = 1000,
+    int random_seed = 666,
+    int cores = 1) {
+  const int n_tasks = rankings.size();
+  if (hits.size() != n_tasks || n_perm < 1) stop("GSEA requires matching modules and positive permutations");
+  std::vector<std::vector<double> > weights(n_tasks);
+  std::vector<std::vector<unsigned char> > tags(n_tasks);
+  for (int task = 0; task < n_tasks; ++task) {
+    NumericVector ranking = as<NumericVector>(rankings[task]);
+    weights[task].assign(ranking.begin(), ranking.end());
+    for (double& value : weights[task]) {
+      if (!std::isfinite(value)) stop("GSEA rankings must be finite");
+      value = std::fabs(value);
+    }
+    tags[task].assign(ranking.size(), 0);
+    IntegerVector hit = as<IntegerVector>(hits[task]);
+    for (int index : hit) {
+      if (index == NA_INTEGER || index < 1 || index > ranking.size()) stop("GSEA hit index is out of bounds");
+      tags[task][index - 1] = 1;
+    }
+  }
+  std::vector<double> es(n_tasks, NA_REAL), nes(n_tasks, NA_REAL), pval(n_tasks, NA_REAL);
+  std::vector<std::vector<int> > leading(n_tasks);
+  auto run = [&](int task) {
+    const auto& weight = weights[task];
+    const auto& tag = tags[task];
+    const int n = tag.size();
+    const int n_hits = std::accumulate(tag.begin(), tag.end(), 0);
+    if (n_hits == 0 || n_hits == n) return;
+    auto score = [&](const std::vector<unsigned char>& mask, int* peak) {
+      double total = 0.0;
+      for (int i = 0; i < n; ++i) if (mask[i]) total += weight[i];
+      if (total <= 0.0) return NA_REAL;
+      const double miss = 1.0 / static_cast<double>(n - n_hits);
+      const double norm = 1.0 / total;
+      double running = 0.0, maximum = -std::numeric_limits<double>::infinity();
+      double minimum = std::numeric_limits<double>::infinity();
+      int max_index = 0, min_index = 0;
+      for (int i = 0; i < n; ++i) {
+        running += mask[i] ? weight[i] * norm : -miss;
+        if (running > maximum) { maximum = running; max_index = i; }
+        if (running < minimum) { minimum = running; min_index = i; }
+      }
+      const bool positive = std::fabs(maximum) > std::fabs(minimum);
+      if (peak) *peak = positive ? max_index : min_index;
+      return positive ? maximum : minimum;
+    };
+    int peak = 0;
+    es[task] = score(tag, &peak);
+    if (!std::isfinite(es[task])) return;
+    std::mt19937 seed_rng(static_cast<unsigned int>(random_seed));
+    std::mt19937 rng(static_cast<unsigned int>(scenic_numpy_randint(seed_rng, 0, 2147483647)));
+    int same_sign = 0, extreme = 0;
+    double null_sum = 0.0;
+    for (int permutation = 0; permutation < n_perm; ++permutation) {
+      auto shuffled = tag;
+      for (int i = n - 1; i > 0; --i) {
+        const int j = scenic_numpy_randint(rng, 0, i + 1);
+        std::swap(shuffled[i], shuffled[j]);
+      }
+      const double value = score(shuffled, nullptr);
+      if ((es[task] >= 0.0 && value >= 0.0) || (es[task] < 0.0 && value < 0.0)) {
+        ++same_sign;
+        null_sum += value;
+        if ((es[task] >= 0.0 && value >= es[task]) || (es[task] < 0.0 && value < es[task])) ++extreme;
+      }
+    }
+    if (same_sign > 0 && null_sum != 0.0) {
+      nes[task] = es[task] / (std::fabs(null_sum) / same_sign);
+      pval[task] = static_cast<double>(extreme) / same_sign;
+      for (int i = 0; i < n; ++i) {
+        if (tag[i] && ((es[task] > 0.0 && i <= peak) || (es[task] < 0.0 && i >= peak) || es[task] == 0.0)) {
+          leading[task].push_back(i + 1);
+        }
+      }
+    }
+  };
+  scenic_parallel_tasks(n_tasks, cores, run);
+  List edge(n_tasks);
+  for (int task = 0; task < n_tasks; ++task) edge[task] = wrap(leading[task]);
+  return List::create(_["ES"] = wrap(es), _["NES"] = wrap(nes),
+                      _["pval"] = wrap(pval), _["leading_edge"] = edge);
+}
+
 template <typename Expr>
 static DataFrame scenic_grnboost_tree_impl(
     const Expr& expr,
@@ -1196,7 +1534,7 @@ static DataFrame scenic_grnboost_tree_impl(
   for (int g = 0; g < n_genes; ++g) {
     double sum = 0.0;
     for (int i = 0; i < n_samples; ++i) {
-      double x = scenic_tree_feature_value(expr, i, g);
+      double x = scenic_target_value(expr, i, g);
       sum += x;
     }
     means[g] = sum / static_cast<double>(n_samples);
@@ -1491,9 +1829,12 @@ DataFrame grnboost_tree_round_trace(
   target_mean /= static_cast<double>(n_samples);
 
   std::vector<double> residual(n_samples);
+  std::vector<double> response(n_samples), prediction(n_samples);
   for (int i = 0; i < n_samples; ++i) {
     double y = expr(i, target);
     if (!R_finite(y)) y = 0.0;
+    response[i] = y;
+    prediction[i] = target_mean;
     residual[i] = y - target_mean;
   }
 
@@ -1509,6 +1850,7 @@ DataFrame grnboost_tree_round_trace(
   std::vector<std::vector<int> > feature_order_ranks;
   std::vector<std::vector<int> > feature_orders = scenic_feature_orders(
     expr, features, &feature_order_values, &feature_order_ranks);
+  const auto& prediction_view = scenic_tree_view(expr, feature_order_values, feature_order_ranks);
   std::vector<int> row_marks(n_samples, 0);
   int row_mark = 0;
   std::vector<double> oob_improvements;
@@ -1557,21 +1899,8 @@ DataFrame grnboost_tree_round_trace(
     double initial_oob_loss = 0.0;
     double new_oob_loss = 0.0;
     int n_oob = 0;
-    if (sample_size < n_samples) {
-      for (int i = 0; i < n_samples; ++i) {
-        if (is_train[i]) continue;
-        const double old_resid = residual[i];
-        const double pred = scenic_predict_tree(expr, nodes, i);
-        const double new_resid = old_resid - learning_rate * pred;
-        initial_oob_loss += old_resid * old_resid;
-        new_oob_loss += new_resid * new_resid;
-        ++n_oob;
-      }
-    }
-
-    for (int i = 0; i < n_samples; ++i) {
-      residual[i] -= learning_rate * scenic_predict_tree(expr, nodes, i);
-    }
+    scenic_boost_update(prediction_view, nodes, response, prediction, residual, is_train,
+                        sample_size, learning_rate, initial_oob_loss, new_oob_loss, n_oob);
     ++actual_rounds;
 
     double oob_improvement = NA_REAL;
@@ -1707,9 +2036,12 @@ DataFrame grnboost_tree_round_nodes(
   target_mean /= static_cast<double>(n_samples);
 
   std::vector<double> residual(n_samples);
+  std::vector<double> response(n_samples), prediction(n_samples);
   for (int i = 0; i < n_samples; ++i) {
     double y = expr(i, target);
     if (!R_finite(y)) y = 0.0;
+    response[i] = y;
+    prediction[i] = target_mean;
     residual[i] = y - target_mean;
   }
 
@@ -1724,6 +2056,7 @@ DataFrame grnboost_tree_round_nodes(
   std::vector<std::vector<int> > feature_order_ranks;
   std::vector<std::vector<int> > feature_orders = scenic_feature_orders(
     expr, features, &feature_order_values, &feature_order_ranks);
+  const auto& prediction_view = scenic_tree_view(expr, feature_order_values, feature_order_ranks);
   std::vector<int> row_marks(n_samples, 0);
   int row_mark = 0;
   std::vector<double> oob_improvements;
@@ -1768,20 +2101,8 @@ DataFrame grnboost_tree_round_nodes(
     double initial_oob_loss = 0.0;
     double new_oob_loss = 0.0;
     int n_oob = 0;
-    if (sample_size < n_samples) {
-      for (int i = 0; i < n_samples; ++i) {
-        if (is_train[i]) continue;
-        const double old_resid = residual[i];
-        const double pred = scenic_predict_tree(expr, nodes, i);
-        const double new_resid = old_resid - learning_rate * pred;
-        initial_oob_loss += old_resid * old_resid;
-        new_oob_loss += new_resid * new_resid;
-        ++n_oob;
-      }
-    }
-    for (int i = 0; i < n_samples; ++i) {
-      residual[i] -= learning_rate * scenic_predict_tree(expr, nodes, i);
-    }
+    scenic_boost_update(prediction_view, nodes, response, prediction, residual, is_train,
+                        sample_size, learning_rate, initial_oob_loss, new_oob_loss, n_oob);
     if (n_oob > 0 && early_stop_window_length > 0) {
       initial_oob_loss /= static_cast<double>(n_oob);
       new_oob_loss /= static_cast<double>(n_oob);
@@ -1904,9 +2225,12 @@ DataFrame grnboost_tree_node_candidates(
   target_mean /= static_cast<double>(n_samples);
 
   std::vector<double> residual(n_samples);
+  std::vector<double> response(n_samples), prediction(n_samples);
   for (int i = 0; i < n_samples; ++i) {
     double y = expr(i, target);
     if (!R_finite(y)) y = 0.0;
+    response[i] = y;
+    prediction[i] = target_mean;
     residual[i] = y - target_mean;
   }
 
@@ -1921,6 +2245,7 @@ DataFrame grnboost_tree_node_candidates(
   std::vector<std::vector<int> > feature_order_ranks;
   std::vector<std::vector<int> > feature_orders = scenic_feature_orders(
     expr, features, &feature_order_values, &feature_order_ranks);
+  const auto& prediction_view = scenic_tree_view(expr, feature_order_values, feature_order_ranks);
   std::vector<int> row_marks(n_samples, 0);
   int row_mark = 0;
   std::vector<double> oob_improvements;
@@ -1960,20 +2285,8 @@ DataFrame grnboost_tree_node_candidates(
     double initial_oob_loss = 0.0;
     double new_oob_loss = 0.0;
     int n_oob = 0;
-    if (sample_size < n_samples) {
-      for (int i = 0; i < n_samples; ++i) {
-        if (is_train[i]) continue;
-        const double old_resid = residual[i];
-        const double pred = scenic_predict_tree(expr, nodes, i);
-        const double new_resid = old_resid - learning_rate * pred;
-        initial_oob_loss += old_resid * old_resid;
-        new_oob_loss += new_resid * new_resid;
-        ++n_oob;
-      }
-    }
-    for (int i = 0; i < n_samples; ++i) {
-      residual[i] -= learning_rate * scenic_predict_tree(expr, nodes, i);
-    }
+    scenic_boost_update(prediction_view, nodes, response, prediction, residual, is_train,
+                        sample_size, learning_rate, initial_oob_loss, new_oob_loss, n_oob);
     if (n_oob > 0 && early_stop_window_length > 0) {
       initial_oob_loss /= static_cast<double>(n_oob);
       new_oob_loss /= static_cast<double>(n_oob);
