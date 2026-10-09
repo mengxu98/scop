@@ -118,7 +118,8 @@ single-cell reference.</p>
 
 
 <dt id="arg-reference-assay">reference_assay<a class="anchor" aria-label="anchor" href="#arg-reference-assay"></a></dt>
-<dd><p>Assay used in <code>reference</code>.</p></dd>
+<dd><p>Assay used in <code>reference</code>. Only cells present in this
+assay are used, with reference labels aligned by cell ID.</p></dd>
 
 
 <dt id="arg-layer-reference-layer">layer, reference_layer<a class="anchor" aria-label="anchor" href="#arg-layer-reference-layer"></a></dt>
@@ -127,7 +128,9 @@ raw counts.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
-<dd><p>Features used for RCTD. If <code>NULL</code>, shared features are used.</p></dd>
+<dd><p>Features used for RCTD. If <code>NULL</code>, shared features are used.
+Total UMI depths are computed from each full selected assay/layer before
+feature filtering (and after optional count rounding), not from this subset.</p></dd>
 
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
@@ -151,7 +154,8 @@ Visium spot deconvolution.</p></dd>
 
 <dt id="arg-min-cells">min_cells<a class="anchor" aria-label="anchor" href="#arg-min-cells"></a></dt>
 <dd><p>Minimum number of reference cells required for each cell
-type. Old <code>spacexr</code> RCTD requires at least 25 cells per type.</p></dd>
+type after selected-assay alignment and zero-count filtering. Old <code>spacexr</code>
+RCTD requires at least 25 cells per type.</p></dd>
 
 
 <dt id="arg-prefix">prefix<a class="anchor" aria-label="anchor" href="#arg-prefix"></a></dt>
@@ -220,6 +224,15 @@ are also stored in <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span>  length.out <span class="op">=</span> <span class="fl">120</span></span></span>
 <span class="r-in"><span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span><span class="op">[</span>, <span class="va">keep_spots</span><span class="op">]</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
 <span class="r-in"><span><span class="co"># Results are conditional on the three reference cell types used here.</span></span></span>
 <span class="r-in"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="va">panc8_sub</span><span class="op">[</span>, <span class="va">panc8_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="st">"celltype"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ductal"</span>, <span class="st">"alpha"</span>, <span class="st">"beta"</span><span class="op">)</span><span class="op">]</span></span></span>
@@ -244,39 +257,41 @@ are also stored in <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span>  prefix <span class="op">=</span> <span class="st">"RCTD"</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>SpatialRNA: nUMI does not match colSums of counts. If this is unintended, please correct this discrepancy. If this is intended, there is no problem.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Reference: nUMI does not match colSums of counts. If this is unintended, please correct this discrepancy. If this is intended, there is no problem.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Begin: process_cell_type_info</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of cells in reference: 694</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of cells in reference: 1148</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of genes in reference: 97</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ductal   beta  alpha </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    211    304    179 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    237    428    483 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> End: process_cell_type_info</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> create.RCTD: getting regression differentially expressed genes: </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 24</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 7</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 51</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 82</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 22</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 27</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> create.RCTD: getting platform effect normalization differentially expressed genes: </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 27</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 55</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 90</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 26</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 35</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> fitBulk: decomposing bulk</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> chooseSigma: using initial Q_mat with sigma =  1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 1065.34481069009</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4605.44465250967</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.84</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 1043.70504794368</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4509.24334104243</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.69</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 1027.37241216243</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4433.7443755185</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.61</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 1021.04732656451</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4402.86433424729</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.53</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 1017.22091138995</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.49</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 1016.52797026522</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.48</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 1016.50517429608</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.48</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4381.61430997094</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.46</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4373.21937275515</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.45</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4372.94033462053</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.45</span>
 <span class="r-in"><span><span class="fu"><a href="SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
 <span class="r-in"><span>  tool_name <span class="op">=</span> <span class="st">"RCTD"</span>,</span></span>
