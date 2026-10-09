@@ -497,3 +497,31 @@ test_that("RunCHOIR accepts a loaded pinned namespace on the fast path", {
   expect_s4_class(mocked$result, "Seurat")
   expect_length(mocked$checked, 0L)
 })
+
+test_that("CHOIR saved rows and explicit cell IDs follow subset and rename", {
+  with_mock_choir({
+    out <- RunCHOIR(make_choir_seurat(), cluster_colname = "custom_choir",
+      tool_name = "custom_fit", verbose = FALSE)
+  })
+  expect_spatial_result_lifecycle(out, "custom_fit", "custom_choir", explicit_cell = TRUE)
+  index <- out@tools$custom_fit$result_index
+  with_mock_choir({
+    rerun <- RunCHOIR(out, cluster_colname = "custom_choir", tool_name = "custom_fit",
+      overwrite = TRUE, verbose = FALSE)
+  })
+  expect_identical(rerun@tools$custom_fit$result_index$cell_id_colname, index$cell_id_colname)
+  broken <- out
+  broken@meta.data[[index$cell_id_colname]] <- NULL
+  expect_error(GetSpatialResult(broken, "custom_fit"), "identities.*stale")
+  legacy <- out
+  legacy@tools$custom_fit$result_index <- NULL
+  renamed <- SeuratObject::RenameCells(legacy, new.names = rev(colnames(legacy)))
+  expect_error(GetSpatialResult(renamed, "custom_fit"), "identities.*stale")
+  with_mock_choir({
+    compact <- RunCHOIR(make_choir_seurat(), store_tool = FALSE, verbose = FALSE)
+  })
+  expect_null(compact@tools$CHOIR)
+  compact <- SeuratObject::RenameCells(compact, new.names = rev(colnames(compact)))
+  expect_identical(GetSpatialResult(compact, "CHOIR")$clusters$CHOIR_cluster,
+    unname(as.character(compact$CHOIR_cluster)))
+})

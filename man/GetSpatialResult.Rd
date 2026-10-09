@@ -16,7 +16,7 @@ method that stored per-sample results.}
 }
 \value{
 A list with \code{clusters}, \code{parameters}, and \code{summary}. Values that were
-not stored by the method are returned as \code{NULL}; BANKSY summaries are
+not stored by the method are returned as \code{NULL}; BANKSY and PRECAST summaries are
 recomputed from the returned cluster assignments, including empty results.
 }
 \description{
@@ -28,17 +28,27 @@ membership. Sample retrieval requires this index or stored per-sample results;
 sample identity is never inferred from cluster labels.
 
 Results describe cells present in \code{object}, in its current cell order, rather
-than the original fit's full cell set. BANKSY counts are recomputed from the
-returned assignments; parameters still describe the original fit. Other
-methods' stored summaries are omitted when their cell set changes.
+than the original fit's full cell set. BANKSY domain counts and PRECAST cell,
+domain, and sample counts are recomputed from the returned assignments.
+Unfitted PRECAST cells are excluded. Parameters and the native bundles in
+\code{object@tools} still describe the original fit; other methods' stored summaries
+are omitted when their cell set changes. PRECAST can be selected by its tool
+name or by \code{"PRECAST"} when that method identifies a unique stored bundle.
 
-New BANKSY fits retain a private metadata identity column, named by the
-result index. Preserve this column to retrieve results after \code{subset()} or
-\code{RenameCells()}; names are mapped by these saved identities, never by order
-or sample prefixes. Missing, duplicate, or unknown identities cause an
-informative error. Legacy results support exact-ID subsets, but cannot
-reliably detect renames that permute an unchanged set of IDs. Rerun BANKSY
-to establish identity tracking for these older objects.
+New BANKSY fits and detailed SmoothClust, CHOIR, RareQ, and PRECAST results
+retain a private metadata identity column, named by the result index.
+Preserve this column to retrieve results after \code{subset()} or \code{RenameCells()};
+names are mapped by saved identities, never by order or sample prefixes.
+Missing, duplicate, or unknown identities cause an informative error.
+SmoothClust and CHOIR's explicit \code{cell} columns also reflect the current IDs.
+Legacy saved assignments support exact-ID subsets. Contradictory metadata
+causes an error, but renames cannot always be detected without provenance;
+rerun the method to establish identity tracking. Legacy PRECAST and
+metadata-only results use their current metadata assignments.
+
+Storage-disabled methods other than BANKSY retain their existing storage
+behavior. Custom metadata columns require a stored locator; the accessor
+does not guess a column from its values or prefix.
 }
 \examples{
 data(visium_human_pancreas_sub)

@@ -110,6 +110,12 @@ Smooth expression across spatial neighborhoods with the optional
 \code{smoothclust} package, then cluster the smoothed profiles into spatial
 domains with PCA and k-means.
 }
+\details{
+Stored results retain a private per-cell identity metadata column for
+\code{\link[=GetSpatialResult]{GetSpatialResult()}}. Preserve this column when subsetting or renaming cells.
+The accessor returns current-cell assignments; stored native results and
+fit parameters remain unchanged.
+}
 \examples{
 data(visium_human_pancreas_sub)
 keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))

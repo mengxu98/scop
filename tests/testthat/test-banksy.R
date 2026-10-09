@@ -608,3 +608,12 @@ test_that("other spatial summaries are not misrepresented after subsetting", {
   expect_identical(result$parameters, list(seed = 1))
   expect_null(result$summary)
 })
+
+test_that("a BANKSY cluster column named cell is not mistaken for an identity field", {
+  skip_if_missing_banksy_test_dependencies()
+  with_mock_banksy({
+    out <- RunBANKSY(make_banksy_seurat(), layer = "counts", group = "sample",
+      cluster_colname = "cell", verbose = FALSE)
+  })
+  expect_spatial_result_lifecycle(out, "BANKSY", "cell")
+})
