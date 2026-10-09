@@ -57,19 +57,20 @@ test_that("RunRCTD weights match the original spacexr pipeline", {
   names(labels) <- colnames(reference2)
   label_map <- getFromNamespace("rctd_backend_label_map", "scop")(labels)
   features <- intersect(rownames(srt), rownames(reference2))
-  st <- getFromNamespace("rctd_get_count_matrix", "scop")(srt, visium_assay2(srt), "counts", features, "Spatial", TRUE, FALSE)
-  rf <- getFromNamespace("rctd_get_count_matrix", "scop")(reference2, visium_assay2(reference2), "counts", features, "Reference", TRUE, FALSE)
+  st <- getFromNamespace("rctd_get_count_matrix", "scop")(srt, visium_assay2(srt), "counts", NULL, "Spatial", TRUE, FALSE)
+  rf <- getFromNamespace("rctd_get_count_matrix", "scop")(reference2, visium_assay2(reference2), "counts", NULL, "Reference", TRUE, FALSE)
+  # Preserve full-assay library depths, as required by both spacexr APIs.
+  st_numi <- Matrix::colSums(st)
+  ref_numi <- Matrix::colSums(rf)
+  st <- st[features, , drop = FALSE]
+  rf <- rf[features, , drop = FALSE]
   cq <- getFromNamespace("rctd_sparse_quality_cpp", "scop")(st, rf)
   st <- st[rownames(st)[cq$keep_features], , drop = FALSE]
   rf <- rf[rownames(rf)[cq$keep_features], , drop = FALSE]
-  st_numi <- cq$st_numi
-  names(st_numi) <- colnames(st)
-  keep_spots <- is.finite(st_numi) & st_numi > 0
+  keep_spots <- cq$st_numi > 0
   st <- st[, keep_spots, drop = FALSE]
   st_numi <- st_numi[keep_spots]
   coords <- getFromNamespace("resolve_spatial_spot_coords", "scop")(srt, colnames(st), NULL, c("x", "y"), "raw")
-  ref_numi <- cq$ref_numi
-  names(ref_numi) <- colnames(rf)
 
   exports <- getNamespaceExports("spacexr")
   if (all(c("createRctd", "runRctd") %in% exports)) {
