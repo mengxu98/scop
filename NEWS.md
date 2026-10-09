@@ -1,5 +1,11 @@
 # scop (development version)
 
+* **fix**: `RunRCTD()`, `RunCARD()` and `RunSPOTlight()` align reference labels
+  and metadata to selected-assay cell IDs before filtering, including assays
+  containing only part of a Seurat object. Ambiguous IDs are rejected. RCTD
+  preserves full selected-assay library depths through analysis-gene selection;
+  zero-count filtering still uses the selected shared features.
+
 * **fix**: `GetSpatialResult()` returns current-object cells in their current
   order and recomputes BANKSY domain counts after subsetting, in both storage
   modes. New BANKSY fits retain a private per-cell identity column so renamed

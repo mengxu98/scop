@@ -134,6 +134,61 @@ resolve_reference_labels <- function(reference, reference_label) {
   reference[[reference_label, drop = TRUE]]
 }
 
+# Deconvolution matrices may contain only a subset of a Seurat object's cells.
+# Metadata is keyed by identity, never by its position in the whole object.
+deconv_validate_cell_ids <- function(ids, data_label) {
+  if (is.null(ids) || anyNA(ids) || any(!nzchar(ids)) || anyDuplicated(ids)) {
+    log_message(
+      "{.val {data_label}} must have unique, non-missing cell IDs",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
+deconv_align_reference <- function(ref_counts, reference, reference_label, verbose = TRUE) {
+  resolve_reference_labels(reference, reference_label)
+  meta <- reference[[]]
+  cells <- colnames(ref_counts)
+  deconv_validate_cell_ids(cells, "Reference counts")
+  deconv_validate_cell_ids(rownames(meta), "Reference metadata")
+  matched <- match(cells, rownames(meta))
+  if (anyNA(matched)) {
+    log_message(
+      "Reference metadata is missing cell IDs present in the selected assay",
+      message_type = "error"
+    )
+  }
+  labels <- meta[[reference_label]][matched]
+  keep <- !is.na(labels) & nzchar(as.character(labels))
+  if (!all(keep)) {
+    log_message(
+      "Drop {.val {sum(!keep)}} reference cells with missing {.arg reference_label}",
+      verbose = verbose
+    )
+  }
+  if (!any(keep)) {
+    log_message(
+      "{.arg reference_label} must contain at least one non-missing class in the selected assay",
+      message_type = "error"
+    )
+  }
+  labels <- as.character(labels[keep])
+  labels <- stats::setNames(factor(labels, levels = unique(labels)), cells[keep])
+  list(counts = ref_counts[, cells[keep], drop = FALSE], labels = labels)
+}
+
+deconv_check_cell_order <- function(counts, cell_ids, data_label) {
+  deconv_validate_cell_ids(colnames(counts), "Deconvolution counts")
+  if (!identical(colnames(counts), cell_ids)) {
+    log_message(
+      "{.val {data_label}} cell IDs and order must exactly match the count matrix",
+      message_type = "error"
+    )
+  }
+  invisible(TRUE)
+}
+
 resolve_common_features <- function(
   srt,
   reference,
