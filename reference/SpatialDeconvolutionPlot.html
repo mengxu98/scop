@@ -28,23 +28,25 @@ proportions."></head><body>
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Compare and annotate</h6></li>
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Interpret cell states</h6></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
-    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
-    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial methods</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -179,34 +181,38 @@ the displayed comparison; pie fractions are relative to those selected types.</p
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Begin: process_cell_type_info</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of cells in reference: 694</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of cells in reference: 1148</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of genes in reference: 97</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ductal   beta  alpha </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    211    304    179 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    237    428    483 </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> End: process_cell_type_info</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> create.RCTD: getting regression differentially expressed genes: </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 24</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 7</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 51</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 82</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 22</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 27</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> create.RCTD: getting platform effect normalization differentially expressed genes: </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 27</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 55</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 90</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: ductal found DE genes: 26</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: beta found DE genes: 7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: alpha found DE genes: 2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 35</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> fitBulk: decomposing bulk</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> chooseSigma: using initial Q_mat with sigma =  1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 14055.4563689972</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 40089.2008086034</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.84</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 13872.0157413349</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 39342.4105815424</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.69</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 13777.9531790351</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.65</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 13771.1936781319</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.64</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 13770.9645150382</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.64</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 38786.8209416112</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.61</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 38578.9034272752</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.53</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 38653.2368763568</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.49</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 38432.7589536898</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.48</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 38431.5741354966</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.48</span>
 <span class="r-in"><span><span class="fu">SpatialDeconvolutionPlot</span><span class="op">(</span><span class="va">spatial</span>, tool_name <span class="op">=</span> <span class="st">"RCTD"</span>, plot_type <span class="op">=</span> <span class="st">"dominant"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="SpatialDeconvolutionPlot-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>

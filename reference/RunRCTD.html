@@ -20,23 +20,25 @@ single-cell reference."></head><body>
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Compare and annotate</h6></li>
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Interpret cell states</h6></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
-    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
-    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial methods</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -224,15 +226,6 @@ are also stored in <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span>  length.out <span class="op">=</span> <span class="fl">120</span></span></span>
 <span class="r-in"><span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spatial</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span><span class="op">[</span>, <span class="va">keep_spots</span><span class="op">]</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Centroids objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating FOV objects</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Not validating Seurat objects</span>
 <span class="r-in"><span><span class="co"># Results are conditional on the three reference cell types used here.</span></span></span>
 <span class="r-in"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="va">panc8_sub</span><span class="op">[</span>, <span class="va">panc8_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[[</span><span class="st">"celltype"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ductal"</span>, <span class="st">"alpha"</span>, <span class="st">"beta"</span><span class="op">)</span><span class="op">]</span></span></span>
@@ -257,8 +250,6 @@ are also stored in <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-in"><span>  prefix <span class="op">=</span> <span class="st">"RCTD"</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>SpatialRNA: nUMI does not match colSums of counts. If this is unintended, please correct this discrepancy. If this is intended, there is no problem.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Reference: nUMI does not match colSums of counts. If this is unintended, please correct this discrepancy. If this is intended, there is no problem.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Begin: process_cell_type_info</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of cells in reference: 1148</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> process_cell_type_info: number of genes in reference: 97</span>
@@ -278,19 +269,19 @@ are also stored in <code>srt@tools[[tool_name]]</code>.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> get_de_genes: total DE genes: 35</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> fitBulk: decomposing bulk</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> chooseSigma: using initial Q_mat with sigma =  1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4605.44465250967</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4605.44465250976</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.84</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4509.24334104243</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4509.24334104217</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.69</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4433.7443755185</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4433.74437551853</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.61</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4402.86433424729</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4402.86433424713</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.53</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4381.61430997094</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4381.61430997104</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.46</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4373.21937275515</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4373.21937275516</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.45</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4372.94033462053</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Likelihood value: 4372.94033462064</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sigma value:  0.45</span>
 <span class="r-in"><span><span class="fu"><a href="SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">spatial</span>,</span></span>
