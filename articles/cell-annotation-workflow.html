@@ -33,23 +33,25 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Compare and annotate</h6></li>
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Interpret cell states</h6></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
-    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
-    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial methods</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -91,249 +93,432 @@
 
     
     
-<p>This article shows how to annotate query cells in <code>scop</code>
-using reference single-cell data, bulk-like reference profiles, and
-correlation-based summaries. The goal is to make annotation evidence
-explicit instead of treating transferred labels as final truth.</p>
-<p>Use this workflow after the query object has passed basic
-preprocessing and quality control.</p>
-<p>Annotation in this article means evidence-backed label assignment.
-Projection, nearest-neighbor prediction, and correlation heatmaps answer
-related but different questions, so the transferred label should not be
-treated as final until it agrees with marker expression and expected
-biology.</p>
 <div class="section level2">
-<h2 id="prepare-query-and-reference-objects">Prepare Query and Reference Objects<a class="anchor" aria-label="anchor" href="#prepare-query-and-reference-objects"></a>
+<h2 id="what-you-will-do">What you will do<a class="anchor" aria-label="anchor" href="#what-you-will-do"></a>
 </h2>
-<p>The query is the bundled mouse pancreas subset. The reference is the
-bundled human pancreas integration subset, which has a
-<code>celltype</code> annotation and an integrated embedding.</p>
+<p><strong>Question:</strong> which reference cell types resemble each
+query cell, and where is that assignment uncertain? You will transfer
+labels, compare them with held-out annotations, inspect marker
+expression and save the prediction evidence.</p>
+<p>The example uses all 1,600 cells of the bundled human
+<code>panc8_sub</code> object. Every <code>celseq2</code> cell is a
+query; every other technology is reference. This is a technology-defined
+holdout, with no random sampling and no shared cells. It illustrates
+transfer within one tissue/species, not a validated classifier for
+arbitrary tissue. The original package dataset is itself a study
+subset.</p>
+<p>The old human-to-mouse capitalization shortcut is intentionally
+avoided: changing letter case is not ortholog mapping. For cross-species
+work, prepare and report a versioned ortholog table first, resolving
+one-to-many mappings.</p>
+</div>
+<div class="section level2">
+<h2 id="prepare-disjoint-query-and-reference-inputs">Prepare disjoint query and reference inputs<a class="anchor" aria-label="anchor" href="#prepare-disjoint-query-and-reference-inputs"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:30] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
-<span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunIntegration.html">RunIntegration</a></span><span class="op">(</span></span>
-<span>  srt_merge <span class="op">=</span> <span class="va">panc8_sub</span>,</span>
-<span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
-<span>  integration_methods <span class="op">=</span> <span class="st">"Harmony"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-10-04 23:04:34] <span style="color: #0000BB;">Run integration workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:34] Split `srt_merge` into `srt_list` by <span style="color: #0000BB;">"tech"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:35] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-10-04 23:04:35] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; Warning: Data 1/5 of the `srt_list` is "unknown"</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:35] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-10-04 23:04:35] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; Warning: Data 2/5 of the `srt_list` is "unknown"</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:35] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-10-04 23:04:35] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; Warning: Data 3/5 of the `srt_list` is "unknown"</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:35] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-10-04 23:04:35] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; Warning: Data 4/5 of the `srt_list` is "unknown"</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:35] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-10-04 23:04:35] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` is <span style="color: #0000BB;">"unknown"</span></span></span>
-<span><span class="co">#&gt; Warning: Data 5/5 of the `srt_list` is "unknown"</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:35] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:36] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:36] Use the separate HVF from `srt_list`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:36] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:36] Finished check</span></span>
-<span><span class="co">#&gt; Warning: No layers found matching search pattern provided</span></span>
-<span><span class="co">#&gt; Warning: Layer 'scale.data' is empty</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:40] Perform `Seurat::ScaleData()`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:41] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:42] Perform <span style="color: #0000BB;">Harmony</span> integration</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:42] Using <span style="color: #0000BB;">"Harmonypca"</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>) as input</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:42] Adjust neighbor k from <span style="color: #0000BB;">20</span> to <span style="color: #0000BB;">20</span> for small-sample clustering</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:42] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">"louvain"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:42] Reorder clusters...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:42] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:42] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:45] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:48] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmonypca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-10-04 23:04:51] <span style="color: #0000BB;">Harmony</span> integration completed</span></span></code></pre></div>
-<p>When query and reference use different gene-name conventions,
-standardize names before mapping. Keep the name conversion explicit so
-that annotation results can be traced later. The example converts human
-reference symbols into a mouse-like capitalization style because the
-query object is mouse. In real analyses, use the species and ortholog
-mapping appropriate for the experiment rather than relying on simple
-capitalization.</p>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">anyNA</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">$</span><span class="va">tech</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">anyNA</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">query_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span><span class="op">[</span><span class="va">panc8_sub</span><span class="op">$</span><span class="va">tech</span> <span class="op">==</span> <span class="st">"celseq2"</span><span class="op">]</span></span>
+<span><span class="va">reference_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span>, <span class="va">query_ids</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span><span class="va">query_ids</span>, <span class="va">reference_ids</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">query_ids</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">reference_ids</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="va">panc8_sub</span><span class="op">[</span>, <span class="va">query_ids</span><span class="op">]</span></span>
+<span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="va">panc8_sub</span><span class="op">[</span>, <span class="va">reference_ids</span><span class="op">]</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">query</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, seed <span class="op">=</span> <span class="fl">11</span>, cores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                             verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">reference</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, seed <span class="op">=</span> <span class="fl">11</span>, cores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                                 verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">query</span><span class="op">$</span><span class="va">heldout_label</span> <span class="op">&lt;-</span> <span class="va">query</span><span class="op">$</span><span class="va">celltype</span></span>
+<span><span class="va">shared_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span>,</span>
+<span>                             <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/VariableFeatures.html" class="external-link">VariableFeatures</a></span><span class="op">(</span><span class="va">reference</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">shared_features</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">30</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>input <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"query"</span>, <span class="st">"reference"</span><span class="op">)</span>,</span>
+<span>           cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">reference</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>           species <span class="op">=</span> <span class="st">"Homo sapiens"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       input cells      species</span></span>
+<span><span class="co">#&gt; 1     query   200 Homo sapiens</span></span>
+<span><span class="co">#&gt; 2 reference  1400 Homo sapiens</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">reference</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;             acinar activated-stellate              alpha               beta </span></span>
+<span><span class="co">#&gt;                138                 42                413                386 </span></span>
+<span><span class="co">#&gt;              delta             ductal        endothelial            epsilon </span></span>
+<span><span class="co">#&gt;                100                204                 24                  3 </span></span>
+<span><span class="co">#&gt;              gamma         macrophage               mast quiescent-stellate </span></span>
+<span><span class="co">#&gt;                 60                  8                  7                 14 </span></span>
+<span><span class="co">#&gt;            schwann </span></span>
+<span><span class="co">#&gt;                  1</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">query</span><span class="op">$</span><span class="va">heldout_label</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">reference</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; character(0)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">shared_features</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 653</span></span>
+<span><span class="va">label_colors</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span></span>
+<span>  <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">reference</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span><span class="op">)</span>, <span class="st">"Dark 3"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">reference</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The final check prints query labels absent from the reference, if
+any. Such states cannot be correctly named by closed-reference label
+transfer. Reference labels and highly variable genes are model inputs;
+held-out query labels are used only for evaluation. Neither UMAP
+appearance nor prediction scores prove cell identity.</p>
+</div>
+<div class="section level2">
+<h2 id="predict-from-individual-reference-cells">Predict from individual reference cells<a class="anchor" aria-label="anchor" href="#predict-from-individual-reference-cells"></a>
+</h2>
+<p><code>ref_collapsing = FALSE</code> explicitly uses individual
+reference cells; the default collapses reference groups to averages. The
+prefix keeps these labels separate from the next method and from the
+original annotations.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">genenames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/make.unique.html" class="external-link">make.unique</a></span><span class="op">(</span></span>
-<span>  <span class="fu">thisutils</span><span class="fu">::</span><span class="fu"><a href="https://mengxu98.github.io/thisutils/reference/capitalize.html" class="external-link">capitalize</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">[[</span><span class="st">"RNA"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>    force_tolower <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunKNNPredict.html">RunKNNPredict</a></span><span class="op">(</span></span>
+<span>  srt_query <span class="op">=</span> <span class="va">query</span>, srt_ref <span class="op">=</span> <span class="va">reference</span>, ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
+<span>  query_assay <span class="op">=</span> <span class="st">"RNA"</span>, ref_assay <span class="op">=</span> <span class="st">"RNA"</span>, features <span class="op">=</span> <span class="va">shared_features</span>,</span>
+<span>  ref_collapsing <span class="op">=</span> <span class="cn">FALSE</span>, k <span class="op">=</span> <span class="fl">30</span>, filter_lowfreq <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  prefix <span class="op">=</span> <span class="st">"CellKNN"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">genenames</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">panc8_rename</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RenameFeatures.html">RenameFeatures</a></span><span class="op">(</span></span>
-<span>  <span class="va">panc8_sub</span>,</span>
-<span>  newnames <span class="op">=</span> <span class="va">genenames</span>,</span>
-<span>  assays <span class="op">=</span> <span class="st">"RNA"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:51] Rename features for the assay: RNA</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span>, <span class="va">query_ids</span><span class="op">)</span>,</span>
+<span>          <span class="st">"CellKNN_classification"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">query</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>observed <span class="op">=</span> <span class="va">query</span><span class="op">$</span><span class="va">heldout_label</span>, predicted <span class="op">=</span> <span class="va">query</span><span class="op">$</span><span class="va">CellKNN_classification</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                     predicted</span></span>
+<span><span class="co">#&gt; observed             acinar activated-stellate alpha beta delta ductal</span></span>
+<span><span class="co">#&gt;   acinar                 26                  0     0    0     0      0</span></span>
+<span><span class="co">#&gt;   activated-stellate      0                  8     0    0     0      0</span></span>
+<span><span class="co">#&gt;   alpha                   0                  0    68    2     0      0</span></span>
+<span><span class="co">#&gt;   beta                    0                  0     0   41     1      0</span></span>
+<span><span class="co">#&gt;   delta                   0                  0     0    0    11      0</span></span>
+<span><span class="co">#&gt;   ductal                  0                  0     0    0     0     33</span></span>
+<span><span class="co">#&gt;   endothelial             0                  0     0    0     0      0</span></span>
+<span><span class="co">#&gt;   gamma                   0                  0     0    0     0      0</span></span>
+<span><span class="co">#&gt;   macrophage              0                  0     0    0     0      1</span></span>
+<span><span class="co">#&gt;                     predicted</span></span>
+<span><span class="co">#&gt; observed             endothelial gamma</span></span>
+<span><span class="co">#&gt;   acinar                       0     0</span></span>
+<span><span class="co">#&gt;   activated-stellate           0     0</span></span>
+<span><span class="co">#&gt;   alpha                        0     0</span></span>
+<span><span class="co">#&gt;   beta                         0     0</span></span>
+<span><span class="co">#&gt;   delta                        0     0</span></span>
+<span><span class="co">#&gt;   ductal                       0     0</span></span>
+<span><span class="co">#&gt;   endothelial                  2     0</span></span>
+<span><span class="co">#&gt;   gamma                        0     7</span></span>
+<span><span class="co">#&gt;   macrophage                   0     0</span></span>
+<span><span class="fu"><a href="../reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span><span class="va">query</span>, group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"heldout_label"</span>, <span class="st">"CellKNN_classification"</span><span class="op">)</span>,</span>
+<span>            reduction <span class="op">=</span> <span class="st">"UMAP"</span>, label <span class="op">=</span> <span class="cn">FALSE</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>,</span>
+<span>            palcolor <span class="op">=</span> <span class="va">label_colors</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cell-annotation-workflow_files/figure-html/single-cell-reference-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p>Read the contingency table row by row. A strong diagonal supports
+agreement with the supplied labels; off-diagonal entries identify cells
+to inspect. Agreement is descriptive here, because labels come from
+related pancreas data. <code>filter_lowfreq = 0</code> preserves rare
+predictions so their uncertainty is visible; it does not discard rare
+cells or relabel a failed transfer as correct.</p>
 </div>
 <div class="section level2">
-<h2 id="project-query-cells-onto-a-reference">Project Query Cells Onto a Reference<a class="anchor" aria-label="anchor" href="#project-query-cells-onto-a-reference"></a>
+<h2 id="compare-with-bulk-like-reference-profiles">Compare with bulk-like reference profiles<a class="anchor" aria-label="anchor" href="#compare-with-bulk-like-reference-profiles"></a>
 </h2>
-<p>Use projection when the reference has a trusted embedding and you
-want to see where query cells land in that reference coordinate
-system.</p>
+<p>These are average expression profiles derived from the same reference
+cells, not an independent bulk experiment. They test the effect of
+reference aggregation.
+<code>AverageExpression(..., layer = "data")</code> averages expression
+on its unlogged scale, so we explicitly apply <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log1p()</a></code>
+afterward to match the query RNA <code>data</code> layer. Each column is
+a named reference cell type. <code>k = 1</code> selects the nearest
+profile; 30 cell neighbors and one group profile are different models,
+not a controlled change in only one parameter.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">srt_query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunKNNMap.html">RunKNNMap</a></span><span class="op">(</span></span>
-<span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
-<span>  srt_ref <span class="op">=</span> <span class="va">panc8_rename</span>,</span>
-<span>  ref_umap <span class="op">=</span> <span class="st">"HarmonyUMAP2D"</span></span>
+<code class="sourceCode R"><span><span class="va">profiles</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/AverageExpression.html" class="external-link">AverageExpression</a></span><span class="op">(</span><span class="va">reference</span>, assays <span class="op">=</span> <span class="st">"RNA"</span>, layer <span class="op">=</span> <span class="st">"data"</span>,</span>
+<span>                                      group.by <span class="op">=</span> <span class="st">"celltype"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">$</span><span class="va">RNA</span></span>
+<span><span class="va">profiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log1p</a></span><span class="op">(</span><span class="va">profiles</span><span class="op">)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunKNNPredict.html">RunKNNPredict</a></span><span class="op">(</span></span>
+<span>  srt_query <span class="op">=</span> <span class="va">query</span>, bulk_ref <span class="op">=</span> <span class="va">profiles</span>,</span>
+<span>  query_assay <span class="op">=</span> <span class="st">"RNA"</span>, features <span class="op">=</span> <span class="va">shared_features</span>,</span>
+<span>  k <span class="op">=</span> <span class="fl">1</span>, filter_lowfreq <span class="op">=</span> <span class="fl">0</span>, prefix <span class="op">=</span> <span class="st">"ProfileKNN"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:52] Use the features to calculate distance metric</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:52] Data type is log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:53] Data type is log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:53] Use <span style="color: #0000BB;">637</span> features to calculate distance</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:53] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:53] Running UMAP projection</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/ProjectionPlot.html">ProjectionPlot</a></span><span class="op">(</span></span>
-<span>  srt_query <span class="op">=</span> <span class="va">srt_query</span>,</span>
-<span>  srt_ref <span class="op">=</span> <span class="va">panc8_rename</span>,</span>
-<span>  query_group <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
-<span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>  ref_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    xlab <span class="op">=</span> <span class="st">"UMAP_1"</span>,</span>
-<span>    ylab <span class="op">=</span> <span class="st">"UMAP_2"</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Scale for <span style="color: #00BB00;">x</span> is already present.</span></span>
-<span><span class="co">#&gt; Adding another scale for <span style="color: #00BB00;">x</span>, which will replace the existing scale.</span></span>
-<span><span class="co">#&gt; Scale for <span style="color: #00BB00;">y</span> is already present.</span></span>
-<span><span class="co">#&gt; Adding another scale for <span style="color: #00BB00;">y</span>, which will replace the existing scale.</span></span>
-<span><span class="co">#&gt; Warning: Removed 7 rows containing missing values or values outside the scale range</span></span>
-<span><span class="co">#&gt; (`geom_point()`).</span></span>
-<span><span class="co">#&gt; Removed 7 rows containing missing values or values outside the scale range</span></span>
-<span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
-<p><img src="cell-annotation-workflow_files/figure-html/projection-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
-<p>Projection is evidence for similarity, not a replacement for marker
-validation. Use it together with marker plots and group-level summaries.
-Cells landing near a reference group indicate transcriptional similarity
-in the reference embedding. They do not prove identity when the
-reference lacks the state, contains batch effects, or uses a broader
-label vocabulary than the query.</p>
-</div>
-<div class="section level2">
-<h2 id="predict-labels-from-a-bulk-like-reference">Predict Labels From a Bulk-Like Reference<a class="anchor" aria-label="anchor" href="#predict-labels-from-a-bulk-like-reference"></a>
-</h2>
-<p>Use <code><a href="../reference/RunKNNPredict.html">RunKNNPredict()</a></code> with a bulk-like reference when
-reference profiles are available but not individual reference cells.</p>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>cell_reference <span class="op">=</span> <span class="va">query</span><span class="op">$</span><span class="va">CellKNN_classification</span>,</span>
+<span>      profile_reference <span class="op">=</span> <span class="va">query</span><span class="op">$</span><span class="va">ProfileKNN_classification</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                     profile_reference</span></span>
+<span><span class="co">#&gt; cell_reference       acinar activated-stellate alpha beta delta ductal</span></span>
+<span><span class="co">#&gt;   acinar                 25                  0     0    0     0      1</span></span>
+<span><span class="co">#&gt;   activated-stellate      0                  8     0    0     0      0</span></span>
+<span><span class="co">#&gt;   alpha                   0                  0    68    0     0      0</span></span>
+<span><span class="co">#&gt;   beta                    0                  0     0   42     1      0</span></span>
+<span><span class="co">#&gt;   delta                   0                  0     0    0    12      0</span></span>
+<span><span class="co">#&gt;   ductal                  0                  0     0    0     0     33</span></span>
+<span><span class="co">#&gt;   endothelial             0                  0     0    0     0      0</span></span>
+<span><span class="co">#&gt;   gamma                   0                  0     0    0     0      0</span></span>
+<span><span class="co">#&gt;                     profile_reference</span></span>
+<span><span class="co">#&gt; cell_reference       endothelial gamma macrophage</span></span>
+<span><span class="co">#&gt;   acinar                       0     0          0</span></span>
+<span><span class="co">#&gt;   activated-stellate           0     0          0</span></span>
+<span><span class="co">#&gt;   alpha                        0     0          0</span></span>
+<span><span class="co">#&gt;   beta                         0     0          0</span></span>
+<span><span class="co">#&gt;   delta                        0     0          0</span></span>
+<span><span class="co">#&gt;   ductal                       0     0          1</span></span>
+<span><span class="co">#&gt;   endothelial                  2     0          0</span></span>
+<span><span class="co">#&gt;   gamma                        0     7          0</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">query</span><span class="op">@</span><span class="va">tools</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "CellKNN_classification"    "ProfileKNN_classification"</span></span>
+<span><span class="fu"><a href="../reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span><span class="va">query</span>, group.by <span class="op">=</span> <span class="st">"ProfileKNN_classification"</span>, reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
+<span>            theme_use <span class="op">=</span> <span class="st">"theme_blank"</span>, palcolor <span class="op">=</span> <span class="va">label_colors</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cell-annotation-workflow_files/figure-html/bulk-reference-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ref_scMCA</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunKNNPredict.html">RunKNNPredict</a></span><span class="op">(</span></span>
-<span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
-<span>  bulk_ref <span class="op">=</span> <span class="va">ref_scMCA</span>,</span>
-<span>  filter_lowfreq <span class="op">=</span> <span class="fl">20</span></span>
+<code class="sourceCode R"><span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"30 individual neighbors"</span>, <span class="st">"1 log-scale mean profile"</span><span class="op">)</span>,</span>
+<span>  cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span>,</span>
+<span>  matches_supplied_label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">query</span><span class="op">$</span><span class="va">heldout_label</span> <span class="op">==</span> <span class="va">query</span><span class="op">$</span><span class="va">CellKNN_classification</span><span class="op">)</span>,</span>
+<span>                            <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">query</span><span class="op">$</span><span class="va">heldout_label</span> <span class="op">==</span> <span class="va">query</span><span class="op">$</span><span class="va">ProfileKNN_classification</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:55] Use [1] 549 features to calculate distance.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:55] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:55] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:55] Calculate similarity...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:55] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:56] Predict cell type...</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"KNNPredict_classification"</span>,</span>
-<span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
-<span>  label <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="cell-annotation-workflow_files/figure-html/bulk-reference-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
-<p>Bulk-like references are useful for broad labels. They are less
-reliable for substates that depend on local single-cell neighborhoods.
-The <code>KNNPredict_classification</code> column is therefore best read
-as a suggested label source. Keep it separate from curated annotations
-until discordant groups have been reviewed.</p>
+<span><span class="va">comparison</span><span class="op">$</span><span class="va">agreement</span> <span class="op">&lt;-</span> <span class="va">comparison</span><span class="op">$</span><span class="va">matches_supplied_label</span> <span class="op">/</span> <span class="va">comparison</span><span class="op">$</span><span class="va">cells</span></span>
+<span><span class="va">comparison</span></span>
+<span><span class="co">#&gt;                     method cells matches_supplied_label agreement</span></span>
+<span><span class="co">#&gt; 1  30 individual neighbors   200                    196     0.980</span></span>
+<span><span class="co">#&gt; 2 1 log-scale mean profile   200                    195     0.975</span></span></code></pre></div>
+<p>Both prediction columns remain in the object. Different answers are a
+reason to inspect neighbors and markers, not a reason to silently
+replace one label. Scores are similarity/vote evidence, not calibrated
+clinical probabilities.</p>
 </div>
 <div class="section level2">
-<h2 id="predict-labels-from-a-single-cell-reference">Predict Labels From a Single-Cell Reference<a class="anchor" aria-label="anchor" href="#predict-labels-from-a-single-cell-reference"></a>
+<h2 id="project-onto-the-reference-and-inspect-markers">Project onto the reference and inspect markers<a class="anchor" aria-label="anchor" href="#project-onto-the-reference-and-inspect-markers"></a>
 </h2>
-<p>Use a single-cell reference when the reference annotation and query
-biology are close enough for nearest-neighbor transfer.</p>
+<p>Projection places query cells in the reference’s coordinate system.
+We request <code>projection_method = "knn"</code> explicitly: this is
+neighbor-weighted projection, not a newly learned joint embedding or
+evidence of successful batch correction.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunKNNPredict.html">RunKNNPredict</a></span><span class="op">(</span></span>
-<span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
-<span>  srt_ref <span class="op">=</span> <span class="va">panc8_rename</span>,</span>
-<span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>  filter_lowfreq <span class="op">=</span> <span class="fl">20</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:56] Use the HVF to calculate distance metric</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:56] Use [1] 637 features to calculate distance.</span></span>
-<span><span class="co">#&gt; As of Seurat v5, we recommend using AggregateExpression to perform pseudo-bulk analysis.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:56] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:56] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:56] Calculate similarity...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:56] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:56] Predict cell type...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">This message is displayed once per session.</span></span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  group.by <span class="op">=</span> <span class="st">"KNNPredict_classification"</span>,</span>
-<span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
-<span>  label <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="cell-annotation-workflow_files/figure-html/single-cell-reference-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
-<p>Check group-level similarity before accepting labels. A correlation
-heatmap can show whether query labels map cleanly to expected reference
-labels or split across several alternatives. Rows in this heatmap are
-query groups and columns are reference groups. High correlation to one
-reference label supports a clear annotation; similar correlation to
-multiple labels flags ambiguity.</p>
+<code class="sourceCode R"><span><span class="va">ref_umap</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DefaultReduction.html">DefaultReduction</a></span><span class="op">(</span><span class="va">reference</span>, pattern <span class="op">=</span> <span class="st">"UMAP"</span><span class="op">)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunKNNMap.html">RunKNNMap</a></span><span class="op">(</span>srt_query <span class="op">=</span> <span class="va">query</span>, srt_ref <span class="op">=</span> <span class="va">reference</span>,</span>
+<span>                   features <span class="op">=</span> <span class="va">shared_features</span>, ref_umap <span class="op">=</span> <span class="va">ref_umap</span>,</span>
+<span>                   projection_method <span class="op">=</span> <span class="st">"knn"</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/ProjectionPlot.html">ProjectionPlot</a></span><span class="op">(</span>srt_query <span class="op">=</span> <span class="va">query</span>, srt_ref <span class="op">=</span> <span class="va">reference</span>,</span>
+<span>                query_group <span class="op">=</span> <span class="st">"CellKNN_classification"</span>, ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
+<span>                query_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>palcolor <span class="op">=</span> <span class="va">label_colors</span>, cells.highlight <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                ref_param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>palcolor <span class="op">=</span> <span class="va">label_colors</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cell-annotation-workflow_files/figure-html/projection-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">markers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"INS"</span>, <span class="st">"GCG"</span>, <span class="st">"SST"</span>, <span class="st">"KRT19"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>marker <span class="op">=</span> <span class="va">markers</span>, present <span class="op">=</span> <span class="va">markers</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   marker present</span></span>
+<span><span class="co">#&gt; 1    INS   FALSE</span></span>
+<span><span class="co">#&gt; 2    GCG    TRUE</span></span>
+<span><span class="co">#&gt; 3    SST    TRUE</span></span>
+<span><span class="co">#&gt; 4  KRT19    TRUE</span></span>
+<span><span class="fu"><a href="../reference/FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span><span class="va">query</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span><span class="va">markers</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                reduction <span class="op">=</span> <span class="st">"UMAP"</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cell-annotation-workflow_files/figure-html/projection-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p>INS, GCG, SST and KRT19 provide marker checks for beta, alpha, delta
+and ductal labels, respectively. INS is absent from this
+feature-filtered package input, so the receipt records it as unavailable
+and the plot cannot assess that gene. Absence from the matrix is
+different from measured zero expression. Check multiple markers per
+state on your own data; ambient RNA and mixed cells can create
+misleading single-marker signals.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/CellCorHeatmap.html">CellCorHeatmap</a></span><span class="op">(</span></span>
-<span>  srt_query <span class="op">=</span> <span class="va">pancreas_sub</span>,</span>
-<span>  srt_ref <span class="op">=</span> <span class="va">panc8_rename</span>,</span>
-<span>  query_group <span class="op">=</span> <span class="st">"SubCellType"</span>,</span>
-<span>  ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>  nlabel <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  label_by <span class="op">=</span> <span class="st">"row"</span>,</span>
-<span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  show_column_names <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  srt_query <span class="op">=</span> <span class="va">query</span>, srt_ref <span class="op">=</span> <span class="va">reference</span>,</span>
+<span>  query_group <span class="op">=</span> <span class="st">"heldout_label"</span>, ref_group <span class="op">=</span> <span class="st">"celltype"</span>,</span>
+<span>  features <span class="op">=</span> <span class="va">shared_features</span>, nlabel <span class="op">=</span> <span class="fl">1</span>, label_by <span class="op">=</span> <span class="st">"row"</span>, label_size <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, show_column_names <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:57] Use the HVF to calculate distance metric</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:57] Use [1] 637 features to calculate distance.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:57] Detected query data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:57] Detected reference data type: <span style="color: #0000BB;">"log_normalized_counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:57] Calculate similarity...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:57] Use <span style="color: #0000BB;">raw</span> method to find neighbors</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:04:57] Predict cell type...</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ht</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="cell-annotation-workflow_files/figure-html/correlation-heatmap-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p><img src="cell-annotation-workflow_files/figure-html/correlation-heatmap-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p>This is group-level expression similarity. Similar support for
+several reference labels flags ambiguity; these groups should remain
+under review.</p>
+</div>
+<div class="section level2">
+<h2 id="save-reload-and-check-the-hand-off">Save, reload, and check the hand-off<a class="anchor" aria-label="anchor" href="#save-reload-and-check-the-hand-off"></a>
+</h2>
+<p>The build uses a temporary directory so repeated rendering cannot
+overwrite a previous analysis. For your work, replace it with a new
+persistent output folder. Save the object <strong>and</strong>
+plain-text metadata; a figure alone cannot reproduce the analysis. No
+cells are sampled for this export.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">output_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"cell-annotation-workflow"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">output_dir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">result_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"analysis.rds"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">query</span>, <span class="va">result_file</span><span class="op">)</span></span>
+<span><span class="va">reference_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"reference.rds"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">reference</span>, <span class="va">reference_file</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">profiles</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"log-scale-reference-profiles.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="va">shared_features</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"shared-prediction-features.txt"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">comparison</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"prediction-agreement.csv"</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">query</span><span class="op">@</span><span class="va">meta.data</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"cell-metadata.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">reloaded</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">result_file</span><span class="op">)</span></span>
+<span><span class="va">reloaded_reference</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">reference_file</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">reloaded_reference</span><span class="op">)</span>, <span class="va">reference_ids</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">reloaded_reference</span><span class="op">@</span><span class="va">meta.data</span>, <span class="va">reference</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">@</span><span class="va">meta.data</span>, <span class="va">query</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Reductions</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">)</span>,</span>
+<span>                    <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Reductions</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">output_dir</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>           bytes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.info.html" class="external-link">file.info</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">output_dir</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">size</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                               file    bytes</span></span>
+<span><span class="co">#&gt; 1                     analysis.rds  8029796</span></span>
+<span><span class="co">#&gt; 2                cell-metadata.csv    30269</span></span>
+<span><span class="co">#&gt; 3 log-scale-reference-profiles.csv  2562291</span></span>
+<span><span class="co">#&gt; 4         prediction-agreement.csv      134</span></span>
+<span><span class="co">#&gt; 5                    reference.rds 36647970</span></span>
+<span><span class="co">#&gt; 6   shared-prediction-features.txt     4005</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="use-your-own-data-and-recover-common-errors">Use your own data and recover common errors<a class="anchor" aria-label="anchor" href="#use-your-own-data-and-recover-common-errors"></a>
+</h2>
+<ul>
+<li>Replace the <code>data(...)</code> input with
+<code>readRDS("your-object.rds")</code>, or create a Seurat object from
+a gene-by-cell raw-count matrix. Check that cell IDs are unique and
+metadata row names equal the expression column names.</li>
+<li>Set the assay and grouping columns explicitly. Species, gene
+identifiers and reference labels must match your experiment; do not copy
+pancreas labels to unrelated tissue.</li>
+<li>If a reduction or metadata column is missing, inspect
+<code>SeuratObject::Reductions(object)</code> and
+<code>colnames(object@meta.data)</code>, then run its producer chunk. A
+plot does not create the result it needs.</li>
+<li>If a dependency is unavailable, install it in the analysis
+environment, restart R and rerun from the input chunk. A skipped or
+failed method is not evidence that it worked. Preserve warnings and the
+exact error in your report.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="build-and-analysis-provenance">Build and analysis provenance<a class="anchor" aria-label="anchor" href="#build-and-analysis-provenance"></a>
+</h2>
+<p>The receipt records the R seed. Python methods retain their
+documented backend seeds and parameters; setting the R seed alone does
+not control every backend. Package versions, BLAS libraries and backend
+changes can alter numerical results. Keep this receipt with the exported
+object. It describes this page’s actual render.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">source_revision</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"GITHUB_SHA"</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">source_revision</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which</a></span><span class="op">(</span><span class="st">"git"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">source_revision</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"git"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rev-parse"</span>, <span class="st">"HEAD"</span><span class="op">)</span>, stdout <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                      stderr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="cn">NA_character_</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">article_source</span> <span class="op">&lt;-</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/current_input.html" class="external-link">current_input</a></span><span class="op">(</span>dir <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">build_receipt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  article <span class="op">=</span> <span class="st">"cell-annotation-workflow"</span>,</span>
+<span>  built_utc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, tz <span class="op">=</span> <span class="st">"UTC"</span>, usetz <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  scop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"scop"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  R <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric_version.html" class="external-link">getRversion</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  source_revision <span class="op">=</span> <span class="va">source_revision</span>,</span>
+<span>  source_has_local_changes <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which</a></span><span class="op">(</span><span class="st">"git"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"git"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"status"</span>, <span class="st">"--porcelain"</span><span class="op">)</span>, stdout <span class="op">=</span> <span class="cn">TRUE</span>, stderr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="kw">else</span> <span class="cn">NA</span>,</span>
+<span>  article_md5 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/md5sum.html" class="external-link">md5sum</a></span><span class="op">(</span><span class="va">article_source</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  R_seed <span class="op">=</span> <span class="fl">11</span>,</span>
+<span>  cells_retained <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span>,</span>
+<span>  genes_in_active_assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">build_receipt</span></span>
+<span><span class="co">#&gt;                    article               built_utc  scop     R</span></span>
+<span><span class="co">#&gt; 1 cell-annotation-workflow 2026-10-10 12:06:55 UTC 0.9.2 4.6.1</span></span>
+<span><span class="co">#&gt;                            source_revision source_has_local_changes</span></span>
+<span><span class="co">#&gt; 1 151e7134c597a318db23aacdc01739f82fa44758                    FALSE</span></span>
+<span><span class="co">#&gt;                        article_md5 R_seed cells_retained genes_in_active_assay</span></span>
+<span><span class="co">#&gt; 1 513717b50efbb5b18856aaa6eccd9e1b     11            200                 12932</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">build_receipt</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"build-receipt.csv"</span><span class="op">)</span>,</span>
+<span>                 row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"session-info.txt"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<details><summary>
+Show the complete R session used for this page
+</summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.5 LTS</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt;  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
+<span><span class="co">#&gt;  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
+<span><span class="co">#&gt;  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
+<span><span class="co">#&gt; [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; time zone: UTC</span></span>
+<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] scop_0.9.2</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;   [1] RColorBrewer_1.1-3       jsonlite_2.0.0           shape_1.4.6.1           </span></span>
+<span><span class="co">#&gt;   [4] magrittr_2.0.5           spatstat.utils_3.2-5     farver_2.1.2            </span></span>
+<span><span class="co">#&gt;   [7] rmarkdown_2.32           GlobalOptions_0.1.4      fs_2.1.0                </span></span>
+<span><span class="co">#&gt;  [10] ragg_1.5.2               vctrs_0.7.3              ROCR_1.0-12             </span></span>
+<span><span class="co">#&gt;  [13] Rsamtools_2.28.0         spatstat.explore_3.8-3   RcppRoll_0.4.0          </span></span>
+<span><span class="co">#&gt;  [16] htmltools_0.5.9          sass_0.4.10              thisutils_0.5.2         </span></span>
+<span><span class="co">#&gt;  [19] sctransform_0.4.3        parallelly_1.48.0        KernSmooth_2.23-26      </span></span>
+<span><span class="co">#&gt;  [22] bslib_0.12.0             htmlwidgets_1.6.4        desc_1.4.3              </span></span>
+<span><span class="co">#&gt;  [25] ica_1.0-3                plyr_1.8.9               plotly_4.12.1           </span></span>
+<span><span class="co">#&gt;  [28] zoo_1.9-1                cachem_1.1.0             igraph_2.3.4            </span></span>
+<span><span class="co">#&gt;  [31] mime_0.13                lifecycle_1.0.5          iterators_1.0.14        </span></span>
+<span><span class="co">#&gt;  [34] pkgconfig_2.0.3          Matrix_1.7-5             R6_2.6.1                </span></span>
+<span><span class="co">#&gt;  [37] fastmap_1.2.0            MatrixGenerics_1.24.0    fitdistrplus_1.2-6      </span></span>
+<span><span class="co">#&gt;  [40] future_1.76.0            shiny_1.14.0             clue_0.3-68             </span></span>
+<span><span class="co">#&gt;  [43] digest_0.6.39            thisplot_0.4.6           ggnewscale_0.5.2        </span></span>
+<span><span class="co">#&gt;  [46] colorspace_2.1-3         patchwork_1.3.2          S4Vectors_0.50.3        </span></span>
+<span><span class="co">#&gt;  [49] Seurat_5.6.0             tensor_1.5.1             RSpectra_0.16-2         </span></span>
+<span><span class="co">#&gt;  [52] irlba_2.3.7              GenomicRanges_1.64.0     textshaping_1.0.5       </span></span>
+<span><span class="co">#&gt;  [55] labeling_0.4.3           progressr_1.0.0          spatstat.sparse_3.2-0   </span></span>
+<span><span class="co">#&gt;  [58] httr_1.4.9               polyclip_1.10-7          abind_1.4-8             </span></span>
+<span><span class="co">#&gt;  [61] compiler_4.6.1           withr_3.0.3              doParallel_1.0.17       </span></span>
+<span><span class="co">#&gt;  [64] S7_0.2.2                 BiocParallel_1.46.0      fastDummies_1.7.6       </span></span>
+<span><span class="co">#&gt;  [67] ggforce_0.5.0            MASS_7.3-65              proxyC_0.5.2            </span></span>
+<span><span class="co">#&gt;  [70] rjson_0.2.23             tools_4.6.1              lmtest_0.9-40           </span></span>
+<span><span class="co">#&gt;  [73] otel_0.2.0               httpuv_1.6.17            future.apply_1.20.2     </span></span>
+<span><span class="co">#&gt;  [76] goftest_1.2-3            glue_1.8.1               nlme_3.1-169            </span></span>
+<span><span class="co">#&gt;  [79] promises_1.5.0           grid_4.6.1               Rtsne_0.17              </span></span>
+<span><span class="co">#&gt;  [82] cluster_2.1.8.2          reshape2_1.4.5           generics_0.1.4          </span></span>
+<span><span class="co">#&gt;  [85] gtable_0.3.6             spatstat.data_3.1-9      tidyr_1.3.2             </span></span>
+<span><span class="co">#&gt;  [88] data.table_1.18.6.1      XVector_0.52.0           sp_2.2-3                </span></span>
+<span><span class="co">#&gt;  [91] BiocGenerics_0.58.1      spatstat.geom_3.8-3      RcppAnnoy_0.0.23        </span></span>
+<span><span class="co">#&gt;  [94] ggrepel_0.9.8            RANN_2.6.3               foreach_1.5.2           </span></span>
+<span><span class="co">#&gt;  [97] pillar_1.11.1            stringr_1.6.0            spam_2.11-4             </span></span>
+<span><span class="co">#&gt; [100] RcppHNSW_0.7.0           later_1.4.8              circlize_0.4.18         </span></span>
+<span><span class="co">#&gt; [103] splines_4.6.1            tweenr_2.0.3             dplyr_1.2.1             </span></span>
+<span><span class="co">#&gt; [106] lattice_0.22-9           survival_3.8-6           deldir_2.0-4            </span></span>
+<span><span class="co">#&gt; [109] tidyselect_1.2.1         ComplexHeatmap_2.28.0    Biostrings_2.80.2       </span></span>
+<span><span class="co">#&gt; [112] miniUI_0.1.2             pbapply_1.7-5            knitr_1.52              </span></span>
+<span><span class="co">#&gt; [115] gridExtra_2.3.1          Seqinfo_1.2.0            IRanges_2.46.0          </span></span>
+<span><span class="co">#&gt; [118] scattermore_1.2          stats4_4.6.1             xfun_0.61               </span></span>
+<span><span class="co">#&gt; [121] matrixStats_1.5.0        UCSC.utils_1.8.0         stringi_1.8.9           </span></span>
+<span><span class="co">#&gt; [124] yaml_2.3.12              evaluate_1.0.5           codetools_0.2-20        </span></span>
+<span><span class="co">#&gt; [127] tibble_3.3.1             cli_3.6.6                uwot_0.2.5              </span></span>
+<span><span class="co">#&gt; [130] RcppParallel_6.2.1       Signac_1.17.1            xtable_1.8-8            </span></span>
+<span><span class="co">#&gt; [133] reticulate_1.47.0        systemfonts_1.3.2        jquerylib_0.1.4         </span></span>
+<span><span class="co">#&gt; [136] GenomeInfoDb_1.48.0      Rcpp_1.1.2               globals_0.19.1          </span></span>
+<span><span class="co">#&gt; [139] spatstat.random_3.5-2    png_0.1-9                spatstat.univar_3.2-0   </span></span>
+<span><span class="co">#&gt; [142] parallel_4.6.1           pkgdown_2.2.1            ggplot2_4.0.3           </span></span>
+<span><span class="co">#&gt; [145] dotCall64_1.2            sparseMatrixStats_1.24.0 bitops_1.1-0            </span></span>
+<span><span class="co">#&gt; [148] listenv_1.1.0            viridisLite_0.4.3        scales_1.4.0            </span></span>
+<span><span class="co">#&gt; [151] ggridges_0.5.7           SeuratObject_5.4.0       purrr_1.2.2             </span></span>
+<span><span class="co">#&gt; [154] crayon_1.5.3             GetoptLong_1.1.1         rlang_1.3.0             </span></span>
+<span><span class="co">#&gt; [157] fastmatch_1.1-8          cowplot_1.2.0</span></span></code></pre></div>
+</details>
 </div>
 <div class="section level2">
 <h2 id="what-to-report">What to Report<a class="anchor" aria-label="anchor" href="#what-to-report"></a>
 </h2>
 <p>A compact annotation report should include:</p>
 <ul>
-<li>the query object, reference object, and gene-name conversion
-strategy;</li>
+<li>the disjoint query/reference cells, species, feature set and any
+ortholog mapping;</li>
 <li>the reference label column and embedding used for projection;</li>
 <li>whether labels came from bulk-like profiles or single-cell
 neighbors;</li>
-<li>filtering thresholds such as <code>filter_lowfreq</code>;</li>
+<li>neighbor count and filtering thresholds such as
+<code>filter_lowfreq</code>;</li>
 <li>projection plots, predicted label plots, and marker-gene
 checks;</li>
 <li>ambiguous groups where several labels have similar support.</li>

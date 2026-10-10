@@ -33,23 +33,25 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Compare and annotate</h6></li>
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Interpret cell states</h6></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
-    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
-    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial methods</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -91,20 +93,30 @@
 
     
     
-<p>This article shows the recommended first-pass workflow for a
-single-cell Seurat object in <code>scop</code>. It starts from a count
-matrix stored in a Seurat object, runs the standard preprocessing
-workflow, checks cell-level quality, and creates the basic embedding,
-feature, and group-level plots used before choosing more specialized
-downstream methods.</p>
-<p>Use this workflow as the default entry point when the goal is to
-inspect a new single-cell dataset. After this pass, branch into
-integration, annotation, trajectory, differential expression,
-enrichment, or interactive exploration.</p>
-<p>This article deliberately stays at the first-pass level. It explains
-the object state that downstream articles assume: which assay is active,
-which reductions exist, which metadata columns can be used for grouping,
-and where <code>scop</code> stores method-specific outputs.</p>
+<div class="section level2">
+<h2 id="what-you-will-do">What you will do<a class="anchor" aria-label="anchor" href="#what-you-will-do"></a>
+</h2>
+<ul>
+<li>
+<strong>Question:</strong> can I trust the input and recognize its
+main cell states?</li>
+<li>
+<strong>Input:</strong> All 1,000 cells and 15,998 supplied genes in
+the bundled mouse pancreas object. The package dataset is already a
+subset of the study; this article does not sample it again.</li>
+<li>
+<strong>Output:</strong> QC flags, normalized RNA, PCA/UMAP,
+clusters, marker plots and a reloadable object.</li>
+<li>
+<strong>How to run:</strong> start a fresh R session and run the
+chunks in order. Printed tables and figures below are generated from
+that run; code-only alternatives are identified explicitly.</li>
+</ul>
+<p>Start here before integration, annotation, trajectories or pathway
+analysis. The counts and QC tables establish what was measured; marker
+plots check the meaning of labels; the saved object is the input for the
+specialist articles.</p>
+</div>
 <div class="section level2">
 <h2 id="load-and-inspect-the-object">Load and Inspect the Object<a class="anchor" aria-label="anchor" href="#load-and-inspect-the-object"></a>
 </h2>
@@ -113,6 +125,7 @@ spliced, and unspliced assays, so the same object can later be used for
 trajectory and RNA-velocity examples.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
 <span><span class="va">pancreas_sub</span></span>
@@ -120,7 +133,15 @@ trajectory and RNA-velocity examples.</p>
 <span><span class="co">#&gt; 47994 features across 1000 samples within 3 assays </span></span>
 <span><span class="co">#&gt; Active assay: RNA (15998 features, 0 variable features)</span></span>
 <span><span class="co">#&gt;  1 layer present: counts</span></span>
-<span><span class="co">#&gt;  2 other assays present: spliced, unspliced</span></span></code></pre></div>
+<span><span class="co">#&gt;  2 other assays present: spliced, unspliced</span></span>
+<span><span class="va">input_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>          <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html" class="external-link">anyDuplicated</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">counts</span><span class="op">@</span><span class="va">x</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>, cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>,</span>
+<span>           mitochondrial_genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^mt-"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   genes cells mitochondrial_genes</span></span>
+<span><span class="co">#&gt; 1 15998  1000                  10</span></span></code></pre></div>
 <p>Before running a full workflow, check the active assay, available
 assays, metadata columns, and whether a previous dimensional reduction
 already exists. These checks prevent a common documentation mistake:
@@ -170,9 +191,10 @@ stays in the same Seurat object.</p>
 <span>  nHVF <span class="op">=</span> <span class="fl">2000</span>,</span>
 <span>  linear_reduction_dims <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  cluster_resolution <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">11</span>,</span>
+<span>  cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-07 06:23:09] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
 <span></span>
 <span><span class="va">pancreas_sub</span></span>
 <span><span class="co">#&gt; An object of class Seurat </span></span>
@@ -196,47 +218,38 @@ marker genes before being used for biological claims.</p>
 <div class="section level2">
 <h2 id="check-cell-quality">Check Cell Quality<a class="anchor" aria-label="anchor" href="#check-cell-quality"></a>
 </h2>
-<p>Run quality control before interpreting clusters.
-<code><a href="../reference/RunCellQC.html">RunCellQC()</a></code> combines common cell-level flags, writes
-summary columns to metadata, and keeps details under the object tools
-slot.</p>
+<p>Run quality control before interpreting clusters. This first pass
+measures UMIs, detected genes and mitochondrial fraction on the supplied
+RNA counts. It annotates every cell, without silently removing failures.
+The object is already feature-filtered: these totals are not
+original-library QC. Doublet and ambient-RNA models require separate
+dependencies and are not part of this basic receipt. For production
+data, run QC on the unfiltered count assay, justify thresholds and rerun
+preprocessing after any filtering.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunCellQC.html">RunCellQC</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-10-07 06:23:13] Running cell-level quality control</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-07 06:23:13] Data type is raw counts</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-07 06:23:13] Running <span style="color: #0000BB;">scDblFinder</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-10-07 06:24:01] Skip <span style="color: #0000BB;">"atac"</span> QC because `assay = 'RNA'` is not a <span style="color: #0000BB;">&lt;ChromatinAssay&gt;</span></span></span>
-<span><span class="co">#&gt; Warning: Skip "atac" QC because `assay = 'RNA'` is not a &lt;ChromatinAssay&gt;</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-07 06:24:01] Running <span style="color: #0000BB;">decontX</span></span></span>
-<span><span class="co">#&gt; Warning in .library_size_factors(assay(x, assay.type), ...): 'librarySizeFactors' is deprecated.</span></span>
-<span><span class="co">#&gt; Use 'scrapper::centerSizeFactors' instead.</span></span>
-<span><span class="co">#&gt; See help("Deprecated")</span></span>
-<span><span class="co">#&gt; Warning in .local(x, ...): 'normalizeCounts' is deprecated.</span></span>
-<span><span class="co">#&gt; Use 'scrapper::normalizeCounts' instead.</span></span>
-<span><span class="co">#&gt; See help("Deprecated")</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-07 06:24:10] decontX contamination (median/mean/max): 0.0136 / 0.1628 / 0.7465</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-07 06:24:10] decontX assay stored as decontXcounts</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-10-07 06:24:10] <span style="color: #0000BB;">decontX</span> decontamination completed</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-10-07 06:24:10] ● Total cells: <span style="color: #0000BB;">1000</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◉ <span style="color: #0000BB;">957</span> cells remained</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯ <span style="color: #0000BB;">43</span> cells filtered out:</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">20</span> potential doublets</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> ATAC QC failed cells</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-contamination cells</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">23</span> outlier cells</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> low-UMI cells</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> low-gene cells</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-mito cells</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> high-ribo cells</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> ribo_mito_ratio outlier cells</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span>                       ◯   <span style="color: #0000BB;">0</span> species-contaminated cells</span></span>
+<code class="sourceCode R"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunCellQC.html">RunCellQC</a></span><span class="op">(</span></span>
+<span>  <span class="va">pancreas_sub</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
+<span>  qc_metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"umi"</span>, <span class="st">"gene"</span>, <span class="st">"mito"</span><span class="op">)</span>,</span>
+<span>  UMI_threshold <span class="op">=</span> <span class="fl">3000</span>, gene_threshold <span class="op">=</span> <span class="fl">1000</span>, mito_threshold <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  return_filtered <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>, <span class="va">input_cells</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">$</span><span class="va">CellQC</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Pass Fail </span></span>
-<span><span class="co">#&gt;  957   43</span></span>
+<span><span class="co">#&gt; 1000    0</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">tools</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "decontX"</span></span></code></pre></div>
+<span><span class="co">#&gt; NULL</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"umi_qc"</span>, <span class="st">"gene_qc"</span>, <span class="st">"mito_qc"</span><span class="op">)</span>,</span>
+<span>  failures <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"umi_qc"</span>, <span class="st">"gene_qc"</span>, <span class="st">"mito_qc"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>                    <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span> <span class="op">==</span> <span class="st">"Fail"</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;         criterion failures</span></span>
+<span><span class="co">#&gt; umi_qc     umi_qc        0</span></span>
+<span><span class="co">#&gt; gene_qc   gene_qc        0</span></span>
+<span><span class="co">#&gt; mito_qc   mito_qc        0</span></span></code></pre></div>
 <p>Plot the final QC label first, then inspect the individual failure
 categories when too many cells fail.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -245,34 +258,23 @@ categories when too many cells fail.</p>
 <span>  group.by <span class="op">=</span> <span class="st">"CellQC"</span>,</span>
 <span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="single-cell-main-workflow_files/figure-html/qc-plots-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p><img src="single-cell-main-workflow_files/figure-html/qc-plots-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/CellStatPlot.html">CellStatPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">pancreas_sub</span>,</span>
-<span>  stat.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"db_qc"</span>, <span class="st">"decontX_qc"</span>, <span class="st">"outlier_qc"</span>,</span>
-<span>    <span class="st">"umi_qc"</span>, <span class="st">"gene_qc"</span>, <span class="st">"mito_qc"</span>,</span>
-<span>    <span class="st">"ribo_qc"</span>, <span class="st">"ribo_mito_ratio_qc"</span>, <span class="st">"species_qc"</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"upset"</span>,</span>
-<span>  stat_level <span class="op">=</span> <span class="st">"Fail"</span></span>
+<span><span class="va">qc_failures</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  metric <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"UMI"</span>, <span class="st">"Genes"</span>, <span class="st">"Mitochondrial fraction"</span><span class="op">)</span>,</span>
+<span>  failures <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"umi_qc"</span>, <span class="st">"gene_qc"</span>, <span class="st">"mito_qc"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>                    <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span> <span class="op">==</span> <span class="st">"Fail"</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-10-07 06:24:11] `stat_type` is forcibly set to <span style="color: #0000BB;">"count"</span> when plot <span style="color: #0000BB;">"sankey"</span>, <span style="color: #0000BB;">"chord"</span>, <span style="color: #0000BB;">"venn"</span>, and <span style="color: #0000BB;">"upset"</span></span></span>
-<span><span class="co">#&gt; Warning: `stat_type` is forcibly set to "count" when plot "sankey", "chord",</span></span>
-<span><span class="co">#&gt; "venn", and "upset"</span></span>
-<span><span class="co">#&gt; Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use `linewidth` instead.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">ggupset</span> package.</span></span>
-<span><span class="co">#&gt;   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/const-ae/ggupset/issues&gt;</span>.</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once per session.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">generated.</span></span></span>
-<span><span class="co">#&gt; `geom_line()`: Each group consists of only one observation.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Do you need to adjust the <span style="color: #00BB00;">group</span> aesthetic?</span></span>
-<span><span class="co">#&gt; `geom_line()`: Each group consists of only one observation.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Do you need to adjust the <span style="color: #00BB00;">group</span> aesthetic?</span></span></code></pre></div>
-<p><img src="single-cell-main-workflow_files/figure-html/qc-plots-2.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">qc_failures</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">metric</span>, <span class="va">failures</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="va">failures</span><span class="op">)</span>, vjust <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">qc_failures</span><span class="op">$</span><span class="va">failures</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.1</span><span class="op">)</span>,</span>
+<span>                            breaks <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/breaks_pretty.html" class="external-link">breaks_pretty</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Cells flagged"</span>,</span>
+<span>                subtitle <span class="op">=</span> <span class="st">"Zero means no cell failed that criterion"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
+<p><img src="single-cell-main-workflow_files/figure-html/qc-plots-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="plot-cell-groups-and-features">Plot Cell Groups and Features<a class="anchor" aria-label="anchor" href="#plot-cell-groups-and-features"></a>
@@ -285,9 +287,9 @@ gene expression or metadata-derived numeric features.</p>
 <span>  <span class="va">pancreas_sub</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"SubCellType"</span><span class="op">)</span>,</span>
 <span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
-<span>  label <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  label <span class="op">=</span> <span class="cn">FALSE</span>, theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="single-cell-main-workflow_files/figure-html/embedding-plots-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p><img src="single-cell-main-workflow_files/figure-html/embedding-plots-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span>
@@ -295,12 +297,14 @@ gene expression or metadata-derived numeric features.</p>
 <span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sox9"</span>, <span class="st">"Neurog3"</span>, <span class="st">"Fev"</span>, <span class="st">"Rbp4"</span><span class="op">)</span>,</span>
 <span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="single-cell-main-workflow_files/figure-html/embedding-plots-2.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p><img src="single-cell-main-workflow_files/figure-html/embedding-plots-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>When several marker genes define related states,
-<code>compare_features = TRUE</code> helps identify the dominant feature
-per cell. In the pancreas example, <code>Ins1</code>, <code>Gcg</code>,
-<code>Sst</code>, and <code>Ghrl</code> are hormone genes used to
-distinguish beta, alpha, delta, and epsilon endocrine states.</p>
+<code>compare_features = TRUE</code> blends feature-specific colours to
+show overlapping expression. It does not identify the highest-abundance
+gene or assign a cell type. In the pancreas example, <code>Ins1</code>,
+<code>Gcg</code>, <code>Sst</code>, and <code>Ghrl</code> are hormone
+genes used to distinguish beta, alpha, delta, and epsilon endocrine
+states.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
@@ -311,18 +315,18 @@ distinguish beta, alpha, delta, and epsilon endocrine states.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">#&gt; data's <span style="color: #00BB00;">colour</span> values.</span></span></code></pre></div>
-<p><img src="single-cell-main-workflow_files/figure-html/compare-features-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p><img src="single-cell-main-workflow_files/figure-html/compare-features-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="summarize-marker-patterns-by-group">Summarize Marker Patterns by Group<a class="anchor" aria-label="anchor" href="#summarize-marker-patterns-by-group"></a>
 </h2>
 <p>Use grouped heatmaps after the embedding looks coherent. This is
 usually more readable than inspecting many feature plots one by one.
-Here the dot layer summarizes the fraction of cells expressing each
-marker, and the heatmap color summarizes average expression by group. A
-marker should be interpreted from both signals: strong average
-expression in very few cells is different from broad expression across a
-group.</p>
+Here dot size summarizes the fraction of cells expressing each marker.
+Colour shows row-standardized group-average expression: compare groups
+within a gene, not absolute expression between genes. A marker should be
+interpreted from both signals: strong average expression in very few
+cells is different from broad expression across a group.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ht</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GroupHeatmap.html">GroupHeatmap</a></span><span class="op">(</span></span>
 <span>  <span class="va">pancreas_sub</span>,</span>
@@ -336,7 +340,7 @@ group.</p>
 <span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellType"</span>, <span class="st">"SubCellType"</span><span class="op">)</span>,</span>
 <span>  heatmap_palette <span class="op">=</span> <span class="st">"Spectral"</span>,</span>
 <span>  cell_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Phase"</span>, <span class="st">"G2M_score"</span>, <span class="st">"Cdh2"</span><span class="op">)</span>,</span>
-<span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  show_row_names <span class="op">=</span> <span class="cn">TRUE</span>, nlabel <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  row_names_side <span class="op">=</span> <span class="st">"left"</span>,</span>
 <span>  add_dot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  add_reticle <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -394,7 +398,175 @@ group.</p>
 <span><span class="co">#&gt; No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">#&gt; data's <span style="color: #00BB00;">colour</span> values.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ht</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="single-cell-main-workflow_files/figure-html/group-heatmap-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p><img src="single-cell-main-workflow_files/figure-html/group-heatmap-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level2">
+<h2 id="save-reload-and-check-the-hand-off">Save, reload, and check the hand-off<a class="anchor" aria-label="anchor" href="#save-reload-and-check-the-hand-off"></a>
+</h2>
+<p>The build uses a temporary directory so repeated rendering cannot
+overwrite a previous analysis. For your work, replace it with a new
+persistent output folder. Save the object <strong>and</strong>
+plain-text metadata; a figure alone cannot reproduce the analysis. No
+cells are sampled for this export.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">output_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"single-cell-main-workflow"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">output_dir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">result_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"analysis.rds"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">pancreas_sub</span>, <span class="va">result_file</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"cell-metadata.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">reloaded</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">result_file</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">@</span><span class="va">meta.data</span>, <span class="va">pancreas_sub</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Reductions</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">)</span>,</span>
+<span>                    <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Reductions</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">output_dir</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>           bytes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.info.html" class="external-link">file.info</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">output_dir</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">size</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                file    bytes</span></span>
+<span><span class="co">#&gt; 1      analysis.rds 34271763</span></span>
+<span><span class="co">#&gt; 2 cell-metadata.csv   236267</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="use-your-own-data-and-recover-common-errors">Use your own data and recover common errors<a class="anchor" aria-label="anchor" href="#use-your-own-data-and-recover-common-errors"></a>
+</h2>
+<ul>
+<li>Replace the <code>data(...)</code> input with
+<code>readRDS("your-object.rds")</code>, or create a Seurat object from
+a gene-by-cell raw-count matrix. Check that cell IDs are unique and
+metadata row names equal the expression column names.</li>
+<li>Set the assay and grouping columns explicitly. Species, gene
+identifiers and reference labels must match your experiment; do not copy
+pancreas labels to unrelated tissue.</li>
+<li>If a reduction or metadata column is missing, inspect
+<code>SeuratObject::Reductions(object)</code> and
+<code>colnames(object@meta.data)</code>, then run its producer chunk. A
+plot does not create the result it needs.</li>
+<li>If a dependency is unavailable, install it in the analysis
+environment, restart R and rerun from the input chunk. A skipped or
+failed method is not evidence that it worked. Preserve warnings and the
+exact error in your report.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="build-and-analysis-provenance">Build and analysis provenance<a class="anchor" aria-label="anchor" href="#build-and-analysis-provenance"></a>
+</h2>
+<p>The receipt records the R seed. Python methods retain their
+documented backend seeds and parameters; setting the R seed alone does
+not control every backend. Package versions, BLAS libraries and backend
+changes can alter numerical results. Keep this receipt with the exported
+object. It describes this page’s actual render.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">source_revision</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"GITHUB_SHA"</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">source_revision</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which</a></span><span class="op">(</span><span class="st">"git"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">source_revision</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"git"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rev-parse"</span>, <span class="st">"HEAD"</span><span class="op">)</span>, stdout <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                      stderr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="cn">NA_character_</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">article_source</span> <span class="op">&lt;-</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/current_input.html" class="external-link">current_input</a></span><span class="op">(</span>dir <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">build_receipt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  article <span class="op">=</span> <span class="st">"single-cell-main-workflow"</span>,</span>
+<span>  built_utc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, tz <span class="op">=</span> <span class="st">"UTC"</span>, usetz <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  scop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"scop"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  R <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric_version.html" class="external-link">getRversion</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  source_revision <span class="op">=</span> <span class="va">source_revision</span>,</span>
+<span>  source_has_local_changes <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which</a></span><span class="op">(</span><span class="st">"git"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"git"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"status"</span>, <span class="st">"--porcelain"</span><span class="op">)</span>, stdout <span class="op">=</span> <span class="cn">TRUE</span>, stderr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="kw">else</span> <span class="cn">NA</span>,</span>
+<span>  article_md5 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/md5sum.html" class="external-link">md5sum</a></span><span class="op">(</span><span class="va">article_source</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  R_seed <span class="op">=</span> <span class="fl">11</span>,</span>
+<span>  cells_retained <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>,</span>
+<span>  genes_in_active_assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pancreas_sub</span><span class="op">)</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">build_receipt</span></span>
+<span><span class="co">#&gt;                     article               built_utc  scop     R</span></span>
+<span><span class="co">#&gt; 1 single-cell-main-workflow 2026-10-10 12:10:03 UTC 0.9.2 4.6.1</span></span>
+<span><span class="co">#&gt;                            source_revision source_has_local_changes</span></span>
+<span><span class="co">#&gt; 1 151e7134c597a318db23aacdc01739f82fa44758                    FALSE</span></span>
+<span><span class="co">#&gt;                        article_md5 R_seed cells_retained genes_in_active_assay</span></span>
+<span><span class="co">#&gt; 1 4a1ee311c579f65687c419c549b23216     11           1000                 15998</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">build_receipt</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"build-receipt.csv"</span><span class="op">)</span>,</span>
+<span>                 row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"session-info.txt"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<details><summary>
+Show the complete R session used for this page
+</summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.5 LTS</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt;  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
+<span><span class="co">#&gt;  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
+<span><span class="co">#&gt;  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
+<span><span class="co">#&gt; [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; time zone: UTC</span></span>
+<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] scop_0.9.2</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;   [1] RColorBrewer_1.1-3       jsonlite_2.0.0           shape_1.4.6.1           </span></span>
+<span><span class="co">#&gt;   [4] magrittr_2.0.5           spatstat.utils_3.2-5     farver_2.1.2            </span></span>
+<span><span class="co">#&gt;   [7] rmarkdown_2.32           GlobalOptions_0.1.4      fs_2.1.0                </span></span>
+<span><span class="co">#&gt;  [10] ragg_1.5.2               vctrs_0.7.3              ROCR_1.0-12             </span></span>
+<span><span class="co">#&gt;  [13] Rsamtools_2.28.0         spatstat.explore_3.8-3   RcppRoll_0.4.0          </span></span>
+<span><span class="co">#&gt;  [16] htmltools_0.5.9          sass_0.4.10              thisutils_0.5.2         </span></span>
+<span><span class="co">#&gt;  [19] sctransform_0.4.3        parallelly_1.48.0        KernSmooth_2.23-26      </span></span>
+<span><span class="co">#&gt;  [22] bslib_0.12.0             htmlwidgets_1.6.4        desc_1.4.3              </span></span>
+<span><span class="co">#&gt;  [25] ica_1.0-3                plyr_1.8.9               plotly_4.12.1           </span></span>
+<span><span class="co">#&gt;  [28] zoo_1.9-1                cachem_1.1.0             igraph_2.3.4            </span></span>
+<span><span class="co">#&gt;  [31] mime_0.13                lifecycle_1.0.5          iterators_1.0.14        </span></span>
+<span><span class="co">#&gt;  [34] pkgconfig_2.0.3          Matrix_1.7-5             R6_2.6.1                </span></span>
+<span><span class="co">#&gt;  [37] fastmap_1.2.0            MatrixGenerics_1.24.0    fitdistrplus_1.2-6      </span></span>
+<span><span class="co">#&gt;  [40] future_1.76.0            shiny_1.14.0             clue_0.3-68             </span></span>
+<span><span class="co">#&gt;  [43] digest_0.6.39            thisplot_0.4.6           ggnewscale_0.5.2        </span></span>
+<span><span class="co">#&gt;  [46] colorspace_2.1-3         patchwork_1.3.2          S4Vectors_0.50.3        </span></span>
+<span><span class="co">#&gt;  [49] Seurat_5.6.0             tensor_1.5.1             RSpectra_0.16-2         </span></span>
+<span><span class="co">#&gt;  [52] irlba_2.3.7              GenomicRanges_1.64.0     textshaping_1.0.5       </span></span>
+<span><span class="co">#&gt;  [55] labeling_0.4.3           progressr_1.0.0          spatstat.sparse_3.2-0   </span></span>
+<span><span class="co">#&gt;  [58] httr_1.4.9               polyclip_1.10-7          abind_1.4-8             </span></span>
+<span><span class="co">#&gt;  [61] compiler_4.6.1           withr_3.0.3              doParallel_1.0.17       </span></span>
+<span><span class="co">#&gt;  [64] S7_0.2.2                 BiocParallel_1.46.0      fastDummies_1.7.6       </span></span>
+<span><span class="co">#&gt;  [67] ggforce_0.5.0            MASS_7.3-65              proxyC_0.5.2            </span></span>
+<span><span class="co">#&gt;  [70] rjson_0.2.23             tools_4.6.1              lmtest_0.9-40           </span></span>
+<span><span class="co">#&gt;  [73] otel_0.2.0               httpuv_1.6.17            future.apply_1.20.2     </span></span>
+<span><span class="co">#&gt;  [76] goftest_1.2-3            glue_1.8.1               nlme_3.1-169            </span></span>
+<span><span class="co">#&gt;  [79] promises_1.5.0           grid_4.6.1               Rtsne_0.17              </span></span>
+<span><span class="co">#&gt;  [82] cluster_2.1.8.2          reshape2_1.4.5           generics_0.1.4          </span></span>
+<span><span class="co">#&gt;  [85] gtable_0.3.6             spatstat.data_3.1-9      tidyr_1.3.2             </span></span>
+<span><span class="co">#&gt;  [88] data.table_1.18.6.1      XVector_0.52.0           sp_2.2-3                </span></span>
+<span><span class="co">#&gt;  [91] BiocGenerics_0.58.1      spatstat.geom_3.8-3      RcppAnnoy_0.0.23        </span></span>
+<span><span class="co">#&gt;  [94] ggrepel_0.9.8            RANN_2.6.3               foreach_1.5.2           </span></span>
+<span><span class="co">#&gt;  [97] pillar_1.11.1            stringr_1.6.0            spam_2.11-4             </span></span>
+<span><span class="co">#&gt; [100] RcppHNSW_0.7.0           later_1.4.8              circlize_0.4.18         </span></span>
+<span><span class="co">#&gt; [103] splines_4.6.1            tweenr_2.0.3             dplyr_1.2.1             </span></span>
+<span><span class="co">#&gt; [106] lattice_0.22-9           survival_3.8-6           deldir_2.0-4            </span></span>
+<span><span class="co">#&gt; [109] tidyselect_1.2.1         ComplexHeatmap_2.28.0    Biostrings_2.80.2       </span></span>
+<span><span class="co">#&gt; [112] miniUI_0.1.2             pbapply_1.7-5            knitr_1.52              </span></span>
+<span><span class="co">#&gt; [115] gridExtra_2.3.1          Seqinfo_1.2.0            IRanges_2.46.0          </span></span>
+<span><span class="co">#&gt; [118] scattermore_1.2          stats4_4.6.1             xfun_0.61               </span></span>
+<span><span class="co">#&gt; [121] matrixStats_1.5.0        UCSC.utils_1.8.0         stringi_1.8.9           </span></span>
+<span><span class="co">#&gt; [124] yaml_2.3.12              evaluate_1.0.5           codetools_0.2-20        </span></span>
+<span><span class="co">#&gt; [127] tibble_3.3.1             cli_3.6.6                uwot_0.2.5              </span></span>
+<span><span class="co">#&gt; [130] RcppParallel_6.2.1       Signac_1.17.1            xtable_1.8-8            </span></span>
+<span><span class="co">#&gt; [133] reticulate_1.47.0        systemfonts_1.3.2        jquerylib_0.1.4         </span></span>
+<span><span class="co">#&gt; [136] GenomeInfoDb_1.48.0      Rcpp_1.1.2               globals_0.19.1          </span></span>
+<span><span class="co">#&gt; [139] spatstat.random_3.5-2    png_0.1-9                spatstat.univar_3.2-0   </span></span>
+<span><span class="co">#&gt; [142] parallel_4.6.1           pkgdown_2.2.1            ggplot2_4.0.3           </span></span>
+<span><span class="co">#&gt; [145] dotCall64_1.2            sparseMatrixStats_1.24.0 bitops_1.1-0            </span></span>
+<span><span class="co">#&gt; [148] listenv_1.1.0            viridisLite_0.4.3        scales_1.4.0            </span></span>
+<span><span class="co">#&gt; [151] ggridges_0.5.7           SeuratObject_5.4.0       purrr_1.2.2             </span></span>
+<span><span class="co">#&gt; [154] crayon_1.5.3             GetoptLong_1.1.1         rlang_1.3.0             </span></span>
+<span><span class="co">#&gt; [157] fastmatch_1.1-8          cowplot_1.2.0</span></span></code></pre></div>
+</details>
 </div>
 <div class="section level2">
 <h2 id="what-to-report">What to Report<a class="anchor" aria-label="anchor" href="#what-to-report"></a>

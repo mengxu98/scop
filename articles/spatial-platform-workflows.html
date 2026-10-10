@@ -33,23 +33,25 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Compare and annotate</h6></li>
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Interpret cell states</h6></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
-    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
-    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial methods</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -91,11 +93,207 @@
 
     
     
-<p>This page is the platform and method reference for the <a href="spatial-main-workflow.html">main spatial workflow</a>. It
-concentrates input contracts: assay, image, observation unit, coordinate
-space, and the methods that can consume them. The example paths below
-are templates for an existing local vendor output directory. SCOP does
-not download large data or install optional backends during import.</p>
+<p>This page helps you choose the right input for a spatial method.
+First run the complete bundled Visium example: validate IDs and
+coordinates, calculate limited-assay QC, normalize without changing
+counts, inspect a real expression map, and save/reload the result. Then
+adapt the import section to an existing Visium, Visium HD, or Xenium
+vendor output directory.</p>
+<p>The <a href="spatial-main-workflow.html">main spatial workflow</a>
+provides the analysis path. The <a href="spatial-framework-bridges.html">framework bridges</a> page
+verifies conversion to SpatialExperiment and checks the optional Giotto
+backend.</p>
+<div class="section level2">
+<h2 id="run-a-complete-input-check">Run a complete input check<a class="anchor" aria-label="anchor" href="#run-a-complete-input-check"></a>
+</h2>
+<p><code>visium_human_pancreas_sub</code> comes from sample GSM8058244
+(PanIN-LG2), study <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE254829" class="external-link">GSE254829</a>.
+It contains all 1,986 packaged tissue spots and 5,000 genes shared with
+the bundled pancreas reference. The package has already selected those
+genes; this page does not reduce the object further.
+<code>coda_label</code> is supplied microanatomical annotation, not a
+predicted single-cell type.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">visium_human_pancreas_sub</span><span class="op">)</span></span>
+<span><span class="va">visium</span> <span class="op">&lt;-</span> <span class="va">visium_human_pancreas_sub</span></span>
+<span><span class="va">assay_name</span> <span class="op">&lt;-</span> <span class="st">"Spatial"</span></span>
+<span><span class="va">image_name</span> <span class="op">&lt;-</span> <span class="st">"slice1"</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span><span class="va">visium</span>, assay <span class="op">=</span> <span class="va">assay_name</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
+<span><span class="va">raw_coordinates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SpatialCoordinates.html">SpatialCoordinates</a></span><span class="op">(</span><span class="va">visium</span>, image <span class="op">=</span> <span class="va">image_name</span>, space <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5000L</span>, <span class="fl">1986L</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html" class="external-link">anyDuplicated</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">visium</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">visium</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setequal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>, <span class="va">raw_coordinates</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">cell_id</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">raw_coordinates</span><span class="op">$</span><span class="va">data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">counts</span><span class="op">@</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">counts</span><span class="op">@</span><span class="va">x</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">counts</span><span class="op">@</span><span class="va">x</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="va">counts</span><span class="op">@</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">input_receipt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  source <span class="op">=</span> <span class="st">"GSE254829 / GSM8058244 / complete bundled object"</span>,</span>
+<span>  observations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>,</span>
+<span>  observation_unit <span class="op">=</span> <span class="st">"spot"</span>, assay <span class="op">=</span> <span class="va">assay_name</span>, layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  image <span class="op">=</span> <span class="va">image_name</span>, coordinate_space <span class="op">=</span> <span class="st">"raw"</span>, coordinate_units <span class="op">=</span> <span class="st">"pixel"</span>,</span>
+<span>  total_selected_gene_counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">input_receipt</span></span>
+<span><span class="co">#&gt;                                             source observations features</span></span>
+<span><span class="co">#&gt; 1 GSE254829 / GSM8058244 / complete bundled object         1986     5000</span></span>
+<span><span class="co">#&gt;   observation_unit   assay  layer  image coordinate_space coordinate_units</span></span>
+<span><span class="co">#&gt; 1             spot Spatial counts slice1              raw            pixel</span></span>
+<span><span class="co">#&gt;   total_selected_gene_counts</span></span>
+<span><span class="co">#&gt; 1                    8220223</span></span>
+<span><span class="va">raw_coordinates</span><span class="op">$</span><span class="va">source</span></span>
+<span><span class="co">#&gt; $image</span></span>
+<span><span class="co">#&gt; [1] "slice1"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $coord.cols</span></span>
+<span><span class="co">#&gt; [1] "x" "y"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_policy</span></span>
+<span><span class="co">#&gt; [1] "strict"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $coordinate_space</span></span>
+<span><span class="co">#&gt; [1] "raw"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_class</span></span>
+<span><span class="co">#&gt; [1] "VisiumV2"</span></span>
+<span><span class="co">#&gt; attr(,"package")</span></span>
+<span><span class="co">#&gt; [1] "Seurat"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_width</span></span>
+<span><span class="co">#&gt; [1] 600</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_height</span></span>
+<span><span class="co">#&gt; [1] 340</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $scale_name</span></span>
+<span><span class="co">#&gt; [1] "lowres"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $scale_factor</span></span>
+<span><span class="co">#&gt; [1] 0.078125</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $coordinate_contract_version</span></span>
+<span><span class="co">#&gt; [1] 3</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Layers.html" class="external-link">Layers</a></span><span class="op">(</span><span class="va">visium</span><span class="op">[[</span><span class="va">assay_name</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "counts"</span></span></code></pre></div>
+<p>The count total describes only the packaged genes. The ID checks
+prevent an expression column from being paired with another spot’s
+coordinates. The fixed dimension check is specific to this example;
+replace it with your own expected dimensions. Keep the general ID,
+finite-coordinate, and raw-count checks when changing datasets.</p>
+<div class="section level3">
+<h3 id="label-qc-problems-without-discarding-observations">Label QC problems without discarding observations<a class="anchor" aria-label="anchor" href="#label-qc-problems-without-discarding-observations"></a>
+</h3>
+<p>A gene-filtered assay cannot reproduce whole-transcriptome library
+complexity or mitochondrial percentages. Here, UMI and gene thresholds
+are an executable example on the retained genes, not validated tissue-QC
+cutoffs. For real QC, import the complete raw expression assay and
+choose thresholds after examining its distributions and tissue
+image.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">qc_parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>qc_metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"umi"</span>, <span class="st">"gene"</span><span class="op">)</span>, UMI_threshold <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>                      gene_threshold <span class="op">=</span> <span class="fl">200</span>, return_filtered <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">visium_qc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">RunSpotQC</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">visium</span>, assay <span class="op">=</span> <span class="va">assay_name</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="va">qc_parameters</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">qc_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">visium_qc</span><span class="op">$</span><span class="va">SpotQC</span>, useNA <span class="op">=</span> <span class="st">"ifany"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">qc_summary</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"status"</span>, <span class="st">"spots"</span><span class="op">)</span></span>
+<span><span class="va">qc_summary</span></span>
+<span><span class="co">#&gt;   status spots</span></span>
+<span><span class="co">#&gt; 1   Pass  1957</span></span>
+<span><span class="co">#&gt; 2   Fail    29</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">visium_qc</span><span class="op">@</span><span class="va">meta.data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nCount_Spatial"</span>, <span class="st">"nFeature_Spatial"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  nCount_Spatial  nFeature_Spatial</span></span>
+<span><span class="co">#&gt;  Min.   :   36   Min.   :  32    </span></span>
+<span><span class="co">#&gt;  1st Qu.: 1865   1st Qu.:1157    </span></span>
+<span><span class="co">#&gt;  Median : 3370   Median :1796    </span></span>
+<span><span class="co">#&gt;  Mean   : 4139   Mean   :1873    </span></span>
+<span><span class="co">#&gt;  3rd Qu.: 6051   3rd Qu.:2604    </span></span>
+<span><span class="co">#&gt;  Max.   :18957   Max.   :4232</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">visium_qc</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">visium</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu"><a href="../reference/GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span><span class="va">visium_qc</span>, assay <span class="op">=</span> <span class="va">assay_name</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span>, <span class="va">counts</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">qc_summary</span><span class="op">$</span><span class="va">spots</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">visium</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><code>Pass</code> means both requested thresholds passed;
+<code>Fail</code> means at least one failed. An <code>NA</code> result
+is unresolved, not a pass. All observations remain in this example
+because <code>return_filtered = FALSE</code>, so you can inspect
+failures before deciding whether to exclude them.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">visium_qc</span>, group.by <span class="op">=</span> <span class="st">"SpotQC"</span>, image <span class="op">=</span> <span class="va">image_name</span><span class="op">)</span></span></code></pre></div>
+<p><img src="spatial-platform-workflows_files/figure-html/platform-qc-map-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="normalize-and-inspect-a-measured-feature">Normalize and inspect a measured feature<a class="anchor" aria-label="anchor" href="#normalize-and-inspect-a-measured-feature"></a>
+</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">visium_normalized</span> <span class="op">&lt;-</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span></span>
+<span>  <span class="va">visium_qc</span>, assay <span class="op">=</span> <span class="va">assay_name</span>, normalization.method <span class="op">=</span> <span class="st">"LogNormalize"</span>,</span>
+<span>  scale.factor <span class="op">=</span> <span class="fl">10000</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span><span class="va">visium_normalized</span>, assay <span class="op">=</span> <span class="va">assay_name</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span>, <span class="va">counts</span></span>
+<span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Layers.html" class="external-link">Layers</a></span><span class="op">(</span><span class="va">visium_normalized</span><span class="op">[[</span><span class="va">assay_name</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "counts" "data"</span></span>
+<span><span class="va">feature</span> <span class="op">&lt;-</span> <span class="st">"GCG"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="va">feature</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">feature_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span><span class="va">visium_normalized</span>, assay <span class="op">=</span> <span class="va">assay_name</span>, layer <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span><span class="op">[</span><span class="va">feature</span>, <span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>feature <span class="op">=</span> <span class="va">feature</span>, spots_with_counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">counts</span><span class="op">[</span><span class="va">feature</span>, <span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>           minimum_log_expression <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">feature_values</span><span class="op">)</span>,</span>
+<span>           maximum_log_expression <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">feature_values</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   feature spots_with_counts minimum_log_expression maximum_log_expression</span></span>
+<span><span class="co">#&gt; 1     GCG              1861                      0               7.154526</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">visium_normalized</span>, features <span class="op">=</span> <span class="va">feature</span>, assay <span class="op">=</span> <span class="va">assay_name</span>,</span>
+<span>                layer <span class="op">=</span> <span class="st">"data"</span>, image <span class="op">=</span> <span class="va">image_name</span>, palette <span class="op">=</span> <span class="st">"YlGnBu"</span>,</span>
+<span>                legend.title <span class="op">=</span> <span class="st">"Log-normalized GCG"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="spatial-platform-workflows_files/figure-html/platform-expression-map-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p>This map shows measured GCG expression after library-size scaling and
+<code>log1p</code> transformation over the retained genes. It is not a
+deconvolution result or a cell-type call. Recompute normalization from a
+complete assay for production analysis; values normalized over different
+gene universes need not be comparable. The <code>counts</code> equality
+check confirms that the raw source was preserved.</p>
+</div>
+<div class="section level3">
+<h3 id="save-reload-and-verify">Save, reload, and verify<a class="anchor" aria-label="anchor" href="#save-reload-and-verify"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">output_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SCOP_PLATFORM_OUTPUT_DIR"</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"scop-platform"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">output_dir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">result_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"panin-input-qc-normalized.rds"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">visium_normalized</span>, input <span class="op">=</span> <span class="va">input_receipt</span>,</span>
+<span>             qc_parameters <span class="op">=</span> <span class="va">qc_parameters</span>, qc_summary <span class="op">=</span> <span class="va">qc_summary</span>,</span>
+<span>             coordinates <span class="op">=</span> <span class="va">raw_coordinates</span>, session <span class="op">=</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="va">result_file</span><span class="op">)</span></span>
+<span><span class="va">reloaded</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">result_file</span><span class="op">)</span></span>
+<span><span class="va">reload_checks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  observations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">$</span><span class="va">object</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">visium</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  counts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/GetAssayData5.html">GetAssayData5</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">$</span><span class="va">object</span>, assay <span class="op">=</span> <span class="va">assay_name</span>, layer <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span>, <span class="va">counts</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  qc_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">$</span><span class="va">object</span><span class="op">$</span><span class="va">SpotQC</span>, <span class="va">visium_normalized</span><span class="op">$</span><span class="va">SpotQC</span><span class="op">)</span>,</span>
+<span>  coordinates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/SpatialCoordinates.html">SpatialCoordinates</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">$</span><span class="va">object</span>, image <span class="op">=</span> <span class="va">image_name</span>, space <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span>, <span class="va">raw_coordinates</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>check <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">reload_checks</span><span class="op">)</span>, passed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">reload_checks</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          check passed</span></span>
+<span><span class="co">#&gt; 1 observations   TRUE</span></span>
+<span><span class="co">#&gt; 2       counts   TRUE</span></span>
+<span><span class="co">#&gt; 3    qc_labels   TRUE</span></span>
+<span><span class="co">#&gt; 4  coordinates   TRUE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">reload_checks</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The build writes to a temporary directory. Set
+<code>SCOP_PLATFORM_OUTPUT_DIR</code> to a new persistent project
+directory before running this code on your data. Use
+<code>reloaded$object</code> in either plotting call above; plotting
+does not rerun QC or normalization. Save the input receipt alongside
+figures so their units and selected assay remain recoverable.</p>
+</div>
+</div>
 <div class="section level2">
 <h2 id="platform-contracts-at-a-glance">Platform contracts at a glance<a class="anchor" aria-label="anchor" href="#platform-contracts-at-a-glance"></a>
 </h2>
@@ -152,10 +350,43 @@ communication</td>
 <p>The exact assay and image names are read from the loaded object; do
 not copy a name from a different resolution or sample. Check the
 selected context before calling a method:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialCoordinates.html">SpatialCoordinates</a></span><span class="op">(</span><span class="va">object</span>, image <span class="op">=</span> <span class="st">"slice1"</span>, space <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></span>
-<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span>
-<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Images.html" class="external-link">Images</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialCoordinates.html">SpatialCoordinates</a></span><span class="op">(</span><span class="va">visium</span>, image <span class="op">=</span> <span class="va">image_name</span>, space <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span><span class="op">$</span><span class="va">source</span></span>
+<span><span class="co">#&gt; $image</span></span>
+<span><span class="co">#&gt; [1] "slice1"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $coord.cols</span></span>
+<span><span class="co">#&gt; [1] "x" "y"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_policy</span></span>
+<span><span class="co">#&gt; [1] "strict"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $coordinate_space</span></span>
+<span><span class="co">#&gt; [1] "raw"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_class</span></span>
+<span><span class="co">#&gt; [1] "VisiumV2"</span></span>
+<span><span class="co">#&gt; attr(,"package")</span></span>
+<span><span class="co">#&gt; [1] "Seurat"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_width</span></span>
+<span><span class="co">#&gt; [1] 600</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $image_height</span></span>
+<span><span class="co">#&gt; [1] 340</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $scale_name</span></span>
+<span><span class="co">#&gt; [1] "lowres"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $scale_factor</span></span>
+<span><span class="co">#&gt; [1] 0.078125</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $coordinate_contract_version</span></span>
+<span><span class="co">#&gt; [1] 3</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/DefaultAssay.html" class="external-link">DefaultAssay</a></span><span class="op">(</span><span class="va">visium</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "Spatial"</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Images.html" class="external-link">Images</a></span><span class="op">(</span><span class="va">visium</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "slice1"</span></span></code></pre></div>
 <p>SCOP keeps spot IDs/cell IDs aligned with expression columns. If
 several images cover one sample, analysis and plotting require an
 explicit selection or an explicit named sample-to-image map. A display
@@ -165,29 +396,61 @@ and does not turn pixels into microns.</p>
 <div class="section level2">
 <h2 id="import-existing-vendor-output">Import existing vendor output<a class="anchor" aria-label="anchor" href="#import-existing-vendor-output"></a>
 </h2>
-<p>These paths are deliberately marked as templates. They are not
-evaluated by the site build.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">visium</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span></span>
-<span>  data.dir <span class="op">=</span> <span class="st">"path/to/visium/outs"</span>,  <span class="co"># existing local output directory</span></span>
-<span>  technology <span class="op">=</span> <span class="st">"visium"</span>,</span>
-<span>  sample_id <span class="op">=</span> <span class="st">"S1"</span></span>
+<p>Set one or more of <code>SCOP_VISIUM_DIR</code>,
+<code>SCOP_VISIUM_HD_DIR</code>, and <code>SCOP_XENIUM_DIR</code> to
+existing, unpacked vendor output directories before running this
+section. Visium needs the expression matrix plus the
+<code>spatial/</code> outputs; HD needs the selected binned outputs and
+matching images; Xenium needs expression and existing cell segmentation.
+Do not point at an archive. No path is configured by default, so the
+table explicitly reports <code>not_run</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">vendor_paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  visium <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SCOP_VISIUM_DIR"</span><span class="op">)</span>,</span>
+<span>  visium_hd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SCOP_VISIUM_HD_DIR"</span><span class="op">)</span>,</span>
+<span>  xenium <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SCOP_XENIUM_DIR"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">visium_hd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span></span>
-<span>  data.dir <span class="op">=</span> <span class="st">"path/to/visium-hd/outs"</span>,  <span class="co"># existing local output directory</span></span>
-<span>  technology <span class="op">=</span> <span class="st">"visium_hd"</span>,</span>
-<span>  bin.size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">16</span><span class="op">)</span>,</span>
-<span>  sample_id <span class="op">=</span> <span class="st">"HD1"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">xenium</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span></span>
-<span>  data.dir <span class="op">=</span> <span class="st">"path/to/xenium/outs"</span>,  <span class="co"># existing local output directory</span></span>
-<span>  technology <span class="op">=</span> <span class="st">"xenium"</span>,</span>
-<span>  sample_id <span class="op">=</span> <span class="st">"X1"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">vendor_objects</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">import_receipts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">vendor_paths</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">technology</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">path</span> <span class="op">&lt;-</span> <span class="va">vendor_paths</span><span class="op">[[</span><span class="va">technology</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="va">status</span> <span class="op">&lt;-</span> <span class="st">"not_run"</span></span>
+<span>  <span class="va">reason</span> <span class="op">&lt;-</span> <span class="st">"No vendor directory configured"</span></span>
+<span>  <span class="va">observations</span> <span class="op">&lt;-</span> <span class="cn">NA_integer_</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">result</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.exists</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Configured vendor directory does not exist"</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="../reference/ReadSpatialData.html">ReadSpatialData</a></span><span class="op">(</span>data.dir <span class="op">=</span> <span class="va">path</span>, technology <span class="op">=</span> <span class="va">technology</span>,</span>
+<span>                      bin.size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">16</span><span class="op">)</span>, sample_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">technology</span>, <span class="st">"_sample1"</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="va">e</span><span class="op">)</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"error"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">status</span> <span class="op">&lt;-</span> <span class="st">"failed"</span></span>
+<span>      <span class="va">reason</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>      <span class="va">vendor_objects</span><span class="op">[[</span><span class="va">technology</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;&lt;-</span> <span class="va">result</span></span>
+<span>      <span class="va">status</span> <span class="op">&lt;-</span> <span class="st">"completed"</span></span>
+<span>      <span class="va">reason</span> <span class="op">&lt;-</span> <span class="st">"Vendor import and SCOP context validation completed"</span></span>
+<span>      <span class="va">observations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>technology <span class="op">=</span> <span class="va">technology</span>, status <span class="op">=</span> <span class="va">status</span>, observations <span class="op">=</span> <span class="va">observations</span>,</span>
+<span>             reason <span class="op">=</span> <span class="va">reason</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">import_receipts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">import_receipts</span><span class="op">)</span></span>
+<span><span class="va">import_receipts</span></span>
+<span><span class="co">#&gt;   technology  status observations                         reason</span></span>
+<span><span class="co">#&gt; 1     visium not_run           NA No vendor directory configured</span></span>
+<span><span class="co">#&gt; 2  visium_hd not_run           NA No vendor directory configured</span></span>
+<span><span class="co">#&gt; 3     xenium not_run           NA No vendor directory configured</span></span></code></pre></div>
+<p>Only <code>completed</code> means an import ran. For example, after a
+successful Visium import, use
+<code>visium &lt;- vendor_objects$visium</code>, inspect its
+images/assays, and repeat the input checks with its actual dimensions.
+If your matrix filename is nonstandard, pass Seurat’s
+<code>filename =</code> argument through <code><a href="../reference/ReadSpatialData.html">ReadSpatialData()</a></code>;
+the GSE254829 source archive uses
+<code>filename = "filtered_feature_bc_matrix"</code>. For HD, inspect
+every image and its matching assay separately: one resolution is not
+interchangeable with another.</p>
 <p><code><a href="../reference/ReadSpatialData.html">ReadSpatialData()</a></code> delegates file parsing to Seurat and
 records import provenance under
 <code>object@misc$scop_spatial_input</code>. It validates that each
@@ -203,57 +466,100 @@ Xenium Explorer demo datasets</a>. Download and unpack them outside the
 package; do not hard-code a machine path in a reproducible article.</p>
 </div>
 <div class="section level2">
-<h2 id="visium-and-visium-hd-keep-counts-and-normalized-data-separate">Visium and Visium HD: keep counts and normalized data separate<a class="anchor" aria-label="anchor" href="#visium-and-visium-hd-keep-counts-and-normalized-data-separate"></a>
+<h2 id="optional-method-recipes-check-availability-first">Optional method recipes: check availability first<a class="anchor" aria-label="anchor" href="#optional-method-recipes-check-availability-first"></a>
 </h2>
+<p>The complete input/QC/normalization path above is evaluated. The
+following backend-specific recipes are not executed by this page:
+several require separate installations, another sample, a matched
+reference, or a costly model fit. This table measures installation
+status and explicitly distinguishes it from execution. A package being
+installed does not prove that its model ran.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">backend_packages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SpaNorm"</span>, <span class="st">"Banksy"</span>, <span class="st">"BayesSpace"</span>, <span class="st">"PRECAST"</span>, <span class="st">"spacexr"</span><span class="op">)</span></span>
+<span><span class="va">backend_status</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  package <span class="op">=</span> <span class="va">backend_packages</span>,</span>
+<span>  installed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">backend_packages</span>, <span class="va">requireNamespace</span>, <span class="fu"><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  version <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">backend_packages</span>, <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="va">p</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span> <span class="kw">else</span> <span class="cn">NA_character_</span></span>
+<span>  <span class="op">}</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  execution <span class="op">=</span> <span class="st">"not_run: optional recipe on this page"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">backend_status</span></span>
+<span><span class="co">#&gt;               package installed version                             execution</span></span>
+<span><span class="co">#&gt; SpaNorm       SpaNorm      TRUE   1.6.0 not_run: optional recipe on this page</span></span>
+<span><span class="co">#&gt; Banksy         Banksy      TRUE   1.8.1 not_run: optional recipe on this page</span></span>
+<span><span class="co">#&gt; BayesSpace BayesSpace      TRUE  1.22.0 not_run: optional recipe on this page</span></span>
+<span><span class="co">#&gt; PRECAST       PRECAST      TRUE     1.9 not_run: optional recipe on this page</span></span>
+<span><span class="co">#&gt; spacexr       spacexr      TRUE   1.4.0 not_run: optional recipe on this page</span></span></code></pre></div>
+<p>The main workflow contains executable spatial-feature and
+reference-based examples. Use its execution receipts to establish which
+methods actually ran.</p>
+<div class="section level3">
+<h3 id="visium-and-visium-hd-keep-counts-and-normalized-data-separate">Visium and Visium HD: keep counts and normalized data separate<a class="anchor" aria-label="anchor" href="#visium-and-visium-hd-keep-counts-and-normalized-data-separate"></a>
+</h3>
 <p>Raw counts are the input for count-dependent QC and methods that
 model sampling depth. Normalized/log-transformed data are appropriate
 for expression-level plots and methods whose contract asks for a
 normalized layer. <code>SpaNorm</code> is a separate normalization
 stage; it does not replace the original count source.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">normalized</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"SpaNorm"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"Banksy"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">normalized</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
 <span>  <span class="va">visium</span>,</span>
 <span>  workflow <span class="op">=</span> <span class="st">"spatial"</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
 <span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
 <span>  normalization_method <span class="op">=</span> <span class="st">"SpaNorm"</span>,</span>
+<span>  spot_qc_params <span class="op">=</span> <span class="va">qc_parameters</span>,</span>
 <span>  spanorm_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>new_assay <span class="op">=</span> <span class="st">"SpaNormAnalysis"</span><span class="op">)</span>,</span>
 <span>  do_spatial_cluster <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  spatial_cluster_method <span class="op">=</span> <span class="st">"BANKSY"</span>,</span>
 <span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Count-dependent method: keep the original assay/layer explicit.</span></span>
-<span><span class="fu"><a href="../reference/RunBayesSpace.html">RunBayesSpace</a></span><span class="op">(</span></span>
+<span><span class="va">normalized</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">run_standard_spatial_workflow</span><span class="op">$</span><span class="va">stages</span></span>
+<span></span>
+<span><span class="co"># A separate count-dependent method; q is a required choice, not an inferred truth.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BayesSpace"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">bayesspace</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunBayesSpace.html">RunBayesSpace</a></span><span class="op">(</span></span>
 <span>  <span class="va">normalized</span>,</span>
-<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,  <span class="co"># this assay must retain the original counts</span></span>
 <span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
-<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  q <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  store_sce <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">bayesspace</span><span class="op">$</span><span class="va">BayesSpace_cluster</span><span class="op">)</span></span></code></pre></div>
 <p>The workflow attaches matching original counts when needed for QC and
 uses the separate normalized assay for downstream expression
 preprocessing. It rejects an explicit
 <code>do_normalization = FALSE</code> conflict with
-<code>SpaNorm</code>. Do not relabel normalized values as counts.</p>
+<code>SpaNorm</code>. Do not relabel normalized values as counts.
+<code><a href="../reference/RunBayesSpace.html">RunBayesSpace()</a></code> has no <code>layer</code> argument: its
+selected assay must contain the intended counts. Inspect the domain map
+and compare justified choices of <code>q</code>; four domains in this
+recipe is a parameter, not a biological conclusion.</p>
 </div>
-<div class="section level2">
-<h2 id="standard-methods-by-platform">Standard methods by platform<a class="anchor" aria-label="anchor" href="#standard-methods-by-platform"></a>
-</h2>
+<div class="section level3">
+<h3 id="standard-methods-by-platform">Standard methods by platform<a class="anchor" aria-label="anchor" href="#standard-methods-by-platform"></a>
+</h3>
 <p>For a Visium spot or HD bin, a compact method selection is:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
 <span>  <span class="va">visium</span>,</span>
 <span>  workflow <span class="op">=</span> <span class="st">"spatial"</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
 <span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
 <span>  do_spot_qc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  spot_qc_params <span class="op">=</span> <span class="va">qc_parameters</span>,</span>
 <span>  do_spatial_variable_features <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  spatial_variable_features_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"moran"</span>, nfeatures <span class="op">=</span> <span class="fl">50</span><span class="op">)</span>,</span>
+<span>  spatial_variable_features_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"moran"</span>, nfeatures <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">visium</span><span class="op">[[</span><span class="st">"Spatial"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  do_spatial_cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">baseline</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">run_standard_spatial_workflow</span><span class="op">$</span><span class="va">stages</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"Banksy"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">banksy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span></span>
 <span>  <span class="va">visium</span>,</span>
 <span>  workflow <span class="op">=</span> <span class="st">"spatial"</span>,</span>
@@ -267,6 +573,8 @@ preprocessing. It rejects an explicit
 <span>  do_deconvolution <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">banksy</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">run_standard_spatial_workflow</span><span class="op">$</span><span class="va">stages</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">banksy</span><span class="op">$</span><span class="va">BANKSY_cluster</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/SpatialSpotPlot.html">SpatialSpotPlot</a></span><span class="op">(</span><span class="va">banksy</span>, group.by <span class="op">=</span> <span class="st">"BANKSY_cluster"</span>, image <span class="op">=</span> <span class="st">"slice1"</span><span class="op">)</span></span></code></pre></div>
 <p><code>BayesSpace</code> is the spot/bin array branch;
 <code>spatial_q</code> or BayesSpace’s <code>q</code> controls the
@@ -276,15 +584,30 @@ parameters. <code>SmoothClust</code> accepts a requested
 observations are not silently sent through spot deconvolution or
 BayesSpace; use cell-level methods and plots instead.</p>
 </div>
-<div class="section level2">
-<h2 id="multi-sample-precast-integration">Multi-sample PRECAST integration<a class="anchor" aria-label="anchor" href="#multi-sample-precast-integration"></a>
-</h2>
+<div class="section level3">
+<h3 id="multi-sample-precast-integration">Multi-sample PRECAST integration<a class="anchor" aria-label="anchor" href="#multi-sample-precast-integration"></a>
+</h3>
 <p>Integration needs a sample label and a covering image per sample.
 With a merged object, the image map names are the merged object’s image
 keys. With list input, the map names refer to the original list element
 names before Seurat renames duplicate image keys.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">integrated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunSpatialIntegration.html">RunSpatialIntegration</a></span><span class="op">(</span></span>
+<p>Use two independently acquired samples saved as Seurat RDS files. Set
+the two environment variables below to those files; do not split or
+duplicate this single bundled section to manufacture an integration
+result. Inspect each object and adjust the assay/image map before
+running.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"PRECAST"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">sample_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SCOP_SPATIAL_S1_RDS"</span><span class="op">)</span>,</span>
+<span>                  S2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SCOP_SPATIAL_S2_RDS"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">sample_files</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">sample_files</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/normalizePath.html" class="external-link">normalizePath</a></span><span class="op">(</span><span class="va">sample_files</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2L</span><span class="op">)</span></span>
+<span><span class="va">visium_S1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">sample_files</span><span class="op">[[</span><span class="st">"S1"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">visium_S2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">sample_files</span><span class="op">[[</span><span class="st">"S2"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">visium_S1</span>, <span class="st">"Seurat"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">visium_S2</span>, <span class="st">"Seurat"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S1 <span class="op">=</span> <span class="va">visium_S1</span>, S2 <span class="op">=</span> <span class="va">visium_S2</span><span class="op">)</span>, <span class="fu">SeuratObject</span><span class="fu">::</span><span class="va"><a href="https://satijalab.github.io/seurat-object/reference/Images.html" class="external-link">Images</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">integrated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunSpatialIntegration.html">RunSpatialIntegration</a></span><span class="op">(</span></span>
 <span>  object <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>S1 <span class="op">=</span> <span class="va">visium_S1</span>, S2 <span class="op">=</span> <span class="va">visium_S2</span><span class="op">)</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"PRECAST"</span>,</span>
 <span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
@@ -293,10 +616,10 @@ names before Seurat renames duplicate image keys.</p>
 <span>  store_object <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/SpatialIntegrationPlot.html">SpatialIntegrationPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">integrated</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"spatial"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">integrated</span><span class="op">@</span><span class="va">tools</span><span class="op">$</span><span class="va">SpatialIntegration</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/Images.html" class="external-link">Images</a></span><span class="op">(</span><span class="va">integrated</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialIntegrationPlot.html">SpatialIntegrationPlot</a></span><span class="op">(</span><span class="va">integrated</span>, plot_type <span class="op">=</span> <span class="st">"spatial"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">integrated</span>, <span class="st">"precast-integration.rds"</span><span class="op">)</span></span></code></pre></div>
 <p>The plotting call resolves the images in the merged object. Inspect
 <code>SeuratObject::Images(integrated)</code> before supplying an
 explicit plotting map: duplicate input names such as <code>slice1</code>
@@ -322,13 +645,23 @@ fixed-distance Visium/ST mode expects array indices and is rejected for
 SCOP’s analysis coordinates. Empty or invalid graphs stop before
 training. Effective backend arguments and per-sample nonzero edge counts
 are saved under the method bundle’s <code>parameters</code>.</p>
-<p>For SpatialCellChat on Visium HD, supply a calibrated pixel-to-micron
-<code>ratio</code> and a <code>tol</code> in microns appropriate for the
-selected bin or cell size. The ordinary Visium 65-micron spot conversion
-is not valid for HD. Imported HD provenance and assay names such as
-<code>Spatial.008um</code> inform automatic technology detection; an
-explicit <code>technology = "visium_hd"</code> is needed when that
-evidence is absent.</p>
+<p>For SpatialCellChat, verify the physical calibration before
+interpreting distance-dependent communication. The current wrapper has a
+legacy ordinary Visium fallback of
+<code>65 / spot_diameter_fullres</code> and <code>tol = 32.5</code>;
+these are implementation assumptions, not the current platform
+specification. <a href="https://kb.10xgenomics.com/s/article/360035487812-What-is-the-size-of-the-spots-on-the-Visium-Gene-Expression-Slide" class="external-link">10x
+specifies a 55-micron diameter for ordinary Visium spots</a>. For
+confirmed 55-micron spots with full-resolution pixel coordinates, supply
+<code>ratio = 55 / spot_diameter_fullres</code> explicitly and choose a
+justified <code>tol</code> in microns. Do not apply a full-resolution
+ratio to resized-image coordinates. Visium HD needs its own calibrated
+<code>ratio</code> and tolerance for the chosen bin or cell size; an
+ordinary spot-diameter conversion does not apply. Imported HD provenance
+and assay names such as <code>Spatial.008um</code> inform automatic
+technology detection; an explicit <code>technology = "visium_hd"</code>
+is needed when that evidence is absent.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="deconvolution-and-cell2location-storage-choices">Deconvolution and cell2location storage choices<a class="anchor" aria-label="anchor" href="#deconvolution-and-cell2location-storage-choices"></a>
@@ -355,26 +688,71 @@ the remaining bound computed by <code><a href="../reference/SpatialSpotPlot.html
 both cutoffs when you want identical explicit limits across panels.
 <code>combine</code> changes only the return form, including for the
 dominant point map.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">deconvolved</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunRCTD.html">RunRCTD</a></span><span class="op">(</span></span>
-<span>  <span class="va">visium</span>,</span>
-<span>  reference <span class="op">=</span> <span class="va">reference</span>,</span>
-<span>  reference_label <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>  assay <span class="op">=</span> <span class="st">"Spatial"</span>,</span>
-<span>  reference_assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
-<span>  layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
-<span>  reference_layer <span class="op">=</span> <span class="st">"counts"</span>,</span>
-<span>  image <span class="op">=</span> <span class="st">"slice1"</span>,</span>
-<span>  rctd_mode <span class="op">=</span> <span class="st">"full"</span>,</span>
-<span>  max_cores <span class="op">=</span> <span class="fl">1</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot</a></span><span class="op">(</span><span class="va">deconvolved</span>, tool_name <span class="op">=</span> <span class="st">"RCTD"</span>, plot_type <span class="op">=</span> <span class="st">"dominant"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/Cell2locationPlot.html">Cell2locationPlot</a></span><span class="op">(</span></span>
-<span>  <span class="va">cell2location_result</span>,</span>
-<span>  plot_type <span class="op">=</span> <span class="st">"abundance"</span>,</span>
-<span>  combine <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<p>For a complete reference-backed RCTD run, use the <a href="spatial-main-workflow.html">main workflow</a>. Choose a reference
+with compatible gene identifiers and biologically relevant labels, and
+retain its count assay. The stored model result, not an invented
+component matrix, is the input to
+<code><a href="../reference/SpatialDeconvolutionPlot.html">SpatialDeconvolutionPlot()</a></code>. For a saved cell2location
+result, verify that <code>input_summary</code>, modeled
+<code>cells</code>, and the selected abundance/proportion matrix are
+present before calling <code><a href="../reference/Cell2locationPlot.html">Cell2locationPlot()</a></code>.</p>
+</div>
+<div class="section level2">
+<h2 id="common-errors-and-how-to-recover">Common errors and how to recover<a class="anchor" aria-label="anchor" href="#common-errors-and-how-to-recover"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>Symptom</th>
+<th>Check and recovery</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Vendor directory does not exist or a matrix is missing</td>
+<td>Unpack the archive; point at the vendor output directory; check the
+actual matrix filename and loader arguments</td>
+</tr>
+<tr class="even">
+<td>More than one image or HD resolution</td>
+<td>List images and matching assays; select the intended pair
+explicitly, one resolution at a time</td>
+</tr>
+<tr class="odd">
+<td>Image IDs are absent from the assay</td>
+<td>Compare IDs and sample/resolution provenance; choose the matching
+assay instead of silently taking an intersection</td>
+</tr>
+<tr class="even">
+<td>QC labels are unexpectedly good or bad</td>
+<td>Check the gene universe and count layer; inspect distributions and
+tissue; do not apply whole-transcriptome thresholds to a selected-gene
+assay</td>
+</tr>
+<tr class="odd">
+<td>SpaNorm conflicts with normalization settings</td>
+<td>Remove <code>do_normalization = FALSE</code> when requesting SpaNorm
+and preserve the original count assay</td>
+</tr>
+<tr class="even">
+<td>A backend is installed but no result is present</td>
+<td>Read the actual workflow stage status/reason; package availability
+is not a completed analysis</td>
+</tr>
+<tr class="odd">
+<td>PRECAST adjacency is empty or invalid</td>
+<td>Verify raw coordinates, sample/image coverage, and more than six
+spots per sample for the default six-neighbor graph</td>
+</tr>
+<tr class="even">
+<td>Spots have missing composition values</td>
+<td>Check the producer’s modeled cells and dropped-spot record;
+<code>NA</code> means unmodeled/missing, not zero abundance</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="validation-and-analysis-receipts">Validation and analysis receipts<a class="anchor" aria-label="anchor" href="#validation-and-analysis-receipts"></a>
@@ -395,6 +773,49 @@ space, and physical units when known;</li>
 <li>stage status and backend versions for methods that actually
 ran.</li>
 </ul>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  package <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"scop"</span>, <span class="st">"Seurat"</span>, <span class="st">"SeuratObject"</span>, <span class="st">"Matrix"</span><span class="op">)</span>,</span>
+<span>  version <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"scop"</span>, <span class="st">"Seurat"</span>, <span class="st">"SeuratObject"</span>, <span class="st">"Matrix"</span><span class="op">)</span>,</span>
+<span>                   <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;                   package version</span></span>
+<span><span class="co">#&gt; scop                 scop   0.9.2</span></span>
+<span><span class="co">#&gt; Seurat             Seurat   5.6.0</span></span>
+<span><span class="co">#&gt; SeuratObject SeuratObject   5.4.0</span></span>
+<span><span class="co">#&gt; Matrix             Matrix   1.7.5</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="build-provenance">Build provenance<a class="anchor" aria-label="anchor" href="#build-provenance"></a>
+</h2>
+<p>This receipt belongs to the actual rendered source and retained
+observations. Save it beside the exported object when adapting the
+workflow.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">source_revision</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"GITHUB_SHA"</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">source_revision</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which</a></span><span class="op">(</span><span class="st">"git"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">source_revision</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"git"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rev-parse"</span>, <span class="st">"HEAD"</span><span class="op">)</span>, stdout <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                             stderr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">build_receipt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  article <span class="op">=</span> <span class="st">"spatial-platform-workflows"</span>, built_utc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, tz <span class="op">=</span> <span class="st">"UTC"</span>, usetz <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  source_revision <span class="op">=</span> <span class="va">source_revision</span>,</span>
+<span>  source_has_local_changes <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which</a></span><span class="op">(</span><span class="st">"git"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"git"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"status"</span>, <span class="st">"--porcelain"</span><span class="op">)</span>, stdout <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                   stderr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="kw">else</span> <span class="cn">NA</span>,</span>
+<span>  article_md5 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/md5sum.html" class="external-link">md5sum</a></span><span class="op">(</span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/current_input.html" class="external-link">current_input</a></span><span class="op">(</span>dir <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  R <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric_version.html" class="external-link">getRversion</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, scop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"scop"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  retained_observations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">visium_normalized</span><span class="op">)</span>, genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">visium_normalized</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">build_receipt</span></span>
+<span><span class="co">#&gt;                      article               built_utc</span></span>
+<span><span class="co">#&gt; 1 spatial-platform-workflows 2026-10-10 12:11:07 UTC</span></span>
+<span><span class="co">#&gt;                            source_revision source_has_local_changes</span></span>
+<span><span class="co">#&gt; 1 151e7134c597a318db23aacdc01739f82fa44758                    FALSE</span></span>
+<span><span class="co">#&gt;                        article_md5     R  scop retained_observations genes</span></span>
+<span><span class="co">#&gt; 1 857e67c53d4bc4a42ef8c52375db5a5d 4.6.1 0.9.2                  1986  5000</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">build_receipt</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"build-receipt.csv"</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"session-info.txt"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

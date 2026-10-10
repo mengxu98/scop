@@ -33,23 +33,25 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Basic workflows</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/single-cell-main-workflow.html">Single-cell main workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Compare and annotate</h6></li>
     <li><a class="dropdown-item" href="../articles/integration-workflow.html">Data integration workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cell-annotation-workflow.html">Cell annotation workflow</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Interpret cell states</h6></li>
+    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
     <li><a class="dropdown-item" href="../articles/trajectory-dynamic-workflow.html">Trajectory and dynamic feature workflow</a></li>
     <li><a class="dropdown-item" href="../articles/cellrank-palantir-fate-workflow.html">CellRank and Palantir fate workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/differential-enrichment-workflow.html">Differential expression and enrichment workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/reproduce-pancreatic-endocrinogenesis.html">Reproducing pancreatic endocrinogenesis</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Benchmark workflows</h6></li>
-    <li><a class="dropdown-item" href="../articles/integration-benchmark-workflow.html">Integration benchmark workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Spatial Analysis</h6></li>
-    <li><a class="dropdown-item" href="../articles/spatial-main-workflow.html">Spatial transcriptomics main workflow</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Spatial methods</h6></li>
     <li><a class="dropdown-item" href="../articles/spatial-platform-workflows.html">Spatial imports and standard workflow methods</a></li>
     <li><a class="dropdown-item" href="../articles/spatial-framework-bridges.html">Spatial framework bridges</a></li>
+    <li><a class="dropdown-item" href="../articles/spatial-benchmark-workflow.html">Spatial domain benchmark workflow</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -91,18 +93,47 @@
 
     
     
-<p>This article shows how to run and inspect dataset integration in
-<code>scop</code>. Integration should be used when technical batches,
-platforms, donors, or experiments obscure the biological structure that
-should be compared across datasets.</p>
-<p><code><a href="../reference/RunIntegration.html">RunIntegration()</a></code> provides a common entry point for
-several integration methods. The key practical decisions are the batch
-column, the integration method, the reduction names to inspect, and
-whether the integrated structure preserves known biology.</p>
-<p>Integration is not a required step for every dataset. Use it when
-technical structure prevents comparison across samples or platforms.
-Keep an unintegrated baseline so the report can show what changed after
-correction.</p>
+<div class="section level2">
+<h2 id="what-you-will-do">What you will do<a class="anchor" aria-label="anchor" href="#what-you-will-do"></a>
+</h2>
+<ul>
+<li>
+<strong>Question:</strong> does correction reduce technology effects
+while retaining cell types?</li>
+<li>
+<strong>Input:</strong> All 1,600 cells and 12,932 supplied genes in
+<code>panc8_sub</code>; <code>tech</code> identifies five technologies
+and <code>celltype</code> supplies evaluation labels.</li>
+<li>
+<strong>Output:</strong> Uncorrected and Harmony reductions on the
+same cells, marker checks and a reloadable integrated object.</li>
+<li>
+<strong>How to run:</strong> start a fresh R session and run the
+chunks in order. Printed tables and figures below are generated from
+that run; code-only alternatives are identified explicitly.</li>
+</ul>
+<p>Use integration when technical structure prevents comparison across
+samples or platforms, and retain an unintegrated baseline. If every
+condition occurs in only one batch, batch and biology are confounded: no
+attractive embedding can resolve that experimental-design problem.</p>
+</div>
+<div class="section level2">
+<h2 id="prepare-the-required-harmony-source">Prepare the required Harmony source<a class="anchor" aria-label="anchor" href="#prepare-the-required-harmony-source"></a>
+</h2>
+<p>SCOP’s <code><a href="../reference/RunHarmony2.html">RunHarmony2()</a></code> checks the official GitHub package
+origin. A CRAN installation with the same package name does not satisfy
+that check and can trigger an installation attempt in the middle of an
+analysis. Install the exact source before starting this page, then
+restart R:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
+<span>  <span class="st">"immunogenomics/harmony@df19af23ae0639bd6ea2da63898f973f08c85862"</span>,</span>
+<span>  upgrade <span class="op">=</span> <span class="st">"never"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The tutorial’s dependency preflight is read-only. It fails with a
+clear setup requirement instead of allowing an implicit installation
+during fitting.</p>
+</div>
 <div class="section level2">
 <h2 id="prepare-a-merged-object">Prepare a Merged Object<a class="anchor" aria-label="anchor" href="#prepare-a-merged-object"></a>
 </h2>
@@ -111,10 +142,26 @@ of human pancreas datasets. The <code>tech</code> column records the
 batch or technology label. The <code>celltype</code> column is used as
 known biology for diagnostics, not as a target to force during
 integration.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mengxu98.github.io/scop/">scop</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">11</span><span class="op">)</span></span>
+<span><span class="va">harmony_source</span> <span class="op">&lt;-</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageDescription</a></span><span class="op">(</span><span class="st">"harmony"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">harmony_source</span><span class="op">$</span><span class="va">RemoteUsername</span>, <span class="st">"immunogenomics"</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">harmony_source</span><span class="op">$</span><span class="va">RemoteSha</span>, <span class="st">"df19af23ae0639bd6ea2da63898f973f08c85862"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"harmony"</span>, version <span class="op">=</span> <span class="va">harmony_source</span><span class="op">$</span><span class="va">Version</span>,</span>
+<span>           source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">harmony_source</span><span class="op">$</span><span class="va">RemoteUsername</span>, <span class="va">harmony_source</span><span class="op">$</span><span class="va">RemoteRepo</span>, sep <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span>,</span>
+<span>           revision <span class="op">=</span> <span class="va">harmony_source</span><span class="op">$</span><span class="va">RemoteSha</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   package version                 source</span></span>
+<span><span class="co">#&gt; 1 harmony   2.0.4 immunogenomics/harmony</span></span>
+<span><span class="co">#&gt;                                   revision</span></span>
+<span><span class="co">#&gt; 1 df19af23ae0639bd6ea2da63898f973f08c85862</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
+<span><span class="va">input_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">anyNA</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">$</span><span class="va">tech</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">anyNA</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">$</span><span class="va">celltype</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span>, cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   genes cells</span></span>
+<span><span class="co">#&gt; 1 12932  1600</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">panc8_sub</span><span class="op">$</span><span class="va">tech</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     celseq    celseq2 fluidigmc1     indrop  smartseq2 </span></span>
@@ -132,9 +179,9 @@ integration.</p>
 <p>Always inspect the unintegrated embedding or PCA first. This gives
 you a baseline for deciding whether integration removes technical
 structure without erasing cell-type structure.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">panc8_sub</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:08:58] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">panc8_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunStandardWorkflow.html">RunStandardWorkflow</a></span><span class="op">(</span><span class="va">panc8_sub</span>, assay <span class="op">=</span> <span class="st">"RNA"</span>, seed <span class="op">=</span> <span class="fl">11</span>, cores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                                 verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">panc8_sub</span>,</span>
@@ -142,67 +189,42 @@ structure without erasing cell-type structure.</p>
 <span>  reduction <span class="op">=</span> <span class="st">"UMAP"</span>,</span>
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="integration-workflow_files/figure-html/unintegrated-check-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p><img src="integration-workflow_files/figure-html/unintegrated-check-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="run-an-integration-method">Run an Integration Method<a class="anchor" aria-label="anchor" href="#run-an-integration-method"></a>
 </h2>
 <p>Harmony is a common first pass when the object is already a merged
 Seurat object with a batch column.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">panc8_harmony</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunIntegration.html">RunIntegration</a></span><span class="op">(</span></span>
 <span>  srt_merge <span class="op">=</span> <span class="va">panc8_sub</span>,</span>
 <span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
-<span>  integration_methods <span class="op">=</span> <span class="st">"Harmony"</span></span>
+<span>  integration_methods <span class="op">=</span> <span class="st">"Harmony"</span>,</span>
+<span>  nonlinear_reduction_dims <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">11</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #FFAF00;">◌</span> [2026-10-04 23:09:03] <span style="color: #0000BB;">Run integration workflow...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:04] Split `srt_merge` into `srt_list` by <span style="color: #0000BB;">"tech"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:05] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:05] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:05] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:06] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:06] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:06] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:06] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:06] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:06] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:06] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:06] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:06] Use the separate HVF from `srt_list`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:07] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:07] Finished check</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:07] Perform `Seurat::ScaleData()`</span></span>
 <span><span class="co">#&gt; Warning: Different features in new layer data than already exists for</span></span>
 <span><span class="co">#&gt; scale.data</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:07] Perform linear dimension reduction(<span style="color: #0000BB;">"pca"</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:08] Perform <span style="color: #0000BB;">Harmony</span> integration</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:08] Using <span style="color: #0000BB;">"Harmonypca"</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>) as input</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:09] Adjust neighbor k from <span style="color: #0000BB;">20</span> to <span style="color: #0000BB;">20</span> for small-sample clustering</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:09] Perform `Seurat::FindClusters()` with <span style="color: #0000BB;">"louvain"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:09] Reorder clusters...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:09] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:09] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:12] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmony</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:15] Perform <span style="color: #0000BB;">umap</span> nonlinear dimension reduction using <span style="color: #0000BB;">Harmonypca</span> (<span style="color: #0000BB;">1</span>:<span style="color: #0000BB;">20</span>)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> [2026-10-04 23:09:18] <span style="color: #0000BB;">Harmony</span> integration completed</span></span>
 <span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">panc8_harmony</span><span class="op">)</span>, <span class="va">input_cells</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Reductions</a></span><span class="op">(</span><span class="va">panc8_harmony</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Standardpca"       "StandardpcaUMAP2D" "StandardUMAP2D"   </span></span>
 <span><span class="co">#&gt; [4] "Harmonypca"        "Harmony"           "HarmonyUMAP2D"    </span></span>
-<span><span class="co">#&gt; [7] "HarmonyUMAP3D"     "HarmonypcaUMAP2D"</span></span></code></pre></div>
+<span><span class="co">#&gt; [7] "HarmonypcaUMAP2D"</span></span></code></pre></div>
 <p>Use the method-specific integrated UMAP for plotting. The exact
 reduction name depends on the selected method; for Harmony, the examples
-use <code>HarmonyUMAP</code>. When comparing methods, report the
+use <code>HarmonyUMAP2D</code>. When comparing methods, report the
 reduction name explicitly. A plot labeled only as UMAP is ambiguous once
 an object contains uncorrected and integrated embeddings.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">panc8_harmony</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tech"</span>, <span class="st">"celltype"</span><span class="op">)</span>,</span>
-<span>  reduction <span class="op">=</span> <span class="st">"HarmonyUMAP"</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="st">"HarmonyUMAP2D"</span>,</span>
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="integration-workflow_files/figure-html/plot-harmony-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p><img src="integration-workflow_files/figure-html/plot-harmony-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="choose-a-method">Choose a Method<a class="anchor" aria-label="anchor" href="#choose-a-method"></a>
@@ -226,33 +248,9 @@ correction.</li>
 <code>Uncorrected</code> is useful as a baseline and should be kept
 in reports when showing that integration changed the object.</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">panc8_uncorrected</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunIntegration.html">RunIntegration</a></span><span class="op">(</span></span>
-<span>  srt_merge <span class="op">=</span> <span class="va">panc8_harmony</span>,</span>
-<span>  batch <span class="op">=</span> <span class="st">"tech"</span>,</span>
-<span>  integration_methods <span class="op">=</span> <span class="st">"Uncorrected"</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:20] Checking a list of <span style="color: #0000BB;">&lt;Seurat&gt;</span>...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:21] Data <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:21] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">1</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:21] Data <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:21] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">2</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:21] Data <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:21] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">3</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:21] Data <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:21] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">4</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:22] Data <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of the `srt_list` has been log-normalized</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:22] Perform `FindVariableFeatures()` on <span style="color: #0000BB;">5</span>/<span style="color: #0000BB;">5</span> of `srt_list`...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:22] Use the separate HVF from `srt_list`</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:22] Number of available HVF: <span style="color: #0000BB;">2000</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:22] Finished check</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:22] Perform <span style="color: #0000BB;">Uncorrected</span> integration</span></span>
-<span><span class="co">#&gt; Warning: Different features in new layer data than already exists for</span></span>
-<span><span class="co">#&gt; scale.data</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:23] Reorder clusters...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> [2026-10-04 23:09:23] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span></span></code></pre></div>
-<p>Other methods follow the same entry-point pattern, but may require
+<p>The following alternatives are recipes, not additional measured
+results in this page. To compare executed methods, use the <a href="integration-benchmark-workflow.html">integration benchmark</a>.
+Other methods follow the same entry-point pattern, but may require
 additional runtime dependencies or matrix backends:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">panc8_rpca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunIntegration.html">RunIntegration</a></span><span class="op">(</span></span>
@@ -276,30 +274,29 @@ labels, marker genes, and whether rare cell types remain separated.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">panc8_harmony</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"tech"</span>,</span>
-<span>  reduction <span class="op">=</span> <span class="st">"HarmonyUMAP"</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="st">"HarmonyUMAP2D"</span>,</span>
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="integration-workflow_files/figure-html/inspect-quality-1.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p><img src="integration-workflow_files/figure-html/inspect-quality-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">panc8_harmony</span>,</span>
 <span>  group.by <span class="op">=</span> <span class="st">"celltype"</span>,</span>
-<span>  reduction <span class="op">=</span> <span class="st">"HarmonyUMAP"</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="st">"HarmonyUMAP2D"</span>,</span>
 <span>  label <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  label_repel <span class="op">=</span> <span class="cn">TRUE</span>, label.size <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  theme_use <span class="op">=</span> <span class="st">"theme_blank"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="integration-workflow_files/figure-html/inspect-quality-2.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<p><img src="integration-workflow_files/figure-html/inspect-quality-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/FeatureDimPlot.html">FeatureDimPlot</a></span><span class="op">(</span></span>
 <span>  <span class="va">panc8_harmony</span>,</span>
-<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"INS"</span>, <span class="st">"GCG"</span>, <span class="st">"SST"</span>, <span class="st">"KRT19"</span><span class="op">)</span>,</span>
-<span>  reduction <span class="op">=</span> <span class="st">"HarmonyUMAP"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> [2026-10-04 23:09:33] <span style="color: #0000BB;">"INS"</span> are not in the features of <span style="color: #0000BB;">&lt;Seurat&gt;</span></span></span>
-<span><span class="co">#&gt; Warning: "INS" are not in the features of &lt;Seurat&gt;</span></span></code></pre></div>
-<p><img src="integration-workflow_files/figure-html/inspect-quality-3.png" class="r-plt" alt="" width="92%" style="display: block; margin: auto;"></p>
+<span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GCG"</span>, <span class="st">"SST"</span>, <span class="st">"KRT19"</span><span class="op">)</span>,</span>
+<span>  reduction <span class="op">=</span> <span class="st">"HarmonyUMAP2D"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="integration-workflow_files/figure-html/inspect-quality-3.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>When comparing methods, keep the input object fixed and compare the
 same metadata labels, marker genes, and diagnostic plots across methods.
 The unintegrated baseline is useful because it shows what the
@@ -307,6 +304,178 @@ integration changed. Good integration mixes batches within the same
 biological state while keeping distinct cell types and marker programs
 separated. Overcorrection is visible when expected marker-defined groups
 collapse together.</p>
+<p>INS is absent from the supplied feature-filtered object, so this
+marker check uses measured GCG, SST and KRT19. Missing input genes must
+not be interpreted as measured zero expression.</p>
+</div>
+<div class="section level2">
+<h2 id="save-reload-and-check-the-hand-off">Save, reload, and check the hand-off<a class="anchor" aria-label="anchor" href="#save-reload-and-check-the-hand-off"></a>
+</h2>
+<p>The build uses a temporary directory so repeated rendering cannot
+overwrite a previous analysis. For your work, replace it with a new
+persistent output folder. Save the object <strong>and</strong>
+plain-text metadata; a figure alone cannot reproduce the analysis. No
+cells are sampled for this export.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">output_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"integration-workflow"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">output_dir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">result_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"analysis.rds"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">panc8_harmony</span>, <span class="va">result_file</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">panc8_harmony</span><span class="op">@</span><span class="va">meta.data</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"cell-metadata.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">reloaded</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">result_file</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">panc8_harmony</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">@</span><span class="va">meta.data</span>, <span class="va">panc8_harmony</span><span class="op">@</span><span class="va">meta.data</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Reductions</a></span><span class="op">(</span><span class="va">reloaded</span><span class="op">)</span>,</span>
+<span>                    <span class="fu">SeuratObject</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/ObjectAccess.html" class="external-link">Reductions</a></span><span class="op">(</span><span class="va">panc8_harmony</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">output_dir</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>           bytes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.info.html" class="external-link">file.info</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">output_dir</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">size</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                file    bytes</span></span>
+<span><span class="co">#&gt; 1      analysis.rds 46707851</span></span>
+<span><span class="co">#&gt; 2 cell-metadata.csv   186170</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="use-your-own-data-and-recover-common-errors">Use your own data and recover common errors<a class="anchor" aria-label="anchor" href="#use-your-own-data-and-recover-common-errors"></a>
+</h2>
+<ul>
+<li>Replace the <code>data(...)</code> input with
+<code>readRDS("your-object.rds")</code>, or create a Seurat object from
+a gene-by-cell raw-count matrix. Check that cell IDs are unique and
+metadata row names equal the expression column names.</li>
+<li>Set the assay and grouping columns explicitly. Species, gene
+identifiers and reference labels must match your experiment; do not copy
+pancreas labels to unrelated tissue.</li>
+<li>If a reduction or metadata column is missing, inspect
+<code>SeuratObject::Reductions(object)</code> and
+<code>colnames(object@meta.data)</code>, then run its producer chunk. A
+plot does not create the result it needs.</li>
+<li>If a dependency is unavailable, install it in the analysis
+environment, restart R and rerun from the input chunk. A skipped or
+failed method is not evidence that it worked. Preserve warnings and the
+exact error in your report.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="build-and-analysis-provenance">Build and analysis provenance<a class="anchor" aria-label="anchor" href="#build-and-analysis-provenance"></a>
+</h2>
+<p>The receipt records the R seed. Python methods retain their
+documented backend seeds and parameters; setting the R seed alone does
+not control every backend. Package versions, BLAS libraries and backend
+changes can alter numerical results. Keep this receipt with the exported
+object. It describes this page’s actual render.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">source_revision</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"GITHUB_SHA"</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">source_revision</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which</a></span><span class="op">(</span><span class="st">"git"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">source_revision</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"git"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rev-parse"</span>, <span class="st">"HEAD"</span><span class="op">)</span>, stdout <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                      stderr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="cn">NA_character_</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">article_source</span> <span class="op">&lt;-</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/current_input.html" class="external-link">current_input</a></span><span class="op">(</span>dir <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">build_receipt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  article <span class="op">=</span> <span class="st">"integration-workflow"</span>,</span>
+<span>  built_utc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, tz <span class="op">=</span> <span class="st">"UTC"</span>, usetz <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  scop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"scop"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  R <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric_version.html" class="external-link">getRversion</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  source_revision <span class="op">=</span> <span class="va">source_revision</span>,</span>
+<span>  source_has_local_changes <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.which.html" class="external-link">Sys.which</a></span><span class="op">(</span><span class="st">"git"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system2.html" class="external-link">system2</a></span><span class="op">(</span><span class="st">"git"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"status"</span>, <span class="st">"--porcelain"</span><span class="op">)</span>, stdout <span class="op">=</span> <span class="cn">TRUE</span>, stderr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="kw">else</span> <span class="cn">NA</span>,</span>
+<span>  article_md5 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/md5sum.html" class="external-link">md5sum</a></span><span class="op">(</span><span class="va">article_source</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  R_seed <span class="op">=</span> <span class="fl">11</span>,</span>
+<span>  cells_retained <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">panc8_harmony</span><span class="op">)</span>,</span>
+<span>  genes_in_active_assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">panc8_harmony</span><span class="op">)</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">build_receipt</span></span>
+<span><span class="co">#&gt;                article               built_utc  scop     R</span></span>
+<span><span class="co">#&gt; 1 integration-workflow 2026-10-10 12:09:14 UTC 0.9.2 4.6.1</span></span>
+<span><span class="co">#&gt;                            source_revision source_has_local_changes</span></span>
+<span><span class="co">#&gt; 1 151e7134c597a318db23aacdc01739f82fa44758                    FALSE</span></span>
+<span><span class="co">#&gt;                        article_md5 R_seed cells_retained genes_in_active_assay</span></span>
+<span><span class="co">#&gt; 1 5cc182e499ddcc3f3890dcaf68acde54     11           1600                 12932</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">build_receipt</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"build-receipt.csv"</span><span class="op">)</span>,</span>
+<span>                 row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"session-info.txt"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<details><summary>
+Show the complete R session used for this page
+</summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.5 LTS</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt;  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
+<span><span class="co">#&gt;  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
+<span><span class="co">#&gt;  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
+<span><span class="co">#&gt; [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; time zone: UTC</span></span>
+<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] scop_0.9.2</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;   [1] RColorBrewer_1.1-3       jsonlite_2.0.0           shape_1.4.6.1           </span></span>
+<span><span class="co">#&gt;   [4] magrittr_2.0.5           spatstat.utils_3.2-5     farver_2.1.2            </span></span>
+<span><span class="co">#&gt;   [7] rmarkdown_2.32           GlobalOptions_0.1.4      fs_2.1.0                </span></span>
+<span><span class="co">#&gt;  [10] ragg_1.5.2               vctrs_0.7.3              ROCR_1.0-12             </span></span>
+<span><span class="co">#&gt;  [13] Rsamtools_2.28.0         spatstat.explore_3.8-3   RcppRoll_0.4.0          </span></span>
+<span><span class="co">#&gt;  [16] htmltools_0.5.9          sass_0.4.10              thisutils_0.5.2         </span></span>
+<span><span class="co">#&gt;  [19] sctransform_0.4.3        parallelly_1.48.0        KernSmooth_2.23-26      </span></span>
+<span><span class="co">#&gt;  [22] bslib_0.12.0             htmlwidgets_1.6.4        desc_1.4.3              </span></span>
+<span><span class="co">#&gt;  [25] ica_1.0-3                plyr_1.8.9               plotly_4.12.1           </span></span>
+<span><span class="co">#&gt;  [28] zoo_1.9-1                cachem_1.1.0             igraph_2.3.4            </span></span>
+<span><span class="co">#&gt;  [31] mime_0.13                lifecycle_1.0.5          iterators_1.0.14        </span></span>
+<span><span class="co">#&gt;  [34] pkgconfig_2.0.3          Matrix_1.7-5             R6_2.6.1                </span></span>
+<span><span class="co">#&gt;  [37] fastmap_1.2.0            MatrixGenerics_1.24.0    fitdistrplus_1.2-6      </span></span>
+<span><span class="co">#&gt;  [40] future_1.76.0            shiny_1.14.0             clue_0.3-68             </span></span>
+<span><span class="co">#&gt;  [43] digest_0.6.39            thisplot_0.4.6           colorspace_2.1-3        </span></span>
+<span><span class="co">#&gt;  [46] patchwork_1.3.2          S4Vectors_0.50.3         Seurat_5.6.0            </span></span>
+<span><span class="co">#&gt;  [49] tensor_1.5.1             RSpectra_0.16-2          irlba_2.3.7             </span></span>
+<span><span class="co">#&gt;  [52] GenomicRanges_1.64.0     textshaping_1.0.5        labeling_0.4.3          </span></span>
+<span><span class="co">#&gt;  [55] progressr_1.0.0          spatstat.sparse_3.2-0    httr_1.4.9              </span></span>
+<span><span class="co">#&gt;  [58] polyclip_1.10-7          abind_1.4-8              compiler_4.6.1          </span></span>
+<span><span class="co">#&gt;  [61] withr_3.0.3              doParallel_1.0.17        S7_0.2.2                </span></span>
+<span><span class="co">#&gt;  [64] BiocParallel_1.46.0      pak_0.11.1               fastDummies_1.7.6       </span></span>
+<span><span class="co">#&gt;  [67] ggforce_0.5.0            MASS_7.3-65              proxyC_0.5.2            </span></span>
+<span><span class="co">#&gt;  [70] rjson_0.2.23             tools_4.6.1              lmtest_0.9-40           </span></span>
+<span><span class="co">#&gt;  [73] otel_0.2.0               httpuv_1.6.17            future.apply_1.20.2     </span></span>
+<span><span class="co">#&gt;  [76] goftest_1.2-3            glue_1.8.1               nlme_3.1-169            </span></span>
+<span><span class="co">#&gt;  [79] promises_1.5.0           grid_4.6.1               Rtsne_0.17              </span></span>
+<span><span class="co">#&gt;  [82] cluster_2.1.8.2          reshape2_1.4.5           generics_0.1.4          </span></span>
+<span><span class="co">#&gt;  [85] gtable_0.3.6             spatstat.data_3.1-9      tidyr_1.3.2             </span></span>
+<span><span class="co">#&gt;  [88] data.table_1.18.6.1      XVector_0.52.0           sp_2.2-3                </span></span>
+<span><span class="co">#&gt;  [91] BiocGenerics_0.58.1      spatstat.geom_3.8-3      RcppAnnoy_0.0.23        </span></span>
+<span><span class="co">#&gt;  [94] ggrepel_0.9.8            RANN_2.6.3               foreach_1.5.2           </span></span>
+<span><span class="co">#&gt;  [97] pillar_1.11.1            stringr_1.6.0            spam_2.11-4             </span></span>
+<span><span class="co">#&gt; [100] RcppHNSW_0.7.0           later_1.4.8              circlize_0.4.18         </span></span>
+<span><span class="co">#&gt; [103] splines_4.6.1            tweenr_2.0.3             dplyr_1.2.1             </span></span>
+<span><span class="co">#&gt; [106] lattice_0.22-9           survival_3.8-6           deldir_2.0-4            </span></span>
+<span><span class="co">#&gt; [109] tidyselect_1.2.1         ComplexHeatmap_2.28.0    Biostrings_2.80.2       </span></span>
+<span><span class="co">#&gt; [112] miniUI_0.1.2             pbapply_1.7-5            knitr_1.52              </span></span>
+<span><span class="co">#&gt; [115] gridExtra_2.3.1          Seqinfo_1.2.0            IRanges_2.46.0          </span></span>
+<span><span class="co">#&gt; [118] scattermore_1.2          RhpcBLASctl_0.23-42      stats4_4.6.1            </span></span>
+<span><span class="co">#&gt; [121] xfun_0.61                matrixStats_1.5.0        UCSC.utils_1.8.0        </span></span>
+<span><span class="co">#&gt; [124] stringi_1.8.9            yaml_2.3.12              evaluate_1.0.5          </span></span>
+<span><span class="co">#&gt; [127] codetools_0.2-20         tibble_3.3.1             cli_3.6.6               </span></span>
+<span><span class="co">#&gt; [130] uwot_0.2.5               RcppParallel_6.2.1       Signac_1.17.1           </span></span>
+<span><span class="co">#&gt; [133] xtable_1.8-8             reticulate_1.47.0        systemfonts_1.3.2       </span></span>
+<span><span class="co">#&gt; [136] jquerylib_0.1.4          harmony_2.0.4            GenomeInfoDb_1.48.0     </span></span>
+<span><span class="co">#&gt; [139] Rcpp_1.1.2               globals_0.19.1           spatstat.random_3.5-2   </span></span>
+<span><span class="co">#&gt; [142] png_0.1-9                spatstat.univar_3.2-0    parallel_4.6.1          </span></span>
+<span><span class="co">#&gt; [145] pkgdown_2.2.1            ggplot2_4.0.3            dotCall64_1.2           </span></span>
+<span><span class="co">#&gt; [148] sparseMatrixStats_1.24.0 bitops_1.1-0             listenv_1.1.0           </span></span>
+<span><span class="co">#&gt; [151] viridisLite_0.4.3        scales_1.4.0             ggridges_0.5.7          </span></span>
+<span><span class="co">#&gt; [154] SeuratObject_5.4.0       purrr_1.2.2              crayon_1.5.3            </span></span>
+<span><span class="co">#&gt; [157] GetoptLong_1.1.1         rlang_1.3.0              fastmatch_1.1-8         </span></span>
+<span><span class="co">#&gt; [160] cowplot_1.2.0</span></span></code></pre></div>
+</details>
 </div>
 <div class="section level2">
 <h2 id="what-to-report">What to Report<a class="anchor" aria-label="anchor" href="#what-to-report"></a>
