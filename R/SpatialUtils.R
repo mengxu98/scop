@@ -394,6 +394,9 @@ spatial_add_deconv_metadata <- function(srt, weights, prefix, metadata = NULL) {
 spatial_domain_summary <- function(labels) {
   labels <- as.character(labels)
   labels <- labels[!is.na(labels) & nzchar(labels)]
+  if (!length(labels)) {
+    return(data.frame(domain = character(), count = integer(), stringsAsFactors = FALSE))
+  }
   tab <- as.data.frame(table(labels), stringsAsFactors = FALSE)
   colnames(tab) <- c("domain", "count")
   tab[order(tab$count, decreasing = TRUE), , drop = FALSE]

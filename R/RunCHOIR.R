@@ -57,6 +57,12 @@
 #'   point. Unsupported arguments produce an error rather than being silently
 #'   ignored.
 #'
+#' @details
+#' Stored results retain a private per-cell identity metadata column for
+#' [GetSpatialResult()]. Preserve this column when subsetting or renaming cells.
+#' The accessor returns current-cell assignments; stored native results and
+#' fit parameters remain unchanged.
+#'
 #' @return A `Seurat` object containing CHOIR clusters in `cluster_colname`,
 #' complete upstream records in `srt@misc[[key]]`, and, when
 #' `store_tool = TRUE`, a lightweight summary in `srt@tools[[tool_name]]`.
@@ -123,6 +129,9 @@ RunCHOIR <- function(
   validate_scalar_flag(store_tool, "store_tool")
   validate_scalar_flag(verbose, "verbose")
   validate_scalar_flag(overwrite, "overwrite")
+
+  previous_index <- srt@tools[[tool_name]]$result_index
+  spatial_check_identity_columns(srt, tool_name, c(cluster_colname, paste0("CHOIR_clusters_", alpha)))
 
   p_adjust <- match.arg(p_adjust)
   feature_set <- match.arg(feature_set)
@@ -315,6 +324,13 @@ RunCHOIR <- function(
         overwrite = overwrite
       )
     )
+  }
+
+  if (isTRUE(store_tool)) {
+    result@tools[[tool_name]]$result_index <- list(method = "CHOIR",
+      cluster_colname = cluster_colname, cells = colnames(result))
+    result <- spatial_record_cell_identity(result, tool_name, previous_index,
+      protected_columns = backend_cluster_col)
   }
 
   attr(result, "choir_cluster_column") <- NULL

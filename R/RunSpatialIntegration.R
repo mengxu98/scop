@@ -47,6 +47,11 @@
 #' PRECAST integrates expression and domain representations; it is not a
 #' physical image-registration method.
 #'
+#' Stored results retain a private per-cell identity metadata column for
+#' [GetSpatialResult()]. Preserve this column when subsetting or renaming cells.
+#' The accessor returns current-cell assignments; stored native results and
+#' fit parameters remain unchanged.
+#'
 #' @return A `Seurat` object with spatial integration results stored in
 #' metadata, reductions, and `srt@tools[[tool_name]]`.
 #' @export
@@ -1022,6 +1027,9 @@ spatial_integration_apply_result <- function(
   store_object = TRUE,
   coordinate_sources = NULL
 ) {
+  previous_index <- srt@tools[[tool_name]]$result_index
+  spatial_check_identity_columns(srt, tool_name,
+    c(cluster_colname, paste0(reduction.name, c("_aligned_x", "_aligned_y"))))
   all_cells <- colnames(srt)
   if (!is.null(result$domains)) {
     domain_full <- rep(NA_character_, length(all_cells))
@@ -1107,6 +1115,11 @@ spatial_integration_apply_result <- function(
       samples = unique(as.character(srt@meta.data[[sample.by]])),
       cells = all_cells
     )
+    srt@tools[[tool_name]]$result_index <- list(method = method,
+      cluster_colname = cluster_colname, cells = names(result$domains))
+    srt <- spatial_record_cell_identity(srt, tool_name, previous_index,
+      protected_columns = aligned_coord_cols)
+    srt@tools[[tool_name]]$methods[[method]]$result_index <- srt@tools[[tool_name]]$result_index
     srt@tools[[tool_name]] <- spatial_tag_coordinate_contract(srt@tools[[tool_name]])
   }
   srt

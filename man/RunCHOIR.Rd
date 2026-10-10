@@ -122,6 +122,12 @@ The upstream CHOIR records remain available in \code{srt@misc[[key]]}. This
 wrapper also writes a stable cluster column to cell metadata and a lightweight
 summary to \code{srt@tools[[tool_name]]}.
 }
+\details{
+Stored results retain a private per-cell identity metadata column for
+\code{\link[=GetSpatialResult]{GetSpatialResult()}}. Preserve this column when subsetting or renaming cells.
+The accessor returns current-cell assignments; stored native results and
+fit parameters remain unchanged.
+}
 \examples{
 \dontrun{
 data(pancreas_sub)
