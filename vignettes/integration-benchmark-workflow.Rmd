@@ -7,11 +7,23 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   eval = TRUE,
+  error = FALSE,
+  message = FALSE,
   fig.align = "center",
+  fig.width = 12, fig.height = 8,
   dpi = 144,
-  out.width = "92%"
+  out.width = "100%"
 )
 ```
+
+## What you will do
+
+- **Question:** which method balances batch mixing and biological preservation on these cells?
+- **Input:** All 1,600 cells in `panc8_sub`, with `tech` for batch and `celltype` for biological evaluation.
+- **Output:** Per-method run status, latent-space metrics, summary plots and exported score tables.
+- **How to run:** start a fresh R session and run the chunks in order. Printed tables and figures below are generated from that run; code-only alternatives are identified explicitly.
+
+
 
 This article compares batch-correction methods on the same scRNA-seq object
 with [RunIntegrationBenchmark()]. The runner scores each **latent** embedding
@@ -23,10 +35,34 @@ Use this workflow when you need a reproducible side-by-side report for
 `Uncorrected`, `Harmony`, `fastMNN`, or other [RunIntegration()] methods on
 the same input.
 
+## Prepare the required Harmony source
+
+SCOP's `RunHarmony2()` checks the official GitHub package origin. A CRAN
+installation with the same package name does not satisfy that check and can
+trigger an installation attempt in the middle of an analysis. Install the
+exact source before starting this page, then restart R:
+
+```r
+remotes::install_github(
+  "immunogenomics/harmony@df19af23ae0639bd6ea2da63898f973f08c85862",
+  upgrade = "never"
+)
+```
+
+The tutorial's dependency preflight is read-only. It fails with a clear setup
+requirement instead of allowing an implicit installation during fitting.
+
 ## Load data
 
 ```{r load-data}
 library(scop)
+set.seed(11)
+harmony_source <- utils::packageDescription("harmony")
+stopifnot(identical(harmony_source$RemoteUsername, "immunogenomics"),
+          identical(harmony_source$RemoteSha, "df19af23ae0639bd6ea2da63898f973f08c85862"))
+data.frame(package = "harmony", version = harmony_source$Version,
+           source = paste(harmony_source$RemoteUsername, harmony_source$RemoteRepo, sep = "/"),
+           revision = harmony_source$RemoteSha)
 
 data(panc8_sub)
 table(panc8_sub$tech)
@@ -45,13 +81,20 @@ panc8_sub <- RunIntegrationBenchmark(
   batch = "tech",
   celltype = "celltype",
   methods = c("Uncorrected", "Harmony"),
-  nHVF = 500,
-  linear_reduction_dims = 20,
-  linear_reduction_dims_use = 1:10,
-  perplexity = 10,
+  nHVF = 2000,
+  linear_reduction_dims = 50,
+  linear_reduction_dims_use = 1:30,
+  perplexity = 30,
+  skip_failed = FALSE,
+  nonlinear_reduction_dims = 2, seed = 11,
   verbose = FALSE
 )
 ```
+
+The 2,000 variable genes and 30 latent dimensions define the shared model input;
+all cells are scored. No cell subsampling is performed. `skip_failed = FALSE`
+stops this two-method comparison if either method fails, so one successful
+method cannot be mistaken for a complete comparison.
 
 ## Print summary tables
 
@@ -61,6 +104,8 @@ metric per method.
 
 ```{r print-tables}
 bench <- panc8_sub@tools$IntegrationBenchmark
+bench$runs
+stopifnot(all(bench$runs$status == "success"))
 
 thisplot::print_colored_table(
   bench$summary,
@@ -80,6 +125,27 @@ thisplot::print_colored_table(
 )
 ```
 
+## Read the scores without overclaiming
+
+Read the `value` and `scaled` columns separately. Raw iLISI increases when
+neighborhoods contain more batches; raw cLISI is closest to 1 when a
+neighborhood retains a single cell type. The scaled cLISI score reverses that
+direction so larger scaled values represent better label preservation. The
+printed `direction` field refers to the scaled score, not raw cLISI.
+
+The biological summary combines label separation, connectivity and clustering
+agreement. The batch summary combines mixing measures. The overall score uses
+60% biological and 40% batch weight by default; it is a chosen trade-off, not
+a probability of success. Inspect every metric and the label-by-batch balance
+before preferring a method. A high batch score can accompany overcorrection,
+and labels unique to one technology cannot be made to mix legitimately.
+
+Missing metrics remain missing rather than becoming a successful result. This
+small bundled study subset illustrates comparison on the same cells; it does
+not establish a universal ranking of integration methods. To adapt the
+benchmark, keep input cells, feature selection, dimensions and evaluation labels
+fixed, then report the same raw tables and run statuses for each method.
+
 ## Plot all views
 
 `IntegrationBenchmarkPlot()` with `plot_type = "auto"` returns a named list:
@@ -91,6 +157,7 @@ names(plots)
 plots$box
 plots$scatter
 plots$heatmap
+plots$umap
 ```
 
 Individual plot types are also available:
@@ -99,6 +166,91 @@ Individual plot types are also available:
 IntegrationBenchmarkPlot(panc8_sub, plot_type = "box")
 IntegrationBenchmarkPlot(panc8_sub, plot_type = "umap")
 ```
+
+
+
+## Save, reload, and check the hand-off
+
+The build uses a temporary directory so repeated rendering cannot overwrite a
+previous analysis. For your work, replace it with a new persistent output folder.
+Save the object **and** plain-text metadata; a figure alone cannot reproduce the
+analysis. No cells are sampled for this export.
+
+```{r export-reload}
+output_dir <- file.path(tempdir(), "integration-benchmark-workflow")
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+result_file <- file.path(output_dir, "analysis.rds")
+saveRDS(panc8_sub, result_file)
+utils::write.csv(bench$summary, file.path(output_dir, "benchmark-summary.csv"), row.names = FALSE)
+utils::write.csv(bench$metrics, file.path(output_dir, "benchmark-metrics.csv"), row.names = FALSE)
+utils::write.csv(bench$runs, file.path(output_dir, "benchmark-runs.csv"), row.names = FALSE)
+utils::write.csv(panc8_sub@meta.data, file.path(output_dir, "cell-metadata.csv"))
+reloaded <- readRDS(result_file)
+stopifnot(identical(colnames(reloaded), colnames(panc8_sub)),
+          identical(reloaded@meta.data, panc8_sub@meta.data),
+          identical(SeuratObject::Reductions(reloaded),
+                    SeuratObject::Reductions(panc8_sub)))
+data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
+           bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
+```
+
+## Use your own data and recover common errors
+
+- Replace the `data(...)` input with `readRDS("your-object.rds")`, or create a
+  Seurat object from a gene-by-cell raw-count matrix. Check that cell IDs are
+  unique and metadata row names equal the expression column names.
+- Set the assay and grouping columns explicitly. Species, gene identifiers and
+  reference labels must match your experiment; do not copy pancreas labels to
+  unrelated tissue.
+- If a reduction or metadata column is missing, inspect
+  `SeuratObject::Reductions(object)` and `colnames(object@meta.data)`, then run
+  its producer chunk. A plot does not create the result it needs.
+- If a dependency is unavailable, install it in the analysis environment,
+  restart R and rerun from the input chunk. A skipped or failed method is not
+  evidence that it worked. Preserve warnings and the exact error in your report.
+
+## Build and analysis provenance
+
+The receipt records the R seed. Python methods retain their documented backend
+seeds and parameters; setting the R seed alone does not control every backend.
+Package versions, BLAS libraries and backend changes can alter numerical results. Keep
+this receipt with the exported object. It describes this page's actual render.
+
+```{r provenance}
+source_revision <- Sys.getenv("GITHUB_SHA")
+if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
+  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
+                                      stderr = FALSE)[1], error = function(e) NA_character_)
+}
+article_source <- knitr::current_input(dir = TRUE)
+build_receipt <- data.frame(
+  article = "integration-benchmark-workflow",
+  built_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
+  scop = as.character(utils::packageVersion("scop")),
+  R = as.character(getRversion()),
+  source_revision = source_revision,
+  source_has_local_changes = if (nzchar(Sys.which("git")))
+    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0 else NA,
+  article_md5 = unname(tools::md5sum(article_source)),
+  R_seed = 11,
+  cells_retained = ncol(panc8_sub),
+  genes_in_active_assay = nrow(panc8_sub),
+  stringsAsFactors = FALSE
+)
+build_receipt
+utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
+                 row.names = FALSE)
+writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
+```
+
+<details>
+<summary>Show the complete R session used for this page</summary>
+
+```{r session-info}
+sessionInfo()
+```
+
+</details>
 
 ## What to report
 
@@ -112,3 +264,7 @@ A compact integration benchmark report should include:
 
 Overall score uses scIB weights: `0.6 * bio + 0.4 * batch`. Higher is better
 for all scaled metrics shown in the summary table.
+
+A higher batch score alone can reward overcorrection. Compare biological
+retention, batch mixing and marker patterns together. Results depend on this
+dataset and labels, and do not establish a universally best integration method.
