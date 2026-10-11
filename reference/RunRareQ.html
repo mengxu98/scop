@@ -195,6 +195,13 @@ will be removed in scop 1.0.0.</p></dd>
 <code>srt@tools[[tool_name]]</code>.</p>
     </div>
     <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Stored results retain a private per-cell identity metadata column for
+<code><a href="GetSpatialResult.html">GetSpatialResult()</a></code>. Preserve this column when subsetting or renaming cells.
+The accessor returns current-cell assignments; stored native results and
+fit parameters remain unchanged.</p>
+    </div>
+    <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Fa B, Huang C, Ma Y, et al. (2026). Cell neighborhood topology directs
 rare cell population identification. Nature Communications, 17, 4618.
@@ -208,16 +215,16 @@ doi:10.1038/s41467-026-71180-x</p>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-10 13:11:18] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-11 15:41:36] Skip `log1p()` because `layer = data` is not <span style="color: #0000BB;">"counts"</span></span>
 <span class="r-in"><span><span class="va">pancreas_sub</span> <span class="op">&lt;-</span> <span class="fu">RunRareQ</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>
 <span class="r-in"><span>  dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-10 13:11:52] Build <span style="color: #0000BB;">Seurat</span> nearest neighbors for <span style="color: #0000BB;">RareQ</span> using reduction <span style="color: #0000BB;">"Standardpca"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-11 15:42:22] Build <span style="color: #0000BB;">Seurat</span> nearest neighbors for <span style="color: #0000BB;">RareQ</span> using reduction <span style="color: #0000BB;">"Standardpca"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing nearest neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-10 13:11:52] Only one graph name supplied, storing nearest-neighbor graph only</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-10 13:12:11] Run <span style="color: #0000BB;">RareQ</span> with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-10 13:12:11] <span style="color: #0000BB;">RareQ</span> clusters stored in metadata column <span style="color: #0000BB;">"RareQ_cluster"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-11 15:42:22] Only one graph name supplied, storing nearest-neighbor graph only</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-11 15:42:44] Run <span style="color: #0000BB;">RareQ</span> with `k = 6`, `Q_cut = 0.6`, and `ratio = 0.2`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> [2026-10-11 15:42:44] <span style="color: #0000BB;">RareQ</span> clusters stored in metadata column <span style="color: #0000BB;">"RareQ_cluster"</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="CellDimPlot.html">CellDimPlot</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">pancreas_sub</span>,</span></span>

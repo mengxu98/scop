@@ -190,7 +190,11 @@ metadata, reductions, and <code>srt@tools[[tool_name]]</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Provide spatial samples with shared genes and raw coordinates. Use
+    <p>Stored results retain a private per-cell identity metadata column for
+<code><a href="GetSpatialResult.html">GetSpatialResult()</a></code>. Preserve this column when subsetting or renaming cells.
+The accessor returns current-cell assignments; stored native results and
+fit parameters remain unchanged.</p>
+<p>Provide spatial samples with shared genes and raw coordinates. Use
 <code>sample.by</code> to identify samples and <code>image</code> to select their spatial images.
 PRECAST integrates expression and domain representations; it is not a
 physical image-registration method.</p>

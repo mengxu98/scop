@@ -4,12 +4,52 @@ from a Seurat object's stored tool result. If detailed results were not
 stored, cluster assignments are read from the corresponding metadata column.
 BANKSY retains a lightweight index for custom result columns and exact sample
 membership. Sample retrieval requires this index or stored per-sample results;
-sample identity is never inferred from cluster labels."><meta property="og:description" content="Read the cluster assignments, parameters, and summary for a spatial method
+sample identity is never inferred from cluster labels.
+Results describe cells present in object, in its current cell order, rather
+than the original fit's full cell set. BANKSY domain counts and PRECAST cell,
+domain, and sample counts are recomputed from the returned assignments.
+Unfitted PRECAST cells are excluded. Parameters and the native bundles in
+object@tools still describe the original fit; other methods' stored summaries
+are omitted when their cell set changes. PRECAST can be selected by its tool
+name or by &quot;PRECAST&quot; when that method identifies a unique stored bundle.
+New BANKSY fits and detailed SmoothClust, CHOIR, RareQ, and PRECAST results
+retain a private metadata identity column, named by the result index.
+Preserve this column to retrieve results after subset() or RenameCells();
+names are mapped by saved identities, never by order or sample prefixes.
+Missing, duplicate, or unknown identities cause an informative error.
+SmoothClust and CHOIR's explicit cell columns also reflect the current IDs.
+Legacy saved assignments support exact-ID subsets. Contradictory metadata
+causes an error, but renames cannot always be detected without provenance;
+rerun the method to establish identity tracking. Legacy PRECAST and
+metadata-only results use their current metadata assignments.
+Storage-disabled methods other than BANKSY retain their existing storage
+behavior. Custom metadata columns require a stored locator; the accessor
+does not guess a column from its values or prefix."><meta property="og:description" content="Read the cluster assignments, parameters, and summary for a spatial method
 from a Seurat object's stored tool result. If detailed results were not
 stored, cluster assignments are read from the corresponding metadata column.
 BANKSY retains a lightweight index for custom result columns and exact sample
 membership. Sample retrieval requires this index or stored per-sample results;
-sample identity is never inferred from cluster labels."></head><body>
+sample identity is never inferred from cluster labels.
+Results describe cells present in object, in its current cell order, rather
+than the original fit's full cell set. BANKSY domain counts and PRECAST cell,
+domain, and sample counts are recomputed from the returned assignments.
+Unfitted PRECAST cells are excluded. Parameters and the native bundles in
+object@tools still describe the original fit; other methods' stored summaries
+are omitted when their cell set changes. PRECAST can be selected by its tool
+name or by &quot;PRECAST&quot; when that method identifies a unique stored bundle.
+New BANKSY fits and detailed SmoothClust, CHOIR, RareQ, and PRECAST results
+retain a private metadata identity column, named by the result index.
+Preserve this column to retrieve results after subset() or RenameCells();
+names are mapped by saved identities, never by order or sample prefixes.
+Missing, duplicate, or unknown identities cause an informative error.
+SmoothClust and CHOIR's explicit cell columns also reflect the current IDs.
+Legacy saved assignments support exact-ID subsets. Contradictory metadata
+causes an error, but renames cannot always be detected without provenance;
+rerun the method to establish identity tracking. Legacy PRECAST and
+metadata-only results use their current metadata assignments.
+Storage-disabled methods other than BANKSY retain their existing storage
+behavior. Custom metadata columns require a stored locator; the accessor
+does not guess a column from its values or prefix."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -80,6 +120,26 @@ stored, cluster assignments are read from the corresponding metadata column.
 BANKSY retains a lightweight index for custom result columns and exact sample
 membership. Sample retrieval requires this index or stored per-sample results;
 sample identity is never inferred from cluster labels.</p>
+<p>Results describe cells present in <code>object</code>, in its current cell order, rather
+than the original fit's full cell set. BANKSY domain counts and PRECAST cell,
+domain, and sample counts are recomputed from the returned assignments.
+Unfitted PRECAST cells are excluded. Parameters and the native bundles in
+<code>object@tools</code> still describe the original fit; other methods' stored summaries
+are omitted when their cell set changes. PRECAST can be selected by its tool
+name or by <code>"PRECAST"</code> when that method identifies a unique stored bundle.</p>
+<p>New BANKSY fits and detailed SmoothClust, CHOIR, RareQ, and PRECAST results
+retain a private metadata identity column, named by the result index.
+Preserve this column to retrieve results after <code><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset()</a></code> or <code>RenameCells()</code>;
+names are mapped by saved identities, never by order or sample prefixes.
+Missing, duplicate, or unknown identities cause an informative error.
+SmoothClust and CHOIR's explicit <code>cell</code> columns also reflect the current IDs.
+Legacy saved assignments support exact-ID subsets. Contradictory metadata
+causes an error, but renames cannot always be detected without provenance;
+rerun the method to establish identity tracking. Legacy PRECAST and
+metadata-only results use their current metadata assignments.</p>
+<p>Storage-disabled methods other than BANKSY retain their existing storage
+behavior. Custom metadata columns require a stored locator; the accessor
+does not guess a column from its values or prefix.</p>
     </div>
 
     <div class="section level2">
@@ -107,8 +167,8 @@ method that stored per-sample results.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list with <code>clusters</code>, <code>parameters</code>, and <code>summary</code>. Values that were
-not stored by the method are returned as <code>NULL</code>; BANKSY summaries are
-derived from the returned cluster assignments when necessary.</p>
+not stored by the method are returned as <code>NULL</code>; BANKSY and PRECAST summaries are
+recomputed from the returned cluster assignments, including empty results.</p>
     </div>
 
     <div class="section level2">

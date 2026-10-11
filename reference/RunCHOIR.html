@@ -255,6 +255,13 @@ complete upstream records in <code>srt@misc[[key]]</code>, and, when
 <code>store_tool = TRUE</code>, a lightweight summary in <code>srt@tools[[tool_name]]</code>.</p>
     </div>
     <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Stored results retain a private per-cell identity metadata column for
+<code><a href="GetSpatialResult.html">GetSpatialResult()</a></code>. Preserve this column when subsetting or renaming cells.
+The accessor returns current-cell assignments; stored native results and
+fit parameters remain unchanged.</p>
+    </div>
+    <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Sant C, Mucke L, Corces MR. (2025). CHOIR improves significance-based
 detection of cell types and states from single-cell data.
