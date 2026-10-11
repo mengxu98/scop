@@ -402,3 +402,218 @@ test_that("BANKSY clusters reuse SCOP SpatialSpotPlot", {
   )
   expect_s3_class(p, "ggplot")
 })
+
+test_that("BANKSY getters follow current cells and order in both storage modes", {
+  skip_if_missing_banksy_test_dependencies()
+  for (by_sample in c(FALSE, TRUE)) {
+    srt <- make_banksy_seurat()
+    srt$sample <- c("S1", "S1", "S1_A", "S1_A")
+    args <- list(layer = "counts", group = "sample", cluster_colname = "domains",
+      tool_name = "custom_fit", verbose = FALSE)
+    if (by_sample) args$sample.by <- "sample"
+    with_mock_banksy({
+      detailed <- do.call(RunBANKSY, c(list(object = srt), args))
+      compact <- do.call(RunBANKSY, c(list(object = srt, store_results = FALSE), args))
+    })
+    for (rename in c(FALSE, TRUE)) {
+      # Reversing the existing IDs is a permutation, not detectable from sets.
+      outputs <- list(detailed, compact)
+      if (rename) outputs <- lapply(outputs, SeuratObject::RenameCells,
+        new.names = rev(colnames(srt)))
+      outputs <- lapply(outputs, function(x) x[, colnames(x)[c(3L, 1L)]])
+      # Seurat subset may retain its original order. Reconstruct a valid
+      # reordered object to ensure retrieval follows current order as well.
+      outputs <- lapply(outputs, function(x) {
+        cells <- rev(colnames(x))
+        current <- Seurat::CreateSeuratObject(
+          counts = Seurat::GetAssayData(x, layer = "counts")[, cells],
+          meta.data = x[[]][cells, , drop = FALSE])
+        current@tools <- x@tools
+        current
+      })
+      results <- lapply(outputs, GetSpatialResult, method = "custom_fit")
+      expect_equal(results[[1L]]$clusters, results[[2L]]$clusters)
+      expect_equal(results[[1L]]$summary, results[[2L]]$summary)
+      for (i in seq_along(outputs)) {
+        before <- outputs[[i]]
+        result <- results[[i]]
+        expect_identical(rownames(result$clusters), colnames(before))
+        expect_identical(result$clusters$domains, as.character(before$domains))
+        expect_equal(result$summary$n_spots, 2L)
+        expect_equal(sum(result$summary$domains$count), 2L)
+        expect_identical(GetSpatialResult(before, "custom_fit"), result)
+        expect_identical(outputs[[i]], before)
+        if (by_sample) {
+          sample_result <- GetSpatialResult(before, "custom_fit", sample = "S1_A")
+          expect_identical(rownames(sample_result$clusters),
+            colnames(before)[before$sample == "S1_A"])
+          expect_identical(sample_result$clusters$domains, "1")
+          expect_equal(sample_result$summary$n_spots, 1L)
+        }
+      }
+    }
+  }
+})
+
+test_that("BANKSY getters return typed empty results for absent fitted cells", {
+  skip_if_missing_banksy_test_dependencies()
+  srt <- make_banksy_seurat()
+  counts <- Seurat::GetAssayData(srt, layer = "counts")
+  counts[, "Spot2"] <- 0
+  srt <- Seurat::CreateSeuratObject(counts = counts, meta.data = srt[[]])
+  for (store in c(TRUE, FALSE)) {
+    with_mock_banksy({
+      single <- RunBANKSY(srt, layer = "counts", group = "sample",
+        store_results = store, verbose = FALSE)
+      multi <- RunBANKSY(srt, layer = "counts", group = "sample",
+        sample.by = "sample", store_results = store, verbose = FALSE)
+    })
+    empty_single <- GetSpatialResult(single[, "Spot2"], "BANKSY")
+    empty_sample <- GetSpatialResult(multi[, c("Spot3", "Spot4")], "BANKSY", sample = "S1")
+    for (result in list(empty_single, empty_sample)) {
+      expect_equal(nrow(result$clusters), 0L)
+      expect_identical(colnames(result$clusters), "BANKSY_cluster")
+      expect_equal(result$summary$n_spots, 0L)
+      expect_identical(result$summary$domains,
+        data.frame(domain = character(), count = integer()))
+    }
+    # With detailed storage, neither assignments nor subsets require the label
+    # metadata column. The identity marker is retained independently.
+    if (store) {
+      single$BANKSY_cluster <- NULL
+      expect_equal(nrow(GetSpatialResult(single[, "Spot2"], "BANKSY")$clusters), 0L)
+      expect_equal(nrow(GetSpatialResult(single[, "Spot1"], "BANKSY")$clusters), 1L)
+    } else {
+      single$BANKSY_cluster <- NULL
+      expect_error(GetSpatialResult(single, "BANKSY"), "No cluster results")
+    }
+  }
+})
+
+test_that("BANKSY identity markers are collision safe and reused on reruns", {
+  skip_if_missing_banksy_test_dependencies()
+  srt <- make_banksy_seurat()
+  srt$.scop_BANKSY_cell_id <- "user data"
+  with_mock_banksy({
+    out <- RunBANKSY(srt, layer = "counts", group = "sample", verbose = FALSE)
+    column <- out@tools$BANKSY$result_index$cell_id_colname
+    expect_false(identical(column, ".scop_BANKSY_cell_id"))
+    expect_identical(out$.scop_BANKSY_cell_id, srt$.scop_BANKSY_cell_id)
+    rerun <- RunBANKSY(out, layer = "counts", group = "sample",
+      store_results = FALSE, verbose = FALSE)
+    expect_identical(rerun@tools$BANKSY$result_index$cell_id_colname, column)
+    expect_identical(colnames(rerun[[]]), colnames(out[[]]))
+    another <- RunBANKSY(rerun, layer = "counts", group = "sample",
+      cluster_colname = "other_domains", tool_name = "other_fit", verbose = FALSE)
+    expect_false(identical(another@tools$other_fit$result_index$cell_id_colname, column))
+    before_collision <- another
+    expect_error(RunBANKSY(another, layer = "counts", group = "sample",
+      cluster_colname = column, tool_name = "other_fit", verbose = FALSE),
+      "identity metadata column")
+    expect_identical(another, before_collision)
+    renamed <- SeuratObject::RenameCells(another, add.cell.id = "new")
+    expect_identical(GetSpatialResult(renamed, "BANKSY")$clusters$BANKSY_cluster,
+      GetSpatialResult(renamed, "other_fit")$clusters$other_domains)
+    renamed_rerun <- RunBANKSY(renamed, layer = "counts", group = "sample",
+      cluster_colname = "other_domains", tool_name = "other_fit",
+      store_results = FALSE, verbose = FALSE)
+    expect_identical(colnames(renamed_rerun[[]]), colnames(renamed[[]]))
+    expect_identical(GetSpatialResult(renamed_rerun, "BANKSY")$clusters,
+      GetSpatialResult(renamed, "BANKSY")$clusters)
+    expect_identical(rownames(GetSpatialResult(renamed_rerun, "other_fit")$clusters),
+      colnames(renamed_rerun))
+    # A requested output column that collides with the old identity locator
+    # must retain its cluster labels and receive a new independent locator.
+    collision <- RunBANKSY(out, layer = "counts", group = "sample",
+      cluster_colname = column, verbose = FALSE)
+    expect_false(identical(collision@tools$BANKSY$result_index$cell_id_colname, column))
+    expect_identical(GetSpatialResult(collision, "BANKSY")$clusters[[column]],
+      c("1", "1", "2", "2"))
+  })
+})
+
+test_that("BANKSY rejects missing or invalid tracked cell identities", {
+  skip_if_missing_banksy_test_dependencies()
+  for (store in c(TRUE, FALSE)) {
+    with_mock_banksy({
+      out <- RunBANKSY(make_banksy_seurat(), layer = "counts", group = "sample",
+        store_results = store, verbose = FALSE)
+    })
+    column <- out@tools$BANKSY$result_index$cell_id_colname
+    for (invalid in list(NULL, rep("Spot1", 4L), c(NA, "Spot2", "Spot3", "Spot4"),
+      paste0("unrelated", 1:4))) {
+      broken <- out
+      broken@meta.data[[column]] <- invalid
+      expect_error(GetSpatialResult(broken, "BANKSY"), "identities.*stale or unverifiable")
+    }
+    broken <- out
+    broken@tools$BANKSY$result_index$cell_id_colname <- NULL
+    expect_error(GetSpatialResult(broken, "BANKSY"), "identities.*stale or unverifiable")
+    broken <- out
+    broken@tools$BANKSY$result_index$object_cells <- rep("Spot1", 4L)
+    expect_error(GetSpatialResult(broken, "BANKSY"), "identities.*stale or unverifiable")
+  }
+})
+
+test_that("legacy spatial results retain exact-ID subsets and diagnose stale names", {
+  skip_if_missing_banksy_test_dependencies()
+  for (store in c(TRUE, FALSE)) {
+    with_mock_banksy({
+      out <- RunBANKSY(make_banksy_seurat(), layer = "counts", group = "sample",
+        store_results = store, verbose = FALSE)
+    })
+    column <- out@tools$BANKSY$result_index$cell_id_colname
+    out@tools$BANKSY$result_index$cell_id_colname <- NULL
+    out@tools$BANKSY$result_index$object_cells <- NULL
+    out@meta.data[[column]] <- NULL
+    current <- out[, c("Spot4", "Spot1")]
+    result <- GetSpatialResult(current, "BANKSY")
+    expect_identical(rownames(result$clusters), colnames(current))
+    expect_identical(result$clusters$BANKSY_cluster,
+      as.character(out$BANKSY_cluster[colnames(current)]))
+    expect_equal(result$summary$n_spots, 2L)
+    renamed <- SeuratObject::RenameCells(out, add.cell.id = "new")
+    expect_error(GetSpatialResult(renamed, "BANKSY"), "identities.*stale or unverifiable")
+    if (store) {
+      out$BANKSY_cluster <- NULL
+      expect_equal(nrow(GetSpatialResult(out[, "Spot1"], "BANKSY")$clusters), 1L)
+      renamed$BANKSY_cluster <- NULL
+      expect_error(GetSpatialResult(renamed, "BANKSY"), "identities.*stale or unverifiable")
+    }
+  }
+})
+
+test_that("other spatial summaries are not misrepresented after subsetting", {
+  srt <- make_banksy_seurat()
+  srt@tools$other <- list(clusters = data.frame(cluster = c("A", "A", "B", "B"),
+    row.names = colnames(srt)), parameters = list(seed = 1),
+    summary = list(n_spots = 4L, fit_statistic = 10))
+  expect_identical(GetSpatialResult(srt, "other")$summary, srt@tools$other$summary)
+  srt@tools$other$per_sample <- list(S1 = list(
+    clusters = srt@tools$other$clusters[c("Spot1", "Spot2"), , drop = FALSE],
+    summary = list(n_spots = 2L, fit_statistic = 5)))
+  expect_identical(GetSpatialResult(srt, "other", sample = "S1")$summary,
+    srt@tools$other$per_sample$S1$summary)
+  expect_null(GetSpatialResult(srt[, "Spot1"], "other", sample = "S1")$summary)
+  # A valid object with a reordered count matrix/metadata exercises current
+  # cell order independently of Seurat versions that preserve subset order.
+  cells <- c("Spot3", "Spot1")
+  current <- Seurat::CreateSeuratObject(
+    counts = Seurat::GetAssayData(srt, layer = "counts")[, cells],
+    meta.data = srt[[]][cells, , drop = FALSE])
+  current@tools <- srt@tools
+  result <- GetSpatialResult(current, "other")
+  expect_identical(rownames(result$clusters), cells)
+  expect_identical(result$clusters$cluster, c("B", "A"))
+  expect_identical(result$parameters, list(seed = 1))
+  expect_null(result$summary)
+})
+
+test_that("a BANKSY cluster column named cell is not mistaken for an identity field", {
+  skip_if_missing_banksy_test_dependencies()
+  with_mock_banksy({
+    out <- RunBANKSY(make_banksy_seurat(), layer = "counts", group = "sample",
+      cluster_colname = "cell", verbose = FALSE)
+  })
+  expect_spatial_result_lifecycle(out, "BANKSY", "cell")
+})

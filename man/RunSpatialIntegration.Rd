@@ -88,6 +88,11 @@ Integrate spatial transcriptomics samples and identify shared domains
 using PRECAST.
 }
 \details{
+Stored results retain a private per-cell identity metadata column for
+\code{\link[=GetSpatialResult]{GetSpatialResult()}}. Preserve this column when subsetting or renaming cells.
+The accessor returns current-cell assignments; stored native results and
+fit parameters remain unchanged.
+
 Provide spatial samples with shared genes and raw coordinates. Use
 \code{sample.by} to identify samples and \code{image} to select their spatial images.
 PRECAST integrates expression and domain representations; it is not a

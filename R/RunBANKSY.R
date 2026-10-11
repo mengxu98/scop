@@ -53,7 +53,10 @@
 #' @return A `Seurat` object with BANKSY clusters in metadata. When
 #' `store_results = TRUE`, detailed results are stored in
 #' `srt@tools[[tool_name]]`; when `FALSE`, clusters remain in metadata and only
-#' their lightweight retrieval index is retained in the tool entry.
+#' their lightweight retrieval index is retained in the tool entry. Both modes
+#' also retain one private metadata identity column per result, allowing
+#' [GetSpatialResult()] to follow subsets and renamed cells. Preserve this
+#' column; its name is recorded in `result_index$cell_id_colname`.
 #' @seealso [GetSpatialResult()]
 #' @export
 #'
@@ -118,6 +121,14 @@ RunBANKSY <- function(
   validate_named_param_list(run_pca_params, "run_pca_params", require_list = TRUE)
   validate_named_param_list(cluster_banksy_params, "cluster_banksy_params", require_list = TRUE)
   coordinate_space <- match.arg(coordinate_space)
+
+  previous_index <- srt@tools[[tool_name]]$result_index
+  if (cluster_colname %in% spatial_other_identity_columns(srt, tool_name)) {
+    log_message(
+      "{.arg cluster_colname} is an identity metadata column for another stored result; choose a different output column",
+      message_type = "error"
+    )
+  }
 
   if (!is.null(sample.by)) {
     return(banksy_run_by_sample(
@@ -315,6 +326,7 @@ RunBANKSY <- function(
   srt@tools[[tool_name]]$result_index <- list(
     method = "BANKSY", cluster_colname = cluster_colname, cells = colnames(expr)
   )
+  srt <- spatial_record_cell_identity(srt, tool_name, previous_index)
 
   image_use <- coordinate_source$image
   if (length(image_use) != 1L || is.na(image_use) || !nzchar(image_use)) {
@@ -516,6 +528,7 @@ banksy_run_by_sample <- function(
       message_type = "error"
     )
   }
+  previous_index <- srt@tools[[tool_name]]$result_index
   sample_values <- as.character(srt@meta.data[[sample.by]])
   if (length(sample_values) != ncol(srt) || anyNA(sample_values) || any(!nzchar(sample_values))) {
     log_message("{.arg sample.by} must identify every cell or spot", message_type = "error")
@@ -653,6 +666,7 @@ banksy_run_by_sample <- function(
     method = "BANKSY", cluster_colname = cluster_colname,
     samples = analyzed_samples
   )
+  srt <- spatial_record_cell_identity(srt, tool_name, previous_index)
 
   if (isTRUE(thisutils::get_verbose(verbose))) {
     for (sample_name in samples) {
