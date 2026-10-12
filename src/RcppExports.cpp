@@ -1396,6 +1396,63 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// scenicplus_order_cpp
+IntegerVector scenicplus_order_cpp(SEXP values, bool decreasing);
+RcppExport SEXP _scop_scenicplus_order_cpp(SEXP valuesSEXP, SEXP decreasingSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type values(valuesSEXP);
+    Rcpp::traits::input_parameter< bool >::type decreasing(decreasingSEXP);
+    rcpp_result_gen = Rcpp::wrap(scenicplus_order_cpp(values, decreasing));
+    return rcpp_result_gen;
+END_RCPP
+}
+// scenicplus_rank_cpp
+IntegerMatrix scenicplus_rank_cpp(NumericMatrix expression, int random_seed, int cores);
+RcppExport SEXP _scop_scenicplus_rank_cpp(SEXP expressionSEXP, SEXP random_seedSEXP, SEXP coresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type expression(expressionSEXP);
+    Rcpp::traits::input_parameter< int >::type random_seed(random_seedSEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(scenicplus_rank_cpp(expression, random_seed, cores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// scenicplus_region_gbm_cpp
+List scenicplus_region_gbm_cpp(NumericMatrix accessibility, NumericMatrix expression, List candidates, int n_rounds, double max_features, int random_seed, int cores);
+RcppExport SEXP _scop_scenicplus_region_gbm_cpp(SEXP accessibilitySEXP, SEXP expressionSEXP, SEXP candidatesSEXP, SEXP n_roundsSEXP, SEXP max_featuresSEXP, SEXP random_seedSEXP, SEXP coresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type accessibility(accessibilitySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type expression(expressionSEXP);
+    Rcpp::traits::input_parameter< List >::type candidates(candidatesSEXP);
+    Rcpp::traits::input_parameter< int >::type n_rounds(n_roundsSEXP);
+    Rcpp::traits::input_parameter< double >::type max_features(max_featuresSEXP);
+    Rcpp::traits::input_parameter< int >::type random_seed(random_seedSEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(scenicplus_region_gbm_cpp(accessibility, expression, candidates, n_rounds, max_features, random_seed, cores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// scenicplus_gsea_cpp
+List scenicplus_gsea_cpp(List rankings, List hits, int n_perm, int random_seed, int cores);
+RcppExport SEXP _scop_scenicplus_gsea_cpp(SEXP rankingsSEXP, SEXP hitsSEXP, SEXP n_permSEXP, SEXP random_seedSEXP, SEXP coresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type rankings(rankingsSEXP);
+    Rcpp::traits::input_parameter< List >::type hits(hitsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_perm(n_permSEXP);
+    Rcpp::traits::input_parameter< int >::type random_seed(random_seedSEXP);
+    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
+    rcpp_result_gen = Rcpp::wrap(scenicplus_gsea_cpp(rankings, hits, n_perm, random_seed, cores));
+    return rcpp_result_gen;
+END_RCPP
+}
 // grnboost_tree
 DataFrame grnboost_tree(NumericMatrix expr, IntegerVector regulator_idx, IntegerVector target_idx, int n_rounds, double learning_rate, int max_edges_per_target, int max_depth, double max_features, double subsample, int early_stop_window_length, int random_seed, bool exclude_self);
 RcppExport SEXP _scop_grnboost_tree(SEXP exprSEXP, SEXP regulator_idxSEXP, SEXP target_idxSEXP, SEXP n_roundsSEXP, SEXP learning_rateSEXP, SEXP max_edges_per_targetSEXP, SEXP max_depthSEXP, SEXP max_featuresSEXP, SEXP subsampleSEXP, SEXP early_stop_window_lengthSEXP, SEXP random_seedSEXP, SEXP exclude_selfSEXP) {
@@ -2542,6 +2599,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_rctd_finalize_weights_cpp", (DL_FUNC) &_scop_rctd_finalize_weights_cpp, 2},
     {"_scop_estimate_ssgsea_scores_cpp", (DL_FUNC) &_scop_estimate_ssgsea_scores_cpp, 3},
     {"_scop_scenic_edge_correlation_cpp", (DL_FUNC) &_scop_scenic_edge_correlation_cpp, 4},
+    {"_scop_scenicplus_order_cpp", (DL_FUNC) &_scop_scenicplus_order_cpp, 2},
+    {"_scop_scenicplus_rank_cpp", (DL_FUNC) &_scop_scenicplus_rank_cpp, 3},
+    {"_scop_scenicplus_region_gbm_cpp", (DL_FUNC) &_scop_scenicplus_region_gbm_cpp, 7},
+    {"_scop_scenicplus_gsea_cpp", (DL_FUNC) &_scop_scenicplus_gsea_cpp, 5},
     {"_scop_grnboost_tree", (DL_FUNC) &_scop_grnboost_tree, 12},
     {"_scop_grnboost_tree_parallel", (DL_FUNC) &_scop_grnboost_tree_parallel, 13},
     {"_scop_grnboost_tree_sparse", (DL_FUNC) &_scop_grnboost_tree_sparse, 12},

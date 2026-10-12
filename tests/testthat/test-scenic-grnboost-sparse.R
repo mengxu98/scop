@@ -69,8 +69,8 @@ test_that("C++ GRNBoost2 sparse path matches dense path", {
   rownames(auto_dense) <- NULL
   rownames(sparse) <- NULL
 
-  expect_equal(auto_dense, dense, tolerance = 1e-12)
-  expect_equal(sparse, dense, tolerance = 1e-12)
+  expect_identical(auto_dense, dense)
+  expect_identical(sparse, dense)
 })
 
 test_that("C++ GRNBoost2 preserves sparse zero ordering on larger matrices", {
@@ -103,7 +103,7 @@ test_that("C++ GRNBoost2 preserves sparse zero ordering on larger matrices", {
   rownames(dense) <- NULL
   rownames(sparse) <- NULL
 
-  expect_equal(sparse, dense, tolerance = 1e-12)
+  expect_identical(sparse, dense)
 })
 
 test_that("SCENIC recovery uses one weight per ranked target", {
