@@ -64,7 +64,7 @@
     - [Enrichment analysis](#enrichment-analysis)
       - [Over-representation](#over-representation)
       - [GSEA](#gsea)
-    - [Gene regulatory network analysis with SCENIC](#gene-regulatory-network-analysis-with-scenic)
+    - [Gene regulatory network analysis with SCENIC (optional recipe)](https://mengxu98.github.io/scop/articles/reproduce-pancreatic-endocrinogenesis.html#infer-tf-links-and-regulatory-activity)
     - [Interactive data visualization with SCExplorer](#interactive-data-visualization-with-scexplorer)
     - [Other visualization examples](#other-visualization-examples)
 
@@ -73,7 +73,7 @@
 The [scop](https://github.com/mengxu98/scop) package is developed based on the [SCP](https://github.com/zhanghao-njmu/SCP) package, with the following major improvements:
 
 1. Compatibility: full support for [Seurat v5](https://github.com/satijalab/seurat).
-2. Stability: a large number of known issues have been fixed, and all functions have passed `devtools::check()`.
+2. Stability: compatibility repairs and automated package checks. Optional backends require separate runtime validation; a successful package check does not establish that every backend has executed.
 3. Usability: the *Python* environment setup workflow has been improved, with support for conda-compatible managers including conda, mamba, and micromamba; standardized console messages via `thisutils::log_message` for consistent, readable function outputs.
 4. Performance: a new parallel framework has been developed based on `thisutils::parallelize_fun`, providing a consistent experience across *Linux*, *macOS*, and *Windows*.
 5. Functionality: more analysis methods have been added.

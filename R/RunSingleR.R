@@ -6,6 +6,19 @@
 #' @inheritParams SingleR::trainSingleR
 #' @inheritParams thisutils::log_message
 #' @inheritParams thisutils::parallelize_fun
+#' @param genes Marker specification passed to SingleR. Use `"de"` to select
+#'   markers from the reference, or supply a named list of markers per label
+#'   or per pair of labels as supported by [SingleR::trainSingleR].
+#' @param de.method Reference marker-selection method: `"wilcox"`, `"t"`, or
+#'   `"classic"`. Ignored when `genes` supplies explicit marker lists.
+#' @param sd.thresh Legacy SingleR argument, forwarded for compatibility.
+#'   Current SingleR versions deprecate and ignore it.
+#' @param de.n Number of reference markers selected per label comparison.
+#'   `NULL` uses SingleR's method-specific default. Ignored for explicit markers.
+#' @param aggr.ref Whether SingleR aggregates reference cells into representative
+#'   profiles to speed up classification.
+#' @param aggr.args Named list of arguments forwarded to
+#'   [SingleR::aggregateReference] when `aggr.ref = TRUE`.
 #' @param quantile "quantile" parameter in [SingleR::SingleR] function.
 #' @param fine.tune `"fine.tune"` parameter in [SingleR::SingleR] function.
 #' @param tune.thresh `"tune.thresh"` parameter in [SingleR::SingleR] function.

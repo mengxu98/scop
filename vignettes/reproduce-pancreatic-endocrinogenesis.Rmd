@@ -6,7 +6,8 @@ title: "Reproducing pancreatic endocrinogenesis"
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE,
+  eval = TRUE,
+  error = FALSE,
   message = FALSE,
   warning = FALSE,
   fig.align = "center",
@@ -28,10 +29,11 @@ endocrinogenesis study using the bundled `pancreas_sub` object. The biological
 reference is the mouse embryonic pancreas single-cell study by
 Bastidas-Ponce et al. (2019, *Development*, DOI: 10.1242/dev.173849).
 
-The website displays this end-to-end workflow without evaluating its code
-chunks because trajectory, velocity, and regulatory-network steps create and
-use external R and Python environments. Run the chunks interactively in order
-when reproducing the analysis locally.
+The website executes preprocessing, marker plots, Slingshot and Monocle3
+trajectories, native C++ velocity, and dynamic-expression fitting on all bundled
+cells. The regulatory-network and database-enrichment extensions below are
+explicitly marked as code-only recipes: they require separately prepared Python
+environments and external resources, and are not results of this page's render.
 
 The goal is a compact, runnable reproduction rather than a one-to-one rebuild
 of every original figure. The workflow keeps the same evidence chain: identify
@@ -57,14 +59,23 @@ questions:
 
 ## Load and Process the Dataset
 
+Prepare Slingshot and Monocle3 before rendering, and use a current `thisutils`
+build that exports `fit_trends`. Older `thisutils` builds may carry the same
+version number but lack that API; the read-only preflight below detects this.
+
 Start from the package object and run the standard single-cell preprocessing
 workflow. This creates normalized expression, variable features, scaled data,
 PCA, neighbor graph, clustering, and UMAP coordinates.
 
 ```{r preprocess}
 library(scop)
+stopifnot(all(unlist(check_r("slingshot", install = FALSE, verbose = FALSE))),
+          all(unlist(check_r("cole-trapnell-lab/monocle3", install = FALSE, verbose = FALSE))),
+          "fit_trends" %in% getNamespaceExports("thisutils"))
+set.seed(11)
 
 data(pancreas_sub)
+input_cells <- colnames(pancreas_sub)
 
 pancreas_sub <- RunStandardWorkflow(
   pancreas_sub,
@@ -72,10 +83,13 @@ pancreas_sub <- RunStandardWorkflow(
   nHVF = 2000,
   linear_reduction_dims = 50,
   cluster_resolution = 0.6,
+  seed = 11, cores = 1,
   verbose = FALSE
 )
 
-pancreas_sub <- RunCellQC(pancreas_sub)
+pancreas_sub <- RunCellQC(pancreas_sub, assay = "RNA",
+  qc_metrics = c("umi", "gene", "mito"), return_filtered = FALSE, verbose = FALSE)
+stopifnot(identical(colnames(pancreas_sub), input_cells))
 
 data.frame(
   genes = nrow(pancreas_sub),
@@ -145,7 +159,8 @@ pancreas_sub <- RunSlingshot(
   group.by = "SubCellType",
   reduction = "UMAP",
   start = "Ductal",
-  end = c("Alpha", "Beta")
+  end = c("Alpha", "Beta"),
+  show_plot = FALSE, seed = 11
 )
 
 CellDimPlot(
@@ -187,7 +202,8 @@ FeatureDimPlot(
 
 ## Add RNA Velocity
 
-RNA velocity adds a local direction field on the same embedding. This is useful
+This example explicitly uses SCOP's native C++ velocity backend, not a Python
+scVelo run. RNA velocity adds a local direction field on the same embedding. This is useful
 for checking whether the inferred flow points from ductal and progenitor states
 toward endocrine states.
 
@@ -197,6 +213,7 @@ pancreas_sub <- RunSCVELO(
   group.by = "SubCellType",
   linear_reduction = "PCA",
   nonlinear_reduction = "UMAP",
+  backend = "cpp", cores = 1, show_plot = FALSE,
   verbose = FALSE
 )
 
@@ -211,21 +228,17 @@ VelocityPlot(
 ## Detect Dynamic Genes Along Lineages
 
 Dynamic genes connect the trajectory geometry to interpretable gene programs.
-The heatmap is split along the two lineages and annotated with pathway terms and
-feature classes.
+The heatmap is split along the two lineages. The 200 candidate genes are a
+declared feature-selection step; no cells are subsampled. This executed plot
+shows expression patterns without external pathway or feature-class annotation.
 
-```{r dynamic-features, fig.width=9, fig.height=8}
+```{r dynamic-features, fig.width=12, fig.height=14}
 pancreas_sub <- RunDynamicFeatures(
   pancreas_sub,
   lineages = c("Lineage1", "Lineage2"),
   n_candidates = 200
 )
 
-pancreas_sub <- AnnotateFeatures(
-  pancreas_sub,
-  species = "Mus_musculus",
-  db = c("TF", "CSPA")
-)
 
 ht_dynamic <- DynamicHeatmap(
   pancreas_sub,
@@ -235,17 +248,23 @@ ht_dynamic <- DynamicHeatmap(
   reverse_ht = "Lineage1",
   species = "Mus_musculus",
   db = "GO_BP",
-  anno_terms = TRUE,
+  anno_terms = FALSE,
   anno_keys = FALSE,
   anno_features = FALSE,
   heatmap_palette = "viridis",
-  cell_annotation = "SubCellType",
-  feature_annotation = c("TF", "CSPA")
+  cell_annotation = "SubCellType"
 )
 print(ht_dynamic$plot)
 ```
 
-## Infer TF Links and Regulatory Activity
+## Optional regulatory and enrichment recipes (not executed)
+
+The following code-only sections require additional environments and databases.
+No SCENIC, GRNBoost2, enrichment or scExplorer results are claimed by this render.
+For an executed differential-expression example, see the
+[differential and enrichment workflow](differential-enrichment-workflow.html).
+
+### Infer TF Links and Regulatory Activity
 
 The reproduction then moves from dynamic genes to regulatory hypotheses. Use a
 focused set of pancreatic-development TFs as candidate regulators and combine
@@ -253,7 +272,7 @@ them with marker genes and highly variable genes as targets. This keeps the
 example small while preserving the key regulators expected in endocrine
 differentiation.
 
-```{r tf-and-target-sets}
+```{r tf-and-target-sets, eval=FALSE}
 pancreas_tfs <- c(
   "Sox9", "Neurog3", "Neurod1", "Fev", "Pdx1", "Nkx2-2", "Pax4",
   "Arx", "Mafb", "Mafa", "Rfx6", "Isl1", "Insm1"
@@ -278,7 +297,7 @@ Run GRNBoost2 first to inspect direct TF-target edges. The table is useful for
 checking which TFs are connected to hormone genes or progenitor-state markers
 before regulon scoring.
 
-```{r grnboost2}
+```{r grnboost2, eval=FALSE}
 grn_edges <- RunGRNBoost2(
   pancreas_sub,
   regulators = pancreas_tfs,
@@ -301,7 +320,7 @@ within each single cell's expression ranking, yielding a per-cell Regulon Activi
 Score (RAS) matrix stored in the `scenic` assay. The reference files are cached by
 `scop`; the first run may download the mouse cisTarget resources.
 
-```{r scenic-run}
+```{r scenic-run, eval=FALSE}
 scenic_dir <- file.path(tempdir(), "scop_pancreas_scenic")
 
 pancreas_sub <- RunSCENIC(
@@ -330,7 +349,7 @@ Rank regulons by cell-state specificity using the Regulon Specificity Score
 (RSS, calculated from the cell-by-regulon RAS matrix) and keep the top regulons
 for heatmaps and network plots.
 
-```{r scenic-rss-rank, fig.width=9, fig.height=6}
+```{r scenic-rss-rank, eval=FALSE, fig.width=9, fig.height=6}
 scenic_rss <- SCENICPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -342,7 +361,7 @@ scenic_rss <- SCENICPlot(
 print_scop_plot(scenic_rss)
 ```
 
-```{r scenic-top-regulons}
+```{r scenic-top-regulons, eval=FALSE}
 top_regulons <- unique(scenic_rss$top_table$regulon)
 top_tfs <- unique(scenic_rss$top_table$TF)
 
@@ -355,7 +374,7 @@ data.frame(
 )
 ```
 
-```{r scenic-heatmaps, fig.width=8, fig.height=7}
+```{r scenic-heatmaps, eval=FALSE, fig.width=8, fig.height=7}
 scenic_rss_heatmap <- SCENICPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -373,7 +392,7 @@ The `rss_heatmap` above illustrates cluster-level specificity (RSS), while
 `activity_heatmap` visualizes cellular Regulon Activity Scores (RAS) across
 cell types for comparison.
 
-```{r scenic-activity-heatmap, fig.width=8, fig.height=7}
+```{r scenic-activity-heatmap, eval=FALSE, fig.width=8, fig.height=7}
 scenic_activity_heatmap <- SCENICPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -387,7 +406,7 @@ scenic_activity_heatmap <- SCENICPlot(
 print_scop_plot(scenic_activity_heatmap)
 ```
 
-```{r scenic-network, fig.width=9, fig.height=7}
+```{r scenic-network, eval=FALSE, fig.width=9, fig.height=7}
 scenic_network <- SCENICPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -399,7 +418,7 @@ scenic_network <- SCENICPlot(
 print_scop_plot(scenic_network)
 ```
 
-```{r scenic-target-bar, fig.width=9, fig.height=5}
+```{r scenic-target-bar, eval=FALSE, fig.width=9, fig.height=5}
 scenic_targets <- SCENICPlot(
   pancreas_sub,
   group.by = "SubCellType",
@@ -417,7 +436,7 @@ should be interpreted together with the trajectory and TF analyses: dynamic
 genes show when programs change, while DE and enrichment show which programs
 separate annotated states.
 
-```{r differential-and-enrichment, fig.width=10, fig.height=7}
+```{r differential-and-enrichment, eval=FALSE, fig.width=10, fig.height=7}
 pancreas_sub <- RunDEtest(
   pancreas_sub,
   group.by = "CellType",
@@ -479,7 +498,7 @@ terms selected for each cell-state comparison; `GO_BP` is the database label,
 not one specific pathway term. The specific enriched terms are summarized in the
 bar plot below.
 
-```{r enrichment-plot, fig.width=8, fig.height=5}
+```{r enrichment-plot, eval=FALSE, fig.width=8, fig.height=5}
 EnrichmentPlot(
   pancreas_sub,
   group.by = "CellType",
@@ -494,7 +513,7 @@ The final object contains the upstream preprocessing state, trajectory metadata,
 velocity output, dynamic genes, SCENIC regulon activity (RAS), differential genes, and
 enrichment results. Export it for interactive review in SCExplorer.
 
-```{r export-scexplorer}
+```{r export-scexplorer, eval=FALSE}
 scexplorer_dir <- file.path(tempdir(), "SCExplorer_pancreas_reproduction")
 
 PrepareSCExplorer(
