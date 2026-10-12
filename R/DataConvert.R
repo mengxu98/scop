@@ -96,13 +96,8 @@ srt_to_adata <- function(
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
   if (isTRUE(prepare_env) && !isTRUE(getOption("scop_skip_python_prepare", FALSE))) {
-    old_log_verbose <- getOption("log_message.verbose", TRUE)
     if (!isTRUE(verbose)) {
-      options(log_message.verbose = FALSE)
-      on.exit(
-        options(log_message.verbose = old_log_verbose),
-        add = TRUE
-      )
+      thisutils::local_verbose(FALSE)
     }
     PrepareEnv(modules = "scanpy")
     check_python(
@@ -460,13 +455,8 @@ srt_to_h5ad <- function(
   srt = NULL
 ) {
   srt <- resolve_deprecated_srt(object, srt, missing(object))
-  old_log_verbose <- getOption("log_message.verbose", TRUE)
   if (!isTRUE(verbose)) {
-    options(log_message.verbose = FALSE)
-    on.exit(
-      options(log_message.verbose = old_log_verbose),
-      add = TRUE
-    )
+    thisutils::local_verbose(FALSE)
   }
 
   path <- normalizePath(path.expand(path), mustWork = FALSE, winslash = "/")
@@ -549,13 +539,8 @@ adata_to_srt <- function(
   verbose = TRUE
 ) {
   if (isTRUE(prepare_env) && !isTRUE(getOption("scop_skip_python_prepare", FALSE))) {
-    old_log_verbose <- getOption("log_message.verbose", TRUE)
     if (!isTRUE(verbose)) {
-      options(log_message.verbose = FALSE)
-      on.exit(
-        options(log_message.verbose = old_log_verbose),
-        add = TRUE
-      )
+      thisutils::local_verbose(FALSE)
     }
     PrepareEnv(modules = "scanpy")
   }
@@ -830,13 +815,8 @@ h5ad_to_srt <- function(
   verbose = TRUE,
   prepare_for_reticulate = TRUE
 ) {
-  old_log_verbose <- getOption("log_message.verbose", TRUE)
   if (!isTRUE(verbose)) {
-    options(log_message.verbose = FALSE)
-    on.exit(
-      options(log_message.verbose = old_log_verbose),
-      add = TRUE
-    )
+    thisutils::local_verbose(FALSE)
   }
   PrepareEnv(modules = "scanpy")
   if (isTRUE(prepare_for_reticulate)) {
@@ -927,13 +907,8 @@ loom_to_adata <- function(
   verbose = TRUE,
   ...
 ) {
-  old_log_verbose <- getOption("log_message.verbose", TRUE)
   if (!isTRUE(verbose)) {
-    options(log_message.verbose = FALSE)
-    on.exit(
-      options(log_message.verbose = old_log_verbose),
-      add = TRUE
-    )
+    thisutils::local_verbose(FALSE)
   }
   PrepareEnv(modules = "scanpy")
   check_python(
@@ -998,13 +973,8 @@ loom_to_srt <- function(
   verbose = TRUE,
   chunk_rows = 1000
 ) {
-  old_log_verbose <- getOption("log_message.verbose", TRUE)
   if (!isTRUE(verbose)) {
-    options(log_message.verbose = FALSE)
-    on.exit(
-      options(log_message.verbose = old_log_verbose),
-      add = TRUE
-    )
+    thisutils::local_verbose(FALSE)
   }
   check_r("rhdf5", verbose = FALSE)
 
