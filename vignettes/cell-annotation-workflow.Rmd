@@ -3,182 +3,267 @@ title: "Cell annotation workflow"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = TRUE,
-  fig.align = "center",
-  dpi = 144,
-  out.width = "92%"
-)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", error = FALSE, message = FALSE,
+                      fig.align = "center", fig.width = 12, fig.height = 8, dpi = 144, out.width = "100%")
 ```
 
-This article shows how to annotate query cells in `scop` using reference
-single-cell data, bulk-like reference profiles, and correlation-based summaries.
-The goal is to make annotation evidence explicit instead of treating transferred
-labels as final truth.
+## What you will do
 
-Use this workflow after the query object has passed basic preprocessing and
-quality control.
+**Question:** which reference cell types resemble each query cell, and where is
+that assignment uncertain? You will transfer labels, compare them with held-out
+annotations, inspect marker expression and save the prediction evidence.
 
-Annotation in this article means evidence-backed label assignment. Projection,
-nearest-neighbor prediction, and correlation heatmaps answer related but
-different questions, so the transferred label should not be treated as final
-until it agrees with marker expression and expected biology.
+The example uses all 1,600 cells of the bundled human `panc8_sub` object. Every
+`celseq2` cell is a query; every other technology is reference. This is a
+technology-defined holdout, with no random sampling and no shared cells.
+It illustrates transfer within one tissue/species, not a validated classifier
+for arbitrary tissue. The original package dataset is itself a study subset.
 
-## Prepare Query and Reference Objects
+The old human-to-mouse capitalization shortcut is intentionally avoided:
+changing letter case is not ortholog mapping. For cross-species work, prepare
+and report a versioned ortholog table first, resolving one-to-many mappings.
 
-The query is the bundled mouse pancreas subset. The reference is the bundled
-human pancreas integration subset, which has a `celltype` annotation and an
-integrated embedding.
+## Prepare disjoint query and reference inputs
 
 ```{r prepare-query-reference}
 library(scop)
-
-data(pancreas_sub)
+set.seed(11)
 data(panc8_sub)
-
-pancreas_sub <- RunStandardWorkflow(pancreas_sub, verbose = FALSE)
-panc8_sub <- RunIntegration(
-  srt_merge = panc8_sub,
-  batch = "tech",
-  integration_methods = "Harmony"
+stopifnot(!anyNA(panc8_sub$tech), !anyNA(panc8_sub$celltype))
+query_ids <- colnames(panc8_sub)[panc8_sub$tech == "celseq2"]
+reference_ids <- setdiff(colnames(panc8_sub), query_ids)
+stopifnot(length(intersect(query_ids, reference_ids)) == 0,
+          length(query_ids) + length(reference_ids) == ncol(panc8_sub))
+query <- panc8_sub[, query_ids]
+reference <- panc8_sub[, reference_ids]
+query <- RunStandardWorkflow(query, assay = "RNA", seed = 11, cores = 1,
+                             verbose = FALSE)
+reference <- RunStandardWorkflow(reference, assay = "RNA", seed = 11, cores = 1,
+                                 verbose = FALSE)
+query$heldout_label <- query$celltype
+shared_features <- intersect(SeuratObject::VariableFeatures(query),
+                             SeuratObject::VariableFeatures(reference))
+stopifnot(length(shared_features) > 30)
+data.frame(input = c("query", "reference"),
+           cells = c(ncol(query), ncol(reference)),
+           species = "Homo sapiens")
+table(reference$celltype)
+setdiff(unique(query$heldout_label), unique(reference$celltype))
+length(shared_features)
+label_colors <- stats::setNames(
+  grDevices::hcl.colors(length(unique(reference$celltype)), "Dark 3"),
+  sort(unique(as.character(reference$celltype)))
 )
 ```
 
-When query and reference use different gene-name conventions, standardize names
-before mapping. Keep the name conversion explicit so that annotation results can
-be traced later.
-The example converts human reference symbols into a mouse-like capitalization
-style because the query object is mouse. In real analyses, use the species and
-ortholog mapping appropriate for the experiment rather than relying on simple
-capitalization.
+The final check prints query labels absent from the reference, if any. Such
+states cannot be correctly named by closed-reference label transfer. Reference
+labels and highly variable genes are model inputs; held-out query labels are
+used only for evaluation. Neither UMAP appearance nor prediction scores prove
+cell identity.
 
-```{r rename-features}
-genenames <- make.unique(
-  thisutils::capitalize(
-    rownames(panc8_sub[["RNA"]]),
-    force_tolower = TRUE
-  )
-)
-names(genenames) <- rownames(panc8_sub)
+## Predict from individual reference cells
 
-panc8_rename <- RenameFeatures(
-  panc8_sub,
-  newnames = genenames,
-  assays = "RNA"
-)
-```
-
-## Project Query Cells Onto a Reference
-
-Use projection when the reference has a trusted embedding and you want to see
-where query cells land in that reference coordinate system.
-
-```{r projection}
-srt_query <- RunKNNMap(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_rename,
-  ref_umap = "HarmonyUMAP2D"
-)
-
-ProjectionPlot(
-  srt_query = srt_query,
-  srt_ref = panc8_rename,
-  query_group = "SubCellType",
-  ref_group = "celltype",
-  ref_param = list(
-    xlab = "UMAP_1",
-    ylab = "UMAP_2"
-  )
-)
-```
-
-Projection is evidence for similarity, not a replacement for marker validation.
-Use it together with marker plots and group-level summaries.
-Cells landing near a reference group indicate transcriptional similarity in the
-reference embedding. They do not prove identity when the reference lacks the
-state, contains batch effects, or uses a broader label vocabulary than the
-query.
-
-## Predict Labels From a Bulk-Like Reference
-
-Use `RunKNNPredict()` with a bulk-like reference when reference profiles are
-available but not individual reference cells.
-
-```{r bulk-reference}
-data(ref_scMCA)
-
-pancreas_sub <- RunKNNPredict(
-  srt_query = pancreas_sub,
-  bulk_ref = ref_scMCA,
-  filter_lowfreq = 20
-)
-
-CellDimPlot(
-  pancreas_sub,
-  group.by = "KNNPredict_classification",
-  reduction = "UMAP",
-  label = TRUE
-)
-```
-
-Bulk-like references are useful for broad labels. They are less reliable for
-substates that depend on local single-cell neighborhoods.
-The `KNNPredict_classification` column is therefore best read as a suggested
-label source. Keep it separate from curated annotations until discordant groups
-have been reviewed.
-
-## Predict Labels From a Single-Cell Reference
-
-Use a single-cell reference when the reference annotation and query biology are
-close enough for nearest-neighbor transfer.
+`ref_collapsing = FALSE` explicitly uses individual reference cells; the
+default collapses reference groups to averages. The prefix keeps these labels
+separate from the next method and from the original annotations.
 
 ```{r single-cell-reference}
-pancreas_sub <- RunKNNPredict(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_rename,
-  ref_group = "celltype",
-  filter_lowfreq = 20
+query <- RunKNNPredict(
+  srt_query = query, srt_ref = reference, ref_group = "celltype",
+  query_assay = "RNA", ref_assay = "RNA", features = shared_features,
+  ref_collapsing = FALSE, k = 30, filter_lowfreq = 0,
+  prefix = "CellKNN", verbose = FALSE
 )
-
-CellDimPlot(
-  pancreas_sub,
-  group.by = "KNNPredict_classification",
-  reduction = "UMAP",
-  label = TRUE
-)
+stopifnot(identical(colnames(query), query_ids),
+          "CellKNN_classification" %in% colnames(query@meta.data))
+table(observed = query$heldout_label, predicted = query$CellKNN_classification)
+CellDimPlot(query, group.by = c("heldout_label", "CellKNN_classification"),
+            reduction = "UMAP", label = FALSE, theme_use = "theme_blank",
+            palcolor = label_colors)
 ```
 
-Check group-level similarity before accepting labels. A correlation heatmap can
-show whether query labels map cleanly to expected reference labels or split
-across several alternatives.
-Rows in this heatmap are query groups and columns are reference groups. High
-correlation to one reference label supports a clear annotation; similar
-correlation to multiple labels flags ambiguity.
+Read the contingency table row by row. A strong diagonal supports agreement
+with the supplied labels; off-diagonal entries identify cells to inspect.
+Agreement is descriptive here, because labels come from related pancreas data.
+`filter_lowfreq = 0` preserves rare predictions so their uncertainty is visible;
+it does not discard rare cells or relabel a failed transfer as correct.
+
+## Compare with bulk-like reference profiles
+
+These are average expression profiles derived from the same reference cells,
+not an independent bulk experiment. They test the effect of reference
+aggregation. `AverageExpression(..., layer = "data")` averages expression on
+its unlogged scale, so we explicitly apply `log1p()` afterward to match the
+query RNA `data` layer. Each column is a named reference cell type. `k = 1`
+selects the nearest profile; 30 cell neighbors and one group profile are
+different models, not a controlled change in only one parameter.
+
+```{r bulk-reference}
+profiles <- Seurat::AverageExpression(reference, assays = "RNA", layer = "data",
+                                      group.by = "celltype", verbose = FALSE)$RNA
+profiles <- log1p(profiles)
+query <- RunKNNPredict(
+  srt_query = query, bulk_ref = profiles,
+  query_assay = "RNA", features = shared_features,
+  k = 1, filter_lowfreq = 0, prefix = "ProfileKNN", verbose = FALSE
+)
+table(cell_reference = query$CellKNN_classification,
+      profile_reference = query$ProfileKNN_classification)
+names(query@tools)
+CellDimPlot(query, group.by = "ProfileKNN_classification", reduction = "UMAP",
+            theme_use = "theme_blank", palcolor = label_colors)
+comparison <- data.frame(
+  method = c("30 individual neighbors", "1 log-scale mean profile"),
+  cells = ncol(query),
+  matches_supplied_label = c(sum(query$heldout_label == query$CellKNN_classification),
+                            sum(query$heldout_label == query$ProfileKNN_classification))
+)
+comparison$agreement <- comparison$matches_supplied_label / comparison$cells
+comparison
+```
+
+Both prediction columns remain in the object. Different answers are a reason
+to inspect neighbors and markers, not a reason to silently replace one label.
+Scores are similarity/vote evidence, not calibrated clinical probabilities.
+
+## Project onto the reference and inspect markers
+
+Projection places query cells in the reference's coordinate system. We request
+`projection_method = "knn"` explicitly: this is neighbor-weighted projection,
+not a newly learned joint embedding or evidence of successful batch correction.
+
+```{r projection}
+ref_umap <- DefaultReduction(reference, pattern = "UMAP")
+query <- RunKNNMap(srt_query = query, srt_ref = reference,
+                   features = shared_features, ref_umap = ref_umap,
+                   projection_method = "knn", verbose = FALSE)
+ProjectionPlot(srt_query = query, srt_ref = reference,
+                query_group = "CellKNN_classification", ref_group = "celltype",
+                query_param = list(palcolor = label_colors, cells.highlight = TRUE),
+                ref_param = list(palcolor = label_colors))
+markers <- c("INS", "GCG", "SST", "KRT19")
+data.frame(marker = markers, present = markers %in% rownames(query))
+FeatureDimPlot(query, features = intersect(markers, rownames(query)),
+                reduction = "UMAP", ncol = 2)
+```
+
+INS, GCG, SST and KRT19 provide marker checks for beta, alpha, delta and ductal
+labels, respectively. INS is absent from this feature-filtered package input,
+so the receipt records it as unavailable and the plot cannot assess that gene.
+Absence from the matrix is different from measured zero expression. Check
+multiple markers per state on your own data;
+ambient RNA and mixed cells can create misleading single-marker signals.
 
 ```{r correlation-heatmap}
 ht <- CellCorHeatmap(
-  srt_query = pancreas_sub,
-  srt_ref = panc8_rename,
-  query_group = "SubCellType",
-  ref_group = "celltype",
-  nlabel = 3,
-  label_by = "row",
-  show_row_names = TRUE,
-  show_column_names = TRUE
+  srt_query = query, srt_ref = reference,
+  query_group = "heldout_label", ref_group = "celltype",
+  features = shared_features, nlabel = 1, label_by = "row", label_size = 8,
+  show_row_names = TRUE, show_column_names = TRUE
 )
 print(ht$plot)
 ```
+
+This is group-level expression similarity. Similar support for several
+reference labels flags ambiguity; these groups should remain under review.
+
+## Save, reload, and check the hand-off
+
+The build uses a temporary directory so repeated rendering cannot overwrite a
+previous analysis. For your work, replace it with a new persistent output folder.
+Save the object **and** plain-text metadata; a figure alone cannot reproduce the
+analysis. No cells are sampled for this export.
+
+```{r export-reload}
+output_dir <- file.path(tempdir(), "cell-annotation-workflow")
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+result_file <- file.path(output_dir, "analysis.rds")
+saveRDS(query, result_file)
+reference_file <- file.path(output_dir, "reference.rds")
+saveRDS(reference, reference_file)
+utils::write.csv(as.matrix(profiles), file.path(output_dir, "log-scale-reference-profiles.csv"))
+writeLines(shared_features, file.path(output_dir, "shared-prediction-features.txt"))
+utils::write.csv(comparison, file.path(output_dir, "prediction-agreement.csv"), row.names = FALSE)
+utils::write.csv(query@meta.data, file.path(output_dir, "cell-metadata.csv"))
+reloaded <- readRDS(result_file)
+reloaded_reference <- readRDS(reference_file)
+stopifnot(identical(colnames(reloaded_reference), reference_ids),
+          identical(reloaded_reference@meta.data, reference@meta.data))
+stopifnot(identical(colnames(reloaded), colnames(query)),
+          identical(reloaded@meta.data, query@meta.data),
+          identical(SeuratObject::Reductions(reloaded),
+                    SeuratObject::Reductions(query)))
+data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
+           bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
+```
+
+## Use your own data and recover common errors
+
+- Replace the `data(...)` input with `readRDS("your-object.rds")`, or create a
+  Seurat object from a gene-by-cell raw-count matrix. Check that cell IDs are
+  unique and metadata row names equal the expression column names.
+- Set the assay and grouping columns explicitly. Species, gene identifiers and
+  reference labels must match your experiment; do not copy pancreas labels to
+  unrelated tissue.
+- If a reduction or metadata column is missing, inspect
+  `SeuratObject::Reductions(object)` and `colnames(object@meta.data)`, then run
+  its producer chunk. A plot does not create the result it needs.
+- If a dependency is unavailable, install it in the analysis environment,
+  restart R and rerun from the input chunk. A skipped or failed method is not
+  evidence that it worked. Preserve warnings and the exact error in your report.
+
+## Build and analysis provenance
+
+The receipt records the R seed. Python methods retain their documented backend
+seeds and parameters; setting the R seed alone does not control every backend.
+Package versions, BLAS libraries and backend changes can alter numerical results. Keep
+this receipt with the exported object. It describes this page's actual render.
+
+```{r provenance}
+source_revision <- Sys.getenv("GITHUB_SHA")
+if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
+  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
+                                      stderr = FALSE)[1], error = function(e) NA_character_)
+}
+article_source <- knitr::current_input(dir = TRUE)
+build_receipt <- data.frame(
+  article = "cell-annotation-workflow",
+  built_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
+  scop = as.character(utils::packageVersion("scop")),
+  R = as.character(getRversion()),
+  source_revision = source_revision,
+  source_has_local_changes = if (nzchar(Sys.which("git")))
+    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0 else NA,
+  article_md5 = unname(tools::md5sum(article_source)),
+  R_seed = 11,
+  cells_retained = ncol(query),
+  genes_in_active_assay = nrow(query),
+  stringsAsFactors = FALSE
+)
+build_receipt
+utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
+                 row.names = FALSE)
+writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
+```
+
+<details>
+<summary>Show the complete R session used for this page</summary>
+
+```{r session-info}
+sessionInfo()
+```
+
+</details>
 
 ## What to Report
 
 A compact annotation report should include:
 
-- the query object, reference object, and gene-name conversion strategy;
+- the disjoint query/reference cells, species, feature set and any ortholog mapping;
 - the reference label column and embedding used for projection;
 - whether labels came from bulk-like profiles or single-cell neighbors;
-- filtering thresholds such as `filter_lowfreq`;
+- neighbor count and filtering thresholds such as `filter_lowfreq`;
 - projection plots, predicted label plots, and marker-gene checks;
 - ambiguous groups where several labels have similar support.
 

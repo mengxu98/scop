@@ -33,27 +33,30 @@ navbar:
       href: reference/index.html
 
 articles:
-- title: Basic workflows
-  navbar: Basic workflows
+- title: Start with your data
+  navbar: Start here
   contents:
   - single-cell-main-workflow
-  - reproduce-pancreatic-endocrinogenesis
+  - spatial-main-workflow
+- title: Compare batches and transfer labels
+  navbar: Compare and annotate
+  contents:
   - integration-workflow
+  - integration-benchmark-workflow
   - cell-annotation-workflow
+- title: Explain cell states and changing programs
+  navbar: Interpret cell states
+  contents:
+  - differential-enrichment-workflow
   - trajectory-dynamic-workflow
   - cellrank-palantir-fate-workflow
-  - differential-enrichment-workflow
-- title: Benchmark workflows
-  navbar: Benchmark workflows
+  - reproduce-pancreatic-endocrinogenesis
+- title: Import and extend spatial analyses
+  navbar: Spatial methods
   contents:
-  - integration-benchmark-workflow
-  - spatial-benchmark-workflow
-- title: Spatial Analysis
-  navbar: Spatial Analysis
-  contents:
-  - spatial-main-workflow
   - spatial-platform-workflows
   - spatial-framework-bridges
+  - spatial-benchmark-workflow
 
 reference:
 - subtitle: "Single-cell and Spatial omics analysis pipeline"

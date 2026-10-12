@@ -47,9 +47,21 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::pkgdown, local::.
+          extra-packages: |
+            any::pkgdown
+            local::.
+            github::immunogenomics/harmony@df19af23ae0639bd6ea2da63898f973f08c85862
           needs: website
           cache: false
+
+      - name: Verify pinned Harmony source
+        shell: Rscript {0}
+        run: |
+          harmony_source <- utils::packageDescription("harmony")
+          stopifnot(
+            identical(harmony_source$RemoteUsername, "immunogenomics"),
+            identical(harmony_source$RemoteSha, "df19af23ae0639bd6ea2da63898f973f08c85862")
+          )
 
       - name: Save R package cache 💾
         uses: actions/cache/save@v5

@@ -669,3 +669,12 @@ test_that("RunBayesSpace rejects missing cluster labels before mutation", {
   })
   expect_identical(srt[[]], metadata_before)
 })
+
+test_that("BayesSpace metadata views retain subset and rename compatibility", {
+  skip_if_not_installed("SingleCellExperiment")
+  with_mock_bayesspace(mock_bayesspace_complete, {
+    out <- suppressWarnings(RunBayesSpace(make_bayesspace_object(), q = 2, preprocess = FALSE,
+      store_sce = FALSE, cluster_colname = "cell", verbose = FALSE))
+  })
+  expect_spatial_result_lifecycle(out, "BayesSpace", "cell")
+})

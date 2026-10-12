@@ -213,3 +213,67 @@ test_that("PRECAST receives selected features and its SelectModel object argumen
   expect_identical(out$backend_parameters$adj_params$type, "fixed_number")
   expect_equal(out$adjacency_summary, c(S1 = 6, S2 = 6))
 })
+
+test_that("PRECAST accessor counts describe current assignments and preserve raw fits", {
+  for (store_object in c(TRUE, FALSE)) {
+    mock_spatial_integration_backend({
+      out <- RunSpatialIntegration(make_spatial_integration_seurat(), sample.by = "sample",
+        assay = "RNA", layer = "counts", coord.cols = c("col", "row"),
+        cluster_colname = "custom_domains", tool_name = "custom_integration",
+        store_object = store_object, verbose = FALSE)
+    })
+    expect_spatial_result_lifecycle(out, "custom_integration", "custom_domains", integration = TRUE)
+    expect_identical(GetSpatialResult(out, "PRECAST"), GetSpatialResult(out, "custom_integration"))
+    legacy <- out
+    legacy@tools$custom_integration$result_index <- NULL
+    legacy@tools$custom_integration$methods$PRECAST$result_index <- NULL
+    current <- subset(legacy, cells = c("Spot1", "Spot4"))
+    result <- GetSpatialResult(current, "custom_integration")
+    expect_equal(result$summary$n_cells, 2L)
+    expect_equal(result$summary$samples$count, c(1L, 1L))
+    expect_equal(current@tools$custom_integration$summary$n_cells, 6L)
+    current$sample <- NULL
+    expect_null(GetSpatialResult(current, "custom_integration")$summary$samples)
+    ambiguous <- out
+    ambiguous@tools$other <- out@tools$custom_integration
+    expect_error(GetSpatialResult(ambiguous, "PRECAST"), "Multiple stored results")
+  }
+  mock_spatial_integration_backend({
+    named_banksy <- RunSpatialIntegration(make_spatial_integration_seurat(), sample.by = "sample",
+      assay = "RNA", layer = "counts", coord.cols = c("col", "row"),
+      tool_name = "BANKSY", verbose = FALSE)
+  })
+  expect_identical(GetSpatialResult(named_banksy, "BANKSY"), GetSpatialResult(named_banksy, "PRECAST"))
+  expect_equal(GetSpatialResult(named_banksy, "BANKSY")$summary$n_cells, 6L)
+})
+
+test_that("PRECAST excludes unfitted zero-count spots from current count summaries", {
+  input <- make_spatial_integration_seurat()
+  counts <- Seurat::GetAssayData(input, layer = "counts")
+  counts[, "Spot1"] <- 0
+  input <- Seurat::CreateSeuratObject(counts, meta.data = input[[]])
+  mock_spatial_integration_backend({
+    out <- RunSpatialIntegration(input, sample.by = "sample", assay = "RNA",
+      layer = "counts", coord.cols = c("col", "row"), verbose = FALSE)
+  })
+  before <- out@tools
+  result <- GetSpatialResult(out, "PRECAST")
+  expect_equal(result$summary$n_cells, 5L)
+  expect_identical(rownames(result$clusters), colnames(out)[-1])
+  expect_equal(sum(result$summary$samples$count), 5L)
+  empty <- GetSpatialResult(out[, "Spot1"], "SpatialIntegration")
+  expect_equal(nrow(empty$clusters), 0L)
+  expect_equal(empty$summary$n_cells, 0L)
+  expect_equal(sum(empty$summary$domains$count), 0L)
+  expect_equal(sum(empty$summary$samples$count), 0L)
+  expect_identical(out@tools, before)
+  legacy <- out
+  legacy@tools$SpatialIntegration$result_index <- NULL
+  legacy@tools$SpatialIntegration$methods$PRECAST$result_index <- NULL
+  legacy <- SeuratObject::RenameCells(legacy, new.names = rev(colnames(legacy)))
+  result <- GetSpatialResult(legacy, "PRECAST")
+  expect_equal(result$summary$n_cells, 5L)
+  assigned <- as.character(legacy$SpatialIntegration_PRECAST_domain)
+  expect_identical(result$clusters$SpatialIntegration_PRECAST_domain,
+    unname(assigned[!is.na(assigned)]))
+})

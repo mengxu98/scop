@@ -31,6 +31,12 @@
 #' names for RareQ clusters, Q values, cluster sizes, and rare-cluster flags.
 #' @param tool_name Name of the `srt@tools` entry.
 #'
+#' @details
+#' Stored results retain a private per-cell identity metadata column for
+#' [GetSpatialResult()]. Preserve this column when subsetting or renaming cells.
+#' The accessor returns current-cell assignments; stored native results and
+#' fit parameters remain unchanged.
+#'
 #' @return A `Seurat` object with RareQ results in metadata and
 #' `srt@tools[[tool_name]]`.
 #' @export
@@ -179,6 +185,9 @@ RunRareQ <- function(
     )
   }
 
+  previous_index <- srt@tools[[tool_name]]$result_index
+  spatial_check_identity_columns(srt, tool_name,
+    c(cluster_colname, q_colname, size_colname, rare_colname))
   check_r("fabotao/RareQ", verbose = FALSE)
 
   assay <- assay %||% SeuratObject::DefaultAssay(srt)
@@ -375,6 +384,11 @@ RunRareQ <- function(
       rare_colname = rare_colname
     )
   )
+
+  srt@tools[[tool_name]]$result_index <- list(method = "RareQ",
+    cluster_colname = cluster_colname, cells = names(clusters))
+  srt <- spatial_record_cell_identity(srt, tool_name, previous_index,
+    protected_columns = c(q_colname, size_colname, rare_colname))
 
   SeuratObject::DefaultAssay(srt) <- old_assay
   log_message(

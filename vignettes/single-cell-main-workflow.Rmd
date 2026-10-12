@@ -7,26 +7,27 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   eval = TRUE,
+  error = FALSE,
+  message = FALSE,
   fig.align = "center",
+  fig.width = 12, fig.height = 8,
   dpi = 144,
-  out.width = "92%"
+  out.width = "100%"
 )
 ```
 
-This article shows the recommended first-pass workflow for a single-cell Seurat
-object in `scop`. It starts from a count matrix stored in a Seurat object, runs
-the standard preprocessing workflow, checks cell-level quality, and creates the
-basic embedding, feature, and group-level plots used before choosing more
-specialized downstream methods.
+## What you will do
 
-Use this workflow as the default entry point when the goal is to inspect a new
-single-cell dataset. After this pass, branch into integration, annotation,
-trajectory, differential expression, enrichment, or interactive exploration.
+- **Question:** can I trust the input and recognize its main cell states?
+- **Input:** All 1,000 cells and 15,998 supplied genes in the bundled mouse pancreas object. The package dataset is already a subset of the study; this article does not sample it again.
+- **Output:** QC flags, normalized RNA, PCA/UMAP, clusters, marker plots and a reloadable object.
+- **How to run:** start a fresh R session and run the chunks in order. Printed tables and figures below are generated from that run; code-only alternatives are identified explicitly.
 
-This article deliberately stays at the first-pass level. It explains the object
-state that downstream articles assume: which assay is active, which reductions
-exist, which metadata columns can be used for grouping, and where `scop` stores
-method-specific outputs.
+
+
+Start here before integration, annotation, trajectories or pathway analysis.
+The counts and QC tables establish what was measured; marker plots check the
+meaning of labels; the saved object is the input for the specialist articles.
 
 ## Load and Inspect the Object
 
@@ -36,9 +37,16 @@ RNA-velocity examples.
 
 ```{r load-object}
 library(scop)
+set.seed(11)
 
 data(pancreas_sub)
 pancreas_sub
+input_cells <- colnames(pancreas_sub)
+counts <- GetAssayData5(pancreas_sub, assay = "RNA", layer = "counts")
+stopifnot(identical(colnames(counts), rownames(pancreas_sub@meta.data)),
+          !anyDuplicated(colnames(counts)), all(counts@x >= 0))
+data.frame(genes = nrow(counts), cells = ncol(counts),
+           mitochondrial_genes = sum(grepl("^mt-", rownames(counts))))
 ```
 
 Before running a full workflow, check the active assay, available assays,
@@ -67,6 +75,8 @@ pancreas_sub <- RunStandardWorkflow(
   nHVF = 2000,
   linear_reduction_dims = 50,
   cluster_resolution = 0.8,
+  seed = 11,
+  cores = 1,
   verbose = FALSE
 )
 
@@ -86,15 +96,30 @@ claims.
 
 ## Check Cell Quality
 
-Run quality control before interpreting clusters. `RunCellQC()` combines common
-cell-level flags, writes summary columns to metadata, and keeps details under
-the object tools slot.
+Run quality control before interpreting clusters. This first pass measures
+UMIs, detected genes and mitochondrial fraction on the supplied RNA counts.
+It annotates every cell, without silently removing failures. The object is
+already feature-filtered: these totals are not original-library QC.
+Doublet and ambient-RNA models require separate dependencies and are not part
+of this basic receipt. For production data, run QC on the unfiltered count
+assay, justify thresholds and rerun preprocessing after any filtering.
 
 ```{r cell-qc}
-pancreas_sub <- RunCellQC(pancreas_sub)
+pancreas_sub <- RunCellQC(
+  pancreas_sub, assay = "RNA",
+  qc_metrics = c("umi", "gene", "mito"),
+  UMI_threshold = 3000, gene_threshold = 1000, mito_threshold = 20,
+  return_filtered = FALSE, verbose = FALSE
+)
+stopifnot(identical(colnames(pancreas_sub), input_cells))
 
 table(pancreas_sub$CellQC)
 names(pancreas_sub@tools)
+data.frame(
+  criterion = c("umi_qc", "gene_qc", "mito_qc"),
+  failures = vapply(pancreas_sub@meta.data[c("umi_qc", "gene_qc", "mito_qc")],
+                    function(x) sum(x == "Fail", na.rm = TRUE), integer(1))
+)
 ```
 
 Plot the final QC label first, then inspect the individual failure categories
@@ -107,16 +132,19 @@ CellDimPlot(
   reduction = "UMAP"
 )
 
-CellStatPlot(
-  pancreas_sub,
-  stat.by = c(
-    "db_qc", "decontX_qc", "outlier_qc",
-    "umi_qc", "gene_qc", "mito_qc",
-    "ribo_qc", "ribo_mito_ratio_qc", "species_qc"
-  ),
-  plot_type = "upset",
-  stat_level = "Fail"
+qc_failures <- data.frame(
+  metric = c("UMI", "Genes", "Mitochondrial fraction"),
+  failures = vapply(pancreas_sub@meta.data[c("umi_qc", "gene_qc", "mito_qc")],
+                    function(x) sum(x == "Fail", na.rm = TRUE), integer(1))
 )
+ggplot2::ggplot(qc_failures, ggplot2::aes(metric, failures)) +
+  ggplot2::geom_col() +
+  ggplot2::geom_text(ggplot2::aes(label = failures), vjust = -0.5) +
+  ggplot2::scale_y_continuous(limits = c(0, max(1, qc_failures$failures) * 1.1),
+                            breaks = scales::breaks_pretty(n = 4)) +
+  ggplot2::labs(x = NULL, y = "Cells flagged",
+                subtitle = "Zero means no cell failed that criterion") +
+  ggplot2::theme_minimal(base_size = 12)
 ```
 
 ## Plot Cell Groups and Features
@@ -130,7 +158,7 @@ CellDimPlot(
   pancreas_sub,
   group.by = c("CellType", "SubCellType"),
   reduction = "UMAP",
-  label = TRUE
+  label = FALSE, theme_use = "theme_blank"
 )
 
 FeatureDimPlot(
@@ -141,7 +169,8 @@ FeatureDimPlot(
 ```
 
 When several marker genes define related states, `compare_features = TRUE`
-helps identify the dominant feature per cell.
+blends feature-specific colours to show overlapping expression. It does not
+identify the highest-abundance gene or assign a cell type.
 In the pancreas example, `Ins1`, `Gcg`, `Sst`, and `Ghrl` are hormone genes
 used to distinguish beta, alpha, delta, and epsilon endocrine states.
 
@@ -159,8 +188,9 @@ FeatureDimPlot(
 
 Use grouped heatmaps after the embedding looks coherent. This is usually more
 readable than inspecting many feature plots one by one.
-Here the dot layer summarizes the fraction of cells expressing each marker, and
-the heatmap color summarizes average expression by group. A marker should be
+Here dot size summarizes the fraction of cells expressing each marker. Colour
+shows row-standardized group-average expression: compare groups within a gene,
+not absolute expression between genes. A marker should be
 interpreted from both signals: strong average expression in very few cells is
 different from broad expression across a group.
 
@@ -177,13 +207,95 @@ ht <- GroupHeatmap(
   group.by = c("CellType", "SubCellType"),
   heatmap_palette = "Spectral",
   cell_annotation = c("Phase", "G2M_score", "Cdh2"),
-  show_row_names = TRUE,
+  show_row_names = TRUE, nlabel = 0,
   row_names_side = "left",
   add_dot = TRUE,
   add_reticle = TRUE
 )
 print(ht$plot)
 ```
+
+
+
+## Save, reload, and check the hand-off
+
+The build uses a temporary directory so repeated rendering cannot overwrite a
+previous analysis. For your work, replace it with a new persistent output folder.
+Save the object **and** plain-text metadata; a figure alone cannot reproduce the
+analysis. No cells are sampled for this export.
+
+```{r export-reload}
+output_dir <- file.path(tempdir(), "single-cell-main-workflow")
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+result_file <- file.path(output_dir, "analysis.rds")
+saveRDS(pancreas_sub, result_file)
+utils::write.csv(pancreas_sub@meta.data, file.path(output_dir, "cell-metadata.csv"))
+reloaded <- readRDS(result_file)
+stopifnot(identical(colnames(reloaded), colnames(pancreas_sub)),
+          identical(reloaded@meta.data, pancreas_sub@meta.data),
+          identical(SeuratObject::Reductions(reloaded),
+                    SeuratObject::Reductions(pancreas_sub)))
+data.frame(file = basename(list.files(output_dir, full.names = TRUE)),
+           bytes = file.info(list.files(output_dir, full.names = TRUE))$size)
+```
+
+## Use your own data and recover common errors
+
+- Replace the `data(...)` input with `readRDS("your-object.rds")`, or create a
+  Seurat object from a gene-by-cell raw-count matrix. Check that cell IDs are
+  unique and metadata row names equal the expression column names.
+- Set the assay and grouping columns explicitly. Species, gene identifiers and
+  reference labels must match your experiment; do not copy pancreas labels to
+  unrelated tissue.
+- If a reduction or metadata column is missing, inspect
+  `SeuratObject::Reductions(object)` and `colnames(object@meta.data)`, then run
+  its producer chunk. A plot does not create the result it needs.
+- If a dependency is unavailable, install it in the analysis environment,
+  restart R and rerun from the input chunk. A skipped or failed method is not
+  evidence that it worked. Preserve warnings and the exact error in your report.
+
+## Build and analysis provenance
+
+The receipt records the R seed. Python methods retain their documented backend
+seeds and parameters; setting the R seed alone does not control every backend.
+Package versions, BLAS libraries and backend changes can alter numerical results. Keep
+this receipt with the exported object. It describes this page's actual render.
+
+```{r provenance}
+source_revision <- Sys.getenv("GITHUB_SHA")
+if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
+  source_revision <- tryCatch(system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
+                                      stderr = FALSE)[1], error = function(e) NA_character_)
+}
+article_source <- knitr::current_input(dir = TRUE)
+build_receipt <- data.frame(
+  article = "single-cell-main-workflow",
+  built_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
+  scop = as.character(utils::packageVersion("scop")),
+  R = as.character(getRversion()),
+  source_revision = source_revision,
+  source_has_local_changes = if (nzchar(Sys.which("git")))
+    length(system2("git", c("status", "--porcelain"), stdout = TRUE, stderr = FALSE)) > 0 else NA,
+  article_md5 = unname(tools::md5sum(article_source)),
+  R_seed = 11,
+  cells_retained = ncol(pancreas_sub),
+  genes_in_active_assay = nrow(pancreas_sub),
+  stringsAsFactors = FALSE
+)
+build_receipt
+utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"),
+                 row.names = FALSE)
+writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
+```
+
+<details>
+<summary>Show the complete R session used for this page</summary>
+
+```{r session-info}
+sessionInfo()
+```
+
+</details>
 
 ## What to Report
 

@@ -6,6 +6,14 @@
   preserves full selected-assay library depths through analysis-gene selection;
   zero-count filtering still uses the selected shared features.
 
+* **fix**: `GetSpatialResult()` returns current-object cells in their current
+  order and recomputes BANKSY and PRECAST count summaries after subsetting.
+  New BANKSY fits and detailed SmoothClust, CHOIR, RareQ and PRECAST results
+  retain private per-cell identities, including same-ID-set renames. SmoothClust
+  cell-column storage and CHOIR explicit cell IDs are handled correctly.
+  Missing or invalid provenance reports a clear error. Stored native fit
+  results remain unchanged, and compatible legacy metadata reads are retained.
+
 * **refactor**: Remove unused internal helpers and Rcpp bridges, share spatial
   neighborhood filtering and heatmap border preprocessing, and drop redundant
   Imports checks and obsolete ggplot2 compatibility code.
