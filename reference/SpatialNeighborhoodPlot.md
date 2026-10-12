@@ -41,7 +41,8 @@ SpatialNeighborhoodPlot(
   verbose = TRUE,
   ...,
   image.scale = c("lowres", "hires"),
-  srt = NULL
+  srt = NULL,
+  sample = NULL
 )
 ```
 
@@ -72,6 +73,12 @@ SpatialNeighborhoodPlot(
   only support `"count"`: saved observed outgoing edges to the target
   type, not a spicyR effect. Other plot types retain the `"estimate"`
   default.
+
+- sample:
+
+  Optional single sample ID for non-spatial plots. Results from multiple
+  samples require explicit selection; no samples are aggregated. Use
+  `comparison` and `condition` to resolve other repeated label pairs.
 
 - FDR_threshold:
 

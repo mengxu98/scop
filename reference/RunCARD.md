@@ -54,7 +54,8 @@ RunCARD(
 
 - reference_assay:
 
-  Assay used in `reference`.
+  Assay used in `reference`. Only cells present in this assay are used,
+  with reference labels aligned by cell ID.
 
 - layer, reference_layer:
 
@@ -62,7 +63,7 @@ RunCARD(
 
 - features:
 
-  Features used for RCTD. If `NULL`, shared features are used.
+  Features used for CARD. If `NULL`, shared features are used.
 
 - image:
 

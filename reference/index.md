@@ -270,6 +270,8 @@
   : Persist the coordinate axis convention of a VisiumV2 image
 - [`GetSpatialGraph()`](https://mengxu98.github.io/scop/reference/GetSpatialGraph.md)
   : Read or convert a stored spatial graph
+- [`GetSpatialResult()`](https://mengxu98.github.io/scop/reference/GetSpatialResult.md)
+  : Access spatial analysis results
 
 ### Spatial QC and Normalization
 

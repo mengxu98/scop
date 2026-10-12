@@ -59,22 +59,22 @@ MetabolismPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-04 22:08:07] Start standard processing workflow...
-#> ℹ [2026-10-04 22:08:07] Checking a list of <Seurat>...
-#> ! [2026-10-04 22:08:07] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-04 22:08:07] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-04 22:08:07] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-04 22:08:07] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-04 22:08:07] Number of available HVF: 2000
-#> ℹ [2026-10-04 22:08:07] Finished check
-#> ℹ [2026-10-04 22:08:07] Perform `ScaleData()`
-#> ℹ [2026-10-04 22:08:07] Perform pca linear dimension reduction
-#> ℹ [2026-10-04 22:08:08] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-04 22:08:08] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-04 22:08:08] Reorder clusters...
-#> ℹ [2026-10-04 22:08:08] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-04 22:08:08] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-04 22:08:15] Standard processing workflow completed
+#> ℹ [2026-10-11 23:01:17] Start standard processing workflow...
+#> ℹ [2026-10-11 23:01:17] Checking a list of <Seurat>...
+#> ! [2026-10-11 23:01:17] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-11 23:01:17] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-11 23:01:17] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-11 23:01:17] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-11 23:01:17] Number of available HVF: 2000
+#> ℹ [2026-10-11 23:01:17] Finished check
+#> ℹ [2026-10-11 23:01:17] Perform `ScaleData()`
+#> ℹ [2026-10-11 23:01:17] Perform pca linear dimension reduction
+#> ℹ [2026-10-11 23:01:18] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-11 23:01:18] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-11 23:01:18] Reorder clusters...
+#> ℹ [2026-10-11 23:01:18] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-11 23:01:18] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-11 23:01:24] Standard processing workflow completed
 pancreas_sub <- RunMetabolism(
   pancreas_sub,
   db = c("KEGG", "REACTOME"),
@@ -83,15 +83,15 @@ pancreas_sub <- RunMetabolism(
   method = "AUCell",
   use_preparedb = FALSE
 )
-#> ℹ [2026-10-04 22:08:15] Start metabolism pathway scoring
-#> ℹ [2026-10-04 22:08:15] Data type is raw counts
-#> ℹ [2026-10-04 22:08:15] Averaging expression by "CellType" ...
-#> ℹ [2026-10-04 22:08:15] Aggregated expression: 15998 genes x 5 groups
-#> ℹ [2026-10-04 22:08:15] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
-#> ℹ [2026-10-04 22:08:16] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
-#> ! [2026-10-04 22:08:16] `GeneConvert()` failed: "variable names are limited to 10000 bytes". Falling back to direct symbol matching.
-#> ℹ [2026-10-04 22:08:16] Total metabolism gene sets to score: 127
-#> ✔ [2026-10-04 22:08:16] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
+#> ℹ [2026-10-11 23:01:24] Start metabolism pathway scoring
+#> ℹ [2026-10-11 23:01:25] Data type is raw counts
+#> ℹ [2026-10-11 23:01:25] Averaging expression by "CellType" ...
+#> ℹ [2026-10-11 23:01:25] Aggregated expression: 15998 genes x 5 groups
+#> ℹ [2026-10-11 23:01:25] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
+#> ℹ [2026-10-11 23:01:25] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
+#> ! [2026-10-11 23:01:25] `GeneConvert()` failed: "variable names are limited to 10000 bytes". Falling back to direct symbol matching.
+#> ℹ [2026-10-11 23:01:25] Total metabolism gene sets to score: 127
+#> ✔ [2026-10-11 23:01:25] Metabolism scores stored in tools slot "Metabolism_CellType_AUCell"
 
 ht1 <- MetabolismPlot(
   pancreas_sub,
@@ -145,7 +145,7 @@ MetabolismPlot(
   plot_type = "network",
   topTerm = 3
 )
-#> ✔ [2026-10-04 22:08:18] shadowtext installed successfully
+#> ✔ [2026-10-11 23:01:28] shadowtext installed successfully
 
 
 MetabolismPlot(
@@ -173,14 +173,14 @@ pancreas_sub <- RunMetabolism(
   species = "Mus_musculus",
   use_preparedb = FALSE
 )
-#> ℹ [2026-10-04 22:08:23] Start metabolism pathway scoring
-#> ℹ [2026-10-04 22:08:23] Data type is raw counts
-#> ℹ [2026-10-04 22:08:23] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
-#> ℹ [2026-10-04 22:08:23] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
-#> ! [2026-10-04 22:08:23] `GeneConvert()` failed: "variable names are limited to 10000 bytes". Falling back to direct symbol matching.
-#> ℹ [2026-10-04 22:08:23] Total metabolism gene sets to score: 127
-#> ✔ [2026-10-04 22:08:23] Metabolism scores stored in tools slot "Metabolism_AUCell"
-#> ℹ [2026-10-04 22:08:23] Metabolism scores also stored in assay "METABOLISM"
+#> ℹ [2026-10-11 23:01:33] Start metabolism pathway scoring
+#> ℹ [2026-10-11 23:01:33] Data type is raw counts
+#> ℹ [2026-10-11 23:01:33] Using raw scMetabolism gene sets with species conversion to "Mus_musculus"
+#> ℹ [2026-10-11 23:01:33] Converting 3297 human gene symbols to "Mus_musculus" via biomaRt ...
+#> ! [2026-10-11 23:01:33] `GeneConvert()` failed: "variable names are limited to 10000 bytes". Falling back to direct symbol matching.
+#> ℹ [2026-10-11 23:01:33] Total metabolism gene sets to score: 127
+#> ✔ [2026-10-11 23:01:34] Metabolism scores stored in tools slot "Metabolism_AUCell"
+#> ℹ [2026-10-11 23:01:34] Metabolism scores also stored in assay "METABOLISM"
 
 FeatureDimPlot(
   pancreas_sub,
@@ -207,5 +207,5 @@ ht <- GroupHeatmap(
   width = 1,
   height = 2
 )
-#> ! [2026-10-04 22:08:24] The values in the "counts" layer are non-integer. Set the library size to "1"
+#> ! [2026-10-11 23:01:35] The values in the "counts" layer are non-integer. Set the library size to "1"
 ```

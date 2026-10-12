@@ -103,7 +103,14 @@ RunBayesSpace(
 - coord.cols:
 
   Two metadata columns containing raw x/y coordinates when no spatial
-  image is available.
+  image is available. Non-default selections also determine the
+  coordinates passed to BayesSpace, overriding other metadata coordinate
+  columns. The default selection preserves existing
+  `array_col`/`array_row` or `col`/`row` indices when available.
+  Standard array names (`col`/`row`, `array_col`/`array_row`, or
+  `arraycol`/`arrayrow`, case-insensitive) preserve native array
+  indices; other column names are treated as pixel coordinates from
+  which a regular array grid is inferred.
 
 - srt:
 

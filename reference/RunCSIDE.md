@@ -45,7 +45,8 @@ RunCSIDE(
 - explanatory.variable:
 
   Named numeric vector used by `spacexr::run.CSIDE.single()`. Names must
-  match spatial spot names.
+  match spatial spot names. Spots with missing or non-finite values are
+  excluded before backend dispatch.
 
 - group.by:
 

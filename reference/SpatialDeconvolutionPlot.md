@@ -110,33 +110,37 @@ spatial <- RunRCTD(
   verbose = FALSE
 )
 #> Begin: process_cell_type_info
-#> process_cell_type_info: number of cells in reference: 694
+#> process_cell_type_info: number of cells in reference: 1148
 #> process_cell_type_info: number of genes in reference: 97
 #> 
 #> ductal   beta  alpha 
-#>    211    304    179 
+#>    237    428    483 
 #> End: process_cell_type_info
 #> create.RCTD: getting regression differentially expressed genes: 
-#> get_de_genes: ductal found DE genes: 24
-#> get_de_genes: beta found DE genes: 7
-#> get_de_genes: alpha found DE genes: 51
-#> get_de_genes: total DE genes: 82
+#> get_de_genes: ductal found DE genes: 22
+#> get_de_genes: beta found DE genes: 4
+#> get_de_genes: alpha found DE genes: 1
+#> get_de_genes: total DE genes: 27
 #> create.RCTD: getting platform effect normalization differentially expressed genes: 
-#> get_de_genes: ductal found DE genes: 27
-#> get_de_genes: beta found DE genes: 8
-#> get_de_genes: alpha found DE genes: 55
-#> get_de_genes: total DE genes: 90
+#> get_de_genes: ductal found DE genes: 26
+#> get_de_genes: beta found DE genes: 7
+#> get_de_genes: alpha found DE genes: 2
+#> get_de_genes: total DE genes: 35
 #> fitBulk: decomposing bulk
 #> chooseSigma: using initial Q_mat with sigma =  1
-#> Likelihood value: 14055.4563689971
+#> Likelihood value: 40089.2008086036
 #> Sigma value:  0.84
-#> Likelihood value: 13872.0157413348
+#> Likelihood value: 39342.4105815425
 #> Sigma value:  0.69
-#> Likelihood value: 13777.9531790348
-#> Sigma value:  0.65
-#> Likelihood value: 13771.1936781319
-#> Sigma value:  0.64
-#> Likelihood value: 13770.9645150382
-#> Sigma value:  0.64
+#> Likelihood value: 38786.8209416109
+#> Sigma value:  0.61
+#> Likelihood value: 38578.9034272757
+#> Sigma value:  0.53
+#> Likelihood value: 38653.2368763574
+#> Sigma value:  0.49
+#> Likelihood value: 38432.7589536896
+#> Sigma value:  0.48
+#> Likelihood value: 38431.5741354963
+#> Sigma value:  0.48
 SpatialDeconvolutionPlot(spatial, tool_name = "RCTD", plot_type = "dominant")
 ```

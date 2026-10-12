@@ -163,6 +163,14 @@ A `Seurat` object with smoothclust clusters in metadata. When
 `store_results = TRUE`, detailed outputs are stored in
 `srt@tools[[tool_name]]`.
 
+## Details
+
+Stored results retain a private per-cell identity metadata column for
+[`GetSpatialResult()`](https://mengxu98.github.io/scop/reference/GetSpatialResult.md).
+Preserve this column when subsetting or renaming cells. The accessor
+returns current-cell assignments; stored native results and fit
+parameters remain unchanged.
+
 ## Examples
 
 ``` r
@@ -181,7 +189,7 @@ spatial <- RunSmoothClust(
   cores = 1,
   verbose = FALSE
 )
-#> ! [2026-10-04 22:53:32] Function "smoothness_metric" not found in smoothclust namespace
+#> ! [2026-10-11 23:49:49] Function "smoothness_metric" not found in smoothclust namespace
 SpatialSpotPlot(
   spatial,
   group.by = "SmoothClust_cluster",

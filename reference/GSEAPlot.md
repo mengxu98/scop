@@ -337,18 +337,18 @@ gsea_out <- RunGSEA(
   TERM2GENE = term2gene,
   minGSSize = 2
 )
-#> ℹ [2026-10-04 22:04:17] Start GSEA analysis
-#> ! [2026-10-04 22:04:17] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
-#> ℹ [2026-10-04 22:04:17] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
-#> ℹ [2026-10-04 22:04:17] Prepared 10 ranked gene rows after ID mapping.
-#> ℹ [2026-10-04 22:04:17] Running GSEA for 1 group/database combination(s) ...
-#> ℹ [2026-10-04 22:04:17] Running GSEA: group "Cluster1", database "custom", genes 10 ...
+#> ℹ [2026-10-11 22:57:05] Start GSEA analysis
+#> ! [2026-10-11 22:57:05] All values in the `geneScore` are greater than zero. Set scoreType = 'pos'
+#> ℹ [2026-10-11 22:57:05] Preparing custom GSEA database from `TERM2GENE`/`TERM2NAME` ...
+#> ℹ [2026-10-11 22:57:05] Prepared 10 ranked gene rows after ID mapping.
+#> ℹ [2026-10-11 22:57:05] Running GSEA for 1 group/database combination(s) ...
+#> ℹ [2026-10-11 22:57:05] Running GSEA: group "Cluster1", database "custom", genes 10 ...
 #> Registered S3 method overwritten by 'ggtree':
 #>   method         from     
 #>   fortify.igraph ggnetwork
-#> ℹ [2026-10-04 22:04:17] Finished GSEA: group "Cluster1", database "custom".
-#> ✔ [2026-10-04 22:04:17] GSEA analysis done
+#> Error in gsea(geneList = geneList, gene_sets = geneSets, weight = weight,     minGSSize = minGSSize, maxGSSize = maxGSSize, nPerm = nPerm,     exponent = exponent, method = method, adaptive = adaptive,     minPerm = minPerm, maxPerm = maxPerm, pvalThreshold = pvalThreshold,     seed = seed, verbose = verbose, ...): unused argument (by = "fgsea")
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "comparison")
-
+#> Error: object 'gsea_out' not found
 GSEAPlot(res = gsea_out, db = "custom", plot_type = "bar")
+#> Error: object 'gsea_out' not found
 ```

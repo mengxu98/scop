@@ -34,6 +34,7 @@ RunMistyR(
   store_views = FALSE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
+  sample.by = NULL,
   ...,
   srt = NULL
 )
@@ -51,7 +52,8 @@ RunMistyR(
 
 - layer:
 
-  Assay layer used for expression values.
+  Assay layer used for expression values. Values must be finite; missing
+  or infinite values are rejected rather than replaced by zero.
 
 - features:
 
@@ -93,7 +95,12 @@ RunMistyR(
   Folder passed to `mistyR::run_misty()`. If `NULL`, a temporary folder
   is used.
 
-- seed, target_subset, bypass_intra, cv_folds, model_cached, append:
+- target_subset:
+
+  Original feature names or numeric indices of selected features to
+  model. Character names are mapped to the internal MISTy names.
+
+- seed, bypass_intra, cv_folds, model_cached, append:
 
   Parameters passed to `mistyR::run_misty()`.
 
@@ -119,6 +126,13 @@ RunMistyR(
   Coordinate system used to build MISTy views. The default is raw
   acquisition coordinates; `"legacy_display"` remains an explicit
   compatibility option.
+
+- sample.by:
+
+  Optional metadata column identifying independent samples. The selected
+  cells must belong to one sample. Split independent samples into
+  separate runs; when NULL, the caller is responsible for supplying one
+  spatial coordinate field.
 
 - ...:
 

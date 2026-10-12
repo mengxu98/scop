@@ -195,19 +195,16 @@ pancreas_sub <- RunscTenifoldKnk(
   store_networks = TRUE,
   store_manifold = TRUE
 )
-#> ℹ [2026-10-04 23:03:52] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
+#> ℹ [2026-10-12 00:02:05] Run scTenifoldKnk knockout for "Pdx1" using "r" backend
 #> ℹ Building 3 gene regulatory networks (200 cells each)
-#> Networks ■■■■■■■■■■■                       33% | ETA:  4s
-#> Networks ■■■■■■■■■■■■■■■■■■■■■             67% | ETA:  2s
-#> Networks ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | ETA:  0s
 #> ✔ Network construction complete: 3 networks
 #> ℹ [X] Tensor: 301 x 301 x 3 (K=3)
 #> ✔ [X] CP decomposition complete (norm explained: 41.5%)
 #> ℹ Manifold alignment: 301 shared genes, d=2
 #> ✔ Manifold alignment complete: 2 dimensions
 #> ℹ Computing distances for 301 genes
-#> ✔ Differential regulation complete: 1/301 significant genes (FDR < 0.05)
-#> ✔ [2026-10-04 23:03:58] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
+#> ✔ Differential regulation complete: 6/301 significant genes (FDR < 0.05)
+#> ✔ [2026-10-12 00:02:06] scTenifoldKnk results stored in `srt@tools[[scTenifoldKnk]]`
 
 scTenifoldKnkPlot(pancreas_sub, plot_type = "qq")
 

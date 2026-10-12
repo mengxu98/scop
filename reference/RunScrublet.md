@@ -55,24 +55,24 @@ RunScrublet(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-04 22:51:48] Start standard processing workflow...
-#> ℹ [2026-10-04 22:51:48] Checking a list of <Seurat>...
-#> ! [2026-10-04 22:51:48] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-04 22:51:48] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-04 22:51:48] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-04 22:51:49] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-04 22:51:49] Number of available HVF: 2000
-#> ℹ [2026-10-04 22:51:49] Finished check
-#> ℹ [2026-10-04 22:51:49] Perform `ScaleData()`
-#> ℹ [2026-10-04 22:51:49] Perform pca linear dimension reduction
-#> ℹ [2026-10-04 22:51:49] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-04 22:51:49] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-04 22:51:49] Reorder clusters...
-#> ℹ [2026-10-04 22:51:49] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-04 22:51:49] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-04 22:51:58] Standard processing workflow completed
+#> ℹ [2026-10-11 23:47:55] Start standard processing workflow...
+#> ℹ [2026-10-11 23:47:55] Checking a list of <Seurat>...
+#> ! [2026-10-11 23:47:55] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-11 23:47:55] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-11 23:47:55] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-11 23:47:55] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-11 23:47:55] Number of available HVF: 2000
+#> ℹ [2026-10-11 23:47:55] Finished check
+#> ℹ [2026-10-11 23:47:55] Perform `ScaleData()`
+#> ℹ [2026-10-11 23:47:55] Perform pca linear dimension reduction
+#> ℹ [2026-10-11 23:47:56] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-11 23:47:56] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-11 23:47:56] Reorder clusters...
+#> ℹ [2026-10-11 23:47:56] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-11 23:47:56] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-11 23:48:04] Standard processing workflow completed
 pancreas_sub <- RunScrublet(pancreas_sub)
-#> ℹ [2026-10-04 22:51:58] Running Scrublet
+#> ℹ [2026-10-11 23:48:04] Running Scrublet
 #> Error in if (existing_minor %in% c("3.10", "3.11", "3.12")) {    version <- paste0(existing_minor, "-1")}: argument is of length zero
 CellDimPlot(
   pancreas_sub,
@@ -86,6 +86,6 @@ FeatureDimPlot(
   reduction = "umap",
   features = "db.Scrublet_score"
 )
-#> ! [2026-10-04 22:52:00] "db.Scrublet_score" are not in the features of <Seurat>
+#> ! [2026-10-11 23:48:08] "db.Scrublet_score" are not in the features of <Seurat>
 #> Error in FeatureDimPlot(pancreas_sub, reduction = "umap", features = "db.Scrublet_score"): There are no valid features present.
 ```

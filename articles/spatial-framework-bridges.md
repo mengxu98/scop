@@ -1,163 +1,470 @@
 # Spatial framework bridges
 
-This page describes two separate bridges from the [main spatial
-workflow](https://mengxu98.github.io/scop/articles/spatial-main-workflow.md):
-Seurat↔︎SpatialExperiment and Seurat↔︎Giotto. A bridge moves a data
-container; it does not claim that the target framework’s analysis or
-plotting backend ran. The [platform
-page](https://mengxu98.github.io/scop/articles/spatial-platform-workflows.md)
-defines assay, image, and platform-specific input choices.
+Use this page when an analysis needs a different data container. You
+will convert a real Visium dataset to SpatialExperiment, verify what
+survived, convert back to Seurat, and save a reloadable result. A
+separate Giotto section checks the installed backend before attempting
+the same task. Conversion does not run either framework’s biological
+analysis.
 
-## What each bridge preserves
+Start with the [main spatial
+workflow](https://mengxu98.github.io/scop/articles/spatial-main-workflow.md)
+for analysis, or the [platform
+page](https://mengxu98.github.io/scop/articles/spatial-platform-workflows.md)
+for vendor imports and assay/image choices.
+
+## Inputs and preservation boundaries
+
+The executable input is the complete bundled `visium_human_pancreas_sub`
+object: 5,000 genes and all 1,986 packaged tissue spots from human PanIN
+sample GSM8058244, study
+[GSE254829](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE254829).
+The package has already selected genes shared with `panc8_sub`; this
+article performs no additional feature or spot subsampling. `coda_label`
+is supplied microanatomical annotation, not a predicted cell type.
 
 | Field | Seurat ↔︎ SpatialExperiment | Seurat ↔︎ Giotto |
 |----|----|----|
-| Expression | One selected Seurat `assay`/`layer` becomes the `scop_input` assay; it is restored as the requested Seurat assay | The selected image subset is passed to the official GiottoClass converter; native Giotto layers follow that converter’s rules |
-| Observation IDs and order | SpatialExperiment column names and coordinate row names must match exactly; reverse conversion reorders to assay-column order | The official converter owns target IDs; convert one selected image and check the returned object before analysis |
-| Metadata | `include_meta = TRUE` copies Seurat metadata to `colData`; reverse conversion copies `colData` to Seurat metadata | Metadata retention follows `GiottoClass`; the bridge does not invent or merge sample labels |
-| Coordinates | Raw coordinates are the default; an explicit display export records its transform and reverse conversion inverts it | One selected image’s spatial coordinates are sent through the official converter; no extra coordinate system is invented by SCOP |
-| Image/raster information | Raster image slots are not represented by the lightweight SpatialExperiment conversion | One image is selected and subset; multiple images/slices are never silently merged |
-| Analysis and plots | No SpatialExperiment analysis is run by the bridge | No Giotto analysis or plot is run by the bridge |
+| Expression | One selected assay/layer becomes `scop_input`; reverse conversion places it in Seurat `counts` | The official GiottoClass converter controls layer and assay naming |
+| IDs and metadata | Expression columns and coordinate rows are aligned by ID; `include_meta = TRUE` exports metadata | Check returned IDs and metadata against the selected input; do not assume names are unchanged |
+| Coordinates | Raw coordinates by default; an explicit legacy display export stores an invertible transform | Official converter’s coordinate convention; validate before distance-based analysis |
+| Other Seurat content | Does not round-trip images, reductions, graphs, tools, or all assays | Retention follows the installed GiottoClass converter |
+| Analysis | No target-framework analysis is run | No Giotto analysis or Python environment is initialized |
 
-The common invariant is identity: expression columns, metadata rows, and
-coordinate rows must refer to the same spots/cells in the same intended
-order. The bridge keeps provenance where SCOP can invert it, but it
-cannot preserve target-framework fields that have no counterpart.
-
-## Seurat and SpatialExperiment round-trip
-
-[`srt_to_spe()`](https://mengxu98.github.io/scop/reference/srt_to_spe.md)
-exports one selected assay layer and coordinates. It defaults to raw
-acquisition coordinates, which is the safe choice for downstream
-distances. `coordinate_space = "legacy_display"` is an explicit
-compatibility export; the source and affine transform are stored in
-`metadata(spe)$scop_spatial_coordinates`.
+The reverse SpatialExperiment bridge treats its selected expression
+assay as counts. Therefore this round-trip exports raw counts. Do not
+export a normalized layer and then describe the returned `counts` layer
+as raw data.
 
 ``` r
 
 library(scop)
+stopifnot(requireNamespace("SpatialExperiment", quietly = TRUE))
 data(visium_human_pancreas_sub)
+spatial <- visium_human_pancreas_sub
+assay_name <- "Spatial"
+image_name <- "slice1"
+counts_before <- GetAssayData5(spatial, assay = assay_name, layer = "counts")
+raw_before <- SpatialCoordinates(spatial, image = image_name, space = "raw")
 
-spatial <- Seurat::NormalizeData(
-  visium_human_pancreas_sub,
-  assay = "Spatial",
-  verbose = FALSE
+stopifnot(
+  identical(dim(counts_before), c(5000L, 1986L)),
+  !anyDuplicated(colnames(counts_before)),
+  setequal(colnames(counts_before), raw_before$data$cell_id)
 )
+raw_xy <- as.matrix(raw_before$data[colnames(counts_before), c("x", "y")])
+input_receipt <- data.frame(
+  source = "GSE254829 / GSM8058244 / complete bundled object",
+  features = nrow(counts_before), observations = ncol(counts_before),
+  assay = assay_name, layer = "counts", image = image_name,
+  coordinate_space = "raw", coordinate_units = "full-resolution pixels"
+)
+input_receipt
+#>                                             source features observations
+#> 1 GSE254829 / GSM8058244 / complete bundled object     5000         1986
+#>     assay  layer  image coordinate_space       coordinate_units
+#> 1 Spatial counts slice1              raw full-resolution pixels
+raw_before$source
+#> $image
+#> [1] "slice1"
+#> 
+#> $coord.cols
+#> [1] "x" "y"
+#> 
+#> $image_policy
+#> [1] "strict"
+#> 
+#> $coordinate_space
+#> [1] "raw"
+#> 
+#> $image_class
+#> [1] "VisiumV2"
+#> attr(,"package")
+#> [1] "Seurat"
+#> 
+#> $image_width
+#> [1] 600
+#> 
+#> $image_height
+#> [1] 340
+#> 
+#> $scale_name
+#> [1] "lowres"
+#> 
+#> $scale_factor
+#> [1] 0.078125
+#> 
+#> $coordinate_contract_version
+#> [1] 3
+```
+
+The dimension assertion protects this particular example. Replace it
+with your own expected dimensions when adapting the code. The ID check
+is general: stop and resolve any mismatch instead of assigning
+coordinates by row position.
+
+## Round-trip through SpatialExperiment
+
+``` r
+
 spe <- srt_to_spe(
-  spatial,
-  assay = "Spatial",
-  layer = "counts",
-  image = "slice1",
-  coordinate_space = "raw"
+  spatial, assay = assay_name, layer = "counts", image = image_name,
+  include_meta = TRUE, coordinate_space = "raw"
 )
-spatial_roundtrip <- spe_to_srt(spe, assay = "Spatial", layer = "scop_input")
+spatial_roundtrip <- spe_to_srt(spe, assay = assay_name, layer = "scop_input")
+counts_after <- GetAssayData5(spatial_roundtrip, assay = assay_name, layer = "counts")
 
-stopifnot(identical(colnames(spatial_roundtrip), colnames(spe)))
-head(spatial_roundtrip@meta.data)
+# Coordinate columns are checked separately because reverse conversion writes x/y.
+metadata_columns <- setdiff(colnames(spatial@meta.data), c("x", "y"))
+spe_checks <- c(
+  observation_order = identical(colnames(spatial_roundtrip), colnames(counts_before)),
+  feature_order = identical(rownames(counts_after), rownames(counts_before)),
+  counts = isTRUE(all.equal(counts_after, counts_before)),
+  metadata = isTRUE(all.equal(
+    spatial_roundtrip@meta.data[, metadata_columns, drop = FALSE],
+    spatial@meta.data[, metadata_columns, drop = FALSE]
+  )),
+  raw_coordinates = isTRUE(all.equal(
+    as.matrix(spatial_roundtrip@meta.data[, c("x", "y")]), raw_xy,
+    check.attributes = FALSE
+  )),
+  provenance = identical(
+    spatial_roundtrip@misc$spatial_coordinate_import,
+    S4Vectors::metadata(spe)$scop_spatial_coordinates
+  )
+)
+data.frame(check = names(spe_checks), passed = unname(spe_checks))
+#>               check passed
+#> 1 observation_order   TRUE
+#> 2     feature_order   TRUE
+#> 3            counts   TRUE
+#> 4          metadata   TRUE
+#> 5   raw_coordinates   TRUE
+#> 6        provenance   TRUE
+stopifnot(all(spe_checks))
+SummarizedExperiment::assayNames(spe)
+#> [1] "scop_input"
+SeuratObject::Images(spatial_roundtrip)
+#> NULL
 ```
 
-    ##                             orig.ident nCount_Spatial nFeature_Spatial    x   y
-    ## TGGTATCGGTCTGTAT-1 GSE254829_PanIN_LG2           3932             2075 3859 662
-    ## ATTATCTCGACAGATC-1 GSE254829_PanIN_LG2           9403             3340 3914 662
-    ## TGAGATCAAATACTCA-1 GSE254829_PanIN_LG2           9179             3303 3969 662
-    ## CTGGTCCTAACTTGGC-1 GSE254829_PanIN_LG2           5909             2525 4024 662
-    ## ATAGTCTTTGACGTGC-1 GSE254829_PanIN_LG2           5140             2400 4079 662
-    ## GGGTGGTCCAGCCTGT-1 GSE254829_PanIN_LG2           5813             2553 4134 662
-    ##                     sample_id geo_accession patient_sample
-    ## TGGTATCGGTCTGTAT-1 GSM8058244     GSE254829      PanIN-LG2
-    ## ATTATCTCGACAGATC-1 GSM8058244     GSE254829      PanIN-LG2
-    ## TGAGATCAAATACTCA-1 GSM8058244     GSE254829      PanIN-LG2
-    ## CTGGTCCTAACTTGGC-1 GSM8058244     GSE254829      PanIN-LG2
-    ## ATAGTCTTTGACGTGC-1 GSM8058244     GSE254829      PanIN-LG2
-    ## GGGTGGTCCAGCCTGT-1 GSM8058244     GSE254829      PanIN-LG2
-    ##                                             panin_grade coda_label coda_score
-    ## TGGTATCGGTCTGTAT-1 not_manually_annotated_as_epithelial   collagen  100.00000
-    ## ATTATCTCGACAGATC-1 not_manually_annotated_as_epithelial   collagen   60.00000
-    ## TGAGATCAAATACTCA-1 not_manually_annotated_as_epithelial   collagen  100.00000
-    ## CTGGTCCTAACTTGGC-1 not_manually_annotated_as_epithelial     islets   68.75000
-    ## ATAGTCTTTGACGTGC-1 not_manually_annotated_as_epithelial   collagen   62.50000
-    ## GGGTGGTCCAGCCTGT-1 not_manually_annotated_as_epithelial   collagen   86.36364
-    ##                    coda_islets coda_normal.epithelium coda_smooth.muscle
-    ## TGGTATCGGTCTGTAT-1        0.00                      0                  0
-    ## ATTATCTCGACAGATC-1        0.00                      0                  0
-    ## TGAGATCAAATACTCA-1        0.00                      0                  0
-    ## CTGGTCCTAACTTGGC-1       68.75                      0                  0
-    ## ATAGTCTTTGACGTGC-1       37.50                      0                  0
-    ## GGGTGGTCCAGCCTGT-1        0.00                      0                  0
-    ##                    coda_fat coda_acini coda_collagen coda_panin
-    ## TGGTATCGGTCTGTAT-1        0    0.00000     100.00000          0
-    ## ATTATCTCGACAGATC-1        0    0.00000      60.00000         40
-    ## TGAGATCAAATACTCA-1        0    0.00000     100.00000          0
-    ## CTGGTCCTAACTTGGC-1        0    0.00000      31.25000          0
-    ## ATAGTCTTTGACGTGC-1        0    0.00000      62.50000          0
-    ## GGGTGGTCCAGCCTGT-1        0   13.63636      86.36364          0
-    ##                                               feature_selection
-    ## TGGTATCGGTCTGTAT-1 top_5000_shared_with_panc8_by_spatial_counts
-    ## ATTATCTCGACAGATC-1 top_5000_shared_with_panc8_by_spatial_counts
-    ## TGAGATCAAATACTCA-1 top_5000_shared_with_panc8_by_spatial_counts
-    ## CTGGTCCTAACTTGGC-1 top_5000_shared_with_panc8_by_spatial_counts
-    ## ATAGTCTTTGACGTGC-1 top_5000_shared_with_panc8_by_spatial_counts
-    ## GGGTGGTCCAGCCTGT-1 top_5000_shared_with_panc8_by_spatial_counts
+Every displayed check must be `TRUE`. An empty image list is expected:
+the lightweight conversion keeps coordinates in metadata but does not
+reconstruct the raster. The selected count matrix and original metadata
+are checked, not just the number of spots. Existing Seurat analysis
+results are outside this bridge’s contract; keep the original object if
+you need them.
 
 ``` r
 
-SpatialSpotPlot(spatial_roundtrip, image = NULL,
-               features = rownames(spatial_roundtrip)[1],
-               assay = "Spatial", layer = "counts",
-               palette = "YlGnBu", legend.title = "Counts")
+stopifnot("GCG" %in% rownames(counts_after))
+SpatialSpotPlot(
+  spatial_roundtrip, image = NULL, coord.cols = c("x", "y"),
+  features = "GCG", assay = assay_name, layer = "counts",
+  overlay_image = FALSE, palette = "YlGnBu", legend.title = "GCG counts"
+)
 ```
 
-![](spatial-framework-bridges_files/figure-html/spe-roundtrip-1.png)
+![](spatial-framework-bridges_files/figure-html/spe-map-1.png)
 
-The returned assay contains the exported counts, so the plot explicitly
-reads `layer = "counts"`; exporting counts does not also export a
-normalized `data` layer. The
-[`stopifnot()`](https://rdrr.io/r/base/stopifnot.html) check is
-intentionally about IDs, not byte-for-byte equality of every Seurat
-slot. The conversion is lightweight: it does not promise to round-trip
-Seurat images, reductions, graphs, tools, or all assays. External
-SpatialExperiment objects without SCOP coordinate provenance are
-interpreted as raw coordinates in their supplied units; verify their
-units before using a distance-sensitive method.
+This is the measured GCG count map after conversion, drawn from
+preserved raw coordinates without a tissue raster. A spatially localized
+signal is not by itself a cell-type assignment, and the count range is
+not normalized expression.
 
-## Seurat and Giotto round-trip
+### Verify a legacy display export can be inverted
 
-The Giotto bridge is a one-image adapter. A single-image object can be
-resolved automatically; a multi-image object requires `image =`. SCOP
-selects the official `GiottoClass` v4/v5 converter for the installed
-Seurat major version, reuses an installed optional package, and does not
-initialize Giotto’s optional Python environment.
+Use raw coordinates for new distance-sensitive work. This compatibility
+check is useful when an older workflow explicitly expects display-scaled
+and vertically flipped coordinates.
 
 ``` r
 
-library(scop)
-data(visium_human_pancreas_sub)
-
-spatial <- Seurat::NormalizeData(
-  visium_human_pancreas_sub,
-  assay = "Spatial",
-  verbose = FALSE
+spe_display <- srt_to_spe(
+  spatial, assay = assay_name, layer = "counts", image = image_name,
+  coordinate_space = "legacy_display"
 )
-giotto <- srt_to_giotto(spatial, image = "slice1")
-spatial_from_giotto <- giotto_to_srt(giotto)
-
-SeuratObject::Images(spatial_from_giotto)
-SpatialSpotPlot(spatial_from_giotto, features = rownames(spatial_from_giotto)[1])
+display_provenance <- S4Vectors::metadata(spe_display)$scop_spatial_coordinates
+display_provenance
+#> $source
+#> $source$image
+#> [1] "slice1"
+#> 
+#> $source$coord.cols
+#> [1] "x" "y"
+#> 
+#> $source$image_policy
+#> [1] "strict"
+#> 
+#> $source$coordinate_space
+#> [1] "legacy_display"
+#> 
+#> $source$image_class
+#> [1] "VisiumV2"
+#> attr(,"package")
+#> [1] "Seurat"
+#> 
+#> $source$image_width
+#> [1] 600
+#> 
+#> $source$image_height
+#> [1] 340
+#> 
+#> $source$scale_name
+#> [1] "lowres"
+#> 
+#> $source$scale_factor
+#> [1] 0.078125
+#> 
+#> $source$coordinate_contract_version
+#> [1] 3
+#> 
+#> 
+#> $transform
+#> $transform$scale
+#> [1] 0.078125
+#> 
+#> $transform$scale_name
+#> [1] "lowres"
+#> 
+#> $transform$y_flip
+#> [1] TRUE
+#> 
+#> $transform$image_width
+#> [1] 600
+#> 
+#> $transform$image_height
+#> [1] 340
+#> 
+#> $transform$raw_x_col
+#> [1] "x"
+#> 
+#> $transform$raw_y_col
+#> [1] "y"
+#> 
+#> $transform$image_class
+#> [1] "VisiumV2"
+#> attr(,"package")
+#> [1] "Seurat"
+#> 
+#> $transform$coordinate_contract_version
+#> [1] 3
+from_display <- spe_to_srt(spe_display, assay = assay_name, layer = "scop_input")
+display_error <- max(abs(
+  as.matrix(from_display@meta.data[, c("x", "y")]) - raw_xy
+))
+data.frame(max_raw_coordinate_error = display_error, tolerance = 1e-8)
+#>   max_raw_coordinate_error tolerance
+#> 1                        0     1e-08
+stopifnot(is.finite(display_error), display_error < 1e-8)
 ```
 
-This block runs only when a compatible GiottoClass installation is
-available; `eval=FALSE` is deliberate so a documentation build does not
-install or download an external backend. A live round-trip must compare
-the expression features, observation IDs, metadata columns, and
-coordinate values that the installed converter claims to preserve. It
-must not be presented as proof that Giotto’s own analysis or plotting
-pipeline ran.
+The error is measured in original pixel units and should be zero or
+numerical round-off. Preserve the saved transform when passing this
+object to another person. External SpatialExperiment objects without
+SCOP provenance are treated as raw coordinates in their supplied units;
+verify those units yourself.
 
-## Choosing a bridge
+## Optional: round-trip through Giotto
 
-Use SpatialExperiment when a Bioconductor container and explicit
-assay/column metadata are the interchange target. Use Giotto when the
-native Giotto object and its official converter are the target. For
-either route, select one image, record the coordinate space and units,
-check IDs immediately after conversion, and re-check the target object’s
-own accessors before starting downstream analysis.
+SCOP chooses the official `GiottoClass` v4/v5 converters for the
+installed Seurat major version. A single image can be resolved
+automatically; multiple images require `image =`. Normalize before
+export because the official reverse converter needs a nonempty
+normalized layer. This does not replace raw counts.
+
+The following code is evaluated: it records backend availability, runs
+the conversion if compatible converters are installed, and reports any
+error. It never installs a backend during rendering. A missing backend
+is reported as `not_run`, and a failed preservation check as `failed`,
+never `completed`. Install GiottoClass separately following the
+[official Giotto
+instructions](https://github.com/giotto-suite/GiottoClass) and rerun
+this section to validate your exact package versions.
+
+``` r
+
+seurat_major <- as.integer(strsplit(as.character(packageVersion("Seurat")), "\\.")[[1]][1])
+converter_suffix <- if (seurat_major >= 5L) "V5" else "V4"
+converters <- paste0(c("seuratToGiotto", "giottoToSeurat"), converter_suffix)
+giotto_available <- requireNamespace("GiottoClass", quietly = TRUE)
+giotto_compatible <- giotto_available && all(vapply(
+  converters, exists, logical(1), envir = asNamespace("GiottoClass"), inherits = FALSE
+))
+giotto_result <- NULL
+giotto_receipt <- data.frame(
+  backend = "GiottoClass",
+  version = if (giotto_available) as.character(packageVersion("GiottoClass")) else NA_character_,
+  status = "not_run",
+  reason = if (!giotto_available) "GiottoClass is not installed" else
+    if (!giotto_compatible) "Required converters are absent" else "Ready to attempt conversion"
+)
+
+if (giotto_compatible) {
+  giotto_result <- tryCatch({
+    giotto_input <- Seurat::NormalizeData(spatial, assay = assay_name, verbose = FALSE)
+    native <- srt_to_giotto(giotto_input, image = image_name)
+    restored <- giotto_to_srt(native)
+    restored_assay <- SeuratObject::DefaultAssay(restored)
+    restored_counts <- GetAssayData5(restored, assay = restored_assay, layer = "counts")
+    stopifnot(setequal(colnames(restored_counts), colnames(counts_before)),
+              setequal(rownames(restored_counts), rownames(counts_before)))
+    restored_counts <- restored_counts[rownames(counts_before), colnames(counts_before)]
+    restored_xy <- SpatialCoordinates(restored, space = "raw")$data
+    checks <- c(
+      counts = isTRUE(all.equal(restored_counts, counts_before)),
+      coda_annotation = "coda_label" %in% colnames(restored@meta.data) &&
+        identical(as.character(restored@meta.data[colnames(counts_before), "coda_label"]),
+                  as.character(spatial$coda_label)),
+      coordinates = isTRUE(all.equal(
+        as.matrix(restored_xy[colnames(counts_before), c("x", "y")]), raw_xy,
+        check.attributes = FALSE
+      ))
+    )
+    print(data.frame(check = names(checks), passed = unname(checks)))
+    stopifnot(all(checks))
+    list(native = native, restored = restored, assay = restored_assay, checks = checks,
+         metadata_columns_retained = intersect(colnames(spatial@meta.data), colnames(restored@meta.data)),
+         metadata_columns_missing = setdiff(colnames(spatial@meta.data), colnames(restored@meta.data)))
+  }, error = function(e) e)
+  if (inherits(giotto_result, "error")) {
+    giotto_receipt$status <- "failed"
+    giotto_receipt$reason <- conditionMessage(giotto_result)
+    giotto_result <- NULL
+  } else {
+    giotto_receipt$status <- "completed"
+    giotto_receipt$reason <- "Conversion and count, annotation, and coordinate checks passed"
+    print(giotto_result[c("metadata_columns_retained", "metadata_columns_missing")])
+  }
+}
+giotto_receipt
+#>       backend version  status                       reason
+#> 1 GiottoClass    <NA> not_run GiottoClass is not installed
+```
+
+A successful conversion receipt verifies those named checks only. Read
+the metadata retention lists before relying on other columns. If this
+section reports `failed`, resolve its message and rerun before using the
+converted object for analysis. Even `completed` does not mean that
+Giotto’s own analysis or plotting pipeline has run.
+
+## Save, reload, and recheck
+
+Save both the portable object and the receipt. The example uses a
+temporary directory so a build does not overwrite your work. For a
+persistent analysis, set `SCOP_BRIDGE_OUTPUT_DIR` to a new project
+directory before running it.
+
+``` r
+
+output_dir <- Sys.getenv("SCOP_BRIDGE_OUTPUT_DIR", file.path(tempdir(), "scop-bridges"))
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+bridge_file <- file.path(output_dir, "panin-spatialexperiment-roundtrip.rds")
+bridge_bundle <- list(
+  spatial_experiment = spe, seurat = spatial_roundtrip,
+  input = input_receipt, checks = spe_checks, giotto_receipt = giotto_receipt,
+  giotto = giotto_result, session = utils::sessionInfo()
+)
+saveRDS(bridge_bundle, bridge_file)
+reloaded <- readRDS(bridge_file)
+reload_checks <- c(
+  file_exists = file.exists(bridge_file),
+  observations = identical(colnames(reloaded$seurat), colnames(spatial)),
+  counts = isTRUE(all.equal(
+    GetAssayData5(reloaded$seurat, assay = assay_name, layer = "counts"), counts_before
+  )),
+  coordinates = identical(SpatialExperiment::spatialCoords(reloaded$spatial_experiment),
+                         SpatialExperiment::spatialCoords(spe)),
+  receipt = identical(reloaded$checks, spe_checks)
+)
+data.frame(check = names(reload_checks), passed = unname(reload_checks))
+#>          check passed
+#> 1  file_exists   TRUE
+#> 2 observations   TRUE
+#> 3       counts   TRUE
+#> 4  coordinates   TRUE
+#> 5      receipt   TRUE
+stopifnot(all(reload_checks))
+```
+
+The saved `seurat` object can be passed directly to the earlier plot
+call. Reloading or plotting does not rerun conversion, normalization, or
+a model.
+
+## Adapt to your data and recover from errors
+
+1.  Replace the [`data()`](https://rdrr.io/r/utils/data.html) input with
+    your imported Seurat object and choose one image with
+    [`SeuratObject::Images()`](https://satijalab.github.io/seurat-object/reference/Images.html).
+    Select its matching assay and inspect
+    [`SeuratObject::Layers()`](https://satijalab.github.io/seurat-object/reference/Layers.html)
+    before choosing `counts`.
+2.  Keep the entire selected image unless exclusion has a scientific/QC
+    reason. With a multi-image source, derive expected IDs from the
+    selected image and compare the exported object with that same
+    image’s expression columns.
+3.  Replace the fixed example dimension check and `GCG` with your
+    expected dimensions and an actual feature. Keep the ID, count, and
+    coordinate checks.
+4.  Record platform, units, sample, assay/layer, image, input selection,
+    package versions, and whether each bridge completed. Keep the
+    original Seurat object for images and analysis fields that do not
+    cross the bridge.
+
+| Symptom | Check and recovery |
+|----|----|
+| SpatialExperiment is missing | Install it with Bioconductor in your analysis environment, restart R, and rerun the input section |
+| Multiple spatial images | Supply one valid `image =`; export each sample separately rather than merging unrelated coordinate systems |
+| IDs do not match | Compare [`colnames()`](https://rdrr.io/r/base/colnames.html) and coordinate row names; align by verified IDs, never rename by row position |
+| An assay/layer is missing | Inspect `Assays()`/`Layers()`; restore the intended raw count source instead of relabeling normalized data |
+| Display import needs a scale or height | Restore the original SCOP provenance or export raw coordinates again; do not invent a transform |
+| Giotto conversion fails on normalized data | Run [`NormalizeData()`](https://mengxu98.github.io/scop/reference/NormalizeData.md) on the input count assay and check compatible converter exports and versions |
+| No image after the SPE round-trip | Expected: use metadata coordinates with `image = NULL`, or retain the original Seurat object when a raster is required |
+
+``` r
+
+data.frame(
+  package = c("scop", "Seurat", "SeuratObject", "SpatialExperiment"),
+  version = vapply(c("scop", "Seurat", "SeuratObject", "SpatialExperiment"),
+                   function(p) as.character(utils::packageVersion(p)), character(1))
+)
+#>                             package version
+#> scop                           scop   0.9.2
+#> Seurat                       Seurat   5.6.0
+#> SeuratObject           SeuratObject   5.4.0
+#> SpatialExperiment SpatialExperiment  1.22.0
+```
+
+## Build provenance
+
+This receipt belongs to the actual rendered source and retained
+observations. Save it beside the exported object when adapting the
+workflow.
+
+``` r
+
+source_revision <- Sys.getenv("GITHUB_SHA")
+if (!nzchar(source_revision) && nzchar(Sys.which("git"))) {
+  source_revision <- system2("git", c("rev-parse", "HEAD"), stdout = TRUE,
+                             stderr = FALSE)[1]
+}
+build_receipt <- data.frame(
+  article = "spatial-framework-bridges", built_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
+  source_revision = source_revision,
+  source_has_local_changes = if (nzchar(Sys.which("git")))
+    length(system2("git", c("status", "--porcelain"), stdout = TRUE,
+                   stderr = FALSE)) > 0 else NA,
+  article_md5 = unname(tools::md5sum(knitr::current_input(dir = TRUE))),
+  R = as.character(getRversion()), scop = as.character(utils::packageVersion("scop")),
+  retained_observations = ncol(spatial_roundtrip), genes = nrow(spatial_roundtrip)
+)
+build_receipt
+#>                     article               built_utc
+#> 1 spatial-framework-bridges 2026-10-12 00:10:29 UTC
+#>                            source_revision source_has_local_changes
+#> 1 083f5f31e37220a9e9a5b0110e63ea4ed3f49317                    FALSE
+#>                        article_md5     R  scop retained_observations genes
+#> 1 0fc22a1b03cb3a6e77a033e054ff09d1 4.6.1 0.9.2                  1986  5000
+utils::write.csv(build_receipt, file.path(output_dir, "build-receipt.csv"), row.names = FALSE)
+writeLines(capture.output(sessionInfo()), file.path(output_dir, "session-info.txt"))
+```

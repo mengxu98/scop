@@ -123,6 +123,12 @@ reductions, and `srt@tools[[tool_name]]`.
 
 ## Details
 
+Stored results retain a private per-cell identity metadata column for
+[`GetSpatialResult()`](https://mengxu98.github.io/scop/reference/GetSpatialResult.md).
+Preserve this column when subsetting or renaming cells. The accessor
+returns current-cell assignments; stored native results and fit
+parameters remain unchanged.
+
 Provide spatial samples with shared genes and raw coordinates. Use
 `sample.by` to identify samples and `image` to select their spatial
 images. PRECAST integrates expression and domain representations; it is

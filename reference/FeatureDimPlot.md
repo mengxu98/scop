@@ -45,7 +45,7 @@ FeatureDimPlot(
   label.fg = "white",
   label.bg = "black",
   label.bg.r = 0.1,
-  label_insitu = FALSE,
+  label_insitu = TRUE,
   label_repel = FALSE,
   label_repulsion = 20,
   label_point_size = 1,
@@ -402,22 +402,22 @@ FeatureDimPlot(
 ``` r
 data(pancreas_sub)
 pancreas_sub <- RunStandardWorkflow(pancreas_sub)
-#> ℹ [2026-10-04 21:59:16] Start standard processing workflow...
-#> ℹ [2026-10-04 21:59:16] Checking a list of <Seurat>...
-#> ! [2026-10-04 21:59:16] Data 1/1 of the `srt_list` is "unknown"
-#> ℹ [2026-10-04 21:59:16] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
-#> ℹ [2026-10-04 21:59:16] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
-#> ℹ [2026-10-04 21:59:17] Use the separate HVF from `srt_list`
-#> ℹ [2026-10-04 21:59:17] Number of available HVF: 2000
-#> ℹ [2026-10-04 21:59:17] Finished check
-#> ℹ [2026-10-04 21:59:17] Perform `ScaleData()`
-#> ℹ [2026-10-04 21:59:17] Perform pca linear dimension reduction
-#> ℹ [2026-10-04 21:59:17] Use stored estimated dimensions 1:23 for Standardpca
-#> ℹ [2026-10-04 21:59:17] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
-#> ℹ [2026-10-04 21:59:17] Reorder clusters...
-#> ℹ [2026-10-04 21:59:17] Skip `log1p()` because `layer = data` is not "counts"
-#> ℹ [2026-10-04 21:59:17] Perform umap nonlinear dimension reduction
-#> ✔ [2026-10-04 21:59:24] Standard processing workflow completed
+#> ℹ [2026-10-11 22:50:42] Start standard processing workflow...
+#> ℹ [2026-10-11 22:50:42] Checking a list of <Seurat>...
+#> ! [2026-10-11 22:50:42] Data 1/1 of the `srt_list` is "unknown"
+#> ℹ [2026-10-11 22:50:42] Perform `NormalizeData()` with `normalization.method = 'LogNormalize'` on 1/1 of `srt_list`...
+#> ℹ [2026-10-11 22:50:42] Perform `FindVariableFeatures()` on 1/1 of `srt_list`...
+#> ℹ [2026-10-11 22:50:42] Use the separate HVF from `srt_list`
+#> ℹ [2026-10-11 22:50:42] Number of available HVF: 2000
+#> ℹ [2026-10-11 22:50:42] Finished check
+#> ℹ [2026-10-11 22:50:42] Perform `ScaleData()`
+#> ℹ [2026-10-11 22:50:42] Perform pca linear dimension reduction
+#> ℹ [2026-10-11 22:50:43] Use stored estimated dimensions 1:23 for Standardpca
+#> ℹ [2026-10-11 22:50:43] Perform `Seurat::FindClusters()` with `cluster_algorithm = 'louvain'` and `cluster_resolution = 0.6`
+#> ℹ [2026-10-11 22:50:43] Reorder clusters...
+#> ℹ [2026-10-11 22:50:43] Skip `log1p()` because `layer = data` is not "counts"
+#> ℹ [2026-10-11 22:50:43] Perform umap nonlinear dimension reduction
+#> ✔ [2026-10-11 22:50:49] Standard processing workflow completed
 FeatureDimPlot(
   pancreas_sub,
   features = "G2M_score", reduction = "UMAP"
@@ -639,8 +639,7 @@ FeatureDimPlot(
   pt.size = 1,
   compare_features = TRUE,
   color_blend_mode = "blend",
-  label = TRUE,
-  label_insitu = TRUE
+  label = TRUE
 )
 
 
@@ -652,8 +651,7 @@ FeatureDimPlot(
   compare_features = TRUE,
   color_blend_mode = "blend",
   title = "blend",
-  label = TRUE,
-  label_insitu = TRUE
+  label = TRUE
 )
 
 
@@ -665,8 +663,7 @@ FeatureDimPlot(
   compare_features = TRUE,
   color_blend_mode = "average",
   title = "average",
-  label = TRUE,
-  label_insitu = TRUE
+  label = TRUE
 )
 
 
@@ -678,8 +675,7 @@ FeatureDimPlot(
   compare_features = TRUE,
   color_blend_mode = "screen",
   title = "screen",
-  label = TRUE,
-  label_insitu = TRUE
+  label = TRUE
 )
 
 
@@ -691,7 +687,6 @@ FeatureDimPlot(
   compare_features = TRUE,
   color_blend_mode = "multiply",
   title = "multiply",
-  label = TRUE,
-  label_insitu = TRUE
+  label = TRUE
 )
 ```

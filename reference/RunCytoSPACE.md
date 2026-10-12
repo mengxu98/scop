@@ -140,7 +140,13 @@ RunCytoSPACE(
 ## Value
 
 A `Seurat` object with CytoSPACE metadata columns and detailed results
-stored in `srt@tools[["CytoSPACE"]]`.
+stored in `srt@tools[["CytoSPACE"]]`. Cell-type count and fraction
+columns in the stored tables retain the original reference labels.
+Metadata uses unique syntactic suffixes, recorded in
+`metadata_cell_type_suffixes`. The total-count column is recorded in
+`total_cells_column`; its name is `"Total cells"` unless that conflicts
+with a reference label. Spots with no assigned cells have zero fractions
+and an `NA` dominant type.
 
 ## Examples
 

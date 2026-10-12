@@ -175,6 +175,14 @@ A `Seurat` object containing CHOIR clusters in `cluster_colname`,
 complete upstream records in `srt@misc[[key]]`, and, when
 `store_tool = TRUE`, a lightweight summary in `srt@tools[[tool_name]]`.
 
+## Details
+
+Stored results retain a private per-cell identity metadata column for
+[`GetSpatialResult()`](https://mengxu98.github.io/scop/reference/GetSpatialResult.md).
+Preserve this column when subsetting or renaming cells. The accessor
+returns current-cell assignments; stored native results and fit
+parameters remain unchanged.
+
 ## References
 
 Sant C, Mucke L, Corces MR. (2025). CHOIR improves significance-based

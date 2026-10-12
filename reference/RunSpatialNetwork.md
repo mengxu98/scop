@@ -17,7 +17,8 @@ RunSpatialNetwork(
   graph.name = NULL,
   overwrite = FALSE,
   verbose = TRUE,
-  srt = NULL
+  srt = NULL,
+  sample.by = NULL
 )
 ```
 
@@ -57,6 +58,13 @@ RunSpatialNetwork(
 - overwrite:
 
   Whether an existing graph with the same name may be replaced.
+
+- sample.by:
+
+  Optional metadata column identifying independent spatial samples. The
+  selected image/coordinate nodes must belong to one non-missing sample.
+  Subset independent samples and build their graphs separately; this
+  guard does not split graphs. \`NULL\` retains existing behavior.
 
 - verbose:
 

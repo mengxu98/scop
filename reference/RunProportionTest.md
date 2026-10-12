@@ -3,7 +3,10 @@
 RunProportionTest performs differential abundance testing for cell
 proportions. The function acts as a dispatcher and routes to one of the
 method-specific implementations: permutation, milo, sccoda, or
-propeller.
+propeller. `"propeller"` uses the optional speckle backend for pairwise
+empirical Bayes moderated tests; see
+[RunPropeller](https://mengxu98.github.io/scop/reference/RunPropeller.md)
+for transformations and parameters.
 
 ## Usage
 
@@ -148,10 +151,10 @@ pancreas_sub <- RunProportionTest(
   proportion_method = "permutation",
   comparison = list(c("G2M", "G1"))
 )
-#> ℹ [2026-10-04 22:46:43] Start proportion test ("permutation")
-#> ℹ [2026-10-04 22:46:43] Running comparison: "G2M" vs "G1"
-#> ℹ [2026-10-04 22:46:43] Running comparison: "G1" vs "G2M"
-#> ✔ [2026-10-04 22:46:43] Proportion test completed ("permutation")
+#> ℹ [2026-10-11 23:42:00] Start proportion test ("permutation")
+#> ℹ [2026-10-11 23:42:00] Running comparison: "G2M" vs "G1"
+#> ℹ [2026-10-11 23:42:00] Running comparison: "G1" vs "G2M"
+#> ✔ [2026-10-11 23:42:00] Proportion test completed ("permutation")
 
 ProportionTestPlot(
   pancreas_sub

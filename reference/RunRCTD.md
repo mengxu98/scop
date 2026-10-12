@@ -53,7 +53,8 @@ RunRCTD(
 
 - reference_assay:
 
-  Assay used in `reference`.
+  Assay used in `reference`. Only cells present in this assay are used,
+  with reference labels aligned by cell ID.
 
 - layer, reference_layer:
 
@@ -61,7 +62,9 @@ RunRCTD(
 
 - features:
 
-  Features used for RCTD. If `NULL`, shared features are used.
+  Features used for RCTD. If `NULL`, shared features are used. Total UMI
+  depths are computed from each full selected assay/layer before feature
+  filtering (and after optional count rounding), not from this subset.
 
 - image:
 
@@ -84,8 +87,9 @@ RunRCTD(
 
 - min_cells:
 
-  Minimum number of reference cells required for each cell type. Old
-  `spacexr` RCTD requires at least 25 cells per type.
+  Minimum number of reference cells required for each cell type after
+  selected-assay alignment and zero-count filtering. Old `spacexr` RCTD
+  requires at least 25 cells per type.
 
 - prefix:
 
@@ -177,38 +181,38 @@ spatial <- RunRCTD(
   verbose = FALSE
 )
 #> Begin: process_cell_type_info
-#> process_cell_type_info: number of cells in reference: 694
+#> process_cell_type_info: number of cells in reference: 1148
 #> process_cell_type_info: number of genes in reference: 97
 #> 
 #> ductal   beta  alpha 
-#>    211    304    179 
+#>    237    428    483 
 #> End: process_cell_type_info
 #> create.RCTD: getting regression differentially expressed genes: 
-#> get_de_genes: ductal found DE genes: 24
-#> get_de_genes: beta found DE genes: 7
-#> get_de_genes: alpha found DE genes: 51
-#> get_de_genes: total DE genes: 82
+#> get_de_genes: ductal found DE genes: 22
+#> get_de_genes: beta found DE genes: 4
+#> get_de_genes: alpha found DE genes: 1
+#> get_de_genes: total DE genes: 27
 #> create.RCTD: getting platform effect normalization differentially expressed genes: 
-#> get_de_genes: ductal found DE genes: 27
-#> get_de_genes: beta found DE genes: 8
-#> get_de_genes: alpha found DE genes: 55
-#> get_de_genes: total DE genes: 90
+#> get_de_genes: ductal found DE genes: 26
+#> get_de_genes: beta found DE genes: 7
+#> get_de_genes: alpha found DE genes: 2
+#> get_de_genes: total DE genes: 35
 #> fitBulk: decomposing bulk
 #> chooseSigma: using initial Q_mat with sigma =  1
-#> Likelihood value: 1065.34481069014
+#> Likelihood value: 4605.44465250967
 #> Sigma value:  0.84
-#> Likelihood value: 1043.70504794372
+#> Likelihood value: 4509.24334104243
 #> Sigma value:  0.69
-#> Likelihood value: 1027.37241216243
+#> Likelihood value: 4433.7443755185
 #> Sigma value:  0.61
-#> Likelihood value: 1021.04732656451
+#> Likelihood value: 4402.86433424729
 #> Sigma value:  0.53
-#> Likelihood value: 1017.22091138995
-#> Sigma value:  0.49
-#> Likelihood value: 1016.52797026522
-#> Sigma value:  0.48
-#> Likelihood value: 1016.50517429608
-#> Sigma value:  0.48
+#> Likelihood value: 4381.61430997094
+#> Sigma value:  0.46
+#> Likelihood value: 4373.21937275515
+#> Sigma value:  0.45
+#> Likelihood value: 4372.94033462053
+#> Sigma value:  0.45
 SpatialDeconvolutionPlot(
   spatial,
   tool_name = "RCTD",

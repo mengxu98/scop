@@ -33,7 +33,8 @@ RunBANKSY(
   store_results = TRUE,
   verbose = TRUE,
   coordinate_space = c("raw", "legacy_display"),
-  srt = NULL
+  srt = NULL,
+  sample.by = NULL
 )
 ```
 
@@ -45,7 +46,9 @@ RunBANKSY(
 
 - assay:
 
-  Assay to use. `NULL` uses the default assay.
+  Expression assay used by BANKSY. When `NULL`, the assay linked to the
+  selected image is used first, followed by `Spatial`, `RNA`, and the
+  object's default assay.
 
 - layer:
 
@@ -58,15 +61,14 @@ RunBANKSY(
 
 - image:
 
-  Name of the Seurat spatial image used to recover spot coordinates when
-  they are not already present in metadata. For regular Visium data with
-  only pixel `x`/`y` coordinates, BayesSpace array coordinates are
-  inferred from the spatial grid.
+  Spatial image used to recover coordinates. A single available image is
+  selected automatically; choose one explicitly when several exist, or
+  provide a named sample-to-image map with `sample.by`.
 
 - coord.cols:
 
   Metadata coordinate columns used when no image coordinate source is
-  available.
+  available. The default is resolved from common coordinate names.
 
 - lambda:
 
@@ -103,8 +105,8 @@ RunBANKSY(
 
 - group:
 
-  Optional metadata column used by BANKSY for multi-sample scaling. It
-  is copied into the `SpatialExperiment` colData.
+  Optional metadata column passed to BANKSY for multi-sample scaling. It
+  is an algorithm parameter and does not split sample fits.
 
 - seed:
 
@@ -142,7 +144,9 @@ RunBANKSY(
 
 - store_results:
 
-  Whether to store detailed BANKSY results in `object@tools`.
+  Whether to store detailed BANKSY results in `object@tools`; cluster
+  assignments are still written to metadata when `FALSE`; a lightweight
+  index retains the result column and analyzed cells.
 
 - verbose:
 
@@ -160,11 +164,27 @@ RunBANKSY(
   Deprecated alias for `object`; supply exactly one of the two. It will
   be removed in scop 1.0.0.
 
+- sample.by:
+
+  Optional metadata column for independent per-sample fits. Combined
+  labels are prefixed with the sample name; domains are not aligned
+  across samples.
+
 ## Value
 
 A `Seurat` object with BANKSY clusters in metadata. When
 `store_results = TRUE`, detailed results are stored in
-`srt@tools[[tool_name]]`.
+`srt@tools[[tool_name]]`; when `FALSE`, clusters remain in metadata and
+only their lightweight retrieval index is retained in the tool entry.
+Both modes also retain one private metadata identity column per result,
+allowing
+[`GetSpatialResult()`](https://mengxu98.github.io/scop/reference/GetSpatialResult.md)
+to follow subsets and renamed cells. Preserve this column; its name is
+recorded in `result_index$cell_id_colname`.
+
+## See also
+
+[`GetSpatialResult()`](https://mengxu98.github.io/scop/reference/GetSpatialResult.md)
 
 ## Examples
 
@@ -172,35 +192,18 @@ A `Seurat` object with BANKSY clusters in metadata. When
 data(visium_human_pancreas_sub)
 keep_spots <- unique(round(seq(1, ncol(visium_human_pancreas_sub), length.out = 400)))
 spatial <- visium_human_pancreas_sub[, keep_spots]
+if (FALSE) { # \dontrun{
 spatial <- RunBANKSY(
   spatial,
-  assay = "Spatial",
   layer = "counts",
-  coord.cols = c("x", "y"),
   features = rownames(spatial)[1:200],
-  lambda = 0.2,
-  k_geom = 8,
   resolution = 0.6,
   verbose = FALSE
 )
-#> Computing neighbors...
-#> Spatial mode is kNN_median
-#> Parameters: k_geom=8
-#> Done
-#> Computing neighbors...
-#> Spatial mode is kNN_median
-#> Parameters: k_geom=8
-#> Done
-#> Done
-#> Centering
-#> Done
-#> Using seed=1
-#> Using seed=1
 SpatialSpotPlot(
   spatial,
   group.by = "BANKSY_cluster",
-  overlay_image = FALSE,
-  coord.cols = c("x", "y"),
   pt.size = 1.5
 )
+} # }
 ```
