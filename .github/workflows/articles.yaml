@@ -47,7 +47,12 @@ jobs:
         env:
           GITHUB_PAT: ${{ github.token }}
         with:
-          extra-packages: any::pkgdown, local::.
+          extra-packages: |
+            any::pkgdown
+            local::.
+            bioc::org.Mm.eg.db
+            bioc::GO.db
+            any::shadowtext
           needs: website
           cache: false
 
