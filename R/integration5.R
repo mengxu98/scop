@@ -851,16 +851,15 @@ run_integration5 <- function(
         f = srt_integrated[[batch, drop = TRUE]]
       )
       log_message(
-        "Perform {.fn SCTransform} per batch for Seurat v5 integration",
+        "Perform {.fn Seurat::SCTransform} per batch for Seurat v5 integration",
         verbose = verbose
       )
-      srt_integrated <- SCTransform(
+      srt_integrated <- Seurat::SCTransform(
         object = srt_integrated,
         assay = assay,
         variable.features.n = nHVF,
         vars.to.regress = vars_to_regress,
         new.assay.name = "SCT",
-        cores = cores %||% 1L,
         verbose = FALSE
       )
     } else {
@@ -892,6 +891,11 @@ run_integration5 <- function(
       cf <- rownames(Seurat::GetAssay(srt_integrated, assay = "SCT"))
       HVF <- HVF[HVF %in% cf]
     }
+
+    model_features <- lapply(srt_integrated[["SCT"]]@SCTModel.list, function(model) {
+      rownames(Seurat::SCTResults(model, slot = "feature.attributes"))
+    })
+    HVF <- intersect(HVF, Reduce(intersect, model_features))
 
     scale_features <- tryCatch(
       rownames(GetAssayData5(

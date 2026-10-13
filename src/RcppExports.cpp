@@ -2346,69 +2346,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// csc_to_csr
-List csc_to_csr(IntegerVector csc_i, IntegerVector csc_p, NumericVector csc_x, int nrow, int ncol);
-RcppExport SEXP _scop_csc_to_csr(SEXP csc_iSEXP, SEXP csc_pSEXP, SEXP csc_xSEXP, SEXP nrowSEXP, SEXP ncolSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type csc_i(csc_iSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type csc_p(csc_pSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type csc_x(csc_xSEXP);
-    Rcpp::traits::input_parameter< int >::type nrow(nrowSEXP);
-    Rcpp::traits::input_parameter< int >::type ncol(ncolSEXP);
-    rcpp_result_gen = Rcpp::wrap(csc_to_csr(csc_i, csc_p, csc_x, nrow, ncol));
-    return rcpp_result_gen;
-END_RCPP
-}
-// sct_stats_correct_sparse
-List sct_stats_correct_sparse(NumericVector intercepts, NumericVector cell_mu_base, IntegerVector csr_row_ptr, IntegerVector csr_col_idx, NumericVector csr_vals, IntegerVector gene_idx, NumericVector theta, NumericVector corr_factor, double min_var, double clip_lo, double clip_hi, bool do_correct, int cores);
-RcppExport SEXP _scop_sct_stats_correct_sparse(SEXP interceptsSEXP, SEXP cell_mu_baseSEXP, SEXP csr_row_ptrSEXP, SEXP csr_col_idxSEXP, SEXP csr_valsSEXP, SEXP gene_idxSEXP, SEXP thetaSEXP, SEXP corr_factorSEXP, SEXP min_varSEXP, SEXP clip_loSEXP, SEXP clip_hiSEXP, SEXP do_correctSEXP, SEXP coresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type intercepts(interceptsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type cell_mu_base(cell_mu_baseSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type csr_row_ptr(csr_row_ptrSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type csr_col_idx(csr_col_idxSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type csr_vals(csr_valsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type gene_idx(gene_idxSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type corr_factor(corr_factorSEXP);
-    Rcpp::traits::input_parameter< double >::type min_var(min_varSEXP);
-    Rcpp::traits::input_parameter< double >::type clip_lo(clip_loSEXP);
-    Rcpp::traits::input_parameter< double >::type clip_hi(clip_hiSEXP);
-    Rcpp::traits::input_parameter< bool >::type do_correct(do_correctSEXP);
-    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
-    rcpp_result_gen = Rcpp::wrap(sct_stats_correct_sparse(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, corr_factor, min_var, clip_lo, clip_hi, do_correct, cores));
-    return rcpp_result_gen;
-END_RCPP
-}
-// sct_fused_resid_center_sparse
-NumericMatrix sct_fused_resid_center_sparse(NumericVector intercepts, NumericVector cell_mu_base, IntegerVector csr_row_ptr, IntegerVector csr_col_idx, NumericVector csr_vals, IntegerVector gene_idx, NumericVector theta, double min_var, double wide_clip_lo, double wide_clip_hi, double narrow_clip_lo, double narrow_clip_hi, bool do_center, bool do_scale, int cores);
-RcppExport SEXP _scop_sct_fused_resid_center_sparse(SEXP interceptsSEXP, SEXP cell_mu_baseSEXP, SEXP csr_row_ptrSEXP, SEXP csr_col_idxSEXP, SEXP csr_valsSEXP, SEXP gene_idxSEXP, SEXP thetaSEXP, SEXP min_varSEXP, SEXP wide_clip_loSEXP, SEXP wide_clip_hiSEXP, SEXP narrow_clip_loSEXP, SEXP narrow_clip_hiSEXP, SEXP do_centerSEXP, SEXP do_scaleSEXP, SEXP coresSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type intercepts(interceptsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type cell_mu_base(cell_mu_baseSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type csr_row_ptr(csr_row_ptrSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type csr_col_idx(csr_col_idxSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type csr_vals(csr_valsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type gene_idx(gene_idxSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< double >::type min_var(min_varSEXP);
-    Rcpp::traits::input_parameter< double >::type wide_clip_lo(wide_clip_loSEXP);
-    Rcpp::traits::input_parameter< double >::type wide_clip_hi(wide_clip_hiSEXP);
-    Rcpp::traits::input_parameter< double >::type narrow_clip_lo(narrow_clip_loSEXP);
-    Rcpp::traits::input_parameter< double >::type narrow_clip_hi(narrow_clip_hiSEXP);
-    Rcpp::traits::input_parameter< bool >::type do_center(do_centerSEXP);
-    Rcpp::traits::input_parameter< bool >::type do_scale(do_scaleSEXP);
-    Rcpp::traits::input_parameter< int >::type cores(coresSEXP);
-    rcpp_result_gen = Rcpp::wrap(sct_fused_resid_center_sparse(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi, do_center, do_scale, cores));
-    return rcpp_result_gen;
-END_RCPP
-}
 // spatial_neighborhood_profile_cpp
 Rcpp::IntegerVector spatial_neighborhood_profile_cpp(Rcpp::NumericMatrix xy, Rcpp::IntegerVector group, Rcpp::IntegerVector query, Rcpp::NumericVector radii, int ng);
 RcppExport SEXP _scop_spatial_neighborhood_profile_cpp(SEXP xySEXP, SEXP groupSEXP, SEXP querySEXP, SEXP radiiSEXP, SEXP ngSEXP) {
@@ -2652,9 +2589,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scop_log_normalize_dgc", (DL_FUNC) &_scop_log_normalize_dgc, 4},
     {"_scop_scale_sparse_full", (DL_FUNC) &_scop_scale_sparse_full, 4},
     {"_scop_scale_sparse_rows_from_stats", (DL_FUNC) &_scop_scale_sparse_rows_from_stats, 4},
-    {"_scop_csc_to_csr", (DL_FUNC) &_scop_csc_to_csr, 5},
-    {"_scop_sct_stats_correct_sparse", (DL_FUNC) &_scop_sct_stats_correct_sparse, 13},
-    {"_scop_sct_fused_resid_center_sparse", (DL_FUNC) &_scop_sct_fused_resid_center_sparse, 15},
     {"_scop_spatial_neighborhood_profile_cpp", (DL_FUNC) &_scop_spatial_neighborhood_profile_cpp, 5},
     {"_scop_tage_elastic_net_predict_cpp", (DL_FUNC) &_scop_tage_elastic_net_predict_cpp, 7},
     {"_scop_sparse_row_mean_var", (DL_FUNC) &_scop_sparse_row_mean_var, 5},
