@@ -169,9 +169,6 @@ LinkingTo:
     thisutils
 Config/Needs/website:
     mengxu98/thistemplate,
-    bioc::org.Mm.eg.db,
-    bioc::GO.db,
-    any::shadowtext,
     github::cole-trapnell-lab/monocle3
 URL: https://mengxu98.github.io/scop/
 BugReports: https://github.com/mengxu98/scop/issues

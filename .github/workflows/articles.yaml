@@ -51,6 +51,9 @@ jobs:
             any::pkgdown
             local::.
             github::immunogenomics/harmony@df19af23ae0639bd6ea2da63898f973f08c85862
+            bioc::org.Mm.eg.db
+            bioc::GO.db
+            any::shadowtext
           needs: website
           cache: false
 
