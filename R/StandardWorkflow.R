@@ -427,7 +427,6 @@ RunStandardWorkflow <- function(
     nHVF = nHVF,
     HVF = HVF,
     vars_to_regress = vars_to_regress,
-    cores = cores,
     seed = seed,
     verbose = verbose
   )

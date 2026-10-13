@@ -1,3 +1,26 @@
+sct_regress_out <- function(mat, latent.df) {
+  renamed <- latent.df
+  names(renamed) <- paste0("v", seq_len(ncol(latent.df)))
+  design <- stats::model.matrix(
+    stats::as.formula(paste("~", paste(names(renamed), collapse = " + "))),
+    data = renamed
+  )
+  xtx <- crossprod(design)
+  xty <- t(mat %*% design)
+  beta <- tryCatch(
+    if (rcond(xtx) < 1e-8) NULL else solve(xtx, xty),
+    error = function(e) NULL
+  )
+  if (is.null(beta) || any(!is.finite(beta))) {
+    fit <- stats::lm.fit(design, t(mat))
+    resid <- t(fit$residuals)
+  } else {
+    resid <- mat - t(beta) %*% t(design)
+  }
+  dimnames(resid) <- dimnames(mat)
+  resid
+}
+
 sct_fastrowscale <- function(mat_dense, do.scale, do.center, scale.max) {
   cm <- if (isTRUE(do.center)) {
     rowMeans(mat_dense)
