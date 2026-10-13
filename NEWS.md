@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **change**: Handwritten GitHub package installs follow the repository default branch. Backend checks accept the installed revision, and Cell2fate only reuses cached results from that revision. Automatically generated renv records are retained.
+
 * **fix**: `RunRCTD()`, `RunCARD()` and `RunSPOTlight()` align reference labels
   and metadata to selected-assay cell IDs before filtering, including assays
   containing only part of a Seurat object. Ambiguous IDs are rejected. RCTD

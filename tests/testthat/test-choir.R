@@ -20,9 +20,8 @@ make_choir_seurat <- function() {
 
 with_mock_choir <- function(code,
                             backend = NULL,
-                            installed_commit = "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc",
                             namespace_loaded = FALSE,
-                            loaded_commit = "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc") {
+                            loaded_commit = "observed-revision") {
   testthat::skip_on_os("windows")
   received <- new.env(parent = emptyenv())
   if (is.null(backend)) {
@@ -74,7 +73,6 @@ with_mock_choir <- function(code,
       expect_identical(name, "CHOIR")
       backend
     },
-    choir_installed_commit = function() installed_commit,
     choir_namespace_loaded = function() namespace_loaded,
     choir_loaded_commit = function() loaded_commit
   )
@@ -144,7 +142,7 @@ test_that("RunCHOIR calls the optional backend and standardizes results", {
   expect_setequal(
     mocked$checked,
     c(
-      "corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc",
+      "corceslab/CHOIR",
       "BiocGenerics", "bluster", "dplyr", "ggplot2", "ggtree",
       "harmony", "magrittr", "Matrix", "pengminshi/mrtree", "plyr",
       "progress", "ranger", "Seurat", "spatstat.univar", "stringr", "tidyr"
@@ -440,7 +438,7 @@ test_that("RunCHOIR rejects invalid cluster labels", {
   )
 })
 
-test_that("RunCHOIR verifies the pinned backend through check_r with installation enabled", {
+test_that("RunCHOIR prepares the backend without fixing its commit", {
   srt <- make_choir_seurat()
   mocked <- with_mock_choir({
     out <- RunCHOIR(srt, verbose = FALSE)
@@ -449,7 +447,7 @@ test_that("RunCHOIR verifies the pinned backend through check_r with installatio
   expect_setequal(
     mocked$checked,
     c(
-      "corceslab/CHOIR@e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc",
+      "corceslab/CHOIR",
       "BiocGenerics", "bluster", "dplyr", "ggplot2", "ggtree",
       "harmony", "magrittr", "Matrix", "pengminshi/mrtree", "plyr",
       "progress", "ranger", "Seurat", "spatstat.univar", "stringr", "tidyr"
@@ -459,34 +457,22 @@ test_that("RunCHOIR verifies the pinned backend through check_r with installatio
   expect_true(mocked$installation_allowed)
 })
 
-test_that("RunCHOIR errors when the pinned backend cannot be verified", {
-  srt <- make_choir_seurat()
-  expect_error(
-    with_mock_choir(
-      {
-        RunCHOIR(srt, verbose = FALSE)
-      },
-      installed_commit = NULL
-    ),
-    "backend is unavailable"
-  )
+test_that("RunCHOIR allows missing backend commit metadata", {
+  mocked <- with_mock_choir(RunCHOIR(make_choir_seurat(), verbose = FALSE), loaded_commit = NULL)
+  expect_s4_class(mocked$result, "Seurat")
+  expect_null(mocked$result@tools$CHOIR$backend$commit)
 })
 
-test_that("RunCHOIR refuses to replace a loaded stale namespace", {
-  srt <- make_choir_seurat()
-  expect_error(
-    with_mock_choir(
-      {
-        RunCHOIR(srt, verbose = FALSE)
-      },
-      namespace_loaded = TRUE,
-      loaded_commit = "stale"
-    ),
-    "Restart R"
+test_that("RunCHOIR accepts other loaded revisions and records provenance", {
+  mocked <- with_mock_choir(RunCHOIR(make_choir_seurat(), verbose = FALSE),
+    namespace_loaded = TRUE, loaded_commit = "another-revision"
   )
+  expect_s4_class(mocked$result, "Seurat")
+  expect_length(mocked$checked, 0L)
+  expect_identical(mocked$result@tools$CHOIR$backend$commit, "another-revision")
 })
 
-test_that("RunCHOIR accepts a loaded pinned namespace on the fast path", {
+test_that("RunCHOIR reuses an already loaded namespace", {
   srt <- make_choir_seurat()
   mocked <- with_mock_choir(
     {
@@ -500,14 +486,18 @@ test_that("RunCHOIR accepts a loaded pinned namespace on the fast path", {
 
 test_that("CHOIR saved rows and explicit cell IDs follow subset and rename", {
   with_mock_choir({
-    out <- RunCHOIR(make_choir_seurat(), cluster_colname = "custom_choir",
-      tool_name = "custom_fit", verbose = FALSE)
+    out <- RunCHOIR(make_choir_seurat(),
+      cluster_colname = "custom_choir",
+      tool_name = "custom_fit", verbose = FALSE
+    )
   })
   expect_spatial_result_lifecycle(out, "custom_fit", "custom_choir", explicit_cell = TRUE)
   index <- out@tools$custom_fit$result_index
   with_mock_choir({
-    rerun <- RunCHOIR(out, cluster_colname = "custom_choir", tool_name = "custom_fit",
-      overwrite = TRUE, verbose = FALSE)
+    rerun <- RunCHOIR(out,
+      cluster_colname = "custom_choir", tool_name = "custom_fit",
+      overwrite = TRUE, verbose = FALSE
+    )
   })
   expect_identical(rerun@tools$custom_fit$result_index$cell_id_colname, index$cell_id_colname)
   broken <- out
@@ -522,6 +512,8 @@ test_that("CHOIR saved rows and explicit cell IDs follow subset and rename", {
   })
   expect_null(compact@tools$CHOIR)
   compact <- SeuratObject::RenameCells(compact, new.names = rev(colnames(compact)))
-  expect_identical(GetSpatialResult(compact, "CHOIR")$clusters$CHOIR_cluster,
-    unname(as.character(compact$CHOIR_cluster)))
+  expect_identical(
+    GetSpatialResult(compact, "CHOIR")$clusters$CHOIR_cluster,
+    unname(as.character(compact$CHOIR_cluster))
+  )
 })

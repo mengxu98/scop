@@ -30,11 +30,11 @@
 #' @param min_accuracy Minimum classifier accuracy required to keep clusters
 #'   separate.
 #' @param max_clusters Must be `"auto"`. Numeric limits are rejected because
-#'   the pinned upstream backend can fail to terminate when the number of
+#'   the upstream backend can fail to terminate when the number of
 #'   clusters plateaus.
 #' @param normalization_method Normalization performed inside CHOIR. Use
 #'   `"none"` for previously normalized data or `"SCTransform"` with a counts
-#'   layer. The pinned backend does not support `"SCTransform"` for Seurat v5
+#'   layer. The upstream backend does not support `"SCTransform"` for Seurat v5
 #'   `Assay5` objects.
 #' @param batch.by Optional metadata column containing batch labels.
 #' @param batch_correction_method Batch correction performed by CHOIR. If
@@ -45,7 +45,7 @@
 #' @param var_features Features associated with `reduction`. If `NULL` and a
 #'   reduction is supplied, variable features from `assay` are used.
 #' @param atac Whether the selected assay contains ATAC-seq data.
-#' @param cores Number of cores used by CHOIR. The pinned backend supports
+#' @param cores Number of cores used by CHOIR. The upstream backend supports
 #'   macOS and Linux; Windows execution is rejected before installation.
 #' @param seed Random seed passed to CHOIR.
 #' @param store_tool Whether to store a lightweight result summary in
@@ -195,25 +195,14 @@ RunCHOIR <- function(
   )
   if (identical(.Platform$OS.type, "windows")) {
     log_message(
-      "The pinned {.pkg CHOIR} backend supports macOS and Linux, but not Windows",
+      "The {.pkg CHOIR} backend supports macOS and Linux, but not Windows",
       message_type = "error"
     )
   }
-  expected_commit <- "e9ebfbc9089beeaf4ca088c7b81b18f39758b0bc"
-  if (choir_namespace_loaded()) {
-    observed_commit <- choir_loaded_commit()
-    if (identical(observed_commit, expected_commit)) {
-      backend_commit <- observed_commit
-    } else {
-      log_message(
-        "A different or unverifiable {.pkg CHOIR} backend is already loaded. Restart R before using the pinned backend.",
-        message_type = "error"
-      )
-    }
-  } else {
+  if (!choir_namespace_loaded()) {
     check_r(
       c(
-        paste0("corceslab/CHOIR@", expected_commit), "BiocGenerics", "bluster", "dplyr", "ggplot2",
+        "corceslab/CHOIR", "BiocGenerics", "bluster", "dplyr", "ggplot2",
         "ggtree", "harmony", "magrittr", "Matrix", "pengminshi/mrtree",
         "plyr", "progress", "ranger", "Seurat", "spatstat.univar",
         "stringr", "tidyr"
@@ -222,25 +211,9 @@ RunCHOIR <- function(
       install = TRUE,
       verbose = FALSE
     )
-    observed_commit <- choir_installed_commit()
-    if (!identical(observed_commit, expected_commit)) {
-      log_message(
-        paste0(
-          "The pinned {.pkg CHOIR} backend is unavailable. Install it with ",
-          "{.code pak::pkg_install(c('corceslab/CHOIR@{expected_commit}', 'pengminshi/mrtree'))}."
-        ),
-        message_type = "error"
-      )
-    }
-    backend_commit <- observed_commit
   }
   choir_fun <- get_namespace_fun("CHOIR", "CHOIR")
-  if (!identical(choir_loaded_commit(), expected_commit)) {
-    log_message(
-      "The loaded {.pkg CHOIR} namespace could not be matched to the pinned backend. Restart R and try again.",
-      message_type = "error"
-    )
-  }
+  backend_commit <- choir_loaded_commit()
 
   args <- c(
     list(
@@ -327,10 +300,13 @@ RunCHOIR <- function(
   }
 
   if (isTRUE(store_tool)) {
-    result@tools[[tool_name]]$result_index <- list(method = "CHOIR",
-      cluster_colname = cluster_colname, cells = colnames(result))
+    result@tools[[tool_name]]$result_index <- list(
+      method = "CHOIR",
+      cluster_colname = cluster_colname, cells = colnames(result)
+    )
     result <- spatial_record_cell_identity(result, tool_name, previous_index,
-      protected_columns = backend_cluster_col)
+      protected_columns = backend_cluster_col
+    )
   }
 
   attr(result, "choir_cluster_column") <- NULL
@@ -377,21 +353,6 @@ choir_loaded_commit <- function() {
     return(NULL)
   }
   commit
-}
-
-choir_installed_commit <- function() {
-  description <- tryCatch(
-    utils::packageDescription("CHOIR"),
-    error = function(...) NULL
-  )
-  if (is.null(description)) {
-    return(NULL)
-  }
-  commit <- description[["RemoteSha"]]
-  if (is.null(commit) || is.na(commit) || !nzchar(commit)) {
-    return(NULL)
-  }
-  as.character(commit)
 }
 
 choir_prepare_output <- function(
@@ -521,7 +482,7 @@ choir_resolve_layer <- function(
       inherits(srt[[assay]], "Assay5")
   ) {
     log_message(
-      "The pinned {.pkg CHOIR} backend does not support {.arg normalization_method = 'SCTransform'} with Seurat v5 {.cls Assay5} objects. Normalize the assay first and use {.arg normalization_method = 'none'}.",
+      "The {.pkg CHOIR} backend does not support {.arg normalization_method = 'SCTransform'} with Seurat v5 {.cls Assay5} objects. Normalize the assay first and use {.arg normalization_method = 'none'}.",
       message_type = "error"
     )
   }
@@ -795,7 +756,7 @@ choir_validate_max_clusters <- function(x) {
   if (is.numeric(x) && length(x) == 1L && is.finite(x) &&
     x >= 1 && x == floor(x)) {
     log_message(
-      "Numeric {.arg max_clusters} is unsafe with the pinned {.pkg CHOIR} backend because its full-tree loop may not terminate when the cluster count plateaus. Use {.val 'auto'}.",
+      "Numeric {.arg max_clusters} is unsafe with the {.pkg CHOIR} backend because its full-tree loop may not terminate when the cluster count plateaus. Use {.val 'auto'}.",
       message_type = "error"
     )
   }

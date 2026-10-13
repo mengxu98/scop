@@ -50,20 +50,20 @@ jobs:
           extra-packages: |
             any::pkgdown
             local::.
-            github::immunogenomics/harmony@df19af23ae0639bd6ea2da63898f973f08c85862
+            github::immunogenomics/harmony
             bioc::org.Mm.eg.db
             bioc::GO.db
             any::shadowtext
           needs: website
           cache: false
 
-      - name: Verify pinned Harmony source
+      - name: Verify Harmony source
         shell: Rscript {0}
         run: |
           harmony_source <- utils::packageDescription("harmony")
           stopifnot(
             identical(harmony_source$RemoteUsername, "immunogenomics"),
-            identical(harmony_source$RemoteSha, "df19af23ae0639bd6ea2da63898f973f08c85862")
+            identical(harmony_source$RemoteRepo, "harmony")
           )
 
       - name: Save R package cache 💾

@@ -53,7 +53,7 @@ test_that("cell2fate environment is isolated and pinned to the upstream stack", 
   expect_identical(unname(req$packages[["jaxlib"]]), "jaxlib==0.4.10")
   expect_match(
     unname(req$packages[["cell2fate"]]),
-    "BayraktarLab/cell2fate.git@c03d1ca0"
+    "BayraktarLab/cell2fate.git"
   )
   expect_error(
     getFromNamespace("normalize_env_modules", "scop")(
@@ -71,7 +71,7 @@ test_that("cell2fate environment is isolated and pinned to the upstream stack", 
   )
 })
 
-test_that("cell2fate environment check uses the pinned GitHub backend", {
+test_that("cell2fate environment check uses the GitHub backend", {
   checked <- list()
   prepared <- NULL
   python <- Sys.which("python3")
@@ -159,7 +159,7 @@ test_that("cell2fate environment check uses the pinned GitHub backend", {
       manifest <- list(
         producer = "RunCell2fate",
         runner_schema_version = 1L,
-        backend_commit = "c03d1ca0bb963f550001c6070d4986a61ec8456a",
+        backend_commit = "runtime-revision",
         status = "complete",
         request_id = "test-request",
         features = paste0("Gene", 1:3),
@@ -184,7 +184,7 @@ test_that("cell2fate environment check uses the pinned GitHub backend", {
       writeLines(
         paste0(
           '{"producer":"RunCell2fate","runner_schema_version":1,',
-          '"backend_commit":"c03d1ca0bb963f550001c6070d4986a61ec8456a"}'
+          '"backend_commit":"runtime-revision"}'
         ),
         file.path(result_dir, ".cell2fate.json")
       )
@@ -213,7 +213,7 @@ test_that("cell2fate environment check uses the pinned GitHub backend", {
   )
   expect_false(checked[[1]]$pip)
   expect_match(checked[[2]]$packages[[1]], "^git\\+https://")
-  expect_match(checked[[2]]$packages[[1]], "cell2fate.git@c03d1ca0")
+  expect_match(checked[[2]]$packages[[1]], "cell2fate.git")
   expect_true(checked[[2]]$pip)
   expect_equal(unname(out$Cell2fate_time), seq_len(8))
 })
@@ -409,7 +409,7 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
       manifest <- list(
         producer = "RunCell2fate",
         runner_schema_version = 1L,
-        backend_commit = "c03d1ca0bb963f550001c6070d4986a61ec8456a",
+        backend_commit = "runtime-revision",
         status = "complete",
         request_id = "test-request",
         features = paste0("Gene", 1:3),
@@ -434,7 +434,7 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
       writeLines(
         paste0(
           '{"producer":"RunCell2fate","runner_schema_version":1,',
-          '"backend_commit":"c03d1ca0bb963f550001c6070d4986a61ec8456a"}'
+          '"backend_commit":"runtime-revision"}'
         ),
         file.path(result_dir, ".cell2fate.json")
       )
@@ -467,7 +467,7 @@ test_that("RunCell2fate maps posterior summaries back to Seurat", {
   expect_identical(out@tools$Cell2fate$manifest$status, "complete")
   expect_identical(
     out@tools$Cell2fate$provenance$backend_commit,
-    "c03d1ca0bb963f550001c6070d4986a61ec8456a"
+    "runtime-revision"
   )
   expect_false(file.exists(file.path(result_dir, ".cell2fate.lock")))
 })
@@ -791,6 +791,13 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
       "numpy.isfinite = lambda value: types.SimpleNamespace(all=lambda: value.finite)",
       "module = runpy.run_path(sys.argv[1], run_name='cell2fate_test')",
       "assert module['RUNNER_DIR'] not in [Path(value or os.curdir).resolve() for value in sys.path]",
+      "distribution = module['importlib'].metadata.distribution",
+      "for revision in ('first-revision', 'updated-revision'):",
+      "    module['importlib'].metadata.distribution = lambda name: types.SimpleNamespace(",
+      "        read_text=lambda filename: json.dumps({'vcs_info': {'commit_id': revision}})",
+      "    )",
+      "    assert module['_installed_backend_commit']() == revision",
+      "module['importlib'].metadata.distribution = distribution",
       "fake_backend = types.ModuleType('cell2fate')",
       "fake_backend.__file__ = str(Path(tempfile.gettempdir()) / 'cell2fate' / '__init__.py')",
       "fake_backend.__path__ = []",
@@ -914,12 +921,12 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
       "    paths['complete'].write_text('complete')",
       "    paths['manifest'].write_text('{', encoding='utf-8')",
       "    assert module['_can_resume'](",
-      "        paths, 'fingerprint', {}, require_velocity=False",
+      "        paths, 'fingerprint', {}, require_velocity=False, backend_commit='runtime-revision'",
       "    ) is False",
       "    module['_write_json']({",
       "        'producer': module['PRODUCER'],",
       "        'runner_schema_version': module['RUNNER_SCHEMA_VERSION'],",
-      "        'backend_commit': module['BACKEND_COMMIT'],",
+      "        'backend_commit': 'runtime-revision',",
       "        'input_sha256': 'fingerprint',",
       "        'parameters': {},",
       "        'status': 'complete',",
@@ -928,13 +935,16 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
       "        ),",
       "    }, paths['manifest'])",
       "    assert module['_can_resume'](",
-      "        paths, 'fingerprint', {}, require_velocity=False",
+      "        paths, 'fingerprint', {}, require_velocity=False, backend_commit='runtime-revision'",
       "    ) is True",
+      "    assert module['_can_resume'](",
+      "        paths, 'fingerprint', {}, require_velocity=False, backend_commit='updated-revision'",
+      "    ) is False",
       "    strict_parameters = {'flag': False}",
       "    module['_write_json']({",
       "        'producer': module['PRODUCER'],",
       "        'runner_schema_version': module['RUNNER_SCHEMA_VERSION'],",
-      "        'backend_commit': module['BACKEND_COMMIT'],",
+      "        'backend_commit': 'runtime-revision',",
       "        'input_sha256': 'fingerprint',",
       "        'parameters': strict_parameters,",
       "        'parameters_sha256': module['_parameter_fingerprint'](strict_parameters),",
@@ -944,7 +954,7 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
       "        ),",
       "    }, paths['manifest'])",
       "    assert module['_can_resume'](",
-      "        paths, 'fingerprint', {'flag': 0}, require_velocity=False",
+      "        paths, 'fingerprint', {'flag': 0}, require_velocity=False, backend_commit='runtime-revision'",
       "    ) is False",
       "    if hasattr(os, 'symlink') and os.name == 'posix':",
       "        outside = Path(temporary) / 'outside'",
@@ -963,7 +973,7 @@ test_that("Cell2fate runner treats a malformed resume manifest as a cache miss",
       "            paths['logs'].unlink()",
       "    (paths['model'] / 'model.pt').write_bytes(b'corrupt')",
       "    assert module['_can_resume'](",
-      "        paths, 'fingerprint', strict_parameters, require_velocity=False",
+      "        paths, 'fingerprint', strict_parameters, require_velocity=False, backend_commit='runtime-revision'",
       "    ) is False"
     ),
     script
