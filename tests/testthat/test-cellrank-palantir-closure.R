@@ -60,6 +60,14 @@ test_that("package checks use the selected environment interpreter profile", {
 
 test_that("RunCellRankTrends stores normalized trend payload", {
   srt <- make_cellrank_closure_srt()
+  converted_fate <- NULL
+  testthat::local_mocked_bindings(
+    .package = "reticulate",
+    r_to_py = function(x, convert = FALSE) {
+      converted_fate <<- x
+      x
+    }
+  )
   testthat::local_mocked_bindings(
     .package = "scop",
     PrepareEnv = function(...) NULL,
@@ -86,6 +94,7 @@ test_that("RunCellRankTrends stores normalized trend payload", {
     verbose = FALSE
   )
   expect_true("A" %in% names(out@tools$CellRank$trends))
+  expect_identical(converted_fate, srt@tools$CellRank$fate_probabilities)
   expect_equal(out@tools$CellRank$trends$A$cluster_table$cluster, c("0", "1"))
   expect_equal(out@tools$CellRank$trends$A$heatmap_genes, c("g1", "g2"))
 })

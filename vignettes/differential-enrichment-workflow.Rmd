@@ -309,12 +309,29 @@ NES toward the other end. Statistical significance and effect direction must
 both be read from the real result table. GSEA performs substantial permutation
 work and can take longer than DE or plotting.
 
+GSEA uses a separate GO mapping covering the union of the tested genes.
+Each group's full ranking is retained. Reusing the ORA intersection would
+remove known GO memberships from genes that remain in a group's ranking.
+
 ```{r gsea}
+gsea_symbols <- intersect(unique(de$gene),
+                          AnnotationDbi::keys(org.Mm.eg.db::org.Mm.eg.db, keytype = "SYMBOL"))
+gsea_map <- AnnotationDbi::select(org.Mm.eg.db::org.Mm.eg.db,
+                                 keys = gsea_symbols, keytype = "SYMBOL",
+                                 columns = c("GOALL", "ONTOLOGYALL"))
+gsea_term2gene <- unique(gsea_map[!is.na(gsea_map$GOALL) & gsea_map$ONTOLOGYALL == "BP",
+                                c("GOALL", "SYMBOL")])
+colnames(gsea_term2gene) <- c("Term", "symbol")
+gsea_term2name <- AnnotationDbi::select(GO.db::GO.db,
+  keys = unique(gsea_term2gene$Term), keytype = "GOID", columns = "TERM")
+gsea_term2name <- unique(gsea_term2name[stats::complete.cases(gsea_term2name), ])
+colnames(gsea_term2name) <- c("Term", "Name")
+stopifnot(all(go_term2gene$symbol %in% gsea_term2gene$symbol))
 pancreas_sub <- RunGSEA(
   pancreas_sub,
   group.by = "CellType",
   species = "Mus_musculus",
-  TERM2GENE = go_term2gene, TERM2NAME = go_term2name,
+  TERM2GENE = gsea_term2gene, TERM2NAME = gsea_term2name,
   DE_threshold = "is.finite(avg_log2FC)"
 )
 
@@ -371,6 +388,7 @@ result_file <- file.path(output_dir, "analysis.rds")
 saveRDS(pancreas_sub, result_file)
 utils::write.csv(de, file.path(output_dir, "all-markers.csv"), row.names = FALSE)
 utils::write.csv(go_term2gene, file.path(output_dir, "GO-BP-measured-background.csv"), row.names = FALSE)
+utils::write.csv(gsea_term2gene, file.path(output_dir, "GO-BP-GSEA-memberships.csv"), row.names = FALSE)
 writeLines(paste("GO_BP", go_version), file.path(output_dir, "GO-source.txt"))
 utils::write.csv(pancreas_sub@tools$Enrichment_CellType_wilcox$enrichment,
                  file.path(output_dir, "ORA.csv"), row.names = FALSE)
