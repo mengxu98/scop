@@ -67,6 +67,88 @@ test_that("CheckDataMerge reuses log-normalized RNA merge without changing HVF o
   expect_equal(SeuratObject::VariableFeatures(checked$srt_merge), checked$HVF)
 })
 
+test_that("CheckDataList preserves native SCT models and HVFs for split counts layers", {
+  skip_if_not_installed("Seurat", "5.0.0")
+  skip_if_not_installed("SeuratObject", "5.0.0")
+  skip_if_not_installed("glmGamPoi")
+
+  set.seed(31)
+  counts <- Matrix::Matrix(matrix(rpois(120 * 100, lambda = 5), 120, 100), sparse = TRUE)
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+  srt <- Seurat::CreateSeuratObject(counts)
+  srt[["RNA"]] <- split(srt[["RNA"]], f = rep(c("a", "b"), each = 50))
+  layers <- SeuratObject::Layers(srt[["RNA"]], search = "counts")
+  expected <- Seurat::SCTransform(srt, assay = "RNA", variable.features.n = 30, verbose = FALSE)
+  expected <- Seurat::PrepSCTIntegration(
+    object.list = list(expected),
+    anchor.features = SeuratObject::VariableFeatures(expected[["SCT"]]),
+    assay = "SCT",
+    verbose = FALSE
+  )[[1L]]
+
+  checked <- CheckDataList(
+    srt_list = list(srt),
+    batch = "sample",
+    assay = "RNA",
+    normalization_method = "SCT",
+    nHVF = 30,
+    verbose = FALSE
+  )
+  actual <- checked$srt_list[[1L]]
+
+  expect_identical(SeuratObject::Layers(actual[["RNA"]], search = "counts"), layers)
+  expect_length(actual[["SCT"]]@SCTModel.list, 2L)
+  expect_identical(SeuratObject::VariableFeatures(actual[["SCT"]]), SeuratObject::VariableFeatures(expected[["SCT"]]))
+  expect_equal(Seurat::SCTResults(actual[["SCT"]], slot = "feature.attributes"), Seurat::SCTResults(expected[["SCT"]], slot = "feature.attributes"))
+  expect_equal(Seurat::SCTResults(actual[["SCT"]], slot = "cell.attributes"), Seurat::SCTResults(expected[["SCT"]], slot = "cell.attributes"))
+  expect_equal(SeuratObject::GetAssayData(actual, assay = "SCT", layer = "scale.data"), SeuratObject::GetAssayData(expected, assay = "SCT", layer = "scale.data"))
+  expect_setequal(checked$HVF, SeuratObject::VariableFeatures(expected[["SCT"]]))
+})
+
+test_that("CheckDataList preserves native SCT models when merging the same batch", {
+  skip_if_not_installed("Seurat", "5.0.0")
+  skip_if_not_installed("SeuratObject", "5.0.0")
+  skip_if_not_installed("glmGamPoi")
+
+  set.seed(31)
+  counts <- Matrix::Matrix(matrix(rpois(120 * 100, lambda = 5), 120, 100), sparse = TRUE)
+  rownames(counts) <- paste0("g", seq_len(nrow(counts)))
+  colnames(counts) <- paste0("c", seq_len(ncol(counts)))
+  srt_list <- list(
+    Seurat::CreateSeuratObject(counts[, 1:50]),
+    Seurat::CreateSeuratObject(counts[, 51:100])
+  )
+  merged <- Reduce(merge, srt_list)
+  expected <- Seurat::SCTransform(merged, assay = "RNA", variable.features.n = 30, verbose = FALSE)
+  expected <- Seurat::PrepSCTIntegration(
+    object.list = list(expected),
+    anchor.features = SeuratObject::VariableFeatures(expected[["SCT"]]),
+    assay = "SCT",
+    verbose = FALSE
+  )[[1L]]
+
+  checked <- CheckDataList(
+    srt_list = srt_list,
+    batch = c("same", "same"),
+    assay = "RNA",
+    normalization_method = "SCT",
+    nHVF = 30,
+    verbose = FALSE
+  )
+  actual <- checked$srt_list[[1L]]
+
+  expect_length(checked$srt_list, 1L)
+  expect_identical(colnames(actual), colnames(merged))
+  expect_identical(SeuratObject::Layers(actual[["RNA"]], search = "counts"), SeuratObject::Layers(merged[["RNA"]], search = "counts"))
+  expect_length(actual[["SCT"]]@SCTModel.list, 2L)
+  expect_identical(SeuratObject::VariableFeatures(actual[["SCT"]]), SeuratObject::VariableFeatures(expected[["SCT"]]))
+  expect_equal(Seurat::SCTResults(actual[["SCT"]], slot = "feature.attributes"), Seurat::SCTResults(expected[["SCT"]], slot = "feature.attributes"))
+  expect_equal(Seurat::SCTResults(actual[["SCT"]], slot = "cell.attributes"), Seurat::SCTResults(expected[["SCT"]], slot = "cell.attributes"))
+  expect_equal(SeuratObject::GetAssayData(actual, assay = "SCT", layer = "scale.data"), SeuratObject::GetAssayData(expected, assay = "SCT", layer = "scale.data"))
+  expect_setequal(checked$HVF, SeuratObject::VariableFeatures(expected[["SCT"]]))
+})
+
 test_that("NormalizeData handles split Assay5 counts layers", {
   skip_if_not_installed("Seurat")
   skip_if_not_installed("SeuratObject")

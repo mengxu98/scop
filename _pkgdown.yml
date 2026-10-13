@@ -181,7 +181,6 @@ reference:
   - FindClusters
   - FindMultiModalNeighbors
   - FindNeighbors
-  - SCTransform
   - RunDimsEstimate
   - RunDimsReduction
   - RunCHOIR

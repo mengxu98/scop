@@ -601,18 +601,6 @@ scale_sparse_rows_from_stats <- function(sparse_mat, center, scale, n_threads = 
     .Call(`_scop_scale_sparse_rows_from_stats`, sparse_mat, center, scale, n_threads)
 }
 
-csc_to_csr <- function(csc_i, csc_p, csc_x, nrow, ncol) {
-    .Call(`_scop_csc_to_csr`, csc_i, csc_p, csc_x, nrow, ncol)
-}
-
-sct_stats_correct_sparse <- function(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, corr_factor, min_var, clip_lo, clip_hi, do_correct, cores = 1L) {
-    .Call(`_scop_sct_stats_correct_sparse`, intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, corr_factor, min_var, clip_lo, clip_hi, do_correct, cores)
-}
-
-sct_fused_resid_center_sparse <- function(intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi, do_center, do_scale, cores = 1L) {
-    .Call(`_scop_sct_fused_resid_center_sparse`, intercepts, cell_mu_base, csr_row_ptr, csr_col_idx, csr_vals, gene_idx, theta, min_var, wide_clip_lo, wide_clip_hi, narrow_clip_lo, narrow_clip_hi, do_center, do_scale, cores)
-}
-
 spatial_neighborhood_profile_cpp <- function(xy, group, query, radii, ng) {
     .Call(`_scop_spatial_neighborhood_profile_cpp`, xy, group, query, radii, ng)
 }

@@ -1,5 +1,7 @@
 # scop (development version)
 
+* **breaking**: `SCTransform()` now comes from Seurat. scop no longer exports its own method, residual kernels, or load-time signature adapter. Preprocessing calls `Seurat::SCTransform()` and leaves thread control to `Seurat::setThreads()`. `CheckDataList()` and `CheckDataMerge()` no longer accept `cores`, which only controlled that removed path.
+
 * **fix**: `RunRCTD()`, `RunCARD()` and `RunSPOTlight()` align reference labels
   and metadata to selected-assay cell IDs before filtering, including assays
   containing only part of a Seurat object. Ambiguous IDs are rejected. RCTD

@@ -154,7 +154,6 @@ CheckDataList <- function(
   HVF_min_intersection = 1,
   HVF = NULL,
   vars_to_regress = NULL,
-  cores = 1L,
   verbose = TRUE,
   seed = 11
 ) {
@@ -491,53 +490,46 @@ CheckDataList <- function(
           !"SCT" %in% SeuratObject::Assays(srt_list[[i]])
       ) {
         log_message(
-          "Perform {.fn SCTransform} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
+          "Perform {.fn Seurat::SCTransform} on {.val {i}}/{.val {length(srt_list)}} of {.arg srt_list}...",
           verbose = verbose
         )
-        srt_list[[i]] <- SCTransform(
+        srt_list[[i]] <- Seurat::SCTransform(
           object = srt_list[[i]],
           variable.features.n = nHVF,
           vars.to.regress = vars_to_regress,
           assay = assay,
           new.assay.name = "SCT",
-          cores = cores,
           verbose = FALSE
         )
       } else {
         SeuratObject::DefaultAssay(srt_list[[i]]) <- "SCT"
       }
-      feature_attr_sct <- GetFeaturesData(srt_list[[i]], assay = "SCT")
-      if (!"residual_variance" %in% colnames(feature_attr_sct)) {
-        if (length(srt_list[[i]]@assays$SCT@SCTModel.list) > 1) {
-          index <- which(
-            sapply(
-              srt_list[[i]]@assays$SCT@SCTModel.list,
-              function(x) nrow(x@cell.attributes) == ncol(srt_list[[i]])
-            )
+      sct_assay <- srt_list[[i]][["SCT"]]
+      if (length(sct_assay@SCTModel.list) == 1L) {
+        feature_attr_sct <- GetFeaturesData(srt_list[[i]], assay = "SCT")
+        if (!"residual_variance" %in% colnames(feature_attr_sct)) {
+          feature_attr_sct <- Seurat::SCTResults(
+            object = sct_assay,
+            slot = "feature.attributes"
           )
-        } else {
-          index <- 1
         }
-        model <- srt_list[[i]]@assays$SCT@SCTModel.list[[index]]
-        feature_attr_sct <- Seurat::SCTResults(
-          object = model,
-          slot = "feature.attributes"
+        nfeatures <- min(nHVF, nrow(x = feature_attr_sct))
+        top_features <- rownames(x = feature_attr_sct)[utils::head(
+          order(feature_attr_sct$residual_variance, decreasing = TRUE),
+          n = nfeatures
+        )]
+        SeuratObject::VariableFeatures(srt_list[[i]], assay = "SCT") <- top_features
+        srt_list[[i]] <- AddFeaturesData(
+          srt_list[[i]],
+          features = feature_attr_sct,
+          assay = "SCT"
+        )
+      } else {
+        SeuratObject::VariableFeatures(srt_list[[i]], assay = "SCT") <- SeuratObject::VariableFeatures(
+          sct_assay,
+          nfeatures = nHVF
         )
       }
-      nfeatures <- min(nHVF, nrow(x = feature_attr_sct))
-      top_features <- rownames(x = feature_attr_sct)[utils::head(
-        order(feature_attr_sct$residual_variance, decreasing = TRUE),
-        n = nfeatures
-      )]
-      SeuratObject::VariableFeatures(
-        srt_list[[i]],
-        assay = SeuratObject::DefaultAssay(srt_list[[i]])
-      ) <- top_features
-      srt_list[[i]] <- AddFeaturesData(
-        srt_list[[i]],
-        features = feature_attr_sct,
-        assay = "SCT"
-      )
     }
   }
 
@@ -797,7 +789,6 @@ CheckDataMerge <- function(
   HVF_min_intersection = 1,
   HVF = NULL,
   vars_to_regress = NULL,
-  cores = 1L,
   verbose = TRUE,
   seed = 11
 ) {
@@ -862,7 +853,6 @@ CheckDataMerge <- function(
     HVF_min_intersection = HVF_min_intersection,
     HVF = HVF,
     vars_to_regress = vars_to_regress,
-    cores = cores,
     seed = seed
   )
   srt_list <- checked[["srt_list"]]
