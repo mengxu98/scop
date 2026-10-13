@@ -892,6 +892,11 @@ run_integration5 <- function(
       HVF <- HVF[HVF %in% cf]
     }
 
+    model_features <- lapply(srt_integrated[["SCT"]]@SCTModel.list, function(model) {
+      rownames(Seurat::SCTResults(model, slot = "feature.attributes"))
+    })
+    HVF <- intersect(HVF, Reduce(intersect, model_features))
+
     scale_features <- tryCatch(
       rownames(GetAssayData5(
         srt_integrated,

@@ -525,10 +525,12 @@ CheckDataList <- function(
           assay = "SCT"
         )
       } else {
-        SeuratObject::VariableFeatures(srt_list[[i]], assay = "SCT") <- SeuratObject::VariableFeatures(
-          sct_assay,
-          nfeatures = nHVF
-        )
+        top_features <- if (utils::packageVersion("Seurat") >= "5.1.0") {
+          Seurat::SelectSCTIntegrationFeatures(srt_list[[i]], assay = "SCT", nfeatures = nHVF, verbose = FALSE)
+        } else {
+          SeuratObject::VariableFeatures(sct_assay, nfeatures = nHVF)
+        }
+        SeuratObject::VariableFeatures(srt_list[[i]], assay = "SCT") <- top_features
       }
     }
   }
@@ -634,6 +636,17 @@ CheckDataList <- function(
     )
     HVF <- HVF[HVF %in% cf]
   }
+  if (normalization_method == "SCT" && type == "RNA") {
+    model_features <- lapply(srt_list, function(srt) {
+      Reduce(intersect, lapply(srt[["SCT"]]@SCTModel.list, function(model) {
+        rownames(Seurat::SCTResults(model, slot = "feature.attributes"))
+      }))
+    })
+    HVF <- intersect(HVF, Reduce(intersect, model_features))
+    if (length(HVF) == 0L) {
+      log_message("No HVF available in every SCT model", message_type = "error")
+    }
+  }
   log_message(
     "Number of available HVF: {.val {length(HVF)}}",
     verbose = verbose
@@ -662,6 +675,7 @@ CheckDataList <- function(
   }
 
   if (normalization_method == "SCT" && type == "RNA") {
+    srt_list <- lapply(srt_list, get_sct_residuals, features = HVF)
     srt_list <- Seurat::PrepSCTIntegration(
       object.list = srt_list,
       anchor.features = HVF,
@@ -915,4 +929,26 @@ CheckDataMerge <- function(
       type = type
     )
   )
+}
+
+
+get_sct_residuals <- function(object, features, assay = "SCT") {
+  if (all(features %in% rownames(GetAssayData5(object, assay = assay, layer = "scale.data")))) {
+    return(object)
+  }
+  umi_names <- unique(unlist(Seurat::SCTResults(object[[assay]], slot = "umi.assay"), use.names = FALSE))
+  if (length(umi_names) != 1L) {
+    log_message("SCT models must share one UMI assay to compute residuals", message_type = "error")
+  }
+  umi_assays <- stats::setNames(lapply(umi_names, function(assay) object[[assay]]), umi_names)
+  for (umi_assay in umi_names) {
+    if (inherits(object[[umi_assay]], "Assay5")) {
+      suppressWarnings(object[[umi_assay]] <- SeuratObject::CreateAssayObject(counts = GetAssayData5(object, assay = umi_assay, layer = "counts")))
+    }
+  }
+  object <- Seurat::GetResidual(object, assay = assay, umi.assay = umi_names[[1L]], features = features, verbose = FALSE)
+  for (umi_assay in umi_names) {
+    object[[umi_assay]] <- umi_assays[[umi_assay]]
+  }
+  object
 }

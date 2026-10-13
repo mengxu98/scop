@@ -284,7 +284,48 @@ Seurat_integrate <- function(
     for (nm in names(IntegrateData_params)) {
       params2[[nm]] <- IntegrateData_params[[nm]]
     }
+    source_merged <- NULL
+    restore_assays <- character()
+    if (identical(params2$normalization.method, "SCT")) {
+      sct_names <- vapply(params2$anchorset@object.list, SeuratObject::DefaultAssay, character(1))
+      models <- lapply(seq_along(sct_names), function(i) params2$anchorset@object.list[[i]][[sct_names[[i]]]]@SCTModel.list)
+      if (any(lengths(models) > 1L)) {
+        model_features <- lapply(models, function(model_list) {
+          Reduce(intersect, lapply(model_list, function(model) {
+            rownames(Seurat::SCTResults(model, slot = "feature.attributes"))
+          }))
+        })
+        integration_features <- params2$features.to.integrate %||% params2$features %||% params2$anchorset@anchor.features
+        params2$features.to.integrate <- intersect(integration_features, Reduce(intersect, model_features))
+        if (length(params2$features.to.integrate) == 0L) {
+          log_message("No integration features available in every SCT model", message_type = "error")
+        }
+        for (i in seq_along(sct_names)) {
+          params2$anchorset@object.list[[i]] <- get_sct_residuals(params2$anchorset@object.list[[i]], features = params2$features.to.integrate, assay = sct_names[[i]])
+        }
+        source_merged <- merge(params2$anchorset@object.list[[1L]], y = params2$anchorset@object.list[-1L])
+        restore_assays <- unique(sct_names)
+        for (i in seq_along(sct_names)) {
+          object <- params2$anchorset@object.list[[i]]
+          umi_names <- unique(unlist(Seurat::SCTResults(object[[sct_names[[i]]]], slot = "umi.assay"), use.names = FALSE))
+          restore_assays <- union(restore_assays, umi_names)
+          for (umi_assay in umi_names) {
+            if (inherits(object[[umi_assay]], "Assay5")) {
+              suppressWarnings(object[[umi_assay]] <- SeuratObject::CreateAssayObject(counts = GetAssayData5(object, assay = umi_assay, layer = "counts")))
+            }
+          }
+          model_sizes <- vapply(models[[i]], function(model) nrow(model@cell.attributes), integer(1))
+          object[[sct_names[[i]]]]@SCTModel.list <- models[[i]][which.max(model_sizes)]
+          params2$anchorset@object.list[[i]] <- object
+        }
+      }
+    }
     srt_integrated <- invoke_fun(Seurat::IntegrateData, params2)
+    if (!is.null(source_merged)) {
+      for (assay_name in restore_assays) {
+        srt_integrated[[assay_name]] <- source_merged[[assay_name]]
+      }
+    }
 
     SeuratObject::DefaultAssay(srt_integrated) <- "Seuratcorrected"
     SeuratObject::VariableFeatures(srt_integrated[["Seuratcorrected"]]) <- HVF
