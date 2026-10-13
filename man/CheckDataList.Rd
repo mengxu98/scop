@@ -17,7 +17,6 @@ CheckDataList(
   HVF_min_intersection = 1,
   HVF = NULL,
   vars_to_regress = NULL,
-  cores = 1L,
   verbose = TRUE,
   seed = 11
 )
@@ -43,10 +42,6 @@ Possible values are \code{"global"} and \code{"separate"}.}
 \item{HVF_min_intersection}{The feature needs to be present in batches for a minimum number of times in order to be considered as highly variable.}
 
 \item{vars_to_regress}{A vector of variable names to include as additional regression variables.}
-
-\item{cores}{Number of CPU cores. \code{NULL} lets each backend pick its own
-default: the process OpenMP team (\code{OMP_NUM_THREADS}) for C++ kernels and one
-worker for R/Python parallel backends.}
 
 \item{verbose}{Whether to print the message.
 Default is \code{TRUE}.}
